@@ -59,6 +59,7 @@
     "@types/css-font-loading-module": "^0.0.8",
     "@types/earcut": "^2.1.1",
     "@webgpu/types": "^0.1.30",
+    "@xmldom/xmldom": "^0.8.10",
     "earcut": "^2.2.4",
     "eventemitter3": "^5.0.0",
     "ismobilejs": "^1.1.0"
@@ -66,6 +67,7 @@
   "devDependencies": {
     "@pixi/eslint-config": "^4.0.1",
     "@pixi/jest-electron": "^26.0.0",
+    "@pixi/rollup-plugin-web-worker-loader": "^1.6.1",
     "@pixi/webdoc-template": "^1.5.5",
     "@rollup/plugin-commonjs": "^15.1.0",
     "@rollup/plugin-json": "^4.1.0",
@@ -107,7 +109,6 @@
     "rollup-plugin-jscc": "^2.0.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
     "rollup-plugin-string": "^3.0.0",
-    "rollup-plugin-web-worker-loader": "^1.6.1",
     "semver": "^7.3.8",
     "tree-kill": "^1.2.2",
     "ts-jest": "^26.0.0",
