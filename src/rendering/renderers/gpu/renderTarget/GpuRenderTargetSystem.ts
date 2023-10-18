@@ -10,7 +10,7 @@ import { getCanvasTexture } from '../../shared/texture/utils/getCanvasTexture';
 import { GpuRenderTarget } from './GpuRenderTarget';
 
 import type { RgbaArray } from '../../../../color/Color';
-import type { ICanvas } from '../../../../settings/adapter/ICanvas';
+import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { Writeable } from '../../../../utils/types';
 import type { CLEAR_OR_BOOL } from '../../gl/const';
 import type { System } from '../../shared/system/System';

@@ -1,4 +1,4 @@
-import type { ICanvas } from '../../../../settings/adapter/ICanvas';
+import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { Texture } from './Texture';
 
 export type GetPixelsOutput = {

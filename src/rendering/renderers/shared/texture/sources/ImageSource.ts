@@ -1,19 +1,35 @@
-import { settings } from '../../../../../settings/settings';
+import { DOMAdapter } from '../../../../../environment/adapter';
+import { ExtensionType } from '../../../../../extensions/Extensions';
 import { NOOP } from '../../../../../utils/NOOP';
 import { Texture } from '../Texture';
 import { TextureSource } from './TextureSource';
 
-import type { ICanvas } from '../../../../../settings/adapter/ICanvas';
+import type { ICanvas } from '../../../../../environment/canvas/ICanvas';
+import type { ExtensionMetadata } from '../../../../../extensions/Extensions';
 
-type ImageResource = ImageBitmap | HTMLCanvasElement | OffscreenCanvas | ICanvas | VideoFrame;
+export type ImageResource =
+ImageBitmap
+| HTMLCanvasElement
+| OffscreenCanvas
+| ICanvas
+| VideoFrame
+| HTMLImageElement
+| HTMLVideoElement;
 
 export class ImageSource extends TextureSource<ImageResource>
 {
+    public static extension: ExtensionMetadata = ExtensionType.TextureSource;
     public uploadMethodId = 'image';
+
+    public static test(resource: any): resource is ImageResource
+    {
+        return (typeof HTMLImageElement !== 'undefined' && resource instanceof HTMLImageElement)
+        || (typeof ImageBitmap !== 'undefined' && resource instanceof ImageBitmap);
+    }
 }
 
 // create a white canvas
-const canvas = settings.ADAPTER.createCanvas();
+const canvas = DOMAdapter.get().createCanvas();
 
 const size = 1;
 

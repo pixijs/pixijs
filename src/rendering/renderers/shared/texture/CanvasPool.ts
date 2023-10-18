@@ -1,8 +1,8 @@
+import { DOMAdapter } from '../../../../environment/adapter';
 import { nextPow2 } from '../../../../maths/misc/pow2';
-import { settings } from '../../../../settings/settings';
 
-import type { ICanvas, ICanvasRenderingContext2DSettings } from '../../../../settings/adapter/ICanvas';
-import type { ICanvasRenderingContext2D } from '../../../../settings/adapter/ICanvasRenderingContext2D';
+import type { ICanvas, ICanvasRenderingContext2DSettings } from '../../../../environment/canvas/ICanvas';
+import type { ICanvasRenderingContext2D } from '../../../../environment/canvas/ICanvasRenderingContext2D';
 
 export interface CanvasAndContext
 {
@@ -45,7 +45,7 @@ export class CanvasPoolClass
      */
     private _createCanvasAndContext(pixelWidth: number, pixelHeight: number): CanvasAndContext
     {
-        const canvas = settings.ADAPTER.createCanvas();
+        const canvas = DOMAdapter.get().createCanvas();
 
         canvas.width = pixelWidth;
         canvas.height = pixelHeight;

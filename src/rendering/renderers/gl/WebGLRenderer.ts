@@ -18,6 +18,7 @@ import { GlUniformGroupSystem } from './shader/GlUniformGroupSystem';
 import { GlStateSystem } from './state/GlStateSystem';
 import { GlTextureSystem } from './texture/GlTextureSystem';
 
+import type { ICanvas } from '../../../environment/canvas/ICanvas';
 import type { PipeConstructor } from '../shared/instructions/RenderPipe';
 import type { SystemConstructor } from '../shared/system/System';
 import type { ExtractRendererOptions, ExtractSystemTypes } from '../shared/system/utils/typeUtils';
@@ -54,24 +55,24 @@ extensions.handleByNamedList(ExtensionType.WebGLPipesAdaptor, renderPipeAdaptors
 extensions.add(...DefaultWebGLSystems, ...DefaultWebGLPipes, ...DefaultWebGLAdapters);
 
 /** The default WebGL renderer, uses WebGL2 contexts. */
-type WebGLSystems = ExtractSystemTypes<typeof DefaultWebGLSystems> &
-PixiMixins.RendererSystems &
-PixiMixins.WebGLSystems;
+type WebGLSystems = ExtractSystemTypes<typeof DefaultWebGLSystems> & PixiMixins.RendererSystems & PixiMixins.WebGLSystems;
 
 /** The default WebGL renderer, uses WebGL2 contexts. */
-export type WebGLPipes = ExtractSystemTypes<typeof DefaultWebGLPipes> &
-PixiMixins.RendererPipes &
-PixiMixins.WebGLPipes;
+export type WebGLPipes = ExtractSystemTypes<typeof DefaultWebGLPipes> & PixiMixins.RendererPipes & PixiMixins.WebGLPipes;
 
 /** Options for WebGLRenderer. */
-export interface WebGLOptions extends ExtractRendererOptions<typeof DefaultWebGLSystems>,
+export interface WebGLOptions
+    extends ExtractRendererOptions<typeof DefaultWebGLSystems>,
     PixiMixins.RendererOptions,
     PixiMixins.WebGLOptions {}
 
 /** The default WebGL renderer, uses WebGL2 contexts. */
-export interface WebGLRenderer extends AbstractRenderer<WebGLPipes, WebGLOptions>, WebGLSystems {}
-/** The default WebGL renderer, uses WebGL2 contexts. */
-export class WebGLRenderer extends AbstractRenderer<WebGLPipes, WebGLOptions> implements WebGLSystems
+export interface WebGLRenderer<T extends ICanvas = HTMLCanvasElement>
+    extends AbstractRenderer<WebGLPipes, WebGLOptions, T>,
+    WebGLSystems {}
+export class WebGLRenderer<T extends ICanvas = HTMLCanvasElement>
+    extends AbstractRenderer<WebGLPipes, WebGLOptions, T>
+    implements WebGLSystems
 {
     public gl: GlRenderingContext;
 

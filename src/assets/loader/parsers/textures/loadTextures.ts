@@ -1,6 +1,6 @@
+import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { ImageSource } from '../../../../rendering/renderers/shared/texture/sources/ImageSource';
-import { settings } from '../../../../settings/settings';
 import { getResolutionOfUrl } from '../../../../utils/network/getResolutionOfUrl';
 import { checkDataUrl } from '../../../utils/checkDataUrl';
 import { checkExtension } from '../../../utils/checkExtension';
@@ -57,7 +57,7 @@ export interface LoadTextureConfig
  */
 export async function loadImageBitmap(url: string): Promise<ImageBitmap>
 {
-    const response = await settings.ADAPTER.fetch(url);
+    const response = await DOMAdapter.get().fetch(url);
 
     if (!response.ok)
     {

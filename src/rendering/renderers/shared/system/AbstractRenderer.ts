@@ -3,10 +3,10 @@ import { Container } from '../../../../scene/container/Container';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { SystemRunner } from './SystemRunner';
 
+import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { Matrix } from '../../../../maths/matrix/Matrix';
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
 import type { DestroyOptions } from '../../../../scene/container/destroyTypes';
-import type { ICanvas } from '../../../../settings/adapter/ICanvas';
 import type { Writeable } from '../../../../utils/types';
 import type { RenderSurface } from '../../gpu/renderTarget/GpuRenderTargetSystem';
 import type { Renderer } from '../../types';
@@ -59,8 +59,44 @@ type Runners = {[key in DefaultRunners]: SystemRunner} & {
  * The SystemManager is a class that provides functions for managing a set of systems
  * This is a base class, that is generic (no render code or knowledge at all)
  */
-export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions>
+export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions, CANVAS extends ICanvas = HTMLCanvasElement>
 {
+    public static defaultOptions = {
+        /**
+         * Default resolution / device pixel ratio of the renderer.
+         * @default 1
+         */
+        resolution: 1,
+        /**
+         * Should the `failIfMajorPerformanceCaveat` flag be enabled as a context option used in the `isWebGLSupported`
+         * function. If set to true, a WebGL renderer can fail to be created if the browser thinks there could be
+         * performance issues when using WebGL.
+         *
+         * In PixiJS v6 this has changed from true to false by default, to allow WebGL to work in as many
+         * scenarios as possible. However, some users may have a poor experience, for example, if a user has a gpu or
+         * driver version blacklisted by the
+         * browser.
+         *
+         * If your application requires high performance rendering, you may wish to set this to false.
+         * We recommend one of two options if you decide to set this flag to false:
+         *
+         * 1: Use the Canvas renderer as a fallback in case high performance WebGL is
+         *    not supported.
+         *
+         * 2: Call `isWebGLSupported` (which if found in the utils package) in your code before attempting to create a
+         *    PixiJS renderer, and show an error message to the user if the function returns false, explaining that their
+         *    device & browser combination does not support high performance WebGL.
+         *    This is a much better strategy than trying to create a PixiJS renderer and finding it then fails.
+         * @default false
+         */
+        failIfMajorPerformanceCaveat: false,
+        /**
+         * Should round pixels be forced when rendering?
+         * @default false
+         */
+        roundPixels: false
+    };
+
     public readonly type: number;
     public readonly name: string;
 
@@ -106,9 +142,10 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions>
             const defaultSystemOptions = (system.constructor as any).defaultOptions;
 
             options = { ...defaultSystemOptions, ...options };
-
-            this._roundPixels = options.roundPixels ? 1 : 0;
         }
+
+        options = { ...AbstractRenderer.defaultOptions, ...options };
+        this._roundPixels = options.roundPixels ? 1 : 0;
 
         // await emits..
         for (let i = 0; i < this.runners.init.items.length; i++)
@@ -211,9 +248,9 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions>
 
     // NOTE: this was `view` in v7
     /** The canvas element that everything is drawn to.*/
-    get canvas(): ICanvas
+    get canvas(): CANVAS
     {
-        return this.view.canvas;
+        return this.view.canvas as CANVAS;
     }
 
     /**

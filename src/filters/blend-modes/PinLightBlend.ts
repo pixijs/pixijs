@@ -1,10 +1,19 @@
 /* eslint-disable max-len */
 
+import { ExtensionType } from '../../extensions/Extensions';
 import { BlendModeFilter } from './BlendModeFilter';
+
+import type { ExtensionMetadata } from '../../extensions/Extensions';
 
 /** Replaces colors based on the blend color. */
 export class PinLightBlend extends BlendModeFilter
 {
+    /** @ignore */
+    public static extension: ExtensionMetadata = {
+        name: 'pin-light',
+        type: ExtensionType.BlendMode
+    };
+
     constructor()
     {
         super({

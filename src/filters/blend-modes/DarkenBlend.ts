@@ -1,8 +1,17 @@
+import { ExtensionType } from '../../extensions/Extensions';
 import { BlendModeFilter } from './BlendModeFilter';
+
+import type { ExtensionMetadata } from '../../extensions/Extensions';
 
 /** Uses each color channel to select the darker of the following two values; base or blend color */
 export class DarkenBlend extends BlendModeFilter
 {
+    /** @ignore */
+    public static extension: ExtensionMetadata = {
+        name: 'darken',
+        type: ExtensionType.BlendMode
+    };
+
     constructor()
     {
         super({

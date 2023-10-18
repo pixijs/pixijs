@@ -5,7 +5,7 @@ import { warn } from '../../../../utils/logging/warn';
 import { FillGradient } from '../../../graphics/shared/fill/FillGradient';
 import { FillPattern } from '../../../graphics/shared/fill/FillPattern';
 
-import type { ICanvasRenderingContext2D } from '../../../../settings/adapter/ICanvasRenderingContext2D';
+import type { ICanvasRenderingContext2D } from '../../../../environment/canvas/ICanvasRenderingContext2D';
 import type { ConvertedFillStyle } from '../../../graphics/shared/GraphicsContext';
 
 export function getCanvasFillStyle(

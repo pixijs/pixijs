@@ -1,4 +1,4 @@
-import { settings } from '../../../../../settings/settings';
+import { DOMAdapter } from '../../../../../environment/adapter';
 
 const unknownContext = {};
 let context: WebGLRenderingContext | WebGL2RenderingContext = unknownContext as any;
@@ -13,7 +13,7 @@ export function getTestContext(): WebGLRenderingContext | WebGL2RenderingContext
 {
     if (context === unknownContext || context?.isContextLost())
     {
-        const canvas = settings.ADAPTER.createCanvas();
+        const canvas = DOMAdapter.get().createCanvas();
 
         context = canvas.getContext('webgl2', {});
     }

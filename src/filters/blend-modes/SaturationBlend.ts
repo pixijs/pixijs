@@ -1,9 +1,18 @@
+import { ExtensionType } from '../../extensions/Extensions';
 import { BlendModeFilter } from './BlendModeFilter';
 import { hslgl } from './hls/GLhls';
 import { hslgpu } from './hls/GPUhls';
 
+import type { ExtensionMetadata } from '../../extensions/Extensions';
+
 export class SaturationBlend extends BlendModeFilter
 {
+    /** @ignore */
+    public static extension: ExtensionMetadata = {
+        name: 'saturation',
+        type: ExtensionType.BlendMode
+    };
+
     constructor()
     {
         super({

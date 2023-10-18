@@ -1,8 +1,8 @@
-import { settings } from '../../../settings/settings';
+import { DOMAdapter } from '../../../environment/adapter';
 import { fontStringFromTextStyle } from './utils/fontStringFromTextStyle';
 
-import type { ICanvas, ICanvasRenderingContext2DSettings } from '../../../settings/adapter/ICanvas';
-import type { ICanvasRenderingContext2D } from '../../../settings/adapter/ICanvasRenderingContext2D';
+import type { ICanvas, ICanvasRenderingContext2DSettings } from '../../../environment/canvas/ICanvas';
+import type { ICanvasRenderingContext2D } from '../../../environment/canvas/ICanvasRenderingContext2D';
 import type { TextStyle, TextStyleWhiteSpace } from '../TextStyle';
 
 // The type for Intl.Segmenter is only available since TypeScript 4.7.2, so let's make a polyfill for it.
@@ -137,7 +137,7 @@ export class CanvasTextMetrics
 
         if (result !== undefined)
         {
-            const proto = settings.ADAPTER.getCanvasRenderingContext2D().prototype;
+            const proto = DOMAdapter.get().getCanvasRenderingContext2D().prototype;
 
             result
                 = CanvasTextMetrics._experimentalLetterSpacingSupported
@@ -825,11 +825,11 @@ export class CanvasTextMetrics
                     return c as ICanvas;
                 }
 
-                canvas = settings.ADAPTER.createCanvas();
+                canvas = DOMAdapter.get().createCanvas();
             }
             catch (ex)
             {
-                canvas = settings.ADAPTER.createCanvas();
+                canvas = DOMAdapter.get().createCanvas();
             }
             canvas.width = canvas.height = 10;
             CanvasTextMetrics.__canvas = canvas;

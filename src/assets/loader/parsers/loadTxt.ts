@@ -1,5 +1,5 @@
+import { DOMAdapter } from '../../../environment/adapter';
 import { ExtensionType } from '../../../extensions/Extensions';
-import { settings } from '../../../settings/settings';
 import { checkDataUrl } from '../../utils/checkDataUrl';
 import { checkExtension } from '../../utils/checkExtension';
 import { LoaderParserPriority } from './LoaderParser';
@@ -26,7 +26,7 @@ export const loadTxt = {
 
     async load(url: string): Promise<string>
     {
-        const response = await settings.ADAPTER.fetch(url);
+        const response = await DOMAdapter.get().fetch(url);
 
         const txt = await response.text();
 

@@ -9,7 +9,7 @@ import { CLEAR } from './const';
 import { GlRenderTarget } from './GlRenderTarget';
 
 import type { RgbaArray } from '../../../color/Color';
-import type { ICanvas } from '../../../settings/adapter/ICanvas';
+import type { ICanvas } from '../../../environment/canvas/ICanvas';
 import type { RenderSurface } from '../gpu/renderTarget/GpuRenderTargetSystem';
 import type { System } from '../shared/system/System';
 import type { CLEAR_OR_BOOL } from './const';

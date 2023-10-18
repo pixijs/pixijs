@@ -3,8 +3,8 @@ import { Container } from '../../../../scene/container/Container';
 import { Texture } from '../texture/Texture';
 
 import type { ColorSource } from '../../../../color/Color';
+import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
-import type { ICanvas } from '../../../../settings/adapter/ICanvas';
 import type { Renderer } from '../../types';
 import type { System } from '../system/System';
 import type { GetPixelsOutput } from '../texture/GenerateCanvas';

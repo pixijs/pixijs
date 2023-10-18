@@ -19,6 +19,7 @@ import { GpuShaderSystem } from './shader/GpuShaderSystem';
 import { GpuStateSystem } from './state/GpuStateSystem';
 import { GpuTextureSystem } from './texture/GpuTextureSystem';
 
+import type { ICanvas } from '../../../environment/canvas/ICanvas';
 import type { PipeConstructor } from '../shared/instructions/RenderPipe';
 import type { SystemConstructor } from '../shared/system/System';
 import type { ExtractRendererOptions, ExtractSystemTypes } from '../shared/system/utils/typeUtils';
@@ -65,9 +66,13 @@ export type WebGPUOptions = ExtractRendererOptions<typeof DefaultWebGPUSystems> 
 PixiMixins.RendererOptions &
 PixiMixins.WebGPUOptions;
 
-export interface WebGPURenderer extends AbstractRenderer<WebGPUPipes, WebGPUOptions>, WebGPUSystems {}
+export interface WebGPURenderer<T extends ICanvas = HTMLCanvasElement>
+    extends AbstractRenderer<WebGPUPipes, WebGPUOptions, T>,
+    WebGPUSystems {}
 
-export class WebGPURenderer extends AbstractRenderer<WebGPUPipes, WebGPUOptions> implements WebGPUSystems
+export class WebGPURenderer<T extends ICanvas = HTMLCanvasElement>
+    extends AbstractRenderer<WebGPUPipes, WebGPUOptions, T>
+    implements WebGPUSystems
 {
     public gpu: GPU;
 

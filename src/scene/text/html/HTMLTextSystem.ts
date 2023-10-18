@@ -160,7 +160,7 @@ export class HTMLTextSystem implements System
             resource = getTemporaryCanvasFromImage(image, resolution);
         }
 
-        const texture = getPo2TextureFromSource(resource, resource.width, resource.height, resolution);
+        const texture = getPo2TextureFromSource(resource, image.width, image.height, resolution);
 
         if (this._createCanvas)
         {

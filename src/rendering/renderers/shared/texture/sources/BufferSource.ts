@@ -1,5 +1,7 @@
+import { ExtensionType } from '../../../../../extensions/Extensions';
 import { TextureSource } from './TextureSource';
 
+import type { ExtensionMetadata } from '../../../../../extensions/Extensions';
 import type { TypedArray } from '../../buffer/Buffer';
 import type { TextureSourceOptions } from './TextureSource';
 
@@ -11,12 +13,13 @@ export interface BufferSourceOptions extends TextureSourceOptions<TypedArray | A
 
 export class BufferImageSource extends TextureSource<TypedArray | ArrayBuffer>
 {
+    public static extension: ExtensionMetadata = ExtensionType.TextureSource;
+
     public uploadMethodId = 'buffer';
 
-    public static from(options: BufferSourceOptions): BufferImageSource
+    constructor(options: BufferSourceOptions)
     {
         const buffer = options.resource || new Float32Array(options.width * options.height * 4);
-
         let format = options.format;
 
         if (!format)
@@ -51,11 +54,22 @@ export class BufferImageSource extends TextureSource<TypedArray | ArrayBuffer>
             }
         }
 
-        return new BufferImageSource({
-
+        super({
             ...options,
             resource: buffer,
             format,
         });
+    }
+
+    public static test(resource: any): resource is TypedArray | ArrayBuffer
+    {
+        return resource instanceof Int8Array
+        || resource instanceof Uint8Array
+        || resource instanceof Uint8ClampedArray
+        || resource instanceof Int16Array
+        || resource instanceof Uint16Array
+        || resource instanceof Int32Array
+        || resource instanceof Uint32Array
+        || resource instanceof Float32Array;
     }
 }

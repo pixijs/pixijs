@@ -1,7 +1,16 @@
+import { ExtensionType } from '../../extensions/Extensions';
 import { BlendModeFilter } from './BlendModeFilter';
+
+import type { ExtensionMetadata } from '../../extensions/Extensions';
 
 export class NegationBlend extends BlendModeFilter
 {
+    /** @ignore */
+    public static extension: ExtensionMetadata = {
+        name: 'negation',
+        type: ExtensionType.BlendMode
+    };
+
     constructor()
     {
         super({

@@ -1,8 +1,8 @@
 import { Color } from '../../../../color/Color';
+import { DOMAdapter } from '../../../../environment/adapter';
 import { Matrix } from '../../../../maths/matrix/Matrix';
 import { ImageSource } from '../../../../rendering/renderers/shared/texture/sources/ImageSource';
 import { Texture } from '../../../../rendering/renderers/shared/texture/Texture';
-import { settings } from '../../../../settings/settings';
 import { uid } from '../../../../utils/data/uid';
 
 import type { ColorSource } from '../../../../color/Color';
@@ -63,7 +63,7 @@ export class FillGradient implements CanvasGradient
 
         const { gradientStops } = this;
 
-        const canvas = settings.ADAPTER.createCanvas();
+        const canvas = DOMAdapter.get().createCanvas();
 
         canvas.width = defaultSize;
         canvas.height = defaultSize;

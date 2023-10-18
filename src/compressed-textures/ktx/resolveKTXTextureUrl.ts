@@ -1,6 +1,6 @@
+import { Resolver } from '../../assets/resolver/Resolver';
 import { checkExtension } from '../../assets/utils/checkExtension';
 import { ExtensionType } from '../../extensions/Extensions';
-import { settings } from '../../settings/settings';
 
 import type { ResolveURLParser } from '../../assets/resolver/types';
 import type { UnresolvedAsset } from '../../assets/types';
@@ -27,7 +27,7 @@ export const resolveCompressedKTXTextureUrl = {
         }
 
         return {
-            resolution: parseFloat(settings.RETINA_PREFIX.exec(value)?.[1] ?? '1'),
+            resolution: parseFloat(Resolver.RETINA_PREFIX.exec(value)?.[1] ?? '1'),
             format,
             src: value,
         };

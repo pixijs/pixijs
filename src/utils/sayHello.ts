@@ -1,4 +1,4 @@
-import { settings } from '../settings/settings';
+import { DOMAdapter } from '../environment/adapter';
 
 let saidHello = false;
 
@@ -11,7 +11,7 @@ export function sayHello(type: string): void
         return;
     }
 
-    if (settings.ADAPTER.getNavigator().userAgent.toLowerCase().indexOf('chrome') > -1)
+    if (DOMAdapter.get().getNavigator().userAgent.toLowerCase().indexOf('chrome') > -1)
     {
         const args = [
             `%c  %c  %c  %c  %c PixiJS %c v${VERSION} (${type}) http://www.pixijs.com/\n\n`,

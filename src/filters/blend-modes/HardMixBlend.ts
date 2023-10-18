@@ -1,6 +1,9 @@
 /* eslint-disable max-len */
 
+import { ExtensionType } from '../../extensions/Extensions';
 import { BlendModeFilter } from './BlendModeFilter';
+
+import type { ExtensionMetadata } from '../../extensions/Extensions';
 
 /**
  * Hard defines each of the color channel values of the blend color to the RGB values of the base color.
@@ -8,6 +11,12 @@ import { BlendModeFilter } from './BlendModeFilter';
  */
 export class HardMixBlend extends BlendModeFilter
 {
+    /** @ignore */
+    public static extension: ExtensionMetadata = {
+        name: 'hard-mix',
+        type: ExtensionType.BlendMode
+    };
+
     constructor()
     {
         super({

@@ -21,7 +21,7 @@ describe('Visual Tests', () =>
         const defaultRenderers = {
             canvas: false,
             webgpu: true,
-            webgl: false,
+            webgl: true,
         };
 
         const renderers = {

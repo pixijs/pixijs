@@ -1,5 +1,5 @@
+import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { settings } from '../../../../settings/settings';
 import { CanvasPool } from '../../shared/texture/CanvasPool';
 import { BindGroup } from '../shader/BindGroup';
 import { gpuUploadBufferImageResource } from './uploaders/gpuUploadBufferImageResource';
@@ -8,7 +8,7 @@ import { gpuUploadImageResource } from './uploaders/gpuUploadImageSource';
 import { gpuUploadVideoResource } from './uploaders/gpuUploadVideoSource';
 import { GpuMipmapGenerator } from './utils/GpuMipmapGenerator';
 
-import type { ICanvas } from '../../../../settings/adapter/ICanvas';
+import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { System } from '../../shared/system/System';
 import type { CanvasGenerator, GetPixelsOutput } from '../../shared/texture/GenerateCanvas';
 import type { TextureSource } from '../../shared/texture/sources/TextureSource';
@@ -224,7 +224,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
         const commandEncoder = renderer.gpu.device.createCommandEncoder();
 
         // create canvas
-        const canvas = settings.ADAPTER.createCanvas();
+        const canvas = DOMAdapter.get().createCanvas();
 
         canvas.width = texture.source.pixelWidth;
         canvas.height = texture.source.pixelHeight;

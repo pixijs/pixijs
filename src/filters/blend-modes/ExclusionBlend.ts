@@ -1,7 +1,16 @@
+import { ExtensionType } from '../../extensions/Extensions';
 import { BlendModeFilter } from './BlendModeFilter';
+
+import type { ExtensionMetadata } from '../../extensions/Extensions';
 
 export class ExclusionBlend extends BlendModeFilter
 {
+    /** @ignore */
+    public static extension: ExtensionMetadata = {
+        name: 'exclusion',
+        type: ExtensionType.BlendMode
+    };
+
     constructor()
     {
         super({

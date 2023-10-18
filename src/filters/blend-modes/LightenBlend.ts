@@ -1,7 +1,16 @@
+import { ExtensionType } from '../../extensions/Extensions';
 import { BlendModeFilter } from './BlendModeFilter';
+
+import type { ExtensionMetadata } from '../../extensions/Extensions';
 
 export class LightenBlend extends BlendModeFilter
 {
+    /** @ignore */
+    public static extension: ExtensionMetadata = {
+        name: 'lighten',
+        type: ExtensionType.BlendMode
+    };
+
     constructor()
     {
         super({

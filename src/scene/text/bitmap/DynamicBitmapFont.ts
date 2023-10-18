@@ -10,8 +10,8 @@ import { getCanvasFillStyle } from '../canvas/utils/getCanvasFillStyle';
 import { AbstractBitmapFont } from './AbstractBitmapFont';
 import { resolveCharacters } from './utils/resolveCharacters';
 
+import type { ICanvasRenderingContext2D } from '../../../environment/canvas/ICanvasRenderingContext2D';
 import type { CanvasAndContext } from '../../../rendering/renderers/shared/texture/CanvasPool';
-import type { ICanvasRenderingContext2D } from '../../../settings/adapter/ICanvasRenderingContext2D';
 import type { Writeable } from '../../../utils/types';
 import type { TextStyle } from '../TextStyle';
 

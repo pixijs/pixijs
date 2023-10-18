@@ -306,4 +306,10 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
         return this._style.scaleMode;
     }
+
+    public static test(_resource: any): any
+    {
+        // this should be overridden by other sources..
+        throw new Error('Unimplemented');
+    }
 }

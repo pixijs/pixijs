@@ -1,4 +1,4 @@
-import { settings } from '../settings/settings';
+import { DOMAdapter } from '../environment/adapter';
 
 function assertPath(path: string)
 {
@@ -228,7 +228,7 @@ export const path: Path = {
 
         if (this.isDataUrl(url) || this.isBlobUrl(url)) return url;
 
-        const baseUrl = removeUrlParams(this.toPosix(customBaseUrl ?? settings.ADAPTER.getBaseUrl()));
+        const baseUrl = removeUrlParams(this.toPosix(customBaseUrl ?? DOMAdapter.get().getBaseUrl()));
         const rootUrl = removeUrlParams(this.toPosix(customRootUrl ?? this.rootname(baseUrl)));
 
         url = this.toPosix(url);

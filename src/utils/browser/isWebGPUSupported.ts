@@ -1,6 +1,6 @@
-import { settings } from '../../settings/settings';
+import { DOMAdapter } from '../../environment/adapter';
 
-let _isWebGPUSupported: boolean;
+let _isWebGPUSupported: boolean | undefined;
 
 /**
  * Helper for checking for WebGPU support.
@@ -12,11 +12,10 @@ let _isWebGPUSupported: boolean;
 export async function isWebGPUSupported(options: GPURequestAdapterOptions = {}): Promise<boolean>
 {
     if (_isWebGPUSupported !== undefined) return _isWebGPUSupported;
-    // try to create get the gpu
 
     _isWebGPUSupported = await (async (): Promise<boolean> =>
     {
-        const gpu = settings.ADAPTER.getNavigator().gpu;
+        const gpu = DOMAdapter.get().getNavigator().gpu;
 
         if (!gpu)
         {
@@ -25,9 +24,9 @@ export async function isWebGPUSupported(options: GPURequestAdapterOptions = {}):
 
         try
         {
-            const adapter = await navigator.gpu.requestAdapter(options);
-            // TODO and one of these!
+            const adapter = await navigator.gpu.requestAdapter(options) as GPUAdapter;
 
+            // TODO and one of these!
             await adapter.requestDevice();
 
             return true;

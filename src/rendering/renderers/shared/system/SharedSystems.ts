@@ -1,4 +1,3 @@
-import { AccessibilitySystem } from '../../../../accessibility/AccessibilitySystem';
 import { FilterPipe } from '../../../../filters/FilterPipe';
 import { FilterSystem } from '../../../../filters/FilterSystem';
 import { LayerPipe } from '../../../../scene/container/LayerPipe';
@@ -41,7 +40,6 @@ export const SharedSystems = [
     TextureGCSystem,
     GenerateTextureSystem,
     ExtractSystem,
-    AccessibilitySystem,
 ];
 
 export const SharedRenderPipes = [
