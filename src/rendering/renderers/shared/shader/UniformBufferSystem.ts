@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { unsafeEvalSupported } from '../../../../utils/unsafeEvalSupported';
 import { Buffer } from '../buffer/Buffer';
 import { BufferUsage } from '../buffer/const';
 import { createUBOElements } from './utils/createUBOElements';
@@ -6,8 +7,8 @@ import { generateUniformBufferSync } from './utils/createUniformBufferSync';
 
 import type { System } from '../system/System';
 import type { UniformGroup } from './UniformGroup';
-import type { UniformBufferLayout } from './utils/createUBOElements';
-import type { UniformsSyncCallback } from './utils/createUniformBufferSync';
+import type { UBOElement, UniformBufferLayout } from './utils/createUBOElements';
+import type { UniformsSyncCallback } from './utils/createUniformBufferSyncTypes';
 
 export class UniformBufferSystem implements System
 {
@@ -20,6 +21,26 @@ export class UniformBufferSystem implements System
         ],
         name: 'uniformBuffer',
     } as const;
+
+    constructor()
+    {
+        // Validation check that this environment support `new Function`
+        this._systemCheck();
+    }
+
+    /**
+     * Overrideable function by `@pixi/unsafe-eval` to silence
+     * throwing an error if platform doesn't support unsafe-evals.
+     * @private
+     */
+    private _systemCheck(): void
+    {
+        if (!unsafeEvalSupported())
+        {
+            throw new Error('Current environment does not allow unsafe-eval, '
+                 + 'please use @pixi/unsafe-eval module to enable support.');
+        }
+    }
 
     /** Cache of uniform buffer layouts and sync functions, so we don't have to re-create them */
     private _syncFunctionHash: Record<string, {
@@ -47,7 +68,7 @@ export class UniformBufferSystem implements System
 
             const layout = createUBOElements(elements);
 
-            const syncFunction = generateUniformBufferSync(layout.uboElements);
+            const syncFunction = this._generateUniformBufferSync(layout.uboElements);
 
             uniformData = this._syncFunctionHash[uniformGroupSignature] = {
                 layout,
@@ -63,6 +84,13 @@ export class UniformBufferSystem implements System
         });
 
         return uniformGroup._syncFunction;
+    }
+
+    private _generateUniformBufferSync(
+        uboElements: UBOElement[],
+    ): UniformsSyncCallback
+    {
+        return generateUniformBufferSync(uboElements);
     }
 
     public syncUniformGroup(uniformGroup: UniformGroup, data?: Float32Array, offset?: number): boolean

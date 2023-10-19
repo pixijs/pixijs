@@ -21,7 +21,7 @@ const subImports = [
     ['./spritesheet', './lib/spritesheet'],
     // ['./text', './lib/scene/text'], // should this be split out into canvas, html, bitmap?
     ['./rendering', './lib/rendering'], // rename to core?
-    // 'unsafe-eval', // to be implemented
+    ['./unsafe-eval', './lib/unsafe-eval'],
 ];
 
 interface ExportField
@@ -62,7 +62,7 @@ const exportFields: Record<string, ExportField> = {
         require: {
             default: './lib/environment/webworker/webworkerAll.js',
         },
-    }
+    },
 };
 const sideEffects = [
     './lib/environment/browser/browserAll.*',
