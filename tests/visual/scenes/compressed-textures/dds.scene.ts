@@ -1,5 +1,4 @@
 import { Assets } from '../../../../src/assets/Assets';
-import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
 import { Sprite } from '../../../../src/scene/sprite/Sprite';
 import '../../../../src/compressed-textures/dds/init';
 
