@@ -37,7 +37,7 @@
     "coverage": "npm run test -- --coverage --maxWorkers=4",
     "docs": "mkdirp out && npm run docs:webdoc",
     "docs:webdoc": "webdoc -R README.md",
-    "lint": "eslint --ext .js --ext .ts ./ --ignore-path .gitignore --max-warnings 0",
+    "lint": "eslint --ext .js --ext .ts ./ --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "codesandbox-ci": "run-s build",
     "prerelease": "run-s clean:build test dist",
@@ -51,7 +51,7 @@
   },
   "lint-staged": {
     "*.{ts,js,mjs}": [
-      "eslint --ext .js --ext .ts ./ --ignore-path .gitignore --cache --fix --max-warnings 0"
+      "eslint --ext .js --ext .ts ./ --cache --fix --max-warnings 0"
     ]
   },
   "dependencies": {
