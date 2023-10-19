@@ -599,4 +599,21 @@ describe('Resolver', () =>
 
         expect(resolver.resolveUrl('my-image.png')).toBe('my-image.png?hello=world&lucky=23');
     });
+
+    it('should be able to resolve format with query parameters', () =>
+    {
+        const resolver = new Resolver();
+
+        resolver.prefer({
+            params: {
+                format: ['webp', 'png'],
+            },
+        });
+
+        resolver.add('bunny', 'http://example.com/bunny.{png,webp}');
+        resolver.add('bunny2', 'http://example.com/bunny.{png,webp}?abc');
+
+        expect(resolver.resolveUrl('bunny')).toBe('http://example.com/bunny.webp');
+        expect(resolver.resolveUrl('bunny2')).toBe('http://example.com/bunny.webp?abc');
+    });
 });
