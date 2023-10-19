@@ -1,21 +1,21 @@
 import { Assets } from '../../../../src/assets/Assets';
+import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
 import { Sprite } from '../../../../src/scene/sprite/Sprite';
+import '../../../../src/compressed-textures/dds/init';
 
 import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
-    it: 'should render alpha from a Color',
+    it: 'should a dds texture',
     create: async (scene: Container) =>
     {
-        const circleTexture = await Assets.load({
-            src: 'blurredCircle.png',
-            data: {
-                alphaMode: 'no-premultiply-alpha'
-            }
-        });
+        const texture = await Assets.load('explosion_dxt5_mip.dds');
 
-        const sprite = new Sprite(circleTexture);
+        const sprite = new Sprite(texture);
+
+        sprite.width = 128;
+        sprite.height = 128;
 
         scene.addChild(sprite);
     },
