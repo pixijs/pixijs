@@ -17,10 +17,10 @@ const scenesToTest = onlyScenes.length ? onlyScenes : scenes;
 
 function setAssetBasePath(): void
 {
-    const branchName = process.env.GITHUB_REF?.replace('refs/heads/', '') ?? 'next-v8';
+    const branchPath = process.env.GITHUB_SHA ?? 'next-v8';
 
     const basePath = process.env.GITHUB_ACTIONS
-        ? `https://raw.githubusercontent.com/pixijs/pixijs/${branchName}/tests/visual/scenes/assets/`
+        ? `https://raw.githubusercontent.com/pixijs/pixijs/${branchPath}/tests/visual/assets/`
         : 'http://127.0.0.1:8080/tests/visual/assets/';
 
     Assets.init({
