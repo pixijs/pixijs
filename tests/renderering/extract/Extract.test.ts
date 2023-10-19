@@ -150,6 +150,7 @@ describe('GenerateTexture', () =>
             resource: texturePixels,
             width: 2,
             height: 2,
+            alphaMode: 'premultiply-alpha-on-upload',
         });
 
         const sprite = new Sprite(texture);
@@ -175,6 +176,7 @@ describe('GenerateTexture', () =>
             resource: texturePixels,
             width: 2,
             height: 2,
+            alphaMode: 'premultiply-alpha-on-upload',
         });
 
         const sprite = new Sprite(texture);
@@ -206,6 +208,7 @@ describe('GenerateTexture', () =>
             resource: texturePixels,
             width: 2,
             height: 2,
+            alphaMode: 'premultiply-alpha-on-upload',
         });
 
         const sprite = new Sprite(texture);
