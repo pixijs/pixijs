@@ -1,6 +1,17 @@
 import type { TEXTURE_FORMATS } from '../../rendering/renderers/shared/texture/const';
 import type { TextureSourceOptions } from '../../rendering/renderers/shared/texture/sources/TextureSource';
 
+/**
+ * -----------------------------------------------------------
+ * This code includes parts that are adapted from the webGPU(GL) wizard @toji's web-texture-tool.
+ * Massive thanks to @toji for making this tool and sharing it with the world.
+ *
+ * Original Repository: https://github.com/toji/web-texture-tool
+ *
+ * Modifications were made to integrate with PixiJS.
+ * -----------------------------------------------------------
+ */
+
 // All values and structures referenced from:
 // http://msdn.microsoft.com/en-us/library/bb943991.aspx/
 const DDS_MAGIC = 0x20534444;

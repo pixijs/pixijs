@@ -1,11 +1,22 @@
 import { convertFormatIfRequired } from '../utils/convertFormatIfRequired';
-import { createLevelBuffers } from '../utils/createLevelBuffers';
+import { createLevelBuffersFromKTX } from '../utils/createLevelBuffersFromKTX';
 import { getTextureFormatFromKTXTexture } from '../utils/getTextureFormatFromKTXTexture';
-import { gpuFormatToBasisTranscoderFormat } from '../utils/gpuFormatToBasisTranscoderFormat';
+import { gpuFormatToKTXBasisTranscoderFormat } from '../utils/gpuFormatToKTXBasisTranscoderFormat';
 
 import type { TEXTURE_FORMATS } from '../../../rendering/renderers/shared/texture/const';
 import type { TextureSourceOptions } from '../../../rendering/renderers/shared/texture/sources/TextureSource';
 import type { COMPRESSED_TEXTURE_FORMATS, LIBKTXModule, LIBKTXModuleCreator } from '../types';
+
+/**
+ * -----------------------------------------------------------
+ * This code includes parts that are adapted from the webGPU(GL) wizard @toji's web-texture-tool.
+ * Massive thanks to @toji for making this tool and sharing it with the world.
+ *
+ * Original Repository: https://github.com/toji/web-texture-tool
+ *
+ * Modifications were made to integrate with PixiJS.
+ * -----------------------------------------------------------
+ */
 
 declare let LIBKTX: LIBKTXModuleCreator;
 
@@ -90,7 +101,7 @@ async function load(url: string): Promise<TextureSourceOptions>
         format = getTextureFormatFromKTXTexture(ktxTexture);
     }
 
-    const levelBuffers = createLevelBuffers(ktxTexture);
+    const levelBuffers = createLevelBuffersFromKTX(ktxTexture);
 
     const textureOptions = {
         width: ktxTexture.baseWidth,
@@ -117,7 +128,7 @@ async function init(
     basisTranscodedTextureFormat = preferredTranscodedFormat
         .filter((format) => supportedTextures.includes(format))[0] as COMPRESSED_TEXTURE_FORMATS;
 
-    basisTranscoderFormat = gpuFormatToBasisTranscoderFormat(basisTranscodedTextureFormat);
+    basisTranscoderFormat = gpuFormatToKTXBasisTranscoderFormat(basisTranscodedTextureFormat);
 
     await getKTX();
 }
