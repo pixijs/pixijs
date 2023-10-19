@@ -5,7 +5,7 @@ import esbuild from 'rollup-plugin-esbuild';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import alias from '@rollup/plugin-alias';
-import webworker from './scripts/rollup-webworker-loader.mjs';
+import webworker from '@pixi/webworker-plugins/rollup-plugin';
 import workspacesRun from 'workspaces-run';
 import repo from './package.json' assert { type: 'json' };
 

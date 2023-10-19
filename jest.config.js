@@ -9,9 +9,9 @@ module.exports = {
     globalSetup: '<rootDir>/test/jest-global-setup.ts',
     globalTeardown: '<rootDir>/test/jest-global-teardown.ts',
     transform: {
+        '\\.worker.ts$': '@pixi/webworker-plugins/lib/jest-transform',
         '\\.vert$': 'jest-raw-loader',
         '\\.frag$': 'jest-raw-loader',
-        '\\.worker.ts$': '<rootDir>/test/jest-webworker-loader.js',
     },
     moduleNameMapper: {
         '^@pixi/(?!colord)(.*)$': '<rootDir>/packages/$1/src',

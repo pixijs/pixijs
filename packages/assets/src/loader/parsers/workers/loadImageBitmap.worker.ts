@@ -1,3 +1,10 @@
+interface MessageData
+{
+    data: any[];
+    uuid: number;
+    id: string;
+}
+
 async function loadImageBitmap(url: string)
 {
     const response = await fetch(url);
@@ -12,7 +19,7 @@ async function loadImageBitmap(url: string)
 
     return imageBitmap;
 }
-self.onmessage = async (event) =>
+self.onmessage = async (event: MessageEvent<MessageData>) =>
 {
     try
     {
