@@ -33,6 +33,12 @@ export type BLEND_MODES = 'inherit'
 | 'hard-mix'
 | 'negation';
 
+export const BLEND_TO_NPM = {
+    normal: 'normal-npm',
+    add: 'add-npm',
+    screen: 'screen-npm',
+};
+
 export enum STENCIL_MODES
 {
     DISABLED = 0,

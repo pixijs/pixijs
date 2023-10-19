@@ -1,12 +1,13 @@
 import { uid } from '../../../utils/data/uid';
 import { ViewableBuffer } from '../../../utils/ViewableBuffer';
 import { fastCopy } from '../../renderers/shared/buffer/utils/fastCopy';
+import { type BLEND_MODES } from '../../renderers/shared/state/const';
+import { getAdjustedBlendModeBlend } from '../../renderers/shared/state/getAdjustedBlendModeBlend';
 import { BatchTextureArray } from './BatchTextureArray';
 import { MAX_TEXTURES } from './const';
 
 import type { BindGroup } from '../../renderers/gpu/shader/BindGroup';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
-import type { BLEND_MODES } from '../../renderers/shared/state/const';
 import type { Texture } from '../../renderers/shared/texture/Texture';
 
 export type BatchAction = 'startBatch' | 'renderBatch';
@@ -184,7 +185,8 @@ export class Batcher
         // length 0??!! (we broke without ading anything)
         if (!elements[this.elementStart]) return;
 
-        let blendMode = elements[this.elementStart].blendMode;
+        const firstElement = elements[this.elementStart];
+        let blendMode = getAdjustedBlendModeBlend(firstElement.blendMode, firstElement.texture._source);
 
         if (this.attributeSize * 4 > this.attributeBuffer.size)
         {
@@ -215,7 +217,9 @@ export class Batcher
             const texture = element.texture;
             const source = texture._source;
 
-            const blendModeChange = blendMode !== element.blendMode;
+            const adjustedBlendMode = getAdjustedBlendModeBlend(element.blendMode, source);
+
+            const blendModeChange = blendMode !== adjustedBlendMode;
 
             if (source._batchTick === BATCH_TICK && !blendModeChange)
             {
@@ -247,7 +251,7 @@ export class Batcher
                 action = 'renderBatch';
                 start = size;
                 // create a batch...
-                blendMode = element.blendMode;
+                blendMode = adjustedBlendMode;
 
                 textureBatch = this._textureBatchPool[this._textureBatchPoolIndex++] || new BatchTextureArray();
                 textureBatch.clear();
