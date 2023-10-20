@@ -25,151 +25,151 @@ export function SVGToGraphicsPath(svgPath: string, path: GraphicsPath): Graphics
     {
         const command = commands[i];
         const type = command[0];
-        const data = command.slice(1) as number[];
+        const data = command; // alias for 1-based referencing
 
         switch (type)
         {
             case 'M':
-                lastX = data[0];
-                lastY = data[1];
+                lastX = data[1];
+                lastY = data[2];
 
                 path.moveTo(lastX, lastY);
                 break;
             case 'm':
 
-                lastX += data[0];
-                lastY += data[1];
+                lastX += data[1];
+                lastY += data[2];
 
                 path.moveTo(lastX, lastY);
                 break;
             case 'H':
-                lastX = data[0];
+                lastX = data[1];
 
                 path.lineTo(lastX, lastY);
                 break;
             case 'h':
-                lastX += data[0];
+                lastX += data[1];
 
                 path.lineTo(lastX, lastY);
                 break;
             case 'V':
-                lastY = data[0];
-
-                path.lineTo(lastX, lastY);
-                break;
-            case 'v':
-                lastY += data[0];
-
-                path.lineTo(lastX, lastY);
-                break;
-            case 'L':
-                lastX = data[0];
                 lastY = data[1];
 
                 path.lineTo(lastX, lastY);
                 break;
-            case 'l':
-                lastX += data[0];
+            case 'v':
                 lastY += data[1];
+
+                path.lineTo(lastX, lastY);
+                break;
+            case 'L':
+                lastX = data[1];
+                lastY = data[2];
+
+                path.lineTo(lastX, lastY);
+                break;
+            case 'l':
+                lastX += data[1];
+                lastY += data[2];
 
                 path.lineTo(lastX, lastY);
                 break;
             case 'C':
 
-                lastX = data[4];
-                lastY = data[5];
+                lastX = data[5];
+                lastY = data[6];
 
                 path.bezierCurveTo(
-                    data[0], data[1],
-                    data[2], data[3],
+                    data[1], data[2],
+                    data[3], data[4],
                     lastX, lastY
                 );
                 break;
             case 'c':
                 path.bezierCurveTo(
-                    lastX + data[0], lastY + data[1],
-                    lastX + data[2], lastY + data[3],
-                    lastX + data[4], lastY + data[5]
+                    lastX + data[1], lastY + data[2],
+                    lastX + data[3], lastY + data[4],
+                    lastX + data[5], lastY + data[6]
                 );
 
-                lastX += data[4];
-                lastY += data[5];
+                lastX += data[5];
+                lastY += data[6];
                 break;
             case 'S':
-                lastX = data[2];
-                lastY = data[3];
+                lastX = data[3];
+                lastY = data[4];
 
                 path.bezierCurveToShort(
-                    data[0], data[1],
+                    data[1], data[2],
                     lastX, lastY
                 );
                 break;
             case 's':
                 path.bezierCurveToShort(
-                    lastX + data[0], lastY + data[1],
-                    lastX + data[2], lastY + data[3],
+                    lastX + data[1], lastY + data[2],
+                    lastX + data[3], lastY + data[4],
                 );
 
-                lastX += data[2];
-                lastY += data[3];
+                lastX += data[3];
+                lastY += data[4];
                 break;
             case 'Q':
-                lastX = data[2];
-                lastY = data[3];
+                lastX = data[3];
+                lastY = data[4];
 
                 path.quadraticCurveTo(
-                    data[0], data[1],
+                    data[1], data[2],
                     lastX, lastY
                 );
                 break;
             case 'q':
                 path.quadraticCurveTo(
-                    lastX + data[0], lastY + data[1],
-                    lastX + data[2], lastY + data[3]
+                    lastX + data[1], lastY + data[2],
+                    lastX + data[3], lastY + data[4]
                 );
 
-                lastX += data[2];
-                lastY += data[3];
+                lastX += data[3];
+                lastY += data[4];
                 break;
             case 'T':
-                lastX = data[0];
-                lastY = data[1];
+                lastX = data[1];
+                lastY = data[2];
 
                 path.quadraticCurveToShort(
                     lastX, lastY
                 );
                 break;
             case 't':
-                lastX += data[0];
-                lastY += data[1];
+                lastX += data[1];
+                lastY += data[2];
 
                 path.quadraticCurveToShort(
                     lastX, lastY
                 );
                 break;
             case 'A':
-                lastX = data[5];
-                lastY = data[6];
+                lastX = data[6];
+                lastY = data[7];
 
                 path.arcToSvg(
-                    data[0],
                     data[1],
                     data[2],
                     data[3],
                     data[4],
+                    data[5],
                     lastX, lastY
                 );
                 break;
             case 'a':
-                lastX += data[5];
-                lastY += data[6];
+                lastX += data[6];
+                lastY += data[7];
 
                 path.arcToSvg(
-                    data[0],
                     data[1],
                     data[2],
                     data[3],
                     data[4],
+                    data[5],
                     lastX, lastY
                 );
                 break;
