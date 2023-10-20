@@ -1,4 +1,4 @@
-import { extensions, ExtensionType, settings } from '@pixi/core';
+import { extensions, ExtensionType, settings, utils } from '@pixi/core';
 import { loadTextures } from '../../loader';
 
 import type { UnresolvedAsset } from '../../types';
@@ -10,7 +10,7 @@ export const resolveTextureUrl = {
     parse: (value: string): UnresolvedAsset =>
         ({
             resolution: parseFloat(settings.RETINA_PREFIX.exec(value)?.[1] ?? '1'),
-            format: value.split('.').pop(),
+            format: utils.path.extname(value).slice(1),
             src: value,
         }),
 } as ResolveURLParser;

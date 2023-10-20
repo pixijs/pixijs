@@ -831,7 +831,7 @@ export class Resolver
         formattedAsset.src = this._appendDefaultSearchParams(formattedAsset.src);
         formattedAsset.data = { ...assetData || {}, ...formattedAsset.data };
         formattedAsset.loadParser = loadParser ?? formattedAsset.loadParser;
-        formattedAsset.format = format ?? formattedAsset.src.split('.').pop();
+        formattedAsset.format = format ?? utils.path.extname(formattedAsset.src).slice(1);
         formattedAsset.srcs = formattedAsset.src;
         formattedAsset.name = formattedAsset.alias;
 
