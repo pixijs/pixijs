@@ -8,7 +8,7 @@ const gpuFormatToBasisTranscoderFormatMap: Record<string, string> = {
     rg11b10ufloat: 'R11F_G11F_B10F',
 };
 
-export function gpuFormatToBasisTranscoderFormat(transcoderFormat: string): string
+export function gpuFormatToKTXBasisTranscoderFormat(transcoderFormat: string): string
 {
     const format = gpuFormatToBasisTranscoderFormatMap[transcoderFormat];
 

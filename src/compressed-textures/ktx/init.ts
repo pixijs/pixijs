@@ -1,9 +1,9 @@
-import { detectCompressed } from '../../assets/detections/parsers/detectCompressed';
 import { extensions } from '../../extensions/Extensions';
+import { detectCompressed } from '../shared/detectCompressed';
+import { resolveCompressedTextureUrl } from '../shared/resolveCompressedTextureUrl';
 import { loadKTX } from './loadKTX';
-import { resolveCompressedKTXTextureUrl } from './resolveKTXTextureUrl';
 
 extensions.add(loadKTX);
-extensions.add(resolveCompressedKTXTextureUrl);
+extensions.add(resolveCompressedTextureUrl);
 extensions.add(detectCompressed);
 
