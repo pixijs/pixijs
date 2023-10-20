@@ -21,8 +21,8 @@ import type { COMPRESSED_TEXTURE_FORMATS, LIBKTXModule, LIBKTXModuleCreator } fr
 declare let LIBKTX: LIBKTXModuleCreator;
 
 const settings = {
-    jsUrl: 'ktx/libktx.js',
-    wasmUrl: 'ktx/libktx.wasm',
+    jsUrl: '',
+    wasmUrl: '',
 };
 
 let basisTranscoderFormat: string;
