@@ -34,7 +34,7 @@ describe('Compressed Loader', () =>
         resolver.prefer({
             priority: ['format'],
             params: {
-                format: ['s3tc', 's3tc_sRGB', 'png', 'webp'],
+                format: ['bc3', 'bc2', 'png', 'webp'],
                 resolution: 1
             }
         });
@@ -53,20 +53,15 @@ describe('Compressed Loader', () =>
                 },
                 {
                     resolution: 1,
-                    format: 's3tc',
-                    src: 'my-image.bc2.dds',
-                },
-                {
-                    resolution: 1,
-                    format: 's3tc',
-                    src: 'my-image.bc1.dds',
+                    format: 'bc3',
+                    src: 'my-image.bc3.ktx',
                 },
             ]
         });
 
         const asset = resolver.resolveUrl('test');
 
-        expect(asset).toEqual('my-image.s3tc.ktx');
+        expect(asset).toEqual('my-image.bc3.ktx');
     });
 
     it('should add compressed texture formats', async () =>
@@ -83,6 +78,6 @@ describe('Compressed Loader', () =>
         detectCompressed.test = jest.fn(async () => false);
         await Assets.init();
         expect(Assets.resolver['_preferredOrder'][0].params.format.every(
-            (f: string) => !['bc3', 'bc2', 'basis'].includes(f))).toBeTrue();
+            (f: string) => !['bc3', 'bc2'].includes(f))).toBeTrue();
     });
 });
