@@ -24,7 +24,8 @@ export function SVGToGraphicsPath(svgPath: string, path: GraphicsPath): Graphics
     for (let i = 0; i < commands.length; i++)
     {
         const command = commands[i];
-        const [type, ...data] = command;
+        const type = command[0];
+        const data = command.slice(1) as number[];
 
         switch (type)
         {
@@ -178,8 +179,16 @@ export function SVGToGraphicsPath(svgPath: string, path: GraphicsPath): Graphics
                 if (subpaths.length > 0)
                 {
                     currentSubPath = subpaths.pop();
-                    lastX = currentSubPath?.startX ?? 0;
-                    lastY = currentSubPath?.startY ?? 0;
+                    if (currentSubPath)
+                    {
+                        lastX = currentSubPath.startX;
+                        lastY = currentSubPath.startY;
+                    }
+                    else
+                    {
+                        lastX = 0;
+                        lastY = 0;
+                    }
                 }
                 currentSubPath = null;
                 break;
@@ -194,7 +203,7 @@ export function SVGToGraphicsPath(svgPath: string, path: GraphicsPath): Graphics
             if (currentSubPath === null)
             {
                 currentSubPath = { startX: lastX, startY: lastY };
-                subpaths.push({ ...currentSubPath });
+                subpaths.push(currentSubPath);
             }
         }
     }
