@@ -1,5 +1,6 @@
 import glob from 'glob';
 import path from 'path';
+import { Assets } from '../../src/assets/Assets';
 import { renderTest } from './tester';
 
 const paths = glob.sync('**/*.scene.ts', { cwd: path.join(process.cwd(), './tests') });
@@ -14,8 +15,23 @@ const scenes = paths.map((p) =>
 const onlyScenes = scenes.filter((s) => s.data.only);
 const scenesToTest = onlyScenes.length ? onlyScenes : scenes;
 
+function setAssetBasePath(): void
+{
+    const branchPath = process.env.GITHUB_SHA ?? 'next-v8';
+
+    const basePath = process.env.GITHUB_ACTIONS
+        ? `https://raw.githubusercontent.com/pixijs/pixijs/${branchPath}/tests/visual/assets/`
+        : 'http://127.0.0.1:8080/tests/visual/assets/';
+
+    Assets.init({
+        basePath
+    }).catch((e) => console.error(e));
+}
+
 describe('Visual Tests', () =>
 {
+    setAssetBasePath();
+
     scenesToTest.forEach((scene) =>
     {
         const defaultRenderers = {
