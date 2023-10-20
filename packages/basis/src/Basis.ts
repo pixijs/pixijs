@@ -41,6 +41,7 @@ export const BASIS_FORMAT_TO_INTERNAL_FORMAT: { [id: number]: INTERNAL_FORMATS }
     [BASIS_FORMATS.cTFPVRTC1_4_RGBA]: INTERNAL_FORMATS.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG,
     [BASIS_FORMATS.cTFATC_RGB]: INTERNAL_FORMATS.COMPRESSED_RGB_ATC_WEBGL,
     [BASIS_FORMATS.cTFASTC_4x4]: INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_4x4_KHR,
+    [BASIS_FORMATS.cTFBC7]: INTERNAL_FORMATS.COMPRESSED_RGBA_BPTC_UNORM_EXT,
 };
 
 /**
@@ -79,6 +80,7 @@ export const BASIS_FORMATS_ALPHA: { [id: number]: boolean } = {
     [BASIS_FORMATS.cTFBC3]: true,
     [BASIS_FORMATS.cTFPVRTC1_4_RGBA]: true,
     [BASIS_FORMATS.cTFASTC_4x4]: true,
+    [BASIS_FORMATS.cTFBC7]: true,
 };
 
 /**
@@ -122,7 +124,8 @@ export type BasisTextureExtensions = {
     etc1: any,
     pvrtc: any,
     atc: any,
-    astc: WEBGL_compressed_texture_astc
+    astc: WEBGL_compressed_texture_astc,
+    bptc: any
 };
 /* eslint-enable camelcase */
 

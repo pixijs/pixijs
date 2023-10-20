@@ -8,7 +8,8 @@ export type CompressedTextureExtensions = {
     etc1: any,
     pvrtc: any,
     atc: any,
-    astc: WEBGL_compressed_texture_astc
+    astc: WEBGL_compressed_texture_astc,
+    bptc: any
 };
 export type CompressedTextureExtensionRef = keyof CompressedTextureExtensions;
 /* eslint-enable camelcase */

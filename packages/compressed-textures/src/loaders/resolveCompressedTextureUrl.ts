@@ -23,7 +23,8 @@ export const resolveCompressedTextureUrl = {
                 '.etc1.ktx',
                 '.pvrt.ktx',
                 '.atc.ktx',
-                '.astc.ktx'
+                '.astc.ktx',
+                '.bptc.ktx'
             ];
 
             // check if value ends with one of the extensions
