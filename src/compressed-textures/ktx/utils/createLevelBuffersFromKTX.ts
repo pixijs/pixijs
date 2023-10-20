@@ -1,6 +1,6 @@
 import type { KTXTexture } from '../types';
 
-export function createLevelBuffers(ktxTexture: KTXTexture): Uint8Array[]
+export function createLevelBuffersFromKTX(ktxTexture: KTXTexture): Uint8Array[]
 {
     const levelBuffers = [];
 

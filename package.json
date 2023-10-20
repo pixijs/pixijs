@@ -37,7 +37,7 @@
     "coverage": "npm run test -- --coverage --maxWorkers=4",
     "docs": "mkdirp out && npm run docs:webdoc",
     "docs:webdoc": "webdoc -R README.md",
-    "lint": "eslint --ext .js --ext .ts ./ --ignore-path .gitignore --max-warnings 0",
+    "lint": "eslint --ext .js --ext .ts ./ --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "codesandbox-ci": "run-s build",
     "prerelease": "run-s clean:build test dist",
@@ -51,7 +51,7 @@
   },
   "lint-staged": {
     "*.{ts,js,mjs}": [
-      "eslint --ext .js --ext .ts ./ --ignore-path .gitignore --cache --fix --max-warnings 0"
+      "eslint --ext .js --ext .ts ./ --cache --fix --max-warnings 0"
     ]
   },
   "dependencies": {
@@ -127,7 +127,9 @@
     "./lib/filters/blendModes/init.*",
     "./lib/app/init.*",
     "./lib/assets/init.*",
+    "./lib/compressed-textures/dds/init.*",
     "./lib/compressed-textures/ktx/init.*",
+    "./lib/compressed-textures/basis/init.*",
     "./lib/events/init.*",
     "./lib/spritesheet/init.*",
     "./lib/rendering/init.*"
@@ -191,12 +193,28 @@
         "default": "./lib/assets/init.js"
       }
     },
+    "./dds": {
+      "import": {
+        "default": "./lib/compressed-textures/dds/init.mjs"
+      },
+      "require": {
+        "default": "./lib/compressed-textures/dds/init.js"
+      }
+    },
     "./ktx": {
       "import": {
         "default": "./lib/compressed-textures/ktx/init.mjs"
       },
       "require": {
         "default": "./lib/compressed-textures/ktx/init.js"
+      }
+    },
+    "./basis": {
+      "import": {
+        "default": "./lib/compressed-textures/basis/init.mjs"
+      },
+      "require": {
+        "default": "./lib/compressed-textures/basis/init.js"
       }
     },
     "./events": {

@@ -5,12 +5,12 @@ import { ExtensionType } from '../../extensions/Extensions';
 import type { ResolveURLParser } from '../../assets/resolver/types';
 import type { UnresolvedAsset } from '../../assets/types';
 
-const validFormats = ['bc1', 'bc2', 'bc3', 'bc4', 'bc5', 'bc6h', 'bc7', 'etc2', 'eac', 'astc'];
+export const validFormats = ['basis', 'etc2', 'bc7', 'bc6h', 'bc5', 'bc4', 'bc3', 'bc2', 'bc1', 'eac', 'astc'];
 
-export const resolveCompressedKTXTextureUrl = {
+export const resolveCompressedTextureUrl = {
     extension: ExtensionType.ResolveParser,
     test: (value: string) =>
-        checkExtension(value, ['.ktx', '.ktx2']),
+        checkExtension(value, ['.ktx', '.ktx2', '.dds']),
     parse: (value: string): UnresolvedAsset =>
     {
         let format;
@@ -24,6 +24,10 @@ export const resolveCompressedKTXTextureUrl = {
             validFormats.includes(newFormat);
 
             format = newFormat;
+        }
+        else
+        {
+            format = splitValue[splitValue.length - 1];
         }
 
         return {

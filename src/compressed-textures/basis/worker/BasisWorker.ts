@@ -1,11 +1,9 @@
-import { convertFormatIfRequired } from '../utils/convertFormatIfRequired';
-import { createLevelBuffersFromKTX } from '../utils/createLevelBuffersFromKTX';
-import { getTextureFormatFromKTXTexture } from '../utils/getTextureFormatFromKTXTexture';
-import { gpuFormatToKTXBasisTranscoderFormat } from '../utils/gpuFormatToKTXBasisTranscoderFormat';
+import { createLevelBuffers } from '../utils/createLevelBuffers';
+import { gpuFormatToBasisTranscoderFormat } from '../utils/gpuFormatToBasisTranscoderFormat';
 
 import type { TEXTURE_FORMATS } from '../../../rendering/renderers/shared/texture/const';
 import type { TextureSourceOptions } from '../../../rendering/renderers/shared/texture/sources/TextureSource';
-import type { COMPRESSED_TEXTURE_FORMATS, LIBKTXModule, LIBKTXModuleCreator } from '../types';
+import type { BASISModuleCreator, BasisTextureConstructor } from '../types';
 
 /**
  * -----------------------------------------------------------
@@ -18,54 +16,55 @@ import type { COMPRESSED_TEXTURE_FORMATS, LIBKTXModule, LIBKTXModuleCreator } fr
  * -----------------------------------------------------------
  */
 
-declare let LIBKTX: LIBKTXModuleCreator;
+declare let BASIS: BASISModuleCreator;
 
 const settings = {
-    jsUrl: '',
-    wasmUrl: '',
+    jsUrl: 'basis/basis_transcoder.js',
+    wasmUrl: 'basis/basis_transcoder.wasm',
 };
 
-let basisTranscoderFormat: string;
-let basisTranscodedTextureFormat: COMPRESSED_TEXTURE_FORMATS;
+let basisTranscoderFormat: number;
+let basisTranscodedTextureFormat: TEXTURE_FORMATS;
 
-let ktxPromise: Promise<LIBKTXModule>;
+let basisPromise: Promise<BasisTextureConstructor>;
 
-async function getKTX(): Promise<LIBKTXModule>
+async function getBasis(): Promise<BasisTextureConstructor>
 {
-    if (!ktxPromise)
+    if (!basisPromise)
     {
         const absoluteJsUrl = new URL(settings.jsUrl, location.origin).href;
         const absoluteWasmUrl = new URL(settings.wasmUrl, location.origin).href;
 
         importScripts(absoluteJsUrl);
 
-        ktxPromise = new Promise((resolve) =>
+        basisPromise = new Promise((resolve) =>
         {
-            LIBKTX({
+            BASIS({
                 locateFile: (_file) =>
                     absoluteWasmUrl
-            }).then((libktx: LIBKTXModule) =>
+            }).then((module) =>
             {
-                resolve(libktx);
+                module.initializeBasis();
+                resolve(module.BasisFile);
             });
         });
     }
 
-    return ktxPromise;
+    return basisPromise;
 }
 
-async function fetchKTXTexture(url: string, ktx: LIBKTXModule)
+async function fetchBasisTexture(url: string, BasisTexture: BasisTextureConstructor)
 {
-    const ktx2Response = await fetch(url);
+    const basisResponse = await fetch(url);
 
-    if (ktx2Response.ok)
+    if (basisResponse.ok)
     {
-        const ktx2ArrayBuffer = await ktx2Response.arrayBuffer();
+        const basisArrayBuffer = await basisResponse.arrayBuffer();
 
-        return new ktx.ktxTexture(new Uint8Array(ktx2ArrayBuffer));
+        return new BasisTexture(new Uint8Array(basisArrayBuffer));
     }
 
-    throw new Error(`Failed to load KTX(2) texture: ${url}`);
+    throw new Error(`Failed to load Basis texture: ${url}`);
 }
 
 const preferredTranscodedFormat: Partial<TEXTURE_FORMATS>[] = [
@@ -78,42 +77,18 @@ const preferredTranscodedFormat: Partial<TEXTURE_FORMATS>[] = [
 
 async function load(url: string): Promise<TextureSourceOptions>
 {
-    const ktx = await getKTX();
+    const BasisTexture = await getBasis();
 
-    const ktxTexture = await fetchKTXTexture(url, ktx);
+    const basisTexture = await fetchBasisTexture(url, BasisTexture);
 
-    let format: COMPRESSED_TEXTURE_FORMATS;
+    const levelBuffers = createLevelBuffers(basisTexture, basisTranscoderFormat);
 
-    if (ktxTexture.needsTranscoding)
-    {
-        format = basisTranscodedTextureFormat;
-
-        const transcodeFormat = ktx.TranscodeTarget[basisTranscoderFormat];
-        const result = ktxTexture.transcodeBasis(transcodeFormat, 0);
-
-        if (result !== ktx.ErrorCode.SUCCESS)
-        {
-            throw new Error('Unable to transcode basis texture.');
-        }
-    }
-    else
-    {
-        format = getTextureFormatFromKTXTexture(ktxTexture);
-    }
-
-    const levelBuffers = createLevelBuffersFromKTX(ktxTexture);
-
-    const textureOptions = {
-        width: ktxTexture.baseWidth,
-        height: ktxTexture.baseHeight,
-        format: format as TEXTURE_FORMATS,
-        mipLevelCount: ktxTexture.numLevels,
+    return {
+        width: basisTexture.getImageWidth(0, 0),
+        height: basisTexture.getImageHeight(0, 0),
+        format: basisTranscodedTextureFormat,
         resource: levelBuffers,
-    };
-
-    convertFormatIfRequired(textureOptions);
-
-    return textureOptions;
+    } as TextureSourceOptions;
 }
 
 async function init(
@@ -126,11 +101,11 @@ async function init(
     if (wasmUrl)settings.wasmUrl = wasmUrl;
 
     basisTranscodedTextureFormat = preferredTranscodedFormat
-        .filter((format) => supportedTextures.includes(format))[0] as COMPRESSED_TEXTURE_FORMATS;
+        .filter((format) => supportedTextures.includes(format))[0] as TEXTURE_FORMATS;
 
-    basisTranscoderFormat = gpuFormatToKTXBasisTranscoderFormat(basisTranscodedTextureFormat);
+    basisTranscoderFormat = gpuFormatToBasisTranscoderFormat(basisTranscodedTextureFormat);
 
-    await getKTX();
+    await getBasis();
 }
 
 const messageHandlers = {
