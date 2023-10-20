@@ -1,11 +1,12 @@
-import { ExtensionType } from '../../../extensions/Extensions';
+import { ExtensionType } from '../../extensions/Extensions';
 // eslint-disable-next-line max-len
-import { getSupportedCompressedTextureFormats } from '../../../rendering/renderers/shared/texture/utils/getSupportedCompressedTextureFormats';
-import { isWebGLSupported } from '../../../utils/browser/isWebGLSupported';
-import { isWebGPUSupported } from '../../../utils/browser/isWebGPUSupported';
+import { getSupportedCompressedTextureFormats } from '../../rendering/renderers/shared/texture/utils/getSupportedCompressedTextureFormats';
+import { isWebGLSupported } from '../../utils/browser/isWebGLSupported';
+import { isWebGPUSupported } from '../../utils/browser/isWebGPUSupported';
+import { validFormats } from './resolveCompressedTextureUrl';
 
-import type { TEXTURE_FORMATS } from '../../../rendering/renderers/shared/texture/const';
-import type { FormatDetectionParser } from '../types';
+import type { FormatDetectionParser } from '../../assets/detections/types';
+import type { TEXTURE_FORMATS } from '../../rendering/renderers/shared/texture/const';
 
 let compressedTextureExtensions: string[];
 
@@ -55,6 +56,24 @@ function extractExtensionsForCompressedTextureFormats(formats: TEXTURE_FORMATS[]
             dupeMap[extension] = true;
             extensions.push(extension);
         }
+    });
+
+    // sort extensions by priority
+    extensions.sort((a, b) =>
+    {
+        const aIndex = validFormats.indexOf(a);
+        const bIndex = validFormats.indexOf(b);
+
+        if (aIndex === -1)
+        {
+            return 1;
+        }
+        if (bIndex === -1)
+        {
+            return -1;
+        }
+
+        return aIndex - bIndex;
     });
 
     return extensions;
