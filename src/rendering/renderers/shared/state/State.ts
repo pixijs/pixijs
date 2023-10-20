@@ -3,11 +3,14 @@ import type { BLEND_MODES, CULL_MODES } from './const';
 
 const blendModeIds = {
     normal: 0,
-    additive: 1,
+    add: 1,
     multiply: 2,
     screen: 3,
     overlay: 4,
     erase: 5,
+    'normal-npm': 6,
+    'add-npm': 7,
+    'screen-npm': 8,
 };
 const BLEND = 0;
 const OFFSET = 1;

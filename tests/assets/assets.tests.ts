@@ -6,7 +6,7 @@ import { Texture } from '../../src/rendering/renderers/shared/texture/Texture';
 describe('Assets', () =>
 {
     const basePath = process.env.GITHUB_ACTIONS
-        ? `https://raw.githubusercontent.com/pixijs/pixijs/next/packages/assets/test/assets/`
+        ? `https://raw.githubusercontent.com/pixijs/pixijs/${process.env.GITHUB_SHA}/tests/assets/assets/`
         : 'http://localhost:8080/tests/assets/assets/';
 
     beforeEach(() =>
