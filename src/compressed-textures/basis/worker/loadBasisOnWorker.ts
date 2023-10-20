@@ -19,7 +19,7 @@ function getBasisWorker(supportedTextures: TEXTURE_FORMATS[]): Worker
 
             if (!success)
             {
-                console.warn('Failed to load KTX texture', url);
+                console.warn('Failed to load Basis texture', url);
             }
 
             urlHash[url](textureOptions);
