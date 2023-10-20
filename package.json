@@ -37,7 +37,7 @@
     "coverage": "npm run test -- --coverage --maxWorkers=4",
     "docs": "mkdirp out && npm run docs:webdoc",
     "docs:webdoc": "webdoc -R README.md",
-    "lint": "eslint --ext .js --ext .ts ./ --ignore-path .gitignore --max-warnings 0",
+    "lint": "eslint --ext .js --ext .ts ./ --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "codesandbox-ci": "run-s build",
     "prerelease": "run-s clean:build test dist",
@@ -51,7 +51,7 @@
   },
   "lint-staged": {
     "*.{ts,js,mjs}": [
-      "eslint --ext .js --ext .ts ./ --ignore-path .gitignore --cache --fix --max-warnings 0"
+      "eslint --ext .js --ext .ts ./ --cache --fix --max-warnings 0"
     ]
   },
   "dependencies": {
@@ -59,6 +59,7 @@
     "@types/css-font-loading-module": "^0.0.8",
     "@types/earcut": "^2.1.1",
     "@webgpu/types": "^0.1.30",
+    "@xmldom/xmldom": "^0.8.10",
     "earcut": "^2.2.4",
     "eventemitter3": "^5.0.0",
     "ismobilejs": "^1.1.0",
@@ -67,6 +68,7 @@
   "devDependencies": {
     "@pixi/eslint-config": "^4.0.1",
     "@pixi/jest-electron": "^26.0.0",
+    "@pixi/rollup-plugin-web-worker-loader": "^1.6.1",
     "@pixi/webdoc-template": "^1.5.5",
     "@rollup/plugin-commonjs": "^15.1.0",
     "@rollup/plugin-json": "^4.1.0",
@@ -126,6 +128,9 @@
     "./lib/filters/blendModes/init.*",
     "./lib/app/init.*",
     "./lib/assets/init.*",
+    "./lib/compressed-textures/dds/init.*",
+    "./lib/compressed-textures/ktx/init.*",
+    "./lib/compressed-textures/basis/init.*",
     "./lib/events/init.*",
     "./lib/spritesheet/init.*",
     "./lib/rendering/init.*"
@@ -187,6 +192,30 @@
       },
       "require": {
         "default": "./lib/assets/init.js"
+      }
+    },
+    "./dds": {
+      "import": {
+        "default": "./lib/compressed-textures/dds/init.mjs"
+      },
+      "require": {
+        "default": "./lib/compressed-textures/dds/init.js"
+      }
+    },
+    "./ktx": {
+      "import": {
+        "default": "./lib/compressed-textures/ktx/init.mjs"
+      },
+      "require": {
+        "default": "./lib/compressed-textures/ktx/init.js"
+      }
+    },
+    "./basis": {
+      "import": {
+        "default": "./lib/compressed-textures/basis/init.mjs"
+      },
+      "require": {
+        "default": "./lib/compressed-textures/basis/init.js"
       }
     },
     "./events": {

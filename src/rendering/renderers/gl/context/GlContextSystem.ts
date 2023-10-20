@@ -110,7 +110,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
     {
         this._renderer = renderer;
 
-        this.webGLVersion = 1;
+        this.webGLVersion = 2;
         this.extensions = Object.create(null);
 
         this.supports = {
@@ -242,6 +242,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
                 || gl.getExtension('WEBKIT_WEBGL_compressed_texture_pvrtc'),
             atc: gl.getExtension('WEBGL_compressed_texture_atc'),
             astc: gl.getExtension('WEBGL_compressed_texture_astc'),
+            bptc: gl.getExtension('EXT_texture_compression_bptc')
         };
 
         Object.assign(this.extensions, common, {

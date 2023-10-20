@@ -71,8 +71,17 @@ export class GpuDeviceSystem implements System
     {
         // TODO we only need one of these..
         const adapter = await navigator.gpu.requestAdapter(options);
+
+        const requiredFeatures = [
+            'texture-compression-bc',
+            'texture-compression-astc',
+            'texture-compression-etc2',
+        ].filter((feature) => adapter.features.has(feature)) as GPUFeatureName[];
+
         // TODO and one of these!
-        const device = await adapter.requestDevice();
+        const device = await adapter.requestDevice({
+            requiredFeatures
+        });
 
         return { adapter, device };
     }

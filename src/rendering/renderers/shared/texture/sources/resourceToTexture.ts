@@ -3,7 +3,7 @@ import { extensions, ExtensionType } from '../../../../../extensions/Extensions'
 import { Texture } from '../Texture';
 
 import type { TypedArray } from '../../buffer/Buffer';
-import type { BufferSourceOptions } from './BufferImageSource';
+import type { BufferSourceOptions } from './BufferSource';
 import type { ImageResource } from './ImageSource';
 import type { TextureSource, TextureSourceOptions } from './TextureSource';
 

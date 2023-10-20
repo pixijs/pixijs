@@ -27,6 +27,7 @@ export interface TextureSourceOptions<T extends Record<string, any> = any>
     alphaMode?: ALPHA_MODES;
 
     style?: TextureStyleOptions | TextureStyle;
+    label?: string;
 }
 
 export class TextureSource<T extends Record<string, any> = any> extends EventEmitter<{
@@ -52,6 +53,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     };
 
     public uid = uid('textureSource');
+    public label = '';
 
     public resourceType = 'textureSource';
     public resourceId = uid('textureResource');
@@ -77,7 +79,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     public mipLevelCount = 1; // overridden if autoGenerateMipmaps is true
     public autoGenerateMipmaps = false;
 
-    public format: TEXTURE_FORMATS = 'rgba8unorm-srgb';
+    public format: TEXTURE_FORMATS = 'rgba8unorm';
     public dimension: TEXTURE_DIMENSIONS = '2d';
 
     public alphaMode: ALPHA_MODES;
@@ -117,6 +119,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
         options = { ...TextureSource.defaultOptions, ...options };
 
+        this.label ??= options.label;
         this.resource = options.resource;
 
         this._resolution = options.resolution;

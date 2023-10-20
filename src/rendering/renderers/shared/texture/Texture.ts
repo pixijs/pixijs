@@ -9,7 +9,7 @@ import { TextureLayout } from './TextureLayout';
 import { TextureMatrix } from './TextureMatrix';
 
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
-import type { BufferSourceOptions } from './sources/BufferImageSource';
+import type { BufferSourceOptions } from './sources/BufferSource';
 import type { TextureSourceOptions } from './sources/TextureSource';
 import type { TextureLayoutOptions } from './TextureLayout';
 
@@ -77,11 +77,11 @@ export class Texture extends EventEmitter<{
         {
             const { width, height } = this._source;
 
-            layout.frame.x = frame.x / width;
-            layout.frame.y = frame.y / height;
+            (layout as TextureLayout).frame.x = frame.x / width;
+            (layout as TextureLayout).frame.y = frame.y / height;
 
-            layout.frame.width = frame.width / width;
-            layout.frame.height = frame.height / height;
+            (layout as TextureLayout).frame.width = frame.width / width;
+            (layout as TextureLayout).frame.height = frame.height / height;
 
             (layout as TextureLayout).updateUvs();
         }

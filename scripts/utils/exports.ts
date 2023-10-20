@@ -9,8 +9,9 @@ const subImports = [
     ['./advanced-blend-modes', './lib/filters/blendModes'],
     ['./app', './lib/app'],
     ['./assets', './lib/assets'],
-    // 'compressed-textures', // to be implemented
-    // 'basis', // to be implemented
+    ['./dds', './lib/compressed-textures/dds'],
+    ['./ktx', './lib/compressed-textures/ktx'],
+    ['./basis', './lib/compressed-textures/basis'], // to be implemented
     ['./events', './lib/events'],
     // ['./math-extras', './lib/math-extras'],
     // ['./graphics', './lib/scene/graphics'],

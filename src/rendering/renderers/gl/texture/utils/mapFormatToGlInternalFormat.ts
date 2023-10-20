@@ -1,13 +1,15 @@
 import type { GlRenderingContext } from '../../context/GlRenderingContext';
+import type { WebGLExtensions } from '../../context/WebGLExtensions';
 
 /**
  * Returns a lookup table that maps each type-format pair to a compatible internal format.
  * @function mapTypeAndFormatToInternalFormat
  * @private
- * @param {WebGLRenderingContext} gl - The rendering context.
+ * @param gl - The rendering context.
+ * @param extensions - The WebGL extensions.
  * @returns Lookup table.
  */
-export function mapFormatToGlInternalFormat(gl: GlRenderingContext): Record<string, number>
+export function mapFormatToGlInternalFormat(gl: GlRenderingContext, extensions: WebGLExtensions): Record<string, number>
 {
     return {
         // 8-bit formats
@@ -66,5 +68,57 @@ export function mapFormatToGlInternalFormat(gl: GlRenderingContext): Record<stri
         depth32float: gl.DEPTH_COMPONENT32F,
         'depth32float-stencil8': gl.DEPTH32F_STENCIL8,
 
+        // Compressed formats
+        // 'bc1-rgba-unorm',
+        // 'bc1-rgba-unorm-srgb',
+        'bc2-rgba-unorm': extensions.s3tc.COMPRESSED_RGBA_S3TC_DXT3_EXT,
+        'bc2-rgba-unorm-srgb': extensions.s3tc_sRGB.COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT,
+
+        'bc3-rgba-unorm': extensions.s3tc.COMPRESSED_RGBA_S3TC_DXT5_EXT,
+        'bc3-rgba-unorm-srgb': extensions.s3tc_sRGB.COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT,
+        // 'bc4-r-unorm'
+        // 'bc4-r-snorm'
+        // 'bc5-rg-unorm'
+        // 'bc5-rg-snorm'
+        // 'bc6h-rgb-ufloat'
+        // 'bc6h-rgb-float'
+        'bc7-rgba-unorm': extensions.bptc.COMPRESSED_RGBA_BPTC_UNORM_EXT,
+        'bc7-rgba-unorm-srgb': extensions.bptc.COMPRESSED_SRGB_ALPHA_BPTC_UNORM_EXT,
+        'etc2-rgb8unorm': extensions.etc.COMPRESSED_RGB8_ETC2,
+        'etc2-rgb8unorm-srgb': extensions.etc.COMPRESSED_SRGB8_ETC2,
+        'etc2-rgb8a1unorm': extensions.etc.COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2,
+        'etc2-rgb8a1unorm-srgb': extensions.etc.COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2,
+        'etc2-rgba8unorm': extensions.etc.COMPRESSED_RGBA8_ETC2_EAC,
+        'etc2-rgba8unorm-srgb': extensions.etc.COMPRESSED_SRGB8_ALPHA8_ETC2_EAC,
+        'eac-r11unorm': extensions.etc.COMPRESSED_R11_EAC,
+        // 'eac-r11snorm'
+        'eac-rg11unorm': extensions.etc.COMPRESSED_SIGNED_RG11_EAC,
+        // 'eac-rg11snorm'
+        'astc-4x4-unorm': extensions.astc.COMPRESSED_RGBA_ASTC_4x4_KHR,
+        'astc-4x4-unorm-srgb': extensions.astc.COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR,
+        'astc-5x5-unorm': extensions.astc.COMPRESSED_RGBA_ASTC_5x5_KHR,
+        'astc-5x5-unorm-srgb': extensions.astc.COMPRESSED_SRGB8_ALPHA8_ASTC_5x5_KHR,
+        'astc-6x5-unorm': extensions.astc.COMPRESSED_RGBA_ASTC_6x5_KHR,
+        'astc-6x5-unorm-srgb': extensions.astc.COMPRESSED_SRGB8_ALPHA8_ASTC_6x5_KHR,
+        'astc-6x6-unorm': extensions.astc.COMPRESSED_RGBA_ASTC_6x6_KHR,
+        'astc-6x6-unorm-srgb': extensions.astc.COMPRESSED_SRGB8_ALPHA8_ASTC_6x6_KHR,
+        'astc-8x5-unorm': extensions.astc.COMPRESSED_RGBA_ASTC_8x5_KHR,
+        'astc-8x5-unorm-srgb': extensions.astc.COMPRESSED_SRGB8_ALPHA8_ASTC_8x5_KHR,
+        'astc-8x6-unorm':   extensions.astc.COMPRESSED_RGBA_ASTC_8x6_KHR,
+        'astc-8x6-unorm-srgb': extensions.astc.COMPRESSED_SRGB8_ALPHA8_ASTC_8x6_KHR,
+        'astc-8x8-unorm': extensions.astc.COMPRESSED_RGBA_ASTC_8x8_KHR,
+        'astc-8x8-unorm-srgb': extensions.astc.COMPRESSED_SRGB8_ALPHA8_ASTC_8x8_KHR,
+        'astc-10x5-unorm': extensions.astc.COMPRESSED_RGBA_ASTC_10x5_KHR,
+        'astc-10x5-unorm-srgb': extensions.astc.COMPRESSED_SRGB8_ALPHA8_ASTC_10x5_KHR,
+        'astc-10x6-unorm': extensions.astc.COMPRESSED_RGBA_ASTC_10x6_KHR,
+        'astc-10x6-unorm-srgb': extensions.astc.COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR,
+        'astc-10x8-unorm': extensions.astc.COMPRESSED_RGBA_ASTC_10x8_KHR,
+        'astc-10x8-unorm-srgb': extensions.astc.COMPRESSED_SRGB8_ALPHA8_ASTC_10x8_KHR,
+        'astc-10x10-unorm': extensions.astc.COMPRESSED_RGBA_ASTC_10x10_KHR,
+        'astc-10x10-unorm-srgb': extensions.astc.COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR,
+        'astc-12x10-unorm': extensions.astc.COMPRESSED_RGBA_ASTC_12x10_KHR,
+        'astc-12x10-unorm-srgb': extensions.astc.COMPRESSED_SRGB8_ALPHA8_ASTC_12x10_KHR,
+        'astc-12x12-unorm': extensions.astc.COMPRESSED_RGBA_ASTC_12x12_KHR,
+        'astc-12x12-unorm-srgb': extensions.astc.COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR,
     };
 }

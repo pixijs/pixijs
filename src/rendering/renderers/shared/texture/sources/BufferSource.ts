@@ -56,6 +56,7 @@ export class BufferImageSource extends TextureSource<TypedArray | ArrayBuffer>
 
         super({
             ...options,
+            resource: buffer,
             format,
         });
     }

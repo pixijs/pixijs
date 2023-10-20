@@ -4,6 +4,7 @@ import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { Texture } from '../../shared/texture/Texture';
 import { GlTexture } from './GlTexture';
 import { glUploadBufferImageResource } from './uploaders/glUploadBufferImageResource';
+import { glUploadCompressedTextureResource } from './uploaders/glUploadCompressedTextureResource';
 import { glUploadImageResource } from './uploaders/glUploadImageResource';
 import { glUploadVideoResource } from './uploaders/glUploadVideoResource';
 import { applyStyleParams } from './utils/applyStyleParams';
@@ -52,6 +53,7 @@ export class GlTextureSystem implements System, CanvasGenerator
         image: glUploadImageResource,
         buffer: glUploadBufferImageResource,
         video: glUploadVideoResource,
+        compressed: glUploadCompressedTextureResource,
     };
 
     private _gl: GlRenderingContext;
@@ -73,7 +75,9 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         if (!this._mapFormatToInternalFormat)
         {
-            this._mapFormatToInternalFormat = mapFormatToGlInternalFormat(gl);
+            const extensions = this._renderer.context.extensions;
+
+            this._mapFormatToInternalFormat = mapFormatToGlInternalFormat(gl, extensions);
             this._mapFormatToType = mapFormatToGlType(gl);
             this._mapFormatToFormat = mapFormatToGlFormat(gl);
         }
