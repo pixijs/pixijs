@@ -61,7 +61,8 @@
     "@webgpu/types": "^0.1.30",
     "earcut": "^2.2.4",
     "eventemitter3": "^5.0.0",
-    "ismobilejs": "^1.1.0"
+    "ismobilejs": "^1.1.0",
+    "parse-svg-path": "^0.1.2"
   },
   "devDependencies": {
     "@pixi/eslint-config": "^4.0.1",
