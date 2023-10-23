@@ -1,6 +1,6 @@
 export const ktxTranscoderUrls = {
-    jsUrl: './ktx/libktx.js',
-    wasmUrl: './ktx/libktx.wasm'
+    jsUrl: 'https://files.pixijs.download/transcoders/ktx/libktx.js',
+    wasmUrl: 'https://files.pixijs.download/transcoders/ktx/libktx.wasm'
 };
 
 export function setKTXTranscoderPath(config: Partial<typeof ktxTranscoderUrls>)
