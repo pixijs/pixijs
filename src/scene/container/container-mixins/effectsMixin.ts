@@ -3,6 +3,7 @@ import { MaskEffectManager } from '../../../rendering/mask/MaskEffectManager';
 
 import type { Filter } from '../../../filters/Filter';
 import type { FilterEffect } from '../../../filters/FilterEffect';
+import type { Rectangle } from '../../../maths/shapes/Rectangle';
 import type { Container } from '../Container';
 import type { Effect } from '../Effect';
 
@@ -15,7 +16,12 @@ export interface EffectsMixinConstructor
 export interface EffectsMixin extends Required<EffectsMixinConstructor>
 {
     _mask?: {mask: unknown, effect: Effect};
-    _filters?: {filters: Filter[], effect: FilterEffect};
+    _filters?: {
+        filters: Filter[],
+        effect: FilterEffect
+        filterArea?: Rectangle,
+    },
+    filterArea?: Rectangle,
     addEffect(effect: Effect): void;
     removeEffect(effect: Effect): void;
 }
@@ -95,7 +101,7 @@ export const effectsMixin: Partial<Container> = {
 
         // TODO - not massively important, but could optimise here
         // by reusing the same effect.. rather than adding and removing from the pool!
-        this._filters ||= { filters: null, effect: null };
+        this._filters ||= { filters: null, effect: null, filterArea: null };
 
         if (this._filters.filters === value) return;
 
@@ -110,7 +116,7 @@ export const effectsMixin: Partial<Container> = {
 
         if (!value) return;
 
-        const effect = getFilterEffect(value as Filter[]);
+        const effect = getFilterEffect(value as Filter[], this.filterArea);
 
         this._filters.effect = effect;
 
@@ -120,5 +126,18 @@ export const effectsMixin: Partial<Container> = {
     get filters(): Filter[]
     {
         return this._filters?.filters;
-    }
+    },
+
+    set filterArea(value: Rectangle)
+    {
+        this._filters ||= { filters: null, effect: null, filterArea: null };
+
+        this._filters.filterArea = value;
+    },
+
+    get filterArea(): Rectangle
+    {
+        return this._filters?.filterArea;
+    },
+
 } as Container;

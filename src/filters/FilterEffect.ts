@@ -1,15 +1,19 @@
+import type { Rectangle } from '../maths/shapes/Rectangle';
 import type { Effect } from '../scene/container/Effect';
 import type { Filter } from './Filter';
 
 export class FilterEffect implements Effect
 {
     public filters: Filter[];
+    public filterArea?: Rectangle;
+
     public pipe = 'filter';
     public priority = 1;
 
-    constructor(options?: {filters: Filter[]})
+    constructor(options?: {filters: Filter[], filterArea?: Rectangle})
     {
         this.filters = options?.filters;
+        this.filterArea = options?.filterArea;
     }
 
     public destroy(): void
@@ -20,16 +24,18 @@ export class FilterEffect implements Effect
         }
 
         this.filters = null;
+        this.filterArea = null;
     }
 }
 
 const filterEffectsPool: FilterEffect[] = [];
 
-export function getFilterEffect(filters: Filter[])
+export function getFilterEffect(filters: Filter[], filterArea?: Rectangle)
 {
     const filterEffect = filterEffectsPool.pop() || new FilterEffect();
 
     filterEffect.filters = filters;
+    filterEffect.filterArea = filterArea;
 
     return filterEffect;
 }
