@@ -3,6 +3,7 @@ import { warn } from '../../../../utils/logging/warn';
 
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { System } from '../../shared/system/System';
+import type { GpuPowerPreference } from '../../types';
 import type { WebGLRenderer } from '../WebGLRenderer';
 import type { GlRenderingContext } from './GlRenderingContext';
 import type { WebGLExtensions } from './WebGLExtensions';
@@ -21,12 +22,14 @@ export interface ContextSystemOptions
     /** **WebGL Only.** User-provided WebGL rendering context object. */
     context: WebGL2RenderingContext | null;
     /**
-     * **WebGL Only.** A hint indicating what configuration of GPU is suitable for the WebGL context,
-     * can be `'default'`, `'high-performance'` or `'low-power'`.
+     * An optional hint indicating what configuration of GPU is suitable for the WebGL context,
+     * can be `'high-performance'` or `'low-power'`.
      * Setting to `'high-performance'` will prioritize rendering performance over power consumption,
      * while setting to `'low-power'` will prioritize power saving over rendering performance.
      */
-    powerPreference: WebGLPowerPreference;
+    powerPreference?: GpuPowerPreference;
+    /** Whether to force the use of the fallback WebGL1 rendering context instead of WebGL2. */
+    forceFallbackAdapter: boolean;
     /** **WebGL Only.** Whether the compositor will assume the drawing buffer contains colors with premultiplied alpha. */
     premultipliedAlpha: boolean;
     /**
@@ -70,7 +73,12 @@ export class GlContextSystem implements System<ContextSystemOptions>
          * {@link WebGLOptions.powerPreference}
          * @default default
          */
-        powerPreference: 'default',
+        powerPreference: undefined,
+        /**
+         * {@link WebGLOptions.forceFallbackAdapter}
+         * @default false
+         */
+        forceFallbackAdapter: false,
     };
 
     /**
@@ -168,7 +176,9 @@ export class GlContextSystem implements System<ContextSystemOptions>
                 antialias,
                 stencil: true,
                 preserveDrawingBuffer: options.preserveDrawingBuffer,
-                powerPreference: options.powerPreference,
+                powerPreference: options.powerPreference ?? 'default',
+                // todo: fallback to WebGL1 if WebGL2 is not supported? Option doesn't seem available?
+                // https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/getContext
             });
         }
     }

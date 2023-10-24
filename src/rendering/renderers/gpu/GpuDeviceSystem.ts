@@ -1,6 +1,7 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 
 import type { System } from '../shared/system/System';
+import type { GpuPowerPreference } from '../types';
 import type { WebGPURenderer } from './WebGPURenderer';
 
 export interface GPU
@@ -9,11 +10,24 @@ export interface GPU
     device: GPUDevice;
 }
 
+export interface GpuContextOptions
+{
+    /**
+     * An optional hint indicating what configuration of GPU is suitable for the WebGPU context,
+     * can be `'high-performance'` or `'low-power'`.
+     * Setting to `'high-performance'` will prioritize rendering performance over power consumption,
+     * while setting to `'low-power'` will prioritize power saving over rendering performance.
+     */
+    powerPreference?: GpuPowerPreference;
+    /** Force the use of the fallback adapter */
+    forceFallbackAdapter: boolean;
+}
+
 /**
  * System plugin to the renderer to manage the context.
  * @class
  */
-export class GpuDeviceSystem implements System
+export class GpuDeviceSystem implements System<GpuContextOptions>
 {
     /** @ignore */
     public static extension = {
@@ -22,6 +36,19 @@ export class GpuDeviceSystem implements System
         ],
         name: 'device',
     } as const;
+
+    public static defaultOptions: GpuContextOptions = {
+        /**
+         * {@link WebGPUOptions.powerPreference}
+         * @default default
+         */
+        powerPreference: undefined,
+        /**
+         * Force the use of the fallback adapter
+         * @default false
+         */
+        forceFallbackAdapter: false,
+    };
 
     public gpu: GPU;
 
@@ -36,11 +63,11 @@ export class GpuDeviceSystem implements System
         this._renderer = renderer;
     }
 
-    public async init(): Promise<void>
+    public async init(options: GpuContextOptions): Promise<void>
     {
         if (this._initPromise) return this._initPromise;
 
-        this._initPromise = this._createDeviceAndAdaptor({})
+        this._initPromise = this._createDeviceAndAdaptor(options)
             .then((gpu) =>
             {
                 this.gpu = gpu;
@@ -67,10 +94,13 @@ export class GpuDeviceSystem implements System
      * @see https://developer.mozilla.org/en/docs/Web/API/HTMLCanvasElement/getContext
      * @returns {WebGLRenderingContext} the WebGL context
      */
-    private async _createDeviceAndAdaptor(options: GPURequestAdapterOptions): Promise<GPU>
+    private async _createDeviceAndAdaptor(options: GpuContextOptions): Promise<GPU>
     {
         // TODO we only need one of these..
-        const adapter = await navigator.gpu.requestAdapter(options);
+        const adapter = await navigator.gpu.requestAdapter({
+            powerPreference: options.powerPreference,
+            forceFallbackAdapter: options.forceFallbackAdapter,
+        });
 
         const requiredFeatures = [
             'texture-compression-bc',
