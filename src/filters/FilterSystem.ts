@@ -136,10 +136,24 @@ export class FilterSystem implements System
 
         const bounds: Bounds = filterData.bounds;
 
+        // this path is used by the blend modes mostly!
+        // they collect all renderables and push them into a list.
+        // this list is then used to calculate the bounds of the filter area
         if (instruction.renderables)
         {
             getGlobalRenderableBounds(instruction.renderables, bounds);
         }
+        // if a filterArea is provided, we save our selves some measuring and just use that area supplied
+        else if (instruction.filterEffect.filterArea)
+        {
+            // transform the filterArea into global space..
+            bounds.addRect(instruction.filterEffect.filterArea);
+
+            // new for v8, we transform the bounds into the space of the container
+            bounds.applyMatrix(instruction.container.worldTransform);
+        }
+        // classic filter path, we get the bounds of the container and use it by recursively
+        // measuring.
         else
         {
             getGlobalBounds(instruction.container, true, bounds);

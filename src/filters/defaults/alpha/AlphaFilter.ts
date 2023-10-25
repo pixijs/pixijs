@@ -1,6 +1,9 @@
+import { GlProgram } from '../../../rendering/renderers/gl/shader/GlProgram';
 import { GpuProgram } from '../../../rendering/renderers/gpu/shader/GpuProgram';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
 import { Filter } from '../../Filter';
+import vertex from '../defaultFilter.vert';
+import fragment from './alpha.frag';
 import source from './alpha.wgsl';
 
 export interface AlphaFilterOptions
@@ -46,14 +49,21 @@ export class AlphaFilter extends Filter
             },
         });
 
-        const filterUniforms = new UniformGroup({
+        const glProgram = new GlProgram({
+            vertex,
+            fragment,
+            name: 'alpha-filter'
+        });
+
+        const alphaUniforms = new UniformGroup({
             uAlpha: { value: options.alpha, type: 'f32' },
         });
 
         super({
             gpuProgram,
+            glProgram,
             resources: {
-                filterUniforms
+                alphaUniforms
             }
         });
     }
@@ -62,6 +72,6 @@ export class AlphaFilter extends Filter
      * Coefficient for alpha multiplication
      * @default 1
      */
-    get alpha(): number { return this.resources.filterUniforms.uniforms.uAlpha; }
-    set alpha(value: number) { this.resources.filterUniforms.uniforms.uAlpha = value; }
+    get alpha(): number { return this.resources.alphaUniforms.uniforms.uAlpha; }
+    set alpha(value: number) { this.resources.alphaUniforms.uniforms.uAlpha = value; }
 }
