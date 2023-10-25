@@ -15,7 +15,6 @@ export const scene: TestScene = {
         const rect2 = new Graphics().rect(50, 50, 100, 100).fill('orange');
 
         filterContainer.addChild(rect, rect2);
-        // filterContainer.alpha = 0.5;
 
         const filter = new AlphaFilter({
             alpha: 0.5

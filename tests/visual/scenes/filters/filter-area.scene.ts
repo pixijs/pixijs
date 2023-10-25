@@ -7,7 +7,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'Filter Area should be applied correctly',
-    only: true,
     create: async (scene: Container) =>
     {
         const rect = new Graphics().rect(0, 0, 100, 100).fill('orange');
