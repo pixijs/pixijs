@@ -6,7 +6,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'Alpha filter should be applied correctly',
-    only: true,
     create: async (scene: Container) =>
     {
         const filterContainer = new Container();
