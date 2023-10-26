@@ -68,6 +68,7 @@ const programCache: Record<string, GlProgram> = Object.create(null);
  *   fragment: '...',
  * });
  *
+ *
  * There are a few key things that pixi shader will do for you automatically:
  * <br>
  * - If no precision is provided in the shader, it will be injected into the program source for you.
