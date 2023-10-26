@@ -50,10 +50,10 @@ export interface SimpleShaderOptions
 const programCache: Record<string, GpuProgram> = Object.create(null);
 
 /**
- * A wrapper for a WebGPU Program. You can create one and then pass it to a shader.
- * this shader code will be used as part of a WebGPU pipeline
+ * A wrapper for a WebGPU Program, specifically designed for the WebGPU renderer.
+ * This class facilitates the creation and management of shader code that integrates with the WebGPU pipeline.
  *
- * To get the most out of this class, you should be familiar with wgsl shaders and how they work.
+ * To leverage the full capabilities of this class, familiarity with WGSL shaders is recommended.
  * @see https://gpuweb.github.io/gpuweb/#index
  * @example
  *
@@ -69,14 +69,19 @@ const programCache: Record<string, GpuProgram> = Object.create(null);
  *   },
  * });
  *
- * Fragment and vertex sources can all be contained in a single wgsl source file which is quite handy!
  *
- * For optimal usage and best performance, its best to reuse programs as much as possible.
- * You should use the {@link GpuProgram.from} helper function to create programs.
+ * Note: Both fragment and vertex shader sources can coexist within a single WGSL source file
+ * this can make things a bit simpler.
  *
- * Unlike webGL programs which extract the program information from the webGL via the compiled program,
- * WebGPU does not have this ability. So we need to provide extract the
- * program layout information directly from the source ourselves.
+ * For optimal usage and best performance, it help to reuse programs whenever possible.
+ * The {@link GpuProgram.from} helper function is designed for this purpose, utilizing an
+ * internal cache to efficiently manage and retrieve program instances.
+ * By leveraging this function, you can significantly reduce overhead and enhance the performance of your rendering pipeline.
+ *
+ * An important distinction between WebGL and WebGPU regarding program data retrieval:
+ * While WebGL allows extraction of program information directly from its compiled state,
+ * WebGPU does not offer such a capability. Therefore, in the context of WebGPU, we're required
+ * to manually extract the program layout information from the source code itself.
  * @class
  */
 export class GpuProgram
