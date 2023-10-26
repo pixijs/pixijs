@@ -6,14 +6,47 @@ import type { Rectangle } from '../maths/shapes/Rectangle';
 import type { AutoDetectOptions } from '../rendering/renderers/autoDetectRenderer';
 import type { Renderer } from '../rendering/renderers/types';
 import type { DestroyOptions } from '../scene/container/destroyTypes';
-import type { ResizePluginOptions } from './ResizePlugin';
 
-/** Any plugin that's usable for Application should contain these methods. */
+/**
+ * The app module provides a set of classes to use as a starting point when building applications.
+ *
+ * This module has a mixin for a TickerPlugin and a ResizePlugin. These will need to be imported
+ * if you are managing your own renderer.
+ * Usage:
+ * ```js
+ * import 'pixi.js/app';
+ * import { Application } from 'pixi.js';
+ *
+ * const app = new Application();
+ * await app.init();
+ * // Add the canvas to the DOM
+ * document.body.appendChild(app.canvas);
+ * ```
+ * @namespace app
+ */
+
+/**
+ * Any plugin that's usable for Application should contain these methods.
+ * @example
+ * import { ApplicationPlugin } from 'pixi.js';
+ * class MyPlugin implements ApplicationPlugin
+ * {
+ *    static init(options)
+ *    {
+ *      // do something with options
+ *    }
+ *    static destroy()
+ *    {
+ *     // destruction code here
+ *    }
+ * }
+ * @memberof app
+ */
 export interface ApplicationPlugin
 {
     /**
      * Called when Application is constructed, scoped to Application instance.
-     * Passes in `options` as the only argument, which are Application constructor options.
+     * Passes in `options` as the only argument, which are Application init options.
      * @param {object} options - Application options.
      */
     init(options: Partial<ApplicationOptions>): void;
@@ -21,8 +54,11 @@ export interface ApplicationPlugin
     destroy(): void;
 }
 
-/** Application options supplied to constructor. */
-export interface ApplicationOptions extends AutoDetectOptions, PixiMixins.ApplicationOptions, ResizePluginOptions {}
+/**
+ * Application options supplied to the applications init method.
+ * @memberof app
+ */
+export interface ApplicationOptions extends AutoDetectOptions, PixiMixins.ApplicationOptions {}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Application extends PixiMixins.Application {}
@@ -44,11 +80,14 @@ export interface Application extends PixiMixins.Application {}
  *
  * // ex, add display objects
  * app.stage.addChild(Sprite.from('something.png'));
- * @class
+ * @memberof app
  */
 export class Application<R extends Renderer = Renderer>
 {
-    /** Collection of installed plugins. */
+    /**
+     * Collection of installed plugins.
+     * @alias _plugins
+     */
     public static _plugins: ApplicationPlugin[] = [];
 
     /**

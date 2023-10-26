@@ -1,5 +1,21 @@
 import type { Container } from '../scene/container/Container';
 
+/**
+ * The type of the pointer event to listen for.
+ * Can be any of the following:
+ * - `auto`
+ * - `none`
+ * - `visiblePainted`
+ * - `visibleFill`
+ * - `visibleStroke`
+ * - `visible`
+ * - `painted`
+ * - `fill`
+ * - `stroke`
+ * - `all`
+ * - `inherit`
+ * @memberof accessibility
+ */
 export type PointerEvents = 'auto'
 | 'none'
 | 'visiblePainted'
@@ -12,22 +28,59 @@ export type PointerEvents = 'auto'
 | 'all'
 | 'inherit';
 
+/**
+ * The options for accessible objects.
+ * @memberof accessibility
+ */
 export interface AccessibleOptions
 {
+    /**
+     * Flag for if the object is accessible. If true AccessibilityManager will overlay a
+     * shadow div with attributes set
+     * @default false
+     */
     accessible: boolean;
+    /**
+     * Sets the title attribute of the shadow div
+     * If accessibleTitle AND accessibleHint has not been this will default to 'container [tabIndex]'
+     * @member {string}
+     */
     accessibleTitle: string;
+    /** Sets the aria-label attribute of the shadow div */
     accessibleHint: string;
+    /**
+     * @default 0
+     */
     tabIndex: number;
+    /**
+     * Specify the type of div the accessible layer is. Screen readers treat the element differently
+     * depending on this type. Defaults to button.
+     * @default 'button'
+     */
     accessibleType: string;
+    /**
+     * Specify the pointer-events the accessible div will use
+     * Defaults to auto.
+     * @default 'auto'
+     */
     accessiblePointerEvents: PointerEvents;
+    /**
+     * Setting to false will prevent any children inside this container to
+     * be accessible. Defaults to true.
+     * @default true
+     */
     accessibleChildren: boolean;
 }
 
+/**
+ * The Accessibility object is attached to the {@link Container}.
+ * @private
+ */
 export interface AccessibleTarget extends AccessibleOptions
 {
     _accessibleActive: boolean;
     _accessibleDiv: AccessibleHTMLElement;
-    renderId: number;
+    _renderId: number;
 }
 
 export interface AccessibleHTMLElement extends HTMLElement
@@ -40,8 +93,6 @@ export interface AccessibleHTMLElement extends HTMLElement
  * Default property values of accessible objects
  * used by {@link AccessibilitySystem}.
  * @private
- * @function accessibleTarget
- * @type {object}
  * @example
  * import { accessibleTarget } from 'pixi.js';
  *
@@ -50,8 +101,8 @@ export interface AccessibleHTMLElement extends HTMLElement
  */
 export const accessibilityTarget: AccessibleTarget = {
     /**
-     *  Flag for if the object is accessible. If true AccessibilityManager will overlay a
-     *   shadow div with attributes set
+     * Flag for if the object is accessible. If true AccessibilityManager will overlay a
+     * shadow div with attributes set
      * @member {boolean}
      * @memberof Container#
      */
@@ -60,7 +111,7 @@ export const accessibilityTarget: AccessibleTarget = {
     /**
      * Sets the title attribute of the shadow div
      * If accessibleTitle AND accessibleHint has not been this will default to 'container [tabIndex]'
-     * @member {?string}
+     * @member {string}
      * @memberof Container#
      */
     accessibleTitle: null,
@@ -75,7 +126,6 @@ export const accessibilityTarget: AccessibleTarget = {
     /**
      * @member {number}
      * @memberof Container#
-     * @private
      * @todo Needs docs.
      */
     tabIndex: 0,
@@ -83,14 +133,13 @@ export const accessibilityTarget: AccessibleTarget = {
     /**
      * @member {boolean}
      * @memberof Container#
-     * @todo Needs docs.
+     * @private
      */
     _accessibleActive: false,
 
     /**
-     * @member {boolean}
      * @memberof Container#
-     * @todo Needs docs.
+     * @private
      */
     _accessibleDiv: null,
 
@@ -106,7 +155,7 @@ export const accessibilityTarget: AccessibleTarget = {
     /**
      * Specify the pointer-events the accessible div will use
      * Defaults to auto.
-     * @member {string}
+     * @type {PointerEvents}
      * @memberof Container#
      * @default 'auto'
      */
@@ -121,5 +170,10 @@ export const accessibilityTarget: AccessibleTarget = {
      */
     accessibleChildren: true,
 
-    renderId: -1,
+    /**
+     * @member {number}
+     * @memberof Container#
+     * @private
+     */
+    _renderId: -1,
 };

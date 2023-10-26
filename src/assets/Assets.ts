@@ -66,19 +66,19 @@ export interface AssetInitOptions
 /**
  * A one stop shop for all Pixi resource management!
  * Super modern and easy to use, with enough flexibility to customize and do what you need!
- * @namespace Assets
+ * @namespace assets
  *
- * Only one Asset Class exists accessed via the Global Asset object.
+ * Only one Asset Class exists accessed via the Global Asset object. See [here]{@link assets.Assets}, for full documentation.
  *
  * It has four main responsibilities:
- * 1. Allows users to map URLs to keys and resolve them according to the user's browser capabilities
- * 2. Loads the resources and transforms them into assets that developers understand.
- * 3. Caches the assets and provides a way to access them.
- * 4. Allow developers to unload assets and clear the cache.
+ * <br>     1. Allows users to map URLs to keys and resolve them according to the user's browser capabilities
+ * <br>     2. Loads the resources and transforms them into assets that developers understand.
+ * <br>     3. Caches the assets and provides a way to access them.
+ * <br>     4. Allow developers to unload assets and clear the cache.
  *
  * It also has a few advanced features:
- * 1. Allows developers to provide a manifest upfront of all assets and help manage them via 'bundles'.
- * 2. Allows users to background load assets. Shortening (or eliminating) load times and improving UX. With this feature,
+ * <br>1. Allows developers to provide a manifest upfront of all assets and help manage them via 'bundles'.
+ * <br>2. Allows users to background load assets. Shortening (or eliminating) load times and improving UX. With this feature,
  * in-game loading bars can be a thing of the past!
  *
  * ### Assets Loading
@@ -99,26 +99,26 @@ export interface AssetInitOptions
  * Here both promises will be the same. Once resolved... Forever resolved! It makes for really easy resource management!
  *
  * Out of the box it supports the following files:
- * - textures (avif, webp, png, jpg, gif, svg)
- * - sprite sheets (json)
- * - bitmap fonts (xml, fnt, txt)
- * - web fonts (ttf, woff, woff2)
- * - json files (json)
- * - text files (txt)
+ * <br>- textures (avif, webp, png, jpg, gif, svg)
+ * <br>- sprite sheets (json)
+ * <br>- bitmap fonts (xml, fnt, txt)
+ * <br>- web fonts (ttf, woff, woff2)
+ * <br>- json files (json)
+ * <br>- text files (txt)
  *
  * More types can be added fairly easily by creating additional loader parsers.
  *
  * ### Textures
- * - Textures are loaded as ImageBitmap on a worker thread where possible.
+ * \- Textures are loaded as ImageBitmap on a worker thread where possible.
  * Leading to much less janky load + parse times.
- * - By default, we will prefer to load AVIF and WebP image files if you specify them.
+ * <br>- By default, we will prefer to load AVIF and WebP image files if you specify them.
  * But if the browser doesn't support AVIF or WebP we will fall back to png and jpg.
- * - Textures can also be accessed via Texture.from(...) and now use this asset manager under the hood!
- * - Don't worry if you set preferences for textures that don't exist (for example you prefer 2x resolutions images
+ * <br>- Textures can also be accessed via Texture.from(...) and now use this asset manager under the hood!
+ * <br>- Don't worry if you set preferences for textures that don't exist (for example you prefer 2x resolutions images
  *  but only 1x is available for that texture, the Asset manager will pick that up as a fallback automatically)
  *
  * #### Sprite sheets
- * - It's hard to know what resolution a sprite sheet is without loading it first, to address this
+ * <br>- It's hard to know what resolution a sprite sheet is without loading it first, to address this
  * there is a naming convention we have added that will let Pixi understand the image format and resolution
  * of the spritesheet via its file name:
  *
@@ -162,8 +162,8 @@ export interface AssetInitOptions
  * has already been loaded.
  *
  * ### Manifest and Bundles
- * - Manifest is a JSON file that contains a list of all assets and their properties.
- * - Bundles are a way to group assets together.
+ * <br>- Manifest is a JSON file that contains a list of all assets and their properties.
+ * <br>- Bundles are a way to group assets together.
  *
  * ```js
  * import { Assets } from 'pixi.js';
@@ -211,6 +211,16 @@ export interface AssetInitOptions
  * import { Assets } from 'pixi.js';
  *
  * const bunny = await Assets.load('bunny.png');
+ */
+
+/**
+ * The global Asset class, it's a singleton so you don't need to instantiate it.
+ * @example
+ * import { Assets } from 'pixi.js';
+ *
+ * const bunny = await Assets.load('bunny.png');
+ * @memberof assets
+ * @class Assets
  */
 export class AssetsClass
 {

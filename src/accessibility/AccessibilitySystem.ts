@@ -1,9 +1,8 @@
 import { FederatedEvent } from '../events/FederatedEvent';
 import { extensions, ExtensionType } from '../extensions/Extensions';
-import { Container } from '../scene/container/Container';
-import { isMobile } from '../settings/utils/isMobile';
+import { isMobile } from '../utils/browser/isMobile';
 import { removeItems } from '../utils/data/removeItems';
-import { accessibilityTarget, type AccessibleHTMLElement } from './accessibilityTarget';
+import { type AccessibleHTMLElement } from './accessibilityTarget';
 
 import type { Rectangle } from '../maths/shapes/Rectangle';
 // @ts-expect-error - used for jsdoc typedefs
@@ -12,10 +11,22 @@ import type { WebGLRenderer } from '../rendering/renderers/gl/WebGLRenderer';
 import type { WebGPURenderer } from '../rendering/renderers/gpu/WebGPURenderer';
 import type { System } from '../rendering/renderers/shared/system/System';
 import type { Renderer } from '../rendering/renderers/types';
-import type { isMobileResult } from '../settings/utils/isMobile';
+import type { Container } from '../scene/container/Container';
+import type { isMobileResult } from '../utils/browser/isMobile';
 
-// add some extra variables to the container..
-Container.mixin(accessibilityTarget);
+/**
+ * The accessibility module recreates the ability to tab and have content read by screen readers.
+ * This is very important as it can possibly help people with disabilities access PixiJS content.
+ *
+ * This module is a mixin for {@link AbstractRenderer} and will need to be imported if you are managing your own renderer.
+ * Usage:
+ * ```js
+ * import 'pixi.js/accessibility';
+ *
+ * container.accessible = true; // see AccessibleTarget for more properties
+ * ```
+ * @namespace accessibility
+ */
 
 const KEY_CODE_TAB = 9;
 
@@ -44,7 +55,7 @@ export interface AccessibilityOptions
  * events as if the mouse was being used, minimizing the effort required to implement.
  *
  * An instance of this class is automatically created by default, and can be found at `renderer.accessibility`
- * @class
+ * @memberof accessibility
  */
 export class AccessibilitySystem implements System
 {
@@ -266,7 +277,7 @@ export class AccessibilitySystem implements System
                 this._addChild(container);
             }
 
-            container.renderId = this._renderId;
+            container._renderId = this._renderId;
         }
 
         const children = container.children;
@@ -338,7 +349,7 @@ export class AccessibilitySystem implements System
         {
             const child = this._children[i];
 
-            if (child.renderId !== this._renderId)
+            if (child._renderId !== this._renderId)
             {
                 child._accessibleActive = false;
 
@@ -368,7 +379,7 @@ export class AccessibilitySystem implements System
                 {
                     hitArea = child.getBounds();
 
-                    this.capHitArea(hitArea);
+                    this._capHitArea(hitArea);
 
                     div.style.left = `${hitArea.x * sx}px`;
                     div.style.top = `${hitArea.y * sy}px`;
@@ -395,7 +406,7 @@ export class AccessibilitySystem implements System
                     div.tabIndex = child.tabIndex;
                     if (this.debug)
                     {
-                        this.updateDebugHTML(div);
+                        this._updateDebugHTML(div);
                     }
                 }
             }
@@ -410,7 +421,7 @@ export class AccessibilitySystem implements System
      * accessibility div
      * @param {HTMLElement} div -
      */
-    public updateDebugHTML(div: AccessibleHTMLElement): void
+    private _updateDebugHTML(div: AccessibleHTMLElement): void
     {
         div.innerHTML = `type: ${div.type}</br> title : ${div.title}</br> tabIndex: ${div.tabIndex}`;
     }
@@ -419,7 +430,7 @@ export class AccessibilitySystem implements System
      * Adjust the hit area based on the bounds of a display object
      * @param {Rectangle} hitArea - Bounds of the child
      */
-    public capHitArea(hitArea: Rectangle): void
+    private _capHitArea(hitArea: Rectangle): void
     {
         if (hitArea.x < 0)
         {
@@ -518,7 +529,7 @@ export class AccessibilitySystem implements System
 
         if (this.debug)
         {
-            this.updateDebugHTML(div);
+            this._updateDebugHTML(div);
         }
 
         container._accessibleActive = true;

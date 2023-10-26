@@ -16,6 +16,10 @@ import type {
 } from '../types';
 import type { PreferOrder, ResolveURLParser } from './types';
 
+/**
+ * Options for how the resolver deals with generating bundle ids
+ * @memberof assets
+ */
 export interface BundleIdentifierOptions
 {
     /** The character that is used to connect the bundleId and the assetId when generating a bundle asset id key */
@@ -68,6 +72,7 @@ export interface BundleIdentifierOptions
  *
  * It is not intended that this class is created by developers - its part of the Asset class
  * This is the third major system of PixiJS' main Assets class
+ * @memberof assets
  */
 export class Resolver
 {
