@@ -42,7 +42,7 @@ export class BindGroupSystem implements System
     {
         bindGroup.updateKey();
 
-        const gpuBindGroup = this._hash[bindGroup.key] || this._createBindGroup(bindGroup, program, groupIndex);
+        const gpuBindGroup = this._hash[bindGroup._key] || this._createBindGroup(bindGroup, program, groupIndex);
 
         return gpuBindGroup;
     }
@@ -119,7 +119,7 @@ export class BindGroupSystem implements System
             entries,
         });
 
-        this._hash[group.key] = gpuBindGroup;
+        this._hash[group._key] = gpuBindGroup;
 
         return gpuBindGroup;
     }

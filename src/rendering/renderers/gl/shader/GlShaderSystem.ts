@@ -77,7 +77,7 @@ export class GlShaderSystem
                     {
                         this.bindUniformBlock(
                             resource,
-                            shader.uniformBindMap[i as unknown as number][j as unknown as number],
+                            shader._uniformBindMap[i as unknown as number][j as unknown as number],
                             defaultSyncData.blockIndex++
                         );
                     }
@@ -90,7 +90,7 @@ export class GlShaderSystem
                 {
                     this.bindUniformBlock(
                         resource,
-                        shader.uniformBindMap[i as unknown as number][j as unknown as number],
+                        shader._uniformBindMap[i as unknown as number][j as unknown as number],
                         defaultSyncData.blockIndex++
                     );
                 }
@@ -99,7 +99,7 @@ export class GlShaderSystem
                     // TODO really we should not be binding the sampler here too
                     this._renderer.texture.bind(resource, defaultSyncData.textureCount);
 
-                    const uniformName = shader.uniformBindMap[i as unknown as number][j as unknown as number];
+                    const uniformName = shader._uniformBindMap[i as unknown as number][j as unknown as number];
 
                     const uniformData = programData.uniformData[uniformName];
 

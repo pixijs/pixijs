@@ -37,7 +37,7 @@ export class UniformBufferSystem implements System
 
     private _initUniformGroup(uniformGroup: UniformGroup): UniformsSyncCallback
     {
-        const uniformGroupSignature = uniformGroup.signature;
+        const uniformGroupSignature = uniformGroup._signature;
 
         let uniformData = this._syncFunctionHash[uniformGroupSignature];
 
@@ -79,8 +79,8 @@ export class UniformBufferSystem implements System
 
     public updateUniformGroup(uniformGroup: UniformGroup): boolean
     {
-        if (uniformGroup.isStatic && !uniformGroup.dirtyId) return false;
-        uniformGroup.dirtyId = 0;
+        if (uniformGroup.isStatic && !uniformGroup._dirtyId) return false;
+        uniformGroup._dirtyId = 0;
 
         const synced = this.syncUniformGroup(uniformGroup);
 

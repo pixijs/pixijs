@@ -76,9 +76,9 @@ export class GlUniformGroupSystem implements System
     {
         const programData = this._renderer.shader.getProgramData(program);
 
-        if (!group.isStatic || group.dirtyId !== programData.uniformDirtyGroups[group.uid])
+        if (!group.isStatic || group._dirtyId !== programData.uniformDirtyGroups[group.uid])
         {
-            programData.uniformDirtyGroups[group.uid] = group.dirtyId;
+            programData.uniformDirtyGroups[group.uid] = group._dirtyId;
 
             const syncFunc = this._getUniformSyncFunction(group, program);
 
@@ -93,14 +93,14 @@ export class GlUniformGroupSystem implements System
      */
     private _getUniformSyncFunction(group: UniformGroup, program: GlProgram): UniformsSyncCallback
     {
-        return this._uniformGroupSyncHash[group.signature]?.[program.key]
+        return this._uniformGroupSyncHash[group._signature]?.[program.key]
         || this._createUniformSyncFunction(group, program);
     }
 
     private _createUniformSyncFunction(group: UniformGroup, program: GlProgram): UniformsSyncCallback
     {
-        const uniformGroupSyncHash = this._uniformGroupSyncHash[group.signature]
-         || (this._uniformGroupSyncHash[group.signature] = {});
+        const uniformGroupSyncHash = this._uniformGroupSyncHash[group._signature]
+         || (this._uniformGroupSyncHash[group._signature] = {});
 
         const id = this._getSignature(group, program.uniformData, 'u');
 

@@ -76,11 +76,11 @@ describe('BindGroup', () =>
             0: buffer,
         });
 
-        const bindGroupKey = bindGroup.key;
+        const bindGroupKey = bindGroup._key;
 
         buffer.data = new Float32Array(200);
 
-        expect(bindGroupKey).not.toBe(bindGroup.key);
+        expect(bindGroupKey).not.toBe(bindGroup._key);
     });
 
     it('should let a BindGroup know if bufferResource has changed correctly', () =>
@@ -100,10 +100,10 @@ describe('BindGroup', () =>
             0: bufferResource,
         });
 
-        const bindGroupKey = bindGroup.key;
+        const bindGroupKey = bindGroup._key;
 
         buffer.data = new Float32Array(200);
 
-        expect(bindGroupKey).not.toBe(bindGroup.key);
+        expect(bindGroupKey).not.toBe(bindGroup._key);
     });
 });

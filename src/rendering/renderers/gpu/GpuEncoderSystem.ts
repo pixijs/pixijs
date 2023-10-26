@@ -119,7 +119,7 @@ export class GpuEncoderSystem implements System
         if (this._boundBindGroup[index] === bindGroup) return;
         this._boundBindGroup[index] = bindGroup;
 
-        bindGroup.touch(this._renderer.textureGC.count);
+        bindGroup._touch(this._renderer.textureGC.count);
 
         // TODO getting the bind group works as it looks at th e assets and generates a key
         // should this just be hidden behind a dirty flag?

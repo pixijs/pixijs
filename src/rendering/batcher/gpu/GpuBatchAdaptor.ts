@@ -97,7 +97,7 @@ export class GpuBatchAdaptor implements BatcherAdaptor
             tempState
         );
 
-        batch.bindGroup.touch(renderer.textureGC.count);
+        batch.bindGroup._touch(renderer.textureGC.count);
 
         encoder.setPipeline(pipeline);
 
