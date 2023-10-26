@@ -108,7 +108,7 @@ export class BindGroup
     /**
      * Returns the resource at the current specified index.
      * @param index - The index of the resource to get.
-     * @returns
+     * @returns - The resource at the specified index.
      */
     public getResource(index: number): BindResource
     {
