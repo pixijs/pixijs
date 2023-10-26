@@ -28,8 +28,7 @@ export interface ContextSystemOptions
      * while setting to `'low-power'` will prioritize power saving over rendering performance.
      */
     powerPreference?: GpuPowerPreference;
-    /** Whether to force the use of the fallback WebGL1 rendering context instead of WebGL2. */
-    forceFallbackAdapter: boolean;
+
     /** **WebGL Only.** Whether the compositor will assume the drawing buffer contains colors with premultiplied alpha. */
     premultipliedAlpha: boolean;
     /**
@@ -74,11 +73,6 @@ export class GlContextSystem implements System<ContextSystemOptions>
          * @default default
          */
         powerPreference: undefined,
-        /**
-         * {@link WebGLOptions.forceFallbackAdapter}
-         * @default false
-         */
-        forceFallbackAdapter: false,
     };
 
     /**
@@ -177,8 +171,6 @@ export class GlContextSystem implements System<ContextSystemOptions>
                 stencil: true,
                 preserveDrawingBuffer: options.preserveDrawingBuffer,
                 powerPreference: options.powerPreference ?? 'default',
-                // todo: fallback to WebGL1 if WebGL2 is not supported? Option doesn't seem available?
-                // https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/getContext
             });
         }
     }
