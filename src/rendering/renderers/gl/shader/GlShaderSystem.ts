@@ -171,7 +171,7 @@ export class GlShaderSystem
 
         const gl = this._gl;
 
-        const uniformBlockIndex = this.activeProgram.uniformBlockData[name].index;
+        const uniformBlockIndex = this.activeProgram._uniformBlockData[name].index;
 
         if (programData.uniformBlockBindings[index] === boundIndex) return;
         programData.uniformBlockBindings[index] = boundIndex;
@@ -192,12 +192,12 @@ export class GlShaderSystem
 
     public getProgramData(program: GlProgram): GlProgramData
     {
-        return this._programDataHash[program.key] || this._createProgramData(program);
+        return this._programDataHash[program._key] || this._createProgramData(program);
     }
 
     private _createProgramData(program: GlProgram): GlProgramData
     {
-        const key = program.key;
+        const key = program._key;
 
         this._programDataHash[key] = generateProgram(this._gl, program);
 

@@ -1,4 +1,4 @@
-import type { IUniformBlockData } from '../GlProgram';
+import type { GlUniformBlockData } from '../GlProgram';
 
 /**
  * returns the uniform block data from the program
@@ -7,9 +7,9 @@ import type { IUniformBlockData } from '../GlProgram';
  * @param gl - the WebGL context
  * @returns {object} the uniform data for this program
  */
-export function getUniformBufferData(program: WebGLProgram, gl: WebGL2RenderingContext): Record<string, IUniformBlockData>
+export function getUniformBufferData(program: WebGLProgram, gl: WebGL2RenderingContext): Record<string, GlUniformBlockData>
 {
-    const uniformBlocks: Record<string, IUniformBlockData> = {};
+    const uniformBlocks: Record<string, GlUniformBlockData> = {};
 
     // const totalUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
 

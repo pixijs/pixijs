@@ -93,7 +93,7 @@ export class GlUniformGroupSystem implements System
      */
     private _getUniformSyncFunction(group: UniformGroup, program: GlProgram): UniformsSyncCallback
     {
-        return this._uniformGroupSyncHash[group._signature]?.[program.key]
+        return this._uniformGroupSyncHash[group._signature]?.[program._key]
         || this._createUniformSyncFunction(group, program);
     }
 
@@ -102,16 +102,16 @@ export class GlUniformGroupSystem implements System
         const uniformGroupSyncHash = this._uniformGroupSyncHash[group._signature]
          || (this._uniformGroupSyncHash[group._signature] = {});
 
-        const id = this._getSignature(group, program.uniformData, 'u');
+        const id = this._getSignature(group, program._uniformData, 'u');
 
         if (!this._cache[id])
         {
-            this._cache[id] = generateUniformsSync(group, program.uniformData);
+            this._cache[id] = generateUniformsSync(group, program._uniformData);
         }
 
-        uniformGroupSyncHash[program.key] = this._cache[id];
+        uniformGroupSyncHash[program._key] = this._cache[id];
 
-        return uniformGroupSyncHash[program.key];
+        return uniformGroupSyncHash[program._key];
     }
 
     /**

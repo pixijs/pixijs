@@ -1,7 +1,7 @@
 import { mapSize } from './mapSize';
 import { mapType } from './mapType';
 
-import type { IAttributeData } from '../GlProgram';
+import type { GlAttributeData } from '../GlProgram';
 
 /**
  * returns the attribute data from the program
@@ -10,9 +10,9 @@ import type { IAttributeData } from '../GlProgram';
  * @param {WebGLRenderingContext} [gl] - the WebGL context
  * @returns {object} the attribute data for this program
  */
-export function getAttributeData(program: WebGLProgram, gl: WebGLRenderingContextBase): Record<string, IAttributeData>
+export function getAttributeData(program: WebGLProgram, gl: WebGLRenderingContextBase): Record<string, GlAttributeData>
 {
-    const attributes: {[key: string]: IAttributeData} = {};
+    const attributes: {[key: string]: GlAttributeData} = {};
 
     const totalAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
 

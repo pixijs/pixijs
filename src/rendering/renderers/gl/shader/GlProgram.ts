@@ -5,10 +5,7 @@ import { setProgramVersion } from './program/setProgramVersion';
 
 import type { TypedArray } from '../../shared/buffer/Buffer';
 
-export type ProgramPipelineLayoutDescription = GPUBindGroupLayoutEntry[][];
-export type ProgramLayout = Record<string, number>[];
-
-export interface IAttributeData
+export interface GlAttributeData
 {
     type: string;
     size: number;
@@ -16,7 +13,7 @@ export interface IAttributeData
     name: string;
 }
 
-export interface IUniformData
+export interface GlUniformData
 {
     name: string;
     index: number;
@@ -26,7 +23,7 @@ export interface IUniformData
     value: any;
 }
 
-export interface IUniformBlockData
+export interface GlUniformBlockData
 {
     index: number;
     name: string;
@@ -34,12 +31,18 @@ export interface IUniformBlockData
     value?: TypedArray;
 }
 
+/** the options for the gl program */
 export interface GlProgramOptions
 {
-    fragment?: string;
-    vertex?: string;
+    /** The fragment glsl shader source. */
+    fragment: string;
+    /** The vertex glsl shader source. */
+    vertex: string;
+    /** the name of the program, defaults to 'pixi-program' */
     name?: string;
+    /** the preferred vertex precision for the shader, this may not be used if the device does not support it  */
     preferredVertexPrecision?: string;
+    /** the preferred fragment precision for the shader, this may not be used if the device does not support it  */
     preferredFragmentPrecision?: string;
 }
 
@@ -49,24 +52,79 @@ const processes: Record<string, ((source: string, options: any, isFragment?: boo
     setProgramVersion
 };
 
+const programCache: Record<string, GlProgram> = Object.create(null);
+
+/**
+ * A wrapper for a WebGL Program. You can create one and then pass it to a shader.
+ * This will manage the WebGL program that is compiled and uploaded to the GPU.
+ *
+ * To get the most out of this class, you should be familiar with glsl shaders and how they work.
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/WebGLProgram
+ * @example
+ *
+ * // Create a new program
+ * const program = new GlProgram({
+ *   vertex: '...',
+ *   fragment: '...',
+ * });
+ *
+ * There are a few key things that pixi shader will do for you automatically:
+ * <br>
+ * - If no precision is provided in the shader, it will be injected into the program source for you.
+ * This precision will be taken form the options provided, if none is provided,
+ * then the program will default to the defaultOptions.
+ * <br>
+ * - It will inject the program name into the shader source if none is provided.
+ * <br>
+ *  - It will set the program version to 300 es.
+ *
+ * For optimal usage and best performance, its best to reuse programs as much as possible.
+ * You should use the {@link GlProgram.from} helper function to create programs.
+ * @class
+ */
 export class GlProgram
 {
-    public static defaultOptions: GlProgramOptions = {
+    /** The default options used by the program. */
+    public static defaultOptions: Partial<GlProgramOptions> = {
         preferredVertexPrecision: 'highp',
         preferredFragmentPrecision: 'mediump',
     };
 
-    public fragment?: string;
-    public vertex?: string;
-
-    public attributeData: Record<string, IAttributeData>;
-    public uniformData: Record<string, IUniformData>;
-    public uniformBlockData: Record<string, IUniformBlockData>;
-
+    /** the fragment glsl shader source. */
+    public readonly fragment?: string;
+    /** the vertex glsl shader source */
+    public readonly vertex?: string;
+    /**
+     * attribute data extracted from the program once created this happens when the program is used for the first time
+     * @internal
+     * @ignore
+     */
+    public _attributeData: Record<string, GlAttributeData>;
+    /**
+     * uniform data extracted from the program once created this happens when the program is used for the first time
+     * @internal
+     * @ignore
+     */
+    public _uniformData: Record<string, GlUniformData>;
+    /**
+     * uniform data extracted from the program once created this happens when the program is used for the first time
+     * @internal
+     * @ignore
+     */
+    public _uniformBlockData: Record<string, GlUniformBlockData>;
+    /** details on how to use this program with transform feedback */
     public transformFeedbackVaryings?: {names: string[], bufferMode: 'separate' | 'interleaved'};
+    /**
+     * the key that identifies the program via its source vertex + fragment
+     * @internal
+     * @ignore
+     */
+    public readonly _key: string;
 
-    public readonly key: string;
-
+    /**
+     * Creates a shiny new GlProgram. Used by WebGL renderer.
+     * @param options - The options for the program.
+     */
     constructor(options: GlProgramOptions)
     {
         options = { ...GlProgram.defaultOptions, ...options };
@@ -100,31 +158,38 @@ export class GlProgram
         this.fragment = fragment;
         this.vertex = vertex;
 
-        this.key = `${this.vertex}:${this.fragment}`;
+        this._key = `${this.vertex}:${this.fragment}`;
     }
 
+    /** destroys the program */
     public destroy(): void
     {
-        this.fragment = null;
-        this.vertex = null;
+        (this.fragment as any) = null;
+        (this.vertex as any) = null;
 
-        this.attributeData = null;
-        this.uniformData = null;
-        this.uniformBlockData = null;
+        this._attributeData = null;
+        this._uniformData = null;
+        this._uniformBlockData = null;
 
         this.transformFeedbackVaryings = null;
     }
 
-    public static programCached: Record<string, GlProgram> = Object.create(null);
+    /**
+     * Helper function that creates a program for a given source.
+     * It will check the program cache if the program has already been created.
+     * If it has that one will be returned, if not a new one will be created and cached.
+     * @param options - The options for the program.
+     * @returns A program using the same source
+     */
     public static from(options: GlProgramOptions): GlProgram
     {
         const key = `${options.vertex}:${options.fragment}`;
 
-        if (!GlProgram.programCached[key])
+        if (!programCache[key])
         {
-            GlProgram.programCached[key] = new GlProgram(options);
+            programCache[key] = new GlProgram(options);
         }
 
-        return GlProgram.programCached[key];
+        return programCache[key];
     }
 }
