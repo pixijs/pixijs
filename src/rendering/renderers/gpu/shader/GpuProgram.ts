@@ -101,16 +101,13 @@ export class GpuProgram
     public readonly name: string;
 
     /**
-     *
+     * Create a new GpuProgram
      * @param options - The options for the gpu program
-     * @param options.fragment
-     * @param options.vertex
-     * @param options.layout
-     * @param options.gpuLayout
-     * @param options.name
      */
-    constructor({ fragment, vertex, layout, gpuLayout, name }: GpuProgramOptions)
+    constructor(options: GpuProgramOptions)
     {
+        const { fragment, vertex, layout, gpuLayout, name } = options;
+
         this.name = name;
 
         this.fragment = fragment;
