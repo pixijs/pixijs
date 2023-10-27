@@ -1,213 +1,234 @@
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-debugger */
 import { Application } from '../../src/app/Application';
 import { extensions, ExtensionType } from '../../src/extensions/Extensions';
 import { Container } from '../../src/scene/container/Container';
+import { getApp } from '../utils/getApp';
+import { nextTick } from '../utils/nextTick';
 
 import type { ApplicationOptions } from '../../src/app/Application';
 
 describe('Application', () =>
 {
-    const setup = async (options?: Partial<ApplicationOptions>) =>
+    describe('LifeCycle', () =>
     {
-        const app = new Application();
+        it('should generate application', async () =>
+        {
+            expect(Application).toBeInstanceOf(Function);
+            const app = await getApp();
 
-        await app.init(options);
+            expect(app.stage).toBeInstanceOf(Container);
+            expect(app.renderer).toBeTruthy();
 
-        return app;
-    };
+            app.destroy();
 
-    it('should generate application', async () =>
-    {
-        expect(Application).toBeInstanceOf(Function);
-        const app = await setup();
+            expect(app.stage).toBeNull();
+            expect(app.renderer).toBeNull();
+        });
 
-        expect(app.stage).toBeInstanceOf(Container);
-        expect(app.renderer).toBeTruthy();
+        it('register a new plugin, then destroy it', async () =>
+        {
+            const plugin = {
+                init: jest.fn(),
+                destroy: jest.fn(),
+            };
+            const extension = { type: ExtensionType.Application, ref: plugin };
 
-        app.destroy();
+            extensions.add(extension);
 
-        expect(app.stage).toBeNull();
-        expect(app.renderer).toBeNull();
-    });
+            const app = await getApp();
 
-    it('register a new plugin, then destroy it', async () =>
-    {
-        const plugin = {
-            init: jest.fn(),
-            destroy: jest.fn(),
-        };
-        const extension = { type: ExtensionType.Application, ref: plugin };
+            app.destroy();
 
-        extensions.add(extension);
+            expect(plugin.init).toHaveBeenCalledOnce();
+            expect(plugin.destroy).toHaveBeenCalledOnce();
 
-        const app = await setup();
+            extensions.remove(extension);
+        });
 
-        app.destroy();
+        it('should remove canvas when destroyed', async () =>
+        {
+            const app = await getApp();
+            const view = app.canvas as HTMLCanvasElement;
 
-        expect(plugin.init).toHaveBeenCalledOnce();
-        expect(plugin.destroy).toHaveBeenCalledOnce();
+            expect(view).toBeInstanceOf(HTMLCanvasElement);
+            document.body.appendChild(view);
 
-        extensions.remove(extension);
-    });
+            expect(document.body.contains(view)).toBe(true);
+            app.destroy(true);
+            expect(document.body.contains(view)).toBe(false);
+        });
 
-    it('should remove canvas when destroyed', async () =>
-    {
-        const app = await setup();
-        const view = app.canvas as HTMLCanvasElement;
+        it('should not destroy children by default', async () =>
+        {
+            const app = await getApp();
+            const stage = app.stage;
+            const child = new Container();
 
-        expect(view).toBeInstanceOf(HTMLCanvasElement);
-        document.body.appendChild(view);
+            stage.addChild(child);
 
-        expect(document.body.contains(view)).toBe(true);
-        app.destroy(true);
-        expect(document.body.contains(view)).toBe(false);
-    });
+            app.destroy();
+            expect(child.destroyed).toBeFalse();
+        });
 
-    it('should not destroy children by default', async () =>
-    {
-        const app = await setup();
-        const stage = app.stage;
-        const child = new Container();
+        it('should destroy children when option passed', async () =>
+        {
+            const app = await getApp();
+            const stage = app.stage;
+            const child = new Container();
 
-        stage.addChild(child);
+            stage.addChild(child);
 
-        app.destroy();
-        expect(child.destroyed).toBeFalse();
-    });
-
-    it('should destroy children when option passed', async () =>
-    {
-        const app = await setup();
-        const stage = app.stage;
-        const child = new Container();
-
-        stage.addChild(child);
-
-        app.destroy(true);
-        expect(child.destroyed).toBeTrue();
+            app.destroy(true);
+            expect(child.destroyed).toBeTrue();
+        });
     });
 
     describe('resizeTo', () =>
     {
-        let div: HTMLDivElement;
-
-        beforeAll(() =>
+        const getAppWithDiv = async (options?: Partial<ApplicationOptions>) =>
         {
-            div = document.createElement('div');
+            const div: HTMLDivElement = document.createElement('div');
 
             div.style.width = '100px';
             div.style.height = '200px';
             document.body.appendChild(div);
-        });
 
-        afterAll(() =>
-        {
-            div.parentNode.removeChild(div);
-            div = null;
-        });
+            const app = await getApp({
+                resizeTo: div,
+                ...options,
+            });
+
+            const forceResizeApp = (width: number, height: number, queue = false) =>
+            {
+                div.style.width = `${width}px`;
+                div.style.height = `${height}px`;
+
+                if (queue)
+                {
+                    app.queueResize();
+                }
+                else
+                {
+                    app.resize();
+                }
+            };
+
+            const forceQueueResizeApp = (width: number, height: number) => forceResizeApp(width, height, true);
+
+            const cleanup = (destroy = true) =>
+            {
+                destroy && app.destroy();
+                div.parentNode.removeChild(div);
+            };
+
+            return {
+                app,
+                div,
+                forceResizeApp,
+                forceQueueResizeApp,
+                cleanup,
+            };
+        };
 
         it('should assign resizeTo', async () =>
         {
-            const app = await setup({
-                resizeTo: div,
-            });
+            const { app, div, cleanup } = await getAppWithDiv();
 
             expect(app.resizeTo).toEqual(div);
             expect(app.canvas.width).toEqual(100);
             expect(app.canvas.height).toEqual(200);
-            app.destroy();
+
+            cleanup();
         });
 
-        it.skip('should force multiple immediate resizes', async () =>
+        it('should force multiple immediate resizes', async () =>
         {
             const spy = jest.fn();
-            const app = await setup({
-                resizeTo: div,
-            });
+            const { app, forceResizeApp, cleanup } = await getAppWithDiv();
 
             app.renderer.view.texture.source.on('resize', spy);
 
-            app.resize();
-            app.resize();
+            forceResizeApp(200, 400);
+            forceResizeApp(300, 500);
 
             expect(spy).toBeCalledTimes(2);
 
-            app.destroy();
+            cleanup();
         });
 
-        it.skip('should throttle multiple resizes', async (done) =>
+        it('should throttle multiple resizes', async (done) =>
         {
-            const spy = jest.fn();
-            const app = await setup({
-                resizeTo: div,
-            });
+            const { app, forceQueueResizeApp, cleanup } = await getAppWithDiv();
 
-            app.renderer.view.texture.source.on('resize', spy);
-            app.queueResize();
-            app.queueResize();
-
-            setTimeout(() =>
+            const onResize = () =>
             {
-                expect(spy).toBeCalledTimes(1);
-                app.destroy();
-                done();
-            }, 50);
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                nextTick().then(() =>
+                {
+                    // give the canvas a chance to be resized before we check it
+                    expect(app.canvas.width).toEqual(300);
+                    expect(app.canvas.height).toEqual(500);
+
+                    cleanup();
+                    done();
+                });
+            };
+
+            app.renderer.view.texture.source.on('resize', onResize);
+            forceQueueResizeApp(200, 400);
+            forceQueueResizeApp(300, 500);
         });
 
-        it.skip('should cancel resize on destroy', async (done) =>
+        it('should cancel resize on destroy', async (done) =>
         {
             const spy = jest.fn();
-            const app = await setup({
-                resizeTo: div,
-            });
+            const { app, forceQueueResizeApp, cleanup } = await getAppWithDiv();
 
-            // app.renderer.on('resize', spy);
             app.renderer.view.texture.source.on('resize', spy);
-            app.queueResize();
+            forceQueueResizeApp(200, 400);
             app.destroy();
 
             requestAnimationFrame(() =>
             {
                 expect(spy).not.toBeCalled();
+                cleanup(false); // don't destroy, we already did
                 done();
             });
         });
 
-        it.skip('should resize cancel resize queue', async (done) =>
+        it('should resize cancel resize queue', async (done) =>
         {
             const spy = jest.fn();
-            const app = await setup({
-                resizeTo: div,
-            });
+            const { app, forceQueueResizeApp, forceResizeApp, cleanup } = await getAppWithDiv();
 
             app.renderer.view.texture.source.on('resize', spy);
-            app.queueResize();
-            app.resize();
+            forceQueueResizeApp(200, 400);
+            forceResizeApp(300, 500);
             app.destroy();
 
             requestAnimationFrame(() =>
             {
                 expect(spy).toBeCalledTimes(1);
+                cleanup(false); // don't destroy, we already did
                 done();
             });
         });
 
         it('should resizeTo with resolution', async () =>
         {
-            const app = await setup({
-                resolution: 2,
-                resizeTo: div,
-            });
+            const { app, cleanup } = await getAppWithDiv({ resolution: 2 });
 
             expect(app.canvas.width).toEqual(200);
             expect(app.canvas.height).toEqual(400);
-            app.destroy();
+
+            cleanup();
         });
 
         it('should resizeTo with resolution and autoDensity', async () =>
         {
-            const app = await setup({
+            const { app, div, cleanup } = await getAppWithDiv({
                 resolution: 2,
-                resizeTo: div,
                 autoDensity: true,
             });
 
@@ -215,21 +236,25 @@ describe('Application', () =>
             expect(app.canvas.height).toEqual(400);
             expect(app.canvas.style.width).toEqual(div.style.width);
             expect(app.canvas.style.height).toEqual(div.style.height);
-            app.destroy();
+
+            cleanup();
         });
     });
 
-    it('should support OffscreenCanvas', async () =>
+    describe('Offscreen Canvas', () =>
     {
-        const view = new OffscreenCanvas(1, 1);
-        const app = await setup({
-            canvas: view,
-            width: 1,
-            height: 1,
+        it('should support OffscreenCanvas', async () =>
+        {
+            const view = new OffscreenCanvas(1, 1);
+            const app = await getApp({
+                canvas: view,
+                width: 1,
+                height: 1,
+            });
+
+            expect(app.canvas).toBeInstanceOf(OffscreenCanvas);
+
+            app.destroy();
         });
-
-        expect(app.canvas).toBeInstanceOf(OffscreenCanvas);
-
-        app.destroy();
     });
 });

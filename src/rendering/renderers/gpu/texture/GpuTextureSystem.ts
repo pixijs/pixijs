@@ -294,7 +294,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
             const key = Number(k);
             const bindGroup = this._bindGroupHash[key];
 
-            bindGroup.destroy();
+            bindGroup?.destroy();
             this._bindGroupHash[key] = null;
         }
 
