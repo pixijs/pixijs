@@ -21,3 +21,5 @@ export enum RendererType
     WEBGL = 0b1,
     WEBGPU = 0b10
 }
+
+export type GpuPowerPreference = 'low-power' | 'high-performance';
