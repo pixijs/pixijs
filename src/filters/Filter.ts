@@ -7,7 +7,14 @@ import type { BLEND_MODES } from '../rendering/renderers/shared/state/const';
 import type { Texture } from '../rendering/renderers/shared/texture/Texture';
 import type { FilterSystem } from './FilterSystem';
 
-/** The options to use when creating a new filter. */
+/**
+ * @namespace filters
+ */
+
+/**
+ * The options to use when creating a new filter.
+ * @memberof filters
+ */
 export interface FilterOptions extends ShaderWithResourcesDescriptor
 {
     /** optional blend mode used by the filter when rendererig (defaults to 'normal') */
@@ -30,9 +37,9 @@ export interface FilterOptions extends ShaderWithResourcesDescriptor
      * Definitely don't set this to true if the renderer has antialiasing set to false. As it will antialias,
      * but you won't see the difference.
      *
-     * This can be a boolean or {@link FilterAntiAlias} enum.
+     * This can be a boolean or [FilterAntialias]{@link filters.FilterAntialias} string.
      */
-    antialias?: FilterAntiAlias | boolean;
+    antialias?: FilterAntialias | boolean;
     /**
      * If this is set to true, the filter system will grab a snap shot oif the are being rendered
      * to and pass this into the shader. This is useful for blend modes that need to be aware of the pixels
@@ -47,13 +54,14 @@ export interface FilterOptions extends ShaderWithResourcesDescriptor
  * - `on` - the filter is always antialiased regardless of the renderer settings
  * - `off` - the filter is never antialiased regardless of the renderer settings
  * - `inherit` - (default) the filter uses the antialias settings of the renderer
+ * @memberof filters
  */
-export type FilterAntiAlias = 'on' | 'off' | 'inherit';
+export type FilterAntialias = 'on' | 'off' | 'inherit';
 
 /**
  * The Filter class is the base for all filter effects used in Pixi.js
  * As it extends a shader, it requires that a glProgram is parsed in to work with WebGL and a gpuProgram for WebGPU.
- * If you dont proved one, then the filter is skipped and just rendered as if it wasn't there for that renderer.
+ * If you don't proved one, then the filter is skipped and just rendered as if it wasn't there for that renderer.
  *
  * A filter can be applied to anything that extends Container in Pixi.js which also includes Sprites, Graphics etc.
  *
@@ -77,6 +85,7 @@ export type FilterAntiAlias = 'on' | 'off' | 'inherit';
  * but all the framebuffer / shader switching that has to take place.
  * One filter applied to a container with many objects is MUCH faster than many filter applied to many objects.
  * @class
+ * @memberof filters
  */
 export class Filter extends Shader
 {
@@ -104,7 +113,7 @@ export class Filter extends Shader
      * should the filter use antialiasing?
      * @default inherit
      */
-    public antialias: FilterAntiAlias;
+    public antialias: FilterAntialias;
 
     /** If enabled is true the filter is applied, if false it will not. */
     public enabled = true;

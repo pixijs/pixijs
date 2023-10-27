@@ -18,6 +18,7 @@ interface EnsurePrecisionOptions
  * @param options.maxSupportedVertexPrecision
  * @param options.maxSupportedFragmentPrecision
  * @param isFragment
+ * @private
  */
 export function ensurePrecision(
     src: string,

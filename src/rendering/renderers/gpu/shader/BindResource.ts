@@ -1,6 +1,9 @@
 import type { BindGroup } from './BindGroup';
 
-/** an interface that allows a resource to be bound to the gpu in a bind group */
+/**
+ * an interface that allows a resource to be bound to the gpu in a bind group
+ * @memberof rendering
+ */
 export interface BindResource
 {
     /** The type of resource this is */

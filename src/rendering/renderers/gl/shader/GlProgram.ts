@@ -31,7 +31,10 @@ export interface GlUniformBlockData
     value?: TypedArray;
 }
 
-/** the options for the gl program */
+/**
+ * The options for the gl program
+ * @memberof rendering
+ */
 export interface GlProgramOptions
 {
     /** The fragment glsl shader source. */
@@ -82,6 +85,7 @@ const programCache: Record<string, GlProgram> = Object.create(null);
  * For optimal usage and best performance, its best to reuse programs as much as possible.
  * You should use the {@link GlProgram.from} helper function to create programs.
  * @class
+ * @memberof rendering
  */
 export class GlProgram
 {

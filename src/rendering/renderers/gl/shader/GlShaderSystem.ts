@@ -27,7 +27,11 @@ export class GlShaderSystem
         name: 'shader',
     } as const;
 
-    public activeProgram: GlProgram = null;
+    /**
+     * @internal
+     * @private
+     */
+    public _activeProgram: GlProgram = null;
 
     private _programDataHash: Record<string, GlProgramData> = Object.create(null);
     private readonly _renderer: WebGLRenderer;
@@ -60,7 +64,7 @@ export class GlShaderSystem
 
         const gl = this._gl;
 
-        const programData = this.getProgramData(shader.glProgram);
+        const programData = this._getProgramData(shader.glProgram);
 
         // loop through the groups and sync everything...
         for (const i in shader.groups)
@@ -124,13 +128,13 @@ export class GlShaderSystem
 
     private _updateUniformGroup(uniformGroup: UniformGroup): void
     {
-        this._renderer.uniformGroup.updateUniformGroup(uniformGroup, this.activeProgram, defaultSyncData);
+        this._renderer.uniformGroup.updateUniformGroup(uniformGroup, this._activeProgram, defaultSyncData);
     }
 
     public bindUniformBlock(uniformGroup: UniformGroup | BufferResource, name: string, index = 0): void
     {
         const bufferSystem = this._renderer.buffer;
-        const programData = this.getProgramData(this.activeProgram);
+        const programData = this._getProgramData(this._activeProgram);
 
         const isBufferResource = (uniformGroup as BufferResource).bufferResource;
 
@@ -171,7 +175,7 @@ export class GlShaderSystem
 
         const gl = this._gl;
 
-        const uniformBlockIndex = this.activeProgram._uniformBlockData[name].index;
+        const uniformBlockIndex = this._activeProgram._uniformBlockData[name].index;
 
         if (programData.uniformBlockBindings[index] === boundIndex) return;
         programData.uniformBlockBindings[index] = boundIndex;
@@ -181,16 +185,21 @@ export class GlShaderSystem
 
     private _setProgram(program: GlProgram)
     {
-        if (this.activeProgram === program) return;
+        if (this._activeProgram === program) return;
 
-        this.activeProgram = program;
+        this._activeProgram = program;
 
-        const programData = this.getProgramData(program);
+        const programData = this._getProgramData(program);
 
         this._gl.useProgram(programData.program);
     }
 
-    public getProgramData(program: GlProgram): GlProgramData
+    /**
+     * @param program - the program to get the data for
+     * @internal
+     * @private
+     */
+    public _getProgramData(program: GlProgram): GlProgramData
     {
         return this._programDataHash[program._key] || this._createProgramData(program);
     }
