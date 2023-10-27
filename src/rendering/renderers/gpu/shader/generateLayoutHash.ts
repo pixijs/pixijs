@@ -1,5 +1,5 @@
-import type { ProgramLayout } from '../../gl/shader/GlProgram';
 import type { StructsAndGroups } from './extractStructAndGroups';
+import type { ProgramLayout } from './GpuProgram';
 
 export function generateLayoutHash({ groups }: StructsAndGroups): ProgramLayout
 {

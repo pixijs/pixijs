@@ -1,7 +1,7 @@
 import { defaultValue } from './defaultValue';
 import { mapType } from './mapType';
 
-import type { IUniformData } from '../GlProgram';
+import type { GlUniformData } from '../GlProgram';
 
 /**
  * returns the uniform data from the program
@@ -10,9 +10,9 @@ import type { IUniformData } from '../GlProgram';
  * @param gl - the WebGL context
  * @returns {object} the uniform data for this program
  */
-export function getUniformData(program: WebGLProgram, gl: WebGLRenderingContextBase): {[key: string]: IUniformData}
+export function getUniformData(program: WebGLProgram, gl: WebGLRenderingContextBase): {[key: string]: GlUniformData}
 {
-    const uniforms: {[key: string]: IUniformData} = {};
+    const uniforms: {[key: string]: GlUniformData} = {};
 
     const totalUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
 

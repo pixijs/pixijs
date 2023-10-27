@@ -36,6 +36,6 @@ describe('Shader', () =>
 
         shader.destroy(true);
 
-        expect(glProgram.attributeData).toBeNull();
+        expect(glProgram._attributeData).toBeNull();
     });
 });

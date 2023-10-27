@@ -20,7 +20,6 @@ const topologyToGlMap = {
 };
 
 /** System plugin to the renderer to manage geometry. */
-
 export class GlGeometrySystem implements System
 {
     /** @ignore */
@@ -131,7 +130,7 @@ export class GlGeometrySystem implements System
     {
         // geometry must have at least all the attributes that the shader requires.
         const geometryAttributes = geometry.attributes;
-        const shaderAttributes = program.attributeData;
+        const shaderAttributes = program._attributeData;
 
         for (const j in shaderAttributes)
         {
@@ -151,7 +150,7 @@ export class GlGeometrySystem implements System
     protected getSignature(geometry: Geometry, program: GlProgram): string
     {
         const attribs = geometry.attributes;
-        const shaderAttributes = program.attributeData;
+        const shaderAttributes = program._attributeData;
 
         const strings = ['g', geometry.uid];
 
@@ -168,7 +167,7 @@ export class GlGeometrySystem implements System
 
     protected getVao(geometry: Geometry, program: GlProgram): WebGLVertexArrayObject
     {
-        return this._geometryVaoHash[geometry.uid]?.[program.key] || this.initGeometryVao(geometry, program);
+        return this._geometryVaoHash[geometry.uid]?.[program._key] || this.initGeometryVao(geometry, program);
     }
 
     /**
@@ -185,7 +184,7 @@ export class GlGeometrySystem implements System
         // const CONTEXT_UID = this.CONTEXT_UID;
         const bufferSystem = this._renderer.buffer;
 
-        this._renderer.shader.getProgramData(program);
+        this._renderer.shader._getProgramData(program);
 
         this.checkCompatibility(geometry, program);
 
@@ -205,7 +204,7 @@ export class GlGeometrySystem implements System
         if (vao)
         {
             // this will give us easy access to the vao
-            vaoObjectHash[program.key] = vao;
+            vaoObjectHash[program._key] = vao;
 
             return vao;
         }
@@ -223,9 +222,9 @@ export class GlGeometrySystem implements System
 
         for (const j in attributes)
         {
-            if (!attributes[j].size && program.attributeData[j])
+            if (!attributes[j].size && program._attributeData[j])
             {
-                attributes[j].size = program.attributeData[j].size;
+                attributes[j].size = program._attributeData[j].size;
             }
             else if (!attributes[j].size)
             {
@@ -282,7 +281,7 @@ export class GlGeometrySystem implements System
         this.activateVao(geometry, program);
 
         // add it to the cache!
-        vaoObjectHash[program.key] = vao;
+        vaoObjectHash[program._key] = vao;
         vaoObjectHash[signature] = vao;
 
         gl.bindVertexArray(null);
@@ -376,7 +375,7 @@ export class GlGeometrySystem implements System
             const buffer = attribute.buffer;
             const glBuffer = bufferSystem.getGlBuffer(buffer);
 
-            if (program.attributeData[j])
+            if (program._attributeData[j])
             {
                 if (lastBuffer !== glBuffer)
                 {
@@ -385,7 +384,7 @@ export class GlGeometrySystem implements System
                     lastBuffer = glBuffer;
                 }
 
-                const location = program.attributeData[j].location;
+                const location = program._attributeData[j].location;
 
                 // TODO introduce state again
                 // we can optimise this for older devices that have no VAOs

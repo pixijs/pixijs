@@ -15,6 +15,7 @@ import type { IGLUniformData } from '../GlProgramData';
  * generates a WebGL Program object from a high level Pixi Program.
  * @param gl - a rendering context on which to generate the program
  * @param program - the high level Pixi Program.
+ * @private
  */
 export function generateProgram(gl: GlRenderingContext, program: GlProgram): GlProgramData
 {
@@ -55,18 +56,18 @@ export function generateProgram(gl: GlRenderingContext, program: GlProgram): GlP
         logProgramError(gl, webGLProgram, glVertShader, glFragShader);
     }
 
-    program.attributeData = getAttributeData(webGLProgram, gl);
-    program.uniformData = getUniformData(webGLProgram, gl);
-    program.uniformBlockData = getUniformBufferData(webGLProgram, gl);
+    program._attributeData = getAttributeData(webGLProgram, gl);
+    program._uniformData = getUniformData(webGLProgram, gl);
+    program._uniformBlockData = getUniformBufferData(webGLProgram, gl);
 
     gl.deleteShader(glVertShader);
     gl.deleteShader(glFragShader);
 
     const uniformData: {[key: string]: IGLUniformData} = {};
 
-    for (const i in program.uniformData)
+    for (const i in program._uniformData)
     {
-        const data = program.uniformData[i];
+        const data = program._uniformData[i];
 
         uniformData[i] = {
             location: gl.getUniformLocation(webGLProgram, i),
