@@ -59,7 +59,7 @@ export interface WebGLContextEventMap
 
 /**
  * Common interface for HTMLCanvasElement, OffscreenCanvas, and other custom canvas classes.
- * @extends PixiMins.ICanvas
+ * @extends PixiMixins.ICanvas
  * @extends Partial<EventTarget>
  */
 export interface ICanvas extends PixiMixins.ICanvas, Partial<EventTarget>

@@ -32,9 +32,11 @@ export enum LoaderParserPriority
  * some plugins may only be used for parsing,
  * some only for loading
  * and some for both!
+ * @memberof assets
  */
 export interface LoaderParser<ASSET = any, META_DATA = any, CONFIG = Record<string, any>>
 {
+    /** Should be ExtensionType.LoaderParser */
     extension?: ExtensionMetadata;
 
     /** A config to adjust the parser */

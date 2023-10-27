@@ -1,7 +1,10 @@
 import type { ExtensionMetadata } from '../../extensions/Extensions';
 import type { ResolvedAsset } from '../types';
 
-/** A prefer order lets the resolver know which assets to prefer depending on the various parameters passed to it. */
+/**
+ * A prefer order lets the resolver know which assets to prefer depending on the various parameters passed to it.
+ * @memberof assets
+ */
 export interface PreferOrder
 {
     /** the importance order of the params */
@@ -11,7 +14,10 @@ export interface PreferOrder
     };
 }
 
-/** Format for url parser, will test a string and if it pass will then parse it, turning it into an ResolvedAsset */
+/**
+ * Format for url parser, will test a string and if it pass will then parse it, turning it into an ResolvedAsset
+ * @memberof assets
+ */
 export interface ResolveURLParser
 {
     extension?: ExtensionMetadata;
