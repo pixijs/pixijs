@@ -35,7 +35,7 @@ function toArrayBuffer(buf: Buffer): ArrayBuffer
 export async function renderTest(
     id: string,
     createFunction: (scene: Container, renderer: Renderer) => Promise<void>,
-    rendererType: 'canvas' | 'webgl' | 'webgpu',
+    rendererType: 'webgl' | 'webgpu',
     options?: Partial<RendererOptions>,
 ): Promise<number>
 {
