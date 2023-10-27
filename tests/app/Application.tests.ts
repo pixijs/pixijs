@@ -161,6 +161,7 @@ describe('Application', () =>
             });
 
             // app.renderer.on('resize', spy);
+            app.renderer.view.texture.source.on('resize', spy);
             app.queueResize();
             app.destroy();
 
@@ -178,7 +179,7 @@ describe('Application', () =>
                 resizeTo: div,
             });
 
-            // app.renderer.screen.on('resize', spy);
+            app.renderer.view.texture.source.on('resize', spy);
             app.queueResize();
             app.resize();
             app.destroy();
