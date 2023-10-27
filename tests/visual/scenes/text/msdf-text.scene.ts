@@ -6,7 +6,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render msdf-text correctly',
-    only: true,
     create: async (scene: Container) =>
     {
         await Assets.load('fonts/msdf/comicmsdf.fnt');
