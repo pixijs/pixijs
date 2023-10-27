@@ -24,7 +24,7 @@ import type { BindResource } from './BindResource';
  *
  * This bind group class will also watch for changes in its resources ensuring that the changes
  * are reflected in the WebGPU BindGroup.
- * @class
+ * @memberof rendering
  */
 export class BindGroup
 {
@@ -53,7 +53,7 @@ export class BindGroup
             this.setResource(resource, index++);
         }
 
-        this.updateKey();
+        this._updateKey();
     }
 
     /**
@@ -62,7 +62,7 @@ export class BindGroup
      * @internal
      * @ignore
      */
-    public updateKey(): void
+    public _updateKey(): void
     {
         if (!this._dirty) return;
 
@@ -150,6 +150,6 @@ export class BindGroup
     protected onResourceChange()
     {
         this._dirty = true;
-        this.updateKey();
+        this._updateKey();
     }
 }

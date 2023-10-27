@@ -40,7 +40,7 @@ export class BindGroupSystem implements System
 
     public getBindGroup(bindGroup: BindGroup, program: GpuProgram, groupIndex: number): GPUBindGroup
     {
-        bindGroup.updateKey();
+        bindGroup._updateKey();
 
         const gpuBindGroup = this._hash[bindGroup._key] || this._createBindGroup(bindGroup, program, groupIndex);
 

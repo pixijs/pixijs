@@ -7,4 +7,8 @@ import { CanvasSource } from './renderers/shared/texture/sources/CanvasSource';
 import { ImageSource } from './renderers/shared/texture/sources/ImageSource';
 import { VideoSource } from './renderers/shared/texture/sources/VideoSource';
 
+/**
+ * @namespace rendering
+ */
+
 extensions.add(AlphaMask, ColorMask, StencilMask, VideoSource, ImageSource, CanvasSource, BufferImageSource);

@@ -20,7 +20,6 @@ const topologyToGlMap = {
 };
 
 /** System plugin to the renderer to manage geometry. */
-
 export class GlGeometrySystem implements System
 {
     /** @ignore */
@@ -185,7 +184,7 @@ export class GlGeometrySystem implements System
         // const CONTEXT_UID = this.CONTEXT_UID;
         const bufferSystem = this._renderer.buffer;
 
-        this._renderer.shader.getProgramData(program);
+        this._renderer.shader._getProgramData(program);
 
         this.checkCompatibility(geometry, program);
 

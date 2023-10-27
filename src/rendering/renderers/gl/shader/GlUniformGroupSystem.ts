@@ -9,7 +9,10 @@ import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
 import type { GlProgram } from './GlProgram';
 
-/** System plugin to the renderer to manage shaders. */
+/**
+ * System plugin to the renderer to manage shaders.
+ * @memberof rendering
+ */
 export class GlUniformGroupSystem implements System
 {
     /** @ignore */
@@ -25,8 +28,6 @@ export class GlUniformGroupSystem implements System
      * @member {WebGLRenderingContext}
      */
     protected gl: GlRenderingContext;
-
-    public destroyed = false;
 
     /** Cache to holds the generated functions. Stored against UniformObjects unique signature. */
     private _cache: Record<string, UniformsSyncCallback> = {};
@@ -74,7 +75,7 @@ export class GlUniformGroupSystem implements System
      */
     public updateUniformGroup(group: UniformGroup, program: GlProgram, syncData: {textureCount: number}): void
     {
-        const programData = this._renderer.shader.getProgramData(program);
+        const programData = this._renderer.shader._getProgramData(program);
 
         if (!group.isStatic || group._dirtyId !== programData.uniformDirtyGroups[group.uid])
         {
@@ -145,8 +146,6 @@ export class GlUniformGroupSystem implements System
     public destroy(): void
     {
         this._renderer = null;
-        // TODO implement destroy method for ShaderSystem
-        this.destroyed = true;
         this._cache = null;
     }
 }
