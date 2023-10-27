@@ -5,7 +5,7 @@ import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
-    it: 'should render alpha from a Color',
+    it: 'should render no-premultiply-alpha',
     create: async (scene: Container) =>
     {
         const circleTexture = await Assets.load({
