@@ -22,15 +22,32 @@ const validFontMIMEs = [
     'font/woff2',
 ];
 
-/** Loader plugin for handling web fonts */
+/**
+ * Data for loading a font
+ * @memberof assets
+ */
 export type LoadFontData = {
+    /** Font family name */
     family: string;
+    /** A set of optional descriptors passed as an object. It can contain any of the descriptors available for @font-face: */
     display: string;
+    /**
+     * The featureSettings property of the FontFace interface retrieves or sets infrequently used
+     * font features that are not available from a font's variant properties.
+     */
     featureSettings: string;
+    /** The stretch property of the FontFace interface retrieves or sets how the font stretches. */
     stretch: string;
+    /** The style property of the FontFace interface retrieves or sets the font's style. */
     style: string;
+    /**
+     * The unicodeRange property of the FontFace interface retrieves or sets the range of
+     * unicode code points encompassing the font.
+     */
     unicodeRange: string;
+    /** The variant property of the FontFace interface programmatically retrieves or sets font variant values. */
     variant: string;
+    /** The weight property of the FontFace interface retrieves or sets the weight of the font. */
     weights: string[];
 };
 
@@ -44,6 +61,7 @@ const CSS_IDENT_TOKEN_REGEX = /^(--|-?[A-Z_])[0-9A-Z_-]*$/i;
  * Return font face name from a file name
  * Ex.: 'fonts/titan-one.woff' turns into 'Titan One'
  * @param url - File url
+ * @memberof assets
  */
 export function getFontFamilyName(url: string): string
 {
@@ -96,7 +114,23 @@ function encodeURIWhenNeeded(uri: string)
     return encodeURI(uri);
 }
 
-/** Web font loader plugin */
+/**
+ * A loader plugin for handling web fonts
+ *
+ * This will be added automatically if `pixi.js/assets` is imported
+ * @example
+ * import { Assets } from 'pixi.js';
+ *
+ * Assets.load({
+ *   alias: 'font',
+ *   src: 'fonts/titan-one.woff',
+ *   data: {
+ *     family: 'Titan One',
+ *     weights: ['normal', 'bold'],
+ *   }
+ * })
+ * @memberof assets
+ */
 export const loadWebFont = {
     extension: {
         type: ExtensionType.LoadParser,

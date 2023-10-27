@@ -3,6 +3,12 @@ import { testVideoFormat } from '../utils/testVideoFormat';
 
 import type { FormatDetectionParser } from '../types';
 
+/**
+ * Detects if the browser supports the WebM video format.
+ *
+ * This will be added automatically if `pixi.js/assets` is imported
+ * @memberof assets
+ */
 export const detectWebm = {
     extension: {
         type: ExtensionType.DetectionParser,

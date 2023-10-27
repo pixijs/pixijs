@@ -9,7 +9,12 @@ import type { LoaderParser } from './LoaderParser';
 const validJSONExtension = '.json';
 const validJSONMIME = 'application/json';
 
-/** simple loader plugin for loading json data */
+/**
+ * A simple loader plugin for loading json data
+ *
+ * This will be added automatically if `pixi.js/assets` is imported
+ * @memberof assets
+ */
 export const loadJson = {
     extension: {
         type: ExtensionType.LoadParser,

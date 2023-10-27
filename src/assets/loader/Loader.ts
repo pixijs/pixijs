@@ -15,6 +15,7 @@ import type { PromiseAndParser } from './types';
  *
  * It is not intended that this class is created by developers - its part of the Asset class
  * This is the second major system of PixiJS' main Assets class
+ * @memberof assets
  */
 export class Loader
 {
@@ -23,7 +24,10 @@ export class Loader
 
     private _parsersValidated = false;
 
-    /** All loader parsers registered */
+    /**
+     * All loader parsers registered
+     * @type {assets.LoaderParser[]}
+     */
     public parsers = new Proxy(this._parsers, {
         set: (target, key, value) =>
         {

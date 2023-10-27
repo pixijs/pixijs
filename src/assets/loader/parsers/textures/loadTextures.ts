@@ -23,8 +23,9 @@ const validImageMIMEs = [
 ];
 
 /**
- * Configuration for the `loadTextures` loader plugin.
- * @see loadTextures
+ * Configuration for the [loadTextures]{@link assets.loadTextures} plugin.
+ * @see assets.loadTextures
+ * @memberof assets
  */
 export interface LoadTextureConfig
 {
@@ -54,6 +55,7 @@ export interface LoadTextureConfig
  * This function is designed to be used by a worker.
  * Part of WorkerManager!
  * @param url - The image to load an image bitmap for
+ * @ignore
  */
 export async function loadImageBitmap(url: string): Promise<ImageBitmap>
 {
@@ -72,12 +74,13 @@ export async function loadImageBitmap(url: string): Promise<ImageBitmap>
 }
 
 /**
- * Loads our textures!
+ * A simple plugin to load our textures!
  * this makes use of imageBitmaps where available.
  * We load the ImageBitmap on a different thread using the WorkerManager
  * We can then use the ImageBitmap as a source for a Pixi Texture
  *
  * You can customize the behavior of this loader by setting the `config` property.
+ * Which can be found [here]{@link assets.LoadTextureConfig}
  * ```js
  * // Set the config
  * import { loadTextures } from '@pixi/assets';
@@ -90,6 +93,9 @@ export async function loadImageBitmap(url: string): Promise<ImageBitmap>
  *    crossOrigin: 'anonymous',
  * };
  * ```
+ *
+ * This will be added automatically if `pixi.js/assets` is imported
+ * @memberof assets
  */
 export const loadTextures = {
 

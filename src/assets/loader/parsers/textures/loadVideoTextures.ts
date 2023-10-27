@@ -20,6 +20,7 @@ const validVideoMIMEs = validVideoExtensions.map((ext) => `video/${ext.substring
  * @param element - Element to apply crossOrigin
  * @param url - URL to check
  * @param crossorigin - Cross origin value to use
+ * @memberof assets
  */
 export function crossOrigin(element: HTMLImageElement | HTMLVideoElement, url: string, crossorigin?: boolean | string): void
 {
@@ -39,9 +40,10 @@ export function crossOrigin(element: HTMLImageElement | HTMLVideoElement, url: s
  * function does nothing.
  * Nipped from the resource loader!
  * @ignore
- * @param {string} url - The url to test.
+ * @param url - The url to test.
  * @param {object} [loc=window.location] - The location object to test against.
- * @returns {string} The crossOrigin value to use (or empty string for none).
+ * @returns The crossOrigin value to use (or empty string for none).
+ * @memberof assets
  */
 export function determineCrossOrigin(url: string, loc: Location = globalThis.location): string
 {
@@ -66,7 +68,9 @@ export function determineCrossOrigin(url: string, loc: Location = globalThis.loc
 }
 
 /**
- * Loads our video textures!
+ * A simple plugin to video textures
+ *
+ * This will be added automatically if `pixi.js/assets` is imported
  *
  * You can pass VideoSource options to the loader via the .data property of the asset descriptor
  * when using Asset.load().
@@ -80,8 +84,8 @@ export function determineCrossOrigin(url: string, loc: Location = globalThis.loc
  *     },
  * });
  * ```
+ * @memberof assets
  */
-
 export const loadVideoTextures = {
 
     name: 'loadVideo',

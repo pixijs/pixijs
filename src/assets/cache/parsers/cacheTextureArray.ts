@@ -3,6 +3,12 @@ import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 
 import type { CacheParser } from '../CacheParser';
 
+/**
+ * Returns an object of textures from an array of textures to be cached
+ *
+ * This will be added automatically if `pixi.js/assets` is imported
+ * @memberof assets
+ */
 export const cacheTextureArray: CacheParser<Texture[]> = {
     extension: ExtensionType.CacheParser,
 

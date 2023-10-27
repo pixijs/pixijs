@@ -5,19 +5,31 @@ import type { Renderer } from '../rendering/renderers/types';
 
 type ResizeableRenderer = Pick<Renderer, 'resize'>;
 
+/**
+ * Options for the resize plugin
+ * @memberof app
+ * @property {Window|HTMLElement} [resizeTo=window] - Element to automatically resize stage to.
+ */
 export interface ResizePluginOptions
 {
     /**
      * Element to automatically resize stage to.
-     * @memberof ApplicationOptions
+     * @memberof app.ApplicationOptions
      */
     resizeTo?: Window | HTMLElement;
 }
 
 /**
- * Middleware for for Application's resize functionality
- * @private
- * @class
+ * Middleware for for Application's resize functionality.
+ *
+ * \- Adds [resizeTo]{@link app.Application#resizeTo}.
+ * <br>- Adds [resize]{@link app.Application#resize}.
+ * <br>- Adds [queueResize]{@link app.Application#queueResize}.
+ * <br>- Adds [cancelResize]{@link app.Application#cancelResize}.
+ * @example
+ * import { extensions, ResizePlugin } from 'pixi.js';
+ * extensions.add(ResizePlugin);
+ * @memberof app
  */
 export class ResizePlugin
 {
@@ -47,7 +59,7 @@ export class ResizePlugin
              * renderer's view element to match width and height.
              * @member {Window|HTMLElement}
              * @name resizeTo
-             * @memberof Application#
+             * @memberof app.Application#
              */
             {
                 set(dom: Window | HTMLElement)
@@ -69,7 +81,7 @@ export class ResizePlugin
         /**
          * Resize is throttled, so it's safe to call this multiple times per frame and it'll
          * only be called once.
-         * @memberof Application#
+         * @memberof app.Application#
          * @method queueResize
          * @private
          */
@@ -88,7 +100,7 @@ export class ResizePlugin
 
         /**
          * Cancel the resize queue.
-         * @memberof Application#
+         * @memberof app.Application#
          * @method cancelResize
          * @private
          */
@@ -105,7 +117,7 @@ export class ResizePlugin
          * Execute an immediate resize on the renderer, this is not
          * throttled and can be expensive to call many times in a row.
          * Will resize only if `resizeTo` property is set.
-         * @memberof Application#
+         * @memberof app.Application#
          * @method resize
          */
         this.resize = (): void =>

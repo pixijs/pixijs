@@ -3,6 +3,12 @@ import { testImageFormat } from '../utils/testImageFormat';
 
 import type { FormatDetectionParser } from '../types';
 
+/**
+ * Detects if the browser supports the AVIF image format.
+ *
+ * This will be added automatically if `pixi.js/assets` is imported
+ * @memberof assets
+ */
 export const detectAvif: FormatDetectionParser = {
     extension: {
         type: ExtensionType.DetectionParser,
