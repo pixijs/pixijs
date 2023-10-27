@@ -9,7 +9,12 @@ import type { LoaderParser } from './LoaderParser';
 const validTXTExtension = '.txt';
 const validTXTMIME = 'text/plain';
 
-/** Simple loader plugin for loading text data */
+/**
+ * A simple loader plugin for loading text data
+ *
+ * This will be added automatically if `pixi.js/assets` is imported
+ * @memberof assets
+ */
 export const loadTxt = {
 
     name: 'loadTxt',

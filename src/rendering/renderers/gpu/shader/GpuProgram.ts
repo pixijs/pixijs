@@ -8,12 +8,19 @@ import type { StructsAndGroups } from './extractStructAndGroups';
 /**
  * a WebGPU descriptions of how the program is layed out
  * @see https://gpuweb.github.io/gpuweb/#gpupipelinelayout
+ * @memberof rendering
  */
 export type ProgramPipelineLayoutDescription = GPUBindGroupLayoutEntry[][];
-/** a map the maps names of uniforms to group indexes  */
+/**
+ * a map the maps names of uniforms to group indexes
+ * @memberof rendering
+ */
 export type ProgramLayout = Record<string, number>[];
 
-/** the program source */
+/**
+ * the program source
+ * @memberof rendering
+ */
 export interface ProgramSource
 {
     /** The wgsl source code of the shader. */
@@ -22,7 +29,10 @@ export interface ProgramSource
     entryPoint?: string;
 }
 
-/** The options for the gpu program */
+/**
+ * The options for the gpu program
+ * @memberof rendering
+ */
 export interface GpuProgramOptions
 {
     /**
@@ -38,13 +48,6 @@ export interface GpuProgramOptions
     layout?: ProgramLayout;
     /** The gpu layout of the program. If not provided, it will be generated from the shader sources. */
     gpuLayout?: ProgramPipelineLayoutDescription;
-}
-
-// TODO incorporate later?
-export interface SimpleShaderOptions
-{
-    fragment?: string;
-    vertex?: string;
 }
 
 const programCache: Record<string, GpuProgram> = Object.create(null);
@@ -82,15 +85,19 @@ const programCache: Record<string, GpuProgram> = Object.create(null);
  * While WebGL allows extraction of program information directly from its compiled state,
  * WebGPU does not offer such a capability. Therefore, in the context of WebGPU, we're required
  * to manually extract the program layout information from the source code itself.
- * @class
+ * @memberof rendering
  */
 export class GpuProgram
 {
+    /** The fragment glsl shader source. */
     public readonly fragment?: ProgramSource;
+    /** The vertex glsl shader source */
     public readonly vertex?: ProgramSource;
 
+    /** @todo */
     public readonly layout: ProgramLayout;
 
+    /** @todo */
     public readonly gpuLayout: ProgramPipelineLayoutDescription;
 
     /** @internal */
@@ -103,6 +110,10 @@ export class GpuProgram
 
     /** the structs and groups extracted from the shader sources */
     public readonly structsAndGroups: StructsAndGroups;
+    /**
+     * the name of the program, this is added to the label of the GPU Program created under the hood.
+     * Makes it much easier to debug!
+     */
     public readonly name: string;
 
     /**

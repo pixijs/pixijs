@@ -182,7 +182,7 @@ const messageHandlers = {
 self.onmessage = (async (messageEvent) =>
 {
     const message = messageEvent.data;
-    const response = await messageHandlers[message.type as 'load' | 'init'](message as any);
+    const response = await messageHandlers[message.type as 'load' | 'init']?.(message as any);
 
     if (response)
     {

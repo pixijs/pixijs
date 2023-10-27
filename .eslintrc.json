@@ -70,7 +70,9 @@
             "warn",
             {
                 "definedTypes": [
-                    "PIXI",
+                    "assets",
+                    "app",
+                    "accessibility",
                     "AddEventListenerOptions",
                     "EventListenerOptions",
                     "EventListenerOrEventListenerObject",

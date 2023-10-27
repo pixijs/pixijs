@@ -17,7 +17,7 @@
 
 import { Texture } from '../../../shared/texture/Texture';
 
-export interface IUniformParser
+interface IUniformParser
 {
     test(data: unknown, uniform: any): boolean;
     code(name: string, uniform: any): string;
@@ -151,7 +151,7 @@ export const uniformParsers: IUniformParser[] = [
                     cv[0] = v.red;
                     cv[1] = v.green;
                     cv[2] = v.blue;
-    
+
                     gl.uniform3f(ud["${name}"].location, v.red, v.green, v.blue)
                 }`,
     },

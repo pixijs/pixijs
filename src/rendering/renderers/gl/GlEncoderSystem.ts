@@ -52,7 +52,7 @@ export class GlEncoderSystem implements System
 
         renderer.shader.bind(shader, skipSync);
 
-        renderer.geometry.bind(geometry, renderer.shader.activeProgram);
+        renderer.geometry.bind(geometry, renderer.shader._activeProgram);
 
         if (state)
         {

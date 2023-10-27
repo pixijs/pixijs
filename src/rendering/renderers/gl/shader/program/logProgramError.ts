@@ -57,6 +57,7 @@ function logPrettyShaderError(gl: WebGLRenderingContext, shader: WebGLShader): v
  * @param program - the WebGL program to display errors for
  * @param vertexShader  - the fragment WebGL shader program
  * @param fragmentShader - the vertex WebGL shader program
+ * @private
  */
 export function logProgramError(
     gl: WebGLRenderingContext,

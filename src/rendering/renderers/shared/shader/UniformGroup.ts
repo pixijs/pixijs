@@ -12,6 +12,10 @@ type ExtractUniformObject<T = Record<string, UniformData>> = {
     [K in keyof T]: FLOPS<T[K]>;
 };
 
+/**
+ * Uniform group options
+ * @memberof rendering
+ */
 export type UniformGroupOptions = {
     /**
      * if true the UniformGroup is handled as an Uniform buffer object.
@@ -75,12 +79,15 @@ export type UniformGroupOptions = {
  *
  *
  *  ```
- * @class
+ * @memberof rendering
  */
 export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any> implements BindResource
 {
+    /** The default options used by the uniform group. */
     public static defaultOptions: UniformGroupOptions = {
+        /** if true the UniformGroup is handled as an Uniform buffer object. */
         ubo: false,
+        /** if true, then you are responsible for when the data is uploaded to the GPU by calling `update()` */
         isStatic: false,
     };
 
@@ -121,7 +128,10 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
      */
     public readonly _signature: string;
 
-    /** @internal */
+    /**
+     * @internal
+     * @ignore
+     */
     public _syncFunction?: (uniforms: UNIFORMS, data: Float32Array, offset: number) => void;
 
     /**
