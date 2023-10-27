@@ -5,6 +5,17 @@ import type { AnyColor, HslaColor, HslColor, HsvaColor, HsvColor, RgbaColor, Rgb
 
 extend([namesPlugin]);
 
+/**
+ * Color utilities.
+ * @namespace color
+ */
+
+/**
+ * RGBA color array.
+ *
+ * `[number, number, number, number]`
+ * @memberof color
+ */
 export type RgbaArray = [number, number, number, number];
 
 /**
@@ -41,6 +52,7 @@ export type RgbaArray = [number, number, number, number];
  *   `{ h: 0, s: 100, v: 100 }`, `{ h: 0, s: 100, v: 100, a: 0.5 }`, etc.
  * - {@link Color} objects.
  * @since 7.2.0
+ * @memberof color
  */
 export type ColorSource =
     | string
@@ -82,6 +94,7 @@ type ColorSourceTypedArray = Float32Array | Uint8Array | Uint8ClampedArray;
  * new Color('hsl(0, 100%, 50%, 50%)').toArray(); // [1, 0, 0, 0.5]
  * new Color({ h: 0, s: 100, v: 100, a: 0.5 }).toArray(); // [1, 0, 0, 0.5]
  * @since 7.2.0
+ * @memberof color
  */
 export class Color
 {

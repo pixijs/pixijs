@@ -1,5 +1,9 @@
 import { ExtensionType } from '../../extensions/Extensions';
 
+/**
+ * Extension for the webworker environment.
+ * @memberof environment
+ */
 export const webworkerExt = {
     extension: {
         type: ExtensionType.Environment,
