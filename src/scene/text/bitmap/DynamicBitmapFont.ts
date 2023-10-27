@@ -12,7 +12,7 @@ import { resolveCharacters } from './utils/resolveCharacters';
 
 import type { ICanvasRenderingContext2D } from '../../../environment/canvas/ICanvasRenderingContext2D';
 import type { CanvasAndContext } from '../../../rendering/renderers/shared/texture/CanvasPool';
-import type { Writeable } from '../../../utils/types';
+import type { FontMetrics } from '../canvas/CanvasTextMetrics';
 import type { TextStyle } from '../TextStyle';
 
 export interface DynamicBitmapFontOptions
@@ -23,8 +23,6 @@ export interface DynamicBitmapFontOptions
     resolution?: number
     padding?: number
 }
-
-type WriteableDynamicBitmapFont = Writeable<DynamicBitmapFont, keyof DynamicBitmapFont>;
 
 export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
 {
@@ -66,10 +64,9 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         this._padding = dynamicOptions.padding ?? 4;
 
         const font = fontStringFromTextStyle(style);
-        const writable = this as WriteableDynamicBitmapFont;
 
-        writable.fontMetrics = CanvasTextMetrics.measureFont(font);
-        writable.lineHeight = style.lineHeight || this.fontMetrics.fontSize || style.fontSize;
+        (this.fontMetrics as FontMetrics) = CanvasTextMetrics.measureFont(font);
+        (this.lineHeight as number) = style.lineHeight || this.fontMetrics.fontSize || style.fontSize;
     }
 
     public ensureCharacters(chars: string): void
@@ -382,6 +379,6 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
             texture.destroy(true);
         }
 
-        (this as WriteableDynamicBitmapFont).pages = null;
+        (this.pages as null) = null;
     }
 }

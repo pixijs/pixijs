@@ -156,11 +156,11 @@ export class GpuProgram
     public destroy(): void
     {
         this._gpuLayout = null;
-        (this.gpuLayout as any) = null;
-        (this.layout as any) = null;
-        (this.structsAndGroups as any) = null;
-        (this.fragment as any) = null;
-        (this.vertex as any) = null;
+        (this.gpuLayout as null) = null;
+        (this.layout as null) = null;
+        (this.structsAndGroups as null) = null;
+        (this.fragment as null) = null;
+        (this.vertex as null) = null;
     }
 
     /**

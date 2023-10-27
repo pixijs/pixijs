@@ -757,11 +757,7 @@ export class CanvasTextMetrics
      * @param font - String representing the style of the font
      * @returns Font properties object
      */
-    public static measureFont(font: string): {
-        ascent: number;
-        descent: number;
-        fontSize: number;
-    }
+    public static measureFont(font: string): FontMetrics
     {
         // as this method is used for preparing assets, don't recalculate things if we don't need to
         if (CanvasTextMetrics._fonts[font])

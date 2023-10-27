@@ -286,7 +286,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
             .slice()
             .forEach((source) => this.onSourceDestroy(source));
 
-        (this.managedTextures as any) = null;
+        (this.managedTextures as null) = null;
 
         for (const k of Object.keys(this._bindGroupHash))
         {

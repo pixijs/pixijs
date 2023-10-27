@@ -169,8 +169,8 @@ export class GlProgram
     /** destroys the program */
     public destroy(): void
     {
-        (this.fragment as any) = null;
-        (this.vertex as any) = null;
+        (this.fragment as null) = null;
+        (this.vertex as null) = null;
 
         this._attributeData = null;
         this._uniformData = null;

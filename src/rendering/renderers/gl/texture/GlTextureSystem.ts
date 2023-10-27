@@ -387,9 +387,9 @@ export class GlTextureSystem implements System, CanvasGenerator
             .slice()
             .forEach((source) => this.onSourceDestroy(source));
 
-        (this.managedTextures as any) = null;
+        (this.managedTextures as null) = null;
 
-        (this._renderer as any) = null;
+        (this._renderer as null) = null;
     }
 }
 
