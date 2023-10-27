@@ -73,7 +73,7 @@ export class BufferResource extends EventEmitter<{
      * @internal
      * @ignore
      */
-    public readonly bufferResource = true;
+    public readonly _bufferResource = true;
 
     /**
      * Create a new Buffer Resource.

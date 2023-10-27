@@ -165,6 +165,7 @@ export class Buffer extends EventEmitter<{
         };
     }
 
+    /** @todo */
     get data()
     {
         return this._data;

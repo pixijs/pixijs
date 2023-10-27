@@ -4,7 +4,10 @@ import { ExtensionType } from '../../../../extensions/Extensions';
 import type { ColorSource } from '../../../../color/Color';
 import type { System } from '../system/System';
 
-/** Options for the background system. */
+/**
+ * Options for the background system.
+ * @memberof rendering
+ */
 export interface BackgroundSystemOptions
 {
     /**

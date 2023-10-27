@@ -132,7 +132,7 @@ export class GlShaderSystem
         const bufferSystem = this._renderer.buffer;
         const programData = this.getProgramData(this.activeProgram);
 
-        const isBufferResource = (uniformGroup as BufferResource).bufferResource;
+        const isBufferResource = (uniformGroup as BufferResource)._bufferResource;
 
         if (isBufferResource)
         {

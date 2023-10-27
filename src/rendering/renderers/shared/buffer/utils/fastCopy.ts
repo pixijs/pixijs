@@ -4,7 +4,7 @@
  * This means it can copy twice as fast!
  * @param sourceBuffer - the array buffer to copy from
  * @param destinationBuffer - the array buffer to copy to
- * @memberof rendering
+ * @private
  */
 export function fastCopy(sourceBuffer: ArrayBuffer, destinationBuffer: ArrayBuffer): void
 {

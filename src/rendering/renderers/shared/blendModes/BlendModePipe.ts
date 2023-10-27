@@ -11,7 +11,7 @@ import type { InstructionPipe } from '../instructions/RenderPipe';
 import type { Renderable } from '../Renderable';
 import type { BLEND_MODES } from '../state/const';
 
-export interface AdvancedBlendInstruction extends Instruction
+interface AdvancedBlendInstruction extends Instruction
 {
     type: 'blendMode',
     blendMode: BLEND_MODES,
