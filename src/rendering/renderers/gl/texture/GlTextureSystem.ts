@@ -116,7 +116,7 @@ export class GlTextureSystem implements System, CanvasGenerator
     {
         const gl = this._gl;
 
-        source.touched = this._renderer.textureGC.count;
+        source._touched = this._renderer.textureGC.count;
 
         if (this._boundTextures[location] !== source)
         {
@@ -290,7 +290,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         const glSampler = this._gl.createSampler();
 
-        this._glSamplers[style.resourceId] = glSampler;
+        this._glSamplers[style._resourceId] = glSampler;
 
         applyStyleParams(
             style,
@@ -301,12 +301,12 @@ export class GlTextureSystem implements System, CanvasGenerator
             glSampler
         );
 
-        return this._glSamplers[style.resourceId];
+        return this._glSamplers[style._resourceId];
     }
 
     private _getGlSampler(sampler: TextureStyle): WebGLSampler
     {
-        return this._glSamplers[sampler.resourceId] || this._initSampler(sampler);
+        return this._glSamplers[sampler._resourceId] || this._initSampler(sampler);
     }
 
     public getGlSource(source: TextureSource): GlTexture

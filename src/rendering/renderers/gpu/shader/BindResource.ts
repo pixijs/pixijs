@@ -6,13 +6,19 @@ import type { BindGroup } from './BindGroup';
  */
 export interface BindResource
 {
-    /** The type of resource this is */
-    resourceType: string;
+    /**
+     * The type of resource this is
+     * @ignore
+     */
+    _resourceType: string;
 
-    /** Unique id for this resource this can change and is used to link the gpu*/
-    resourceId: number;
+    /**
+     * Unique id for this resource this can change and is used to link the gpu
+     * @ignore
+     */
+    _resourceId: number;
 
-    touched: number;
+    _touched: number;
 
     /**
      * event dispatch whenever the underlying resource needs to change
@@ -20,6 +26,6 @@ export interface BindResource
      * This is important as it allows the renderer to know that it needs to rebind the resource
      */
     on?(event: 'change', listenerFunction: (resource: BindResource) => void, listener: BindGroup): void
+    /** @todo */
     off?(event: 'change', listenerFunction: (resource: BindResource) => void, listener: BindGroup): void
-
 }

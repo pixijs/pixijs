@@ -75,7 +75,7 @@ export class BindGroup
         for (const i in this.resources)
         {
             // TODO make this consistent...
-            keyParts[index++] = this.resources[i].resourceId;
+            keyParts[index++] = this.resources[i]._resourceId;
         }
 
         this._key = keyParts.join('|');
@@ -128,7 +128,7 @@ export class BindGroup
 
         for (const i in resources)
         {
-            resources[i].touched = tick;
+            resources[i]._touched = tick;
         }
     }
 

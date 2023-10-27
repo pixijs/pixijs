@@ -64,7 +64,7 @@ describe('Visual Tests', () =>
                 const res = await renderTest(
                     scene.data.id
                         || path.basename(scene.path).toLowerCase().replaceAll('.', '-'), scene.data.create,
-                    renderer as 'canvas' | 'webgl' | 'webgpu',
+                    renderer as 'webgl' | 'webgpu',
                     scene.data.options ?? {}
                 );
 

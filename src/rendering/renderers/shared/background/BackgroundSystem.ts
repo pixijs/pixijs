@@ -6,21 +6,33 @@ import type { System } from '../system/System';
 
 /**
  * Options for the background system.
- * @ignore
+ * @memberof rendering
  */
 export interface BackgroundSystemOptions
 {
-    /** The background color used to clear the canvas. See {@link ColorSource} for accepted color values. */
+    /**
+     * The background color used to clear the canvas. See {@link ColorSource} for accepted color values.
+     * @default 'black'
+     */
     backgroundColor: ColorSource;
-    /** Alias for {@link WebGLOptions.backgroundColor} */
+    /** Alias for backgroundColor */
     background?: ColorSource
-    /** Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque). */
+    /**
+     * Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
+     * @default 1
+     */
     backgroundAlpha: number;
-    /** Whether to clear the canvas before new render passes. */
+    /**
+     * Whether to clear the canvas before new render passes.
+     * @default true
+     */
     clearBeforeRender: boolean;
 }
 
-/** The background system manages the background color and alpha of the main view. */
+/**
+ * The background system manages the background color and alpha of the main view.
+ * @memberof rendering
+ */
 export class BackgroundSystem implements System
 {
     /** @ignore */
@@ -34,7 +46,10 @@ export class BackgroundSystem implements System
         priority: 0,
     } as const;
 
-    /** @ignore */
+    /**
+     * default options used by the system
+     * @ignore
+     */
     public static defaultOptions: BackgroundSystemOptions = {
         /**
          * {@link WebGLOptions.backgroundAlpha}
@@ -117,6 +132,11 @@ export class BackgroundSystem implements System
         return this._backgroundColorRgba;
     }
 
+    /**
+     * destroys the background system
+     * @internal
+     * @ignore
+     */
     public destroy(): void
     {
         // No cleanup required

@@ -169,14 +169,14 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
     private _initSampler(sampler: TextureStyle): GPUSampler
     {
-        this._gpuSamplers[sampler.resourceId] = this._gpu.device.createSampler(sampler);
+        this._gpuSamplers[sampler._resourceId] = this._gpu.device.createSampler(sampler);
 
-        return this._gpuSamplers[sampler.resourceId];
+        return this._gpuSamplers[sampler._resourceId];
     }
 
     public getGpuSampler(sampler: TextureStyle): GPUSampler
     {
-        return this._gpuSamplers[sampler.resourceId] || this._initSampler(sampler);
+        return this._gpuSamplers[sampler._resourceId] || this._initSampler(sampler);
     }
 
     public getGpuSource(source: TextureSource): GPUTexture

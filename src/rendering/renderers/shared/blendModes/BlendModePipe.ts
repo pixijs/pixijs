@@ -11,7 +11,7 @@ import type { InstructionPipe } from '../instructions/RenderPipe';
 import type { Renderable } from '../Renderable';
 import type { BLEND_MODES } from '../state/const';
 
-export interface AdvancedBlendInstruction extends Instruction
+interface AdvancedBlendInstruction extends Instruction
 {
     type: 'blendMode',
     blendMode: BLEND_MODES,
@@ -33,8 +33,21 @@ extensions.handle(ExtensionType.BlendMode, (value) =>
     delete BLEND_MODE_FILTERS[value.name as BLEND_MODES];
 });
 
+/**
+ * This Pipe handles the blend mode switching of the renderer.
+ * It will insert instructions into the {@link renderers.InstructionSet} to switch the blend mode according to the
+ * blend modes of the scene graph.
+ *
+ * This pipe is were wwe handle Advanced blend modes. Advanced blend modes essentially wrap the renderables
+ * in a filter that applies the blend mode.
+ *
+ * You only need to use this class if you are building your own render instruction set rather than letting PixiJS build
+ * the instruction set for you by traversing the scene graph
+ * @memberof rendering
+ */
 export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
 {
+    /** @ignore */
     public static extension = {
         type: [
             ExtensionType.WebGLPipes,
@@ -58,6 +71,12 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
         this._renderer = renderer;
     }
 
+    /**
+     * This ensures that a blendMode switch is added to the instruction set if the blend mode has changed.
+     * @param renderable - The renderable we are adding to the instruction set
+     * @param blendMode - The blend mode of the renderable
+     * @param instructionSet - The instruction set we are adding to
+     */
     public setBlendMode(renderable: Renderable, blendMode: BLEND_MODES, instructionSet: InstructionSet)
     {
         if (this._activeBlendMode === blendMode)
@@ -131,11 +150,21 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
         });
     }
 
+    /**
+     * called when the instruction build process is starting this will reset internally to the default blend mode
+     * @internal
+     */
     public buildStart()
     {
         this._isAdvanced = false;
     }
 
+    /**
+     * called when the instruction build process is finished, ensuring that if there is an advanced blend mode
+     * active, we add the final render instructions added to the instruction set
+     * @param instructionSet - The instruction set we are adding to
+     * @internal
+     */
     public buildEnd(instructionSet: InstructionSet)
     {
         if (this._isAdvanced)
@@ -144,6 +173,10 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
         }
     }
 
+    /**
+     * @internal
+     * @ignore
+     */
     public destroy()
     {
         this._renderer = null;
