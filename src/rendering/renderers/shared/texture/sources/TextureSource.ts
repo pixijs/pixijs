@@ -55,8 +55,8 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     public uid = uid('textureSource');
     public label = '';
 
-    public resourceType = 'textureSource';
-    public resourceId = uid('textureResource');
+    public _resourceType = 'textureSource';
+    public _resourceId = uid('textureResource');
 
     public uploadMethodId = 'unknown';
 
@@ -99,7 +99,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      * Used by automatic texture Garbage Collection, stores last GC tick when it was bound
      * @protected
      */
-    public touched = 0;
+    public _touched = 0;
 
     /**
      * Used by the batcher to build texture batches. faster to have the variable here!
@@ -210,7 +210,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
     public unload()
     {
-        this.resourceId++;
+        this._resourceId++;
         this.emit('change', this);
         this.emit('unload', this);
     }
@@ -269,7 +269,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
         this.emit('resize', this);
 
-        this.resourceId++;
+        this._resourceId++;
         this.emit('change', this);
     }
 

@@ -54,9 +54,9 @@ export class TextureStyle extends EventEmitter<{
     destroy: TextureStyle,
 }> implements BindResource
 {
-    public resourceType = 'textureSampler';
-    public touched = 0;
-    private _resourceId: number;
+    public _resourceType = 'textureSampler';
+    public _touched = 0;
+    private _sharedResourceId: number;
 
     // override to set styles globally
     public static readonly defaultOptions: TextureStyleOptions = {
@@ -173,16 +173,16 @@ export class TextureStyle extends EventEmitter<{
     }
 
     // TODO - move this to WebGL?
-    get resourceId(): number
+    get _resourceId(): number
     {
-        return this._resourceId || this._generateResourceId();
+        return this._sharedResourceId || this._generateResourceId();
     }
 
     public update()
     {
         // manage the resource..
         this.emit('change', this);
-        this._resourceId = null;
+        this._sharedResourceId = null;
     }
 
     private _generateResourceId(): number
@@ -190,7 +190,7 @@ export class TextureStyle extends EventEmitter<{
         // eslint-disable-next-line max-len
         const bigKey = `${this.addressModeU}-${this.addressModeV}-${this.addressModeW}-${this.magFilter}-${this.minFilter}-${this.mipmapFilter}-${this.lodMinClamp}-${this.lodMaxClamp}-${this.compare}-${this._maxAnisotropy}`;
 
-        this._resourceId = createIdFromString(bigKey, 'sampler');
+        this._sharedResourceId = createIdFromString(bigKey, 'sampler');
 
         return this._resourceId;
     }

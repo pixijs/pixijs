@@ -85,14 +85,14 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
     };
 
     /** used internally to know if a uniform group was used in the last render pass */
-    public touched = 0;
+    public _touched = 0;
 
     /** a unique id for this uniform group used through the renderer */
     public readonly uid = uid('uniform');
     /** a resource type, used to identify how to handle it when its in a bind group / shader resource */
-    public resourceType = 'uniformGroup';
+    public _resourceType = 'uniformGroup';
     /** the resource id used internally by the renderer to build bind group keys */
-    public resourceId = this.uid;
+    public _resourceId = this.uid;
     /** the structures of the uniform group */
     public uniformStructures: UNIFORMS;
     /** the uniforms as an easily accessible map of properties */

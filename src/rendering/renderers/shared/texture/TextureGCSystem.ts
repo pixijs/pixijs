@@ -117,9 +117,9 @@ export class TextureGCSystem implements System
             const texture = managedTextures[i];
 
             // Only supports non generated textures at the moment!
-            if (texture.resource && texture.touched > -1 && this.count - texture.touched > this.maxIdle)
+            if (texture.resource && texture._touched > -1 && this.count - texture._touched > this.maxIdle)
             {
-                texture.touched = -1;
+                texture._touched = -1;
                 texture.unload();
             }
         }

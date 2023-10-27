@@ -59,7 +59,7 @@ export class BindGroupSystem implements System
             let gpuResource: GPUSampler | GPUTextureView | GPUExternalTexture | GPUBufferBinding;
             // TODO make this dynamic..
 
-            if (resource.resourceType === 'uniformGroup')
+            if (resource._resourceType === 'uniformGroup')
             {
                 const uniformGroup = resource as UniformGroup;
 
@@ -73,7 +73,7 @@ export class BindGroupSystem implements System
                     size: buffer.descriptor.size,
                 };
             }
-            else if (resource.resourceType === 'buffer')
+            else if (resource._resourceType === 'buffer')
             {
                 const buffer = resource as Buffer;
 
@@ -83,7 +83,7 @@ export class BindGroupSystem implements System
                     size: buffer.descriptor.size,
                 };
             }
-            else if (resource.resourceType === 'bufferResource')
+            else if (resource._resourceType === 'bufferResource')
             {
                 const bufferResource = resource as BufferResource;
 
@@ -93,13 +93,13 @@ export class BindGroupSystem implements System
                     size: bufferResource.size,
                 };
             }
-            else if (resource.resourceType === 'textureSampler')
+            else if (resource._resourceType === 'textureSampler')
             {
                 const sampler = resource as TextureStyle;
 
                 gpuResource = this._renderer.texture.getGpuSampler(sampler);
             }
-            else if (resource.resourceType === 'textureSource')
+            else if (resource._resourceType === 'textureSource')
             {
                 const texture = resource as TextureSource;
 

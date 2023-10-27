@@ -28,11 +28,11 @@ describe('BindGroup', () =>
             size: 200
         });
 
-        const bufferResourceId = bufferResource.resourceId;
+        const bufferResourceId = bufferResource._resourceId;
 
         buffer.data = new Float32Array(200);
 
-        expect(bufferResourceId).not.toBe(bufferResource.resourceId);
+        expect(bufferResourceId).not.toBe(bufferResource._resourceId);
     });
 
     it('should not update resourceID if its the same size buffer', () =>
@@ -42,7 +42,7 @@ describe('BindGroup', () =>
             usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST,
         });
 
-        const bufferId = buffer.resourceId;
+        const bufferId = buffer._resourceId;
 
         const updateListener = jest.fn();
         const changeListener = jest.fn();
@@ -52,14 +52,14 @@ describe('BindGroup', () =>
 
         buffer.data = new Float32Array(100);
 
-        expect(bufferId).toBe(buffer.resourceId);
+        expect(bufferId).toBe(buffer._resourceId);
 
         expect(updateListener).toBeCalledTimes(1);
         expect(changeListener).toBeCalledTimes(0);
 
         buffer.data = new Float32Array(50);
 
-        expect(bufferId).not.toBe(buffer.resourceId);
+        expect(bufferId).not.toBe(buffer._resourceId);
 
         expect(updateListener).toBeCalledTimes(1);
         expect(changeListener).toBeCalledTimes(1);

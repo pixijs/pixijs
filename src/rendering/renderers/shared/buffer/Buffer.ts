@@ -98,21 +98,21 @@ export class Buffer extends EventEmitter<{
      * @internal
      * @ignore
      */
-    public readonly resourceType = 'buffer';
+    public readonly _resourceType = 'buffer';
 
     /**
      * the resource id used internally by the renderer to build bind group keys
      * @internal
      * @ignore
      */
-    public resourceId = uid('bufferResource');
+    public _resourceId = uid('bufferResource');
 
     /**
      * used internally to know if a uniform group was used in the last render pass
      * @internal
      * @ignore
      */
-    public touched = 0;
+    public _touched = 0;
 
     /**
      * a description of the buffer and how it should be set up on the GPU
@@ -181,7 +181,7 @@ export class Buffer extends EventEmitter<{
             if (oldData.length !== value.length)
             {
                 this.descriptor.size = value.byteLength;
-                this.resourceId = uid('bufferResource');
+                this._resourceId = uid('bufferResource');
 
                 this.emit('change', this);
             }

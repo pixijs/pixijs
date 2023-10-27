@@ -46,21 +46,21 @@ export class BufferResource extends EventEmitter<{
      * @internal
      * @ignore
      */
-    public readonly resourceType = 'bufferResource';
+    public readonly _resourceType = 'bufferResource';
 
     /**
      * used internally to know if a uniform group was used in the last render pass
      * @internal
      * @ignore
      */
-    public touched = 0;
+    public _touched = 0;
 
     /**
      * the resource id used internally by the renderer to build bind group keys
      * @internal
      * @ignore
      */
-    public resourceId = uid('buffer');
+    public _resourceId = uid('buffer');
 
     /** the underlying buffer that this resource is using */
     public buffer: Buffer;
@@ -97,7 +97,7 @@ export class BufferResource extends EventEmitter<{
 
     protected onBufferChange(): void
     {
-        this.resourceId = uid('buffer');
+        this._resourceId = uid('buffer');
 
         this.emit('change', this);
     }

@@ -245,7 +245,7 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
                 const name = i;
                 let value = resources[i];
 
-                if (!(value.source) && !(value as BindResource).resourceType)
+                if (!(value.source) && !(value as BindResource)._resourceType)
                 {
                     value = new UniformGroup(value);
                 }

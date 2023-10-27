@@ -4,12 +4,12 @@ import type { BindGroup } from './BindGroup';
 export interface BindResource
 {
     /** The type of resource this is */
-    resourceType: string;
+    _resourceType: string;
 
     /** Unique id for this resource this can change and is used to link the gpu*/
-    resourceId: number;
+    _resourceId: number;
 
-    touched: number;
+    _touched: number;
 
     /**
      * event dispatch whenever the underlying resource needs to change
