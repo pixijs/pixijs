@@ -2,7 +2,6 @@ import EventEmitter from 'eventemitter3';
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import type { Writeable } from '../../../utils/types';
 import type { FontMetrics } from '../canvas/CanvasTextMetrics';
 
 export interface CharData
@@ -71,8 +70,6 @@ interface BitmapFontEvents<Type>
 {
     destroy: [Type];
 }
-
-type WriteableAbstractBitmapFont = Writeable<AbstractBitmapFont<any>, keyof AbstractBitmapFont<any>>;
 
 export abstract class AbstractBitmapFont<FontType>
     extends EventEmitter<BitmapFontEvents<FontType>>
@@ -161,6 +158,6 @@ export abstract class AbstractBitmapFont<FontType>
             this.chars[i].texture.destroy();
         }
 
-        (this as WriteableAbstractBitmapFont).chars = null;
+        (this.chars as null) = null;
     }
 }

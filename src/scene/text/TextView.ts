@@ -70,7 +70,7 @@ export class TextView implements View
 
         this._renderMode = renderMode;
 
-        this._style = ensureTextStyle(renderMode, options.style);
+        this.style = ensureTextStyle(renderMode, options.style);
 
         this.renderPipeId = map[renderMode];
 

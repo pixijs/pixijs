@@ -1,7 +1,6 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { fastCopy } from '../../shared/buffer/utils/fastCopy';
 
-import type { Writeable } from '../../../../utils/types';
 import type { Buffer } from '../../shared/buffer/Buffer';
 import type { System } from '../../shared/system/System';
 import type { GPU } from '../GpuDeviceSystem';
@@ -113,10 +112,6 @@ export class BufferSystem implements System
         }
 
         this._gpuBuffers = null;
-
-        const writeable = this as Writeable<typeof this, '_renderer'>;
-
-        writeable._renderer = null;
     }
 }
 

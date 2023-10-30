@@ -5,7 +5,6 @@ import { BindGroup } from '../../gpu/shader/BindGroup';
 import { UniformGroup } from '../shader/UniformGroup';
 
 import type { PointData } from '../../../../maths/point/PointData';
-import type { Writeable } from '../../../../utils/types';
 import type { GlRenderTargetSystem } from '../../gl/GlRenderTargetSystem';
 import type { GpuRenderTargetSystem } from '../../gpu/renderTarget/GpuRenderTargetSystem';
 import type { WebGPURenderer } from '../../gpu/WebGPURenderer';
@@ -205,8 +204,6 @@ export class GlobalUniformSystem implements System
 
     public destroy()
     {
-        const writeable = this as Writeable<typeof this, '_renderer'>;
-
-        writeable._renderer = null;
+        (this._renderer as null) = null;
     }
 }
