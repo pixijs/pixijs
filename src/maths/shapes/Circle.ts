@@ -111,7 +111,7 @@ export class Circle implements ShapePrimitive
     // #if _DEBUG
     public toString(): string
     {
-        return `[@pixi/math:Circle x=${this.x} y=${this.y} radius=${this.radius}]`;
+        return `[pixi.js/math:Circle x=${this.x} y=${this.y} radius=${this.radius}]`;
     }
     // #endif
 }

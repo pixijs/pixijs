@@ -38,8 +38,8 @@ const tempLocalMapping = new Point();
  * container can be detached from the scene and glued using a custom event boundary.
  *
  * ```ts
- * import { Container } from '@pixi/display';
- * import { EventBoundary } from '@pixi/events';
+ * import { Container } from 'pixi.js';
+ * import { EventBoundary } from 'pixi.js';
  * import { SpatialHash } from 'pixi-spatial-hash';
  *
  * class HashedHitTestingEventBoundary
@@ -75,6 +75,7 @@ const tempLocalMapping = new Point();
  *     }
  * }
  * ```
+ * @memberof events
  */
 export class EventBoundary
 {
@@ -199,8 +200,8 @@ export class EventBoundary
 
     /**
      * Dispatches the given event
-     * @param e
-     * @param type
+     * @param e - The event to dispatch.
+     * @param type - The type of event to dispatch. Defaults to `e.type`.
      */
     public dispatchEvent(e: FederatedEvent, type?: string): void
     {
@@ -213,7 +214,7 @@ export class EventBoundary
 
     /**
      * Maps the given upstream event through the event boundary and propagates it downstream.
-     * @param e
+     * @param e - The event to map.
      */
     public mapEvent(e: FederatedEvent): void
     {
@@ -243,8 +244,8 @@ export class EventBoundary
      * Finds the Container that is the target of a event at the given coordinates.
      *
      * The passed (x,y) coordinates are in the world space above this event boundary.
-     * @param x
-     * @param y
+     * @param x - The x coordinate of the event.
+     * @param y - The y coordinate of the event.
      */
     public hitTest(
         x: number,
@@ -270,7 +271,7 @@ export class EventBoundary
      * Propagate the passed event from from {@link EventBoundary.rootTarget this.rootTarget} to its
      * target {@code e.target}.
      * @param e - The event to propagate.
-     * @param type
+     * @param type - The type of event to propagate. Defaults to `e.type`.
      */
     public propagate(e: FederatedEvent, type?: string): void
     {
@@ -346,7 +347,7 @@ export class EventBoundary
     /**
      * Finds the propagation path from {@link EventBoundary.rootTarget rootTarget} to the passed
      * {@code target}. The last element in the path is {@code target}.
-     * @param target
+     * @param target - The target to find the propagation path to.
      */
     public propagationPath(target: FederatedEventTarget): FederatedEventTarget[]
     {
@@ -573,8 +574,8 @@ export class EventBoundary
      *
      * {@link EventBoundary}'s implementation uses the {@link Container.hitArea hitArea}
      * and {@link Container._mask} for pruning.
-     * @param container
-     * @param location
+     * @param container - The container to prune.
+     * @param location - The location to test for overlap.
      */
     protected hitPruneFn(container: Container, location: Point): boolean
     {
@@ -611,8 +612,8 @@ export class EventBoundary
 
     /**
      * Checks whether the container passes hit testing for the given location.
-     * @param container
-     * @param location
+     * @param container - The container to test.
+     * @param location - The location to test for overlap.
      * @returns - Whether `container` passes hit testing for `location`.
      */
     protected hitTestFn(container: Container, location: Point): boolean
@@ -641,7 +642,7 @@ export class EventBoundary
      * If the `currentTarget` contains the property `on<type>`, then it is called here,
      * simulating the behavior from version 6.x and prior.
      * @param e - The event passed to the target.
-     * @param type
+     * @param type - The type of event to notify. Defaults to `e.type`.
      */
     protected notifyTarget(e: FederatedEvent, type?: string): void
     {
@@ -666,7 +667,7 @@ export class EventBoundary
      * Maps the upstream `pointerdown` events to a downstream `pointerdown` event.
      *
      * `touchstart`, `rightdown`, `mousedown` events are also dispatched for specific pointer types.
-     * @param from
+     * @param from - The upstream `pointerdown` event.
      */
     protected mapPointerDown(from: FederatedEvent): void
     {
@@ -1272,8 +1273,8 @@ export class EventBoundary
      * + deltaX
      * + deltaY
      * + deltaZ
-     * @param from
-     * @param to
+     * @param from - The event to copy data from.
+     * @param to - The event to copy data into.
      */
     protected copyWheelData(from: FederatedWheelEvent, to: FederatedWheelEvent): void
     {
@@ -1296,8 +1297,8 @@ export class EventBoundary
      * + tangentialPressure
      * + tiltX
      * + tiltY
-     * @param from
-     * @param to
+     * @param from - The event to copy data from.
+     * @param to - The event to copy data into.
      */
     protected copyPointerData(from: FederatedEvent, to: FederatedEvent): void
     {
@@ -1334,8 +1335,8 @@ export class EventBoundary
      * + screen
      * + shiftKey
      * + global
-     * @param from
-     * @param to
+     * @param from - The event to copy data from.
+     * @param to - The event to copy data into.
      */
     protected copyMouseData(from: FederatedEvent, to: FederatedEvent): void
     {

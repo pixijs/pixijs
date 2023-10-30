@@ -1,14 +1,14 @@
 /**
- * A Runner is a highly performant and simple alternative to signals. Best used in situations
+ * A SystemRunner is a highly performant and simple alternative to signals. Best used in situations
  * where events are dispatched to many objects at high frequency (say every frame!)
  *
  *
  * like a signal..
  * ```
- * import { Runner } from '@pixi/runner';
+ * import { SystemRunner } from 'pixi.js';
  *
  * const myObject = {
- *     loaded: new Runner('loaded')
+ *     loaded: new SystemRunner('loaded')
  * }
  *
  * const listener = {
@@ -24,10 +24,10 @@
  *
  * Or for handling calling the same function on many items
  * ```
- * import { Runner } from '@pixi/runner';
+ * import { SystemRunner } from 'pixi.js';
  *
  * const myGame = {
- *     update: new Runner('update')
+ *     update: new SystemRunner('update')
  * }
  *
  * const gameObject = {
@@ -84,7 +84,7 @@ export class SystemRunner
      * Eg A listener passed to this Runner will require a 'complete' function.
      *
      * ```
-     * import { Runner } from '@pixi/runner';
+     * import { Runner } from 'pixi.js';
      *
      * const complete = new Runner('complete');
      * ```

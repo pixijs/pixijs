@@ -204,7 +204,7 @@ export class State
     // #if _DEBUG
     public toString(): string
     {
-        return `[@pixi/core:State `
+        return `[pixi.js/core:State `
             + `blendMode=${this.blendMode} `
             + `clockwiseFrontFace=${this.clockwiseFrontFace} `
             + `culling=${this.culling} `

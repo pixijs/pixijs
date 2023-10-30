@@ -108,7 +108,7 @@ export class ObservablePoint implements PointLike
     // #if _DEBUG
     public toString(): string
     {
-        return `[@pixi/math:ObservablePoint x=${0} y=${0} scope=${this._observer}]`;
+        return `[pixi.js/math:ObservablePoint x=${0} y=${0} scope=${this._observer}]`;
     }
     // #endif
 

@@ -8,14 +8,13 @@ import fragment from './colorMatrixFilter.frag';
 import source from './colorMatrixFilter.wgsl';
 
 import type { ColorSource } from '../../../color/Color';
+import type { ArrayFixed } from '../../../utils/types';
 
-// ts fixed array of length 20
-export type ColorMatrix = [
-    number, number, number, number, number,
-    number, number, number, number, number,
-    number, number, number, number, number,
-    number, number, number, number, number
-];
+/**
+ * 5x4 matrix for transforming RGBA color and alpha
+ * @memberof filters
+ */
+export type ColorMatrix = ArrayFixed<number, 20>;
 
 /**
  * The ColorMatrixFilter class lets you apply a 5x4 matrix transformation on the RGBA

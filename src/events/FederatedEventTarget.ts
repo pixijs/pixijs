@@ -6,6 +6,49 @@ import type { AllFederatedEventMap } from './FederatedEventMap';
 import type { FederatedPointerEvent } from './FederatedPointerEvent';
 import type { FederatedWheelEvent } from './FederatedWheelEvent';
 
+/**
+ * The type of cursor to use when the mouse pointer is hovering over.
+ * @see https://developer.mozilla.org/en-US/docs/Web/CSS/cursor
+ *
+ * can be any valid CSS cursor value
+ * - auto
+ * - default
+ * - none
+ * - context-menu
+ * - help
+ * - pointer
+ * - progress
+ * - wait
+ * - cell
+ * - crosshair
+ * - text
+ * - verticaltext
+ * - alias
+ * - copy
+ * - move
+ * - nodrop
+ * - notallowed
+ * - eresize
+ * - nresize
+ * - neresize
+ * - nwresize
+ * - sresize
+ * - seresize
+ * - swresize
+ * - wresize
+ * - nsresize
+ * - ewresize
+ * - neswresize
+ * - colresize
+ * - nwseresize
+ * - rowresize
+ * - allscroll
+ * - zoomin
+ * - zoomout
+ * - grab
+ * - grabbing
+ * @memberof events
+ */
 export type Cursor = 'auto'
 | 'default'
 | 'none'
@@ -49,16 +92,32 @@ export interface IHitArea
     contains(x: number, y: number): boolean;
 }
 
-/** Function type for handlers, e.g., onclick */
+/**
+ * Function type for handlers, e.g., onclick
+ * @memberof events
+ */
 export type FederatedEventHandler<T= FederatedPointerEvent> = (event: T) => void;
 
 /**
  * The type of interaction a Container can be. For more information on values and their meaning,
  * see {@link Container.eventMode Container's eventMode property}.
+ *
+ * Can be one of the following:
+ * - `'none'`: Ignores all interaction events, even on its children.
+ * - `'passive'`: Does not emit events and ignores all hit testing on itself and non-interactive children.
+ * Interactive children will still emit events.
+ * - `'auto'`: Does not emit events but is hit tested if parent is interactive. Same as `interactive = false` in v7
+ * - `'static'`: Emit events and is hit tested. Same as `interaction = true` in v7
+ * - `'dynamic'`: Emits events and is hit tested but will also receive mock interaction events fired from a ticker to
  * @since 7.2.0
+ * @memberof events
  */
 export type EventMode = 'none' | 'passive' | 'auto' | 'static' | 'dynamic';
 
+/**
+ * The options for interactive objects.
+ * @memberof events
+ */
 export interface FederatedOptions
 {
     /** The cursor preferred when the mouse pointer is hovering over. */
@@ -139,7 +198,10 @@ export interface FederatedOptions
     onwheel?: FederatedEventHandler<FederatedWheelEvent> | null;
 }
 
-/** Describes the shape for a {@link FederatedEvent}'s' `eventTarget`. */
+/**
+ * Describes the shape for a {@link FederatedEvent}'s' `eventTarget`.
+ * @memberof events
+ */
 export interface FederatedEventTarget extends EventEmitter, EventTarget, Required<FederatedOptions>
 {
     /** The parent of this event target. */
@@ -654,7 +716,6 @@ export const FederatedContainer: IFederatedContainer = {
     /**
      * Unlike `on` or `addListener` which are methods from EventEmitter, `addEventListener`
      * seeks to be compatible with the DOM's `addEventListener` with support for options.
-     * **IMPORTANT:** _Only_ available if using the `@pixi/events` package.
      * @memberof Container
      * @param type - The type of event to listen to.
      * @param listener - The listener callback or object.
@@ -703,7 +764,6 @@ export const FederatedContainer: IFederatedContainer = {
     /**
      * Unlike `off` or `removeListener` which are methods from EventEmitter, `removeEventListener`
      * seeks to be compatible with the DOM's `removeEventListener` with support for options.
-     * **IMPORTANT:** _Only_ available if using the `@pixi/events` package.
      * @memberof Container
      * @param type - The type of event the listener is bound to.
      * @param listener - The listener callback or object.
@@ -729,8 +789,6 @@ export const FederatedContainer: IFederatedContainer = {
      * Dispatch the event on this {@link Container} using the event's {@link EventBoundary}.
      *
      * The target of the event is set to `this` and the `defaultPrevented` flag is cleared before dispatch.
-     *
-     * **IMPORTANT:** _Only_ available if using the `@pixi/events` package.
      * @memberof Container
      * @param e - The event to dispatch.
      * @returns Whether the {@link FederatedEvent.preventDefault preventDefault}() method was not invoked.
