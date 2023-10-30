@@ -1,3 +1,6 @@
+// TODO eventually we should not use this bit, but instead use the localUniformBit
+// have the MSDF bit be merged in with the localUniformBit
+
 export const localUniformMSDFBit = {
     name: 'local-uniform-msdf-bit',
     vertex: {
@@ -37,5 +40,34 @@ export const localUniformMSDFBit = {
         `
 
     }
+};
 
+export const localUniformMSDFBitGl = {
+    name: 'local-uniform-msdf-bit',
+    vertex: {
+        header: /* glsl */`
+            uniform mat3 uTransformMatrix;
+            uniform vec4 uColor;
+            uniform float uRound;
+        `,
+        main: /* glsl */`
+            vColor *= uColor;
+            modelMatrix *= uTransformMatrix;
+        `,
+        end: /* glsl */`
+            if(uRound == 1.)
+            {
+                gl_Position.xy = roundPixels(gl_Position.xy, uResolution);
+            }
+        `
+    },
+    fragment: {
+        header: /* glsl */`
+            uniform float uDistance;
+         `,
+        main: /* glsl */` 
+            outColor = vColor * calculateMSDFAlpha(outColor, uDistance);
+        `
+
+    }
 };
