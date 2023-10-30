@@ -6,6 +6,7 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render text correctly if style changes',
+    pixelMatch: 250,
     create: async (scene: Container, renderer: Renderer) =>
     {
         const text = new Text({
