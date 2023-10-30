@@ -3,7 +3,6 @@ import { BufferUsage } from '../../shared/buffer/const';
 import { BUFFER_TYPE } from './const';
 import { GlBuffer } from './GlBuffer';
 
-import type { Writeable } from '../../../../utils/types';
 import type { Buffer } from '../../shared/buffer/Buffer';
 import type { System } from '../../shared/system/System';
 // @ts-expect-error - used for jsdoc typedefs
@@ -58,13 +57,11 @@ export class GlBufferSystem implements System
      */
     public destroy(): void
     {
-        const writeable = this as Writeable<typeof this, '_boundBufferBases'>;
-
         this.destroyAll(true);
         this._renderer = null;
         this._gl = null;
         this._gpuBuffers = null;
-        writeable._boundBufferBases = null;
+        (this._boundBufferBases as null) = null;
     }
 
     /** Sets up the renderer context and necessary buffers. */

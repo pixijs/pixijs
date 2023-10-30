@@ -7,7 +7,6 @@ import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { Matrix } from '../../../../maths/matrix/Matrix';
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
 import type { DestroyOptions } from '../../../../scene/container/destroyTypes';
-import type { Writeable } from '../../../../utils/types';
 import type { RenderSurface } from '../../gpu/renderTarget/GpuRenderTargetSystem';
 import type { Renderer } from '../../types';
 import type { GenerateTextureOptions, GenerateTextureSystem } from '../extract/GenerateTextureSystem';
@@ -365,8 +364,6 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
 
     public destroy(options: DestroyOptions = false): void
     {
-        const writeable = this as Writeable<typeof this, 'renderPipes' | 'runners'>;
-
         this.runners.destroy.items.reverse();
         this.runners.destroy.emit(options);
 
@@ -376,11 +373,10 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
             runner.destroy();
         });
 
-        writeable.runners = null;
         this._systemsHash = null;
 
         // destroy all pipes
-        writeable.renderPipes = null;
+        (this.renderPipes as null) = null;
     }
 
     /**
