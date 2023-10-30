@@ -381,7 +381,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
     public destroy(): void
     {
-        // we copy the array as the aarry with a slice as onSourceDestroy
+        // we copy the array as the array with a slice as onSourceDestroy
         // will remove the source from the real managedTextures array
         this.managedTextures
             .slice()
