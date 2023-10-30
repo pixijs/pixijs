@@ -22,6 +22,7 @@ export interface VideoSourceOptions extends TextureSourceOptions<VideoResource>
     muted?: boolean;
     playsinline?: boolean;
     preload?: boolean;
+    preloadTimeoutMs?: number;
     alphaMode?: ALPHA_MODES;
 }
 
@@ -80,6 +81,7 @@ export class VideoSource extends TextureSource<VideoResource>
     private _load: Promise<this>;
 
     private _msToNextUpdate: number;
+    private _preloadTimeout: number;
 
     /** Callback when completed with load. */
     private _resolve: (value?: this | PromiseLike<this>) => void;
@@ -117,6 +119,7 @@ export class VideoSource extends TextureSource<VideoResource>
 
         // Bind for listeners
         this._onCanPlay = this._onCanPlay.bind(this);
+        this._onCanPlayThrough = this._onCanPlayThrough.bind(this);
         this._onError = this._onError.bind(this);
         this._onPlayStart = this._onPlayStart.bind(this);
         this._onPlayStop = this._onPlayStop.bind(this);
@@ -193,6 +196,7 @@ export class VideoSource extends TextureSource<VideoResource>
         }
 
         const source = this.resource;
+        const options = this.options as VideoSourceOptions;
 
         // Check if source data is enough and set it to complete if needed
         if ((source.readyState === source.HAVE_ENOUGH_DATA || source.readyState === source.HAVE_FUTURE_DATA)
@@ -209,18 +213,18 @@ export class VideoSource extends TextureSource<VideoResource>
         // Add or handle source readiness event listeners
         if (!this._isSourceReady())
         {
-            const options = this.options as VideoSourceOptions;
-
             if (!options.preload)
             {
+                // since this event fires early, only bind if not waiting for a preload event
                 source.addEventListener('canplay', this._onCanPlay);
             }
-            source.addEventListener('canplaythrough', this._onCanPlay);
+            source.addEventListener('canplaythrough', this._onCanPlayThrough);
             source.addEventListener('error', this._onError, true);
         }
         else
         {
-            this._onCanPlay();
+            // Source is already ready, so handle it immediately
+            this._mediaReady();
         }
 
         this.alphaMode = await detectVideoAlphaMode();
@@ -237,6 +241,13 @@ export class VideoSource extends TextureSource<VideoResource>
                 this._resolve = resolve;
                 this._reject = reject;
 
+                if (options.preloadTimeoutMs !== undefined)
+                {
+                    this._preloadTimeout = setTimeout(() =>
+                    {
+                        this._onError(new ErrorEvent(`Preload exceeded timeout of ${options.preloadTimeoutMs}ms`));
+                    }) as unknown as number;
+                }
                 source.load();
             }
         });
@@ -286,10 +297,10 @@ export class VideoSource extends TextureSource<VideoResource>
     /** Runs the update loop when the video is ready to play. */
     private _onPlayStart(): void
     {
-    // Handle edge case where video might not have received its "can play" event yet
+        // Handle edge case where video might not have received its "can play" event yet
         if (!this.isValid)
         {
-            this._onCanPlay();
+            this._mediaReady();
         }
 
         this._configureAutoUpdate();
@@ -312,14 +323,36 @@ export class VideoSource extends TextureSource<VideoResource>
         }
     }
 
-    /** Fired when the video is loaded and ready to play. */
     private _onCanPlay(): void
     {
         const source = this.resource;
 
         // Remove event listeners
         source.removeEventListener('canplay', this._onCanPlay);
+
+        this._mediaReady();
+    }
+
+    private _onCanPlayThrough(): void
+    {
+        const source = this.resource;
+
+        // Remove event listeners
         source.removeEventListener('canplaythrough', this._onCanPlay);
+
+        if (this._preloadTimeout)
+        {
+            clearTimeout(this._preloadTimeout);
+            this._preloadTimeout = undefined;
+        }
+
+        this._mediaReady();
+    }
+
+    /** Fired when the video is loaded and ready to play. */
+    private _mediaReady(): void
+    {
+        const source = this.resource;
 
         if (this.isValid)
         {
@@ -365,7 +398,7 @@ export class VideoSource extends TextureSource<VideoResource>
             source.removeEventListener('pause', this._onPlayStop);
             source.removeEventListener('seeked', this._onSeeked);
             source.removeEventListener('canplay', this._onCanPlay);
-            source.removeEventListener('canplaythrough', this._onCanPlay);
+            source.removeEventListener('canplaythrough', this._onCanPlayThrough);
             source.removeEventListener('error', this._onError, true);
 
             // Clear the video source and pause
@@ -503,6 +536,6 @@ export class VideoSource extends TextureSource<VideoResource>
     public static test(resource: any): resource is VideoResource
     {
         return (globalThis.HTMLVideoElement && resource instanceof HTMLVideoElement)
-        || (globalThis.VideoFrame && resource instanceof VideoFrame);
+            || (globalThis.VideoFrame && resource instanceof VideoFrame);
     }
 }

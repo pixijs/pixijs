@@ -1,10 +1,8 @@
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable no-debugger */
 import { Application } from '../../src/app/Application';
 import { extensions, ExtensionType } from '../../src/extensions/Extensions';
 import { Container } from '../../src/scene/container/Container';
+import { nextTick } from '../utils/async';
 import { getApp } from '../utils/getApp';
-import { nextTick } from '../utils/nextTick';
 
 import type { ApplicationOptions } from '../../src/app/Application';
 

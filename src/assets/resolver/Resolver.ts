@@ -717,9 +717,16 @@ export class Resolver
                         {
                             const filteredAssets = assets.filter((asset) =>
                             {
-                                if (asset[priorityKey as keyof ResolvedAsset])
+                                const priorityValue = asset[priorityKey as keyof ResolvedAsset];
+
+                                if (priorityValue)
                                 {
-                                    return asset[priorityKey as keyof ResolvedAsset] === value;
+                                    // note: if the key is "format" and there are query params,
+                                    // then "format" will contain the query params as well,
+                                    // so we check inclusion rather than strict equality
+                                    return typeof priorityValue === 'string'
+                                        ? priorityValue.startsWith(value as string)
+                                        : priorityValue === value;
                                 }
 
                                 return false;

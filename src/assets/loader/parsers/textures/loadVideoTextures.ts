@@ -35,6 +35,39 @@ export function crossOrigin(element: HTMLImageElement | HTMLVideoElement, url: s
 }
 
 /**
+ * Preload a video element
+ * @param element - Video element to preload
+ */
+export function preloadVideo(element: HTMLVideoElement): Promise<void>
+{
+    return new Promise((resolve, reject) =>
+    {
+        element.addEventListener('canplaythrough', loaded);
+        element.addEventListener('error', error);
+
+        element.load();
+
+        function loaded(): void
+        {
+            cleanup();
+            resolve();
+        }
+
+        function error(err: ErrorEvent): void
+        {
+            cleanup();
+            reject(err);
+        }
+
+        function cleanup(): void
+        {
+            element.removeEventListener('canplaythrough', loaded);
+            element.removeEventListener('error', error);
+        }
+    });
+}
+
+/**
  * Sets the `crossOrigin` property for this resource based on if the url
  * for this resource is cross-origin. If crossOrigin was manually set, this
  * function does nothing.
@@ -169,6 +202,11 @@ export const loadVideoTextures = {
 
         // --- Create texture ---
         const base = new VideoSource({ ...options, resource: videoElement });
+
+        if (asset.data.preload)
+        {
+            await preloadVideo(videoElement);
+        }
 
         return createTexture(base, loader, url);
     },
