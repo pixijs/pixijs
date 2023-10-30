@@ -212,7 +212,7 @@ export class Buffer extends EventEmitter<{
         this.emit('destroy', this);
 
         this._data = null;
-        (this.descriptor as any) = null;
+        (this.descriptor as null) = null;
 
         this.removeAllListeners();
     }

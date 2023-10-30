@@ -2,7 +2,7 @@ import { Rectangle } from '../../../maths/shapes/Rectangle';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { AbstractBitmapFont } from './AbstractBitmapFont';
 
-import type { Writeable } from '../../../utils/types';
+import type { FontMetrics } from '../canvas/CanvasTextMetrics';
 import type { BitmapFontData } from './AbstractBitmapFont';
 
 export interface BitmapFontOptions
@@ -10,8 +10,6 @@ export interface BitmapFontOptions
     data: BitmapFontData
     textures: Texture[]
 }
-
-type WriteableBitmapFont = Writeable<BitmapFont, keyof BitmapFont>;
 
 export class BitmapFont extends AbstractBitmapFont<BitmapFont>
 {
@@ -61,18 +59,16 @@ export class BitmapFont extends AbstractBitmapFont<BitmapFont>
 
         this.baseRenderedFontSize = data.fontSize;
 
-        const writable = this as WriteableBitmapFont;
-
-        writable.baseMeasurementFontSize = data.fontSize;
-        writable.fontMetrics = {
+        (this.baseMeasurementFontSize as number) = data.fontSize;
+        (this.fontMetrics as FontMetrics) = {
             ascent: 0,
             descent: 0,
             fontSize: data.fontSize,
         };
-        writable.baseLineOffset = data.baseLineOffset;
-        writable.lineHeight = data.lineHeight;
-        writable.fontFamily = data.fontFamily;
-        writable.distanceField = data.distanceField ?? {
+        (this.baseLineOffset as number) = data.baseLineOffset;
+        (this.lineHeight as number) = data.lineHeight;
+        (this.fontFamily as string) = data.fontFamily;
+        (this.distanceField as {type: string, range: number}) = data.distanceField ?? {
             type: 'none',
             range: 0,
         };
@@ -89,6 +85,6 @@ export class BitmapFont extends AbstractBitmapFont<BitmapFont>
             texture.destroy(true);
         }
 
-        (this as WriteableBitmapFont).pages = null;
+        (this.pages as null) = null;
     }
 }

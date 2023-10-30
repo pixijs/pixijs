@@ -1,7 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { STENCIL_MODES } from '../shared/state/const';
 
-import type { Writeable } from '../../../utils/types';
 import type { RenderTarget } from '../shared/renderTarget/RenderTarget';
 import type { System } from '../shared/system/System';
 import type { WebGPURenderer } from './WebGPURenderer';
@@ -66,9 +65,7 @@ export class GpuStencilSystem implements System
     {
         this._renderer.renderTarget.onRenderTargetChange.remove(this);
 
-        const writeable = this as Writeable<typeof this, '_renderer'>;
-
-        writeable._renderer = null;
+        (this._renderer as null) = null;
 
         this._activeRenderTarget = null;
         this._renderTargetStencilState = null;
