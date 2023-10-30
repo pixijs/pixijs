@@ -49,4 +49,9 @@ describe('Texture', () =>
         expect(Texture.from({ resource: buffer })).toBe(texture);
         expect(Cache.has(buffer)).toBe(true);
     });
+
+    it('texture.WHITE should have correct alpha mode set', () =>
+    {
+        expect(Texture.WHITE.source.alphaMode).toBe('premultiply-alpha-on-upload');
+    });
 });
