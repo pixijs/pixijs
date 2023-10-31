@@ -1,63 +1,113 @@
 /**
+ * extensions is a global object that holds all the extensions registered with PixiJS.
+ * PixiJS uses a this extensions architecture a lot to make the library more modular and
+ * flexible.
+ *
+ * For example, if you want to add load a new type of asset, you can register a new
+ * load parser with the `extensions` object.
+ *
+ * ```js
+ * import { extensions, ExtensionType } from 'pixi.js';
+ *
+ * const assetLoader = {
+ *    extension: {
+ *        type: ExtensionType.LoadParser,
+ *        name: 'asset-loader',
+ *    },
+ *    load: (url) =>
+ *    {
+ *        // load
+ *    },
+ * };
+ * extensions.add(assetLoader);
+ * ```
+ *
+ * This would add the `assetLoader` to the list of available loaders that PixiJS can use.
+ *
+ * There are many different types of extensions, which are listed in {@link extensions.ExtensionType}.
+ * @namespace extensions
+ */
+
+/**
  * Collection of valid extension types.
- * @property {string} Application - Application plugins
- * @property {string} RendererPlugin - Plugins for Renderer
- * @property {string} CanvasRendererPlugin - Plugins for CanvasRenderer
- * @property {string} Loader - Plugins to use with Loader
- * @property {string} LoadParser - Parsers for Assets loader.
- * @property {string} ResolveParser - Parsers for Assets resolvers.
- * @property {string} CacheParser - Parsers for Assets cache.
+ * @memberof extensions
  */
 enum ExtensionType
 // eslint-disable-next-line @typescript-eslint/indent
 {
-    Renderer = 'renderer',
+    /** extensions that are registered as Application plugins */
     Application = 'application',
 
-    // WebGL renderer plugins/pipes/systems
+    /** extensions that are registered as WebGL render pipes */
     WebGLPipes = 'webgl-pipes',
+    /** extensions that are registered as WebGL render pipes adaptors */
     WebGLPipesAdaptor = 'webgl-pipes-adaptor',
+    /** extensions that are registered as WebGL render systems */
     WebGLSystem = 'webgl-system',
 
-    // WebGPU renderer plugins/pipes/systems
+    /** extensions that are registered as WebGPU render pipes */
     WebGPUPipes = 'webgpu-pipes',
+    /** extensions that are registered as WebGPU render pipes adaptors */
     WebGPUPipesAdaptor = 'webgpu-pipes-adaptor',
+    /** extensions that are registered as WebGPU render systems */
     WebGPUSystem = 'webgpu-system',
 
-    // Canvas renderer plugins/pipes/systems
+    /** extensions that are registered as Canvas render pipes */
     CanvasSystem = 'canvas-system',
+    /** extensions that are registered as Canvas render pipes adaptors */
     CanvasPipesAdaptor = 'canvas-pipes-adaptor',
+    /** extensions that are registered as Canvas render systems */
     CanvasPipes = 'canvas-pipes',
 
-    // Asset related plugins
+    /** extensions that combine the other Asset extensions */
     Asset = 'asset',
+    /** extensions that are used to load assets through Assets */
     LoadParser = 'load-parser',
+    /** extensions that are used to resolve asset urls through Assets */
     ResolveParser = 'resolve-parser',
+    /** extensions that are used to handle how urls are cached by Assets */
     CacheParser = 'cache-parser',
+    /** extensions that are used to add/remove available resources from Assets */
     DetectionParser = 'detection-parser',
 
+    /** extensions that are registered with the MaskEffectManager */
     MaskEffect = 'mask-effect',
 
+    /** A type of extension for creating a new advanced blend mode */
     BlendMode = 'blend-mode',
 
+    /** A type of extension that will be used to auto detect a resource type */
     TextureSource = 'texture-source',
 
+    /** A type of extension that will be used to auto detect an environment */
     Environment = 'environment',
 }
 
+/**
+ * The metadata for an extension.
+ * @memberof extensions
+ */
 interface ExtensionMetadataDetails
 {
+    /** The extension type, can be multiple types */
     type: ExtensionType | ExtensionType[];
+    /** Optional. Some plugins provide an API name/property, to make them more easily accessible */
     name?: string;
+    /** Optional, used for sorting the plugins in a particular order */
     priority?: number;
 }
 
+/**
+ * The metadata for an extension.
+ * @memberof extensions
+ */
 type ExtensionMetadata = ExtensionType | ExtensionMetadataDetails;
 
 /**
  * Format when registering an extension. Generally, the extension
  * should have these values as `extension` static property,
  * but you can override name or type by providing an object.
+ * @memberof extensions
  */
 interface ExtensionFormatLoose
 {
@@ -71,7 +121,10 @@ interface ExtensionFormatLoose
     ref: any;
 }
 
-/** Strict extension format that is used internally for registrations. */
+/**
+ * Strict extension format that is used internally for registrations.
+ * @memberof extensions
+ */
 interface ExtensionFormat extends ExtensionFormatLoose
 {
     /** The extension type, always expressed as multiple, even if a single */
@@ -124,13 +177,20 @@ const normalizeExtension = (ext: ExtensionFormatLoose | any): ExtensionFormat =>
  * @param ext - Any extension
  * @param defaultPriority - Fallback priority if none is defined.
  * @returns The priority for the extension.
+ * @memberof extensions
  */
 export const normalizeExtensionPriority = (ext: ExtensionFormatLoose | any, defaultPriority: number): number =>
     normalizeExtension(ext).priority ?? defaultPriority;
 
 /**
  * Global registration of all PixiJS extensions. One-stop-shop for extensibility.
- * @namespace extensions
+ * @property {Function} remove - Remove extensions from PixiJS.
+ * @property {Function} add - Register new extensions with PixiJS.
+ * @property {Function} handle - Internal method to handle extensions by name.
+ * @property {Function} handleByMap - Handle a type, but using a map by `name` property.
+ * @property {Function} handleByNamedList - Handle a type, but using a list of extensions with a `name` property.
+ * @property {Function} handleByList - Handle a type, but using a list of extensions.
+ * @memberof extensions
  */
 const extensions = {
 

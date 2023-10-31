@@ -8,7 +8,7 @@ import type { ResolveURLParser } from './resolver/types';
  * This developer convenience object allows developers to group
  * together the various asset parsers into a single object.
  * @example
- * import { AssetExtension, extensions } from '@pixi-essentials/assets';
+ * import { AssetExtension, extensions } from 'pixi.js';
  *
  * extensions.add({
  *     extension: ExtensionType.Asset,

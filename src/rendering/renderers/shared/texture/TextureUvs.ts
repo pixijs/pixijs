@@ -123,7 +123,7 @@ export class TextureUvs
     // #if _DEBUG
     public toString(): string
     {
-        return `[@pixi/core:TextureUvs `
+        return `[pixi.js/core:TextureUvs `
             + `x0=${this.x0} y0=${this.y0} `
             + `x1=${this.x1} y1=${this.y1} x2=${this.x2} `
             + `y2=${this.y2} x3=${this.x3} y3=${this.y3}`

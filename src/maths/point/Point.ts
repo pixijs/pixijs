@@ -88,7 +88,7 @@ export class Point implements PointLike
     // #if _DEBUG
     public toString(): string
     {
-        return `[@pixi/math:Point x=${this.x} y=${this.y}]`;
+        return `[pixi.js/math:Point x=${this.x} y=${this.y}]`;
     }
     // #endif
 

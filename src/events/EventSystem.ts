@@ -26,14 +26,12 @@ export interface EventSystemOptions
 {
     /**
      * The default event mode mode for all display objects.
-     * This option only is available when using **@pixi/events** package
      * (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
      */
     eventMode?: EventMode;
 
     /**
      * The event features that are enabled by the EventSystem
-     * This option only is available when using **@pixi/events** package
      * (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
      * @example
      * const app = new Application({
@@ -51,9 +49,9 @@ export interface EventSystemOptions
 
 /**
  * The event features that are enabled by the EventSystem
- * This option only is available when using **@pixi/events** package
  * (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
  * @since 7.2.0
+ * @memberof events
  */
 interface EventSystemFeatures
 {
@@ -84,7 +82,10 @@ interface EventSystemFeatures
     wheel: boolean;
 }
 
-/** The system for handling UI events. */
+/**
+ * The system for handling UI events.
+ * @memberof events
+ */
 export class EventSystem implements System<EventSystemOptions>
 {
     /** @ignore */
@@ -100,14 +101,17 @@ export class EventSystem implements System<EventSystemOptions>
 
     /**
      * The event features that are enabled by the EventSystem
-     * This option only is available when using **@pixi/events** package
      * (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
      * @since 7.2.0
      */
     public static defaultEventFeatures: EventSystemFeatures = {
+        /** Enables pointer events associated with pointer movement. */
         move: true,
+        /** Enables global pointer move events. */
         globalMove: true,
+        /** Enables pointer events associated with clicking. */
         click: true,
+        /** Enables wheel events. */
         wheel: true,
     };
 
@@ -174,7 +178,6 @@ export class EventSystem implements System<EventSystemOptions>
 
     /**
      * The event features that are enabled by the EventSystem
-     * This option only is available when using **@pixi/events** package
      * (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
      * @since 7.2.0
      * @example

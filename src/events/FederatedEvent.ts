@@ -3,6 +3,10 @@ import { Point } from '../maths/point/Point';
 import type { EventBoundary } from './EventBoundary';
 import type { FederatedEventTarget } from './FederatedEventTarget';
 
+/**
+ * A PixiJS compatible {@code Touch} event.
+ * @memberof events
+ */
 export interface PixiTouch extends Touch
 {
     button: number;

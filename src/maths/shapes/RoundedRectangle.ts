@@ -169,7 +169,7 @@ export class RoundedRectangle implements ShapePrimitive
     // #if _DEBUG
     public toString(): string
     {
-        return `[@pixi/math:RoundedRectangle x=${this.x} y=${this.y}`
+        return `[pixi.js/math:RoundedRectangle x=${this.x} y=${this.y}`
             + `width=${this.width} height=${this.height} radius=${this.radius}]`;
     }
     // #endif

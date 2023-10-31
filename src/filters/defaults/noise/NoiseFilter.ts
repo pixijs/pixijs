@@ -6,9 +6,15 @@ import vertex from '../defaultFilter.vert';
 import fragment from './noise.frag';
 import source from './noise.wgsl';
 
+/**
+ * Options for NoiseFilter
+ * @memberof filters
+ */
 export interface NoiseFilterOptions
 {
+    /** The amount of noise to apply, this value should be in the range (0, 1]. */
     noise?: number;
+    /** A seed value to apply to the random noise generation. `Math.random()` is a good value to use. */
     seed?: number;
 }
 
@@ -21,17 +27,17 @@ export interface NoiseFilterOptions
  */
 export class NoiseFilter extends Filter
 {
-    public static readonly DEFAULT: NoiseFilterOptions = {
-        noise: 0.5,
-        seed: undefined,
-    };
-
     /**
-     * @param options
+     * @param options - The options of the noise filter.
      */
     constructor(options: NoiseFilterOptions = {})
     {
-        options = { ...NoiseFilter.DEFAULT, ...options };
+        options = {
+            ...{
+                noise: 0.5,
+                seed: Math.random(),
+            }, ...options
+        };
 
         const gpuProgram = new GpuProgram({
             vertex: {

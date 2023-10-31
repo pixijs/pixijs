@@ -9,22 +9,37 @@ import type { Texture } from '../../../rendering/renderers/shared/texture/Textur
 import type { FilterSystem } from '../../FilterSystem';
 import type { BlurFilterOptions } from './BlurFilter';
 
+/**
+ * Options for BlurFilterPass
+ * @memberof filters
+ */
 export interface BlurFilterPassOptions extends BlurFilterOptions
 {
+    /** Do pass along the x-axis (`true`) or y-axis (`false`). */
     horizontal: boolean;
 }
 
-/** The BlurFilterPass applies a horizontal or vertical Gaussian blur to an object. */
+/**
+ * The BlurFilterPass applies a horizontal or vertical Gaussian blur to an object.
+ * @memberof filters
+ */
 export class BlurFilterPass extends Filter
 {
+    /** Default blur filter pass options */
     public static defaultOptions: Partial<BlurFilterPassOptions> = {
+        /** The strength of the blur filter. */
         strength: 8,
+        /** The quality of the blur filter. */
         quality: 4,
+        /** The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15. */
         kernelSize: 5,
     };
 
+    /** Do pass along the x-axis (`true`) or y-axis (`false`). */
     public horizontal: boolean;
+    /** The number of passes to run the filter. */
     public passes!: number;
+    /** The strength of the blur filter. */
     public strength!: number;
 
     private _quality: number;

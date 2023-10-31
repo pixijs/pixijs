@@ -354,7 +354,7 @@ export class Rectangle implements ShapePrimitive
     // #if _DEBUG
     public toString(): string
     {
-        return `[@pixi/math:Rectangle x=${this.x} y=${this.y} width=${this.width} height=${this.height}]`;
+        return `[pixi.js/math:Rectangle x=${this.x} y=${this.y} width=${this.width} height=${this.height}]`;
     }
     // #endif
 }
