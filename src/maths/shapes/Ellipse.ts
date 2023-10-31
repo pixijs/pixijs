@@ -2,19 +2,34 @@ import { Rectangle } from './Rectangle';
 
 import type { ShapePrimitive } from './ShapePrimitive';
 
-/** The Ellipse object is used to help draw graphics and can also be used to specify a hit area for containers. */
+/**
+ * The Ellipse object is used to help draw graphics and can also be used to specify a hit area for containers.
+ * @memberof maths
+ */
 export class Ellipse implements ShapePrimitive
 {
-    /** @default 0 */
+    /**
+     * The X coordinate of the center of this ellipse
+     * @default 0
+     */
     public x: number;
 
-    /** @default 0 */
+    /**
+     * The Y coordinate of the center of this ellipse
+     * @default 0
+     */
     public y: number;
 
-    /** @default 0 */
+    /**
+     * The half width of this ellipse
+     * @default 0
+     */
     public halfWidth: number;
 
-    /** @default 0 */
+    /**
+     * The half height of this ellipse
+     * @default 0
+     */
     public halfHeight: number;
 
     /**

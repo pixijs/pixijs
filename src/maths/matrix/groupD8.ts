@@ -98,23 +98,23 @@ type GD8Symmetry = number;
  *
  * **Origin:**<br>
  *  This is the small part of gameofbombs.com portal system. It works.
- * @see groupD8.E
- * @see groupD8.SE
- * @see groupD8.S
- * @see groupD8.SW
- * @see groupD8.W
- * @see groupD8.NW
- * @see groupD8.N
- * @see groupD8.NE
+ * @see maths.groupD8.E
+ * @see maths.groupD8.SE
+ * @see maths.groupD8.S
+ * @see maths.groupD8.SW
+ * @see maths.groupD8.W
+ * @see maths.groupD8.NW
+ * @see maths.groupD8.N
+ * @see maths.groupD8.NE
  * @author Ivan @ivanpopelyshev
- * @namespace groupD8
+ * @namespace maths.groupD8
  */
 export const groupD8 = {
     /**
      * | Rotation | Direction |
      * |----------|-----------|
      * | 0°       | East      |
-     * @memberof groupD8
+     * @memberof maths.groupD8
      * @constant {GD8Symmetry}
      */
     E: 0,
@@ -123,7 +123,7 @@ export const groupD8 = {
      * | Rotation | Direction |
      * |----------|-----------|
      * | 45°↻     | Southeast |
-     * @memberof groupD8
+     * @memberof maths.groupD8
      * @constant {GD8Symmetry}
      */
     SE: 1,
@@ -132,7 +132,7 @@ export const groupD8 = {
      * | Rotation | Direction |
      * |----------|-----------|
      * | 90°↻     | South     |
-     * @memberof groupD8
+     * @memberof maths.groupD8
      * @constant {GD8Symmetry}
      */
     S: 2,
@@ -141,7 +141,7 @@ export const groupD8 = {
      * | Rotation | Direction |
      * |----------|-----------|
      * | 135°↻    | Southwest |
-     * @memberof groupD8
+     * @memberof maths.groupD8
      * @constant {GD8Symmetry}
      */
     SW: 3,
@@ -150,7 +150,7 @@ export const groupD8 = {
      * | Rotation | Direction |
      * |----------|-----------|
      * | 180°     | West      |
-     * @memberof groupD8
+     * @memberof maths.groupD8
      * @constant {GD8Symmetry}
      */
     W: 4,
@@ -159,7 +159,7 @@ export const groupD8 = {
      * | Rotation    | Direction    |
      * |-------------|--------------|
      * | -135°/225°↻ | Northwest    |
-     * @memberof groupD8
+     * @memberof maths.groupD8
      * @constant {GD8Symmetry}
      */
     NW: 5,
@@ -168,7 +168,7 @@ export const groupD8 = {
      * | Rotation    | Direction    |
      * |-------------|--------------|
      * | -90°/270°↻  | North        |
-     * @memberof groupD8
+     * @memberof maths.groupD8
      * @constant {GD8Symmetry}
      */
     N: 6,
@@ -177,41 +177,41 @@ export const groupD8 = {
      * | Rotation    | Direction    |
      * |-------------|--------------|
      * | -45°/315°↻  | Northeast    |
-     * @memberof groupD8
+     * @memberof maths.groupD8
      * @constant {GD8Symmetry}
      */
     NE: 7,
 
     /**
      * Reflection about Y-axis.
-     * @memberof groupD8
+     * @memberof maths.groupD8
      * @constant {GD8Symmetry}
      */
     MIRROR_VERTICAL: 8,
 
     /**
      * Reflection about the main diagonal.
-     * @memberof groupD8
+     * @memberof maths.groupD8
      * @constant {GD8Symmetry}
      */
     MAIN_DIAGONAL: 10,
 
     /**
      * Reflection about X-axis.
-     * @memberof groupD8
+     * @memberof maths.groupD8
      * @constant {GD8Symmetry}
      */
     MIRROR_HORIZONTAL: 12,
 
     /**
      * Reflection about reverse diagonal.
-     * @memberof groupD8
+     * @memberof maths.groupD8
      * @constant {GD8Symmetry}
      */
     REVERSE_DIAGONAL: 14,
 
     /**
-     * @memberof groupD8
+     * @memberof maths.groupD8
      * @param {GD8Symmetry} ind - sprite rotation angle.
      * @returns {GD8Symmetry} The X-component of the U-axis
      *    after rotating the axes.
@@ -219,7 +219,7 @@ export const groupD8 = {
     uX: (ind: GD8Symmetry): GD8Symmetry => ux[ind],
 
     /**
-     * @memberof groupD8
+     * @memberof maths.groupD8
      * @param {GD8Symmetry} ind - sprite rotation angle.
      * @returns {GD8Symmetry} The Y-component of the U-axis
      *    after rotating the axes.
@@ -227,7 +227,7 @@ export const groupD8 = {
     uY: (ind: GD8Symmetry): GD8Symmetry => uy[ind],
 
     /**
-     * @memberof groupD8
+     * @memberof maths.groupD8
      * @param {GD8Symmetry} ind - sprite rotation angle.
      * @returns {GD8Symmetry} The X-component of the V-axis
      *    after rotating the axes.
@@ -235,7 +235,7 @@ export const groupD8 = {
     vX: (ind: GD8Symmetry): GD8Symmetry => vx[ind],
 
     /**
-     * @memberof groupD8
+     * @memberof maths.groupD8
      * @param {GD8Symmetry} ind - sprite rotation angle.
      * @returns {GD8Symmetry} The Y-component of the V-axis
      *    after rotating the axes.
@@ -243,7 +243,7 @@ export const groupD8 = {
     vY: (ind: GD8Symmetry): GD8Symmetry => vy[ind],
 
     /**
-     * @memberof groupD8
+     * @memberof maths.groupD8
      * @param {GD8Symmetry} rotation - symmetry whose opposite
      *   is needed. Only rotations have opposite symmetries while
      *   reflections don't.
@@ -276,7 +276,7 @@ export const groupD8 = {
      * | N^=14 | N^  | W^  | S^  | E^  | N    | W     | S     | E     |
      *
      * [This is a Cayley table]{@link https://en.wikipedia.org/wiki/Cayley_table}
-     * @memberof groupD8
+     * @memberof maths.groupD8
      * @param {GD8Symmetry} rotationSecond - Second operation, which
      *   is the row in the above cayley table.
      * @param {GD8Symmetry} rotationFirst - First operation, which
@@ -289,7 +289,7 @@ export const groupD8 = {
 
     /**
      * Reverse of `add`.
-     * @memberof groupD8
+     * @memberof maths.groupD8
      * @param {GD8Symmetry} rotationSecond - Second operation
      * @param {GD8Symmetry} rotationFirst - First operation
      * @returns {GD8Symmetry} Result
@@ -301,7 +301,7 @@ export const groupD8 = {
     /**
      * Adds 180 degrees to rotation, which is a commutative
      * operation.
-     * @memberof groupD8
+     * @memberof maths.groupD8
      * @param {number} rotation - The number to rotate.
      * @returns {number} Rotated number
      */
@@ -310,7 +310,7 @@ export const groupD8 = {
     /**
      * Checks if the rotation angle is vertical, i.e. south
      * or north. It doesn't work for reflections.
-     * @memberof groupD8
+     * @memberof maths.groupD8
      * @param {GD8Symmetry} rotation - The number to check.
      * @returns {boolean} Whether or not the direction is vertical
      */
@@ -319,7 +319,7 @@ export const groupD8 = {
     /**
      * Approximates the vector `V(dx,dy)` into one of the
      * eight directions provided by `groupD8`.
-     * @memberof groupD8
+     * @memberof maths.groupD8
      * @param {number} dx - X-component of the vector
      * @param {number} dy - Y-component of the vector
      * @returns {GD8Symmetry} Approximation of the vector into
@@ -364,7 +364,7 @@ export const groupD8 = {
 
     /**
      * Helps sprite to compensate texture packer rotation.
-     * @memberof groupD8
+     * @memberof maths.groupD8
      * @param {Matrix} matrix - sprite world matrix
      * @param {GD8Symmetry} rotation - The rotation factor to use.
      * @param {number} tx - sprite anchoring

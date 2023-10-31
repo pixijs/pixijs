@@ -1,7 +1,10 @@
 import type { SHAPE_PRIMITIVE } from '../misc/const';
 import type { Rectangle } from './Rectangle';
 
-/** A basic object to define a Pixi shape. */
+/**
+ * A basic object to define a Pixi shape.
+ * @memberof maths
+ */
 export interface ShapePrimitive
 {
     /** The type of the object, mainly used to avoid `instanceof` checks */
@@ -18,6 +21,8 @@ export interface ShapePrimitive
     /** Returns the framing rectangle of the ShapePrimitive as a Rectangle object. */
     getBounds(out?: Rectangle): Rectangle;
 
+    /** The X coordinate of the shape */
     readonly x: number;
+    /** The Y coordinate of the shape */
     readonly y: number;
 }

@@ -1,7 +1,10 @@
 import type { PointData } from './PointData';
 import type { PointLike } from './PointLike';
 
-/** Observer used to listen for observable point changes. */
+/**
+ * Observer used to listen for observable point changes.
+ * @memberof maths
+ */
 export interface Observer<T>
 {
     /** Callback to call when the point has updated. */
@@ -11,7 +14,8 @@ export interface Observer<T>
  * The ObservablePoint object represents a location in a two-dimensional coordinate system, where `x` represents
  * the position on the horizontal axis and `y` represents the position on the vertical axis.
  *
- * An `ObservablePoint` is a point that triggers a callback when the point's position is changed.
+ * An `ObservablePoint` is a point that triggers the `onUpdate` method on an observer when the point's position is changed.
+ * @memberof maths
  */
 export class ObservablePoint implements PointLike
 {
@@ -20,7 +24,7 @@ export class ObservablePoint implements PointLike
     /** @internal */
     public _y: number;
 
-    /** This object used to call the `onChange` callback when the point changes. */
+    /** This object used to call the `onUpdate` callback when the point changes. */
     private readonly _observer: Observer<ObservablePoint>;
 
     /**

@@ -7,6 +7,7 @@ import type { PointLike } from './PointLike';
  * the position on the horizontal axis and `y` represents the position on the vertical axis
  * @class
  * @implements {PointLike}
+ * @memberof maths
  */
 export class Point implements PointLike
 {
@@ -91,6 +92,10 @@ export class Point implements PointLike
     }
     // #endif
 
+    /**
+     * A static Point object with `x` and `y` values of `0`. Can be used to avoid creating new objects multiple times.
+     * @readonly
+     */
     static get shared(): Point
     {
         tempPoint.x = 0;
