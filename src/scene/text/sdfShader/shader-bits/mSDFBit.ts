@@ -22,7 +22,7 @@ export const mSDFBit = {
 
                 return alpha;
             }
-        `
+        `,
     }
 
 };
@@ -52,13 +52,7 @@ export const mSDFBitGl = {
 
                 return alpha;
             }
-
-            uniform float uDistance;
         `,
-        main: /* glsl */`
-
-            outColor = vColor * calculateMSDFAlpha(outColor, uDistance);
-        `
     }
 
 };

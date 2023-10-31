@@ -3,6 +3,15 @@ import { BufferUsage } from '../../buffer/const';
 
 import type { TypedArray } from '../../buffer/Buffer';
 
+/**
+ * Converts something into a buffer. If it is already a buffer it will pass it through
+ * if it is a number array it will convert it to a float32 array before being passed into a buffer
+ * the buffer will be created with the correct usage flags for geometry attributes
+ * @param buffer - number array
+ * @param index - is this an index buffer?
+ * @returns a buffer
+ * @memberof rendering
+ */
 export function ensureIsBuffer(buffer: Buffer | TypedArray | number[], index: boolean): Buffer
 {
     if (!(buffer instanceof Buffer))
@@ -27,7 +36,7 @@ export function ensureIsBuffer(buffer: Buffer | TypedArray | number[], index: bo
 
         buffer = new Buffer({
             data: buffer,
-            label: 'index-mesh-buffer',
+            label: index ? 'index-mesh-buffer' : 'vertex-mesh-buffer',
             usage
         });
     }
