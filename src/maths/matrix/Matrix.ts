@@ -511,6 +511,7 @@ export class Matrix
 
     /**
      * A static Matrix that can be used to avoid creating new objects.
+     * Will always ensure the matrix is reset to identity when requested.
      * @readonly
      */
     static get shared(): Matrix
