@@ -4,7 +4,10 @@ import { Rectangle } from './Rectangle';
 import type { SHAPE_PRIMITIVE } from '../misc/const';
 import type { ShapePrimitive } from './ShapePrimitive';
 
-/** A class to define a shape of a triangle via user defined coordinates. */
+/**
+ * A class to define a shape of a triangle via user defined coordinates.
+ * @memberof maths
+ */
 export class Triangle implements ShapePrimitive
 {
     /**

@@ -11,6 +11,7 @@ const tempPoints = [new Point(), new Point(), new Point(), new Point()];
 /**
  * Rectangle object is an area defined by its position, as indicated by its top-left corner
  * point (x, y) and by its width and its height.
+ * @memberof maths
  */
 export class Rectangle implements ShapePrimitive
 {
@@ -20,15 +21,28 @@ export class Rectangle implements ShapePrimitive
      */
     public readonly type: SHAPE_PRIMITIVE = 'rectangle';
 
-    /** @default 0 */
+    /**
+     * The X coordinate of the upper-left corner of the rectangle
+     * @default 0
+     */
     public x: number;
 
-    /** @default 0 */
+    /**
+     * The Y coordinate of the upper-left corner of the rectangle
+     * @default 0
+     */
     public y: number;
-    /** @default 0 */
+
+    /**
+     * The overall width of this rectangle
+     *  @default 0
+     */
     public width: number;
 
-    /** @default 0 */
+    /**
+     * The overall height of this rectangle
+     * @default 0
+     */
     public height: number;
 
     /**

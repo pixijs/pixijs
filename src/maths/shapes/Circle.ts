@@ -3,16 +3,28 @@ import { Rectangle } from './Rectangle';
 import type { SHAPE_PRIMITIVE } from '../misc/const';
 import type { ShapePrimitive } from './ShapePrimitive';
 
-/** The Circle object is used to help draw graphics and can also be used to specify a hit area for containers. */
+/**
+ * The Circle object is used to help draw graphics and can also be used to specify a hit area for containers.
+ * @memberof maths
+ */
 export class Circle implements ShapePrimitive
 {
-    /** @default 0 */
+    /**
+     * The X coordinate of the center of this circle
+     * @default 0
+     */
     public x: number;
 
-    /** @default 0 */
+    /**
+     * The Y coordinate of the center of this circle
+     * @default 0
+     */
     public y: number;
 
-    /** @default 0 */
+    /**
+     * The radius of the circle
+     *  @default 0
+     */
     public radius: number;
 
     /**

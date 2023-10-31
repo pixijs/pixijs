@@ -550,6 +550,7 @@ export class Ticker
      * };
      * animate(performance.now());
      * @member {Ticker}
+     * @readonly
      * @static
      */
     static get shared(): Ticker

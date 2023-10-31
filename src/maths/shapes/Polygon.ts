@@ -4,7 +4,10 @@ import type { SHAPE_PRIMITIVE } from '../misc/const';
 import type { PointData } from '../point/PointData';
 import type { ShapePrimitive } from './ShapePrimitive';
 
-/** A class to define a shape via user defined coordinates. */
+/**
+ * A class to define a shape via user defined coordinates.
+ * @memberof maths
+ */
 export class Polygon implements ShapePrimitive
 {
     /** An array of the points of this polygon. */
@@ -21,7 +24,6 @@ export class Polygon implements ShapePrimitive
 
     constructor(points: PointData[] | number[]);
     constructor(...points: PointData[] | number[]);
-
     /**
      * @param {PointData[]|number[]} points - This can be an array of Points
      *  that form the polygon, a flat array of numbers that will be interpreted as [x,y, x,y, ...], or

@@ -5,22 +5,38 @@ import type { ShapePrimitive } from './ShapePrimitive';
 /**
  * The Rounded Rectangle object is an area that has nice rounded corners, as indicated by its
  * top-left corner point (x, y) and by its width and its height and its radius.
+ * @memberof maths
  */
 export class RoundedRectangle implements ShapePrimitive
 {
-    /** @default 0 */
+    /**
+     * The X coordinate of the upper-left corner of the rounded rectangle
+     * @default 0
+     */
     public x: number;
 
-    /** @default 0 */
+    /**
+     * The Y coordinate of the upper-left corner of the rounded rectangle
+     * @default 0
+     */
     public y: number;
 
-    /** @default 0 */
+    /**
+     * The overall width of this rounded rectangle
+     * @default 0
+     */
     public width: number;
 
-    /** @default 0 */
+    /**
+     * The overall height of this rounded rectangle
+     * @default 0
+     */
     public height: number;
 
-    /** @default 20 */
+    /**
+     * Controls the radius of the rounded corners
+     * @default 20
+     */
     public radius: number;
 
     /**

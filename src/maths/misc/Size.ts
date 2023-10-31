@@ -1,4 +1,7 @@
-/** Defines a size with a width and a height. */
+/**
+ * Defines a size with a width and a height.
+ * @memberof maths
+ */
 export interface Size
 {
     /** The width. */
