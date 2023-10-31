@@ -1,5 +1,9 @@
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 
+/**
+ * The different topology types supported by the renderer used to describe how the geometry should be renderer
+ * @memberof rendering
+ */
 export type Topology =
     'point-list'
     | 'line-list'
@@ -25,6 +29,10 @@ export const DRAW_MODES = new Proxy(DEPRECATED_DRAW_MODES, {
     },
 });
 
+/**
+ * The different types of vertex formats supported by the renderer
+ * @memberof rendering
+ */
 export type VertexFormat =
     | 'uint8x2'
     | 'uint8x4'
