@@ -10,7 +10,7 @@ describe('Container#getGlobalPosition', () =>
         expect(obj.getGlobalPosition).toBeInstanceOf(Function);
     });
 
-    it('should return correct global coordinates of a displayObject, without depending on its pivot', () =>
+    it('should return correct global coordinates of a container, without depending on its pivot', () =>
     {
         const parent = new Container();
         const container = new Container();
