@@ -10,7 +10,7 @@ describe('DisplayObject#getGlobalPosition', () =>
         expect(obj.getGlobalPosition).toBeInstanceOf(Function);
     });
 
-    it.skip('should return correct global coordinates of a displayObject, without depending on its pivot', () =>
+    it('should return correct global coordinates of a displayObject, without depending on its pivot', () =>
     {
         const parent = new Container();
         const container = new Container();
@@ -31,9 +31,10 @@ describe('DisplayObject#getGlobalPosition', () =>
         // check but skipUpdate
 
         parent.position.set(200, 200);
+        // not strictly skipUpdate, more like use scene graph values...
         globalPoint = container.getGlobalPosition(globalPoint, true);
 
-        expect(globalPoint.x).toEqual(80); // currently returning x=10, is this a bug?
-        expect(globalPoint.y).toEqual(160); // currently returning y=-30, is this a bug?
+        expect(globalPoint.x).toEqual(10); // this is the containers values from above unchanged
+        expect(globalPoint.y).toEqual(-30); // this is the containers values from above unchanged
     });
 });
