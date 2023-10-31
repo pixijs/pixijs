@@ -24,7 +24,6 @@ export class GraphicsContextRenderData
 
     public init()
     {
-        this.geometry.reset();
         this.instructions.reset();
     }
 }
