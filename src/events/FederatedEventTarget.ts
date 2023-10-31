@@ -632,7 +632,7 @@ export const FederatedContainer: IFederatedContainer = {
     },
     set interactive(value: boolean)
     {
-        this.eventMode = value ? 'static' : 'passive';
+        this.eventMode = value ? 'static' : 'auto';
     },
     /**
      * @ignore
