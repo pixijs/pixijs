@@ -1,6 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 
-import type { Writeable } from '../../../utils/types';
 import type { Buffer } from '../shared/buffer/Buffer';
 import type { BufferResource } from '../shared/buffer/BufferResource';
 import type { UniformGroup } from '../shared/shader/UniformGroup';
@@ -133,8 +132,6 @@ export class BindGroupSystem implements System
 
         this._hash = null;
 
-        const writeable = this as Writeable<typeof this, '_renderer'>;
-
-        writeable._renderer = null;
+        (this._renderer as null) = null;
     }
 }

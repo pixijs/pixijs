@@ -47,13 +47,6 @@ export class SpriteView implements View
 
         if (this._texture === value) return;
 
-        if (this._texture)
-        {
-            this._texture.off('update', this.onUpdate, this);
-        }
-
-        value.on('update', this.onUpdate, this);
-
         this._texture = value;
 
         this.onUpdate();

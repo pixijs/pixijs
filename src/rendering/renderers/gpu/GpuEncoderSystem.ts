@@ -1,7 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 
 import type { Rectangle } from '../../../maths/shapes/Rectangle';
-import type { Writeable } from '../../../utils/types';
 import type { Buffer } from '../shared/buffer/Buffer';
 import type { Topology } from '../shared/geometry/const';
 import type { Geometry } from '../shared/geometry/Geometry';
@@ -273,9 +272,7 @@ export class GpuEncoderSystem implements System
 
     public destroy()
     {
-        const writeable = this as Writeable<typeof this, '_renderer'>;
-
-        writeable._renderer = null;
+        (this._renderer as null) = null;
         this._gpu = null;
         this._boundBindGroup = null;
         this._boundVertexBuffer = null;

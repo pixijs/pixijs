@@ -556,14 +556,18 @@ export class EventSystem implements System<EventSystemOptions>
 
         const style = this.domElement.style as CrossCSSStyleDeclaration;
 
-        if ((globalThis.navigator as any).msPointerEnabled)
+        // offscreen canvas does not have style, so check first
+        if (style)
         {
-            style.msContentZooming = '';
-            style.msTouchAction = '';
-        }
-        else if (this.supportsPointerEvents)
-        {
-            style.touchAction = '';
+            if ((globalThis.navigator as any).msPointerEnabled)
+            {
+                style.msContentZooming = '';
+                style.msTouchAction = '';
+            }
+            else if (this.supportsPointerEvents)
+            {
+                style.touchAction = '';
+            }
         }
 
         if (this.supportsPointerEvents)

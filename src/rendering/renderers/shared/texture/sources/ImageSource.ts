@@ -53,6 +53,7 @@ ctx.fill();
 Texture.WHITE = new Texture({
     source: new ImageSource({
         resource: canvas,
+        alphaMode: 'premultiply-alpha-on-upload'
     }),
 });
 

@@ -14,7 +14,6 @@ import { mapFormatToGlType } from './utils/mapFormatToGlType';
 import { unpremultiplyAlpha } from './utils/unpremultiplyAlpha';
 
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
-import type { Writeable } from '../../../../utils/types';
 import type { System } from '../../shared/system/System';
 import type { CanvasGenerator, GetPixelsOutput } from '../../shared/texture/GenerateCanvas';
 import type { TextureSource } from '../../shared/texture/sources/TextureSource';
@@ -382,9 +381,15 @@ export class GlTextureSystem implements System, CanvasGenerator
 
     public destroy(): void
     {
-        const writeable = this as Writeable<typeof this, '_renderer'>;
+        // we copy the array as the array with a slice as onSourceDestroy
+        // will remove the source from the real managedTextures array
+        this.managedTextures
+            .slice()
+            .forEach((source) => this.onSourceDestroy(source));
 
-        writeable._renderer = null;
+        (this.managedTextures as null) = null;
+
+        (this._renderer as null) = null;
     }
 }
 

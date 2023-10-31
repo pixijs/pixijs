@@ -280,21 +280,20 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
     public destroy(): void
     {
-        for (const k of Object.keys(this._gpuSources))
-        {
-            const key = Number(k);
-            const gpuTexture = this._gpuSources[key];
+        // we copy the array as the aarry with a slice as onSourceDestroy
+        // will remove the source from the real managedTextures array
+        this.managedTextures
+            .slice()
+            .forEach((source) => this.onSourceDestroy(source));
 
-            gpuTexture.destroy();
-            this._gpuSources[key] = null;
-        }
+        (this.managedTextures as null) = null;
 
         for (const k of Object.keys(this._bindGroupHash))
         {
             const key = Number(k);
             const bindGroup = this._bindGroupHash[key];
 
-            bindGroup.destroy();
+            bindGroup?.destroy();
             this._bindGroupHash[key] = null;
         }
 

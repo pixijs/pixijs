@@ -9,12 +9,11 @@ import {
     generateTextureBatchBit,
     generateTextureBatchBitGl
 } from '../../../rendering/high-shader/shader-bits/generateTextureBatchBit';
-import { localUniformBitGl } from '../../../rendering/high-shader/shader-bits/localUniformBit';
 import { roundPixelsBit, roundPixelsBitGl } from '../../../rendering/high-shader/shader-bits/roundPixelsBit';
 import { batchSamplersUniformGroup } from '../../../rendering/renderers/gl/shader/batchSamplersUniformGroup';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
-import { localUniformMSDFBit } from './shader-bits/localUniformMSDFBit';
+import { localUniformMSDFBit, localUniformMSDFBitGl } from './shader-bits/localUniformMSDFBit';
 import { mSDFBit, mSDFBitGl } from './shader-bits/mSDFBit';
 
 export class SdfShader extends Shader
@@ -44,7 +43,7 @@ export class SdfShader extends Shader
             bits: [
                 colorBitGl,
                 generateTextureBatchBitGl(MAX_TEXTURES),
-                localUniformBitGl,
+                localUniformMSDFBitGl,
                 mSDFBitGl,
                 roundPixelsBitGl,
             ]

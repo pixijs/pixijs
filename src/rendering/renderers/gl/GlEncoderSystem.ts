@@ -1,6 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 
-import type { Writeable } from '../../../utils/types';
 import type { Topology } from '../shared/geometry/const';
 import type { Geometry } from '../shared/geometry/Geometry';
 import type { Shader } from '../shared/shader/Shader';
@@ -64,8 +63,6 @@ export class GlEncoderSystem implements System
 
     public destroy()
     {
-        const writeable = this as Writeable<typeof this, '_renderer'>;
-
-        writeable._renderer = null;
+        (this._renderer as null) = null;
     }
 }
