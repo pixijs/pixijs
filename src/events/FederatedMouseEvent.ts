@@ -5,7 +5,10 @@ import type { PointData } from '../maths/point/PointData';
 import type { Container } from '../scene/container/Container';
 import type { PixiTouch } from './FederatedEvent';
 
-/** A {@link FederatedEvent} for mouse events. */
+/**
+ * A {@link FederatedEvent} for mouse events.
+ * @memberof events
+ */
 export class FederatedMouseEvent extends FederatedEvent<
 MouseEvent | PointerEvent | PixiTouch
 > implements MouseEvent

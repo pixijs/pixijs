@@ -82,8 +82,19 @@ export interface BatchableObject
 
 let BATCH_TICK = 0;
 
+export interface BatcherOptions
+{
+    vertexSize?: number;
+    indexSize?: number;
+}
+
 export class Batcher
 {
+    public static defaultOptions: BatcherOptions = {
+        vertexSize: 4,
+        indexSize: 6,
+    };
+
     public uid = uid('batcher');
     public attributeBuffer: ViewableBuffer;
     public indexBuffer: Uint32Array;
@@ -110,8 +121,12 @@ export class Batcher
     private _batchIndexStart: number;
     private _batchIndexSize: number;
 
-    constructor(vertexSize = 4, indexSize = 6)
+    constructor(options: BatcherOptions = {})
     {
+        options = { ...Batcher.defaultOptions, ...options };
+
+        const { vertexSize, indexSize } = options;
+
         this.attributeBuffer = new ViewableBuffer(vertexSize * this._vertexSize * 4);
 
         this.indexBuffer = new Uint32Array(indexSize);
@@ -321,16 +336,24 @@ export class Batcher
         this.break(instructionSet);
     }
 
+    /**
+     * Resizes the attribute buffer to the given size (1 = 1 float32)
+     * @param size - the size in vertices to ensure (not bytes!)
+     */
     public ensureAttributeBuffer(size: number)
     {
-        if (size * 4 < this.attributeBuffer.size) return;
+        if (size * 4 <= this.attributeBuffer.size) return;
 
         this._resizeAttributeBuffer(size * 4);
     }
 
+    /**
+     * Resizes the index buffer to the given size (1 = 1 float32)
+     * @param size - the size in vertices to ensure (not bytes!)
+     */
     public ensureIndexBuffer(size: number)
     {
-        if (size < this.indexBuffer.length) return;
+        if (size <= this.indexBuffer.length) return;
 
         this._resizeIndexBuffer(size);
     }

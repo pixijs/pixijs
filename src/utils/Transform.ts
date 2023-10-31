@@ -126,7 +126,7 @@ export class Transform
     // #if _DEBUG
     public toString(): string
     {
-        return `[@pixi/math:Transform `
+        return `[pixi.js/math:Transform `
             + `position=(${this.position.x}, ${this.position.y}) `
             + `rotation=${this.rotation} `
             + `scale=(${this.scale.x}, ${this.scale.y}) `

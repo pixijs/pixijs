@@ -146,7 +146,7 @@ export const TextFormat = {
             const charNode = char[i];
             const id = parseInt(charNode.id, 10);
 
-            let letter = charNode.letter ?? charNode.char;
+            let letter = charNode.letter ?? charNode.char ?? String.fromCharCode(id);
 
             if (letter === 'space')letter = ' ';
 

@@ -7,8 +7,11 @@ const environments: { name: string; value: { test: () => boolean; load: () => Pr
 extensions.handleByNamedList(ExtensionType.Environment, environments);
 extensions.add(browserExt, webworkerExt);
 
-export type Environment = 'browser' & 'webworker' & string;
-
+/**
+ * Automatically detects the environment and loads the appropriate extensions.
+ * @param manageImports - whether to add the default imports to the bundle
+ * @memberof environment
+ */
 export async function autoDetectEnvironment(manageImports: boolean): Promise<void>
 {
     if (!manageImports) return;

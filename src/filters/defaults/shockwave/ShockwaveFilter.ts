@@ -11,6 +11,10 @@ import type { RenderSurface } from '../../../rendering/renderers/gpu/renderTarge
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { FilterSystem } from '../../FilterSystem';
 
+/**
+ * Options for ShockwaveFilter
+ * @memberof filters
+ */
 export interface ShockwaveFilterOptions
 {
     /**
@@ -54,12 +58,19 @@ export interface ShockwaveFilterOptions
  */
 export class ShockwaveFilter extends Filter
 {
+    /** Default shockwave filter options */
     public static readonly DEFAULT: ShockwaveFilterOptions = {
+        /** The `x` and `y` center coordinates to change the position of the center of the circle of effect. */
         center: { x: 0, y: 0 },
+        /** The speed about the shockwave ripples out. The unit is `pixel-per-second` */
         speed: 500,
+        /** The amplitude of the shockwave */
         amplitude: 30,
+        /** The wavelength of the shockwave */
         wavelength: 160,
+        /** The brightness of the shockwave */
         brightness: 1,
+        /** The maximum radius of shockwave. less than `0` means the max is an infinite distance */
         radius: -1,
     };
 

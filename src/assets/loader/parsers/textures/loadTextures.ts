@@ -83,7 +83,7 @@ export async function loadImageBitmap(url: string): Promise<ImageBitmap>
  * Which can be found [here]{@link assets.LoadTextureConfig}
  * ```js
  * // Set the config
- * import { loadTextures } from '@pixi/assets';
+ * import { loadTextures } from 'pixi.js';
  * loadTextures.config = {
  *    // If true we will use a worker to load the ImageBitmap
  *    preferWorkers: true,

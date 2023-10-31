@@ -14,10 +14,16 @@ import type { PointData } from '../../../maths/point/PointData';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { FilterSystem } from '../../FilterSystem';
 
+/**
+ * Options for DisplacementFilter
+ * @memberof filters
+ */
 export interface DisplacementFilterOptions
 {
+    /** The texture used for the displacement map. */
     sprite: Sprite,
-    scale?: number | { x: number, y: number },
+    /** The scale of the displacement. */
+    scale?: number | PointData,
 }
 
 /**
@@ -95,6 +101,13 @@ export class DisplacementFilter extends Filter
         this._sprite.renderable = false;
     }
 
+    /**
+     * Applies the filter.
+     * @param filterManager - The manager.
+     * @param input - The input target.
+     * @param output - The output target.
+     * @param clearMode - clearMode.
+     */
     public apply(
         filterManager: FilterSystem,
         input: Texture,
@@ -127,6 +140,7 @@ export class DisplacementFilter extends Filter
         filterManager.applyFilter(this, input, output, clearMode);
     }
 
+    /** scaleX, scaleY for displacements */
     get scale(): Point
     {
         return this.resources.filterUniforms.uniforms.scale as Point;

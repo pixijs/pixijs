@@ -10,11 +10,28 @@ import type { Texture } from '../../../rendering/renderers/shared/texture/Textur
 import type { FilterOptions } from '../../Filter';
 import type { FilterSystem } from '../../FilterSystem';
 
+/**
+ * Options for BlurFilter
+ * @memberof filters
+ */
 export interface BlurFilterOptions extends Partial<FilterOptions>
 {
+    /**
+     * The strength of the blur filter.
+     * @default 8
+     */
     strength?: number;
+    /**
+     * The quality of the blur filter.
+     * @default 4
+     */
     quality?: number;
+    /** The resolution of the blur filter. */
     resolution?: number;
+    /**
+     * The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
+     * @default 5
+     */
     kernelSize?: number;
 }
 
@@ -25,9 +42,13 @@ export interface BlurFilterOptions extends Partial<FilterOptions>
  */
 export class BlurFilter extends Filter
 {
+    /** Default blur filter options */
     public static defaultOptions: Partial<BlurFilterOptions> = {
+        /** The strength of the blur filter. */
         strength: 8,
+        /** The quality of the blur filter. */
         quality: 4,
+        /** The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15. */
         kernelSize: 5,
     };
 

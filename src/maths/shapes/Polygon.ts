@@ -164,7 +164,7 @@ export class Polygon implements ShapePrimitive
     // #if _DEBUG
     public toString(): string
     {
-        return `[@pixi/math:Polygon`
+        return `[pixi.js/math:Polygon`
             + `closeStroke=${this.closePath}`
             + `points=${this.points.reduce((pointsDesc, currentPoint) => `${pointsDesc}, ${currentPoint}`, '')}]`;
     }

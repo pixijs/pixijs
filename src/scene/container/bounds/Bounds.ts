@@ -354,7 +354,7 @@ export class Bounds
     public toString(): string
     {
         // eslint-disable-next-line max-len
-        return `[@pixi:Bounds minX=${this.minX} minY=${this.minY} maxX=${this.maxX} maxY=${this.maxY} width=${this.width} height=${this.height}]`;
+        return `[pixi.js:Bounds minX=${this.minX} minY=${this.minY} maxX=${this.maxX} maxY=${this.maxY} width=${this.width} height=${this.height}]`;
     }
 }
 

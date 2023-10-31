@@ -302,7 +302,7 @@ export class AccessibilitySystem implements System
     }
 
     /**
-     * Runner postrender was called, ensure that all divs are mapped correctly to their DisplayObjects.
+     * Runner postrender was called, ensure that all divs are mapped correctly to their Containers.
      * Only fires while active.
      * @ignore
      */

@@ -42,16 +42,16 @@ describe('AccessibilitySystem', () =>
         }, 0);
     });
 
-    it('should not crash when scene graph contains DisplayObjects without children', async (done) =>
+    it('should not crash when scene graph contains Containers without children', async (done) =>
     {
-        class CompleteDisplayObject extends Container
+        class CompleteContainer extends Container
         {
             calculateBounds() { /* noop */ }
             render() { /* noop */ }
         }
 
         const renderer = await getRenderer();
-        const stage = new Container().addChild(new CompleteDisplayObject());
+        const stage = new Container().addChild(new CompleteContainer());
         const system = new AccessibilitySystem(renderer);
 
         globalThis.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 9, key: 'tab' }));
