@@ -109,6 +109,11 @@ export type FederatedEventHandler<T= FederatedPointerEvent> = (event: T) => void
  * - `'auto'`: Does not emit events but is hit tested if parent is interactive. Same as `interactive = false` in v7
  * - `'static'`: Emit events and is hit tested. Same as `interaction = true` in v7
  * - `'dynamic'`: Emits events and is hit tested but will also receive mock interaction events fired from a ticker to
+ * allow for interaction when the mouse isn't moving
+ *
+ * `none` and `passive` are useful for optimizing interaction events on objects as it reduces the number of hit tests
+ * PixiJS has to do. `auto` is useful for when you want to recreate how the DOM handles interaction events with
+ * `pointer-events: auto`.
  * @since 7.2.0
  * @memberof events
  */

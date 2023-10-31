@@ -1,9 +1,7 @@
 /**
- * A SystemRunner is a highly performant and simple alternative to signals. Best used in situations
- * where events are dispatched to many objects at high frequency (say every frame!)
+ * SystemRunner is used internally by the renderers as an efficient way for systems to
+ * be notified about what the renderer is up to during the rendering phase.
  *
- *
- * like a signal..
  * ```
  * import { SystemRunner } from 'pixi.js';
  *

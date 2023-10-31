@@ -9,13 +9,13 @@ import { FederatedContainer } from './FederatedEventTarget';
  * Adding support for mouse and touch events to your project is simple and consistent.
  *
  * The new event-based system that replaced InteractionManager from v6 has expanded the definition of what a
- * DisplayObject means to be interactive. With this we have introduced `eventMode` which allows you to control
+ * Container means to be interactive. With this we have introduced `eventMode` which allows you to control
  * how an object responds to interaction events.
  * This is similar to the `interactive` property in v6 but with more options.
  *
  * ### Event Modes
  *
- * The new event-based system that replaced InteractionManager from v6 has expanded the definition of what a DisplayObject
+ * The new event-based system that replaced InteractionManager from v6 has expanded the definition of what a Container
  *  means to be interactive. With this we have introduced `eventMode` which allows you to control how an object responds
  * to interaction events. This is similar to the `interactive` property in v6 but with more options.
  *
@@ -72,7 +72,7 @@ import { FederatedContainer } from './FederatedEventTarget';
  *
  * ### Enabling Interaction
  *
- * Any DisplayObject-derived object (Sprite, Container, etc.) can become interactive simply by setting its `eventMode` property to any of
+ * Any Container-derived object (Sprite, Container, etc.) can become interactive simply by setting its `eventMode` property to any of
  * the eventModes listed above. Doing so will cause the object to emit interaction events that can be responded to in order to drive your project's behavior.
  *
  * Check out the [interaction example code](/examples/events/click).
@@ -80,12 +80,12 @@ import { FederatedContainer } from './FederatedEventTarget';
  * To respond to clicks and taps, bind to the events fired on the object, like so:
  *
  * ```javascript
- * let sprite = PIXI.Sprite.from('/some/texture.png');
+ * let sprite = Sprite.from('/some/texture.png');
  * sprite.on('pointerdown', (event) => { alert('clicked!'); });
  * sprite.eventMode = 'static';
  * ```
  *
- * Check out the [DisplayObject](https://pixijs.download/release/docs/PIXI.DisplayObject.html) for the list of interaction events supported.
+ * Check out the [Container](https://pixijs.download/release/docs/Container.html) for the list of interaction events supported.
  * @namespace events
  */
 /* eslint-enable max-len */
