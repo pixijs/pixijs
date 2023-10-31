@@ -1,6 +1,6 @@
 import { Container } from '../../src/scene/container/Container';
 
-describe('DisplayObject#getGlobalPosition', () =>
+describe('Container#getGlobalPosition', () =>
 {
     it('should exist', () =>
     {

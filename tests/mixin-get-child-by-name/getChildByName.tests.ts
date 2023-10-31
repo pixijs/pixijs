@@ -1,7 +1,7 @@
 import { Container } from '../../src/scene/container/Container';
 // import '../../src/scene/container/container-mixins/findMixin';
 
-describe('DisplayObject#name', () =>
+describe('Container#name', () =>
 {
     it('should contain property', () =>
     {
