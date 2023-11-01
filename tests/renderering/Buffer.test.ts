@@ -72,7 +72,7 @@ describe('Buffer', () =>
         buffer.on('change', changeObserver);
         buffer.on('update', updateObserver);
 
-        buffer.setData(new Float32Array([1, 2, 3, 4]));
+        buffer.setDataWithSize(new Float32Array([1, 2, 3, 4]), 4);
 
         expect(changeObserver).toHaveBeenCalled();
         expect(updateObserver).not.toHaveBeenCalled();
@@ -84,7 +84,7 @@ describe('Buffer', () =>
         changeObserver.mockClear();
         updateObserver.mockClear();
 
-        buffer.setData(new Float32Array([1, 2, 3]));
+        buffer.setDataWithSize(new Float32Array([1, 2, 3]), 3);
 
         expect(changeObserver).toHaveBeenCalled();
         expect(updateObserver).not.toHaveBeenCalled();
@@ -94,7 +94,7 @@ describe('Buffer', () =>
         changeObserver.mockClear();
         updateObserver.mockClear();
 
-        buffer.setData(new Float32Array([4, 5, 6]));
+        buffer.setDataWithSize(new Float32Array([4, 5, 6]), 3);
 
         expect(changeObserver).not.toHaveBeenCalled();
         expect(updateObserver).toHaveBeenCalled();
@@ -104,7 +104,7 @@ describe('Buffer', () =>
         changeObserver.mockClear();
         updateObserver.mockClear();
 
-        buffer.setData(new Float32Array([4, 5, 6]), 2);
+        buffer.setDataWithSize(new Float32Array([4, 5, 6]), 2);
 
         expect(changeObserver).not.toHaveBeenCalled();
         expect(updateObserver).toHaveBeenCalled();
@@ -129,7 +129,7 @@ describe('Buffer', () =>
 
         // grow the buffer...
 
-        buffer.setData(new Float32Array([1, 2, 3, 4]));
+        buffer.setDataWithSize(new Float32Array([1, 2, 3, 4]), 4);
 
         expect(changeObserver).toHaveBeenCalled();
         expect(updateObserver).not.toHaveBeenCalled();
@@ -141,7 +141,7 @@ describe('Buffer', () =>
         changeObserver.mockClear();
         updateObserver.mockClear();
 
-        buffer.setData(new Float32Array([1, 2, 3]));
+        buffer.setDataWithSize(new Float32Array([1, 2, 3]), 3);
 
         expect(changeObserver).not.toHaveBeenCalled();
         expect(updateObserver).toHaveBeenCalled();
@@ -160,7 +160,7 @@ describe('Buffer', () =>
             shrinkToFit: false,
         });
 
-        buffer.setData(data, 2);
+        buffer.setDataWithSize(data, 2);
 
         expect(buffer.descriptor.size).toBe(3 * 4);
         expect(buffer._updateSize).toBe(2 * 4);

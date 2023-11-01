@@ -194,7 +194,7 @@ export class Buffer extends EventEmitter<{
 
     set data(value: TypedArray)
     {
-        this.setData(value, value.length);
+        this.setDataWithSize(value, value.length);
     }
 
     /**
@@ -203,15 +203,12 @@ export class Buffer extends EventEmitter<{
      * @param value - the data to set
      * @param size - the size of the data in bytes
      */
-    public setData(value: TypedArray, size?: number)
+    public setDataWithSize(value: TypedArray, size: number)
     {
         // Increment update ID
         this._updateID++;
 
-        // Calculate size in bytes
-        const sizeInBytes = size ? (size * value.BYTES_PER_ELEMENT) : value.byteLength;
-
-        this._updateSize = sizeInBytes;
+        this._updateSize = (size * value.BYTES_PER_ELEMENT);
 
         // If the data hasn't changed, early return after emitting 'update'
         if (this._data === value)
