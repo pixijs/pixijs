@@ -264,7 +264,7 @@ describe('Sprite', () =>
 
     describe('tint', () =>
     {
-        it.only('should support ColorSource inputs', () =>
+        it('should support ColorSource inputs', () =>
         {
             const sprite = new Sprite(Texture.WHITE);
 
