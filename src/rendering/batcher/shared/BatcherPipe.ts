@@ -81,10 +81,9 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
 
         activeBatch.finish(instructionSet);
 
-        geometry.indexBuffer.data = activeBatch.indexBuffer;
-        geometry.indexBuffer.update(activeBatch.indexSize * 4);
+        geometry.indexBuffer.setDataWithSize(activeBatch.indexBuffer, activeBatch.indexSize, true);
 
-        geometry.buffers[0].data = activeBatch.attributeBuffer.float32View;
+        geometry.buffers[0].setDataWithSize(activeBatch.attributeBuffer.float32View, activeBatch.attributeSize, false);
     }
 
     public upload(instructionSet: InstructionSet)

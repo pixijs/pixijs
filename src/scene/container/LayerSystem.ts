@@ -100,7 +100,6 @@ export class LayerSystem implements System
         if (renderPipes.uniformBatch)
         {
             renderPipes.uniformBatch.renderEnd();
-            renderPipes.uniformBuffer.renderEnd();
         }
     }
 
