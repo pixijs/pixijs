@@ -2,13 +2,10 @@ import { Assets } from '../../src/assets/Assets';
 import { loadTextures } from '../../src/assets/loader/parsers/textures/loadTextures';
 import { extensions } from '../../src/extensions/Extensions';
 import { Texture } from '../../src/rendering/renderers/shared/texture/Texture';
+import { basePath } from './basePath';
 
 describe('Assets', () =>
 {
-    const basePath = process.env.GITHUB_ACTIONS
-        ? `https://raw.githubusercontent.com/pixijs/pixijs/${process.env.GITHUB_SHA}/tests/assets/assets/`
-        : 'http://localhost:8080/tests/assets/assets/';
-
     beforeEach(() =>
     {
         // reset the loader

@@ -821,10 +821,17 @@ export class Resolver
         formattedAsset.src = this._appendDefaultSearchParams(formattedAsset.src);
         formattedAsset.data = { ...assetData || {}, ...formattedAsset.data };
         formattedAsset.loadParser = loadParser ?? formattedAsset.loadParser;
-        formattedAsset.format = format ?? formattedAsset.format ?? formattedAsset.src.split('.').pop();
+        formattedAsset.format = format ?? formattedAsset.format ?? getUrlExtension(formattedAsset.src);
         formattedAsset.srcs = formattedAsset.src;
         formattedAsset.name = formattedAsset.alias;
 
         return formattedAsset;
     }
+}
+
+export function getUrlExtension(url: string)
+{
+    return url.split('.').pop().split('?').shift()
+        .split('#')
+        .shift();
 }

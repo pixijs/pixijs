@@ -4,6 +4,7 @@ import { VideoSource } from '../../../src/rendering/renderers/shared/texture/sou
 import '../../../src/environment/browser/browserAll';
 
 import type { VideoSourceOptions } from '../../../src/rendering/renderers/shared/texture/sources/VideoSource';
+import type { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
 
 const url = path.resolve(__dirname, '../../assets/assets/video', 'park.mp4');
 
@@ -11,11 +12,11 @@ describe('VideoSource', () =>
 {
     const setup = async (options?: VideoSourceOptions, forceUrl?: string) =>
     {
-        const texture = await Assets.load({
+        const texture = await Assets.load<Texture>({
             src: forceUrl ?? url,
             data: options
         });
-        const source = texture.source;
+        const source = texture.source as VideoSource;
         const sourceElement = source.resource.firstElementChild as HTMLSourceElement;
 
         return { source, sourceElement };
@@ -125,13 +126,16 @@ describe('VideoSource', () =>
 
     it('should wait until fully loaded if preload option is true', async () =>
     {
-        const { source } = await setup({ preload: true, autoLoad: false });
-        const spy = jest.spyOn(source.resource, 'addEventListener');
+        const { source } = await setup({ preload: true, autoLoad: false }); // autoLoad=false to give us time to add spies
+        const mediaReadySpy = jest.spyOn(source as any, '_mediaReady');
+        const canPlaySpy = jest.spyOn(source as any, '_onCanPlay');
+        const canPlayThroughSpy = jest.spyOn(source as any, '_onCanPlayThrough');
 
         await source.load();
 
-        expect(spy).toHaveBeenCalledWith('canplaythrough', expect.any(Function));
-        expect(spy).not.toHaveBeenCalledWith('canplay', expect.any(Function));
+        expect(mediaReadySpy).toHaveBeenCalled();
+        expect(canPlaySpy).not.toHaveBeenCalled();
+        expect(canPlayThroughSpy).not.toHaveBeenCalled();
     });
 });
 
