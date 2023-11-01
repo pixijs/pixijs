@@ -2,7 +2,7 @@ import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { emptyViewObserver } from '../../rendering/renderers/shared/view/View';
 import { uid } from '../../utils/data/uid';
-import { Transform } from '../../utils/Transform';
+import { Transform } from '../../utils/misc/Transform';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';

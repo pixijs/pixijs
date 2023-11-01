@@ -1,5 +1,5 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { unsafeEvalSupported } from '../../../../utils/unsafeEvalSupported';
+import { unsafeEvalSupported } from '../../../../utils/browser/unsafeEvalSupported';
 import { generateUniformsSync } from './program/generateUniformsSync';
 
 import type { UniformGroup } from '../../shared/shader/UniformGroup';

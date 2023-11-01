@@ -1,5 +1,5 @@
 import { uid } from '../../../utils/data/uid';
-import { ViewableBuffer } from '../../../utils/ViewableBuffer';
+import { ViewableBuffer } from '../../../utils/data/ViewableBuffer';
 import { fastCopy } from '../../renderers/shared/buffer/utils/fastCopy';
 import { type BLEND_MODES } from '../../renderers/shared/state/const';
 import { getAdjustedBlendModeBlend } from '../../renderers/shared/state/getAdjustedBlendModeBlend';

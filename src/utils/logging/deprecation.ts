@@ -3,7 +3,10 @@ import type { Dict } from '../types';
 // A map of warning messages already fired
 const warnings: Dict<boolean> = {};
 
-/** deprecation name for version 8.0.0 */
+/**
+ * deprecation name for version 8.0.0
+ * @ignore
+ */
 export const v8_0_0 = '8.0.0';
 
 /**

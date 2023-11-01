@@ -2,7 +2,7 @@
 import { PI_2 } from '../misc/const';
 import { Point } from '../point/Point';
 
-import type { Transform } from '../../utils/Transform';
+import type { Transform } from '../../utils/misc/Transform';
 import type { PointData } from '../point/PointData';
 
 /**

@@ -2,7 +2,7 @@ import EventEmitter from 'eventemitter3';
 import { Cache } from '../../../../assets/cache/Cache';
 import { uid } from '../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
-import { NOOP } from '../../../../utils/NOOP';
+import { NOOP } from '../../../../utils/misc/NOOP';
 import { resourceToTexture } from './sources/resourceToTexture';
 import { TextureSource } from './sources/TextureSource';
 import { TextureLayout } from './TextureLayout';

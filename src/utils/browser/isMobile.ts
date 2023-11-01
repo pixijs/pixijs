@@ -4,6 +4,10 @@ import isMobileJs from 'ismobilejs';
 type isMobileJsType = typeof isMobileJs & { default?: typeof isMobileJs };
 const isMobileCall = (isMobileJs as isMobileJsType).default ?? isMobileJs;
 
+/**
+ * The result of the {@link utils.isMobile} function.
+ * @memberof utils
+ */
 export type isMobileResult = {
     apple: {
         phone: boolean;
@@ -40,4 +44,8 @@ export type isMobileResult = {
     any: boolean;
 };
 
+/**
+ * Detects whether the device is mobile and what type of mobile device it is.
+ * @memberof utils
+ */
 export const isMobile: isMobileResult = isMobileCall(globalThis.navigator);

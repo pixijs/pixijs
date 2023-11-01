@@ -4,7 +4,7 @@ let _isWebGPUSupported: boolean | undefined;
 
 /**
  * Helper for checking for WebGPU support.
- * @param options
+ * @param options - The options for requesting a GPU adapter.
  * @memberof utils
  * @function isWebGPUSupported
  * @returns Is WebGPU supported.

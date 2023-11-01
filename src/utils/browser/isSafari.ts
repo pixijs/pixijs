@@ -1,4 +1,4 @@
-import { DOMAdapter } from '../environment/adapter';
+import { DOMAdapter } from '../../environment/adapter';
 
 export function isSafari(): boolean
 {
