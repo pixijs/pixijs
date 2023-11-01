@@ -64,7 +64,7 @@ export const effectsMixin: Partial<Container> = {
         this._updateIsSimple();
     },
 
-    set mask(value: number | Container)
+    set mask(value: number | Container | null)
     {
         this._mask ||= { mask: null, effect: null };
 
