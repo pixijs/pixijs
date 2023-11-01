@@ -43,7 +43,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     public static defaultOptions: TextureSourceOptions = {
         resolution: 1,
         format: 'bgra8unorm',
-        alphaMode: 'no-premultiply-alpha',
+        alphaMode: 'premultiply-alpha-on-upload',
         dimensions: '2d',
         mipLevelCount: 1,
         autoGenerateMipmaps: false,
