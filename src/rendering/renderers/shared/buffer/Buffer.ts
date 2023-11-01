@@ -194,7 +194,7 @@ export class Buffer extends EventEmitter<{
 
     set data(value: TypedArray)
     {
-        this.setDataWithSize(value, value.length);
+        this.setDataWithSize(value, value.length, true);
     }
 
     /**
@@ -202,8 +202,9 @@ export class Buffer extends EventEmitter<{
      * If you only want to update a subset of the buffer, you can pass in the size of the data.
      * @param value - the data to set
      * @param size - the size of the data in bytes
+     * @param syncGPU - should the buffer be updated on the GPU immediately?
      */
-    public setDataWithSize(value: TypedArray, size: number)
+    public setDataWithSize(value: TypedArray, size: number, syncGPU: boolean)
     {
         // Increment update ID
         this._updateID++;
@@ -213,7 +214,7 @@ export class Buffer extends EventEmitter<{
         // If the data hasn't changed, early return after emitting 'update'
         if (this._data === value)
         {
-            this.emit('update', this);
+            if (syncGPU) this.emit('update', this);
 
             return;
         }
@@ -228,7 +229,7 @@ export class Buffer extends EventEmitter<{
         {
             if (!this.shrinkToFit && value.byteLength < oldData.byteLength)
             {
-                this.emit('update', this);
+                if (syncGPU) this.emit('update', this);
             }
             else
             {
@@ -240,7 +241,7 @@ export class Buffer extends EventEmitter<{
             return;
         }
 
-        this.emit('update', this);
+        if (syncGPU) this.emit('update', this);
     }
 
     /**
@@ -251,7 +252,8 @@ export class Buffer extends EventEmitter<{
      */
     public update(sizeInBytes?: number): void
     {
-        this._updateSize = sizeInBytes || this.descriptor.size;
+        this._updateSize = sizeInBytes ?? this._updateSize;
+
         this._updateID++;
 
         this.emit('update', this);

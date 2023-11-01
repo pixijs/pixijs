@@ -168,8 +168,8 @@ export class GraphicsContextSystem implements System
         // not to self - this works as we are assigning the batchers array buffer
         // once its up loaded - this buffer is then put back in the pool to be reused.
         // this mean we don't have to creating new Batchers for each graphics items
-        geometry.indexBuffer.setDataWithSize(batcher.indexBuffer, batcher.indexSize);
-        geometry.buffers[0].setDataWithSize(batcher.attributeBuffer.float32View, batcher.attributeSize);
+        geometry.indexBuffer.setDataWithSize(batcher.indexBuffer, batcher.indexSize, true);
+        geometry.buffers[0].setDataWithSize(batcher.attributeBuffer.float32View, batcher.attributeSize, true);
 
         const drawBatches = batcher.batches;
 
