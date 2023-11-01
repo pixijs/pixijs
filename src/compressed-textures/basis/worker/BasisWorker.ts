@@ -105,6 +105,7 @@ async function load(url: string): Promise<TextureSourceOptions>
         height: basisTexture.getImageHeight(0, 0),
         format: basisTranscodedTextureFormat,
         resource: levelBuffers,
+        alphaMode: 'no-premultiply-alpha'
     } as TextureSourceOptions;
 }
 

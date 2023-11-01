@@ -145,6 +145,7 @@ export function parseDDS(buffer: ArrayBuffer, supportedFormats: TEXTURE_FORMATS[
             width,
             height,
             resource: [new Uint8Array(buffer, dataOffset, width * height * bytesPerPixel)],
+            alphaMode: 'no-premultiply-alpha'
         };
     }
 
@@ -180,6 +181,7 @@ export function parseDDS(buffer: ArrayBuffer, supportedFormats: TEXTURE_FORMATS[
         width,
         height,
         resource: levelBuffers,
+        alphaMode: 'no-premultiply-alpha'
     };
 
     return textureOptions;
