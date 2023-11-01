@@ -22,6 +22,15 @@ export interface BufferOptions
     usage: number;
     /** a label for the buffer, this is useful for debugging */
     label?: string;
+    /**
+     * should the GPU buffer be shrunk when the data becomes smaller?
+     * changing this will cause the buffer to be destroyed and a new one created on the GPU
+     * this can be expensive, especially if the buffer is already big enough!
+     * setting this to false will prevent the buffer from being shrunk. This will yield better performance
+     * if you are constantly setting data that is changing size often.
+     * @default true
+     */
+    shrinkToFit?: boolean;
 }
 
 export interface BufferDescriptor
@@ -136,13 +145,23 @@ export class Buffer extends EventEmitter<{
     private _data: TypedArray;
 
     /**
+     * should the GPU buffer be shrunk when the data becomes smaller?
+     * changing this will cause the buffer to be destroyed and a new one created on the GPU
+     * this can be expensive, especially if the buffer is already big enough!
+     * setting this to false will prevent the buffer from being shrunk. This will yield better performance
+     * if you are constantly setting data that is changing size often.
+     * @default true
+     */
+    public shrinkToFit = true;
+
+    /**
      * Creates a new Buffer with the given options
      * @param options - the options for the buffer
      */
     constructor(options: BufferOptions)
     {
         let { data, size } = options;
-        const { usage, label } = options;
+        const { usage, label, shrinkToFit } = options;
 
         super();
 
@@ -163,6 +182,8 @@ export class Buffer extends EventEmitter<{
             mappedAtCreation,
             label,
         };
+
+        this.shrinkToFit = shrinkToFit ?? true;
     }
 
     /** @todo */
@@ -173,24 +194,53 @@ export class Buffer extends EventEmitter<{
 
     set data(value: TypedArray)
     {
-        if (this._data !== value)
+        this.setDataWithSize(value, value.length);
+    }
+
+    /**
+     * Sets the data in the buffer to the given value. This will immediately update the buffer on the GPU.
+     * If you only want to update a subset of the buffer, you can pass in the size of the data.
+     * @param value - the data to set
+     * @param size - the size of the data in bytes
+     */
+    public setDataWithSize(value: TypedArray, size: number)
+    {
+        // Increment update ID
+        this._updateID++;
+
+        this._updateSize = (size * value.BYTES_PER_ELEMENT);
+
+        // If the data hasn't changed, early return after emitting 'update'
+        if (this._data === value)
         {
-            const oldData = this._data;
+            this.emit('update', this);
 
-            this._data = value;
+            return;
+        }
 
-            if (oldData.length !== value.length)
-            {
-                this.descriptor.size = value.byteLength;
-                this._resourceId = uid('bufferResource');
+        // Cache old data and update to new value
+        const oldData = this._data;
 
-                this.emit('change', this);
-            }
-            else
+        this._data = value;
+
+        // Event handling
+        if (oldData.length !== value.length)
+        {
+            if (!this.shrinkToFit && value.byteLength < oldData.byteLength)
             {
                 this.emit('update', this);
             }
+            else
+            {
+                this.descriptor.size = value.byteLength;
+                this._resourceId = uid('bufferResource');
+                this.emit('change', this);
+            }
+
+            return;
         }
+
+        this.emit('update', this);
     }
 
     /**

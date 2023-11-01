@@ -15,12 +15,14 @@ export class BatchGeometry extends Geometry
             data: placeHolderBufferData,
             label: 'attribute-batch-buffer',
             usage: BufferUsage.VERTEX | BufferUsage.COPY_DST,
+            shrinkToFit: false,
         });
 
         const indexBuffer = new Buffer({
             data: placeHolderIndexData,
             label: 'index-batch-buffer',
             usage: BufferUsage.INDEX | BufferUsage.COPY_DST, // | BufferUsage.STATIC,
+            shrinkToFit: false,
         });
 
         const stride = vertexSize * 4;
