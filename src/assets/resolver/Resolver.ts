@@ -717,16 +717,9 @@ export class Resolver
                         {
                             const filteredAssets = assets.filter((asset) =>
                             {
-                                const priorityValue = asset[priorityKey as keyof ResolvedAsset];
-
-                                if (priorityValue)
+                                if (asset[priorityKey as keyof ResolvedAsset])
                                 {
-                                    // note: if the key is "format" and there are query params,
-                                    // then "format" will contain the query params as well,
-                                    // so we check inclusion rather than strict equality
-                                    return typeof priorityValue === 'string'
-                                        ? priorityValue.startsWith(value as string)
-                                        : priorityValue === value;
+                                    return asset[priorityKey as keyof ResolvedAsset] === value;
                                 }
 
                                 return false;
@@ -828,10 +821,17 @@ export class Resolver
         formattedAsset.src = this._appendDefaultSearchParams(formattedAsset.src);
         formattedAsset.data = { ...assetData || {}, ...formattedAsset.data };
         formattedAsset.loadParser = loadParser ?? formattedAsset.loadParser;
-        formattedAsset.format = format ?? formattedAsset.format ?? formattedAsset.src.split('.').pop();
+        formattedAsset.format = format ?? formattedAsset.format ?? getUrlExtension(formattedAsset.src);
         formattedAsset.srcs = formattedAsset.src;
         formattedAsset.name = formattedAsset.alias;
 
         return formattedAsset;
     }
+}
+
+export function getUrlExtension(url: string)
+{
+    return url.split('.').pop().split('?').shift()
+        .split('#')
+        .shift();
 }

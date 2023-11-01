@@ -1,6 +1,6 @@
 import { Assets } from '../../src/assets/Assets';
 import { resolveTextureUrl } from '../../src/assets/resolver/parsers/resolveTextureUrl';
-import { Resolver } from '../../src/assets/resolver/Resolver';
+import { getUrlExtension, Resolver } from '../../src/assets/resolver/Resolver';
 import { extensions, ExtensionType } from '../../src/extensions/Extensions';
 import { manifest } from './sampleManifest';
 
@@ -671,6 +671,13 @@ describe('Resolver', () =>
         resolver.setDefaultSearchParams('hello=world&lucky=23');
 
         expect(resolver.resolveUrl('my-image.png')).toBe('my-image.png?hello=world&lucky=23');
+    });
+
+    it('should parse url extensions correctly', () =>
+    {
+        expect(getUrlExtension('http://example.com/bunny.webp')).toBe('webp');
+        expect(getUrlExtension('http://example.com/bunny.webp?abc=123&efg=456')).toBe('webp');
+        expect(getUrlExtension('http://example.com/bunny.webp?abc#hash')).toBe('webp');
     });
 
     it('should be able to resolve format with query parameters', () =>
