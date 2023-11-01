@@ -28,6 +28,7 @@
     "prewatch": "npm run build",
     "postbuild": "rimraf \"src/**/index.ts\" --glob && npm run build:pkg",
     "watch": "nodemon --watch \"./src/*\" --exec \"npm run watch:build\" -e ts,js,vert,frag,wgsl,d.ts --ignore \"index.ts\"",
+    "watch:lib": "cross-env LIB_ONLY=1 nodemon --watch \"./src/*\" --exec \"npm run watch:build\" -e ts,js,vert,frag,wgsl,d.ts --ignore \"index.ts\"",
     "watch:build": "run-s build:index build:rollup build:tsc build:dts postbuild",
     "test": "run-s test:unit test:scene",
     "test:unit": "npx jest --silent",
