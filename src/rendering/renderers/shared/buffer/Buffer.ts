@@ -23,10 +23,10 @@ export interface BufferOptions
     /** a label for the buffer, this is useful for debugging */
     label?: string;
     /**
-     * should the GPU buffer bew shrunk when the data becomes smaller?
+     * should the GPU buffer be shrunk when the data becomes smaller?
      * changing this will cause the buffer to be destroyed and a new one created on the GPU
      * this can be expensive, especially if the buffer is already big enough!
-     * setting ts to false will prevent the buffer from being shrunk. This will yield better performance
+     * setting this to false will prevent the buffer from being shrunk. This will yield better performance
      * if you are constantly setting data that is changing size often.
      * @default true
      */
@@ -145,10 +145,10 @@ export class Buffer extends EventEmitter<{
     private _data: TypedArray;
 
     /**
-     * should the GPU buffer bew shrunk when the data becomes smaller?
+     * should the GPU buffer be shrunk when the data becomes smaller?
      * changing this will cause the buffer to be destroyed and a new one created on the GPU
      * this can be expensive, especially if the buffer is already big enough!
-     * setting ts to false will prevent the buffer from being shrunk. This will yield better performance
+     * setting this to false will prevent the buffer from being shrunk. This will yield better performance
      * if you are constantly setting data that is changing size often.
      * @default true
      */
