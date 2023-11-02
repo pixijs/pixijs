@@ -4,11 +4,34 @@ import { TickerListener } from './TickerListener';
 export type TickerCallback<T> = (this: T, ticker: Ticker) => any;
 
 /**
+ * Tickers provide periodic callbacks based on a clock.
+ * Your game update logic will generally be run in response to a tick once per frame.
+ * You can have multiple tickers in use at one time.
+ * ```js
+ * import { Ticker } from 'pixi.js';
+ *
+ * const ticker = new Ticker();
+ * ticker.add((ticker) => {
+ *    // do something every frame
+ * });
+ * ticker.start();
+ *
+ * // or use the shared ticker instance *
+ * Ticker.shared.add((ticker) => {
+ *   // do something every frame
+ * });
+ *
+ * ```
+ * @namespace ticker
+ */
+
+/**
  * A Ticker class that runs an update loop that other objects listen to.
  *
  * This class is composed around listeners meant for execution on the next requested animation frame.
  * Animation frames are requested only when necessary, e.g. When the ticker is started and the emitter has listeners.
  * @class
+ * @memberof ticker
  */
 export class Ticker
 {
@@ -23,19 +46,22 @@ export class Ticker
     /** The private system ticker instance  */
     private static _system: Ticker;
 
-    /** Whether or not this ticker should invoke the method {@link Ticker#start} automatically when a listener is added. */
+    /**
+     * Whether or not this ticker should invoke the method
+     * {@link ticker.Ticker#start} automatically when a listener is added.
+     */
     public autoStart = false;
     /**
      * Scalar time value from last frame to this frame.
-     * This value is capped by setting {@link Ticker#minFPS}
-     * and is scaled with {@link Ticker#speed}.
+     * This value is capped by setting {@link ticker.Ticker#minFPS}
+     * and is scaled with {@link ticker.Ticker#speed}.
      * **Note:** The cap may be exceeded by scaling.
      */
     public deltaTime = 1;
     /**
      * Scaler time elapsed in milliseconds from last frame to this frame.
-     * This value is capped by setting {@link Ticker#minFPS}
-     * and is scaled with {@link Ticker#speed}.
+     * This value is capped by setting {@link ticker.Ticker#minFPS}
+     * and is scaled with {@link ticker.Ticker#speed}.
      * **Note:** The cap may be exceeded by scaling.
      * If the platform supports DOMHighResTimeStamp,
      * this value will have a precision of 1 µs.
@@ -45,7 +71,7 @@ export class Ticker
     public deltaMS: number;
     /**
      * Time elapsed in milliseconds from last frame to this frame.
-     * Opposed to what the scalar {@link Ticker#deltaTime}
+     * Opposed to what the scalar {@link ticker.Ticker#deltaTime}
      * is based, this value is neither capped nor scaled.
      * If the platform supports DOMHighResTimeStamp,
      * this value will have a precision of 1 µs.
@@ -54,7 +80,7 @@ export class Ticker
      */
     public elapsedMS: number;
     /**
-     * The last time {@link Ticker#update} was invoked.
+     * The last time {@link ticker.Ticker#update} was invoked.
      * This value is also reset internally outside of invoking
      * update, but only when a new animation frame is requested.
      * If the platform supports DOMHighResTimeStamp,
@@ -62,7 +88,7 @@ export class Ticker
      */
     public lastTime = -1;
     /**
-     * Factor of current {@link Ticker#deltaTime}.
+     * Factor of current {@link ticker.Ticker#deltaTime}.
      * @example
      * // Scales ticker.deltaTime to what would be
      * // the equivalent of approximately 120 FPS
@@ -71,10 +97,10 @@ export class Ticker
     public speed = 1;
     /**
      * Whether or not this ticker has been started.
-     * `true` if {@link Ticker#start} has been called.
-     * `false` if {@link Ticker#stop} has been called.
+     * `true` if {@link ticker.Ticker#start} has been called.
+     * `false` if {@link ticker.Ticker#stop} has been called.
      * While `false`, this value may change to `true` in the
-     * event of {@link Ticker#autoStart} being `true`
+     * event of {@link ticker.Ticker#autoStart} being `true`
      * and a listener is added.
      */
     public started = false;
@@ -350,10 +376,10 @@ export class Ticker
 
     /**
      * Triggers an update. An update entails setting the
-     * current {@link Ticker#elapsedMS},
-     * the current {@link Ticker#deltaTime},
+     * current {@link ticker.Ticker#elapsedMS},
+     * the current {@link ticker.Ticker#deltaTime},
      * invoking all listeners with current deltaTime,
-     * and then finally setting {@link Ticker#lastTime}
+     * and then finally setting {@link ticker.Ticker#lastTime}
      * with the value of currentTime that was provided.
      * This method will be called automatically by animation
      * frame callbacks if the ticker instance has been started
@@ -439,8 +465,8 @@ export class Ticker
      * The frames per second at which this ticker is running.
      * The default is approximately 60 in most modern browsers.
      * **Note:** This does not factor in the value of
-     * {@link Ticker#speed}, which is specific
-     * to scaling {@link Ticker#deltaTime}.
+     * {@link ticker.Ticker#speed}, which is specific
+     * to scaling {@link ticker.Ticker#deltaTime}.
      * @member {number}
      * @readonly
      */
@@ -451,9 +477,9 @@ export class Ticker
 
     /**
      * Manages the maximum amount of milliseconds allowed to
-     * elapse between invoking {@link Ticker#update}.
-     * This value is used to cap {@link Ticker#deltaTime},
-     * but does not effect the measured value of {@link Ticker#FPS}.
+     * elapse between invoking {@link ticker.Ticker#update}.
+     * This value is used to cap {@link ticker.Ticker#deltaTime},
+     * but does not effect the measured value of {@link ticker.Ticker#FPS}.
      * When setting this property it is clamped to a value between
      * `0` and `Ticker.targetFPMS * 1000`.
      * @member {number}
@@ -477,8 +503,8 @@ export class Ticker
 
     /**
      * Manages the minimum amount of milliseconds required to
-     * elapse between invoking {@link Ticker#update}.
-     * This will effect the measured value of {@link Ticker#FPS}.
+     * elapse between invoking {@link ticker.Ticker#update}.
+     * This will effect the measured value of {@link ticker.Ticker#FPS}.
      * If it is set to `0`, then there is no limit; PixiJS will render as many frames as it can.
      * Otherwise it will be at least `minFPS`
      * @member {number}
@@ -515,7 +541,7 @@ export class Ticker
      *
      * It may also be used by {@link Application} if created with the `sharedTicker` option property set to true.
      *
-     * The property {@link Ticker#autoStart} is set to `true` for this instance.
+     * The property {@link ticker.Ticker#autoStart} is set to `true` for this instance.
      * Please follow the examples for usage, including how to opt-out of auto-starting the shared ticker.
      * @example
      * import { Ticker } from 'pixi.js';
@@ -571,7 +597,7 @@ export class Ticker
      * functionality that shouldn't usually need to be paused, unlike the `shared`
      * ticker which drives visual animations and rendering which may want to be paused.
      *
-     * The property {@link Ticker#autoStart} is set to `true` for this instance.
+     * The property {@link ticker.Ticker#autoStart} is set to `true` for this instance.
      * @member {Ticker}
      * @static
      */

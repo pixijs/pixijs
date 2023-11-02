@@ -53,8 +53,21 @@ function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack:
 }
 
 /**
- * Asset extension for loading spritesheets.
+ * Asset extension for loading spritesheets
+ *
+ * This will be added automatically if `pixi.js/spritesheet` is imported
+ * @example
+ * import { Assets } from 'pixi.js';
+ *
+ * Assets.load({
+ *     alias: 'spritesheet',
+ *     src: 'path/to/spritesheet.json',
+ *     data: {
+ *         ignoreMultiPack: true,
+ *     }
+ * })
  * @type {AssetExtension}
+ * @memberof assets
  */
 export const spritesheetAsset = {
     extension: ExtensionType.Asset,
@@ -90,7 +103,6 @@ export const spritesheetAsset = {
      * once the JSON has been loaded this checks to see if the JSON is spritesheet data.
      * If it is, we load the spritesheets image and parse the data into Spritesheet
      * All textures in the sprite sheet are then added to the cache
-     * @ignore
      */
     loader: {
         name: 'spritesheetLoader',
