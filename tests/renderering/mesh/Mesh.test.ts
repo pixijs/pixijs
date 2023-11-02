@@ -56,4 +56,15 @@ describe('Mesh', () =>
 
         expect(gpuMesh.renderable).toBeNull();
     });
+
+    it('should support color tinting', () =>
+    {
+        const mesh = getMesh();
+
+        mesh.tint = 'red';
+
+        expect(mesh.tint).toBe(0xff0000);
+
+        mesh.destroy();
+    });
 });
