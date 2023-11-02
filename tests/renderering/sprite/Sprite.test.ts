@@ -1,4 +1,3 @@
-import path from 'path';
 import { Point } from '../../../src/maths/point/Point';
 import { RenderTexture } from '../../../src/rendering/renderers/shared/texture/RenderTexture';
 import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
@@ -213,57 +212,6 @@ describe('Sprite', () =>
             const point = new Point(100, 100);
 
             expect(sprite.view.containsPoint(point)).toBe(false);
-        });
-    });
-
-    interface EETexture extends Texture
-    {
-        _eventsCount: number; // missing in ee3 typings
-    }
-
-    describe('texture', () =>
-    {
-        // skipped note: Sprite/SpriteView doesn't seem to subscribe to the texture? So _eventsCount is always 0
-        it.only('should unsubscribe from old texture', () =>
-        {
-            const texture = new Texture() as EETexture;
-            const texture2 = new Texture() as EETexture;
-
-            const sprite = new Sprite(texture);
-
-            // eslint-disable-next-line no-restricted-syntax, no-debugger
-            debugger;
-
-            expect(texture['_eventsCount']).toEqual(1);
-            expect(texture2['_eventsCount']).toEqual(0);
-
-            sprite.texture = texture2;
-
-            expect(texture['_eventsCount']).toEqual(0);
-            expect(texture2['_eventsCount']).toEqual(1);
-
-            sprite.destroy();
-            texture.destroy(true);
-            texture2.destroy(true);
-        });
-    });
-
-    describe('destroy', () =>
-    {
-        // skipped note: _eventsCount undefined?
-        it.skip('should destroy while BaseTexture is loading', () =>
-        {
-            const texture = Texture.from(path.resolve(__dirname, 'resources', 'building1.png')) as EETexture;
-            const sprite = new Sprite(texture);
-
-            expect(texture['_eventsCount']).toEqual(1);
-
-            sprite.destroy();
-
-            expect(texture['_eventsCount']).toEqual(0);
-
-            texture.emit('update', texture);
-            texture.destroy(true);
         });
     });
 

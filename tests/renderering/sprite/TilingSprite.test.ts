@@ -12,20 +12,26 @@ import type { TextureSource } from '../../../src/rendering/renderers/shared/text
 describe('TilingSprite', () =>
 {
     type SetupOptions = {
-        texture?: Texture;
-        source?: TextureSource;
-        width?: number;
-        height?: number;
+        texture: Texture;
+        source: TextureSource;
+        width: number;
+        height: number;
+        x: number;
+        y: number;
+        anchor: { x: number; y: number };
     };
 
-    const setup = (options: SetupOptions) =>
+    const setup = (options: Partial<SetupOptions> = {}) =>
     {
-        const { texture, source, width = 256, height = 256 } = options;
+        const { texture, source, width = 256, height = 256, x = 0, y = 0, anchor = { x: 0, y: 0 } } = options;
 
         const sprite = new TilingSprite({
             texture: texture ?? new Texture({ source }),
             width,
             height,
+            x,
+            y,
+            anchor,
         });
 
         return sprite;
@@ -41,13 +47,12 @@ describe('TilingSprite', () =>
             const height = 200;
             const anchor = { x: 0.5, y: 0.5 };
 
-            const sprite = new TilingSprite(
-                {
-                    texture: getTexture({ width: 256, height: 256 }),
-                    x, y,
-                    width, height,
-                    anchor
-                });
+            const sprite = setup({
+                texture: getTexture({ width: 256, height: 256 }),
+                x, y,
+                width, height,
+                anchor,
+            });
 
             expect(sprite.x).toBe(x);
             expect(sprite.y).toBe(y);
