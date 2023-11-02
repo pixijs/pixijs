@@ -1,17 +1,37 @@
 import { Point } from '../../../src/maths/point/Point';
-import { TextureSource } from '../../../src/rendering/renderers/shared/texture/sources/TextureSource';
 import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
 import { Bounds } from '../../../src/scene/container/bounds/Bounds';
 import { getGlobalBounds } from '../../../src/scene/container/bounds/getGlobalBounds';
 import { Container } from '../../../src/scene/container/Container';
-import { Sprite } from '../../../src/scene/sprite/Sprite';
 import { TilingSprite } from '../../../src/scene/sprite-tiling/TilingSprite';
 import { getRenderer } from '../../utils/getRenderer';
 import { getTexture } from '../../utils/getTexture';
 
+import type { TextureSource } from '../../../src/rendering/renderers/shared/texture/sources/TextureSource';
+
 describe('TilingSprite', () =>
 {
-    describe.skip('Lifecycle', () =>
+    type SetupOptions = {
+        texture?: Texture;
+        source?: TextureSource;
+        width?: number;
+        height?: number;
+    };
+
+    const setup = (options: SetupOptions) =>
+    {
+        const { texture, source, width = 256, height = 256 } = options;
+
+        const sprite = new TilingSprite({
+            texture: texture ?? new Texture({ source }),
+            width,
+            height,
+        });
+
+        return sprite;
+    };
+
+    describe('Lifecycle', () =>
     {
         it('should accept constructor arguments', () =>
         {
@@ -92,183 +112,69 @@ describe('TilingSprite', () =>
         });
     });
 
-    describe('getBounds()', () =>
+    describe('Geometry', () =>
     {
-        it('must have correct value according to _width, _height and anchor', () =>
+        it('should calculate correct bounds when transformed', () =>
         {
-            const parent = new Container();
-            const texture = new Texture();
-            const tilingSprite = new TilingSprite({
-                texture,
-                width: 200,
-                height: 300,
-            });
+            const sprite = setup({ width: 200, height: 300 });
 
-            parent.addChild(tilingSprite);
+            sprite.anchor.set(0.5, 0.5);
+            sprite.scale.set(-2, 2);
+            sprite.position.set(50, 40);
 
-            tilingSprite.anchor.set(0.5, 0.5);
-            tilingSprite.scale.set(-2, 2);
-            tilingSprite.position.set(50, 40);
-
-            const bounds = tilingSprite.getBounds();
+            const bounds = sprite.getBounds();
 
             expect(bounds.x).toEqual(-150);
             expect(bounds.y).toEqual(-260);
             expect(bounds.width).toEqual(400);
             expect(bounds.height).toEqual(600);
         });
+
+        it('should check whether contains point correctly', () =>
+        {
+            const sprite = setup({ width: 200, height: 300 });
+
+            // note: containsPoint works in local coords
+            expect(sprite.view.containsPoint(new Point(0, 0))).toEqual(true);
+            expect(sprite.view.containsPoint(new Point(100, 150))).toEqual(true);
+            expect(sprite.view.containsPoint(new Point(200, 300))).toEqual(true);
+            expect(sprite.view.containsPoint(new Point(201, 301))).toEqual(false);
+            expect(sprite.view.containsPoint(new Point(-1, -1))).toEqual(false);
+        });
+
+        it('should get and set height & width correctly', () =>
+        {
+            const sprite = setup({ width: 200, height: 300 });
+
+            expect(sprite.width).toEqual(200);
+            expect(sprite.height).toEqual(300);
+
+            sprite.width = 400;
+            sprite.height = 600;
+
+            expect(sprite.width).toEqual(400);
+            expect(sprite.height).toEqual(600);
+        });
     });
 
-    describe('.from()', () =>
+    describe('Texture Construction', () =>
     {
-        it('should build from texture', () =>
+        it('should build from given texture', () =>
         {
-            const sprite = new TilingSprite({
-                texture: Texture.EMPTY,
+            const texture = new Texture();
+            const sprite = setup({ texture });
+
+            expect(sprite.texture).toEqual(texture);
+        });
+
+        it('should use empty texture when no texture passed', () =>
+        {
+            const tilingSprite = new TilingSprite({
                 width: 1,
-                height: 2,
+                height: 1,
             });
 
-            sprite.destroy();
+            expect(tilingSprite.texture).toEqual(Texture.EMPTY);
         });
-
-        it('should build a texture from source', () =>
-        {
-            const canvas = document.createElement('canvas');
-
-            canvas.width = 10;
-            canvas.height = 10;
-
-            const texture = new Texture({ source: new TextureSource({ resource: canvas }) });
-            const sprite = new TilingSprite({
-                texture,
-                width: 10,
-                height: 10,
-            });
-
-            sprite.destroy(true);
-        });
-    });
-
-    describe('.getLocalBounds()', () =>
-    {
-        let tileSprite: TilingSprite;
-        let spy: jest.SpyInstance;
-
-        beforeEach(() =>
-        {
-            tileSprite = new TilingSprite({
-                texture: Texture.EMPTY,
-                width: 1,
-                height: 2,
-            });
-            tileSprite.anchor.set(3, 4);
-            spy = jest.spyOn(Sprite.prototype, 'getLocalBounds');
-            spy.mockReset();
-            tileSprite['_bounds'] = { getRectangle: jest.fn() } as unknown as Bounds;
-        });
-
-        afterEach(() =>
-        {
-            // @ts-expect-error ---
-            Sprite.prototype.getLocalBounds.mockClear();
-        });
-
-        afterAll(() =>
-        {
-            tileSprite.destroy();
-            tileSprite = null;
-        });
-
-        it.only('should call parent method if there are children', () =>
-        {
-            // tileSprite.children.length = 1;
-            tileSprite.addChild(new Sprite());
-            tileSprite.getLocalBounds();
-            expect(Sprite.prototype.getLocalBounds).toHaveBeenCalledOnce();
-            expect(tileSprite['_bounds'].getRectangle).not.toBeCalled();
-        });
-
-        it('should make quick calc if no children', () =>
-        {
-            tileSprite.children.length = 0;
-            // @ts-expect-error ---
-            tileSprite.getLocalBounds('dummy');
-
-            expect(tileSprite['_bounds'].getRectangle).toHaveBeenCalledOnce();
-            // @ts-expect-error ---
-            expect(tileSprite['_bounds'].getRectangle.mock.calls[0][0]).toEqual('dummy');
-            expect(Sprite.prototype.getLocalBounds).not.toBeCalled();
-
-            expect(tileSprite['_bounds'].minX).toEqual(-3);
-            expect(tileSprite['_bounds'].minY).toEqual(-8);
-            expect(tileSprite['_bounds'].maxX).toEqual(-2);
-            expect(tileSprite['_bounds'].maxY).toEqual(-6);
-        });
-
-        it('should assign default rect if rect is not specified', () =>
-        {
-            tileSprite.children.length = 0;
-            // @ts-expect-error ---
-            tileSprite['_localBoundsRect'] = 'localRect';
-            tileSprite.getLocalBounds();
-
-            expect(tileSprite['_bounds'].getRectangle).toHaveBeenCalledOnce();
-            // @ts-expect-error ---
-            expect(tileSprite['_bounds'].getRectangle.mock.calls[0][0]).toEqual('localRect');
-            expect(Sprite.prototype.getLocalBounds).not.toBeCalled();
-
-            expect(tileSprite['_bounds'].minX).toEqual(-3);
-            expect(tileSprite['_bounds'].minY).toEqual(-8);
-            expect(tileSprite['_bounds'].maxX).toEqual(-2);
-            expect(tileSprite['_bounds'].maxY).toEqual(-6);
-        });
-
-        it('should create and assign rect if default rect is not', () =>
-        {
-            tileSprite.children.length = 0;
-            tileSprite['_localBoundsRect'] = null;
-            tileSprite.getLocalBounds();
-
-            expect(tileSprite['_bounds'].getRectangle).toHaveBeenCalledOnce();
-            // @ts-expect-error ---
-            expect(tileSprite['_bounds'].getRectangle.mock.calls[0][0]).toBeInstanceOf(Rectangle);
-            expect(Sprite.prototype.getLocalBounds).not.toBeCalled();
-
-            expect(tileSprite['_bounds'].minX).toEqual(-3);
-            expect(tileSprite['_bounds'].minY).toEqual(-8);
-            expect(tileSprite['_bounds'].maxX).toEqual(-2);
-            expect(tileSprite['_bounds'].maxY).toEqual(-6);
-        });
-    });
-
-    it('checks if tilingSprite contains a point', () =>
-    {
-        const texture = new Texture();
-        const tilingSprite = new TilingSprite(texture, 200, 300);
-
-        expect(tilingSprite.containsPoint(new Point(0, 0))).toEqual(true);
-        expect(tilingSprite.containsPoint(new Point(10, 10))).toEqual(true);
-        expect(tilingSprite.containsPoint(new Point(200, 300))).toEqual(false);
-        expect(tilingSprite.containsPoint(new Point(300, 400))).toEqual(false);
-    });
-
-    it('gets and sets height and width correctly', () =>
-    {
-        const texture = new Texture();
-        const tilingSprite = new TilingSprite(texture, 200, 300);
-
-        tilingSprite.width = 400;
-        tilingSprite.height = 600;
-
-        expect(tilingSprite.width).toEqual(400);
-        expect(tilingSprite.height).toEqual(600);
-    });
-
-    it('should create TilingSprite with nullable texture', () =>
-    {
-        const tilingSprite = new TilingSprite(null, 1, 1);
-
-        expect(tilingSprite.texture).toEqual(Texture.EMPTY);
     });
 });
