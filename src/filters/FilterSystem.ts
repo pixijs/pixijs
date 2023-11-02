@@ -63,7 +63,7 @@ const quadGeometry = new Geometry({
  */
 export interface FilterInstruction extends Instruction
 {
-    type: 'filter',
+    renderPipeId: 'filter',
     action: FilterAction,
     container?: Container,
     renderables?: Renderable[],

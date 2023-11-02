@@ -11,6 +11,6 @@ export function executeInstructions(layerGroup: LayerGroup, renderer: RenderPipe
     {
         const instruction = instructions[i];
 
-        (renderer[instruction.type as keyof RenderPipes] as InstructionPipe<any>).execute(instruction);
+        (renderer[instruction.renderPipeId as keyof RenderPipes] as InstructionPipe<any>).execute(instruction);
     }
 }

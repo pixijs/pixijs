@@ -49,7 +49,7 @@ class AlphaMaskEffect extends FilterEffect implements PoolItem
 
 export interface AlphaMaskInstruction extends Instruction
 {
-    type: 'alphaMask',
+    renderPipeId: 'alphaMask',
     action: MaskMode,
     mask: AlphaMask,
     maskedContainer: Container,
@@ -91,7 +91,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
         renderer.renderPipes.batch.break(instructionSet);
 
         instructionSet.add({
-            type: 'alphaMask',
+            renderPipeId: 'alphaMask',
             action: 'pushMaskBegin',
             mask,
             canBundle: false,
@@ -116,7 +116,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
         renderer.renderPipes.batch.break(instructionSet);
 
         instructionSet.add({
-            type: 'alphaMask',
+            renderPipeId: 'alphaMask',
             action: 'pushMaskEnd',
             mask,
             maskedContainer,
@@ -131,7 +131,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
         renderer.renderPipes.batch.break(instructionSet);
 
         instructionSet.add({
-            type: 'alphaMask',
+            renderPipeId: 'alphaMask',
             action: 'popMaskEnd',
             mask,
             canBundle: false,
@@ -207,7 +207,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
             }
 
             renderer.filter.push({
-                type: 'filter',
+                renderPipeId: 'filter',
                 action: 'pushFilter',
                 container: maskData.maskedContainer,
                 filterEffect: maskData.filterEffect,
