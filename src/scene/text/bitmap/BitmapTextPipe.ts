@@ -207,7 +207,7 @@ export class BitmapTextPipe implements RenderPipe<TextView>
         const view = renderable.view;
 
         const fontFamily = view._style.fontFamily as string;
-        const dynamicFont = Cache.get(fontFamily as string);
+        const dynamicFont = Cache.get(`${fontFamily as string}-bitmap`);
 
         // Inject the shader code with the correct value
         const { a, b, c, d } = renderable.layerTransform;
