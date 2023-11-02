@@ -27,7 +27,7 @@ export const bitmapFontCachePlugin = {
             out[key] = asset;
         });
 
-        out[asset.fontFamily] = asset;
+        out[`${asset.fontFamily}-bitmap`] = asset;
 
         return out;
     }
