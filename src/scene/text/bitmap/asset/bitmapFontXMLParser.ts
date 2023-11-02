@@ -1,6 +1,6 @@
 import type { BitmapFontData, RawCharData } from '../AbstractBitmapFont';
 
-export const XMLFormat = {
+export const bitmapFontXMLParser = {
     test(data: string | XMLDocument | BitmapFontData): boolean
     {
         const xml = data as Document;
