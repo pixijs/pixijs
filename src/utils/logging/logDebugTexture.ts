@@ -7,7 +7,7 @@ import type { Renderer } from '../../rendering/renderers/types';
  * @param texture - The texture to log
  * @param renderer - The renderer to use
  * @param size - The size of the texture to log in the console
- * @memberof utils
+ * @ignore
  */
 export async function logDebugTexture(texture: Texture, renderer: Renderer, size = 200)
 {
