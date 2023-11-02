@@ -1,14 +1,14 @@
 import { DOMAdapter } from '../../../../environment/adapter';
-import { XMLFormat } from './xmlFormat';
+import { bitmapFontXMLParser } from './bitmapFontXMLParser';
 
 import type { BitmapFontData } from '../AbstractBitmapFont';
 
-export const XMLStringFormat = {
+export const bitmapFontXMLStringParser = {
     test(data: string | XMLDocument | BitmapFontData): boolean
     {
         if (typeof data === 'string' && data.includes('<font>'))
         {
-            return XMLFormat.test(DOMAdapter.get().parseXML(data));
+            return bitmapFontXMLParser.test(DOMAdapter.get().parseXML(data));
         }
 
         return false;
@@ -16,6 +16,6 @@ export const XMLStringFormat = {
 
     parse(data: string): BitmapFontData
     {
-        return XMLFormat.parse(DOMAdapter.get().parseXML(data));
+        return bitmapFontXMLParser.parse(DOMAdapter.get().parseXML(data));
     }
 };

@@ -7,36 +7,52 @@ import type { BindableTexture } from '../rendering/renderers/shared/texture/Text
 import type { TextureBorders } from '../rendering/renderers/shared/texture/TextureLayout';
 import type { Dict } from '../utils/types';
 
-/** Represents the JSON data for a spritesheet atlas. */
+/**
+ * Represents the JSON data for a spritesheet atlas.
+ * @memberof assets
+ */
 export interface SpritesheetFrameData
 {
+    /** The frame rectangle of the texture. */
     frame: {
         x: number;
         y: number;
         w: number;
         h: number;
     };
+    /** Whether the texture is trimmed. */
     trimmed?: boolean;
+    /** Whether the texture is rotated. */
     rotated?: boolean;
+    /** The source size of the texture. */
     sourceSize?: {
         w: number;
         h: number;
     };
+    /** The sprite source size. */
     spriteSourceSize?: {
         h?: number;
         w?: number;
         x: number;
         y: number;
     };
+    /** The anchor point of the texture. */
     anchor?: PointData;
+    /** The 9-slice borders of the texture. */
     borders?: TextureBorders
 }
 
-/** Atlas format. */
+/**
+ * Atlas format.
+ * @memberof assets
+ */
 export interface SpritesheetData
 {
+    /** The frames of the atlas. */
     frames: Dict<SpritesheetFrameData>;
+    /** The animations of the atlas. */
     animations?: Dict<string[]>;
+    /** The meta data of the atlas. */
     meta: {
         app?: string;
         format?: string;
@@ -145,6 +161,7 @@ export interface SpritesheetData
  * Default anchor points (see {@link Texture#defaultAnchor}), default 9-slice borders
  * (see {@link Texture#defaultBorders}) and grouping of animation sprites are currently only
  * supported by TexturePacker.
+ * @memberof assets
  */
 export class Spritesheet<S extends SpritesheetData = SpritesheetData>
 {
@@ -243,7 +260,6 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
     /**
      * Parser spritesheet from loaded data. This is done asynchronously
      * to prevent creating too many Texture within a single process.
-     * @method Spritesheet#parse
      */
     public parse(): Promise<Record<string, Texture>>
     {

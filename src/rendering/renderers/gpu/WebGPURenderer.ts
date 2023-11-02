@@ -12,7 +12,6 @@ import { type GPU, GpuDeviceSystem } from './GpuDeviceSystem';
 import { GpuEncoderSystem } from './GpuEncoderSystem';
 import { GpuStencilSystem } from './GpuStencilSystem';
 import { GpuUniformBatchPipe } from './GpuUniformBatchPipe';
-import { GpuUniformBufferPipe } from './GpuUniformBufferPipe';
 import { PipelineSystem } from './pipeline/PipelineSystem';
 import { GpuRenderTargetSystem } from './renderTarget/GpuRenderTargetSystem';
 import { GpuShaderSystem } from './shader/GpuShaderSystem';
@@ -38,7 +37,7 @@ const DefaultWebGPUSystems = [
     GpuStencilSystem,
     BindGroupSystem,
 ];
-const DefaultWebGPUPipes = [...SharedRenderPipes, GpuUniformBatchPipe, GpuUniformBufferPipe];
+const DefaultWebGPUPipes = [...SharedRenderPipes, GpuUniformBatchPipe];
 const DefaultWebGPUAdapters = [GpuBatchAdaptor, GpuMeshAdapter, GpuGraphicsAdaptor];
 
 // installed systems will bbe added to this array by the extensions manager..

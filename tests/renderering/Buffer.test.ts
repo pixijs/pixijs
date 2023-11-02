@@ -72,7 +72,7 @@ describe('Buffer', () =>
         buffer.on('change', changeObserver);
         buffer.on('update', updateObserver);
 
-        buffer.setDataWithSize(new Float32Array([1, 2, 3, 4]), 4);
+        buffer.setDataWithSize(new Float32Array([1, 2, 3, 4]), 4, true);
 
         expect(changeObserver).toHaveBeenCalled();
         expect(updateObserver).not.toHaveBeenCalled();
@@ -84,7 +84,7 @@ describe('Buffer', () =>
         changeObserver.mockClear();
         updateObserver.mockClear();
 
-        buffer.setDataWithSize(new Float32Array([1, 2, 3]), 3);
+        buffer.setDataWithSize(new Float32Array([1, 2, 3]), 3, true);
 
         expect(changeObserver).toHaveBeenCalled();
         expect(updateObserver).not.toHaveBeenCalled();
@@ -94,7 +94,7 @@ describe('Buffer', () =>
         changeObserver.mockClear();
         updateObserver.mockClear();
 
-        buffer.setDataWithSize(new Float32Array([4, 5, 6]), 3);
+        buffer.setDataWithSize(new Float32Array([4, 5, 6]), 3, true);
 
         expect(changeObserver).not.toHaveBeenCalled();
         expect(updateObserver).toHaveBeenCalled();
@@ -104,7 +104,7 @@ describe('Buffer', () =>
         changeObserver.mockClear();
         updateObserver.mockClear();
 
-        buffer.setDataWithSize(new Float32Array([4, 5, 6]), 2);
+        buffer.setDataWithSize(new Float32Array([4, 5, 6]), 2, true);
 
         expect(changeObserver).not.toHaveBeenCalled();
         expect(updateObserver).toHaveBeenCalled();
@@ -129,7 +129,7 @@ describe('Buffer', () =>
 
         // grow the buffer...
 
-        buffer.setDataWithSize(new Float32Array([1, 2, 3, 4]), 4);
+        buffer.setDataWithSize(new Float32Array([1, 2, 3, 4]), 4, true);
 
         expect(changeObserver).toHaveBeenCalled();
         expect(updateObserver).not.toHaveBeenCalled();
@@ -141,7 +141,7 @@ describe('Buffer', () =>
         changeObserver.mockClear();
         updateObserver.mockClear();
 
-        buffer.setDataWithSize(new Float32Array([1, 2, 3]), 3);
+        buffer.setDataWithSize(new Float32Array([1, 2, 3]), 3, true);
 
         expect(changeObserver).not.toHaveBeenCalled();
         expect(updateObserver).toHaveBeenCalled();
@@ -160,9 +160,45 @@ describe('Buffer', () =>
             shrinkToFit: false,
         });
 
-        buffer.setDataWithSize(data, 2);
+        buffer.setDataWithSize(data, 2, true);
 
         expect(buffer.descriptor.size).toBe(3 * 4);
+        expect(buffer._updateSize).toBe(2 * 4);
+    });
+
+    it('should not update with setDataAndSize dontSyncGPU', async () =>
+    {
+        const data = new Float32Array([1, 2, 3]);
+
+        const buffer = new Buffer({
+            data,
+            usage: 1,
+            shrinkToFit: false,
+        });
+
+        const updateObserver = jest.fn();
+
+        buffer.on('update', updateObserver);
+
+        buffer.setDataWithSize(data, 3, false);
+
+        expect(updateObserver).not.toHaveBeenCalled();
+    });
+
+    it('update should always use the last updateSize passed to it', async () =>
+    {
+        const data = new Float32Array([1, 2, 3]);
+
+        const buffer = new Buffer({
+            data,
+            usage: 1,
+            shrinkToFit: false,
+        });
+
+        buffer.setDataWithSize(data, 2, true);
+
+        buffer.update();
+
         expect(buffer._updateSize).toBe(2 * 4);
     });
 });

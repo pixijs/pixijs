@@ -218,7 +218,7 @@ export class TextView implements View
             return 'html';
         }
 
-        const fontData = Cache.get(style?.fontFamily as string);
+        const fontData = Cache.get(`${style?.fontFamily as string}-bitmap`);
 
         if (fontData instanceof DynamicBitmapFont || fontData instanceof BitmapFont)
         {

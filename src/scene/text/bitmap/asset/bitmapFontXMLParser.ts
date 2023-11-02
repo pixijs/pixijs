@@ -1,6 +1,6 @@
 import type { BitmapFontData, RawCharData } from '../AbstractBitmapFont';
 
-export const XMLFormat = {
+export const bitmapFontXMLParser = {
     test(data: string | XMLDocument | BitmapFontData): boolean
     {
         const xml = data as Document;
@@ -61,7 +61,7 @@ export const XMLFormat = {
             const charNode = char[i];
             const id = parseInt(charNode.getAttribute('id'), 10);
 
-            let letter = charNode.getAttribute('letter') ?? charNode.getAttribute('char');
+            let letter = charNode.getAttribute('letter') ?? charNode.getAttribute('char') ?? String.fromCharCode(id);
 
             if (letter === 'space')letter = ' ';
 
