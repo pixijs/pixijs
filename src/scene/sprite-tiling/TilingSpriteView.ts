@@ -21,7 +21,7 @@ export interface TilingSpriteViewOptions
 export class TilingSpriteView implements View
 {
     public static defaultOptions: TilingSpriteViewOptions = {
-        texture: Texture.WHITE,
+        texture: Texture.EMPTY,
         width: 256,
         height: 256,
         applyAnchorToTexture: false,
@@ -57,7 +57,7 @@ export class TilingSpriteView implements View
 
         this._applyAnchorToTexture = options.applyAnchorToTexture;
 
-        this.texture = options.texture ?? Texture.EMPTY;
+        this.texture = options.texture;
         this._width = options.width;
         this._height = options.height;
         this._tileTransform = new Transform({ observer: this });

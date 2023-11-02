@@ -17,7 +17,7 @@ import type { TextureDestroyOptions, TypeOrBool } from '../container/destroyType
 import type { HTMLTextStyleOptions } from './html/HtmlTextStyle';
 import type { TextStyle, TextStyleOptions } from './TextStyle';
 
-export type TextString = string | number | {toString: () => string};
+export type TextString = string | number | { toString: () => string };
 export type AnyTextStyle = TextStyle | HTMLTextStyle;
 export type AnyTextStyleOptions = TextStyleOptions | HTMLTextStyleOptions;
 
@@ -26,7 +26,7 @@ type Filter<T> = { [K in keyof T]: {
     renderMode?: K;
     resolution?: number;
     style?: T[K]
-} } [keyof T];
+} }[keyof T];
 
 export type TextStyles = {
     canvas: TextStyleOptions | TextStyle;
@@ -137,16 +137,16 @@ export class TextView implements View
 
     public containsPoint(point: PointData)
     {
-        const width = this.bounds[2];
-        const height = this.bounds[3];
+        const width = this.bounds[0];
+        const height = this.bounds[2];
         const x1 = -width * this.anchor.x;
         let y1 = 0;
 
-        if (point.x >= x1 && point.x < x1 + width)
+        if (point.x >= x1 && point.x <= x1 + width)
         {
             y1 = -height * this.anchor.y;
 
-            if (point.y >= y1 && point.y < y1 + height) return true;
+            if (point.y >= y1 && point.y <= y1 + height) return true;
         }
 
         return false;
