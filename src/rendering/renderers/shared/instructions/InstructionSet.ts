@@ -38,7 +38,11 @@ export class InstructionSet
         this.instructions[this.instructionSize++] = instruction;
     }
 
-    /** Log the instructions to the console (for debugging) */
+    /**
+     * Log the instructions to the console (for debugging)
+     * @internal
+     * @ignore
+     */
     public log()
     {
         this.instructions.length = this.instructionSize;
