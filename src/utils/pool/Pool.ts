@@ -91,7 +91,7 @@ export class Pool<T extends PoolItem>
      */
     get totalFree(): number
     {
-        return this. _index;
+        return this._index;
     }
 
     /**
