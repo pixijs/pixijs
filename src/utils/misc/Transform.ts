@@ -16,7 +16,8 @@ export interface TransformOptions
 }
 
 /**
- * Transform that takes care about its versions.
+ * The Transform class facilitates the manipulation of a 2D transformation matrix through 
+ * user-friendly properties: position, scale, rotation, skew, and pivot. 
  * @memberof utils
  */
 export class Transform
@@ -93,7 +94,8 @@ export class Transform
     }
 
     /**
-     * The local matrix.
+     * This matrix is computed by combining this Transforms position, scale, rotation, skew, and pivot
+     * properties into a single matrix.
      * @readonly
      */
     get matrix(): Matrix

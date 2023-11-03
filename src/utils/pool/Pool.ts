@@ -1,6 +1,6 @@
 /**
  * A generic class for managing a pool of items.
- * @template T The type of items in the pool. Must extend {@link utils.PoolItem}.
+ * @template T The type of items in the pool. Must implement {@link utils.PoolItem}.
  * @memberof utils
  */
 export class Pool<T extends PoolItem>
@@ -91,7 +91,7 @@ export class Pool<T extends PoolItem>
      */
     get totalFree(): number
     {
-        return this._pool.length;
+        return this. _index;
     }
 
     /**
@@ -101,7 +101,7 @@ export class Pool<T extends PoolItem>
      */
     get totalUsed(): number
     {
-        return this._count - this._pool.length;
+        return this._count - this._index;
     }
 }
 
