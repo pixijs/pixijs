@@ -1,20 +1,31 @@
-import { Matrix } from '../maths/matrix/Matrix';
-import { ObservablePoint } from '../maths/point/ObservablePoint';
+import { Matrix } from '../../maths/matrix/Matrix';
+import { ObservablePoint } from '../../maths/point/ObservablePoint';
 
-import type { Observer } from '../maths/point/ObservablePoint';
+import type { Observer } from '../../maths/point/ObservablePoint';
 
+/**
+ * Options for the {@link utils.Transform} constructor.
+ * @memberof utils
+ */
 export interface TransformOptions
 {
+    /** The matrix to use. */
     matrix?: Matrix;
+    /** The observer to use. */
     observer?: {onUpdate: (transform: Transform) => void}
 }
 
-/** Transform that takes care about its versions. */
+/**
+ * The Transform class facilitates the manipulation of a 2D transformation matrix through
+ * user-friendly properties: position, scale, rotation, skew, and pivot.
+ * @memberof utils
+ */
 export class Transform
 {
     /**
      * The local transformation matrix.
      * @internal
+     * @private
      */
     public _matrix: Matrix;
 
@@ -60,6 +71,11 @@ export class Transform
     protected dirty = true;
     protected observer: Observer<Transform>;
 
+    /**
+     * @param options - Options for the transform.
+     * @param options.matrix - The matrix to use.
+     * @param options.observer - The observer to use.
+     */
     constructor({ matrix, observer }: TransformOptions = {})
     {
         this._matrix = matrix ?? new Matrix();
@@ -77,6 +93,11 @@ export class Transform
         this._sy = 1;
     }
 
+    /**
+     * This matrix is computed by combining this Transforms position, scale, rotation, skew, and pivot
+     * properties into a single matrix.
+     * @readonly
+     */
     get matrix(): Matrix
     {
         const lt = this._matrix;
@@ -99,6 +120,7 @@ export class Transform
      * Called when a value changes.
      * @param point
      * @internal
+     * @private
      */
     public onUpdate(point?: ObservablePoint): void
     {

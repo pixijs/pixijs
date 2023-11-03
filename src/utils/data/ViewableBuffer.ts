@@ -1,8 +1,12 @@
 type TypedArray = Float32Array | Uint32Array | Int32Array | Uint8Array;
 
-/** Flexible wrapper around `ArrayBuffer` that also provides typed array views on demand. */
+/**
+ * Flexible wrapper around `ArrayBuffer` that also provides typed array views on demand.
+ * @memberof utils
+ */
 export class ViewableBuffer
 {
+    /** The size of the buffer in bytes. */
     public size: number;
 
     /** Underlying `ArrayBuffer` that holds all the data and is of capacity `this.size`. */
@@ -97,6 +101,7 @@ export class ViewableBuffer
         return this._int32View;
     }
 
+    /** View on the raw binary data as a `Float64Array`. */
     get float64View(): Float64Array
     {
         if (!this._float64Array)
@@ -107,6 +112,7 @@ export class ViewableBuffer
         return this._float64Array;
     }
 
+    /** View on the raw binary data as a `BigUint64Array`. */
     get bigUint64View(): BigUint64Array
     {
         if (!this._bigUint64Array)
@@ -141,6 +147,12 @@ export class ViewableBuffer
         this.float32View = null;
     }
 
+    /**
+     * Returns the size of the given type in bytes.
+     * @param type - One of `int8`, `uint8`, `int16`,
+     *   `uint16`, `int32`, `uint32`, and `float32`.
+     * @returns - size of the type in bytes
+     */
     public static sizeOf(type: string): number
     {
         switch (type)

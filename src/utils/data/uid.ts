@@ -30,6 +30,7 @@ type UIDNames =
  * @param name - The name of the identifier.
  * @function uid
  * @returns {number} The next unique identifier to use.
+ * @memberof utils
  */
 export function uid(name: UIDNames = 'default'): number
 {

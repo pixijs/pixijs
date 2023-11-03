@@ -2,7 +2,7 @@ import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { emptyViewObserver } from '../../rendering/renderers/shared/view/View';
 import { uid } from '../../utils/data/uid';
-import { updateQuadBounds } from '../../utils/updateQuadBounds';
+import { updateQuadBounds } from '../../utils/data/updateQuadBounds';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { View, ViewObserver } from '../../rendering/renderers/shared/view/View';

@@ -1,7 +1,7 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
+import { updateQuadBounds } from '../../../utils/data/updateQuadBounds';
 import { BigPool } from '../../../utils/pool/PoolGroup';
-import { updateQuadBounds } from '../../../utils/updateQuadBounds';
 import { BatchableSprite } from '../../sprite/BatchableSprite';
 
 import type { RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';

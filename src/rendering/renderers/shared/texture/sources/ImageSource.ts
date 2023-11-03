@@ -1,6 +1,6 @@
 import { DOMAdapter } from '../../../../../environment/adapter';
 import { ExtensionType } from '../../../../../extensions/Extensions';
-import { NOOP } from '../../../../../utils/NOOP';
+import { NOOP } from '../../../../../utils/misc/NOOP';
 import { Texture } from '../Texture';
 import { TextureSource } from './TextureSource';
 
