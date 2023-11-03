@@ -16,8 +16,8 @@ export interface TransformOptions
 }
 
 /**
- * The Transform class facilitates the manipulation of a 2D transformation matrix through 
- * user-friendly properties: position, scale, rotation, skew, and pivot. 
+ * The Transform class facilitates the manipulation of a 2D transformation matrix through
+ * user-friendly properties: position, scale, rotation, skew, and pivot.
  * @memberof utils
  */
 export class Transform
@@ -72,9 +72,9 @@ export class Transform
     protected observer: Observer<Transform>;
 
     /**
-     * @param param0 - Options for the transform.
-     * @param param0.matrix - The matrix to use.
-     * @param param0.observer - The observer to use.
+     * @param options - Options for the transform.
+     * @param options.matrix - The matrix to use.
+     * @param options.observer - The observer to use.
      */
     constructor({ matrix, observer }: TransformOptions = {})
     {
