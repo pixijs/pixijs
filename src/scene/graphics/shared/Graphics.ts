@@ -1,6 +1,9 @@
 import { deprecation } from '../../../utils/logging/deprecation';
 import { Container } from '../../container/Container';
 import { GraphicsContext } from './GraphicsContext';
+// @ts-expect-error - used for jsdoc typedefs
+// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
+import { ConvertedFillStyle, ConvertedStrokeStyle } from './GraphicsContext';
 import { GraphicsView } from './GraphicsView';
 
 import type { ColorSource } from '../../../color/Color';
@@ -9,15 +12,32 @@ import type { Texture } from '../../../rendering/renderers/shared/texture/Textur
 import type { ContainerOptions } from '../../container/Container';
 import type { FillStyleInputs } from './GraphicsContext';
 
+/**
+ * Options for the Graphics.
+ * @memberof scene
+ */
 export interface GraphicsOptions extends Partial<ContainerOptions<GraphicsView>>
 {
+    /** The GraphicsContext to use. */
     context?: GraphicsContext;
+    /** The fill style to use. */
     fillStyle?: FillStyleInputs;
+    /** The stroke style to use. */
     strokeStyle?: FillStyleInputs;
 }
 
+/**
+ * The Graphics class is primarily used to render primitive shapes such as lines, circles and
+ * rectangles to the display, and to color and fill them.  However, you can also use a Graphics
+ * object to build a list of primitives to use as a mask, or as a complex hitArea.
+ * @memberof scene
+ * @extends scene.Container
+ */
 export class Graphics extends Container<GraphicsView>
 {
+    /**
+     * @param options - Options for the Graphics.
+     */
     constructor(options?: GraphicsOptions | GraphicsContext)
     {
         if (options instanceof GraphicsContext)
@@ -36,6 +56,9 @@ export class Graphics extends Container<GraphicsView>
         this.allowChildren = false;
     }
 
+    /**
+     * @todo
+     */
     get context(): GraphicsContext
     {
         return this.view.context;
@@ -66,17 +89,15 @@ export class Graphics extends Container<GraphicsView>
         return this._callContextMethod('stroke', args);
     }
     public texture(texture: Texture): this;
-    public texture(texture: Texture, tint: ColorSource): this;
-    public texture(texture: Texture, tint: ColorSource, dx: number, dy: number): this;
-    public texture(texture: Texture, tint: ColorSource, dx: number, dy: number, dw: number, dh: number): this;
     public texture(texture: Texture, tint?: ColorSource, dx?: number, dy?: number, dw?: number, dh?: number): this;
     public texture(...args: [Texture, number?, number?, number?, number?, number?]): this
     {
         return this._callContextMethod('texture', args);
     }
-    public beginPath(...args: Parameters<GraphicsContext['beginPath']>): this
+    /** Begins a new path. */
+    public beginPath(): this
     {
-        return this._callContextMethod('beginPath', args);
+        return this._callContextMethod('beginPath', []);
     }
     public cut(...args: Parameters<GraphicsContext['cut']>): this
     {
@@ -86,6 +107,7 @@ export class Graphics extends Container<GraphicsView>
     {
         return this._callContextMethod('arc', args);
     }
+    public arcTo(x1: number, y1: number, x2: number, y2: number, radius: number): this;
     public arcTo(...args: Parameters<GraphicsContext['arcTo']>): this
     {
         return this._callContextMethod('arcTo', args);
@@ -192,6 +214,10 @@ export class Graphics extends Container<GraphicsView>
     {
         return this._callContextMethod('clear', args);
     }
+    /**
+     * The fill style to use.
+     * @type {ConvertedFillStyle}
+     */
     get fillStyle(): GraphicsContext['fillStyle']
     {
         return this.view.context.fillStyle;
@@ -200,6 +226,10 @@ export class Graphics extends Container<GraphicsView>
     {
         this.view.context.fillStyle = value;
     }
+    /**
+     * The stroke style to use.
+     * @type {ConvertedStrokeStyle}
+     */
     get strokeStyle(): GraphicsContext['strokeStyle']
     {
         return this.view.context.strokeStyle;

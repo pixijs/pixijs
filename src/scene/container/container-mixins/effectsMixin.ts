@@ -29,8 +29,19 @@ export interface EffectsMixin extends Required<EffectsMixinConstructor>
 export const effectsMixin: Partial<Container> = {
     _mask: null,
     _filters: null,
+
+    /**
+     * @todo Needs docs.
+     * @memberof scene.Container#
+     * @type {Array<Effect>}
+     */
     effects: [],
 
+    /**
+     * @todo Needs docs.
+     * @param effect - The effect to add.
+     * @memberof scene.Container#
+     */
     addEffect(effect: Effect)
     {
         const index = this.effects.indexOf(effect);
@@ -48,6 +59,11 @@ export const effectsMixin: Partial<Container> = {
 
         this._updateIsSimple();
     },
+    /**
+     * @todo Needs docs.
+     * @param effect - The effect to remove.
+     * @memberof scene.Container#
+     */
     removeEffect(effect: Effect)
     {
         const index = this.effects.indexOf(effect);
@@ -90,6 +106,27 @@ export const effectsMixin: Partial<Container> = {
         this.addEffect(effect);
     },
 
+    /**
+     * Sets a mask for the displayObject. A mask is an object that limits the visibility of an
+     * object to the shape of the mask applied to it. In PixiJS a regular mask must be a
+     * {@link Graphics} or a {@link Sprite} object. This allows for much faster masking in canvas as it
+     * utilities shape clipping. Furthermore, a mask of an object must be in the subtree of its parent.
+     * Otherwise, `getLocalBounds` may calculate incorrect bounds, which makes the container's width and height wrong.
+     * To remove a mask, set this property to `null`.
+     *
+     * For sprite mask both alpha and red channel are used. Black mask is the same as transparent mask.
+     * @example
+     * import { Graphics, Sprite } from 'pixi.js';
+     *
+     * const graphics = new Graphics();
+     * graphics.beginFill(0xFF3300);
+     * graphics.drawRect(50, 250, 100, 100);
+     * graphics.endFill();
+     *
+     * const sprite = new Sprite(texture);
+     * sprite.mask = graphics;
+     * @memberof scene.Container#
+     */
     get mask(): unknown
     {
         return this._mask?.mask;
@@ -123,6 +160,12 @@ export const effectsMixin: Partial<Container> = {
         this.addEffect(effect);
     },
 
+    /**
+     * Sets the filters for the displayObject.
+     * IMPORTANT: This is a WebGL only feature and will be ignored by the canvas renderer.
+     * To remove filters simply set this property to `'null'`.
+     * @memberof scene.Container#
+     */
     get filters(): Filter[]
     {
         return this._filters?.filters;
@@ -135,6 +178,13 @@ export const effectsMixin: Partial<Container> = {
         this._filters.filterArea = value;
     },
 
+    /**
+     * The area the filter is applied to. This is used as more of an optimization
+     * rather than figuring out the dimensions of the displayObject each frame you can set this rectangle.
+     *
+     * Also works as an interaction mask.
+     * @memberof scene.Container#
+     */
     get filterArea(): Rectangle
     {
         return this._filters?.filterArea;

@@ -69,7 +69,7 @@ export class VideoSource extends TextureSource<VideoResource>
     private _autoUpdate: boolean;
 
     /**
-     * `true` if the instance is currently connected to PIXI.Ticker.shared to auto update the base texture.
+     * `true` if the instance is currently connected to Ticker.shared to auto update the base texture.
      * @default false
      */
     private _isConnectedToTicker: boolean;

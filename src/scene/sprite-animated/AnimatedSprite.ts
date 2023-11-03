@@ -33,6 +33,7 @@ import { Sprite } from '../sprite/Sprite';
  *
  * const sheet = await Assets.load('assets/spritesheet.json');
  * animatedSprite = new AnimatedSprite(sheet.animations['image_sequence']);
+ * @memberof scene
  */
 export class AnimatedSprite extends Sprite
 {
@@ -463,7 +464,7 @@ export class AnimatedSprite extends Sprite
     }
 }
 
-/** @memberof AnimatedSprite */
+/** @memberof scene */
 export interface FrameObject
 {
     /** The {@link Texture} of the frame. */

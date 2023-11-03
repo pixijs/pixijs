@@ -22,6 +22,10 @@ const tempMatrix = new Matrix();
 
 export const measureMixin: Partial<Container> = {
 
+    /**
+     * The width of the Container, setting this will actually modify the scale to achieve the value set.
+     * @memberof scene.Container#
+     */
     get width(): number
     {
         return Math.abs(this.scale.x * getLocalBounds(this, tempBounds, tempMatrix).width);
@@ -41,6 +45,10 @@ export const measureMixin: Partial<Container> = {
         }
     },
 
+    /**
+     * The height of the Container, setting this will actually modify the scale to achieve the value set.
+     * @memberof scene.Container#
+     */
     get height(): number
     {
         return Math.abs(this.scale.y * getLocalBounds(this, tempBounds, tempMatrix).height);
@@ -64,6 +72,7 @@ export const measureMixin: Partial<Container> = {
      * Retrieves the local bounds of the container as a Bounds object.
      * @param rect - Optional rectangle to store the result of the bounds calculation.
      * @returns - The bounding area.
+     * @memberof scene.Container#
      */
     getLocalBounds(rect?: Rectangle): Rectangle
     {
@@ -79,6 +88,7 @@ export const measureMixin: Partial<Container> = {
      *  nice performance boost.
      * @param rect - Optional rectangle to store the result of the bounds calculation.
      * @returns - The minimum axis-aligned rectangle in world space that fits around this object.
+     * @memberof scene.Container#
      */
     getBounds(skipUpdate?: boolean, rect?: Rectangle): Rectangle
     {
