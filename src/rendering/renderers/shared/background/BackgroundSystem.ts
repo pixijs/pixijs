@@ -1,7 +1,7 @@
 import { Color } from '../../../../color/Color';
 import { ExtensionType } from '../../../../extensions/Extensions';
 
-import type { ColorSource } from '../../../../color/Color';
+import type { ColorSource, RgbaArray } from '../../../../color/Color';
 import type { System } from '../system/System';
 
 /**
@@ -78,7 +78,6 @@ export class BackgroundSystem implements System
     public clearBeforeRender: boolean;
 
     private readonly _backgroundColor: Color;
-    private _backgroundColorRgba: [number, number, number, number] = [0, 0, 0, 0];
 
     constructor()
     {
@@ -101,6 +100,8 @@ export class BackgroundSystem implements System
         this.clearBeforeRender = options.clearBeforeRender;
         this.color = options.background || options.backgroundColor || this._backgroundColor; // run bg color setter
         this.alpha = options.backgroundAlpha;
+
+        this._backgroundColor.setAlpha(options.backgroundAlpha);
     }
 
     /** The background color to fill if not transparent */
@@ -112,7 +113,6 @@ export class BackgroundSystem implements System
     set color(value: ColorSource)
     {
         this._backgroundColor.setValue(value);
-        this._backgroundColorRgba = this._backgroundColor.toArray() as [number, number, number, number];
     }
 
     /** The background color alpha. Setting this to 0 will make the canvas transparent. */
@@ -127,9 +127,9 @@ export class BackgroundSystem implements System
     }
 
     /** The background color as an [R, G, B, A] array. */
-    get colorRgba(): [number, number, number, number]
+    get colorRgba(): RgbaArray
     {
-        return this._backgroundColorRgba;
+        return this._backgroundColor.toArray() as RgbaArray;
     }
 
     /**

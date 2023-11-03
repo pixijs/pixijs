@@ -376,8 +376,8 @@ export class GpuRenderTargetSystem implements System
                             | GPUTextureUsage.COPY_DST
                             | GPUTextureUsage.RENDER_ATTACHMENT
                             | GPUTextureUsage.COPY_SRC,
-                        format: 'bgra8unorm',
-                        alphaMode: 'opaque',
+                        format: navigator.gpu.getPreferredCanvasFormat(),
+                        alphaMode: 'premultiplied',
                     });
                 }
                 catch (e)
