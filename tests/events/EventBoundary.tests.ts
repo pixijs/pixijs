@@ -113,7 +113,7 @@ describe('EventBoundary', () =>
         expect(boundary.hitTest(50, 50)).toEqual(null);
     });
 
-    it.skip(`should not block an interaction event if the display object is a mask`, () =>
+    it(`should not block an interaction event if the display object is a mask`, () =>
     {
         const stage = new Container();
         const boundary = new EventBoundary(stage);
@@ -122,11 +122,21 @@ describe('EventBoundary', () =>
         const maskTarget = container.addChild(id(graphicsWithRect(0, 0, 100, 100), 'maskTarget'));
         const maskTargetChild = maskTarget.addChild(id(graphicsWithRect(0, 0, 100, 100), 'maskTargetChild'));
 
+        // stage (EventBoundary)
+        // + container (0,0,100,100)
+        //   + target (0,0,100,100)
+        //   + maskTarget (0,0,100,100) (mask of container)
+        //     + maskTargetChild (0,0,100,100)
+
         container.interactive = true;
         container.mask = maskTarget;
         maskTarget.interactive = true;
         maskTargetChild.interactive = true;
         target.interactive = true;
+
+        // todo: should this be set when something becomes a mask?
+        maskTarget.eventMode = 'passive';
+        maskTarget.interactiveChildren = false;
 
         let hitTest = boundary.hitTest(50, 50); // <-- hitTest = "maskTargetChild"
 
