@@ -59,6 +59,14 @@ export class CanvasSource extends TextureSource<ICanvas>
         }
     }
 
+    public update()
+    {
+        super.update();
+
+        this.width = this.resource.width;
+        this.height = this.resource.height;
+    }
+
     public resizeCanvas()
     {
         if (this.autoDensity)

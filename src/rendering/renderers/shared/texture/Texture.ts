@@ -3,7 +3,7 @@ import { Cache } from '../../../../assets/cache/Cache';
 import { uid } from '../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { NOOP } from '../../../../utils/misc/NOOP';
-import { resourceToTexture } from './sources/resourceToTexture';
+import { sourceToTexture } from './sources/resourceToTexture';
 import { TextureSource } from './sources/TextureSource';
 import { TextureLayout } from './TextureLayout';
 import { TextureMatrix } from './TextureMatrix';
@@ -42,8 +42,8 @@ export class Texture extends EventEmitter<{
             return new Texture({ source: id });
         }
 
-        // return a auto generated texture from resource
-        return resourceToTexture(id, skipCache);
+        // return a auto generated texture from source
+        return sourceToTexture(id, skipCache);
     }
 
     public label?: string;

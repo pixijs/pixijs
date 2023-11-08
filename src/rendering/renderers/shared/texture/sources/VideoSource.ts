@@ -17,7 +17,6 @@ export interface VideoSourceOptions extends TextureSourceOptions<VideoResource>
     autoLoad?: boolean;
     autoPlay?: boolean;
     updateFPS?: number;
-    crossorigin?: boolean | string;
     loop?: boolean;
     muted?: boolean;
     playsinline?: boolean;

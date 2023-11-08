@@ -1,13 +1,11 @@
 import { WebGLRenderer } from '../../src/rendering/renderers/gl/WebGLRenderer';
 
-import type { Renderer } from '../../src/rendering/renderers/types';
-
 type RenderOptions = {
     width: number;
     height: number;
 };
 
-export async function getRenderer(options: Partial<RenderOptions> = {}): Promise<Renderer>
+export async function getRenderer(options: Partial<RenderOptions> = {}): Promise<WebGLRenderer>
 {
     const renderer = new WebGLRenderer();
 

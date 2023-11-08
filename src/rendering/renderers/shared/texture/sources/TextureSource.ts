@@ -11,6 +11,8 @@ export interface TextureSourceOptions<T extends Record<string, any> = any>
 {
     resource?: T;
 
+    crossorigin?: boolean | string;
+
     width?: number;
     height?: number;
     resolution?: number;
@@ -213,6 +215,15 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this._resourceId++;
         this.emit('change', this);
         this.emit('unload', this);
+    }
+
+    /**
+     * Checks if the resource has valid dimensions.
+     * @returns {boolean} True if width and height are set, otherwise false.
+     */
+    public get isValid(): boolean
+    {
+        return this.resourceWidth > 0 && this.resourceHeight > 0;
     }
 
     public get resourceWidth(): number

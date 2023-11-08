@@ -32,7 +32,7 @@ export function autoDetectSource(options: TextureSourceOptions<ImageResource> | 
     throw new Error(`Could not find a source type for resource: ${options.resource}`);
 }
 
-export function resourceToTexture(
+export function sourceToTexture(
     options: TextureSourceOptions<ImageResource> | BufferSourceOptions = {},
     skipCache = false
 ): Texture

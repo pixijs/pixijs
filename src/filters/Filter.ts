@@ -141,7 +141,7 @@ export class Filter extends Shader
     /**
      * @param options - The optional parameters of this filter.
      */
-    constructor(options: FilterOptions)
+    constructor(options?: FilterOptions)
     {
         options = { ...Filter.defaultOptions, ...options };
 
