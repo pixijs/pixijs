@@ -55,22 +55,20 @@ describe('Sprite', () =>
             expect(sprite.width).toBeGreaterThanOrEqual(0);
         });
 
-        // skipped note: There's a ticket for this, Mat to investigate current vs test behavior
-        it.skip('should not change sign of scale.x', () =>
+        it('should not change sign of scale.x', () =>
         {
-            const texture = new Texture();
-            const sprite = new Sprite();
+            const texture = RenderTexture.create({ width: 100, height: 100 });
+            const sprite = new Sprite(texture);
 
-            texture.frameWidth = 100; // correct way now? was texture.orig.width
             sprite.scale.x = 1;
             sprite.width = 50;
 
-            expect(sprite.scale.x).toBeGreaterThan(0);
+            expect(sprite.scale.x).toEqual(0.5);
 
             sprite.scale.x = -1;
             sprite.width = 75; // should this be -75, this is when the scale.x becomes negative
 
-            expect(sprite.scale.x).toBeLessThan(0);
+            expect(sprite.scale.x).toEqual(-0.75);
         });
     });
 
@@ -86,23 +84,20 @@ describe('Sprite', () =>
             expect(sprite.height).toBeGreaterThanOrEqual(0);
         });
 
-        // skipped note: There's a ticket for this, Mat to investigate current vs test behavior
-        it.skip('should not change sign of scale.y', () =>
+        it('should not change sign of scale.y', () =>
         {
-            const texture = new Texture();
-            const sprite = new Sprite();
+            const texture = RenderTexture.create({ width: 100, height: 100 });
+            const sprite = new Sprite(texture);
 
-            // texture.orig.height = 100;
-            texture.frameHeight = 100;
             sprite.scale.y = 1;
             sprite.height = 50;
 
-            expect(sprite.scale.y).toBeGreaterThan(0);
+            expect(sprite.scale.y).toEqual(0.5);
 
             sprite.scale.y = -1;
-            sprite.height = 75; // same as above skipped
+            sprite.height = 75;
 
-            expect(sprite.scale.y).toBeLessThan(0);
+            expect(sprite.scale.y).toEqual(-0.75);
         });
     });
 
