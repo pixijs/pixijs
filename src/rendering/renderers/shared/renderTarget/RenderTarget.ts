@@ -1,5 +1,4 @@
 // what we are building is a platform and a framework.
-// import { Matrix } from '../../shared/maths/Matrix';
 import { Matrix } from '../../../../maths/matrix/Matrix';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { uid } from '../../../../utils/data/uid';
@@ -162,20 +161,29 @@ export class RenderTarget
         this._resize(source.width, source.height, source._resolution, true);
     }
 
+    public resize(width: number, height: number, resolution = this.resolution)
+    {
+        this._resize(width, height, resolution);
+    }
+
     private _resize(width: number, height: number, resolution = this.resolution, skipColorTexture = false)
     {
+        const colorTextures = this.colorTextures;
+
         this.width = width;
         this.height = height;
         this.resolution = resolution;
 
         this.dirtyId++;
 
-        this.colorTextures.forEach((colorTexture, i) =>
+        for (let i = 0; i < colorTextures.length; i++)
         {
+            const colorTexture = colorTextures[i];
+
             if (skipColorTexture && i === 0) return;
 
             colorTexture.source.resize(width, height, resolution);
-        });
+        }
 
         if (this.depthTexture)
         {
@@ -185,6 +193,14 @@ export class RenderTarget
 
     public destroy()
     {
-        throw new Error('Method not implemented.');
+        for (const colorTexture of this.colorTextures)
+        {
+            colorTexture.destroy();
+        }
+
+        this.width = 0;
+        this.height = 0;
+        this.resolution = 1;
+        this.colorTextures.length = 0;
     }
 }
