@@ -84,7 +84,16 @@ export class TextureMatrix
         this._updateID = 0;
 
         this.clampOffset = 0;
-        this.clampMargin = (typeof clampMargin === 'undefined') ? 0.5 : clampMargin;
+
+        if ((typeof clampMargin === 'undefined'))
+        {
+            this.clampMargin = (texture.width < 10) ? 0 : 0.5;
+        }
+        else
+        {
+            this.clampMargin = clampMargin;
+        }
+
         this.isSimple = false;
 
         this.texture = texture;
