@@ -87,11 +87,11 @@ export class SpriteView implements View
         const x1 = -width * this.anchor.x;
         let y1 = 0;
 
-        if (point.x >= x1 && point.x < x1 + width)
+        if (point.x >= x1 && point.x <= x1 + width)
         {
             y1 = -height * this.anchor.y;
 
-            if (point.y >= y1 && point.y < y1 + height)
+            if (point.y >= y1 && point.y <= y1 + height)
             {
                 return true;
             }

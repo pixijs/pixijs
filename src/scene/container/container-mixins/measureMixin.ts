@@ -31,13 +31,15 @@ export const measureMixin: Partial<Container> = {
     {
         const localWidth = getLocalBounds(this, tempBounds, tempMatrix).width;
 
+        const sign = Math.sign(this.scale.x) || 1;
+
         if (localWidth !== 0)
         {
-            this.scale.x = value / localWidth;
+            this.scale.x = (value / localWidth) * sign;
         }
         else
         {
-            this.scale.x = 1;
+            this.scale.x = sign;
         }
     },
 
@@ -50,13 +52,15 @@ export const measureMixin: Partial<Container> = {
     {
         const localHeight = getLocalBounds(this, tempBounds, tempMatrix).height;
 
+        const sign = Math.sign(this.scale.y) || 1;
+
         if (localHeight !== 0)
         {
-            this.scale.y = value / localHeight;
+            this.scale.y = (value / localHeight) * sign;
         }
         else
         {
-            this.scale.y = 1;
+            this.scale.y = sign;
         }
     },
 
