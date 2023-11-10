@@ -21,7 +21,7 @@ export interface TilingSpriteViewOptions
 export class TilingSpriteView implements View
 {
     public static defaultOptions: TilingSpriteViewOptions = {
-        texture: Texture.WHITE,
+        texture: Texture.EMPTY,
         width: 256,
         height: 256,
         applyAnchorToTexture: false,
@@ -140,16 +140,16 @@ export class TilingSpriteView implements View
 
     public containsPoint(point: PointData)
     {
-        const width = this.bounds[2];
-        const height = this.bounds[3];
+        const width = this.bounds[0];
+        const height = this.bounds[2];
         const x1 = -width * this.anchor.x;
         let y1 = 0;
 
-        if (point.x >= x1 && point.x < x1 + width)
+        if (point.x >= x1 && point.x <= x1 + width)
         {
             y1 = -height * this.anchor.y;
 
-            if (point.y >= y1 && point.y < y1 + height) return true;
+            if (point.y >= y1 && point.y <= y1 + height) return true;
         }
 
         return false;

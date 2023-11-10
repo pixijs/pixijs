@@ -1,0 +1,59 @@
+{"frames": {
+
+"goldmine_10_5.png":
+{
+	"frame": {"x":1,"y":1,"w":190,"h":229},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":190,"h":229},
+	"sourceSize": {"w":190,"h":229}
+},
+"star1.png":
+{
+	"frame": {"x":193,"y":59,"w":54,"h":55},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":5,"w":54,"h":55},
+	"sourceSize": {"w":64,"h":64},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"star2.png":
+{
+	"frame": {"x":193,"y":115,"w":50,"h":57},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":4,"w":50,"h":57},
+	"sourceSize": {"w":64,"h":64},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"star3.png":
+{
+	"frame": {"x":193,"y":1,"w":56,"h":55},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":5,"w":56,"h":55},
+	"sourceSize": {"w":64,"h":64},
+	"anchor": {"x":0.5,"y":0.5}
+},
+"star4.png":
+{
+	"frame": {"x":193,"y":174,"w":56,"h":50},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":8,"w":56,"h":50},
+	"sourceSize": {"w":64,"h":64},
+	"anchor": {"x":0.5,"y":0.5}
+}},
+"animations": {
+	"star": ["star1.png","star2.png","star3.png","star4.png"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "building1@2x.png",
+	"format": "RGBA8888",
+	"size": {"w":249,"h":231},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:1cb0f14cbdd5e7bcecd332ecd0eaa9f7:8acde9d234ecca966a410602c71bffad:6046b8eb706ddefaa771c33ceb7cb6d5$"
+}
+}
