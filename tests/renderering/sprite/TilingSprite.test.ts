@@ -82,22 +82,23 @@ describe('TilingSprite', () =>
             container.addChild(sprite);
 
             renderer.render({ container });
-            expect(renderer.renderPipes.tilingSprite['_renderableHash'][sprite.uid]).not.toBeNull();
 
-            expect(renderer.renderPipes.tilingSprite['_gpuTilingSprite'][sprite.uid]).toBeUndefined();
-            expect(renderer.renderPipes.tilingSprite['_gpuBatchedTilingSprite'][sprite.uid]).not.toBeNull();
+            const renderData = renderer.renderPipes.tilingSprite['_renderableHash'][sprite.uid];
+
+            expect(renderData).not.toBeNull();
+
+            expect(renderData.gpuTilingSprite).toBeUndefined();
+            expect(renderData.batchedMesh).not.toBeNull();
 
             sprite.texture = getTexture({ width: 10, height: 10 });
 
             renderer.render({ container });
 
-            expect(renderer.renderPipes.tilingSprite['_gpuTilingSprite'][sprite.uid]).not.toBeNull();
+            expect(renderData.gpuTilingSprite).not.toBeNull();
 
             sprite.destroy();
 
             expect(renderer.renderPipes.tilingSprite['_renderableHash'][sprite.uid]).toBeNull();
-            expect(renderer.renderPipes.tilingSprite['_gpuTilingSprite'][sprite.uid]).toBeNull();
-            expect(renderer.renderPipes.tilingSprite['_gpuBatchedTilingSprite'][sprite.uid]).toBeNull();
 
             expect(sprite.view.texture).toBeNull();
         });
