@@ -130,7 +130,7 @@ class BitmapFontManagerClass
 
         font.ensureCharacters(flatChars.join(''));
 
-        Cache.set(name, font);
+        Cache.set(`${name}-bitmap`, font);
 
         return font;
     }
