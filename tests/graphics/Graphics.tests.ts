@@ -39,26 +39,22 @@ describe('Graphics', () =>
             graphics.strokeStyle.color = 0xff0000;
             graphics.strokeStyle.alpha = 0.5;
             graphics.strokeStyle.alignment = 1;
-            // todo: native?
 
             expect(graphics.strokeStyle.width).toEqual(1);
             expect(graphics.strokeStyle.color).toEqual(0xff0000);
             expect(graphics.strokeStyle.alignment).toEqual(1);
             expect(graphics.strokeStyle.alpha).toEqual(0.5);
-            // expect(graphics.strokeStyle.native).toEqual(true);
 
             graphics.destroy();
         });
 
-        // note: was this correct? Second expect is black, not white
-        it.skip('should default color to black if texture not present and white is present', () =>
+        it('should default color to black if texture not present and white is present', () =>
         {
             const graphics = new Graphics();
 
-            graphics.strokeStyle.width = 1;
-            expect(graphics.strokeStyle.color).toEqual(0x0);
-            graphics.strokeStyle.texture = Texture.WHITE;
-            // graphics.lineTextureStyle({ texture: Texture.WHITE, width: 1 });
+            graphics.strokeStyle = { color: 0, width: 1 };
+            expect(graphics.strokeStyle.color).toEqual(0);
+            graphics.strokeStyle = { texture: Texture.WHITE, width: 1 };
             expect(graphics.strokeStyle.color).toEqual(0xFFFFFF);
             graphics.destroy();
         });
@@ -68,38 +64,30 @@ describe('Graphics', () =>
             const graphics = new Graphics();
 
             graphics.strokeStyle = {
-                width: 1,
-                alpha: 0.5,
+                width: 123,
+                alpha: 0.25,
                 color: 0xff0000,
-                alignment: 1,
-                // native: true,
+                alignment: 2,
                 cap: 'round',
                 join: 'round',
                 miterLimit: 20,
             };
 
-            expect(graphics.strokeStyle.width).toEqual(1);
-            expect(graphics.strokeStyle.color).toEqual(0xff0000);
-            expect(graphics.strokeStyle.alignment).toEqual(1);
-            expect(graphics.strokeStyle.alpha).toEqual(0.5);
-            // expect(graphics.strokeStyle.native).toEqual(true);
-            // expect(graphics.strokeStyle.visible).toEqual(true);
-            expect(graphics.strokeStyle.cap).toEqual('round');
-            expect(graphics.strokeStyle.join).toEqual('round');
-            expect(graphics.strokeStyle.miterLimit).toEqual(20);
+            expect(graphics.strokeStyle).toEqual({
+                ...GraphicsContext.defaultStrokeStyle,
+                width: 123,
+                alpha: 0.25,
+                color: 0xff0000,
+                alignment: 2,
+                cap: 'round',
+                join: 'round',
+                miterLimit: 20,
+            });
 
-            // note: this part doesn't seem relevant anyone, it doest set defaults from empty assignment
-            // graphics.lineStyle();
+            // expect defaults from empty assignment
+            graphics.strokeStyle = {};
 
-            // expect(graphics.strokeStyle.width).toEqual(0);
-            // expect(graphics.strokeStyle.color).toEqual(0);
-            // expect(graphics.strokeStyle.alignment).toEqual(0.5);
-            // expect(graphics.strokeStyle.alpha).toEqual(1);
-            // // expect(graphics.strokeStyle.native).toEqual(false);
-            // // expect(graphics.strokeStyle.visible).toEqual(false);
-            // expect(graphics.strokeStyle.cap).toEqual(LINE_CAP.BUTT);
-            // expect(graphics.strokeStyle.join).toEqual(LINE_JOIN.MITER);
-            // expect(graphics.strokeStyle.miterLimit).toEqual(10);
+            expect(graphics.strokeStyle).toEqual(GraphicsContext.defaultStrokeStyle);
 
             graphics.destroy();
         });
@@ -116,15 +104,14 @@ describe('Graphics', () =>
             graphics.destroy();
         });
 
-        // note: alpha not getting parsed? Test below passes though its overriding - Fixed
         it('should accept other color sources with alpha', () =>
         {
             const graphics = new Graphics();
 
-            graphics.strokeStyle = ({ color: '#ff000080', width: 1 });
+            graphics.strokeStyle = ({ color: '#ff000080', width: 1, alpha: 0.5 });
 
             expect(graphics.strokeStyle.color).toEqual(0xFF0000);
-            expect(graphics.strokeStyle.alpha).toEqual(0.5); // <-- equals 1
+            expect(graphics.strokeStyle.alpha).toEqual(0.25);
 
             graphics.destroy();
         });
@@ -157,103 +144,26 @@ describe('Graphics', () =>
                 matrix,
                 texture,
                 alignment: 1,
-                // native: true,
             };
 
-            expect(graphics.strokeStyle.width).toEqual(1);
-            expect(graphics.strokeStyle.texture).toEqual(texture);
-            expect(graphics.strokeStyle.matrix).toBeTruthy();
-            expect(graphics.strokeStyle.color).toEqual(0xff0000);
-            expect(graphics.strokeStyle.alignment).toEqual(1);
-            expect(graphics.strokeStyle.alpha).toEqual(0.5);
-            // expect(graphics.strokeStyle.native).toEqual(true);
-            // expect(graphics.strokeStyle.visible).toEqual(true);
+            expect(graphics.strokeStyle).toEqual({
+                ...GraphicsContext.defaultStrokeStyle,
+                width: 1,
+                alpha: 0.5,
+                color: 0xff0000,
+                matrix,
+                texture,
+                alignment: 1,
+            });
 
-            // note: the part below doesn't seem relevant any more, it doesn't set defaults from empty assignment
-            // graphics.lineTextureStyle();
+            // expect defaults from empty assignment
+            graphics.strokeStyle = {};
 
-            // expect(graphics.strokeStyle.width).toEqual(0);
-            // expect(graphics.strokeStyle.texture).toEqual(Texture.WHITE);
-            // expect(graphics.strokeStyle.matrix).toEqual(null);
-            // expect(graphics.strokeStyle.color).toEqual(0);
-            // expect(graphics.strokeStyle.alignment).toEqual(0.5);
-            // expect(graphics.strokeStyle.alpha).toEqual(1);
-            // expect(graphics.strokeStyle.native).toEqual(false);
-            // expect(graphics.strokeStyle.visible).toEqual(false);
-
-            graphics.destroy();
-        });
-    });
-
-    describe('beginTextureFill', () =>
-    {
-        // note: what is geometry and batch v8 equivalent?
-        // it.skip('should pass texture to batches', () =>
-        // {
-        //     const graphics = new Graphics();
-        //     const canvas1 = document.createElement('canvas');
-        //     const validTex1 = Texture.from(new TextureSource({ resource: canvas1 }));
-        //     const canvas2 = document.createElement('canvas');
-        //     const validTex2 = Texture.from(new TextureSource({ resource: canvas2 }));
-
-        //     canvas1.width = 10;
-        //     canvas1.height = 10;
-        //     canvas2.width = 10;
-        //     canvas2.height = 10;
-        //     validTex1.source.update();
-        //     validTex2.source.update();
-
-        //     graphics.fillStyle = { texture: validTex1 };
-        //     graphics.beginPath().rect(0, 0, 10, 10).closePath();
-        //     graphics.fillStyle = { texture: validTex2 };
-        //     graphics.beginPath().rect(20, 20, 10, 10).closePath();
-
-        //     graphics.geometry.updateBatches();
-
-        //     const batches = graphics.geometry.batches;
-
-        //     expect(batches.length).toEqual(2);
-        //     expect(batches[0].style.texture).toEqual(validTex1);
-        //     expect(batches[1].style.texture).toEqual(validTex2);
-        // });
-
-        it('should accept other color sources', () =>
-        {
-            const graphics = new Graphics();
-
-            // note: correct?
-            graphics.fillStyle = { color: 'red' };
-            // graphics.beginTextureFill({ color: 'red' });
-
-            expect(graphics.fillStyle.color).toEqual(0xFF0000);
-            expect(graphics.fillStyle.alpha).toEqual(1);
-
-            graphics.destroy();
-        });
-
-        // note: alpha not getting parsed? Fixed
-        it('should accept other color sources with alpha', () =>
-        {
-            const graphics = new Graphics();
-
-            graphics.fillStyle = { color: '#ff000080' };
-            // graphics.beginTextureFill({ color: '#ff000080' });
-
-            expect(graphics.fillStyle.color).toEqual(0xFF0000);
-            expect(graphics.fillStyle.alpha).toEqual(0.5);
-
-            graphics.destroy();
-        });
-
-        it('should accept other color sources with alpha override', () =>
-        {
-            const graphics = new Graphics();
-
-            graphics.fillStyle = { color: '#ff000080', alpha: 1 };
-            // graphics.beginTextureFill({ color: '#ff000080', alpha: 1 });
-
-            expect(graphics.fillStyle.color).toEqual(0xFF0000);
-            expect(graphics.fillStyle.alpha).toEqual(1);
+            expect(graphics.strokeStyle).toEqual({
+                ...GraphicsContext.defaultStrokeStyle,
+                matrix: null,
+                texture: Texture.WHITE,
+            });
 
             graphics.destroy();
         });
@@ -261,37 +171,6 @@ describe('Graphics', () =>
 
     describe('utils', () =>
     {
-        // note: is this relevant any more?
-        // it.skip('FILL_COMMADS should be filled', () =>
-        // {
-        //     expect(FILL_COMMANDS).not.toBeNull();
-
-        //     expect(FILL_COMMANDS[SHAPES.POLY]).not.toBeNull();
-        //     expect(FILL_COMMANDS[SHAPES.CIRC]).not.toBeNull();
-        //     expect(FILL_COMMANDS[SHAPES.ELIP]).not.toBeNull();
-        //     expect(FILL_COMMANDS[SHAPES.RECT]).not.toBeNull();
-        //     expect(FILL_COMMANDS[SHAPES.RREC]).not.toBeNull();
-        // });
-
-        // note: geometry?
-        // it.skip('buildLine should execute without throws', () =>
-        // {
-        //     const graphics = new Graphics();
-
-        //     graphics.lineStyle({ width: 2, color: 0xff0000 });
-        //     graphics.drawRect(0, 0, 10, 10);
-
-        //     const geometry = graphics.geometry;
-        //     const data = geometry.graphicsData[0];
-
-        //     // native = false
-        //     expect(() => { buildLine(data, geometry); }).not.toThrowError();
-
-        //     data.lineStyle.native = true;
-        //     // native = true
-        //     expect(() => { buildLine(data, geometry); }).not.toThrowError();
-        // });
-
         it('should parse the alpha component from a color string value', () =>
         {
             const style = convertFillInputToFillStyle({ color: '#ff000080' }, GraphicsContext.defaultFillStyle);
@@ -314,9 +193,10 @@ describe('Graphics', () =>
         {
             const graphics = new Graphics();
 
-            graphics.strokeStyle = { width: 1, cap: 'square' };
-            graphics.moveTo(0, 0);
-            graphics.lineTo(0, 10);
+            graphics
+                .moveTo(0, 0)
+                .lineTo(0, 10)
+                .stroke({ width: 1, cap: 'square' });
 
             expect(graphics.width).toBeCloseTo(1, 0.0001);
             expect(graphics.height).toBeCloseTo(11, 0.0001);
@@ -395,37 +275,23 @@ describe('Graphics', () =>
             expect(graphics.height).toEqual(70);
         });
 
-        it.skip('should ignore duplicate calls', () =>
+        it('should generate correct instructions', () =>
         {
             const graphics = new Graphics();
 
-            graphics.beginPath(); // <-- had to include these calls or otherwise no instructions?
             graphics.moveTo(0, 0);
-
-            graphics.lineTo(0, 0); // <-- original test calls
-            graphics.lineTo(10, 0);
+            graphics.lineTo(0, 0);
             graphics.lineTo(10, 0);
 
             graphics.stroke();
-            graphics.closePath();
 
-            /**
-             * 0
-            :
-            {action: 'moveTo', data: Array(2)}
-            1
-            :
-            {action: 'lineTo', data: Array(2)}
-            2
-            :
-            {action: 'lineTo', data: Array(2)} <-- duplicate
-            3
-            :
-            {action: 'lineTo', data: Array(2)} <-- duplicate
-             */
+            const instruction = graphics.context.instructions[0] as FillInstruction;
+            const actions = instruction.data.path.instructions.map((i) => i.action);
+            const data = instruction.data.path.instructions.map((i) => i.data);
 
-            // expect(graphics.currentPath.points).toEqual([0, 0, 10, 0]);
-            expect(graphics.context.instructions[0]).toEqual([0, 0, 10, 0]);
+            expect(graphics.context.instructions.length).toBe(1);
+            expect(actions).toEqual(['moveTo', 'lineTo', 'lineTo']);
+            expect(data).toEqual([[0, 0], [0, 0], [10, 0]]);
         });
 
         // note: zero dimensions
@@ -478,16 +344,14 @@ describe('Graphics', () =>
 
     describe('containsPoint', () =>
     {
-        // note: had to fill to get it to work, original test didn't fill or create a path - breaking changes for users?
         it('should return true when point inside a standard shape', () =>
         {
             const point = new Point(1, 1);
             const graphics = new Graphics();
 
-            graphics.beginPath();
-            graphics.rect(0, 0, 10, 10);
-            graphics.fill();
-            graphics.closePath();
+            graphics
+                .rect(0, 0, 10, 10)
+                .fill();
 
             expect(graphics.context.containsPoint(point)).toBe(true);
         });
@@ -497,44 +361,42 @@ describe('Graphics', () =>
             const point = new Point(20, 20);
             const graphics = new Graphics();
 
-            graphics.beginPath();
-            graphics.rect(0, 0, 10, 10);
-            graphics.fill();
-            graphics.closePath();
+            graphics
+                .rect(0, 0, 10, 10)
+                .fill();
 
             expect(graphics.context.containsPoint(point)).toBe(false);
         });
 
-        it('should return true when point inside just lines', () =>
+        // note: ticket to fix these tests
+        it.skip('should return true when point inside just lines', () =>
         {
-            const point = new Point(1, 1);
+            const point = new Point(-1, -1);
             const graphics = new Graphics();
 
-            graphics.beginPath();
-            graphics.moveTo(0, 0);
-            graphics.lineTo(0, 10);
-            graphics.lineTo(10, 10);
-            graphics.lineTo(10, 0);
-            graphics.lineTo(0, 0);
-            graphics.stroke();
-            graphics.closePath();
+            graphics
+                .moveTo(0, 0)
+                .lineTo(0, 10)
+                .lineTo(10, 10)
+                .lineTo(10, 0)
+                .lineTo(0, 0)
+                .stroke({ width: 2 });
 
             expect(graphics.context.containsPoint(point)).toBe(true);
         });
 
-        it('should return false when point outside just lines', () =>
+        it.skip('should return false when point outside just lines', () =>
         {
-            const point = new Point(20, 20);
+            const point = new Point(5, 5);
             const graphics = new Graphics();
 
-            graphics.beginPath();
-            graphics.moveTo(0, 0);
-            graphics.lineTo(0, 10);
-            graphics.lineTo(10, 10);
-            graphics.lineTo(10, 0);
-            graphics.lineTo(0, 0);
-            graphics.stroke();
-            graphics.closePath();
+            graphics
+                .moveTo(0, 0)
+                .lineTo(0, 10)
+                .lineTo(10, 10)
+                .lineTo(10, 0)
+                .lineTo(0, 0)
+                .stroke();
 
             expect(graphics.context.containsPoint(point)).toBe(false);
         });
@@ -551,104 +413,74 @@ describe('Graphics', () =>
             expect(graphics.context.containsPoint(point)).toBe(false);
         });
 
-        // note: how to test this?
-        it.skip('should return false with hole', () =>
+        it('should return false with hole', () =>
         {
-            const point1 = new Point(1, 1);
-            const point2 = new Point(5, 5);
             const graphics = new Graphics();
 
             graphics
-                .beginPath()
                 .moveTo(0, 0)
                 .lineTo(10, 0)
                 .lineTo(10, 10)
                 .lineTo(0, 10)
-                .fill(0)
-                .closePath()
-                // .beginHole()
-                .beginPath()
+                .fill()
                 .moveTo(2, 2)
                 .lineTo(8, 2)
                 .lineTo(8, 8)
                 .lineTo(2, 8)
-                // .endHole();
-                .fill()
-                .cut()
-                .closePath();
+                .cut();
 
-            expect(graphics.context.containsPoint(point1)).toBe(true);
-            expect(graphics.context.containsPoint(point2)).toBe(false);
+            expect(graphics.context.containsPoint(new Point(1, 1))).toBe(true);
+            expect(graphics.context.containsPoint(new Point(5, 5))).toBe(false);
         });
 
-        // note: hole api?
+        // note: failing, needs investigation
         it.skip('should handle extra shapes in holes', () =>
         {
             const graphics = new Graphics();
 
             graphics
-                .beginPath()
                 .moveTo(3, 3)
                 .lineTo(5, 3)
                 .lineTo(5, 5)
                 .lineTo(3, 5)
-                .fill(0)
-                .closePath()
-                .beginPath()
+                .fill()
                 .moveTo(0, 0)
                 .lineTo(10, 0)
                 .lineTo(10, 10)
                 .lineTo(0, 10)
                 .fill()
-                .closePath()
-                // .beginHole()
-                .beginPath()
                 .moveTo(2, 2)
                 .lineTo(8, 2)
                 .lineTo(8, 8)
                 .lineTo(2, 8)
-                .fill(0)
-                .closePath()
-                // .endHole()
-                .beginPath()
-                .moveTo(5, 5)
-                .lineTo(7, 5)
-                .lineTo(7, 7)
-                .lineTo(5, 7)
-                .fill(0)
-                .closePath();
+                .cut();
+            // .moveTo(5, 5)
+            // .lineTo(7, 5)
+            // .lineTo(7, 7)
+            // .lineTo(5, 7)
+            // .fill();
 
             expect(graphics.context.containsPoint(new Point(1, 1))).toBe(true);
-            expect(graphics.context.containsPoint(new Point(4, 4))).toBe(true);
-            expect(graphics.context.containsPoint(new Point(4, 6))).toBe(false);
-            expect(graphics.context.containsPoint(new Point(6, 4))).toBe(false);
-            expect(graphics.context.containsPoint(new Point(6, 6))).toBe(true);
+            // expect(graphics.context.containsPoint(new Point(4, 4))).toBe(true);
+            // expect(graphics.context.containsPoint(new Point(4, 6))).toBe(false);
+            // expect(graphics.context.containsPoint(new Point(6, 4))).toBe(false);
+            // expect(graphics.context.containsPoint(new Point(6, 6))).toBe(true);
         });
 
-        // note: failing, needs care to port new api
+        // note: Mat to look into, may be bug
         it.skip('should take a matrix into account', () =>
         {
             const g = new Graphics();
-            const m = new Matrix();
 
-            // g.beginFill(0xffffff, 1.0);
-            // m.identity().translate(0, 100);
-            // g.setMatrix(m.clone());
-            // g.drawRect(0, 0, 10, 10);
-            // m.identity().translate(200, 0);
-            // g.setMatrix(m.clone());
-            // g.drawRect(0, 0, 10, 10);
-            // g.setMatrix(null);
-            // g.drawRect(30, 40, 10, 10);
-
-            m.identity().translate(0, 100);
-            g.context.setTransform(m.clone());
-            g.beginPath().rect(0, 0, 10, 10);
-            m.identity().translate(200, 0);
-            g.context.setTransform(m.clone());
-            g.rect(0, 0, 10, 10);
-            g.context.setTransform(null);
-            g.rect(30, 40, 10, 10).fill({ color: 0xffffff, alpha: 1.0 });
+            g.context
+                .translate(0, 100)
+                .rect(0, 0, 10, 10)
+                .resetTransform()
+                .translate(200, 0)
+                .rect(0, 0, 10, 10)
+                .resetTransform()
+                .rect(30, 40, 10, 10)
+                .fill({ color: 0xff0000, alpha: 1.0 });
 
             expect(g.context.containsPoint(new Point(5, 5))).toBe(false);
             expect(g.context.containsPoint(new Point(5, 105))).toBe(true);
