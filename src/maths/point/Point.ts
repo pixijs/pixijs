@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
+// import type { Dict } from '../../utils/types';
 import type { PointData } from './PointData';
 import type { PointLike } from './PointLike';
 
@@ -11,6 +12,15 @@ import type { PointLike } from './PointLike';
  */
 export class Point implements PointLike
 {
+    // /**
+    //  * Mixes all enumerable properties and methods from a source object to Container.
+    //  * @param source - The source of properties and methods to mix in.
+    //  */
+    // public static mixin(source: Dict<any>): void
+    // {
+    //     Object.defineProperties(Point.prototype, Object.getOwnPropertyDescriptors(source));
+    // }
+
     /** Position of the point on the x axis */
     public x = 0;
     /** Position of the point on the y axis */
