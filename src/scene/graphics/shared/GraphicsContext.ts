@@ -277,7 +277,14 @@ export class GraphicsContext extends EventEmitter<{
             {
                 if (lastInstruction.action === 'stroke' || lastInstruction.action === 'fill')
                 {
-                    lastInstruction.data.hole = holePath;
+                    if (lastInstruction.data.hole)
+                    {
+                        lastInstruction.data.hole.addPath(holePath);
+                    }
+                    else
+                    {
+                        lastInstruction.data.hole = holePath;
+                    }
                 }
             }
         }
