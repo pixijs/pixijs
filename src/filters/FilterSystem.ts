@@ -428,9 +428,18 @@ export class FilterSystem implements System
 
         let resolution = this.renderer.renderTarget.rootRenderTarget.colorTexture.source._resolution;
 
-        if (this._filterStackIndex > 0)
+        // to find the previous resolution we need to account for the skipped filters
+        // the following will find the last non skipped filter...
+        let currentIndex = this._filterStackIndex - 1;
+
+        while (currentIndex > 0 && this._filterStack[currentIndex].skip)
         {
-            resolution = this._filterStack[this._filterStackIndex - 1].inputTexture.source._resolution;
+            --currentIndex;
+        }
+
+        if (currentIndex > 0)
+        {
+            resolution = this._filterStack[currentIndex].inputTexture.source._resolution;
         }
 
         const filterUniforms = this._filterGlobalUniforms;
