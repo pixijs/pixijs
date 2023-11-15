@@ -8,6 +8,9 @@ import type { ShapePrimitive } from './ShapePrimitive';
 
 const tempPoints = [new Point(), new Point(), new Point(), new Point()];
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Rectangle extends PixiMixins.Rectangle { }
+
 /**
  * Rectangle object is an area defined by its position, as indicated by its top-left corner
  * point (x, y) and by its width and its height.
