@@ -4,6 +4,7 @@ import { CLEAR } from '../../gl/const';
 import { isRenderingToScreen } from '../../shared/renderTarget/isRenderingToScreen';
 import { RenderTarget } from '../../shared/renderTarget/RenderTarget';
 import { SystemRunner } from '../../shared/system/SystemRunner';
+import { CanvasSource } from '../../shared/texture/sources/CanvasSource';
 import { TextureSource } from '../../shared/texture/sources/TextureSource';
 import { Texture } from '../../shared/texture/Texture';
 import { getCanvasTexture } from '../../shared/texture/utils/getCanvasTexture';
@@ -315,7 +316,7 @@ export class GpuRenderTargetSystem implements System
     {
         let renderTarget = null;
 
-        if (renderSurface instanceof HTMLCanvasElement)
+        if (CanvasSource.test(renderSurface))
         {
             renderSurface = getCanvasTexture(renderSurface as ICanvas);
         }
@@ -359,7 +360,7 @@ export class GpuRenderTargetSystem implements System
 
         renderTarget.colorTextures.forEach((colorTexture, i) =>
         {
-            if (colorTexture.source.resource instanceof HTMLCanvasElement)
+            if (CanvasSource.test(colorTexture.source.resource))
             {
                 const context
                     = renderTarget.colorTexture.source.resource.getContext(

@@ -3,6 +3,7 @@ import { Matrix } from '../../../maths/matrix/Matrix';
 import { isRenderingToScreen } from '../shared/renderTarget/isRenderingToScreen';
 import { RenderTarget } from '../shared/renderTarget/RenderTarget';
 import { SystemRunner } from '../shared/system/SystemRunner';
+import { CanvasSource } from '../shared/texture/sources/CanvasSource';
 import { Texture } from '../shared/texture/Texture';
 import { getCanvasTexture } from '../shared/texture/utils/getCanvasTexture';
 import { CLEAR } from './const';
@@ -211,7 +212,7 @@ export class GlRenderTargetSystem implements System
     {
         let renderTarget: RenderTarget = null;
 
-        if (renderSurface instanceof HTMLCanvasElement)
+        if (CanvasSource.test(renderSurface))
         {
             renderSurface = getCanvasTexture(renderSurface as ICanvas);
         }
@@ -226,7 +227,7 @@ export class GlRenderTargetSystem implements System
                 colorTextures: [renderSurface],
             });
 
-            if (renderSurface.source.resource instanceof HTMLCanvasElement)
+            if (CanvasSource.test(renderSurface.source.resource))
             {
                 renderTarget.isRoot = true;
             }
@@ -311,7 +312,7 @@ export class GlRenderTargetSystem implements System
         const glRenderTarget = new GlRenderTarget();
 
         // we are rendering to a canvas..
-        if (renderTarget.colorTexture.source.resource instanceof HTMLCanvasElement)
+        if (CanvasSource.test(renderTarget.colorTexture.source.resource))
         {
             this._gpuRenderTargetHash[renderTarget.uid] = glRenderTarget;
 
