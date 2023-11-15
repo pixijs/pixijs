@@ -415,6 +415,18 @@ export class TextStyle extends EventEmitter<{
         this.emit('update', this);
     }
 
+    public reset()
+    {
+        const defaultStyle = TextStyle.defaultTextStyle;
+
+        for (const key in defaultStyle)
+        {
+            this[key as keyof typeof this] = defaultStyle[key as keyof TextStyleOptions] as any;
+        }
+
+        this.update();
+    }
+
     get styleKey()
     {
         return this._styleKey || this._generateKey();

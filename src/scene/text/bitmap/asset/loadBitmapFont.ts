@@ -33,7 +33,7 @@ export const bitmapFontCachePlugin = {
     }
 };
 
-export const xmlBitmapFontLoader = {
+export const loadBitmapFont = {
     extension: {
         type: ExtensionType.LoadParser,
         priority: LoaderParserPriority.Normal,
@@ -75,7 +75,7 @@ export const xmlBitmapFontLoader = {
         const bitmapFont = new BitmapFont({
             data: bitmapFontData,
             textures
-        });
+        }, src);
 
         return bitmapFont;
     },

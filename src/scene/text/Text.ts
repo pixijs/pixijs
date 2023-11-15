@@ -97,6 +97,11 @@ export class Text extends Container<TextView>
             } as TextOptions;
         }
 
+        if (!options)
+        {
+            options = {} as TextOptions;
+        }
+
         const { style, text, renderMode, resolution, ...rest } = options as TextOptions;
 
         super({

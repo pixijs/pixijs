@@ -134,6 +134,18 @@ class BitmapFontManagerClass
 
         return font;
     }
+
+    public uninstall(name: string)
+    {
+        const cacheKey = `${name}-bitmap`;
+        const font = Cache.get<BitmapFont>(cacheKey);
+
+        if (font)
+        {
+            Cache.remove(cacheKey);
+            font.destroy();
+        }
+    }
 }
 
 export const BitmapFontManager = new BitmapFontManagerClass();
