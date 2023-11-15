@@ -33,7 +33,7 @@ export class FilterPipe implements InstructionPipe<FilterInstruction>
         renderPipes.batch.break(instructionSet);
 
         instructionSet.add({
-            type: 'filter',
+            renderPipeId: 'filter',
             canBundle: false,
             action: 'pushFilter',
             container,
@@ -46,7 +46,7 @@ export class FilterPipe implements InstructionPipe<FilterInstruction>
         this._renderer.renderPipes.batch.break(instructionSet);
 
         instructionSet.add({
-            type: 'filter',
+            renderPipeId: 'filter',
             action: 'popFilter',
             canBundle: false,
         });
