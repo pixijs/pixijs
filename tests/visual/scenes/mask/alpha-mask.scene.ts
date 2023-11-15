@@ -7,8 +7,7 @@ import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
-    it: 'should render alpha alpha mask',
-    only: true,
+    it: 'should render alpha mask',
     create: async (scene: Container) =>
     {
         const rect = new Graphics()
