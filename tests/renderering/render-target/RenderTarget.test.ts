@@ -86,7 +86,7 @@ describe('isRenderingToScreen', () =>
         expect(renderer.renderTarget.projectionMatrix.toArray()).toEqual(
             new Float32Array([0.0625, 0, -1, 0, 0.0625, -1, 0, 0, 1])
         );
-    }),
+    });
 
     it('root render target should have negative projection matrix in WebGL', async () =>
     {
@@ -112,7 +112,7 @@ describe('isRenderingToScreen', () =>
         expect(renderer.renderTarget.projectionMatrix.toArray()).toEqual(
             new Float32Array([0.0625, 0, -1, 0, -0.0625, 1, 0, 0, 1])
         );
-    }),
+    });
 
     it('render target system should use same render target for shared texture sources', async () =>
     {
