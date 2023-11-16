@@ -1,4 +1,3 @@
-// import { ObservablePoint } from '../maths/point/ObservablePoint';
 import { Point } from '../maths/point/Point';
 
 import type { PointData } from '../maths/point/PointData';
@@ -7,9 +6,9 @@ export const mixins: any = {
     /**
      * Adds `other` to `this` point and outputs into `outPoint` or a new Point.
      *
-     * _Note: Only available with **@pixi/math-extras**._
+     * _Note: Only available with **pixi.js/math-extras**._
      * @method add
-     * @memberof PixiMixins.Point#
+     * @memberof maths.Point#
      * @param {PointData} other - The point to add to `this`.
      * @param {PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
@@ -18,9 +17,9 @@ export const mixins: any = {
     /**
      * Adds `other` to `this` point and outputs into `outPoint` or a new Point.
      *
-     * _Note: Only available with **@pixi/math-extras**._
+     * _Note: Only available with **pixi.js/math-extras**._
      * @method add
-     * @memberof PixiMixins.ObservablePoint#
+     * @memberof maths.ObservablePoint#
      * @param {PointData} other - The point to add to `this`.
      * @param {PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
@@ -41,9 +40,9 @@ export const mixins: any = {
     /**
      * Subtracts `other` from `this` point and outputs into `outPoint` or a new Point.
      *
-     * _Note: Only available with **@pixi/math-extras**._
+     * _Note: Only available with **pixi.js/math-extras**._
      * @method subtract
-     * @memberof PixiMixins.Point#
+     * @memberof maths.Point#
      * @param {PointData} other - The point to subtract to `this`.
      * @param {PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
@@ -52,9 +51,9 @@ export const mixins: any = {
     /**
      * Subtracts `other` from `this` point and outputs into `outPoint` or a new Point.
      *
-     * _Note: Only available with **@pixi/math-extras**._
+     * _Note: Only available with **pixi.js/math-extras**._
      * @method subtract
-     * @memberof PixiMixins.ObservablePoint#
+     * @memberof maths.ObservablePoint#
      * @param {PointData} other - The point to subtract to `this`.
      * @param {PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
@@ -75,9 +74,9 @@ export const mixins: any = {
     /**
      * Multiplies component-wise `other` and `this` points and outputs into `outPoint` or a new Point.
      *
-     * _Note: Only available with **@pixi/math-extras**._
+     * _Note: Only available with **pixi.js/math-extras**._
      * @method multiply
-     * @memberof PixiMixins.Point#
+     * @memberof maths.Point#
      * @param {PointData} other - The point to multiply with `this`.
      * @param {PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
@@ -86,9 +85,9 @@ export const mixins: any = {
     /**
      * Multiplies component-wise `other` and `this` points and outputs into `outPoint` or a new Point.
      *
-     * _Note: Only available with **@pixi/math-extras**._
+     * _Note: Only available with **pixi.js/math-extras**._
      * @method multiply
-     * @memberof PixiMixins.ObservablePoint#
+     * @memberof maths.ObservablePoint#
      * @param {PointData} other - The point to multiply with `this`.
      * @param {PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
@@ -109,9 +108,9 @@ export const mixins: any = {
     /**
      * Multiplies each component of `this` point with the number `scalar` and outputs into `outPoint` or a new Point.
      *
-     * _Note: Only available with **@pixi/math-extras**._
+     * _Note: Only available with **pixi.js/math-extras**._
      * @method multiplyScalar
-     * @memberof PixiMixins.Point#
+     * @memberof maths.Point#
      * @param {number} scalar - The number to multiply both components of `this`.
      * @param {PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
@@ -120,9 +119,9 @@ export const mixins: any = {
     /**
      * Multiplies each component of `this` point with the number `scalar` and outputs into `outPoint` or a new Point.
      *
-     * _Note: Only available with **@pixi/math-extras**._
+     * _Note: Only available with **pixi.js/math-extras**._
      * @method multiplyScalar
-     * @memberof PixiMixins.ObservablePoint#
+     * @memberof maths.ObservablePoint#
      * @param {number} scalar - The number to multiply both components of `this`.
      * @param {PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
@@ -144,9 +143,9 @@ export const mixins: any = {
      * Computes the dot product of `other` with `this` point.
      * The dot product is the sum of the products of the corresponding components of two vectors.
      *
-     * _Note: Only available with **@pixi/math-extras**._
+     * _Note: Only available with **pixi.js/math-extras**._
      * @method dot
-     * @memberof PixiMixins.Point#
+     * @memberof maths.Point#
      * @param {PointData} other - The other point to calculate the dot product with `this`.
      * @returns {number} The result of the dot product. This is an scalar value.
      */
@@ -154,9 +153,9 @@ export const mixins: any = {
      * Computes the dot product of `other` with `this` point.
      * The dot product is the sum of the products of the corresponding components of two vectors.
      *
-     * _Note: Only available with **@pixi/math-extras**._
+     * _Note: Only available with **pixi.js/math-extras**._
      * @method dot
-     * @memberof PixiMixins.ObservablePoint#
+     * @memberof maths.ObservablePoint#
      * @param {PointData} other - The other point to calculate the dot product with `this`.
      * @returns {number} The result of the dot product. This is an scalar value.
      */
@@ -174,9 +173,9 @@ export const mixins: any = {
      *
      * This function returns the z component of the cross product of the two points.
      *
-     * _Note: Only available with **@pixi/math-extras**._
+     * _Note: Only available with **pixi.js/math-extras**._
      * @method cross
-     * @memberof PixiMixins.Point#
+     * @memberof maths.Point#
      * @param {PointData} other - The other point to calculate the cross product with `this`.
      * @returns {number} The z component of the result of the cross product.
      */
@@ -189,9 +188,9 @@ export const mixins: any = {
      *
      * This function returns the z component of the cross product of the two points.
      *
-     * _Note: Only available with **@pixi/math-extras**._
+     * _Note: Only available with **pixi.js/math-extras**._
      * @method cross
-     * @memberof PixiMixins.ObservablePoint#
+     * @memberof maths.ObservablePoint#
      * @param {PointData} other - The other point to calculate the cross product with `this`.
      * @returns {number} The z component of the result of the cross product.
      */
@@ -214,9 +213,9 @@ export const mixins: any = {
      *
      * A normalized vector is a vector of magnitude (length) 1
      *
-     * _Note: Only available with **@pixi/math-extras**._
+     * _Note: Only available with **pixi.js/math-extras**._
      * @method normalize
-     * @memberof PixiMixins.Point#
+     * @memberof maths.Point#
      * @param {PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
      * @returns {PointData} The normalized point.
@@ -226,9 +225,9 @@ export const mixins: any = {
      *
      * A normalized vector is a vector of magnitude (length) 1
      *
-     * _Note: Only available with **@pixi/math-extras**._
+     * _Note: Only available with **pixi.js/math-extras**._
      * @method normalize
-     * @memberof PixiMixins.ObservablePoint#
+     * @memberof maths.ObservablePoint#
      * @param {PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
      * @returns {PointData} The normalized point.
@@ -252,9 +251,9 @@ export const mixins: any = {
      *
      * Defined as the square root of the sum of the squares of each component.
      *
-     * _Note: Only available with **@pixi/math-extras**._
+     * _Note: Only available with **pixi.js/math-extras**._
      * @method magnitude
-     * @memberof PixiMixins.Point#
+     * @memberof maths.Point#
      * @returns {number} The magnitude (length) of the vector.
      */
     /**
@@ -262,9 +261,9 @@ export const mixins: any = {
      *
      * Defined as the square root of the sum of the squares of each component.
      *
-     * _Note: Only available with **@pixi/math-extras**._
+     * _Note: Only available with **pixi.js/math-extras**._
      * @method magnitude
-     * @memberof PixiMixins.ObservablePoint#
+     * @memberof maths.ObservablePoint#
      * @returns {number} The magnitude (length) of the vector.
      */
     magnitude(): number
@@ -279,9 +278,9 @@ export const mixins: any = {
      *
      * Defined as the sum of the squares of each component.
      *
-     * _Note: Only available with **@pixi/math-extras**._
+     * _Note: Only available with **pixi.js/math-extras**._
      * @method magnitudeSquared
-     * @memberof PixiMixins.Point#
+     * @memberof maths.Point#
      * @returns {number} The magnitude squared (length squared) of the vector.
      */
     /**
@@ -291,9 +290,9 @@ export const mixins: any = {
      *
      * Defined as the sum of the squares of each component.
      *
-     * _Note: Only available with **@pixi/math-extras**._
+     * _Note: Only available with **pixi.js/math-extras**._
      * @method magnitudeSquared
-     * @memberof PixiMixins.ObservablePoint#
+     * @memberof maths.ObservablePoint#
      * @returns {number} The magnitude squared (length squared) of the vector.
      */
     magnitudeSquared(): number
@@ -308,9 +307,9 @@ export const mixins: any = {
      * The light would cast rays perpendicular to `onto`.
      * `this.project(onto)` is the shadow cast by `this` on the line defined by `onto` .
      *
-     * _Note: Only available with **@pixi/math-extras**._
+     * _Note: Only available with **pixi.js/math-extras**._
      * @method project
-     * @memberof PixiMixins.Point#
+     * @memberof maths.Point#
      * @param {PointData} onto - A non zero vector describing a line on which to project `this`.
      * @param {PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
@@ -323,9 +322,9 @@ export const mixins: any = {
      * The light would cast rays perpendicular to `onto`.
      * `this.project(onto)` is the shadow cast by `this` on the line defined by `onto` .
      *
-     * _Note: Only available with **@pixi/math-extras**._
+     * _Note: Only available with **pixi.js/math-extras**._
      * @method project
-     * @memberof PixiMixins.ObservablePoint#
+     * @memberof maths.ObservablePoint#
      * @param {PointData} onto - A non zero vector describing a line on which to project `this`.
      * @param {PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
@@ -354,9 +353,9 @@ export const mixins: any = {
      * `this` vector is the light and `normal` is a vector perpendicular to the mirror.
      * `this.reflect(normal)` is the reflection of `this` on that mirror.
      *
-     * _Note: Only available with **@pixi/math-extras**._
+     * _Note: Only available with **pixi.js/math-extras**._
      * @method reflect
-     * @memberof PixiMixins.Point#
+     * @memberof maths.Point#
      * @param {PointData} normal - The normal vector of your reflecting plane.
      * @param {PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
@@ -370,9 +369,9 @@ export const mixins: any = {
      * `this` vector is the light and `normal` is a vector perpendicular to the mirror.
      * `this.reflect(normal)` is the reflection of `this` on that mirror.
      *
-     * _Note: Only available with **@pixi/math-extras**._
+     * _Note: Only available with **pixi.js/math-extras**._
      * @method reflect
-     * @memberof PixiMixins.ObservablePoint#
+     * @memberof maths.ObservablePoint#
      * @param {PointData} normal - The normal vector of your reflecting plane.
      * @param {PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
@@ -395,6 +394,3 @@ export const mixins: any = {
         return outPoint;
     }
 };
-
-// Object.assign(Point.prototype, mixins);
-// Object.assign(ObservablePoint.prototype, mixins);

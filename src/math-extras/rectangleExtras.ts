@@ -6,9 +6,9 @@ import { Rectangle } from '../maths/shapes/Rectangle';
  * Rectangles without area (width or height equal to zero) can't contain anything,
  * not even other arealess rectangles.
  *
- * _Note: Only available with **@pixi/math-extras**._
+ * _Note: Only available with **pixi.js/math-extras**._
  * @method containsRect
- * @memberof PIXI.Rectangle#
+ * @memberof maths.Rectangle#
  * @param {Rectangle} other - The Rectangle to fit inside `this`.
  * @returns {boolean} A value of `true` if `this` Rectangle contains `other`; otherwise `false`.
  */
@@ -25,9 +25,9 @@ Rectangle.prototype.containsRect = function containsRect(other: Rectangle): bool
 /**
  * Accepts `other` Rectangle and returns true if the given Rectangle is equal to `this` Rectangle.
  *
- * _Note: Only available with **@pixi/math-extras**._
+ * _Note: Only available with **pixi.js/math-extras**._
  * @method equals
- * @memberof PIXI.Rectangle#
+ * @memberof maths.Rectangle#
  * @param {Rectangle} other - The Rectangle to compare with `this`
  * @returns {boolean} Returns true if all `x`, `y`, `width`, and `height` are equal.
  */
@@ -48,9 +48,9 @@ Rectangle.prototype.equals = function equals(other: Rectangle): boolean
  * Rectangles without area (width or height equal to zero) can't intersect or be intersected
  * and will always return an empty rectangle with its properties set to zero.
  *
- * _Note: Only available with **@pixi/math-extras**._
+ * _Note: Only available with **pixi.js/math-extras**._
  * @method intersection
- * @memberof PIXI.Rectangle#
+ * @memberof maths.Rectangle#
  * @param {Rectangle} other - The Rectangle to intersect with `this`.
  * @param {Rectangle} [outRect] - A Rectangle object in which to store the value,
  * optional (otherwise will create a new Rectangle).
@@ -95,9 +95,9 @@ Rectangle.prototype.intersection = function intersection<T extends Rectangle>(ot
  * Adds `this` and `other` Rectangles together to create a new Rectangle object filling
  * the horizontal and vertical space between the two rectangles.
  *
- * _Note: Only available with **@pixi/math-extras**._
+ * _Note: Only available with **pixi.js/math-extras**._
  * @method union
- * @memberof PIXI.Rectangle#
+ * @memberof maths.Rectangle#
  * @param {Rectangle} other - The Rectangle to unite with `this`.
  * @param {Rectangle} [outRect] - A Rectangle object in which to store the value,
  * optional (otherwise will create a new Rectangle).
