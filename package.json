@@ -128,7 +128,7 @@
     "./lib/environment/browser/browserAll.*",
     "./lib/environment/webworker/webworkerAll.*",
     "./lib/accessibility/init.*",
-    "./lib/filters/blendModes/init.*",
+    "./lib/filters/blend-modes/init.*",
     "./lib/app/init.*",
     "./lib/assets/init.*",
     "./lib/compressed-textures/dds/init.*",
@@ -175,10 +175,10 @@
     },
     "./advanced-blend-modes": {
       "import": {
-        "default": "./lib/filters/blendModes/init.mjs"
+        "default": "./lib/filters/blend-modes/init.mjs"
       },
       "require": {
-        "default": "./lib/filters/blendModes/init.js"
+        "default": "./lib/filters/blend-modes/init.js"
       }
     },
     "./app": {
