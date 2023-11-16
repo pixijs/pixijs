@@ -40,12 +40,30 @@ const bigTriangleShader = new Shader({
     },
 });
 
+/** The options for the back buffer system. */
 export interface GlBackBufferOptions
 {
+    /** if true will use the back buffer where required */
     useBackBuffer?: boolean;
+    /** if true will ensure the texture is antialiased */
     antialias?: boolean;
 }
 
+/**
+ * For blend modes you need to know what pixels you are actually drawing to. For this to be possible in WebGL
+ * we need to render to a texture and then present that texture to the screen. This system manages that process.
+ *
+ * As the main scene is rendered to a texture, it means we can sample it anc copy its pixels,
+ * something not possible on the main canvas.
+ *
+ * If antialiasing is set to to true and useBackBuffer is set to true, then the back buffer will be antialiased.
+ * and the main gl context will not.
+ *
+ * You only need to activate this back buffer if you are using a blend mode that requires it.
+ *
+ * to activate is simple, you pass `useBackBuffer:true` to your render options
+ * @memberof rendering
+ */
 export class GlBackBufferSystem implements System
 {
     /** @ignore */
@@ -57,10 +75,12 @@ export class GlBackBufferSystem implements System
         priority: 1
     } as const;
 
+    /** default options for the back buffer system */
     public static defaultOptions: GlBackBufferOptions = {
         useBackBuffer: false,
     };
 
+    /** if true, the back buffer is used */
     public useBackBuffer = false;
 
     private _backBufferTexture: Texture;
@@ -89,7 +109,9 @@ export class GlBackBufferSystem implements System
      */
     protected renderStart(options: RenderOptions)
     {
-        this._useBackBufferThisRender = this.useBackBuffer && !!options.target;
+        const renderTarget = this._renderer.renderTarget.getRenderTarget(options.target);
+
+        this._useBackBufferThisRender = this.useBackBuffer && !!renderTarget.isRoot;
 
         if (this._useBackBufferThisRender)
         {
@@ -147,6 +169,7 @@ export class GlBackBufferSystem implements System
         return this._backBufferTexture;
     }
 
+    /** destroys the back buffer */
     public destroy()
     {
         if (this._backBufferTexture)
