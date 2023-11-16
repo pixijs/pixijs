@@ -18,6 +18,7 @@ import type { TextureDestroyOptions, TypeOrBool } from '../../container/destroyT
 import type { LineCap, LineJoin } from './const';
 import type { FillGradient } from './fill/FillGradient';
 import type { FillPattern } from './fill/FillPattern';
+import type { RoundedPoint } from './path/roundShape';
 import type { ShapePath } from './path/ShapePath';
 
 export interface FillStyle
@@ -459,11 +460,11 @@ export class GraphicsContext extends EventEmitter<{
         return this;
     }
 
-    public roundRect(x: number, y: number, w: number, h: number, radii?: number): this
+    public roundRect(x: number, y: number, w: number, h: number, radius?: number): this
     {
         this._tick++;
 
-        this._activePath.roundRect(x, y, w, h, radii, this._transform.clone());
+        this._activePath.roundRect(x, y, w, h, radius, this._transform.clone());
 
         return this;
     }
@@ -473,6 +474,81 @@ export class GraphicsContext extends EventEmitter<{
         this._tick++;
 
         this._activePath.poly(points, close, this._transform.clone());
+
+        return this;
+    }
+
+    public regularPoly(x: number, y: number, radius: number, sides: number, rotation = 0): this
+    {
+        this._tick++;
+        this._activePath.regularPoly(x, y, radius, sides, rotation);
+
+        return this;
+    }
+
+    public roundPoly(x: number, y: number, radius: number, sides: number, corner: number, rotation?: number): this
+    {
+        this._tick++;
+        this._activePath.roundPoly(x, y, radius, sides, corner, rotation);
+
+        return this;
+    }
+
+    public roundShape(points: RoundedPoint[], radius: number, useQuadratic?: boolean): this
+    {
+        this._tick++;
+        this._activePath.roundShape(points, radius, useQuadratic);
+
+        return this;
+    }
+
+    public filletRect(x: number, y: number, width: number, height: number, fillet: number): this
+    {
+        this._tick++;
+        this._activePath.filletRect(x, y, width, height, fillet);
+
+        return this;
+    }
+
+    public chamferRect(x: number, y: number, width: number, height: number, chamfer: number): this
+    {
+        this._tick++;
+        this._activePath.chamferRect(x, y, width, height, chamfer);
+
+        return this;
+    }
+
+    /**
+     * Draw a torus shape, like a donut. Can be used for something like a circle loader.
+     * @param x - X position
+     * @param y - Y position
+     * @param innerRadius - Inner circle radius
+     * @param outerRadius - Outer circle radius
+     * @param startArc - Where to begin sweep, in radians, 0.0 = to the right
+     * @param endArc - Where to end sweep, in radians
+     */
+    public torus(
+        x: number,
+        y: number,
+        innerRadius: number,
+        outerRadius: number,
+        startArc = 0,
+        endArc: number = Math.PI * 2): this
+    {
+        if (Math.abs(endArc - startArc) >= Math.PI * 2)
+        {
+            return this
+                .circle(x, y, outerRadius)
+                .fill()
+                .circle(x, y, innerRadius)
+                .cut();
+        }
+
+        this.closePath();
+        this
+            .arc(x, y, innerRadius, endArc, startArc, true)
+            .arc(x, y, outerRadius, startArc, endArc, false)
+            .closePath();
 
         return this;
     }

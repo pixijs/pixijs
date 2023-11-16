@@ -11,10 +11,12 @@ import { buildAdaptiveQuadratic } from '../buildCommands/buildAdaptiveQuadratic'
 import { buildArc } from '../buildCommands/buildArc';
 import { buildArcTo } from '../buildCommands/buildArcTo';
 import { buildArcToSvg } from '../buildCommands/buildArcToSvg';
+import { roundedShapeArc, roundedShapeQuadraticCurve } from './roundShape';
 
 import type { Matrix } from '../../../../maths/matrix/Matrix';
 import type { ShapePrimitive } from '../../../../maths/shapes/ShapePrimitive';
 import type { GraphicsPath } from './GraphicsPath';
+import type { RoundedPoint } from './roundShape';
 
 const tempRectangle = new Rectangle();
 
@@ -187,13 +189,182 @@ export class ShapePath
         return this;
     }
 
-    public poly(points: number[], close?: boolean, transform?: Matrix): void
+    public poly(points: number[], close?: boolean, transform?: Matrix): this
     {
         const polygon = new Polygon(points);
 
         polygon.closePath = close;
 
         this.drawShape(polygon, transform);
+
+        return this;
+    }
+
+    public regularPoly(x: number, y: number, radius: number, sides: number, rotation = 0): this
+    {
+        sides = Math.max(sides | 0, 3);
+        const startAngle = (-1 * Math.PI / 2) + rotation;
+        const delta = (Math.PI * 2) / sides;
+        const polygon = [];
+
+        for (let i = 0; i < sides; i++)
+        {
+            const angle = (i * delta) + startAngle;
+
+            polygon.push(
+                x + (radius * Math.cos(angle)),
+                y + (radius * Math.sin(angle))
+            );
+        }
+
+        this.poly(polygon, false);
+
+        return this;
+    }
+
+    public roundPoly(x: number, y: number, radius: number, sides: number, corner: number, rotation = 0): this
+    {
+        sides = Math.max((sides | 0), 3);
+
+        if (corner <= 0)
+        {
+            return this.regularPoly(x, y, radius, sides, rotation);
+        }
+
+        const sideLength = (radius * Math.sin(Math.PI / sides)) - 0.001;
+
+        corner = Math.min(corner, sideLength);
+
+        const startAngle = (-1 * Math.PI / 2) + rotation;
+        const delta = (Math.PI * 2) / sides;
+        const internalAngle = ((sides - 2) * Math.PI) / sides / 2;
+
+        for (let i = 0; i < sides; i++)
+        {
+            const angle = (i * delta) + startAngle;
+            const x0 = x + (radius * Math.cos(angle));
+            const y0 = y + (radius * Math.sin(angle));
+            const a1 = angle + (Math.PI) + internalAngle;
+            const a2 = angle - (Math.PI) - internalAngle;
+            const x1 = x0 + (corner * Math.cos(a1));
+            const y1 = y0 + (corner * Math.sin(a1));
+            const x3 = x0 + (corner * Math.cos(a2));
+            const y3 = y0 + (corner * Math.sin(a2));
+
+            if (i === 0)
+            {
+                this.moveTo(x1, y1);
+            }
+            else
+            {
+                this.lineTo(x1, y1);
+            }
+            this.quadraticCurveTo(x0, y0, x3, y3);
+        }
+
+        return this.closePath();
+    }
+
+    /**
+     * Draw a Shape with rounded corners.
+     * Supports custom radius for each point.
+     * @param points - Corners of the shape to draw. Minimum length is 3.
+     * @param radius - Corners default radius.
+     * @param useQuadratic - If true, rounded corners will be drawn using quadraticCurve instead of arc.
+     */
+    public roundShape(points: RoundedPoint[], radius: number, useQuadratic = false): this
+    {
+        if (points.length < 3)
+        {
+            return this;
+        }
+
+        if (useQuadratic)
+        {
+            roundedShapeQuadraticCurve(this, points, radius);
+        }
+        else
+        {
+            roundedShapeArc(this, points, radius);
+        }
+
+        return this.closePath();
+    }
+
+    /**
+     * Draw Rectangle with fillet corners. This is much like rounded rectangle
+     * however it support negative numbers as well for the corner radius.
+     * @param x - Upper left corner of rect
+     * @param y - Upper right corner of rect
+     * @param width - Width of rect
+     * @param height - Height of rect
+     * @param fillet - accept negative or positive values
+     */
+    public filletRect(x: number, y: number, width: number, height: number, fillet: number): this
+    {
+        if (fillet === 0)
+        {
+            return this.rect(x, y, width, height);
+        }
+
+        const maxFillet = Math.min(width, height) / 2;
+        const inset = Math.min(maxFillet, Math.max(-maxFillet, fillet));
+        const right = x + width;
+        const bottom = y + height;
+        const dir = inset < 0 ? -inset : 0;
+        const size = Math.abs(inset);
+
+        return this
+            .moveTo(x, y + size)
+            .arcTo(x + dir, y + dir, x + size, y, size)
+            .lineTo(right - size, y)
+            .arcTo(right - dir, y + dir, right, y + size, size)
+            .lineTo(right, bottom - size)
+            .arcTo(right - dir, bottom - dir, x + width - size, bottom, size)
+            .lineTo(x + size, bottom)
+            .arcTo(x + dir, bottom - dir, x, bottom - size, size)
+            .closePath();
+    }
+
+    /**
+     * Draw Rectangle with chamfer corners. These are angled corners.
+     * @param x - Upper left corner of rect
+     * @param y - Upper right corner of rect
+     * @param width - Width of rect
+     * @param height - Height of rect
+     * @param chamfer - non-zero real number, size of corner cutout
+     */
+    public chamferRect(x: number, y: number, width: number, height: number, chamfer: number): this
+    {
+        if (chamfer <= 0)
+        {
+            return this.rect(x, y, width, height);
+        }
+
+        const inset = Math.min(chamfer, Math.min(width, height) / 2);
+        const right = x + width;
+        const bottom = y + height;
+        const points = [
+            x + inset, y,
+            right - inset, y,
+            right, y + inset,
+            right, bottom - inset,
+            right - inset, bottom,
+            x + inset, bottom,
+            x, bottom - inset,
+            x, y + inset,
+        ];
+
+        // Remove overlapping points
+        for (let i = points.length - 1; i >= 2; i -= 2)
+        {
+            if (points[i] === points[i - 2] && points[i - 1] === points[i - 3])
+            {
+                points.splice(i - 1, 2);
+            }
+        }
+
+        return this.poly(points);
     }
 
     public ellipse(x: number, y: number, radiusX: number, radiusY: number, transform?: Matrix): this
@@ -205,9 +376,9 @@ export class ShapePath
         return this;
     }
 
-    public roundRect(x: number, y: number, w: number, h: number, radii?: number, transform?: Matrix): this
+    public roundRect(x: number, y: number, w: number, h: number, radius?: number, transform?: Matrix): this
     {
-        this.drawShape(new RoundedRectangle(x, y, w, h, radii), transform);
+        this.drawShape(new RoundedRectangle(x, y, w, h, radius), transform);
 
         return this;
     }

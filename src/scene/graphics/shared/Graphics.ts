@@ -138,6 +138,31 @@ export class Graphics extends Container<GraphicsView>
     {
         return this._callContextMethod('poly', args);
     }
+    public regularPoly(...args: Parameters<GraphicsContext['regularPoly']>): this
+    {
+        return this._callContextMethod('regularPoly', args);
+    }
+    public roundPoly(...args: Parameters<GraphicsContext['roundPoly']>): this
+    {
+        return this._callContextMethod('roundPoly', args);
+    }
+    public roundShape(...args: Parameters<GraphicsContext['roundShape']>): this
+    {
+        return this._callContextMethod('roundShape', args);
+    }
+    public filletRect(...args: Parameters<GraphicsContext['filletRect']>): this
+    {
+        return this._callContextMethod('filletRect', args);
+    }
+    public chamferRect(...args: Parameters<GraphicsContext['chamferRect']>): this
+    {
+        return this._callContextMethod('chamferRect', args);
+    }
+    public torus(...args: Parameters<GraphicsContext['torus']>): this
+    {
+        return this._callContextMethod('torus', args);
+    }
+
     public star(...args: Parameters<GraphicsContext['star']>): this
     {
         return this._callContextMethod('star', args);
