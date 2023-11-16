@@ -21,9 +21,11 @@ export class GraphicsView implements View
     public _didUpdate: boolean;
 
     private _context: GraphicsContext;
+    private readonly _ownedContext: boolean;
 
     constructor(graphicsContext?: GraphicsContext)
     {
+        this._ownedContext = !graphicsContext;
         this._context = graphicsContext || new GraphicsContext();
         this._context.on('update', this.onGraphicsContextUpdate, this);
     }
@@ -75,9 +77,15 @@ export class GraphicsView implements View
     {
         (this as any).owner = null;
 
+        if (this._ownedContext && !options)
+        {
+            this._context.destroy(options);
+        }
+
         const destroyContext = typeof options === 'boolean' ? options : options?.context;
 
-        if (destroyContext)
+        /** if the context was created by this graphics, we should destroy it*/
+        if (destroyContext || (destroyContext === undefined && this._ownedContext))
         {
             this._context.destroy(options);
         }
