@@ -7,7 +7,7 @@ import vertex from './shockwave.vert';
 import source from './shockwave.wgsl';
 
 import type { PointData } from '../../../maths/point/PointData';
-import type { RenderSurface } from '../../../rendering/renderers/gpu/renderTarget/GpuRenderTargetSystem';
+import type { RenderSurface } from '../../../rendering/renderers/shared/renderTarget/RenderTargetSystem';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { FilterSystem } from '../../FilterSystem';
 

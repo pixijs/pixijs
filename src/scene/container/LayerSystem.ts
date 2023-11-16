@@ -89,7 +89,6 @@ export class LayerSystem implements System
 
         renderer.globalUniforms.start(
             {
-                projectionData: renderer.renderTarget.rootRenderTarget,
                 worldTransformMatrix: container.layerGroup.worldTransform
             }
         );
