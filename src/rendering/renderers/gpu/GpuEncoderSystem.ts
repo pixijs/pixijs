@@ -21,6 +21,7 @@ export class GpuEncoderSystem implements System
     public static extension = {
         type: [ExtensionType.WebGPUSystem],
         name: 'encoder',
+        priority: 1
     } as const;
 
     public commandEncoder: GPUCommandEncoder;

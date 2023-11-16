@@ -25,8 +25,8 @@ import type { ExtractRendererOptions, ExtractSystemTypes } from '../shared/syste
 import type { GlRenderingContext } from './context/GlRenderingContext';
 
 const DefaultWebGLSystems = [
-    GlBackBufferSystem,
     ...SharedSystems,
+    GlBackBufferSystem,
     GlContextSystem,
     GlBufferSystem,
     GlTextureSystem,

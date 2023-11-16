@@ -54,6 +54,7 @@ export class GlBackBufferSystem implements System
             ExtensionType.WebGLSystem,
         ],
         name: 'backBuffer',
+        priority: 1
     } as const;
 
     public static defaultOptions: GlBackBufferOptions = {
