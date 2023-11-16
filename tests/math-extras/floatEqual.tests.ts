@@ -1,4 +1,4 @@
-import { floatEqual } from '../../src/math-extras';
+import { floatEqual } from '../../src/math-extras/util';
 
 describe('floatEqual', () =>
 {

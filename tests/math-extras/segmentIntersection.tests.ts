@@ -1,4 +1,4 @@
-import { segmentIntersection } from '../../src/math-extras';
+import { segmentIntersection } from '../../src/math-extras/util';
 import { Point } from '../../src/maths/point/Point';
 
 describe('segmentIntersection', () =>
@@ -83,3 +83,4 @@ describe('segmentIntersection', () =>
         expect(intersect.y).toEqual(7.25);
     });
 });
+

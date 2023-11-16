@@ -1,4 +1,4 @@
-import { lineIntersection } from '../../src/math-extras';
+import { lineIntersection } from '../../src/math-extras/util';
 import { Point } from '../../src/maths/point/Point';
 
 describe('lineIntersection', () =>
