@@ -31,15 +31,6 @@ export class ObservablePoint implements PointLike
     /** This object used to call the `onUpdate` callback when the point changes. */
     private readonly _observer: Observer<ObservablePoint>;
 
-    // /**
-    //  * Mixes all enumerable properties and methods from a source object to Container.
-    //  * @param source - The source of properties and methods to mix in.
-    //  */
-    // public static mixin(source: Dict<any>): void
-    // {
-    //     Object.defineProperties(ObservablePoint.prototype, Object.getOwnPropertyDescriptors(source));
-    // }
-
     /**
      * Creates a new `ObservablePoint`
      * @param observer - Observer to pass to listen for change events.
