@@ -1,16 +1,12 @@
 import { Matrix } from '../../src/maths/matrix/Matrix';
 import { Point } from '../../src/maths/point/Point';
-// import { TextureSource } from '../../src/rendering/renderers/shared/texture/sources/TextureSource';
 import { Texture } from '../../src/rendering/renderers/shared/texture/Texture';
-// import { buildLine } from '../../src/scene/graphics/shared/buildCommands/buildLine';
 import { Graphics } from '../../src/scene/graphics/shared/Graphics';
 import { GraphicsContext } from '../../src/scene/graphics/shared/GraphicsContext';
+import { GraphicsPath } from '../../src/scene/graphics/shared/path/GraphicsPath';
 import { convertFillInputToFillStyle } from '../../src/scene/graphics/shared/utils/convertFillInputToFillStyle';
 
-// import type { Polygon } from '../../src/maths/shapes/Polygon';
 import type { FillInstruction } from '../../src/scene/graphics/shared/GraphicsContext';
-
-// const { FILL_COMMANDS, buildLine } = graphicsUtils;
 
 describe('Graphics', () =>
 {
@@ -22,10 +18,10 @@ describe('Graphics', () =>
 
             expect(graphics.fillStyle.color).toEqual(0xFFFFFF);
             expect(graphics.fillStyle.alpha).toEqual(1);
-            expect(graphics.strokeStyle.width).toEqual(0);
-            expect(graphics.strokeStyle.color).toEqual(0);
+            expect(graphics.strokeStyle.width).toEqual(1);
+            expect(graphics.strokeStyle.color).toEqual(0xffffff);
             expect(graphics.tint).toEqual(0xFFFFFF);
-            expect(graphics.blendMode).toEqual('normal');
+            expect(graphics.blendMode).toEqual('inherit');
         });
     });
 
@@ -123,9 +119,26 @@ describe('Graphics', () =>
             graphics.strokeStyle = { color: '#ff000080', alpha: 1, width: 1 };
 
             expect(graphics.strokeStyle.color).toEqual(0xFF0000);
-            expect(graphics.strokeStyle.alpha).toEqual(1);
+            expect(graphics.strokeStyle.alpha).toEqual(0.5);
 
             graphics.destroy();
+        });
+    });
+
+    describe('utils', () =>
+    {
+        it('should parse the alpha component from a color string value', () =>
+        {
+            const style = convertFillInputToFillStyle({ color: '#ff000080' }, GraphicsContext.defaultFillStyle);
+
+            expect(style.alpha).toBe(0.5);
+        });
+
+        it('should multiply alpha component from a color string value with a passed alpha value', () =>
+        {
+            const style = convertFillInputToFillStyle({ color: '#ff000080', alpha: 0.5 }, GraphicsContext.defaultFillStyle);
+
+            expect(style.alpha).toBe(0.25);
         });
     });
 
@@ -169,26 +182,10 @@ describe('Graphics', () =>
         });
     });
 
-    describe('utils', () =>
-    {
-        it('should parse the alpha component from a color string value', () =>
-        {
-            const style = convertFillInputToFillStyle({ color: '#ff000080' }, GraphicsContext.defaultFillStyle);
-
-            expect(style.alpha).toBe(0.5);
-        });
-
-        it('should override parsed alpha component from a color string value', () =>
-        {
-            const style = convertFillInputToFillStyle({ color: '#ff000080', alpha: 1 }, GraphicsContext.defaultFillStyle);
-
-            expect(style.alpha).toBe(1);
-        });
-    });
-
     describe('lineTo', () =>
     {
         // note: width & height are zero?
+        // Ticket for Mat - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44798775
         it.skip('should return correct bounds - north', () =>
         {
             const graphics = new Graphics();
@@ -203,6 +200,7 @@ describe('Graphics', () =>
         });
 
         // note: width & height are zero?
+        // Ticket for Mat - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44798775
         it.skip('should return correct bounds - south', () =>
         {
             const graphics = new Graphics();
@@ -216,6 +214,7 @@ describe('Graphics', () =>
         });
 
         // note: width & height are zero?
+        // Ticket for Mat - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44798775
         it.skip('should return correct bounds - east', () =>
         {
             const graphics = new Graphics();
@@ -229,6 +228,7 @@ describe('Graphics', () =>
         });
 
         // note: width & height are zero?
+        // Ticket for Mat - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44798775
         it.skip('should return correct bounds - west', () =>
         {
             const graphics = new Graphics();
@@ -242,6 +242,7 @@ describe('Graphics', () =>
         });
 
         // note: width & height are zero?
+        // Ticket for Mat - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44798775
         it('should return correct bounds when stacked with circle', () =>
         {
             const graphics = new Graphics();
@@ -260,6 +261,7 @@ describe('Graphics', () =>
         });
 
         // note: width & height are zero?
+        // Ticket for Mat - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44798775
         it.skip('should return correct bounds when square', () =>
         {
             const graphics = new Graphics();
@@ -295,6 +297,7 @@ describe('Graphics', () =>
         });
 
         // note: zero dimensions
+        // Ticket for Mat - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44798775
         it.skip('should not have miter join on 180 degree corner', () =>
         {
             const graphics = new Graphics();
@@ -314,6 +317,7 @@ describe('Graphics', () =>
         });
 
         // note: zero dimensions
+        // Ticket for Mat - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44798775
         it.skip('should not have bevel join on 180 degree corner', () =>
         {
             const graphics = new Graphics();
@@ -328,6 +332,7 @@ describe('Graphics', () =>
         });
 
         // note: zero dimensions
+        // Ticket for Mat - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44798775
         it.skip('should have round join on 180 degree corner', () =>
         {
             const graphics = new Graphics();
@@ -369,6 +374,7 @@ describe('Graphics', () =>
         });
 
         // note: ticket to fix these tests
+        // Ticket for Mat - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44798775
         it.skip('should return true when point inside just lines', () =>
         {
             const point = new Point(-1, -1);
@@ -385,6 +391,8 @@ describe('Graphics', () =>
             expect(graphics.context.containsPoint(point)).toBe(true);
         });
 
+        // note: ticket to fix these tests
+        // Ticket for Mat - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44798775
         it.skip('should return false when point outside just lines', () =>
         {
             const point = new Point(5, 5);
@@ -461,13 +469,14 @@ describe('Graphics', () =>
             // .fill();
 
             expect(graphics.context.containsPoint(new Point(1, 1))).toBe(true);
-            // expect(graphics.context.containsPoint(new Point(4, 4))).toBe(true);
-            // expect(graphics.context.containsPoint(new Point(4, 6))).toBe(false);
-            // expect(graphics.context.containsPoint(new Point(6, 4))).toBe(false);
-            // expect(graphics.context.containsPoint(new Point(6, 6))).toBe(true);
+            expect(graphics.context.containsPoint(new Point(4, 4))).toBe(true);
+            expect(graphics.context.containsPoint(new Point(4, 6))).toBe(false);
+            expect(graphics.context.containsPoint(new Point(6, 4))).toBe(false);
+            expect(graphics.context.containsPoint(new Point(6, 6))).toBe(true);
         });
 
         // note: Mat to look into, may be bug
+        // ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44799288
         it.skip('should take a matrix into account', () =>
         {
             const g = new Graphics();
@@ -491,79 +500,61 @@ describe('Graphics', () =>
 
     describe('chaining', () =>
     {
-        // note: need to know how to port the hole api
-        it.skip('should chain draw commands', () =>
+        it('should chain draw commands', () =>
         {
-            // complex drawing #1: draw triangle, rounder rect and an arc (issue #3433)
-            // const graphics = new Graphics().beginFill(0xFF3300)
-            //     .lineStyle(4, 0xffd900, 1)
-            //     .moveTo(50, 50)
-            //     .lineTo(250, 50)
-            //     .endFill()
-            //     .drawRoundedRect(150, 450, 300, 100, 15)
-            //     .beginHole()
-            //     .endHole()
-            //     .quadraticCurveTo(1, 1, 1, 1)
-            //     .bezierCurveTo(1, 1, 1, 1, 1, 1)
-            //     .arcTo(1, 1, 1, 1, 1)
-            //     .arc(1, 1, 1, 1, 1, false)
-            //     .drawRect(1, 1, 1, 1)
-            //     .drawRoundedRect(1, 1, 1, 1, 0.1)
-            //     .drawCircle(1, 1, 20)
-            //     .drawEllipse(1, 1, 1, 1)
-            //     .drawPolygon([1, 1, 1, 1, 1, 1])
-            //     .clear();
+            const texture = Texture.WHITE;
+            const graphics = new Graphics();
 
-            // new v8 api WIP...
-            // const graphics = new Graphics();
+            graphics
+                .texture(texture, 'red')
+                .beginPath()
+                .cut()
+                .arc(100, 100, 50, 0, Math.PI)
+                .arcTo(100, 100, 200, 200, 50)
+                .arcToSvg(50, 50, 0, 1, 0, 100, 100)
+                .bezierCurveTo(100, 100, 200, 200, 300, 300)
+                .closePath()
+                .ellipse(100, 100, 50, 75)
+                .circle(100, 100, 50)
+                .path(new GraphicsPath())
+                .lineTo(200, 200)
+                .moveTo(100, 100)
+                .quadraticCurveTo(100, 100, 200, 200)
+                .rect(100, 100, 200, 150)
+                .roundRect(100, 100, 200, 150, 20)
+                .poly([100, 100, 200, 200, 300, 300], true)
+                .star(100, 100, 5, 70, 35, Math.PI / 4)
+                .svg('<svg></svg>')
+                .restore()
+                .save()
+                .getTransform()
+                .resetTransform()
+                .rotateTransform(Math.PI / 4)
+                .scaleTransform(1.5)
+                .setTransform(new Matrix())
+                .transform(new Matrix())
+                .translateTransform(100, 100)
+                .clear();
 
-            // graphics.strokeStyle = { width: 4, color: 0xffd900, alpha: 1 };
-            // graphics
-            // .beginPath()
-            // .moveTo(50, 50)
-            // .lineTo(250, 50)
-            // .fill(0xFF3300)
-            // .closePath()
-
-            // .drawRoundedRect(150, 450, 300, 100, 15)
-            // .beginHole()
-            // .endHole()
-            // .quadraticCurveTo(1, 1, 1, 1)
-            // .bezierCurveTo(1, 1, 1, 1, 1, 1)
-            // .arcTo(1, 1, 1, 1, 1)
-            // .arc(1, 1, 1, 1, 1, false)
-            // .drawRect(1, 1, 1, 1)
-            // .drawRoundedRect(1, 1, 1, 1, 0.1)
-            // .drawCircle(1, 1, 20)
-            // .drawEllipse(1, 1, 1, 1)
-            // .drawPolygon([1, 1, 1, 1, 1, 1])
-            // .clear();
-
-            // expect(graphics).not.toBeNull();
+            // just to pass test, the chaining above is the real test
+            expect(graphics).not.toBeUndefined();
         });
     });
 
     describe('drawPolygon', () =>
     {
         let numbers: number[];
-        // let points: Point[];
-        // let points: number[];
-        // let poly: Polygon;
 
         beforeAll(() =>
         {
             numbers = [0, 0, 10, 10, 20, 20];
-            // points = [new Point(0, 0), new Point(10, 10), new Point(20, 20)];
-            // points as number pair array
-            // poly = new Polygon(points);
         });
 
-        // note: rewritten to use new api
         it('should draw a polygon', () =>
         {
             const graphics = new Graphics();
 
-            graphics.beginPath().poly(numbers).fill().closePath();
+            graphics.poly(numbers).fill();
 
             expect(graphics.context.instructions).toHaveLength(1);
 
@@ -573,65 +564,6 @@ describe('Graphics', () =>
             expect(poly.action).toBe('poly');
             expect(poly.data[0]).toEqual(numbers);
         });
-
-        // note: these tests don't seem to be relevant any more
-        // it('should support array of numbers', () =>
-        // {
-        //     const graphics = new Graphics();
-
-        //     expect(graphics.currentPath).toBeNull();
-
-        //     graphics.drawPolygon(numbers);
-
-        //     expect(graphics.geometry.graphicsData[0]).not.toBeNull();
-
-        //     const result = (graphics.geometry.graphicsData[0].shape as Polygon).points;
-
-        //     expect(result).toEqual(numbers);
-        // });
-
-        // it('should support array of points', () =>
-        // {
-        //     const graphics = new Graphics();
-
-        //     graphics.drawPolygon(points);
-
-        //     expect(graphics.geometry.graphicsData[0]).not.toBeNull();
-
-        //     const result = (graphics.geometry.graphicsData[0].shape as Polygon).points;
-
-        //     expect(result).toEqual(numbers);
-        // });
-
-        // it('should support flat arguments of numbers', () =>
-        // {
-        //     const graphics = new Graphics();
-
-        //     expect(graphics.currentPath).toBeNull();
-
-        //     graphics.drawPolygon(...numbers);
-
-        //     expect(graphics.geometry.graphicsData[0]).not.toBeNull();
-
-        //     const result = (graphics.geometry.graphicsData[0].shape as Polygon).points;
-
-        //     expect(result).toEqual(numbers);
-        // });
-
-        // it('should support flat arguments of points', () =>
-        // {
-        //     const graphics = new Graphics();
-
-        //     expect(graphics.currentPath).toBeNull();
-
-        //     graphics.drawPolygon(...points);
-
-        //     expect(graphics.geometry.graphicsData[0]).not.toBeNull();
-
-        //     const result = (graphics.geometry.graphicsData[0].shape as Polygon).points;
-
-        //     expect(result).toEqual(numbers);
-        // });
     });
 
     describe('should have the same bounds for any rect or poly line alignment value', () =>
@@ -716,79 +648,17 @@ describe('Graphics', () =>
 
             expect(() => graphics.beginPath().arc(300, 100, 20, 0, Math.PI).fill().closePath()).not.toThrowError();
         });
-
-        // note: does do something, compare with original test
-        it.skip('should do nothing when startAngle and endAngle are equal', () =>
-        {
-            const graphics = new Graphics();
-
-            expect(graphics.context.instructions).toHaveLength(0);
-
-            graphics.beginPath().arc(0, 0, 10, 0, 0).fill().closePath();
-
-            expect(graphics.context.instructions).toHaveLength(0);
-        });
-
-        // note: does do something, compare with original test
-        it.skip('should do nothing if sweep equals zero', () =>
-        {
-            const graphics = new Graphics();
-
-            expect(graphics.context.instructions).toHaveLength(0);
-
-            graphics.beginPath().arc(0, 0, 10, 0, 0).fill().closePath();
-
-            expect(graphics.context.instructions).toHaveLength(0);
-        });
     });
 
-    // note: v8 equivalent?
-    // describe('_calculateBounds', () =>
-    // {
-    //     it('should only call updateLocalBounds once when not empty', () =>
-    //     {
-    //         const graphics = new Graphics();
-
-    //         graphics.beginFill();
-    //         graphics.drawRect(0, 0, 10, 10);
-    //         graphics.endFill();
-
-    //         const spy = jest.spyOn(graphics.geometry, 'calculateBounds' as any);
-
-    //         graphics['_calculateBounds']();
-
-    //         expect(spy).toHaveBeenCalledOnce();
-
-    //         graphics['_calculateBounds']();
-
-    //         expect(spy).toHaveBeenCalledOnce();
-    //     });
-
-    //     it('should not call updateLocalBounds when empty', () =>
-    //     {
-    //         const graphics = new Graphics();
-
-    //         const spy = jest.spyOn(graphics.geometry, 'calculateBounds' as any);
-
-    //         graphics['_calculateBounds']();
-
-    //         expect(spy).not.toBeCalled();
-
-    //         graphics['_calculateBounds']();
-
-    //         expect(spy).not.toBeCalled();
-    //     });
-    // });
-
-    describe('getBounds', () =>
+    describe('bounds', () =>
     {
-        it('should use getBounds without stroke', () =>
+        it('should give correct bounds without stroke', () =>
         {
             const graphics = new Graphics();
 
-            graphics.beginPath().rect(10, 20, 100, 200).fill(0).closePath();
+            graphics.rect(10, 20, 100, 200).fill(0);
 
-            const { x, y, width, height } = graphics.getBounds();
+            const { x, y, width, height } = graphics.context.bounds;
 
             expect(x).toEqual(10);
             expect(y).toEqual(20);
@@ -796,15 +666,18 @@ describe('Graphics', () =>
             expect(height).toEqual(200);
         });
 
-        // note: not getting expected values
-        it.skip('should use getBounds with stroke', () =>
+        // note: not getting expected values - expected to break, part of stroke bounds measurement fix
+        // Ticket for Mat - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44798775
+        it.skip('should give correct bounds with stroke', () =>
         {
             const graphics = new Graphics();
 
-            graphics.strokeStyle = { width: 4, color: 0xff0000 };
-            graphics.beginPath().rect(10, 20, 100, 200).fill(0).closePath();
+            graphics
+                .rect(10, 20, 100, 200)
+                .fill(0)
+                .stroke({ width: 4, color: 0xff0000 });
 
-            const { x, y, width, height } = graphics.getBounds();
+            const { x, y, width, height } = graphics.context.bounds;
 
             expect(x).toEqual(8); // <- received 10
             expect(y).toEqual(18); // <- received 20
@@ -865,7 +738,6 @@ describe('Graphics', () =>
             const graphics = new Graphics();
 
             graphics
-                .beginPath()
                 .moveTo(50, 50)
                 .lineTo(250, 50)
                 .lineTo(100, 100)
@@ -873,26 +745,12 @@ describe('Graphics', () =>
                 .fill(0xffffff);
 
             graphics
-                .beginPath()
                 .moveTo(250, 50)
                 .lineTo(450, 50)
                 .lineTo(300, 100)
                 .lineTo(250, 50)
                 .fill(0xffffff);
 
-            // graphics.beginFill(0xffffff, 1.0);
-            // graphics.moveTo(50, 50);
-            // graphics.lineTo(250, 50);
-            // graphics.lineTo(100, 100);
-            // graphics.lineTo(50, 50);
-
-            // graphics.moveTo(250, 50);
-            // graphics.lineTo(450, 50);
-            // graphics.lineTo(300, 100);
-            // graphics.lineTo(250, 50);
-            // graphics.endFill();
-
-            // const data = graphics.geometry.graphicsData;
             const data = graphics.context.instructions;
             const fill1 = data[0] as FillInstruction;
             const fill2 = data[1] as FillInstruction;
@@ -904,35 +762,34 @@ describe('Graphics', () =>
             expect(fill2Data).toEqual([250, 50, 450, 50, 300, 100, 250, 50]);
         });
 
-        // note: not sure what this is testing? same as above?
-        // it.skip('should honour lineStyle break', () =>
-        // {
-        //     const graphics = new Graphics();
+        // note: unexpected values, bug? add ticket for Mat
+        // ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44800641
+        it.skip('should honour lineStyle break', () =>
+        {
+            const graphics = new Graphics();
 
-        //     // graphics.strokeStyle = { width: 1.0, color: 0xffffff };
-        //     // graphics.beginPath().moveTo(50, 50).lineTo(250, 50);
-        //     // graphics.strokeStyle = { width: 2.0, color: 0xffffff };
-        //     // graphics.lineTo(100, 100).lineTo(50, 50);
-        //     // graphics.strokeStyle = { width: 0.0 };
-        //     // graphics.closePath();
+            graphics
+                .moveTo(50, 50)
+                .lineTo(250, 50)
+                .stroke({ width: 1.0, color: 0xffffff })
+                .lineTo(100, 100)
+                .lineTo(50, 50)
+                .stroke({ width: 2.0, color: 0xffffff });
 
-        //     graphics.lineStyle(1.0, 0xffffff);
-        //     graphics.moveTo(50, 50);
-        //     graphics.lineTo(250, 50);
-        //     graphics.lineStyle(2.0, 0xffffff);
-        //     graphics.lineTo(100, 100);
-        //     graphics.lineTo(50, 50);
-        //     graphics.lineStyle(0.0);
+            const data = graphics.context.instructions;
+            const fill1 = data[0] as FillInstruction;
+            const fill2 = data[1] as FillInstruction;
+            const fill1Data = fill1.data.path.instructions.map((i) => i.data).flat();
+            const fill2Data = fill2.data.path.instructions.map((i) => i.data).flat();
 
-        //     const data = graphics.geometry.graphicsData;
-
-        //     expect(data.length).toEqual(2);
-        //     expect((data[0].shape as Polygon).points).toEqual([50, 50, 250, 50]);
-        //     expect((data[1].shape as Polygon).points).toEqual([250, 50, 100, 100, 50, 50]);
-        // });
+            expect(data.length).toEqual(2);
+            expect(fill1Data).toEqual([50, 50, 250, 50]);
+            expect(fill2Data).toEqual([250, 50, 100, 100, 50, 50]);
+        });
     });
 
-    // note: v8 equivalent?
+    // todo: all these tests should be moved to GraphicsContext.test.ts, with equivalent changes for api
+    // ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44801478
     // it.skip('should support adaptive curves', () =>
     // {
     //     const defMode = Graphics.curves.adaptive;
@@ -957,10 +814,8 @@ describe('Graphics', () =>
     //     Graphics.curves.maxLength = defMaxLen;
     // });
 
-    // note: how to test? I only see dirty flags and a batchMode on GraphicsContext?
     // describe('geometry', () =>
     // {
-
     //     it('validateBatching should return false if any of textures is invalid', () =>
     //     {
     //         const graphics = new Graphics();
