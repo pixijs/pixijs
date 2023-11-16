@@ -24,12 +24,14 @@ import type { SystemConstructor } from '../shared/system/System';
 import type { ExtractRendererOptions, ExtractSystemTypes } from '../shared/system/utils/typeUtils';
 
 const DefaultWebGPUSystems = [
+    // we want renderStart to be called first..
+    // before the renderTarget system renderStart..
+    GpuEncoderSystem,
     ...SharedSystems,
     GpuDeviceSystem,
     BufferSystem,
     GpuTextureSystem,
     GpuRenderTargetSystem,
-    GpuEncoderSystem,
     GpuShaderSystem,
     GpuStateSystem,
     PipelineSystem,

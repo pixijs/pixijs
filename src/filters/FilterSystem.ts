@@ -11,13 +11,12 @@ import { getGlobalBounds } from '../scene/container/bounds/getGlobalBounds';
 import { getGlobalRenderableBounds } from '../scene/container/bounds/getRenderableBounds';
 import { warn } from '../utils/logging/warn';
 
-import type { GlRenderTargetSystem } from '../rendering/renderers/gl/GlRenderTargetSystem';
 import type { WebGLRenderer } from '../rendering/renderers/gl/WebGLRenderer';
-import type { RenderSurface } from '../rendering/renderers/gpu/renderTarget/GpuRenderTargetSystem';
 import type { WebGPURenderer } from '../rendering/renderers/gpu/WebGPURenderer';
 import type { Instruction } from '../rendering/renderers/shared/instructions/Instruction';
 import type { Renderable } from '../rendering/renderers/shared/Renderable';
 import type { RenderTarget } from '../rendering/renderers/shared/renderTarget/RenderTarget';
+import type { RenderSurface } from '../rendering/renderers/shared/renderTarget/RenderTargetSystem';
 import type { System } from '../rendering/renderers/shared/system/System';
 import type { Renderer } from '../rendering/renderers/types';
 import type { Container } from '../scene/container/Container';
@@ -234,7 +233,7 @@ export class FilterSystem implements System
         // her we constrain the bounds to the viewport we will render too
         // need to factor in resolutions also..
         bounds.scale(resolution)
-            .fit(renderer.renderTarget.rootRenderTarget.viewport)
+            .fit(renderer.renderTarget.rootViewPort)
             .scale(1 / resolution)
             .pad(padding)
             .ceil();
@@ -296,18 +295,12 @@ export class FilterSystem implements System
 
         let backTexture = Texture.EMPTY;
 
-        // TODO - another area we need to know about the renderer
-        // but its still not worth making ana adaptor for this yet
-        (renderer.renderTarget as GlRenderTargetSystem).finishRenderPass?.();
+        renderer.renderTarget.finishRenderPass();
 
         if (filterData.blendRequired)
         {
             // this actually forces the current commandQueue to render everything so far.
             // if we don't do this, we won't be able to copy pixels for the background
-
-            renderer.encoder.finishRenderPass();
-
-            // renderer.renderTarget.finishRenderPass();
             const previousBounds = this._filterStackIndex > 0 ? this._filterStack[this._filterStackIndex - 1].bounds : null;
 
             backTexture = this.getBackTexture(filterData.previousRenderSurface, bounds, previousBounds);
@@ -488,13 +481,25 @@ export class FilterSystem implements System
         globalFrame[2] = rootTexture.source.width * resolution;
         globalFrame[3] = rootTexture.source.height * resolution;
 
-        // set the output texture - this is where we are going to rendr to
-        const renderSurface = this.renderer.renderTarget.getRenderTarget(output);
+        // set the output texture - this is where we are going to render to
 
-        outputTexture[0] = renderSurface.colorTexture.frameWidth;
-        outputTexture[1] = renderSurface.colorTexture.frameHeight;
-        outputTexture[2] = renderSurface.isRoot ? -1 : 1;
+        const renderTarget = this.renderer.renderTarget.getRenderTarget(output);
 
+        renderer.renderTarget.bind(output, !!clear);
+
+        if (output instanceof Texture)
+        {
+            outputTexture[0] = output.frameWidth;
+            outputTexture[1] = output.frameHeight;
+        }
+        else
+        {
+            // this means a renderTarget was passed directly
+            outputTexture[0] = renderTarget.width;
+            outputTexture[1] = renderTarget.height;
+        }
+
+        outputTexture[2] = renderTarget.isRoot ? -1 : 1;
         filterUniforms.update();
 
         // TODO - should prolly use a adaptor...
@@ -515,8 +520,6 @@ export class FilterSystem implements System
         // set bind group..
         this._globalFilterBindGroup.setResource(input.source, 1);
         this._globalFilterBindGroup.setResource(input.source.style, 2);
-
-        renderer.renderTarget.bind(output, !!clear);
 
         filter.groups[0] = this._globalFilterBindGroup;
 
