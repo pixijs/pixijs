@@ -20,7 +20,7 @@ export const mixins: any = {
      *
      * _Note: Only available with **@pixi/math-extras**._
      * @method add
-     * @memberof PIXI.ObservablePoint#
+     * @memberof PixiMixins.ObservablePoint#
      * @param {PointData} other - The point to add to `this`.
      * @param {PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
@@ -54,7 +54,7 @@ export const mixins: any = {
      *
      * _Note: Only available with **@pixi/math-extras**._
      * @method subtract
-     * @memberof PIXI.ObservablePoint#
+     * @memberof PixiMixins.ObservablePoint#
      * @param {PointData} other - The point to subtract to `this`.
      * @param {PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
@@ -88,7 +88,7 @@ export const mixins: any = {
      *
      * _Note: Only available with **@pixi/math-extras**._
      * @method multiply
-     * @memberof PIXI.ObservablePoint#
+     * @memberof PixiMixins.ObservablePoint#
      * @param {PointData} other - The point to multiply with `this`.
      * @param {PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
@@ -122,7 +122,7 @@ export const mixins: any = {
      *
      * _Note: Only available with **@pixi/math-extras**._
      * @method multiplyScalar
-     * @memberof PIXI.ObservablePoint#
+     * @memberof PixiMixins.ObservablePoint#
      * @param {number} scalar - The number to multiply both components of `this`.
      * @param {PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
@@ -156,7 +156,7 @@ export const mixins: any = {
      *
      * _Note: Only available with **@pixi/math-extras**._
      * @method dot
-     * @memberof PIXI.ObservablePoint#
+     * @memberof PixiMixins.ObservablePoint#
      * @param {PointData} other - The other point to calculate the dot product with `this`.
      * @returns {number} The result of the dot product. This is an scalar value.
      */
@@ -191,7 +191,7 @@ export const mixins: any = {
      *
      * _Note: Only available with **@pixi/math-extras**._
      * @method cross
-     * @memberof PIXI.ObservablePoint#
+     * @memberof PixiMixins.ObservablePoint#
      * @param {PointData} other - The other point to calculate the cross product with `this`.
      * @returns {number} The z component of the result of the cross product.
      */
@@ -228,7 +228,7 @@ export const mixins: any = {
      *
      * _Note: Only available with **@pixi/math-extras**._
      * @method normalize
-     * @memberof PIXI.ObservablePoint#
+     * @memberof PixiMixins.ObservablePoint#
      * @param {PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
      * @returns {PointData} The normalized point.
@@ -264,7 +264,7 @@ export const mixins: any = {
      *
      * _Note: Only available with **@pixi/math-extras**._
      * @method magnitude
-     * @memberof PIXI.ObservablePoint#
+     * @memberof PixiMixins.ObservablePoint#
      * @returns {number} The magnitude (length) of the vector.
      */
     magnitude(): number
@@ -293,7 +293,7 @@ export const mixins: any = {
      *
      * _Note: Only available with **@pixi/math-extras**._
      * @method magnitudeSquared
-     * @memberof PIXI.ObservablePoint#
+     * @memberof PixiMixins.ObservablePoint#
      * @returns {number} The magnitude squared (length squared) of the vector.
      */
     magnitudeSquared(): number
@@ -325,7 +325,7 @@ export const mixins: any = {
      *
      * _Note: Only available with **@pixi/math-extras**._
      * @method project
-     * @memberof PIXI.ObservablePoint#
+     * @memberof PixiMixins.ObservablePoint#
      * @param {PointData} onto - A non zero vector describing a line on which to project `this`.
      * @param {PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
@@ -372,7 +372,7 @@ export const mixins: any = {
      *
      * _Note: Only available with **@pixi/math-extras**._
      * @method reflect
-     * @memberof PIXI.ObservablePoint#
+     * @memberof PixiMixins.ObservablePoint#
      * @param {PointData} normal - The normal vector of your reflecting plane.
      * @param {PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
