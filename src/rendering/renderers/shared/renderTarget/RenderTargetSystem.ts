@@ -1,4 +1,3 @@
-import { ExtensionType } from '../../../../extensions/Extensions';
 import { Matrix } from '../../../../maths/matrix/Matrix';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { CLEAR } from '../../gl/const';
@@ -130,12 +129,6 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends GlRenderTarget | GpuR
  */
 export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRenderTarget> implements System
 {
-    /** @ignore */
-    public static extension = {
-        type: [ExtensionType.WebGPUSystem, ExtensionType.WebGLSystem],
-        name: 'renderTarget',
-    } as const;
-
     /** When rendering of a scene begins, this is where the root render surface is stored */
     public rootRenderTarget: RenderTarget;
     /** This is the root viewport for the render pass*/
@@ -387,7 +380,18 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
     public destroy()
     {
         (this._renderer as null) = null;
+
+        this._renderSurfaceToRenderTargetHash.forEach((renderTarget, key) =>
+        {
+            if (renderTarget !== key)
+            {
+                renderTarget.destroy();
+            }
+        });
+
         this._renderSurfaceToRenderTargetHash.clear();
+
+        this._gpuRenderTargetHash = Object.create(null);
     }
 
     private _initRenderTarget(renderSurface: RenderSurface): RenderTarget

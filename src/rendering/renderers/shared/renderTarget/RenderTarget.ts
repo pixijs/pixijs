@@ -159,6 +159,6 @@ export class RenderTarget
 
     public destroy()
     {
-        throw new Error('Method not implemented.');
+        this.colorTexture.source.off('resize', this.onSourceResize, this);
     }
 }
