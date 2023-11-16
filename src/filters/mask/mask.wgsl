@@ -95,5 +95,4 @@ fn mainFragment(
     var a = (alphaMul * mask.r) * clip;
 
     return vec4(source.rgb, source.a) * a;
-  
 }
