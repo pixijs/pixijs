@@ -759,7 +759,7 @@ describe('Graphics', () =>
 
             expect(data.length).toEqual(2);
             expect(fill1Data).toEqual([50, 50, 250, 50, 100, 100, 50, 50]);
-            expect(fill2Data).toEqual([50, 50, 250, 50, 450, 50, 300, 100, 250, 50]);
+            expect(fill2Data).toEqual([250, 50, 450, 50, 300, 100, 250, 50]);
         });
 
         // note: unexpected values, bug? add ticket for Mat

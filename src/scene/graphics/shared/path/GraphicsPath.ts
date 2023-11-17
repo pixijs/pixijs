@@ -564,6 +564,7 @@ export class GraphicsPath
 
                 break;
             case 'poly':
+
                 break;
             default:
                 // #if _DEBUG
