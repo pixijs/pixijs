@@ -764,7 +764,7 @@ describe('Graphics', () =>
 
         // note: unexpected values, bug? add ticket for Mat
         // ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44800641
-        it.skip('should honour lineStyle break', () =>
+        it('should honour lineStyle break', () =>
         {
             const graphics = new Graphics();
 
