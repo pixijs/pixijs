@@ -78,6 +78,9 @@ export class LayerSystem implements System
                 updateRenderables(layerGroup);
             }
 
+            // reset the renderables to update
+            layerGroup.childrenRenderablesToUpdate.index = 0;
+
             // upload all the things!
             renderer.renderPipes.batch.upload(layerGroup.instructionSet);
         }
@@ -121,7 +124,5 @@ function updateRenderables(layerGroup: LayerGroup)
             layerGroup.updateRenderable(container);
         }
     }
-
-    layerGroup.childrenRenderablesToUpdate.index = 0;
 }
 
