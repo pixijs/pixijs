@@ -3,6 +3,7 @@ import { Bounds } from '../../../src/scene/container/bounds/Bounds';
 import { getLocalBounds } from '../../../src/scene/container/bounds/getLocalBounds';
 import { Container } from '../../../src/scene/container/Container';
 import { Graphics } from '../../../src/scene/graphics/shared/Graphics';
+import { GraphicsContext } from '../../../src/scene/graphics/shared/GraphicsContext';
 import { getRenderer } from '../../utils/getRenderer';
 
 describe('Graphics', () =>
@@ -38,7 +39,7 @@ describe('Graphics', () =>
         // we will lose this ref once its destroyed:
         const context = graphics.context;
 
-        graphics.destroy();
+        graphics.destroy({ context: false });
 
         expect(graphics.context).toBeNull();
 
@@ -66,5 +67,37 @@ describe('Graphics', () =>
         const bounds = getLocalBounds(g, new Bounds(), new Matrix());
 
         expect(bounds.rectangle.width).toBe(200);
+    });
+
+    it('should destroy its own context', async () =>
+    {
+        const g = new Graphics();
+
+        const context = g.context;
+
+        // listen to function..
+        const spy = jest.fn();
+
+        context.on('destroy', spy);
+
+        g.destroy();
+
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should not destroy its context if its managed externally', async () =>
+    {
+        const context = new GraphicsContext();
+
+        const g = new Graphics(context);
+
+        // listen to function..
+        const spy = jest.fn();
+
+        context.on('destroy', spy);
+
+        g.destroy();
+
+        expect(spy).not.toHaveBeenCalled();
     });
 });
