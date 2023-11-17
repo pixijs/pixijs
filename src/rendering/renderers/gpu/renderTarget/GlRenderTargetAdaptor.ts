@@ -1,6 +1,7 @@
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { CLEAR } from '../../gl/const';
 import { GlRenderTarget } from '../../gl/GlRenderTarget';
+import { CanvasSource } from '../../shared/texture/sources/CanvasSource';
 
 import type { RgbaArray } from '../../../../color/Color';
 import type { CLEAR_OR_BOOL } from '../../gl/const';
@@ -142,7 +143,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         const glRenderTarget = new GlRenderTarget();
 
         // we are rendering to a canvas..
-        if (renderTarget.colorTexture.resource instanceof HTMLCanvasElement)
+        if (CanvasSource.test(renderTarget.colorTexture.resource))
         {
             glRenderTarget.framebuffer = null;
 

@@ -3,6 +3,7 @@ import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { CLEAR } from '../../gl/const';
 import { calculateProjection } from '../../gpu/renderTarget/calculateProjection';
 import { SystemRunner } from '../system/SystemRunner';
+import { CanvasSource } from '../texture/sources/CanvasSource';
 import { TextureSource } from '../texture/sources/TextureSource';
 import { Texture } from '../texture/Texture';
 import { getCanvasTexture } from '../texture/utils/getCanvasTexture';
@@ -398,7 +399,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
     {
         let renderTarget: RenderTarget = null;
 
-        if (renderSurface instanceof HTMLCanvasElement)
+        if (CanvasSource.test(renderSurface))
         {
             renderSurface = getCanvasTexture(renderSurface as ICanvas);
         }
@@ -414,7 +415,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
                 depthTexture: renderSurface.source.depthStencil,
             });
 
-            if (renderSurface.source.resource instanceof HTMLCanvasElement)
+            if (CanvasSource.test(renderSurface.source.resource))
             {
                 renderTarget.isRoot = true;
             }

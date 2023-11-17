@@ -1,4 +1,5 @@
 import { CLEAR } from '../../gl/const';
+import { CanvasSource } from '../../shared/texture/sources/CanvasSource';
 import { TextureSource } from '../../shared/texture/sources/TextureSource';
 import { GpuRenderTarget } from './GpuRenderTarget';
 
@@ -206,7 +207,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         // is a canvas...
         renderTarget.colorTextures.forEach((colorTexture, i) =>
         {
-            if (colorTexture.resource instanceof HTMLCanvasElement)
+            if (CanvasSource.test(colorTexture.resource))
             {
                 const context = renderTarget.colorTexture.resource.getContext(
                     'webgpu'
