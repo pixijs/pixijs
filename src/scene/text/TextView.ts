@@ -134,8 +134,9 @@ export class TextView implements View
 
     public containsPoint(point: PointData)
     {
-        const width = this.bounds[0];
-        const height = this.bounds[2];
+        const width = this.bounds[1];
+        const height = this.bounds[3];
+
         const x1 = -width * this.anchor.x;
         let y1 = 0;
 

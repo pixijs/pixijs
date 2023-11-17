@@ -87,4 +87,11 @@ describe('Text', () =>
 
         expect(renderer.renderPipes.bitmapText['_gpuBitmapText'][text.uid]).toBeNull();
     });
+
+    it('should contain point correctly', async () =>
+    {
+        const text = new Text({ text: 'foo', renderMode: 'canvas' });
+
+        expect(text.view.containsPoint({ x: 4, y: 4 })).toBe(true);
+    });
 });
