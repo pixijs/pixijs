@@ -222,7 +222,6 @@ export class GraphicsContext extends EventEmitter<{
 
         this.onUpdate();
 
-        // this._activePath.instructions.length = 0;
         this._initNextPathLocation();
         this._tick = 0;
 
@@ -269,7 +268,6 @@ export class GraphicsContext extends EventEmitter<{
 
         this.onUpdate();
 
-        // this._activePath.instructions.length = 0;
         this._initNextPathLocation();
         this._tick = 0;
 
