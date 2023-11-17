@@ -85,7 +85,7 @@ export class Mesh<
     }
 
     /**
-     * Includes vertex positions, face indices, normals, colors, UVs, and
+     * Includes vertex positions, face indices, colors, UVs, and
      * custom attributes within buffers, reducing the cost of passing all
      * this data to the GPU. Can be shared between multiple Mesh objects.
      */
