@@ -91,7 +91,7 @@ export class GraphicsContext extends EventEmitter<{
 }>
 {
     public static defaultFillStyle: ConvertedFillStyle = {
-        color: 0,
+        color: 0xffffff,
         alpha: 1,
         texture: Texture.WHITE,
         matrix: null,
@@ -100,7 +100,7 @@ export class GraphicsContext extends EventEmitter<{
 
     public static defaultStrokeStyle: ConvertedStrokeStyle = {
         width: 1,
-        color: 0,
+        color: 0xffffff,
         alpha: 1,
         alignment: 0.5,
         miterLimit: 10,
