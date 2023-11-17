@@ -110,7 +110,7 @@ export class GraphicsPath
     {
         const last = this.instructions[this.instructions.length - 1];
 
-        const lastPoint = this._getLastPoint(Point.shared);
+        const lastPoint = this.getLastPoint(Point.shared);
 
         let cp1x = 0;
         let cp1y = 0;
@@ -193,7 +193,7 @@ export class GraphicsPath
         // check if we have a previous quadraticCurveTo
         const last = this.instructions[this.instructions.length - 1];
 
-        const lastPoint = this._getLastPoint(Point.shared);
+        const lastPoint = this.getLastPoint(Point.shared);
 
         let cpx1 = 0;
         let cpy1 = 0;
@@ -437,12 +437,7 @@ export class GraphicsPath
         return this.shapePath.bounds;
     }
 
-    public get lastPoint()
-    {
-        return this._getLastPoint(new Point());
-    }
-
-    private _getLastPoint(out: Point): Point
+    public getLastPoint(out: Point): Point
     {
         let index = this.instructions.length - 1;
 

@@ -231,10 +231,10 @@ export class GraphicsContext extends EventEmitter<{
     private _initNextPathLocation()
     {
         // Reset the _activePath with the last point of the current path
-        const lastPoint = this._activePath.lastPoint;
+        const { x, y } = this._activePath.getLastPoint(Point.shared);
 
         this._activePath.clear();
-        this._activePath.moveTo(lastPoint.x, lastPoint.y);
+        this._activePath.moveTo(x, y);
     }
 
     public stroke(style?: FillStyleInputs): this
