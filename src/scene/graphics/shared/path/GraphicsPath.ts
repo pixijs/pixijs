@@ -492,7 +492,7 @@ export class GraphicsPath
                 break;
             case 'addPath':
                 // TODO prolly should transform the last point of the path
-                lastInstruction.data[0].lastPoint.copyTo(out);
+                lastInstruction.data[0].getLastPoint(out);
                 break;
             case 'rect':
                 // TODO transform...
