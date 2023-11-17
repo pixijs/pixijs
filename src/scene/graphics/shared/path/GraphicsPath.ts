@@ -437,6 +437,11 @@ export class GraphicsPath
         return this.shapePath.bounds;
     }
 
+    public get lastPoint()
+    {
+        return this._getLastPoint(new Point());
+    }
+
     private _getLastPoint(out: Point): Point
     {
         let index = this.instructions.length - 1;
@@ -492,8 +497,7 @@ export class GraphicsPath
                 break;
             case 'addPath':
                 // TODO prolly should transform the last point of the path
-                out.x = lastInstruction.data[0].lastX;
-                out.y = lastInstruction.data[2].lastY;
+                lastInstruction.data[0].lastPoint.copyTo(out);
                 break;
             case 'rect':
                 // TODO transform...
