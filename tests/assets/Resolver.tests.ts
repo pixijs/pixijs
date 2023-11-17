@@ -448,26 +448,20 @@ describe('Resolver', () =>
         expect(resolver.resolve(['test', 'test2', 'test3'])).toEqual({
             test: {
                 alias: ['test'],
-                name: ['test'],
                 src: 'out1.png',
-                srcs: 'out1.png',
                 format: 'png',
                 loadParser: undefined,
                 data: {}
             },
             test2: {
                 alias: ['test2'],
-                name: ['test2'],
                 src: 'out2.png',
-                srcs: 'out2.png',
                 format: 'png',
                 loadParser: undefined,
                 data: {}
             },
             test3: {
                 alias: ['test3'],
-                name: ['test3'],
-                srcs: 'out4.png',
                 src: 'out4.png',
                 format: 'png',
                 loadParser: undefined,
@@ -532,9 +526,7 @@ describe('Resolver', () =>
         expect(assets.level).toEqual({
             image3: {
                 alias: ['image3', 'level-image3'],
-                name: ['image3', 'level-image3'],
                 src: 'chicken.png',
-                srcs: 'chicken.png',
                 format: 'png',
                 resolution: 1,
                 loadParser: undefined,
@@ -545,11 +537,9 @@ describe('Resolver', () =>
         expect(assets.default).toEqual({
             image1: {
                 alias: ['image1', 'default-image1'],
-                name: ['image1', 'default-image1'],
                 format: 'png',
                 resolution: 1,
                 src: 'my-sprite@2x.png',
-                srcs: 'my-sprite@2x.png',
                 loadParser: undefined,
                 data: {}
             },
@@ -558,33 +548,24 @@ describe('Resolver', () =>
                     'levelData',
                     'default-levelData',
                 ],
-                name: [
-                    'levelData',
-                    'default-levelData',
-                ],
                 format: 'json',
                 src: 'levelData.json',
-                srcs: 'levelData.json',
                 loadParser: undefined,
                 data: {}
             },
             spriteSheet1: {
                 alias: ['spriteSheet1', 'default-spriteSheet1'],
-                name: ['spriteSheet1', 'default-spriteSheet1'],
                 format: 'png',
                 resolution: 1,
                 src: 'my-sprite-sheet.json',
-                srcs: 'my-sprite-sheet.json',
                 loadParser: undefined,
                 data: {}
             },
             spriteSheet2: {
                 alias: ['spriteSheet2', 'default-spriteSheet2'],
-                name: ['spriteSheet2', 'default-spriteSheet2'],
                 format: 'png',
                 resolution: 1,
                 src: 'my-sprite-sheet-2.json',
-                srcs: 'my-sprite-sheet-2.json',
                 loadParser: undefined,
                 data: {}
             },
