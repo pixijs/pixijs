@@ -10,8 +10,9 @@ function createGlobalUniformSystem(): GlobalUniformSystem
 {
     const renderer = {
         renderTarget: {
+            projectionMatrix: new Matrix(2, 2, 2, 2, 2, 2),
             renderTarget: {
-                projectionMatrix: new Matrix(2, 2, 2, 2, 2, 2),
+                size: [1, 1],
             }
         },
         renderPipes: {},
@@ -26,10 +27,9 @@ function createGlobalUniformSystem(): GlobalUniformSystem
     const globalUniformSystem = new GlobalUniformSystem(renderer);
 
     globalUniformSystem.start({
-        projectionData: {
-            projectionMatrix: new Matrix(1, 1, 1, 1, 1, 1),
-            size: [1, 1]
-        },
+        projectionMatrix: new Matrix(1, 1, 1, 1, 1, 1),
+        size: [1, 1],
+
         worldTransformMatrix: new Matrix(2, 2, 2, 2, 2, 2),
     });
 
@@ -60,19 +60,17 @@ describe('GlobalUniformSystem', () =>
         const bindGroup = globalUniformSystem.bindGroup;
 
         globalUniformSystem.push({
-            projectionData: {
-                projectionMatrix: new Matrix(3, 3, 3, 3, 3, 3),
-                size: [1, 1]
-            },
+
+            projectionMatrix: new Matrix(3, 3, 3, 3, 3, 3),
+            size: [1, 1]
+
         });
 
         const bindGroup2 = globalUniformSystem.bindGroup;
 
         globalUniformSystem.push({
-            projectionData: {
-                projectionMatrix: new Matrix(4, 4, 4, 4, 4, 4),
-                size: [1, 1]
-            },
+            projectionMatrix: new Matrix(4, 4, 4, 4, 4, 4),
+            size: [1, 1],
             worldTransformMatrix: new Matrix(5, 5, 5, 5, 5, 5),
         });
 

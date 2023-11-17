@@ -162,10 +162,6 @@ export class CanvasTextPipe implements RenderPipe<TextView>
 
     private _initGpuText(renderable: Renderable<TextView>)
     {
-        const view = renderable.view;
-
-        view._style.update();
-
         const gpuTextData: CanvasTextPipe['_gpuText'][number] = {
             texture: null,
             currentKey: '--',

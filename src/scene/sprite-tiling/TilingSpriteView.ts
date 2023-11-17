@@ -9,12 +9,32 @@ import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Bounds } from '../container/bounds/Bounds';
 import type { TextureDestroyOptions, TypeOrBool } from '../container/destroyTypes';
 
+/**
+ * Options for the {@link scene.TilingSprite} constructor.
+ * @memberof scene
+ */
 export interface TilingSpriteViewOptions
 {
+    /**
+     * The texture to use for the sprite.
+     * @default Texture.WHITE
+     */
     texture?: Texture
+    /**
+     * The width of the tiling sprite. #
+     * @default 256
+     */
     width?: number
+    /**
+     * The height of the tiling sprite.
+     * @default 256
+     */
     height?: number
     // TODO needs a better name..
+    /**
+     * @todo
+     * @default false
+     */
     applyAnchorToTexture?: boolean
 }
 

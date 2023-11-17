@@ -6,8 +6,8 @@ export const manifest: AssetsManifest = {
             name: 'default',
             assets: [
                 {
-                    name: 'image1',
-                    srcs: [
+                    alias: 'image1',
+                    src: [
                         {
                             resolution: 1,
                             format: 'png',
@@ -21,8 +21,8 @@ export const manifest: AssetsManifest = {
                     ],
                 },
                 {
-                    name: 'spriteSheet1',
-                    srcs: [
+                    alias: 'spriteSheet1',
+                    src: [
                         {
                             resolution: 1,
                             format: 'png',
@@ -36,8 +36,8 @@ export const manifest: AssetsManifest = {
                     ],
                 },
                 {
-                    name: `spriteSheet2`,
-                    srcs: [
+                    alias: `spriteSheet2`,
+                    src: [
                         {
                             resolution: 1,
                             format: 'png',
@@ -46,8 +46,8 @@ export const manifest: AssetsManifest = {
                     ],
                 },
                 {
-                    name: 'levelData',
-                    srcs: 'levelData.json',
+                    alias: 'levelData',
+                    src: 'levelData.json',
                 },
             ],
         },
@@ -55,8 +55,8 @@ export const manifest: AssetsManifest = {
             name: 'level',
             assets: [
                 {
-                    name: 'image3',
-                    srcs: [
+                    alias: 'image3',
+                    src: [
                         {
                             resolution: 1,
                             format: 'png',
