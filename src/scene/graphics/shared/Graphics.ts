@@ -180,11 +180,6 @@ export class Graphics extends Container<GraphicsView>
     {
         return this._callContextMethod('chamferRect', args);
     }
-    public torus(...args: Parameters<GraphicsContext['torus']>): this
-    {
-        return this._callContextMethod('torus', args);
-    }
-
     public star(...args: Parameters<GraphicsContext['star']>): this
     {
         return this._callContextMethod('star', args);

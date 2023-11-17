@@ -478,10 +478,10 @@ export class GraphicsContext extends EventEmitter<{
         return this;
     }
 
-    public regularPoly(x: number, y: number, radius: number, sides: number, rotation = 0): this
+    public regularPoly(x: number, y: number, radius: number, sides: number, rotation = 0, transform?: Matrix): this
     {
         this._tick++;
-        this._activePath.regularPoly(x, y, radius, sides, rotation);
+        this._activePath.regularPoly(x, y, radius, sides, rotation, transform);
 
         return this;
     }
@@ -510,45 +510,10 @@ export class GraphicsContext extends EventEmitter<{
         return this;
     }
 
-    public chamferRect(x: number, y: number, width: number, height: number, chamfer: number): this
+    public chamferRect(x: number, y: number, width: number, height: number, chamfer: number, transform?: Matrix): this
     {
         this._tick++;
-        this._activePath.chamferRect(x, y, width, height, chamfer);
-
-        return this;
-    }
-
-    /**
-     * Draw a torus shape, like a donut. Can be used for something like a circle loader.
-     * @param x - X position
-     * @param y - Y position
-     * @param innerRadius - Inner circle radius
-     * @param outerRadius - Outer circle radius
-     * @param startArc - Where to begin sweep, in radians, 0.0 = to the right
-     * @param endArc - Where to end sweep, in radians
-     */
-    public torus(
-        x: number,
-        y: number,
-        innerRadius: number,
-        outerRadius: number,
-        startArc = 0,
-        endArc: number = Math.PI * 2): this
-    {
-        if (Math.abs(endArc - startArc) >= Math.PI * 2)
-        {
-            return this
-                .circle(x, y, outerRadius)
-                .fill()
-                .circle(x, y, innerRadius)
-                .cut();
-        }
-
-        this.closePath();
-        this
-            .arc(x, y, innerRadius, endArc, startArc, true)
-            .arc(x, y, outerRadius, startArc, endArc, false)
-            .closePath();
+        this._activePath.chamferRect(x, y, width, height, chamfer, transform);
 
         return this;
     }

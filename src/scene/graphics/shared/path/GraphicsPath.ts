@@ -262,7 +262,7 @@ export class GraphicsPath
         return this;
     }
 
-    public regularPoly(x: number, y: number, radius: number, sides: number, rotation?: number): this;
+    public regularPoly(x: number, y: number, radius: number, sides: number, rotation?: number, transform?: Matrix): this;
     public regularPoly(...args: [number, number, number, number, number]): this
     {
         this.instructions.push({ action: 'regularPoly', data: args });
@@ -298,7 +298,7 @@ export class GraphicsPath
 
         return this;
     }
-    public chamferRect(x: number, y: number, width: number, height: number, chamfer: number): this;
+    public chamferRect(x: number, y: number, width: number, height: number, chamfer: number, transform?: Matrix): this;
     public chamferRect(...args: [number, number, number, number, number]): this
     {
         this.instructions.push({ action: 'chamferRect', data: args });

@@ -200,7 +200,7 @@ export class ShapePath
         return this;
     }
 
-    public regularPoly(x: number, y: number, radius: number, sides: number, rotation = 0): this
+    public regularPoly(x: number, y: number, radius: number, sides: number, rotation = 0, transform?: Matrix): this
     {
         sides = Math.max(sides | 0, 3);
         const startAngle = (-1 * Math.PI / 2) + rotation;
@@ -217,7 +217,7 @@ export class ShapePath
             );
         }
 
-        this.poly(polygon, false);
+        this.poly(polygon, false, transform);
 
         return this;
     }
@@ -333,8 +333,9 @@ export class ShapePath
      * @param width - Width of rect
      * @param height - Height of rect
      * @param chamfer - non-zero real number, size of corner cutout
+     * @param transform
      */
-    public chamferRect(x: number, y: number, width: number, height: number, chamfer: number): this
+    public chamferRect(x: number, y: number, width: number, height: number, chamfer: number, transform?: Matrix): this
     {
         if (chamfer <= 0)
         {
@@ -364,7 +365,7 @@ export class ShapePath
             }
         }
 
-        return this.poly(points);
+        return this.poly(points, undefined, transform);
     }
 
     public ellipse(x: number, y: number, radiusX: number, radiusY: number, transform?: Matrix): this
