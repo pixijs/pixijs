@@ -250,6 +250,48 @@ export interface Container
  *     .beginFill(0xffffff)
  *     .drawCircle(sprite.width / 2, sprite.height / 2, Math.min(sprite.width, sprite.height) / 2)
  *     .endFill();
+ *
+ *
+ * ## Layers
+ *
+ * In PixiJS v8, containers can be set to operate in 'layer mode',
+ * transforming them into entities akin to a stage in traditional rendering paradigms.
+ * A layer is a root renderable entity, similar to a container,
+ * but it's rendered in a separate pass with its own unique set of rendering instructions.
+ * This approach enhances rendering efficiency and organization, particularly in complex scenes.
+ *
+ * You can enable layer mode on any container using container.enableLayer()
+ * or by initializing a new container with the layer property set to true (new Container({layer: true})).
+ *  The method you choose depends on your specific use case and setup requirements.
+ *
+ * An important aspect of PixiJS’s rendering process is the automatic treatment of rendered scenes as layers.
+ * This conversion streamlines the rendering process, but understanding when and how this happens is crucial
+ * to fully leverage its benefits.
+ *
+ * One of the key advantages of using layers is the performance efficiency in moving them. Since transformations
+ *  are applied at the GPU level, moving a layer, even one with complex and numerous children,
+ * doesn't require recalculating the rendering instructions or performing transformations on each child.
+ * This makes operations like panning a large game world incredibly efficient.
+ *
+ * However, it's crucial to note that layers do not batch together.
+ * This means that turning every container into a layer could actually slow things down,
+ * as each layer is processed separately. It's best to use layers judiciously, at a broader level,
+ * rather than on a per-child basis.
+ * This approach ensures you get the performance benefits without overburdening the rendering process.
+ *
+ * Layers maintain their own set of rendering instructions,
+ * ensuring that changes or updates within a layer don't affect the rendering instructions of its parent or other layers.
+ *  This isolation ensures more stable and predictable rendering behavior.
+ *
+ * Additionally, layers can be nested, allowing for powerful options in organizing different aspects of your scene.
+ * This feature is particularly beneficial for separating complex game graphics from UI elements,
+ * enabling intricate and efficient scene management in complex applications.
+ *
+ * This means that Containers have 3 levels of matrix to be mindful of:
+ *
+ * 1 - localTransform, this is the transform of the container based on its own properties
+ * 2 - layerTransform, this it the transform of the container relative to the layer it belongs too
+ * 3 - worldTransform, this is the transform of the container relative to the Scene being rendered
  * @memberof scene
  */
 export class Container<T extends View = View> extends EventEmitter<ContainerEvents & AnyEvent> implements Renderable
@@ -323,7 +365,9 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      */
     public localTransform: Matrix = new Matrix();
     /**
-     * @todo
+     * The layer transform is a transform relative to the layer it belongs too. It will include all parent
+     * transforms and up to the layer (think of it as kind of like a stage - but the stage can be nested).
+     * @readonly
      */
     public layerTransform: Matrix = new Matrix();
     // the global transform taking into account the layer and all parents
@@ -635,16 +679,15 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     }
 
     /**
-     * @todo
+     * Returns true if this container is a layer.
+     * This means that it will be rendered as a separate pass, with its own set of instructions
      */
     get layer(): boolean
     {
         return this.isLayerRoot;
     }
 
-    /**
-     * @todo
-     */
+    /** This enables the container to be rendered as a layer. */
     public enableLayer()
     {
         // does it OWN the layer..
