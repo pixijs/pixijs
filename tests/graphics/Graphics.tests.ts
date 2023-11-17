@@ -733,7 +733,7 @@ describe('Graphics', () =>
 
     describe('startPoly', () =>
     {
-        it.only('should fill two triangles', () =>
+        it('should fill two triangles', () =>
         {
             const graphics = new Graphics();
 
@@ -756,8 +756,6 @@ describe('Graphics', () =>
             const fill2 = data[1] as FillInstruction;
             const fill1Data = fill1.data.path.instructions.map((i) => i.data).flat();
             const fill2Data = fill2.data.path.instructions.map((i) => i.data).flat();
-
-            console.log(fill2Data);
 
             expect(data.length).toEqual(2);
             expect(fill1Data).toEqual([50, 50, 250, 50, 100, 100, 50, 50]);
