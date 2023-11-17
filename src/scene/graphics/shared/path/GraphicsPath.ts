@@ -112,7 +112,7 @@ export class GraphicsPath
     {
         const last = this.instructions[this.instructions.length - 1];
 
-        const lastPoint = this._getLastPoint(Point.shared);
+        const lastPoint = this.getLastPoint(Point.shared);
 
         let cp1x = 0;
         let cp1y = 0;
@@ -195,7 +195,7 @@ export class GraphicsPath
         // check if we have a previous quadraticCurveTo
         const last = this.instructions[this.instructions.length - 1];
 
-        const lastPoint = this._getLastPoint(Point.shared);
+        const lastPoint = this.getLastPoint(Point.shared);
 
         let cpx1 = 0;
         let cpy1 = 0;
@@ -485,7 +485,7 @@ export class GraphicsPath
         return this.shapePath.bounds;
     }
 
-    private _getLastPoint(out: Point): Point
+    public getLastPoint(out: Point): Point
     {
         let index = this.instructions.length - 1;
 
@@ -540,8 +540,7 @@ export class GraphicsPath
                 break;
             case 'addPath':
                 // TODO prolly should transform the last point of the path
-                out.x = lastInstruction.data[0].lastX;
-                out.y = lastInstruction.data[2].lastY;
+                lastInstruction.data[0].getLastPoint(out);
                 break;
             case 'rect':
                 // TODO transform...

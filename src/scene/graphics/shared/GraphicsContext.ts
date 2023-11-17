@@ -223,10 +223,19 @@ export class GraphicsContext extends EventEmitter<{
 
         this.onUpdate();
 
-        this._activePath.instructions.length = 0;
+        this._initNextPathLocation();
         this._tick = 0;
 
         return this;
+    }
+
+    private _initNextPathLocation()
+    {
+        // Reset the _activePath with the last point of the current path
+        const { x, y } = this._activePath.getLastPoint(Point.shared);
+
+        this._activePath.clear();
+        this._activePath.moveTo(x, y);
     }
 
     public stroke(style?: FillStyleInputs): this
@@ -260,7 +269,7 @@ export class GraphicsContext extends EventEmitter<{
 
         this.onUpdate();
 
-        this._activePath.instructions.length = 0;
+        this._initNextPathLocation();
         this._tick = 0;
 
         return this;
