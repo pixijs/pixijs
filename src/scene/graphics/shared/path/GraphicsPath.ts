@@ -563,6 +563,8 @@ export class GraphicsPath
                 }
 
                 break;
+            case 'poly':
+                break;
             default:
                 // #if _DEBUG
                 warn(`${lastInstruction.action} is not supported yet`);
