@@ -334,59 +334,6 @@ describe('Container', () =>
         });
     });
 
-    describe('render', () =>
-    {
-        // todo: convert to visual tests, maybe one test
-        // note: what is container.render equivalent in v8?
-        // it.skip('should not render when object not visible', () =>
-        // {
-        //     const container = new Container();
-        //     const webGLSpy = jest.spyOn(container, '_render' as any);
-
-        //     container.visible = false;
-
-        //     container.render(undefined);
-        //     expect(webGLSpy).not.toBeCalled();
-        // });
-
-        // note: what is container.render equivalent in v8?
-        // it.skip('should not render when alpha is zero', () =>
-        // {
-        //     const container = new Container();
-        //     const webGLSpy = jest.spyOn(container, '_render' as any);
-
-        //     container.worldAlpha = 0;
-
-        //     container.render(undefined);
-        //     expect(webGLSpy).not.toBeCalled();
-        // });
-
-        // note: what is container.render equivalent in v8?
-        // it.skip('should not render when object not renderable', () =>
-        // {
-        //     const container = new Container();
-        //     const webGLSpy = jest.spyOn(container, '_render' as any);
-
-        //     container.renderable = false;
-
-        //     container.render(undefined);
-        //     expect(webGLSpy).not.toBeCalled();
-        // });
-
-        // note: what is container.render equivalent in v8?
-        // it.skip('should render children', () =>
-        // {
-        //     const container = new Container();
-        //     const child = new Container();
-        //     const webGLSpy = jest.spyOn(child, '_render' as any);
-
-        //     container.addChild(child);
-
-        //     container.render(undefined);
-        //     expect(webGLSpy).toBeCalled();
-        // });
-    });
-
     describe('removeChildren', () =>
     {
         it('should remove all children when no arguments supplied', () =>
@@ -798,7 +745,7 @@ describe('Container', () =>
             filterPush.mockClear();
         });
 
-        // note: cullable equivalent in v8?
+        // note: culling is not ported in v8 yet, keeping these tests for reference
         // it.skip('non-cullable container should always be rendered even if bounds do not intersect the frame', () =>
         // {
         //     const container = new Container();
