@@ -121,37 +121,18 @@ describe('Container', () =>
             assertRemovedFromParent(parent, container, child, () => { container.addChild(child); });
         });
 
-        // note: does not exist in v8, whats the equivalent? It does exist in layerGroup, but not container
-        it.skip('should call onChildrenChange', () =>
+        it('should flag child needs update once ', () =>
         {
             const container = new Container();
-            const child = new Container();
-            const spy = jest.spyOn(container, 'onChildUpdate' as any);
 
-            container.addChild(child);
+            container.didChange = false;
+            container.position.set(100, 100);
 
-            expect(spy).toBeCalled();
-            expect(spy).toBeCalledWith(0);
+            expect(container.didChange).toBeTrue();
         });
 
-        // note: boundsID doesn't seem to be a concept in v8?
-        // it.skip('should flag child transform and container bounds for recalculation', testAddChild(
-        //     (mockAddChild: (container: Container, child: Container) => void) =>
-        //     {
-        //         const container = new Container();
-        //         const child = new Container();
-
-        //         container.getBounds();
-        //         child.getBounds();
-
-        //         const boundsID = container._updateFlags['_boundsID'];
-        //         const childParentID = child.transform._parentID;
-
-        //         mockAddChild(container, child);
-
-        //         expect(boundsID).not.toEqual(container['_boundsID']);
-        //         expect(childParentID).not.toEqual(child.transform._parentID);
-        //     }));
+        // todo: test that the updateFlags get set correctly
+        // (v7) updateTransform() =>  updateLayerGroupTransforms(container.layerGroup, true);
     });
 
     describe('removeChildAt', () =>
@@ -162,21 +143,6 @@ describe('Container', () =>
             const child = new Container();
 
             assertRemovedFromParent(parent, null, child, () => { parent.removeChildAt(0); });
-        });
-
-        // note: does not exist in v8, whats the equivalent? It does exist in layerGroup, but not container
-        it.skip('should call onChildrenChange', () =>
-        {
-            const container = new Container();
-            const child = new Container();
-
-            container.addChild(child);
-
-            const spy = jest.spyOn(container, 'onChildrenChange' as any);
-
-            container.removeChildAt(0);
-            expect(spy).toBeCalled();
-            expect(spy).toBeCalledWith(0);
         });
     });
 
@@ -226,21 +192,7 @@ describe('Container', () =>
             assertRemovedFromParent(parent, container, child, () => { container.addChildAt(child, 0); });
         });
 
-        // note: does not exist in v8, whats the equivalent? It does exist in layerGroup, but not container
-        it.skip('should call onChildrenChange', () =>
-        {
-            const container = new Container();
-            const child = new Container();
-
-            container.addChild(new Container());
-
-            const spy = jest.spyOn(container, 'onChildrenChange' as any);
-
-            container.addChildAt(child, 0);
-
-            expect(spy).toBeCalled();
-            expect(spy).toBeCalledWith(0);
-        });
+        // todo: check events for adding/removing using events
     });
 
     describe('removeChild', () =>
@@ -271,41 +223,6 @@ describe('Container', () =>
 
             expect(container.children.length).toEqual(0);
         });
-
-        // note: does not exist in v8, whats the equivalent? It does exist in layerGroup, but not container
-        it.skip('should call onChildrenChange', () =>
-        {
-            const container = new Container();
-            const child = new Container();
-
-            container.addChild(child);
-
-            const spy = jest.spyOn(container, 'onChildrenChange' as any);
-
-            container.removeChild(child);
-
-            expect(spy).toBeCalled();
-            expect(spy).toBeCalledWith(0);
-        });
-
-        // note: boundsID doesn't seem to be a concept in v8?
-        // it.skip('should flag transform for recalculation', testRemoveChild(
-        //     (mockRemoveChild: (c: Container, b: Container) => void) =>
-        //     {
-        //         const container = new Container();
-        //         const child = new Container();
-
-        //         container.addChild(child);
-        //         container.getBounds();
-
-        //         const childParentID = child.transform._parentID;
-        //         const boundsID = container['_boundsID'];
-
-        //         mockRemoveChild(container, child);
-
-        //         expect(childParentID).not.toEqual(child.transform._parentID);
-        //         expect(boundsID).not.toEqual(container['_boundsID']);
-        //     }));
     });
 
     describe('getChildIndex', () =>
@@ -382,62 +299,10 @@ describe('Container', () =>
             container.setChildIndex(child, 0);
             expect(container.children.indexOf(child)).toEqual(0);
         });
-
-        // note: does not exist in v8, whats the equivalent? It does exist in layerGroup, but not container
-        it.skip('should call onChildrenChange', () =>
-        {
-            const container = new Container();
-            const child = new Container();
-
-            container.addChild(child, new Container());
-
-            const spy = jest.spyOn(container, 'onChildrenChange' as any);
-
-            container.setChildIndex(child, 1);
-
-            expect(spy).toBeCalled();
-            expect(spy).toBeCalledWith(1);
-        });
     });
 
     describe('swapChildren', () =>
     {
-        // note: does not exist in v8, whats the equivalent? It does exist in layerGroup, but not container
-        it.skip('should call onChildrenChange', () =>
-        {
-            const container = new Container();
-            const child1 = new Container();
-            const child2 = new Container();
-
-            container.addChild(child1, child2);
-
-            const spy = jest.spyOn(container, 'onChildrenChange' as any);
-
-            container.swapChildren(child1, child2);
-            expect(spy).toBeCalled();
-            expect(spy).toBeCalledWith(0);
-
-            // second call required to complete returned index coverage
-            container.swapChildren(child1, child2);
-            expect(spy).toBeCalledTimes(2);
-            expect(spy).toBeCalledWith(0);
-        });
-
-        // note: what is the equivalent of this in v8?
-        it.skip('should not call onChildrenChange if supplied children are equal', () =>
-        {
-            const container = new Container();
-            const child = new Container();
-
-            container.addChild(child, new Container());
-
-            const spy = jest.spyOn(container, 'onChildrenChange' as any);
-
-            container.swapChildren(child, child);
-
-            expect(spy).not.toBeCalled();
-        });
-
         it('should throw if children do not belong', () =>
         {
             const container = new Container();
@@ -469,68 +334,9 @@ describe('Container', () =>
         });
     });
 
-    describe('updateTransform', () =>
-    {
-        // note: what is updateTransform equivalent in v8?
-        // it.skip('should call sortChildren if sortDirty and sortableChildren are true', () =>
-        // {
-        //     const parent = new Container();
-        //     const container = new Container();
-        //     const child = new Container();
-        //     const canvasSpy = jest.spyOn(container, 'sortChildren');
-
-        //     parent.addChild(container);
-        //     container.addChild(child);
-
-        //     container.sortDirty = true;
-        //     container.sortableChildren = true;
-
-        //     container.updateTransform();
-
-        //     expect(canvasSpy).toBeCalled();
-        // });
-
-        // note: what is updateTransform equivalent in v8?
-        // it.skip('should not call sortChildren if sortDirty is false', () =>
-        // {
-        //     const parent = new Container();
-        //     const container = new Container();
-        //     const child = new Container();
-        //     const canvasSpy = jest.spyOn(container, 'sortChildren');
-
-        //     parent.addChild(container);
-        //     container.addChild(child);
-
-        //     container.sortDirty = false;
-        //     container.sortableChildren = true;
-
-        //     container.updateTransform();
-
-        //     expect(canvasSpy).not.toBeCalled();
-        // });
-
-        // note: what is updateTransform equivalent in v8?
-        // it.skip('should not call sortChildren if sortableChildren is false', () =>
-        // {
-        //     const parent = new Container();
-        //     const container = new Container();
-        //     const child = new Container();
-        //     const canvasSpy = jest.spyOn(container, 'sortChildren');
-
-        //     parent.addChild(container);
-        //     container.addChild(child);
-
-        //     container.sortDirty = true;
-        //     container.sortableChildren = false;
-
-        //     container.updateTransform();
-
-        //     expect(canvasSpy).not.toBeCalled();
-        // });
-    });
-
     describe('render', () =>
     {
+        // todo: convert to visual tests, maybe one test
         // note: what is container.render equivalent in v8?
         // it.skip('should not render when object not visible', () =>
         // {
@@ -674,58 +480,6 @@ describe('Container', () =>
         });
     });
 
-    describe('getLocalBounds', () =>
-    {
-        // note: what is getLocalBounds equivalent in v8?
-        // it.skip('should recalculate children transform by default', () =>
-        // {
-        //     const root = new Container();
-        //     const container = new Container();
-        //     const child = new Container();
-
-        //     root.addChild(container);
-        //     container.addChild(child);
-
-        //     container.position.set(10, 10);
-        //     child.position.set(20, 30);
-
-        //     container.updateTransform();
-        //     container.getLocalBounds();
-
-        //     expect(child.worldTransform.tx).toEqual(30);
-        //     expect(child.worldTransform.ty).toEqual(40);
-        // });
-
-        // note: what is _calculateBounds equivalent in v8?
-        // it.skip('should recalculate bounds if children position was changed', () =>
-        // {
-        //     const root = new Container();
-        //     const container = new Container();
-        //     const child = new Container();
-        //     let bounds = null;
-
-        //     // eslint-disable-next-line func-names
-        //     child['_calculateBounds'] = function ()
-        //     {
-        //         this._bounds.addFrame(this.transform, 0, 0, 1, 1);
-        //     };
-
-        //     root.addChild(container);
-        //     container.addChild(child);
-        //     container.position.set(10, 10);
-        //     container.updateTransform();
-
-        //     child.position.set(20, 30);
-        //     bounds = container.getLocalBounds();
-        //     expect(bounds.x).toEqual(20);
-        //     expect(bounds.y).toEqual(30);
-        //     child.position.set(5, 5);
-        //     bounds = container.getLocalBounds();
-        //     expect(bounds.x).toEqual(5);
-        //     expect(bounds.y).toEqual(5);
-        // });
-    });
-
     describe('width', () =>
     {
         it('should reset scale', () =>
@@ -754,15 +508,14 @@ describe('Container', () =>
         });
     });
 
-    describe.only('sortDirty', () =>
+    describe('sortDirty', () =>
     {
-        // note: had to add parent.sortDirty = true to get this to pass
         it('should set sortDirty flag to true when adding a new child', () =>
         {
             const parent = new Container();
             const child = new Container();
 
-            parent.sortableChildren = true; // <- had to add this, breaking behavior?
+            parent.sortableChildren = true;
 
             expect(parent.sortDirty).toBe(false);
 
@@ -876,12 +629,6 @@ describe('Container', () =>
             expect(container.children.indexOf(child4)).toEqual(3);
 
             container.sortChildren();
-
-            // note: skipped these
-            // expect(child1._lastSortedIndex).toEqual(0);
-            // expect(child2._lastSortedIndex).toEqual(1);
-            // expect(child3._lastSortedIndex).toEqual(2);
-            // expect(child4._lastSortedIndex).toEqual(3);
 
             expect(container.children.indexOf(child1)).toEqual(2);
             expect(container.children.indexOf(child2)).toEqual(3);
@@ -1028,7 +775,7 @@ describe('Container', () =>
         expect(child.parent).toEqual(container);
     }
 
-    describe.only('culling', () =>
+    describe('culling', () =>
     {
         let renderer: WebGLRenderer;
         let filterPush: jest.SpyInstance;

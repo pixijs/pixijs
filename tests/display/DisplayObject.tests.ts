@@ -1,5 +1,6 @@
 import { DEG_TO_RAD, RAD_TO_DEG } from '../../src/maths/misc/const';
 import { Container } from '../../src/scene/container/Container';
+import { updateLayerGroupTransforms } from '../../src/scene/container/utils/updateLayerGroupTransforms';
 
 describe('Container', () =>
 {
@@ -10,34 +11,10 @@ describe('Container', () =>
             const object = new Container();
 
             expect(object.alpha).toEqual(1);
-            // expect(object.worldAlpha).toEqual(1);
+            expect(object.layerColor).toEqual(0xffffffff);
             expect(object.renderable).toBe(true);
             expect(object.visible).toBe(true);
         });
-    });
-
-    describe('setParent', () =>
-    {
-        // note: setParent does not exist, adding children tested in Container.tests.ts
-        // it.skip('should add itself to a Container', () =>
-        // {
-        //     const child = new Container();
-        //     const container = new Container();
-
-        //     expect(container.children.length).toEqual(0);
-        //     child.setParent(container);
-        //     expect(container.children.length).toEqual(1);
-        //     expect(child.parent).toEqual(container);
-        // });
-
-        // it.skip('should throw if not Container', () =>
-        // {
-        //     const child = new Container();
-        //     const notAContainer = {};
-
-        //     expect(() => child.setParent()).toThrowError('setParent: Argument must be a Container');
-        //     expect(() => child.setParent(notAContainer)).toThrowError('setParent: Argument must be a Container');
-        // });
     });
 
     describe('removeFromParent', () =>
@@ -75,53 +52,68 @@ describe('Container', () =>
 
     describe('setTransform', () =>
     {
-        // note: setTransform does not exist. worldTransform or localTransform doesn't work either?
-        // it.skip('should set correct properties', () =>
-        // {
-        //     const object = new Container();
+        it('should set correct properties', () =>
+        {
+            const object = new Container();
 
-        //     object.setTransform(1, 2, 3, 4, 5, 6, 7, 8, 9);
+            object.updateTransform({
+                x: 1,
+                y: 2,
+                scaleX: 3,
+                scaleY: 4,
+                rotation: 5,
+                skewX: 6,
+                skewY: 7,
+                pivotX: 8,
+                pivotY: 9,
+            });
 
-        //     expect(object.position.x).toEqual(1);
-        //     expect(object.position.y).toEqual(2);
-        //     expect(object.scale.x).toEqual(3);
-        //     expect(object.scale.y).toEqual(4);
-        //     expect(object.rotation).toEqual(5);
-        //     expect(object.skew.x).toEqual(6);
-        //     expect(object.skew.y).toEqual(7);
-        //     expect(object.pivot.x).toEqual(8);
-        //     expect(object.pivot.y).toEqual(9);
-        // });
+            expect(object.position.x).toEqual(1);
+            expect(object.position.y).toEqual(2);
+            expect(object.scale.x).toEqual(3);
+            expect(object.scale.y).toEqual(4);
+            expect(object.rotation).toEqual(5);
+            expect(object.skew.x).toEqual(6);
+            expect(object.skew.y).toEqual(7);
+            expect(object.pivot.x).toEqual(8);
+            expect(object.pivot.y).toEqual(9);
+        });
 
-        // it.skip('should convert zero scale to one', () =>
-        // {
-        //     const object = new Container();
+        it('should convert zero scale to one', () =>
+        {
+            const object = new Container();
 
-        //     object.setTransform(1, 1, 0, 0, 1, 1, 1, 1, 1);
+            object.updateTransform({
+                scaleX: 0,
+                scaleY: 0,
+            });
 
-        //     expect(object.scale.x).toEqual(1);
-        //     expect(object.scale.y).toEqual(1);
-        // });
+            expect(object.scale.x).toEqual(1);
+            expect(object.scale.y).toEqual(1);
+        });
     });
 
-    describe('worldVisible', () =>
+    describe('Layer Cascading Visibility', () =>
     {
-        // note: worldVisible does not exist and visible is not traversed when set on parent
-        // it.skip('should traverse parents', () =>
-        // {
-        //     const grandParent = new Container();
-        //     const parent = new Container();
-        //     const child = new Container();
+        it('should traverse parents', () =>
+        {
+            const rootContainer = new Container({ layer: true });
+            const parent = new Container();
+            const child = new Container();
 
-        //     grandParent.addChild(parent);
-        //     parent.addChild(child);
+            rootContainer.addChild(parent);
+            parent.addChild(child);
 
-        //     expect(child.worldVisible).toBe(true);
+            expect(child.layerVisibleRenderable).toBe(0b11);
+            expect(child.localVisibleRenderable).toBe(0b11);
 
-        //     grandParent.visible = false;
+            parent.visible = false;
 
-        //     expect(child.worldVisible).toBe(false);
-        // });
+            updateLayerGroupTransforms(rootContainer.layerGroup, true);
+
+            expect(child.layerVisibleRenderable).toBe(0b01);
+            expect(child.localVisibleRenderable).toBe(0b11);
+        });
     });
 
     describe('rotation', () =>
@@ -145,118 +137,82 @@ describe('Container', () =>
         });
     });
 
-    describe('enableTempParent', () =>
-    {
-        // note: incompatible apis, whats the equivalent?
-        // it.skip('should allow to recalc children transform', () =>
-        // {
-        //     const child = new Container();
-        //     const container = new Container();
-
-        //     container.addChild(child);
-        //     container.position.set(10, 10);
-        //     child.position.set(15, 10);
-
-        //     container.enableTempParent();
-        //     container.updateTransform();
-        //     container.disableTempParent(null);
-
-        //     expect(child.worldTransform.tx).toEqual(25);
-        //     expect(child.worldTransform.ty).toEqual(20);
-
-        //     const cacheParent = child.enableTempParent();
-
-        //     child.updateTransform();
-        //     child.disableTempParent(cacheParent);
-
-        //     expect(cacheParent).toEqual(container);
-        //     expect(child.parent).toEqual(container);
-        //     expect(child.worldTransform.tx).toEqual(15);
-        //     expect(child.worldTransform.ty).toEqual(10);
-
-        //     child.updateTransform();
-
-        //     expect(child.worldTransform.tx).toEqual(25);
-        //     expect(child.worldTransform.ty).toEqual(20);
-        // });
-    });
-
     describe('mask', () =>
     {
-        // note: isMask is not a property, also renderable was not being set as expected when commenting out isMask
-        // it.skip('should set isMask and renderable properties correctly even if the same mask is used by multiple objects',
-        //     () =>
-        //     {
-        //         const mask1 = new Container();
-        //         const mask2 = new Container();
-        //         const container1 = new Container();
-        //         const container2 = new Container();
+        // todo: ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44913565
+        it.skip('should set isMask and renderable properties correctly even if the same mask is used by multiple objects',
+            () =>
+            {
+                const mask1 = new Container();
+                const mask2 = new Container();
+                const container1 = new Container();
+                const container2 = new Container();
 
-        //         expect(mask1.isMask).toBe(false);
-        //         expect(mask1.renderable).toBe(true);
-        //         expect(mask2.isMask).toBe(false);
-        //         expect(mask2.renderable).toBe(true);
+                expect(mask1.includeInBuild).toBe(true);
+                expect(mask1.measurable).toBe(true);
+                expect(mask2.includeInBuild).toBe(true);
+                expect(mask2.measurable).toBe(true);
 
-        //         container1.mask = mask1;
+                container1.mask = mask1;
 
-        //         expect(mask1.isMask).toBe(true);
-        //         expect(mask1.renderable).toBe(false);
-        //         expect(mask2.isMask).toBe(false);
-        //         expect(mask2.renderable).toBe(true);
+                expect(mask1.includeInBuild).toBe(false);
+                expect(mask1.measurable).toBe(false);
+                expect(mask2.includeInBuild).toBe(true);
+                expect(mask2.measurable).toBe(true);
 
-        //         container1.mask = mask1;
+                container1.mask = mask1;
 
-        //         expect(mask1.isMask).toBe(true);
-        //         expect(mask1.renderable).toBe(false);
-        //         expect(mask2.isMask).toBe(false);
-        //         expect(mask2.renderable).toBe(true);
+                expect(mask1.includeInBuild).toBe(true);
+                expect(mask1.measurable).toBe(false);
+                expect(mask2.includeInBuild).toBe(false);
+                expect(mask2.measurable).toBe(true);
 
-        //         container2.mask = mask1;
+                container2.mask = mask1;
 
-        //         expect(mask1.isMask).toBe(true);
-        //         expect(mask2.isMask).toBe(false);
-        //         expect(mask1.renderable).toBe(false);
-        //         expect(mask2.renderable).toBe(true);
+                expect(mask1.includeInBuild).toBe(true);
+                expect(mask2.includeInBuild).toBe(false);
+                expect(mask1.measurable).toBe(false);
+                expect(mask2.measurable).toBe(true);
 
-        //         container1.mask = mask2;
+                container1.mask = mask2;
 
-        //         expect(mask1.isMask).toBe(true);
-        //         expect(mask1.renderable).toBe(false);
-        //         expect(mask2.isMask).toBe(true);
-        //         expect(mask2.renderable).toBe(false);
+                expect(mask1.includeInBuild).toBe(true);
+                expect(mask1.measurable).toBe(false);
+                expect(mask2.includeInBuild).toBe(true);
+                expect(mask2.measurable).toBe(false);
 
-        //         container2.mask = mask2;
+                container2.mask = mask2;
 
-        //         expect(mask1.isMask).toBe(false);
-        //         expect(mask1.renderable).toBe(true);
-        //         expect(mask2.isMask).toBe(true);
-        //         expect(mask2.renderable).toBe(false);
+                expect(mask1.includeInBuild).toBe(false);
+                expect(mask1.measurable).toBe(true);
+                expect(mask2.includeInBuild).toBe(true);
+                expect(mask2.measurable).toBe(false);
 
-        //         container1.mask = null;
+                container1.mask = null;
 
-        //         expect(mask1.isMask).toBe(false);
-        //         expect(mask1.renderable).toBe(true);
-        //         expect(mask2.isMask).toBe(true);
-        //         expect(mask2.renderable).toBe(false);
+                expect(mask1.includeInBuild).toBe(false);
+                expect(mask1.measurable).toBe(true);
+                expect(mask2.includeInBuild).toBe(true);
+                expect(mask2.measurable).toBe(false);
 
-        //         container2.mask = null;
+                container2.mask = null;
 
-        //         expect(mask1.isMask).toBe(false);
-        //         expect(mask1.renderable).toBe(true);
-        //         expect(mask2.isMask).toBe(false);
-        //         expect(mask2.renderable).toBe(true);
+                expect(mask1.includeInBuild).toBe(false);
+                expect(mask1.measurable).toBe(true);
+                expect(mask2.includeInBuild).toBe(false);
+                expect(mask2.measurable).toBe(true);
 
-        //         container1.mask = mask1;
+                container1.mask = mask1;
 
-        //         expect(mask1.isMask).toBe(true);
-        //         expect(mask1.renderable).toBe(false);
+                expect(mask1.includeInBuild).toBe(true);
+                expect(mask1.measurable).toBe(false);
 
-        //         container1.destroy();
+                container1.destroy();
 
-        //         expect(mask1.isMask).toBe(false);
-        //         expect(mask1.renderable).toBe(true);
-        //     }
-        // );
+                expect(mask1.includeInBuild).toBe(false);
+                expect(mask1.measurable).toBe(true);
+            }
+        );
     });
 
     describe('remove', () =>
@@ -332,28 +288,24 @@ describe('Container', () =>
         });
     });
 
-    describe('worldAlpha', () =>
+    describe('alpha', () =>
     {
-        // note: worldAlpha does not exist neither does temp parent api
-        // it.skip('should calculate the parent worldAlpha', () =>
-        // {
-        //     const parent = new Container();
+        it('should traverse alpha', () =>
+        {
+            const rootContainer = new Container({ layer: true });
+            const parent = new Container();
+            const child = new Container();
 
-        //     parent.alpha = 0.4;
-        //     const child = new Container();
+            rootContainer.addChild(parent);
+            parent.addChild(child);
 
-        //     child.alpha = 0.6;
-        //     parent.addChild(child);
+            parent.alpha = 0.5;
 
-        //     parent.enableTempParent();
-        //     parent.updateTransform();
-        //     parent.disableTempParent(null);
+            updateLayerGroupTransforms(rootContainer.layerGroup, true);
 
-        //     expect(child.worldAlpha).toBe(0.24);
+            const alpha = ((child.layerColor >> 24) & 0xFF) / 255;
 
-        //     child.getLocalBounds();
-
-        //     expect(child.worldAlpha).toBe(0.24);
-        // });
+            expect(alpha).toBeCloseTo(0.5, 2);
+        });
     });
 });
