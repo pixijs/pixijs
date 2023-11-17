@@ -21,7 +21,8 @@ export type GlobalUniformGroup = UniformGroup<{
 
 export interface GlobalUniformOptions
 {
-    projectionData?: {size: [number, number], projectionMatrix: Matrix}
+    size?: number[],
+    projectionMatrix?: Matrix,
     worldTransformMatrix?: Matrix
     worldColor?: number
     offset?: PointData
@@ -100,7 +101,8 @@ export class GlobalUniformSystem implements System
     }
 
     public bind({
-        projectionData,
+        size,
+        projectionMatrix,
         worldTransformMatrix,
         worldColor,
         offset,
@@ -116,8 +118,8 @@ export class GlobalUniformSystem implements System
         };
 
         const globalUniformData: GlobalUniformData = {
-            projectionMatrix: projectionData?.projectionMatrix || renderTarget.projectionMatrix,
-            resolution: projectionData?.size || renderTarget.size,
+            projectionMatrix: projectionMatrix || this._renderer.renderTarget.projectionMatrix,
+            resolution: size || renderTarget.size,
             worldTransformMatrix: worldTransformMatrix || currentGlobalUniformData.worldTransformMatrix,
             worldColor: worldColor || currentGlobalUniformData.worldColor,
             offset: offset || currentGlobalUniformData.offset,

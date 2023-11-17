@@ -12,7 +12,7 @@ export interface TextureLayoutOptions
     rotate?: number;
 }
 
-/** Stores the width of the non-scalable borders, for example when used with {@link PIXI.NineSlicePlane} texture. */
+/** Stores the width of the non-scalable borders, for example when used with {@link scene.NineSlicePlane} texture. */
 export interface TextureBorders
 {
     /** left border in pixels */
