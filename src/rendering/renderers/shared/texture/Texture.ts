@@ -26,12 +26,14 @@ export interface BindableTexture
     source: TextureSource;
 }
 
+export type TextureSourceLike = TextureSource | TextureSourceOptions | BufferSourceOptions | string;
+
 export class Texture extends EventEmitter<{
     update: Texture
     destroy: Texture
 }> implements BindableTexture
 {
-    public static from(id: string | TextureSource | TextureSourceOptions | BufferSourceOptions, skipCache = false): Texture
+    public static from(id: TextureSourceLike, skipCache = false): Texture
     {
         if (typeof id === 'string')
         {

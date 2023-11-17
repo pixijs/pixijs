@@ -19,16 +19,26 @@ export interface FindMixin extends Required<FindMixinConstructor>
 }
 
 export const findMixin: Partial<Container> = {
+    /**
+     * The instance label of the object.
+     * @memberof scene.Container#
+     * @member {string} label
+     */
     label: null,
 
-    /** @deprecated since 8.0.0 */
+    /**
+     * The instance name of the object.
+     * @deprecated since 8.0.0
+     * @see scene.Container#label
+     * @member {string} name
+     * @memberof scene.Container#
+     */
     get name(): string
     {
         deprecation(v8_0_0, 'Container.name property has been removed, use Container.label instead');
 
         return this.label;
     },
-    /** @deprecated since 8.0.0 */
     set name(value: string)
     {
         deprecation(v8_0_0, 'Container.name property has been removed, use Container.label instead');
@@ -38,12 +48,12 @@ export const findMixin: Partial<Container> = {
 
     /**
      * @method getChildByName
-     * @memberof Container#
      * @deprecated since 8.0.0
-     * @see Container#getChildByLabel
      * @param {string} name - Instance name.
      * @param {boolean}[deep=false] - Whether to search recursively
      * @returns {Container} The child with the specified name.
+     * @see scene.Container#getChildByLabel
+     * @memberof scene.Container#
      */
     getChildByName(name: string, deep = false): Container | null
     {
@@ -53,8 +63,7 @@ export const findMixin: Partial<Container> = {
      * Returns the first child in the container with the specified label.
      *
      * Recursive searches are done in a pre-order traversal.
-     * @method getChildByLabel
-     * @memberof Container#
+     * @memberof scene.Container#
      * @param {string|RegExp} label - Instance label.
      * @param {boolean}[deep=false] - Whether to search recursively
      * @returns {Container} The child with the specified label.
@@ -89,8 +98,7 @@ export const findMixin: Partial<Container> = {
 
     /**
      * Returns all children in the container with the specified label.
-     * @method getChildrenByLabel
-     * @memberof Container#
+     * @memberof scene.Container#
      * @param {string|RegExp} label - Instance label.
      * @param {boolean}[deep=false] - Whether to search recursively
      * @param {Container[]} [out=[]] - The array to store matching children in.

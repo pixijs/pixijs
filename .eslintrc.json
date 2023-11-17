@@ -73,6 +73,7 @@
                     "assets",
                     "app",
                     "accessibility",
+                    "scene",
                     "AddEventListenerOptions",
                     "EventListenerOptions",
                     "EventListenerOrEventListenerObject",
