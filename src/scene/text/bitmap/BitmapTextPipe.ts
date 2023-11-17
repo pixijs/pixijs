@@ -181,8 +181,6 @@ export class BitmapTextPipe implements RenderPipe<TextView>
 
     private _initGpuText(renderable: Renderable<TextView>)
     {
-        renderable.view._style.update();
-
         // TODO we could keep a bunch of contexts around and reuse one that hav the same style!
         const proxyRenderable = BigPool.get(GraphicsProxyRenderable, renderable);
 
