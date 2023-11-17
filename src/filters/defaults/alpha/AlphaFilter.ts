@@ -6,6 +6,8 @@ import vertex from '../defaultFilter.vert';
 import fragment from './alpha.frag';
 import source from './alpha.wgsl';
 
+import type { FilterOptions } from '../../Filter';
+
 /**
  * Options for AlphaFilter
  * @memberof filters
@@ -35,13 +37,14 @@ export interface AlphaFilterOptions
  */
 export class AlphaFilter extends Filter
 {
-    public static readonly DEFAULT_OPTIONS: AlphaFilterOptions = {
-        alpha: 1
+    public static readonly defaultOptions: AlphaFilterOptions & Partial<FilterOptions> = {
+        ...Filter.defaultOptions,
+        alpha: 1,
     };
 
     constructor(options?: AlphaFilterOptions)
     {
-        options = { ...AlphaFilter.DEFAULT_OPTIONS, ...options };
+        options = { ...AlphaFilter.defaultOptions, ...options };
 
         const gpuProgram = new GpuProgram({
             vertex: {

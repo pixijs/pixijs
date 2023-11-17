@@ -106,7 +106,7 @@ export class Matrix
      * @param [out=new Float32Array(9)] - If provided the array will be assigned to out
      * @returns The newly created array which contains the matrix
      */
-    public toArray(transpose: boolean, out?: Float32Array): Float32Array
+    public toArray(transpose?: boolean, out?: Float32Array): Float32Array
     {
         if (!this.array)
         {

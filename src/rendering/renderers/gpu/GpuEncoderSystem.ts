@@ -4,13 +4,13 @@ import type { Rectangle } from '../../../maths/shapes/Rectangle';
 import type { Buffer } from '../shared/buffer/Buffer';
 import type { Topology } from '../shared/geometry/const';
 import type { Geometry } from '../shared/geometry/Geometry';
-import type { RenderTarget } from '../shared/renderTarget/RenderTarget';
 import type { Shader } from '../shared/shader/Shader';
 import type { UniformGroup } from '../shared/shader/UniformGroup';
 import type { State } from '../shared/state/State';
 import type { System } from '../shared/system/System';
 import type { GPU } from './GpuDeviceSystem';
 import type { GpuRenderTarget } from './renderTarget/GpuRenderTarget';
+import type { GpuRenderTargetAdaptor } from './renderTarget/GpuRenderTargetAdaptor';
 import type { BindGroup } from './shader/BindGroup';
 import type { GpuProgram } from './shader/GpuProgram';
 import type { WebGPURenderer } from './WebGPURenderer';
@@ -21,6 +21,7 @@ export class GpuEncoderSystem implements System
     public static extension = {
         type: [ExtensionType.WebGPUSystem],
         name: 'encoder',
+        priority: 1
     } as const;
 
     public commandEncoder: GPUCommandEncoder;
@@ -42,7 +43,7 @@ export class GpuEncoderSystem implements System
         this._renderer = renderer;
     }
 
-    public start(): void
+    public renderStart(): void
     {
         this.commandFinished = new Promise((resolve) =>
         {
@@ -54,23 +55,26 @@ export class GpuEncoderSystem implements System
         this.commandEncoder = this._renderer.gpu.device.createCommandEncoder();
     }
 
-    public beginRenderPass(renderTarget: RenderTarget, gpuRenderTarget: GpuRenderTarget)
+    public beginRenderPass(gpuRenderTarget: GpuRenderTarget)
     {
-        // TODO we should not finish a render pass each time we bind
-        // for example filters - we would want to push / pop render targets
+        this.endRenderPass();
+
+        this._clearCache();
+
+        this.renderPassEncoder = this.commandEncoder.beginRenderPass(gpuRenderTarget.descriptor);
+    }
+
+    public endRenderPass()
+    {
         if (this.renderPassEncoder)
         {
             this.renderPassEncoder.end();
         }
 
-        this._clearCache();
-
-        this.renderPassEncoder = this.commandEncoder.beginRenderPass(gpuRenderTarget.descriptor);
-
-        this._setViewport(renderTarget.viewport);
+        this.renderPassEncoder = null;
     }
 
-    private _setViewport(viewport: Rectangle): void
+    public setViewport(viewport: Rectangle): void
     {
         this.renderPassEncoder.setViewport(viewport.x, viewport.y, viewport.width, viewport.height, 0, 1);
     }
@@ -222,7 +226,7 @@ export class GpuEncoderSystem implements System
     // used when we want to stop drawing and log a texture..
     public restoreRenderPass()
     {
-        const descriptor = this._renderer.renderTarget.getDescriptor(
+        const descriptor = (this._renderer.renderTarget.adaptor as GpuRenderTargetAdaptor).getDescriptor(
             this._renderer.renderTarget.renderTarget,
             false,
             [0, 0, 0, 1],
@@ -237,7 +241,7 @@ export class GpuEncoderSystem implements System
 
         this._clearCache();
 
-        const viewport = this._renderer.renderTarget.renderTarget.viewport;
+        const viewport = this._renderer.renderTarget.viewport;
 
         this.renderPassEncoder.setViewport(viewport.x, viewport.y, viewport.width, viewport.height, 0, 1);
 

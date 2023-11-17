@@ -5,8 +5,7 @@ import { TextureSource } from '../shared/texture/sources/TextureSource';
 import { Texture } from '../shared/texture/Texture';
 import { GlProgram } from './shader/GlProgram';
 
-import type { RgbaArray } from '../../../color/Color';
-import type { RenderSurface } from '../gpu/renderTarget/GpuRenderTargetSystem';
+import type { RenderOptions } from '../shared/system/AbstractRenderer';
 import type { System } from '../shared/system/System';
 import type { WebGLRenderer } from './WebGLRenderer';
 
@@ -41,12 +40,30 @@ const bigTriangleShader = new Shader({
     },
 });
 
+/** The options for the back buffer system. */
 export interface GlBackBufferOptions
 {
+    /** if true will use the back buffer where required */
     useBackBuffer?: boolean;
+    /** if true will ensure the texture is antialiased */
     antialias?: boolean;
 }
 
+/**
+ * For blend modes you need to know what pixels you are actually drawing to. For this to be possible in WebGL
+ * we need to render to a texture and then present that texture to the screen. This system manages that process.
+ *
+ * As the main scene is rendered to a texture, it means we can sample it anc copy its pixels,
+ * something not possible on the main canvas.
+ *
+ * If antialiasing is set to to true and useBackBuffer is set to true, then the back buffer will be antialiased.
+ * and the main gl context will not.
+ *
+ * You only need to activate this back buffer if you are using a blend mode that requires it.
+ *
+ * to activate is simple, you pass `useBackBuffer:true` to your render options
+ * @memberof rendering
+ */
 export class GlBackBufferSystem implements System
 {
     /** @ignore */
@@ -55,17 +72,20 @@ export class GlBackBufferSystem implements System
             ExtensionType.WebGLSystem,
         ],
         name: 'backBuffer',
+        priority: 1
     } as const;
 
+    /** default options for the back buffer system */
     public static defaultOptions: GlBackBufferOptions = {
         useBackBuffer: false,
     };
 
+    /** if true, the back buffer is used */
     public useBackBuffer = false;
 
     private _backBufferTexture: Texture;
     private readonly _renderer: WebGLRenderer;
-    private _targetTexture: Texture;
+    private _targetTexture: TextureSource;
     private _useBackBufferThisRender = false;
     private _antialias: boolean;
 
@@ -82,22 +102,25 @@ export class GlBackBufferSystem implements System
         this._antialias = antialias;
     }
 
-    protected renderStart({ target, clear, clearColor }: { target: RenderSurface, clear: boolean, clearColor: RgbaArray })
+    /**
+     * This is called before the RenderTargetSystem is started. This is where
+     * we replace the target with the back buffer if required.
+     * @param options - The options for this render.
+     */
+    protected renderStart(options: RenderOptions)
     {
-        this._useBackBufferThisRender = this.useBackBuffer && !!target;
+        const renderTarget = this._renderer.renderTarget.getRenderTarget(options.target);
 
-        if (this.useBackBuffer)
+        this._useBackBufferThisRender = this.useBackBuffer && !!renderTarget.isRoot;
+
+        if (this._useBackBufferThisRender)
         {
-            const renderTarget = this._renderer.renderTarget.getRenderTarget(target);
+            const renderTarget = this._renderer.renderTarget.getRenderTarget(options.target);
 
             this._targetTexture = renderTarget.colorTexture;
 
-            target = this._getBackBufferTexture(renderTarget.colorTexture);
+            options.target = this._getBackBufferTexture(renderTarget.colorTexture);
         }
-
-        clearColor ??= this._renderer.background.colorRgba;
-
-        this._renderer.renderTarget.start(target, clear, clearColor);
     }
 
     protected renderEnd()
@@ -125,29 +148,28 @@ export class GlBackBufferSystem implements System
         gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
 
-    private _getBackBufferTexture(targetTexture: Texture)
+    private _getBackBufferTexture(targetSourceTexture: TextureSource)
     {
-        const source = targetTexture.source;
-
         this._backBufferTexture = this._backBufferTexture || new Texture({
             source: new TextureSource({
-                width: source.width,
-                height: source.height,
-                resolution: source._resolution,
+                width: targetSourceTexture.width,
+                height: targetSourceTexture.height,
+                resolution: targetSourceTexture._resolution,
                 antialias: this._antialias,
             }),
         });
 
         // this will not resize if its the same size already! No extra check required
         this._backBufferTexture.source.resize(
-            source.width,
-            source.height,
-            source._resolution,
+            targetSourceTexture.width,
+            targetSourceTexture.height,
+            targetSourceTexture._resolution,
         );
 
         return this._backBufferTexture;
     }
 
+    /** destroys the back buffer */
     public destroy()
     {
         if (this._backBufferTexture)

@@ -7,8 +7,9 @@ import vertex from './shockwave.vert';
 import source from './shockwave.wgsl';
 
 import type { PointData } from '../../../maths/point/PointData';
-import type { RenderSurface } from '../../../rendering/renderers/gpu/renderTarget/GpuRenderTargetSystem';
+import type { RenderSurface } from '../../../rendering/renderers/shared/renderTarget/RenderTargetSystem';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
+import type { FilterOptions } from '../../Filter';
 import type { FilterSystem } from '../../FilterSystem';
 
 /**
@@ -59,7 +60,8 @@ export interface ShockwaveFilterOptions
 export class ShockwaveFilter extends Filter
 {
     /** Default shockwave filter options */
-    public static readonly DEFAULT: ShockwaveFilterOptions = {
+    public static readonly defaultOptions: ShockwaveFilterOptions & Partial<FilterOptions> = {
+        ...Filter.defaultOptions,
         /** The `x` and `y` center coordinates to change the position of the center of the circle of effect. */
         center: { x: 0, y: 0 },
         /** The speed about the shockwave ripples out. The unit is `pixel-per-second` */
@@ -89,7 +91,7 @@ export class ShockwaveFilter extends Filter
      */
     constructor(options: ShockwaveFilterOptions = {})
     {
-        options = { ...ShockwaveFilter.DEFAULT, ...options };
+        options = { ...ShockwaveFilter.defaultOptions, ...options };
 
         const gpuProgram = new GpuProgram({
             vertex: {

@@ -7,12 +7,21 @@ import { NineSliceGeometry } from './NineSliceGeometry';
 
 import type { ContainerOptions } from '../container/Container';
 
+/**
+ * Options for the {@link NineSliceSprite} constructor.
+ * @memberof scene
+ */
 export interface NineSliceSpriteOptions extends ContainerOptions<MeshView<NineSliceGeometry>>
 {
+    /** The texture to use on the NineSlicePlane. */
     texture: Texture;
+    /** Width of the left vertical bar (A) */
     leftWidth?: number;
+    /** Height of the top horizontal bar (C) */
     topHeight?: number;
+    /** Width of the right vertical bar (B) */
     rightWidth?: number;
+    /** Height of the bottom horizontal bar (D) */
     bottomHeight?: number;
 }
 
@@ -41,19 +50,26 @@ export interface NineSliceSpriteOptions extends ContainerOptions<MeshView<NineSl
  * import { NineSlicePlane, Texture } from 'pixi.js';
  *
  * const plane9 = new NineSlicePlane(Texture.from('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
+ * @memberof scene
  */
 export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
 {
+    /** The default options, used to override the initial values of any options passed in the constructor. */
     public static defaultOptions: NineSliceSpriteOptions = {
+        /** @default Texture.EMPTY */
         texture: Texture.EMPTY,
+        /** @default 10 */
         leftWidth: 10,
+        /** @default 10 */
         topHeight: 10,
+        /** @default 10 */
         rightWidth: 10,
+        /** @default 10 */
         bottomHeight: 10,
     };
 
     /**
-     * @param options - Options to use
+     * @param {scene.NineSliceSpriteOptions|Texture} options - Options to use
      * @param options.texture - The texture to use on the NineSlicePlane.
      * @param options.leftWidth - Width of the left vertical bar (A)
      * @param options.topHeight - Height of the top horizontal bar (C)
@@ -99,7 +115,7 @@ export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
         this.allowChildren = false;
     }
 
-    // /** The width of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane. */
+    /** The width of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane. */
     get width(): number
     {
         return this.view.geometry.width;
@@ -112,6 +128,7 @@ export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
         });
     }
 
+    /** The height of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane. */
     get height(): number
     {
         return this.view.geometry.height;
@@ -124,6 +141,7 @@ export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
         });
     }
 
+    /** The width of the left column (a) of the NineSlicePlane. */
     get leftWidth(): number
     {
         return this.view.geometry._leftWidth;
@@ -136,6 +154,7 @@ export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
         });
     }
 
+    /** The width of the right column (b) of the NineSlicePlane. */
     get topHeight(): number
     {
         return this.view.geometry._topHeight;
@@ -148,6 +167,7 @@ export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
         });
     }
 
+    /** The width of the right column (b) of the NineSlicePlane. */
     get rightWidth(): number
     {
         return this.view.geometry._rightWidth;
@@ -160,6 +180,7 @@ export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
         });
     }
 
+    /** The width of the right column (b) of the NineSlicePlane. */
     get bottomHeight(): number
     {
         return this.view.geometry._bottomHeight;
@@ -172,6 +193,7 @@ export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
         });
     }
 
+    /** The texture that the NineSlicePlane is using. */
     get texture(): Texture
     {
         return this.view.texture;
@@ -191,6 +213,7 @@ export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
         this.view.texture = value;
     }
 
+    /** Whether or not to round the x/y position of the nine slice. */
     get roundPixels()
     {
         return !!this.view.roundPixels;

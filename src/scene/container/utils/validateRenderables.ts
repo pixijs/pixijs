@@ -25,10 +25,5 @@ export function validateRenderables(layerGroup: LayerGroup, renderPipes: RenderP
 
     layerGroup.structureDidChange = rebuildRequired;
 
-    if (rebuildRequired)
-    {
-        layerGroup.childrenRenderablesToUpdate.index = 0;
-    }
-
     return rebuildRequired;
 }
