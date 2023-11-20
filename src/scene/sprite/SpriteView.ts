@@ -82,16 +82,11 @@ export class SpriteView implements View
     // passed local space..
     public containsPoint(point: PointData)
     {
-        const width = this._texture.frameWidth;
-        const height = this._texture.frameHeight;
-        const x1 = -width * this.anchor.x;
-        let y1 = 0;
+        const bounds = this.sourceBounds;
 
-        if (point.x >= x1 && point.x <= x1 + width)
+        if (point.x >= bounds[0] && point.x <= bounds[1])
         {
-            y1 = -height * this.anchor.y;
-
-            if (point.y >= y1 && point.y <= y1 + height)
+            if (point.y >= bounds[2] && point.y <= bounds[3])
             {
                 return true;
             }
@@ -102,20 +97,9 @@ export class SpriteView implements View
 
     public addBounds(bounds: Bounds)
     {
-        const trim = this._texture._layout.trim;
+        const _bounds = this._texture._layout.trim ? this.sourceBounds : this.bounds;
 
-        if (trim)
-        {
-            const sourceBounds = this.sourceBounds;
-
-            bounds.addFrame(sourceBounds[0], sourceBounds[2], sourceBounds[1], sourceBounds[3]);
-        }
-        else
-        {
-            const _bounds = this.bounds;
-
-            bounds.addFrame(_bounds[0], _bounds[2], _bounds[1], _bounds[3]);
-        }
+        bounds.addFrame(_bounds[0], _bounds[2], _bounds[1], _bounds[3]);
     }
 
     /**
@@ -150,11 +134,11 @@ export class SpriteView implements View
         const width = textureSource.width * orig.width;
         const height = textureSource.height * orig.height;
 
-        sourceBounds[1] = -anchor._x * width;
-        sourceBounds[0] = sourceBounds[1] + width;
+        sourceBounds[0] = -anchor._x * width;
+        sourceBounds[1] = sourceBounds[1] + width;
 
-        sourceBounds[3] = -anchor._y * height;
-        sourceBounds[2] = sourceBounds[3] + height;
+        sourceBounds[2] = -anchor._y * height;
+        sourceBounds[3] = sourceBounds[3] + height;
     }
 
     /**

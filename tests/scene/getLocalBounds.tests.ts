@@ -1,8 +1,12 @@
+import { Rectangle } from '../../src/maths/shapes/Rectangle';
 import { StencilMask } from '../../src/rendering/mask/stencil/StencilMask';
 import { addMaskLocalBounds } from '../../src/rendering/mask/utils/addMaskLocalBounds';
+import { TextureSource } from '../../src/rendering/renderers/shared/texture/sources/TextureSource';
+import { Texture } from '../../src/rendering/renderers/shared/texture/Texture';
 import { Bounds } from '../../src/scene/container/bounds/Bounds';
 import { getLocalBounds } from '../../src/scene/container/bounds/getLocalBounds';
 import { Container } from '../../src/scene/container/Container';
+import { Sprite } from '../../src/scene/sprite/Sprite';
 import { DummyEffect } from './DummyEffect';
 import { DummyView } from './DummyView';
 
@@ -243,5 +247,27 @@ describe('getLocalBounds', () =>
         getLocalBounds(container, bounds);
 
         expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 150, maxY: 50 });
+    });
+
+    it('should measure trimmed sprite correctly', async () =>
+    {
+        const textureSource = new TextureSource({
+            width: 100,
+            height: 100,
+            resolution: 1,
+        });
+
+        const texture = new Texture({
+            source: textureSource,
+            layout: {
+                trim: new Rectangle(0.1, 0.1, 0.8, 0.8),
+                frame: new Rectangle(0, 0, 1, 1),
+            }
+        });
+
+        const sprite = new Sprite({ texture });
+
+        expect(sprite.width).toBe(100);
+        expect(sprite.height).toBe(100);
     });
 });
