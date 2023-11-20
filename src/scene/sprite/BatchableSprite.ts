@@ -52,7 +52,7 @@ export class BatchableSprite implements BatchableObject
 
         // _ _ _ _
         // a b g r
-        const argb = sprite.layerColor;
+        const argb = sprite.layerColorAlpha;
 
         const textureIdAndRound = (textureId << 16) | (this.roundPixels & 0xFFFF);
 

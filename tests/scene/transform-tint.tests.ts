@@ -37,9 +37,7 @@ describe('Transform Tints', () =>
 
         root.alpha = 0.5;
 
-        const roundedAlpha = ((0.5 * 255) | 0) / 255;
-
-        expect((root.alpha)).toEqual(roundedAlpha);
+        expect((root.alpha)).toEqual(0.5);
 
         root.alpha = 0.5;
 
@@ -71,11 +69,8 @@ describe('Transform Tints', () =>
 
         expect((root.tint)).toEqual(0xFF00FF);
 
-        const roundedAlpha = ((0.5 * 255) | 0) / 255;
-
-        expect((root.alpha)).toEqual(roundedAlpha);
-
-        check32BitColorMatches(root.localColor, [127, 255, 0, 255]);
+        expect((root.alpha)).toEqual(0.5);
+        expect((root.localColor)).toEqual(0xFF00FF);
 
         expect(root.onUpdate).toHaveBeenCalledTimes(2);
     });
@@ -97,7 +92,7 @@ describe('Transform Tints', () =>
 
         updateLayerGroupTransforms(root.layerGroup, true);
 
-        check32BitColorMatches(child.layerColor, [63, 255, 255, 255]);
+        check32BitColorMatches(child.layerColorAlpha, [63, 255, 255, 255]);
     });
 
     it('should update global color (parent set only) correctly', async () =>
@@ -115,7 +110,7 @@ describe('Transform Tints', () =>
 
         updateLayerGroupTransforms(root.layerGroup, true);
 
-        check32BitColorMatches(child.layerColor, [255, 0, 0, 255]);
+        check32BitColorMatches(child.layerColorAlpha, [255, 0, 0, 255]);
     });
 
     it('should update global color (child set only) correctly', async () =>
@@ -133,7 +128,7 @@ describe('Transform Tints', () =>
 
         updateLayerGroupTransforms(root.layerGroup, true);
 
-        check32BitColorMatches(child.layerColor, [255, 0, 0, 255]);
+        check32BitColorMatches(child.layerColorAlpha, [255, 0, 0, 255]);
     });
 
     it('should update global color (parent and child set) correctly', async () =>
@@ -156,7 +151,7 @@ describe('Transform Tints', () =>
 
         updateLayerGroupTransforms(root.layerGroup, true);
         // ABGR
-        check32BitColorMatches(child.layerColor, [255, 0, 127, 128]);
+        check32BitColorMatches(child.layerColorAlpha, [255, 0, 127, 128]);
     });
 
     it('should update  alpha and color with nested layer group correctly', async () =>
@@ -189,7 +184,7 @@ describe('Transform Tints', () =>
 
         updateLayerGroupTransforms(root.layerGroup, true);
 
-        check32BitColorMatches(child.layerColor, [255, 0, 255, 0]);
+        check32BitColorMatches(child.layerColorAlpha, [255, 0, 255, 0]);
     });
 
     it('should update cap alpha to 1', async () =>
@@ -226,8 +221,8 @@ describe('Transform Tints', () =>
 
         updateLayerGroupTransforms(root.layerGroup, true);
 
-        check32BitColorMatches(container2.layerGroup.worldColor, [127, 255, 255, 255]);
+        check32BitColorMatches(container2.layerGroup.worldColorAlpha, [127, 255, 255, 255]);
 
-        check32BitColorMatches(child.layerColor, [255, 255, 255, 255]);
+        check32BitColorMatches(child.layerColorAlpha, [255, 255, 255, 255]);
     });
 });

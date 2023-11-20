@@ -2,16 +2,8 @@ import { mixHexColors } from './mixHexColors';
 
 const WHITE_WHITE = 0xFFFFFF + (0xFFFFFF << 32);
 
-export function mixColors(localColor: number, parentColor: number)
+export function mixColors(localBGRColor: number, parentBGRColor: number)
 {
-    const localAlpha = ((localColor >> 24) & 0xFF) / 255;
-    const parentAlpha = ((parentColor >> 24) & 0xFF) / 255;
-
-    const globalAlpha = ((localAlpha * parentAlpha) * 255);
-
-    const localBGRColor = localColor & 0x00FFFFFF;
-    const parentBGRColor = parentColor & 0x00FFFFFF;
-
     let sharedBGRColor = 0xFFFFFF;
 
     if (localBGRColor + (parentBGRColor << 32) !== WHITE_WHITE)
@@ -32,7 +24,7 @@ export function mixColors(localColor: number, parentColor: number)
         }
     }
 
-    return sharedBGRColor + (globalAlpha << 24);
+    return sharedBGRColor;
 }
 
 export function mixStandardAnd32BitColors(localColorRGB: number, localAlpha: number, parentColor: number)

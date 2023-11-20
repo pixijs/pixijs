@@ -447,12 +447,16 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      * @internal
      * @ignore
      */
-    public localColor = 0xFFFFFFFF;
+    public localColor = 0xFFFFFF;
+    public localAlpha = 1;
+
     /**
      * @internal
      * @ignore
      */
-    public layerColor = 0xFFFFFFFF;
+    public layerAlpha = 1; // A
+    public layerColor = 0xFFFFFF; // BGR
+    public layerColorAlpha = 0xFFFFFFFF; // BGRA
 
     /// BLEND related props //////////////
 
@@ -918,11 +922,9 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
     set alpha(value: number)
     {
-        value = (value * 255) | 0;
+        if (value === this.localAlpha) return;
 
-        if (value === ((this.localColor >> 24) & 0xFF)) return;
-
-        this.localColor = (this.localColor & 0x00FFFFFF) | (value << 24);
+        this.localAlpha = value;
 
         this._updateFlags |= UPDATE_COLOR;
 
@@ -932,7 +934,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     /** The opacity of the object. */
     get alpha(): number
     {
-        return ((this.localColor >> 24) & 0xFF) / 255;
+        return this.localAlpha;
     }
 
     set tint(value: ColorSource)
@@ -940,9 +942,9 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         const tempColor = Color.shared.setValue(value);
         const bgr = tempColor.toBgrNumber();
 
-        if (bgr === (this.localColor & 0x00FFFFFF)) return;
+        if (bgr === this.localColor) return;
 
-        this.localColor = (this.localColor & 0xFF000000) | (bgr & 0xFFFFFF);
+        this.localColor = bgr;
 
         this._updateFlags |= UPDATE_COLOR;
 
@@ -957,7 +959,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      */
     get tint(): number
     {
-        const bgr = this.localColor & 0x00FFFFFF;
+        const bgr = this.localColor;
         // convert bgr to rgb..
 
         return ((bgr & 0xFF) << 16) + (bgr & 0xFF00) + ((bgr >> 16) & 0xFF);
@@ -1042,9 +1044,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     /** Whether or not the object should be rendered. */
     get isRenderable(): boolean
     {
-        const worldAlpha = ((this.layerColor >> 24) & 0xFF);
-
-        return (this.localVisibleRenderable === 0b11 && worldAlpha > 0);
+        return (this.localVisibleRenderable === 0b11 && this.layerAlpha > 0);
     }
 
     /**
@@ -1075,6 +1075,11 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         this._scale = null;
         this._pivot = null;
         this._skew = null;
+
+        if (this.isLayerRoot)
+        {
+            this.layerGroup.proxyRenderable = null;
+        }
 
         this.emit('destroyed');
 
