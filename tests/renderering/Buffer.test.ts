@@ -59,6 +59,19 @@ describe('Buffer', () =>
         expect((renderer).buffer['_gpuBuffers'][buffer.uid]).toBeUndefined();
     });
 
+    it('should set static correctly', () =>
+    {
+        const buffer = new Buffer({
+            data: new Float32Array([1, 2, 3]),
+            usage: 1,
+        });
+
+        buffer.static = false;
+
+        expect(buffer.static).toBe(false);
+        expect(buffer.descriptor.usage).toBe(1);
+    });
+
     it('should set data correctly with setData', async () =>
     {
         const buffer = new Buffer({
