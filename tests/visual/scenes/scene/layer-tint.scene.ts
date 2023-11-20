@@ -1,15 +1,13 @@
 import { Container } from '../../../../src/scene/container/Container';
 import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
 import { GraphicsContext } from '../../../../src/scene/graphics/shared/GraphicsContext';
-import { Text } from '../../../../src/scene/text/Text';
 
-import type { Renderer } from '../../../../src/rendering/renderers/types';
 import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should tint layers correctly',
     only: true,
-    create: async (scene: Container, renderer: Renderer) =>
+    create: async (scene: Container) =>
     {
         // layer green container..
         const squareContext = new GraphicsContext()
