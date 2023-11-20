@@ -444,7 +444,7 @@ export class ShapePath
                 let lx = lastShape.shape.x;
                 let ly = lastShape.shape.y;
 
-                if (lastShape.transform.isIdentity())
+                if (!lastShape.transform.isIdentity())
                 {
                     const t = lastShape.transform;
 
@@ -454,7 +454,7 @@ export class ShapePath
                     ly = (t.b * tempX) + (t.d * ly) + t.ty;
                 }
 
-                this._currentPoly.points.push(lx, lx);
+                this._currentPoly.points.push(lx, ly);
             }
             else
             {

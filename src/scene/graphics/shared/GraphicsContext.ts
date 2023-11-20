@@ -299,7 +299,7 @@ export class GraphicsContext extends EventEmitter<{
             }
         }
 
-        this._activePath.instructions.length = 0;
+        this._initNextPathLocation();
 
         return this;
     }
@@ -438,9 +438,21 @@ export class GraphicsContext extends EventEmitter<{
 
         const t = this._transform;
 
+        const instructions = this._activePath.instructions;
+
+        const transformedX = (t.a * x) + (t.c * y) + t.tx;
+        const transformedY = (t.b * x) + (t.d * y) + t.ty;
+
+        if (instructions.length === 1 && instructions[0].action === 'moveTo')
+        {
+            instructions[0].data[0] = transformedX;
+            instructions[0].data[1] = transformedY;
+
+            return this;
+        }
         this._activePath.moveTo(
-            (t.a * x) + (t.c * y) + t.tx,
-            (t.b * x) + (t.d * y) + t.ty
+            transformedX,
+            transformedY
         );
 
         return this;
