@@ -456,7 +456,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      */
     public layerAlpha = 1; // A
     public layerColor = 0xFFFFFF; // BGR
-    public layerColorAlpha = 0xFFFFFFFF; // BGRA
+    public layerColorAlpha = 0xFFFFFFFF; // ABGR
 
     /// BLEND related props //////////////
 
