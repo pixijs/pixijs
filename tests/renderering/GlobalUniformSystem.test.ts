@@ -213,10 +213,10 @@ describe('GlobalUniformSystem', () =>
 
         const bindGroup3 = globalUniformSystem.bindGroup;
 
-        expect((bindGroup.resources[0] as UniformGroup).uniforms.worldAlpha).toEqual(1);
+        expect((bindGroup.resources[0] as UniformGroup).uniforms.worldColorAlpha).toEqual(new Float32Array([1, 1, 1, 1]));
 
-        expect((bindGroup2.resources[0]as UniformGroup).uniforms.worldAlpha).toEqual(0);
+        expect((bindGroup2.resources[0]as UniformGroup).uniforms.worldColorAlpha).toEqual(new Float32Array([1, 1, 1, 0]));
 
-        expect((bindGroup3.resources[0]as UniformGroup).uniforms.worldAlpha).toEqual(1);
+        expect((bindGroup3.resources[0]as UniformGroup).uniforms.worldColorAlpha).toEqual(new Float32Array([1, 1, 1, 1]));
     });
 });
