@@ -132,6 +132,7 @@ export function lineIntersection(aStart: PointData, aEnd: PointData, bStart: Poi
  * @param {PointData} outPoint - A Point-like object in which to store the value,
  * optional (otherwise will create a new Point).
  * @returns {PointData} The point where the lines intersect or a `NaN` Point.
+ * @memberof maths
  */
 export function lineIntersection
 <T extends PointData>(aStart: PointData, aEnd: PointData, bStart: PointData, bEnd: PointData, outPoint: T): T;
