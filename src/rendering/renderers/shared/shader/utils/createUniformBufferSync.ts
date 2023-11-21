@@ -1,4 +1,5 @@
 /* eslint-disable quote-props */
+import { warn } from '../../../../../utils/logging/warn';
 import { WGSL_TO_STD40_SIZE } from './createUBOElements';
 import { UBO_TO_SINGLE_SETTERS, type UniformsSyncCallback } from './createUniformBufferSyncTypes';
 import { uniformBufferParsers } from './uniformBufferParsers';
@@ -28,12 +29,6 @@ export function generateUniformBufferSync(
 
         let parsed = false;
         let offset = 0;
-
-        {
-            const a = 123;
-
-            String(a);
-        }
 
         for (let j = 0; j < uniformBufferParsers.length; j++)
         {
@@ -69,7 +64,7 @@ export function generateUniformBufferSync(
                     offset += ${offset - prev};
 
                     let arrayOffset = offset;
-                    
+
                     t = 0;
 
                     for(var i=0; i < ${uboElement.data.size * rowSize}; i++)
@@ -101,8 +96,7 @@ export function generateUniformBufferSync(
 
     const fragmentSrc = funcFragments.join('\n');
 
-    // console.log('--------------------------');
-    // console.log(fragmentSrc);
+    warn(fragmentSrc);
 
     // eslint-disable-next-line no-new-func
     return new Function(
