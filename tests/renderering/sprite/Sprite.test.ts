@@ -211,7 +211,7 @@ describe('Sprite', () =>
             expect(sprite.view.containsPoint(point)).toBe(false);
         });
 
-        it.only('should return true when point inside a trimmed sprite', () =>
+        it('should return true when point inside a trimmed sprite', () =>
         {
             const textureSource = new TextureSource({
                 width: 100,
