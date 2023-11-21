@@ -1,6 +1,7 @@
 import { Rectangle } from '../../../src/maths/shapes/Rectangle';
 import { ExtractSystem } from '../../../src/rendering/renderers/shared/extract/ExtractSystem';
 import { RenderTexture } from '../../../src/rendering/renderers/shared/texture/RenderTexture';
+import { ImageSource } from '../../../src/rendering/renderers/shared/texture/sources/ImageSource';
 import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
 import { Container } from '../../../src/scene/container/Container';
 import { Graphics } from '../../../src/scene/graphics/shared/Graphics';
@@ -599,4 +600,20 @@ describe('GenerateTexture', () =>
     //     renderer.destroy();
     //     renderTexture.destroy();
     // });
+
+    it('should convert image element to canvas resource and warn user', async () =>
+    {
+        const spy = jest.spyOn(console, 'warn');
+        const renderer = (await getRenderer()) as WebGLRenderer;
+        const sprite = new Sprite(Texture.WHITE);
+        const image = await renderer.extract.image(sprite);
+        const imageSource = new ImageSource({ resource: image });
+
+        expect(imageSource.resource).toBeInstanceOf(HTMLCanvasElement);
+        expect(spy)
+            .toHaveBeenCalledWith(
+                'PixiJS Warning: ',
+                'ImageSource: Image element passed, converting to canvas. Use CanvasSource instead.'
+            );
+    });
 });
