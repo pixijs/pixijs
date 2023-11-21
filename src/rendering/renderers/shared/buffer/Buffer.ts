@@ -1,8 +1,8 @@
 import EventEmitter from 'eventemitter3';
 import { uid } from '../../../../utils/data/uid';
+import { BufferUsage } from './const';
 
 import type { BindResource } from '../../gpu/shader/BindResource';
-import type { BufferUsage } from './const';
 
 /** All the various typed arrays that exist in js */
 // eslint-disable-next-line max-len
@@ -195,6 +195,23 @@ export class Buffer extends EventEmitter<{
     set data(value: TypedArray)
     {
         this.setDataWithSize(value, value.length, true);
+    }
+
+    get static()
+    {
+        return !!(this.descriptor.usage & BufferUsage.STATIC);
+    }
+
+    set static(value: boolean)
+    {
+        if (value)
+        {
+            this.descriptor.usage |= BufferUsage.STATIC;
+        }
+        else
+        {
+            this.descriptor.usage &= ~BufferUsage.STATIC;
+        }
     }
 
     /**

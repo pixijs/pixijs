@@ -1,6 +1,9 @@
 import type { PointData } from './PointData';
 import type { PointLike } from './PointLike';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface ObservablePoint extends PixiMixins.ObservablePoint { }
+
 /**
  * Observer used to listen for observable point changes.
  * @memberof maths

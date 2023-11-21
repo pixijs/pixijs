@@ -19,8 +19,8 @@ export const gpuUploadBufferImageResource = {
             resource,
             {
                 offset: 0,
-                rowsPerImage: source.pixelWidth,
-                bytesPerRow: source.pixelWidth * bytesPerPixel,
+                rowsPerImage: source.pixelHeight,
+                bytesPerRow: source.pixelHeight * bytesPerPixel,
             },
             {
                 width: source.pixelWidth,

@@ -1,15 +1,21 @@
 import { WebGLRenderer } from '../../src/rendering/renderers/gl/WebGLRenderer';
 
-import type { Renderer, RendererOptions } from '../../src/rendering/renderers/types';
+import type { WebGLOptions } from '../../src/rendering/renderers/gl/WebGLRenderer';
+import type { Renderer } from '../../src/rendering/renderers/types';
 
-export async function getRenderer(options: Partial<RendererOptions> = {}): Promise<Renderer>
+export async function getRenderer(options: Partial<WebGLOptions> = {}): Promise<Renderer>
 {
     const renderer = new WebGLRenderer();
 
+    const defaultOptions: Partial<WebGLOptions> = {
+        width: 100,
+        height: 100,
+
+    };
+
     await renderer.init({
+        ...defaultOptions,
         ...options,
-        width: options.width ?? 2,
-        height: options.height ?? 2,
     });
 
     return renderer;

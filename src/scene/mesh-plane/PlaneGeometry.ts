@@ -3,14 +3,26 @@ import { MeshGeometry } from '../mesh/shared/MeshGeometry';
 
 import type { MeshGeometryOptions } from '../mesh/shared/MeshGeometry';
 
+/**
+ * Options for the {@link PlaneGeometry} constructor.
+ * @memberof scene
+ */
 export interface PlaneGeometryOptions
 {
+    /** Width of plane */
     width?: number;
+    /** Height of plane */
     height?: number;
+    /** Number of vertices on x-axis */
     verticesX?: number;
+    /** Number of vertices on y-axis */
     verticesY?: number;
 }
 
+/**
+ * The PlaneGeometry allows you to draw a 2d plane
+ * @memberof scene
+ */
 export class PlaneGeometry extends MeshGeometry
 {
     public static defaultOptions: PlaneGeometryOptions & MeshGeometryOptions = {
@@ -20,9 +32,13 @@ export class PlaneGeometry extends MeshGeometry
         verticesY: 10,
     };
 
+    /** The number of vertices on x-axis */
     public verticesX: number;
+    /** The number of vertices on y-axis */
     public verticesY: number;
+    /** The width of plane */
     public width: number;
+    /** The height of plane */
     public height: number;
 
     /**
@@ -59,7 +75,7 @@ export class PlaneGeometry extends MeshGeometry
 
     /**
      * Refreshes plane coordinates
-     * @param options
+     * @param options - Options to be applied to plane geometry
      */
     public build(options: PlaneGeometryOptions): void
     {

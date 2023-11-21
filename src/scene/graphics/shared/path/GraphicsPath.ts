@@ -6,6 +6,7 @@ import { ShapePath } from './ShapePath';
 
 import type { Matrix } from '../../../../maths/matrix/Matrix';
 import type { Bounds } from '../../../container/bounds/Bounds';
+import type { RoundedPoint } from './roundShape';
 
 export interface PathInstruction
 {
@@ -13,7 +14,8 @@ export interface PathInstruction
     'bezierCurveTo' | 'arc' | 'closePath' |
     'addPath' | 'arcTo' | 'ellipse' |
     'rect' | 'roundRect' | 'arcToSvg' |
-    'poly' | 'circle';
+    'poly' | 'circle' |
+    'regularPoly' | 'roundPoly' | 'roundShape' | 'filletRect' | 'chamferRect'
     data: any[];
 }
 
@@ -110,7 +112,7 @@ export class GraphicsPath
     {
         const last = this.instructions[this.instructions.length - 1];
 
-        const lastPoint = this._getLastPoint(Point.shared);
+        const lastPoint = this.getLastPoint(Point.shared);
 
         let cp1x = 0;
         let cp1y = 0;
@@ -193,7 +195,7 @@ export class GraphicsPath
         // check if we have a previous quadraticCurveTo
         const last = this.instructions[this.instructions.length - 1];
 
-        const lastPoint = this._getLastPoint(Point.shared);
+        const lastPoint = this.getLastPoint(Point.shared);
 
         let cpx1 = 0;
         let cpy1 = 0;
@@ -240,7 +242,7 @@ export class GraphicsPath
         return this;
     }
 
-    public roundRect(x: number, y: number, w: number, h: number, radii?: number, transform?: Matrix): this;
+    public roundRect(x: number, y: number, w: number, h: number, radius?: number, transform?: Matrix): this;
     public roundRect(...args: [number, number, number, number, number, Matrix?]): this
     {
         this.instructions.push({ action: 'roundRect', data: args });
@@ -260,8 +262,54 @@ export class GraphicsPath
         return this;
     }
 
+    public regularPoly(x: number, y: number, radius: number, sides: number, rotation?: number, transform?: Matrix): this;
+    public regularPoly(...args: [number, number, number, number, number]): this
+    {
+        this.instructions.push({ action: 'regularPoly', data: args });
+
+        this._dirty = true;
+
+        return this;
+    }
+    public roundPoly(x: number, y: number, radius: number, sides: number, corner: number, rotation?: number): this;
+    public roundPoly(...args: [number, number, number, number, number, number]): this
+    {
+        this.instructions.push({ action: 'roundPoly', data: args });
+
+        this._dirty = true;
+
+        return this;
+    }
+    public roundShape(points: RoundedPoint[], radius: number, useQuadratic?: boolean): this;
+    public roundShape(...args: [RoundedPoint[], number, boolean]): this
+    {
+        this.instructions.push({ action: 'roundShape', data: args });
+
+        this._dirty = true;
+
+        return this;
+    }
+    public filletRect(x: number, y: number, width: number, height: number, fillet: number): this;
+    public filletRect(...args: [number, number, number, number, number]): this
+    {
+        this.instructions.push({ action: 'filletRect', data: args });
+
+        this._dirty = true;
+
+        return this;
+    }
+    public chamferRect(x: number, y: number, width: number, height: number, chamfer: number, transform?: Matrix): this;
+    public chamferRect(...args: [number, number, number, number, number]): this
+    {
+        this.instructions.push({ action: 'chamferRect', data: args });
+
+        this._dirty = true;
+
+        return this;
+    }
+
     // eslint-disable-next-line max-len
-    public star(x: number, y: number, points: number, radius: number, innerRadius?: number, rotation = 0, transform?: Matrix): this
+    public star(x: number, y: number, points: number, radius: number, innerRadius?: number, rotation?: number, transform?: Matrix): this
     {
         innerRadius = innerRadius || radius / 2;
 
@@ -437,7 +485,7 @@ export class GraphicsPath
         return this.shapePath.bounds;
     }
 
-    private _getLastPoint(out: Point): Point
+    public getLastPoint(out: Point): Point
     {
         let index = this.instructions.length - 1;
 
@@ -492,8 +540,7 @@ export class GraphicsPath
                 break;
             case 'addPath':
                 // TODO prolly should transform the last point of the path
-                out.x = lastInstruction.data[0].lastX;
-                out.y = lastInstruction.data[2].lastY;
+                lastInstruction.data[0].getLastPoint(out);
                 break;
             case 'rect':
                 // TODO transform...
@@ -515,6 +562,8 @@ export class GraphicsPath
                     out.y = y;
                 }
 
+                break;
+            case 'poly':
                 break;
             default:
                 // #if _DEBUG
