@@ -116,6 +116,7 @@ function genericLineIntersection<T extends PointData>(
  * @param bStart - First point of the second line.
  * @param bEnd - Second point of the second line.
  * @returns {PointData} The point where the lines intersect.
+ * @memberof maths
  */
 export function lineIntersection(aStart: PointData, aEnd: PointData, bStart: PointData, bEnd: PointData): Point;
 /**
