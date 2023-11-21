@@ -1,5 +1,5 @@
 import { Matrix } from '../../maths/matrix/Matrix';
-import { PlaneGeometry } from './PlaneGeometry';
+import { PlaneGeometry } from '../mesh-plane/PlaneGeometry';
 
 export interface NineSliceGeometryOptions
 {

@@ -57,7 +57,7 @@ export class Mesh<
 
             if (args[3])
             {
-                deprecation(v8_0_0, 'Mesh: topology argument has been removed, use geometry.topology instead');
+                deprecation(v8_0_0, 'Mesh: drawMode argument has been removed, use geometry.topology instead');
                 options.geometry.topology = args[3];
             }
         }
