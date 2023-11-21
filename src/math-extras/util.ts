@@ -169,6 +169,7 @@ export function segmentIntersection(aStart: PointData, aEnd: PointData, bStart: 
  * @param {PointData} outPoint - A Point-like object in which to store the value,
  * optional (otherwise will create a new Point).
  * @returns {PointData} The point where the segments intersect or a `NaN` Point.
+ * @memberof maths
  */
 export function segmentIntersection
 <T extends PointData>(aStart: PointData, aEnd: PointData, bStart: PointData, bEnd: PointData, outPoint: T): T;
