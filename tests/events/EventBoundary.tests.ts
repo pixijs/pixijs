@@ -205,36 +205,44 @@ describe('EventBoundary', () =>
         expect(boundary.hitTest(75, 50)).toEqual(null);
     });
 
-    it.skip('should hit-test correctly when using multiple interactive types', () =>
+    it('should hit-test correctly when using multiple interactive types', () =>
     {
         const stage = new Container();
         const boundary = new EventBoundary(stage);
         const container = stage.addChild(id(new Container(), 'container'));
         const target = container.addChild(id(graphicsWithRect(0, 0, 100, 100), 'target'));
-        const autoBlocker = container.addChild(id(graphicsWithRect(25, 0, 25, 100), 'autoBlocker'));
-        const activeBlocker = container.addChild(id(graphicsWithRect(50, 0, 25, 100), 'activeBlocker'));
-        const noneBlocker = container.addChild(id(graphicsWithRect(75, 0, 25, 100), 'noneBlocker'));
+        const autoBlocker = container.addChild(id(graphicsWithRect(0, 0, 25, 100), 'autoBlocker'));
+        const activeBlocker = container.addChild(id(graphicsWithRect(75, 0, 25, 100), 'activeBlocker'));
+        const noneBlocker = container.addChild(id(graphicsWithRect(25, 0, 50, 100), 'noneBlocker'));
 
         container.eventMode = 'passive';
+        container.label = 'container';
         // this should be hit because it is interactive and parent is passive
         target.interactive = true;
+        target.label = 'target';
         // this should block the target because it is interactive and parent is passive
         activeBlocker.interactive = true;
+        activeBlocker.label = 'activeBlocker';
         // this should be ignored because it is not interactive and parent is passive
         autoBlocker.eventMode = 'auto';
+        autoBlocker.label = 'autoBlocker';
         // this should be ignored because it is using none
         noneBlocker.eventMode = 'none';
+        noneBlocker.label = 'noneBlocker';
 
         let hitTest = boundary.hitTest(12, 50);
 
+        expect(hitTest.label).toEqual('target');
         expect(hitTest).toEqual(target); // hitTest = "target"
 
         hitTest = boundary.hitTest(50, 50); // hitTest = "activeBlocker"
 
+        expect(hitTest.label).toEqual('target');
         expect(hitTest).toEqual(target);
 
         hitTest = boundary.hitTest(87, 50); // hitTest = "target"
 
+        expect(hitTest.label).toEqual('activeBlocker');
         expect(hitTest).toEqual(activeBlocker);
     });
 

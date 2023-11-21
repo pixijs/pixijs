@@ -774,7 +774,7 @@ describe('EventSystem', () =>
         expect(graphics.eventMode).toEqual('dynamic');
     });
 
-    it('should use auto for the default interaction when undefined', async () =>
+    it('should use passive for the default interaction when undefined', async () =>
     {
         const renderer = await createRenderer(undefined, undefined, {
             width: 100,
@@ -782,12 +782,12 @@ describe('EventSystem', () =>
         });
 
         expect(renderer['_initOptions'].eventMode).toBeUndefined();
-        expect(EventSystem.defaultEventMode).toEqual('auto');
+        expect(EventSystem.defaultEventMode).toEqual('passive');
 
         const graphics = new Graphics();
 
         expect(graphics.interactive).toEqual(false);
-        expect(graphics.eventMode).toEqual('auto');
+        expect(graphics.eventMode).toEqual('passive');
     });
 
     it('should provide the correct global pointer event', async () =>
