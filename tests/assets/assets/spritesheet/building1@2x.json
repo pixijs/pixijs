@@ -53,7 +53,7 @@
 	"image": "building1@2x.png",
 	"format": "RGBA8888",
 	"size": {"w":249,"h":231},
-	"scale": "1",
+	"scale": "2",
 	"smartupdate": "$TexturePacker:SmartUpdate:1cb0f14cbdd5e7bcecd332ecd0eaa9f7:8acde9d234ecca966a410602c71bffad:6046b8eb706ddefaa771c33ceb7cb6d5$"
 }
 }

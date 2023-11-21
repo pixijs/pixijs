@@ -115,23 +115,8 @@ describe('Spritesheet', () =>
         };
     });
 
-    // duplicated test ^
-    // it.skip('should create instance with BaseTexture source scale', (done) =>
-    // {
-    //     // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
-    //     const data = require(path.resolve(assets, 'building1.json'));
-    //     const baseTexture = BaseTexture.from(data.meta.image);
-    //     const spritesheet = new Spritesheet(baseTexture, data);
-
-    //     expect(data).toBeObject();
-    //     expect(data.meta.image).toEqual('building1.png');
-    //     expect(spritesheet.resolution).toEqual(0.5);
-
-    //     validate(spritesheet, done);
-    // });
-
     // resolution is not being parsed, remains 1
-    it.skip('should create instance with filename resolution', (done) =>
+    it('should create instance with filename resolution', (done) =>
     {
         const uri = path.resolve(assets, 'building1@2x.json');
         // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
