@@ -2,7 +2,7 @@ import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { emptyViewObserver } from '../../rendering/renderers/shared/view/View';
 import { uid } from '../../utils/data/uid';
-import { updateQuadBounds } from '../../utils/updateQuadBounds';
+import { updateQuadBounds } from '../../utils/data/updateQuadBounds';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { View, ViewObserver } from '../../rendering/renderers/shared/view/View';
@@ -87,11 +87,11 @@ export class SpriteView implements View
         const x1 = -width * this.anchor.x;
         let y1 = 0;
 
-        if (point.x >= x1 && point.x < x1 + width)
+        if (point.x >= x1 && point.x <= x1 + width)
         {
             y1 = -height * this.anchor.y;
 
-            if (point.y >= y1 && point.y < y1 + height)
+            if (point.y >= y1 && point.y <= y1 + height)
             {
                 return true;
             }

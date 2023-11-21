@@ -1,7 +1,7 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
 import { RendererType } from '../../../rendering/renderers/types';
-import { isSafari } from '../../../utils/isSafari';
+import { isSafari } from '../../../utils/browser/isSafari';
 import { warn } from '../../../utils/logging/warn';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { extractFontFamilies } from './utils/extractFontFamilies';

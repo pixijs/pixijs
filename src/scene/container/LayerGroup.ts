@@ -9,7 +9,7 @@ import type { Container } from './Container';
 
 export class LayerGroup implements Instruction
 {
-    public type = 'layer';
+    public renderPipeId = 'layer';
     public root: Container = null;
 
     public canBundle = false;

@@ -1,23 +1,20 @@
-import { Cache } from '../../assets/cache/Cache';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { emptyViewObserver } from '../../rendering/renderers/shared/view/View';
 import { uid } from '../../utils/data/uid';
-import { BitmapFont } from './bitmap/BitmapFont';
 import { BitmapFontManager } from './bitmap/BitmapFontManager';
-import { DynamicBitmapFont } from './bitmap/DynamicBitmapFont';
 import { CanvasTextMetrics } from './canvas/CanvasTextMetrics';
-import { HTMLTextStyle } from './html/HtmlTextStyle';
 import { measureHtmlText } from './html/utils/measureHtmlText';
+import { detectRenderType } from './utils/detectRenderType';
 import { ensureTextStyle } from './utils/ensureTextStyle';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { View, ViewObserver } from '../../rendering/renderers/shared/view/View';
 import type { Bounds } from '../container/bounds/Bounds';
 import type { TextureDestroyOptions, TypeOrBool } from '../container/destroyTypes';
-import type { HTMLTextStyleOptions } from './html/HtmlTextStyle';
+import type { HTMLTextStyle, HTMLTextStyleOptions } from './html/HtmlTextStyle';
 import type { TextStyle, TextStyleOptions } from './TextStyle';
 
-export type TextString = string | number | {toString: () => string};
+export type TextString = string | number | { toString: () => string };
 export type AnyTextStyle = TextStyle | HTMLTextStyle;
 export type AnyTextStyleOptions = TextStyleOptions | HTMLTextStyleOptions;
 
@@ -26,7 +23,7 @@ type Filter<T> = { [K in keyof T]: {
     renderMode?: K;
     resolution?: number;
     style?: T[K]
-} } [keyof T];
+} }[keyof T];
 
 export type TextStyles = {
     canvas: TextStyleOptions | TextStyle;
@@ -66,7 +63,7 @@ export class TextView implements View
     {
         this.text = options.text ?? '';
 
-        const renderMode = options.renderMode ?? this._detectRenderType(options.style);
+        const renderMode = options.renderMode ?? detectRenderType(options.style);
 
         this._renderMode = renderMode;
 
@@ -137,16 +134,17 @@ export class TextView implements View
 
     public containsPoint(point: PointData)
     {
-        const width = this.bounds[2];
+        const width = this.bounds[1];
         const height = this.bounds[3];
+
         const x1 = -width * this.anchor.x;
         let y1 = 0;
 
-        if (point.x >= x1 && point.x < x1 + width)
+        if (point.x >= x1 && point.x <= x1 + width)
         {
             y1 = -height * this.anchor.y;
 
-            if (point.y >= y1 && point.y < y1 + height) return true;
+            if (point.y >= y1 && point.y <= y1 + height) return true;
         }
 
         return false;
@@ -209,23 +207,6 @@ export class TextView implements View
             bounds[2] = (-anchor._y * height) - padding;
             bounds[3] = bounds[2] + height;
         }
-    }
-
-    private _detectRenderType(style: TextStyleOptions | AnyTextStyle): 'canvas' | 'html' | 'bitmap'
-    {
-        if (style instanceof HTMLTextStyle)
-        {
-            return 'html';
-        }
-
-        const fontData = Cache.get(style?.fontFamily as string);
-
-        if (fontData instanceof DynamicBitmapFont || fontData instanceof BitmapFont)
-        {
-            return 'bitmap';
-        }
-
-        return 'canvas';
     }
 
     /**

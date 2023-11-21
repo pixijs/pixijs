@@ -78,6 +78,9 @@ export class LayerSystem implements System
                 updateRenderables(layerGroup);
             }
 
+            // reset the renderables to update
+            layerGroup.childrenRenderablesToUpdate.index = 0;
+
             // upload all the things!
             renderer.renderPipes.batch.upload(layerGroup.instructionSet);
         }
@@ -89,7 +92,6 @@ export class LayerSystem implements System
 
         renderer.globalUniforms.start(
             {
-                projectionData: renderer.renderTarget.rootRenderTarget,
                 worldTransformMatrix: container.layerGroup.worldTransform
             }
         );
@@ -100,7 +102,6 @@ export class LayerSystem implements System
         if (renderPipes.uniformBatch)
         {
             renderPipes.uniformBatch.renderEnd();
-            renderPipes.uniformBuffer.renderEnd();
         }
     }
 
@@ -123,7 +124,5 @@ function updateRenderables(layerGroup: LayerGroup)
             layerGroup.updateRenderable(container);
         }
     }
-
-    layerGroup.childrenRenderablesToUpdate.index = 0;
 }
 

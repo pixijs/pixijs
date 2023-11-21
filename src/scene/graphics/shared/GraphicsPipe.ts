@@ -23,7 +23,7 @@ export interface GraphicsAdaptor
 
 export interface GraphicsInstruction extends Instruction
 {
-    type: 'graphics';
+    renderPipeId: 'graphics';
     renderable: Renderable<GraphicsView>;
 }
 
@@ -104,7 +104,7 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
         {
             this.renderer.renderPipes.batch.break(instructionSet);
             instructionSet.add({
-                type: 'graphics',
+                renderPipeId: 'graphics',
                 renderable
             } as GraphicsInstruction);
         }

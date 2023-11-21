@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { updateQuadBounds } from '../../../utils/data/updateQuadBounds';
 import { BigPool } from '../../../utils/pool/PoolGroup';
-import { updateQuadBounds } from '../../../utils/updateQuadBounds';
 import { BatchableSprite } from '../../sprite/BatchableSprite';
 
 import type { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
@@ -162,10 +162,6 @@ export class CanvasTextPipe implements RenderPipe<TextView>
 
     private _initGpuText(renderable: Renderable<TextView>)
     {
-        const view = renderable.view;
-
-        view._style.update();
-
         const gpuTextData: CanvasTextPipe['_gpuText'][number] = {
             texture: null,
             currentKey: '--',

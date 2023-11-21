@@ -126,7 +126,8 @@ async function load(url: string): Promise<TextureSourceOptions>
         format: format as TEXTURE_FORMATS,
         mipLevelCount: ktxTexture.numLevels,
         resource: levelBuffers,
-    };
+        alphaMode: 'no-premultiply-alpha'
+    } as TextureSourceOptions;
 
     convertFormatIfRequired(textureOptions);
 

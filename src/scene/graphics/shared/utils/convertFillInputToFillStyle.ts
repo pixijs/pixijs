@@ -89,7 +89,10 @@ export function convertFillInputToFillStyle(
         style.color = 0xffffff;
     }
 
-    style.color = Color.shared.setValue(style.color).toNumber();
+    const color = Color.shared.setValue(style.color);
+
+    style.alpha *= color.alpha;
+    style.color = color.toNumber();
 
     // its a regular fill style!
     return style as ConvertedFillStyle;

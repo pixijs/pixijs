@@ -62,7 +62,7 @@ export class TickerPlugin
      * @private
      * @param {object} [options] - See application options
      */
-    protected static init(options?: PixiMixins.ApplicationOptions): void
+    public static init(options?: PixiMixins.ApplicationOptions): void
     {
         // Set default
         options = Object.assign({
@@ -143,7 +143,7 @@ export class TickerPlugin
      * @static
      * @private
      */
-    protected static destroy(): void
+    public static destroy(): void
     {
         if (this._ticker)
         {

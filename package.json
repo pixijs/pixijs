@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "8.0.0-beta.7",
+  "version": "8.0.0-beta.10",
   "author": "PixiJS Team",
   "main": "lib/index.js",
   "module": "lib/index.mjs",
@@ -28,6 +28,7 @@
     "prewatch": "npm run build",
     "postbuild": "rimraf \"src/**/index.ts\" --glob && npm run build:pkg",
     "watch": "nodemon --watch \"./src/*\" --exec \"npm run watch:build\" -e ts,js,vert,frag,wgsl,d.ts --ignore \"index.ts\"",
+    "watch:lib": "cross-env LIB_ONLY=1 nodemon --watch \"./src/*\" --exec \"npm run watch:build\" -e ts,js,vert,frag,wgsl,d.ts --ignore \"index.ts\"",
     "watch:build": "run-s build:index build:rollup build:tsc build:dts postbuild",
     "test": "run-s test:unit test:scene",
     "test:unit": "npx jest --silent",
@@ -127,13 +128,14 @@
     "./lib/environment/browser/browserAll.*",
     "./lib/environment/webworker/webworkerAll.*",
     "./lib/accessibility/init.*",
-    "./lib/filters/blendModes/init.*",
+    "./lib/filters/blend-modes/init.*",
     "./lib/app/init.*",
     "./lib/assets/init.*",
     "./lib/compressed-textures/dds/init.*",
     "./lib/compressed-textures/ktx/init.*",
     "./lib/compressed-textures/basis/init.*",
     "./lib/events/init.*",
+    "./lib/math-extras/init.*",
     "./lib/spritesheet/init.*",
     "./lib/rendering/init.*",
     "./lib/unsafe-eval/init.*"
@@ -175,10 +177,10 @@
     },
     "./advanced-blend-modes": {
       "import": {
-        "default": "./lib/filters/blendModes/init.mjs"
+        "default": "./lib/filters/blend-modes/init.mjs"
       },
       "require": {
-        "default": "./lib/filters/blendModes/init.js"
+        "default": "./lib/filters/blend-modes/init.js"
       }
     },
     "./app": {
@@ -227,6 +229,14 @@
       },
       "require": {
         "default": "./lib/events/init.js"
+      }
+    },
+    "./math-extras": {
+      "import": {
+        "default": "./lib/math-extras/init.mjs"
+      },
+      "require": {
+        "default": "./lib/math-extras/init.js"
       }
     },
     "./spritesheet": {

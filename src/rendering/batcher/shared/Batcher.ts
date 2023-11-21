@@ -1,5 +1,5 @@
 import { uid } from '../../../utils/data/uid';
-import { ViewableBuffer } from '../../../utils/ViewableBuffer';
+import { ViewableBuffer } from '../../../utils/data/ViewableBuffer';
 import { fastCopy } from '../../renderers/shared/buffer/utils/fastCopy';
 import { type BLEND_MODES } from '../../renderers/shared/state/const';
 import { getAdjustedBlendModeBlend } from '../../renderers/shared/state/getAdjustedBlendModeBlend';
@@ -7,14 +7,15 @@ import { BatchTextureArray } from './BatchTextureArray';
 import { MAX_TEXTURES } from './const';
 
 import type { BindGroup } from '../../renderers/gpu/shader/BindGroup';
+import type { Instruction } from '../../renderers/shared/instructions/Instruction';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { Texture } from '../../renderers/shared/texture/Texture';
 
 export type BatchAction = 'startBatch' | 'renderBatch';
 
-export class Batch
+export class Batch implements Instruction
 {
-    public type = 'batch';
+    public renderPipeId = 'batch';
     public action: BatchAction = 'startBatch';
 
     // TODO - eventually this could be useful for flagging batches as dirty and then only rebuilding those ones

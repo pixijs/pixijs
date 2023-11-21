@@ -1,11 +1,22 @@
+/**
+ * Base destroy options.
+ * @memberof scene
+ */
 export interface BaseDestroyOptions
 {
+    /** Destroy children recursively. */
     children?: boolean;
 }
 
+/**
+ * Texture destroy options.
+ * @memberof scene
+ */
 export interface TextureDestroyOptions
 {
+    /** Destroy the texture as well. */
     texture?: boolean;
+    /** Destroy the texture source as well. */
     textureSource?: boolean;
 }
 

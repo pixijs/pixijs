@@ -49,7 +49,7 @@ class BitmapFontManagerClass
 
     public getFont(text: string, style: TextStyle): BitmapFont
     {
-        let fontFamilyKey = style.fontFamily as string;
+        let fontFamilyKey = `${style.fontFamily as string}-bitmap`;
         let overrideFill = true;
 
         // assuming there is no texture we can use a tint!
@@ -130,7 +130,7 @@ class BitmapFontManagerClass
 
         font.ensureCharacters(flatChars.join(''));
 
-        Cache.set(name, font);
+        Cache.set(`${name}-bitmap`, font);
 
         return font;
     }

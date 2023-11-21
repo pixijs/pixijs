@@ -12,7 +12,6 @@ import type {
     ResolvedAsset,
     ResolvedSrc,
     UnresolvedAsset,
-    UnresolvedAssetObject
 } from '../types';
 import type { PreferOrder, ResolveURLParser } from './types';
 
@@ -303,15 +302,15 @@ export class Resolver
      */
     public getAlias(asset: UnresolvedAsset): string[]
     {
-        const { alias, name, src, srcs } = asset;
+        const { alias, src } = asset;
         const aliasesToUse = convertToList<ArrayOr<string | AssetSrc>>(
-            alias || name || src || srcs, (value: string | AssetSrc) =>
+            alias || src, (value: string | AssetSrc) =>
             {
                 if (typeof value === 'string') return value;
 
-                if (Array.isArray(value)) return value.map((v) => (v as ResolvedSrc)?.src ?? (v as ResolvedSrc)?.srcs ?? v);
+                if (Array.isArray(value)) return value.map((v) => (v as ResolvedSrc)?.src ?? v);
 
-                if (value?.src || value?.srcs) return value.src ?? value.srcs;
+                if (value?.src) return value.src;
 
                 return value;
             }, true) as string[];
@@ -363,75 +362,36 @@ export class Resolver
         // and pass it through as an additional alias for the asset
         // this keeps clashing ids separate on a per-bundle basis
         // you can also resolve a file using the bundleId-assetId syntax
-        if (Array.isArray(assets))
+
+        assets.forEach((asset) =>
         {
-            assets.forEach((asset) =>
+            const srcs = asset.src;
+            const aliases = asset.alias;
+            let ids: string[];
+
+            if (typeof aliases === 'string')
             {
-                const srcs = asset.src ?? asset.srcs;
-                const aliases = asset.alias ?? asset.name;
-                let ids: string[];
+                const bundleAssetId = this._createBundleAssetId(bundleId, aliases);
 
-                if (typeof aliases === 'string')
-                {
-                    const bundleAssetId = this._createBundleAssetId(bundleId, aliases);
-
-                    assetNames.push(bundleAssetId);
-                    ids = [aliases, bundleAssetId];
-                }
-                else
-                {
-                    const bundleIds = aliases.map((name) => this._createBundleAssetId(bundleId, name));
-
-                    assetNames.push(...bundleIds);
-                    ids = [...aliases, ...bundleIds];
-                }
-
-                this.add({
-                    ...asset,
-                    ...{
-                        alias: ids,
-                        src: srcs,
-                    }
-                });
-            });
-        }
-        else
-        {
-            Object.keys(assets).forEach((key) =>
+                assetNames.push(bundleAssetId);
+                ids = [aliases, bundleAssetId];
+            }
+            else
             {
-                const aliases: string[] = [key, this._createBundleAssetId(bundleId, key)];
+                const bundleIds = aliases.map((name) => this._createBundleAssetId(bundleId, name));
 
-                if (typeof assets[key] === 'string')
-                {
-                    this.add({
-                        alias: aliases,
-                        src: assets[key] as string,
-                    });
-                }
-                else if (Array.isArray(assets[key]))
-                {
-                    this.add({
-                        alias: aliases,
-                        src: assets[key] as string[],
-                    });
-                }
-                else
-                {
-                    const asset = assets[key] as UnresolvedAssetObject;
-                    const assetSrc = asset.src ?? asset.srcs;
+                assetNames.push(...bundleIds);
+                ids = [...aliases, ...bundleIds];
+            }
 
-                    this.add({
-                        ...asset,
-                        ...{
-                            alias: aliases,
-                            src: Array.isArray(assetSrc) ? assetSrc : [assetSrc],
-                        }
-                    });
+            this.add({
+                ...asset,
+                ...{
+                    alias: ids,
+                    src: srcs,
                 }
-
-                assetNames.push(...aliases);
             });
-        }
+        });
 
         this._bundles[bundleId] = assetNames;
     }
@@ -498,13 +458,13 @@ export class Resolver
         // loop through all the assets and generate a resolve asset for each src
         assetArray.forEach((asset) =>
         {
-            const { src, srcs } = asset;
+            const { src } = asset;
             let { data, format, loadParser } = asset;
 
             // src can contain an unresolved asset itself
             // so we need to merge that data with the current asset
             // we dont need to create string variations for the src if it is a ResolvedAsset
-            const srcsToUse: (string | ResolvedSrc)[][] = convertToList<AssetSrc>(src || srcs).map((src) =>
+            const srcsToUse: (string | ResolvedSrc)[][] = convertToList<AssetSrc>(src).map((src) =>
             {
                 if (typeof src === 'string')
                 { return createStringVariations(src); }
@@ -822,8 +782,6 @@ export class Resolver
         formattedAsset.data = { ...assetData || {}, ...formattedAsset.data };
         formattedAsset.loadParser = loadParser ?? formattedAsset.loadParser;
         formattedAsset.format = format ?? formattedAsset.format ?? getUrlExtension(formattedAsset.src);
-        formattedAsset.srcs = formattedAsset.src;
-        formattedAsset.name = formattedAsset.alias;
 
         return formattedAsset;
     }

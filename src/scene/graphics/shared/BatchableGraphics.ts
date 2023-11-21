@@ -135,4 +135,9 @@ export class BatchableGraphics implements BatchableObject
         gpuBuffer.texture = this.texture;
         gpuBuffer.geometryData = this.geometryData;
     }
+
+    public reset()
+    {
+        this.applyTransform = true;
+    }
 }

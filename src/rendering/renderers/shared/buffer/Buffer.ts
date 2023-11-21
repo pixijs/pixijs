@@ -1,8 +1,8 @@
 import EventEmitter from 'eventemitter3';
 import { uid } from '../../../../utils/data/uid';
+import { BufferUsage } from './const';
 
 import type { BindResource } from '../../gpu/shader/BindResource';
-import type { BufferUsage } from './const';
 
 /** All the various typed arrays that exist in js */
 // eslint-disable-next-line max-len
@@ -22,6 +22,15 @@ export interface BufferOptions
     usage: number;
     /** a label for the buffer, this is useful for debugging */
     label?: string;
+    /**
+     * should the GPU buffer be shrunk when the data becomes smaller?
+     * changing this will cause the buffer to be destroyed and a new one created on the GPU
+     * this can be expensive, especially if the buffer is already big enough!
+     * setting this to false will prevent the buffer from being shrunk. This will yield better performance
+     * if you are constantly setting data that is changing size often.
+     * @default true
+     */
+    shrinkToFit?: boolean;
 }
 
 export interface BufferDescriptor
@@ -136,13 +145,23 @@ export class Buffer extends EventEmitter<{
     private _data: TypedArray;
 
     /**
+     * should the GPU buffer be shrunk when the data becomes smaller?
+     * changing this will cause the buffer to be destroyed and a new one created on the GPU
+     * this can be expensive, especially if the buffer is already big enough!
+     * setting this to false will prevent the buffer from being shrunk. This will yield better performance
+     * if you are constantly setting data that is changing size often.
+     * @default true
+     */
+    public shrinkToFit = true;
+
+    /**
      * Creates a new Buffer with the given options
      * @param options - the options for the buffer
      */
     constructor(options: BufferOptions)
     {
         let { data, size } = options;
-        const { usage, label } = options;
+        const { usage, label, shrinkToFit } = options;
 
         super();
 
@@ -163,6 +182,8 @@ export class Buffer extends EventEmitter<{
             mappedAtCreation,
             label,
         };
+
+        this.shrinkToFit = shrinkToFit ?? true;
     }
 
     /** @todo */
@@ -173,24 +194,71 @@ export class Buffer extends EventEmitter<{
 
     set data(value: TypedArray)
     {
-        if (this._data !== value)
+        this.setDataWithSize(value, value.length, true);
+    }
+
+    get static()
+    {
+        return !!(this.descriptor.usage & BufferUsage.STATIC);
+    }
+
+    set static(value: boolean)
+    {
+        if (value)
         {
-            const oldData = this._data;
+            this.descriptor.usage |= BufferUsage.STATIC;
+        }
+        else
+        {
+            this.descriptor.usage &= ~BufferUsage.STATIC;
+        }
+    }
 
-            this._data = value;
+    /**
+     * Sets the data in the buffer to the given value. This will immediately update the buffer on the GPU.
+     * If you only want to update a subset of the buffer, you can pass in the size of the data.
+     * @param value - the data to set
+     * @param size - the size of the data in bytes
+     * @param syncGPU - should the buffer be updated on the GPU immediately?
+     */
+    public setDataWithSize(value: TypedArray, size: number, syncGPU: boolean)
+    {
+        // Increment update ID
+        this._updateID++;
 
-            if (oldData.length !== value.length)
+        this._updateSize = (size * value.BYTES_PER_ELEMENT);
+
+        // If the data hasn't changed, early return after emitting 'update'
+        if (this._data === value)
+        {
+            if (syncGPU) this.emit('update', this);
+
+            return;
+        }
+
+        // Cache old data and update to new value
+        const oldData = this._data;
+
+        this._data = value;
+
+        // Event handling
+        if (oldData.length !== value.length)
+        {
+            if (!this.shrinkToFit && value.byteLength < oldData.byteLength)
             {
-                this.descriptor.size = value.byteLength;
-                this._resourceId = uid('bufferResource');
-
-                this.emit('change', this);
+                if (syncGPU) this.emit('update', this);
             }
             else
             {
-                this.emit('update', this);
+                this.descriptor.size = value.byteLength;
+                this._resourceId = uid('bufferResource');
+                this.emit('change', this);
             }
+
+            return;
         }
+
+        if (syncGPU) this.emit('update', this);
     }
 
     /**
@@ -201,7 +269,8 @@ export class Buffer extends EventEmitter<{
      */
     public update(sizeInBytes?: number): void
     {
-        this._updateSize = sizeInBytes || this.descriptor.size;
+        this._updateSize = sizeInBytes ?? this._updateSize;
+
         this._updateID++;
 
         this.emit('update', this);

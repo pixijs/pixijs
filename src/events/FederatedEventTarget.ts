@@ -262,7 +262,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `click` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onclick = (event) => {
@@ -273,7 +273,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `mousedown` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onmousedown = (event) => {
@@ -284,7 +284,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `mouseenter` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onmouseenter = (event) => {
@@ -295,7 +295,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `mouseleave` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onmouseleave = (event) => {
@@ -306,7 +306,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `mousemove` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onmousemove = (event) => {
@@ -317,7 +317,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `globalmousemove` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onglobalmousemove = (event) => {
@@ -328,7 +328,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `mouseout` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onmouseout = (event) => {
@@ -339,7 +339,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `mouseover` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onmouseover = (event) => {
@@ -350,7 +350,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `mouseup` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onmouseup = (event) => {
@@ -361,7 +361,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `mouseupoutside` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onmouseupoutside = (event) => {
@@ -372,7 +372,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `pointercancel` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onpointercancel = (event) => {
@@ -383,7 +383,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `pointerdown` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onpointerdown = (event) => {
@@ -394,7 +394,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `pointerenter` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onpointerenter = (event) => {
@@ -405,7 +405,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `pointerleave` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onpointerleave = (event) => {
@@ -416,7 +416,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `pointermove` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onpointermove = (event) => {
@@ -427,7 +427,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `globalpointermove` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onglobalpointermove = (event) => {
@@ -438,7 +438,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `pointerout` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onpointerout = (event) => {
@@ -449,7 +449,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `pointerover` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onpointerover = (event) => {
@@ -460,7 +460,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `pointertap` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onpointertap = (event) => {
@@ -471,7 +471,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `pointerup` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onpointerup = (event) => {
@@ -482,7 +482,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `pointerupoutside` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onpointerupoutside = (event) => {
@@ -493,7 +493,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `rightclick` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onrightclick = (event) => {
@@ -504,7 +504,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `rightdown` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onrightdown = (event) => {
@@ -515,7 +515,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `rightup` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onrightup = (event) => {
@@ -526,7 +526,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `rightupoutside` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onrightupoutside = (event) => {
@@ -537,7 +537,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `tap` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.ontap = (event) => {
@@ -548,7 +548,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `touchcancel` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.ontouchcancel = (event) => {
@@ -559,7 +559,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `touchend` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.ontouchend = (event) => {
@@ -570,7 +570,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `touchendoutside` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.ontouchendoutside = (event) => {
@@ -581,7 +581,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `touchmove` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.ontouchmove = (event) => {
@@ -592,7 +592,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `globaltouchmove` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onglobaltouchmove = (event) => {
@@ -603,7 +603,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `touchstart` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.ontouchstart = (event) => {
@@ -614,7 +614,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `wheel` event.
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default null
      * @example
      * this.onwheel = (event) => {
@@ -624,7 +624,7 @@ export const FederatedContainer: IFederatedContainer = {
     onwheel:  null,
     /**
      * Enable interaction events for the Container. Touch, pointer and mouse
-     * @memberof Container#
+     * @memberof scene.Container#
      */
     get interactive()
     {
@@ -657,7 +657,7 @@ export const FederatedContainer: IFederatedContainer = {
      * sprite.on('tap', (event) => {
      *     // Handle event
      * });
-     * @memberof Container#
+     * @memberof scene.Container#
      * @since 7.2.0
      */
     get eventMode()
@@ -672,7 +672,7 @@ export const FederatedContainer: IFederatedContainer = {
     /**
      * Determines if the container is interactive or not
      * @returns {boolean} Whether the container is interactive or not
-     * @memberof Container#
+     * @memberof scene.Container#
      * @since 7.2.0
      * @example
      * import { Sprite } from 'pixi.js';
@@ -700,7 +700,7 @@ export const FederatedContainer: IFederatedContainer = {
     /**
      * Determines if the children to the container can be clicked/touched
      * Setting this to false allows PixiJS to bypass a recursive `hitTest` function
-     * @memberof Container#
+     * @memberof scene.Container#
      */
     interactiveChildren: true,
 
@@ -714,14 +714,14 @@ export const FederatedContainer: IFederatedContainer = {
      * sprite.interactive = true;
      * sprite.hitArea = new Rectangle(0, 0, 100, 100);
      * @member {IHitArea}
-     * @memberof Container#
+     * @memberof scene.Container#
      */
     hitArea: null,
 
     /**
      * Unlike `on` or `addListener` which are methods from EventEmitter, `addEventListener`
      * seeks to be compatible with the DOM's `addEventListener` with support for options.
-     * @memberof Container
+     * @memberof scene.Container
      * @param type - The type of event to listen to.
      * @param listener - The listener callback or object.
      * @param options - Listener options, used for capture phase.
@@ -769,7 +769,7 @@ export const FederatedContainer: IFederatedContainer = {
     /**
      * Unlike `off` or `removeListener` which are methods from EventEmitter, `removeEventListener`
      * seeks to be compatible with the DOM's `removeEventListener` with support for options.
-     * @memberof Container
+     * @memberof scene.Container
      * @param type - The type of event the listener is bound to.
      * @param listener - The listener callback or object.
      * @param options - The original listener options. This is required to deregister a capture phase listener.
@@ -794,7 +794,7 @@ export const FederatedContainer: IFederatedContainer = {
      * Dispatch the event on this {@link Container} using the event's {@link EventBoundary}.
      *
      * The target of the event is set to `this` and the `defaultPrevented` flag is cleared before dispatch.
-     * @memberof Container
+     * @memberof scene.Container
      * @param e - The event to dispatch.
      * @returns Whether the {@link FederatedEvent.preventDefault preventDefault}() method was not invoked.
      * @example

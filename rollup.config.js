@@ -137,7 +137,7 @@ async function main()
     // The package.json file has a bundle field
     // we'll use this to generate the bundle file
     // this will package all dependencies
-    if (bundle)
+    if (bundle && !process.env.LIB_ONLY)
     {
         const file = path.join(process.cwd(), bundle);
         const moduleFile = bundleModule ? path.join(process.cwd(), bundleModule) : '';

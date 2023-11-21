@@ -1,5 +1,5 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { unsafeEvalSupported } from '../../../../utils/unsafeEvalSupported';
+import { unsafeEvalSupported } from '../../../../utils/browser/unsafeEvalSupported';
 import { Buffer } from '../buffer/Buffer';
 import { BufferUsage } from '../buffer/const';
 import { createUBOElements } from './utils/createUBOElements';
