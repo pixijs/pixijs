@@ -3,3 +3,4 @@
 /// <reference path="../src/events/EventsMixins.d.ts" />
 /// <reference path="../src/rendering/RenderingMixins.d.ts" />
 /// <reference path="../src/scene/SceneMixins.d.ts" />
+/// <reference path="../src/math-extras/MathExtraMixins.d.ts" />
