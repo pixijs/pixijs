@@ -153,6 +153,7 @@ export function lineIntersection
  * @param bStart - Starting point of the second segment.
  * @param bEnd - Ending point of the second segment.
  * @returns {PointData} The point where the segments intersect.
+ * @memberof maths
  */
 export function segmentIntersection(aStart: PointData, aEnd: PointData, bStart: PointData, bEnd: PointData): Point;
 /**
