@@ -1,6 +1,7 @@
 /**
  * A rectangular bounding box describing the boundary of an area.
  * @since 7.1.0
+ * @memberof utils
  */
 export class BoundingBox
 {

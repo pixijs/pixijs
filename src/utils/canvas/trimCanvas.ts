@@ -6,6 +6,7 @@ import type { ICanvas } from '../../environment/canvas/ICanvas';
  * Trim transparent borders from a canvas.
  * @param {ICanvas} canvas - The canvas to trim.
  * @returns The trimmed canvas data.
+ * @memberof utils
  */
 export function trimCanvas(canvas: ICanvas): { width: number, height: number, data: ImageData | null }
 {

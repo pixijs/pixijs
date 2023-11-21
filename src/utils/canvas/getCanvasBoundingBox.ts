@@ -29,6 +29,7 @@ function checkColumn(data: Uint8ClampedArray, width: number, x: number, top: num
  * @param {ICanvas} canvas - The canvas to measure.
  * @returns {BoundingBox} The bounding box of the canvas' visible pixels.
  * @since 7.1.0
+ * @memberof utils
  */
 export function getCanvasBoundingBox(canvas: ICanvas): BoundingBox
 {
