@@ -1,4 +1,3 @@
-// import type { Dict } from '../../utils/types';
 import type { PointData } from './PointData';
 import type { PointLike } from './PointLike';
 
