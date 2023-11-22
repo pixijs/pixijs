@@ -100,8 +100,10 @@ class CustomElement extends HTMLElement
     view = document.createElement('canvas');
     constructor()
     {
+        // eslint-disable-next-line jest/expect-expect
         super();
 
+        // eslint-disable-next-line jest/expect-expect
         const shadowRoot = this.attachShadow({ mode: 'closed' });
 
         shadowRoot.appendChild(this.view);
@@ -225,7 +227,9 @@ describe('EventSystem', () =>
         it.each(staticPointerEventTests)('Pointer Event %s', async (event) =>
         {
             const events = Array.isArray(event) ? event : [event];
+            // eslint-disable-next-line jest/expect-expect
             const isMouseEvent = events[0].type.startsWith('mouse');
+            // eslint-disable-next-line jest/expect-expect
             const isTouchEvent = events[0].type.startsWith('touch');
 
             const renderer = await createRenderer(view, isMouseEvent);
@@ -280,6 +284,7 @@ describe('EventSystem', () =>
                     event = new MouseEvent(native || type, { clientX, clientY });
                 }
 
+                // eslint-disable-next-line jest/expect-expect
                 (renderer.events as any)[handler](event);
 
                 expect(eventSpy).toHaveBeenCalledOnce();
@@ -316,10 +321,11 @@ describe('EventSystem', () =>
             })
         );
 
-        expect(eventSpy).not.toBeCalled();
+        expect(eventSpy).not.toHaveBeenCalled();
         expect(renderer.canvas.style.cursor).toEqual('inherit');
     });
 
+    // eslint-disable-next-line jest/no-done-callback
     it('should provide the correct global position', async (done) =>
     {
         const renderer = await createRenderer();
@@ -435,7 +441,7 @@ describe('EventSystem', () =>
         expect(secondaryMoveSpy).toHaveBeenCalledOnce();
         expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(2);
         expect(secondaryMoveGlobalSpy).toHaveBeenCalledTimes(2);
-        expect(secondaryOutSpy).not.toBeCalledTimes(1);
+        expect(secondaryOutSpy).not.toHaveBeenCalledTimes(1);
     });
 
     it('should dispatch synthetic over/out events on pointermove with hitArea', async () =>
@@ -528,7 +534,7 @@ describe('EventSystem', () =>
         expect(secondaryMoveSpy).toHaveBeenCalledOnce();
         expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(2);
         expect(secondaryMoveGlobalSpy).toHaveBeenCalledTimes(2);
-        expect(secondaryOutSpy).not.toBeCalledTimes(1);
+        expect(secondaryOutSpy).not.toHaveBeenCalledTimes(1);
     });
 
     it('should not dispatch pointer events if not interactive', async () =>
@@ -680,6 +686,7 @@ describe('EventSystem', () =>
         expect(eventSpy).toHaveBeenCalledOnce();
     });
 
+    // eslint-disable-next-line jest/no-done-callback
     it('should set the detail of click events to the click count', async (done) =>
     {
         const renderer = await createRenderer();
@@ -711,7 +718,7 @@ describe('EventSystem', () =>
             renderer.events['_onPointerUp'](e);
         }
 
-        expect(eventSpy).toBeCalledTimes(3);
+        expect(eventSpy).toHaveBeenCalledTimes(3);
 
         graphics.removeAllListeners();
 

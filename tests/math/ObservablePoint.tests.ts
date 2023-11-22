@@ -14,7 +14,7 @@ describe('ObservablePoint', () =>
         expect(pt.x).toEqual(2);
         expect(pt.y).toEqual(5);
 
-        expect(cb.onUpdate).toBeCalled();
+        expect(cb.onUpdate).toHaveBeenCalled();
 
         pt.set(2, 6);
         expect(pt.x).toEqual(2);

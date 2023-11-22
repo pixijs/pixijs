@@ -9,7 +9,7 @@ describe('Polygon', () =>
         {
             const polygon = new Polygon(0, 0, 10, 0, 0, 10);
 
-            expect(polygon.points.length).toEqual(6);
+            expect(polygon.points).toHaveLength(6);
         });
 
         it('should accept a spread of points', () =>
@@ -20,14 +20,14 @@ describe('Polygon', () =>
                 new Point(0, 10)
             );
 
-            expect(polygon.points.length).toEqual(6);
+            expect(polygon.points).toHaveLength(6);
         });
 
         it('should accept an array of values', () =>
         {
             const polygon = new Polygon([0, 0, 10, 0, 0, 10]);
 
-            expect(polygon.points.length).toEqual(6);
+            expect(polygon.points).toHaveLength(6);
         });
 
         it('should accept an array of points', () =>
@@ -38,7 +38,7 @@ describe('Polygon', () =>
                 new Point(0, 10),
             ]);
 
-            expect(polygon.points.length).toEqual(6);
+            expect(polygon.points).toHaveLength(6);
         });
     });
 
@@ -52,8 +52,8 @@ describe('Polygon', () =>
 
             const polygon2 = polygon1.clone();
 
-            expect(polygon1.points.length).toEqual(6);
-            expect(polygon1.points.length).toEqual(6);
+            expect(polygon1.points).toHaveLength(6);
+            expect(polygon1.points).toHaveLength(6);
 
             for (let i = 0; i < 6; i++)
             {
@@ -63,8 +63,8 @@ describe('Polygon', () =>
             expect(polygon1.closePath).toEqual(polygon2.closePath);
             polygon2.points.push(0, 0);
 
-            expect(polygon1.points.length).toEqual(6);
-            expect(polygon2.points.length).toEqual(8);
+            expect(polygon1.points).toHaveLength(6);
+            expect(polygon2.points).toHaveLength(8);
         });
     });
 

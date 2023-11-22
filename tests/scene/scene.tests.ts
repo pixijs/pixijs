@@ -10,7 +10,7 @@ describe('Scene', () =>
 
         container.addChild(child);
 
-        expect(container.children.length).toEqual(1);
+        expect(container.children).toHaveLength(1);
         expect(container.children[0]).toEqual(child);
     });
 
@@ -24,7 +24,7 @@ describe('Scene', () =>
 
         container.removeChild(child);
 
-        expect(container.children.length).toEqual(0);
+        expect(container.children).toHaveLength(0);
     });
 
     it('should re-parent a child', async () =>
@@ -39,8 +39,8 @@ describe('Scene', () =>
 
         child.addChild(child2);
 
-        expect(container.children.length).toEqual(1);
-        expect(child.children.length).toEqual(1);
+        expect(container.children).toHaveLength(1);
+        expect(child.children).toHaveLength(1);
     });
 
     it('should set correct render group a child', async () =>
@@ -57,8 +57,8 @@ describe('Scene', () =>
 
         container.addChild(childPost);
 
-        expect(container.children.length).toEqual(2);
-        expect(container.layerGroup['_children'].length).toEqual(2);
+        expect(container.children).toHaveLength(2);
+        expect(container.layerGroup['_children']).toHaveLength(2);
 
         expect(childPre.layerGroup).toEqual(container.layerGroup);
         expect(childPost.layerGroup).toEqual(container.layerGroup);
@@ -99,8 +99,8 @@ describe('Scene', () =>
         container2.addChild(child2);
         container2.addChild(child3);
 
-        expect(container.children.length).toEqual(2);
-        expect(container.layerGroup['_children'].length).toEqual(4);
+        expect(container.children).toHaveLength(2);
+        expect(container.layerGroup['_children']).toHaveLength(4);
 
         expect(child2.layerGroup).toEqual(container.layerGroup);
         expect(child3.layerGroup).toEqual(container.layerGroup);
@@ -137,8 +137,8 @@ describe('Scene', () =>
         container2.addChild(child3);
 
         expect(container.layerGroup === container2.layerGroup).toBeFalse();
-        expect(container.layerGroup['_children'].length).toEqual(2);
-        expect(container2.layerGroup['_children'].length).toEqual(2);
+        expect(container.layerGroup['_children']).toHaveLength(2);
+        expect(container2.layerGroup['_children']).toHaveLength(2);
 
         expect(container.layerGroup).toEqual(container.layerGroup);
         expect(container2.layerGroup).toEqual(container2.layerGroup);
@@ -147,8 +147,8 @@ describe('Scene', () =>
         expect(child2.layerGroup).toEqual(container2.layerGroup);
         expect(child3.layerGroup).toEqual(container2.layerGroup);
 
-        expect(container.layerGroup.layerGroupChildren.length).toEqual(1);
-        expect(container2.layerGroup.layerGroupChildren.length).toEqual(0);
+        expect(container.layerGroup.layerGroupChildren).toHaveLength(1);
+        expect(container2.layerGroup.layerGroupChildren).toHaveLength(0);
     });
 
     it('should set reparent from one layer to another group', async () =>
@@ -185,8 +185,8 @@ describe('Scene', () =>
         container2.addChild(child);
 
         expect(container.layerGroup === container2.layerGroup).toBeFalse();
-        expect(container.layerGroup['_children'].length).toEqual(1);
-        expect(container2.layerGroup['_children'].length).toEqual(3);
+        expect(container.layerGroup['_children']).toHaveLength(1);
+        expect(container2.layerGroup['_children']).toHaveLength(3);
 
         expect(container.layerGroup).toEqual(container.layerGroup);
         expect(container2.layerGroup).toEqual(container2.layerGroup);
@@ -195,8 +195,8 @@ describe('Scene', () =>
         expect(child2.layerGroup).toEqual(container2.layerGroup);
         expect(child3.layerGroup).toEqual(container2.layerGroup);
 
-        expect(container.layerGroup.layerGroupChildren.length).toEqual(1);
-        expect(container2.layerGroup.layerGroupChildren.length).toEqual(0);
+        expect(container.layerGroup.layerGroupChildren).toHaveLength(1);
+        expect(container2.layerGroup.layerGroupChildren).toHaveLength(0);
 
         // |- contianer // renderGroup
         //    |- container2 // renderGroup
@@ -206,8 +206,8 @@ describe('Scene', () =>
 
         container.addChild(child3);
 
-        expect(container.layerGroup['_children'].length).toEqual(2);
-        expect(container2.layerGroup['_children'].length).toEqual(2);
+        expect(container.layerGroup['_children']).toHaveLength(2);
+        expect(container2.layerGroup['_children']).toHaveLength(2);
 
         expect(container.layerGroup).toEqual(container.layerGroup);
         expect(container2.layerGroup).toEqual(container2.layerGroup);
@@ -216,8 +216,8 @@ describe('Scene', () =>
         expect(child2.layerGroup).toEqual(container2.layerGroup);
         expect(child3.layerGroup).toEqual(container.layerGroup);
 
-        expect(container.layerGroup.layerGroupChildren.length).toEqual(1);
-        expect(container2.layerGroup.layerGroupChildren.length).toEqual(0);
+        expect(container.layerGroup.layerGroupChildren).toHaveLength(1);
+        expect(container2.layerGroup.layerGroupChildren).toHaveLength(0);
     });
 
     // REparents a rendergroup..
@@ -261,15 +261,15 @@ describe('Scene', () =>
         expect(child3.layerGroup).toBe(container2.layerGroup);
 
         expect(container.layerGroup === container2.layerGroup).toBeFalse();
-        expect(container.layerGroup['_children'].length).toEqual(2);
-        expect(container2.layerGroup['_children'].length).toEqual(2);
+        expect(container.layerGroup['_children']).toHaveLength(2);
+        expect(container2.layerGroup['_children']).toHaveLength(2);
 
         expect(container2.parent).toBe(child);
 
-        expect(child.children.length).toEqual(1);
+        expect(child.children).toHaveLength(1);
 
-        expect(container.layerGroup.layerGroupChildren.length).toEqual(1);
-        expect(container2.layerGroup.layerGroupChildren.length).toEqual(0);
+        expect(container.layerGroup.layerGroupChildren).toHaveLength(1);
+        expect(container2.layerGroup.layerGroupChildren).toHaveLength(0);
 
         child.layer = true;
 
@@ -279,20 +279,20 @@ describe('Scene', () =>
         //           |- child2
         //           |- child3
 
-        expect(container.layerGroup.layerGroupChildren.length).toEqual(1);
-        expect(child.layerGroup.layerGroupChildren.length).toEqual(1);
-        expect(container2.layerGroup.layerGroupChildren.length).toEqual(0);
-        expect(child.layerGroup['_children'].length).toEqual(1);
-        expect(container2.layerGroup['_children'].length).toEqual(2);
+        expect(container.layerGroup.layerGroupChildren).toHaveLength(1);
+        expect(child.layerGroup.layerGroupChildren).toHaveLength(1);
+        expect(container2.layerGroup.layerGroupChildren).toHaveLength(0);
+        expect(child.layerGroup['_children']).toHaveLength(1);
+        expect(container2.layerGroup['_children']).toHaveLength(2);
 
         container.addChild(container2);
 
-        expect(container.layerGroup.layerGroupChildren.length).toEqual(2);
-        expect(container.children.length).toEqual(2);
-        expect(child.layerGroup.layerGroupChildren.length).toEqual(0);
-        expect(container2.layerGroup.layerGroupChildren.length).toEqual(0);
-        expect(child.layerGroup['_children'].length).toEqual(0);
-        expect(container2.layerGroup['_children'].length).toEqual(2);
+        expect(container.layerGroup.layerGroupChildren).toHaveLength(2);
+        expect(container.children).toHaveLength(2);
+        expect(child.layerGroup.layerGroupChildren).toHaveLength(0);
+        expect(container2.layerGroup.layerGroupChildren).toHaveLength(0);
+        expect(child.layerGroup['_children']).toHaveLength(0);
+        expect(container2.layerGroup['_children']).toHaveLength(2);
 
         expect(container.relativeLayerDepth).toEqual(0);
         expect(child.relativeLayerDepth).toEqual(1);
@@ -612,11 +612,11 @@ describe('Scene', () =>
 
         container.addChild(child);
         container.addChild(child);
-        expect(container.children.length).toEqual(1);
+        expect(container.children).toHaveLength(1);
 
         container.removeChild(child);
 
-        expect(container.children.length).toEqual(0);
+        expect(container.children).toHaveLength(0);
         expect(child.parent).toEqual(null);
         // container.removeChild(child);
     });

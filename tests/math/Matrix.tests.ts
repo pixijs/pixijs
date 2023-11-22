@@ -27,7 +27,7 @@ describe('Matrix', () =>
 
         let output = matrix.toArray(true);
 
-        expect(output.length).toEqual(9);
+        expect(output).toHaveLength(9);
         expect(output[0]).toEqual(0);
         expect(output[1]).toEqual(1);
         expect(output[3]).toEqual(3);
@@ -37,7 +37,7 @@ describe('Matrix', () =>
 
         output = matrix.toArray(false);
 
-        expect(output.length).toEqual(9);
+        expect(output).toHaveLength(9);
         expect(output[0]).toEqual(0);
         expect(output[1]).toEqual(3);
         expect(output[2]).toEqual(2);

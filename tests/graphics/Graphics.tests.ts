@@ -291,7 +291,7 @@ describe('Graphics', () =>
             const actions = instruction.data.path.instructions.map((i) => i.action);
             const data = instruction.data.path.instructions.map((i) => i.data);
 
-            expect(graphics.context.instructions.length).toBe(1);
+            expect(graphics.context.instructions).toHaveLength(1);
             expect(actions).toEqual(['moveTo', 'lineTo', 'lineTo']);
             expect(data).toEqual([[0, 0], [0, 0], [10, 0]]);
         });
@@ -646,7 +646,7 @@ describe('Graphics', () =>
 
             graphics.strokeStyle = { width: 4, color: 0x00FF00, alpha: 1 };
 
-            expect(() => graphics.beginPath().arc(300, 100, 20, 0, Math.PI).fill().closePath()).not.toThrowError();
+            expect(() => graphics.beginPath().arc(300, 100, 20, 0, Math.PI).fill().closePath()).not.toThrow();
         });
     });
 
@@ -757,7 +757,7 @@ describe('Graphics', () =>
             const fill1Data = fill1.data.path.instructions.map((i) => i.data).flat();
             const fill2Data = fill2.data.path.instructions.map((i) => i.data).flat();
 
-            expect(data.length).toEqual(2);
+            expect(data).toHaveLength(2);
             expect(fill1Data).toEqual([50, 50, 250, 50, 100, 100, 50, 50]);
             expect(fill2Data).toEqual([250, 50, 450, 50, 300, 100, 250, 50]);
         });
@@ -782,7 +782,7 @@ describe('Graphics', () =>
             const fill1Data = fill1.data.path.instructions.map((i) => i.data).flat();
             const fill2Data = fill2.data.path.instructions.map((i) => i.data).flat();
 
-            expect(data.length).toEqual(2);
+            expect(data).toHaveLength(2);
             expect(fill1Data).toEqual([50, 50, 250, 50]);
             expect(fill2Data).toEqual([250, 50, 100, 100, 50, 50]);
         });
@@ -790,6 +790,7 @@ describe('Graphics', () =>
 
     // todo: all these tests should be moved to GraphicsContext.test.ts, with equivalent changes for api
     // ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44801478
+    // eslint-disable-next-line jest/no-commented-out-tests
     // it.skip('should support adaptive curves', () =>
     // {
     //     const defMode = Graphics.curves.adaptive;
@@ -814,8 +815,10 @@ describe('Graphics', () =>
     //     Graphics.curves.maxLength = defMaxLen;
     // });
 
+    // eslint-disable-next-line jest/no-commented-out-tests
     // describe('geometry', () =>
     // {
+    // eslint-disable-next-line jest/no-commented-out-tests
     //     it('validateBatching should return false if any of textures is invalid', () =>
     //     {
     //         const graphics = new Graphics();
@@ -839,6 +842,7 @@ describe('Graphics', () =>
     //         // expect(geometry['validateBatching']()).toBe(false);
     //     });
 
+    // eslint-disable-next-line jest/no-commented-out-tests
     //     it('validateBatching should return true if all textures is valid', () =>
     //     {
     //         const graphics = new Graphics();
@@ -854,6 +858,7 @@ describe('Graphics', () =>
     //         expect(geometry['validateBatching']()).toBe(true);
     //     });
 
+    // eslint-disable-next-line jest/no-commented-out-tests
     //     it('should be batchable if graphicsData is empty', () =>
     //     {
     //         const graphics = new Graphics();
@@ -863,6 +868,7 @@ describe('Graphics', () =>
     //         expect(geometry.batchable).toBe(true);
     //     });
 
+    // eslint-disable-next-line jest/no-commented-out-tests
     //     it('_compareStyles should return true for identical styles', () =>
     //     {
     //         const graphics = new Graphics();
@@ -889,6 +895,7 @@ describe('Graphics', () =>
     //         expect(geometry['_compareStyles'](firstLine, secondLine)).toBe(true);
     //     });
 
+    // eslint-disable-next-line jest/no-commented-out-tests
     //     it('should be 1 batch for same styles', () =>
     //     {
     //         const graphics = new Graphics();
@@ -903,6 +910,7 @@ describe('Graphics', () =>
     //         expect(geometry.batches).toHaveLength(1);
     //     });
 
+    // eslint-disable-next-line jest/no-commented-out-tests
     //     it('should be 2 batches for 2 different styles', () =>
     //     {
     //         const graphics = new Graphics();
@@ -924,6 +932,7 @@ describe('Graphics', () =>
     //         expect(geometry.batches).toHaveLength(2);
     //     });
 
+    // eslint-disable-next-line jest/no-commented-out-tests
     //     it('should be 1 batch if fill and line are the same', () =>
     //     {
     //         const graphics = new Graphics();
@@ -939,6 +948,7 @@ describe('Graphics', () =>
     //         expect(geometry.batches).toHaveLength(1);
     //     });
 
+    // eslint-disable-next-line jest/no-commented-out-tests
     //     it('should not use fill if triangulation does nothing', () =>
     //     {
     //         const graphics = new Graphics();

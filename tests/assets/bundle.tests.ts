@@ -160,7 +160,7 @@ describe('Assets bundles', () =>
         expect(resources.character).not.toBe(resources2.character);
     });
 
-    it('should load bundles with clashing names correctly', async () =>
+    it('should load bundles with clashing names correctly with custom connector', async () =>
     {
         const manifest = {
             bundles: [
@@ -302,6 +302,7 @@ describe('Assets bundles', () =>
         await Assets.init({ manifest, basePath });
 
         // expect promise to throw an error..
+        // eslint-disable-next-line jest/valid-expect
         expect(async () => await Assets.init({ manifest, basePath }));
 
         const bundle = Assets.resolver.resolveBundle('bunny1');
