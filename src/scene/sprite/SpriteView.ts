@@ -138,7 +138,7 @@ export class SpriteView implements View
         sourceBounds[1] = sourceBounds[1] + width;
 
         sourceBounds[2] = -anchor._y * height;
-        sourceBounds[3] = sourceBounds[3] + height;
+        sourceBounds[3] = sourceBounds[2] + height;
     }
 
     /**
