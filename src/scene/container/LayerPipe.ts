@@ -37,7 +37,7 @@ export class LayerPipe implements InstructionPipe<LayerGroup>
 
         this._renderer.globalUniforms.push({
             worldTransformMatrix: layerGroup.worldTransform,
-            worldColor: layerGroup.worldColor,
+            worldColor: layerGroup.worldColorAlpha,
         });
 
         executeInstructions(layerGroup, this._renderer.renderPipes);

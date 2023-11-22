@@ -185,7 +185,7 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
         localUniforms.update();
 
         color32BitToUniform(
-            renderable.layerColor,
+            renderable.layerColorAlpha,
             localUniforms.uniforms.uColor,
             0
         );

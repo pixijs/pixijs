@@ -152,7 +152,7 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
         localUniforms.uRound = renderer._roundPixels | renderable.view.roundPixels;
 
         color32BitToUniform(
-            renderable.layerColor,
+            renderable.layerColorAlpha,
             localUniforms.uColor,
             0
         );

@@ -42,22 +42,35 @@ export function updateLayerGroupTransforms(layerGroup: LayerGroup, updateChildRe
 
 export function updateLayerTransform(layerGroup: LayerGroup)
 {
+    const root = layerGroup.root;
+
     if (layerGroup.layerGroupParent)
     {
+        const layerGroupParent = layerGroup.layerGroupParent;
+
         layerGroup.worldTransform.appendFrom(
-            layerGroup.root.layerTransform,
-            layerGroup.layerGroupParent.worldTransform,
+            root.layerTransform,
+            layerGroupParent.worldTransform,
         );
 
         layerGroup.worldColor = mixColors(
-            layerGroup.root.layerColor,
-            layerGroup.layerGroupParent.worldColor,
+            root.layerColor,
+            layerGroupParent.worldColor,
         );
+
+        layerGroup.worldAlpha = root.layerAlpha * layerGroupParent.worldAlpha;
+
+        layerGroup.worldColorAlpha = layerGroup.worldColor
+            + (((layerGroup.worldAlpha * 255) | 0) << 24);
     }
     else
     {
-        layerGroup.worldTransform.copyFrom(layerGroup.root.layerTransform);
-        layerGroup.worldColor = layerGroup.root.localColor;
+        layerGroup.worldTransform.copyFrom(root.layerTransform);
+        layerGroup.worldColor = root.localColor;
+        layerGroup.worldAlpha = root.localAlpha;
+
+        layerGroup.worldColorAlpha = layerGroup.worldColor
+            + (((layerGroup.worldAlpha * 255) | 0) << 24);
     }
 }
 
@@ -128,7 +141,14 @@ function updateColorBlendVisibility(
 {
     if (updateFlags & UPDATE_COLOR)
     {
-        container.layerColor = mixColors(container.localColor, parent.layerColor);
+        container.layerColor = mixColors(
+            container.localColor,
+            parent.layerColor
+        );
+
+        container.layerAlpha = container.localAlpha * parent.layerAlpha;
+
+        container.layerColorAlpha = container.layerColor + (((container.layerAlpha * 255) | 0) << 24);
     }
 
     if (updateFlags & UPDATE_BLEND)
