@@ -253,7 +253,7 @@ describe('getLocalBounds', () =>
     {
         const textureSource = new TextureSource({
             width: 100,
-            height: 100,
+            height: 200,
             resolution: 1,
         });
 
@@ -268,6 +268,6 @@ describe('getLocalBounds', () =>
         const sprite = new Sprite({ texture });
 
         expect(sprite.width).toBe(100);
-        expect(sprite.height).toBe(100);
+        expect(sprite.height).toBe(200);
     });
 });
