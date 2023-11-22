@@ -3,7 +3,7 @@ import { UniformBufferSystem } from '../rendering/renderers/shared/shader/Unifor
 import { generateUniformBufferSyncPolyfill } from './generateUniformBufferSyncPolyfill';
 import { generateUniformsSyncPolyfill } from './generateUniformsSyncPolyfill';
 
-export function install()
+function selfInstall()
 {
     Object.assign(GlUniformGroupSystem.prototype,
         {
@@ -29,3 +29,5 @@ export function install()
         }
     );
 }
+
+selfInstall();
