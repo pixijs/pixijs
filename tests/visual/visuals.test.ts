@@ -17,7 +17,7 @@ const onlyScenes = scenes.filter((s) =>
 {
     if (isCI && s.data.only)
     {
-        // throw new Error(`only: true should not be committed to the repo. Please remove from ${path.basename(s.path)}`);
+        throw new Error(`only: true should not be committed to the repo. Please remove from ${path.basename(s.path)}`);
     }
 
     return s.data.only;
