@@ -1,6 +1,7 @@
 import glob from 'glob';
 import path from 'path';
 import { Assets } from '../../src/assets/Assets';
+import { isCI } from '../assets/basePath';
 import { renderTest } from './tester';
 
 const paths = glob.sync('**/*.scene.ts', { cwd: path.join(process.cwd(), './tests') });
@@ -12,7 +13,15 @@ const scenes = paths.map((p) =>
     return { path: p, data: require(`./${relativePath}`).scene };
 });
 
-const onlyScenes = scenes.filter((s) => s.data.only);
+const onlyScenes = scenes.filter((s) =>
+{
+    if (isCI && s.data.only)
+    {
+        throw new Error(`only: true should not be committed to the repo. Please remove from ${path.basename(s.path)}`);
+    }
+
+    return s.data.only;
+});
 const scenesToTest = onlyScenes.length ? onlyScenes : scenes;
 
 function setAssetBasePath(): void

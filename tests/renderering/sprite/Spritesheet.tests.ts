@@ -23,15 +23,15 @@ describe('Spritesheet', () =>
                 const width = Math.floor(spritesheet.data.frames[id].frame.w);
                 const height = Math.floor(spritesheet.data.frames[id].frame.h);
 
-                expect(Object.keys(textures).length).toEqual(5);
-                expect(Object.keys(spritesheet.textures).length).toEqual(5);
+                expect(Object.keys(textures)).toHaveLength(5);
+                expect(Object.keys(spritesheet.textures)).toHaveLength(5);
                 expect(textures[id]).toBeInstanceOf(Texture);
                 expect(textures[id].width).toEqual(width / spritesheet.resolution);
                 expect(textures[id].height).toEqual(height / spritesheet.resolution);
                 expect(textures[id]._layout.defaultAnchor).toBeUndefined();
 
                 expect(spritesheet.animations.star).toBeArray();
-                expect(spritesheet.animations.star.length).toEqual(4);
+                expect(spritesheet.animations.star).toHaveLength(4);
                 expect(spritesheet.animations.star[0]._layout.defaultAnchor.x).toEqual(0.5);
                 expect(spritesheet.animations.star[0]._layout.defaultAnchor.y).toEqual(0.5);
 
@@ -94,130 +94,137 @@ describe('Spritesheet', () =>
         spritesheet.destroy(true);
     });
 
-    it('should create instance with scale resolution', (done) =>
-    {
-        jest.setTimeout(10000);
-        // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
-        const data = require(path.resolve(assets, 'building1.json'));
-        const image = new Image();
-
-        image.src = path.join(assets, data.meta.image);
-        image.onload = () =>
+    it('should create instance with scale resolution', () =>
+        new Promise<void>((done) =>
         {
-            const baseTexture = new Texture({ source: new ImageSource({ resource: image }) });
-            const spritesheet = new Spritesheet(baseTexture, data);
+            jest.setTimeout(10000);
+            // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
+            const data = require(path.resolve(assets, 'building1.json'));
+            const image = new Image();
 
-            expect(data).toBeObject();
-            expect(data.meta.image).toEqual('building1.png');
-            expect(spritesheet.resolution).toEqual(0.5);
+            image.src = path.join(assets, data.meta.image);
+            image.onload = () =>
+            {
+                const baseTexture = new Texture({ source: new ImageSource({ resource: image }) });
+                const spritesheet = new Spritesheet(baseTexture, data);
 
-            validate(spritesheet, done);
-        };
-    });
+                expect(data).toBeObject();
+                expect(data.meta.image).toEqual('building1.png');
+                expect(spritesheet.resolution).toEqual(0.5);
+
+                validate(spritesheet, done);
+            };
+        }));
 
     // resolution is not being parsed, remains 1
-    it('should create instance with filename resolution', (done) =>
-    {
-        const uri = path.resolve(assets, 'building1@2x.json');
-        // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
-        const data = require(uri);
-        const image = new Image();
-
-        image.src = path.join(assets, data.meta.image);
-        image.onload = () =>
+    it('should create instance with filename resolution', () =>
+        new Promise<void>((done) =>
         {
-            const baseTexture = new Texture({
-                source: new ImageSource({ resource: image, resolution: 1 })
+            const uri = path.resolve(assets, 'building1@2x.json');
+            // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
+            const data = require(uri);
+            const image = new Image();
+
+            image.src = path.join(assets, data.meta.image);
+            image.onload = () =>
+            {
+                const baseTexture = new Texture({
+                    source: new ImageSource({ resource: image, resolution: 1 })
+                });
+                const spritesheet = new Spritesheet(baseTexture, data/* , uri*/);
+
+                expect(data).toBeObject();
+                expect(data.meta.image).toEqual('building1@2x.png');
+                expect(spritesheet.textureSource.resolution).toEqual(2);
+
+                validate(spritesheet, done);
+            };
+        }));
+
+    it('should parse full data untrimmed', () =>
+        new Promise<void>((done) =>
+        {
+            const data = {
+                frame: { x: 0, y: 0, w: 14, h: 16 },
+                rotated: false,
+                trimmed: false,
+                spriteSourceSize: { x: 0, y: 0, w: 14, h: 16 },
+                sourceSize: { w: 14, h: 16 },
+            } as SpritesheetFrameData;
+
+            parseFrame(data, (texture) =>
+            {
+                expect(texture.width).toEqual(14);
+                expect(texture.height).toEqual(16);
+                done();
             });
-            const spritesheet = new Spritesheet(baseTexture, data/* , uri*/);
+        }));
 
-            expect(data).toBeObject();
-            expect(data.meta.image).toEqual('building1@2x.png');
-            expect(spritesheet.textureSource.resolution).toEqual(2);
-
-            validate(spritesheet, done);
-        };
-    });
-
-    it('should parse full data untrimmed', (done) =>
-    {
-        const data = {
-            frame: { x: 0, y: 0, w: 14, h: 16 },
-            rotated: false,
-            trimmed: false,
-            spriteSourceSize: { x: 0, y: 0, w: 14, h: 16 },
-            sourceSize: { w: 14, h: 16 },
-        } as SpritesheetFrameData;
-
-        parseFrame(data, (texture) =>
+    it('should parse texture from trimmed', () =>
+        new Promise<void>((done) =>
         {
-            expect(texture.width).toEqual(14);
-            expect(texture.height).toEqual(16);
-            done();
-        });
-    });
+            const data = {
+                frame: { x: 0, y: 28, w: 14, h: 14 },
+                rotated: false,
+                trimmed: true,
+                spriteSourceSize: { x: 0, y: 0, w: 40, h: 20 },
+                sourceSize: { w: 40, h: 20 },
+            };
 
-    it('should parse texture from trimmed', (done) =>
-    {
-        const data = {
-            frame: { x: 0, y: 28, w: 14, h: 14 },
-            rotated: false,
-            trimmed: true,
-            spriteSourceSize: { x: 0, y: 0, w: 40, h: 20 },
-            sourceSize: { w: 40, h: 20 },
-        };
+            parseFrame(data, (texture) =>
+            {
+                expect(texture.width).toEqual(40);
+                expect(texture.height).toEqual(20);
+                done();
+            });
+        }));
 
-        parseFrame(data, (texture) =>
+    it('should parse texture from minimal data', () =>
+        new Promise<void>((done) =>
         {
-            expect(texture.width).toEqual(40);
-            expect(texture.height).toEqual(20);
-            done();
-        });
-    });
+            const data = { frame: { x: 0, y: 0, w: 14, h: 14 } };
 
-    it('should parse texture from minimal data', (done) =>
-    {
-        const data = { frame: { x: 0, y: 0, w: 14, h: 14 } };
+            parseFrame(data, (texture) =>
+            {
+                expect(texture.width).toEqual(14);
+                expect(texture.height).toEqual(14);
+                done();
+            });
+        }));
 
-        parseFrame(data, (texture) =>
+    it('should parse texture without trimmed or sourceSize', () =>
+        new Promise<void>((done) =>
         {
-            expect(texture.width).toEqual(14);
-            expect(texture.height).toEqual(14);
-            done();
-        });
-    });
+            const data = {
+                frame: { x: 0, y: 14, w: 14, h: 14 },
+                rotated: false,
+                trimmed: false,
+                spriteSourceSize: { x: 0, y: 0, w: 20, h: 30 },
+            };
 
-    it('should parse texture without trimmed or sourceSize', (done) =>
-    {
-        const data = {
-            frame: { x: 0, y: 14, w: 14, h: 14 },
-            rotated: false,
-            trimmed: false,
-            spriteSourceSize: { x: 0, y: 0, w: 20, h: 30 },
-        };
+            parseFrame(data, (texture) =>
+            {
+                expect(texture.width).toEqual(14);
+                expect(texture.height).toEqual(14);
+                done();
+            });
+        }));
 
-        parseFrame(data, (texture) =>
+    it('should parse as trimmed if spriteSourceSize is set', () =>
+        new Promise<void>((done) =>
         {
-            expect(texture.width).toEqual(14);
-            expect(texture.height).toEqual(14);
-            done();
-        });
-    });
-
-    it('should parse as trimmed if spriteSourceSize is set', (done) =>
-    {
         // shoebox format
-        const data = {
-            frame: { x: 0, y: 0, w: 14, h: 16 },
-            spriteSourceSize: { x: 0, y: 0, w: 120, h: 100 },
-            sourceSize: { w: 120, h: 100 },
-        };
+            const data = {
+                frame: { x: 0, y: 0, w: 14, h: 16 },
+                spriteSourceSize: { x: 0, y: 0, w: 120, h: 100 },
+                sourceSize: { w: 120, h: 100 },
+            };
 
-        parseFrame(data, (texture) =>
-        {
-            expect(texture.width).toEqual(120);
-            expect(texture.height).toEqual(100);
-            done();
-        });
-    });
+            parseFrame(data, (texture) =>
+            {
+                expect(texture.width).toEqual(120);
+                expect(texture.height).toEqual(100);
+                done();
+            });
+        }));
 });

@@ -90,17 +90,6 @@ describe('Transform Visibility', () =>
 
         root.renderable = false;
 
-        expect(root.layerGroup.structureDidChange).toEqual(false);
-    });
-
-    it('should not cause a rebuild if renderable is changed on a layer', async () =>
-    {
-        const root = new Container({ layer: true });
-
-        root.layerGroup.structureDidChange = false;
-
-        root.renderable = false;
-
         expect(root.renderable).toEqual(false);
 
         expect(root.layerGroup.structureDidChange).toEqual(false);

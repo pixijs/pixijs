@@ -93,7 +93,7 @@ describe('Round Pixels', () =>
         expect(tilingSprite.view.roundPixels).toBe(1);
     });
 
-    it('renderer round pixels should override batched items round pixels if false ', async () =>
+    it('renderer round pixels should override batched items round pixels if false', async () =>
     {
         const renderer = new WebGLRenderer();
 
@@ -132,7 +132,7 @@ describe('Round Pixels', () =>
         expect(batchableTilingSprite.view.roundPixels).toBe(1);
     });
 
-    it('renderer round pixels should override text items round pixels if false ', async () =>
+    it('renderer round pixels should override text items round pixels if false', async () =>
     {
         const renderer = new WebGLRenderer();
 
@@ -155,7 +155,7 @@ describe('Round Pixels', () =>
         expect(batchableTextHTMLData.batchableSprite.roundPixels).toBe(1);
     });
 
-    it('renderer round pixels should override non batched items round pixels if false ', async () =>
+    it('renderer round pixels should override non batched items round pixels if false', async () =>
     {
         const renderer = new WebGLRenderer();
 

@@ -11,7 +11,7 @@ char id=33 x=244 y=107 width=8 height=30 xoffset=4 yoffset=0 xadvance=15 page=0 
 
 describe('TextFormat', () =>
 {
-    it('should parse text chars, if no letter or char property is present ', async () =>
+    it('should parse text chars, if no letter or char property is present', async () =>
     {
         const parsedText = bitmapFontTextParser.parse(rawFontString);
 

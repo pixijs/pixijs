@@ -100,12 +100,12 @@ describe('Ticker', () =>
         shared.add(listener);
         shared.update();
 
-        expect(listener).toBeCalledTimes(1);
+        expect(listener).toHaveBeenCalledTimes(1);
 
         shared.remove(listener);
         shared.update();
 
-        expect(listener).toBeCalledTimes(1);
+        expect(listener).toHaveBeenCalledTimes(1);
     });
 
     it('should update a listener twice and remove once', () =>
@@ -116,13 +116,13 @@ describe('Ticker', () =>
         shared.add(listener).add(listener);
         shared.update();
 
-        expect(listener).toBeCalledTimes(2);
+        expect(listener).toHaveBeenCalledTimes(2);
         expect(length()).toEqual(len + 2);
 
         shared.remove(listener);
         shared.update();
 
-        expect(listener).toBeCalledTimes(2);
+        expect(listener).toHaveBeenCalledTimes(2);
         expect(length()).toEqual(len);
     });
 
@@ -191,7 +191,7 @@ describe('Ticker', () =>
 
         shared.update();
 
-        expect(listener).toBeCalledTimes(1);
+        expect(listener).toHaveBeenCalledTimes(1);
         expect(length()).toEqual(len);
     });
 
@@ -241,9 +241,9 @@ describe('Ticker', () =>
 
         shared.update();
 
-        expect(listener1).toBeCalledTimes(2);
-        expect(listener2).toBeCalledTimes(1);
-        expect(listener3).toBeCalledTimes(2);
+        expect(listener1).toHaveBeenCalledTimes(2);
+        expect(listener2).toHaveBeenCalledTimes(1);
+        expect(listener3).toHaveBeenCalledTimes(2);
 
         shared.remove(listener1).remove(listener3);
 
@@ -267,9 +267,9 @@ describe('Ticker', () =>
 
         expect(length()).toEqual(len + 3);
 
-        expect(mainListener).toBeCalledTimes(1);
-        expect(lowListener).toBeCalledTimes(1);
-        expect(highListener).not.toBeCalled();
+        expect(mainListener).toHaveBeenCalledTimes(1);
+        expect(lowListener).toHaveBeenCalledTimes(1);
+        expect(highListener).not.toHaveBeenCalled();
 
         shared.remove(mainListener)
             .remove(highListener)
@@ -293,8 +293,8 @@ describe('Ticker', () =>
 
         expect(length()).toEqual(len + 2);
 
-        expect(listener2).toBeCalledTimes(1);
-        expect(listener1).toBeCalledTimes(1);
+        expect(listener2).toHaveBeenCalledTimes(1);
+        expect(listener1).toHaveBeenCalledTimes(1);
 
         shared.remove(listener1)
             .remove(listener2);
@@ -321,8 +321,8 @@ describe('Ticker', () =>
 
         expect(length()).toEqual(len + 1);
 
-        expect(listener2).toBeCalledTimes(1);
-        expect(listener1).toBeCalledTimes(1);
+        expect(listener2).toHaveBeenCalledTimes(1);
+        expect(listener1).toHaveBeenCalledTimes(1);
 
         shared.remove(listener2);
 
@@ -349,12 +349,12 @@ describe('Ticker', () =>
         expect(length()).toEqual(len + 1);
 
         expect(listener2).not.toHaveBeenCalled();
-        expect(listener1).toBeCalledTimes(1);
+        expect(listener1).toHaveBeenCalledTimes(1);
 
         shared.update();
 
-        expect(listener2).toBeCalledTimes(1);
-        expect(listener1).toBeCalledTimes(1);
+        expect(listener2).toHaveBeenCalledTimes(1);
+        expect(listener1).toHaveBeenCalledTimes(1);
 
         shared.remove(listener2);
 
@@ -387,17 +387,17 @@ describe('Ticker', () =>
 
         expect(length()).toEqual(len + 2);
 
-        expect(listener2).toBeCalledTimes(1);
-        expect(listener3).not.toBeCalled();
-        expect(listener4).toBeCalledTimes(1);
-        expect(listener1).toBeCalledTimes(1);
+        expect(listener2).toHaveBeenCalledTimes(1);
+        expect(listener3).not.toHaveBeenCalled();
+        expect(listener4).toHaveBeenCalledTimes(1);
+        expect(listener1).toHaveBeenCalledTimes(1);
 
         shared.update();
 
-        expect(listener2).toBeCalledTimes(1);
-        expect(listener3).not.toBeCalled();
-        expect(listener4).toBeCalledTimes(2);
-        expect(listener1).toBeCalledTimes(2);
+        expect(listener2).toHaveBeenCalledTimes(1);
+        expect(listener3).not.toHaveBeenCalled();
+        expect(listener4).toHaveBeenCalledTimes(2);
+        expect(listener1).toHaveBeenCalledTimes(2);
 
         shared.remove(listener1)
             .remove(listener4);
@@ -405,50 +405,52 @@ describe('Ticker', () =>
         expect(length()).toEqual(len);
     });
 
-    it('should destroy on listener', (done) =>
-    {
-        const ticker = new Ticker();
-        const listener2 = jest.fn();
-        const listener = jest.fn(() =>
+    it('should destroy on listener', () =>
+        new Promise<void>((done) =>
         {
-            ticker.destroy();
-            setTimeout(() =>
+            const ticker = new Ticker();
+            const listener2 = jest.fn();
+            const listener = jest.fn(() =>
             {
-                expect(listener2).not.toHaveBeenCalled();
-                expect(listener).toBeCalledTimes(1);
+                ticker.destroy();
+                setTimeout(() =>
+                {
+                    expect(listener2).not.toHaveBeenCalled();
+                    expect(listener).toHaveBeenCalledTimes(1);
+                    done();
+                }, 0);
+            });
+
+            ticker.add(listener);
+            ticker.add(listener2, null, UPDATE_PRIORITY.LOW);
+            ticker.start();
+        }));
+
+    it('should Ticker call destroyed listener "next" pointer after destroy', () =>
+        new Promise<void>((done) =>
+        {
+            const ticker = new Ticker();
+
+            const listener1 = jest.fn();
+            const listener2 = jest.fn(() =>
+            {
+                ticker.remove(listener2);
+            });
+
+            const listener3 = jest.fn(() =>
+            {
+                ticker.stop();
+
+                expect(listener1).toHaveBeenCalledTimes(1);
+                expect(listener2).toHaveBeenCalledTimes(1);
+                expect(listener3).toHaveBeenCalledTimes(1);
                 done();
-            }, 0);
-        });
+            });
 
-        ticker.add(listener);
-        ticker.add(listener2, null, UPDATE_PRIORITY.LOW);
-        ticker.start();
-    });
+            ticker.add(listener1, null, UPDATE_PRIORITY.HIGH);
+            ticker.add(listener2, null, UPDATE_PRIORITY.HIGH);
+            ticker.add(listener3, null, UPDATE_PRIORITY.HIGH);
 
-    it('should Ticker call destroyed listener "next" pointer after destroy', (done) =>
-    {
-        const ticker = new Ticker();
-
-        const listener1 = jest.fn();
-        const listener2 = jest.fn(() =>
-        {
-            ticker.remove(listener2);
-        });
-
-        const listener3 = jest.fn(() =>
-        {
-            ticker.stop();
-
-            expect(listener1).toBeCalledTimes(1);
-            expect(listener2).toBeCalledTimes(1);
-            expect(listener3).toBeCalledTimes(1);
-            done();
-        });
-
-        ticker.add(listener1, null, UPDATE_PRIORITY.HIGH);
-        ticker.add(listener2, null, UPDATE_PRIORITY.HIGH);
-        ticker.add(listener3, null, UPDATE_PRIORITY.HIGH);
-
-        ticker.start();
-    });
+            ticker.start();
+        }));
 });
