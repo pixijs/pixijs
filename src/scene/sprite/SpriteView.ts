@@ -135,7 +135,7 @@ export class SpriteView implements View
         const height = textureSource.height * orig.height;
 
         sourceBounds[0] = -anchor._x * width;
-        sourceBounds[1] = sourceBounds[1] + width;
+        sourceBounds[1] = sourceBounds[0] + width;
 
         sourceBounds[2] = -anchor._y * height;
         sourceBounds[3] = sourceBounds[2] + height;
