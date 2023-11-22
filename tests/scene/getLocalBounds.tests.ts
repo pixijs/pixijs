@@ -252,7 +252,7 @@ describe('getLocalBounds', () =>
     it('should measure trimmed sprite correctly', async () =>
     {
         const textureSource = new TextureSource({
-            width: 100,
+            width: 200,
             height: 200,
             resolution: 1,
         });
@@ -267,7 +267,7 @@ describe('getLocalBounds', () =>
 
         const sprite = new Sprite({ texture });
 
-        expect(sprite.width).toBe(100);
+        expect(sprite.width).toBe(200);
         expect(sprite.height).toBe(200);
     });
 });
