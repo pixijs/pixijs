@@ -14,7 +14,7 @@ export const scene: TestScene = {
             .fill('white');
 
         const greenContainer = new Container({
-           // layer: true,
+           layer: true,
         });
 
         greenContainer.addChild(new Graphics(squareContext));
@@ -30,7 +30,7 @@ export const scene: TestScene = {
 
         redContainer.addChild(new Graphics(squareContext));
         redContainer.x = 30;
-       // redContainer.tint = 0xFF0000;
+        redContainer.tint = 0xFF0000;
 
         scene.addChild(redContainer);
 
