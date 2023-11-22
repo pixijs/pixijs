@@ -14,7 +14,7 @@ export const scene: TestScene = {
             .fill('white');
 
         const greenContainer = new Container({
-            layer: true,
+           // layer: true,
         });
 
         greenContainer.addChild(new Graphics(squareContext));
@@ -28,10 +28,7 @@ export const scene: TestScene = {
 
         scene.addChild(greenContainer);
 
-        redContainer.addChild(new Graphics()
-            .rect(0, 0, 20, 20)
-            .fill('red'));
-
+        redContainer.addChild(new Graphics(squareContext));
         redContainer.x = 30;
        // redContainer.tint = 0xFF0000;
 
@@ -42,13 +39,13 @@ export const scene: TestScene = {
         });
 
         const whiteContainer = new Container({
-            layer: true,
+         //   layer: true,
         });
 
         whiteContainer.addChild(new Graphics(squareContext));
 
         const blueContainer = new Container({
-            layer: false,
+           // layer: false,
         });
 
         blueContainer.addChild(new Graphics(squareContext));
