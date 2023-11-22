@@ -95,8 +95,6 @@ export function generateUniformBufferSync(
 
     const fragmentSrc = funcFragments.join('\n');
 
-    throw new Error(fragmentSrc);
-
     // eslint-disable-next-line no-new-func
     return new Function(
         'uv',

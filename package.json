@@ -36,7 +36,7 @@
     "test:scene": "npx jest --silent --testPathPattern=tests/visual",
     "test:scene:debug": "cross-env DEBUG_MODE=1 npx jest --testPathPattern=tests/visual",
     "test:types": "tsc --noEmit",
-    "coverage": "npm run test:scene -- --coverage --maxWorkers=4",
+    "coverage": "npm run test:unit --coverage --maxWorkers=4 && npm run test:scene -- --maxWorkers=4",
     "docs": "mkdirp out && npm run docs:webdoc",
     "docs:webdoc": "webdoc -R README.md",
     "docs:watch": "nodemon --watch \"./src/*\" --exec \"npm run docs\" -e ts",

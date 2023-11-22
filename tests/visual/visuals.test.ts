@@ -36,8 +36,8 @@ describe('Visual Tests', () =>
     {
         const defaultRenderers = {
             canvas: false,
-            webgl: true,
             webgpu: true,
+            webgl: true,
         };
 
         const renderers = {
