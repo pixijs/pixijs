@@ -6,51 +6,46 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should tint layers correctly',
-    only: true,
     create: async (scene: Container) =>
     {
-       
+        // layer green container..
+        const squareContext = new GraphicsContext()
+            .rect(0, 0, 20, 20)
+            .fill('white');
 
-        // non layer red container.
-        const redContainer = new Container({
+        const greenContainer = new Container({
             layer: false,
         });
 
-     
+        greenContainer.addChild(new Graphics(squareContext));
+
+        greenContainer.tint = 'green';
+
+        // non layer red container.
+        const redContainer = new Container({
+            layer: true,
+        });
+
+        scene.addChild(greenContainer);
+
+        redContainer.addChild(new Graphics(squareContext));
         redContainer.x = 30;
         redContainer.tint = 'red';
 
         scene.addChild(redContainer);
-
-         // layer green container..
-         const squareContext = new GraphicsContext()
-         .rect(0, 0, 20, 20)
-         .fill('white');
-
-     const greenContainer = new Container({
-         layer: true,
-     });
-
-     greenContainer.addChild(new Graphics(squareContext));
-
-     greenContainer.tint = 'green';
-
-     scene.addChild(greenContainer);
-
-     redContainer.addChild(new Graphics(squareContext));
 
         const nestedLayer = new Container({
             layer: true,
         });
 
         const whiteContainer = new Container({
-            //   layer: true,
+            layer: true,
         });
 
         whiteContainer.addChild(new Graphics(squareContext));
 
         const blueContainer = new Container({
-            // layer: false,
+            layer: false,
         });
 
         blueContainer.addChild(new Graphics(squareContext));
