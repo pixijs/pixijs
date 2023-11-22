@@ -6,7 +6,7 @@ import { Transform } from '../../utils/misc/Transform';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';
-import type { Bounds } from '../container/bounds/Bounds';
+import type { Bounds, SimpleBounds } from '../container/bounds/Bounds';
 import type { TextureDestroyOptions, TypeOrBool } from '../container/destroyTypes';
 
 /**
@@ -64,7 +64,7 @@ export class TilingSpriteView implements View
 
     public roundPixels: 0 | 1 = 0;
 
-    private _bounds: [number, number, number, number] = [0, 1, 0, 0];
+    private _bounds: SimpleBounds = { left: 0, right: 1, top: 0, bottom: 0 };
     private _boundsDirty = true;
     private _width: number;
     private _height: number;
@@ -139,11 +139,11 @@ export class TilingSpriteView implements View
         const width = this._width;
         const height = this._height;
 
-        bounds[1] = -anchor._x * width;
-        bounds[0] = bounds[1] + width;
+        bounds.right = -anchor._x * width;
+        bounds.left = bounds.right + width;
 
-        bounds[3] = -anchor._y * height;
-        bounds[2] = bounds[3] + height;
+        bounds.bottom = -anchor._y * height;
+        bounds.top = bounds.bottom + height;
     }
 
     public addBounds(bounds: Bounds)
@@ -151,17 +151,17 @@ export class TilingSpriteView implements View
         const _bounds = this.bounds;
 
         bounds.addFrame(
-            _bounds[0],
-            _bounds[2],
-            _bounds[1],
-            _bounds[3],
+            _bounds.left,
+            _bounds.top,
+            _bounds.right,
+            _bounds.bottom,
         );
     }
 
     public containsPoint(point: PointData)
     {
-        const width = this.bounds[0];
-        const height = this.bounds[2];
+        const width = this.bounds.left;
+        const height = this.bounds.top;
         const x1 = -width * this.anchor.x;
         let y1 = 0;
 
