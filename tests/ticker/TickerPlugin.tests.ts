@@ -13,23 +13,24 @@ describe('TickerPlugin', () =>
     }
     let app: App;
 
-    it('should not start application before calling start method if options.autoStart is false', (done) =>
-    {
-        const app = {} as App;
-
-        TickerPlugin.init.call(app, { autoStart: false });
-
-        expect(app.ticker).toBeInstanceOf(Ticker);
-        expect(app.ticker.started).toBe(false);
-
-        app.start();
-
-        app.ticker.addOnce(() =>
+    it('should not start application before calling start method if options.autoStart is false', () =>
+        new Promise<void>((done) =>
         {
-            TickerPlugin.destroy.call(app);
-            done();
-        });
-    });
+            const app = {} as App;
+
+            TickerPlugin.init.call(app, { autoStart: false });
+
+            expect(app.ticker).toBeInstanceOf(Ticker);
+            expect(app.ticker.started).toBe(false);
+
+            app.start();
+
+            app.ticker.addOnce(() =>
+            {
+                TickerPlugin.destroy.call(app);
+                done();
+            });
+        }));
 
     describe('set ticker', () =>
     {
@@ -60,11 +61,11 @@ describe('TickerPlugin', () =>
             app.ticker = ticker as unknown as Ticker;
 
             expect(_ticker.remove).toHaveBeenCalledOnce();
-            expect(_ticker.remove).toBeCalledWith(app.render, app);
+            expect(_ticker.remove).toHaveBeenCalledWith(app.render, app);
 
             expect(app._ticker).toEqual(ticker);
             expect(ticker.add).toHaveBeenCalledOnce();
-            expect(ticker.add).toBeCalledWith(app.render, app, UPDATE_PRIORITY.LOW);
+            expect(ticker.add).toHaveBeenCalledWith(app.render, app, UPDATE_PRIORITY.LOW);
         });
 
         it('should assign ticker if no ticker', () =>
@@ -76,7 +77,7 @@ describe('TickerPlugin', () =>
 
             expect(app._ticker).toEqual(ticker);
             expect(ticker.add).toHaveBeenCalledOnce();
-            expect(ticker.add).toBeCalledWith(app.render, app, UPDATE_PRIORITY.LOW);
+            expect(ticker.add).toHaveBeenCalledWith(app.render, app, UPDATE_PRIORITY.LOW);
         });
 
         it('should assign null ticker', () =>
@@ -87,7 +88,7 @@ describe('TickerPlugin', () =>
             app.ticker = null;
 
             expect(_ticker.remove).toHaveBeenCalledOnce();
-            expect(_ticker.remove).toBeCalledWith(app.render, app);
+            expect(_ticker.remove).toHaveBeenCalledWith(app.render, app);
 
             expect(app._ticker).toBeNull();
         });

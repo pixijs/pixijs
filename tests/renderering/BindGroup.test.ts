@@ -54,15 +54,15 @@ describe('BindGroup', () =>
 
         expect(bufferId).toBe(buffer._resourceId);
 
-        expect(updateListener).toBeCalledTimes(1);
-        expect(changeListener).toBeCalledTimes(0);
+        expect(updateListener).toHaveBeenCalledTimes(1);
+        expect(changeListener).toHaveBeenCalledTimes(0);
 
         buffer.data = new Float32Array(50);
 
         expect(bufferId).not.toBe(buffer._resourceId);
 
-        expect(updateListener).toBeCalledTimes(1);
-        expect(changeListener).toBeCalledTimes(1);
+        expect(updateListener).toHaveBeenCalledTimes(1);
+        expect(changeListener).toHaveBeenCalledTimes(1);
     });
 
     it('should let a BindGroup know if buffer has changed correctly', () =>

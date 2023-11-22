@@ -22,7 +22,7 @@ describe('GLTextureSystem', () =>
         const texture = getTexture({ width: 10, height: 10 });
         const pixelInfo = renderer.texture.getPixels(texture);
 
-        expect(pixelInfo.pixels.length).toBe(texture.width * texture.height * 4);
+        expect(pixelInfo.pixels).toHaveLength(texture.width * texture.height * 4);
         expect(pixelInfo.width).toBe(texture.width);
         expect(pixelInfo.height).toBe(texture.height);
     });

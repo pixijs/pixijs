@@ -1,4 +1,4 @@
-const isCI = process.env.GITHUB_ACTIONS === 'true';
+export const isCI = process.env.GITHUB_ACTIONS === 'true';
 const GITHUB_SHA = (process.env.GITHUB_SHA || 'master');
 
 export const basePath = isCI

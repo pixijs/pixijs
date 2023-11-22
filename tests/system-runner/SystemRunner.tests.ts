@@ -17,12 +17,12 @@ describe('Runner', () =>
 
         complete.add({ complete: callback });
         complete.emit();
-        expect(callback).toBeCalled();
-        expect(callback).toBeCalledTimes(1);
+        expect(callback).toHaveBeenCalled();
+        expect(callback).toHaveBeenCalledTimes(1);
         complete.emit();
-        expect(callback).toBeCalledTimes(2);
+        expect(callback).toHaveBeenCalledTimes(2);
         complete.emit();
-        expect(callback).toBeCalledTimes(3);
+        expect(callback).toHaveBeenCalledTimes(3);
         complete.destroy();
         expect(!complete.items).toBe(true);
         expect(!complete.name).toBe(true);
@@ -52,8 +52,8 @@ describe('Runner', () =>
 
         update.add({ update: callback });
         update.emit(1, 2);
-        expect(callback).toBeCalled();
-        expect(callback).toBeCalledTimes(1);
+        expect(callback).toHaveBeenCalled();
+        expect(callback).toHaveBeenCalledTimes(1);
     });
 
     it('should implement multiple targets', () =>
@@ -69,15 +69,15 @@ describe('Runner', () =>
         expect(complete.contains(obj2)).toBe(true);
         complete.emit();
         expect(!complete.empty).toBe(true);
-        expect(complete.items.length).toEqual(2);
-        expect(obj.complete).toBeCalled();
-        expect(obj.complete).toBeCalledTimes(1);
-        expect(obj2.complete).toBeCalled();
-        expect(obj2.complete).toBeCalledTimes(1);
+        expect(complete.items).toHaveLength(2);
+        expect(obj.complete).toHaveBeenCalled();
+        expect(obj.complete).toHaveBeenCalledTimes(1);
+        expect(obj2.complete).toHaveBeenCalled();
+        expect(obj2.complete).toHaveBeenCalledTimes(1);
         complete.remove(obj);
-        expect(complete.items.length).toEqual(1);
+        expect(complete.items).toHaveLength(1);
         complete.remove(obj2);
-        expect(complete.items.length).toEqual(0);
+        expect(complete.items).toHaveLength(0);
         expect(complete.empty).toBe(true);
     });
 
@@ -95,7 +95,7 @@ describe('Runner', () =>
             .add(obj2)
             .add(obj3);
 
-        expect(complete.items.length).toEqual(2);
+        expect(complete.items).toHaveLength(2);
 
         complete.removeAll();
         expect(complete.empty).toBe(true);
@@ -108,6 +108,6 @@ describe('Runner', () =>
         const obj = { complete() { } };
 
         complete.add(obj).add(obj);
-        expect(complete.items.length).toEqual(1);
+        expect(complete.items).toHaveLength(1);
     });
 });

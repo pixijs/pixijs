@@ -4,7 +4,7 @@ import { Container } from '../../src/scene/container/Container';
 import { Graphics } from '../../src/scene/graphics/shared/Graphics';
 import { getApp } from '../utils/getApp';
 
-export function graphicsWithRect(x: number, y: number, width: number, height: number)
+function graphicsWithRect(x: number, y: number, width: number, height: number)
 {
     const graphics = new Graphics();
 
@@ -13,7 +13,7 @@ export function graphicsWithRect(x: number, y: number, width: number, height: nu
     return graphics;
 }
 
-export function id(container: Container, id: string)
+function id(container: Container, id: string)
 {
     (container as any).__id = id;
 
@@ -65,7 +65,7 @@ describe('EventBoundary', () =>
         stage.addEventListener('click', stageSpy);
         boundary.dispatchEvent(event);
 
-        expect(eventSpy).toBeCalledTimes(2);
+        expect(eventSpy).toHaveBeenCalledTimes(2);
         expect(captureSpy).toHaveBeenCalledOnce();
         expect(captureSpy).toHaveBeenCalledBefore(eventSpy);
         expect(stageSpy).not.toHaveBeenCalled();
@@ -289,13 +289,13 @@ describe('EventBoundary', () =>
         boundary.mapEvent(off);
 
         // "pressed" unmounted so it shouldn't get a pointerupoutside
-        expect(eventSpy).not.toBeCalled();
+        expect(eventSpy).not.toHaveBeenCalled();
 
         // "container" still mounted so it should get pointerupoutside
         expect(containerSpy).toHaveBeenCalledOnce();
 
         // "stage" still ancestor of the hit "outside" on pointerup, so it get pointerup instead
-        expect(stageOutsideSpy).not.toBeCalled();
+        expect(stageOutsideSpy).not.toHaveBeenCalled();
         // not a "pointerupoutside"
         expect(stageSpy).toHaveBeenCalledOnce();
     });
@@ -351,7 +351,7 @@ describe('EventBoundary', () =>
         over.destroy();
         boundary.mapEvent(off);
 
-        expect(outSpy).not.toBeCalled();
+        expect(outSpy).not.toHaveBeenCalled();
         expect(containerOutSpy).toHaveBeenCalledOnce();
         expect(toOverSpy).toHaveBeenCalledOnce();
     });

@@ -6,7 +6,7 @@ import { manifest } from './sampleManifest';
 
 import type { FormatDetectionParser } from '../../src/assets/detections/types';
 
-export const testDetector = {
+const testDetector = {
     extension: {
         type: ExtensionType.DetectionParser,
         priority: 2,

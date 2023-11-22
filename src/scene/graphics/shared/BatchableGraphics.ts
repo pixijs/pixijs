@@ -66,7 +66,8 @@ export class BatchableGraphics implements BatchableObject
 
         if (this.applyTransform)
         {
-            const argb = mixColors(bgr + ((this.alpha * 255) << 24), graphics.layerColor);
+            const argb = mixColors(bgr, graphics.layerColor)
+            + ((this.alpha * graphics.layerAlpha * 255) << 24);
 
             const wt = graphics.layerTransform;
             const textureIdAndRound = (textureId << 16) | (this.roundPixels & 0xFFFF);

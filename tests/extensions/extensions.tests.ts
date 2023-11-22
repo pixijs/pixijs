@@ -34,7 +34,7 @@ describe('extensions', () =>
             expect(() =>
             {
                 extensions.handle(exampleType, () => null, () => null);
-            }).toThrowError(`Extension type ${exampleType} already has a handler`);
+            }).toThrow(`Extension type ${exampleType} already has a handler`);
         });
     });
 
@@ -72,7 +72,7 @@ describe('extensions', () =>
             extensions.handleByList(exampleType, list);
             extensions.add(example);
             extensions.add(example);
-            expect(list.length).toBe(1);
+            expect(list).toHaveLength(1);
         });
 
         it('should add extensions in order of priority', () =>
@@ -115,10 +115,10 @@ describe('extensions', () =>
 
             extensions.handleByList(exampleType, list);
             extensions.add(example2);
-            expect(list.length).toBe(1);
+            expect(list).toHaveLength(1);
             expect(list[0]).toBe(example2);
             extensions.remove(example2);
-            expect(list.length).toBe(0);
+            expect(list).toHaveLength(0);
         });
 
         it('should support spread', () =>
@@ -127,9 +127,9 @@ describe('extensions', () =>
 
             extensions.handleByList(exampleType, list);
             extensions.add(example2, example);
-            expect(list.length).toBe(2);
+            expect(list).toHaveLength(2);
             extensions.remove(example2, example);
-            expect(list.length).toBe(0);
+            expect(list).toHaveLength(0);
         });
 
         it('should immedately register extension before handle', () =>
@@ -138,10 +138,10 @@ describe('extensions', () =>
 
             extensions.handleByList(exampleType, list);
             extensions.add(example);
-            expect(list.length).toBe(1);
+            expect(list).toHaveLength(1);
             expect(list[0]).toBe(example);
             extensions.remove(example);
-            expect(list.length).toBe(0);
+            expect(list).toHaveLength(0);
         });
 
         it('should immedately register extension after handle', () =>
@@ -150,10 +150,10 @@ describe('extensions', () =>
 
             extensions.add(example);
             extensions.handleByList(exampleType, list);
-            expect(list.length).toBe(1);
+            expect(list).toHaveLength(1);
             expect(list[0]).toBe(example);
             extensions.remove(example);
-            expect(list.length).toBe(0);
+            expect(list).toHaveLength(0);
         });
 
         it('should support multiple types', () =>
@@ -169,13 +169,13 @@ describe('extensions', () =>
             extensions.handleByList(exampleType, list);
             extensions.handleByList(exampleType2, list2);
             extensions.add(example3);
-            expect(list.length).toBe(1);
-            expect(list2.length).toBe(1);
+            expect(list).toHaveLength(1);
+            expect(list2).toHaveLength(1);
             expect(list[0]).toBe(example3);
             expect(list2[0]).toBe(example3);
             extensions.remove(example3);
-            expect(list.length).toBe(0);
-            expect(list2.length).toBe(0);
+            expect(list).toHaveLength(0);
+            expect(list2).toHaveLength(0);
         });
     });
 });
