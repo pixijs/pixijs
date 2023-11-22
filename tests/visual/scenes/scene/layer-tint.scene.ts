@@ -30,8 +30,8 @@ export const scene: TestScene = {
         scene.addChild(greenContainer);
 
         redContainer.addChild(new Graphics(squareContext));
-        redContainer.x = 30;
-        redContainer.tint = 0xFF0000;
+    //    redContainer.x = 10;
+        redContainer.tint = 'red';
 
         scene.addChild(redContainer);
 
