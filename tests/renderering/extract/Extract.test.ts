@@ -96,7 +96,7 @@ describe('GenerateTexture', () =>
             const renderTexture = getTexture({ width: 10, height: 10 });
             const pixels = renderer.extract.pixels(renderTexture);
 
-            expect(pixels.pixels.length).toBe(renderTexture.width * renderTexture.height * 4);
+            expect(pixels.pixels).toHaveLength(renderTexture.width * renderTexture.height * 4);
             expect(pixels.width).toBe(renderTexture.width);
             expect(pixels.height).toBe(renderTexture.height);
         });
@@ -220,6 +220,7 @@ describe('GenerateTexture', () =>
         expect(height).toEqual(2);
     });
 
+    // eslint-disable-next-line jest/no-commented-out-tests
     // it('should extract canvas from render texture correctly', async () =>
     // {
     //     const renderer = new Renderer({ width: 2, height: 2 });
@@ -248,6 +249,7 @@ describe('GenerateTexture', () =>
     //     renderer.destroy();
     // });
 
+    // eslint-disable-next-line jest/no-commented-out-tests
     // it('should extract pixels with resolution !== 1', async () =>
     // {
     //     const renderer = new Renderer({ width: 2, height: 2, resolution: 2 });
@@ -281,6 +283,7 @@ describe('GenerateTexture', () =>
     //     renderer.destroy();
     // });
 
+    // eslint-disable-next-line jest/no-commented-out-tests
     // it('should extract canvas with resolution !== 1', async () =>
     // {
     //     const renderer = new Renderer({ width: 2, height: 2, resolution: 2 });
@@ -320,6 +323,7 @@ describe('GenerateTexture', () =>
     //     renderer.destroy();
     // });
 
+    // eslint-disable-next-line jest/no-commented-out-tests
     // it('should extract an sprite', async () =>
     // {
     //     const renderer = new Renderer();
@@ -335,6 +339,7 @@ describe('GenerateTexture', () =>
     //     sprite.destroy();
     // });
 
+    // eslint-disable-next-line jest/no-commented-out-tests
     // it('should extract with no arguments', async () =>
     // {
     //     const renderer = new Renderer();
@@ -348,6 +353,7 @@ describe('GenerateTexture', () =>
     //     renderer.destroy();
     // });
 
+    // eslint-disable-next-line jest/no-commented-out-tests
     // it('should extract a render texture', async () =>
     // {
     //     const renderer = new Renderer();
@@ -368,6 +374,7 @@ describe('GenerateTexture', () =>
     //     sprite.destroy();
     // });
 
+    // eslint-disable-next-line jest/no-commented-out-tests
     // it('should extract with multisample', async () =>
     // {
     //     const renderer = new Renderer({ antialias: true });
@@ -383,6 +390,7 @@ describe('GenerateTexture', () =>
     //     sprite.destroy();
     // });
 
+    // eslint-disable-next-line jest/no-commented-out-tests
     // it('should extract from object with frame correctly', async () =>
     // {
     //     const renderer = new Renderer({ width: 2, height: 2 });
@@ -420,6 +428,7 @@ describe('GenerateTexture', () =>
     //     renderer.destroy();
     // });
 
+    // eslint-disable-next-line jest/no-commented-out-tests
     // it('should unpremultiply alpha correctly', () =>
     // {
     //     const pixels1 = new Uint8Array(4);
@@ -467,6 +476,7 @@ describe('GenerateTexture', () =>
     //     }
     // });
 
+    // eslint-disable-next-line jest/no-commented-out-tests
     // it('should extract from multisampled render texture', async () =>
     // {
     //     const renderer = new Renderer();
@@ -491,6 +501,7 @@ describe('GenerateTexture', () =>
     //     sprite.destroy();
     // });
 
+    // eslint-disable-next-line jest/no-commented-out-tests
     // it('should not throw an error if frame is empty', async () =>
     // {
     //     const renderer = new Renderer();
@@ -525,6 +536,7 @@ describe('GenerateTexture', () =>
     //     renderer.destroy();
     // });
 
+    // eslint-disable-next-line jest/no-commented-out-tests
     // it('should unpremultiply if premultiplied alpha', async () =>
     // {
     //     const renderer = new Renderer({
@@ -568,6 +580,7 @@ describe('GenerateTexture', () =>
     //     renderTexture.destroy();
     // });
 
+    // eslint-disable-next-line jest/no-commented-out-tests
     // it('should not unpremultiply if no premultiplied alpha', async () =>
     // {
     //     const renderer = new Renderer({

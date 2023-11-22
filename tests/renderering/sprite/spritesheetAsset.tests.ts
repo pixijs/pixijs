@@ -87,9 +87,9 @@ describe('spritesheetAsset', () =>
         const spritesheet2 = await loader.load<Spritesheet>(`${basePath}spritesheet/atlas-multipack-wrong-type.json`);
         const spritesheet3 = await loader.load<Spritesheet>(`${basePath}spritesheet/atlas-multipack-wrong-array.json`);
 
-        expect(spritesheet.linkedSheets.length).toEqual(1);
-        expect(spritesheet2.linkedSheets.length).toEqual(0);
-        expect(spritesheet3.linkedSheets.length).toEqual(0);
+        expect(spritesheet.linkedSheets).toHaveLength(1);
+        expect(spritesheet2.linkedSheets).toHaveLength(0);
+        expect(spritesheet3.linkedSheets).toHaveLength(0);
     });
 
     it('should unload a spritesheet', async () =>

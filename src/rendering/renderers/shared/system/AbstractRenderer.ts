@@ -107,6 +107,8 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
     public view: ViewSystem;
     public textureGenerator: GenerateTextureSystem;
 
+    protected _initOptions: OPTIONS = {} as OPTIONS;
+
     private _systemsHash: Record<string, System> = Object.create(null);
     private _lastObjectRendered: Container;
 
@@ -151,6 +153,9 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
         {
             await this.runners.init.items[i].init(options);
         }
+
+        // store options
+        this._initOptions = options as OPTIONS;
     }
 
     /** @deprecated since 8.0.0 */

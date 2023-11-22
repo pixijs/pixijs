@@ -939,7 +939,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
     set tint(value: ColorSource)
     {
-        const tempColor = Color.shared.setValue(value);
+        const tempColor = Color.shared.setValue(value ?? 0xFFFFFF);
         const bgr = tempColor.toBgrNumber();
 
         if (bgr === this.localColor) return;

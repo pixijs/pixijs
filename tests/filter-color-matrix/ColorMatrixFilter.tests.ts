@@ -22,6 +22,7 @@ describe('ColorMatrixFilter', () =>
     it('should run all operations without multiply', () =>
     {
         const filter = new ColorMatrixFilter();
+        const multiplySpy = jest.spyOn(filter, '_multiply' as any);
 
         filter.brightness(0.5, false);
         filter.tint(0xff0000, false);
@@ -46,11 +47,14 @@ describe('ColorMatrixFilter', () =>
         filter.reset();
 
         filter.destroy();
+
+        expect(multiplySpy).toHaveBeenCalledTimes(0);
     });
 
     it('should run all operations with multiply', () =>
     {
         const filter = new ColorMatrixFilter();
+        const multiplySpy = jest.spyOn(filter, '_multiply' as any);
 
         filter.brightness(0.5, true);
         filter.tint(0xff0000, true);
@@ -75,5 +79,6 @@ describe('ColorMatrixFilter', () =>
         filter.reset();
 
         filter.destroy();
+        expect(multiplySpy).toHaveBeenCalledTimes(19);
     });
 });

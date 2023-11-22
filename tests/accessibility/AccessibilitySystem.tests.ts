@@ -27,6 +27,7 @@ describe('AccessibilitySystem', () =>
         renderer.destroy();
     });
 
+    // eslint-disable-next-line jest/no-done-callback
     it('should activate when tab is pressed and deactivate when mouse moved', async (done) =>
     {
         const renderer = await getRenderer();
@@ -42,6 +43,7 @@ describe('AccessibilitySystem', () =>
         }, 0);
     });
 
+    // eslint-disable-next-line jest/no-done-callback
     it('should not crash when scene graph contains Containers without children', async (done) =>
     {
         class CompleteContainer extends Container
@@ -56,7 +58,7 @@ describe('AccessibilitySystem', () =>
 
         globalThis.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 9, key: 'tab' }));
 
-        expect(() => renderer.render(stage)).not.toThrowError();
+        expect(() => renderer.render(stage)).not.toThrow();
         setTimeout(() =>
         {
             expect(system.isActive).toBe(true);

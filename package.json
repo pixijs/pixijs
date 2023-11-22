@@ -90,6 +90,7 @@
     "esbuild": "^0.17.18",
     "eslint": "^8.38.0",
     "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jest": "^27.6.0",
     "eslint-plugin-jsdoc": "^41.1.2",
     "eslint-plugin-no-mixed-operators": "^1.1.1",
     "eslint-plugin-simple-import-sort": "^10.0.0",
@@ -135,6 +136,7 @@
     "./lib/compressed-textures/ktx/init.*",
     "./lib/compressed-textures/basis/init.*",
     "./lib/events/init.*",
+    "./lib/math-extras/init.*",
     "./lib/spritesheet/init.*",
     "./lib/rendering/init.*"
   ],
@@ -227,6 +229,14 @@
       },
       "require": {
         "default": "./lib/events/init.js"
+      }
+    },
+    "./math-extras": {
+      "import": {
+        "default": "./lib/math-extras/init.mjs"
+      },
+      "require": {
+        "default": "./lib/math-extras/init.js"
       }
     },
     "./spritesheet": {
