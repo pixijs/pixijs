@@ -1,9 +1,3 @@
-struct GlobalUniforms {
-  projectionMatrix:mat3x3<f32>,
-  worldTransformMatrix:mat3x3<f32>,
-  worldAlpha: f32
-}
-
 struct GlobalFilterUniforms {
   inputSize:vec4<f32>,
   inputPixel:vec4<f32>,
