@@ -1,5 +1,4 @@
 /* eslint-disable quote-props */
-import { warn } from '../../../../../utils/logging/warn';
 import { WGSL_TO_STD40_SIZE } from './createUBOElements';
 import { UBO_TO_SINGLE_SETTERS, type UniformsSyncCallback } from './createUniformBufferSyncTypes';
 import { uniformBufferParsers } from './uniformBufferParsers';
@@ -96,7 +95,7 @@ export function generateUniformBufferSync(
 
     const fragmentSrc = funcFragments.join('\n');
 
-    warn(fragmentSrc);
+    throw new Error(fragmentSrc);
 
     // eslint-disable-next-line no-new-func
     return new Function(
