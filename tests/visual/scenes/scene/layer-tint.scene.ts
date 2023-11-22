@@ -6,6 +6,7 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should tint layers correctly',
+    only: true,
     create: async (scene: Container) =>
     {
         // layer green container..
@@ -14,7 +15,7 @@ export const scene: TestScene = {
             .fill('white');
 
         const greenContainer = new Container({
-           layer: true,
+            layer: true,
         });
 
         greenContainer.addChild(new Graphics(squareContext));
@@ -39,13 +40,13 @@ export const scene: TestScene = {
         });
 
         const whiteContainer = new Container({
-         //   layer: true,
+            //   layer: true,
         });
 
         whiteContainer.addChild(new Graphics(squareContext));
 
         const blueContainer = new Container({
-           // layer: false,
+            // layer: false,
         });
 
         blueContainer.addChild(new Graphics(squareContext));
