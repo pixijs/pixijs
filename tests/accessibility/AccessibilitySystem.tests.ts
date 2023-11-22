@@ -40,7 +40,7 @@ describe('AccessibilitySystem', () =>
             globalThis.document.dispatchEvent(new MouseEvent('mousemove', { movementX: 10, movementY: 10 }));
             expect(system.isActive).toBe(false);
             done();
-        }, 0);
+        }, 10);
     });
 
     // eslint-disable-next-line jest/no-done-callback
@@ -63,6 +63,6 @@ describe('AccessibilitySystem', () =>
         {
             expect(system.isActive).toBe(true);
             done();
-        }, 0);
+        }, 10);
     });
 });
