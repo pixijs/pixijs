@@ -140,6 +140,27 @@ function addTextureToGeometryData(
     batches.push(graphicsBatch);
 }
 
+function isPointInPolygon(x: number, y: number, vertices: number[]): boolean
+{
+    let inside = false;
+    const n = vertices.length;
+
+    for (let i = 0, j = n - 2; i < n; j = i, i += 2)
+    {
+        const xi = vertices[i];
+        const yi = vertices[i + 1];
+        const xj = vertices[j];
+        const yj = vertices[j + 1];
+
+        const intersect = ((yi > y) !== (yj > y))
+                        && (x < ((xj - xi) * (y - yi) / (yj - yi)) + xi);
+
+        if (intersect) inside = !inside;
+    }
+
+    return inside;
+}
+
 function addShapePathToGeometryData(
     shapePath: ShapePath,
     style: ConvertedFillStyle,
@@ -193,6 +214,13 @@ function addShapePathToGeometryData(
 
                 holeArrays.forEach((holePoints) =>
                 {
+                    const [x, y] = holePoints;
+
+                    if (!isPointInPolygon(x, y, otherPoints))
+                    {
+                        return;
+                    }
+
                     holeIndices.push(otherPoints.length / 2);
                     otherPoints.push(...holePoints);
                 });
