@@ -202,5 +202,11 @@ export class RenderTarget
         this.height = 0;
         this.resolution = 1;
         this.colorTextures.length = 0;
+
+        if (this.depthTexture)
+        {
+            this.depthTexture.destroy();
+            delete this.depthTexture;
+        }
     }
 }

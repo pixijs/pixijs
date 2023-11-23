@@ -26,8 +26,8 @@ function checkColumn(data: Uint8ClampedArray, width: number, x: number, top: num
 
 /**
  * Measuring the bounds of a canvas' visible (non-transparent) pixels.
- * @param {ICanvas} canvas - The canvas to measure.
- * @returns {BoundingBox} The bounding box of the canvas' visible pixels.
+ * @param canvas - The canvas to measure.
+ * @returns The bounding box of the canvas' visible pixels.
  * @since 7.1.0
  * @memberof utils
  */
