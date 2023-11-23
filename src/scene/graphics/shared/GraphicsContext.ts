@@ -363,7 +363,7 @@ export class GraphicsContext extends EventEmitter<{
         return this;
     }
 
-    public bezierCurveTo(cp1x: number, cp1y: number, cp2x: number, cp2y: number, x: number, y: number): this
+    public bezierCurveTo(cp1x: number, cp1y: number, cp2x: number, cp2y: number, x: number, y: number, smoothness?: number): this
     {
         this._tick++;
 
@@ -377,6 +377,7 @@ export class GraphicsContext extends EventEmitter<{
             (t.b * cp2x) + (t.d * cp2y) + t.ty,
             (t.a * x) + (t.c * y) + t.tx,
             (t.b * x) + (t.d * y) + t.ty,
+            smoothness,
         );
 
         return this;
@@ -458,7 +459,7 @@ export class GraphicsContext extends EventEmitter<{
         return this;
     }
 
-    public quadraticCurveTo(cpx: number, cpy: number, x: number, y: number): void
+    public quadraticCurveTo(cpx: number, cpy: number, x: number, y: number, smoothness?: number): void
     {
         this._tick++;
 
@@ -469,6 +470,7 @@ export class GraphicsContext extends EventEmitter<{
             (t.b * cpx) + (t.d * cpy) + t.ty,
             (t.a * x) + (t.c * y) + t.tx,
             (t.b * x) + (t.d * y) + t.ty,
+            smoothness,
         );
     }
 
@@ -515,10 +517,10 @@ export class GraphicsContext extends EventEmitter<{
         return this;
     }
 
-    public roundShape(points: RoundedPoint[], radius: number, useQuadratic?: boolean): this
+    public roundShape(points: RoundedPoint[], radius: number, useQuadratic?: boolean, smoothness?: number): this
     {
         this._tick++;
-        this._activePath.roundShape(points, radius, useQuadratic);
+        this._activePath.roundShape(points, radius, useQuadratic, smoothness);
 
         return this;
     }

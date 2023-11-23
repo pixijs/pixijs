@@ -28,7 +28,12 @@ export class GraphicsContextRenderData
     }
 }
 
-export class GraphicsContextSystem implements System
+export interface GraphicsContextSystemOptions
+{
+    bezierSmoothness?: number;
+}
+
+export class GraphicsContextSystem implements System<GraphicsContextSystemOptions>
 {
     /** @ignore */
     public static extension = {
@@ -40,6 +45,14 @@ export class GraphicsContextSystem implements System
         name: 'graphicsContext'
     } as const;
 
+    public static readonly defaultOptions: GraphicsContextSystemOptions = {
+        /**
+         * A value from 0 to 1 that controls the smoothness of bezier curves (the higher the smoother)
+         * @default 0.5
+         */
+        bezierSmoothness: 0.5,
+    };
+
     // the root context batches, used to either make a batch or geometry
     // all graphics use this as a base
     private readonly _activeBatchers: Batcher[] = [];
@@ -47,6 +60,16 @@ export class GraphicsContextSystem implements System
     // used for non-batchable graphics
     private _graphicsDataContextHash: Record<number, GraphicsContextRenderData> = Object.create(null);
     private readonly _needsContextNeedsRebuild: GraphicsContext[] = [];
+
+    /**
+     * Runner init called, update the default options
+     * @ignore
+     */
+    public init(options?: GraphicsContextSystemOptions)
+    {
+        GraphicsContextSystem.defaultOptions.bezierSmoothness = options?.bezierSmoothness
+            ?? GraphicsContextSystem.defaultOptions.bezierSmoothness;
+    }
 
     protected prerender()
     {
@@ -63,7 +86,7 @@ export class GraphicsContextSystem implements System
     {
         let gpuContext: GpuGraphicsContext = this._gpuContextHash[context.uid]
 
-        || this._initContext(context);
+            || this._initContext(context);
 
         if (context.dirty)
         {
