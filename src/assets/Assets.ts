@@ -700,7 +700,7 @@ export class AssetsClass
 
         const out: Record<string, T> = {};
 
-        resolveArray.forEach((resolveResult, i) =>
+        [...new Set(resolveArray)].forEach((resolveResult, i) =>
         {
             const asset = loadedAssets[resolveResult.src];
 
