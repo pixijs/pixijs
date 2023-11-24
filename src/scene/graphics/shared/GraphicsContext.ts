@@ -746,15 +746,18 @@ export class GraphicsContext extends EventEmitter<{
 
                 const transform = shapes[i].transform;
 
-                transform.applyInverse(point, tmpPoint);
+                if (transform)
+                {
+                    point = transform.applyInverse(point, tmpPoint);
+                }
 
                 if (instruction.action === 'fill')
                 {
-                    hasHit = shape.contains(tmpPoint.x, tmpPoint.y);
+                    hasHit = shape.contains(point.x, point.y);
                 }
                 else
                 {
-                    hasHit = shape.strokeContains(tmpPoint.x, tmpPoint.y, (style as ConvertedStrokeStyle).width);
+                    hasHit = shape.strokeContains(point.x, point.y, (style as ConvertedStrokeStyle).width);
                 }
 
                 const holes = data.hole;
@@ -767,7 +770,7 @@ export class GraphicsContext extends EventEmitter<{
                     {
                         for (let j = 0; j < holeShapes.length; j++)
                         {
-                            if (holeShapes[j].shape.contains(tmpPoint.x, tmpPoint.y))
+                            if (holeShapes[j].shape.contains(point.x, point.y))
                             {
                                 hasHit = false;
                             }
