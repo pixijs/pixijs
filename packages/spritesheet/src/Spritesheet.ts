@@ -36,7 +36,7 @@ export interface ISpritesheetFrameData
  */
 export interface ISpritesheetData
 {
-    animations?: utils.Dict<string[]>;
+    animations: utils.Dict<string[]>;
     frames: utils.Dict<ISpritesheetFrameData>;
     meta: {
         app?: string;
