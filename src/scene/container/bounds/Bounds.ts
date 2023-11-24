@@ -360,6 +360,16 @@ export class Bounds
         this.maxY = maxY;
     }
 
+    public containsPoint(x: number, y: number): boolean
+    {
+        if (this.minX <= x && this.minY <= y && this.maxX >= x && this.maxY >= y)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     public toString(): string
     {
         // eslint-disable-next-line max-len

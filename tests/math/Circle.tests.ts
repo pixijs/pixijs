@@ -59,6 +59,24 @@ describe('Circle', () =>
         expect(circ2.contains(10, 10)).toBe(false);
     });
 
+    it('should check if point is within circle stroke', () =>
+    {
+        const circle = new Circle(10, 10, 5);
+
+        expect(circle.strokeContains(10 + 5, 10, 4)).toBe(true);
+        expect(circle.strokeContains(10 - 5, 10, 4)).toBe(true);
+        expect(circle.strokeContains(10, 10 + 5, 4)).toBe(true);
+        expect(circle.strokeContains(10, 10 - 5, 4)).toBe(true);
+
+        expect(circle.strokeContains(10 + 5, 10, 2)).toBe(true);
+        expect(circle.strokeContains(10 - 5, 10, 2)).toBe(true);
+
+        // now some false ones
+
+        expect(circle.strokeContains(20 + 5, 10, 4)).toBe(false);
+        expect(circle.strokeContains(10, 20 + 5, 4)).toBe(false);
+    });
+
     it('should return framing rectangle', () =>
     {
         const circ1 = new Circle(10, 10, 5);
