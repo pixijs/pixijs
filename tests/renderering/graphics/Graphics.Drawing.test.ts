@@ -3,7 +3,9 @@ import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture
 import { Bounds } from '../../../src/scene/container/bounds/Bounds';
 import { getLocalBounds } from '../../../src/scene/container/bounds/getLocalBounds';
 import { Graphics } from '../../../src/scene/graphics/shared/Graphics';
-import { FillInstruction, GraphicsContext } from '../../../src/scene/graphics/shared/GraphicsContext';
+import { GraphicsContext } from '../../../src/scene/graphics/shared/GraphicsContext';
+
+import type { FillInstruction } from '../../../src/scene/graphics/shared/GraphicsContext';
 
 describe('Graphics Drawing', () =>
 {
@@ -56,7 +58,6 @@ describe('Graphics Drawing', () =>
             expect(() => graphics.beginPath().arc(300, 100, 20, 0, Math.PI).fill().closePath()).not.toThrow();
         });
     });
-
 
     it('should fill two triangles', () =>
     {
@@ -185,7 +186,7 @@ describe('Graphics Drawing', () =>
 
             expect(bounds.rectangle.width).toBe(200);
         });
-    })
+    });
 
     describe('lineStyle', () =>
     {
