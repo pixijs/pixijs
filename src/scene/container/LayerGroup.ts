@@ -240,9 +240,7 @@ export class LayerGroup implements Instruction
 
     get isRenderable(): boolean
     {
-        const worldAlpha = ((this.worldColorAlpha >> 24) & 0xFF);
-
-        return (this.root.localVisibleRenderable === 0b11 && worldAlpha > 0);
+        return (this.root.localVisibleRenderable === 0b11 && this.worldAlpha > 0);
     }
 
     /**

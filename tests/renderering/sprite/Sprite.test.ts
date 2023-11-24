@@ -1,5 +1,7 @@
 import { Point } from '../../../src/maths/point/Point';
+import { Rectangle } from '../../../src/maths/shapes/Rectangle';
 import { RenderTexture } from '../../../src/rendering/renderers/shared/texture/RenderTexture';
+import { TextureSource } from '../../../src/rendering/renderers/shared/texture/sources/TextureSource';
 import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
 import { Container } from '../../../src/scene/container/Container';
 import { Graphics } from '../../../src/scene/graphics/shared/Graphics';
@@ -207,6 +209,47 @@ describe('Sprite', () =>
             const point = new Point(100, 100);
 
             expect(sprite.view.containsPoint(point)).toBe(false);
+        });
+
+        it('should return true when point inside a trimmed sprite', () =>
+        {
+            const textureSource = new TextureSource({
+                width: 100,
+                height: 100,
+                resolution: 1,
+            });
+
+            const texture = new Texture({
+                source: textureSource,
+                layout: {
+                    trim: new Rectangle(
+                        0.01652892561983471,
+                        0.014598540145985401,
+                        0.36496350364963503,
+                        0.4132231404958678
+                    ),
+                    frame: new Rectangle(
+                        0.01652892561983471,
+                        0.014598540145985401,
+                        0.36496350364963503,
+                        0.4132231404958678),
+                    orig: new Rectangle(
+                        0,
+                        0,
+                        1.094890510948905,
+                        1.094890510948905),
+                }
+            });
+
+            const sprite = new Sprite({ texture });
+
+            expect(sprite.view.containsPoint(
+                new Point(108, 108)
+            )).toBe(true);
+
+            expect(sprite.view.containsPoint(
+                new Point(1, 1)
+            )).toBe(true);
         });
     });
 

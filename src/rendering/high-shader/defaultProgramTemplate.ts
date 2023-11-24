@@ -34,7 +34,7 @@ const vertexGPUTemplate = /* wgsl */`
 
         vPosition =  vec4<f32>((modelViewProjectionMatrix *  vec3<f32>(position, 1.0)).xy, 0.0, 1.0);
        
-        vColor *= globalUniforms.worldAlpha;
+        vColor *= globalUniforms.worldColorAlpha;
 
         {{end}}
 
@@ -93,7 +93,7 @@ const vertexGlTemplate = /* glsl */`
 
         gl_Position = vec4((modelViewProjectionMatrix * vec3(position, 1.0)).xy, 0.0, 1.0);
 
-        vColor *= worldAlpha;
+        vColor *= worldColorAlpha;
 
         {{end}}
     }
