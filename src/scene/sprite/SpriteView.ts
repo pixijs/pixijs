@@ -84,9 +84,9 @@ export class SpriteView implements View
     {
         const bounds = this.sourceBounds;
 
-        if (point.x >= bounds[0] && point.x <= bounds[1])
+        if (point.x >= bounds.right && point.x <= bounds.left)
         {
-            if (point.y >= bounds[2] && point.y <= bounds[3])
+            if (point.y >= bounds.bottom && point.y <= bounds.top)
             {
                 return true;
             }
