@@ -99,4 +99,37 @@ describe('Polygon', () =>
             expect(polygon.contains(11, 11)).toBe(false);
         });
     });
+
+    describe('strokeContains', () =>
+    {
+        const polygon: Polygon = new Polygon([0, 0, 10, 0, 10, 10, 0, 10, 0, 0]);
+
+        test('returns false for a point inside the polygon with larger stroke width', () =>
+        {
+            expect(polygon.strokeContains(5, 5, 3)).toBe(false);
+        });
+
+        test('returns true for a point on the polygon edge with larger stroke width', () =>
+        {
+            expect(polygon.strokeContains(0, 0, 2)).toBe(true);
+            expect(polygon.strokeContains(5, 0, 4)).toBe(true);
+            expect(polygon.strokeContains(10, 5, 2)).toBe(true);
+        });
+
+        test('returns true for a point near the polygon edge within larger stroke width', () =>
+        {
+            expect(polygon.strokeContains(0, 1.5, 2)).toBe(true);
+            expect(polygon.strokeContains(5, -2, 4)).toBe(true);
+            expect(polygon.strokeContains(11, 5, 3)).toBe(true);
+        });
+
+        test('returns false for a point outside the polygon and beyond the larger stroke width', () =>
+        {
+            expect(polygon.strokeContains(-3, -3, 2)).toBe(false);
+            expect(polygon.strokeContains(15, 0, 4)).toBe(false);
+            expect(polygon.strokeContains(0, 12, 3)).toBe(false);
+        });
+
+        // Add additional tests as necessary
+    });
 });

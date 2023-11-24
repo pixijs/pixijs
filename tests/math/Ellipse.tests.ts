@@ -62,6 +62,17 @@ describe('Ellipse', () =>
         expect(ellipse2.contains(10, 10)).toBe(false);
     });
 
+    it('should check if point is within ellipse stroke', () =>
+    {
+        const ellipse = new Ellipse(2, 2, 10, 10);
+
+        expect(ellipse.strokeContains(2, 2, 5)).toBe(false);
+        expect(ellipse.strokeContains(7, 7, 10)).toBe(true);
+        expect(ellipse.strokeContains(8, 8, 5)).toBe(true);
+        expect(ellipse.strokeContains(12, 12, 10)).toBe(true);
+        expect(ellipse.strokeContains(15, 15, 5)).toBe(false);
+    });
+
     it('should return framing rectangle', () =>
     {
         const ellipse1 = new Ellipse(10, 10, 5, 5);
