@@ -1,6 +1,15 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { Rectangle } from '../../../maths/shapes/Rectangle';
 
+/** Simple bounds implementation instead of more ambiguous [number, number, number, number] */
+export interface SimpleBounds
+{
+    left: number;
+    top: number;
+    right: number;
+    bottom: number;
+}
+
 // TODO optimisations
 // 1 - setMatrix could set a reference directly, this would save a copy op per object
 // 2 - push and pop matrix could be optimised to use an index counter

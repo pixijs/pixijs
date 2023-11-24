@@ -9,7 +9,7 @@ import { ensureTextStyle } from './utils/ensureTextStyle';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { View, ViewObserver } from '../../rendering/renderers/shared/view/View';
-import type { Bounds } from '../container/bounds/Bounds';
+import type { Bounds, SimpleBounds } from '../container/bounds/Bounds';
 import type { TextureDestroyOptions, TypeOrBool } from '../container/destroyTypes';
 import type { HTMLTextStyle, HTMLTextStyleOptions } from './html/HtmlTextStyle';
 import type { TextStyle, TextStyleOptions } from './TextStyle';
@@ -54,7 +54,7 @@ export class TextView implements View
     public _didUpdate = true;
     public roundPixels?: 0 | 1 = 0;
 
-    private _bounds: [number, number, number, number] = [0, 1, 0, 0];
+    private _bounds: SimpleBounds = { left: 0, right: 1, top: 0, bottom: 0 };
     private _boundsDirty = true;
     private _text: string;
     private readonly _renderMode: string;
@@ -125,17 +125,17 @@ export class TextView implements View
         const _bounds = this.bounds;
 
         bounds.addFrame(
-            _bounds[0],
-            _bounds[2],
-            _bounds[1],
-            _bounds[3],
+            _bounds.left,
+            _bounds.top,
+            _bounds.right,
+            _bounds.bottom,
         );
     }
 
     public containsPoint(point: PointData)
     {
-        const width = this.bounds[1];
-        const height = this.bounds[3];
+        const width = this.bounds.right;
+        const height = this.bounds.bottom;
 
         const x1 = -width * this.anchor.x;
         let y1 = 0;
@@ -180,10 +180,10 @@ export class TextView implements View
             const width = bitmapMeasurement.width * scale;
             const height = bitmapMeasurement.height * scale;
 
-            bounds[0] = (-anchor._x * width) - padding;
-            bounds[1] = bounds[0] + width;
-            bounds[2] = (-anchor._y * (height + offset)) - padding;
-            bounds[3] = bounds[2] + height;
+            bounds.left = (-anchor._x * width) - padding;
+            bounds.right = bounds.left + width;
+            bounds.top = (-anchor._y * (height + offset)) - padding;
+            bounds.bottom = bounds.top + height;
         }
         else if (this.renderPipeId === 'htmlText')
         {
@@ -191,10 +191,10 @@ export class TextView implements View
 
             const { width, height } = htmlMeasurement;
 
-            bounds[0] = (-anchor._x * width) - padding;
-            bounds[1] = bounds[0] + width;
-            bounds[2] = (-anchor._y * height) - padding;
-            bounds[3] = bounds[2] + height;
+            bounds.left = (-anchor._x * width) - padding;
+            bounds.right = bounds.left + width;
+            bounds.top = (-anchor._y * height) - padding;
+            bounds.bottom = bounds.top + height;
         }
         else
         {
@@ -202,10 +202,10 @@ export class TextView implements View
 
             const { width, height } = canvasMeasurement;
 
-            bounds[0] = (-anchor._x * width) - padding;
-            bounds[1] = bounds[0] + width;
-            bounds[2] = (-anchor._y * height) - padding;
-            bounds[3] = bounds[2] + height;
+            bounds.left = (-anchor._x * width) - padding;
+            bounds.right = bounds.left + width;
+            bounds.top = (-anchor._y * height) - padding;
+            bounds.bottom = bounds.top + height;
         }
     }
 
