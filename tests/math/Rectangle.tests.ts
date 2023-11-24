@@ -78,6 +78,35 @@ describe('Rectangle', () =>
         expect(rect2.contains(21, 21)).toBe(false);
     });
 
+    describe('strokeContains', () =>
+    {
+        const rectangle = new Rectangle(10, 10, 100, 100);
+
+        test('returns true for a point on the rectangle edge with small stroke width', () =>
+        {
+            expect(rectangle.strokeContains(10, 10, 1)).toBe(true);
+            expect(rectangle.strokeContains(60, 10, 1)).toBe(true);
+            expect(rectangle.strokeContains(110, 60, 1)).toBe(true);
+            expect(rectangle.strokeContains(10, 110, 1)).toBe(true);
+        });
+
+        test('returns true for a point near the rectangle edge within stroke width', () =>
+        {
+            expect(rectangle.strokeContains(107, 58, 20)).toBe(true);
+            expect(rectangle.strokeContains(117, 70, 20)).toBe(true);
+            expect(rectangle.strokeContains(14, 111, 20)).toBe(true);
+        });
+
+        test('returns false for a point outside the rectangle and beyond the stroke width', () =>
+        {
+            expect(rectangle.strokeContains(5, 5, 4)).toBe(false);
+            expect(rectangle.strokeContains(115, 10, 4)).toBe(false);
+            expect(rectangle.strokeContains(10, 115, 4)).toBe(false);
+        });
+
+        // Add additional tests as necessary
+    });
+
     it('should enlarge rectangle', () =>
     {
         const rect1 = new Rectangle(10, 10, 10, 10);

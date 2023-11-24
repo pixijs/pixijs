@@ -12,6 +12,8 @@ export interface ShapePrimitive
 
     /** Checks whether the x and y coordinates passed to this function are contained within this ShapePrimitive. */
     contains(x: number, y: number): boolean;
+    /** Checks whether the x and y coordinates passed to this function are contained within the stroke of this shape */
+    strokeContains(x: number, y: number, strokeWidth: number): boolean;
     /** Creates a clone of this ShapePrimitive instance. */
     clone(): ShapePrimitive;
     /** Copies the properties from another ShapePrimitive to this ShapePrimitive. */
