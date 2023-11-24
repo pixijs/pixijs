@@ -27,24 +27,19 @@ describe('AccessibilitySystem', () =>
         renderer.destroy();
     });
 
-    // eslint-disable-next-line jest/no-done-callback
-    it('should activate when tab is pressed and deactivate when mouse moved', async (done) =>
+    it('should activate when tab is pressed and deactivate when mouse moved', async () =>
     {
         const renderer = await getRenderer();
         const system = new AccessibilitySystem(renderer);
 
-        globalThis.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 9, key: 'tab' }));
-        setTimeout(() =>
-        {
-            expect(system.isActive).toBe(true);
-            globalThis.document.dispatchEvent(new MouseEvent('mousemove', { movementX: 10, movementY: 10 }));
-            expect(system.isActive).toBe(false);
-            done();
-        }, 10);
+        system['_onKeyDown'](new KeyboardEvent('keydown', { keyCode: 9, key: 'tab' }));
+        expect(system.isActive).toBe(true);
+
+        system['_onMouseMove'](new MouseEvent('mousemove', { movementX: 10, movementY: 10 }));
+        expect(system.isActive).toBe(false);
     });
 
-    // eslint-disable-next-line jest/no-done-callback
-    it('should not crash when scene graph contains Containers without children', async (done) =>
+    it('should not crash when scene graph contains Containers without children', async () =>
     {
         class CompleteContainer extends Container
         {
@@ -56,13 +51,9 @@ describe('AccessibilitySystem', () =>
         const stage = new Container().addChild(new CompleteContainer());
         const system = new AccessibilitySystem(renderer);
 
-        globalThis.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 9, key: 'tab' }));
+        system['_onKeyDown'](new KeyboardEvent('keydown', { keyCode: 9, key: 'tab' }));
 
         expect(() => renderer.render(stage)).not.toThrow();
-        setTimeout(() =>
-        {
-            expect(system.isActive).toBe(true);
-            done();
-        }, 10);
+        expect(system.isActive).toBe(true);
     });
 });
