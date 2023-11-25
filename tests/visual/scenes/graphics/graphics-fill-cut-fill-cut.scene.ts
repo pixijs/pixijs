@@ -5,7 +5,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render fill, cut, fill, cut.',
-    only: true,
     create: async (scene: Container) =>
     {
         const rectsWithHoles = new Graphics()
