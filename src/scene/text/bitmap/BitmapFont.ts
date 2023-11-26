@@ -13,7 +13,7 @@ export interface BitmapFontOptions
 
 export class BitmapFont extends AbstractBitmapFont<BitmapFont>
 {
-    constructor(options: BitmapFontOptions)
+    constructor(options: BitmapFontOptions, public readonly url?: string)
     {
         super();
 
@@ -68,7 +68,7 @@ export class BitmapFont extends AbstractBitmapFont<BitmapFont>
         (this.baseLineOffset as number) = data.baseLineOffset;
         (this.lineHeight as number) = data.lineHeight;
         (this.fontFamily as string) = data.fontFamily;
-        (this.distanceField as {type: string, range: number}) = data.distanceField ?? {
+        (this.distanceField as { type: string, range: number }) = data.distanceField ?? {
             type: 'none',
             range: 0,
         };

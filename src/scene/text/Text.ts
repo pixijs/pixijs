@@ -96,6 +96,10 @@ export class Text extends Container<TextView>
                 style: args[1],
             } as TextOptions;
         }
+        else
+        {
+            options = {} as TextOptions;
+        }
 
         const { style, text, renderMode, resolution, ...rest } = options as TextOptions;
 

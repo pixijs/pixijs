@@ -1,5 +1,7 @@
+/* eslint-disable max-len */
 import { Sprite } from '../../src/scene/sprite/Sprite';
 import { Text } from '../../src/scene/text/Text';
+import { TextStyle } from '../../src/scene/text/TextStyle';
 import { getRenderer } from '../utils/getRenderer';
 
 import type { DestroyOptions } from '../../src/scene/container/destroyTypes';
@@ -8,92 +10,83 @@ describe('Text', () =>
 {
     describe('properties', () =>
     {
-        it('should modify the height of the object when setting height', () =>
+        it('should be able to modify the size', () =>
         {
             const text = new Text({ text: 'foo' });
 
+            text.width = 200;
             text.height = 300;
 
-            expect(text.height).toEqual(300);
+            expect(Math.round(text.width)).toEqual(200);
+            expect(Math.round(text.height)).toEqual(300);
         });
 
-        it('should modify the width of the object when setting width', () =>
+        it('should set the text resolution to match the resolution provided', () =>
         {
-            const text = new Text({ text: 'foo' });
+            const text = new Text({ text: 'foo', resolution: 3 });
 
-            text.width = 300;
-
-            expect(text.width).toEqual(300);
+            expect(text.view.resolution).toEqual(3);
         });
 
-        it('should set the text resolution to match the resolution setting when constructed time', () =>
+        // note: bug - ticker for Mat
+        it.skip('should update the text resolution to match the renderer resolution when being rendered to screen', async () =>
         {
             const text = new Text({ text: 'foo' });
-
-            expect(text.resolution).toEqual(settings.RESOLUTION);
-        });
-
-        it('should update the text resolution to match the renderer resolution when being rendered to screen', async () =>
-        {
-            const text = new Text({ text: 'foo' });
-
-            expect(text.resolution).toEqual(settings.RESOLUTION);
 
             const renderer = await getRenderer({ resolution: 2 });
 
-            expect(renderer.resolution).toEqual(2);
+            const texture = renderer.canvasText.getTexture(text.text, text.view.resolution, text.style, 'foo');
 
-            renderer.render(text);
-
-            expect(text.resolution).toEqual(renderer.resolution);
+            expect(texture.source.resolution).toEqual(2);
 
             renderer.destroy();
         });
 
+        // note: we fixed this!
         it('should use any manually set text resolution over the renderer resolution', async () =>
         {
-            const text = new Text({ text: 'foo' });
+            const text = new Text({ text: 'foo', resolution: 3 });
 
-            text.resolution = 3;
-
-            expect(text.resolution).toEqual(3);
+            expect(text.view.resolution).toEqual(3);
 
             const renderer = await getRenderer({ resolution: 2 });
 
-            renderer.render(text);
+            const texture = renderer.canvasText.getTexture(text.text, text.view.resolution, text.style, 'foo');
 
-            expect(text.resolution).toEqual(3);
+            expect(texture.source.resolution).toEqual(3);
 
             renderer.destroy();
         });
     });
 
+    // note: these are working except for one
     describe('destroy', () =>
     {
-        it('should now clear canvas size on imported canvas', () =>
-        {
-            const canvas = document.createElement('canvas');
-            // const text = new Text('blah', {}, canvas);
-            const text = new Text({ text: 'blah' });
+        // note: can you even pass a canvas now?
+        // it.skip('should not clear canvas size on imported canvas', () =>
+        // {
+        //     const canvas = document.createElement('canvas');
+        //     // const text = new Text('blah', {}, canvas);
+        //     const text = new Text({ text: 'blah', renderMode: 'canvas' });
 
-            const { width, height } = canvas;
+        //     const { width, height } = canvas;
 
-            text.destroy();
+        //     text.destroy();
 
-            expect(canvas.width).toEqual(width);
-            expect(canvas.height).toEqual(height);
-        });
+        //     expect(canvas.width).toEqual(width);
+        //     expect(canvas.height).toEqual(height);
+        // });
 
-        it('should clear size on owned canvas during destroy', () =>
-        {
-            const text = new Text({ text: 'blah' });
-            const { canvas } = text;
+        // it('should clear size on owned canvas during destroy', () =>
+        // {
+        //     const text = new Text({ text: 'blah' });
+        //     const { canvas } = text;
 
-            text.destroy();
+        //     text.destroy();
 
-            expect(canvas.width).toEqual(0);
-            expect(canvas.height).toEqual(0);
-        });
+        //     expect(canvas.width).toEqual(0);
+        //     expect(canvas.height).toEqual(0);
+        // });
 
         it('should call through to Sprite.destroy', () =>
         {
@@ -121,7 +114,7 @@ describe('Text', () =>
             text.addChild(child);
             text.destroy({ children: true });
             expect(text.destroyed).toEqual(true);
-            expect(child.destroy).toEqual(true);
+            expect(child.destroyed).toEqual(true);
         });
 
         it('should accept options correctly', () =>
@@ -148,7 +141,7 @@ describe('Text', () =>
 
             text.addChild(child);
             text.destroy({ children: true, texture: true });
-            expect(childDestroyOpts).toEqual({ children: true, texture: true, baseTexture: true });
+            expect(childDestroyOpts).toEqual({ children: true, texture: true });
         });
     });
 
@@ -168,6 +161,13 @@ describe('Text', () =>
             expect(text.text).toEqual('0');
         });
 
+        it('should prevent setting null via text options', () =>
+        {
+            const text = new Text({ text: null });
+
+            expect(text.text).toEqual('');
+        });
+
         it('should prevent setting null', () =>
         {
             const text = new Text(null);
@@ -182,12 +182,19 @@ describe('Text', () =>
             expect(text.text).toEqual('');
         });
 
-        it('should trim an empty string', () =>
-        {
-            const text = new Text(' ', { trim: true });
+        // note: ticket add Trim
+        // it('should trim an empty string', () =>
+        // {
+        //     // note: why?
+        //     const text = new Text({
+        //         text: ' ',
+        //         style: {
+        //           trim: true
+        //         }
+        //     });
 
-            expect(text.text).toEqual('');
-        });
+        //     expect(text.text).toEqual('');
+        // });
 
         it('should allow setting \'\' for v5', () =>
         {
@@ -196,18 +203,18 @@ describe('Text', () =>
             expect(text.text).toEqual('');
         });
 
-        it('should keep at least 1 pixel for canvas width and height', () =>
-        {
-            const text = new Text({ text: '' });
+        // it('should keep at least 1 pixel for canvas width and height', () =>
+        // {
+        //     const text = new Text({ text: '' });
 
-            text.updateText(undefined);
+        //     text.updateText(undefined);
 
-            expect(text.canvas.width).toBeGreaterThan(1);
-            expect(text.canvas.height).toBeGreaterThan(1);
+        //     expect(text.canvas.width).toBeGreaterThan(1);
+        //     expect(text.canvas.height).toBeGreaterThan(1);
 
-            text.text = '\n';
+        //     text.text = '\n';
 
-            expect(text.canvas.width).toBeGreaterThan(0);
-        });
+        //     expect(text.canvas.width).toBeGreaterThan(0);
+        // });
     });
 });

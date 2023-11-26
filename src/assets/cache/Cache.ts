@@ -32,6 +32,11 @@ class CacheClass
         cacheKeys: string[],
     }> = new Map();
 
+    public get keys()
+    {
+        return [...this._cache.keys()];
+    }
+
     /** Clear all entries. */
     public reset(): void
     {

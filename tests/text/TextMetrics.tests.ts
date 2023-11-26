@@ -3,6 +3,7 @@
  * widths or breaking of words may not be cross-platform
  */
 
+import { CanvasTextMetrics } from '../../src/scene/text/canvas/CanvasTextMetrics';
 import { TextStyle } from '../../src/scene/text/TextStyle';
 
 /* eslint-disable no-multi-str */
@@ -43,7 +44,7 @@ const breakingSpaces = [
     '\u3000',
 ];
 
-describe('TextMetrics', () =>
+describe('CanvasTextMetrics', () =>
 {
     const defaultStyle = {
         breakWords: true,
@@ -55,7 +56,7 @@ describe('TextMetrics', () =>
         wordWrap: true,
         wordWrapWidth: 200,
         letterSpacing: 4,
-    } as Partial<ITextStyle>;
+    } as Partial<TextStyle>;
 
     describe('wordWrap without breakWords', () =>
     {
@@ -64,7 +65,7 @@ describe('TextMetrics', () =>
             // On Windows 'exercitationem' renders to about 217px, bigger wrap width required for this test to be valid on every platform
             const style = Object.assign({}, defaultStyle, { wordWrapWidth: 220, breakWords: false }) as Partial<TextStyle>;
 
-            const metrics = TextMetrics.measureText(longText, new TextStyle(style));
+            const metrics = CanvasTextMetrics.measureText(longText, new TextStyle(style));
 
             expect(metrics.width).toBeLessThan(style.wordWrapWidth);
 
@@ -82,7 +83,7 @@ describe('TextMetrics', () =>
         {
             const style = Object.assign({}, defaultStyle, { breakWords: false });
 
-            const metrics = TextMetrics.measureText(breakingWordText, new TextStyle(style));
+            const metrics = CanvasTextMetrics.measureText(breakingWordText, new TextStyle(style));
 
             expect(metrics.width).toBeGreaterThan(style.wordWrapWidth);
 
@@ -99,7 +100,7 @@ describe('TextMetrics', () =>
 
             const style = Object.assign({}, defaultStyle, { breakWords: false });
 
-            const metrics = TextMetrics.measureText(fillText, new TextStyle(style));
+            const metrics = CanvasTextMetrics.measureText(fillText, new TextStyle(style));
 
             expect(metrics.width).toBeLessThan(style.wordWrapWidth);
             expect(metrics.width + charWidth).toBeGreaterThan(style.wordWrapWidth);
@@ -115,7 +116,7 @@ describe('TextMetrics', () =>
         {
             const style = Object.assign({}, defaultStyle, { breakWords: false });
 
-            const metrics = TextMetrics.measureText(spaceNewLineText, new TextStyle(style));
+            const metrics = CanvasTextMetrics.measureText(spaceNewLineText, new TextStyle(style));
 
             expect(metrics.width).toBeGreaterThan(style.wordWrapWidth);
 
@@ -137,7 +138,7 @@ describe('TextMetrics', () =>
 
         it('should be able to override wordWrap to false in measureText', () =>
         {
-            const metrics = TextMetrics.measureText(longText, new TextStyle(defaultStyle), false);
+            const metrics = CanvasTextMetrics.measureText(longText, new TextStyle(defaultStyle), false);
 
             expect(metrics.lines.length).toEqual(1);
         });
@@ -149,7 +150,7 @@ describe('TextMetrics', () =>
         {
             const style = Object.assign({}, defaultStyle, { breakWords: true });
 
-            const metrics = TextMetrics.measureText(longText, new TextStyle(style));
+            const metrics = CanvasTextMetrics.measureText(longText, new TextStyle(style));
 
             expect(metrics.width).toBeLessThan(style.wordWrapWidth);
 
@@ -164,7 +165,7 @@ describe('TextMetrics', () =>
         {
             const style = Object.assign({}, defaultStyle, { breakWords: true });
 
-            const metrics = TextMetrics.measureText(breakingWordText, new TextStyle(style));
+            const metrics = CanvasTextMetrics.measureText(breakingWordText, new TextStyle(style));
 
             expect(metrics.width).toBeLessThan(style.wordWrapWidth);
 
@@ -181,7 +182,7 @@ describe('TextMetrics', () =>
 
             const style = Object.assign({}, defaultStyle, { breakWords: true });
 
-            const metrics = TextMetrics.measureText(fillText, new TextStyle(style));
+            const metrics = CanvasTextMetrics.measureText(fillText, new TextStyle(style));
 
             expect(metrics.width).toBeLessThan(style.wordWrapWidth);
             expect(metrics.width + charWidth).toBeGreaterThan(style.wordWrapWidth);
@@ -197,7 +198,7 @@ describe('TextMetrics', () =>
         {
             const style = Object.assign({}, defaultStyle, { breakWords: true });
 
-            const metrics = TextMetrics.measureText(intergityText, new TextStyle(style));
+            const metrics = CanvasTextMetrics.measureText(intergityText, new TextStyle(style));
 
             const lines = metrics.lines.reduce((accumulator, line) => accumulator + line);
 
@@ -208,7 +209,7 @@ describe('TextMetrics', () =>
         {
             const style = Object.assign({}, defaultStyle, { breakWords: true });
 
-            const metrics = TextMetrics.measureText(spaceNewLineText, new TextStyle(style));
+            const metrics = CanvasTextMetrics.measureText(spaceNewLineText, new TextStyle(style));
 
             expect(metrics.width).toBeLessThan(style.wordWrapWidth);
 
@@ -231,18 +232,18 @@ describe('TextMetrics', () =>
 
     describe('wordWrap misc', () =>
     {
-        const originalSplit = TextMetrics.wordWrapSplit;
+        const originalSplit = CanvasTextMetrics.wordWrapSplit;
 
         afterEach(() =>
         {
-            TextMetrics.wordWrapSplit = originalSplit;
+            CanvasTextMetrics.wordWrapSplit = originalSplit;
         });
 
         it('should use configuration callback to split a token', () =>
         {
             let wasSplitCalled = false;
 
-            TextMetrics.wordWrapSplit = (token) =>
+            CanvasTextMetrics.wordWrapSplit = (token) =>
             {
                 wasSplitCalled = true;
                 expect(token).toEqual('testword1234567890abcd!');
@@ -250,7 +251,7 @@ describe('TextMetrics', () =>
                 return ['s', 'p', 'l', 'i', 't'];
             };
 
-            const brokenText = TextMetrics['wordWrap']('testword1234567890abcd!', new TextStyle(defaultStyle));
+            const brokenText = CanvasTextMetrics['_wordWrap']('testword1234567890abcd!', new TextStyle(defaultStyle));
 
             expect(wasSplitCalled).toEqual(true);
             expect(brokenText).toEqual('split');
@@ -263,7 +264,7 @@ describe('TextMetrics', () =>
         {
             const style = Object.assign({}, defaultStyle, { breakWords: false, whiteSpace: 'normal' });
 
-            const metrics = TextMetrics.measureText(spaceNewLineText, new TextStyle(style));
+            const metrics = CanvasTextMetrics.measureText(spaceNewLineText, new TextStyle(style));
 
             expect(metrics.width).toBeGreaterThan(style.wordWrapWidth);
 
@@ -289,7 +290,7 @@ describe('TextMetrics', () =>
 
             const style = Object.assign({}, defaultStyle, { breakWords: false, whiteSpace: 'normal' });
 
-            const metrics = TextMetrics.measureText(spaceNewLineText, new TextStyle(style));
+            const metrics = CanvasTextMetrics.measureText(spaceNewLineText, new TextStyle(style));
 
             expect(metrics.lines[0][0]).toEqual('S');
             expect(metrics.lines[4][0]).toEqual('m');
@@ -305,7 +306,7 @@ describe('TextMetrics', () =>
         {
             const style = Object.assign({}, defaultStyle, { breakWords: false, whiteSpace: 'pre-line' });
 
-            const metrics = TextMetrics.measureText(spaceNewLineText, new TextStyle(style));
+            const metrics = CanvasTextMetrics.measureText(spaceNewLineText, new TextStyle(style));
 
             expect(metrics.width).toBeGreaterThan(style.wordWrapWidth);
 
@@ -329,7 +330,7 @@ describe('TextMetrics', () =>
         {
             const style = Object.assign({}, defaultStyle, { breakWords: true, whiteSpace: 'normal' });
 
-            const metrics = TextMetrics.measureText(spaceNewLineText, new TextStyle(style));
+            const metrics = CanvasTextMetrics.measureText(spaceNewLineText, new TextStyle(style));
 
             expect(metrics.width).toBeLessThan(style.wordWrapWidth);
 
@@ -355,7 +356,7 @@ describe('TextMetrics', () =>
 
             const style = Object.assign({}, defaultStyle, { breakWords: true, whiteSpace: 'normal' });
 
-            const metrics = TextMetrics.measureText(spaceNewLineText, new TextStyle(style));
+            const metrics = CanvasTextMetrics.measureText(spaceNewLineText, new TextStyle(style));
 
             expect(metrics.lines[0][0]).toEqual('S');
             expect(metrics.lines[4][0]).toEqual('m');
@@ -371,7 +372,7 @@ describe('TextMetrics', () =>
         {
             const style = Object.assign({}, defaultStyle, { breakWords: true, whiteSpace: 'pre-line' });
 
-            const metrics = TextMetrics.measureText(spaceNewLineText, new TextStyle(style));
+            const metrics = CanvasTextMetrics.measureText(spaceNewLineText, new TextStyle(style));
 
             expect(metrics.width).toBeLessThan(style.wordWrapWidth);
 
@@ -393,28 +394,28 @@ describe('TextMetrics', () =>
     {
         it('string with no whitespaces to trim', () =>
         {
-            const text = TextMetrics['trimRight']('remove white spaces to the right');
+            const text = CanvasTextMetrics['_trimRight']('remove white spaces to the right');
 
             expect(text).toEqual('remove white spaces to the right');
         });
 
         it('string with whitespaces to trim', () =>
         {
-            const text = TextMetrics['trimRight']('remove white spaces to the right   ');
+            const text = CanvasTextMetrics['_trimRight']('remove white spaces to the right   ');
 
             expect(text).toEqual('remove white spaces to the right');
         });
 
         it('string with strange unicode whitespaces to trim', () =>
         {
-            const text = TextMetrics['trimRight']('remove white spaces to the right\u0009\u0020\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2008\u2009\u200A\u205F\u3000');
+            const text = CanvasTextMetrics['_trimRight']('remove white spaces to the right\u0009\u0020\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2008\u2009\u200A\u205F\u3000');
 
             expect(text).toEqual('remove white spaces to the right');
         });
 
         it('empty string', () =>
         {
-            const text = TextMetrics['trimRight']('');
+            const text = CanvasTextMetrics['_trimRight']('');
 
             expect(text).toEqual('');
         });
@@ -422,7 +423,7 @@ describe('TextMetrics', () =>
         it('non-string input', () =>
         {
             // @ts-expect-error - should return false on non-string input
-            const text = TextMetrics['trimRight']({});
+            const text = CanvasTextMetrics['_trimRight']({});
 
             expect(text).toEqual('');
         });
@@ -432,21 +433,21 @@ describe('TextMetrics', () =>
     {
         it('line feed', () =>
         {
-            const bool = TextMetrics['isNewline']('\n');
+            const bool = CanvasTextMetrics['_isNewline']('\n');
 
             expect(bool).toEqual(true);
         });
 
         it('carriage return', () =>
         {
-            const bool = TextMetrics['isNewline']('\r');
+            const bool = CanvasTextMetrics['_isNewline']('\r');
 
             expect(bool).toEqual(true);
         });
 
         it('newline char', () =>
         {
-            const bool = TextMetrics['isNewline']('A');
+            const bool = CanvasTextMetrics['_isNewline']('A');
 
             expect(bool).toEqual(false);
         });
@@ -454,7 +455,7 @@ describe('TextMetrics', () =>
         it('non string', () =>
         {
             // @ts-expect-error - should return false on non-string input
-            const bool = TextMetrics['isNewline']({});
+            const bool = CanvasTextMetrics['isNewline']({});
 
             expect(bool).toEqual(false);
         });
@@ -466,7 +467,7 @@ describe('TextMetrics', () =>
         {
             breakingSpaces.forEach((char) =>
             {
-                const bool = TextMetrics.isBreakingSpace(char);
+                const bool = CanvasTextMetrics.isBreakingSpace(char);
 
                 expect(bool).toEqual(true);
             });
@@ -476,7 +477,7 @@ describe('TextMetrics', () =>
         {
             nonBreakingSpaces.forEach((char) =>
             {
-                const bool = TextMetrics.isBreakingSpace(char);
+                const bool = CanvasTextMetrics.isBreakingSpace(char);
 
                 expect(bool).not.toEqual(true);
             });
@@ -484,7 +485,7 @@ describe('TextMetrics', () =>
 
         it('newline char', () =>
         {
-            const bool = TextMetrics.isBreakingSpace('A');
+            const bool = CanvasTextMetrics.isBreakingSpace('A');
 
             expect(bool).toEqual(false);
         });
@@ -492,7 +493,7 @@ describe('TextMetrics', () =>
         it('non string', () =>
         {
             // @ts-expect-error - should return false on non-string input
-            const bool = TextMetrics.isBreakingSpace({});
+            const bool = CanvasTextMetrics.isBreakingSpace({});
 
             expect(bool).toEqual(false);
         });
@@ -501,10 +502,10 @@ describe('TextMetrics', () =>
         {
             const reg = /[あいうえお]/;
 
-            const original = TextMetrics.isBreakingSpace;
+            const original = CanvasTextMetrics.isBreakingSpace;
 
             // override breakingSpace
-            TextMetrics.isBreakingSpace = (char, nextChar) =>
+            CanvasTextMetrics.isBreakingSpace = (char, nextChar) =>
             {
                 const isBreakingSpace = breakingSpaces.includes(char);
 
@@ -518,13 +519,13 @@ describe('TextMetrics', () =>
 
             breakingSpaces.forEach((char) =>
             {
-                const bool = TextMetrics.isBreakingSpace(char, 'あ');
+                const bool = CanvasTextMetrics.isBreakingSpace(char, 'あ');
 
                 expect(bool).toEqual(false);
             });
 
             // reset the override breakingSpace
-            TextMetrics.isBreakingSpace = original;
+            CanvasTextMetrics.isBreakingSpace = original;
         });
     });
 
@@ -532,7 +533,7 @@ describe('TextMetrics', () =>
     {
         it('full example', () =>
         {
-            const arr = TextMetrics['tokenize'](spaceNewLineText);
+            const arr = CanvasTextMetrics['_tokenize'](spaceNewLineText);
 
             expect(arr).toBeArray();
             expect(arr.length).toEqual(146);
@@ -542,7 +543,7 @@ describe('TextMetrics', () =>
 
         it('empty string', () =>
         {
-            const arr = TextMetrics['tokenize']('');
+            const arr = CanvasTextMetrics['_tokenize']('');
 
             expect(arr).toBeArray();
             expect(arr.length).toEqual(0);
@@ -550,7 +551,7 @@ describe('TextMetrics', () =>
 
         it('single char', () =>
         {
-            const arr = TextMetrics['tokenize']('A');
+            const arr = CanvasTextMetrics['_tokenize']('A');
 
             expect(arr).toBeArray();
             expect(arr.length).toEqual(1);
@@ -558,7 +559,7 @@ describe('TextMetrics', () =>
 
         it('newline char', () =>
         {
-            const arr = TextMetrics['tokenize']('\n');
+            const arr = CanvasTextMetrics['_tokenize']('\n');
 
             expect(arr).toBeArray();
             expect(arr.length).toEqual(1);
@@ -566,7 +567,7 @@ describe('TextMetrics', () =>
 
         it('breakingSpaces', () =>
         {
-            const arr = TextMetrics['tokenize'](breakingSpaces.join(''));
+            const arr = CanvasTextMetrics['_tokenize'](breakingSpaces.join(''));
 
             expect(arr).toBeArray();
             expect(arr.length).toEqual(breakingSpaces.length);
@@ -575,7 +576,7 @@ describe('TextMetrics', () =>
         it('non string', () =>
         {
             // @ts-expect-error - should return false on non-string input
-            const arr = TextMetrics['tokenize']({});
+            const arr = CanvasTextMetrics['tokenize']({});
 
             expect(arr).toBeArray();
             expect(arr.length).toEqual(0);
@@ -586,21 +587,21 @@ describe('TextMetrics', () =>
     {
         it('pre', () =>
         {
-            const bool = TextMetrics['collapseSpaces']('pre');
+            const bool = CanvasTextMetrics['_collapseSpaces']('pre');
 
             expect(bool).toEqual(false);
         });
 
         it('normal', () =>
         {
-            const bool = TextMetrics['collapseSpaces']('normal');
+            const bool = CanvasTextMetrics['_collapseSpaces']('normal');
 
             expect(bool).toEqual(true);
         });
 
         it('pre-line', () =>
         {
-            const bool = TextMetrics['collapseSpaces']('pre-line');
+            const bool = CanvasTextMetrics['_collapseSpaces']('pre-line');
 
             expect(bool).toEqual(true);
         });
@@ -608,7 +609,7 @@ describe('TextMetrics', () =>
         it('non matching string', () =>
         {
             // @ts-expect-error - should return false on non matching string
-            const bool = TextMetrics['collapseSpaces']('bull');
+            const bool = CanvasTextMetrics['collapseSpaces']('bull');
 
             expect(bool).toEqual(false);
         });
@@ -616,7 +617,7 @@ describe('TextMetrics', () =>
         it('non string', () =>
         {
             // @ts-expect-error - should return false on non-string input
-            const bool = TextMetrics['collapseSpaces']({});
+            const bool = CanvasTextMetrics['collapseSpaces']({});
 
             expect(bool).toEqual(false);
         });
@@ -626,21 +627,21 @@ describe('TextMetrics', () =>
     {
         it('pre', () =>
         {
-            const bool = TextMetrics['collapseNewlines']('pre');
+            const bool = CanvasTextMetrics['_collapseNewlines']('pre');
 
             expect(bool).toEqual(false);
         });
 
         it('normal', () =>
         {
-            const bool = TextMetrics['collapseNewlines']('normal');
+            const bool = CanvasTextMetrics['_collapseNewlines']('normal');
 
             expect(bool).toEqual(true);
         });
 
         it('pre-line', () =>
         {
-            const bool = TextMetrics['collapseNewlines']('pre-line');
+            const bool = CanvasTextMetrics['_collapseNewlines']('pre-line');
 
             expect(bool).toEqual(false);
         });
@@ -648,7 +649,7 @@ describe('TextMetrics', () =>
         it('non matching string', () =>
         {
             // @ts-expect-error - should return false on non matching string
-            const bool = TextMetrics['collapseNewlines']('bull');
+            const bool = CanvasTextMetrics['_collapseNewlines']('bull');
 
             expect(bool).toEqual(false);
         });
@@ -656,7 +657,7 @@ describe('TextMetrics', () =>
         it('non string', () =>
         {
             // @ts-expect-error - should return false on non-string input
-            const bool = TextMetrics['collapseNewlines']({});
+            const bool = CanvasTextMetrics['_collapseNewlines']({});
 
             expect(bool).toEqual(false);
         });
@@ -666,14 +667,14 @@ describe('TextMetrics', () =>
     {
         it('breakWords: true', () =>
         {
-            const bool = TextMetrics.canBreakWords('text', true);
+            const bool = CanvasTextMetrics.canBreakWords('text', true);
 
             expect(bool).toEqual(true);
         });
 
         it('breakWords: false', () =>
         {
-            const bool = TextMetrics.canBreakWords('text', false);
+            const bool = CanvasTextMetrics.canBreakWords('text', false);
 
             expect(bool).toEqual(false);
         });
@@ -684,7 +685,7 @@ describe('TextMetrics', () =>
         it('should always return true', () =>
         {
             // @ts-expect-error - function is meant to be overridden
-            const bool = TextMetrics['canBreakChars']();
+            const bool = CanvasTextMetrics['canBreakChars']();
 
             expect(bool).toEqual(true);
         });
@@ -709,14 +710,14 @@ describe('TextMetrics', () =>
             const str = '-------0000,1111,9999------';
             const reg = /^\d+$/;
 
-            TextMetrics.canBreakWords = () =>
+            CanvasTextMetrics.canBreakWords = () =>
                 true;
 
             // override breakChars
-            TextMetrics.canBreakChars = (char, nextChar) =>
+            CanvasTextMetrics.canBreakChars = (char, nextChar) =>
                 !(char.match(reg) && nextChar.match(reg));
 
-            const metrics = TextMetrics.measureText(str, style);
+            const metrics = CanvasTextMetrics.measureText(str, style);
 
             expect(metrics.lines[0]).toEqual('-------0000,1111,');
             expect(metrics.lines[1]).toEqual('9999------');

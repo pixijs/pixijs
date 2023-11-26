@@ -8,7 +8,7 @@ module.exports = async function ()
     {
         const httpServerProcess = spawn(
             'http-server',
-            ['-c-1', `${join(process.cwd(), './')}`],
+            ['-c-1', '-d', `${join(process.cwd(), './')}`],
             {
                 // See https://nodejs.org/api/child_process.html#spawning-bat-and-cmd-files-on-windows
                 shell: process.platform === 'win32',
@@ -31,6 +31,10 @@ module.exports = async function ()
                 {
                     resolve();
                 }
+            }).on('error', (err) =>
+            {
+                console.error('JEST SERVER ERROR: ', err);
+                process.exit(-1);
             });
         });
     }

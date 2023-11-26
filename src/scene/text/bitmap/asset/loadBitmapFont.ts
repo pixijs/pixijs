@@ -33,7 +33,7 @@ export const bitmapFontCachePlugin = {
     }
 };
 
-export const xmlBitmapFontLoader = {
+export const loadBitmapFont = {
     extension: {
         type: ExtensionType.LoadParser,
         priority: LoaderParserPriority.Normal,
@@ -75,7 +75,7 @@ export const xmlBitmapFontLoader = {
         const bitmapFont = new BitmapFont({
             data: bitmapFontData,
             textures
-        });
+        }, src);
 
         return bitmapFont;
     },
@@ -83,6 +83,11 @@ export const xmlBitmapFontLoader = {
     async load(url: string, _options: ResolvedAsset): Promise<string>
     {
         const response = await DOMAdapter.get().fetch(url);
+
+        if (!response.ok)
+        {
+            throw new Error(`Failed to load bitmap font ${url}`);
+        }
 
         return await response.text();
     },
