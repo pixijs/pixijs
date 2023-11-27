@@ -367,13 +367,6 @@ export class GraphicsPath
         return this;
     }
 
-    public invalidate()
-    {
-        this.shapePath.buildPath();
-
-        return this;
-    }
-
     public transform(matrix: Matrix): this
     {
         if (matrix.isIdentity()) return this;
