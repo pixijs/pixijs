@@ -16,7 +16,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
-      SOURCE_DIR: 'dist'
+      SOURCE_DIR: '.upload'
     runs-on: ubuntu-20.04
     steps:
     - name: Checkout
@@ -64,7 +64,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          ./dist/*
+          .upload/*
 
     # Examples:
     # 1) PR feature/acme merged into dev

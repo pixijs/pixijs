@@ -27,8 +27,8 @@
         }
     },
     "opts": {
-        "destination": "./dist/docs",
-        "export": "./dist/docs/webdoc.api.json",
+        "destination": ".upload/docs",
+        "export": ".upload/docs/webdoc.api.json",
         "template"      : "@pixi/webdoc-template"
     },
     "template": {

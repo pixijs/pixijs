@@ -51,3 +51,4 @@ dist/docs/pixi.api.json
 
 # visual artifacts
 .artifacts
+.upload
