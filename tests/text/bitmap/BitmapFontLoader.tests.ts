@@ -207,15 +207,13 @@ describe('BitmapFontLoader', () =>
     });
 
     // note: expected values are twice the actual size, is scaling being applied?
-    // note: ticket for Mat
+    // ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=45749982
     it.skip('should properly register SCALED bitmap font', async () =>
     {
         const renderer = await getRenderer();
         const font = await loader.load<BitmapFont>(`${basePath}fonts/font@0.5x.fnt`);
 
         expect(font).toBeObject();
-        // expect(BitmapFont.available.font).toEqual(font);
-        // expect(Cache.get('font')).toEqual(font);
         expect(font).toHaveProperty('chars');
 
         const charA = font.chars['A'];
@@ -339,7 +337,7 @@ describe('BitmapFontLoader', () =>
     });
 
     // note: This is giving back 'premultiply-alpha-on-upload'
-    // note: ticket for Mat
+    // ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=45750176
     it.skip('should set the texture to NPM on SDF fonts', async () =>
     {
         const sdfFont = await loader.load<BitmapFont>(`${basePath}fonts/sdf.fnt`);

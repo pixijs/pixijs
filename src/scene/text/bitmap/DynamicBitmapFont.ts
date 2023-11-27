@@ -29,7 +29,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
     // this is a resolution modifier for the font size..
     // texture resolution will also be used to scale texture according to its font size also
     public resolution = 1;
-    public override readonly pages: {canvasAndContext?: CanvasAndContext, texture: Texture}[] = [];
+    public override readonly pages: { canvasAndContext?: CanvasAndContext, texture: Texture }[] = [];
 
     private readonly _padding: number = 4;
     private readonly _measureCache: Record<string, number> = Object.create(null);
@@ -256,7 +256,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         }
     }
 
-    private _nextPage(): {canvasAndContext: CanvasAndContext, texture: Texture}
+    private _nextPage(): { canvasAndContext: CanvasAndContext, texture: Texture }
     {
         this._currentPageIndex++;
 

@@ -96,7 +96,8 @@ export class Text extends Container<TextView>
                 style: args[1],
             } as TextOptions;
         }
-        else
+
+        if (!options)
         {
             options = {} as TextOptions;
         }

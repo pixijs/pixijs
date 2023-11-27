@@ -42,7 +42,6 @@ describe('Text', () =>
             renderer.destroy();
         });
 
-        // note: we fixed this!
         it('should use any manually set text resolution over the renderer resolution', async () =>
         {
             const text = new Text({ text: 'foo', resolution: 3 });
@@ -183,18 +182,19 @@ describe('Text', () =>
         });
 
         // note: ticket add Trim
-        // it('should trim an empty string', () =>
-        // {
-        //     // note: why?
-        //     const text = new Text({
-        //         text: ' ',
-        //         style: {
-        //           trim: true
-        //         }
-        //     });
+        // ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=45756485
+        it.skip('should trim an empty string', () =>
+        {
+            // note: why?
+            const text = new Text({
+                text: ' ',
+                style: {
+                    //   trim: true
+                }
+            });
 
-        //     expect(text.text).toEqual('');
-        // });
+            expect(text.text).toEqual('');
+        });
 
         it('should allow setting \'\' for v5', () =>
         {
@@ -202,19 +202,5 @@ describe('Text', () =>
 
             expect(text.text).toEqual('');
         });
-
-        // it('should keep at least 1 pixel for canvas width and height', () =>
-        // {
-        //     const text = new Text({ text: '' });
-
-        //     text.updateText(undefined);
-
-        //     expect(text.canvas.width).toBeGreaterThan(1);
-        //     expect(text.canvas.height).toBeGreaterThan(1);
-
-        //     text.text = '\n';
-
-        //     expect(text.canvas.width).toBeGreaterThan(0);
-        // });
     });
 });

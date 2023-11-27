@@ -13,7 +13,9 @@ export interface BitmapFontOptions
 
 export class BitmapFont extends AbstractBitmapFont<BitmapFont>
 {
-    constructor(options: BitmapFontOptions, public readonly url?: string)
+    public url?: string;
+
+    constructor(options: BitmapFontOptions, url?: string)
     {
         super();
 
@@ -72,6 +74,8 @@ export class BitmapFont extends AbstractBitmapFont<BitmapFont>
             type: 'none',
             range: 0,
         };
+
+        this.url = url;
     }
 
     public override destroy(): void
