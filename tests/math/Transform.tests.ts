@@ -58,9 +58,7 @@ describe('Transform', () =>
             expect(otherTransform.rotation).toEqual(0);
         });
 
-        // todo: Mat investigation
-        // ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=45246448
-        it.skip('should apply skew before scale, like in adobe animate and spine', () =>
+        it('should apply skew before scale, like in adobe animate and spine', () =>
         {
             // this example looks the same in CSS and in pixi, made with pixi-animate by @bigtimebuddy
 
@@ -73,14 +71,12 @@ describe('Transform', () =>
             transform.scale.set(0.572, 4.101);
             transform.skew.set(-0.873, 0.175);
 
-            const mat = transform.matrix;
-
-            expect(mat.a).toBeCloseTo(0.563, eps);
-            expect(mat.b).toBeCloseTo(0.100, eps);
-            expect(mat.c).toBeCloseTo(-3.142, eps);
-            expect(mat.d).toBeCloseTo(2.635, eps);
-            expect(mat.tx).toBeCloseTo(387.8, eps);
-            expect(mat.ty).toBeCloseTo(313.95, eps);
+            expect(transform.matrix.a).toBeCloseTo(0.563, eps);
+            expect(transform.matrix.b).toBeCloseTo(0.100, eps);
+            expect(transform.matrix.c).toBeCloseTo(-3.142, eps);
+            expect(transform.matrix.d).toBeCloseTo(2.635, eps);
+            expect(transform.matrix.tx).toBeCloseTo(387.8, eps);
+            expect(transform.matrix.ty).toBeCloseTo(313.95, eps);
 
             otherTransform.setFromMatrix(transform.matrix);
 
