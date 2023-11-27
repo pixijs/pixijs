@@ -212,8 +212,6 @@ describe('Graphics Bounds', () =>
             expect(graphics.context.containsPoint(new Point(6, 6))).toBe(true);
         });
 
-        // note: Mat to look into, may be bug
-        // ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44799288
         it('should take a matrix into account', () =>
         {
             const g = new Graphics();
