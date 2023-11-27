@@ -8,7 +8,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render renderTextures with mipmaps correctly',
-    only: true,
     pixelMatch: 250,
     create: async (scene: Container, renderer: Renderer) =>
     {
