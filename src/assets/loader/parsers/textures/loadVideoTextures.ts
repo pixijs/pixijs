@@ -198,11 +198,12 @@ export const loadVideoTextures = {
             sourceElement.type = mime;
         }
 
+        // this promise will make sure that video is ready to play - as in we have a valid width, height and it can be
+        // uploaded to the GPU. Our textures are kind of dumb now, and don't want to handle resizing right now.
         return new Promise((resolve) =>
         {
             videoElement.addEventListener('canplay', async () =>
             {
-                // --- Create texture ---
                 const base = new VideoSource({ ...options, resource: videoElement });
 
                 if (asset.data.preload)
@@ -210,7 +211,6 @@ export const loadVideoTextures = {
                     await preloadVideo(videoElement);
                 }
 
-                // return createTexture(base, loader, url);
                 resolve(createTexture(base, loader, url));
             });
 
