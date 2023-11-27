@@ -282,7 +282,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      * The reason for this is is can be quite expensive to update mipmaps for a texture. So by default,
      * We want you, the developer to specify when this action should happen.
      *
-     * Generally you don't want to have mipmaps generated on Render targets that are changed ever frame,
+     * Generally you don't want to have mipmaps generated on Render targets that are changed every frame,
      */
     public updateMipmaps()
     {
