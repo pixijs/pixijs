@@ -298,6 +298,7 @@ export class GraphicsContext extends EventEmitter<{
                     else
                     {
                         lastInstruction.data.hole = holePath;
+                        break;
                     }
                 }
             }
