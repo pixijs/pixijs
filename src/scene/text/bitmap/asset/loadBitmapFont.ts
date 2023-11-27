@@ -69,7 +69,15 @@ export const loadBitmapFont = {
             textureUrls.push(imagePath);
         }
 
-        const loadedTextures = await loader.load<Texture>(textureUrls);
+        const alphaMode = bitmapFontData.distanceField && bitmapFontData.distanceField.type !== 'none'
+            ? 'no-premultiply-alpha' : 'premultiply-alpha-on-upload';
+        const mappedUrls: ResolvedAsset[] = textureUrls.map((url) => ({
+            src: url,
+            data: {
+                alphaMode
+            }
+        }));
+        const loadedTextures = await loader.load<Texture>(mappedUrls);
         const textures = textureUrls.map((url) => loadedTextures[url]);
 
         const bitmapFont = new BitmapFont({

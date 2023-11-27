@@ -336,9 +336,7 @@ describe('BitmapFontLoader', () =>
         expect(charCTexture.source.label).toEqual(`${basePath}fonts/split_font_ab.png`);
     });
 
-    // note: This is giving back 'premultiply-alpha-on-upload'
-    // ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=45750176
-    it.skip('should set the texture to NPM on SDF fonts', async () =>
+    it('should set the texture to NPM on SDF fonts', async () =>
     {
         const sdfFont = await loader.load<BitmapFont>(`${basePath}fonts/sdf.fnt`);
         const msdfFont = await loader.load<BitmapFont>(`${basePath}fonts/msdf.fnt`);
