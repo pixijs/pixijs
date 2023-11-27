@@ -2,6 +2,7 @@ import type { Batch, BatchableObject, Batcher } from '../../rendering/batcher/sh
 import type { Renderable } from '../../rendering/renderers/shared/Renderable';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { View } from '../../rendering/renderers/shared/view/View';
+import type { SimpleBounds } from '../container/bounds/Bounds';
 
 export class BatchableSprite implements BatchableObject
 {
@@ -17,7 +18,7 @@ export class BatchableSprite implements BatchableObject
     public location = 0; // location in the buffer
     public batcher: Batcher = null;
     public batch: Batch = null;
-    public bounds: [number, number, number, number];
+    public bounds: SimpleBounds;
     public roundPixels: 0 | 1 = 0;
 
     get blendMode() { return this.renderable.layerBlendMode; }
@@ -43,16 +44,16 @@ export class BatchableSprite implements BatchableObject
 
         const bounds = this.bounds;
 
-        const w0 = bounds[1];
-        const w1 = bounds[0];
-        const h0 = bounds[3];
-        const h1 = bounds[2];
+        const w0 = bounds.right;
+        const w1 = bounds.left;
+        const h0 = bounds.bottom;
+        const h1 = bounds.top;
 
         const uvs = texture._layout.uvs;
 
         // _ _ _ _
         // a b g r
-        const argb = sprite.layerColor;
+        const argb = sprite.layerColorAlpha;
 
         const textureIdAndRound = (textureId << 16) | (this.roundPixels & 0xFFFF);
 

@@ -37,7 +37,7 @@ export interface MeshAdaptor
 
 export interface MeshInstruction extends Instruction
 {
-    type: 'mesh';
+    renderPipeId: 'mesh';
     renderable: Renderable<MeshView>;
 }
 
@@ -141,7 +141,7 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
             batcher.break(instructionSet);
 
             instructionSet.add({
-                type: 'mesh',
+                renderPipeId: 'mesh',
                 renderable
             } as MeshInstruction);
         }
@@ -185,7 +185,7 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
         localUniforms.update();
 
         color32BitToUniform(
-            renderable.layerColor,
+            renderable.layerColorAlpha,
             localUniforms.uniforms.uColor,
             0
         );

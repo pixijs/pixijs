@@ -10,7 +10,7 @@ import type { ColorMask } from './ColorMask';
 
 export interface ColorMaskInstruction extends Instruction
 {
-    type: 'colorMask',
+    renderPipeId: 'colorMask',
     colorMask: number,
 }
 
@@ -59,7 +59,7 @@ export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
         {
             this._currentColor = currentColor;
             instructionSet.add({
-                type: 'colorMask',
+                renderPipeId: 'colorMask',
                 colorMask: currentColor,
                 canBundle: false,
             } as ColorMaskInstruction);
@@ -85,7 +85,7 @@ export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
             this._currentColor = currentColor;
 
             instructionSet.add({
-                type: 'colorMask',
+                renderPipeId: 'colorMask',
                 colorMask: currentColor,
                 canBundle: false,
             } as ColorMaskInstruction);

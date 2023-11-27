@@ -178,6 +178,8 @@ export class MeshView<
             this._texture.destroy(destroyTextureSource);
         }
 
+        this._geometry?.off('update', this.onUpdate, this);
+
         this._texture = null;
         this._geometry = null;
         this._shader = null;

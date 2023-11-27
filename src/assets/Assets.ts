@@ -685,8 +685,7 @@ export class AssetsClass
         onProgress?: ProgressCallback
     ): Promise<Record<string, T>>
     {
-        const resolveArray = Object.values(resolveResults) as ResolvedAsset[];
-        const resolveKeys = Object.keys(resolveResults);
+        const resolveArray = [...new Set(Object.values(resolveResults))] as ResolvedAsset[];
 
         // pause background loader...
         this._backgroundLoader.active = false;
@@ -700,7 +699,7 @@ export class AssetsClass
 
         const out: Record<string, T> = {};
 
-        resolveArray.forEach((resolveResult, i) =>
+        resolveArray.forEach((resolveResult) =>
         {
             const asset = loadedAssets[resolveResult.src];
 
@@ -711,7 +710,10 @@ export class AssetsClass
                 keys.push(...resolveResult.alias);
             }
 
-            out[resolveKeys[i]] = asset;
+            keys.forEach((key) =>
+            {
+                out[key] = asset;
+            });
 
             Cache.set(keys, asset);
         });

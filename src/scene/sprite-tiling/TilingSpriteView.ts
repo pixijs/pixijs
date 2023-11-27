@@ -2,26 +2,46 @@ import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { emptyViewObserver } from '../../rendering/renderers/shared/view/View';
 import { uid } from '../../utils/data/uid';
-import { Transform } from '../../utils/Transform';
+import { Transform } from '../../utils/misc/Transform';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';
-import type { Bounds } from '../container/bounds/Bounds';
+import type { Bounds, SimpleBounds } from '../container/bounds/Bounds';
 import type { TextureDestroyOptions, TypeOrBool } from '../container/destroyTypes';
 
+/**
+ * Options for the {@link scene.TilingSprite} constructor.
+ * @memberof scene
+ */
 export interface TilingSpriteViewOptions
 {
+    /**
+     * The texture to use for the sprite.
+     * @default Texture.WHITE
+     */
     texture?: Texture
+    /**
+     * The width of the tiling sprite. #
+     * @default 256
+     */
     width?: number
+    /**
+     * The height of the tiling sprite.
+     * @default 256
+     */
     height?: number
     // TODO needs a better name..
+    /**
+     * @todo
+     * @default false
+     */
     applyAnchorToTexture?: boolean
 }
 
 export class TilingSpriteView implements View
 {
     public static defaultOptions: TilingSpriteViewOptions = {
-        texture: Texture.WHITE,
+        texture: Texture.EMPTY,
         width: 256,
         height: 256,
         applyAnchorToTexture: false,
@@ -44,7 +64,7 @@ export class TilingSpriteView implements View
 
     public roundPixels: 0 | 1 = 0;
 
-    private _bounds: [number, number, number, number] = [0, 1, 0, 0];
+    private _bounds: SimpleBounds = { left: 0, right: 1, top: 0, bottom: 0 };
     private _boundsDirty = true;
     private _width: number;
     private _height: number;
@@ -119,11 +139,11 @@ export class TilingSpriteView implements View
         const width = this._width;
         const height = this._height;
 
-        bounds[1] = -anchor._x * width;
-        bounds[0] = bounds[1] + width;
+        bounds.right = -anchor._x * width;
+        bounds.left = bounds.right + width;
 
-        bounds[3] = -anchor._y * height;
-        bounds[2] = bounds[3] + height;
+        bounds.bottom = -anchor._y * height;
+        bounds.top = bounds.bottom + height;
     }
 
     public addBounds(bounds: Bounds)
@@ -131,25 +151,25 @@ export class TilingSpriteView implements View
         const _bounds = this.bounds;
 
         bounds.addFrame(
-            _bounds[0],
-            _bounds[2],
-            _bounds[1],
-            _bounds[3],
+            _bounds.left,
+            _bounds.top,
+            _bounds.right,
+            _bounds.bottom,
         );
     }
 
     public containsPoint(point: PointData)
     {
-        const width = this.bounds[2];
-        const height = this.bounds[3];
+        const width = this.bounds.left;
+        const height = this.bounds.top;
         const x1 = -width * this.anchor.x;
         let y1 = 0;
 
-        if (point.x >= x1 && point.x < x1 + width)
+        if (point.x >= x1 && point.x <= x1 + width)
         {
             y1 = -height * this.anchor.y;
 
-            if (point.y >= y1 && point.y < y1 + height) return true;
+            if (point.y >= y1 && point.y <= y1 + height) return true;
         }
 
         return false;

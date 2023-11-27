@@ -1,23 +1,20 @@
-import { Cache } from '../../assets/cache/Cache';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { emptyViewObserver } from '../../rendering/renderers/shared/view/View';
 import { uid } from '../../utils/data/uid';
-import { BitmapFont } from './bitmap/BitmapFont';
 import { BitmapFontManager } from './bitmap/BitmapFontManager';
-import { DynamicBitmapFont } from './bitmap/DynamicBitmapFont';
 import { CanvasTextMetrics } from './canvas/CanvasTextMetrics';
-import { HTMLTextStyle } from './html/HtmlTextStyle';
 import { measureHtmlText } from './html/utils/measureHtmlText';
+import { detectRenderType } from './utils/detectRenderType';
 import { ensureTextStyle } from './utils/ensureTextStyle';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { View, ViewObserver } from '../../rendering/renderers/shared/view/View';
-import type { Bounds } from '../container/bounds/Bounds';
+import type { Bounds, SimpleBounds } from '../container/bounds/Bounds';
 import type { TextureDestroyOptions, TypeOrBool } from '../container/destroyTypes';
-import type { HTMLTextStyleOptions } from './html/HtmlTextStyle';
+import type { HTMLTextStyle, HTMLTextStyleOptions } from './html/HtmlTextStyle';
 import type { TextStyle, TextStyleOptions } from './TextStyle';
 
-export type TextString = string | number | {toString: () => string};
+export type TextString = string | number | { toString: () => string };
 export type AnyTextStyle = TextStyle | HTMLTextStyle;
 export type AnyTextStyleOptions = TextStyleOptions | HTMLTextStyleOptions;
 
@@ -26,7 +23,7 @@ type Filter<T> = { [K in keyof T]: {
     renderMode?: K;
     resolution?: number;
     style?: T[K]
-} } [keyof T];
+} }[keyof T];
 
 export type TextStyles = {
     canvas: TextStyleOptions | TextStyle;
@@ -57,7 +54,7 @@ export class TextView implements View
     public _didUpdate = true;
     public roundPixels?: 0 | 1 = 0;
 
-    private _bounds: [number, number, number, number] = [0, 1, 0, 0];
+    private _bounds: SimpleBounds = { left: 0, right: 1, top: 0, bottom: 0 };
     private _boundsDirty = true;
     private _text: string;
     private readonly _renderMode: string;
@@ -66,7 +63,7 @@ export class TextView implements View
     {
         this.text = options.text ?? '';
 
-        const renderMode = options.renderMode ?? this._detectRenderType(options.style);
+        const renderMode = options.renderMode ?? detectRenderType(options.style);
 
         this._renderMode = renderMode;
 
@@ -128,25 +125,26 @@ export class TextView implements View
         const _bounds = this.bounds;
 
         bounds.addFrame(
-            _bounds[0],
-            _bounds[2],
-            _bounds[1],
-            _bounds[3],
+            _bounds.left,
+            _bounds.top,
+            _bounds.right,
+            _bounds.bottom,
         );
     }
 
     public containsPoint(point: PointData)
     {
-        const width = this.bounds[2];
-        const height = this.bounds[3];
+        const width = this.bounds.right;
+        const height = this.bounds.bottom;
+
         const x1 = -width * this.anchor.x;
         let y1 = 0;
 
-        if (point.x >= x1 && point.x < x1 + width)
+        if (point.x >= x1 && point.x <= x1 + width)
         {
             y1 = -height * this.anchor.y;
 
-            if (point.y >= y1 && point.y < y1 + height) return true;
+            if (point.y >= y1 && point.y <= y1 + height) return true;
         }
 
         return false;
@@ -182,10 +180,10 @@ export class TextView implements View
             const width = bitmapMeasurement.width * scale;
             const height = bitmapMeasurement.height * scale;
 
-            bounds[0] = (-anchor._x * width) - padding;
-            bounds[1] = bounds[0] + width;
-            bounds[2] = (-anchor._y * (height + offset)) - padding;
-            bounds[3] = bounds[2] + height;
+            bounds.left = (-anchor._x * width) - padding;
+            bounds.right = bounds.left + width;
+            bounds.top = (-anchor._y * (height + offset)) - padding;
+            bounds.bottom = bounds.top + height;
         }
         else if (this.renderPipeId === 'htmlText')
         {
@@ -193,10 +191,10 @@ export class TextView implements View
 
             const { width, height } = htmlMeasurement;
 
-            bounds[0] = (-anchor._x * width) - padding;
-            bounds[1] = bounds[0] + width;
-            bounds[2] = (-anchor._y * height) - padding;
-            bounds[3] = bounds[2] + height;
+            bounds.left = (-anchor._x * width) - padding;
+            bounds.right = bounds.left + width;
+            bounds.top = (-anchor._y * height) - padding;
+            bounds.bottom = bounds.top + height;
         }
         else
         {
@@ -204,28 +202,11 @@ export class TextView implements View
 
             const { width, height } = canvasMeasurement;
 
-            bounds[0] = (-anchor._x * width) - padding;
-            bounds[1] = bounds[0] + width;
-            bounds[2] = (-anchor._y * height) - padding;
-            bounds[3] = bounds[2] + height;
+            bounds.left = (-anchor._x * width) - padding;
+            bounds.right = bounds.left + width;
+            bounds.top = (-anchor._y * height) - padding;
+            bounds.bottom = bounds.top + height;
         }
-    }
-
-    private _detectRenderType(style: TextStyleOptions | AnyTextStyle): 'canvas' | 'html' | 'bitmap'
-    {
-        if (style instanceof HTMLTextStyle)
-        {
-            return 'html';
-        }
-
-        const fontData = Cache.get(style?.fontFamily as string);
-
-        if (fontData instanceof DynamicBitmapFont || fontData instanceof BitmapFont)
-        {
-            return 'bitmap';
-        }
-
-        return 'canvas';
     }
 
     /**

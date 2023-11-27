@@ -20,10 +20,12 @@ export class LayerRenderable<T extends View = View> extends EventEmitter impleme
     public view: T;
     private readonly _original: Container<View>;
     public layerTransform: Matrix;
-    public worldTransform: Matrix;
-    public layerColor: number;
     public layerVisibleRenderable: number;
     public didViewUpdate: boolean;
+    public worldTransform: Matrix;
+    public layerColorAlpha = 0xffffffff;
+    public layerColor = 0xffffff;
+    public layerAlpha = 1;
 
     constructor({ original, view }: { original: Container<View>; view: T })
     {
@@ -32,9 +34,11 @@ export class LayerRenderable<T extends View = View> extends EventEmitter impleme
         this.view = view;
         this._original = original;
         this.layerTransform = new Matrix();
-        this.layerColor = 0xffffffff;
         this.layerVisibleRenderable = 0b11;
 
+        // layer renderable should match the original id as we use it to reference
+        // the gpu counter part on various systems
+        this.uid = original.uid;
         this.view.owner = this;
     }
 

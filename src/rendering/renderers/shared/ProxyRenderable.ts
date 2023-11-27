@@ -38,9 +38,19 @@ export class ProxyRenderable<T extends View = View> extends EventEmitter impleme
         this.layerTransform = original.layerTransform;
     }
 
+    get layerColorAlpha()
+    {
+        return this._original.layerColorAlpha;
+    }
+
     get layerColor()
     {
         return this._original.layerColor;
+    }
+
+    get layerAlpha()
+    {
+        return this._original.layerAlpha;
     }
 
     get layerBlendMode()

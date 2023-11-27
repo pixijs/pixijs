@@ -4,6 +4,7 @@
  * priority items, such as render, should go later.
  * @static
  * @enum {number}
+ * @memberof ticker
  */
 export enum UPDATE_PRIORITY
 // eslint-disable-next-line @typescript-eslint/indent

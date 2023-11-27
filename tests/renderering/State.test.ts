@@ -5,7 +5,7 @@ import type { GlStateSystem } from '../../src/rendering/renderers/gl/state/GlSta
 
 describe('State', () =>
 {
-    it('should default to normal state ', async () =>
+    it('should default to normal state', async () =>
     {
         const stateSystem = (await getRenderer()).state as GlStateSystem;
 

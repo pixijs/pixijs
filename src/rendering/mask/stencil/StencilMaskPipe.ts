@@ -15,7 +15,7 @@ type MaskMode = 'pushMaskBegin' | 'pushMaskEnd' | 'popMaskBegin' | 'popMaskEnd';
 
 export interface StencilMaskInstruction extends Instruction
 {
-    type: 'stencilMask',
+    renderPipeId: 'stencilMask',
     action: MaskMode,
     mask: StencilMask,
 }
@@ -56,7 +56,7 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         renderer.renderPipes.blendMode.setBlendMode(effect.mask, 'none', instructionSet);
 
         instructionSet.add({
-            type: 'stencilMask',
+            renderPipeId: 'stencilMask',
             action: 'pushMaskBegin',
             mask,
             canBundle: false,
@@ -89,7 +89,7 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         renderer.renderPipes.batch.break(instructionSet);
 
         instructionSet.add({
-            type: 'stencilMask',
+            renderPipeId: 'stencilMask',
             action: 'pushMaskEnd',
             mask,
             canBundle: false,
@@ -125,7 +125,7 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         renderer.renderPipes.blendMode.setBlendMode(effect.mask, 'none', instructionSet);
 
         instructionSet.add({
-            type: 'stencilMask',
+            renderPipeId: 'stencilMask',
             action: 'popMaskBegin',
             canBundle: false,
         });
@@ -142,7 +142,7 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         }
 
         instructionSet.add({
-            type: 'stencilMask',
+            renderPipeId: 'stencilMask',
             action: 'popMaskEnd',
             canBundle: false,
         });

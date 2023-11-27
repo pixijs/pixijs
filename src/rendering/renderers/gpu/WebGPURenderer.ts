@@ -25,11 +25,11 @@ import type { ExtractRendererOptions, ExtractSystemTypes } from '../shared/syste
 
 const DefaultWebGPUSystems = [
     ...SharedSystems,
+    GpuEncoderSystem,
     GpuDeviceSystem,
     BufferSystem,
     GpuTextureSystem,
     GpuRenderTargetSystem,
-    GpuEncoderSystem,
     GpuShaderSystem,
     GpuStateSystem,
     PipelineSystem,

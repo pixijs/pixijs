@@ -117,7 +117,7 @@ export function getBitmapTextLayout(chars: string[], style: TextStyle, font: Abs
             char = chars[i];
         }
 
-        const charData = font.chars[char];
+        const charData = font.chars[char] || font.chars[' '];
 
         const isSpace = (/(?:\s)/).test(char);
         const isWordBreak = isSpace || char === '\r' || char === '\n' || isEnd;

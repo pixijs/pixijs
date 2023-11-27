@@ -1,7 +1,7 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
+import { updateQuadBounds } from '../../../utils/data/updateQuadBounds';
 import { BigPool } from '../../../utils/pool/PoolGroup';
-import { updateQuadBounds } from '../../../utils/updateQuadBounds';
 import { BatchableSprite } from '../../sprite/BatchableSprite';
 
 import type { RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
@@ -173,10 +173,6 @@ export class HTMLTextPipe implements RenderPipe<TextView>
 
     private _initGpuText(renderable: Renderable<TextView>)
     {
-        const view = renderable.view;
-
-        view._style.update();
-
         const gpuTextData: HTMLTextPipe['_gpuText'][number] = {
             texture: Texture.EMPTY,
             currentKey: '--',
@@ -189,7 +185,7 @@ export class HTMLTextPipe implements RenderPipe<TextView>
 
         batchableSprite.renderable = renderable;
         batchableSprite.texture = Texture.EMPTY;
-        batchableSprite.bounds = [0, 1, 0, 0];
+        batchableSprite.bounds = { left: 0, right: 1, top: 0, bottom: 0 };
         batchableSprite.roundPixels = (this._renderer._roundPixels | renderable.view.roundPixels) as 0 | 1;
 
         this._gpuText[renderable.uid] = gpuTextData;

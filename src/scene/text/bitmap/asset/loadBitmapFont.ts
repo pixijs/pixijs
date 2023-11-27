@@ -4,8 +4,8 @@ import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { path } from '../../../../utils/path';
 import { BitmapFont } from '../BitmapFont';
-import { TextFormat } from './textFormat';
-import { XMLStringFormat } from './xmlStringFormat';
+import { bitmapFontTextParser } from './bitmapFontTextParser';
+import { bitmapFontXMLStringParser } from './bitmapFontXMLStringParser';
 
 import type { Loader } from '../../../../assets/loader/Loader';
 import type { LoaderParser } from '../../../../assets/loader/parsers/LoaderParser';
@@ -27,7 +27,7 @@ export const bitmapFontCachePlugin = {
             out[key] = asset;
         });
 
-        out[asset.fontFamily] = asset;
+        out[`${asset.fontFamily}-bitmap`] = asset;
 
         return out;
     }
@@ -46,14 +46,14 @@ export const xmlBitmapFontLoader = {
 
     async testParse(data: string): Promise<boolean>
     {
-        return TextFormat.test(data) || XMLStringFormat.test(data);
+        return bitmapFontTextParser.test(data) || bitmapFontXMLStringParser.test(data);
     },
 
     async parse(asset: string, data: ResolvedAsset, loader: Loader): Promise<BitmapFont>
     {
-        const bitmapFontData = TextFormat.test(asset)
-            ? TextFormat.parse(asset)
-            : XMLStringFormat.parse(asset);
+        const bitmapFontData = bitmapFontTextParser.test(asset)
+            ? bitmapFontTextParser.parse(asset)
+            : bitmapFontXMLStringParser.parse(asset);
 
         const { src } = data;
         const { pages } = bitmapFontData;

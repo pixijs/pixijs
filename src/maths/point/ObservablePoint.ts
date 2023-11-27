@@ -1,6 +1,9 @@
 import type { PointData } from './PointData';
 import type { PointLike } from './PointLike';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface ObservablePoint extends PixiMixins.ObservablePoint { }
+
 /**
  * Observer used to listen for observable point changes.
  * @memberof maths
@@ -64,7 +67,7 @@ export class ObservablePoint implements PointLike
         {
             this._x = x;
             this._y = y;
-            this._observer.onUpdate();
+            this._observer.onUpdate(this);
         }
 
         return this;
@@ -81,7 +84,7 @@ export class ObservablePoint implements PointLike
         {
             this._x = p.x;
             this._y = p.y;
-            this._observer.onUpdate();
+            this._observer.onUpdate(this);
         }
 
         return this;

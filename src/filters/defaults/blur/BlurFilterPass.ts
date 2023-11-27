@@ -4,7 +4,7 @@ import { Filter } from '../../Filter';
 import { generateBlurGlProgram } from './gl/generateBlurGlProgram';
 import { generateBlurProgram } from './gpu/generateBlurProgram';
 
-import type { RenderSurface } from '../../../rendering/renderers/gpu/renderTarget/GpuRenderTargetSystem';
+import type { RenderSurface } from '../../../rendering/renderers/shared/renderTarget/RenderTargetSystem';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { FilterSystem } from '../../FilterSystem';
 import type { BlurFilterOptions } from './BlurFilter';

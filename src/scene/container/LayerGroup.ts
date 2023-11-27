@@ -9,7 +9,7 @@ import type { Container } from './Container';
 
 export class LayerGroup implements Instruction
 {
-    public type = 'layer';
+    public renderPipeId = 'layer';
     public root: Container = null;
 
     public canBundle = false;
@@ -20,7 +20,9 @@ export class LayerGroup implements Instruction
     private readonly _children: Container[] = [];
 
     public worldTransform: Matrix = new Matrix();
-    public worldColor = 0xffffffff;
+    public worldColorAlpha = 0xffffffff;
+    public worldColor = 0xffffff;
+    public worldAlpha = 1;
 
     // these updates are transform changes..
     public readonly childrenToUpdate: Record<number, { list: Container[]; index: number; }> = Object.create(null);
@@ -238,9 +240,7 @@ export class LayerGroup implements Instruction
 
     get isRenderable(): boolean
     {
-        const worldAlpha = ((this.worldColor >> 24) & 0xFF);
-
-        return (this.root.localVisibleRenderable === 0b11 && worldAlpha > 0);
+        return (this.root.localVisibleRenderable === 0b11 && this.worldAlpha > 0);
     }
 
     /**

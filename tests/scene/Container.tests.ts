@@ -19,7 +19,7 @@ describe('Container Tests', () =>
         expect(container.angle).toBe(angle);
         expect(container.children).toContain(children[0]);
         expect(container.children).toContain(children[1]);
-        expect(addedSpy).toBeCalledTimes(1);
+        expect(addedSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should a global position correctly', async () =>
@@ -83,7 +83,7 @@ describe('Container Tests', () =>
         expect(child.toLocal({ x: 0, y: 0 })).toEqual({ x: -10, y: -10 });
     });
 
-    it('should a local position correctly', async () =>
+    it('should a local position correctly when nested', async () =>
     {
         const root = new Container({
             label: 'root',

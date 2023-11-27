@@ -1,4 +1,4 @@
-import { TextFormat } from '../../src/scene/text/bitmap/asset/textFormat';
+import { bitmapFontTextParser } from '../../src/scene/text/bitmap/asset/bitmapFontTextParser';
 
 const rawFontString = `
 info face="sans-serif" size=36 bold=0 italic=0 charset="" unicode=1 stretchH=100 smooth=1 aa=1 padding=1,1,1,1 spacing=1,1
@@ -11,9 +11,9 @@ char id=33 x=244 y=107 width=8 height=30 xoffset=4 yoffset=0 xadvance=15 page=0 
 
 describe('TextFormat', () =>
 {
-    it('should parse text chars, if no letter or char property is present ', async () =>
+    it('should parse text chars, if no letter or char property is present', async () =>
     {
-        const parsedText = TextFormat.parse(rawFontString);
+        const parsedText = bitmapFontTextParser.parse(rawFontString);
 
         expect(parsedText.chars['!']).toEqual({
             id: 33,

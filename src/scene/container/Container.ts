@@ -22,6 +22,10 @@ import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Dict } from '../../utils/types';
 import type { DestroyOptions } from './destroyTypes';
 
+/**
+ * @namespace scene
+ */
+
 // as pivot and skew are the least used properties of a container, we can use this optimisation
 // to avoid allocating lots of unnecessary objects for them.
 const defaultSkew = new ObservablePoint(null);
@@ -59,45 +63,46 @@ export const UPDATE_TRANSFORM = 0b1000;
 
 /**
  * Constructor options use for Container instances.
- * @see Container
+ * @memberof scene
+ * @see scene.Container
  */
 export interface ContainerOptions<T extends View> extends PixiMixins.ContainerOptions
 {
-    /** @see Container#layer */
+    /** @see scene.Container#layer */
     layer?: boolean;
-    /** @see Container#view */
+    /** @see scene.Container#view */
     view?: T;
 
-    /** @see Container#blendMode */
+    /** @see scene.Container#blendMode */
     blendMode?: BLEND_MODES;
-    /** @see Container#tint */
+    /** @see scene.Container#tint */
     tint?: ColorSource;
 
-    /** @see Container#alpha */
+    /** @see scene.Container#alpha */
     alpha?: number;
-    /** @see Container#angle */
+    /** @see scene.Container#angle */
     angle?: number;
-    /** @see Container#children */
+    /** @see scene.Container#children */
     children?: Container[];
-    /** @see Container#parent */
+    /** @see scene.Container#parent */
     parent?: Container;
-    /** @see Container#renderable */
+    /** @see scene.Container#renderable */
     renderable?: boolean;
-    /** @see Container#rotation */
+    /** @see scene.Container#rotation */
     rotation?: number;
-    /** @see Container#scale */
+    /** @see scene.Container#scale */
     scale?: PointData;
-    /** @see Container#pivot */
+    /** @see scene.Container#pivot */
     pivot?: PointData;
-    /** @see Container#position */
+    /** @see scene.Container#position */
     position?: PointData;
-    /** @see Container#skew */
+    /** @see scene.Container#skew */
     skew?: PointData;
-    /** @see Container#visible */
+    /** @see scene.Container#visible */
     visible?: boolean;
-    /** @see Container#x */
+    /** @see scene.Container#x */
     x?: number;
-    /** @see Container#y */
+    /** @see scene.Container#y */
     y?: number;
 }
 
@@ -105,6 +110,190 @@ export interface Container
     extends Omit<PixiMixins.Container, keyof EventEmitter<ContainerEvents & AnyEvent>>,
     EventEmitter<ContainerEvents & AnyEvent> {}
 
+/**
+ * Container is a general-purpose display object that holds children. It also adds built-in support for advanced
+ * rendering features like masking and filtering.
+ *
+ * It is the base class of all display objects that act as a container for other objects, including Graphics
+ * and Sprite.
+ *
+ * ## Transforms
+ *
+ * The [transform]{@link scene.Container#transform} of a display object describes the projection from its
+ * local coordinate space to its parent's local coordinate space. The following properties are derived
+ * from the transform:
+ *
+ * <table>
+ *   <thead>
+ *     <tr>
+ *       <th>Property</th>
+ *       <th>Description</th>
+ *     </tr>
+ *   </thead>
+ *   <tbody>
+ *     <tr>
+ *       <td>[pivot]{@link scene.Container#pivot}</td>
+ *       <td>
+ *         Invariant under rotation, scaling, and skewing. The projection of into the parent's space of the pivot
+ *         is equal to position, regardless of the other three transformations. In other words, It is the center of
+ *         rotation, scaling, and skewing.
+ *       </td>
+ *     </tr>
+ *     <tr>
+ *       <td>[position]{@link scene.Container#position}</td>
+ *       <td>
+ *         Translation. This is the position of the [pivot]{@link scene.Container#pivot} in the parent's local
+ *         space. The default value of the pivot is the origin (0,0). If the top-left corner of your display object
+ *         is (0,0) in its local space, then the position will be its top-left corner in the parent's local space.
+ *       </td>
+ *     </tr>
+ *     <tr>
+ *       <td>[scale]{@link scene.Container#scale}</td>
+ *       <td>
+ *         Scaling. This will stretch (or compress) the display object's projection. The scale factors are along the
+ *         local coordinate axes. In other words, the display object is scaled before rotated or skewed. The center
+ *         of scaling is the [pivot]{@link scene.Container#pivot}.
+ *       </td>
+ *     </tr>
+ *     <tr>
+ *       <td>[rotation]{@link scene.Container#rotation}</td>
+ *       <td>
+ *          Rotation. This will rotate the display object's projection by this angle (in radians).
+ *       </td>
+ *     </tr>
+ *     <tr>
+ *       <td>[skew]{@link scene.Container#skew}</td>
+ *       <td>
+ *         <p>Skewing. This can be used to deform a rectangular display object into a parallelogram.</p>
+ *         <p>
+ *         In PixiJS, skew has a slightly different behaviour than the conventional meaning. It can be
+ *         thought of the net rotation applied to the coordinate axes (separately). For example, if "skew.x" is
+ *         ⍺ and "skew.y" is β, then the line x = 0 will be rotated by ⍺ (y = -x*cot⍺) and the line y = 0 will be
+ *         rotated by β (y = x*tanβ). A line y = x*tanϴ (i.e. a line at angle ϴ to the x-axis in local-space) will
+ *         be rotated by an angle between ⍺ and β.
+ *         </p>
+ *         <p>
+ *         It can be observed that if skew is applied equally to both axes, then it will be equivalent to applying
+ *         a rotation. Indeed, if "skew.x" = -ϴ and "skew.y" = ϴ, it will produce an equivalent of "rotation" = ϴ.
+ *         </p>
+ *         <p>
+ *         Another quite interesting observation is that "skew.x", "skew.y", rotation are commutative operations. Indeed,
+ *         because rotation is essentially a careful combination of the two.
+ *         </p>
+ *       </td>
+ *     </tr>
+ *     <tr>
+ *       <td>[angle]{@link scene.Container#angle}</td>
+ *       <td>Rotation. This is an alias for [rotation]{@link scene.Container#rotation}, but in degrees.</td>
+ *     </tr>
+ *     <tr>
+ *       <td>[x]{@link scene.Container#x}</td>
+ *       <td>Translation. This is an alias for position.x!</td>
+ *     </tr>
+ *     <tr>
+ *       <td>[y]{@link scene.Container#y}</td>
+ *       <td>Translation. This is an alias for position.y!</td>
+ *     </tr>
+ *     <tr>
+ *       <td>[width]{@link scene.Container#width}</td>
+ *       <td>
+ *         Implemented in [Container]{@link scene.Container}. Scaling. The width property calculates scale.x by dividing
+ *         the "requested" width by the local bounding box width. It is indirectly an abstraction over scale.x, and there
+ *         is no concept of user-defined width.
+ *       </td>
+ *     </tr>
+ *     <tr>
+ *       <td>[height]{@link scene.Container#height}</td>
+ *       <td>
+ *         Implemented in [Container]{@link scene.Container}. Scaling. The height property calculates scale.y by dividing
+ *         the "requested" height by the local bounding box height. It is indirectly an abstraction over scale.y, and there
+ *         is no concept of user-defined height.
+ *       </td>
+ *     </tr>
+ *   </tbody>
+ * </table>
+ *
+ * ## Bounds
+ *
+ * TODO
+ *
+ * ## Alpha
+ *
+ * This alpha sets a display object's **relative opacity** w.r.t its parent. For example, if the alpha of a display
+ * object is 0.5 and its parent's alpha is 0.5, then it will be rendered with 25% opacity (assuming alpha is not
+ * applied on any ancestor further up the chain).
+ *
+ * ## Renderable vs Visible
+ *
+ * The `renderable` and `visible` properties can be used to prevent a display object from being rendered to the
+ * screen. However, there is a subtle difference between the two. When using `renderable`, the transforms  of the display
+ * object (and its children subtree) will continue to be calculated. When using `visible`, the transforms will not
+ * be calculated.
+ * @example
+ * import { BlurFilter, Container, Graphics, Sprite } from 'pixi.js';
+ *
+ * const container = new Container();
+ * const sprite = Sprite.from('https://s3-us-west-2.amazonaws.com/s.cdpn.io/693612/IaUrttj.png');
+ *
+ * sprite.width = 512;
+ * sprite.height = 512;
+ *
+ * // Adds a sprite as a child to this container. As a result, the sprite will be rendered whenever the container
+ * // is rendered.
+ * container.addChild(sprite);
+ *
+ * // Blurs whatever is rendered by the container
+ * container.filters = [new BlurFilter()];
+ *
+ * // Only the contents within a circle at the center should be rendered onto the screen.
+ * container.mask = new Graphics()
+ *     .beginFill(0xffffff)
+ *     .drawCircle(sprite.width / 2, sprite.height / 2, Math.min(sprite.width, sprite.height) / 2)
+ *     .endFill();
+ *
+ *
+ * ## Layers
+ *
+ * In PixiJS v8, containers can be set to operate in 'layer mode',
+ * transforming them into entities akin to a stage in traditional rendering paradigms.
+ * A layer is a root renderable entity, similar to a container,
+ * but it's rendered in a separate pass with its own unique set of rendering instructions.
+ * This approach enhances rendering efficiency and organization, particularly in complex scenes.
+ *
+ * You can enable layer mode on any container using container.enableLayer()
+ * or by initializing a new container with the layer property set to true (new Container({layer: true})).
+ *  The method you choose depends on your specific use case and setup requirements.
+ *
+ * An important aspect of PixiJS’s rendering process is the automatic treatment of rendered scenes as layers.
+ * This conversion streamlines the rendering process, but understanding when and how this happens is crucial
+ * to fully leverage its benefits.
+ *
+ * One of the key advantages of using layers is the performance efficiency in moving them. Since transformations
+ *  are applied at the GPU level, moving a layer, even one with complex and numerous children,
+ * doesn't require recalculating the rendering instructions or performing transformations on each child.
+ * This makes operations like panning a large game world incredibly efficient.
+ *
+ * However, it's crucial to note that layers do not batch together.
+ * This means that turning every container into a layer could actually slow things down,
+ * as each layer is processed separately. It's best to use layers judiciously, at a broader level,
+ * rather than on a per-child basis.
+ * This approach ensures you get the performance benefits without overburdening the rendering process.
+ *
+ * Layers maintain their own set of rendering instructions,
+ * ensuring that changes or updates within a layer don't affect the rendering instructions of its parent or other layers.
+ *  This isolation ensures more stable and predictable rendering behavior.
+ *
+ * Additionally, layers can be nested, allowing for powerful options in organizing different aspects of your scene.
+ * This feature is particularly beneficial for separating complex game graphics from UI elements,
+ * enabling intricate and efficient scene management in complex applications.
+ *
+ * This means that Containers have 3 levels of matrix to be mindful of:
+ *
+ * 1 - localTransform, this is the transform of the container based on its own properties
+ * 2 - layerTransform, this it the transform of the container relative to the layer it belongs too
+ * 3 - worldTransform, this is the transform of the container relative to the Scene being rendered
+ * @memberof scene
+ */
 export class Container<T extends View = View> extends EventEmitter<ContainerEvents & AnyEvent> implements Renderable
 {
     /**
@@ -116,82 +305,103 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         Object.defineProperties(Container.prototype, Object.getOwnPropertyDescriptors(source));
     }
 
-    /** @internal */
+    /** @private */
     public uid: number = uid('renderable');
 
-    /** @internal */
+    /** @private */
     public _updateFlags = 0b1111;
 
     // is this container the root of a layer?
     // TODO implement this in a few more places
-    /** @internal */
+    /** @private */
     public isLayerRoot = false;
     // the layer group this container belongs to OR owns
-    /** @internal */
+    /** @private */
     public layerGroup: LayerGroup = null;
 
     // set to true if the container has changed. It is reset once the changes have been applied
     // by the transform system
     // its here to stop ensure that when things change, only one update gets registers with the transform system
-    /** @internal */
+    /** @private */
     public didChange = false;
     // same as above, but for the renderable
-    /** @internal */
+    /** @private */
     public didViewUpdate = false;
     // how deep is the container relative to its layer..
     // unless the element is the root layer - it will be relative to its parent
-    /** @internal */
+    /** @private */
     public relativeLayerDepth = 0;
 
+    /**
+     * The array of children of this container.
+     * @readonly
+     */
     public children: Container[] = [];
+    /** The display object container that contains this display object. */
     public parent: Container = null;
 
     // used internally for changing up the render order.. mainly for masks and filters
     // TODO setting this should cause a rebuild??
-    /** @internal */
+    /** @private */
     public includeInBuild = true;
-    /** @internal */
+    /** @private */
     public measurable = true;
-    /** @internal */
+    /** @private */
     public isSimple = true;
 
     /// /////////////Transform related props//////////////
 
     // used by the transform system to check if a container needs to be updated that frame
     // if the tick matches the current transform system tick, it is not updated again
-    /** @internal */
+    /**
+     * @internal
+     * @ignore
+     */
     public updateTick = -1;
 
+    /**
+     * Current transform of the object based on local factors: position, scale, other stuff.
+     * @readonly
+     */
     public localTransform: Matrix = new Matrix();
-    // transform relative to its layer..
+    /**
+     * The layer transform is a transform relative to the layer it belongs too. It will include all parent
+     * transforms and up to the layer (think of it as kind of like a stage - but the stage can be nested).
+     * @readonly
+     */
     public layerTransform: Matrix = new Matrix();
     // the global transform taking into account the layer and all parents
     private _worldTransform: Matrix;
 
+    /** If the object has been destroyed via destroy(). If true, it should not be used. */
     public destroyed = false;
 
     // transform data..
     /**
      * The coordinate of the object relative to the local coordinates of the parent.
      * @internal
+     * @ignore
      */
     public _position: ObservablePoint = new ObservablePoint(this, 0, 0);
 
     /**
      * The scale factor of the object.
      * @internal
+     * @ignore
      */
     public _scale: ObservablePoint = defaultScale;
 
     /**
      * The pivot point of the container that it rotates around.
      * @internal
+     * @ignore
      */
     public _pivot: ObservablePoint = defaultPivot;
 
     /**
      * The skew amount, on the x and y axis.
      * @internal
+     * @ignore
      */
     public _skew: ObservablePoint = defaultSkew;
 
@@ -199,6 +409,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      * The X-coordinate value of the normalized local X axis,
      * the first column of the local transformation matrix without a scale.
      * @internal
+     * @ignore
      */
     public _cx = 1;
 
@@ -206,6 +417,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      * The Y-coordinate value of the normalized local X axis,
      * the first column of the local transformation matrix without a scale.
      * @internal
+     * @ignore
      */
     public _sx = 0;
 
@@ -213,6 +425,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      * The X-coordinate value of the normalized local Y axis,
      * the second column of the local transformation matrix without a scale.
      * @internal
+     * @ignore
      */
     public _cy = 0;
 
@@ -220,6 +433,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      * The Y-coordinate value of the normalized local Y axis,
      * the second column of the local transformation matrix without a scale.
      * @internal
+     * @ignore
      */
     public _sy = 1;
 
@@ -229,16 +443,32 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     /// COLOR related props //////////////
 
     // color stored as ABGR
-    /** @internal */
-    public localColor = 0xFFFFFFFF;
-    /** @internal */
-    public layerColor = 0xFFFFFFFF;
+    /**
+     * @internal
+     * @ignore
+     */
+    public localColor = 0xFFFFFF;
+    public localAlpha = 1;
+
+    /**
+     * @internal
+     * @ignore
+     */
+    public layerAlpha = 1; // A
+    public layerColor = 0xFFFFFF; // BGR
+    public layerColorAlpha = 0xFFFFFFFF; // ABGR
 
     /// BLEND related props //////////////
 
-    /** @internal */
+    /**
+     * @internal
+     * @ignore
+     */
     public localBlendMode: BLEND_MODES = 'inherit';
-    /** @internal */
+    /**
+     * @internal
+     * @ignore
+     */
     public layerBlendMode: BLEND_MODES = 'normal';
 
     /// VISIBILITY related props //////////////
@@ -246,12 +476,18 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     // visibility
     // 0b11
     // first bit is visible, second bit is renderable
-    /** @internal */
+    /**
+     * @internal
+     * @ignore
+     */
     public localVisibleRenderable = 0b11; // 0b11 | 0b10 | 0b01 | 0b00
-    /** @internal */
+    /**
+     * @internal
+     * @ignore
+     */
     public layerVisibleRenderable = 0b11; // 0b11 | 0b10 | 0b01 | 0b00
 
-    // a renderable object... like a sprite!
+    /** A view that is used to render this container. */
     public readonly view: T;
 
     constructor(options: Partial<ContainerOptions<T>> = {})
@@ -389,10 +625,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         return child;
     }
 
-    /**
-     * @param point
-     * @internal
-     */
+    /** @ignore */
     public onUpdate(point?: ObservablePoint)
     {
         if (point)
@@ -424,7 +657,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         }
     }
 
-    /** @internal */
+    /** @ignore */
     public onViewUpdate()
     {
         if (this.didViewUpdate) return;
@@ -449,11 +682,16 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         }
     }
 
+    /**
+     * Returns true if this container is a layer.
+     * This means that it will be rendered as a separate pass, with its own set of instructions
+     */
     get layer(): boolean
     {
         return this.isLayerRoot;
     }
 
+    /** This enables the container to be rendered as a layer. */
     public enableLayer()
     {
         // does it OWN the layer..
@@ -496,14 +734,16 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         this._updateIsSimple();
     }
 
-    /**
-     * @ignore
-     */
+    /** @ignore */
     public _updateIsSimple()
     {
         this.isSimple = !(this.isLayerRoot) && (this.effects.length === 0);
     }
 
+    /**
+     * Current transform of the object based on world (parent) factors.
+     * @readonly
+     */
     get worldTransform()
     {
         this._worldTransform ||= new Matrix();
@@ -553,6 +793,10 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         this._position.y = value;
     }
 
+    /**
+     * The coordinate of the object relative to the local coordinates of the parent.
+     * @since 4.0.0
+     */
     get position(): ObservablePoint
     {
         return this._position;
@@ -595,6 +839,13 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         this.rotation = value * DEG_TO_RAD;
     }
 
+    /**
+     * The center of rotation, scaling, and skewing for this display object in its local space. The `position`
+     * is the projection of `pivot` in the parent's local space.
+     *
+     * By default, the pivot is the origin (0, 0).
+     * @since 4.0.0
+     */
     get pivot(): ObservablePoint
     {
         if (this._pivot === defaultPivot)
@@ -615,6 +866,10 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         this._pivot.copyFrom(value);
     }
 
+    /**
+     * The skew factor for the object in radians.
+     * @since 4.0.0
+     */
     get skew(): ObservablePoint
     {
         if (this._skew === defaultSkew)
@@ -625,6 +880,12 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         return this._skew;
     }
 
+    /**
+     * The scale factors of this object along the local coordinate axes.
+     *
+     * The default scale is (1, 1).
+     * @since 4.0.0
+     */
     get scale(): ObservablePoint
     {
         if (this._scale === defaultScale)
@@ -661,39 +922,44 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
     set alpha(value: number)
     {
-        value = (value * 255) | 0;
+        if (value === this.localAlpha) return;
 
-        if (value === ((this.localColor >> 24) & 0xFF)) return;
-
-        this.localColor = (this.localColor & 0x00FFFFFF) | (value << 24);
+        this.localAlpha = value;
 
         this._updateFlags |= UPDATE_COLOR;
 
         this.onUpdate();
     }
 
+    /** The opacity of the object. */
     get alpha(): number
     {
-        return ((this.localColor >> 24) & 0xFF) / 255;
+        return this.localAlpha;
     }
 
     set tint(value: ColorSource)
     {
-        const tempColor = Color.shared.setValue(value);
+        const tempColor = Color.shared.setValue(value ?? 0xFFFFFF);
         const bgr = tempColor.toBgrNumber();
 
-        if (bgr === (this.localColor & 0x00FFFFFF)) return;
+        if (bgr === this.localColor) return;
 
-        this.localColor = (this.localColor & 0xFF000000) | (bgr & 0xFFFFFF);
+        this.localColor = bgr;
 
         this._updateFlags |= UPDATE_COLOR;
 
         this.onUpdate();
     }
 
+    /**
+     * The tint applied to the sprite. This is a hex value.
+     *
+     * A value of 0xFFFFFF will remove any tint effect.
+     * @default 0xFFFFFF
+     */
     get tint(): number
     {
-        const bgr = this.localColor & 0x00FFFFFF;
+        const bgr = this.localColor;
         // convert bgr to rgb..
 
         return ((bgr & 0xFF) << 16) + (bgr & 0xFF00) + ((bgr >> 16) & 0xFF);
@@ -716,6 +982,10 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         this.onUpdate();
     }
 
+    /**
+     * The blend mode to be applied to the sprite. Apply a value of `'normal'` to reset the blend mode.
+     * @default 'normal'
+     */
     get blendMode(): BLEND_MODES
     {
         return this.localBlendMode;
@@ -723,12 +993,12 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
     /// ///////// VISIBILITY / RENDERABLE /////////////////
 
+    /** The visibility of the object. If false the object will not be drawn, and the transform will not be updated. */
     get visible()
     {
         return !!(this.localVisibleRenderable & 0b10);
     }
 
-    // visible -  the renderable is not shown, also the transform is not updated
     set visible(value: boolean)
     {
         const valueNumber = value ? 1 : 0;
@@ -747,6 +1017,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         this.onUpdate();
     }
 
+    /** Can this object be rendered, if false the object will not be drawn but the transform will still be updated. */
     get renderable()
     {
         return !!(this.localVisibleRenderable & 0b01);
@@ -770,11 +1041,10 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         this.onUpdate();
     }
 
+    /** Whether or not the object should be rendered. */
     get isRenderable(): boolean
     {
-        const worldAlpha = ((this.layerColor >> 24) & 0xFF);
-
-        return (this.localVisibleRenderable === 0b11 && worldAlpha > 0);
+        return (this.localVisibleRenderable === 0b11 && this.layerAlpha > 0);
     }
 
     /**
@@ -805,6 +1075,11 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         this._scale = null;
         this._pivot = null;
         this._skew = null;
+
+        if (this.isLayerRoot)
+        {
+            this.layerGroup.proxyRenderable = null;
+        }
 
         this.emit('destroyed');
 

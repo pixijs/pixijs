@@ -99,7 +99,7 @@ describe('GenerateTexture', () =>
             const renderTexture = getTexture({ width: 10, height: 10 });
             const pixels = renderer.extract.pixels(renderTexture);
 
-            expect(pixels.pixels.length).toBe(renderTexture.width * renderTexture.height * 4);
+            expect(pixels.pixels).toHaveLength(renderTexture.width * renderTexture.height * 4);
             expect(pixels.width).toBe(renderTexture.width);
             expect(pixels.height).toBe(renderTexture.height);
         });
@@ -407,6 +407,7 @@ describe('GenerateTexture', () =>
     });
 
     // todo: Mat to investigate - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=43551238
+    // eslint-disable-next-line jest/no-commented-out-tests
     // it('should unpremultiply alpha correctly', () =>
     // {
     //     const pixels1 = new Uint8Array(4);
@@ -515,6 +516,7 @@ describe('GenerateTexture', () =>
     });
 
     // todo: Mat to investigate - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=43551238
+    // eslint-disable-next-line jest/no-commented-out-tests
     // it('should unpremultiply if premultiplied alpha', async () =>
     // {
     //     const renderer = (await getRenderer({
@@ -558,6 +560,7 @@ describe('GenerateTexture', () =>
     //     renderTexture.destroy();
     // });
 
+    // eslint-disable-next-line jest/no-commented-out-tests
     // it.skip('should not unpremultiply if no premultiplied alpha', async () =>
     // {
     //     const renderer = (await getRenderer({

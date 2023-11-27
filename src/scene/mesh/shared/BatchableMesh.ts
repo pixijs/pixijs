@@ -61,7 +61,7 @@ export class BatchableMesh implements BatchableObject
         const positions = geometry.positions;
         const uvs = geometry.uvs;
 
-        const abgr = renderable.layerColor;
+        const abgr = renderable.layerColorAlpha;
 
         for (let i = 0; i < positions.length; i += 2)
         {

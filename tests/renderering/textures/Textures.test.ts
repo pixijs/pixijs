@@ -9,7 +9,7 @@ describe('Texture', () =>
         const texture = new Texture();
 
         texture.destroy(true);
-        texture.destroy(true);
+        expect(() => { texture.destroy(true); }).not.toThrow();
     });
 
     it('should return the same texture if the resource is the same', () =>

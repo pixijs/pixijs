@@ -27,7 +27,7 @@ describe('Pool', () =>
         const pool = new Pool(TestItem, 5);
 
         expect(pool['_count']).toBe(5);
-        expect(pool['_pool'].length).toBe(5);
+        expect(pool['_pool']).toHaveLength(5);
     });
 
     it('should create a pool with no initial size', () =>
@@ -35,7 +35,7 @@ describe('Pool', () =>
         const pool = new Pool(TestItem);
 
         expect(pool['_count']).toBe(0);
-        expect(pool['_pool'].length).toBe(0);
+        expect(pool['_pool']).toHaveLength(0);
     });
 
     it('should prepopulate the pool with the specified number of items', () =>
@@ -45,7 +45,7 @@ describe('Pool', () =>
         pool.prepopulate(5);
 
         expect(pool['_count']).toBe(5);
-        expect(pool['_pool'].length).toBe(5);
+        expect(pool['_pool']).toHaveLength(5);
     });
 
     it('should get an item from the pool', () =>

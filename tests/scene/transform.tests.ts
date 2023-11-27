@@ -256,6 +256,6 @@ describe('Transform updates', () =>
 
         updateLayerGroupTransforms(root.layerGroup, true);
 
-        expect(updateRenderable).toBeCalledTimes(0);
+        expect(updateRenderable).toHaveBeenCalledTimes(0);
     });
 });

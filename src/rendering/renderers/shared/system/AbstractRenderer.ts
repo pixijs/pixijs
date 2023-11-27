@@ -7,10 +7,10 @@ import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { Matrix } from '../../../../maths/matrix/Matrix';
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
 import type { DestroyOptions } from '../../../../scene/container/destroyTypes';
-import type { RenderSurface } from '../../gpu/renderTarget/GpuRenderTargetSystem';
 import type { Renderer } from '../../types';
 import type { GenerateTextureOptions, GenerateTextureSystem } from '../extract/GenerateTextureSystem';
 import type { PipeConstructor } from '../instructions/RenderPipe';
+import type { RenderSurface } from '../renderTarget/RenderTargetSystem';
 import type { Texture } from '../texture/Texture';
 import type { ViewSystem } from '../view/ViewSystem';
 import type { System, SystemConstructor } from './System';
@@ -107,6 +107,8 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
     public view: ViewSystem;
     public textureGenerator: GenerateTextureSystem;
 
+    protected _initOptions: OPTIONS = {} as OPTIONS;
+
     private _systemsHash: Record<string, System> = Object.create(null);
     private _lastObjectRendered: Container;
 
@@ -151,6 +153,9 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
         {
             await this.runners.init.items[i].init(options);
         }
+
+        // store options
+        this._initOptions = options as OPTIONS;
     }
 
     /** @deprecated since 8.0.0 */

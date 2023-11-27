@@ -22,6 +22,10 @@ const tempMatrix = new Matrix();
 
 export const measureMixin: Partial<Container> = {
 
+    /**
+     * The width of the Container, setting this will actually modify the scale to achieve the value set.
+     * @memberof scene.Container#
+     */
     get width(): number
     {
         return Math.abs(this.scale.x * getLocalBounds(this, tempBounds, tempMatrix).width);
@@ -31,16 +35,22 @@ export const measureMixin: Partial<Container> = {
     {
         const localWidth = getLocalBounds(this, tempBounds, tempMatrix).width;
 
+        const sign = Math.sign(this.scale.x) || 1;
+
         if (localWidth !== 0)
         {
-            this.scale.x = value / localWidth;
+            this.scale.x = (value / localWidth) * sign;
         }
         else
         {
-            this.scale.x = 1;
+            this.scale.x = sign;
         }
     },
 
+    /**
+     * The height of the Container, setting this will actually modify the scale to achieve the value set.
+     * @memberof scene.Container#
+     */
     get height(): number
     {
         return Math.abs(this.scale.y * getLocalBounds(this, tempBounds, tempMatrix).height);
@@ -50,13 +60,15 @@ export const measureMixin: Partial<Container> = {
     {
         const localHeight = getLocalBounds(this, tempBounds, tempMatrix).height;
 
+        const sign = Math.sign(this.scale.y) || 1;
+
         if (localHeight !== 0)
         {
-            this.scale.y = value / localHeight;
+            this.scale.y = (value / localHeight) * sign;
         }
         else
         {
-            this.scale.y = 1;
+            this.scale.y = sign;
         }
     },
 
@@ -64,6 +76,7 @@ export const measureMixin: Partial<Container> = {
      * Retrieves the local bounds of the container as a Bounds object.
      * @param rect - Optional rectangle to store the result of the bounds calculation.
      * @returns - The bounding area.
+     * @memberof scene.Container#
      */
     getLocalBounds(rect?: Rectangle): Rectangle
     {
@@ -79,6 +92,7 @@ export const measureMixin: Partial<Container> = {
      *  nice performance boost.
      * @param rect - Optional rectangle to store the result of the bounds calculation.
      * @returns - The minimum axis-aligned rectangle in world space that fits around this object.
+     * @memberof scene.Container#
      */
     getBounds(skipUpdate?: boolean, rect?: Rectangle): Rectangle
     {
