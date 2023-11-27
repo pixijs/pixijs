@@ -250,47 +250,57 @@ describe('GenerateTexture', () =>
 
     it('should extract pixels with resolution !== 1', async () =>
     {
-        const renderer = (await getRenderer({ width: 2, height: 2, resolution: 2 })) as WebGLRenderer;
-        const texturePixels = new Uint8ClampedArray([
+        const texturePixels = new Uint8Array([
             255, 0, 0, 255, 0, 255, 0, 153,
             0, 0, 255, 102, 255, 255, 0, 51,
         ]);
+
         const texture = Texture.from({
-            resource: texturePixels,
             width: 2,
             height: 2,
-            scaleMode: 'nearest',
+            resource: texturePixels,
+            alphaMode: 'premultiply-alpha-on-upload',
+            style: {
+                scaleMode: 'nearest'
+            }
         });
 
+        const renderer = await getRenderer({ width: 2, height: 2, resolution: 2 });
+
         const sprite = new Sprite(texture);
-        const extractedPixels = renderer.extract.pixels(sprite).pixels;
 
-        expect(extractedPixels).toEqual(new Uint8ClampedArray([
-            255, 0, 0, 255, 191, 64, 0, 229, 64, 191, 0, 178, 0, 255, 0, 153,
-            191, 0, 64, 217, 159, 64, 48, 194, 96, 191, 16, 150, 64, 255, 0, 128,
-            64, 0, 191, 140, 96, 64, 143, 124, 159, 191, 48, 92, 191, 255, 0, 76,
-            0, 0, 255, 102, 64, 64, 191, 89, 191, 191, 64, 64, 255, 255, 0, 51
+        renderer.render(sprite);
+
+        const pixels = renderer.extract.pixels(sprite);
+
+        expect(pixels.width).toEqual(4);
+        expect(pixels.height).toEqual(4);
+
+        expect(pixels.pixels).toEqual(new Uint8ClampedArray([
+            255, 0, 0, 255, 255, 0, 0, 255, 0, 255, 0, 153, 0, 255, 0, 153,
+            255, 0, 0, 255, 255, 0, 0, 255, 0, 255, 0, 153, 0, 255, 0, 153,
+            0, 0, 255, 102, 0, 0, 255, 102, 255, 255, 0, 51, 255, 255, 0, 51,
+            0, 0, 255, 102, 0, 0, 255, 102, 255, 255, 0, 51, 255, 255, 0, 51,
         ]));
-
-        texture.destroy(true);
-        sprite.destroy();
-        renderer.destroy();
     });
 
-    // todo: Mat to investigate - returning different result on CI to Local
-    // ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=43551238
-    it.skip('should extract canvas with resolution !== 1', async () =>
+    it('should extract canvas with resolution !== 1', async () =>
     {
         const renderer = (await getRenderer({ width: 2, height: 2, resolution: 2 })) as WebGLRenderer;
+
         const texturePixels = new Uint8ClampedArray([
             255, 0, 0, 255, 0, 255, 0, 153,
             0, 0, 255, 102, 255, 255, 0, 51,
         ]);
+
         const texture = Texture.from({
-            resource: texturePixels,
             width: 2,
             height: 2,
-            scaleMode: 'nearest',
+            resource: texturePixels,
+            alphaMode: 'premultiply-alpha-on-upload',
+            style: {
+                scaleMode: 'nearest'
+            }
         });
 
         const sprite = new Sprite(texture);
@@ -303,10 +313,10 @@ describe('GenerateTexture', () =>
         const imageData = context?.getImageData(0, 0, 4, 4);
 
         expect(imageData?.data).toEqual(new Uint8ClampedArray([
-            255, 0, 0, 255, 192, 63, 0, 229, 64, 191, 0, 178, 0, 255, 0, 153,
-            192, 0, 63, 217, 159, 64, 49, 194, 95, 190, 15, 150, 64, 255, 0, 128,
-            64, 0, 191, 140, 97, 64, 144, 124, 158, 191, 47, 92, 191, 255, 0, 76,
-            0, 0, 255, 102, 63, 63, 192, 89, 191, 191, 64, 64, 255, 255, 0, 51
+            255, 0, 0, 255, 255, 0, 0, 255, 0, 255, 0, 153, 0, 255, 0, 153,
+            255, 0, 0, 255, 255, 0, 0, 255, 0, 255, 0, 153, 0, 255, 0, 153,
+            0, 0, 255, 102, 0, 0, 255, 102, 255, 255, 0, 51, 255, 255, 0, 51,
+            0, 0, 255, 102, 0, 0, 255, 102, 255, 255, 0, 51, 255, 255, 0, 51,
         ]));
 
         texture.destroy(true);
