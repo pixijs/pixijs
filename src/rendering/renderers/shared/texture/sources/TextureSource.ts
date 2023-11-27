@@ -37,6 +37,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     destroy: TextureSource;
     resize: TextureSource;
     styleChange: TextureSource;
+    updateMipmaps: TextureSource;
     error: Error;
 }> implements BindResource
 {
@@ -305,6 +306,14 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         deprecation(v8_0_0, 'TextureSource.scaleMode property has been deprecated. Use TextureSource.style.scaleMode instead.');
 
         return this._style.scaleMode;
+    }
+
+    public updateMipmaps()
+    {
+        if (this.autoGenerateMipmaps && this.mipLevelCount > 1)
+        {
+            this.emit('updateMipmaps', this);
+        }
     }
 
     public static test(_resource: any): any
