@@ -16,7 +16,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
-      SOURCE_DIR: 'dist'
+      SOURCE_DIR: '.s3_uploads'
     runs-on: ubuntu-20.04
     steps:
     - name: Checkout
@@ -43,12 +43,12 @@ jobs:
       run: xvfb-run --auto-servernum npm run coverage
       env:
         NODE_ENV: production
-    - name: Upload Test Artifacts
+    - name: Upload PR upload folder
       if: ${{ success() || failure() }}
       uses: actions/upload-artifact@v3
       with:
-        name: test-artifacts
-        path: .artifacts/
+        name: pr_uploads
+        path: .pr_uploads/
 
     - name: Extract Branch Name
       id: branch_name

@@ -49,5 +49,10 @@ pixi.code-workspace
 # webdoc api
 dist/docs/pixi.api.json
 
-# visual artifacts
-.artifacts
+# A folder that will be uploaded with every PR
+# This is useful for things like visual testing artifacts that can be used to debug a PR if it fails
+.pr_uploads
+
+# A folder that will be uploaded with every release
+# This is useful for things like docs and bundled versions of the library
+.s3_uploads
