@@ -274,6 +274,24 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.emit('change', this);
     }
 
+    /**
+     * Lets the renderer know that this texture has been updated and its mipmaps should be re-generated.
+     * This is only important for RenderTexture instances, as standard Texture instances will have their
+     * mipmaps generated on upload. You should call this method after you make any change to the texture
+     *
+     * The reason for this is is can be quite expensive to update mipmaps for a texture. So by default,
+     * We want you, the developer to specify when this action should happen.
+     *
+     * Generally you don't want to have mipmaps generated on Render targets that are changed ever frame,
+     */
+    public updateMipmaps()
+    {
+        if (this.autoGenerateMipmaps && this.mipLevelCount > 1)
+        {
+            this.emit('updateMipmaps', this);
+        }
+    }
+
     /** @deprecated since 8.0.0 */
     set wrapMode(value: WRAP_MODE)
     {
@@ -306,14 +324,6 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         deprecation(v8_0_0, 'TextureSource.scaleMode property has been deprecated. Use TextureSource.style.scaleMode instead.');
 
         return this._style.scaleMode;
-    }
-
-    public updateMipmaps()
-    {
-        if (this.autoGenerateMipmaps && this.mipLevelCount > 1)
-        {
-            this.emit('updateMipmaps', this);
-        }
     }
 
     public static test(_resource: any): any
