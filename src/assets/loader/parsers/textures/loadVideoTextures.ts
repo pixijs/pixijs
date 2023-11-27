@@ -198,17 +198,24 @@ export const loadVideoTextures = {
             sourceElement.type = mime;
         }
 
-        videoElement.appendChild(sourceElement);
-
-        // --- Create texture ---
-        const base = new VideoSource({ ...options, resource: videoElement });
-
-        if (asset.data.preload)
+        return new Promise((resolve) =>
         {
-            await preloadVideo(videoElement);
-        }
+            videoElement.addEventListener('canplay', async () =>
+            {
+                // --- Create texture ---
+                const base = new VideoSource({ ...options, resource: videoElement });
 
-        return createTexture(base, loader, url);
+                if (asset.data.preload)
+                {
+                    await preloadVideo(videoElement);
+                }
+
+                // return createTexture(base, loader, url);
+                resolve(createTexture(base, loader, url));
+            });
+
+            videoElement.appendChild(sourceElement);
+        });
     },
 
     unload(texture: Texture): void
