@@ -135,10 +135,11 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
                     view = canvasTextureView;
                 }
-
                 else
                 {
-                    view = this._renderer.texture.getTextureView(texture);
+                    view = this._renderer.texture.getGpuSource(texture).createView({
+                        mipLevelCount: 1,
+                    });
                 }
 
                 if (gpuRenderTarget.msaaTextures[i])
