@@ -3,11 +3,11 @@ import { unsafeEvalSupported } from '../../../../utils/browser/unsafeEvalSupport
 import { generateUniformsSync } from './program/generateUniformsSync';
 
 import type { UniformGroup } from '../../shared/shader/UniformGroup';
-import type { UniformsSyncCallback } from '../../shared/shader/utils/createUniformBufferSync';
+import type { UniformsSyncCallback } from '../../shared/shader/utils/createUniformBufferSyncTypes';
 import type { System } from '../../shared/system/System';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
-import type { GlProgram } from './GlProgram';
+import type { GlProgram, GlUniformData } from './GlProgram';
 
 /**
  * System plugin to the renderer to manage shaders.
@@ -73,7 +73,7 @@ export class GlUniformGroupSystem implements System
      * @param syncData
      * @param syncData.textureCount
      */
-    public updateUniformGroup(group: UniformGroup, program: GlProgram, syncData: {textureCount: number}): void
+    public updateUniformGroup(group: UniformGroup, program: GlProgram, syncData: { textureCount: number }): void
     {
         const programData = this._renderer.shader._getProgramData(program);
 
@@ -95,24 +95,29 @@ export class GlUniformGroupSystem implements System
     private _getUniformSyncFunction(group: UniformGroup, program: GlProgram): UniformsSyncCallback
     {
         return this._uniformGroupSyncHash[group._signature]?.[program._key]
-        || this._createUniformSyncFunction(group, program);
+            || this._createUniformSyncFunction(group, program);
     }
 
     private _createUniformSyncFunction(group: UniformGroup, program: GlProgram): UniformsSyncCallback
     {
         const uniformGroupSyncHash = this._uniformGroupSyncHash[group._signature]
-         || (this._uniformGroupSyncHash[group._signature] = {});
+            || (this._uniformGroupSyncHash[group._signature] = {});
 
         const id = this._getSignature(group, program._uniformData, 'u');
 
         if (!this._cache[id])
         {
-            this._cache[id] = generateUniformsSync(group, program._uniformData);
+            this._cache[id] = this._generateUniformsSync(group, program._uniformData);
         }
 
         uniformGroupSyncHash[program._key] = this._cache[id];
 
         return uniformGroupSyncHash[program._key];
+    }
+
+    private _generateUniformsSync(group: UniformGroup, uniformData: Record<string, GlUniformData>): UniformsSyncCallback
+    {
+        return generateUniformsSync(group, uniformData);
     }
 
     /**
