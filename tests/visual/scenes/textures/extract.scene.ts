@@ -29,8 +29,6 @@ function addSprite(sprite: Sprite, scene: Container, opts: Partial<PoseOptions> 
     return sprite;
 }
 
-// todo: investigate failing WebGPU render test
-// ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=43551238
 export const scene: TestScene = {
     it: 'should extract textures',
     create: async (scene: Container, renderer: Renderer) =>
