@@ -36,7 +36,7 @@ export interface ISpritesheetFrameData
  */
 export interface ISpritesheetData
 {
-    animations: utils.Dict<string[]>;
+    animations?: utils.Dict<string[]>;
     frames: utils.Dict<ISpritesheetFrameData>;
     meta: {
         app?: string;
@@ -177,7 +177,7 @@ export class Spritesheet<S extends ISpritesheetData = ISpritesheetData>
      *
      * new AnimatedSprite(sheet.animations['anim_name']);
      */
-    public animations: Record<keyof S['animations'], Texture[]>;
+    public animations: Record<keyof NonNullable<S['animations']>, Texture[]>;
 
     /**
      * Reference to the original JSON data.
