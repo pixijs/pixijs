@@ -84,6 +84,32 @@ export class Ellipse implements ShapePrimitive
         return (normx + normy <= 1);
     }
 
+    public strokeContains(x: number, y: number, width: number): boolean
+    {
+        const { halfWidth, halfHeight } = this;
+
+        if (halfWidth <= 0 || halfHeight <= 0)
+        {
+            return false;
+        }
+
+        const halfStrokeWidth = width / 2;
+        const innerA = halfWidth - halfStrokeWidth;
+        const innerB = halfHeight - halfStrokeWidth;
+        const outerA = halfWidth + halfStrokeWidth;
+        const outerB = halfHeight + halfStrokeWidth;
+
+        const normalizedX = x - this.x;
+        const normalizedY = y - this.y;
+
+        const innerEllipse = ((normalizedX * normalizedX) / (innerA * innerA))
+                           + ((normalizedY * normalizedY) / (innerB * innerB));
+        const outerEllipse = ((normalizedX * normalizedX) / (outerA * outerA))
+                           + ((normalizedY * normalizedY) / (outerB * outerB));
+
+        return innerEllipse > 1 && outerEllipse <= 1;
+    }
+
     /**
      * Returns the framing rectangle of the ellipse as a Rectangle object
      * @returns The framing rectangle

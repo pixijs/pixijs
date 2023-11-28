@@ -12,14 +12,12 @@ import { SVGParser } from './svg/SVGParser';
 import { convertFillInputToFillStyle } from './utils/convertFillInputToFillStyle';
 
 import type { PointData } from '../../../maths/point/PointData';
-import type { ShapePrimitive } from '../../../maths/shapes/ShapePrimitive';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import type { TextureDestroyOptions, TypeOrBool } from '../../container/destroyTypes';
 import type { LineCap, LineJoin } from './const';
 import type { FillGradient } from './fill/FillGradient';
 import type { FillPattern } from './fill/FillPattern';
 import type { RoundedPoint } from './path/roundShape';
-import type { ShapePath } from './path/ShapePath';
 
 export interface FillStyle
 {
@@ -59,8 +57,14 @@ export type FillStyleInputs = ColorSource | FillGradient | CanvasPattern | Patte
 
 export interface FillInstruction
 {
-    action: 'fill' | 'stroke' | 'cut'
+    action: 'fill' | 'cut'
     data: { style: ConvertedFillStyle, path: GraphicsPath, hole?: GraphicsPath }
+}
+
+export interface StrokeInstruction
+{
+    action: 'stroke'
+    data: { style: ConvertedStrokeStyle, path: GraphicsPath, hole?: GraphicsPath }
 }
 
 export interface TextureInstruction
@@ -81,7 +85,7 @@ export interface TextureInstruction
     }
 }
 
-export type GraphicsInstructions = FillInstruction | TextureInstruction;
+export type GraphicsInstructions = FillInstruction | StrokeInstruction | TextureInstruction;
 
 const tempMatrix = new Matrix();
 
@@ -294,6 +298,7 @@ export class GraphicsContext extends EventEmitter<{
                     else
                     {
                         lastInstruction.data.hole = holePath;
+                        break;
                     }
                 }
             }
@@ -363,7 +368,7 @@ export class GraphicsContext extends EventEmitter<{
         return this;
     }
 
-    public bezierCurveTo(cp1x: number, cp1y: number, cp2x: number, cp2y: number, x: number, y: number): this
+    public bezierCurveTo(cp1x: number, cp1y: number, cp2x: number, cp2y: number, x: number, y: number, smoothness?: number): this
     {
         this._tick++;
 
@@ -377,6 +382,7 @@ export class GraphicsContext extends EventEmitter<{
             (t.b * cp2x) + (t.d * cp2y) + t.ty,
             (t.a * x) + (t.c * y) + t.tx,
             (t.b * x) + (t.d * y) + t.ty,
+            smoothness,
         );
 
         return this;
@@ -458,7 +464,7 @@ export class GraphicsContext extends EventEmitter<{
         return this;
     }
 
-    public quadraticCurveTo(cpx: number, cpy: number, x: number, y: number): void
+    public quadraticCurveTo(cpx: number, cpy: number, x: number, y: number, smoothness?: number): void
     {
         this._tick++;
 
@@ -469,6 +475,7 @@ export class GraphicsContext extends EventEmitter<{
             (t.b * cpx) + (t.d * cpy) + t.ty,
             (t.a * x) + (t.c * y) + t.tx,
             (t.b * x) + (t.d * y) + t.ty,
+            smoothness,
         );
     }
 
@@ -515,10 +522,10 @@ export class GraphicsContext extends EventEmitter<{
         return this;
     }
 
-    public roundShape(points: RoundedPoint[], radius: number, useQuadratic?: boolean): this
+    public roundShape(points: RoundedPoint[], radius: number, useQuadratic?: boolean, smoothness?: number): this
     {
         this._tick++;
-        this._activePath.roundShape(points, radius, useQuadratic);
+        this._activePath.roundShape(points, radius, useQuadratic, smoothness);
 
         return this;
     }
@@ -689,6 +696,21 @@ export class GraphicsContext extends EventEmitter<{
                 bounds.addFrame(data.dx, data.dy, data.dx + data.dw, data.dy + data.dh);
                 bounds.popMatrix();
             }
+            if (action === 'stroke')
+            {
+                const data = instruction.data as StrokeInstruction['data'];
+
+                const padding = data.style.width / 2;
+
+                const _bounds = data.path.bounds;
+
+                bounds.addFrame(
+                    _bounds.minX - padding,
+                    _bounds.minY - padding,
+                    _bounds.maxX + padding,
+                    _bounds.maxY + padding
+                );
+            }
         }
 
         return bounds;
@@ -701,67 +723,69 @@ export class GraphicsContext extends EventEmitter<{
      */
     public containsPoint(point: PointData): boolean
     {
+        // early out if the bounding box is not hit
+        if (!this.bounds.containsPoint(point.x, point.y)) return false;
+
         const instructions = this.instructions;
         let hasHit = false;
 
-        // TODO: we should cache the bounds
-        instructions.forEach((instruction) =>
+        for (let k = 0; k < instructions.length; k++)
         {
+            const instruction = instructions[k];
+
             const data = instruction.data as FillInstruction['data'];
             const path = data.path;
 
-            if (!instruction.action || !path) return;
+            if (!instruction.action || !path) continue;
 
             const style = data.style;
-            const shapes = path.shapePath?.shapePrimitives;
+            const shapes = path.shapePath.shapePrimitives;
 
-            this._forEachShape(shapes, (shape) =>
+            for (let i = 0; i < shapes.length; i++)
             {
-                if (!style || !shape) return;
+                const shape = shapes[i].shape;
 
-                if (typeof style !== 'number' && style.matrix)
+                if (!style || !shape) continue;
+
+                const transform = shapes[i].transform;
+
+                const transformedPoint = transform ? transform.applyInverse(point, tmpPoint) : point;
+
+                if (instruction.action === 'fill')
                 {
-                    style.matrix.applyInverse(point, tmpPoint);
+                    hasHit = shape.contains(transformedPoint.x, transformedPoint.y);
                 }
                 else
                 {
-                    tmpPoint.copyFrom(point);
+                    hasHit = shape.strokeContains(transformedPoint.x, transformedPoint.y, (style as ConvertedStrokeStyle).width);
                 }
-
-                hasHit = shape.contains(tmpPoint.x, tmpPoint.y);
 
                 const holes = data.hole;
 
-                if (!holes) return;
-
-                const holeShapes = holes.shapePath?.shapePrimitives;
-
-                if (!holeShapes) return;
-
-                this._forEachShape(holeShapes, (hole) =>
+                if (holes)
                 {
-                    if (hole.contains(tmpPoint.x, tmpPoint.y))
+                    const holeShapes = holes.shapePath?.shapePrimitives;
+
+                    if (holeShapes)
                     {
-                        hasHit = false;
+                        for (let j = 0; j < holeShapes.length; j++)
+                        {
+                            if (holeShapes[j].shape.contains(transformedPoint.x, transformedPoint.y))
+                            {
+                                hasHit = false;
+                            }
+                        }
                     }
-                });
-            });
-        });
+                }
+
+                if (hasHit)
+                {
+                    return true;
+                }
+            }
+        }
 
         return hasHit;
-    }
-
-    private _forEachShape(shapes: ShapePath['shapePrimitives'] | undefined, callback: (shape: ShapePrimitive) => void)
-    {
-        shapes?.forEach((shapePrimitive) =>
-        {
-            const shape = shapePrimitive?.shape;
-
-            if (shape)
-            {
-                callback(shape);
-            }
-        });
     }
 
     /**

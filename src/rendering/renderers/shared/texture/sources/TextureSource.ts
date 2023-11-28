@@ -37,6 +37,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     destroy: TextureSource;
     resize: TextureSource;
     styleChange: TextureSource;
+    updateMipmaps: TextureSource;
     error: Error;
 }> implements BindResource
 {
@@ -130,7 +131,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         }
         else
         {
-            this.pixelWidth = options.resource?.width ?? 1;
+            this.pixelWidth = this.resource ? (this.resourceWidth ?? 1) : 1;
         }
 
         if (options.height)
@@ -139,7 +140,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         }
         else
         {
-            this.pixelHeight = options.resource?.height ?? 1;
+            this.pixelHeight = this.resource ? (this.resourceHeight ?? 1) : 1;
         }
 
         this.width = this.pixelWidth / this._resolution;
@@ -271,6 +272,24 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
         this._resourceId++;
         this.emit('change', this);
+    }
+
+    /**
+     * Lets the renderer know that this texture has been updated and its mipmaps should be re-generated.
+     * This is only important for RenderTexture instances, as standard Texture instances will have their
+     * mipmaps generated on upload. You should call this method after you make any change to the texture
+     *
+     * The reason for this is is can be quite expensive to update mipmaps for a texture. So by default,
+     * We want you, the developer to specify when this action should happen.
+     *
+     * Generally you don't want to have mipmaps generated on Render targets that are changed every frame,
+     */
+    public updateMipmaps()
+    {
+        if (this.autoGenerateMipmaps && this.mipLevelCount > 1)
+        {
+            this.emit('updateMipmaps', this);
+        }
     }
 
     /** @deprecated since 8.0.0 */

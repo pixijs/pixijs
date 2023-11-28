@@ -6,7 +6,7 @@ import { updateQuadBounds } from '../../utils/data/updateQuadBounds';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { View, ViewObserver } from '../../rendering/renderers/shared/view/View';
-import type { Bounds } from '../container/bounds/Bounds';
+import type { Bounds, SimpleBounds } from '../container/bounds/Bounds';
 import type { TextureDestroyOptions, TypeOrBool } from '../container/destroyTypes';
 
 export class SpriteView implements View
@@ -23,8 +23,8 @@ export class SpriteView implements View
     /** @internal */
     public _didUpdate = false;
 
-    private _bounds: [number, number, number, number] = [0, 1, 0, 0];
-    private _sourceBounds: [number, number, number, number] = [0, 1, 0, 0];
+    private _bounds: SimpleBounds = { left: 0, right: 1, top: 0, bottom: 0 };
+    private _sourceBounds: SimpleBounds = { left: 0, right: 1, top: 0, bottom: 0 };
     private _boundsDirty = true;
     private _sourceBoundsDirty = true;
 
@@ -84,9 +84,9 @@ export class SpriteView implements View
     {
         const bounds = this.sourceBounds;
 
-        if (point.x >= bounds[0] && point.x <= bounds[1])
+        if (point.x >= bounds.right && point.x <= bounds.left)
         {
-            if (point.y >= bounds[2] && point.y <= bounds[3])
+            if (point.y >= bounds.bottom && point.y <= bounds.top)
             {
                 return true;
             }
@@ -99,7 +99,7 @@ export class SpriteView implements View
     {
         const _bounds = this._texture._layout.trim ? this.sourceBounds : this.bounds;
 
-        bounds.addFrame(_bounds[0], _bounds[2], _bounds[1], _bounds[3]);
+        bounds.addFrame(_bounds.left, _bounds.top, _bounds.right, _bounds.bottom);
     }
 
     /**
@@ -134,11 +134,11 @@ export class SpriteView implements View
         const width = textureSource.width * orig.width;
         const height = textureSource.height * orig.height;
 
-        sourceBounds[0] = -anchor._x * width;
-        sourceBounds[1] = sourceBounds[0] + width;
+        sourceBounds.right = -anchor._x * width;
+        sourceBounds.left = sourceBounds.right + width;
 
-        sourceBounds[2] = -anchor._y * height;
-        sourceBounds[3] = sourceBounds[2] + height;
+        sourceBounds.bottom = -anchor._y * height;
+        sourceBounds.top = sourceBounds.bottom + height;
     }
 
     /**

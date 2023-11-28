@@ -36,6 +36,9 @@ export class LayerRenderable<T extends View = View> extends EventEmitter impleme
         this.layerTransform = new Matrix();
         this.layerVisibleRenderable = 0b11;
 
+        // layer renderable should match the original id as we use it to reference
+        // the gpu counter part on various systems
+        this.uid = original.uid;
         this.view.owner = this;
     }
 

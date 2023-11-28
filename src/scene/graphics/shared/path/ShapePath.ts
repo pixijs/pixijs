@@ -22,7 +22,7 @@ const tempRectangle = new Rectangle();
 
 export class ShapePath
 {
-    public shapePrimitives: {shape: ShapePrimitive, transform?: Matrix}[] = [];
+    public shapePrimitives: { shape: ShapePrimitive, transform?: Matrix }[] = [];
     private _currentPoly: Polygon | null = null;
     private readonly _graphicsPath2D: GraphicsPath;
     private readonly _bounds = new Bounds();
@@ -105,7 +105,11 @@ export class ShapePath
         return this;
     }
 
-    public bezierCurveTo(cp1x: number, cp1y: number, cp2x: number, cp2y: number, x: number, y: number): this
+    public bezierCurveTo(
+        cp1x: number, cp1y: number, cp2x: number, cp2y: number,
+        x: number, y: number,
+        smoothness?: number
+    ): this
     {
         this._ensurePoly();
 
@@ -117,13 +121,14 @@ export class ShapePath
         buildAdaptiveBezier(
             this._currentPoly.points,
             currentPoly.lastX, currentPoly.lastY,
-            cp1x, cp1y, cp2x, cp2y, x, y
+            cp1x, cp1y, cp2x, cp2y, x, y,
+            smoothness,
         );
 
         return this;
     }
 
-    public quadraticCurveTo(cp1x: number, cp1y: number, x: number, y: number): this
+    public quadraticCurveTo(cp1x: number, cp1y: number, x: number, y: number, smoothing?: number): this
     {
         this._ensurePoly();
 
@@ -135,7 +140,8 @@ export class ShapePath
         buildAdaptiveQuadratic(
             this._currentPoly.points,
             currentPoly.lastX, currentPoly.lastY,
-            cp1x, cp1y, x, y
+            cp1x, cp1y, x, y,
+            smoothing,
         );
 
         return this;
@@ -222,7 +228,13 @@ export class ShapePath
         return this;
     }
 
-    public roundPoly(x: number, y: number, radius: number, sides: number, corner: number, rotation = 0): this
+    public roundPoly(
+        x: number, y: number,
+        radius: number,
+        sides: number, corner: number,
+        rotation = 0,
+        smoothness?: number,
+    ): this
     {
         sides = Math.max((sides | 0), 3);
 
@@ -259,7 +271,7 @@ export class ShapePath
             {
                 this.lineTo(x1, y1);
             }
-            this.quadraticCurveTo(x0, y0, x3, y3);
+            this.quadraticCurveTo(x0, y0, x3, y3, smoothness);
         }
 
         return this.closePath();
@@ -271,8 +283,9 @@ export class ShapePath
      * @param points - Corners of the shape to draw. Minimum length is 3.
      * @param radius - Corners default radius.
      * @param useQuadratic - If true, rounded corners will be drawn using quadraticCurve instead of arc.
+     * @param smoothness - If using quadraticCurve, this is the smoothness of the curve.
      */
-    public roundShape(points: RoundedPoint[], radius: number, useQuadratic = false): this
+    public roundShape(points: RoundedPoint[], radius: number, useQuadratic = false, smoothness?: number): this
     {
         if (points.length < 3)
         {
@@ -281,7 +294,7 @@ export class ShapePath
 
         if (useQuadratic)
         {
-            roundedShapeQuadraticCurve(this, points, radius);
+            roundedShapeQuadraticCurve(this, points, radius, smoothness);
         }
         else
         {

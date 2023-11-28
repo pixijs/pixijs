@@ -205,6 +205,7 @@ export class GlTextureSystem implements System, CanvasGenerator
         source.on('styleChange', this.onStyleChange, this);
         source.on('destroy', this.onSourceDestroy, this);
         source.on('unload', this.onSourceUnload, this);
+        source.on('updateMipmaps', this.onUpdateMipmaps, this);
 
         this.managedTextures.push(source);
 
@@ -259,17 +260,26 @@ export class GlTextureSystem implements System, CanvasGenerator
         if (this._uploads[source.uploadMethodId])
         {
             this._uploads[source.uploadMethodId].upload(source, glTexture, this._gl);
-
-            if (source.autoGenerateMipmaps && source.mipLevelCount > 1)
-            {
-                gl.generateMipmap(glTexture.target);
-            }
         }
         else
         {
             // eslint-disable-next-line max-len
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, source.pixelWidth, source.pixelHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
         }
+
+        if (source.autoGenerateMipmaps && source.mipLevelCount > 1)
+        {
+            this.onUpdateMipmaps(source);
+        }
+    }
+
+    protected onUpdateMipmaps(source: TextureSource): void
+    {
+        this.bindSource(source, 0);
+
+        const glTexture = this.getGlSource(source);
+
+        this._gl.generateMipmap(glTexture.target);
     }
 
     protected onSourceDestroy(source: TextureSource): void
@@ -278,6 +288,7 @@ export class GlTextureSystem implements System, CanvasGenerator
         source.off('update', this.onSourceUpdate, this);
         source.off('unload', this.onSourceUnload, this);
         source.off('styleChange', this.onStyleChange, this);
+        source.off('updateMipmaps', this.onUpdateMipmaps, this);
 
         this.managedTextures.splice(this.managedTextures.indexOf(source), 1);
 

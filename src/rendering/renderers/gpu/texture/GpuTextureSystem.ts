@@ -98,6 +98,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
         source.on('resize', this.onSourceResize, this);
         source.on('destroy', this.onSourceDestroy, this);
         source.on('unload', this.onSourceUnload, this);
+        source.on('updateMipmaps', this.onUpdateMipmaps, this);
 
         this.managedTextures.push(source);
 
@@ -120,12 +121,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
         if (source.autoGenerateMipmaps && source.mipLevelCount > 1)
         {
-            if (!this._mipmapGenerator)
-            {
-                this._mipmapGenerator = new GpuMipmapGenerator(this._gpu.device);
-            }
-
-            this._mipmapGenerator.generateMipmap(gpuTexture);
+            this.onUpdateMipmaps(source);
         }
     }
 
@@ -141,12 +137,25 @@ export class GpuTextureSystem implements System, CanvasGenerator
         }
     }
 
+    protected onUpdateMipmaps(source: TextureSource): void
+    {
+        if (!this._mipmapGenerator)
+        {
+            this._mipmapGenerator = new GpuMipmapGenerator(this._gpu.device);
+        }
+
+        const gpuTexture = this.getGpuSource(source);
+
+        this._mipmapGenerator.generateMipmap(gpuTexture);
+    }
+
     protected onSourceDestroy(source: TextureSource): void
     {
         source.off('update', this.onSourceUpdate, this);
         source.off('unload', this.onSourceUnload, this);
         source.off('destroy', this.onSourceDestroy, this);
         source.off('resize', this.onSourceResize, this);
+        source.off('updateMipmaps', this.onUpdateMipmaps, this);
 
         this.managedTextures.splice(this.managedTextures.indexOf(source), 1);
 

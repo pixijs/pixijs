@@ -62,10 +62,7 @@ export class Circle implements ShapePrimitive
      */
     public contains(x: number, y: number): boolean
     {
-        if (this.radius <= 0)
-        {
-            return false;
-        }
+        if (this.radius <= 0) return false;
 
         const r2 = this.radius * this.radius;
         let dx = (this.x - x);
@@ -75,6 +72,19 @@ export class Circle implements ShapePrimitive
         dy *= dy;
 
         return (dx + dy <= r2);
+    }
+
+    public strokeContains(x: number, y: number, width: number): boolean
+    {
+        if (this.radius === 0) return false;
+
+        const dx = (this.x - x);
+        const dy = (this.y - y);
+        const r = this.radius;
+        const w2 = width / 2;
+        const distance = Math.sqrt((dx * dx) + (dy * dy));
+
+        return (distance < r + w2 && distance > r - w2);
     }
 
     /**

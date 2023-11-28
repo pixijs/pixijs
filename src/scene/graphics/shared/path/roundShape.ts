@@ -135,7 +135,8 @@ export type RoundedPoint = PointData & { radius?: number };
 export function roundedShapeQuadraticCurve(
     g: ShapePath,
     points: RoundedPoint[],
-    radius: number
+    radius: number,
+    smoothness?: number,
 ): void
 {
     const distance = (p1: PointData, p2: PointData) =>
@@ -214,6 +215,6 @@ export function roundedShapeQuadraticCurve(
         {
             g.lineTo(start.x, start.y);
         }
-        g.quadraticCurveTo(thisPoint.x, thisPoint.y, end.x, end.y);
+        g.quadraticCurveTo(thisPoint.x, thisPoint.y, end.x, end.y, smoothness);
     }
 }
