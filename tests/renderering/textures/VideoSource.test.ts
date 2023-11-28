@@ -35,13 +35,13 @@ describe('VideoSource', () =>
         expect(source.resource).toBeInstanceOf(HTMLVideoElement);
         expect(sourceElement.src).toEqual(`file://${url}`);
 
-        // expect initial state to be empty until loaded
-        expect(source.width).toEqual(0);
-        expect(source.height).toEqual(0);
-        expect(source.pixelWidth).toEqual(0);
-        expect(source.pixelHeight).toEqual(0);
-        expect(source.isReady).toBe(false);
-        expect(source.isValid).toBe(false);
+        // expect initial state to have dimensions (loadVideoTextures loader waits for canplay before resolving)
+        expect(source.width).toEqual(1920);
+        expect(source.height).toEqual(1080);
+        expect(source.pixelWidth).toEqual(1920);
+        expect(source.pixelHeight).toEqual(1080);
+        expect(source.isReady).toBe(true);
+        expect(source.isValid).toBe(true);
     });
 
     it('should load new source', async () =>
