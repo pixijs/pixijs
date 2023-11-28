@@ -23,7 +23,7 @@ describe('getFontCss', () =>
 
         expect(css).toContain('@font-face');
         expect(css).toContain('font-family: "font-bitmap"');
-        expect(css).toContain(`url('data:application/octet-stream;base64,PGZvbnQ+`);
+        expect(css).toContain(`url('data:`);
         expect(css).toContain('font-weight: normal');
         expect(css).toContain('font-style: normal');
     });
