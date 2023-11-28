@@ -282,6 +282,10 @@ describe('GenerateTexture', () =>
             0, 0, 255, 102, 0, 0, 255, 102, 255, 255, 0, 51, 255, 255, 0, 51,
             0, 0, 255, 102, 0, 0, 255, 102, 255, 255, 0, 51, 255, 255, 0, 51,
         ]));
+
+        texture.destroy(true);
+        sprite.destroy();
+        renderer.destroy();
     });
 
     it('should extract canvas with resolution !== 1', async () =>
