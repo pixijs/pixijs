@@ -159,7 +159,7 @@ export class Filter extends Shader
             this.antialias = options.antialias ?? 'inherit';
         }
 
-        this.resolution = options.resolution;
+        this.resolution = 4;// 0.5 + Math.random();// options.resolution;
         this.blendRequired = options.blendRequired;
 
         this.addResource('filterUniforms', 0, 0);

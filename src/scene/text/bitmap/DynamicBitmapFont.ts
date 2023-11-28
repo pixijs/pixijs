@@ -184,7 +184,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
 
                 this.chars[char].texture = new Texture({
                     source: textureSource,
-                    frameReal: frame,
+                    frame,
                 });
 
                 currentX += Math.ceil(paddedWidth);

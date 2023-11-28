@@ -42,7 +42,7 @@ export class BitmapFont extends AbstractBitmapFont<BitmapFont>
 
             const texture = new Texture({
                 source: textureSource,
-                frameReal
+                frame: frameReal
             });
 
             this.chars[key] = {

@@ -145,8 +145,8 @@ export class ViewSystem implements System
     {
         this.texture.source.resize(desiredScreenWidth, desiredScreenHeight, resolution);
 
-        this.screen.width = this.texture.frameWidth;
-        this.screen.height = this.texture.frameHeight;
+        this.screen.width = this.texture.frame.width;
+        this.screen.height = this.texture.frame.height;
 
         if (this.autoDensity)
         {

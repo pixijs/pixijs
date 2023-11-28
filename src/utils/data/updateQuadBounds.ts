@@ -9,26 +9,18 @@ export function updateQuadBounds(
     padding: number
 )
 {
-    const textureSource = texture._source;
-
-    const orig = texture.orig;
+    const { width, height } = texture.orig;
     const trim = texture.trim;
-
-    const textureSourceWidth = textureSource.width;
-    const textureSourceHeight = textureSource.height;
-
-    const width = textureSourceWidth * orig.width;
-    const height = textureSourceHeight * orig.height;
 
     if (trim)
     {
-        const sourceWidth = textureSourceWidth * trim.width;
-        const sourceHeight = textureSourceHeight * trim.height;
+        const sourceWidth = trim.width;
+        const sourceHeight = trim.height;
 
-        bounds.left = (trim.x * textureSourceWidth) - (anchor._x * width) - padding;
+        bounds.left = (trim.x) - (anchor._x * width) - padding;
         bounds.right = bounds.left + sourceWidth;
 
-        bounds.top = (trim.y * textureSourceHeight) - (anchor._y * height) - padding;
+        bounds.top = (trim.y) - (anchor._y * height) - padding;
         bounds.bottom = bounds.top + sourceHeight;
     }
 

@@ -337,22 +337,12 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
                         Math.floor(rect.w) / this.resolution,
                         Math.floor(rect.h) / this.resolution
                     );
-
-                    trim.x /= this.textureSource.width;
-                    trim.y /= this.textureSource.height;
-                    trim.width /= this.textureSource.width;
-                    trim.height /= this.textureSource.height;
                 }
-
-                orig.x /= this.textureSource.width;
-                orig.y /= this.textureSource.height;
-                orig.width /= this.textureSource.width;
-                orig.height /= this.textureSource.height;
 
                 this.textures[i] = new Texture({
                     source: this.textureSource,
 
-                    frameReal: frame,
+                    frame,
                     orig,
                     trim,
                     rotate: data.rotated ? 2 : 0,

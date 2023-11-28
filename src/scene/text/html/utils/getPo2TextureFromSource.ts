@@ -41,8 +41,8 @@ export function getPo2TextureFromSource(
     texture.source.resource = image;
     texture.source.alphaMode = 'premultiply-alpha-on-upload';
 
-    texture.frameWidth = width / resolution;
-    texture.frameHeight = height / resolution;
+    texture.frame.width = width / resolution;
+    texture.frame.height = height / resolution;
 
     texture.source.update();
     texture.updateUvs();

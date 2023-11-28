@@ -164,7 +164,7 @@ describe('Round Pixels', () =>
         });
 
         const nonBatchableTexture = new Texture({
-            frameReal: new Rectangle(0, 0, 0.5, 0.5),
+            frame: new Rectangle(0, 0, 0.5, 0.5),
             source: Texture.WHITE.source,
         });
 

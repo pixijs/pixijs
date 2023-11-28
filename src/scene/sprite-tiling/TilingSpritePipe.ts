@@ -310,8 +310,8 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
     private _updateBatchUvs(renderable: Renderable<TilingSpriteView>)
     {
         const view = renderable.view;
-        const width = view.texture.frameWidth;
-        const height = view.texture.frameHeight;
+        const width = view.texture.frame.width;
+        const height = view.texture.frame.height;
 
         const meshRenderable = this._getBatchedTilingSprite(renderable);
 

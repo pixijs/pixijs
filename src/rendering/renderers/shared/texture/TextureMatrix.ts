@@ -173,15 +173,16 @@ export class TextureMatrix
         const margin = this.clampMargin / texBase._resolution;
         const offset = this.clampOffset;
 
-        frame[0] = (tex.frameX + margin + offset) / texBase.width;
-        frame[1] = (tex.frameY + margin + offset) / texBase.height;
-        frame[2] = (tex.frameX + tex.frameWidth - margin + offset) / texBase.width;
-        frame[3] = (tex.frameY + tex.frameHeight - margin + offset) / texBase.height;
+        frame[0] = (tex.frame.x + margin + offset) / texBase.width;
+        frame[1] = (tex.frame.y + margin + offset) / texBase.height;
+        frame[2] = (tex.frame.x + tex.frame.width - margin + offset) / texBase.width;
+        frame[3] = (tex.frame.y + tex.frame.height - margin + offset) / texBase.height;
+
         this.uClampOffset[0] = offset / texBase.pixelWidth;
         this.uClampOffset[1] = offset / texBase.pixelHeight;
 
-        this.isSimple = tex.frameWidth === texBase.width
-            && tex.frameHeight === texBase.height
+        this.isSimple = tex.frame.width === texBase.width
+            && tex.frame.height === texBase.height
             && tex.rotate === 0;
 
         return true;

@@ -101,11 +101,12 @@ export class TexturePoolClass
         texture.source.pixelHeight = po2Height;
 
         // fit the layout to the requested original size
-        texture.frameX = 0;
-        texture.frameY = 0;
-        texture.frameWidth = frameWidth;
-        texture.frameHeight = frameHeight;
-        texture.update();
+        texture.frame.x = 0;
+        texture.frame.y = 0;
+        texture.frame.width = frameWidth;
+        texture.frame.height = frameHeight;
+
+        texture.updateUvs();
 
         this._poolKeyHash[texture.id] = key;
 

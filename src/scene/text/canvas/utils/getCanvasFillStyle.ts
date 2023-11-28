@@ -24,7 +24,7 @@ export function getCanvasFillStyle(
         // create an inverted scale matrix..
         const tempMatrix = fillStyle.matrix.copyTo(Matrix.shared);
 
-        tempMatrix.scale(fillStyle.texture.frameWidth, fillStyle.texture.frameHeight);
+        tempMatrix.scale(fillStyle.texture.frame.width, fillStyle.texture.frame.height);
 
         pattern.setTransform(tempMatrix);
 
@@ -38,7 +38,10 @@ export function getCanvasFillStyle(
 
         const tempMatrix = fillPattern.transform.copyTo(Matrix.shared);
 
-        tempMatrix.scale(fillPattern.texture.frameWidth, fillPattern.texture.frameHeight);
+        tempMatrix.scale(
+            fillPattern.texture.frame.width,
+            fillPattern.texture.frame.height
+        );
 
         pattern.setTransform(tempMatrix);
 

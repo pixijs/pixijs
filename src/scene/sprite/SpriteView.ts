@@ -124,14 +124,9 @@ export class SpriteView implements View
         const anchor = this.anchor;
         const texture = this._texture;
 
-        const textureSource = texture._source;
-
-        const orig = texture.orig;
-
         const sourceBounds = this._sourceBounds;
 
-        const width = textureSource.width * orig.width;
-        const height = textureSource.height * orig.height;
+        const { width, height } = texture.orig;
 
         sourceBounds.right = -anchor._x * width;
         sourceBounds.left = sourceBounds.right + width;

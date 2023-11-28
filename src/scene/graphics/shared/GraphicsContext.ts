@@ -167,8 +167,8 @@ export class GraphicsContext extends EventEmitter<{
                 dx: dx || 0,
                 dy: dy || 0,
 
-                dw: dw || texture.frameWidth,
-                dh: dh || texture.frameHeight,
+                dw: dw || texture.frame.width,
+                dh: dh || texture.frame.height,
 
                 transform: this._transform.clone(),
                 alpha: this._fillStyle.alpha,

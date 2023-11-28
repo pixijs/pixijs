@@ -40,8 +40,6 @@ export interface TextureOptions
 {
     source?: TextureSource;
     label?: string;
-    frameReal?: Rectangle;
-
     frame?: Rectangle;
     orig?: Rectangle;
     trim?: Rectangle;
@@ -93,20 +91,21 @@ export class Texture extends EventEmitter<{
     /** @internal */
     public _source: TextureSource;
 
-    public frame: Rectangle;
-    public orig: Rectangle;
-
     public rotate: number;
     public uvs: UVs = { x0: 0, y0: 0, x1: 0, y1: 0, x2: 0, y2: 0, x3: 0, y3: 0 };
 
-    public trim?: Rectangle;
     public defaultAnchor?: { x: number; y: number };
     public defaultBorders?: TextureBorders;
+
+    public frame = new Rectangle();
+    public orig: Rectangle;
+    public trim: Rectangle;
+
+    public noFrame = false;
 
     constructor({
         source,
         label,
-        frameReal,
         frame,
         orig,
         trim,
@@ -120,22 +119,23 @@ export class Texture extends EventEmitter<{
         this.label = label;
         this.source = source?.source ?? new TextureSource();
 
-        frame ||= new Rectangle(0, 0, 1, 1);
+        this.noFrame = !frame;
 
-        if (frameReal)
+        if (frame)
+        {
+            this.frame.copyFrom(frame);
+        }
+        else
         {
             const { width, height } = this._source;
 
-            frame.x = frameReal.x / width;
-            frame.y = frameReal.y / height;
-
-            frame.width = frameReal.width / width;
-            frame.height = frameReal.height / height;
+            this.frame.width = width;
+            this.frame.height = height;
         }
 
-        this.frame = frame;
-        this.orig = orig || frame;
+        this.orig = orig || this.frame;
         this.trim = trim;
+
         this.rotate = rotate ?? 0;
         this.defaultAnchor = defaultAnchor;
         this.defaultBorders = defaultBorders;
@@ -174,87 +174,40 @@ export class Texture extends EventEmitter<{
         return this._textureMatrix;
     }
 
-    set frameWidth(value: number)
-    {
-        this.frame.width = value / this._source.width;
-    }
-
-    get frameWidth(): number
-    {
-        return (this._source.pixelWidth / this._source._resolution) * this.frame.width;
-    }
-
-    set frameHeight(value: number)
-    {
-        this.frame.height = value / this._source.height;
-    }
-
-    get frameHeight(): number
-    {
-        return (this._source.pixelHeight / this._source._resolution) * this.frame.height;
-    }
-
-    set frameX(value: number)
-    {
-        if (value === 0)
-        {
-            this.frame.x = 0;
-
-            return;
-        }
-
-        this.frame.x = (this._source.width) / value;
-    }
-
-    get frameX(): number
-    {
-        return (this._source.width) * this.frame.x;
-    }
-
-    set frameY(value: number)
-    {
-        if (value === 0)
-        {
-            this.frame.y = 0;
-
-            return;
-        }
-
-        this.frame.y = (this._source.height) / value;
-    }
-
-    get frameY(): number
-    {
-        return (this._source.height) * this.frame.y;
-    }
-
     /** The width of the Texture in pixels. */
     get width(): number
     {
-        return (this._source.width) * this.orig.width;
+        return this.orig.width;
     }
 
     /** The height of the Texture in pixels. */
     get height(): number
     {
-        return (this._source.height) * this.orig.height;
+        return this.orig.height;
     }
 
     public updateUvs()
     {
-        const uvs = this.uvs;
-        const frame = this.frame;
+        const { uvs, frame } = this;
+        const { width, height } = this._source;
+
+        const nX = frame.x / width;
+        const nY = frame.y / height;
+
+        const nW = frame.width / width;
+        const nH = frame.height / height;
+
         let rotate = this.rotate;
 
         if (rotate)
         {
             // width and height div 2 div baseFrame size
-            const w2 = frame.width / 2;
-            const h2 = frame.height / 2;
+            const w2 = nW / 2;
+            const h2 = nH / 2;
 
             // coordinates of center
-            const cX = frame.x + w2;
-            const cY = frame.y + h2;
+            const cX = nX + w2;
+            const cY = nY + h2;
 
             rotate = groupD8.add(rotate, groupD8.NW); // NW is top-left corner
             uvs.x0 = cX + (w2 * groupD8.uX(rotate));
@@ -275,20 +228,15 @@ export class Texture extends EventEmitter<{
 
         else
         {
-            uvs.x0 = frame.x;
-            uvs.y0 = frame.y;
-            uvs.x1 = frame.x + frame.width;
-            uvs.y1 = frame.y;
-            uvs.x2 = frame.x + frame.width;
-            uvs.y2 = frame.y + frame.height;
-            uvs.x3 = frame.x;
-            uvs.y3 = frame.y + frame.height;
+            uvs.x0 = nX;
+            uvs.y0 = nY;
+            uvs.x1 = nX + nW;
+            uvs.y1 = nY;
+            uvs.x2 = nX + nW;
+            uvs.y2 = nY + nH;
+            uvs.x3 = nX;
+            uvs.y3 = nY + nH;
         }
-    }
-
-    public update(): void
-    {
-        this.updateUvs();
     }
 
     /**
@@ -317,6 +265,13 @@ export class Texture extends EventEmitter<{
      */
     protected onUpdate()
     {
+        if (this.noFrame)
+        {
+            this.frame.width = this._source.width;
+            this.frame.height = this._source.height;
+        }
+
+        this.updateUvs();
         this.emit('update', this);
     }
 
