@@ -131,7 +131,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         }
         else
         {
-            this.pixelWidth = options.resource?.width ?? 1;
+            this.pixelWidth = this.resource ? (this.resourceWidth ?? 1) : 1;
         }
 
         if (options.height)
@@ -140,7 +140,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         }
         else
         {
-            this.pixelHeight = options.resource?.height ?? 1;
+            this.pixelHeight = this.resource ? (this.resourceHeight ?? 1) : 1;
         }
 
         this.width = this.pixelWidth / this._resolution;
