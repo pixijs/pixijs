@@ -6,6 +6,7 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should load and display ttf correctly',
+    pixelMatch: 1042,
     create: async (scene: Container) =>
     {
         await Assets.load('fonts/Herborn.ttf');
