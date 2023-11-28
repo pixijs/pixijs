@@ -3,28 +3,45 @@ import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
 
 import type { TestScene } from '../../types';
 
-function drawBezier(x: number, y: number, bezierSmoothness: number)
+function drawCurve(
+    root: Container,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    smoothness: number,
+    thickness: number,
+)
 {
-    const bezier = new Graphics();
+    const startX = x;
+    const startY = y + height;
+    const endX = x + width;
+    const endY = y + height;
+    const cpX = startX + (width / 2);
+    const cpY = y - thickness;
 
-    bezier.fillStyle = 0x0000ff;
-    bezier.beginPath();
-    bezier.moveTo(11.5, 0);
-    bezier.lineTo(52.5, 0);
-    bezier.bezierCurveTo(58.25, 0, 64, 5.75, 64, 11.5, bezierSmoothness);
-    bezier.lineTo(64, 52.5);
-    bezier.bezierCurveTo(64, 58.25, 58.25, 64, 52.5, 64, bezierSmoothness);
-    bezier.lineTo(11.5, 64);
-    bezier.bezierCurveTo(5.75, 64, 0, 58.25, 0, 52.5, bezierSmoothness);
-    bezier.lineTo(0, 11.5);
-    bezier.bezierCurveTo(0, 5.75, 5.75, 0, 11.5, 0, bezierSmoothness);
-    bezier.closePath();
-    bezier.stroke({ color: 0xffffff, width: 1, alignment: 0 });
-    bezier.fill();
-    bezier.scale.set(5);
-    bezier.position.set(x, y);
+    const bezierA = new Graphics();
 
-    return bezier;
+    bezierA.beginPath();
+    bezierA.moveTo(startX, startY);
+    bezierA.quadraticCurveTo(cpX, cpY, endX, endY, smoothness);
+    bezierA.moveTo(endX, endY);
+    bezierA.closePath();
+    bezierA.stroke({ color: 0xff0000, width: thickness, alignment: 0 });
+    bezierA.position.set(x, y);
+
+    const bezierB = new Graphics();
+
+    bezierB.beginPath();
+    bezierB.moveTo(startX, startY);
+    bezierB.bezierCurveTo(cpX, cpY, cpX, cpY, endX, endY, smoothness);
+    bezierB.moveTo(endX, endY);
+    bezierB.closePath();
+    bezierB.stroke({ color: 0x00ff00, width: thickness, alignment: 0 });
+    bezierB.position.set(x, y);
+
+    root.addChild(bezierB);
+    root.addChild(bezierA);
 }
 
 export const scene: TestScene = {
@@ -33,13 +50,37 @@ export const scene: TestScene = {
     {
         const root = new Container();
 
-        const bezier1 = drawBezier(10, 10, 0); // smoothness = 0 (none)
-        const bezier2 = drawBezier(20, 20, 0.5); // smoothness = 0.5 (default)
-        const bezier3 = drawBezier(30, 30, 1); // smoothness = 1 (full)
+        const thickness = 10;
+        const width = 22;
+        const height = 128;
 
-        root.addChild(bezier1);
-        root.addChild(bezier2);
-        root.addChild(bezier3);
+        const rect = new Graphics();
+
+        rect.fillStyle = 0x666666;
+        rect.rect(0, 0, 128, 128);
+        rect.fill();
+        root.addChild(rect);
+
+        drawCurve(
+            root,
+            thickness * 0.5, 0,
+            width, height,
+            0 /** no smoothness */, thickness,
+        );
+
+        drawCurve(
+            root,
+            (thickness * 0.5) + (width), 0,
+            width, height,
+            0.5 /** mid smoothness (default) */, thickness,
+        );
+
+        drawCurve(
+            root,
+            (thickness * 0.5) + (width * 2), 0,
+            width, height,
+            1 /** full smoothness */, thickness,
+        );
 
         scene.addChild(root);
     },
