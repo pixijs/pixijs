@@ -105,7 +105,7 @@ export class TexturePoolClass
         texture.frameY = 0;
         texture.frameWidth = frameWidth;
         texture.frameHeight = frameHeight;
-        texture.layout.update();
+        texture.update();
 
         this._poolKeyHash[texture.id] = key;
 

@@ -304,7 +304,7 @@ export class AnimatedSprite extends Sprite
 
         if (this.updateAnchor)
         {
-            this.anchor.copyFrom(this.texture.layout.defaultAnchor);
+            this.anchor.copyFrom(this.texture.defaultAnchor);
         }
 
         if (this.onFrameChange)

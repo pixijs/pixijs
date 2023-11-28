@@ -149,12 +149,12 @@ export class TextureMatrix
 
         this._updateID++;
 
-        const uvs = tex.layout.uvs;
+        const uvs = tex.uvs;
 
         this.mapCoord.set(uvs.x1 - uvs.x0, uvs.y1 - uvs.y0, uvs.x3 - uvs.x0, uvs.y3 - uvs.y0, uvs.x0, uvs.y0);
 
-        const orig = tex.layout.orig;
-        const trim = tex.layout.trim;
+        const orig = tex.orig;
+        const trim = tex.trim;
 
         if (trim)
         {
@@ -182,7 +182,7 @@ export class TextureMatrix
 
         this.isSimple = tex.frameWidth === texBase.width
             && tex.frameHeight === texBase.height
-            && tex.layout.rotate === 0;
+            && tex.rotate === 0;
 
         return true;
     }

@@ -49,7 +49,7 @@ export class BatchableSprite implements BatchableObject
         const h0 = bounds.bottom;
         const h1 = bounds.top;
 
-        const uvs = texture._layout.uvs;
+        const uvs = texture.uvs;
 
         // _ _ _ _
         // a b g r

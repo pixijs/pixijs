@@ -34,8 +34,8 @@ export class SpriteView implements View
     {
         this.anchor = new ObservablePoint(
             this,
-            texture.layout.defaultAnchor?.x || 0,
-            texture.layout.defaultAnchor?.y || 0,
+            texture.defaultAnchor?.x || 0,
+            texture.defaultAnchor?.y || 0,
         );
 
         this.texture = texture;
@@ -97,7 +97,7 @@ export class SpriteView implements View
 
     public addBounds(bounds: Bounds)
     {
-        const _bounds = this._texture._layout.trim ? this.sourceBounds : this.bounds;
+        const _bounds = this._texture.trim ? this.sourceBounds : this.bounds;
 
         bounds.addFrame(_bounds.left, _bounds.top, _bounds.right, _bounds.bottom);
     }
@@ -125,9 +125,8 @@ export class SpriteView implements View
         const texture = this._texture;
 
         const textureSource = texture._source;
-        const layout = texture.layout;
 
-        const orig = layout.orig;
+        const orig = texture.orig;
 
         const sourceBounds = this._sourceBounds;
 

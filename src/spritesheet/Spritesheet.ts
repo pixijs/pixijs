@@ -3,8 +3,7 @@ import { Texture } from '../rendering/renderers/shared/texture/Texture';
 
 import type { PointData } from '../maths/point/PointData';
 import type { TextureSource } from '../rendering/renderers/shared/texture/sources/TextureSource';
-import type { BindableTexture } from '../rendering/renderers/shared/texture/Texture';
-import type { TextureBorders } from '../rendering/renderers/shared/texture/TextureLayout';
+import type { BindableTexture, TextureBorders } from '../rendering/renderers/shared/texture/Texture';
 import type { Dict } from '../utils/types';
 
 /**
@@ -345,12 +344,6 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
                     trim.height /= this.textureSource.height;
                 }
 
-                // normalise...
-                frame.x /= this.textureSource.width;
-                frame.y /= this.textureSource.height;
-                frame.width /= this.textureSource.width;
-                frame.height /= this.textureSource.height;
-
                 orig.x /= this.textureSource.width;
                 orig.y /= this.textureSource.height;
                 orig.width /= this.textureSource.width;
@@ -358,14 +351,14 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
 
                 this.textures[i] = new Texture({
                     source: this.textureSource,
-                    layout: {
-                        frame,
-                        orig,
-                        trim,
-                        rotate: data.rotated ? 2 : 0,
-                        defaultAnchor: data.anchor,
-                        defaultBorders: data.borders
-                    },
+
+                    frameReal: frame,
+                    orig,
+                    trim,
+                    rotate: data.rotated ? 2 : 0,
+                    defaultAnchor: data.anchor,
+                    defaultBorders: data.borders,
+
                     label: i.toString(),
                 });
             }

@@ -176,17 +176,15 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
                 const py = textureSource.height * fontScale;
 
                 const frame = new Rectangle(
-                    (currentX) / px,
-                    (currentY) / py,
-                    (paddedWidth) / px,
-                    (paddedHeight) / py,
+                    ((currentX) / px) * textureSource.width,
+                    ((currentY) / py) * textureSource.height,
+                    ((paddedWidth) / px) * textureSource.width,
+                    ((paddedHeight) / py) * textureSource.height,
                 );
 
                 this.chars[char].texture = new Texture({
                     source: textureSource,
-                    layout: {
-                        frame
-                    }
+                    frameReal: frame,
                 });
 
                 currentX += Math.ceil(paddedWidth);

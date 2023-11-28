@@ -125,7 +125,7 @@ describe('isRenderingToScreen', () =>
 
         const renderTextureTopLeft = new Texture({
             source: sourceTexture,
-            frame: new Rectangle(
+            frameReal: new Rectangle(
                 0, 0,
                 16, 16
             )
@@ -133,7 +133,7 @@ describe('isRenderingToScreen', () =>
 
         const renderTextureBottomRight = new Texture({
             source: sourceTexture,
-            frame: new Rectangle(
+            frameReal: new Rectangle(
                 16, 16,
                 16, 16
             )

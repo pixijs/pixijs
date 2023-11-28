@@ -45,7 +45,7 @@ export function getPo2TextureFromSource(
     texture.frameHeight = height / resolution;
 
     texture.source.update();
-    texture.layout.updateUvs();
+    texture.updateUvs();
 
     return texture;
 }

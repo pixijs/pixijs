@@ -11,10 +11,8 @@ export function updateQuadBounds(
 {
     const textureSource = texture._source;
 
-    const layout = texture.layout;
-
-    const orig = layout.orig;
-    const trim = layout.trim;
+    const orig = texture.orig;
+    const trim = texture.trim;
 
     const textureSourceWidth = textureSource.width;
     const textureSourceHeight = textureSource.height;

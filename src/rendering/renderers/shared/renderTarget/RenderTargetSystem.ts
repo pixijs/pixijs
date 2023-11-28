@@ -241,7 +241,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
 
         if (!frame)
         {
-            frame = renderSurface instanceof Texture ? renderSurface.layout.frame : defaultFrame;
+            frame = renderSurface instanceof Texture ? renderSurface.frame : defaultFrame;
         }
 
         const gpuRenderTarget = this.getGpuRenderTarget(renderTarget);
