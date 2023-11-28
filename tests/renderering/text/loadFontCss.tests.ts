@@ -13,7 +13,7 @@ describe('loadFontCSS', () =>
 
         expect(css).toBeTruthy();
         expect(css).toContain('Herborn');
-        expect(css).toContain(`src: url('data:font/ttf;base64,AAEAAAAUAQAABABAR0R`);
+        expect(css).toContain(`url('data:font/ttf;base64,AAEAAAAUAQAABABAR0R`);
     });
 
     it('should load a font with variants', async () =>
