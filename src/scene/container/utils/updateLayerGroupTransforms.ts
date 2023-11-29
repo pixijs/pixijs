@@ -44,6 +44,8 @@ export function updateLayerTransform(layerGroup: LayerGroup)
 {
     const root = layerGroup.root;
 
+    let worldAlpha;
+
     if (layerGroup.layerGroupParent)
     {
         const layerGroupParent = layerGroup.layerGroupParent;
@@ -58,20 +60,20 @@ export function updateLayerTransform(layerGroup: LayerGroup)
             layerGroupParent.worldColor,
         );
 
-        layerGroup.worldAlpha = root.layerAlpha * layerGroupParent.worldAlpha;
-
-        layerGroup.worldColorAlpha = layerGroup.worldColor
-            + (((layerGroup.worldAlpha * 255) | 0) << 24);
+        worldAlpha = root.layerAlpha * layerGroupParent.worldAlpha;
     }
     else
     {
         layerGroup.worldTransform.copyFrom(root.layerTransform);
         layerGroup.worldColor = root.localColor;
-        layerGroup.worldAlpha = root.localAlpha;
-
-        layerGroup.worldColorAlpha = layerGroup.worldColor
-            + (((layerGroup.worldAlpha * 255) | 0) << 24);
+        worldAlpha = root.localAlpha;
     }
+
+    worldAlpha = (worldAlpha < 0 && 0) || (worldAlpha > 1 && 1) || worldAlpha;
+
+    layerGroup.worldAlpha = worldAlpha;
+    layerGroup.worldColorAlpha = layerGroup.worldColor
+            + (((worldAlpha * 255) | 0) << 24);
 }
 
 export function updateTransformAndChildren(container: Container, updateTick: number, updateFlags: number)
@@ -146,9 +148,10 @@ function updateColorBlendVisibility(
             parent.layerColor
         );
 
-        container.layerAlpha = container.localAlpha * parent.layerAlpha;
+        const layerAlpha = container.localAlpha * parent.layerAlpha;
 
-        container.layerColorAlpha = container.layerColor + (((container.layerAlpha * 255) | 0) << 24);
+        container.layerAlpha = (layerAlpha < 0 && 0) || (layerAlpha > 1 && 1) || layerAlpha;
+        container.layerColorAlpha = container.layerColor + (((layerAlpha * 255) | 0) << 24);
     }
 
     if (updateFlags & UPDATE_BLEND)
