@@ -108,7 +108,7 @@ export class TexturePoolClass
 
         texture.updateUvs();
 
-        this._poolKeyHash[texture.id] = key;
+        this._poolKeyHash[texture.uid] = key;
 
         return texture;
     }
@@ -126,7 +126,7 @@ export class TexturePoolClass
      */
     public returnTexture(renderTexture: Texture): void
     {
-        const key = this._poolKeyHash[renderTexture.id];
+        const key = this._poolKeyHash[renderTexture.uid];
 
         this._texturePool[key].push(renderTexture);
     }
