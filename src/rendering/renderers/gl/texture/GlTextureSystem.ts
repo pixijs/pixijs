@@ -1,6 +1,5 @@
 import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { Texture } from '../../shared/texture/Texture';
 import { GlTexture } from './GlTexture';
 import { glUploadBufferImageResource } from './uploaders/glUploadBufferImageResource';
@@ -23,7 +22,6 @@ import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
 import type { GLTextureUploader } from './uploaders/GLTextureUploader';
 
-const TEMP_RECT = new Rectangle();
 const BYTES_PER_PIXEL = 4;
 
 export class GlTextureSystem implements System, CanvasGenerator
@@ -350,12 +348,7 @@ export class GlTextureSystem implements System, CanvasGenerator
     public getPixels(texture: Texture): GetPixelsOutput
     {
         const resolution = texture.source.resolution;
-        const frame = TEMP_RECT;
-
-        frame.x = texture.frameX;
-        frame.y = texture.frameY;
-        frame.width = texture.frameWidth;
-        frame.height = texture.frameHeight;
+        const frame = texture.frame;
 
         const width = Math.max(Math.round(frame.width * resolution), 1);
         const height = Math.max(Math.round(frame.height * resolution), 1);

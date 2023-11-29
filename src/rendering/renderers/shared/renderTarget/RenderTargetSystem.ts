@@ -21,8 +21,6 @@ import type { BindableTexture } from '../texture/Texture';
 
 export type RenderSurface = ICanvas | BindableTexture | RenderTarget;
 
-const defaultFrame = new Rectangle(0, 0, 1, 1);
-
 /**
  * stores a render target and its frame
  * @ignore
@@ -239,11 +237,6 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
 
         this.renderTarget = renderTarget;
 
-        if (!frame)
-        {
-            frame = renderSurface instanceof Texture ? renderSurface.layout.frame : defaultFrame;
-        }
-
         const gpuRenderTarget = this.getGpuRenderTarget(renderTarget);
 
         if (renderTarget.pixelWidth !== gpuRenderTarget.width
@@ -261,10 +254,27 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
         const pixelWidth = source.pixelWidth;
         const pixelHeight = source.pixelHeight;
 
-        viewport.x = ((frame.x * pixelWidth) + 0.5) | 0;
-        viewport.y = ((frame.y * pixelHeight) + 0.5) | 0;
-        viewport.width = ((frame.width * pixelWidth) + 0.5) | 0;
-        viewport.height = ((frame.height * pixelHeight) + 0.5) | 0;
+        if (!frame && renderSurface instanceof Texture)
+        {
+            frame = renderSurface.frame;
+        }
+
+        if (frame)
+        {
+            const resolution = source._resolution;
+
+            viewport.x = ((frame.x * resolution) + 0.5) | 0;
+            viewport.y = ((frame.y * resolution) + 0.5) | 0;
+            viewport.width = ((frame.width * resolution) + 0.5) | 0;
+            viewport.height = ((frame.height * resolution) + 0.5) | 0;
+        }
+        else
+        {
+            viewport.x = 0;
+            viewport.y = 0;
+            viewport.width = pixelWidth;
+            viewport.height = pixelHeight;
+        }
 
         calculateProjection(
             this.projectionMatrix,

@@ -114,7 +114,7 @@ function addTextureToGeometryData(
 
     build.triangulate(points, vertices, 2, vertOffset, indices, indexOffset);
 
-    const textureUvs = texture.layout.uvs;
+    const textureUvs = texture.uvs;
 
     uvs.push(
         textureUvs.x0, textureUvs.y0,

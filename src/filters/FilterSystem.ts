@@ -464,8 +464,8 @@ export class FilterSystem implements System
             outputFrame[1] = 0;
         }
 
-        outputFrame[2] = input.frameWidth;
-        outputFrame[3] = input.frameHeight;
+        outputFrame[2] = input.frame.width;
+        outputFrame[3] = input.frame.height;
 
         inputSize[0] = input.source.width;
         inputSize[1] = input.source.height;
@@ -479,8 +479,8 @@ export class FilterSystem implements System
 
         inputClamp[0] = 0.5 * inputPixel[2];
         inputClamp[1] = 0.5 * inputPixel[3];
-        inputClamp[2] = (input.frameWidth * inputSize[2]) - (0.5 * inputPixel[2]);
-        inputClamp[3] = (input.frameHeight * inputSize[3]) - (0.5 * inputPixel[3]);
+        inputClamp[2] = (input.frame.width * inputSize[2]) - (0.5 * inputPixel[2]);
+        inputClamp[3] = (input.frame.height * inputSize[3]) - (0.5 * inputPixel[3]);
 
         const rootTexture = this.renderer.renderTarget.rootRenderTarget.colorTexture;
 
@@ -498,8 +498,8 @@ export class FilterSystem implements System
 
         if (output instanceof Texture)
         {
-            outputTexture[0] = output.frameWidth;
-            outputTexture[1] = output.frameHeight;
+            outputTexture[0] = output.frame.width;
+            outputTexture[1] = output.frame.height;
         }
         else
         {
@@ -576,7 +576,10 @@ export class FilterSystem implements System
 
         worldTransform.invert();
         mappedMatrix.prepend(worldTransform);
-        mappedMatrix.scale(1.0 / (sprite.texture.frameWidth), 1.0 / (sprite.texture.frameHeight));
+        mappedMatrix.scale(
+            1.0 / sprite.texture.frame.width,
+            1.0 / sprite.texture.frame.height
+        );
 
         mappedMatrix.translate(sprite.anchor.x, sprite.anchor.y);
 

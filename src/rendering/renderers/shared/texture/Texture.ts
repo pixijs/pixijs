@@ -1,24 +1,51 @@
 import EventEmitter from 'eventemitter3';
 import { Cache } from '../../../../assets/cache/Cache';
+import { groupD8 } from '../../../../maths/matrix/groupD8';
+import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { uid } from '../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { NOOP } from '../../../../utils/misc/NOOP';
 import { resourceToTexture } from './sources/resourceToTexture';
 import { TextureSource } from './sources/TextureSource';
-import { TextureLayout } from './TextureLayout';
 import { TextureMatrix } from './TextureMatrix';
 
-import type { Rectangle } from '../../../../maths/shapes/Rectangle';
 import type { BufferSourceOptions } from './sources/BufferSource';
 import type { TextureSourceOptions } from './sources/TextureSource';
-import type { TextureLayoutOptions } from './TextureLayout';
+
+/** Stores the width of the non-scalable borders, for example when used with {@link scene.NineSlicePlane} texture. */
+export interface TextureBorders
+{
+    /** left border in pixels */
+    left: number;
+    /** top border in pixels */
+    top: number;
+    /** right border in pixels */
+    right: number;
+    /** bottom border in pixels */
+    bottom: number;
+}
+
+export type UVs = {
+    x0: number;
+    y0: number;
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+    x3: number;
+    y3: number;
+};
 
 export interface TextureOptions
 {
     source?: TextureSource;
-    layout?: TextureLayout | TextureLayoutOptions
     label?: string;
     frame?: Rectangle;
+    orig?: Rectangle;
+    trim?: Rectangle;
+    defaultAnchor?: { x: number; y: number };
+    defaultBorders?: TextureBorders;
+    rotate?: number;
 }
 
 export interface BindableTexture
@@ -62,35 +89,60 @@ export class Texture extends EventEmitter<{
     private _textureMatrix: TextureMatrix;
 
     /** @internal */
-    public _layout: TextureLayout;
-    /** @internal */
     public _source: TextureSource;
 
-    constructor({ source, layout, label, frame }: TextureOptions = {})
+    public rotate: number;
+    public uvs: UVs = { x0: 0, y0: 0, x1: 0, y1: 0, x2: 0, y2: 0, x3: 0, y3: 0 };
+
+    public defaultAnchor?: { x: number; y: number };
+    public defaultBorders?: TextureBorders;
+
+    public frame = new Rectangle();
+    public orig: Rectangle;
+    public trim: Rectangle;
+
+    public noFrame = false;
+
+    constructor({
+        source,
+        label,
+        frame,
+        orig,
+        trim,
+        defaultAnchor,
+        defaultBorders,
+        rotate
+    }: TextureOptions = {})
     {
         super();
 
         this.label = label;
         this.source = source?.source ?? new TextureSource();
 
-        layout = layout instanceof TextureLayout ? layout : new TextureLayout(layout);
+        this.noFrame = !frame;
 
         if (frame)
         {
+            this.frame.copyFrom(frame);
+        }
+        else
+        {
             const { width, height } = this._source;
 
-            (layout as TextureLayout).frame.x = frame.x / width;
-            (layout as TextureLayout).frame.y = frame.y / height;
-
-            (layout as TextureLayout).frame.width = frame.width / width;
-            (layout as TextureLayout).frame.height = frame.height / height;
-
-            (layout as TextureLayout).updateUvs();
+            this.frame.width = width;
+            this.frame.height = height;
         }
 
-        this.layout = layout as TextureLayout;
+        this.orig = orig || this.frame;
+        this.trim = trim;
+
+        this.rotate = rotate ?? 0;
+        this.defaultAnchor = defaultAnchor;
+        this.defaultBorders = defaultBorders;
 
         this.destroyed = false;
+
+        this.updateUvs();
     }
 
     set source(value: TextureSource)
@@ -112,22 +164,6 @@ export class Texture extends EventEmitter<{
         return this._source;
     }
 
-    get layout(): TextureLayout
-    {
-        return this._layout;
-    }
-
-    set layout(value: TextureLayout)
-    {
-        this._layout?.off('update', this.onUpdate, this);
-
-        this._layout = value;
-
-        value.on('update', this.onUpdate, this);
-
-        this.emit('update', this);
-    }
-
     get textureMatrix()
     {
         if (!this._textureMatrix)
@@ -138,70 +174,69 @@ export class Texture extends EventEmitter<{
         return this._textureMatrix;
     }
 
-    set frameWidth(value: number)
-    {
-        this._layout.frame.width = value / this._source.width;
-    }
-
-    get frameWidth(): number
-    {
-        return (this._source.pixelWidth / this._source._resolution) * this._layout.frame.width;
-    }
-
-    set frameHeight(value: number)
-    {
-        this._layout.frame.height = value / this._source.height;
-    }
-
-    get frameHeight(): number
-    {
-        return (this._source.pixelHeight / this._source._resolution) * this._layout.frame.height;
-    }
-
-    set frameX(value: number)
-    {
-        if (value === 0)
-        {
-            this._layout.frame.x = 0;
-
-            return;
-        }
-
-        this._layout.frame.x = (this._source.width) / value;
-    }
-
-    get frameX(): number
-    {
-        return (this._source.width) * this._layout.frame.x;
-    }
-
-    set frameY(value: number)
-    {
-        if (value === 0)
-        {
-            this._layout.frame.y = 0;
-
-            return;
-        }
-
-        this._layout.frame.y = (this._source.height) / value;
-    }
-
-    get frameY(): number
-    {
-        return (this._source.height) * this._layout.frame.y;
-    }
-
     /** The width of the Texture in pixels. */
     get width(): number
     {
-        return (this._source.width) * this._layout.orig.width;
+        return this.orig.width;
     }
 
     /** The height of the Texture in pixels. */
     get height(): number
     {
-        return (this._source.height) * this._layout.orig.height;
+        return this.orig.height;
+    }
+
+    public updateUvs()
+    {
+        const { uvs, frame } = this;
+        const { width, height } = this._source;
+
+        const nX = frame.x / width;
+        const nY = frame.y / height;
+
+        const nW = frame.width / width;
+        const nH = frame.height / height;
+
+        let rotate = this.rotate;
+
+        if (rotate)
+        {
+            // width and height div 2 div baseFrame size
+            const w2 = nW / 2;
+            const h2 = nH / 2;
+
+            // coordinates of center
+            const cX = nX + w2;
+            const cY = nY + h2;
+
+            rotate = groupD8.add(rotate, groupD8.NW); // NW is top-left corner
+            uvs.x0 = cX + (w2 * groupD8.uX(rotate));
+            uvs.y0 = cY + (h2 * groupD8.uY(rotate));
+
+            rotate = groupD8.add(rotate, 2); // rotate 90 degrees clockwise
+            uvs.x1 = cX + (w2 * groupD8.uX(rotate));
+            uvs.y1 = cY + (h2 * groupD8.uY(rotate));
+
+            rotate = groupD8.add(rotate, 2);
+            uvs.x2 = cX + (w2 * groupD8.uX(rotate));
+            uvs.y2 = cY + (h2 * groupD8.uY(rotate));
+
+            rotate = groupD8.add(rotate, 2);
+            uvs.x3 = cX + (w2 * groupD8.uX(rotate));
+            uvs.y3 = cY + (h2 * groupD8.uY(rotate));
+        }
+
+        else
+        {
+            uvs.x0 = nX;
+            uvs.y0 = nY;
+            uvs.x1 = nX + nW;
+            uvs.y1 = nY;
+            uvs.x2 = nX + nW;
+            uvs.y2 = nY + nH;
+            uvs.x3 = nX;
+            uvs.y3 = nY + nH;
+        }
     }
 
     /**
@@ -210,12 +245,6 @@ export class Texture extends EventEmitter<{
      */
     public destroy(destroySource = false)
     {
-        if (this._layout)
-        {
-            this._layout.destroy();
-            this._layout = null;
-        }
-
         if (this._source)
         {
             if (destroySource)
@@ -236,6 +265,13 @@ export class Texture extends EventEmitter<{
      */
     protected onUpdate()
     {
+        if (this.noFrame)
+        {
+            this.frame.width = this._source.width;
+            this.frame.height = this._source.height;
+        }
+
+        this.updateUvs();
         this.emit('update', this);
     }
 

@@ -82,7 +82,10 @@ export function convertFillInputToFillStyle(
     {
         const m = style.matrix || new Matrix();
 
-        m.scale(1 / style.texture.frameWidth, 1 / style.texture.frameHeight);
+        m.scale(
+            1 / style.texture.frame.width,
+            1 / style.texture.frame.height
+        );
 
         style.matrix = m;
 

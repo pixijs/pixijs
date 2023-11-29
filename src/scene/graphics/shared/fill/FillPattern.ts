@@ -36,8 +36,8 @@ export class FillPattern implements CanvasPattern
         this.texture = texture;
 
         this.transform.scale(
-            1 / texture.frameWidth,
-            1 / texture.frameHeight
+            1 / texture.frame.width,
+            1 / texture.frame.height
         );
 
         if (repetition)
@@ -55,8 +55,8 @@ export class FillPattern implements CanvasPattern
         this.transform.invert();
         //  transform.scale
         this.transform.scale(
-            1 / texture.frameWidth,
-            1 / texture.frameHeight
+            1 / texture.frame.width,
+            1 / texture.frame.height
         );
     }
 }

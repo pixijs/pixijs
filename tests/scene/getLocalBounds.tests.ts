@@ -259,10 +259,8 @@ describe('getLocalBounds', () =>
 
         const texture = new Texture({
             source: textureSource,
-            layout: {
-                trim: new Rectangle(0.1, 0.1, 0.8, 0.8),
-                frame: new Rectangle(0, 0, 1, 1),
-            }
+            trim: new Rectangle(0.1 * 200, 0.1 * 200, 0.8 * 200, 0.8 * 200),
+            frame: new Rectangle(0, 0, 200, 200),
         });
 
         const sprite = new Sprite({ texture });

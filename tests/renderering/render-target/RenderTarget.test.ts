@@ -76,7 +76,7 @@ describe('isRenderingToScreen', () =>
         renderer.renderTarget.push(sourceTexture, false, null, new Rectangle(0, 0, 16, 16));
 
         expect(renderer.renderTarget.projectionMatrix.toArray()).toEqual(
-            new Float32Array([0.00390625, 0, -1, 0, 0.00390625, -1, 0, 0, 1])
+            new Float32Array([0.125, 0, -1, 0, 0.125, -1, 0, 0, 1])
         );
 
         renderer.renderTarget.pop();
