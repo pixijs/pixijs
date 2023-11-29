@@ -47,7 +47,7 @@ export abstract class PrepareBase
     }
 
     /** Resolve the given resource type and return an item for the queue */
-    protected abstract resolveQueueItem(source: PrepareSourceItem): PrepareQueueItem | null;
+    protected abstract resolveQueueItem(source: PrepareSourceItem, queue: PrepareQueueItem[]): void;
     protected abstract uploadQueueItem(item: PrepareQueueItem): void;
 
     /**
@@ -69,12 +69,7 @@ export abstract class PrepareBase
 
         for (const resourceItem of resourceArray)
         {
-            const queueItem = this.resolveQueueItem(resourceItem);
-
-            if (queueItem)
-            {
-                this.queue.push(queueItem);
-            }
+            this.resolveQueueItem(resourceItem, this.queue);
 
             // handle containers and their children
             if (resourceItem instanceof Container)
@@ -92,12 +87,7 @@ export abstract class PrepareBase
      */
     private _addContainer(container: Container): void
     {
-        const queueItem = this.resolveQueueItem(container);
-
-        if (queueItem)
-        {
-            this.queue.push(queueItem);
-        }
+        this.resolveQueueItem(container, this.queue);
 
         // recursively add children
         for (const child of container.children)
@@ -141,8 +131,21 @@ export abstract class PrepareBase
     /** eliminate duplicates before processing */
     public dedupeQueue(): void
     {
-        // todo: more efficient/thorough dedupe?
-        this.queue = this.queue.filter((item, index, self) => self.indexOf(item) === index);
+        const hash = Object.create(null);
+        let nextUnique = 0;
+
+        for (let i = 0; i < this.queue.length; i++)
+        {
+            const current = this.queue[i];
+
+            if (!hash[current.uid])
+            {
+                hash[current.uid] = true;
+                this.queue[nextUnique++] = current;
+            }
+        }
+
+        this.queue.length = nextUnique;
     }
 
     /** called per frame by the ticker, defer processing to next tick */

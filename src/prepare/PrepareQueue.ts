@@ -2,10 +2,16 @@ import { TextureSource } from '../rendering/renderers/shared/texture/sources/Tex
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { Container } from '../scene/container/Container';
 import { GraphicsContext } from '../scene/graphics/shared/GraphicsContext';
-import { Text } from '../scene/text/Text';
+import { GraphicsView } from '../scene/graphics/shared/GraphicsView';
+import { Mesh } from '../scene/mesh/shared/Mesh';
+import { Sprite } from '../scene/sprite/Sprite';
+import { AnimatedSprite } from '../scene/sprite-animated/AnimatedSprite';
+import { TilingSprite } from '../scene/sprite-tiling/TilingSprite';
+import { TextView } from '../scene/text/TextView';
 import { PrepareBase } from './PrepareBase';
 
 import type { FillInstruction, TextureInstruction } from '../scene/graphics/shared/GraphicsContext';
+import type { FrameObject } from '../scene/sprite-animated/AnimatedSprite';
 import type { PrepareQueueItem, PrepareSourceItem } from './PrepareBase';
 
 /**
@@ -17,24 +23,21 @@ export abstract class PrepareQueue extends PrepareBase
     /**
      * Resolve the given resource type and return an item for the queue
      * @param source
+     * @param queue
      */
-    protected resolveQueueItem(source: PrepareSourceItem): PrepareQueueItem | null
+    protected resolveQueueItem(source: PrepareSourceItem, queue: PrepareQueueItem[]): void
     {
         if (source instanceof Container)
         {
-            return this.resolveContainerQueueItem(source);
+            this.resolveViewQueueItem(source, queue);
         }
-        else if (source instanceof TextureSource)
+        else if (source instanceof TextureSource || source instanceof Texture)
         {
-            return source;
-        }
-        else if (source instanceof Texture)
-        {
-            return source.source;
+            queue.push(source.source);
         }
         else if (source instanceof GraphicsContext)
         {
-            return source;
+            queue.push(source);
         }
 
         // could not resolve the resource type
@@ -44,18 +47,39 @@ export abstract class PrepareQueue extends PrepareBase
     /**
      * Resolve the given container and return an item for the queue
      * @param container
+     * @param queue
      */
-    protected resolveContainerQueueItem(container: Container): PrepareQueueItem | null
+    protected resolveViewQueueItem(container: Container, queue: PrepareQueueItem[]): void
     {
-        // Note: we are just concerned with the given container, not its children.
-        //       Children are handled by the recursive call of the base class
+        // Note: we are just concerned with the given view.
+        // Children are handled by the recursive call of the base class
 
-        if (container instanceof Text)
+        if (container instanceof Sprite || container instanceof TilingSprite || container instanceof Mesh)
         {
-            // todo: extract the text view texture resource
-        } // todo: check for other container types
-
-        return null;
+            queue.push(container.texture.source);
+        }
+        else if (container instanceof TextView)
+        {
+            queue.push(container);
+        }
+        else if (container instanceof GraphicsView)
+        {
+            queue.push(container.context);
+        }
+        else if (container instanceof AnimatedSprite)
+        {
+            container.textures.forEach((textureOrFrame) =>
+            {
+                if ((textureOrFrame as Texture).source)
+                {
+                    queue.push((textureOrFrame as Texture).source);
+                }
+                else
+                {
+                    queue.push((textureOrFrame as FrameObject).texture.source);
+                }
+            });
+        }
     }
 
     /**

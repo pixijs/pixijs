@@ -4,6 +4,7 @@ import { TextView } from '../scene/text/TextView';
 import { PrepareQueue } from './PrepareQueue';
 
 import type { FillInstruction, TextureInstruction } from '../scene/graphics/shared/GraphicsContext';
+import type { Text } from '../scene/text/Text';
 import type { PrepareQueueItem } from './PrepareBase';
 
 /**
@@ -39,7 +40,9 @@ export abstract class PrepareUpload extends PrepareQueue
 
     protected uploadText(_text: TextView): void
     {
-        // todo: upload the text view resource
+        const pipeId = _text.renderPipeId as 'text' | 'bitmapText' | 'htmlText';
+
+        this.renderer.renderPipes[pipeId].updateRenderable(_text.owner as Text);
     }
 
     /**
