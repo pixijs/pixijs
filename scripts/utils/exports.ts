@@ -16,7 +16,7 @@ const subImports = [
     ['./math-extras', './lib/math-extras'],
     // ['./graphics', './lib/scene/graphics'],
     // ['./mesh', './lib/scene/mesh'],
-    // ['./prepare', './lib/prepare'], // to be implemented
+    ['./prepare', './lib/prepare'], // to be implemented
     // ['./sprite-tiling', './lib/scene/sprite-tiling'],
     ['./spritesheet', './lib/spritesheet'],
     // ['./text', './lib/scene/text'], // should this be split out into canvas, html, bitmap?
