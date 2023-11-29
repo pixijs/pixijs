@@ -3,6 +3,7 @@ import { TextureSource } from '../../src/rendering/renderers/shared/texture/sour
 import { Texture } from '../../src/rendering/renderers/shared/texture/Texture';
 import { Container } from '../../src/scene/container/Container';
 import { Graphics } from '../../src/scene/graphics/shared/Graphics';
+import { Sprite } from '../../src/scene/sprite/Sprite';
 import { getRenderer } from '../utils/getRenderer';
 
 describe.skip('PrepareSystem', () =>
@@ -26,25 +27,37 @@ describe.skip('PrepareSystem', () =>
             expect(prepare.getQueue()).toEqual([textureSource]);
         });
 
-        it('should add a container to the queue', async () =>
+        it('should add nat add container to the queue', async () =>
         {
             const { prepare } = await setup();
             const container = new Container();
 
             prepare.add(container);
-            expect(prepare.getQueue()).toEqual([container]);
+
+            expect(prepare.getQueue()).toEqual([]);
+        });
+
+        it('should add a container to the queue', async () =>
+        {
+            const { prepare } = await setup();
+            const container = new Graphics();
+
+            prepare.add(container);
+
+            expect(prepare.getQueue()).toEqual([container.context]);
         });
 
         it('should add a container and all its children to the queue', async () =>
         {
             const { prepare } = await setup();
             const container = new Container();
-            const child1 = new Container();
-            const child2 = new Container();
+            const child1 = new Sprite();
+            const child2 = new Graphics();
 
             container.addChild(child1, child2);
             prepare.add(container);
-            expect(prepare.getQueue()).toEqual([container, child1, child2]);
+
+            expect(prepare.getQueue()).toEqual([child1.texture.source, child2.context]);
         });
 
         it('should add a texture to the queue', async () =>
@@ -53,7 +66,7 @@ describe.skip('PrepareSystem', () =>
             const texture = new Texture();
 
             prepare.add(texture);
-            expect(prepare.getQueue()).toEqual([texture]);
+            expect(prepare.getQueue()).toEqual([texture.source]);
         });
 
         it('should add a graphics context to the queue', async () =>
@@ -62,7 +75,7 @@ describe.skip('PrepareSystem', () =>
             const graphics = new Graphics();
 
             prepare.add(graphics);
-            expect(prepare.getQueue()).toEqual([graphics]);
+            expect(prepare.getQueue()).toEqual([graphics.context]);
         });
     });
 

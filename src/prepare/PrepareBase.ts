@@ -69,12 +69,14 @@ export abstract class PrepareBase
 
         for (const resourceItem of resourceArray)
         {
-            this.resolveQueueItem(resourceItem, this.queue);
-
             // handle containers and their children
             if (resourceItem instanceof Container)
             {
                 this._addContainer(resourceItem);
+            }
+            else
+            {
+                this.resolveQueueItem(resourceItem, this.queue);
             }
         }
 

@@ -1,8 +1,8 @@
 import { TextureSource } from '../rendering/renderers/shared/texture/sources/TextureSource';
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { Container } from '../scene/container/Container';
+import { Graphics } from '../scene/graphics/shared/Graphics';
 import { GraphicsContext } from '../scene/graphics/shared/GraphicsContext';
-import { GraphicsView } from '../scene/graphics/shared/GraphicsView';
 import { Mesh } from '../scene/mesh/shared/Mesh';
 import { Sprite } from '../scene/sprite/Sprite';
 import { AnimatedSprite } from '../scene/sprite-animated/AnimatedSprite';
@@ -29,7 +29,7 @@ export abstract class PrepareQueue extends PrepareBase
     {
         if (source instanceof Container)
         {
-            this.resolveViewQueueItem(source, queue);
+            this.resolveContainerQueueItem(source, queue);
         }
         else if (source instanceof TextureSource || source instanceof Texture)
         {
@@ -49,7 +49,7 @@ export abstract class PrepareQueue extends PrepareBase
      * @param container
      * @param queue
      */
-    protected resolveViewQueueItem(container: Container, queue: PrepareQueueItem[]): void
+    protected resolveContainerQueueItem(container: Container, queue: PrepareQueueItem[]): void
     {
         // Note: we are just concerned with the given view.
         // Children are handled by the recursive call of the base class
@@ -62,7 +62,7 @@ export abstract class PrepareQueue extends PrepareBase
         {
             queue.push(container);
         }
-        else if (container instanceof GraphicsView)
+        else if (container instanceof Graphics)
         {
             queue.push(container.context);
         }
