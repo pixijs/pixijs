@@ -136,7 +136,6 @@
     "./lib/compressed-textures/basis/init.*",
     "./lib/events/init.*",
     "./lib/math-extras/init.*",
-    "./lib/prepare/init.*",
     "./lib/spritesheet/init.*",
     "./lib/rendering/init.*",
     "./lib/prepare/init.*",
@@ -239,14 +238,6 @@
       },
       "require": {
         "default": "./lib/math-extras/init.js"
-      }
-    },
-    "./prepare": {
-      "import": {
-        "default": "./lib/prepare/init.mjs"
-      },
-      "require": {
-        "default": "./lib/prepare/init.js"
       }
     },
     "./spritesheet": {
