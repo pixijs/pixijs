@@ -18,6 +18,7 @@ const valuesToIterateForKeys = [
     '_wordWrapWidth',
     '_padding',
     '_cssOverrides',
+    '_trim'
 ];
 
 /**
