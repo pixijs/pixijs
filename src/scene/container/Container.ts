@@ -5,6 +5,7 @@ import { DEG_TO_RAD, RAD_TO_DEG } from '../../maths/misc/const';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { uid } from '../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
+import { Culler } from '../Culler';
 import { childrenHelperMixin } from './container-mixins/childrenHelperMixin';
 import { effectsMixin } from './container-mixins/effectsMixin';
 import { findMixin } from './container-mixins/findMixin';
@@ -509,6 +510,19 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         options.children?.forEach((child) => this.addChild(child));
         this.effects = [];
         options.effects?.forEach((effect) => this.addEffect(effect));
+    }
+
+    public culler = Culler.shared;
+    public _cull = false;
+
+    get cull(): boolean
+    {
+        return this._cull;
+    }
+    set cull(value: boolean)
+    {
+        this._cull = value;
+        this.culler.add(this);
     }
 
     /**
