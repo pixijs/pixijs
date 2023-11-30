@@ -18,7 +18,12 @@ export function getLocalBounds(target: Container, bounds: Bounds, relativeMatrix
 
     relativeMatrix ||= new Matrix();
 
-    if (target.view)
+    if (target.boundsArea)
+    {
+        bounds.setMatrix(relativeMatrix);
+        bounds.addRect(target.boundsArea);
+    }
+    else if (target.view)
     {
         bounds.setMatrix(relativeMatrix);
         target.view.addBounds(bounds);

@@ -256,6 +256,15 @@ describe('getGlobalBounds', () =>
 
     it('should get global bounds correctly if a container has boundsArea specified', async () =>
     {
+        const container = new Container({ label: 'container', boundsArea: new Rectangle(0, 0, 500, 500) });
+
+        const bounds = getGlobalBounds(container, false, new Bounds());
+
+        expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 500, maxY: 500 });
+    });
+
+    it('should get global bounds correctly if a containers children has boundsArea specified', async () =>
+    {
         const container = new Container({ label: 'container' });
 
         const child = new Container({ label: 'child', boundsArea: new Rectangle(0, 0, 500, 500) });
