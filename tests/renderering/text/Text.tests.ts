@@ -28,15 +28,13 @@ describe('Text', () =>
             expect(text.view.resolution).toEqual(3);
         });
 
-        // note: bug - ticket for Mat
-        // ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=45883000
-        it.skip('should update the text resolution to match the renderer resolution when being rendered to screen', async () =>
+        it('should update the text resolution to match the renderer resolution when being rendered to screen', async () =>
         {
             const text = new Text({ text: 'foo' });
 
             const renderer = await getRenderer({ resolution: 2 });
 
-            const texture = renderer.canvasText.getTexture(text.text, text.view.resolution, text.style, 'foo');
+            const texture = renderer.renderPipes.text['_getGpuText'](text).texture;
 
             expect(texture.source.resolution).toEqual(2); // <-- getting null
 

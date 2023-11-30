@@ -55,39 +55,39 @@ describe('BitmapFontLoader', () =>
 
         expect(charA).toBeDefined();
         expect(charATexture.source.label).toEqual(`${basePath}fonts/font.png`);
-        expect(charATexture.frameX).toEqual(2);
-        expect(charATexture.frameY).toEqual(2);
-        expect(charATexture.frameWidth).toEqual(19);
-        expect(charATexture.frameHeight).toEqual(20);
+        expect(charATexture.frame.x).toEqual(2);
+        expect(charATexture.frame.y).toEqual(2);
+        expect(charATexture.frame.width).toEqual(19);
+        expect(charATexture.frame.height).toEqual(20);
 
         const charB = font.chars['B'];
         const charBTexture = charB.texture as Texture;
 
         expect(charB).toBeDefined();
         expect(charBTexture.source.label).toEqual(`${basePath}fonts/font.png`);
-        expect(charBTexture.frameX).toEqual(2);
-        expect(charBTexture.frameY).toEqual(24);
-        expect(charBTexture.frameWidth).toEqual(15);
-        expect(charBTexture.frameHeight).toEqual(20);
+        expect(charBTexture.frame.x).toEqual(2);
+        expect(charBTexture.frame.y).toEqual(24);
+        expect(charBTexture.frame.width).toEqual(15);
+        expect(charBTexture.frame.height).toEqual(20);
 
         const charC = font.chars['C'];
         const charCTexture = charC.texture as Texture;
 
         expect(charC).toBeDefined();
         expect(charCTexture.source.label).toEqual(`${basePath}fonts/font.png`);
-        expect(charCTexture.frameX).toEqual(23);
-        expect(charCTexture.frameY).toEqual(2);
-        expect(charCTexture.frameWidth).toEqual(18);
-        expect(charCTexture.frameHeight).toEqual(20);
+        expect(charCTexture.frame.x).toEqual(23);
+        expect(charCTexture.frame.y).toEqual(2);
+        expect(charCTexture.frame.width).toEqual(18);
+        expect(charCTexture.frame.height).toEqual(20);
         const charD = font.chars['D'];
         const charDTexture = charD.texture as Texture;
 
         expect(charD).toBeDefined();
         expect(charDTexture.source.label).toEqual(`${basePath}fonts/font.png`);
-        expect(charDTexture.frameX).toEqual(19);
-        expect(charDTexture.frameY).toEqual(24);
-        expect(charDTexture.frameWidth).toEqual(17);
-        expect(charDTexture.frameHeight).toEqual(20);
+        expect(charDTexture.frame.x).toEqual(19);
+        expect(charDTexture.frame.y).toEqual(24);
+        expect(charDTexture.frame.width).toEqual(17);
+        expect(charDTexture.frame.height).toEqual(20);
         const charE = font.chars['E'];
 
         expect(charE).toBeUndefined();
@@ -105,38 +105,38 @@ describe('BitmapFontLoader', () =>
 
         expect(charA).toBeDefined();
         expect(charATexture.source.label).toEqual(`${basePath}fonts/bmGlyph-test.png`);
-        expect(charATexture.frameX).toEqual(1);
-        expect(charATexture.frameY).toEqual(179);
-        expect(charATexture.frameWidth).toEqual(38);
-        expect(charATexture.frameHeight).toEqual(28);
+        expect(charATexture.frame.x).toEqual(1);
+        expect(charATexture.frame.y).toEqual(179);
+        expect(charATexture.frame.width).toEqual(38);
+        expect(charATexture.frame.height).toEqual(28);
 
         const charB = font.chars['B'];
         const charBTexture = charB.texture as Texture;
 
         expect(charB).toBeDefined();
         expect(charBTexture.source.label).toEqual(`${basePath}fonts/bmGlyph-test.png`);
-        expect(charBTexture.frameX).toEqual(52);
-        expect(charBTexture.frameY).toEqual(146);
-        expect(charBTexture.frameWidth).toEqual(34);
-        expect(charBTexture.frameHeight).toEqual(28);
+        expect(charBTexture.frame.x).toEqual(52);
+        expect(charBTexture.frame.y).toEqual(146);
+        expect(charBTexture.frame.width).toEqual(34);
+        expect(charBTexture.frame.height).toEqual(28);
         const charC = font.chars['C'];
         const charCTexture = charC.texture as Texture;
 
         expect(charC).toBeDefined();
         expect(charCTexture.source.label).toEqual(`${basePath}fonts/bmGlyph-test.png`);
-        expect(charCTexture.frameX).toEqual(52);
-        expect(charCTexture.frameY).toEqual(117);
-        expect(charCTexture.frameWidth).toEqual(34);
-        expect(charCTexture.frameHeight).toEqual(28);
+        expect(charCTexture.frame.x).toEqual(52);
+        expect(charCTexture.frame.y).toEqual(117);
+        expect(charCTexture.frame.width).toEqual(34);
+        expect(charCTexture.frame.height).toEqual(28);
         const charD = font.chars['D'];
         const charDTexture = charD.texture as Texture;
 
         expect(charD).toBeDefined();
         expect(charDTexture.source.label).toEqual(`${basePath}fonts/bmGlyph-test.png`);
-        expect(charDTexture.frameX).toEqual(52);
-        expect(charDTexture.frameY).toEqual(88);
-        expect(charDTexture.frameWidth).toEqual(34);
-        expect(charDTexture.frameHeight).toEqual(28);
+        expect(charDTexture.frame.x).toEqual(52);
+        expect(charDTexture.frame.y).toEqual(88);
+        expect(charDTexture.frame.width).toEqual(34);
+        expect(charDTexture.frame.height).toEqual(28);
         const charUndefined = font.chars['£'];
 
         expect(charUndefined).toBeUndefined();
@@ -153,37 +153,37 @@ describe('BitmapFontLoader', () =>
 
         expect(charA).toBeDefined();
         expect(charATexture.source.label).toEqual(`${basePath}fonts/font.png`);
-        expect(charATexture.frameX).toEqual(2);
-        expect(charATexture.frameY).toEqual(2);
-        expect(charATexture.frameWidth).toEqual(19);
-        expect(charATexture.frameHeight).toEqual(20);
+        expect(charATexture.frame.x).toEqual(2);
+        expect(charATexture.frame.y).toEqual(2);
+        expect(charATexture.frame.width).toEqual(19);
+        expect(charATexture.frame.height).toEqual(20);
         const charB = font.chars['B'];
         const charBTexture = charB.texture as Texture;
 
         expect(charB).toBeDefined();
         expect(charBTexture.source.label).toEqual(`${basePath}fonts/font.png`);
-        expect(charBTexture.frameX).toEqual(2);
-        expect(charBTexture.frameY).toEqual(24);
-        expect(charBTexture.frameWidth).toEqual(15);
-        expect(charBTexture.frameHeight).toEqual(20);
+        expect(charBTexture.frame.x).toEqual(2);
+        expect(charBTexture.frame.y).toEqual(24);
+        expect(charBTexture.frame.width).toEqual(15);
+        expect(charBTexture.frame.height).toEqual(20);
         const charC = font.chars['C'];
         const charCTexture = charC.texture as Texture;
 
         expect(charC).toBeDefined();
         expect(charCTexture.source.label).toEqual(`${basePath}fonts/font.png`);
-        expect(charCTexture.frameX).toEqual(23);
-        expect(charCTexture.frameY).toEqual(2);
-        expect(charCTexture.frameWidth).toEqual(18);
-        expect(charCTexture.frameHeight).toEqual(20);
+        expect(charCTexture.frame.x).toEqual(23);
+        expect(charCTexture.frame.y).toEqual(2);
+        expect(charCTexture.frame.width).toEqual(18);
+        expect(charCTexture.frame.height).toEqual(20);
         const charD = font.chars['D'];
         const charDTexture = charD.texture as Texture;
 
         expect(charD).toBeDefined();
         expect(charDTexture.source.label).toEqual(`${basePath}fonts/font.png`);
-        expect(charDTexture.frameX).toEqual(19);
-        expect(charDTexture.frameY).toEqual(24);
-        expect(charDTexture.frameWidth).toEqual(17);
-        expect(charDTexture.frameHeight).toEqual(20);
+        expect(charDTexture.frame.x).toEqual(19);
+        expect(charDTexture.frame.y).toEqual(24);
+        expect(charDTexture.frame.width).toEqual(17);
+        expect(charDTexture.frame.height).toEqual(20);
         const charE = font.chars['E'];
 
         expect(charE).toBeUndefined();
@@ -200,10 +200,10 @@ describe('BitmapFontLoader', () =>
 
         expect(charA).toBeDefined();
         expect(charATexture.source.label).toEqual(`${basePath}fonts/font.png?version=1.0.0`);
-        expect(charATexture.frameX).toEqual(2);
-        expect(charATexture.frameY).toEqual(2);
-        expect(charATexture.frameWidth).toEqual(19);
-        expect(charATexture.frameHeight).toEqual(20);
+        expect(charATexture.frame.x).toEqual(2);
+        expect(charATexture.frame.y).toEqual(2);
+        expect(charATexture.frame.width).toEqual(19);
+        expect(charATexture.frame.height).toEqual(20);
     });
 
     // note: expected values are twice the actual size, is scaling being applied?
@@ -225,40 +225,40 @@ describe('BitmapFontLoader', () =>
 
         expect(charA).toBeDefined();
         expect(charATexture.source.label).toEqual(`${basePath}fonts/font@0.5x.png`);
-        expect(charATexture.frameX).toEqual(4); // 2 / 0.5
-        expect(charATexture.frameY).toEqual(4); // 2 / 0.5
-        expect(charATexture.frameWidth).toEqual(38); // 19 / 0.5
-        expect(charATexture.frameHeight).toEqual(40); // 20 / 0.5
+        expect(charATexture.frame.x).toEqual(4); // 2 / 0.5
+        expect(charATexture.frame.y).toEqual(4); // 2 / 0.5
+        expect(charATexture.frame.width).toEqual(38); // 19 / 0.5
+        expect(charATexture.frame.height).toEqual(40); // 20 / 0.5
 
         const charB = font.chars['B'];
         const charBTexture = charB.texture as Texture;
 
         expect(charB).toBeDefined();
         expect(charBTexture.source.label).toEqual(`${basePath}fonts/font@0.5x.png`);
-        expect(charBTexture.frameX).toEqual(4); // 2 / 0.5
-        expect(charBTexture.frameY).toEqual(48); // 24 / 0.5
-        expect(charBTexture.frameWidth).toEqual(30); // 15 / 0.5
-        expect(charBTexture.frameHeight).toEqual(40); // 20 / 0.5
+        expect(charBTexture.frame.x).toEqual(4); // 2 / 0.5
+        expect(charBTexture.frame.y).toEqual(48); // 24 / 0.5
+        expect(charBTexture.frame.width).toEqual(30); // 15 / 0.5
+        expect(charBTexture.frame.height).toEqual(40); // 20 / 0.5
 
         const charC = font.chars['C'];
         const charCTexture = charC.texture as Texture;
 
         expect(charC).toBeDefined();
         expect(charCTexture.source.label).toEqual(`${basePath}fonts/font@0.5x.png`);
-        expect(charCTexture.frameX).toEqual(46); // 23 / 0.5
-        expect(charCTexture.frameY).toEqual(4); // 2 / 0.5
-        expect(charCTexture.frameWidth).toEqual(36); // 18 / 0.5
-        expect(charCTexture.frameHeight).toEqual(40); // 20 / 0.5
+        expect(charCTexture.frame.x).toEqual(46); // 23 / 0.5
+        expect(charCTexture.frame.y).toEqual(4); // 2 / 0.5
+        expect(charCTexture.frame.width).toEqual(36); // 18 / 0.5
+        expect(charCTexture.frame.height).toEqual(40); // 20 / 0.5
 
         const charD = font.chars['D'];
         const charDTexture = charD.texture as Texture;
 
         expect(charD).toBeDefined();
         expect(charDTexture.source.label).toEqual(`${basePath}fonts/font@0.5x.png`);
-        expect(charDTexture.frameX).toEqual(38); // 19 / 0.5
-        expect(charDTexture.frameY).toEqual(48); // 24 / 0.5
-        expect(charDTexture.frameWidth).toEqual(34); // 17 / 0.5
-        expect(charDTexture.frameHeight).toEqual(40); // 20 / 0.5
+        expect(charDTexture.frame.x).toEqual(38); // 19 / 0.5
+        expect(charDTexture.frame.y).toEqual(48); // 24 / 0.5
+        expect(charDTexture.frame.width).toEqual(34); // 17 / 0.5
+        expect(charDTexture.frame.height).toEqual(40); // 20 / 0.5
         const charE = font.chars['E'];
 
         expect(charE).toBeUndefined();
@@ -278,10 +278,10 @@ describe('BitmapFontLoader', () =>
 
         src = src.substring(src.length - 17);
         expect(src).toEqual('split_font_ab.png');
-        expect(charATexture.frameX).toEqual(2);
-        expect(charATexture.frameY).toEqual(2);
-        expect(charATexture.frameWidth).toEqual(19);
-        expect(charATexture.frameHeight).toEqual(20);
+        expect(charATexture.frame.x).toEqual(2);
+        expect(charATexture.frame.y).toEqual(2);
+        expect(charATexture.frame.width).toEqual(19);
+        expect(charATexture.frame.height).toEqual(20);
         const charB = font.chars['B'];
         const charBTexture = charB.texture as Texture;
 
@@ -290,10 +290,10 @@ describe('BitmapFontLoader', () =>
 
         src = src.substring(src.length - 17);
         expect(src).toEqual('split_font_ab.png');
-        expect(charBTexture.frameX).toEqual(2);
-        expect(charBTexture.frameY).toEqual(24);
-        expect(charBTexture.frameWidth).toEqual(15);
-        expect(charBTexture.frameHeight).toEqual(20);
+        expect(charBTexture.frame.x).toEqual(2);
+        expect(charBTexture.frame.y).toEqual(24);
+        expect(charBTexture.frame.width).toEqual(15);
+        expect(charBTexture.frame.height).toEqual(20);
         const charC = font.chars['C'];
         const charCTexture = charC.texture as Texture;
 
@@ -302,10 +302,10 @@ describe('BitmapFontLoader', () =>
 
         src = src.substring(src.length - 17);
         expect(src).toEqual('split_font_cd.png');
-        expect(charCTexture.frameX).toEqual(2);
-        expect(charCTexture.frameY).toEqual(2);
-        expect(charCTexture.frameWidth).toEqual(18);
-        expect(charCTexture.frameHeight).toEqual(20);
+        expect(charCTexture.frame.x).toEqual(2);
+        expect(charCTexture.frame.y).toEqual(2);
+        expect(charCTexture.frame.width).toEqual(18);
+        expect(charCTexture.frame.height).toEqual(20);
         const charD = font.chars['D'];
         const charDTexture = charD.texture as Texture;
 
@@ -314,10 +314,10 @@ describe('BitmapFontLoader', () =>
 
         src = src.substring(src.length - 17);
         expect(src).toEqual('split_font_cd.png');
-        expect(charDTexture.frameX).toEqual(2);
-        expect(charDTexture.frameY).toEqual(24);
-        expect(charDTexture.frameWidth).toEqual(17);
-        expect(charDTexture.frameHeight).toEqual(20);
+        expect(charDTexture.frame.x).toEqual(2);
+        expect(charDTexture.frame.y).toEqual(24);
+        expect(charDTexture.frame.width).toEqual(17);
+        expect(charDTexture.frame.height).toEqual(20);
         const charE = font.chars['E'];
 
         expect(charE).toBeUndefined();
@@ -371,10 +371,10 @@ describe('BitmapFontLoader', () =>
 
         expect(charA).toBeDefined();
         expect(charATexture.source.label).toEqual(`${basePath}fonts/font.png`);
-        expect(charATexture.frameX).toEqual(2);
-        expect(charATexture.frameY).toEqual(2);
-        expect(charATexture.frameWidth).toEqual(19);
-        expect(charATexture.frameHeight).toEqual(20);
+        expect(charATexture.frame.x).toEqual(2);
+        expect(charATexture.frame.y).toEqual(2);
+        expect(charATexture.frame.width).toEqual(19);
+        expect(charATexture.frame.height).toEqual(20);
     });
 
     it('should unload a bitmap font', async () =>
