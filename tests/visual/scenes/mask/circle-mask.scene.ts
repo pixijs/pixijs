@@ -5,7 +5,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render circle mask correctly',
-    only: true,
     create: async (scene: Container) =>
     {
         const rect = new Graphics()
