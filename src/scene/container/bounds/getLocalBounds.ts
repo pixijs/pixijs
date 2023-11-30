@@ -60,16 +60,24 @@ function _getLocalBounds(target: Container, bounds: Bounds, parentTransform: Mat
         bounds = new Bounds();
     }
 
-    if (target.view)
+    if (target.boundsArea)
     {
         bounds.setMatrix(relativeTransform);
-
-        target.view.addBounds(bounds);
+        bounds.addRect(target.boundsArea);
     }
-
-    for (let i = 0; i < target.children.length; i++)
+    else
     {
-        _getLocalBounds(target.children[i], bounds, relativeTransform, rootContainer);
+        if (target.view)
+        {
+            bounds.setMatrix(relativeTransform);
+
+            target.view.addBounds(bounds);
+        }
+
+        for (let i = 0; i < target.children.length; i++)
+        {
+            _getLocalBounds(target.children[i], bounds, relativeTransform, rootContainer);
+        }
     }
 
     if (preserveBounds)

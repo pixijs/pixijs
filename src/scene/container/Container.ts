@@ -16,6 +16,7 @@ import { LayerGroup } from './LayerGroup';
 import { definedProps } from './utils/definedProps';
 
 import type { PointData } from '../../maths/point/PointData';
+import type { Rectangle } from '../../maths/shapes/Rectangle';
 import type { Renderable } from '../../rendering/renderers/shared/Renderable';
 import type { BLEND_MODES } from '../../rendering/renderers/shared/state/const';
 import type { View } from '../../rendering/renderers/shared/view/View';
@@ -104,6 +105,8 @@ export interface ContainerOptions<T extends View> extends PixiMixins.ContainerOp
     x?: number;
     /** @see scene.Container#y */
     y?: number;
+    /** @see scene.Container#boundArea */
+    boundsArea?: Rectangle;
 }
 
 export interface Container
@@ -489,6 +492,15 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
     /** A view that is used to render this container. */
     public readonly view: T;
+
+    /**
+     * An optional bounds area for this container. Setting this rectangle will stop the renderer
+     * from recursively measuring the bounds of each children and instead use this single boundArea.
+     * This is great for optimisation! If for example you have a 1000 spinning particles and you know they all sit
+     * within a specific bounds, then setting it will mean the renderer will not need to measure the
+     * 1000 children to find the bounds. Instead it will just use the bounds you set.
+     */
+    public boundsArea: Rectangle;
 
     constructor(options: Partial<ContainerOptions<T>> = {})
     {

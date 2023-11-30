@@ -1,3 +1,4 @@
+import { Rectangle } from '../../src/maths/shapes/Rectangle';
 import { addMaskBounds } from '../../src/rendering/mask/utils/addMaskBounds';
 import { Bounds } from '../../src/scene/container/bounds/Bounds';
 import { getGlobalBounds } from '../../src/scene/container/bounds/getGlobalBounds';
@@ -251,5 +252,19 @@ describe('getGlobalBounds', () =>
         const bounds = getGlobalBounds(container, true, new Bounds());
 
         expect(bounds).toMatchObject({ minX: 250, minY: 0, maxX: 450, maxY: 200 });
+    });
+
+    it('should get global bounds correctly if a container has boundsArea specified', async () =>
+    {
+        const container = new Container({ label: 'container' });
+
+        const child = new Container({ label: 'child', boundsArea: new Rectangle(0, 0, 500, 500) });
+
+        container.addChild(child);
+
+        child.scale.set(0.5);
+        const bounds = getGlobalBounds(container, false, new Bounds());
+
+        expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 500 / 2, maxY: 500 / 2 });
     });
 });
