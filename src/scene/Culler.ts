@@ -7,18 +7,11 @@ const tempBounds = new Bounds();
 
 type RectangleLike = {x: number, y: number, width: number, height: number};
 
-export class Cull
+export class Culler
 {
-    public readonly container: Container;
-
-    constructor(container: Container)
+    public cull(container: Container, view: RectangleLike)
     {
-        this.container = container;
-    }
-
-    public cull(view: RectangleLike)
-    {
-        this._cullRecursive(this.container, view);
+        this._cullRecursive(container, view);
     }
 
     private _cullRecursive(container: Container, view: RectangleLike)
@@ -34,9 +27,9 @@ export class Cull
                 || bounds.y + bounds.height < view.y);
         }
 
-        for (let i = 0; i < this.container.children.length; i++)
+        for (let i = 0; i < container.children.length; i++)
         {
-            this._cullRecursive(this.container.children[i], view);
+            this._cullRecursive(container.children[i], view);
         }
     }
 }
