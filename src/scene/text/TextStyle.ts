@@ -343,7 +343,7 @@ export class TextStyle extends EventEmitter<{
     get padding(): number { return this._padding; }
     set padding(value: number) { this._padding = value; this.update(); }
 
-    /** Trim transparent borders. */
+    /** Trim transparent borders. This is an expensive operation so only use this if you have to! */
     get trim(): boolean { return this._trim; }
     set trim(value: boolean) { this._trim = value; this.update(); }
     /**
