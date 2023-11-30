@@ -378,13 +378,9 @@ export class Texture extends EventEmitter<{
         return this._source;
     }
 
-    /**
-     * an Empty Texture used internally by the engine
-     */
+    /** an Empty Texture used internally by the engine */
     public static EMPTY: Texture;
-    /**
-     * a White texture used internally by the engine
-     */
+    /** a White texture used internally by the engine */
     public static WHITE: Texture;
 }
 
