@@ -380,8 +380,6 @@ export class Texture extends EventEmitter<{
 
     /**
      * an Empty Texture used internally by the engine
-     * @ignore
-     * @internal
      */
     public static EMPTY: Texture;
     /**
