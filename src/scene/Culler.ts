@@ -45,7 +45,7 @@ export class Culler
     {
         if (container.view)
         {
-            const bounds = getGlobalBounds(container, true, tempBounds);
+            const bounds = container.cullArea ?? getGlobalBounds(container, true, tempBounds);
 
             // check view intersection..
             container.visible = !(bounds.x > view.x + view.width

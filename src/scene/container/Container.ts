@@ -17,6 +17,7 @@ import { LayerGroup } from './LayerGroup';
 import { definedProps } from './utils/definedProps';
 
 import type { PointData } from '../../maths/point/PointData';
+import type { Rectangle } from '../../maths/shapes/Rectangle';
 import type { Renderable } from '../../rendering/renderers/shared/Renderable';
 import type { BLEND_MODES } from '../../rendering/renderers/shared/state/const';
 import type { View } from '../../rendering/renderers/shared/view/View';
@@ -491,6 +492,17 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     /** A view that is used to render this container. */
     public readonly view: T;
 
+    /**
+     * If set, this shape is used for culling instead of the bounds of this object.
+     * It can improve the culling performance of objects with many children.
+     * The culling area is defined in local space.
+     */
+    public cullArea: Rectangle;
+    /** The culler used to cull this container. */
+    public culler = Culler.shared;
+    /** whether or not to cull this container. */
+    private _cullable = false;
+
     constructor(options: Partial<ContainerOptions<T>> = {})
     {
         super();
@@ -512,16 +524,18 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         options.effects?.forEach((effect) => this.addEffect(effect));
     }
 
-    public culler = Culler.shared;
-    public _cull = false;
-
-    get cull(): boolean
+    /**
+     * Should this object be rendered if the bounds of this object are out of frame?
+     *
+     * Culling has no effect on whether updateTransform is called.
+     */
+    get cullable(): boolean
     {
-        return this._cull;
+        return this._cullable;
     }
-    set cull(value: boolean)
+    set cullable(value: boolean)
     {
-        this._cull = value;
+        this._cullable = value;
         this.culler.add(this);
     }
 
