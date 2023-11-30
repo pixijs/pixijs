@@ -384,8 +384,6 @@ export class Texture extends EventEmitter<{
     public static EMPTY: Texture;
     /**
      * a White texture used internally by the engine
-     * @ignore
-     * @internal
      */
     public static WHITE: Texture;
 }
