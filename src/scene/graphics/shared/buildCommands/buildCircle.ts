@@ -150,69 +150,51 @@ export const buildCircle: ShapeBuildCommand<RoundedShape> = {
         return points;
     },
 
-    triangulate(
-        points: number[],
-
-        vertices: number[],
-        verticesStride: number,
-        verticesOffset: number,
-
-        indices: number[],
-        indicesOffset: number)
+    triangulate(points, vertices, verticesStride, verticesOffset, indices, indicesOffset)
     {
         if (points.length === 0)
         {
             return;
         }
 
-        let x = 0;
-        let y = 0;
+        // Compute center (average of all points)
+        let centerX = 0; let
+            centerY = 0;
 
-        const div = points.length / 4;
+        for (let i = 0; i < points.length; i += 2)
+        {
+            centerX += points[i];
+            centerY += points[i + 1];
+        }
+        centerX /= (points.length / 2);
+        centerY /= (points.length / 2);
 
-        x += points[0];
-        y += points[1];
-
-        x += points[div | 0];
-        y += points[(div | 0) + 1];
-
-        x += points[(div * 2) | 0];
-        y += points[((div * 2) | 0) + 1];
-
-        x += points[(div * 3) | 0];
-        y += points[((div * 3) | 0) + 1];
-
-        x /= 4;
-        y /= 4;
-
+        // Set center vertex
         let count = verticesOffset;
 
-        vertices[count * verticesStride] = x;
-        vertices[(count * verticesStride) + 1] = y;
+        vertices[count * verticesStride] = centerX;
+        vertices[(count * verticesStride) + 1] = centerY;
+        const centerIndex = count++;
 
-        count++;
-        const center = verticesOffset;
-
-        vertices[count * verticesStride] = points[0];
-        vertices[(count * verticesStride) + 1] = points[1];
-
-        count++;
-
-        for (let i = 2; i < points.length; i += 2)
+        // Set edge vertices and indices
+        for (let i = 0; i < points.length; i += 2)
         {
             vertices[count * verticesStride] = points[i];
             vertices[(count * verticesStride) + 1] = points[i + 1];
 
-            // add some uvs
-            indices[indicesOffset++] = count;
-            indices[indicesOffset++] = center;
-            indices[indicesOffset++] = count - 1;
-
+            if (i > 0)
+            { // Skip first point for indices
+                indices[indicesOffset++] = count;
+                indices[indicesOffset++] = centerIndex;
+                indices[indicesOffset++] = count - 1;
+            }
             count++;
         }
 
-        indices[indicesOffset++] = center + 1;
-        indices[indicesOffset++] = center;
+        // Connect last point to the first edge point
+        indices[indicesOffset++] = centerIndex + 1;
+        indices[indicesOffset++] = centerIndex;
         indices[indicesOffset++] = count - 1;
-    },
+    }
+
 };
