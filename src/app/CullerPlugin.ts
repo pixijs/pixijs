@@ -15,7 +15,7 @@ export class CullerPlugin
 
     public static culler: Culler;
     public static renderer: Renderer;
-    public static scene: Container;
+    public static stage: Container;
     public static render: () => void;
     private static _renderRef: () => void;
 
@@ -28,7 +28,7 @@ export class CullerPlugin
         this.render = (): void =>
         {
             this.culler.cull(this.renderer.screen);
-            this.renderer.render(this.scene);
+            this.renderer.render({ container: this.stage });
         };
     }
 
