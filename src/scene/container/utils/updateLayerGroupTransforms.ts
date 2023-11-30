@@ -69,7 +69,8 @@ export function updateLayerTransform(layerGroup: LayerGroup)
         worldAlpha = root.localAlpha;
     }
 
-    worldAlpha = (worldAlpha < 0 && 0) || (worldAlpha > 1 && 1) || worldAlpha;
+    // eslint-disable-next-line no-nested-ternary
+    worldAlpha = worldAlpha < 0 ? 0 : (worldAlpha > 1 ? 1 : worldAlpha);
 
     layerGroup.worldAlpha = worldAlpha;
     layerGroup.worldColorAlpha = layerGroup.worldColor
@@ -150,7 +151,9 @@ function updateColorBlendVisibility(
 
         const layerAlpha = container.localAlpha * parent.layerAlpha;
 
-        container.layerAlpha = (layerAlpha < 0 && 0) || (layerAlpha > 1 && 1) || layerAlpha;
+        // eslint-disable-next-line no-nested-ternary
+        container.layerAlpha = layerAlpha < 0 ? 0 : (layerAlpha > 1 ? 1 : layerAlpha);
+
         container.layerColorAlpha = container.layerColor + (((layerAlpha * 255) | 0) << 24);
     }
 
