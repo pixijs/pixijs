@@ -1103,6 +1103,8 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         this._scale = null;
         this._pivot = null;
         this._skew = null;
+        this.culler?.remove(this);
+        this.culler = null;
 
         if (this.isLayerRoot)
         {
