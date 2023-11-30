@@ -3,7 +3,7 @@ import { updateLayerGroupTransforms } from '../../src/scene/container/utils/upda
 
 describe('Transform Alpha', () =>
 {
-    it('should cap localAlpha to between zero and one', async () =>
+    it('should cap layerAlpha to between zero and one', async () =>
     {
         const root = new Container({ layer: true });
 
