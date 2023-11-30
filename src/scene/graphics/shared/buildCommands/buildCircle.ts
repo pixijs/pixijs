@@ -211,8 +211,8 @@ export const buildCircle: ShapeBuildCommand<RoundedShape> = {
             count++;
         }
 
-        indices[indicesOffset++] = count - 1;
-        indices[indicesOffset++] = center;
         indices[indicesOffset++] = center + 1;
+        indices[indicesOffset++] = center;
+        indices[indicesOffset++] = count - 1;
     },
 };
