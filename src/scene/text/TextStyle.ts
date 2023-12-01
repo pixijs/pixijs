@@ -200,7 +200,7 @@ export class TextStyle extends EventEmitter<{
          * See {@link TextStyle.whiteSpace}
          * @type {'normal'|'pre'|'pre-line'}
          */
-        whiteSpace: 'pre',
+        whiteSpace: 'normal',
         /** See {@link TextStyle.wordWrap} */
         wordWrap: false,
         /** See {@link TextStyle.wordWrapWidth} */
