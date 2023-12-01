@@ -88,8 +88,6 @@ export function convertFillInputToFillStyle(
         );
 
         style.matrix = m;
-
-        style.color = 0xffffff;
     }
 
     const color = Color.shared.setValue(style.color);
