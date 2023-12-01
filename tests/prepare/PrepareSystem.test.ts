@@ -4,6 +4,7 @@ import { Texture } from '../../src/rendering/renderers/shared/texture/Texture';
 import { Container } from '../../src/scene/container/Container';
 import { Graphics } from '../../src/scene/graphics/shared/Graphics';
 import { Sprite } from '../../src/scene/sprite/Sprite';
+import { Text } from '../../src/scene/text/Text';
 import { getRenderer } from '../utils/getRenderer';
 
 describe.skip('PrepareSystem', () =>
@@ -25,16 +26,6 @@ describe.skip('PrepareSystem', () =>
 
             prepare.add(textureSource);
             expect(prepare.getQueue()).toEqual([textureSource]);
-        });
-
-        it('should add nat add container to the queue', async () =>
-        {
-            const { prepare } = await setup();
-            const container = new Container();
-
-            prepare.add(container);
-
-            expect(prepare.getQueue()).toEqual([]);
         });
 
         it('should add a container to the queue', async () =>
@@ -96,11 +87,102 @@ describe.skip('PrepareSystem', () =>
             expect(prepare.getQueue()).toHaveLength(1);
         });
 
-        // todo: test upload behavior:
-        // - upload a texture source
-        // - upload a text view
-        // - check that maximum number of uploads is respected per frame
-        // - resolves when all uploads done
-        // - resolves when all uploads done, even if more added
+        it('should upload a texture source', async () =>
+        {
+            const { prepare } = await setup();
+            const textureSource = new TextureSource();
+
+            const spy = jest.spyOn(prepare as any, 'uploadTextureSource');
+
+            await prepare.upload(textureSource);
+
+            expect(prepare.getQueue()).toHaveLength(0);
+            expect(spy).toHaveBeenCalledWith(textureSource);
+        });
+
+        it('should upload a text view', async () =>
+        {
+            const { prepare } = await setup();
+            const text = new Text({
+                text: 'foo'
+            });
+
+            const spy = jest.spyOn(prepare as any, 'uploadText');
+
+            await prepare.upload(text);
+
+            expect(prepare.getQueue()).toHaveLength(0);
+            expect(spy).toHaveBeenCalledWith(text.view);
+        });
+
+        it('should respected maximum number of uploads per frame', async () =>
+        {
+            const { prepare } = await setup();
+
+            const uploadSpy = jest.spyOn(prepare as any, 'uploadTextureSource');
+            const tickSpy = jest.spyOn(prepare as any, '_tick');
+
+            const batches = 3;
+            const maxCalls = PrepareSystem.uploadsPerFrame * batches;
+
+            for (let i = 0; i < maxCalls; i++)
+            {
+                const textureSource = new TextureSource();
+
+                prepare.add(textureSource);
+            }
+
+            await prepare.upload();
+
+            expect(uploadSpy).toHaveBeenCalledTimes(maxCalls); // 12 expected uploads
+            expect(tickSpy).toHaveBeenCalledTimes(batches); // 3 expected ticks broken into 4 uploads per tick
+        });
+
+        it('should resolve when all uploads done', async () =>
+        {
+            const { prepare } = await setup();
+
+            const uploadSpy = jest.spyOn(prepare as any, 'uploadTextureSource');
+
+            const batches = 3;
+            const maxCalls = PrepareSystem.uploadsPerFrame * batches;
+
+            for (let i = 0; i < maxCalls; i++)
+            {
+                const textureSource = new TextureSource();
+
+                prepare.add(textureSource);
+            }
+
+            expect(prepare.getQueue()).toHaveLength(maxCalls);
+            expect(uploadSpy).toHaveBeenCalledTimes(0);
+
+            await prepare.upload();
+
+            expect(uploadSpy).toHaveBeenCalledTimes(maxCalls);
+            expect(prepare.getQueue()).toHaveLength(0);
+        });
+
+        it('should resolve when all uploads done even if more added', async () =>
+        {
+            const { prepare } = await setup();
+
+            const uploadCount = 10;
+            const promises = [];
+
+            for (let i = 0; i < uploadCount; i++)
+            {
+                const textureSource = new TextureSource();
+
+                promises.push(prepare.upload(textureSource));
+            }
+
+            expect(prepare.getQueue()).toHaveLength(uploadCount);
+
+            void Promise.all(promises).then(() =>
+            {
+                expect(prepare.getQueue()).toHaveLength(0);
+            });
+        });
     });
 });

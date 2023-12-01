@@ -96,6 +96,7 @@ export function convertFillInputToFillStyle(
 
     style.alpha *= color.alpha;
     style.color = color.toNumber();
+    style.matrix = style.matrix?.clone(); // todo: lets optimise this!
 
     // its a regular fill style!
     return style as ConvertedFillStyle;

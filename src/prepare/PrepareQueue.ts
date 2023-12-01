@@ -7,7 +7,7 @@ import { Mesh } from '../scene/mesh/shared/Mesh';
 import { Sprite } from '../scene/sprite/Sprite';
 import { AnimatedSprite } from '../scene/sprite-animated/AnimatedSprite';
 import { TilingSprite } from '../scene/sprite-tiling/TilingSprite';
-import { TextView } from '../scene/text/TextView';
+import { Text } from '../scene/text/Text';
 import { PrepareBase } from './PrepareBase';
 
 import type { FillInstruction, TextureInstruction } from '../scene/graphics/shared/GraphicsContext';
@@ -58,9 +58,9 @@ export abstract class PrepareQueue extends PrepareBase
         {
             queue.push(container.texture.source);
         }
-        else if (container instanceof TextView)
+        else if (container instanceof Text)
         {
-            queue.push(container);
+            queue.push(container.view);
         }
         else if (container instanceof Graphics)
         {

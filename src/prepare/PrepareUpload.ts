@@ -42,7 +42,7 @@ export abstract class PrepareUpload extends PrepareQueue
     {
         const pipeId = _text.renderPipeId as 'text' | 'bitmapText' | 'htmlText';
 
-        this.renderer.renderPipes[pipeId].updateRenderable(_text.owner as Text);
+        this.renderer.renderPipes[pipeId].initGpuText(_text.owner as Text);
     }
 
     /**
