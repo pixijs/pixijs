@@ -168,10 +168,10 @@ export class HTMLTextPipe implements RenderPipe<TextView>
 
     private _getGpuText(renderable: Renderable<TextView>)
     {
-        return this._gpuText[renderable.uid] || this._initGpuText(renderable);
+        return this._gpuText[renderable.uid] || this.initGpuText(renderable);
     }
 
-    private _initGpuText(renderable: Renderable<TextView>)
+    public initGpuText(renderable: Renderable<TextView>)
     {
         const gpuTextData: HTMLTextPipe['_gpuText'][number] = {
             texture: Texture.EMPTY,
