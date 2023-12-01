@@ -7,7 +7,7 @@ import { Sprite } from '../../src/scene/sprite/Sprite';
 import { Text } from '../../src/scene/text/Text';
 import { getRenderer } from '../utils/getRenderer';
 
-describe.skip('PrepareSystem', () =>
+describe('PrepareSystem', () =>
 {
     const setup = async () =>
     {
