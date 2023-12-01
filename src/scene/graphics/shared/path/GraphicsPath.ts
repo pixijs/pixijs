@@ -457,8 +457,10 @@ export class GraphicsPath
 
                     break;
 
+                case 'circle':
+                    data[4] = adjustTransform(data[3], matrix);
+                    break;
                 case 'rect':
-
                     data[4] = adjustTransform(data[4], matrix);
                     break;
                 case 'ellipse':
@@ -467,9 +469,11 @@ export class GraphicsPath
                 case 'roundRect':
                     data[5] = adjustTransform(data[5], matrix);
                     break;
-
                 case 'addPath':
                     data[0].transform(matrix);
+                    break;
+                case 'poly':
+                    data[2] = adjustTransform(data[2], matrix);
                     break;
                 default:
                     // #if _DEBUG
@@ -518,10 +522,6 @@ export class GraphicsPath
             lastInstruction = this.instructions[index];
         }
 
-        let x: number;
-        let y: number;
-        let transform: Matrix;
-
         switch (lastInstruction.action)
         {
             case 'moveTo':
@@ -546,41 +546,13 @@ export class GraphicsPath
                 // TODO prolly should transform the last point of the path
                 lastInstruction.data[0].getLastPoint(out);
                 break;
-            case 'rect':
-                // TODO transform...
-
-                transform = lastInstruction.data[4];
-                x = lastInstruction.data[0];
-                y = lastInstruction.data[1];
-
-                if (transform)
-                {
-                    const { a, b, c, d, tx, ty } = transform;
-
-                    out.x = (a * x) + (c * y) + tx;
-                    out.y = (b * x) + (d * y) + ty;
-                }
-                else
-                {
-                    out.x = x;
-                    out.y = y;
-                }
-
-                break;
-            case 'poly':
-                break;
-            default:
-                // #if _DEBUG
-                warn(`${lastInstruction.action} is not supported yet`);
-                // #endif
-                break;
         }
 
         return out;
     }
 }
 
-function adjustTransform(currentMatrix: Matrix, transform?: Matrix): Matrix
+function adjustTransform(currentMatrix?: Matrix, transform?: Matrix): Matrix
 {
     if (currentMatrix)
     {
