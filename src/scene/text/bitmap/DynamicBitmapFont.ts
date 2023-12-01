@@ -106,8 +106,6 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         let maxCharHeight = 0;
         let skipTexture = false;
 
-        //  style.lineHeight = 0;
-
         for (let i = 0; i < charList.length; i++)
         {
             const char = charList[i];
