@@ -73,16 +73,24 @@ export function _getGlobalBounds(
         bounds = bounds.clone();
     }
 
-    if (target.view)
+    if (target.boundsArea)
     {
         bounds.setMatrix(worldTransform);
-
-        target.view.addBounds(bounds);
+        bounds.addRect(target.boundsArea);
     }
-
-    for (let i = 0; i < target.children.length; i++)
+    else
     {
-        _getGlobalBounds(target.children[i], bounds, worldTransform, skipUpdateTransform);
+        if (target.view)
+        {
+            bounds.setMatrix(worldTransform);
+
+            target.view.addBounds(bounds);
+        }
+
+        for (let i = 0; i < target.children.length; i++)
+        {
+            _getGlobalBounds(target.children[i], bounds, worldTransform, skipUpdateTransform);
+        }
     }
 
     if (preserveBounds)
