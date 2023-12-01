@@ -76,7 +76,7 @@ export interface Application extends PixiMixins.Application {}
  * await app.init();
  *
  * // Add the view to the DOM
- * document.body.appendChild(app.view);
+ * document.body.appendChild(app.canvas);
  *
  * // ex, add display objects
  * app.stage.addChild(Sprite.from('something.png'));

@@ -5,6 +5,7 @@ import type { TextStyle } from '../TextStyle';
 const valuesToIterateForKeys = [
     '_fontFamily',
     '_fontStyle',
+    '_fontSize',
     '_fontVariant',
     '_fontWeight',
     '_breakWords',
@@ -18,6 +19,7 @@ const valuesToIterateForKeys = [
     '_wordWrapWidth',
     '_padding',
     '_cssOverrides',
+    '_trim'
 ];
 
 /**

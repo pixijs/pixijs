@@ -200,7 +200,7 @@ export class TextStyle extends EventEmitter<{
          * See {@link TextStyle.whiteSpace}
          * @type {'normal'|'pre'|'pre-line'}
          */
-        whiteSpace: 'pre',
+        whiteSpace: 'normal',
         /** See {@link TextStyle.wordWrap} */
         wordWrap: false,
         /** See {@link TextStyle.wordWrapWidth} */
@@ -238,6 +238,7 @@ export class TextStyle extends EventEmitter<{
     private _padding: number;
 
     protected _styleKey: string;
+    private _trim: boolean;
 
     constructor(style: Partial<TextStyleOptions> = {})
     {
@@ -341,6 +342,10 @@ export class TextStyle extends EventEmitter<{
      */
     get padding(): number { return this._padding; }
     set padding(value: number) { this._padding = value; this.update(); }
+
+    /** Trim transparent borders. This is an expensive operation so only use this if you have to! */
+    get trim(): boolean { return this._trim; }
+    set trim(value: boolean) { this._trim = value; this.update(); }
     /**
      * The baseline of the text that is rendered.
      * @member {'alphabetic'|'top'|'hanging'|'middle'|'ideographic'|'bottom'}

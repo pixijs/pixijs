@@ -30,7 +30,7 @@ describe('textStyleToCSS', () =>
                 font-variant: normal;
                 letter-spacing: 0px;
                 text-align: left;padding: 0px;
-                white-space: pre
+                white-space: normal
             }`;
 
         expect(formatCSSString(css)).toBe(formatCSSString(expected));
@@ -61,7 +61,7 @@ describe('textStyleToCSS', () =>
                 letter-spacing: 0px;
                 text-align: left;
                 padding: 0px;
-                white-space: pre
+                white-space: normal
             } 
             comic { 
                 font-family: Comic Sans;
