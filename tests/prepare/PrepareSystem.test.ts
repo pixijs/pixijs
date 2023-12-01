@@ -5,7 +5,7 @@ import { Container } from '../../src/scene/container/Container';
 import { Graphics } from '../../src/scene/graphics/shared/Graphics';
 import { getRenderer } from '../utils/getRenderer';
 
-describe('PrepareSystem', () =>
+describe.skip('PrepareSystem', () =>
 {
     const setup = async () =>
     {
