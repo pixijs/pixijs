@@ -106,11 +106,17 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         let maxCharHeight = 0;
         let skipTexture = false;
 
+        //  style.lineHeight = 0;
+
         for (let i = 0; i < charList.length; i++)
         {
             const char = charList[i];
 
             const metrics = CanvasTextMetrics.measureText(char, style, canvas, false);
+
+            // override the line height.. we want this to be the glyps heigh
+            // not the user specified one.
+            metrics.lineHeight = metrics.height;
 
             const width = (widthScale * metrics.width) * fontScale;
             const height = (metrics.height) * fontScale;
