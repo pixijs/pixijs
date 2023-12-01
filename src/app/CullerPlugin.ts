@@ -6,12 +6,17 @@ import type { Renderer } from '../rendering/renderers/types';
 import type { Container } from '../scene/container/Container';
 
 /**
+ * An Application plugin that will automatically cull your stage using the renderers screen size.
  * @memberof app
  */
 export class CullerPlugin
 {
     /** @ignore */
-    public static extension: ExtensionMetadata = ExtensionType.Application;
+    public static extension: ExtensionMetadata = {
+        priority: 10,
+        type: ExtensionType.Application,
+        name: 'culler',
+    };
 
     public static culler: Culler;
     public static renderer: Renderer;
@@ -27,14 +32,13 @@ export class CullerPlugin
 
         this.render = (): void =>
         {
-            this.culler.cull(this.renderer.screen);
+            this.culler.cull(this.stage, this.renderer.screen);
             this.renderer.render({ container: this.stage });
         };
     }
 
     public static destroy(): void
     {
-        this.culler.removeAll();
         this.culler = null;
         this.render = this._renderRef;
     }

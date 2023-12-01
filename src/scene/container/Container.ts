@@ -5,7 +5,6 @@ import { DEG_TO_RAD, RAD_TO_DEG } from '../../maths/misc/const';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { uid } from '../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
-import { Culler } from '../Culler';
 import { childrenHelperMixin } from './container-mixins/childrenHelperMixin';
 import { effectsMixin } from './container-mixins/effectsMixin';
 import { findMixin } from './container-mixins/findMixin';
@@ -502,10 +501,12 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      * The culling area is defined in local space.
      */
     public cullArea: Rectangle;
-    /** The culler used to cull this container. */
-    public culler = Culler.shared;
-    /** whether or not to cull this container. */
-    private _cullable = false;
+    /**
+     * Should this object be rendered if the bounds of this object are out of frame?
+     *
+     * Culling has no effect on whether updateTransform is called.
+     */
+    public cullable = false;
 
     constructor(options: Partial<ContainerOptions<T>> = {})
     {
@@ -526,21 +527,6 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         options.children?.forEach((child) => this.addChild(child));
         this.effects = [];
         options.effects?.forEach((effect) => this.addEffect(effect));
-    }
-
-    /**
-     * Should this object be rendered if the bounds of this object are out of frame?
-     *
-     * Culling has no effect on whether updateTransform is called.
-     */
-    get cullable(): boolean
-    {
-        return this._cullable;
-    }
-    set cullable(value: boolean)
-    {
-        this._cullable = value;
-        this.culler.add(this);
     }
 
     /**
@@ -1107,8 +1093,6 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         this._scale = null;
         this._pivot = null;
         this._skew = null;
-        this.culler?.remove(this);
-        this.culler = null;
 
         if (this.isLayerRoot)
         {

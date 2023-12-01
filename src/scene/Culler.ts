@@ -7,64 +7,45 @@ const tempBounds = new Bounds();
 
 type RectangleLike = {x: number, y: number, width: number, height: number};
 
+/**
+ * The Culler class is responsible for managing and culling containers.
+ * Culling is the process of removing objects that are not currently visible to the user,
+ * which can improve performance in large scenes.
+ * @memberof scene
+ */
 export class Culler
 {
-    private readonly _list = new Set<Container>();
-
-    public add(container: Container)
+    /**
+     * Culls the children of a specific container based on the given view. This will also cull items that are not
+     * being explicitly managed by the culler.
+     * @param container - The container to cull.
+     * @param view - The view rectangle.
+     * @param skipUpdateTransform - Whether to skip updating the transform.
+     */
+    public cull(container: Container, view: RectangleLike, skipUpdateTransform = true)
     {
-        this._list.add(container);
+        this._cullRecursive(container, view, skipUpdateTransform);
     }
 
-    public remove(container: Container)
+    private _cullRecursive(container: Container, view: RectangleLike, skipUpdateTransform = true)
     {
-        this._list.delete(container);
-    }
-
-    public removeAll()
-    {
-        this._list.clear();
-    }
-
-    public cull(view: RectangleLike)
-    {
-        // TODO: right now if we set a parent to be culled, it will also check any children that
-        // have been added to the list. This doesn't need to happen as they won't be rendered anyway
-        for (const container of this._list)
+        if (container.cullable && container.view)
         {
-            this._cull(container, view);
-        }
-    }
-
-    public cullContainer(container: Container, view: RectangleLike)
-    {
-        this._cullRecursive(container, view);
-    }
-
-    private _cull(container: Container, view: RectangleLike)
-    {
-        if (container.view)
-        {
-            const bounds = container.cullArea ?? getGlobalBounds(container, true, tempBounds);
+            const bounds = container.cullArea ?? getGlobalBounds(container, skipUpdateTransform, tempBounds);
 
             // check view intersection..
-            container.visible = !(bounds.x > view.x + view.width
-                || bounds.y > view.y + view.height
-                || bounds.x + bounds.width < view.x
-                || bounds.y + bounds.height < view.y);
+            container.visible = !(bounds.x >= view.x + view.width
+                || bounds.y >= view.y + view.height
+                || bounds.x + bounds.width <= view.x
+                || bounds.y + bounds.height <= view.y);
         }
-    }
-
-    private _cullRecursive(container: Container, view: RectangleLike)
-    {
-        this._cull(container, view);
 
         for (let i = 0; i < container.children.length; i++)
         {
-            this._cullRecursive(container.children[i], view);
+            this._cullRecursive(container.children[i], view, skipUpdateTransform);
         }
     }
 
-    // default culler will be culled to the screen if culler plugin is used
+    /** A shared instance of the Culler class. */
     public static shared = new Culler();
 }
