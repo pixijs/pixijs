@@ -9,6 +9,8 @@ import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
 import { tilingBit, tilingBitGl } from './tilingBit';
 
+import type { GlProgram } from '../../../rendering/renderers/gl/shader/GlProgram';
+import type { GpuProgram } from '../../../rendering/renderers/gpu/shader/GpuProgram';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { TextureShader } from '../../mesh/shared/MeshView';
 
@@ -17,13 +19,16 @@ interface TilingSpriteOptions
     texture: Texture;
 }
 
+let gpuProgram: GpuProgram;
+let glProgram: GlProgram;
+
 export class TilingSpriteShader extends Shader implements TextureShader
 {
     private _texture: Texture;
 
     constructor(options: TilingSpriteOptions)
     {
-        const gpuProgram = compileHighShaderGpuProgram({
+        gpuProgram ??= compileHighShaderGpuProgram({
             name: 'tiling-sprite-shader',
             bits: [
                 localUniformBit,
@@ -32,7 +37,7 @@ export class TilingSpriteShader extends Shader implements TextureShader
             ],
         });
 
-        const glProgram = compileHighShaderGlProgram({
+        glProgram ??= compileHighShaderGlProgram({
             name: 'tiling-sprite-shader',
             bits: [
                 localUniformBitGl,
