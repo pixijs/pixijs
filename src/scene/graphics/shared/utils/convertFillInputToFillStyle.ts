@@ -78,16 +78,26 @@ export function convertFillInputToFillStyle(
 
     const style: FillStyle = { ...defaultStyle, ...(value as FillStyle) };
 
-    if (style.texture !== Texture.WHITE)
+    if (style.texture)
     {
-        const m = style.matrix || new Matrix();
+        if (style.texture !== Texture.WHITE)
+        {
+            const m = style.matrix || new Matrix();
 
-        m.scale(
-            1 / style.texture.frame.width,
-            1 / style.texture.frame.height
-        );
+            m.scale(
+                1 / style.texture.frame.width,
+                1 / style.texture.frame.height
+            );
 
-        style.matrix = m;
+            style.matrix = m;
+        }
+
+        const sourceStyle = style.texture.source.style;
+
+        if (sourceStyle.addressMode === 'clamp-to-edge')
+        {
+            sourceStyle.addressMode = 'repeat';
+        }
     }
 
     const color = Color.shared.setValue(style.color);

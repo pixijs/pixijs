@@ -182,6 +182,76 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this._onStyleChange();
     }
 
+    get addressMode(): WRAP_MODE
+    {
+        return this._style.addressMode;
+    }
+
+    set addressMode(value: WRAP_MODE)
+    {
+        this._style.addressMode = value;
+    }
+
+    get repeatMode(): WRAP_MODE
+    {
+        return this._style.addressMode;
+    }
+
+    set repeatMode(value: WRAP_MODE)
+    {
+        this._style.addressMode = value;
+    }
+
+    get magFilter(): SCALE_MODE
+    {
+        return this._style.magFilter;
+    }
+
+    set magFilter(value: SCALE_MODE)
+    {
+        this._style.magFilter = value;
+    }
+
+    get minFilter(): SCALE_MODE
+    {
+        return this._style.minFilter;
+    }
+
+    set minFilter(value: SCALE_MODE)
+    {
+        this._style.minFilter = value;
+    }
+
+    get mipmapFilter(): SCALE_MODE
+    {
+        return this._style.mipmapFilter;
+    }
+
+    set mipmapFilter(value: SCALE_MODE)
+    {
+        this._style.mipmapFilter = value;
+    }
+
+    get lodMinClamp(): number
+    {
+        return this._style.lodMinClamp;
+    }
+
+    set lodMinClamp(value: number)
+    {
+        this._style.lodMinClamp = value;
+    }
+
+    get lodMaxClamp(): number
+    {
+        return this._style.lodMaxClamp;
+    }
+
+    set lodMaxClamp(value: number)
+    {
+        this._style.lodMaxClamp = value;
+    }
+
     private _onStyleChange()
     {
         this.emit('styleChange', this);
