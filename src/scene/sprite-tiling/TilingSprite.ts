@@ -1,11 +1,11 @@
 import { Cache } from '../../assets/cache/Cache';
+import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { Container } from '../container/Container';
 import { definedProps } from '../container/utils/definedProps';
 import { TilingSpriteView } from './TilingSpriteView';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { PointLike } from '../../maths/point/PointLike';
-import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { ContainerOptions } from '../container/Container';
 import type { TilingSpriteViewOptions } from './TilingSpriteView';
 
@@ -80,8 +80,13 @@ export class TilingSprite extends Container<TilingSpriteView>
     /**
      * @param options - The options for creating the tiling sprite.
      */
-    constructor(options?: TilingSpriteOptions)
+    constructor(options?: Texture | TilingSpriteOptions)
     {
+        if (options instanceof Texture)
+        {
+            options = { texture: options };
+        }
+
         const { texture, width, height, applyAnchorToTexture, ...rest } = options ?? {};
 
         super({
