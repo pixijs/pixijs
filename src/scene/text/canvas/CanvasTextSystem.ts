@@ -3,6 +3,7 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import { nextPow2 } from '../../../maths/misc/pow2';
 import { CanvasPool } from '../../../rendering/renderers/shared/texture/CanvasPool';
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
+import { getCanvasBoundingBox } from '../../../utils/canvas/getCanvasBoundingBox';
 import { getPo2TextureFromSource } from '../html/utils/getPo2TextureFromSource';
 import { CanvasTextMetrics } from './CanvasTextMetrics';
 import { fontStringFromTextStyle } from './utils/fontStringFromTextStyle';
@@ -76,6 +77,15 @@ export class CanvasTextSystem implements System
         this.renderTextToCanvas(text, style, resolution, canvasAndContext);
 
         const texture = getPo2TextureFromSource(canvas, width, height, resolution);
+
+        if (style.trim)
+        {
+            const trimmed = getCanvasBoundingBox(canvas, resolution);
+
+            texture.frame.copyFrom(trimmed);
+
+            texture.updateUvs();
+        }
 
         this._activeTextures[textKey] = {
             canvasAndContext,
