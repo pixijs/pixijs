@@ -106,7 +106,7 @@ export const spritesheetAsset = {
             const {
                 texture: imageTexture, // if user need to use preloaded texture
                 imageFilename // if user need to use custom filename (not from jsonFile.meta.image)
-            } = options?.data || { texture: undefined, imageFilename: undefined };
+            } = options?.data ?? {};
 
             let basePath = utils.path.dirname(options.src);
 
@@ -123,18 +123,7 @@ export const spritesheetAsset = {
             }
             else
             {
-                let imagePath = '';
-
-                if (imageFilename)
-                {
-                    imagePath = basePath + imageFilename;
-                }
-                else
-                {
-                    imagePath = basePath + asset.meta.image;
-                }
-
-                imagePath = copySearchParams(imagePath, options.src);
+                const imagePath = copySearchParams(basePath + (imageFilename ?? asset.meta.image), options.src);
 
                 const assets = await loader.load<Texture>([imagePath]);
 
