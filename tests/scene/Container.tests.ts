@@ -22,6 +22,19 @@ describe('Container Tests', () =>
         expect(addedSpy).toHaveBeenCalledTimes(1);
     });
 
+    it('should assign to parent correctly is passed to constructor', () =>
+    {
+        const parent = new Container();
+
+        const addedSpy = jest.spyOn(parent, 'emit');
+
+        const container = new Container({ parent });
+
+        expect(parent.children).toEqual([container]);
+        expect(container.parent).toEqual(parent);
+        expect(addedSpy).toHaveBeenCalledTimes(1);
+    });
+
     it('should a global position correctly', async () =>
     {
         const container = new Container({

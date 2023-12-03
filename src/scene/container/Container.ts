@@ -13,7 +13,7 @@ import { onRenderMixin } from './container-mixins/onRenderMixin';
 import { sortMixin } from './container-mixins/sortMixin';
 import { toLocalGlobalMixin } from './container-mixins/toLocalGlobalMixin';
 import { LayerGroup } from './LayerGroup';
-import { definedProps } from './utils/definedProps';
+import { assignPropertiesFromOptions } from './utils/assignPropertiesFromOptions';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { Rectangle } from '../../maths/shapes/Rectangle';
@@ -515,12 +515,15 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
             options.view = undefined;
         }
 
-        Object.assign(this, definedProps(options));
+        assignPropertiesFromOptions(this, options, {
+            children: true,
+            parent: true,
+            effects: true,
+        });
 
-        this.children = [];
         options.children?.forEach((child) => this.addChild(child));
-        this.effects = [];
         options.effects?.forEach((effect) => this.addEffect(effect));
+        options.parent?.addChild(this);
     }
 
     /**
