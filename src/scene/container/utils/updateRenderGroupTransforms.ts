@@ -2,19 +2,19 @@ import { Container, UPDATE_BLEND, UPDATE_COLOR, UPDATE_VISIBLE } from '../Contai
 import { mixColors } from './mixColors';
 import { updateLocalTransform } from './updateLocalTransform';
 
-import type { LayerGroup } from '../LayerGroup';
+import type { RenderGroup } from '../RenderGroup';
 
 const tempContainer = new Container();
 
-export function updateLayerGroupTransforms(layerGroup: LayerGroup, updateChildRenderGroups = false)
+export function updateRenderGroupTransforms(renderGroup: RenderGroup, updateChildRenderGroups = false)
 {
-    updateLayerTransform(layerGroup);
+    updateRenderGroupTransform(renderGroup);
 
-    const childrenToUpdate = layerGroup.childrenToUpdate;
+    const childrenToUpdate = renderGroup.childrenToUpdate;
 
-    const updateTick = layerGroup.updateTick;
+    const updateTick = renderGroup.updateTick;
 
-    layerGroup.updateTick++;
+    renderGroup.updateTick++;
 
     for (const j in childrenToUpdate)
     {
@@ -33,47 +33,47 @@ export function updateLayerGroupTransforms(layerGroup: LayerGroup, updateChildRe
 
     if (updateChildRenderGroups)
     {
-        for (let i = 0; i < layerGroup.layerGroupChildren.length; i++)
+        for (let i = 0; i < renderGroup.renderGroupChildren.length; i++)
         {
-            updateLayerGroupTransforms(layerGroup.layerGroupChildren[i], updateChildRenderGroups);
+            updateRenderGroupTransforms(renderGroup.renderGroupChildren[i], updateChildRenderGroups);
         }
     }
 }
 
-export function updateLayerTransform(layerGroup: LayerGroup)
+export function updateRenderGroupTransform(renderGroup: RenderGroup)
 {
-    const root = layerGroup.root;
+    const root = renderGroup.root;
 
     let worldAlpha;
 
-    if (layerGroup.layerGroupParent)
+    if (renderGroup.renderGroupParent)
     {
-        const layerGroupParent = layerGroup.layerGroupParent;
+        const renderGroupParent = renderGroup.renderGroupParent;
 
-        layerGroup.worldTransform.appendFrom(
-            root.layerTransform,
-            layerGroupParent.worldTransform,
+        renderGroup.worldTransform.appendFrom(
+            root.rgTransform,
+            renderGroupParent.worldTransform,
         );
 
-        layerGroup.worldColor = mixColors(
-            root.layerColor,
-            layerGroupParent.worldColor,
+        renderGroup.worldColor = mixColors(
+            root.rgColor,
+            renderGroupParent.worldColor,
         );
 
-        worldAlpha = root.layerAlpha * layerGroupParent.worldAlpha;
+        worldAlpha = root.rgAlpha * renderGroupParent.worldAlpha;
     }
     else
     {
-        layerGroup.worldTransform.copyFrom(root.layerTransform);
-        layerGroup.worldColor = root.localColor;
+        renderGroup.worldTransform.copyFrom(root.rgTransform);
+        renderGroup.worldColor = root.localColor;
         worldAlpha = root.localAlpha;
     }
 
     // eslint-disable-next-line no-nested-ternary
     worldAlpha = worldAlpha < 0 ? 0 : (worldAlpha > 1 ? 1 : worldAlpha);
 
-    layerGroup.worldAlpha = worldAlpha;
-    layerGroup.worldColorAlpha = layerGroup.worldColor
+    renderGroup.worldAlpha = worldAlpha;
+    renderGroup.worldColorAlpha = renderGroup.worldColor
             + (((worldAlpha * 255) | 0) << 24);
 }
 
@@ -90,13 +90,13 @@ export function updateTransformAndChildren(container: Container, updateTick: num
 
     const parent = container.parent;
 
-    if (parent && !parent.isLayerRoot)
+    if (parent && !parent.isRenderGroupRoot)
     {
         updateFlags = updateFlags | container._updateFlags;
 
-        container.layerTransform.appendFrom(
+        container.rgTransform.appendFrom(
             localTransform,
-            parent.layerTransform,
+            parent.rgTransform,
         );
 
         if (updateFlags)
@@ -108,7 +108,7 @@ export function updateTransformAndChildren(container: Container, updateTick: num
     {
         updateFlags = container._updateFlags;
 
-        container.layerTransform.copyFrom(localTransform);
+        container.rgTransform.copyFrom(localTransform);
 
         if (updateFlags)
         {
@@ -117,7 +117,7 @@ export function updateTransformAndChildren(container: Container, updateTick: num
     }
 
     // don't update children if its a layer..
-    if (!container.isLayerRoot)
+    if (!container.isRenderGroupRoot)
     {
         const children = container.children;
         const length = children.length;
@@ -127,11 +127,11 @@ export function updateTransformAndChildren(container: Container, updateTick: num
             updateTransformAndChildren(children[i], updateTick, updateFlags);
         }
 
-        const layerGroup = container.layerGroup;
+        const renderGroup = container.renderGroup;
 
-        if (container.view && !layerGroup.structureDidChange)
+        if (container.view && !renderGroup.structureDidChange)
         {
-            layerGroup.updateRenderable(container);
+            renderGroup.updateRenderable(container);
         }
     }
 }
@@ -144,27 +144,27 @@ function updateColorBlendVisibility(
 {
     if (updateFlags & UPDATE_COLOR)
     {
-        container.layerColor = mixColors(
+        container.rgColor = mixColors(
             container.localColor,
-            parent.layerColor
+            parent.rgColor
         );
 
-        const layerAlpha = container.localAlpha * parent.layerAlpha;
+        const rgAlpha = container.localAlpha * parent.rgAlpha;
 
         // eslint-disable-next-line no-nested-ternary
-        container.layerAlpha = layerAlpha < 0 ? 0 : (layerAlpha > 1 ? 1 : layerAlpha);
+        container.rgAlpha = rgAlpha < 0 ? 0 : (rgAlpha > 1 ? 1 : rgAlpha);
 
-        container.layerColorAlpha = container.layerColor + (((layerAlpha * 255) | 0) << 24);
+        container.rgColorAlpha = container.rgColor + (((rgAlpha * 255) | 0) << 24);
     }
 
     if (updateFlags & UPDATE_BLEND)
     {
-        container.layerBlendMode = container.localBlendMode === 'inherit' ? parent.layerBlendMode : container.localBlendMode;
+        container.rgBlendMode = container.localBlendMode === 'inherit' ? parent.rgBlendMode : container.localBlendMode;
     }
 
     if (updateFlags & UPDATE_VISIBLE)
     {
-        container.layerVisibleRenderable = container.localVisibleRenderable & parent.layerVisibleRenderable;
+        container.rgVisibleRenderable = container.localVisibleRenderable & parent.rgVisibleRenderable;
     }
 
     container._updateFlags = 0;

@@ -7,25 +7,25 @@ import type { Renderable } from './Renderable';
 import type { View } from './view/View';
 
 /**
- * LayerRenderable is used to render the view of the root container of a layer group
+ * RGRenderable is used to render the view of the root container of a render group
  * We don't want to inherit the transform / color of the root container as that information is
  * uploaded to the GPU and applied globally.
  *
  * This proxy allows us to override the values. This saves us a lot of extra if statements in the core loop
  * for what is normally a very rare use case!
  */
-export class LayerRenderable<T extends View = View> extends EventEmitter implements Renderable<T>
+export class RGRenderable<T extends View = View> extends EventEmitter implements Renderable<T>
 {
     public uid = uid('renderable');
     public view: T;
     private readonly _original: Container<View>;
-    public layerTransform: Matrix;
-    public layerVisibleRenderable: number;
+    public rgTransform: Matrix;
+    public rgVisibleRenderable: number;
     public didViewUpdate: boolean;
     public worldTransform: Matrix;
-    public layerColorAlpha = 0xffffffff;
-    public layerColor = 0xffffff;
-    public layerAlpha = 1;
+    public rgColorAlpha = 0xffffffff;
+    public rgColor = 0xffffff;
+    public rgAlpha = 1;
 
     constructor({ original, view }: { original: Container<View>; view: T })
     {
@@ -33,24 +33,24 @@ export class LayerRenderable<T extends View = View> extends EventEmitter impleme
 
         this.view = view;
         this._original = original;
-        this.layerTransform = new Matrix();
-        this.layerVisibleRenderable = 0b11;
+        this.rgTransform = new Matrix();
+        this.rgVisibleRenderable = 0b11;
 
-        // layer renderable should match the original id as we use it to reference
+        // render group renderable should match the original id as we use it to reference
         // the gpu counter part on various systems
         this.uid = original.uid;
         this.view.owner = this;
     }
 
-    get layerBlendMode()
+    get rgBlendMode()
     {
-        return this._original.layerBlendMode;
+        return this._original.rgBlendMode;
     }
 
     public onViewUpdate()
     {
         this.didViewUpdate = true;
-        this._original.layerGroup.onChildViewUpdate(this);
+        this._original.renderGroup.onChildViewUpdate(this);
     }
 
     get isRenderable()

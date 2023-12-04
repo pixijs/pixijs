@@ -1,8 +1,8 @@
 import { ExtensionType } from '../../extensions/Extensions';
 import { buildInstructions } from './utils/buildInstructions';
-import { collectLayerGroups } from './utils/collectLayerGroups';
+import { collectRenderGroups } from './utils/collectRenderGroups';
 import { executeInstructions } from './utils/executeInstructions';
-import { updateLayerGroupTransforms } from './utils/updateLayerGroupTransforms';
+import { updateRenderGroupTransforms } from './utils/updateRenderGroupTransforms';
 import { validateRenderables } from './utils/validateRenderables';
 
 import type { Matrix } from '../../maths/matrix/Matrix';
@@ -10,14 +10,14 @@ import type { WebGPURenderer } from '../../rendering/renderers/gpu/WebGPURendere
 import type { System } from '../../rendering/renderers/shared/system/System';
 import type { Renderer } from '../../rendering/renderers/types';
 import type { Container } from './Container';
-import type { LayerGroup } from './LayerGroup';
+import type { RenderGroup } from './RenderGroup';
 
 /**
  * The view system manages the main canvas that is attached to the DOM.
  * This main role is to deal with how the holding the view reference and dealing with how it is resized.
  */
 
-export class LayerSystem implements System
+export class RenderGroupSystem implements System
 {
     /** @ignore */
     public static extension = {
@@ -26,7 +26,7 @@ export class LayerSystem implements System
             ExtensionType.WebGPUSystem,
             ExtensionType.CanvasSystem,
         ],
-        name: 'layer',
+        name: 'renderGroup',
     } as const;
 
     private readonly _renderer: Renderer;
@@ -38,65 +38,65 @@ export class LayerSystem implements System
 
     protected render({ container, transform }: {container: Container, transform: Matrix}): void
     {
-        container.layer = true;
+        container.isRenderGroup = true;
 
         const renderer = this._renderer;
 
         // collect all the renderGroups in the scene and then render them one by one..
-        const layerGroups = collectLayerGroups(container.layerGroup, []);
+        const renderGroups = collectRenderGroups(container.renderGroup, []);
 
         const renderPipes = (renderer as WebGPURenderer).renderPipes;
 
-        for (let i = 0; i < layerGroups.length; i++)
+        for (let i = 0; i < renderGroups.length; i++)
         {
-            const layerGroup = layerGroups[i];
+            const renderGroup = renderGroups[i];
 
-            layerGroup.runOnRender();
+            renderGroup.runOnRender();
 
-            layerGroup.instructionSet.renderPipes = renderPipes;
+            renderGroup.instructionSet.renderPipes = renderPipes;
 
-            if (!layerGroup.structureDidChange)
+            if (!renderGroup.structureDidChange)
             {
                 // phase 1 - validate all the renderables
-                validateRenderables(layerGroup, renderPipes);
+                validateRenderables(renderGroup, renderPipes);
             }
 
             // phase 2 - update all the transforms
             // including updating the renderables..
-            updateLayerGroupTransforms(layerGroup);
+            updateRenderGroupTransforms(renderGroup);
 
-            if (layerGroup.structureDidChange)
+            if (renderGroup.structureDidChange)
             {
-                layerGroup.structureDidChange = false;
+                renderGroup.structureDidChange = false;
 
                 // build the renderables
-                buildInstructions(layerGroup, renderPipes);
+                buildInstructions(renderGroup, renderPipes);
             }
             else
             {
                 // update remaining renderables
-                updateRenderables(layerGroup);
+                updateRenderables(renderGroup);
             }
 
             // reset the renderables to update
-            layerGroup.childrenRenderablesToUpdate.index = 0;
+            renderGroup.childrenRenderablesToUpdate.index = 0;
 
             // upload all the things!
-            renderer.renderPipes.batch.upload(layerGroup.instructionSet);
+            renderer.renderPipes.batch.upload(renderGroup.instructionSet);
         }
 
         if (transform)
         {
-            container.layerGroup.worldTransform.copyFrom(transform);
+            container.renderGroup.worldTransform.copyFrom(transform);
         }
 
         renderer.globalUniforms.start(
             {
-                worldTransformMatrix: container.layerGroup.worldTransform
+                worldTransformMatrix: container.renderGroup.worldTransform
             }
         );
 
-        executeInstructions(container.layerGroup, renderPipes);
+        executeInstructions(container.renderGroup, renderPipes);
 
         // TODO need to add some events / runners for things like this to hook up to
         if (renderPipes.uniformBatch)
@@ -111,9 +111,9 @@ export class LayerSystem implements System
     }
 }
 
-function updateRenderables(layerGroup: LayerGroup)
+function updateRenderables(renderGroup: RenderGroup)
 {
-    const { list, index } = layerGroup.childrenRenderablesToUpdate;
+    const { list, index } = renderGroup.childrenRenderablesToUpdate;
 
     for (let i = 0; i < index; i++)
     {
@@ -121,7 +121,7 @@ function updateRenderables(layerGroup: LayerGroup)
 
         if (container.didViewUpdate)
         {
-            layerGroup.updateRenderable(container);
+            renderGroup.updateRenderable(container);
         }
     }
 }

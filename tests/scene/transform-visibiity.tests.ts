@@ -1,25 +1,25 @@
 import { Container } from '../../src/scene/container/Container';
-import { updateLayerGroupTransforms } from '../../src/scene/container/utils/updateLayerGroupTransforms';
+import { updateRenderGroupTransforms } from '../../src/scene/container/utils/updateRenderGroupTransforms';
 
 describe('Transform Visibility', () =>
 {
     it('should not cause a rebuild if visibility is changed on a layer', async () =>
     {
-        const root = new Container({ layer: true });
+        const root = new Container({ isRenderGroup: true });
 
-        root.layerGroup.structureDidChange = false;
+        root.renderGroup.structureDidChange = false;
 
         root.visible = false;
 
         expect(root.visible).toEqual(false);
-        expect(root.layerGroup.structureDidChange).toEqual(false);
+        expect(root.renderGroup.structureDidChange).toEqual(false);
     });
 
     it('should cause a rebuild if visibility is changed on a child', async () =>
     {
-        const root = new Container({ layer: true });
+        const root = new Container({ isRenderGroup: true });
 
-        root.layerGroup.structureDidChange = false;
+        root.renderGroup.structureDidChange = false;
 
         const child = new Container();
 
@@ -27,12 +27,12 @@ describe('Transform Visibility', () =>
 
         child.visible = false;
 
-        expect(root.layerGroup.structureDidChange).toEqual(true);
+        expect(root.renderGroup.structureDidChange).toEqual(true);
     });
 
     it('should inherit visibility on the scene graph', async () =>
     {
-        const root = new Container({ layer: true, label: 'root' });
+        const root = new Container({ isRenderGroup: true, label: 'root' });
 
         const container = new Container({ label: 'container' });
 
@@ -44,20 +44,20 @@ describe('Transform Visibility', () =>
 
         container.visible = false;
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(child.layerVisibleRenderable).toEqual(0b01);
+        expect(child.rgVisibleRenderable).toEqual(0b01);
 
         container.visible = true;
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(child.layerVisibleRenderable).toEqual(0b11);
+        expect(child.rgVisibleRenderable).toEqual(0b11);
     });
 
     it('should inherit visibility when children swapped around on the scene graph', async () =>
     {
-        const root = new Container({ layer: true, label: 'root' });
+        const root = new Container({ isRenderGroup: true, label: 'root' });
 
         const container = new Container({ label: 'container' });
         const containerHidden = new Container({ label: 'containerAdd' });
@@ -71,33 +71,33 @@ describe('Transform Visibility', () =>
 
         containerHidden.visible = false;
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(child.layerVisibleRenderable).toEqual(0b11);
+        expect(child.rgVisibleRenderable).toEqual(0b11);
 
         containerHidden.addChild(child);
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(child.layerVisibleRenderable).toEqual(0b01);
+        expect(child.rgVisibleRenderable).toEqual(0b01);
     });
 
     it('should not cause a rebuild if renderable is changed on a layer', async () =>
     {
-        const root = new Container({ layer: true });
+        const root = new Container({ isRenderGroup: true });
 
-        root.layerGroup.structureDidChange = false;
+        root.renderGroup.structureDidChange = false;
 
         root.renderable = false;
 
         expect(root.renderable).toEqual(false);
 
-        expect(root.layerGroup.structureDidChange).toEqual(false);
+        expect(root.renderGroup.structureDidChange).toEqual(false);
     });
 
     it('should set both renderable and visible correctly in layerVisibleRenderable prop', async () =>
     {
-        const root = new Container({ layer: true, label: 'root' });
+        const root = new Container({ isRenderGroup: true, label: 'root' });
 
         const container = new Container({ label: 'container' });
 
@@ -110,24 +110,24 @@ describe('Transform Visibility', () =>
         container.visible = false;
         container.renderable = false;
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(child.layerVisibleRenderable).toEqual(0b00);
+        expect(child.rgVisibleRenderable).toEqual(0b00);
 
         container.visible = true;
         container.renderable = true;
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(child.layerVisibleRenderable).toEqual(0b11);
+        expect(child.rgVisibleRenderable).toEqual(0b11);
     });
 
     it('should cause a rebuild if visibility is changed on a child before it is added', async () =>
     {
-        const root = new Container({ layer: true });
+        const root = new Container({ isRenderGroup: true });
         const container = new Container();
 
-        root.layerGroup.structureDidChange = false;
+        root.renderGroup.structureDidChange = false;
 
         const child = new Container();
 
@@ -137,15 +137,15 @@ describe('Transform Visibility', () =>
         root.addChild(container);
         container.addChild(child);
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(root.layerGroup.structureDidChange).toEqual(true);
+        expect(root.renderGroup.structureDidChange).toEqual(true);
 
-        root.layerGroup.structureDidChange = false;
+        root.renderGroup.structureDidChange = false;
 
         container.visible = true;
 
-        expect(root.layerGroup.structureDidChange).toEqual(true);
+        expect(root.renderGroup.structureDidChange).toEqual(true);
     });
 });
 
