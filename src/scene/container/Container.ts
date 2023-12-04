@@ -373,7 +373,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      * transforms and up to the render group (think of it as kind of like a stage - but the stage can be nested).
      * @readonly
      */
-    public renderGroupTransform: Matrix = new Matrix();
+    public rgTransform: Matrix = new Matrix();
     // the global transform taking into account the render group and all parents
     private _worldTransform: Matrix;
 
@@ -769,7 +769,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
             }
             else
             {
-                this._worldTransform.appendFrom(this.renderGroupTransform, this.renderGroup.worldTransform);
+                this._worldTransform.appendFrom(this.rgTransform, this.renderGroup.worldTransform);
             }
         }
 

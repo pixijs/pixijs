@@ -25,15 +25,15 @@ describe('Transform updates', () =>
 
         updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(container.renderGroupTransform.tx).toEqual(10);
-        expect(child.renderGroupTransform.tx).toEqual(30);
+        expect(container.rgTransform.tx).toEqual(10);
+        expect(child.rgTransform.tx).toEqual(30);
 
         root.x = 20;
 
         updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(container.renderGroupTransform.tx).toEqual(10);
-        expect(child.renderGroupTransform.tx).toEqual(30);
+        expect(container.rgTransform.tx).toEqual(10);
+        expect(child.rgTransform.tx).toEqual(30);
     });
 
     it('should calculate local transform correctly after re-parenting', async () =>
@@ -53,15 +53,15 @@ describe('Transform updates', () =>
 
         updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(container.renderGroupTransform.tx).toEqual(10);
-        expect(child.renderGroupTransform.tx).toEqual(30);
+        expect(container.rgTransform.tx).toEqual(10);
+        expect(child.rgTransform.tx).toEqual(30);
 
         root.addChild(child);
 
         updateRenderGroupTransforms(root.renderGroup);
 
-        expect(container.renderGroupTransform.tx).toEqual(10);
-        expect(child.renderGroupTransform.tx).toEqual(20);
+        expect(container.rgTransform.tx).toEqual(10);
+        expect(child.rgTransform.tx).toEqual(20);
     });
 
     it('should not affect transform of removed container', async () =>
@@ -81,8 +81,8 @@ describe('Transform updates', () =>
 
         updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(container.renderGroupTransform.tx).toEqual(10);
-        expect(child.renderGroupTransform.tx).toEqual(30);
+        expect(container.rgTransform.tx).toEqual(10);
+        expect(child.rgTransform.tx).toEqual(30);
 
         container.removeChild(child);
 
@@ -90,8 +90,8 @@ describe('Transform updates', () =>
 
         updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(container.renderGroupTransform.tx).toEqual(100);
-        expect(child.renderGroupTransform.tx).toEqual(30);
+        expect(container.rgTransform.tx).toEqual(100);
+        expect(child.rgTransform.tx).toEqual(30);
     });
 
     it('should give a correct render group transform', async () =>
@@ -114,8 +114,8 @@ describe('Transform updates', () =>
 
         updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(container.renderGroupTransform.tx).toEqual(10);
-        expect(child.renderGroupTransform.tx).toEqual(30);
+        expect(container.rgTransform.tx).toEqual(10);
+        expect(child.rgTransform.tx).toEqual(30);
 
         container.isRenderGroup = true;
 
@@ -125,8 +125,8 @@ describe('Transform updates', () =>
 
         updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(container.renderGroupTransform.tx).toEqual(10);
-        expect(child.renderGroupTransform.tx).toEqual(20);
+        expect(container.rgTransform.tx).toEqual(10);
+        expect(child.rgTransform.tx).toEqual(20);
     });
 
     it('should give a correct world transform', async () =>

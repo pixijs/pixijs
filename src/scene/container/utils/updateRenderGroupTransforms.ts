@@ -51,7 +51,7 @@ export function updateRenderGroupTransform(renderGroup: RenderGroup)
         const renderGroupParent = renderGroup.renderGroupParent;
 
         renderGroup.worldTransform.appendFrom(
-            root.renderGroupTransform,
+            root.rgTransform,
             renderGroupParent.worldTransform,
         );
 
@@ -64,7 +64,7 @@ export function updateRenderGroupTransform(renderGroup: RenderGroup)
     }
     else
     {
-        renderGroup.worldTransform.copyFrom(root.renderGroupTransform);
+        renderGroup.worldTransform.copyFrom(root.rgTransform);
         renderGroup.worldColor = root.localColor;
         worldAlpha = root.localAlpha;
     }
@@ -94,9 +94,9 @@ export function updateTransformAndChildren(container: Container, updateTick: num
     {
         updateFlags = updateFlags | container._updateFlags;
 
-        container.renderGroupTransform.appendFrom(
+        container.rgTransform.appendFrom(
             localTransform,
-            parent.renderGroupTransform,
+            parent.rgTransform,
         );
 
         if (updateFlags)
@@ -108,7 +108,7 @@ export function updateTransformAndChildren(container: Container, updateTick: num
     {
         updateFlags = container._updateFlags;
 
-        container.renderGroupTransform.copyFrom(localTransform);
+        container.rgTransform.copyFrom(localTransform);
 
         if (updateFlags)
         {

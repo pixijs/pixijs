@@ -33,7 +33,7 @@ export class BatchableSprite implements BatchableObject
         const sprite = this.renderable;
         const texture = this.texture;
 
-        const wt = sprite.renderGroupTransform;
+        const wt = sprite.rgTransform;
 
         const a = wt.a;
         const b = wt.b;

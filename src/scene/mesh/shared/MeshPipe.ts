@@ -180,7 +180,7 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
 
         const localUniforms = this.localUniforms;
 
-        localUniforms.uniforms.uTransformMatrix = renderable.renderGroupTransform;
+        localUniforms.uniforms.uTransformMatrix = renderable.rgTransform;
         localUniforms.uniforms.uRound = this.renderer._roundPixels | renderable.view.roundPixels;
         localUniforms.update();
 

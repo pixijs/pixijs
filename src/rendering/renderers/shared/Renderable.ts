@@ -8,7 +8,7 @@ export interface Renderable<VIEW extends View = View> extends EventEmitter
     uid: number;
     view: VIEW;
     didViewUpdate: boolean;
-    renderGroupTransform: Matrix;
+    rgTransform: Matrix;
     worldTransform: Matrix;
     rgAlpha: number;
     rgColor: number;

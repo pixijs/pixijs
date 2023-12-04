@@ -16,7 +16,7 @@ export class ProxyRenderable<T extends View = View> extends EventEmitter impleme
     public uid = uid('renderable');
     public view: T;
     private _original: Renderable<any>;
-    public renderGroupTransform: Matrix;
+    public rgTransform: Matrix;
     public worldTransform: Matrix;
     public didViewUpdate = false;
 
@@ -35,7 +35,7 @@ export class ProxyRenderable<T extends View = View> extends EventEmitter impleme
     public init(original: Renderable<any>)
     {
         this._original = original;
-        this.renderGroupTransform = original.renderGroupTransform;
+        this.rgTransform = original.rgTransform;
     }
 
     get rgColorAlpha()

@@ -69,7 +69,7 @@ export class BatchableGraphics implements BatchableObject
             const argb = mixColors(bgr, graphics.rgColor)
             + ((this.alpha * graphics.rgAlpha * 255) << 24);
 
-            const wt = graphics.renderGroupTransform;
+            const wt = graphics.rgTransform;
             const textureIdAndRound = (textureId << 16) | (this.roundPixels & 0xFFFF);
 
             const a = wt.a;

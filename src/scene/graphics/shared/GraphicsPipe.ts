@@ -148,7 +148,7 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
 
         const localUniforms = shader.resources.localUniforms.uniforms;
 
-        localUniforms.uTransformMatrix = renderable.renderGroupTransform;
+        localUniforms.uTransformMatrix = renderable.rgTransform;
         localUniforms.uRound = renderer._roundPixels | renderable.view.roundPixels;
 
         color32BitToUniform(

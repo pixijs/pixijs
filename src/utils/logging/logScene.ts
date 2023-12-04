@@ -43,7 +43,7 @@ export function logScene(container: Container, depth = 0, data: {color?: string}
     }
 
     // eslint-disable-next-line max-len
-    let output = `%c ${spaces}|- ${label} (worldX:${container.worldTransform.tx}, renderX:${container.renderGroupTransform.tx}, localX:${container.x})`;
+    let output = `%c ${spaces}|- ${label} (worldX:${container.worldTransform.tx}, renderX:${container.rgTransform.tx}, localX:${container.x})`;
 
     if (container.isRenderGroupRoot)
     {

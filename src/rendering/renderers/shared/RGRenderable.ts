@@ -19,7 +19,7 @@ export class RGRenderable<T extends View = View> extends EventEmitter implements
     public uid = uid('renderable');
     public view: T;
     private readonly _original: Container<View>;
-    public renderGroupTransform: Matrix;
+    public rgTransform: Matrix;
     public rgVisibleRenderable: number;
     public didViewUpdate: boolean;
     public worldTransform: Matrix;
@@ -33,7 +33,7 @@ export class RGRenderable<T extends View = View> extends EventEmitter implements
 
         this.view = view;
         this._original = original;
-        this.renderGroupTransform = new Matrix();
+        this.rgTransform = new Matrix();
         this.rgVisibleRenderable = 0b11;
 
         // render group renderable should match the original id as we use it to reference

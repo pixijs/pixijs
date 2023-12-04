@@ -46,7 +46,7 @@ export class BatchableMesh implements BatchableObject
         const view = this.renderable.view;
 
         const geometry = view.geometry;
-        const wt = renderable.renderGroupTransform;
+        const wt = renderable.rgTransform;
 
         const textureIdAndRound = (textureId << 16) | (this.roundPixels & 0xFFFF);
 
