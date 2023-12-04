@@ -5,7 +5,6 @@ import { extensions } from '../../src/extensions/Extensions';
 import { Container } from '../../src/scene/container/Container';
 import { Sprite } from '../../src/scene/sprite/Sprite';
 import { basePath } from '../assets/basePath';
-import '../../src/culling/init';
 
 import type { Texture } from '../../src/rendering/renderers/shared/texture/Texture';
 

@@ -1,6 +1,6 @@
 import type { Rectangle } from '../maths/shapes/Rectangle';
 
-export interface CullingTarget
+export interface CullingMixinConstructor
 {
     /**
      * If set, this shape is used for culling instead of the bounds of this object.
@@ -27,7 +27,7 @@ export interface CullingTarget
     cullableChildren: boolean,
 }
 
-export const cullingTarget: CullingTarget = {
+export const cullingMixin: CullingMixinConstructor = {
     cullArea: null,
     cullable: false,
     cullableChildren: true,
