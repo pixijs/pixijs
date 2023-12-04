@@ -194,8 +194,8 @@ describe('Transform updates', () =>
         expect(child.renderGroup.worldTransform.tx).toEqual(35);
 
         // TODO this bit!
-        expect(container2.renderGroup.layerTransform.tx).toEqual(25);
-        expect(child.renderGroup.layerTransform.tx).toEqual(10);
+        expect(container2.renderGroup.rgTransform.tx).toEqual(25);
+        expect(child.renderGroup.rgTransform.tx).toEqual(10);
 
         // expect(container.layerGroup.layerTransform.tx).toEqual(10);
         // expect(child.layerGroup.layerTransform.tx).toEqual(20);

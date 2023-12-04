@@ -7,7 +7,7 @@ import type { Renderable } from './Renderable';
 import type { View } from './view/View';
 
 /**
- * LayerRenderable is used to render the view of the root container of a layer group
+ * RGRenderable is used to render the view of the root container of a render group
  * We don't want to inherit the transform / color of the root container as that information is
  * uploaded to the GPU and applied globally.
  *

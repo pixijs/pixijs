@@ -9,7 +9,7 @@ import type { Container } from './Container';
 
 export class RenderGroup implements Instruction
 {
-    public renderPipeId = 'layer';
+    public renderPipeId = 'renderGroup';
     public root: Container = null;
 
     public canBundle = false;
@@ -57,40 +57,40 @@ export class RenderGroup implements Instruction
         return this.root.localTransform;
     }
 
-    get layerTransform()
+    get rgTransform()
     {
         return this.root.renderGroupTransform;
     }
 
-    public addRenderGroupChild(layerGroupChild: RenderGroup)
+    public addRenderGroupChild(renderGroupChild: RenderGroup)
     {
-        if (layerGroupChild.renderGroupParent)
+        if (renderGroupChild.renderGroupParent)
         {
-            layerGroupChild.renderGroupParent._removeRenderGroupChild(layerGroupChild);
+            renderGroupChild.renderGroupParent._removeRenderGroupChild(renderGroupChild);
         }
 
-        layerGroupChild.renderGroupParent = this;
+        renderGroupChild.renderGroupParent = this;
 
-        this.onChildUpdate(layerGroupChild.root);
+        this.onChildUpdate(renderGroupChild.root);
 
-        this.renderGroupChildren.push(layerGroupChild);
+        this.renderGroupChildren.push(renderGroupChild);
     }
 
-    private _removeRenderGroupChild(layerGroupChild: RenderGroup)
+    private _removeRenderGroupChild(renderGroupChild: RenderGroup)
     {
-        if (layerGroupChild.root.didChange)
+        if (renderGroupChild.root.didChange)
         {
-            this._removeChildFromUpdate(layerGroupChild.root);
+            this._removeChildFromUpdate(renderGroupChild.root);
         }
 
-        const index = this.renderGroupChildren.indexOf(layerGroupChild);
+        const index = this.renderGroupChildren.indexOf(renderGroupChild);
 
         if (index > -1)
         {
             this.renderGroupChildren.splice(index, 1);
         }
 
-        layerGroupChild.renderGroupParent = null;
+        renderGroupChild.renderGroupParent = null;
     }
 
     public addChild(child: Container)
