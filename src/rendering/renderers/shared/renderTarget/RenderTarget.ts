@@ -140,6 +140,11 @@ export class RenderTarget
         this._resize(source.width, source.height, source._resolution, true);
     }
 
+    public resize(width: number, height: number, resolution = this.resolution)
+    {
+        this._resize(width, height, resolution);
+    }
+
     private _resize(width: number, height: number, resolution = this.resolution, skipColorTexture = false)
     {
         this.dirtyId++;
@@ -160,5 +165,11 @@ export class RenderTarget
     public destroy()
     {
         this.colorTexture.source.off('resize', this.onSourceResize, this);
+
+        if (this.depthTexture)
+        {
+            this.depthTexture.destroy();
+            delete this.depthTexture;
+        }
     }
 }
