@@ -58,7 +58,7 @@ describe('Container Sort', () =>
 
             container.sortChildren();
 
-            expect(spy).toBeCalled();
+            expect(spy).toHaveBeenCalled();
         });
 
         it('should not call sort when children have no zIndex', () =>
@@ -72,7 +72,7 @@ describe('Container Sort', () =>
 
             container.sortChildren();
 
-            expect(spy).not.toBeCalled();
+            expect(spy).not.toHaveBeenCalled();
         });
 
         it('should sort children by zIndex value', () =>

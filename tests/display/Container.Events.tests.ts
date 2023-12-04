@@ -64,17 +64,17 @@ describe('Container Events', () =>
             container.addChild(child);
             container.removeChild(child);
 
-            expect(listener).toBeCalledTimes(1);
+            expect(listener).toHaveBeenCalledTimes(1);
 
             container.addChild(child);
             child.removeFromParent();
 
-            expect(listener).toBeCalledTimes(2);
+            expect(listener).toHaveBeenCalledTimes(2);
 
             container.addChild(child);
             child.destroy();
 
-            expect(listener).toBeCalledTimes(3);
+            expect(listener).toHaveBeenCalledTimes(3);
         });
     });
 
@@ -91,12 +91,12 @@ describe('Container Events', () =>
             container.addChild(child);
             container.removeChild(child);
 
-            expect(listener).not.toBeCalled();
+            expect(listener).not.toHaveBeenCalled();
 
             container.addChild(child);
             child.destroy();
 
-            expect(listener).toBeCalledTimes(1);
+            expect(listener).toHaveBeenCalledTimes(1);
         });
 
         it('should trigger destroyed listeners once destruction is complete', () =>

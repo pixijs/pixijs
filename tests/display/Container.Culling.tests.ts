@@ -1,3 +1,4 @@
+/* eslint-disable jest/no-commented-out-tests */
 // import { getRenderer } from '../utils/getRenderer';
 
 // import type { WebGLRenderer } from '../../src/rendering/renderers/gl/WebGLRenderer';

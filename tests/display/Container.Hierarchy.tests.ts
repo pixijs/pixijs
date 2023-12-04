@@ -40,7 +40,7 @@ describe('Container Hierarchy', () =>
             assertRemovedFromParent(parent, container, child, () => { container.addChild(child); });
         });
 
-        it('should flag child needs update once ', () =>
+        it('should flag child needs update once', () =>
         {
             const container = new Container();
 
@@ -98,8 +98,8 @@ describe('Container Hierarchy', () =>
 
             container.addChild(new Container());
 
-            expect(() => container.addChildAt(child, -1)).toThrowError('The index -1 supplied is out of bounds 1');
-            expect(() => container.addChildAt(child, 2)).toThrowError('The index 2 supplied is out of bounds 1');
+            expect(() => container.addChildAt(child, -1)).toThrow('The index -1 supplied is out of bounds 1');
+            expect(() => container.addChildAt(child, 2)).toThrow('The index 2 supplied is out of bounds 1');
         });
 
         it('should remove from current parent', () =>
@@ -195,7 +195,7 @@ describe('Container Hierarchy', () =>
             const child = new Container();
 
             expect(() => container.getChildIndex(child))
-                .toThrowError('The supplied Container must be a child of the caller');
+                .toThrow('The supplied Container must be a child of the caller');
         });
     });
 
@@ -205,8 +205,8 @@ describe('Container Hierarchy', () =>
         {
             const container = new Container();
 
-            expect(() => container.getChildAt(-1)).toThrowError('getChildAt: Index (-1) does not exist.');
-            expect(() => container.getChildAt(1)).toThrowError('getChildAt: Index (1) does not exist.');
+            expect(() => container.getChildAt(-1)).toThrow('getChildAt: Index (-1) does not exist.');
+            expect(() => container.getChildAt(1)).toThrow('getChildAt: Index (1) does not exist.');
         });
     });
 
@@ -219,8 +219,8 @@ describe('Container Hierarchy', () =>
 
             container.addChild(child);
 
-            expect(() => container.setChildIndex(child, -1)).toThrowError('The index -1 supplied is out of bounds 1');
-            expect(() => container.setChildIndex(child, 1)).toThrowError('The index 1 supplied is out of bounds 1');
+            expect(() => container.setChildIndex(child, -1)).toThrow('The index -1 supplied is out of bounds 1');
+            expect(() => container.setChildIndex(child, 1)).toThrow('The index 1 supplied is out of bounds 1');
         });
 
         it('should throw when child does not belong', () =>
@@ -231,7 +231,7 @@ describe('Container Hierarchy', () =>
             container.addChild(new Container());
 
             expect(() => container.setChildIndex(child, 0))
-                .toThrowError('The supplied Container must be a child of the caller');
+                .toThrow('The supplied Container must be a child of the caller');
         });
 
         it('should set index', () =>
@@ -263,9 +263,9 @@ describe('Container Hierarchy', () =>
             container.addChild(child, new Container());
 
             expect(() => container.swapChildren(child, new Container()))
-                .toThrowError('The supplied Container must be a child of the caller');
+                .toThrow('The supplied Container must be a child of the caller');
             expect(() => container.swapChildren(new Container(), child))
-                .toThrowError('The supplied Container must be a child of the caller');
+                .toThrow('The supplied Container must be a child of the caller');
         });
 
         it('should result in swapped child positions', () =>
@@ -329,11 +329,11 @@ describe('Container Hierarchy', () =>
             container.addChild(new Container());
 
             expect(() => container.removeChildren(2))
-                .toThrowError('removeChildren: numeric values are outside the acceptable range.');
+                .toThrow('removeChildren: numeric values are outside the acceptable range.');
             expect(() => container.removeChildren(-1))
-                .toThrowError('removeChildren: numeric values are outside the acceptable range.');
+                .toThrow('removeChildren: numeric values are outside the acceptable range.');
             expect(() => container.removeChildren(-1, 1))
-                .toThrowError('removeChildren: numeric values are outside the acceptable range.');
+                .toThrow('removeChildren: numeric values are outside the acceptable range.');
         });
     });
 });
