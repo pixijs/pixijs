@@ -522,6 +522,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         });
 
         options.children?.forEach((child) => this.addChild(child));
+        this.effects = [];
         options.effects?.forEach((effect) => this.addEffect(effect));
         options.parent?.addChild(this);
     }
