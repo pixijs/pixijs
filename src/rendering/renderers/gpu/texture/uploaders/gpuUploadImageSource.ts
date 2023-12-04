@@ -12,8 +12,9 @@ export const gpuUploadImageResource = {
 
         if (!resource) return;
 
-        const width = source.resourceWidth || source.pixelWidth;
-        const height = source.resourceHeight || source.pixelHeight;
+        const width = Math.min(gpuTexture.width, source.resourceWidth || source.pixelWidth);
+        const height = Math.min(gpuTexture.height, source.resourceHeight || source.pixelHeight);
+
         const premultipliedAlpha = source.alphaMode === 'premultiply-alpha-on-upload';
 
         gpu.device.queue.copyExternalImageToTexture(
