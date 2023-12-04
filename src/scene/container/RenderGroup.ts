@@ -2,8 +2,8 @@ import { Matrix } from '../../maths/matrix/Matrix';
 import { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
-import type { LayerRenderable } from '../../rendering/renderers/shared/LayerRenderable';
 import type { Renderable } from '../../rendering/renderers/shared/Renderable';
+import type { RGRenderable } from '../../rendering/renderers/shared/RGRenderable';
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Container } from './Container';
 
@@ -43,7 +43,7 @@ export class RenderGroup implements Instruction
      * this is used as we do not want to inherit the transform / color of the root container
      * it is only used by the parent root layer group
      */
-    public proxyRenderable: LayerRenderable<View>;
+    public proxyRenderable: RGRenderable<View>;
 
     constructor(root: Container)
     {

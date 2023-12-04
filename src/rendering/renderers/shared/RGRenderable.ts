@@ -14,7 +14,7 @@ import type { View } from './view/View';
  * This proxy allows us to override the values. This saves us a lot of extra if statements in the core loop
  * for what is normally a very rare use case!
  */
-export class LayerRenderable<T extends View = View> extends EventEmitter implements Renderable<T>
+export class RGRenderable<T extends View = View> extends EventEmitter implements Renderable<T>
 {
     public uid = uid('renderable');
     public view: T;

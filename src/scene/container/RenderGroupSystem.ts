@@ -1,8 +1,8 @@
 import { ExtensionType } from '../../extensions/Extensions';
 import { buildInstructions } from './utils/buildInstructions';
-import { collectLayerGroups } from './utils/collectLayerGroups';
+import { collectRenderGroups } from './utils/collectRenderGroups';
 import { executeInstructions } from './utils/executeInstructions';
-import { updateLayerGroupTransforms } from './utils/updateLayerGroupTransforms';
+import { updateRenderGroupTransforms } from './utils/updateRenderGroupTransforms';
 import { validateRenderables } from './utils/validateRenderables';
 
 import type { Matrix } from '../../maths/matrix/Matrix';
@@ -26,7 +26,7 @@ export class RenderGroupSystem implements System
             ExtensionType.WebGPUSystem,
             ExtensionType.CanvasSystem,
         ],
-        name: 'layer',
+        name: 'renderGroup',
     } as const;
 
     private readonly _renderer: Renderer;
@@ -43,7 +43,7 @@ export class RenderGroupSystem implements System
         const renderer = this._renderer;
 
         // collect all the renderGroups in the scene and then render them one by one..
-        const layerGroups = collectLayerGroups(container.renderGroup, []);
+        const layerGroups = collectRenderGroups(container.renderGroup, []);
 
         const renderPipes = (renderer as WebGPURenderer).renderPipes;
 
@@ -63,7 +63,7 @@ export class RenderGroupSystem implements System
 
             // phase 2 - update all the transforms
             // including updating the renderables..
-            updateLayerGroupTransforms(layerGroup);
+            updateRenderGroupTransforms(layerGroup);
 
             if (layerGroup.structureDidChange)
             {

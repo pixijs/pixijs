@@ -1,5 +1,5 @@
 import { Container } from '../../src/scene/container/Container';
-import { updateLayerGroupTransforms } from '../../src/scene/container/utils/updateLayerGroupTransforms';
+import { updateRenderGroupTransforms } from '../../src/scene/container/utils/updateRenderGroupTransforms';
 
 describe('Transform Visibility', () =>
 {
@@ -44,13 +44,13 @@ describe('Transform Visibility', () =>
 
         container.visible = false;
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(child.rgVisibleRenderable).toEqual(0b01);
 
         container.visible = true;
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(child.rgVisibleRenderable).toEqual(0b11);
     });
@@ -71,13 +71,13 @@ describe('Transform Visibility', () =>
 
         containerHidden.visible = false;
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(child.rgVisibleRenderable).toEqual(0b11);
 
         containerHidden.addChild(child);
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(child.rgVisibleRenderable).toEqual(0b01);
     });
@@ -110,14 +110,14 @@ describe('Transform Visibility', () =>
         container.visible = false;
         container.renderable = false;
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(child.rgVisibleRenderable).toEqual(0b00);
 
         container.visible = true;
         container.renderable = true;
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(child.rgVisibleRenderable).toEqual(0b11);
     });
@@ -137,7 +137,7 @@ describe('Transform Visibility', () =>
         root.addChild(container);
         container.addChild(child);
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(root.renderGroup.structureDidChange).toEqual(true);
 

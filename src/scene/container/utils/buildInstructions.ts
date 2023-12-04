@@ -1,4 +1,4 @@
-import { LayerRenderable } from '../../../rendering/renderers/shared/LayerRenderable';
+import { RGRenderable } from '../../../rendering/renderers/shared/RGRenderable';
 
 import type { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
 import type { InstructionPipe, RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
@@ -100,12 +100,12 @@ function collectAllRenderablesAdvanced(
 {
     if (isRoot)
     {
-        const layerGroup = container.renderGroup;
+        const renderGroup = container.renderGroup;
 
-        if (layerGroup.root.view)
+        if (renderGroup.root.view)
         {
             // proxy renderable is needed here as we do not want to inherit the transform / color of the root container
-            const proxyRenderable = layerGroup.proxyRenderable ?? initProxyRenderable(layerGroup);
+            const proxyRenderable = renderGroup.proxyRenderable ?? initProxyRenderable(renderGroup);
 
             if (proxyRenderable)
             {
@@ -129,7 +129,7 @@ function collectAllRenderablesAdvanced(
 
     if (!isRoot && container.isRenderGroupRoot)
     {
-        renderPipes.layer.addLayerGroup(container.renderGroup, instructionSet);
+        renderPipes.renderGroup.addRenderGroup(container.renderGroup, instructionSet);
     }
     else
     {
@@ -170,11 +170,11 @@ function collectAllRenderablesAdvanced(
     }
 }
 
-function initProxyRenderable(layerGroup: RenderGroup)
+function initProxyRenderable(renderGroup: RenderGroup)
 {
-    const root = layerGroup.root;
+    const root = renderGroup.root;
 
-    layerGroup.proxyRenderable = new LayerRenderable({
+    renderGroup.proxyRenderable = new RGRenderable({
         original: root,
         view: root.view,
     });

@@ -1,5 +1,5 @@
 import { Container } from '../../src/scene/container/Container';
-import { updateLayerGroupTransforms } from '../../src/scene/container/utils/updateLayerGroupTransforms';
+import { updateRenderGroupTransforms } from '../../src/scene/container/utils/updateRenderGroupTransforms';
 import { DummyView } from './DummyView';
 
 describe('Transform updates', () =>
@@ -23,14 +23,14 @@ describe('Transform updates', () =>
         container.x = 10;
         child.x = 20;
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(container.renderGroupTransform.tx).toEqual(10);
         expect(child.renderGroupTransform.tx).toEqual(30);
 
         root.x = 20;
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(container.renderGroupTransform.tx).toEqual(10);
         expect(child.renderGroupTransform.tx).toEqual(30);
@@ -51,14 +51,14 @@ describe('Transform updates', () =>
         container.x = 10;
         child.x = 20;
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(container.renderGroupTransform.tx).toEqual(10);
         expect(child.renderGroupTransform.tx).toEqual(30);
 
         root.addChild(child);
 
-        updateLayerGroupTransforms(root.renderGroup);
+        updateRenderGroupTransforms(root.renderGroup);
 
         expect(container.renderGroupTransform.tx).toEqual(10);
         expect(child.renderGroupTransform.tx).toEqual(20);
@@ -79,7 +79,7 @@ describe('Transform updates', () =>
         container.x = 10;
         child.x = 20;
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(container.renderGroupTransform.tx).toEqual(10);
         expect(child.renderGroupTransform.tx).toEqual(30);
@@ -88,7 +88,7 @@ describe('Transform updates', () =>
 
         container.x = 100;
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(container.renderGroupTransform.tx).toEqual(100);
         expect(child.renderGroupTransform.tx).toEqual(30);
@@ -112,7 +112,7 @@ describe('Transform updates', () =>
         container.x = 10;
         child.x = 20;
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(container.renderGroupTransform.tx).toEqual(10);
         expect(child.renderGroupTransform.tx).toEqual(30);
@@ -123,7 +123,7 @@ describe('Transform updates', () =>
         //      |- container // rendergroup
         //          |- child
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(container.renderGroupTransform.tx).toEqual(10);
         expect(child.renderGroupTransform.tx).toEqual(20);
@@ -147,7 +147,7 @@ describe('Transform updates', () =>
         container.x = 10;
         child.x = 20;
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(child.worldTransform.tx).toEqual(30);
 
@@ -158,7 +158,7 @@ describe('Transform updates', () =>
         //      |- container // rendergroup
         //          |- child
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(child.worldTransform.tx).toEqual(40);
     });
@@ -185,7 +185,7 @@ describe('Transform updates', () =>
         container2.x = 15;
         child.x = 10;
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         // expect(container.worldTransform.tx).toEqual(10);
         // expect(child.worldTransform.tx).toEqual(30);
@@ -202,7 +202,7 @@ describe('Transform updates', () =>
 
         container.x = 0;
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(container2.renderGroup.worldTransform.tx).toEqual(15);
         expect(child.renderGroup.worldTransform.tx).toEqual(25);
@@ -243,18 +243,18 @@ describe('Transform updates', () =>
         container2.visible = false;
         child.x = 10;
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
         expect(root.renderGroup.structureDidChange).toEqual(true);
 
         root.renderGroup.structureDidChange = false;
 
         child.x = 20;
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         child.x = 20;
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(updateRenderable).toHaveBeenCalledTimes(0);
     });

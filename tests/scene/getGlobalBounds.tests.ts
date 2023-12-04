@@ -3,7 +3,7 @@ import { addMaskBounds } from '../../src/rendering/mask/utils/addMaskBounds';
 import { Bounds } from '../../src/scene/container/bounds/Bounds';
 import { getGlobalBounds } from '../../src/scene/container/bounds/getGlobalBounds';
 import { Container } from '../../src/scene/container/Container';
-import { updateLayerGroupTransforms } from '../../src/scene/container/utils/updateLayerGroupTransforms';
+import { updateRenderGroupTransforms } from '../../src/scene/container/utils/updateRenderGroupTransforms';
 import { DummyEffect } from './DummyEffect';
 import { DummyView } from './DummyView';
 
@@ -96,7 +96,7 @@ describe('getGlobalBounds', () =>
 
         expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 100, maxY: 100 });
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         // this should be right..
         const bounds2 = getGlobalBounds(child, true, new Bounds());
@@ -245,7 +245,7 @@ describe('getGlobalBounds', () =>
         child3.addChild(child2);
         child2.addChild(child);
 
-        updateLayerGroupTransforms(container.renderGroup, true);
+        updateRenderGroupTransforms(container.renderGroup, true);
 
         expect(child.worldTransform.tx).toBe(250);
 

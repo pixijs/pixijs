@@ -1,5 +1,5 @@
 import { Container } from '../../src/scene/container/Container';
-import { updateLayerGroupTransforms } from '../../src/scene/container/utils/updateLayerGroupTransforms';
+import { updateRenderGroupTransforms } from '../../src/scene/container/utils/updateRenderGroupTransforms';
 
 function check32BitColorMatches(color1: number, color2: number[] | number): void
 {
@@ -90,7 +90,7 @@ describe('Transform Tints', () =>
         container2.alpha = 0.5;
         child.alpha = 0.5;
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         check32BitColorMatches(child.rgColorAlpha, [63, 255, 255, 255]);
     });
@@ -108,7 +108,7 @@ describe('Transform Tints', () =>
 
         container2.tint = 0xFF0000;
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         check32BitColorMatches(child.rgColorAlpha, [255, 0, 0, 255]);
     });
@@ -126,7 +126,7 @@ describe('Transform Tints', () =>
 
         child.tint = 0xFF0000;
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         check32BitColorMatches(child.rgColorAlpha, [255, 0, 0, 255]);
     });
@@ -149,7 +149,7 @@ describe('Transform Tints', () =>
         container2.tint = 0xFF0000;
         child.tint = 0x00FF00;
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
         // ABGR
         check32BitColorMatches(child.rgColorAlpha, [255, 0, 127, 128]);
     });
@@ -182,7 +182,7 @@ describe('Transform Tints', () =>
         container2.tint = 0xFF0000;
         child.tint = 0x00FF00;
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         check32BitColorMatches(child.rgColorAlpha, [255, 0, 255, 0]);
     });
@@ -219,7 +219,7 @@ describe('Transform Tints', () =>
 
         root.alpha = 0.5;
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         check32BitColorMatches(container2.renderGroup.worldColorAlpha, [127, 255, 255, 255]);
 

@@ -3,7 +3,7 @@ import { Text } from '../../../src/scene/text/Text';
 import { getRenderer } from '../../utils/getRenderer';
 import '../../../src/rendering/renderers/shared/texture/Texture';
 
-describe('LayerSystem', () =>
+describe('RenderGroupSystem', () =>
 {
     it('should reset childrenRenderablesToUpdate index between renders', async () =>
     {

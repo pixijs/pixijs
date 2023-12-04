@@ -1,5 +1,5 @@
 import { Container } from '../../src/scene/container/Container';
-import { updateLayerGroupTransforms } from '../../src/scene/container/utils/updateLayerGroupTransforms';
+import { updateRenderGroupTransforms } from '../../src/scene/container/utils/updateRenderGroupTransforms';
 
 describe('Transform Blend Modes', () =>
 {
@@ -43,7 +43,7 @@ describe('Transform Blend Modes', () =>
 
         container.blendMode = 'add';
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(child.rgBlendMode).toEqual('add');
     });
@@ -64,13 +64,13 @@ describe('Transform Blend Modes', () =>
 
         containerAdd.blendMode = 'add';
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(child.rgBlendMode).toEqual('normal');
 
         containerAdd.addChild(child);
 
-        updateLayerGroupTransforms(root.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(child.rgBlendMode).toEqual('add');
     });
