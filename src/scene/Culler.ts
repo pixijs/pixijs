@@ -40,6 +40,8 @@ export class Culler
                 || bounds.y + bounds.height <= view.y);
         }
 
+        if (!container.cullableChildren) return;
+
         for (let i = 0; i < container.children.length; i++)
         {
             this._cullRecursive(container.children[i], view, skipUpdateTransform);

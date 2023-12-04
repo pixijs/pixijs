@@ -518,6 +518,13 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      * Culling has no effect on whether updateTransform is called.
      */
     public cullable = false;
+    /**
+     * Determines if the children to the container can be culled
+     * Setting this to false allows PixiJS to bypass a recursive culling function
+     * Which can help to optimize very complex scenes
+     * @default true
+     */
+    public cullableChildren = true;
 
     constructor(options: Partial<ContainerOptions<T>> = {})
     {
