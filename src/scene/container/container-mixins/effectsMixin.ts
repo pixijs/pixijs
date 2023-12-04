@@ -11,7 +11,6 @@ export interface EffectsMixinConstructor
 {
     mask?: number | Container;
     filters?: Filter | Filter[];
-    effects?: Effect[];
 }
 export interface EffectsMixin extends Required<EffectsMixinConstructor>
 {
@@ -22,6 +21,7 @@ export interface EffectsMixin extends Required<EffectsMixinConstructor>
         filterArea?: Rectangle,
     },
     filterArea?: Rectangle,
+    effects?: Effect[];
     addEffect(effect: Effect): void;
     removeEffect(effect: Effect): void;
 }
@@ -41,6 +41,7 @@ export const effectsMixin: Partial<Container> = {
      * @todo Needs docs.
      * @param effect - The effect to add.
      * @memberof scene.Container#
+     * @ignore
      */
     addEffect(effect: Effect)
     {
@@ -63,6 +64,7 @@ export const effectsMixin: Partial<Container> = {
      * @todo Needs docs.
      * @param effect - The effect to remove.
      * @memberof scene.Container#
+     * @ignore
      */
     removeEffect(effect: Effect)
     {
