@@ -97,9 +97,9 @@ describe('Container Visual', () =>
 
             updateLayerGroupTransforms(rootContainer.layerGroup, true);
 
-            const alpha = ((child.layerColor >> 24) & 0xFF) / 255;
+            const alpha = child.layerAlpha;
 
-            expect(alpha).toBeCloseTo(0.5, 2);
+            expect(alpha).toBe(0.5);
         });
     });
 
