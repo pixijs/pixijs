@@ -1,10 +1,11 @@
 import { Assets } from '../../src/assets/Assets';
 import { loadTextures } from '../../src/assets/loader/parsers/textures/loadTextures';
+import { Culler } from '../../src/culling/Culler';
 import { extensions } from '../../src/extensions/Extensions';
 import { Container } from '../../src/scene/container/Container';
-import { Culler } from '../../src/scene/Culler';
 import { Sprite } from '../../src/scene/sprite/Sprite';
 import { basePath } from '../assets/basePath';
+import '../../src/culling/init';
 
 import type { Texture } from '../../src/rendering/renderers/shared/texture/Texture';
 

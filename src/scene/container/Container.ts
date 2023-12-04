@@ -107,12 +107,6 @@ export interface ContainerOptions<T extends View> extends PixiMixins.ContainerOp
     y?: number;
     /** @see scene.Container#boundArea */
     boundsArea?: Rectangle;
-    /** @see scene.Container#cullable */
-    cullable?: boolean;
-    /** @see scene.Container#cullArea */
-    cullArea?: Rectangle;
-    /** @see scene.Container#cullableChildren */
-    cullableChildren?: boolean;
 }
 
 export interface Container
@@ -507,26 +501,6 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      * 1000 children to find the bounds. Instead it will just use the bounds you set.
      */
     public boundsArea: Rectangle;
-
-    /**
-     * If set, this shape is used for culling instead of the bounds of this object.
-     * It can improve the culling performance of objects with many children.
-     * The culling area is defined in local space.
-     */
-    public cullArea: Rectangle;
-    /**
-     * Should this object be rendered if the bounds of this object are out of frame?
-     *
-     * Culling has no effect on whether updateTransform is called.
-     */
-    public cullable = false;
-    /**
-     * Determines if the children to the container can be culled
-     * Setting this to false allows PixiJS to bypass a recursive culling function
-     * Which can help to optimize very complex scenes
-     * @default true
-     */
-    public cullableChildren = true;
 
     constructor(options: Partial<ContainerOptions<T>> = {})
     {

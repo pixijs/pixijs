@@ -131,6 +131,7 @@
     "./lib/filters/blend-modes/init.*",
     "./lib/app/init.*",
     "./lib/assets/init.*",
+    "./lib/culling/init.*",
     "./lib/compressed-textures/dds/init.*",
     "./lib/compressed-textures/ktx/init.*",
     "./lib/compressed-textures/basis/init.*",
@@ -198,6 +199,14 @@
       },
       "require": {
         "default": "./lib/assets/init.js"
+      }
+    },
+    "./culling": {
+      "import": {
+        "default": "./lib/culling/init.mjs"
+      },
+      "require": {
+        "default": "./lib/culling/init.js"
       }
     },
     "./dds": {

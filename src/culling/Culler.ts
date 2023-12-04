@@ -1,7 +1,7 @@
-import { Bounds } from './container/bounds/Bounds';
-import { getGlobalBounds } from './container/bounds/getGlobalBounds';
+import { Bounds } from '../scene/container/bounds/Bounds';
+import { getGlobalBounds } from '../scene/container/bounds/getGlobalBounds';
 
-import type { Container } from './container/Container';
+import type { Container } from '../scene/container/Container';
 
 const tempBounds = new Bounds();
 

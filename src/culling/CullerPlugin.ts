@@ -1,5 +1,5 @@
 import { ExtensionType } from '../extensions/Extensions';
-import { Culler } from '../scene/Culler';
+import { Culler } from './Culler';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 import type { Renderer } from '../rendering/renderers/types';
@@ -7,6 +7,10 @@ import type { Container } from '../scene/container/Container';
 
 /**
  * An Application plugin that will automatically cull your stage using the renderers screen size.
+ * @example
+ * import { extensions, CullerPlugin } from 'pixi.js';
+ *
+ * extensions.add(CullerPlugin);
  * @memberof app
  */
 export class CullerPlugin
@@ -18,7 +22,6 @@ export class CullerPlugin
         name: 'culler',
     };
 
-    public static culler: Culler;
     public static renderer: Renderer;
     public static stage: Container;
     public static render: () => void;
@@ -26,20 +29,17 @@ export class CullerPlugin
 
     public static init(): void
     {
-        this.culler = Culler.shared;
-
         this._renderRef = this.render.bind(this);
 
         this.render = (): void =>
         {
-            this.culler.cull(this.stage, this.renderer.screen);
+            Culler.shared.cull(this.stage, this.renderer.screen);
             this.renderer.render({ container: this.stage });
         };
     }
 
     public static destroy(): void
     {
-        this.culler = null;
         this.render = this._renderRef;
     }
 }
