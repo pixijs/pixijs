@@ -424,7 +424,6 @@ export class TextStyle extends EventEmitter<{
             this[key as keyof typeof this] = defaultStyle[key as keyof TextStyleOptions] as any;
         }
 
-        this.update();
     }
 
     get styleKey()
