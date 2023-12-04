@@ -166,7 +166,11 @@ export class GpuTextureSystem implements System, CanvasGenerator
     {
         const gpuTexture = this._gpuSources[source.uid];
 
-        if (gpuTexture.width !== source.pixelWidth || gpuTexture.height !== source.pixelHeight)
+        if (!gpuTexture)
+        {
+            this.initSource(source);
+        }
+        else if (gpuTexture.width !== source.pixelWidth || gpuTexture.height !== source.pixelHeight)
         {
             this._textureViewHash[source.uid] = null;
             this._bindGroupHash[source.uid] = null;
