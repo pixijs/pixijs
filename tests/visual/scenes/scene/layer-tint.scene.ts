@@ -5,7 +5,7 @@ import { GraphicsContext } from '../../../../src/scene/graphics/shared/GraphicsC
 import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
-    it: 'should tint layers correctly',
+    it: 'should tint render groups correctly',
     create: async (scene: Container) =>
     {
         // layer green container..
@@ -14,7 +14,7 @@ export const scene: TestScene = {
             .fill('white');
 
         const greenContainer = new Container({
-            layer: false,
+            isRenderGroup: false,
         });
 
         greenContainer.addChild(new Graphics(squareContext));
@@ -23,7 +23,7 @@ export const scene: TestScene = {
 
         // non layer red container.
         const redContainer = new Container({
-            layer: true,
+            isRenderGroup: true,
         });
 
         scene.addChild(greenContainer);
@@ -35,17 +35,17 @@ export const scene: TestScene = {
         scene.addChild(redContainer);
 
         const nestedLayer = new Container({
-            layer: true,
+            isRenderGroup: true,
         });
 
         const whiteContainer = new Container({
-            layer: true,
+            isRenderGroup: true,
         });
 
         whiteContainer.addChild(new Graphics(squareContext));
 
         const blueContainer = new Container({
-            layer: false,
+            isRenderGroup: false,
         });
 
         blueContainer.addChild(new Graphics(squareContext));

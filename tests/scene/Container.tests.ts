@@ -1,5 +1,5 @@
 import { Container } from '../../src/scene/container/Container';
-import { updateLayerGroupTransforms } from '../../src/scene/container/utils/updateLayerGroupTransforms';
+import { updateRenderGroupTransforms } from '../../src/scene/container/utils/updateRenderGroupTransforms';
 
 describe('Container Tests', () =>
 {
@@ -45,7 +45,7 @@ describe('Container Tests', () =>
     {
         const root = new Container({
             label: 'root',
-            layer: true,
+            isRenderGroup: true,
         });
 
         const container = new Container({
@@ -66,7 +66,7 @@ describe('Container Tests', () =>
         // wrong!
         expect(child.toGlobal({ x: 0, y: 0 }, null, true)).toEqual({ x: 0, y: 0 });
 
-        updateLayerGroupTransforms(container.layerGroup, true);
+        updateRenderGroupTransforms(container.renderGroup, true);
 
         // right!!
         expect(child.toGlobal({ x: 0, y: 0 }, null, true)).toEqual({ x: 20, y: 20 });
@@ -87,7 +87,7 @@ describe('Container Tests', () =>
     {
         const root = new Container({
             label: 'root',
-            layer: true,
+            isRenderGroup: true,
         });
 
         const container = new Container({
@@ -118,7 +118,7 @@ describe('Container Tests', () =>
     {
         const root = new Container({
             label: 'root',
-            layer: true,
+            isRenderGroup: true,
         });
 
         const container = new Container({
@@ -144,7 +144,7 @@ describe('Container Tests', () =>
         // wrong!
         expect(child.toLocal({ x: 0, y: 0 }, otherContainer, null, true)).toEqual({ x: 0, y: 0 });
 
-        updateLayerGroupTransforms(container.layerGroup, true);
+        updateRenderGroupTransforms(container.renderGroup, true);
 
         // right!
         expect(child.toLocal({ x: 0, y: 0 }, otherContainer, null, true)).toEqual({ x: -20, y: -20 });
@@ -155,7 +155,7 @@ describe('Container Tests', () =>
     {
         const root = new Container({
             label: 'root',
-            layer: true,
+            isRenderGroup: true,
         });
 
         const container1 = new Container({
@@ -174,14 +174,14 @@ describe('Container Tests', () =>
         root.addChild(container2);
         root.addChild(container3);
 
-        root.layerGroup.structureDidChange = false;
+        root.renderGroup.structureDidChange = false;
 
         expect(root.sortableChildren).toEqual(false);
 
         container1.zIndex = 1;
 
         expect(root.sortDirty).toEqual(true);
-        expect(root.layerGroup.structureDidChange).toEqual(true);
+        expect(root.renderGroup.structureDidChange).toEqual(true);
 
         root.sortChildren();
 

@@ -53,9 +53,9 @@ export const effectsMixin: Partial<Container> = {
 
         this.effects.sort((a, b) => a.priority - b.priority);
 
-        if (!this.isLayerRoot && this.layerGroup)
+        if (!this.isRenderGroupRoot && this.renderGroup)
         {
-            this.layerGroup.structureDidChange = true;
+            this.renderGroup.structureDidChange = true;
         }
 
         this._updateIsSimple();
@@ -74,9 +74,9 @@ export const effectsMixin: Partial<Container> = {
 
         this.effects.splice(index, 1);
 
-        if (!this.isLayerRoot && this.layerGroup)
+        if (!this.isRenderGroupRoot && this.renderGroup)
         {
-            this.layerGroup.structureDidChange = true;
+            this.renderGroup.structureDidChange = true;
         }
 
         this._updateIsSimple();

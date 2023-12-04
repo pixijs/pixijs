@@ -3,7 +3,7 @@ import { addMaskBounds } from '../../src/rendering/mask/utils/addMaskBounds';
 import { Bounds } from '../../src/scene/container/bounds/Bounds';
 import { getGlobalBounds } from '../../src/scene/container/bounds/getGlobalBounds';
 import { Container } from '../../src/scene/container/Container';
-import { updateLayerGroupTransforms } from '../../src/scene/container/utils/updateLayerGroupTransforms';
+import { updateRenderGroupTransforms } from '../../src/scene/container/utils/updateRenderGroupTransforms';
 import { DummyEffect } from './DummyEffect';
 import { DummyView } from './DummyView';
 
@@ -11,7 +11,7 @@ describe('getGlobalBounds', () =>
 {
     it('should measure correctly', async () =>
     {
-        const root = new Container({ layer: true, label: 'root' });
+        const root = new Container({ isRenderGroup: true, label: 'root' });
 
         const container = new Container({ label: 'container' });
 
@@ -28,7 +28,7 @@ describe('getGlobalBounds', () =>
 
     it('should measure correctly with transforms', async () =>
     {
-        const root = new Container({ layer: true, label: 'root' });
+        const root = new Container({ isRenderGroup: true, label: 'root' });
 
         const container = new Container({ label: 'container' });
 
@@ -53,9 +53,9 @@ describe('getGlobalBounds', () =>
 
     it('should measure correctly with nested layer groups transforms', async () =>
     {
-        const root = new Container({ layer: true, label: 'root' });
+        const root = new Container({ isRenderGroup: true, label: 'root' });
 
-        const container = new Container({ label: 'container', layer: true });
+        const container = new Container({ label: 'container', isRenderGroup: true });
 
         const child = new Container({ label: 'child', view: new DummyView() });
 
@@ -78,9 +78,9 @@ describe('getGlobalBounds', () =>
 
     it('should measure correctly skip transforms', async () =>
     {
-        const root = new Container({ layer: true, label: 'root' });
+        const root = new Container({ isRenderGroup: true, label: 'root' });
 
-        const container = new Container({ label: 'container', layer: true });
+        const container = new Container({ label: 'container', isRenderGroup: true });
 
         const child = new Container({ label: 'child', view: new DummyView() });
 
@@ -96,7 +96,7 @@ describe('getGlobalBounds', () =>
 
         expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 100, maxY: 100 });
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         // this should be right..
         const bounds2 = getGlobalBounds(child, true, new Bounds());
@@ -106,9 +106,9 @@ describe('getGlobalBounds', () =>
 
     it('should measure correctly with child has a modified parent transforms', async () =>
     {
-        const root = new Container({ layer: true, label: 'root' });
+        const root = new Container({ isRenderGroup: true, label: 'root' });
 
-        const container = new Container({ label: 'container', layer: true });
+        const container = new Container({ label: 'container', isRenderGroup: true });
 
         const child = new Container({ label: 'child', view: new DummyView() });
 
@@ -125,9 +125,9 @@ describe('getGlobalBounds', () =>
 
     it('should measure correctly multiple children', async () =>
     {
-        const root = new Container({ layer: true, label: 'root' });
+        const root = new Container({ isRenderGroup: true, label: 'root' });
 
-        const container = new Container({ label: 'container', layer: true });
+        const container = new Container({ label: 'container', isRenderGroup: true });
 
         const child = new Container({ label: 'child', view: new DummyView() });
         const child2 = new Container({ label: 'child2', view: new DummyView() });
@@ -158,7 +158,7 @@ describe('getGlobalBounds', () =>
 
     it('should measure correctly with visibility', async () =>
     {
-        const container = new Container({ label: 'container', layer: true });
+        const container = new Container({ label: 'container', isRenderGroup: true });
 
         const child = new Container({ label: 'child', view: new DummyView() });
 
@@ -173,7 +173,7 @@ describe('getGlobalBounds', () =>
 
     it('should measure with effects correctly', async () =>
     {
-        const container = new Container({ label: 'container', layer: true });
+        const container = new Container({ label: 'container', isRenderGroup: true });
 
         const child = new Container({ label: 'child', view: new DummyView() });
 
@@ -229,12 +229,12 @@ describe('getGlobalBounds', () =>
         expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 500, maxY: 500 });
     });
 
-    it('should get global bounds correctly with a layer', async () =>
+    it('should get global bounds correctly with a render group', async () =>
     {
-        const container = new Container({ label: 'container', layer: true });
+        const container = new Container({ label: 'container', isRenderGroup: true });
 
         const child3 = new Container({ label: 'child3' });
-        const child2 = new Container({ label: 'child2', layer: true });
+        const child2 = new Container({ label: 'child2', isRenderGroup: true });
 
         const child = new Container({ label: 'child', view: new DummyView() });
 
@@ -245,7 +245,7 @@ describe('getGlobalBounds', () =>
         child3.addChild(child2);
         child2.addChild(child);
 
-        updateLayerGroupTransforms(container.layerGroup, true);
+        updateRenderGroupTransforms(container.renderGroup, true);
 
         expect(child.worldTransform.tx).toBe(250);
 
