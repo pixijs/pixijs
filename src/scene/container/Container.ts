@@ -111,6 +111,8 @@ export interface ContainerOptions<T extends View> extends PixiMixins.ContainerOp
     cullable?: boolean;
     /** @see scene.Container#cullArea */
     cullArea?: Rectangle;
+    /** @see scene.Container#cullableChildren */
+    cullableChildren?: boolean;
 }
 
 export interface Container
