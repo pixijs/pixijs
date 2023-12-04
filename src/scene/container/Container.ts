@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import { Color, type ColorSource } from '../../color/Color';
+import { cullingMixin } from '../../culling/cullingMixin';
 import { Matrix } from '../../maths/matrix/Matrix';
 import { DEG_TO_RAD, RAD_TO_DEG } from '../../maths/misc/const';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
@@ -1128,3 +1129,4 @@ Container.mixin(measureMixin);
 Container.mixin(effectsMixin);
 Container.mixin(findMixin);
 Container.mixin(sortMixin);
+Container.mixin(cullingMixin);

@@ -195,7 +195,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
     public getTextureBindGroup(texture: Texture)
     {
-        return this._bindGroupHash[texture.id] ?? this._createTextureBindGroup(texture);
+        return this._bindGroupHash[texture.uid] ?? this._createTextureBindGroup(texture);
     }
 
     private _createTextureBindGroup(texture: BindableTexture)
