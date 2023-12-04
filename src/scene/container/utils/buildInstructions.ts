@@ -7,10 +7,10 @@ import type { RenderPipes } from '../../../rendering/renderers/types';
 import type { Container } from '../Container';
 import type { RenderGroup } from '../RenderGroup';
 
-export function buildInstructions(layerGroup: RenderGroup, renderPipes: RenderPipes)
+export function buildInstructions(renderGroup: RenderGroup, renderPipes: RenderPipes)
 {
-    const root = layerGroup.root;
-    const instructionSet = layerGroup.instructionSet;
+    const root = renderGroup.root;
+    const instructionSet = renderGroup.instructionSet;
 
     instructionSet.reset();
 

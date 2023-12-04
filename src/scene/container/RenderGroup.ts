@@ -41,7 +41,7 @@ export class RenderGroup implements Instruction
     /**
      * proxy renderable is used to render the root containers view if it has one
      * this is used as we do not want to inherit the transform / color of the root container
-     * it is only used by the parent root layer group
+     * it is only used by the parent root render group
      */
     public proxyRenderable: RGRenderable<View>;
 
@@ -124,7 +124,7 @@ export class RenderGroup implements Instruction
         {
             if (child.renderGroup.root === child)
             {
-                // its already its own layer group..
+                // its already its own render group..
                 this.addRenderGroupChild(child.renderGroup);
 
                 return;

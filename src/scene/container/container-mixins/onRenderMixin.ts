@@ -14,13 +14,13 @@ export const onRenderMixin: Partial<Container> = {
 
     set onRender(func: () => void)
     {
-        const layerGroup = this.renderGroup;
+        const renderGroup = this.renderGroup;
 
         if (!func)
         {
             if (this._onRender)
             {
-                layerGroup?.removeOnRender(this);
+                renderGroup?.removeOnRender(this);
             }
 
             this._onRender = null;
@@ -30,7 +30,7 @@ export const onRenderMixin: Partial<Container> = {
 
         if (!this._onRender)
         {
-            layerGroup?.addOnRender(this);
+            renderGroup?.addOnRender(this);
         }
 
         this._onRender = func;

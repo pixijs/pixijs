@@ -36,7 +36,7 @@ export class RGRenderable<T extends View = View> extends EventEmitter implements
         this.renderGroupTransform = new Matrix();
         this.rgVisibleRenderable = 0b11;
 
-        // layer renderable should match the original id as we use it to reference
+        // render group renderable should match the original id as we use it to reference
         // the gpu counter part on various systems
         this.uid = original.uid;
         this.view.owner = this;

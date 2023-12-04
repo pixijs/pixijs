@@ -229,7 +229,7 @@ describe('getGlobalBounds', () =>
         expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 500, maxY: 500 });
     });
 
-    it('should get global bounds correctly with a layer', async () =>
+    it('should get global bounds correctly with a render group', async () =>
     {
         const container = new Container({ label: 'container', isRenderGroup: true });
 

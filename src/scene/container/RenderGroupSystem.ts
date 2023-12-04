@@ -43,46 +43,46 @@ export class RenderGroupSystem implements System
         const renderer = this._renderer;
 
         // collect all the renderGroups in the scene and then render them one by one..
-        const layerGroups = collectRenderGroups(container.renderGroup, []);
+        const renderGroups = collectRenderGroups(container.renderGroup, []);
 
         const renderPipes = (renderer as WebGPURenderer).renderPipes;
 
-        for (let i = 0; i < layerGroups.length; i++)
+        for (let i = 0; i < renderGroups.length; i++)
         {
-            const layerGroup = layerGroups[i];
+            const renderGroup = renderGroups[i];
 
-            layerGroup.runOnRender();
+            renderGroup.runOnRender();
 
-            layerGroup.instructionSet.renderPipes = renderPipes;
+            renderGroup.instructionSet.renderPipes = renderPipes;
 
-            if (!layerGroup.structureDidChange)
+            if (!renderGroup.structureDidChange)
             {
                 // phase 1 - validate all the renderables
-                validateRenderables(layerGroup, renderPipes);
+                validateRenderables(renderGroup, renderPipes);
             }
 
             // phase 2 - update all the transforms
             // including updating the renderables..
-            updateRenderGroupTransforms(layerGroup);
+            updateRenderGroupTransforms(renderGroup);
 
-            if (layerGroup.structureDidChange)
+            if (renderGroup.structureDidChange)
             {
-                layerGroup.structureDidChange = false;
+                renderGroup.structureDidChange = false;
 
                 // build the renderables
-                buildInstructions(layerGroup, renderPipes);
+                buildInstructions(renderGroup, renderPipes);
             }
             else
             {
                 // update remaining renderables
-                updateRenderables(layerGroup);
+                updateRenderables(renderGroup);
             }
 
             // reset the renderables to update
-            layerGroup.childrenRenderablesToUpdate.index = 0;
+            renderGroup.childrenRenderablesToUpdate.index = 0;
 
             // upload all the things!
-            renderer.renderPipes.batch.upload(layerGroup.instructionSet);
+            renderer.renderPipes.batch.upload(renderGroup.instructionSet);
         }
 
         if (transform)
@@ -111,9 +111,9 @@ export class RenderGroupSystem implements System
     }
 }
 
-function updateRenderables(layerGroup: RenderGroup)
+function updateRenderables(renderGroup: RenderGroup)
 {
-    const { list, index } = layerGroup.childrenRenderablesToUpdate;
+    const { list, index } = renderGroup.childrenRenderablesToUpdate;
 
     for (let i = 0; i < index; i++)
     {
@@ -121,7 +121,7 @@ function updateRenderables(layerGroup: RenderGroup)
 
         if (container.didViewUpdate)
         {
-            layerGroup.updateRenderable(container);
+            renderGroup.updateRenderable(container);
         }
     }
 }

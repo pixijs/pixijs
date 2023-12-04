@@ -94,7 +94,7 @@ describe('Transform updates', () =>
         expect(child.renderGroupTransform.tx).toEqual(30);
     });
 
-    it('should give a correct layer transform', async () =>
+    it('should give a correct render group transform', async () =>
     {
         const root = new Container({ label: 'root', isRenderGroup: true });
 
@@ -163,7 +163,7 @@ describe('Transform updates', () =>
         expect(child.worldTransform.tx).toEqual(40);
     });
 
-    it('should give a correct layerGroup layer transform', async () =>
+    it('should give a correct renderGroup transform', async () =>
     {
         const root = new Container({ label: 'root', isRenderGroup: true });
 

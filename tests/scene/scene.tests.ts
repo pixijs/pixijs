@@ -64,7 +64,7 @@ describe('Scene', () =>
         expect(childPost.renderGroup).toEqual(container.renderGroup);
     });
 
-    it('should snot enable a layer twice', async () =>
+    it('should not enable a render group twice', async () =>
     {
         const container = new Container();
 
@@ -76,7 +76,7 @@ describe('Scene', () =>
         expect(layerGroup).toBe(container.renderGroup);
     });
 
-    it('should set correct layer groups a child with a more complex scene graph', async () =>
+    it('should set correct render groups a child with a more complex scene graph', async () =>
     {
         const container = new Container();
 
@@ -151,7 +151,7 @@ describe('Scene', () =>
         expect(container2.renderGroup.renderGroupChildren).toHaveLength(0);
     });
 
-    it('should set reparent from one layer to another group', async () =>
+    it('should set reparent from one render group to another group', async () =>
     {
         const container = new Container();
 
@@ -221,7 +221,7 @@ describe('Scene', () =>
     });
 
     // REparents a rendergroup..
-    it('should set reparent on layer to another', async () =>
+    it('should set reparent on render group to another', async () =>
     {
         const container = new Container();
 

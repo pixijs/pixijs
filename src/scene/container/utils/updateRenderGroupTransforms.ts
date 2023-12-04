@@ -6,15 +6,15 @@ import type { RenderGroup } from '../RenderGroup';
 
 const tempContainer = new Container();
 
-export function updateRenderGroupTransforms(layerGroup: RenderGroup, updateChildRenderGroups = false)
+export function updateRenderGroupTransforms(renderGroup: RenderGroup, updateChildRenderGroups = false)
 {
-    updateRenderGroupTransform(layerGroup);
+    updateRenderGroupTransform(renderGroup);
 
-    const childrenToUpdate = layerGroup.childrenToUpdate;
+    const childrenToUpdate = renderGroup.childrenToUpdate;
 
-    const updateTick = layerGroup.updateTick;
+    const updateTick = renderGroup.updateTick;
 
-    layerGroup.updateTick++;
+    renderGroup.updateTick++;
 
     for (const j in childrenToUpdate)
     {
@@ -33,9 +33,9 @@ export function updateRenderGroupTransforms(layerGroup: RenderGroup, updateChild
 
     if (updateChildRenderGroups)
     {
-        for (let i = 0; i < layerGroup.renderGroupChildren.length; i++)
+        for (let i = 0; i < renderGroup.renderGroupChildren.length; i++)
         {
-            updateRenderGroupTransforms(layerGroup.renderGroupChildren[i], updateChildRenderGroups);
+            updateRenderGroupTransforms(renderGroup.renderGroupChildren[i], updateChildRenderGroups);
         }
     }
 }

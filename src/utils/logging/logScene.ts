@@ -43,11 +43,11 @@ export function logScene(container: Container, depth = 0, data: {color?: string}
     }
 
     // eslint-disable-next-line max-len
-    let output = `%c ${spaces}|- ${label} (worldX:${container.worldTransform.tx}, layerX:${container.renderGroupTransform.tx}, localX:${container.x})`;
+    let output = `%c ${spaces}|- ${label} (worldX:${container.worldTransform.tx}, renderX:${container.renderGroupTransform.tx}, localX:${container.x})`;
 
     if (container.isRenderGroupRoot)
     {
-        output += ' (LayerGroup)';
+        output += ' (RenderGroup)';
     }
 
     if (container.filters)
@@ -67,8 +67,8 @@ export function logScene(container: Container, depth = 0, data: {color?: string}
     }
 }
 
-export function logLayerGroupScene(
-    layerGroup: RenderGroup, depth = 0,
+export function logRenderGroupScene(
+    renderGroup: RenderGroup, depth = 0,
     data: {index: number, color?: string} = { index: 0, color: '#000000' }
 )
 {
@@ -80,16 +80,16 @@ export function logLayerGroupScene(
         spaces += '    ';
     }
 
-    const output = `%c ${spaces}- ${data.index}: ${layerGroup.root.label} worldX:${layerGroup.worldTransform.tx}`;
+    const output = `%c ${spaces}- ${data.index}: ${renderGroup.root.label} worldX:${renderGroup.worldTransform.tx}`;
 
     console.log(output, `color:${data.color}; font-weight:bold;`);
 
     depth++;
 
-    for (let i = 0; i < layerGroup.renderGroupChildren.length; i++)
+    for (let i = 0; i < renderGroup.renderGroupChildren.length; i++)
     {
-        const child = layerGroup.renderGroupChildren[i];
+        const child = renderGroup.renderGroupChildren[i];
 
-        logLayerGroupScene(child, depth, { ...data, index: i });
+        logRenderGroupScene(child, depth, { ...data, index: i });
     }
 }

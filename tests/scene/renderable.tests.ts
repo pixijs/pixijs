@@ -3,7 +3,7 @@ import { DummyView } from './DummyView';
 
 describe('Renderable Containers', () =>
 {
-    it('should register a renderable update correctly in the layer group', async () =>
+    it('should register a renderable update correctly in the render group', async () =>
     {
         const container = new Container({
             isRenderGroup: true,
@@ -23,7 +23,7 @@ describe('Renderable Containers', () =>
         });
     });
 
-    it('should register a renderable update only once on the layer group', async () =>
+    it('should register a renderable update only once on the render group', async () =>
     {
         const container = new Container({
             isRenderGroup: true,

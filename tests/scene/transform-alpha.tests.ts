@@ -3,7 +3,7 @@ import { updateRenderGroupTransforms } from '../../src/scene/container/utils/upd
 
 describe('Transform Alpha', () =>
 {
-    it('should cap layerAlpha to between zero and one', async () =>
+    it('should cap render group alpha to between zero and one', async () =>
     {
         const root = new Container({ isRenderGroup: true });
 
