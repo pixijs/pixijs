@@ -1,4 +1,4 @@
-import { assignPropertiesFromOptions } from '../../../src/scene/container/utils/assignPropertiesFromOptions';
+import { assignWithIgnore } from '../../../src/scene/container/utils/assignWithIgnore';
 
 describe('assignPropertiesFromOptions', () =>
 {
@@ -11,7 +11,7 @@ describe('assignPropertiesFromOptions', () =>
             c: 3,
         };
 
-        assignPropertiesFromOptions(target, options);
+        assignWithIgnore(target, options);
 
         expect(target).toEqual(options);
     });
@@ -28,7 +28,7 @@ describe('assignPropertiesFromOptions', () =>
             b: true,
         };
 
-        assignPropertiesFromOptions(target, options, ignore);
+        assignWithIgnore(target, options, ignore);
 
         expect(target).toEqual({
             a: 1,
@@ -49,7 +49,7 @@ describe('assignPropertiesFromOptions', () =>
             c: undefined,
         };
 
-        assignPropertiesFromOptions(target, options);
+        assignWithIgnore(target, options);
 
         expect(target).toEqual({
             a: 1,
