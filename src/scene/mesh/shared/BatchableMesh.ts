@@ -14,7 +14,7 @@ export class BatchableMesh implements BatchableObject
     public renderable: Renderable<MeshView>;
     public roundPixels: 0 | 1 = 0;
 
-    get blendMode() { return this.renderable.layerBlendMode; }
+    get blendMode() { return this.renderable.rgBlendMode; }
 
     public reset()
     {
@@ -46,7 +46,7 @@ export class BatchableMesh implements BatchableObject
         const view = this.renderable.view;
 
         const geometry = view.geometry;
-        const wt = renderable.layerTransform;
+        const wt = renderable.renderGroupTransform;
 
         const textureIdAndRound = (textureId << 16) | (this.roundPixels & 0xFFFF);
 
@@ -61,7 +61,7 @@ export class BatchableMesh implements BatchableObject
         const positions = geometry.positions;
         const uvs = geometry.uvs;
 
-        const abgr = renderable.layerColorAlpha;
+        const abgr = renderable.rgColorAlpha;
 
         for (let i = 0; i < positions.length; i += 2)
         {

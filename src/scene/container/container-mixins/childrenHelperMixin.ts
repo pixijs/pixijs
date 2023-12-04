@@ -43,9 +43,9 @@ export const childrenHelperMixin: Partial<Container> = {
 
                 if (!child) continue;
 
-                if (this.layerGroup)
+                if (this.renderGroup)
                 {
-                    this.layerGroup.removeChild(child);
+                    this.renderGroup.removeChild(child);
                 }
 
                 removed.push(child);
@@ -189,9 +189,9 @@ export const childrenHelperMixin: Partial<Container> = {
         child.didViewUpdate = false;
         child._updateFlags = 0b1111;
 
-        if (this.layerGroup)
+        if (this.renderGroup)
         {
-            this.layerGroup.addChild(child);
+            this.renderGroup.addChild(child);
         }
 
         if (this.sortableChildren) this.sortDirty = true;

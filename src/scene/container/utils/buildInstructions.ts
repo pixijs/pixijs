@@ -5,9 +5,9 @@ import type { InstructionPipe, RenderPipe } from '../../../rendering/renderers/s
 import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
 import type { RenderPipes } from '../../../rendering/renderers/types';
 import type { Container } from '../Container';
-import type { LayerGroup } from '../LayerGroup';
+import type { RenderGroup } from '../RenderGroup';
 
-export function buildInstructions(layerGroup: LayerGroup, renderPipes: RenderPipes)
+export function buildInstructions(layerGroup: RenderGroup, renderPipes: RenderPipes)
 {
     const root = layerGroup.root;
     const instructionSet = layerGroup.instructionSet;
@@ -42,7 +42,7 @@ export function collectAllRenderables(
 {
     // if there is 0b01 or 0b10 the return value
 
-    if (container.layerVisibleRenderable < 0b11 || !container.includeInBuild) return;
+    if (container.rgVisibleRenderable < 0b11 || !container.includeInBuild) return;
 
     if (container.sortableChildren)
     {
@@ -70,7 +70,7 @@ function collectAllRenderablesSimple(
     if (view)
     {
         // TODO add blends in
-        renderPipes.blendMode.setBlendMode(container as Renderable, container.layerBlendMode, instructionSet);
+        renderPipes.blendMode.setBlendMode(container as Renderable, container.rgBlendMode, instructionSet);
 
         container.didViewUpdate = false;
 
@@ -79,7 +79,7 @@ function collectAllRenderablesSimple(
         rp[view.renderPipeId].addRenderable(container, instructionSet);
     }
 
-    if (!container.isLayerRoot)
+    if (!container.isRenderGroupRoot)
     {
         const children = container.children;
         const length = children.length;
@@ -100,7 +100,7 @@ function collectAllRenderablesAdvanced(
 {
     if (isRoot)
     {
-        const layerGroup = container.layerGroup;
+        const layerGroup = container.renderGroup;
 
         if (layerGroup.root.view)
         {
@@ -109,7 +109,7 @@ function collectAllRenderablesAdvanced(
 
             if (proxyRenderable)
             {
-                renderPipes.blendMode.setBlendMode(proxyRenderable, proxyRenderable.layerBlendMode, instructionSet);
+                renderPipes.blendMode.setBlendMode(proxyRenderable, proxyRenderable.rgBlendMode, instructionSet);
 
                 // eslint-disable-next-line max-len
                 (renderPipes[proxyRenderable.view.renderPipeId as keyof RenderPipes] as any).addRenderable(proxyRenderable, instructionSet);
@@ -127,9 +127,9 @@ function collectAllRenderablesAdvanced(
         }
     }
 
-    if (!isRoot && container.isLayerRoot)
+    if (!isRoot && container.isRenderGroupRoot)
     {
-        renderPipes.layer.addLayerGroup(container.layerGroup, instructionSet);
+        renderPipes.layer.addLayerGroup(container.renderGroup, instructionSet);
     }
     else
     {
@@ -138,7 +138,7 @@ function collectAllRenderablesAdvanced(
         if (view)
         {
             // TODO add blends in
-            renderPipes.blendMode.setBlendMode(container as Renderable, container.layerBlendMode, instructionSet);
+            renderPipes.blendMode.setBlendMode(container as Renderable, container.rgBlendMode, instructionSet);
             container.didViewUpdate = false;
 
             const pipe = renderPipes[view.renderPipeId as keyof RenderPipes]as RenderPipe<any>;
@@ -170,7 +170,7 @@ function collectAllRenderablesAdvanced(
     }
 }
 
-function initProxyRenderable(layerGroup: LayerGroup)
+function initProxyRenderable(layerGroup: RenderGroup)
 {
     const root = layerGroup.root;
 

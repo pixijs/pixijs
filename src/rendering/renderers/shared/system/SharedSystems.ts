@@ -1,7 +1,7 @@
 import { FilterPipe } from '../../../../filters/FilterPipe';
 import { FilterSystem } from '../../../../filters/FilterSystem';
-import { LayerPipe } from '../../../../scene/container/LayerPipe';
-import { LayerSystem } from '../../../../scene/container/LayerSystem';
+import { RenderGroupPipe } from '../../../../scene/container/RenderGroupPipe';
+import { RenderGroupSystem } from '../../../../scene/container/RenderGroupSystem';
 import { GraphicsContextSystem } from '../../../../scene/graphics/shared/GraphicsContextSystem';
 import { GraphicsPipe } from '../../../../scene/graphics/shared/GraphicsPipe';
 import { MeshPipe } from '../../../../scene/mesh/shared/MeshPipe';
@@ -35,7 +35,7 @@ export const SharedSystems = [
     ViewSystem,
     CanvasTextSystem,
     HTMLTextSystem,
-    LayerSystem,
+    RenderGroupSystem,
     UniformBufferSystem,
     TextureGCSystem,
     GenerateTextureSystem,
@@ -46,7 +46,7 @@ export const SharedRenderPipes = [
     BlendModePipe,
     BatcherPipe,
     SpritePipe,
-    LayerPipe,
+    RenderGroupPipe,
     MeshPipe,
     GraphicsPipe,
     CanvasTextPipe,

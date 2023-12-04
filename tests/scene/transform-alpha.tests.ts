@@ -5,7 +5,7 @@ describe('Transform Alpha', () =>
 {
     it('should cap layerAlpha to between zero and one', async () =>
     {
-        const root = new Container({ layer: true });
+        const root = new Container({ isRenderGroup: true });
 
         const parentContainer = new Container();
 
@@ -17,15 +17,15 @@ describe('Transform Alpha', () =>
         parentContainer.alpha = 20;
         childContainer.alpha = 3;
 
-        updateLayerGroupTransforms(root.layerGroup, false);
+        updateLayerGroupTransforms(root.renderGroup, false);
 
-        expect(childContainer.layerAlpha).toEqual(1);
+        expect(childContainer.rgAlpha).toEqual(1);
 
         parentContainer.alpha = -10;
 
-        updateLayerGroupTransforms(root.layerGroup, false);
+        updateLayerGroupTransforms(root.renderGroup, false);
 
-        expect(childContainer.layerAlpha).toEqual(0);
+        expect(childContainer.rgAlpha).toEqual(0);
     });
 });
 

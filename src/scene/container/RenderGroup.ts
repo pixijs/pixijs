@@ -7,15 +7,15 @@ import type { Renderable } from '../../rendering/renderers/shared/Renderable';
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Container } from './Container';
 
-export class LayerGroup implements Instruction
+export class RenderGroup implements Instruction
 {
     public renderPipeId = 'layer';
     public root: Container = null;
 
     public canBundle = false;
 
-    public layerGroupParent: LayerGroup = null;
-    public layerGroupChildren: LayerGroup[] = [];
+    public renderGroupParent: RenderGroup = null;
+    public renderGroupChildren: RenderGroup[] = [];
 
     private readonly _children: Container[] = [];
 
@@ -59,38 +59,38 @@ export class LayerGroup implements Instruction
 
     get layerTransform()
     {
-        return this.root.layerTransform;
+        return this.root.renderGroupTransform;
     }
 
-    public addLayerGroupChild(layerGroupChild: LayerGroup)
+    public addRenderGroupChild(layerGroupChild: RenderGroup)
     {
-        if (layerGroupChild.layerGroupParent)
+        if (layerGroupChild.renderGroupParent)
         {
-            layerGroupChild.layerGroupParent._removeLayerGroupChild(layerGroupChild);
+            layerGroupChild.renderGroupParent._removeRenderGroupChild(layerGroupChild);
         }
 
-        layerGroupChild.layerGroupParent = this;
+        layerGroupChild.renderGroupParent = this;
 
         this.onChildUpdate(layerGroupChild.root);
 
-        this.layerGroupChildren.push(layerGroupChild);
+        this.renderGroupChildren.push(layerGroupChild);
     }
 
-    private _removeLayerGroupChild(layerGroupChild: LayerGroup)
+    private _removeRenderGroupChild(layerGroupChild: RenderGroup)
     {
         if (layerGroupChild.root.didChange)
         {
             this._removeChildFromUpdate(layerGroupChild.root);
         }
 
-        const index = this.layerGroupChildren.indexOf(layerGroupChild);
+        const index = this.renderGroupChildren.indexOf(layerGroupChild);
 
         if (index > -1)
         {
-            this.layerGroupChildren.splice(index, 1);
+            this.renderGroupChildren.splice(index, 1);
         }
 
-        layerGroupChild.layerGroupParent = null;
+        layerGroupChild.renderGroupParent = null;
     }
 
     public addChild(child: Container)
@@ -106,12 +106,12 @@ export class LayerGroup implements Instruction
 
             if (child.parent === this.root)
             {
-                child.relativeLayerDepth = 1;
+                child.relativeRenderGroupDepth = 1;
             }
 
             else
             {
-                child.relativeLayerDepth = child.parent.relativeLayerDepth + 1;
+                child.relativeRenderGroupDepth = child.parent.relativeRenderGroupDepth + 1;
             }
 
             if (child._onRender)
@@ -120,25 +120,25 @@ export class LayerGroup implements Instruction
             }
         }
 
-        if (child.layerGroup)
+        if (child.renderGroup)
         {
-            if (child.layerGroup.root === child)
+            if (child.renderGroup.root === child)
             {
                 // its already its own layer group..
-                this.addLayerGroupChild(child.layerGroup);
+                this.addRenderGroupChild(child.renderGroup);
 
                 return;
             }
         }
         else
         {
-            child.layerGroup = this;
+            child.renderGroup = this;
             child.didChange = true;
         }
 
         const children = child.children;
 
-        if (!child.isLayerRoot)
+        if (!child.isRenderGroupRoot)
         {
             this.onChildUpdate(child);
         }
@@ -159,7 +159,7 @@ export class LayerGroup implements Instruction
             this.removeOnRender(child);
         }
 
-        if (child.layerGroup.root !== child)
+        if (child.renderGroup.root !== child)
         {
             const children = child.children;
 
@@ -170,15 +170,15 @@ export class LayerGroup implements Instruction
 
             if (child.didChange)
             {
-                child.layerGroup._removeChildFromUpdate(child);
+                child.renderGroup._removeChildFromUpdate(child);
             }
 
-            child.layerGroup = null;
+            child.renderGroup = null;
         }
 
         else
         {
-            this._removeLayerGroupChild(child.layerGroup);
+            this._removeRenderGroupChild(child.renderGroup);
         }
 
         const index = this._children.indexOf(child);
@@ -191,11 +191,11 @@ export class LayerGroup implements Instruction
 
     public onChildUpdate(child: Container)
     {
-        let childrenToUpdate = this.childrenToUpdate[child.relativeLayerDepth];
+        let childrenToUpdate = this.childrenToUpdate[child.relativeRenderGroupDepth];
 
         if (!childrenToUpdate)
         {
-            childrenToUpdate = this.childrenToUpdate[child.relativeLayerDepth] = {
+            childrenToUpdate = this.childrenToUpdate[child.relativeRenderGroupDepth] = {
                 index: 0,
                 list: [],
             };
@@ -208,7 +208,7 @@ export class LayerGroup implements Instruction
     public updateRenderable(container: Renderable)
     {
         // only update if its visible!
-        if (container.layerVisibleRenderable < 0b11) return;
+        if (container.rgVisibleRenderable < 0b11) return;
 
         container.didViewUpdate = false;
         // actually updates the renderable..
@@ -222,7 +222,7 @@ export class LayerGroup implements Instruction
 
     private _removeChildFromUpdate(child: Container)
     {
-        const childrenToUpdate = this.childrenToUpdate[child.relativeLayerDepth];
+        const childrenToUpdate = this.childrenToUpdate[child.relativeRenderGroupDepth];
 
         if (!childrenToUpdate)
         { return; }

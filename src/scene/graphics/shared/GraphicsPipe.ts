@@ -144,15 +144,15 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
 
         const shader = context.customShader || this._adaptor.shader;
 
-        this.state.blendMode = renderable.layerBlendMode;
+        this.state.blendMode = renderable.rgBlendMode;
 
         const localUniforms = shader.resources.localUniforms.uniforms;
 
-        localUniforms.uTransformMatrix = renderable.layerTransform;
+        localUniforms.uTransformMatrix = renderable.renderGroupTransform;
         localUniforms.uRound = renderer._roundPixels | renderable.view.roundPixels;
 
         color32BitToUniform(
-            renderable.layerColorAlpha,
+            renderable.rgColorAlpha,
             localUniforms.uColor,
             0
         );

@@ -9,19 +9,19 @@ describe('LayerSystem', () =>
     {
         const renderer = await getRenderer();
 
-        const container = new Container({ layer: true });
+        const container = new Container({ isRenderGroup: true });
         const text = new Text({ text: 'hello world' });
 
         container.addChild(text);
 
-        expect(container.layerGroup.childrenRenderablesToUpdate.index).toEqual(0);
+        expect(container.renderGroup.childrenRenderablesToUpdate.index).toEqual(0);
 
         text.text = 'hello world 2';
 
-        expect(container.layerGroup.childrenRenderablesToUpdate.index).toEqual(1);
+        expect(container.renderGroup.childrenRenderablesToUpdate.index).toEqual(1);
 
         renderer.render(container);
 
-        expect(container.layerGroup.childrenRenderablesToUpdate.index).toEqual(0);
+        expect(container.renderGroup.childrenRenderablesToUpdate.index).toEqual(0);
     });
 });

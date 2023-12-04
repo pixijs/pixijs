@@ -4,9 +4,9 @@ import { executeInstructions } from './utils/executeInstructions';
 import type { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 import type { InstructionPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../../rendering/renderers/types';
-import type { LayerGroup } from './LayerGroup';
+import type { RenderGroup } from './RenderGroup';
 
-export class LayerPipe implements InstructionPipe<LayerGroup>
+export class RenderGroupPipe implements InstructionPipe<RenderGroup>
 {
     public static extension = {
         type: [
@@ -24,14 +24,14 @@ export class LayerPipe implements InstructionPipe<LayerGroup>
         this._renderer = renderer;
     }
 
-    public addLayerGroup(layerGroup: LayerGroup, instructionSet: InstructionSet): void
+    public addLayerGroup(layerGroup: RenderGroup, instructionSet: InstructionSet): void
     {
         this._renderer.renderPipes.batch.break(instructionSet);
 
         instructionSet.add(layerGroup);
     }
 
-    public execute(layerGroup: LayerGroup)
+    public execute(layerGroup: RenderGroup)
     {
         if (!layerGroup.isRenderable) return;
 

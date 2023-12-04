@@ -2,11 +2,11 @@ import { Container, UPDATE_BLEND, UPDATE_COLOR, UPDATE_VISIBLE } from '../Contai
 import { mixColors } from './mixColors';
 import { updateLocalTransform } from './updateLocalTransform';
 
-import type { LayerGroup } from '../LayerGroup';
+import type { RenderGroup } from '../RenderGroup';
 
 const tempContainer = new Container();
 
-export function updateLayerGroupTransforms(layerGroup: LayerGroup, updateChildRenderGroups = false)
+export function updateLayerGroupTransforms(layerGroup: RenderGroup, updateChildRenderGroups = false)
 {
     updateLayerTransform(layerGroup);
 
@@ -33,38 +33,38 @@ export function updateLayerGroupTransforms(layerGroup: LayerGroup, updateChildRe
 
     if (updateChildRenderGroups)
     {
-        for (let i = 0; i < layerGroup.layerGroupChildren.length; i++)
+        for (let i = 0; i < layerGroup.renderGroupChildren.length; i++)
         {
-            updateLayerGroupTransforms(layerGroup.layerGroupChildren[i], updateChildRenderGroups);
+            updateLayerGroupTransforms(layerGroup.renderGroupChildren[i], updateChildRenderGroups);
         }
     }
 }
 
-export function updateLayerTransform(layerGroup: LayerGroup)
+export function updateLayerTransform(layerGroup: RenderGroup)
 {
     const root = layerGroup.root;
 
     let worldAlpha;
 
-    if (layerGroup.layerGroupParent)
+    if (layerGroup.renderGroupParent)
     {
-        const layerGroupParent = layerGroup.layerGroupParent;
+        const layerGroupParent = layerGroup.renderGroupParent;
 
         layerGroup.worldTransform.appendFrom(
-            root.layerTransform,
+            root.renderGroupTransform,
             layerGroupParent.worldTransform,
         );
 
         layerGroup.worldColor = mixColors(
-            root.layerColor,
+            root.rgColor,
             layerGroupParent.worldColor,
         );
 
-        worldAlpha = root.layerAlpha * layerGroupParent.worldAlpha;
+        worldAlpha = root.rgAlpha * layerGroupParent.worldAlpha;
     }
     else
     {
-        layerGroup.worldTransform.copyFrom(root.layerTransform);
+        layerGroup.worldTransform.copyFrom(root.renderGroupTransform);
         layerGroup.worldColor = root.localColor;
         worldAlpha = root.localAlpha;
     }
@@ -90,13 +90,13 @@ export function updateTransformAndChildren(container: Container, updateTick: num
 
     const parent = container.parent;
 
-    if (parent && !parent.isLayerRoot)
+    if (parent && !parent.isRenderGroupRoot)
     {
         updateFlags = updateFlags | container._updateFlags;
 
-        container.layerTransform.appendFrom(
+        container.renderGroupTransform.appendFrom(
             localTransform,
-            parent.layerTransform,
+            parent.renderGroupTransform,
         );
 
         if (updateFlags)
@@ -108,7 +108,7 @@ export function updateTransformAndChildren(container: Container, updateTick: num
     {
         updateFlags = container._updateFlags;
 
-        container.layerTransform.copyFrom(localTransform);
+        container.renderGroupTransform.copyFrom(localTransform);
 
         if (updateFlags)
         {
@@ -117,7 +117,7 @@ export function updateTransformAndChildren(container: Container, updateTick: num
     }
 
     // don't update children if its a layer..
-    if (!container.isLayerRoot)
+    if (!container.isRenderGroupRoot)
     {
         const children = container.children;
         const length = children.length;
@@ -127,7 +127,7 @@ export function updateTransformAndChildren(container: Container, updateTick: num
             updateTransformAndChildren(children[i], updateTick, updateFlags);
         }
 
-        const layerGroup = container.layerGroup;
+        const layerGroup = container.renderGroup;
 
         if (container.view && !layerGroup.structureDidChange)
         {
@@ -144,27 +144,27 @@ function updateColorBlendVisibility(
 {
     if (updateFlags & UPDATE_COLOR)
     {
-        container.layerColor = mixColors(
+        container.rgColor = mixColors(
             container.localColor,
-            parent.layerColor
+            parent.rgColor
         );
 
-        const layerAlpha = container.localAlpha * parent.layerAlpha;
+        const layerAlpha = container.localAlpha * parent.rgAlpha;
 
         // eslint-disable-next-line no-nested-ternary
-        container.layerAlpha = layerAlpha < 0 ? 0 : (layerAlpha > 1 ? 1 : layerAlpha);
+        container.rgAlpha = layerAlpha < 0 ? 0 : (layerAlpha > 1 ? 1 : layerAlpha);
 
-        container.layerColorAlpha = container.layerColor + (((layerAlpha * 255) | 0) << 24);
+        container.rgColorAlpha = container.rgColor + (((layerAlpha * 255) | 0) << 24);
     }
 
     if (updateFlags & UPDATE_BLEND)
     {
-        container.layerBlendMode = container.localBlendMode === 'inherit' ? parent.layerBlendMode : container.localBlendMode;
+        container.rgBlendMode = container.localBlendMode === 'inherit' ? parent.rgBlendMode : container.localBlendMode;
     }
 
     if (updateFlags & UPDATE_VISIBLE)
     {
-        container.layerVisibleRenderable = container.localVisibleRenderable & parent.layerVisibleRenderable;
+        container.rgVisibleRenderable = container.localVisibleRenderable & parent.rgVisibleRenderable;
     }
 
     container._updateFlags = 0;

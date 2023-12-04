@@ -19,13 +19,13 @@ export class LayerRenderable<T extends View = View> extends EventEmitter impleme
     public uid = uid('renderable');
     public view: T;
     private readonly _original: Container<View>;
-    public layerTransform: Matrix;
-    public layerVisibleRenderable: number;
+    public renderGroupTransform: Matrix;
+    public rgVisibleRenderable: number;
     public didViewUpdate: boolean;
     public worldTransform: Matrix;
-    public layerColorAlpha = 0xffffffff;
-    public layerColor = 0xffffff;
-    public layerAlpha = 1;
+    public rgColorAlpha = 0xffffffff;
+    public rgColor = 0xffffff;
+    public rgAlpha = 1;
 
     constructor({ original, view }: { original: Container<View>; view: T })
     {
@@ -33,8 +33,8 @@ export class LayerRenderable<T extends View = View> extends EventEmitter impleme
 
         this.view = view;
         this._original = original;
-        this.layerTransform = new Matrix();
-        this.layerVisibleRenderable = 0b11;
+        this.renderGroupTransform = new Matrix();
+        this.rgVisibleRenderable = 0b11;
 
         // layer renderable should match the original id as we use it to reference
         // the gpu counter part on various systems
@@ -42,15 +42,15 @@ export class LayerRenderable<T extends View = View> extends EventEmitter impleme
         this.view.owner = this;
     }
 
-    get layerBlendMode()
+    get rgBlendMode()
     {
-        return this._original.layerBlendMode;
+        return this._original.rgBlendMode;
     }
 
     public onViewUpdate()
     {
         this.didViewUpdate = true;
-        this._original.layerGroup.onChildViewUpdate(this);
+        this._original.renderGroup.onChildViewUpdate(this);
     }
 
     get isRenderable()

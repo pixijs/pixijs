@@ -5,20 +5,20 @@ describe('Transform Blend Modes', () =>
 {
     it('should not cause a rebuild if blend mode is changed on a layer', async () =>
     {
-        const root = new Container({ layer: true });
+        const root = new Container({ isRenderGroup: true });
 
-        root.layerGroup.structureDidChange = false;
+        root.renderGroup.structureDidChange = false;
 
         root.blendMode = 'add';
 
-        expect(root.layerGroup.structureDidChange).toEqual(false);
+        expect(root.renderGroup.structureDidChange).toEqual(false);
     });
 
     it('should cause a rebuild if blend mode is changed on a child', async () =>
     {
-        const root = new Container({ layer: true });
+        const root = new Container({ isRenderGroup: true });
 
-        root.layerGroup.structureDidChange = false;
+        root.renderGroup.structureDidChange = false;
 
         const child = new Container();
 
@@ -26,12 +26,12 @@ describe('Transform Blend Modes', () =>
 
         child.blendMode = 'add';
 
-        expect(root.layerGroup.structureDidChange).toEqual(true);
+        expect(root.renderGroup.structureDidChange).toEqual(true);
     });
 
     it('should inherit blend modes on the scene graph', async () =>
     {
-        const root = new Container({ layer: true, label: 'root' });
+        const root = new Container({ isRenderGroup: true, label: 'root' });
 
         const container = new Container({ label: 'container' });
 
@@ -43,14 +43,14 @@ describe('Transform Blend Modes', () =>
 
         container.blendMode = 'add';
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateLayerGroupTransforms(root.renderGroup, true);
 
-        expect(child.layerBlendMode).toEqual('add');
+        expect(child.rgBlendMode).toEqual('add');
     });
 
     it('should inherit blend modes when children swapped around on the scene graph', async () =>
     {
-        const root = new Container({ layer: true, label: 'root' });
+        const root = new Container({ isRenderGroup: true, label: 'root' });
 
         const container = new Container({ label: 'container' });
         const containerAdd = new Container({ label: 'containerAdd' });
@@ -64,15 +64,15 @@ describe('Transform Blend Modes', () =>
 
         containerAdd.blendMode = 'add';
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateLayerGroupTransforms(root.renderGroup, true);
 
-        expect(child.layerBlendMode).toEqual('normal');
+        expect(child.rgBlendMode).toEqual('normal');
 
         containerAdd.addChild(child);
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateLayerGroupTransforms(root.renderGroup, true);
 
-        expect(child.layerBlendMode).toEqual('add');
+        expect(child.rgBlendMode).toEqual('add');
     });
 });
 

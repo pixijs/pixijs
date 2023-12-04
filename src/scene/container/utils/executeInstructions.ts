@@ -1,8 +1,8 @@
 import type { InstructionPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
 import type { RenderPipes } from '../../../rendering/renderers/types';
-import type { LayerGroup } from '../LayerGroup';
+import type { RenderGroup } from '../RenderGroup';
 
-export function executeInstructions(layerGroup: LayerGroup, renderer: RenderPipes)
+export function executeInstructions(layerGroup: RenderGroup, renderer: RenderPipes)
 {
     const instructionSet = layerGroup.instructionSet;
     const instructions = instructionSet.instructions;

@@ -78,7 +78,7 @@ describe('Transform Tints', () =>
     it('should update global alpha correctly', async () =>
     {
         const root = new Container({
-            layer: true,
+            isRenderGroup: true,
             label: 'root',
         });
         const container2 = new Container({ label: 'container2' });
@@ -90,15 +90,15 @@ describe('Transform Tints', () =>
         container2.alpha = 0.5;
         child.alpha = 0.5;
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateLayerGroupTransforms(root.renderGroup, true);
 
-        check32BitColorMatches(child.layerColorAlpha, [63, 255, 255, 255]);
+        check32BitColorMatches(child.rgColorAlpha, [63, 255, 255, 255]);
     });
 
     it('should update global color (parent set only) correctly', async () =>
     {
         const root = new Container({
-            layer: true,
+            isRenderGroup: true,
         });
         const container2 = new Container();
         const child = new Container();
@@ -108,15 +108,15 @@ describe('Transform Tints', () =>
 
         container2.tint = 0xFF0000;
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateLayerGroupTransforms(root.renderGroup, true);
 
-        check32BitColorMatches(child.layerColorAlpha, [255, 0, 0, 255]);
+        check32BitColorMatches(child.rgColorAlpha, [255, 0, 0, 255]);
     });
 
     it('should update global color (child set only) correctly', async () =>
     {
         const root = new Container({
-            layer: true,
+            isRenderGroup: true,
         });
         const container2 = new Container();
         const child = new Container();
@@ -126,15 +126,15 @@ describe('Transform Tints', () =>
 
         child.tint = 0xFF0000;
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateLayerGroupTransforms(root.renderGroup, true);
 
-        check32BitColorMatches(child.layerColorAlpha, [255, 0, 0, 255]);
+        check32BitColorMatches(child.rgColorAlpha, [255, 0, 0, 255]);
     });
 
     it('should update global color (parent and child set) correctly', async () =>
     {
         const root = new Container({
-            layer: true,
+            isRenderGroup: true,
         });
         const container2 = new Container();
         const child = new Container();
@@ -149,9 +149,9 @@ describe('Transform Tints', () =>
         container2.tint = 0xFF0000;
         child.tint = 0x00FF00;
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateLayerGroupTransforms(root.renderGroup, true);
         // ABGR
-        check32BitColorMatches(child.layerColorAlpha, [255, 0, 127, 128]);
+        check32BitColorMatches(child.rgColorAlpha, [255, 0, 127, 128]);
     });
 
     it('should update  alpha and color with nested layer group correctly', async () =>
@@ -159,12 +159,12 @@ describe('Transform Tints', () =>
         // should ignore the alpha of the parent layer group
 
         const root = new Container({
-            layer: true,
+            isRenderGroup: true,
             label: 'root',
         });
 
         const container2 = new Container({
-            layer: true,
+            isRenderGroup: true,
             label: 'container2',
         });
 
@@ -182,9 +182,9 @@ describe('Transform Tints', () =>
         container2.tint = 0xFF0000;
         child.tint = 0x00FF00;
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateLayerGroupTransforms(root.renderGroup, true);
 
-        check32BitColorMatches(child.layerColorAlpha, [255, 0, 255, 0]);
+        check32BitColorMatches(child.rgColorAlpha, [255, 0, 255, 0]);
     });
 
     it('should update cap alpha to 1', async () =>
@@ -201,12 +201,12 @@ describe('Transform Tints', () =>
     it('should update set world layer correctly', async () =>
     {
         const root = new Container({
-            layer: true,
+            isRenderGroup: true,
             label: 'root',
         });
 
         const container2 = new Container({
-            layer: true,
+            isRenderGroup: true,
             label: 'container2',
         });
 
@@ -219,10 +219,10 @@ describe('Transform Tints', () =>
 
         root.alpha = 0.5;
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateLayerGroupTransforms(root.renderGroup, true);
 
-        check32BitColorMatches(container2.layerGroup.worldColorAlpha, [127, 255, 255, 255]);
+        check32BitColorMatches(container2.renderGroup.worldColorAlpha, [127, 255, 255, 255]);
 
-        check32BitColorMatches(child.layerColorAlpha, [255, 255, 255, 255]);
+        check32BitColorMatches(child.rgColorAlpha, [255, 255, 255, 255]);
     });
 });

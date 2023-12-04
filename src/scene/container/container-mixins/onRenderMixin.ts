@@ -14,7 +14,7 @@ export const onRenderMixin: Partial<Container> = {
 
     set onRender(func: () => void)
     {
-        const layerGroup = this.layerGroup;
+        const layerGroup = this.renderGroup;
 
         if (!func)
         {

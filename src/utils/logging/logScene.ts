@@ -3,7 +3,7 @@
 import { Sprite } from '../../scene/sprite/Sprite';
 
 import type { Container } from '../../scene/container/Container';
-import type { LayerGroup } from '../../scene/container/LayerGroup';
+import type { RenderGroup } from '../../scene/container/RenderGroup';
 
 const colors = [
     '#000080', // Navy Blue
@@ -22,7 +22,7 @@ let colorTick = 0;
 
 export function logScene(container: Container, depth = 0, data: {color?: string} = { color: '#000000' })
 {
-    if (container.isLayerRoot)
+    if (container.isRenderGroupRoot)
     {
         data.color = colors[colorTick++];
     }
@@ -43,9 +43,9 @@ export function logScene(container: Container, depth = 0, data: {color?: string}
     }
 
     // eslint-disable-next-line max-len
-    let output = `%c ${spaces}|- ${label} (worldX:${container.worldTransform.tx}, layerX:${container.layerTransform.tx}, localX:${container.x})`;
+    let output = `%c ${spaces}|- ${label} (worldX:${container.worldTransform.tx}, layerX:${container.renderGroupTransform.tx}, localX:${container.x})`;
 
-    if (container.isLayerRoot)
+    if (container.isRenderGroupRoot)
     {
         output += ' (LayerGroup)';
     }
@@ -68,7 +68,7 @@ export function logScene(container: Container, depth = 0, data: {color?: string}
 }
 
 export function logLayerGroupScene(
-    layerGroup: LayerGroup, depth = 0,
+    layerGroup: RenderGroup, depth = 0,
     data: {index: number, color?: string} = { index: 0, color: '#000000' }
 )
 {
@@ -86,9 +86,9 @@ export function logLayerGroupScene(
 
     depth++;
 
-    for (let i = 0; i < layerGroup.layerGroupChildren.length; i++)
+    for (let i = 0; i < layerGroup.renderGroupChildren.length; i++)
     {
-        const child = layerGroup.layerGroupChildren[i];
+        const child = layerGroup.renderGroupChildren[i];
 
         logLayerGroupScene(child, depth, { ...data, index: i });
     }

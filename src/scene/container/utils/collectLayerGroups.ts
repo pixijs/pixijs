@@ -1,12 +1,12 @@
-import type { LayerGroup } from '../LayerGroup';
+import type { RenderGroup } from '../RenderGroup';
 
-export function collectLayerGroups(renderGroup: LayerGroup, out: LayerGroup[] = [])
+export function collectLayerGroups(renderGroup: RenderGroup, out: RenderGroup[] = [])
 {
     out.push(renderGroup);
 
-    for (let i = 0; i < renderGroup.layerGroupChildren.length; i++)
+    for (let i = 0; i < renderGroup.renderGroupChildren.length; i++)
     {
-        collectLayerGroups(renderGroup.layerGroupChildren[i], out);
+        collectLayerGroups(renderGroup.renderGroupChildren[i], out);
     }
 
     return out;

@@ -10,14 +10,14 @@ import type { WebGPURenderer } from '../../rendering/renderers/gpu/WebGPURendere
 import type { System } from '../../rendering/renderers/shared/system/System';
 import type { Renderer } from '../../rendering/renderers/types';
 import type { Container } from './Container';
-import type { LayerGroup } from './LayerGroup';
+import type { RenderGroup } from './RenderGroup';
 
 /**
  * The view system manages the main canvas that is attached to the DOM.
  * This main role is to deal with how the holding the view reference and dealing with how it is resized.
  */
 
-export class LayerSystem implements System
+export class RenderGroupSystem implements System
 {
     /** @ignore */
     public static extension = {
@@ -38,12 +38,12 @@ export class LayerSystem implements System
 
     protected render({ container, transform }: {container: Container, transform: Matrix}): void
     {
-        container.layer = true;
+        container.isRenderGroup = true;
 
         const renderer = this._renderer;
 
         // collect all the renderGroups in the scene and then render them one by one..
-        const layerGroups = collectLayerGroups(container.layerGroup, []);
+        const layerGroups = collectLayerGroups(container.renderGroup, []);
 
         const renderPipes = (renderer as WebGPURenderer).renderPipes;
 
@@ -87,16 +87,16 @@ export class LayerSystem implements System
 
         if (transform)
         {
-            container.layerGroup.worldTransform.copyFrom(transform);
+            container.renderGroup.worldTransform.copyFrom(transform);
         }
 
         renderer.globalUniforms.start(
             {
-                worldTransformMatrix: container.layerGroup.worldTransform
+                worldTransformMatrix: container.renderGroup.worldTransform
             }
         );
 
-        executeInstructions(container.layerGroup, renderPipes);
+        executeInstructions(container.renderGroup, renderPipes);
 
         // TODO need to add some events / runners for things like this to hook up to
         if (renderPipes.uniformBatch)
@@ -111,7 +111,7 @@ export class LayerSystem implements System
     }
 }
 
-function updateRenderables(layerGroup: LayerGroup)
+function updateRenderables(layerGroup: RenderGroup)
 {
     const { list, index } = layerGroup.childrenRenderablesToUpdate;
 
