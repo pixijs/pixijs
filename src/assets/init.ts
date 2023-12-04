@@ -1,5 +1,5 @@
 import { extensions, ExtensionType } from '../extensions/Extensions';
-import { bitmapFontCachePlugin, xmlBitmapFontLoader } from '../scene/text/bitmap/asset/loadBitmapFont';
+import { bitmapFontCachePlugin, loadBitmapFont } from '../scene/text/bitmap/asset/loadBitmapFont';
 import { cacheTextureArray } from './cache/parsers/cacheTextureArray';
 import { detectAvif } from './detections/parsers/detectAvif';
 import { detectDefaults } from './detections/parsers/detectDefaults';
@@ -38,7 +38,7 @@ extensions.add(
 
     // TODO: these should probably be moved to its own init, along with splitting out all the
     // text pipeline stuff
-    xmlBitmapFontLoader,
+    loadBitmapFont,
     bitmapFontCachePlugin
 );
 

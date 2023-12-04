@@ -80,12 +80,12 @@ export type TextOptions = Partial<ContainerOptions<TextView>> & TextViewOptions 
  */
 export class Text extends Container<TextView>
 {
-    constructor(options: TextOptions);
+    constructor(options?: TextOptions);
     /** @deprecated since 8.0.0 */
-    constructor(text: TextString, options?: Partial<AnyTextStyle>);
-    constructor(...args: [TextOptions] | [TextString, Partial<AnyTextStyle>])
+    constructor(text?: TextString, options?: Partial<AnyTextStyle>);
+    constructor(...args: [TextOptions?] | [TextString, Partial<AnyTextStyle>])
     {
-        let options = args[0];
+        let options = args[0] ?? {} as TextOptions;
 
         // @deprecated
         if (typeof options === 'string' || args[1])
