@@ -8,6 +8,7 @@ import { spritesheetAsset } from '../../../src/spritesheet/spritesheetAsset';
 import { basePath } from '../../assets/basePath';
 
 import type { CacheParser } from '../../../src/assets/cache/CacheParser';
+import type { SpriteSheetJson } from '../../../src/spritesheet/spritesheetAsset';
 
 describe('spritesheetAsset', () =>
 {
@@ -141,5 +142,37 @@ describe('spritesheetAsset', () =>
                 expect(spritesheetAsset.resolver.parse(toTest.url)).toEqual(toTest.result);
             }
         });
+    });
+
+    it('should use preloaded texture via data.texture instead of loading texture using imagePath', async () =>
+    {
+        const spritesheetJsonUrl = `${basePath}spritesheet/spritesheet.json`;
+        const preloadedTexture = new Texture();
+        const json = await loadJson.load<SpriteSheetJson>(spritesheetJsonUrl);
+        const spritesheet = await spritesheetAsset.loader.parse<Spritesheet>(
+            json,
+            {
+                src: spritesheetJsonUrl,
+                data: { texture: preloadedTexture }
+            });
+
+        expect(spritesheet.textureSource).toEqual(preloadedTexture.source);
+    });
+
+    it('should use image filename via data.imageFilename instead of meta.image', async () =>
+    {
+        const spritesheetJsonUrl = `${basePath}spritesheet/spritesheet.json`;
+        const customImageFilename = 'multi-pack-1.png';
+        const json = await loadJson.load<SpriteSheetJson>(spritesheetJsonUrl);
+        const spritesheet = await spritesheetAsset.loader.parse<Spritesheet>(
+            json,
+            {
+                src: spritesheetJsonUrl,
+                data: { imageFilename: customImageFilename }
+            }, loader);
+
+        const texture = await loader.load({ src: `${basePath}spritesheet/${customImageFilename}` });
+
+        expect(spritesheet.textureSource).toEqual(texture.source);
     });
 });
