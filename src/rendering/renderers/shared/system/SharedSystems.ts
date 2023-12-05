@@ -1,6 +1,5 @@
 import { RenderGroupPipe } from '../../../../scene/container/RenderGroupPipe';
 import { RenderGroupSystem } from '../../../../scene/container/RenderGroupSystem';
-import { MeshPipe } from '../../../../scene/mesh/shared/MeshPipe';
 import { SpritePipe } from '../../../../scene/sprite/SpritePipe';
 import { BatcherPipe } from '../../../batcher/shared/BatcherPipe';
 import { AlphaMaskPipe } from '../../../mask/alpha/AlphaMaskPipe';
@@ -33,7 +32,6 @@ export const SharedRenderPipes = [
     BatcherPipe,
     SpritePipe,
     RenderGroupPipe,
-    MeshPipe,
     AlphaMaskPipe,
     StencilMaskPipe,
     ColorMaskPipe,

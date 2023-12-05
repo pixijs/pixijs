@@ -20,6 +20,7 @@ const subImports = [
     ['./text-bitmap', './lib/scene/text-bitmap'],
     ['./text-html', './lib/text-html'],
     ['./graphics', './lib/scene/graphics'],
+    ['./mesh', './lib/scene/mesh'],
     ['./prepare', './lib/prepare'], // to be implemented
     ['./spritesheet', './lib/spritesheet'],
     ['./rendering', './lib/rendering'], // rename to core?
