@@ -1,6 +1,6 @@
 import { DEG_TO_RAD, RAD_TO_DEG } from '../../src/maths/misc/const';
 import { Container } from '../../src/scene/container/Container';
-import { updateLayerGroupTransforms } from '../../src/scene/container/utils/updateLayerGroupTransforms';
+import { updateRenderGroupTransforms } from '../../src/scene/container/utils/updateRenderGroupTransforms';
 
 describe('Container Visual', () =>
 {
@@ -86,7 +86,7 @@ describe('Container Visual', () =>
     {
         it('should traverse alpha', () =>
         {
-            const rootContainer = new Container({ layer: true });
+            const rootContainer = new Container({ isRenderGroup: true });
             const parent = new Container();
             const child = new Container();
 
@@ -95,9 +95,9 @@ describe('Container Visual', () =>
 
             parent.alpha = 0.5;
 
-            updateLayerGroupTransforms(rootContainer.layerGroup, true);
+            updateRenderGroupTransforms(rootContainer.renderGroup, true);
 
-            const alpha = child.layerAlpha;
+            const alpha = child.rgAlpha;
 
             expect(alpha).toBe(0.5);
         });
@@ -107,21 +107,21 @@ describe('Container Visual', () =>
     {
         it('should traverse parents', () =>
         {
-            const rootContainer = new Container({ layer: true });
+            const rootContainer = new Container({ isRenderGroup: true });
             const parent = new Container();
             const child = new Container();
 
             rootContainer.addChild(parent);
             parent.addChild(child);
 
-            expect(child.layerVisibleRenderable).toBe(0b11);
+            expect(child.rgVisibleRenderable).toBe(0b11);
             expect(child.localVisibleRenderable).toBe(0b11);
 
             parent.visible = false;
 
-            updateLayerGroupTransforms(rootContainer.layerGroup, true);
+            updateRenderGroupTransforms(rootContainer.renderGroup, true);
 
-            expect(child.layerVisibleRenderable).toBe(0b01);
+            expect(child.rgVisibleRenderable).toBe(0b01);
             expect(child.localVisibleRenderable).toBe(0b11);
         });
     });
