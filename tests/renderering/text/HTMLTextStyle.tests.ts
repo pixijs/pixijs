@@ -1,4 +1,4 @@
-import { HTMLTextStyle } from '../../../src/scene/text/html/HtmlTextStyle';
+import { HTMLTextStyle } from '../../../src/scene/text-html/HtmlTextStyle';
 
 describe('HTMLTextStyle', () =>
 {

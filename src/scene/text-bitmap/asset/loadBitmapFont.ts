@@ -1,16 +1,16 @@
-import { LoaderParserPriority } from '../../../../assets/loader/parsers/LoaderParser';
-import { copySearchParams } from '../../../../assets/utils/copySearchParams';
-import { DOMAdapter } from '../../../../environment/adapter';
-import { ExtensionType } from '../../../../extensions/Extensions';
-import { path } from '../../../../utils/path';
+import { LoaderParserPriority } from '../../../assets/loader/parsers/LoaderParser';
+import { copySearchParams } from '../../../assets/utils/copySearchParams';
+import { DOMAdapter } from '../../../environment/adapter';
+import { ExtensionType } from '../../../extensions/Extensions';
+import { path } from '../../../utils/path';
 import { BitmapFont } from '../BitmapFont';
 import { bitmapFontTextParser } from './bitmapFontTextParser';
 import { bitmapFontXMLStringParser } from './bitmapFontXMLStringParser';
 
-import type { Loader } from '../../../../assets/loader/Loader';
-import type { LoaderParser } from '../../../../assets/loader/parsers/LoaderParser';
-import type { ResolvedAsset } from '../../../../assets/types';
-import type { Texture } from '../../../../rendering/renderers/shared/texture/Texture';
+import type { Loader } from '../../../assets/loader/Loader';
+import type { LoaderParser } from '../../../assets/loader/parsers/LoaderParser';
+import type { ResolvedAsset } from '../../../assets/types';
+import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 
 const validExtensions = ['.xml', '.fnt'];
 

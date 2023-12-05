@@ -1,6 +1,6 @@
 /* eslint-disable jest/no-commented-out-tests */
-import { HTMLTextStyle } from '../../../src/scene/text/html/HtmlTextStyle';
 import { TextStyle } from '../../../src/scene/text/TextStyle';
+import { HTMLTextStyle } from '../../../src/scene/text-html/HtmlTextStyle';
 
 describe('TextStyle', () =>
 {

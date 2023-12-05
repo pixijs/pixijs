@@ -1,7 +1,7 @@
-import { CanvasTextMetrics } from '../../canvas/CanvasTextMetrics';
+import { CanvasTextMetrics } from '../../text/canvas/CanvasTextMetrics';
 import { HTMLTextRenderData } from '../HTMLTextSystem';
 
-import type { Size } from '../../../../maths/misc/Size';
+import type { Size } from '../../../maths/misc/Size';
 import type { HTMLTextStyle } from '../HtmlTextStyle';
 
 let tempHTMLTextRenderData: HTMLTextRenderData;

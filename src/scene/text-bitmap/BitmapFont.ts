@@ -1,8 +1,8 @@
-import { Rectangle } from '../../../maths/shapes/Rectangle';
-import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
+import { Rectangle } from '../../maths/shapes/Rectangle';
+import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { AbstractBitmapFont } from './AbstractBitmapFont';
 
-import type { FontMetrics } from '../canvas/CanvasTextMetrics';
+import type { FontMetrics } from '../text/canvas/CanvasTextMetrics';
 import type { BitmapFontData } from './AbstractBitmapFont';
 
 export interface BitmapFontOptions

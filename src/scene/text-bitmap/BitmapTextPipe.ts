@@ -1,18 +1,18 @@
-import { Cache } from '../../../assets/cache/Cache';
-import { ExtensionType } from '../../../extensions/Extensions';
-import { ProxyRenderable } from '../../../rendering/renderers/shared/ProxyRenderable';
-import { BigPool } from '../../../utils/pool/PoolGroup';
-import { GraphicsView } from '../../graphics/shared/GraphicsView';
-import { SdfShader } from '../sdfShader/SdfShader';
+import { Cache } from '../../assets/cache/Cache';
+import { ExtensionType } from '../../extensions/Extensions';
+import { ProxyRenderable } from '../../rendering/renderers/shared/ProxyRenderable';
+import { BigPool } from '../../utils/pool/PoolGroup';
+import { GraphicsView } from '../graphics/shared/GraphicsView';
+import { SdfShader } from '../text/sdfShader/SdfShader';
 import { BitmapFontManager } from './BitmapFontManager';
 import { getBitmapTextLayout } from './utils/getBitmapTextLayout';
 
-import type { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
-import type { RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
-import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
-import type { Renderer } from '../../../rendering/renderers/types';
-import type { GraphicsContext } from '../../graphics/shared/GraphicsContext';
-import type { TextView } from '../TextView';
+import type { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
+import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
+import type { Renderable } from '../../rendering/renderers/shared/Renderable';
+import type { Renderer } from '../../rendering/renderers/types';
+import type { GraphicsContext } from '../graphics/shared/GraphicsContext';
+import type { TextView } from '../text/TextView';
 
 class GraphicsProxyRenderable extends ProxyRenderable<GraphicsView>
 {

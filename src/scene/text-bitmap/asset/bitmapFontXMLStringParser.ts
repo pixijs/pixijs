@@ -1,4 +1,4 @@
-import { DOMAdapter } from '../../../../environment/adapter';
+import { DOMAdapter } from '../../../environment/adapter';
 import { bitmapFontXMLParser } from './bitmapFontXMLParser';
 
 import type { BitmapFontData } from '../AbstractBitmapFont';

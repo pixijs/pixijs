@@ -2,12 +2,12 @@ import { Cache } from '../../../src/assets/cache/Cache';
 import { Loader } from '../../../src/assets/loader/Loader';
 import { loadTxt } from '../../../src/assets/loader/parsers/loadTxt';
 import { loadTextures } from '../../../src/assets/loader/parsers/textures/loadTextures';
-import { loadBitmapFont } from '../../../src/scene/text/bitmap/asset/loadBitmapFont';
 import { Text } from '../../../src/scene/text/Text';
+import { loadBitmapFont } from '../../../src/scene/text-bitmap/asset/loadBitmapFont';
 import { basePath } from '../../assets/basePath';
 import { getRenderer } from '../../utils/getRenderer';
 
-import type { BitmapFont } from '../../../src/scene/text/bitmap/BitmapFont';
+import type { BitmapFont } from '../../../src/scene/text-bitmap/BitmapFont';
 
 describe('BitmapText', () =>
 {

@@ -1,8 +1,8 @@
 import { Cache } from '../../../src/assets/cache/Cache';
-import { BitmapFontManager } from '../../../src/scene/text/bitmap/BitmapFontManager';
 import { detectRenderType } from '../../../src/scene/text/utils/detectRenderType';
+import { BitmapFontManager } from '../../../src/scene/text-bitmap/BitmapFontManager';
 
-import type { BitmapFont } from '../../../src/scene/text/bitmap/BitmapFont';
+import type { BitmapFont } from '../../../src/scene/text-bitmap/BitmapFont';
 
 describe('BitmapFontManager', () =>
 {

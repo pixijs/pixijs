@@ -1,4 +1,4 @@
-import { CanvasPool } from '../../../../rendering/renderers/shared/texture/CanvasPool';
+import { CanvasPool } from '../../../rendering/renderers/shared/texture/CanvasPool';
 
 /**
  * This function converts an image to a canvas, and returns the canvas.

@@ -7,11 +7,11 @@ import { GraphicsPipe } from '../../../../scene/graphics/shared/GraphicsPipe';
 import { MeshPipe } from '../../../../scene/mesh/shared/MeshPipe';
 import { SpritePipe } from '../../../../scene/sprite/SpritePipe';
 import { TilingSpritePipe } from '../../../../scene/sprite-tiling/TilingSpritePipe';
-import { BitmapTextPipe } from '../../../../scene/text/bitmap/BitmapTextPipe';
 import { CanvasTextPipe } from '../../../../scene/text/canvas/CanvasTextPipe';
 import { CanvasTextSystem } from '../../../../scene/text/canvas/CanvasTextSystem';
-import { HTMLTextPipe } from '../../../../scene/text/html/HTMLTextPipe';
-import { HTMLTextSystem } from '../../../../scene/text/html/HTMLTextSystem';
+import { BitmapTextPipe } from '../../../../scene/text-bitmap/BitmapTextPipe';
+import { HTMLTextPipe } from '../../../../scene/text-html/HTMLTextPipe';
+import { HTMLTextSystem } from '../../../../scene/text-html/HTMLTextSystem';
 import { BatcherPipe } from '../../../batcher/shared/BatcherPipe';
 import { AlphaMaskPipe } from '../../../mask/alpha/AlphaMaskPipe';
 import { ColorMaskPipe } from '../../../mask/color/ColorMaskPipe';
@@ -58,3 +58,14 @@ export const SharedRenderPipes = [
     StencilMaskPipe,
     ColorMaskPipe,
 ];
+
+// CanvasTextSystem
+// HTMLTextSystem
+
+// MeshPipe
+// GraphicsPipe
+// CanvasTextPipe
+// HTMLTextPipe
+// BitmapTextPipe
+// TilingSpritePipe
+// FilterPipe?

@@ -1,19 +1,19 @@
-import { Color } from '../../../color/Color';
-import { Rectangle } from '../../../maths/shapes/Rectangle';
-import { CanvasPool } from '../../../rendering/renderers/shared/texture/CanvasPool';
-import { ImageSource } from '../../../rendering/renderers/shared/texture/sources/ImageSource';
-import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
-import { CanvasTextMetrics } from '../canvas/CanvasTextMetrics';
-import { fontStringFromTextStyle } from '../canvas/utils/fontStringFromTextStyle';
-import { getCanvasFillStyle } from '../canvas/utils/getCanvasFillStyle';
+import { Color } from '../../color/Color';
+import { Rectangle } from '../../maths/shapes/Rectangle';
+import { CanvasPool } from '../../rendering/renderers/shared/texture/CanvasPool';
+import { ImageSource } from '../../rendering/renderers/shared/texture/sources/ImageSource';
+import { Texture } from '../../rendering/renderers/shared/texture/Texture';
+import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
+import { CanvasTextMetrics } from '../text/canvas/CanvasTextMetrics';
+import { fontStringFromTextStyle } from '../text/canvas/utils/fontStringFromTextStyle';
+import { getCanvasFillStyle } from '../text/canvas/utils/getCanvasFillStyle';
 import { AbstractBitmapFont } from './AbstractBitmapFont';
 import { resolveCharacters } from './utils/resolveCharacters';
 
-import type { ICanvasRenderingContext2D } from '../../../environment/canvas/ICanvasRenderingContext2D';
-import type { CanvasAndContext } from '../../../rendering/renderers/shared/texture/CanvasPool';
-import type { FontMetrics } from '../canvas/CanvasTextMetrics';
-import type { TextStyle } from '../TextStyle';
+import type { ICanvasRenderingContext2D } from '../../environment/canvas/ICanvasRenderingContext2D';
+import type { CanvasAndContext } from '../../rendering/renderers/shared/texture/CanvasPool';
+import type { FontMetrics } from '../text/canvas/CanvasTextMetrics';
+import type { TextStyle } from '../text/TextStyle';
 
 export interface DynamicBitmapFontOptions
 {

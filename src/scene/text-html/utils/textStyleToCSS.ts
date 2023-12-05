@@ -1,7 +1,7 @@
-import { Color } from '../../../../color/Color';
+import { Color } from '../../../color/Color';
 
-import type { StrokeStyle } from '../../../graphics/shared/GraphicsContext';
-import type { TextStyle } from '../../TextStyle';
+import type { StrokeStyle } from '../../graphics/shared/GraphicsContext';
+import type { TextStyle } from '../../text/TextStyle';
 import type { HTMLTextStyle, HTMLTextStyleOptions } from '../HtmlTextStyle';
 
 /**

@@ -1,8 +1,8 @@
 import EventEmitter from 'eventemitter3';
-import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
+import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 
-import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import type { FontMetrics } from '../canvas/CanvasTextMetrics';
+import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
+import type { FontMetrics } from '../text/canvas/CanvasTextMetrics';
 
 export interface CharData
 {

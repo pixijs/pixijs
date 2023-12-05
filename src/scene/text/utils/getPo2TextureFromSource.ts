@@ -1,8 +1,8 @@
-import { TexturePool } from '../../../../rendering/renderers/shared/texture/TexturePool';
-import { Bounds } from '../../../container/bounds/Bounds';
+import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
+import { Bounds } from '../../container/bounds/Bounds';
 
-import type { ICanvas } from '../../../../environment/canvas/ICanvas';
-import type { Texture } from '../../../../rendering/renderers/shared/texture/Texture';
+import type { ICanvas } from '../../../environment/canvas/ICanvas';
+import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 
 const tempBounds = new Bounds();
 

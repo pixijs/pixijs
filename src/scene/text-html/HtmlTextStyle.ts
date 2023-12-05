@@ -1,11 +1,11 @@
 /* eslint-disable accessor-pairs */
-import { warn } from '../../../utils/logging/warn';
-import { TextStyle } from '../TextStyle';
-import { generateTextStyleKey } from '../utils/generateTextStyleKey';
+import { warn } from '../../utils/logging/warn';
+import { TextStyle } from '../text/TextStyle';
+import { generateTextStyleKey } from '../text/utils/generateTextStyleKey';
 import { textStyleToCSS } from './utils/textStyleToCSS';
 
-import type { FillStyleInputs } from '../../graphics/shared/GraphicsContext';
-import type { TextStyleOptions } from '../TextStyle';
+import type { FillStyleInputs } from '../graphics/shared/GraphicsContext';
+import type { TextStyleOptions } from '../text/TextStyle';
 
 export interface HTMLTextStyleOptions extends Omit<TextStyleOptions, 'leading' | 'textBaseline' | 'trim' >
 {

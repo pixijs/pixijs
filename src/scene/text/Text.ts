@@ -6,7 +6,7 @@ import { TextView } from './TextView';
 import type { PointData } from '../../maths/point/PointData';
 import type { PointLike } from '../../maths/point/PointLike';
 import type { ContainerOptions } from '../container/Container';
-import type { HTMLTextStyle } from './html/HtmlTextStyle';
+import type { HTMLTextStyle } from '../text-html/HtmlTextStyle';
 import type { TextStyle } from './TextStyle';
 import type { AnyTextStyle, AnyTextStyleOptions, TextString, TextViewOptions } from './TextView';
 

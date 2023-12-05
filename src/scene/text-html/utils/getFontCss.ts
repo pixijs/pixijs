@@ -1,4 +1,4 @@
-import { Cache } from '../../../../assets/cache/Cache';
+import { Cache } from '../../../assets/cache/Cache';
 import { FontStylePromiseCache, HTMLTextSystem } from '../HTMLTextSystem';
 import { loadFontCSS } from './loadFontCSS';
 
