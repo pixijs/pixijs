@@ -177,7 +177,7 @@ export class Spritesheet<S extends ISpritesheetData = ISpritesheetData>
      *
      * new AnimatedSprite(sheet.animations['anim_name']);
      */
-    public animations: Record<keyof S['animations'], Texture[]>;
+    public animations: Record<keyof NonNullable<S['animations']>, Texture[]>;
 
     /**
      * Reference to the original JSON data.
@@ -224,7 +224,7 @@ export class Spritesheet<S extends ISpritesheetData = ISpritesheetData>
         this._texture = texture instanceof Texture ? texture : null;
         this.baseTexture = texture instanceof BaseTexture ? texture : this._texture.baseTexture;
         this.textures = {} as Record<keyof S['frames'], Texture>;
-        this.animations = {} as Record<keyof S['animations'], Texture[]>;
+        this.animations = {} as Record<keyof NonNullable<S['animations']>, Texture[]>;
         this.data = data;
 
         const resource = this.baseTexture.resource as ImageResource;
