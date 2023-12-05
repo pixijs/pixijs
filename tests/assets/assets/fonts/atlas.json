@@ -1,0 +1,25 @@
+{
+	"meta": {
+		"image": "atlas.png",
+		"size": {"w":256,"h":256},
+		"scale": "1"
+	},
+	"frames": {
+		"resources/test.png":
+		{
+			"frame": {"x":2,"y":2,"w":152,"h":188},
+			"rotated": false,
+			"trimmed": true,
+			"spriteSourceSize": {"x":74,"y":36,"w":152,"h":188},
+			"sourceSize": {"w":300,"h":225}
+		},
+		"resources/font.png":
+		{
+			"frame": {"x":158,"y":2,"w":40,"h":42},
+			"rotated": false,
+			"trimmed": true,
+			"spriteSourceSize": {"x":2,"y":2,"w":40,"h":42},
+			"sourceSize": {"w":43,"h":46}
+		}
+	}
+}

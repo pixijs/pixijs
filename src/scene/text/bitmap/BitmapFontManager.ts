@@ -62,13 +62,17 @@ class BitmapFontManagerClass
         // first get us the the right font...
         if (!Cache.has(fontFamilyKey))
         {
+            const fnt = new DynamicBitmapFont({
+                style,
+                overrideFill,
+                ...this.defaultOptions,
+            });
+
+            fnt.once('destroy', () => Cache.remove(fontFamilyKey));
+
             Cache.set(
                 fontFamilyKey as string,
-                new DynamicBitmapFont({
-                    style,
-                    overrideFill,
-                    ...this.defaultOptions,
-                }),
+                fnt
             );
         }
 
@@ -132,7 +136,25 @@ class BitmapFontManagerClass
 
         Cache.set(`${name}-bitmap`, font);
 
+        font.once('destroy', () => Cache.remove(`${name}-bitmap`));
+
         return font;
+    }
+
+    /**
+     * Uninstalls a bitmap font from the cache.
+     * @param {string} name - The name of the bitmap font to uninstall.
+     */
+    public uninstall(name: string)
+    {
+        const cacheKey = `${name}-bitmap`;
+        const font = Cache.get<BitmapFont>(cacheKey);
+
+        if (font)
+        {
+            Cache.remove(cacheKey);
+            font.destroy();
+        }
     }
 }
 
