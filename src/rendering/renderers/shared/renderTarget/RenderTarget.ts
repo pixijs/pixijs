@@ -67,7 +67,7 @@ export class RenderTarget
 
             const colorSource = this.colorTexture.source;
 
-            this._resize(colorSource.width, colorSource.height, colorSource._resolution);
+            this.resize(colorSource.width, colorSource.height, colorSource._resolution);
         }
 
         // the first color texture drives the size of all others..
@@ -137,10 +137,10 @@ export class RenderTarget
 
     protected onSourceResize(source: TextureSource)
     {
-        this._resize(source.width, source.height, source._resolution, true);
+        this.resize(source.width, source.height, source._resolution, true);
     }
 
-    private _resize(width: number, height: number, resolution = this.resolution, skipColorTexture = false)
+    public resize(width: number, height: number, resolution = this.resolution, skipColorTexture = false)
     {
         this.dirtyId++;
 
@@ -160,5 +160,11 @@ export class RenderTarget
     public destroy()
     {
         this.colorTexture.source.off('resize', this.onSourceResize, this);
+
+        if (this.depthTexture)
+        {
+            this.depthTexture.destroy();
+            delete this.depthTexture;
+        }
     }
 }
