@@ -6,6 +6,9 @@ import { Text } from '../../../src/scene/text/Text';
 import { loadBitmapFont } from '../../../src/scene/text-bitmap/asset/loadBitmapFont';
 import { basePath } from '../../assets/basePath';
 import { getRenderer } from '../../utils/getRenderer';
+import '../../../src/scene/text/init';
+import '../../../src/scene/text-bitmap/init';
+import '../../../src/scene/graphics/init';
 
 import type { BitmapFont } from '../../../src/scene/text-bitmap/BitmapFont';
 

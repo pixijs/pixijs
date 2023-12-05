@@ -13,13 +13,15 @@ const subImports = [
     ['./ktx', './lib/compressed-textures/ktx'],
     ['./basis', './lib/compressed-textures/basis'], // to be implemented
     ['./events', './lib/events'],
+    ['./filters', './lib/filters'],
     ['./math-extras', './lib/math-extras'],
-    // ['./graphics', './lib/scene/graphics'],
-    // ['./mesh', './lib/scene/mesh'],
+    ['./sprite-tiling', './lib/scene/sprite-tiling'],
+    ['./text', './lib/scene/text'],
+    ['./text-bitmap', './lib/scene/text-bitmap'],
+    ['./text-html', './lib/text-html'],
+    ['./graphics', './lib/scene/graphics'],
     ['./prepare', './lib/prepare'], // to be implemented
-    // ['./sprite-tiling', './lib/scene/sprite-tiling'],
     ['./spritesheet', './lib/spritesheet'],
-    // ['./text', './lib/scene/text'], // should this be split out into canvas, html, bitmap?
     ['./rendering', './lib/rendering'], // rename to core?
     ['./unsafe-eval', './lib/unsafe-eval'],
 ];

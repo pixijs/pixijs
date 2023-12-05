@@ -7,6 +7,6 @@ declare namespace PixiMixins
 
     interface RendererPipes
     {
-        canvasText: import('./canvas/CanvasTextSystem').CanvasTextSystem;
+        text: import('./canvas/CanvasTextPipe').CanvasTextPipe;
     }
 }
