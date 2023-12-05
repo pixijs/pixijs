@@ -1,7 +1,10 @@
+import { Cache } from '../../../src/assets/cache/Cache';
 import { BitmapFontManager } from '../../../src/scene/text/bitmap/BitmapFontManager';
 import { detectRenderType } from '../../../src/scene/text/utils/detectRenderType';
 
-describe('BitmapFont', () =>
+import type { BitmapFont } from '../../../src/scene/text/bitmap/BitmapFont';
+
+describe('BitmapFontManager', () =>
 {
     it('should install a font and be accessible', async () =>
     {
@@ -14,5 +17,14 @@ describe('BitmapFont', () =>
         });
 
         expect(type).toEqual('bitmap');
+    });
+
+    it('should uninstall and remove from Cache', () =>
+    {
+        BitmapFontManager.install('foo', {}, { chars: 'a' });
+        expect(Cache.get<BitmapFont>('foo-bitmap')).toBeDefined();
+
+        BitmapFontManager.uninstall('foo');
+        expect(Cache.get<BitmapFont>('foo-bitmap')).toBeUndefined();
     });
 });
