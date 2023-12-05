@@ -53,7 +53,7 @@ export interface ISpritesheetData
             name: string;
             opacity: number;
         }[];
-        scale: string;
+        scale: string | number;
         size?: {
             h: number;
             w: number;
@@ -254,7 +254,7 @@ export class Spritesheet<S extends ISpritesheetData = ISpritesheetData>
         if (resolution === null)
         {
             // Use the scale value or default to 1
-            resolution = parseFloat(scale ?? '1');
+            resolution = typeof scale === 'number' ? scale : parseFloat(scale ?? '1');
         }
 
         // For non-1 resolutions, update baseTexture
