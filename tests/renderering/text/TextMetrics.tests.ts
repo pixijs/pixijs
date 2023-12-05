@@ -65,7 +65,7 @@ describe('CanvasTextMetrics', () =>
         it('width should not be greater than wordWrapWidth with longText', () =>
         {
             // On Windows 'exercitationem' renders to about 217px, bigger wrap width required for this test to be valid on every platform
-            const style = Object.assign({}, defaultStyle, { wordWrapWidth: 220, breakWords: false }) as Partial<TextStyleOptions>;
+            const style = Object.assign({}, defaultStyle, { wordWrapWidth: 220, breakWords: false });
 
             const metrics = CanvasTextMetrics.measureText(longText, new TextStyle(style));
 
@@ -83,7 +83,7 @@ describe('CanvasTextMetrics', () =>
 
         it('width should be greater than wordWrapWidth with breakingWordText', () =>
         {
-            const style = Object.assign({}, defaultStyle, { breakWords: false }) as Partial<TextStyleOptions>;
+            const style = Object.assign({}, defaultStyle, { breakWords: false });
 
             const metrics = CanvasTextMetrics.measureText(breakingWordText, new TextStyle(style));
 
@@ -100,7 +100,7 @@ describe('CanvasTextMetrics', () =>
         {
             const charWidth = 4; // it should fill the line to at lease width -4
 
-            const style = Object.assign({}, defaultStyle, { breakWords: false }) as Partial<TextStyleOptions>;
+            const style = Object.assign({}, defaultStyle, { breakWords: false });
 
             const metrics = CanvasTextMetrics.measureText(fillText, new TextStyle(style));
 
@@ -114,10 +114,10 @@ describe('CanvasTextMetrics', () =>
             });
         });
 
-        // note: curremt behavior splits lines but the lines are trimmed, no spaces
-        it.skip('width should be greater than wordWrapWidth and should format correct spaces', () =>
+        // ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=46583734
+        it('width should be greater than wordWrapWidth and should format correct spaces', () =>
         {
-            const style = Object.assign({}, defaultStyle, { breakWords: false }) as Partial<TextStyleOptions>;
+            const style = Object.assign({}, defaultStyle, { breakWords: false, whiteSpace: 'pre' });
 
             const metrics = CanvasTextMetrics.measureText(spaceNewLineText, new TextStyle(style));
 
@@ -208,10 +208,10 @@ describe('CanvasTextMetrics', () =>
             expect(lines).toEqual(intergityText);
         });
 
-        // note: curremt behavior splits lines but the lines are trimmed, no spaces
-        it.skip('width should not be greater than wordWrapWidth and should format correct spaces', () =>
+        // ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=46583734
+        it('width should not be greater than wordWrapWidth and should format correct spaces', () =>
         {
-            const style = Object.assign({}, defaultStyle, { breakWords: true });
+            const style = Object.assign({}, defaultStyle, { breakWords: true, whiteSpace: 'pre' });
 
             const metrics = CanvasTextMetrics.measureText(spaceNewLineText, new TextStyle(style));
 
