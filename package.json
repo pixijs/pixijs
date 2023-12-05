@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "8.0.0-beta.11",
+  "version": "8.0.0-beta.12",
   "author": "PixiJS Team",
   "main": "lib/index.js",
   "module": "lib/index.mjs",
@@ -71,7 +71,7 @@
     "@pixi/eslint-config": "^4.0.1",
     "@pixi/jest-electron": "^26.0.0",
     "@pixi/rollup-plugin-web-worker-loader": "^1.6.1",
-    "@pixi/webdoc-template": "^1.5.5",
+    "@pixi/webdoc-template": "^2.0.0",
     "@rollup/plugin-commonjs": "^15.1.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^15.0.0",

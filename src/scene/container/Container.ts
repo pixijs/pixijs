@@ -63,7 +63,7 @@ export const UPDATE_BLEND = 0b0010;
 export const UPDATE_VISIBLE = 0b0100;
 export const UPDATE_TRANSFORM = 0b1000;
 
-export interface TransformOptions
+export interface UpdateTransformOptions
 {
     x: number;
     y: number;
@@ -961,7 +961,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      * @param {number} opts.pivotX - The x coordinate of the pivot point.
      * @param {number} opts.pivotY - The y coordinate of the pivot point.
      */
-    public updateTransform(opts: Partial<TransformOptions>): this
+    public updateTransform(opts: Partial<UpdateTransformOptions>): this
     {
         this.position.set(
             typeof opts.x === 'number' ? opts.x : this.position.x,
