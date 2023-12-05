@@ -15,7 +15,6 @@ export const scene: TestScene = {
             resolution: 1,
             style: new HTMLTextStyle({
                 fill: 'white',
-                whiteSpace: 'pre',
                 fontSize: 35,
                 tagStyles: {
                     red: {

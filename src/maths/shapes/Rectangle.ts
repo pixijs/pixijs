@@ -86,6 +86,12 @@ export class Rectangle implements ShapePrimitive
         return this.y + this.height;
     }
 
+    /** Determines whether the Rectangle is empty. */
+    public isEmpty(): boolean
+    {
+        return this.left === this.right || this.top === this.bottom;
+    }
+
     /** A constant empty rectangle. */
     static get EMPTY(): Rectangle
     {
