@@ -153,6 +153,20 @@ export class GraphicsContext extends EventEmitter<{
         this._strokeStyle = convertFillInputToFillStyle(value, GraphicsContext.defaultStrokeStyle) as ConvertedStrokeStyle;
     }
 
+    public setFillStyle(style: FillStyleInputs): this
+    {
+        this._fillStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultFillStyle);
+
+        return this;
+    }
+
+    public setStrokeStyle(style: FillStyleInputs): this
+    {
+        this._strokeStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultStrokeStyle) as ConvertedStrokeStyle;
+
+        return this;
+    }
+
     public texture(texture: Texture): this;
     public texture(texture: Texture, tint: ColorSource): this;
     public texture(texture: Texture, tint: ColorSource, dx: number, dy: number): this;

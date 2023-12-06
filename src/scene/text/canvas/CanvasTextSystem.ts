@@ -4,7 +4,7 @@ import { nextPow2 } from '../../../maths/misc/pow2';
 import { CanvasPool } from '../../../rendering/renderers/shared/texture/CanvasPool';
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
 import { getCanvasBoundingBox } from '../../../utils/canvas/getCanvasBoundingBox';
-import { getPo2TextureFromSource } from '../html/utils/getPo2TextureFromSource';
+import { getPo2TextureFromSource } from '../utils/getPo2TextureFromSource';
 import { CanvasTextMetrics } from './CanvasTextMetrics';
 import { fontStringFromTextStyle } from './utils/fontStringFromTextStyle';
 import { getCanvasFillStyle } from './utils/getCanvasFillStyle';

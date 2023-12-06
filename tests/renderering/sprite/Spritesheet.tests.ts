@@ -227,4 +227,30 @@ describe('Spritesheet', () =>
                 done();
             });
         }));
+
+    it('should parse scale correctly', () =>
+    {
+        [
+            {
+                frames: {},
+                meta: { scale: '1' } // scale can be a string
+            },
+            {
+                frames: {},
+                meta: { scale: 1 } // scale can be a number
+            },
+            {
+                frames: {},
+                meta: {} // if scale not set, default to 1
+            } as unknown as SpritesheetData,
+        ].forEach((toTest) =>
+        {
+            const baseTexture = new Texture();
+            const spritesheet = new Spritesheet(baseTexture, toTest);
+
+            expect(spritesheet.resolution).toEqual(1);
+
+            spritesheet.destroy(true);
+        });
+    });
 });

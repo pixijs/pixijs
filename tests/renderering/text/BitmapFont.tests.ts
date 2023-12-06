@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Cache } from '../../../src/assets/cache/Cache';
-import { BitmapFontManager } from '../../../src/scene/text/bitmap/BitmapFontManager';
 import { TextStyle } from '../../../src/scene/text/TextStyle';
+import { BitmapFontManager } from '../../../src/scene/text-bitmap/BitmapFontManager';
 
-import type { BitmapFont } from '../../../src/scene/text/bitmap/BitmapFont';
+import type { BitmapFont } from '../../../src/scene/text-bitmap/BitmapFont';
 
 describe('BitmapFont', () =>
 {
