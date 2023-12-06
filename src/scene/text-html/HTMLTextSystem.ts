@@ -1,24 +1,24 @@
-import { ExtensionType } from '../../../extensions/Extensions';
-import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
-import { RendererType } from '../../../rendering/renderers/types';
-import { isSafari } from '../../../utils/browser/isSafari';
-import { warn } from '../../../utils/logging/warn';
-import { BigPool } from '../../../utils/pool/PoolGroup';
+import { ExtensionType } from '../../extensions/Extensions';
+import { TexturePool } from '../../rendering/renderers/shared/texture/TexturePool';
+import { RendererType } from '../../rendering/renderers/types';
+import { isSafari } from '../../utils/browser/isSafari';
+import { warn } from '../../utils/logging/warn';
+import { BigPool } from '../../utils/pool/PoolGroup';
+import { getPo2TextureFromSource } from '../text/utils/getPo2TextureFromSource';
 import { extractFontFamilies } from './utils/extractFontFamilies';
 import { getFontCss } from './utils/getFontCss';
-import { getPo2TextureFromSource } from './utils/getPo2TextureFromSource';
 import { getSVGUrl } from './utils/getSVGUrl';
 import { getTemporaryCanvasFromImage } from './utils/getTemporaryCanvasFromImage';
 import { loadSVGImage } from './utils/loadSVGImage';
 import { measureHtmlText } from './utils/measureHtmlText';
 
-import type { WebGPURenderer } from '../../../rendering/renderers/gpu/WebGPURenderer';
-import type { System } from '../../../rendering/renderers/shared/system/System';
-import type { CanvasAndContext } from '../../../rendering/renderers/shared/texture/CanvasPool';
-import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import type { Renderer } from '../../../rendering/renderers/types';
-import type { PoolItem } from '../../../utils/pool/Pool';
-import type { TextViewOptions } from '../TextView';
+import type { WebGPURenderer } from '../../rendering/renderers/gpu/WebGPURenderer';
+import type { System } from '../../rendering/renderers/shared/system/System';
+import type { CanvasAndContext } from '../../rendering/renderers/shared/texture/CanvasPool';
+import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
+import type { Renderer } from '../../rendering/renderers/types';
+import type { PoolItem } from '../../utils/pool/Pool';
+import type { TextViewOptions } from '../text/TextView';
 import type { HTMLTextStyle } from './HtmlTextStyle';
 import type { FontCSSStyleOptions } from './utils/loadFontCSS';
 

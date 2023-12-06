@@ -1,6 +1,6 @@
 import { Assets } from '../../../src/assets/Assets';
-import { HTMLTextStyle } from '../../../src/scene/text/html/HtmlTextStyle';
-import { getFontCss } from '../../../src/scene/text/html/utils/getFontCss';
+import { HTMLTextStyle } from '../../../src/scene/text-html/HtmlTextStyle';
+import { getFontCss } from '../../../src/scene/text-html/utils/getFontCss';
 import { basePath } from '../../assets/basePath';
 import { getApp } from '../../utils/getApp';
 

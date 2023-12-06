@@ -135,7 +135,14 @@
     "./lib/compressed-textures/ktx/init.*",
     "./lib/compressed-textures/basis/init.*",
     "./lib/events/init.*",
+    "./lib/filters/init.*",
     "./lib/math-extras/init.*",
+    "./lib/scene/sprite-tiling/init.*",
+    "./lib/scene/text/init.*",
+    "./lib/scene/text-bitmap/init.*",
+    "./lib/text-html/init.*",
+    "./lib/scene/graphics/init.*",
+    "./lib/scene/mesh/init.*",
     "./lib/prepare/init.*",
     "./lib/spritesheet/init.*",
     "./lib/rendering/init.*",
@@ -232,12 +239,68 @@
         "default": "./lib/events/init.js"
       }
     },
+    "./filters": {
+      "import": {
+        "default": "./lib/filters/init.mjs"
+      },
+      "require": {
+        "default": "./lib/filters/init.js"
+      }
+    },
     "./math-extras": {
       "import": {
         "default": "./lib/math-extras/init.mjs"
       },
       "require": {
         "default": "./lib/math-extras/init.js"
+      }
+    },
+    "./sprite-tiling": {
+      "import": {
+        "default": "./lib/scene/sprite-tiling/init.mjs"
+      },
+      "require": {
+        "default": "./lib/scene/sprite-tiling/init.js"
+      }
+    },
+    "./text": {
+      "import": {
+        "default": "./lib/scene/text/init.mjs"
+      },
+      "require": {
+        "default": "./lib/scene/text/init.js"
+      }
+    },
+    "./text-bitmap": {
+      "import": {
+        "default": "./lib/scene/text-bitmap/init.mjs"
+      },
+      "require": {
+        "default": "./lib/scene/text-bitmap/init.js"
+      }
+    },
+    "./text-html": {
+      "import": {
+        "default": "./lib/text-html/init.mjs"
+      },
+      "require": {
+        "default": "./lib/text-html/init.js"
+      }
+    },
+    "./graphics": {
+      "import": {
+        "default": "./lib/scene/graphics/init.mjs"
+      },
+      "require": {
+        "default": "./lib/scene/graphics/init.js"
+      }
+    },
+    "./mesh": {
+      "import": {
+        "default": "./lib/scene/mesh/init.mjs"
+      },
+      "require": {
+        "default": "./lib/scene/mesh/init.js"
       }
     },
     "./prepare": {

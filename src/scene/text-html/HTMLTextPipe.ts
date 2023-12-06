@@ -1,13 +1,13 @@
-import { ExtensionType } from '../../../extensions/Extensions';
-import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import { updateQuadBounds } from '../../../utils/data/updateQuadBounds';
-import { BigPool } from '../../../utils/pool/PoolGroup';
-import { BatchableSprite } from '../../sprite/BatchableSprite';
+import { ExtensionType } from '../../extensions/Extensions';
+import { Texture } from '../../rendering/renderers/shared/texture/Texture';
+import { updateQuadBounds } from '../../utils/data/updateQuadBounds';
+import { BigPool } from '../../utils/pool/PoolGroup';
+import { BatchableSprite } from '../sprite/BatchableSprite';
 
-import type { RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
-import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
-import type { Renderer } from '../../../rendering/renderers/types';
-import type { TextView } from '../TextView';
+import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
+import type { Renderable } from '../../rendering/renderers/shared/Renderable';
+import type { Renderer } from '../../rendering/renderers/types';
+import type { TextView } from '../text/TextView';
 import type { HTMLTextStyle } from './HtmlTextStyle';
 
 export class HTMLTextPipe implements RenderPipe<TextView>

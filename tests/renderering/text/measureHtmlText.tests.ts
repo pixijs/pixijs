@@ -1,6 +1,6 @@
 import { CanvasTextMetrics } from '../../../src/scene/text/canvas/CanvasTextMetrics';
-import { HTMLTextStyle } from '../../../src/scene/text/html/HtmlTextStyle';
-import { measureHtmlText } from '../../../src/scene/text/html/utils/measureHtmlText';
+import { HTMLTextStyle } from '../../../src/scene/text-html/HtmlTextStyle';
+import { measureHtmlText } from '../../../src/scene/text-html/utils/measureHtmlText';
 
 describe('measureHtmlText', () =>
 {

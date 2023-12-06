@@ -6,6 +6,8 @@ import { Container } from '../../../src/scene/container/Container';
 import { TilingSprite } from '../../../src/scene/sprite-tiling/TilingSprite';
 import { getRenderer } from '../../utils/getRenderer';
 import { getTexture } from '../../utils/getTexture';
+import '../../../src/scene/sprite-tiling/init';
+import '../../../src/scene/mesh/init';
 
 import type { TextureSource } from '../../../src/rendering/renderers/shared/texture/sources/TextureSource';
 

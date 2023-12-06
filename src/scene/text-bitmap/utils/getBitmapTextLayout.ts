@@ -1,4 +1,4 @@
-import type { TextStyle } from '../../TextStyle';
+import type { TextStyle } from '../../text/TextStyle';
 import type { AbstractBitmapFont } from '../AbstractBitmapFont';
 
 export interface BitmapTextLayoutData

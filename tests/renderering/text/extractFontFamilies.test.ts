@@ -1,5 +1,5 @@
-import { HTMLTextStyle } from '../../../src/scene/text/html/HtmlTextStyle';
-import { extractFontFamilies } from '../../../src/scene/text/html/utils/extractFontFamilies';
+import { HTMLTextStyle } from '../../../src/scene/text-html/HtmlTextStyle';
+import { extractFontFamilies } from '../../../src/scene/text-html/utils/extractFontFamilies';
 
 describe('extractFontFamilies', () =>
 {

@@ -1,4 +1,4 @@
-import { getPo2TextureFromSource } from '../../../src/scene/text/html/utils/getPo2TextureFromSource';
+import { getPo2TextureFromSource } from '../../../src/scene/text/utils/getPo2TextureFromSource';
 
 describe('getPo2TextureFromSource', () =>
 {

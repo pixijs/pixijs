@@ -1,10 +1,10 @@
-import { Cache } from '../../../assets/cache/Cache';
-import { TextStyle } from '../TextStyle';
+import { Cache } from '../../assets/cache/Cache';
+import { TextStyle } from '../text/TextStyle';
 import { DynamicBitmapFont } from './DynamicBitmapFont';
 import { getBitmapTextLayout } from './utils/getBitmapTextLayout';
 import { resolveCharacters } from './utils/resolveCharacters';
 
-import type { TextStyleOptions } from '../TextStyle';
+import type { TextStyleOptions } from '../text/TextStyle';
 import type { BitmapFontInstallOptions } from './AbstractBitmapFont';
 import type { BitmapFont } from './BitmapFont';
 import type { BitmapTextLayoutData } from './utils/getBitmapTextLayout';

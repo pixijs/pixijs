@@ -1,4 +1,4 @@
-import { bitmapFontTextParser } from '../../src/scene/text/bitmap/asset/bitmapFontTextParser';
+import { bitmapFontTextParser } from '../../src/scene/text-bitmap/asset/bitmapFontTextParser';
 
 const rawFontString = `
 info face="sans-serif" size=36 bold=0 italic=0 charset="" unicode=1 stretchH=100 smooth=1 aa=1 padding=1,1,1,1 spacing=1,1
