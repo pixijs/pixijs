@@ -265,7 +265,7 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
         this.animations = {} as Record<keyof NonNullable<S['animations']>, Texture[]>;
         this.data = data;
 
-        const metaResolution = typeof data.meta.scale === 'number' ? data.meta.scale : parseFloat(data.meta.scale);
+        const metaResolution = parseFloat(data.meta.scale as string);
 
         if (metaResolution)
         {
