@@ -82,7 +82,7 @@ export function convertFillInputToFillStyle(
     {
         if (style.texture !== Texture.WHITE)
         {
-            const m = style.matrix || new Matrix();
+            const m = style.matrix?.invert() || new Matrix();
 
             m.scale(
                 1 / style.texture.frame.width,
