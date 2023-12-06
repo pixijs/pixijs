@@ -13,17 +13,18 @@ export function fastCopy(sourceBuffer: ArrayBuffer, destinationBuffer: ArrayBuff
     const sourceFloat64View = new Float64Array(sourceBuffer, 0, lengthDouble);
     const destinationFloat64View = new Float64Array(destinationBuffer, 0, lengthDouble);
 
-    for (let i = 0; i < lengthDouble; i++)
-    {
-        destinationFloat64View[i] = sourceFloat64View[i];
-    }
+    // Use set for faster copying
+    destinationFloat64View.set(sourceFloat64View);
 
     // copying over the remaining bytes
-    const sourceUint8View = new Uint8Array(sourceBuffer, lengthDouble * 8);
-    const destinationUint8View = new Uint8Array(destinationBuffer, lengthDouble * 8);
+    const remainingBytes = sourceBuffer.byteLength - (lengthDouble * 8);
 
-    for (let i = 0; i < sourceUint8View.length; i++)
+    if (remainingBytes > 0)
     {
-        destinationUint8View[i] = sourceUint8View[i];
+        const sourceUint8View = new Uint8Array(sourceBuffer, lengthDouble * 8, remainingBytes);
+        const destinationUint8View = new Uint8Array(destinationBuffer, lengthDouble * 8, remainingBytes);
+
+        // Direct copy for remaining bytes
+        destinationUint8View.set(sourceUint8View);
     }
 }
