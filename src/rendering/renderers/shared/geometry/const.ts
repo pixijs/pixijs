@@ -23,7 +23,7 @@ const DEPRECATED_DRAW_MODES = {
 export const DRAW_MODES = new Proxy(DEPRECATED_DRAW_MODES, {
     get(target, prop: keyof typeof DEPRECATED_DRAW_MODES)
     {
-        deprecation(v8_0_0, `DRAW_MODES.${prop} is deprecated, use '${prop}' instead`);
+        deprecation(v8_0_0, `DRAW_MODES.${prop} is deprecated, use '${DEPRECATED_DRAW_MODES[prop]}' instead`);
 
         return target[prop];
     },
