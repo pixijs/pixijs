@@ -67,7 +67,7 @@ export interface SpritesheetData
             name: string;
             opacity: number;
         }[];
-        scale: string;
+        scale: number | string;
         size?: {
             h: number;
             w: number;
@@ -265,7 +265,7 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
         this.animations = {} as Record<keyof NonNullable<S['animations']>, Texture[]>;
         this.data = data;
 
-        const metaResolution = parseFloat(data.meta.scale);
+        const metaResolution = parseFloat(data.meta.scale as string);
 
         if (metaResolution)
         {
