@@ -61,7 +61,7 @@ export const scene: TestScene = {
         // rect with separate texture fill
         const rect4 = new Graphics();
 
-        rect4.rect(50, 50, 50, 50).fill({ texture: texture2, matrix: new Matrix().scale(5, 5) })
+        rect4.rect(50, 50, 50, 50).fill({ texture: texture2, matrix: new Matrix().scale(0.2, 0.2) })
             .stroke({ width: 5, texture, color: 0xff0000 });
 
         scene.addChild(rect4);
