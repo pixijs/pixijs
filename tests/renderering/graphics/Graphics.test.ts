@@ -110,6 +110,8 @@ describe('Graphics', () =>
                 .ellipse(100, 100, 50, 75)
                 .circle(100, 100, 50)
                 .path(new GraphicsPath())
+                .setStrokeStyle({ width: 1, color: 0xffffff, alpha: 1, texture })
+                .setFillStyle({ color: 0xffffff, alpha: 1, texture })
                 .lineTo(200, 200)
                 .moveTo(100, 100)
                 .quadraticCurveTo(100, 100, 200, 200)
