@@ -60,7 +60,9 @@ export type RunnerItem<T = string, ARG extends unknown[] = any[]> =
  *
  * ```ts
  *
- * let runner: Runner<'update', [number]>;
+ * import { Runner } from '@pixi/runner';
+ *
+ * const runner: Runner<'update', [number]>;
  *
  * // This won't work because the function name 'update' is expected
  * runner = new Runner('destroy');
