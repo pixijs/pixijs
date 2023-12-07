@@ -105,7 +105,7 @@ export class Runner<T = any, ARG extends unknown[] = any[]>
     private _aliasCount: number;
 
     /**
-     * @param name - The function name that will be executed on the listeners added to this Runner.
+     * @param {string} name - The function name that will be executed on the listeners added to this Runner.
      */
     constructor(name: T)
     {
@@ -238,7 +238,7 @@ export class Runner<T = any, ARG extends unknown[] = any[]>
 
     /**
      * The name of the runner.
-     * @readonly
+     * @type {string}
      */
     public get name(): T
     {
