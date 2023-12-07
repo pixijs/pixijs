@@ -21,10 +21,19 @@ describe('Runner', () =>
             },
         };
 
-        runner.emit(10);
         runner.add(item);
+        runner.emit(10);
 
-        expect(item).toHaveBeenCalledWith(10);
+        expect(item.update).toHaveBeenCalledWith(
+            10,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined
+        );
     });
 
     it('should implement emit', () =>
