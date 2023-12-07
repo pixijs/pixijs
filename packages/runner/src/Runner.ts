@@ -1,11 +1,11 @@
 export type RunnerListenerCallback<ARG extends unknown[] = any[]> = (...args: ARG) => unknown;
 
-export type RunnerItemValid<T extends string, ARG extends unknown[] = any[]> =
+type RunnerItemValid<T extends string, ARG extends unknown[] = any[]> =
     { [K in T]: RunnerListenerCallback<ARG> | unknown };
 
-export type RunnerItemAny = Record<string, unknown>;
+type RunnerItemAny = Record<string, unknown>;
 
-export type RunnerItemEmpty = Record<string, never>;
+type RunnerItemEmpty = Record<string, never>;
 
 export type RunnerItem<T = string, ARG extends unknown[] = any[]> =
     T extends string ?
