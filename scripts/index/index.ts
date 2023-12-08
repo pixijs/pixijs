@@ -42,14 +42,6 @@ directories.forEach((directory) =>
         shortName += ext.charAt(0).toUpperCase() + ext.slice(1);
 
         return `export { default as ${shortName} } from './${file}';`;
-
-        // const replace = file.replace(/\.(vert|frag|glsl|wgsl)$/, '');
-        // let shortName = join(directory, replace).replace(/-([a-z])/g, (_, group1) => group1.toUpperCase());
-        // const ext = extname(join(directory, file)).slice(1);
-
-        // shortName += ext.charAt(0).toUpperCase() + ext.slice(1);
-
-        // return `export { default as ${shortName} } from './${file}';`;
     });
 
     // Combine the export statements into one file
