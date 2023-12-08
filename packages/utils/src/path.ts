@@ -311,19 +311,7 @@ export const path: Path = {
             if (arg.length > 0)
             {
                 if (joined === undefined) joined = arg;
-                else
-                {
-                    const prevArg = segments[i - 1] ?? '';
-
-                    if (this.extname(prevArg))
-                    {
-                        joined += `/../${arg}`;
-                    }
-                    else
-                    {
-                        joined += `/${arg}`;
-                    }
-                }
+                else joined += `/${arg}`;
             }
         }
         if (joined === undefined) { return '.'; }

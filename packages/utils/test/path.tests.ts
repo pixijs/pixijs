@@ -113,12 +113,12 @@ describe('Paths', () =>
     it('should join paths', () =>
     {
         expect(path.join('http://foo.com/index.html', '../bar/baz/file')).toBe('http://foo.com/bar/baz/file');
-        expect(path.join('http://foo.com/bar/index.html', '../baz/file')).toBe('http://foo.com/baz/file');
-        expect(path.join('http://foo.com/bar/index.html', './baz/file')).toBe('http://foo.com/bar/baz/file');
-        expect(path.join('http://foo.com/bar/index.html', 'baz/file')).toBe('http://foo.com/bar/baz/file');
-        expect(path.join('http://foo.com/bar/index.html?var=a', '../baz/file')).toBe('http://foo.com/baz/file');
-        expect(path.join('http://foo.com/bar/index.html?var=a#hash', '../baz/file')).toBe('http://foo.com/baz/file');
-        expect(path.join('http://foo.com/bar/index.html#hash', '../baz/file')).toBe('http://foo.com/baz/file');
+        expect(path.join('http://foo.com/bar/index.html', '../baz/file')).toBe('http://foo.com/bar/baz/file');
+        expect(path.join('http://foo.com/bar/', './baz/file')).toBe('http://foo.com/bar/baz/file');
+        expect(path.join('http://foo.com/bar/', 'baz/file')).toBe('http://foo.com/bar/baz/file');
+        expect(path.join('http://foo.com/bar/index.html?var=a', '../baz/file')).toBe('http://foo.com/bar/baz/file');
+        expect(path.join('http://foo.com/bar/index.html?var=a#hash', '../baz/file')).toBe('http://foo.com/bar/baz/file');
+        expect(path.join('http://foo.com/bar/index.html#hash', '../baz/file')).toBe('http://foo.com/bar/baz/file');
 
         expect(path.join('http://foo.com', '../bar/baz/file')).toBe('http://foo.com/bar/baz/file');
         expect(path.join('https://foo.com', '../bar/baz/file')).toBe('https://foo.com/bar/baz/file');
@@ -140,6 +140,9 @@ describe('Paths', () =>
         expect(path.join('/foo', 'bar/baz/file', '../test')).toBe('/foo/bar/baz/test');
         expect(path.join('C:/foo', 'bar/baz/file', '../test')).toBe('C:/foo/bar/baz/test');
         expect(path.join('C:\\foo', 'bar/baz/file', '../test')).toBe('C:/foo/bar/baz/test');
+
+        expect(path.join('http://foo.com/baz3.0', '/bar/file')).toBe('http://foo.com/baz3.0/bar/file');
+        expect(path.join('http://foo.com/baz3.0', '../bar/file')).toBe('http://foo.com/bar/file');
     });
 
     it('should get the directory name', () =>
@@ -256,21 +259,21 @@ describe('Paths', () =>
         expect(path.toAbsolute('mac.png', '/foo/bar')).toEqual(`/foo/bar/mac.png`);
 
         // paths with extensions
-        expect(path.toAbsolute('./browser.png', 'http://example.com/page-1/index.html'))
+        expect(path.toAbsolute('./browser.png', 'http://example.com/page-1/'))
             .toEqual(`http://example.com/page-1/browser.png`);
-        expect(path.toAbsolute('./img/browser.png', 'http://example.com/page-1/index.html'))
+        expect(path.toAbsolute('./img/browser.png', 'http://example.com/page-1/'))
             .toEqual(`http://example.com/page-1/img/browser.png`);
-        expect(path.toAbsolute('img/browser.png', 'http://example.com/page-1/index.html'))
+        expect(path.toAbsolute('img/browser.png', 'http://example.com/page-1/'))
             .toEqual(`http://example.com/page-1/img/browser.png`);
-        expect(path.toAbsolute('windows.png', 'C:/foo/bar/index.html')).toEqual(`C:/foo/bar/windows.png`);
-        expect(path.toAbsolute('mac.png', '/foo/bar/index.html')).toEqual(`/foo/bar/mac.png`);
+        expect(path.toAbsolute('windows.png', 'C:/foo/bar/')).toEqual(`C:/foo/bar/windows.png`);
+        expect(path.toAbsolute('mac.png', '/foo/bar/')).toEqual(`/foo/bar/mac.png`);
 
         // path with query string
-        expect(path.toAbsolute('./browser.png', 'http://example.com/page-1/index.html?var=a#hash'))
+        expect(path.toAbsolute('./browser.png', 'http://example.com/page-1?var=a#hash'))
             .toEqual(`http://example.com/page-1/browser.png`);
-        expect(path.toAbsolute('./img/browser.png', 'http://example.com/page-1/index.html?var=a#hash'))
+        expect(path.toAbsolute('./img/browser.png', 'http://example.com/page-1?var=a#hash'))
             .toEqual(`http://example.com/page-1/img/browser.png`);
-        expect(path.toAbsolute('img/browser.png', 'http://example.com/page-1/index.html?var=a#hash'))
+        expect(path.toAbsolute('img/browser.png', 'http://example.com/page-1?var=a#hash'))
             .toEqual(`http://example.com/page-1/img/browser.png`);
         expect(path.toAbsolute('img/browser.png', 'http://example.com/page-1?var=a#hash'))
             .toEqual(`http://example.com/page-1/img/browser.png`);
