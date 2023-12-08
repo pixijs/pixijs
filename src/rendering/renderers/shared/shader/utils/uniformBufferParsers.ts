@@ -14,66 +14,102 @@
 //     codeUbo: (name, uniform) => {} <--- returns the string of the piece of code that uploads the
 //                                         uniform to a uniform buffer
 // }
+import { parseFunctionBody } from '../../utils/parseFunctionBody';
+
 import type { Matrix } from '../../../../../maths/matrix/Matrix';
 import type { PointLike } from '../../../../../maths/point/PointLike';
 import type { Rectangle } from '../../../../../maths/shapes/Rectangle';
 import type { UNIFORM_TYPES, UniformData } from './createUBOElements';
 
-export interface UniformParser
+type UniformParserKey = 'UPLOAD_PIXI_MAT_TO_MAT3' | 'VEC4_RECTANGLE' | 'VEC2_POINT';
+
+interface UniformParserDefinition
+{
+    test(data: UniformData): boolean;
+    exec: (name: string, uv: any, data: any, offset: any, v: any) => void;
+}
+
+export interface UniformParser extends UniformParserDefinition
 {
     type: UNIFORM_TYPES;
-    test: (data: UniformData) => boolean;
-    code: (name: string) => string;
+    code: string;
 }
+
+const parsers: Record<UniformParserKey, UniformParserDefinition> = {
+    UPLOAD_PIXI_MAT_TO_MAT3: {
+        test: (data: UniformData): boolean =>
+        {
+            const value = data.value as Matrix;
+
+            return value.a !== undefined;
+        },
+        exec: (name: string, uv: any, data: any, offset: any, _v: any): void =>
+        {
+            // eslint-disable-next-line no-lone-blocks
+            {
+                const matrix = uv[name].toArray(true);
+
+                data[offset] = matrix[0];
+                data[offset + 1] = matrix[1];
+                data[offset + 2] = matrix[2];
+
+                data[offset + 4] = matrix[3];
+                data[offset + 5] = matrix[4];
+                data[offset + 6] = matrix[5];
+
+                data[offset + 8] = matrix[6];
+                data[offset + 9] = matrix[7];
+                data[offset + 10] = matrix[8];
+            }
+        },
+    },
+    VEC4_RECTANGLE: {
+        test: (data: UniformData): boolean =>
+            data.type === 'vec4<f32>' && data.size === 1 && (data.value as Rectangle).width !== undefined,
+        exec: (name: string, uv: any, data: any, offset: any, v: any): void =>
+        {
+            v = uv[name];
+
+            data[offset] = v.x;
+            data[offset + 1] = v.y;
+            data[offset + 2] = v.width;
+            data[offset + 3] = v.height;
+        },
+    },
+    VEC2_POINT: {
+        test: (data: UniformData): boolean =>
+            data.type === 'vec2<f32>' && data.size === 1 && (data.value as PointLike).x !== undefined,
+        exec: (name: string, uv: any, data: any, offset: any, v: any): void =>
+        {
+            v = uv[name];
+
+            data[offset] = v.x;
+            data[offset + 1] = v.y;
+        },
+    },
+};
 
 export const uniformBufferParsers: UniformParser[] = [
     // uploading pixi matrix object to mat3
     {
         type: 'mat3x3<f32>',
-        test: (data: UniformData): boolean =>
-            (data.value as Matrix).a !== undefined,
-        code: (name: string): string =>
-            `
-                var ${name}_matrix = uv.${name}.toArray(true);
-
-                data[offset] = ${name}_matrix[0];
-                data[offset+1] = ${name}_matrix[1];
-                data[offset+2] = ${name}_matrix[2];
-
-                data[offset + 4] = ${name}_matrix[3];
-                data[offset + 5] = ${name}_matrix[4];
-                data[offset + 6] = ${name}_matrix[5];
-
-                data[offset + 8] = ${name}_matrix[6];
-                data[offset + 9] = ${name}_matrix[7];
-                data[offset + 10] = ${name}_matrix[8];
-            `,
+        test: parsers.UPLOAD_PIXI_MAT_TO_MAT3.test,
+        exec: parsers.UPLOAD_PIXI_MAT_TO_MAT3.exec,
+        code: parseFunctionBody(parsers.UPLOAD_PIXI_MAT_TO_MAT3.exec)
     },
+    // uploading a pixi rectangle as a vec4
     {
         type: 'vec4<f32>',
-        test: (data: UniformData) =>
-            data.type === 'vec4<f32>' && data.size === 1 && (data.value as Rectangle).width !== undefined,
-        code: (name: string): string =>
-            `
-                        v = uv.${name};
-
-                        data[offset] = v.x;
-                        data[offset+1] = v.y;
-                        data[offset+2] = v.width;
-                        data[offset+3] = v.height;
-                    `,
+        test: parsers.VEC4_RECTANGLE.test,
+        exec: parsers.VEC4_RECTANGLE.exec,
+        code: parseFunctionBody(parsers.VEC4_RECTANGLE.exec)
     },
+    // uploading a pixi point as a vec2
     {
         type: 'vec2<f32>',
-        test: (data: UniformData): boolean =>
-            data.type === 'vec2<f32>' && data.size === 1 && (data.value as PointLike).x !== undefined,
-        code: (name: string): string =>
-            `
-                    v = uv.${name};
-
-                    data[offset] = v.x;
-                    data[offset+1] = v.y;
-                `,
+        test: parsers.VEC2_POINT.test,
+        exec: parsers.VEC2_POINT.exec,
+        code: parseFunctionBody(parsers.VEC2_POINT.exec)
     },
     // uploading a pixi point as a vec2 with caching layer
     // {

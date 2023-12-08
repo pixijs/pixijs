@@ -1,6 +1,8 @@
 // thanks to https://github.com/mattdesl/adaptive-quadratic-curve
 // for the original code!
 
+import { GraphicsContextSystem } from '../GraphicsContextSystem';
+
 const RECURSION_LIMIT = 8;
 const FLT_EPSILON = 1.19209290e-7;
 const PATH_DISTANCE_EPSILON = 1.0;
@@ -13,10 +15,15 @@ export function buildAdaptiveQuadratic(
     sX: number, sY: number,
     cp1x: number, cp1y: number,
     eX: number, eY: number,
+    smoothness?: number,
 )
 {
     const scale = 1.0;
-    let distanceTolerance = PATH_DISTANCE_EPSILON / scale;
+    const smoothing = Math.min(
+        0.99, // a value of 1.0 actually inverts smoothing, so we cap it at 0.99
+        Math.max(0, smoothness ?? GraphicsContextSystem.defaultOptions.bezierSmoothness)
+    );
+    let distanceTolerance = (PATH_DISTANCE_EPSILON - smoothing) / scale;
 
     distanceTolerance *= distanceTolerance;
     begin(sX, sY, cp1x, cp1y, eX, eY, points, distanceTolerance);

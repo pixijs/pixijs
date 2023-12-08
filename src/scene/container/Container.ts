@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import { Color, type ColorSource } from '../../color/Color';
+import { cullingMixin } from '../../culling/cullingMixin';
 import { Matrix } from '../../maths/matrix/Matrix';
 import { DEG_TO_RAD, RAD_TO_DEG } from '../../maths/misc/const';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
@@ -12,10 +13,11 @@ import { measureMixin } from './container-mixins/measureMixin';
 import { onRenderMixin } from './container-mixins/onRenderMixin';
 import { sortMixin } from './container-mixins/sortMixin';
 import { toLocalGlobalMixin } from './container-mixins/toLocalGlobalMixin';
-import { LayerGroup } from './LayerGroup';
-import { definedProps } from './utils/definedProps';
+import { RenderGroup } from './RenderGroup';
+import { assignWithIgnore } from './utils/assignWithIgnore';
 
 import type { PointData } from '../../maths/point/PointData';
+import type { Rectangle } from '../../maths/shapes/Rectangle';
 import type { Renderable } from '../../rendering/renderers/shared/Renderable';
 import type { BLEND_MODES } from '../../rendering/renderers/shared/state/const';
 import type { View } from '../../rendering/renderers/shared/view/View';
@@ -61,6 +63,19 @@ export const UPDATE_BLEND = 0b0010;
 export const UPDATE_VISIBLE = 0b0100;
 export const UPDATE_TRANSFORM = 0b1000;
 
+export interface UpdateTransformOptions
+{
+    x: number;
+    y: number;
+    scaleX: number;
+    scaleY: number;
+    rotation: number;
+    skewX: number;
+    skewY: number;
+    pivotX: number;
+    pivotY: number;
+}
+
 /**
  * Constructor options use for Container instances.
  * @memberof scene
@@ -68,8 +83,8 @@ export const UPDATE_TRANSFORM = 0b1000;
  */
 export interface ContainerOptions<T extends View> extends PixiMixins.ContainerOptions
 {
-    /** @see scene.Container#layer */
-    layer?: boolean;
+    /** @see scene.Container#isRenderGroup */
+    isRenderGroup?: boolean;
     /** @see scene.Container#view */
     view?: T;
 
@@ -104,11 +119,13 @@ export interface ContainerOptions<T extends View> extends PixiMixins.ContainerOp
     x?: number;
     /** @see scene.Container#y */
     y?: number;
+    /** @see scene.Container#boundArea */
+    boundsArea?: Rectangle;
 }
 
 export interface Container
     extends Omit<PixiMixins.Container, keyof EventEmitter<ContainerEvents & AnyEvent>>,
-    EventEmitter<ContainerEvents & AnyEvent> {}
+    EventEmitter<ContainerEvents & AnyEvent> { }
 
 /**
  * Container is a general-purpose display object that holds children. It also adds built-in support for advanced
@@ -252,45 +269,46 @@ export interface Container
  *     .endFill();
  *
  *
- * ## Layers
+ * ## RenderGroup
  *
- * In PixiJS v8, containers can be set to operate in 'layer mode',
+ * In PixiJS v8, containers can be set to operate in 'render group mode',
  * transforming them into entities akin to a stage in traditional rendering paradigms.
- * A layer is a root renderable entity, similar to a container,
+ * A render group is a root renderable entity, similar to a container,
  * but it's rendered in a separate pass with its own unique set of rendering instructions.
  * This approach enhances rendering efficiency and organization, particularly in complex scenes.
  *
- * You can enable layer mode on any container using container.enableLayer()
- * or by initializing a new container with the layer property set to true (new Container({layer: true})).
+ * You can enable render group mode on any container using container.enableRenderGroup()
+ * or by initializing a new container with the render group property set to true (new Container({isRenderGroup: true})).
  *  The method you choose depends on your specific use case and setup requirements.
  *
- * An important aspect of PixiJS’s rendering process is the automatic treatment of rendered scenes as layers.
+ * An important aspect of PixiJS’s rendering process is the automatic treatment of rendered scenes as render groups.
  * This conversion streamlines the rendering process, but understanding when and how this happens is crucial
  * to fully leverage its benefits.
  *
- * One of the key advantages of using layers is the performance efficiency in moving them. Since transformations
- *  are applied at the GPU level, moving a layer, even one with complex and numerous children,
+ * One of the key advantages of using render groups is the performance efficiency in moving them. Since transformations
+ *  are applied at the GPU level, moving a render group, even one with complex and numerous children,
  * doesn't require recalculating the rendering instructions or performing transformations on each child.
  * This makes operations like panning a large game world incredibly efficient.
  *
- * However, it's crucial to note that layers do not batch together.
- * This means that turning every container into a layer could actually slow things down,
- * as each layer is processed separately. It's best to use layers judiciously, at a broader level,
+ * However, it's crucial to note that render groups do not batch together.
+ * This means that turning every container into a render group could actually slow things down,
+ * as each render group is processed separately. It's best to use render groups judiciously, at a broader level,
  * rather than on a per-child basis.
  * This approach ensures you get the performance benefits without overburdening the rendering process.
  *
- * Layers maintain their own set of rendering instructions,
- * ensuring that changes or updates within a layer don't affect the rendering instructions of its parent or other layers.
+ * RenderGroups maintain their own set of rendering instructions,
+ * ensuring that changes or updates within a render group don't affect the rendering
+ * instructions of its parent or other render groups.
  *  This isolation ensures more stable and predictable rendering behavior.
  *
- * Additionally, layers can be nested, allowing for powerful options in organizing different aspects of your scene.
+ * Additionally, renderGroups can be nested, allowing for powerful options in organizing different aspects of your scene.
  * This feature is particularly beneficial for separating complex game graphics from UI elements,
  * enabling intricate and efficient scene management in complex applications.
  *
  * This means that Containers have 3 levels of matrix to be mindful of:
  *
  * 1 - localTransform, this is the transform of the container based on its own properties
- * 2 - layerTransform, this it the transform of the container relative to the layer it belongs too
+ * 2 - rgTransform, this it the transform of the container relative to the renderGroup it belongs too
  * 3 - worldTransform, this is the transform of the container relative to the Scene being rendered
  * @memberof scene
  */
@@ -311,13 +329,13 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     /** @private */
     public _updateFlags = 0b1111;
 
-    // is this container the root of a layer?
+    // is this container the root of a renderGroup?
     // TODO implement this in a few more places
     /** @private */
-    public isLayerRoot = false;
-    // the layer group this container belongs to OR owns
+    public isRenderGroupRoot = false;
+    // the render group this container belongs to OR owns
     /** @private */
-    public layerGroup: LayerGroup = null;
+    public renderGroup: RenderGroup = null;
 
     // set to true if the container has changed. It is reset once the changes have been applied
     // by the transform system
@@ -327,10 +345,10 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     // same as above, but for the renderable
     /** @private */
     public didViewUpdate = false;
-    // how deep is the container relative to its layer..
-    // unless the element is the root layer - it will be relative to its parent
+    // how deep is the container relative to its render group..
+    // unless the element is the root render group - it will be relative to its parent
     /** @private */
-    public relativeLayerDepth = 0;
+    public relativeRenderGroupDepth = 0;
 
     /**
      * The array of children of this container.
@@ -365,12 +383,12 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      */
     public localTransform: Matrix = new Matrix();
     /**
-     * The layer transform is a transform relative to the layer it belongs too. It will include all parent
-     * transforms and up to the layer (think of it as kind of like a stage - but the stage can be nested).
+     * The render group transform is a transform relative to the render group it belongs too. It will include all parent
+     * transforms and up to the render group (think of it as kind of like a stage - but the stage can be nested).
      * @readonly
      */
-    public layerTransform: Matrix = new Matrix();
-    // the global transform taking into account the layer and all parents
+    public rgTransform: Matrix = new Matrix();
+    // the global transform taking into account the render group and all parents
     private _worldTransform: Matrix;
 
     /** If the object has been destroyed via destroy(). If true, it should not be used. */
@@ -454,9 +472,9 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      * @internal
      * @ignore
      */
-    public layerAlpha = 1; // A
-    public layerColor = 0xFFFFFF; // BGR
-    public layerColorAlpha = 0xFFFFFFFF; // ABGR
+    public rgAlpha = 1; // A
+    public rgColor = 0xFFFFFF; // BGR
+    public rgColorAlpha = 0xFFFFFFFF; // ABGR
 
     /// BLEND related props //////////////
 
@@ -469,7 +487,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      * @internal
      * @ignore
      */
-    public layerBlendMode: BLEND_MODES = 'normal';
+    public rgBlendMode: BLEND_MODES = 'normal';
 
     /// VISIBILITY related props //////////////
 
@@ -485,10 +503,19 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      * @internal
      * @ignore
      */
-    public layerVisibleRenderable = 0b11; // 0b11 | 0b10 | 0b01 | 0b00
+    public rgVisibleRenderable = 0b11; // 0b11 | 0b10 | 0b01 | 0b00
 
     /** A view that is used to render this container. */
     public readonly view: T;
+
+    /**
+     * An optional bounds area for this container. Setting this rectangle will stop the renderer
+     * from recursively measuring the bounds of each children and instead use this single boundArea.
+     * This is great for optimisation! If for example you have a 1000 spinning particles and you know they all sit
+     * within a specific bounds, then setting it will mean the renderer will not need to measure the
+     * 1000 children to find the bounds. Instead it will just use the bounds you set.
+     */
+    public boundsArea: Rectangle;
 
     constructor(options: Partial<ContainerOptions<T>> = {})
     {
@@ -503,12 +530,15 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
             options.view = undefined;
         }
 
-        Object.assign(this, definedProps(options));
+        assignWithIgnore(this, options, {
+            children: true,
+            parent: true,
+            effects: true,
+        });
 
-        this.children = [];
         options.children?.forEach((child) => this.addChild(child));
         this.effects = [];
-        options.effects?.forEach((effect) => this.addEffect(effect));
+        options.parent?.addChild(this);
     }
 
     /**
@@ -543,9 +573,9 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
             this.children.splice(this.children.indexOf(child), 1);
             this.children.push(child);
 
-            if (this.layerGroup && !this.isLayerRoot)
+            if (this.renderGroup && !this.isRenderGroupRoot)
             {
-                this.layerGroup.structureDidChange = true;
+                this.renderGroup.structureDidChange = true;
             }
 
             return child;
@@ -553,7 +583,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
         if (child.parent)
         {
-            // TODO Optimisation...if the parent has the same layer group, this does not need to change!
+            // TODO Optimisation...if the parent has the same render group, this does not need to change!
             child.parent.removeChild(child);
         }
 
@@ -569,9 +599,9 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         // TODO - OPtimise this? could check what the parent has set?
         child._updateFlags = 0b1111;
 
-        if (this.layerGroup)
+        if (this.renderGroup)
         {
-            this.layerGroup.addChild(child);
+            this.renderGroup.addChild(child);
         }
 
         this.emit('childAdded', child, this, this.children.length - 1);
@@ -612,9 +642,9 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         {
             this.children.splice(index, 1);
 
-            if (this.layerGroup)
+            if (this.renderGroup)
             {
-                this.layerGroup.removeChild(child);
+                this.renderGroup.removeChild(child);
             }
         }
 
@@ -641,19 +671,19 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         if (this.didChange) return;
         this.didChange = true;
 
-        if (this.isLayerRoot)
+        if (this.isRenderGroupRoot)
         {
-            const layerGroupParent = this.layerGroup.layerGroupParent;
+            const renderGroupParent = this.renderGroup.renderGroupParent;
             // lets update its parent..
 
-            if (layerGroupParent)
+            if (renderGroupParent)
             {
-                layerGroupParent.onChildUpdate(this);
+                renderGroupParent.onChildUpdate(this);
             }
         }
-        else if (this.layerGroup)
+        else if (this.renderGroup)
         {
-            this.layerGroup.onChildUpdate(this);
+            this.renderGroup.onChildUpdate(this);
         }
     }
 
@@ -663,64 +693,64 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         if (this.didViewUpdate) return;
         this.didViewUpdate = true;
 
-        if (this.layerGroup)
+        if (this.renderGroup)
         {
-            this.layerGroup.onChildViewUpdate(this);
+            this.renderGroup.onChildViewUpdate(this);
         }
     }
 
-    set layer(value: boolean)
+    set isRenderGroup(value: boolean)
     {
-        if (this.isLayerRoot && value === false)
+        if (this.isRenderGroupRoot && value === false)
         {
-            throw new Error('[Pixi] cannot undo a layer just yet');
+            throw new Error('[Pixi] cannot undo a render group just yet');
         }
 
         if (value)
         {
-            this.enableLayer();
+            this.enableRenderGroup();
         }
     }
 
     /**
-     * Returns true if this container is a layer.
+     * Returns true if this container is a render group.
      * This means that it will be rendered as a separate pass, with its own set of instructions
      */
-    get layer(): boolean
+    get isRenderGroup(): boolean
     {
-        return this.isLayerRoot;
+        return this.isRenderGroupRoot;
     }
 
-    /** This enables the container to be rendered as a layer. */
-    public enableLayer()
+    /** This enables the container to be rendered as a render group. */
+    public enableRenderGroup()
     {
-        // does it OWN the layer..
-        if (this.layerGroup && this.layerGroup.root === this) return;
+        // does it OWN the render group..
+        if (this.renderGroup && this.renderGroup.root === this) return;
 
-        this.isLayerRoot = true;
+        this.isRenderGroupRoot = true;
 
-        const parentLayerGroup = this.layerGroup;
+        const parentRenderGroup = this.renderGroup;
 
-        if (parentLayerGroup)
+        if (parentRenderGroup)
         {
-            parentLayerGroup.removeChild(this);
+            parentRenderGroup.removeChild(this);
         }
 
-        this.layerGroup = new LayerGroup(this);
+        this.renderGroup = new RenderGroup(this);
 
-        // find children layers and move them out..
-        if (parentLayerGroup)
+        // find children render groups and move them out..
+        if (parentRenderGroup)
         {
-            for (let i = 0; i < parentLayerGroup.layerGroupChildren.length; i++)
+            for (let i = 0; i < parentRenderGroup.renderGroupChildren.length; i++)
             {
-                const childLayerGroup = parentLayerGroup.layerGroupChildren[i];
-                let parent = childLayerGroup.root;
+                const childRenderGroup = parentRenderGroup.renderGroupChildren[i];
+                let parent = childRenderGroup.root;
 
                 while (parent)
                 {
                     if (parent === this)
                     {
-                        this.layerGroup.addLayerGroupChild(childLayerGroup);
+                        this.renderGroup.addRenderGroupChild(childRenderGroup);
 
                         break;
                     }
@@ -728,7 +758,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
                 }
             }
 
-            parentLayerGroup.addLayerGroupChild(this.layerGroup);
+            parentRenderGroup.addRenderGroupChild(this.renderGroup);
         }
 
         this._updateIsSimple();
@@ -737,7 +767,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     /** @ignore */
     public _updateIsSimple()
     {
-        this.isSimple = !(this.isLayerRoot) && (this.effects.length === 0);
+        this.isSimple = !(this.isRenderGroupRoot) && (this.effects.length === 0);
     }
 
     /**
@@ -748,15 +778,15 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     {
         this._worldTransform ||= new Matrix();
 
-        if (this.layerGroup)
+        if (this.renderGroup)
         {
-            if (this.isLayerRoot)
+            if (this.isRenderGroupRoot)
             {
-                this._worldTransform.copyFrom(this.layerGroup.worldTransform);
+                this._worldTransform.copyFrom(this.renderGroup.worldTransform);
             }
             else
             {
-                this._worldTransform.appendFrom(this.layerTransform, this.layerGroup.worldTransform);
+                this._worldTransform.appendFrom(this.rgTransform, this.renderGroup.worldTransform);
             }
         }
 
@@ -918,6 +948,42 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         this._sy = Math.cos(rotation - skew._x); // sin, added PI/2
     }
 
+    /**
+     * Updates the transform properties of the container (accepts partial values).
+     * @param {object} opts - The options for updating the transform.
+     * @param {number} opts.x - The x position of the container.
+     * @param {number} opts.y - The y position of the container.
+     * @param {number} opts.scaleX - The scale factor on the x-axis.
+     * @param {number} opts.scaleY - The scale factor on the y-axis.
+     * @param {number} opts.rotation - The rotation of the container, in radians.
+     * @param {number} opts.skewX - The skew factor on the x-axis.
+     * @param {number} opts.skewY - The skew factor on the y-axis.
+     * @param {number} opts.pivotX - The x coordinate of the pivot point.
+     * @param {number} opts.pivotY - The y coordinate of the pivot point.
+     */
+    public updateTransform(opts: Partial<UpdateTransformOptions>): this
+    {
+        this.position.set(
+            typeof opts.x === 'number' ? opts.x : this.position.x,
+            typeof opts.y === 'number' ? opts.y : this.position.y
+        );
+        this.scale.set(
+            typeof opts.scaleX === 'number' ? opts.scaleX || 1 : this.scale.x,
+            typeof opts.scaleY === 'number' ? opts.scaleY || 1 : this.scale.y
+        );
+        this.rotation = typeof opts.rotation === 'number' ? opts.rotation : this.rotation;
+        this.skew.set(
+            typeof opts.skewX === 'number' ? opts.skewX : this.skew.x,
+            typeof opts.skewY === 'number' ? opts.skewY : this.skew.y
+        );
+        this.pivot.set(
+            typeof opts.pivotX === 'number' ? opts.pivotX : this.pivot.x,
+            typeof opts.pivotY === 'number' ? opts.pivotY : this.pivot.y
+        );
+
+        return this;
+    }
+
     /// ///// color related stuff
 
     set alpha(value: number)
@@ -970,9 +1036,9 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     set blendMode(value: BLEND_MODES)
     {
         if (this.localBlendMode === value) return;
-        if (this.layerGroup && !this.isLayerRoot)
+        if (this.renderGroup && !this.isRenderGroupRoot)
         {
-            this.layerGroup.structureDidChange = true;
+            this.renderGroup.structureDidChange = true;
         }
 
         this._updateFlags |= UPDATE_BLEND;
@@ -1005,9 +1071,9 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
         if ((this.localVisibleRenderable & 0b10) >> 1 === valueNumber) return;
 
-        if (this.layerGroup && !this.isLayerRoot)
+        if (this.renderGroup && !this.isRenderGroupRoot)
         {
-            this.layerGroup.structureDidChange = true;
+            this.renderGroup.structureDidChange = true;
         }
 
         this._updateFlags |= UPDATE_VISIBLE;
@@ -1033,9 +1099,9 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
         this._updateFlags |= UPDATE_VISIBLE;
 
-        if (this.layerGroup && !this.isLayerRoot)
+        if (this.renderGroup && !this.isRenderGroupRoot)
         {
-            this.layerGroup.structureDidChange = true;
+            this.renderGroup.structureDidChange = true;
         }
 
         this.onUpdate();
@@ -1044,7 +1110,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     /** Whether or not the object should be rendered. */
     get isRenderable(): boolean
     {
-        return (this.localVisibleRenderable === 0b11 && this.layerAlpha > 0);
+        return (this.localVisibleRenderable === 0b11 && this.rgAlpha > 0);
     }
 
     /**
@@ -1076,9 +1142,9 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         this._pivot = null;
         this._skew = null;
 
-        if (this.isLayerRoot)
+        if (this.isRenderGroupRoot)
         {
-            this.layerGroup.proxyRenderable = null;
+            this.renderGroup.proxyRenderable = null;
         }
 
         this.emit('destroyed');
@@ -1112,3 +1178,4 @@ Container.mixin(measureMixin);
 Container.mixin(effectsMixin);
 Container.mixin(findMixin);
 Container.mixin(sortMixin);
+Container.mixin(cullingMixin);

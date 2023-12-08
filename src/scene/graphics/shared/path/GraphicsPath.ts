@@ -98,8 +98,12 @@ export class GraphicsPath
         return this;
     }
 
-    public bezierCurveTo(cp1x: number, cp1y: number, cp2x: number, cp2y: number, x: number, y: number): this;
-    public bezierCurveTo(...args: [number, number, number, number, number, number]): this
+    public bezierCurveTo(
+        cp1x: number, cp1y: number, cp2x: number, cp2y: number,
+        x: number, y: number,
+        smoothness?: number
+    ): this;
+    public bezierCurveTo(...args: [number, number, number, number, number, number, number]): this
     {
         this.instructions.push({ action: 'bezierCurveTo', data: args });
 
@@ -108,7 +112,7 @@ export class GraphicsPath
         return this;
     }
 
-    public bezierCurveToShort(cp2x: number, cp2y: number, x: number, y: number): this
+    public bezierCurveToShort(cp2x: number, cp2y: number, x: number, y: number, smoothness?: number): this
     {
         const last = this.instructions[this.instructions.length - 1];
 
@@ -134,7 +138,7 @@ export class GraphicsPath
             cp1y = currentY + (currentY - cp1y);
         }
 
-        this.instructions.push({ action: 'bezierCurveTo', data: [cp1x, cp1y, cp2x, cp2y, x, y] });
+        this.instructions.push({ action: 'bezierCurveTo', data: [cp1x, cp1y, cp2x, cp2y, x, y, smoothness] });
 
         this._dirty = true;
 
@@ -180,8 +184,8 @@ export class GraphicsPath
         return this;
     }
 
-    public quadraticCurveTo(cpx: number, cpy: number, x: number, y: number): this;
-    public quadraticCurveTo(...args: [number, number, number, number]): this
+    public quadraticCurveTo(cpx: number, cpy: number, x: number, y: number, smoothness?: number): this;
+    public quadraticCurveTo(...args: [number, number, number, number, number]): this
     {
         this.instructions.push({ action: 'quadraticCurveTo', data: args });
 
@@ -190,7 +194,7 @@ export class GraphicsPath
         return this;
     }
 
-    public quadraticCurveToShort(x: number, y: number): this
+    public quadraticCurveToShort(x: number, y: number, smoothness?: number): this
     {
         // check if we have a previous quadraticCurveTo
         const last = this.instructions[this.instructions.length - 1];
@@ -217,7 +221,7 @@ export class GraphicsPath
             cpy1 = currentY + (currentY - cpy1);
         }
 
-        this.instructions.push({ action: 'quadraticCurveTo', data: [cpx1, cpy1, x, y] });
+        this.instructions.push({ action: 'quadraticCurveTo', data: [cpx1, cpy1, x, y, smoothness] });
 
         this._dirty = true;
 
@@ -280,8 +284,8 @@ export class GraphicsPath
 
         return this;
     }
-    public roundShape(points: RoundedPoint[], radius: number, useQuadratic?: boolean): this;
-    public roundShape(...args: [RoundedPoint[], number, boolean]): this
+    public roundShape(points: RoundedPoint[], radius: number, useQuadratic?: boolean, smoothness?: number): this;
+    public roundShape(...args: [RoundedPoint[], number, boolean, number]): this
     {
         this.instructions.push({ action: 'roundShape', data: args });
 
@@ -453,8 +457,10 @@ export class GraphicsPath
 
                     break;
 
+                case 'circle':
+                    data[4] = adjustTransform(data[3], matrix);
+                    break;
                 case 'rect':
-
                     data[4] = adjustTransform(data[4], matrix);
                     break;
                 case 'ellipse':
@@ -463,9 +469,11 @@ export class GraphicsPath
                 case 'roundRect':
                     data[5] = adjustTransform(data[5], matrix);
                     break;
-
                 case 'addPath':
                     data[0].transform(matrix);
+                    break;
+                case 'poly':
+                    data[2] = adjustTransform(data[2], matrix);
                     break;
                 default:
                     // #if _DEBUG
@@ -514,10 +522,6 @@ export class GraphicsPath
             lastInstruction = this.instructions[index];
         }
 
-        let x: number;
-        let y: number;
-        let transform: Matrix;
-
         switch (lastInstruction.action)
         {
             case 'moveTo':
@@ -542,41 +546,13 @@ export class GraphicsPath
                 // TODO prolly should transform the last point of the path
                 lastInstruction.data[0].getLastPoint(out);
                 break;
-            case 'rect':
-                // TODO transform...
-
-                transform = lastInstruction.data[4];
-                x = lastInstruction.data[0];
-                y = lastInstruction.data[1];
-
-                if (transform)
-                {
-                    const { a, b, c, d, tx, ty } = transform;
-
-                    out.x = (a * x) + (c * y) + tx;
-                    out.y = (b * x) + (d * y) + ty;
-                }
-                else
-                {
-                    out.x = x;
-                    out.y = y;
-                }
-
-                break;
-            case 'poly':
-                break;
-            default:
-                // #if _DEBUG
-                warn(`${lastInstruction.action} is not supported yet`);
-                // #endif
-                break;
         }
 
         return out;
     }
 }
 
-function adjustTransform(currentMatrix: Matrix, transform?: Matrix): Matrix
+function adjustTransform(currentMatrix?: Matrix, transform?: Matrix): Matrix
 {
     if (currentMatrix)
     {

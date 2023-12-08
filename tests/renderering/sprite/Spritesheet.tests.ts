@@ -28,12 +28,12 @@ describe('Spritesheet', () =>
                 expect(textures[id]).toBeInstanceOf(Texture);
                 expect(textures[id].width).toEqual(width / spritesheet.resolution);
                 expect(textures[id].height).toEqual(height / spritesheet.resolution);
-                expect(textures[id]._layout.defaultAnchor).toBeUndefined();
+                expect(textures[id].defaultAnchor).toBeUndefined();
 
                 expect(spritesheet.animations.star).toBeArray();
                 expect(spritesheet.animations.star).toHaveLength(4);
-                expect(spritesheet.animations.star[0]._layout.defaultAnchor.x).toEqual(0.5);
-                expect(spritesheet.animations.star[0]._layout.defaultAnchor.y).toEqual(0.5);
+                expect(spritesheet.animations.star[0].defaultAnchor.x).toEqual(0.5);
+                expect(spritesheet.animations.star[0].defaultAnchor.y).toEqual(0.5);
 
                 spritesheet.destroy(true);
                 expect(spritesheet.textures).toBeNull();
@@ -227,4 +227,30 @@ describe('Spritesheet', () =>
                 done();
             });
         }));
+
+    it('should parse scale correctly', () =>
+    {
+        [
+            {
+                frames: {},
+                meta: { scale: '1' } // scale can be a string
+            },
+            {
+                frames: {},
+                meta: { scale: 1 } // scale can be a number
+            },
+            {
+                frames: {},
+                meta: {} // if scale not set, default to 1
+            } as unknown as SpritesheetData,
+        ].forEach((toTest) =>
+        {
+            const baseTexture = new Texture();
+            const spritesheet = new Spritesheet(baseTexture, toTest);
+
+            expect(spritesheet.resolution).toEqual(1);
+
+            spritesheet.destroy(true);
+        });
+    });
 });

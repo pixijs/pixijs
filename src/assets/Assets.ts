@@ -20,7 +20,7 @@ export type ProgressCallback = (progress: number) => void;
  */
 export interface AssetsPreferences extends LoadTextureConfig, PixiMixins.AssetsPreferences {}
 
-/** Initialization options object for Asset Class. */
+/** Initialization options object for the Assets Class. */
 export interface AssetInitOptions
 {
     // basic...
@@ -68,7 +68,8 @@ export interface AssetInitOptions
  * Super modern and easy to use, with enough flexibility to customize and do what you need!
  * @namespace assets
  *
- * Only one Asset Class exists accessed via the Global Asset object. See [here]{@link assets.Assets}, for full documentation.
+ * Only one Asset Class exists accessed via the Global Assets object. See [here]{@link assets.Assets},
+ * for full documentation.
  *
  * It has four main responsibilities:
  * <br>     1. Allows users to map URLs to keys and resolve them according to the user's browser capabilities
@@ -115,7 +116,7 @@ export interface AssetInitOptions
  * But if the browser doesn't support AVIF or WebP we will fall back to png and jpg.
  * <br>- Textures can also be accessed via Texture.from(...) and now use this asset manager under the hood!
  * <br>- Don't worry if you set preferences for textures that don't exist (for example you prefer 2x resolutions images
- *  but only 1x is available for that texture, the Asset manager will pick that up as a fallback automatically)
+ *  but only 1x is available for that texture, the Assets manager will pick that up as a fallback automatically)
  *
  * #### Sprite sheets
  * <br>- It's hard to know what resolution a sprite sheet is without loading it first, to address this
@@ -200,7 +201,7 @@ export interface AssetInitOptions
  *     ]
  * };
  *
- * await Asset.init({ manifest });
+ * await Assets.init({ manifest });
  *
  * // Load a bundle...
  * loadScreenAssets = await Assets.loadBundle('load-screen');
@@ -214,7 +215,7 @@ export interface AssetInitOptions
  */
 
 /**
- * The global Asset class, it's a singleton so you don't need to instantiate it.
+ * The global Assets class, it's a singleton so you don't need to instantiate it.
  * @example
  * import { Assets } from 'pixi.js';
  *
@@ -257,15 +258,15 @@ export class AssetsClass
      * Best practice is to call this function before any loading commences
      * Initiating is the best time to add any customization to the way things are loaded.
      *
-     * you do not need to call this for the Asset class to work, only if you want to set any initial properties
-     * @param options - options to initialize the Asset manager with
+     * you do not need to call this for the Assets class to work, only if you want to set any initial properties
+     * @param options - options to initialize the Assets manager with
      */
     public async init(options: AssetInitOptions = {}): Promise<void>
     {
         if (this._initialized)
         {
             // #if _DEBUG
-            warn('[Assets]AssetManager already initialized, did you load before calling this Asset.init()?');
+            warn('[Assets]AssetManager already initialized, did you load before calling this Assets.init()?');
             // #endif
 
             return;
@@ -501,7 +502,7 @@ export class AssetsClass
      *     ]
      * };
      *
-     * await Asset.init({ manifest });
+     * await Assets.init({ manifest });
      *
      * // Load a bundle...
      * loadScreenAssets = await Assets.loadBundle('load-screen');
@@ -685,8 +686,7 @@ export class AssetsClass
         onProgress?: ProgressCallback
     ): Promise<Record<string, T>>
     {
-        const resolveArray = Object.values(resolveResults) as ResolvedAsset[];
-        const resolveKeys = Object.keys(resolveResults);
+        const resolveArray = [...new Set(Object.values(resolveResults))] as ResolvedAsset[];
 
         // pause background loader...
         this._backgroundLoader.active = false;
@@ -700,7 +700,7 @@ export class AssetsClass
 
         const out: Record<string, T> = {};
 
-        resolveArray.forEach((resolveResult, i) =>
+        resolveArray.forEach((resolveResult) =>
         {
             const asset = loadedAssets[resolveResult.src];
 
@@ -711,7 +711,10 @@ export class AssetsClass
                 keys.push(...resolveResult.alias);
             }
 
-            out[resolveKeys[i]] = asset;
+            keys.forEach((key) =>
+            {
+                out[key] = asset;
+            });
 
             Cache.set(keys, asset);
         });

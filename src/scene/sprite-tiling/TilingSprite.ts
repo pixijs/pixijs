@@ -1,11 +1,12 @@
 import { Cache } from '../../assets/cache/Cache';
+import { Texture } from '../../rendering/renderers/shared/texture/Texture';
+import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { Container } from '../container/Container';
 import { definedProps } from '../container/utils/definedProps';
 import { TilingSpriteView } from './TilingSpriteView';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { PointLike } from '../../maths/point/PointLike';
-import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { ContainerOptions } from '../container/Container';
 import type { TilingSpriteViewOptions } from './TilingSpriteView';
 
@@ -80,8 +81,31 @@ export class TilingSprite extends Container<TilingSpriteView>
     /**
      * @param options - The options for creating the tiling sprite.
      */
-    constructor(options?: TilingSpriteOptions)
+    constructor(options?: Texture | TilingSpriteOptions);
+    /** @deprecated since 8.0.0 */
+    constructor(texture: Texture, width: number, height: number);
+    constructor(...args: [(Texture | TilingSpriteViewOptions)?] | [Texture, number, number])
     {
+        let options = args[0] || {};
+
+        if (options instanceof Texture)
+        {
+            options = { texture: options };
+        }
+
+        if (args.length > 1)
+        {
+            deprecation(v8_0_0, 'use new TilingSprite({ texture, width:100, height:100 }) instead');
+
+            options.width = args[1];
+            options.height = args[2];
+        }
+
+        if (options instanceof Texture)
+        {
+            options = { texture: options };
+        }
+
         const { texture, width, height, applyAnchorToTexture, ...rest } = options ?? {};
 
         super({

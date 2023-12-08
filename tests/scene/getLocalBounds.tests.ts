@@ -23,9 +23,9 @@ describe('getLocalBounds', () =>
 
     it('should measure with children correctly', async () =>
     {
-        const root = new Container({ layer: true, label: 'root' });
+        const root = new Container({ isRenderGroup: true, label: 'root' });
 
-        const container = new Container({ label: 'container', layer: true });
+        const container = new Container({ label: 'container', isRenderGroup: true });
 
         const child = new Container({ label: 'child', view: new DummyView() });
 
@@ -46,9 +46,9 @@ describe('getLocalBounds', () =>
 
     it('should measure with multiple children correctly', async () =>
     {
-        const root = new Container({ layer: true, label: 'root' });
+        const root = new Container({ isRenderGroup: true, label: 'root' });
 
-        const container = new Container({ label: 'container', layer: true });
+        const container = new Container({ label: 'container', isRenderGroup: true });
 
         const child = new Container({ label: 'child', view: new DummyView() });
         const child2 = new Container({ label: 'child2', view: new DummyView() });
@@ -72,7 +72,7 @@ describe('getLocalBounds', () =>
 
     it('should measure with effects correctly', async () =>
     {
-        const container = new Container({ label: 'container', layer: true });
+        const container = new Container({ label: 'container', isRenderGroup: true });
 
         const child = new Container({ label: 'child', view: new DummyView() });
 
@@ -87,7 +87,7 @@ describe('getLocalBounds', () =>
 
     it('should measure correctly with visibility', async () =>
     {
-        const container = new Container({ label: 'container', layer: true });
+        const container = new Container({ label: 'container', isRenderGroup: true });
 
         const child = new Container({ label: 'child', view: new DummyView() });
 
@@ -102,7 +102,7 @@ describe('getLocalBounds', () =>
 
     it('should measure correctly without child visibility', async () =>
     {
-        const container = new Container({ label: 'container', layer: true });
+        const container = new Container({ label: 'container', isRenderGroup: true });
 
         const child = new Container({ label: 'child', view: new DummyView() });
 
@@ -122,7 +122,7 @@ describe('getLocalBounds', () =>
         bounds.set(0, 0, 100, 100);
         bounds.pad(10);
 
-        const root = new Container({ label: 'root', layer: true });
+        const root = new Container({ label: 'root', isRenderGroup: true });
 
         const mask = new Container({ label: 'mask', view: new DummyView() });
 
@@ -138,7 +138,7 @@ describe('getLocalBounds', () =>
         bounds.set(0, 0, 100, 100);
         bounds.pad(10);
 
-        const root = new Container({ label: 'root', layer: true });
+        const root = new Container({ label: 'root', isRenderGroup: true });
 
         const maskedContent = new Container({ label: 'maskedContent' });
         const child = new Container({ label: 'child', view: new DummyView() });
@@ -165,9 +165,9 @@ describe('getLocalBounds', () =>
     {
         const bounds = new Bounds();
 
-        const root = new Container({ label: 'root', layer: true });
+        const root = new Container({ label: 'root', isRenderGroup: true });
 
-        const container = new Container({ label: 'container', layer: true });
+        const container = new Container({ label: 'container', isRenderGroup: true });
 
         const maskedContent = new Container({ label: 'maskedContent' });
         const mask = new Container({ label: 'mask', view: new DummyView(0, 0, 50, 50) });
@@ -208,9 +208,9 @@ describe('getLocalBounds', () =>
     {
         const bounds = new Bounds();
 
-        const root = new Container({ label: 'root', layer: true });
+        const root = new Container({ label: 'root', isRenderGroup: true });
 
-        const container = new Container({ label: 'container', layer: true });
+        const container = new Container({ label: 'container', isRenderGroup: true });
 
         const maskedContent = new Container({ label: 'maskedContent' });
         const mask = new Container({ label: 'mask', view: new DummyView(0, 0, 50, 50) });
@@ -259,15 +259,40 @@ describe('getLocalBounds', () =>
 
         const texture = new Texture({
             source: textureSource,
-            layout: {
-                trim: new Rectangle(0.1, 0.1, 0.8, 0.8),
-                frame: new Rectangle(0, 0, 1, 1),
-            }
+            trim: new Rectangle(0.1 * 200, 0.1 * 200, 0.8 * 200, 0.8 * 200),
+            frame: new Rectangle(0, 0, 200, 200),
         });
 
         const sprite = new Sprite({ texture });
 
         expect(sprite.width).toBe(200);
         expect(sprite.height).toBe(200);
+    });
+
+    it('should get local bounds correctly if a container has boundsArea specified', async () =>
+    {
+        const container = new Container({ label: 'container', boundsArea: new Rectangle(0, 0, 500, 500) });
+
+        container.x = 100;
+
+        const bounds = getLocalBounds(container, new Bounds());
+
+        expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 500, maxY: 500 });
+    });
+
+    it('should get local bounds correctly if a containers children has boundsArea specified', async () =>
+    {
+        const container = new Container({ label: 'container' });
+
+        container.x = 100;
+
+        const child = new Container({ label: 'child', boundsArea: new Rectangle(0, 0, 500, 500) });
+
+        container.addChild(child);
+
+        child.scale.set(0.5);
+        const bounds = getLocalBounds(container, new Bounds());
+
+        expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 500 / 2, maxY: 500 / 2 });
     });
 });

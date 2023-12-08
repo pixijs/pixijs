@@ -6,7 +6,7 @@ import { TextView } from './TextView';
 import type { PointData } from '../../maths/point/PointData';
 import type { PointLike } from '../../maths/point/PointLike';
 import type { ContainerOptions } from '../container/Container';
-import type { HTMLTextStyle } from './html/HtmlTextStyle';
+import type { HTMLTextStyle } from '../text-html/HtmlTextStyle';
 import type { TextStyle } from './TextStyle';
 import type { AnyTextStyle, AnyTextStyleOptions, TextString, TextViewOptions } from './TextView';
 
@@ -80,12 +80,12 @@ export type TextOptions = Partial<ContainerOptions<TextView>> & TextViewOptions 
  */
 export class Text extends Container<TextView>
 {
-    constructor(options: TextOptions);
+    constructor(options?: TextOptions);
     /** @deprecated since 8.0.0 */
-    constructor(text: TextString, options?: Partial<AnyTextStyle>);
-    constructor(...args: [TextOptions] | [TextString, Partial<AnyTextStyle>])
+    constructor(text?: TextString, options?: Partial<AnyTextStyle>);
+    constructor(...args: [TextOptions?] | [TextString, Partial<AnyTextStyle>])
     {
-        let options = args[0];
+        let options = args[0] ?? {} as TextOptions;
 
         // @deprecated
         if (typeof options === 'string' || args[1])
@@ -168,7 +168,11 @@ export class Text extends Container<TextView>
     }
 }
 
-/** @deprecated 8.0.0 */
+/**
+ * This is a convenience class for generating a Text object with bitmap font.
+ * It is an alias for `new Text({ renderMode: 'bitmap' })`.
+ * @memberof scene
+ */
 export class BitmapText extends Text
 {
     constructor(options: TextOptions);
@@ -176,14 +180,12 @@ export class BitmapText extends Text
     constructor(text: TextString, options?: Partial<TextStyle>);
     constructor(...args: [TextOptions] | [TextString, Partial<TextStyle>])
     {
-        // eslint-disable-next-line max-len
-        deprecation(v8_0_0, 'use new Text({ text: "hi!", style, renderMode: "bitmap" }) instead');
-
         let options: TextOptions = args[0] as TextOptions;
 
         // @deprecated
         if (typeof options === 'string' || args[1])
         {
+            deprecation(v8_0_0, 'use new BitmapText({ text: "hi!", style }) instead');
             options = {
                 text: options,
                 style: args[1],
@@ -196,7 +198,11 @@ export class BitmapText extends Text
     }
 }
 
-/** @deprecated since 8.0.0 */
+/**
+ * This is a convenience class for generating a Text object with HTML text.
+ * It is an alias for `new Text({ renderMode: 'html' })`.
+ * @memberof scene
+ */
 export class HTMLText extends Text
 {
     constructor(options: TextOptions);
@@ -204,14 +210,12 @@ export class HTMLText extends Text
     constructor(text: TextString, options?: Partial<HTMLTextStyle>);
     constructor(...args: [TextOptions] | [TextString, Partial<HTMLTextStyle>])
     {
-        // eslint-disable-next-line max-len
-        deprecation(v8_0_0, 'use new Text({ text: "hi!", style, renderMode: "html" }) instead');
-
         let options: TextOptions = args[0] as TextOptions;
 
         // @deprecated
         if (typeof options === 'string' || args[1])
         {
+            deprecation(v8_0_0, 'use new HTMLText({ text: "hi!", style }) instead');
             options = {
                 text: options,
                 style: args[1],

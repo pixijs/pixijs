@@ -1,5 +1,5 @@
 import { Container } from '../../src/scene/container/Container';
-import { updateLayerGroupTransforms } from '../../src/scene/container/utils/updateLayerGroupTransforms';
+import { updateRenderGroupTransforms } from '../../src/scene/container/utils/updateRenderGroupTransforms';
 import { DummyView } from './DummyView';
 
 describe('Transform updates', () =>
@@ -8,7 +8,7 @@ describe('Transform updates', () =>
     {
         const root = new Container();
 
-        root.layer = true;
+        root.isRenderGroup = true;
 
         const container = new Container({
             label: 'container',
@@ -23,24 +23,24 @@ describe('Transform updates', () =>
         container.x = 10;
         child.x = 20;
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(container.layerTransform.tx).toEqual(10);
-        expect(child.layerTransform.tx).toEqual(30);
+        expect(container.rgTransform.tx).toEqual(10);
+        expect(child.rgTransform.tx).toEqual(30);
 
         root.x = 20;
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(container.layerTransform.tx).toEqual(10);
-        expect(child.layerTransform.tx).toEqual(30);
+        expect(container.rgTransform.tx).toEqual(10);
+        expect(child.rgTransform.tx).toEqual(30);
     });
 
     it('should calculate local transform correctly after re-parenting', async () =>
     {
         const root = new Container();
 
-        root.layer = true;
+        root.isRenderGroup = true;
 
         const container = new Container();
         const child = new Container();
@@ -51,24 +51,24 @@ describe('Transform updates', () =>
         container.x = 10;
         child.x = 20;
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(container.layerTransform.tx).toEqual(10);
-        expect(child.layerTransform.tx).toEqual(30);
+        expect(container.rgTransform.tx).toEqual(10);
+        expect(child.rgTransform.tx).toEqual(30);
 
         root.addChild(child);
 
-        updateLayerGroupTransforms(root.layerGroup);
+        updateRenderGroupTransforms(root.renderGroup);
 
-        expect(container.layerTransform.tx).toEqual(10);
-        expect(child.layerTransform.tx).toEqual(20);
+        expect(container.rgTransform.tx).toEqual(10);
+        expect(child.rgTransform.tx).toEqual(20);
     });
 
     it('should not affect transform of removed container', async () =>
     {
         const root = new Container();
 
-        root.layer = true;
+        root.isRenderGroup = true;
 
         const container = new Container();
         const child = new Container();
@@ -79,24 +79,24 @@ describe('Transform updates', () =>
         container.x = 10;
         child.x = 20;
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(container.layerTransform.tx).toEqual(10);
-        expect(child.layerTransform.tx).toEqual(30);
+        expect(container.rgTransform.tx).toEqual(10);
+        expect(child.rgTransform.tx).toEqual(30);
 
         container.removeChild(child);
 
         container.x = 100;
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(container.layerTransform.tx).toEqual(100);
-        expect(child.layerTransform.tx).toEqual(30);
+        expect(container.rgTransform.tx).toEqual(100);
+        expect(child.rgTransform.tx).toEqual(30);
     });
 
-    it('should give a correct layer transform', async () =>
+    it('should give a correct render group transform', async () =>
     {
-        const root = new Container({ label: 'root', layer: true });
+        const root = new Container({ label: 'root', isRenderGroup: true });
 
         const container = new Container({ label: 'container' });
 
@@ -112,26 +112,26 @@ describe('Transform updates', () =>
         container.x = 10;
         child.x = 20;
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(container.layerTransform.tx).toEqual(10);
-        expect(child.layerTransform.tx).toEqual(30);
+        expect(container.rgTransform.tx).toEqual(10);
+        expect(child.rgTransform.tx).toEqual(30);
 
-        container.layer = true;
+        container.isRenderGroup = true;
 
         //  |- root // rendergroup
         //      |- container // rendergroup
         //          |- child
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(container.layerTransform.tx).toEqual(10);
-        expect(child.layerTransform.tx).toEqual(20);
+        expect(container.rgTransform.tx).toEqual(10);
+        expect(child.rgTransform.tx).toEqual(20);
     });
 
     it('should give a correct world transform', async () =>
     {
-        const root = new Container({ label: 'root', layer: true });
+        const root = new Container({ label: 'root', isRenderGroup: true });
 
         const container = new Container({ label: 'container' });
 
@@ -147,30 +147,30 @@ describe('Transform updates', () =>
         container.x = 10;
         child.x = 20;
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(child.worldTransform.tx).toEqual(30);
 
-        container.layer = true;
+        container.isRenderGroup = true;
 
         container.x = 20;
         //  |- root // rendergroup
         //      |- container // rendergroup
         //          |- child
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(child.worldTransform.tx).toEqual(40);
     });
 
-    it('should give a correct layerGroup layer transform', async () =>
+    it('should give a correct renderGroup transform', async () =>
     {
-        const root = new Container({ label: 'root', layer: true });
+        const root = new Container({ label: 'root', isRenderGroup: true });
 
         const container = new Container({ label: 'container' });
-        const container2 = new Container({ label: 'container2', layer: true });
+        const container2 = new Container({ label: 'container2', isRenderGroup: true });
 
-        const child = new Container({ label: 'child', layer: true });
+        const child = new Container({ label: 'child', isRenderGroup: true });
 
         //  |- root // rendergroup
         //      |- container
@@ -185,37 +185,37 @@ describe('Transform updates', () =>
         container2.x = 15;
         child.x = 10;
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         // expect(container.worldTransform.tx).toEqual(10);
         // expect(child.worldTransform.tx).toEqual(30);
 
-        expect(container2.layerGroup.worldTransform.tx).toEqual(25);
-        expect(child.layerGroup.worldTransform.tx).toEqual(35);
+        expect(container2.renderGroup.worldTransform.tx).toEqual(25);
+        expect(child.renderGroup.worldTransform.tx).toEqual(35);
 
         // TODO this bit!
-        expect(container2.layerGroup.layerTransform.tx).toEqual(25);
-        expect(child.layerGroup.layerTransform.tx).toEqual(10);
+        expect(container2.renderGroup.rgTransform.tx).toEqual(25);
+        expect(child.renderGroup.rgTransform.tx).toEqual(10);
 
         // expect(container.layerGroup.layerTransform.tx).toEqual(10);
         // expect(child.layerGroup.layerTransform.tx).toEqual(20);
 
         container.x = 0;
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(container2.layerGroup.worldTransform.tx).toEqual(15);
-        expect(child.layerGroup.worldTransform.tx).toEqual(25);
+        expect(container2.renderGroup.worldTransform.tx).toEqual(15);
+        expect(child.renderGroup.worldTransform.tx).toEqual(25);
         // expect(child.worldTransform.tx).toEqual(40);
     });
 
     it('should not update a container with a view if it is not visible', async () =>
     {
-        const root = new Container({ label: 'root', layer: true });
+        const root = new Container({ label: 'root', isRenderGroup: true });
 
         const updateRenderable = jest.fn();
 
-        root.layerGroup.instructionSet.renderPipes = {
+        root.renderGroup.instructionSet.renderPipes = {
             dummy: {
                 addRenderable: () =>
                 {
@@ -243,18 +243,18 @@ describe('Transform updates', () =>
         container2.visible = false;
         child.x = 10;
 
-        updateLayerGroupTransforms(root.layerGroup, true);
-        expect(root.layerGroup.structureDidChange).toEqual(true);
+        updateRenderGroupTransforms(root.renderGroup, true);
+        expect(root.renderGroup.structureDidChange).toEqual(true);
 
-        root.layerGroup.structureDidChange = false;
-
-        child.x = 20;
-
-        updateLayerGroupTransforms(root.layerGroup, true);
+        root.renderGroup.structureDidChange = false;
 
         child.x = 20;
 
-        updateLayerGroupTransforms(root.layerGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
+
+        child.x = 20;
+
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(updateRenderable).toHaveBeenCalledTimes(0);
     });

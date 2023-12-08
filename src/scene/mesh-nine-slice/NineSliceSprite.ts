@@ -89,7 +89,7 @@ export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
 
         const { leftWidth, rightWidth, topHeight, bottomHeight, texture: optTex, ...rest } = options;
         const texture = optTex ?? NineSliceSprite.defaultOptions.texture;
-        const borders = texture.layout.defaultBorders;
+        const borders = texture.defaultBorders;
 
         const nineSliceGeometry = new NineSliceGeometry(definedProps({
             width: texture.width,

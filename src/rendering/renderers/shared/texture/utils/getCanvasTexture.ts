@@ -17,8 +17,24 @@ export function getCanvasTexture(canvas: ICanvas, options?: CanvasSourceOptions)
             })
         });
 
+        const onDestroy = () =>
+        {
+            if (canvasCache.get(canvas) === texture)
+            {
+                canvasCache.delete(canvas);
+            }
+        };
+
+        texture.once('destroy', onDestroy);
+        texture.source.once('destroy', onDestroy);
+
         canvasCache.set(canvas, texture);
     }
 
     return canvasCache.get(canvas);
+}
+
+export function hasCachedCanvasTexture(canvas: ICanvas): boolean
+{
+    return canvasCache.has(canvas);
 }

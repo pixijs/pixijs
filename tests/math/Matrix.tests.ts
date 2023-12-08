@@ -202,13 +202,10 @@ describe('Matrix', () =>
         }
     });
 
-    // todo: Mat investigation
-    // ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=45246448
-    it.skip('should decompose corner case', () =>
+    it('should decompose corner case', () =>
     {
         const matrix = new Matrix();
         const transform = new Transform();
-        const result = transform.matrix;
 
         matrix.a = -0.00001;
         matrix.b = -1;
@@ -216,10 +213,10 @@ describe('Matrix', () =>
         matrix.d = 0;
         matrix.decompose(transform);
 
-        expect(result.a).toBeCloseTo(matrix.a, 0.001);
-        expect(result.b).toBeCloseTo(matrix.b, 0.001);
-        expect(result.c).toBeCloseTo(matrix.c, 0.001);
-        expect(result.d).toBeCloseTo(matrix.d, 0.001);
+        expect(transform.matrix.a).toBeCloseTo(matrix.a, 0.001);
+        expect(transform.matrix.b).toBeCloseTo(matrix.b, 0.001);
+        expect(transform.matrix.c).toBeCloseTo(matrix.c, 0.001);
+        expect(transform.matrix.d).toBeCloseTo(matrix.d, 0.001);
     });
 
     describe('decompose', () =>

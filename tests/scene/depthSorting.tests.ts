@@ -49,4 +49,20 @@ describe('Depth sorting', () =>
         expect(container.sortableChildren).toBe(true);
         expect(container.sortDirty).toBe(true);
     });
+
+    it('should not set sortDirty flag to true when the assignment of a child zIndex does not change the zIndex', () =>
+    {
+        const parent = new Container();
+        const child = new Container();
+
+        parent.addChild(child);
+
+        child.zIndex = 10;
+
+        parent.sortDirty = false;
+
+        child.zIndex = 10;
+
+        expect(parent.sortDirty).toBe(false);
+    });
 });

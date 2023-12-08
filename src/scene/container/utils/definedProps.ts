@@ -7,7 +7,15 @@
  */
 export function definedProps<T extends Record<string, any>>(obj: T): T
 {
-    return Object.fromEntries(
-        Object.entries(obj).filter(([_k, v]) => v !== undefined)
-    ) as T;
+    const result: Partial<T> = {};
+
+    for (const key in obj)
+    {
+        if (obj[key] !== undefined)
+        {
+            result[key] = obj[key];
+        }
+    }
+
+    return result as T;
 }

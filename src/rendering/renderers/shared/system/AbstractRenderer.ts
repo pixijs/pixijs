@@ -238,7 +238,7 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
      */
     get width(): number
     {
-        return this.view.texture.frameWidth;
+        return this.view.texture.frame.width;
     }
 
     /**
@@ -247,7 +247,7 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
      */
     get height(): number
     {
-        return this.view.texture.frameHeight;
+        return this.view.texture.frame.height;
     }
 
     // NOTE: this was `view` in v7

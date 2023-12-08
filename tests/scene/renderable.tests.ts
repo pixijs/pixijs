@@ -3,10 +3,10 @@ import { DummyView } from './DummyView';
 
 describe('Renderable Containers', () =>
 {
-    it('should register a renderable update correctly in the layer group', async () =>
+    it('should register a renderable update correctly in the render group', async () =>
     {
         const container = new Container({
-            layer: true,
+            isRenderGroup: true,
         });
 
         const child = new Container({
@@ -17,16 +17,16 @@ describe('Renderable Containers', () =>
 
         child.onViewUpdate();
 
-        expect(container.layerGroup.childrenRenderablesToUpdate).toEqual({
+        expect(container.renderGroup.childrenRenderablesToUpdate).toEqual({
             list: [child],
             index: 1,
         });
     });
 
-    it('should register a renderable update only once on the layer group', async () =>
+    it('should register a renderable update only once on the render group', async () =>
     {
         const container = new Container({
-            layer: true,
+            isRenderGroup: true,
         });
 
         const child = new Container({
@@ -39,14 +39,14 @@ describe('Renderable Containers', () =>
 
         child.onViewUpdate();
 
-        expect(container.layerGroup.childrenRenderablesToUpdate).toEqual({
+        expect(container.renderGroup.childrenRenderablesToUpdate).toEqual({
             list: [child],
             index: 1,
         });
 
         child.onViewUpdate();
 
-        expect(container.layerGroup.childrenRenderablesToUpdate).toEqual({
+        expect(container.renderGroup.childrenRenderablesToUpdate).toEqual({
             list: [child],
             index: 1,
         });

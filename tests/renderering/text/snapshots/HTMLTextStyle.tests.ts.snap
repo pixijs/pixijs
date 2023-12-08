@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`HTMLTextStyle toCSS should convert to CSS 1`] = `"div { color: #000000;font-size: 26px;font-family: Arial;font-weight: normal;font-style: normal;font-variant: normal;letter-spacing: 0px;text-align: left;padding: 0px;white-space: pre }"`;
+
+exports[`HTMLTextStyle toCSS should insert overrides 1`] = `"div { color: #000000;font-size: 26px;font-family: Arial;font-weight: normal;font-style: normal;font-variant: normal;letter-spacing: 0px;text-align: left;padding: 0px;white-space: pre;color: red }"`;
+
+exports[`HTMLTextStyle toCSS should respect scale 1`] = `"div { color: #000000;font-size: 26px;font-family: Arial;font-weight: normal;font-style: normal;font-variant: normal;letter-spacing: 0px;text-align: left;padding: 0px;white-space: pre-wrap;line-height: 50px;word-wrap: break-word;max-width: 200px }"`;

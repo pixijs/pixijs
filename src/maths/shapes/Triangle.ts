@@ -1,4 +1,5 @@
 // import { SHAPES } from '../const';
+import { squaredDistanceToLineSegment } from '../misc/squaredDistanceToLineSegment';
 import { Rectangle } from './Rectangle';
 
 import type { SHAPE_PRIMITIVE } from '../misc/const';
@@ -82,6 +83,23 @@ export class Triangle implements ShapePrimitive
         const d = ((this.x3 - this.x2) * (y - this.y2)) - ((this.y3 - this.y2) * (x - this.x2));
 
         return d === 0 || (d < 0) === (s + t <= 0);
+    }
+
+    public strokeContains(pointX: number, pointY: number, strokeWidth: number): boolean
+    {
+        const halfStrokeWidth = strokeWidth / 2;
+        const halfStrokeWidthSquared = halfStrokeWidth * halfStrokeWidth;
+
+        const { x, x2, x3, y, y2, y3 } = this;
+
+        if (squaredDistanceToLineSegment(pointX, pointY, x, y, x2, y3) <= halfStrokeWidthSquared
+            || squaredDistanceToLineSegment(pointX, pointY, x2, y2, x3, y3) <= halfStrokeWidthSquared
+            || squaredDistanceToLineSegment(pointX, pointY, x3, y3, x, y) <= halfStrokeWidthSquared)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     /**

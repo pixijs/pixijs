@@ -1,6 +1,5 @@
 import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { Texture } from '../../shared/texture/Texture';
 import { GlTexture } from './GlTexture';
 import { glUploadBufferImageResource } from './uploaders/glUploadBufferImageResource';
@@ -23,7 +22,6 @@ import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
 import type { GLTextureUploader } from './uploaders/GLTextureUploader';
 
-const TEMP_RECT = new Rectangle();
 const BYTES_PER_PIXEL = 4;
 
 export class GlTextureSystem implements System, CanvasGenerator
@@ -85,6 +83,11 @@ export class GlTextureSystem implements System, CanvasGenerator
         {
             this.bind(Texture.EMPTY, i);
         }
+    }
+
+    public initSource(source: TextureSource)
+    {
+        this.bind(source);
     }
 
     public bind(texture: BindableTexture, location = 0)
@@ -205,6 +208,7 @@ export class GlTextureSystem implements System, CanvasGenerator
         source.on('styleChange', this.onStyleChange, this);
         source.on('destroy', this.onSourceDestroy, this);
         source.on('unload', this.onSourceUnload, this);
+        source.on('updateMipmaps', this.onUpdateMipmaps, this);
 
         this.managedTextures.push(source);
 
@@ -218,7 +222,7 @@ export class GlTextureSystem implements System, CanvasGenerator
     {
         const gl = this._gl;
 
-        const glTexture = this._glTextures[source.uid];
+        const glTexture = this.getGlSource(source);
 
         gl.bindTexture(gl.TEXTURE_2D, glTexture.texture);
 
@@ -259,17 +263,26 @@ export class GlTextureSystem implements System, CanvasGenerator
         if (this._uploads[source.uploadMethodId])
         {
             this._uploads[source.uploadMethodId].upload(source, glTexture, this._gl);
-
-            if (source.autoGenerateMipmaps && source.mipLevelCount > 1)
-            {
-                gl.generateMipmap(glTexture.target);
-            }
         }
         else
         {
             // eslint-disable-next-line max-len
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, source.pixelWidth, source.pixelHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
         }
+
+        if (source.autoGenerateMipmaps && source.mipLevelCount > 1)
+        {
+            this.onUpdateMipmaps(source);
+        }
+    }
+
+    protected onUpdateMipmaps(source: TextureSource): void
+    {
+        this.bindSource(source, 0);
+
+        const glTexture = this.getGlSource(source);
+
+        this._gl.generateMipmap(glTexture.target);
     }
 
     protected onSourceDestroy(source: TextureSource): void
@@ -278,6 +291,7 @@ export class GlTextureSystem implements System, CanvasGenerator
         source.off('update', this.onSourceUpdate, this);
         source.off('unload', this.onSourceUnload, this);
         source.off('styleChange', this.onStyleChange, this);
+        source.off('updateMipmaps', this.onUpdateMipmaps, this);
 
         this.managedTextures.splice(this.managedTextures.indexOf(source), 1);
 
@@ -339,12 +353,7 @@ export class GlTextureSystem implements System, CanvasGenerator
     public getPixels(texture: Texture): GetPixelsOutput
     {
         const resolution = texture.source.resolution;
-        const frame = TEMP_RECT;
-
-        frame.x = texture.frameX;
-        frame.y = texture.frameY;
-        frame.width = texture.frameWidth;
-        frame.height = texture.frameHeight;
+        const frame = texture.frame;
 
         const width = Math.max(Math.round(frame.width * resolution), 1);
         const height = Math.max(Math.round(frame.height * resolution), 1);

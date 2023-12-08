@@ -1,6 +1,6 @@
-import { getPo2TextureFromSource } from '../../../src/scene/text/html/utils/getPo2TextureFromSource';
+import { getPo2TextureFromSource } from '../../../src/scene/text/utils/getPo2TextureFromSource';
 
-describe('getPo2TextureFromSource#Label', () =>
+describe('getPo2TextureFromSource', () =>
 {
     it('should give correct texture', () =>
     {
@@ -11,9 +11,9 @@ describe('getPo2TextureFromSource#Label', () =>
 
         const texture = getPo2TextureFromSource(canvas, 100, 100, 1);
 
-        expect(texture).toEqual(expect.objectContaining({
-            frameWidth: 100,
-            frameHeight: 100,
+        expect(texture.frame).toEqual(expect.objectContaining({
+            width: 100,
+            height: 100,
         }));
 
         expect(texture.source).toEqual(expect.objectContaining({
@@ -28,9 +28,9 @@ describe('getPo2TextureFromSource#Label', () =>
 
         const texture2 = getPo2TextureFromSource(canvas, 100, 100, 2);
 
-        expect(texture2).toEqual(expect.objectContaining({
-            frameWidth: 50,
-            frameHeight: 50,
+        expect(texture2.frame).toEqual(expect.objectContaining({
+            width: 50,
+            height: 50,
         }));
 
         expect(texture2.source).toEqual(expect.objectContaining({
