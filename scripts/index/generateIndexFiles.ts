@@ -15,7 +15,16 @@ const directoryPath = path.join(process.cwd(), './src'); // Replace with your di
 const indexFilePath = path.join(directoryPath, 'index.ts');
 
 // Use glob to find all TypeScript files recursively in the directory
-const files = glob.sync('**/*[!.d].ts', { cwd: directoryPath });
+const files = glob.sync('**/*[!.d].ts', {
+    cwd: directoryPath,
+    ignore: [
+        '**/init.ts',
+        // '**/browserAll.ts',
+        // '**/webworkerAll.ts',
+        '**/BasisWorker.ts',
+        '**/KTXWorker.ts',
+    ],
+});
 
 // Generate export statements for each file
 const exportStatements = files.map((file) => `export * from './${file.replace(/\.ts$/, '')}';`);

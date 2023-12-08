@@ -93,7 +93,29 @@ async function main()
     const external = Object.keys(dependencies)
         .concat(Object.keys(peerDependencies))
         .map(convertPackageNameToRegExp);
-    const input = path.join(process.cwd(), 'src/index.ts');
+    const input = [
+        path.join(process.cwd(), 'src/index.ts'),
+        path.join(process.cwd(), 'src/accessibility/init.ts'),
+        path.join(process.cwd(), 'src/app/init.ts'),
+        path.join(process.cwd(), 'src/assets/init.ts'),
+        path.join(process.cwd(), 'src/compressed-textures/ktx/init.ts'),
+        path.join(process.cwd(), 'src/compressed-textures/dds/init.ts'),
+        path.join(process.cwd(), 'src/compressed-textures/basis/init.ts'),
+        path.join(process.cwd(), 'src/events/init.ts'),
+        path.join(process.cwd(), 'src/filters/init.ts'),
+        path.join(process.cwd(), 'src/filters/blend-modes/init.ts'),
+        path.join(process.cwd(), 'src/math-extras/init.ts'),
+        path.join(process.cwd(), 'src/prepare/init.ts'),
+        path.join(process.cwd(), 'src/rendering/init.ts'),
+        path.join(process.cwd(), 'src/scene/graphics/init.ts'),
+        path.join(process.cwd(), 'src/scene/text/init.ts'),
+        path.join(process.cwd(), 'src/scene/text-bitmap/init.ts'),
+        path.join(process.cwd(), 'src/scene/text-html/init.ts'),
+        path.join(process.cwd(), 'src/scene/sprite-tiling/init.ts'),
+        path.join(process.cwd(), 'src/scene/mesh/init.ts'),
+        path.join(process.cwd(), 'src/spritesheet/init.ts'),
+        path.join(process.cwd(), 'src/unsafe-eval/init.ts'),
+    ];
 
     results.push({
         input,
@@ -143,7 +165,7 @@ async function main()
         const moduleFile = bundleModule ? path.join(process.cwd(), bundleModule) : '';
 
         results.push({
-            input,
+            input: path.join(process.cwd(), 'src/index.ts'),
             output: [
                 {
                     name: 'PIXI',
@@ -164,7 +186,7 @@ async function main()
             treeshake: false,
             plugins: bundlePlugins,
         }, {
-            input,
+            input: path.join(process.cwd(), 'src/index.ts'),
             output: [
                 {
                     name: 'PIXI',

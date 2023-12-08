@@ -1,6 +1,6 @@
+import { browserExt } from '../environment-browser/browserExt';
+import { webworkerExt } from '../environment-webworker/webworkerExt';
 import { extensions, ExtensionType } from '../extensions/Extensions';
-import { browserExt } from './browser/browserExt';
-import { webworkerExt } from './webworker/webworkerExt';
 
 const environments: { name: string; value: { test: () => boolean; load: () => Promise<boolean> } }[] = [];
 

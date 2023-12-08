@@ -1,4 +1,4 @@
-import { ExtensionType } from '../../extensions/Extensions';
+import { ExtensionType } from '../extensions/Extensions';
 
 /**
  * Extension for the webworker environment.

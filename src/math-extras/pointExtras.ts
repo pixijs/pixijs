@@ -2,7 +2,7 @@ import { Point } from '../maths/point/Point';
 
 import type { PointData } from '../maths/point/PointData';
 
-export const mixins: any = {
+export const pointExtraMixins: any = {
     /**
      * Adds `other` to `this` point and outputs into `outPoint` or a new Point.
      *
