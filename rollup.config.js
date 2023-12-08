@@ -83,10 +83,10 @@ async function main()
     const results = [];
 
     const {
-        bundle,
-        bundleModule,
+        bundles,
         dependencies = {},
         peerDependencies = {},
+        sideEffects
     } = repo;
 
     // Check for bundle folder
@@ -95,26 +95,7 @@ async function main()
         .map(convertPackageNameToRegExp);
     const input = [
         path.join(process.cwd(), 'src/index.ts'),
-        path.join(process.cwd(), 'src/accessibility/init.ts'),
-        path.join(process.cwd(), 'src/app/init.ts'),
-        path.join(process.cwd(), 'src/assets/init.ts'),
-        path.join(process.cwd(), 'src/compressed-textures/ktx/init.ts'),
-        path.join(process.cwd(), 'src/compressed-textures/dds/init.ts'),
-        path.join(process.cwd(), 'src/compressed-textures/basis/init.ts'),
-        path.join(process.cwd(), 'src/events/init.ts'),
-        path.join(process.cwd(), 'src/filters/init.ts'),
-        path.join(process.cwd(), 'src/filters/blend-modes/init.ts'),
-        path.join(process.cwd(), 'src/math-extras/init.ts'),
-        path.join(process.cwd(), 'src/prepare/init.ts'),
-        path.join(process.cwd(), 'src/rendering/init.ts'),
-        path.join(process.cwd(), 'src/scene/graphics/init.ts'),
-        path.join(process.cwd(), 'src/scene/text/init.ts'),
-        path.join(process.cwd(), 'src/scene/text-bitmap/init.ts'),
-        path.join(process.cwd(), 'src/scene/text-html/init.ts'),
-        path.join(process.cwd(), 'src/scene/sprite-tiling/init.ts'),
-        path.join(process.cwd(), 'src/scene/mesh/init.ts'),
-        path.join(process.cwd(), 'src/spritesheet/init.ts'),
-        path.join(process.cwd(), 'src/unsafe-eval/init.ts'),
+        ...sideEffects.map((name) => path.join(process.cwd(), name.replace('/lib/', '/src/').replace('.*', '.ts'))),
     ];
 
     results.push({
@@ -159,53 +140,56 @@ async function main()
     // The package.json file has a bundle field
     // we'll use this to generate the bundle file
     // this will package all dependencies
-    if (bundle && !process.env.LIB_ONLY)
+    if (bundles && !process.env.LIB_ONLY)
     {
-        const file = path.join(process.cwd(), bundle);
-        const moduleFile = bundleModule ? path.join(process.cwd(), bundleModule) : '';
+        bundles.forEach((bundle, i) =>
+        {
+            const file = path.join(process.cwd(), bundle.target);
+            const moduleFile = bundle.module ? path.join(process.cwd(), bundle.module) : '';
 
-        results.push({
-            input: path.join(process.cwd(), 'src/index.ts'),
-            output: [
-                {
-                    name: 'PIXI',
-                    banner,
-                    file,
-                    format: 'iife',
-                    freeze: false,
-                    sourcemap: true,
-                },
-                {
-                    banner,
-                    file: moduleFile,
-                    format: 'esm',
-                    freeze: false,
-                    sourcemap: true,
-                }
-            ],
-            treeshake: false,
-            plugins: bundlePlugins,
-        }, {
-            input: path.join(process.cwd(), 'src/index.ts'),
-            output: [
-                {
-                    name: 'PIXI',
-                    banner,
-                    file: prodName(file),
-                    format: 'iife',
-                    freeze: false,
-                    sourcemap: true,
-                },
-                {
-                    banner,
-                    file: prodName(moduleFile),
-                    format: 'esm',
-                    freeze: false,
-                    sourcemap: true,
-                }
-            ],
-            treeshake: false,
-            plugins: bundlePluginsProd,
+            results.push({
+                input: path.join(process.cwd(), bundle.src),
+                output: [
+                    {
+                        name: 'PIXI',
+                        banner,
+                        file,
+                        format: 'iife',
+                        freeze: false,
+                        sourcemap: true,
+                    },
+                    {
+                        banner,
+                        file: moduleFile,
+                        format: 'esm',
+                        freeze: false,
+                        sourcemap: true,
+                    }
+                ],
+                treeshake: false,
+                plugins: bundlePlugins,
+            }, {
+                input: path.join(process.cwd(), bundle.src),
+                output: [
+                    {
+                        name: 'PIXI',
+                        banner,
+                        file: prodName(file),
+                        format: 'iife',
+                        freeze: false,
+                        sourcemap: true,
+                    },
+                    {
+                        banner,
+                        file: prodName(moduleFile),
+                        format: 'esm',
+                        freeze: false,
+                        sourcemap: true,
+                    }
+                ],
+                treeshake: false,
+                plugins: bundlePluginsProd,
+            });
         });
     }
 
