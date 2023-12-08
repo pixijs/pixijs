@@ -94,15 +94,14 @@ export class GraphicsContext extends EventEmitter<{
     destroy: GraphicsContext
 }>
 {
-    public static defaultFillStyle: ConvertedFillStyle = {
+    public static defaultFillStyle: Partial<ConvertedFillStyle> = {
         color: 0xffffff,
         alpha: 1,
-        texture: Texture.WHITE,
         matrix: null,
         fill: null,
     };
 
-    public static defaultStrokeStyle: ConvertedStrokeStyle = {
+    public static defaultStrokeStyle: Partial<ConvertedStrokeStyle> = {
         width: 1,
         color: 0xffffff,
         alpha: 1,
@@ -110,7 +109,6 @@ export class GraphicsContext extends EventEmitter<{
         miterLimit: 10,
         cap: 'butt',
         join: 'miter',
-        texture: Texture.WHITE,
         matrix: null,
         fill: null,
     };
@@ -124,8 +122,8 @@ export class GraphicsContext extends EventEmitter<{
     private _activePath: GraphicsPath = new GraphicsPath();
     private _transform: Matrix = new Matrix();
 
-    private _fillStyle: ConvertedFillStyle = { ...GraphicsContext.defaultFillStyle };
-    private _strokeStyle: ConvertedStrokeStyle = { ...GraphicsContext.defaultStrokeStyle };
+    private _fillStyle: ConvertedFillStyle = GraphicsContext._getDefaultStyle('fill');
+    private _strokeStyle: ConvertedStrokeStyle = GraphicsContext._getDefaultStyle('stroke');
     private _stateStack: { fillStyle: ConvertedFillStyle; strokeStyle: ConvertedStrokeStyle, transform: Matrix }[] = [];
 
     private _tick = 0;
@@ -140,7 +138,7 @@ export class GraphicsContext extends EventEmitter<{
 
     set fillStyle(value: FillStyleInputs)
     {
-        this._fillStyle = convertFillInputToFillStyle(value, GraphicsContext.defaultFillStyle);
+        this._fillStyle = convertFillInputToFillStyle(value, GraphicsContext._getDefaultStyle('fill'));
     }
 
     get strokeStyle(): ConvertedStrokeStyle
@@ -150,19 +148,19 @@ export class GraphicsContext extends EventEmitter<{
 
     set strokeStyle(value: FillStyleInputs)
     {
-        this._strokeStyle = convertFillInputToFillStyle(value, GraphicsContext.defaultStrokeStyle) as ConvertedStrokeStyle;
+        this._strokeStyle = convertFillInputToFillStyle(value, GraphicsContext._getDefaultStyle('stroke'));
     }
 
     public setFillStyle(style: FillStyleInputs): this
     {
-        this._fillStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultFillStyle);
+        this._fillStyle = convertFillInputToFillStyle(style, GraphicsContext._getDefaultStyle('fill'));
 
         return this;
     }
 
     public setStrokeStyle(style: FillStyleInputs): this
     {
-        this._strokeStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultStrokeStyle) as ConvertedStrokeStyle;
+        this._strokeStyle = convertFillInputToFillStyle(style, GraphicsContext._getDefaultStyle('stroke'));
 
         return this;
     }
@@ -229,7 +227,7 @@ export class GraphicsContext extends EventEmitter<{
                 deprecation('8.0.0', 'GraphicsContext.fill(color, alpha) is deprecated, use GraphicsContext.fill({ color, alpha }) instead');
                 style = { color: style, alpha };
             }
-            this._fillStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultFillStyle);
+            this._fillStyle = convertFillInputToFillStyle(style, GraphicsContext._getDefaultStyle('fill'));
         }
 
         // TODO not a fan of the clone!!
@@ -275,7 +273,7 @@ export class GraphicsContext extends EventEmitter<{
 
         if (style)
         {
-            this._strokeStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultStrokeStyle);
+            this._strokeStyle = convertFillInputToFillStyle(style, GraphicsContext._getDefaultStyle('stroke'));
         }
 
         // TODO not a fan of the clone!!
@@ -800,6 +798,16 @@ export class GraphicsContext extends EventEmitter<{
         }
 
         return hasHit;
+    }
+
+    public static _getDefaultStyle(type: 'fill' | 'stroke'): ConvertedFillStyle | ConvertedStrokeStyle
+    {
+        if (type === 'fill')
+        {
+            return { texture: Texture.WHITE, ...GraphicsContext.defaultFillStyle } as ConvertedFillStyle;
+        }
+
+        return { texture: Texture.WHITE, ...GraphicsContext.defaultStrokeStyle } as ConvertedStrokeStyle;
     }
 
     /**

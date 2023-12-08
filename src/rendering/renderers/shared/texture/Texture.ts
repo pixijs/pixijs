@@ -380,47 +380,53 @@ export class Texture extends EventEmitter<{
         return this._source;
     }
 
+    private static _emptyTexture: Texture;
     /** an Empty Texture used internally by the engine */
-    public static EMPTY: Texture;
+    public static get EMPTY(): Texture
+    {
+        if (!this._emptyTexture)
+        {
+            const texture = new Texture({});
+
+            texture.label = 'EMPTY';
+            texture.destroy = NOOP;
+            this._emptyTexture = texture;
+        }
+
+        return this._emptyTexture;
+    }
+    private static _whiteTexture: Texture;
     /** a White texture used internally by the engine */
-    public static WHITE: Texture;
+    public static get WHITE(): Texture
+    {
+        if (!this._whiteTexture)
+        {
+            // create a white canvas
+            const canvas = DOMAdapter.get().createCanvas();
+
+            const size = 1;
+
+            canvas.width = size;
+            canvas.height = size;
+
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, size, size);
+
+            const texture = new Texture({
+                source: new ImageSource({
+                    resource: canvas,
+                    alphaMode: 'premultiply-alpha-on-upload',
+                }),
+            });
+
+            texture.label = 'WHITE';
+            texture.destroy = NOOP;
+
+            this._whiteTexture = texture;
+        }
+
+        return this._whiteTexture;
+    }
 }
-
-Texture.EMPTY = new Texture({
-
-});
-
-Texture.EMPTY.label = 'EMPTY';
-Texture.EMPTY.destroy = NOOP;
-
-// create a white canvas
-const canvas = DOMAdapter.get().createCanvas();
-
-const size = 1;
-
-canvas.width = size;
-canvas.height = size;
-
-const ctx = canvas.getContext('2d');
-
-ctx.fillStyle = '#ffffff';
-ctx.fillRect(0, 0, size, size);
-
-// draw red triangle
-ctx.beginPath();
-ctx.moveTo(0, 0);
-ctx.lineTo(size, 0);
-ctx.lineTo(size, size);
-ctx.closePath();
-ctx.fillStyle = '#ffffff';
-ctx.fill();
-
-Texture.WHITE = new Texture({
-    source: new ImageSource({
-        resource: canvas,
-        alphaMode: 'premultiply-alpha-on-upload'
-    }),
-});
-
-Texture.WHITE.label = 'WHITE';
-Texture.WHITE.destroy = NOOP;
