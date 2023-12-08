@@ -94,7 +94,7 @@ export interface AssetInitOptions
  *
  * Do not be afraid to load things multiple times - under the hood, it will **NEVER** load anything more than once.
  *
- * <u>For example:</u>
+ * *For example:*
  *
  * ```js
  * import { Assets } from 'pixi.js';
@@ -107,7 +107,7 @@ export interface AssetInitOptions
  *
  * Here both promises will be the same. Once resolved... Forever resolved! It makes for really easy resource management!
  *
- * <u>Out of the box it supports the following files:</u>
+ * *Out of the box it supports the following files:*
  * - Textures (**_avif_**, **_webp_**, **_png_**, **_jpg_**, **_gif_**, **_svg_**)
  * - Sprite sheets (**_json_**)
  * - Bitmap fonts (**_xml_**, **_fnt_**, **_txt_**)
@@ -134,7 +134,7 @@ export interface AssetInitOptions
  * - It's hard to know what resolution a sprite sheet is without loading it first, to address this
  * there is a naming convention we have added that will let Pixi understand the image format and resolution
  * of the spritesheet via its file name: `my-spritesheet{resolution}.{imageFormat}.json`
- * <br><br><u>For example:</u>
+ * <br><br>*For example:*
  *   - `my-spritesheet@2x.webp.json`* // 2x resolution, WebP sprite sheet*
  *   - `my-spritesheet@0.5x.png.json`* // 0.5x resolution, png sprite sheet*
  * - This is optional! You can just load a sprite sheet as normal.
