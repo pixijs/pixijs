@@ -39,9 +39,9 @@ describe('Graphics', () =>
         });
     });
 
-    describe('lineTextureStyle', () =>
+    describe('Stroke & Fill', () =>
     {
-        it('should support object parameter', () =>
+        it('should support stroke object parameter and use defaults', () =>
         {
             const graphics = new Graphics();
             const matrix = new Matrix();
@@ -77,6 +77,52 @@ describe('Graphics', () =>
 
             graphics.destroy();
         });
+
+        it('should support fill object parameter and use defaults', () =>
+        {
+            const graphics = new Graphics();
+            const matrix = new Matrix();
+            const texture = Texture.WHITE;
+
+            graphics.fillStyle = {
+                color: 0xff0000,
+                alpha: 0.5,
+                matrix,
+                texture,
+            };
+
+            expect(graphics.fillStyle).toEqual({
+                ...GraphicsContext.defaultFillStyle,
+                color: 0xff0000,
+                alpha: 0.5,
+                matrix,
+                texture,
+            });
+
+            // expect defaults from empty assignment
+            graphics.fillStyle = {};
+
+            expect(graphics.fillStyle).toEqual({
+                ...GraphicsContext.defaultFillStyle,
+                matrix: null,
+                texture: Texture.WHITE,
+            });
+
+            graphics.destroy();
+        });
+
+        it('should invert matrix when used with texture fill', () =>
+        {
+            const matrix = new Matrix();
+            const texture = Texture.EMPTY;
+
+            matrix.scale(2, 3);
+
+            const style = convertFillInputToFillStyle({ texture, matrix }, GraphicsContext.defaultFillStyle);
+
+            expect(style.matrix.a).toBe(1 / 2);
+            expect(style.matrix.d).toBe(1 / 3);
+        });
     });
 
     describe('tint', () =>
@@ -110,6 +156,8 @@ describe('Graphics', () =>
                 .ellipse(100, 100, 50, 75)
                 .circle(100, 100, 50)
                 .path(new GraphicsPath())
+                .setStrokeStyle({ width: 1, color: 0xffffff, alpha: 1, texture })
+                .setFillStyle({ color: 0xffffff, alpha: 1, texture })
                 .lineTo(200, 200)
                 .moveTo(100, 100)
                 .quadraticCurveTo(100, 100, 200, 200)

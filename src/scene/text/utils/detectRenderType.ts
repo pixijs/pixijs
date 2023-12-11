@@ -1,7 +1,7 @@
 import { Cache } from '../../../assets/cache/Cache';
-import { BitmapFont } from '../bitmap/BitmapFont';
-import { DynamicBitmapFont } from '../bitmap/DynamicBitmapFont';
-import { HTMLTextStyle } from '../html/HtmlTextStyle';
+import { BitmapFont } from '../../text-bitmap/BitmapFont';
+import { DynamicBitmapFont } from '../../text-bitmap/DynamicBitmapFont';
+import { HTMLTextStyle } from '../../text-html/HtmlTextStyle';
 
 import type { TextStyleOptions } from '../TextStyle';
 import type { AnyTextStyle } from '../TextView';

@@ -1,10 +1,12 @@
 import EventEmitter from 'eventemitter3';
 import { Cache } from '../../../../assets/cache/Cache';
+import { DOMAdapter } from '../../../../environment/adapter';
 import { groupD8 } from '../../../../maths/matrix/groupD8';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { uid } from '../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { NOOP } from '../../../../utils/misc/NOOP';
+import { ImageSource } from './sources/ImageSource';
 import { resourceToTexture } from './sources/resourceToTexture';
 import { TextureSource } from './sources/TextureSource';
 import { TextureMatrix } from './TextureMatrix';
@@ -390,3 +392,35 @@ Texture.EMPTY = new Texture({
 
 Texture.EMPTY.label = 'EMPTY';
 Texture.EMPTY.destroy = NOOP;
+
+// create a white canvas
+const canvas = DOMAdapter.get().createCanvas();
+
+const size = 1;
+
+canvas.width = size;
+canvas.height = size;
+
+const ctx = canvas.getContext('2d');
+
+ctx.fillStyle = '#ffffff';
+ctx.fillRect(0, 0, size, size);
+
+// draw red triangle
+ctx.beginPath();
+ctx.moveTo(0, 0);
+ctx.lineTo(size, 0);
+ctx.lineTo(size, size);
+ctx.closePath();
+ctx.fillStyle = '#ffffff';
+ctx.fill();
+
+Texture.WHITE = new Texture({
+    source: new ImageSource({
+        resource: canvas,
+        alphaMode: 'premultiply-alpha-on-upload'
+    }),
+});
+
+Texture.WHITE.label = 'WHITE';
+Texture.WHITE.destroy = NOOP;

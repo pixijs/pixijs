@@ -3,6 +3,7 @@ import { Mesh } from '../../../src/scene/mesh/shared/Mesh';
 import { MeshGeometry } from '../../../src/scene/mesh/shared/MeshGeometry';
 import { getRenderer } from '../../utils/getRenderer';
 import { getTexture } from '../../utils/getTexture';
+import '../../../src/scene/mesh/init';
 
 function getMesh()
 {

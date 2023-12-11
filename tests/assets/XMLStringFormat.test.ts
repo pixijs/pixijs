@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { bitmapFontXMLStringParser } from '../../src/scene/text/bitmap/asset/bitmapFontXMLStringParser';
+import { bitmapFontXMLStringParser } from '../../src/scene/text-bitmap/asset/bitmapFontXMLStringParser';
 
 const rawFontString = `<?xml version="1.0"?>
 <font>
