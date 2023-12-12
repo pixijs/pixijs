@@ -10,13 +10,11 @@ export interface BoundsData
     maxY: number;
 }
 
+const defaultMatrix = new Matrix();
+
 // TODO optimisations
-// 1 - setMatrix could set a reference directly, this would save a copy op per object
-// 2 - push and pop matrix could be optimised to use an index counter
-// 3 - get rectangle could use a dirty flag, rather than setting the data each time is called
-// 4 - push matrix can avoid the copy op
-// 5 - pop matrix can avoid the copy op
-// 6 - getFrame ALWAYS assumes a matrix, could be optimised to avoid the matrix calculation if not needed
+// 1 - get rectangle could use a dirty flag, rather than setting the data each time is called
+// 62- getFrame ALWAYS assumes a matrix, could be optimised to avoid the matrix calculation if not needed
 export class Bounds
 {
     public minX = Infinity;
@@ -27,9 +25,7 @@ export class Bounds
 
     public maxY = -Infinity;
 
-    // todo optimise.. lots of bounds wont need this!
-    private readonly _matrixStack: Matrix[] = [];
-    public matrix = new Matrix();
+    public matrix = defaultMatrix;
 
     private _rectangle: Rectangle;
 
@@ -65,51 +61,14 @@ export class Bounds
         return rectangle;
     }
 
-    public clear(): void
+    public clear(): this
     {
         this.minX = Infinity;
         this.minY = Infinity;
         this.maxX = -Infinity;
         this.maxY = -Infinity;
 
-        this._matrixStack.length = 0;
-        this.matrix.identity();
-    }
-
-    public pushMatrix(matrix: Matrix)
-    {
-        this._matrixStack.push(matrix);
-
-        if (this._matrixStack.length > 1)
-        {
-            this.matrix.copyFrom(this._matrixStack[this._matrixStack.length - 2]);
-
-            this.matrix.append(matrix);
-        }
-        else
-        {
-            this.matrix.copyFrom(matrix);
-        }
-    }
-
-    public popMatrix()
-    {
-        this._matrixStack.pop();
-
-        if (this._matrixStack.length > 1)
-        {
-            this.matrix.copyFrom(this._matrixStack[this._matrixStack.length - 2]);
-
-            this.matrix.append(this._matrixStack[this._matrixStack.length - 1]);
-        }
-        else if (this._matrixStack.length === 1)
-        {
-            this.matrix.copyFrom(this._matrixStack[0]);
-        }
-        else
-        {
-            this.matrix.identity();
-        }
+        return this;
     }
 
     public setMatrix(matrix: Matrix): void
@@ -195,7 +154,7 @@ export class Bounds
         this.addFrame(rect.x, rect.y, rect.x + rect.width, rect.y + rect.height, matrix);
     }
 
-    public addBounds(bounds: Bounds, matrix?: Matrix)
+    public addBounds(bounds: BoundsData, matrix?: Matrix)
     {
         this.addFrame(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY, matrix);
     }

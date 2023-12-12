@@ -1,7 +1,8 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
-import { Bounds } from './Bounds';
+import { getBounds, returnBounds } from './utils/boundsPool';
 
 import type { Container } from '../Container';
+import type { Bounds } from './Bounds';
 
 // TODO could we cache local bounds on the render groups?
 
@@ -34,8 +35,6 @@ export function getFastGlobalBounds(target: Container, bounds: Bounds): Bounds
 
     return bounds;
 }
-const boundsPool: Bounds[] = [];
-let boundsPoolIndex = 0;
 
 export function _getGlobalBoundsRecursive(
     target: Container,
@@ -53,7 +52,7 @@ export function _getGlobalBoundsRecursive(
 
     if (target.isRenderGroupRoot || manageEffects)
     {
-        localBounds = boundsPool[boundsPoolIndex++] || new Bounds();
+        localBounds = getBounds().clear();
     }
 
     if (target.boundsArea)
@@ -108,13 +107,11 @@ export function _getGlobalBoundsRecursive(
         }
 
         bounds.addBounds(localBounds);
-
-        boundsPoolIndex--;
+        returnBounds(localBounds);
     }
     else if (target.isRenderGroupRoot)
     {
         bounds.addBounds(localBounds, target.rgTransform);
-
-        boundsPoolIndex--;
+        returnBounds(localBounds);
     }
 }

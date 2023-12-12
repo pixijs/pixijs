@@ -692,9 +692,7 @@ export class GraphicsContext extends EventEmitter<{
             {
                 const data = instruction.data as TextureInstruction['data'];
 
-                bounds.pushMatrix(data.transform);
-                bounds.addFrame(data.dx, data.dy, data.dx + data.dw, data.dy + data.dh);
-                bounds.popMatrix();
+                bounds.addFrame(data.dx, data.dy, data.dx + data.dw, data.dy + data.dh, data.transform);
             }
             if (action === 'stroke')
             {
