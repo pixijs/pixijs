@@ -5,8 +5,8 @@ import { Container } from '../container/Container';
 import { definedProps } from '../container/utils/definedProps';
 import { TilingSpriteView } from './TilingSpriteView';
 
+import type { Point } from '../../maths/point/Point';
 import type { PointData } from '../../maths/point/PointData';
-import type { PointLike } from '../../maths/point/PointLike';
 import type { ContainerOptions } from '../container/Container';
 import type { TilingSpriteViewOptions } from './TilingSpriteView';
 
@@ -166,7 +166,7 @@ export class TilingSprite extends Container<TilingSpriteView>
      * const sprite = new TilingSprite({texture: Texture.WHITE});
      * sprite.anchor.set(0.5); // This will set the origin to center. (0.5) is same as (0.5, 0.5).
      */
-    get anchor(): PointLike
+    get anchor(): Point
     {
         return this.view.anchor;
     }

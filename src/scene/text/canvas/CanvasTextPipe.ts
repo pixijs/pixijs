@@ -169,7 +169,7 @@ export class CanvasTextPipe implements RenderPipe<TextView>
         };
 
         gpuTextData.batchableSprite.renderable = renderable;
-        gpuTextData.batchableSprite.bounds = { left: 0, right: 1, top: 0, bottom: 0 };
+        gpuTextData.batchableSprite.bounds = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
         gpuTextData.batchableSprite.roundPixels = (this._renderer._roundPixels | renderable.view.roundPixels) as 0 | 1;
 
         this._gpuText[renderable.uid] = gpuTextData;

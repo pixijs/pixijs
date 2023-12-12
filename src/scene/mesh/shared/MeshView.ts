@@ -116,6 +116,11 @@ export class MeshView<
         return this._geometry.batchMode === 'batch';
     }
 
+    get bounds()
+    {
+        return this._geometry.bounds;
+    }
+
     public addBounds(bounds: Bounds)
     {
         bounds.addVertexData(this.geometry.positions, 0, this.geometry.positions.length);
@@ -124,6 +129,8 @@ export class MeshView<
     public containsPoint(point: PointData)
     {
         const { x, y } = point;
+
+        if (!this.bounds.containsPoint(x, y)) return false;
 
         const vertices = this.geometry.getBuffer('aPosition').data;
 
