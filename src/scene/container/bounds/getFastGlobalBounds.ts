@@ -1,8 +1,11 @@
+import { Matrix } from '../../../maths/matrix/Matrix';
 import { Bounds } from './Bounds';
 
 import type { Container } from '../Container';
 
 // TODO could we cache local bounds on the render groups?
+
+const tempMatrix = new Matrix();
 
 /**
  * Does exactly the same as getGlobalBounds, but does instead makes use of transforming AABBs
@@ -31,6 +34,8 @@ export function getFastGlobalBounds(target: Container, bounds: Bounds): Bounds
 
     return bounds;
 }
+const boundsPool: Bounds[] = [];
+let boundsPoolIndex = 0;
 
 export function _getGlobalBoundsRecursive(
     target: Container,
@@ -48,7 +53,7 @@ export function _getGlobalBoundsRecursive(
 
     if (target.isRenderGroupRoot || manageEffects)
     {
-        localBounds = new Bounds();
+        localBounds = boundsPool[boundsPoolIndex++] || new Bounds();
     }
 
     if (target.boundsArea)
@@ -98,14 +103,18 @@ export function _getGlobalBoundsRecursive(
 
         if (advanced)
         {
-            localBounds.applyMatrix(target.renderGroup.worldTransform.clone().invert());
+            localBounds.applyMatrix(target.renderGroup.worldTransform.copyTo(tempMatrix).invert());
             bounds.addBounds(localBounds, target.rgTransform);
         }
 
         bounds.addBounds(localBounds);
+
+        boundsPoolIndex--;
     }
     else if (target.isRenderGroupRoot)
     {
         bounds.addBounds(localBounds, target.rgTransform);
+
+        boundsPoolIndex--;
     }
 }
