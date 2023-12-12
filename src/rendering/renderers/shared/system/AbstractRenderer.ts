@@ -12,7 +12,7 @@ import type { GenerateTextureOptions, GenerateTextureSystem } from '../extract/G
 import type { PipeConstructor } from '../instructions/RenderPipe';
 import type { RenderSurface } from '../renderTarget/RenderTargetSystem';
 import type { Texture } from '../texture/Texture';
-import type { ViewSystem } from '../view/ViewSystem';
+import type { ViewSurfaceSystem } from '../view/ViewSurfaceSystem';
 import type { System, SystemConstructor } from './System';
 
 interface RendererConfig
@@ -20,9 +20,9 @@ interface RendererConfig
     type: number;
     name: string;
     runners?: string[];
-    systems: {name: string, value: SystemConstructor}[];
-    renderPipes: {name: string, value: PipeConstructor}[];
-    renderPipeAdaptors: {name: string, value: any}[];
+    systems: { name: string, value: SystemConstructor }[];
+    renderPipes: { name: string, value: PipeConstructor }[];
+    renderPipeAdaptors: { name: string, value: any }[];
 }
 
 export interface RenderOptions
@@ -49,7 +49,7 @@ const defaultRunners = [
 ] as const;
 
 type DefaultRunners = typeof defaultRunners[number];
-type Runners = {[key in DefaultRunners]: SystemRunner} & {
+type Runners = { [key in DefaultRunners]: SystemRunner } & {
     // eslint-disable-next-line @typescript-eslint/ban-types
     [K: ({} & string) | ({} & symbol)]: SystemRunner;
 };
@@ -104,7 +104,7 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
 
     public readonly runners: Runners = Object.create(null) as Runners;
     public readonly renderPipes = Object.create(null) as PIPES;
-    public view: ViewSystem;
+    public surface: ViewSurfaceSystem;
     public textureGenerator: GenerateTextureSystem;
 
     protected _initOptions: OPTIONS = {} as OPTIONS;
@@ -159,7 +159,7 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
     }
 
     /** @deprecated since 8.0.0 */
-    public render(container: Container, options: {renderTexture: any}): void;
+    public render(container: Container, options: { renderTexture: any }): void;
     /**
      * Renders the object to its view.
      * @param options - The options to render with.
@@ -167,7 +167,7 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
      * @param [options.target] - The target to render to.
      */
     public render(options: RenderOptions | Container): void;
-    public render(args: RenderOptions | Container, deprecated?: {renderTexture: any}): void
+    public render(args: RenderOptions | Container, deprecated?: { renderTexture: any }): void
     {
         let options = args;
 
@@ -184,10 +184,10 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
             }
         }
 
-        options.target ||= this.view.texture;
+        options.target ||= this.surface.texture;
 
         // TODO: we should eventually fix events so that it can handle multiple canvas elements
-        if (options.target === this.view.texture)
+        if (options.target === this.surface.texture)
         {
             // TODO get rid of this
             this._lastObjectRendered = options.container;
@@ -215,18 +215,18 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
      */
     public resize(desiredScreenWidth: number, desiredScreenHeight: number, resolution?: number): void
     {
-        this.view.resize(desiredScreenWidth, desiredScreenHeight, resolution);
+        this.surface.resize(desiredScreenWidth, desiredScreenHeight, resolution);
     }
 
     /** The resolution / device pixel ratio of the renderer. */
     get resolution(): number
     {
-        return this.view.resolution;
+        return this.surface.resolution;
     }
 
     set resolution(value: number)
     {
-        this.view.resolution = value;
+        this.surface.resolution = value;
         this.runners.resolutionChange.emit(value);
     }
 
@@ -238,7 +238,7 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
      */
     get width(): number
     {
-        return this.view.texture.frame.width;
+        return this.surface.texture.frame.width;
     }
 
     /**
@@ -247,14 +247,22 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
      */
     get height(): number
     {
-        return this.view.texture.frame.height;
+        return this.surface.texture.frame.height;
     }
 
     // NOTE: this was `view` in v7
     /** The canvas element that everything is drawn to.*/
     get canvas(): CANVAS
     {
-        return this.view.canvas as CANVAS;
+        return this.surface.canvas as CANVAS;
+    }
+
+    /**
+     * @deprecated As of version 8, `view` is now deprecated. Use `canvas` instead.
+     */
+    get view(): CANVAS
+    {
+        return this.surface.canvas as CANVAS;
     }
 
     /**
@@ -286,7 +294,7 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
      */
     get screen(): Rectangle
     {
-        return this.view.screen;
+        return this.surface.screen;
     }
 
     /**

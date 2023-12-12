@@ -14,7 +14,7 @@ describe('GlBackBufferSystem', () =>
         renderer.backBuffer.useBackBuffer = false;
 
         renderer.backBuffer['renderStart']({
-            target: renderer.view.texture,
+            target: renderer.surface.texture,
             container
         });
 
@@ -23,7 +23,7 @@ describe('GlBackBufferSystem', () =>
         renderer.backBuffer.useBackBuffer = true;
 
         renderer.backBuffer['renderStart']({
-            target: renderer.view.texture,
+            target: renderer.surface.texture,
             container
         });
 
@@ -49,12 +49,12 @@ describe('GlBackBufferSystem', () =>
         const container = new Container();
 
         const options = {
-            target: renderer.view.texture,
+            target: renderer.surface.texture,
             container
         };
 
         renderer.backBuffer['renderStart']({
-            target: renderer.view.texture,
+            target: renderer.surface.texture,
             container
         });
 

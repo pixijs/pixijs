@@ -235,7 +235,7 @@ export class AccessibilitySystem implements System
         globalThis.removeEventListener('keydown', this._onKeyDown, false);
 
         this._renderer.runners.postrender.add(this);
-        this._renderer.view.canvas.parentNode?.appendChild(this._div);
+        this._renderer.surface.canvas.parentNode?.appendChild(this._div);
     }
 
     /**
@@ -322,7 +322,7 @@ export class AccessibilitySystem implements System
 
         this._androidUpdateCount = now + this._androidUpdateFrequency;
 
-        if (!this._renderer.renderingToScreen || !this._renderer.view.canvas)
+        if (!this._renderer.renderingToScreen || !this._renderer.surface.canvas)
         {
             return;
         }
@@ -333,7 +333,7 @@ export class AccessibilitySystem implements System
             this._updateAccessibleObjects(this._renderer.lastObjectRendered as Container);
         }
 
-        const { x, y, width, height } = this._renderer.view.canvas.getBoundingClientRect();
+        const { x, y, width, height } = this._renderer.surface.canvas.getBoundingClientRect();
         const { width: viewWidth, height: viewHeight, resolution } = this._renderer;
 
         const sx = (width / viewWidth) * resolution;
@@ -394,7 +394,7 @@ export class AccessibilitySystem implements System
                         div.title = child.accessibleTitle;
                     }
                     if (div.getAttribute('aria-label') !== child.accessibleHint
-                       && child.accessibleHint !== null)
+                        && child.accessibleHint !== null)
                     {
                         div.setAttribute('aria-label', child.accessibleHint);
                     }
@@ -517,7 +517,7 @@ export class AccessibilitySystem implements System
             div.title = container.accessibleTitle;
         }
         else if (!container.accessibleHint
-                 || container.accessibleHint === null)
+            || container.accessibleHint === null)
         {
             div.title = `container ${container.tabIndex}`;
         }

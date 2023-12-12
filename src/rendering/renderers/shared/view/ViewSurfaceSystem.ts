@@ -32,10 +32,10 @@ export interface ViewSystemOptions
 }
 
 /**
- * The view system manages the main canvas that is attached to the DOM.
+ * The view surface system manages the main canvas that is attached to the DOM.
  * This main role is to deal with how the holding the view reference and dealing with how it is resized.
  */
-export class ViewSystem implements System
+export class ViewSurfaceSystem implements System
 {
     /** @ignore */
     public static extension = {
@@ -44,7 +44,7 @@ export class ViewSystem implements System
             ExtensionType.WebGPUSystem,
             ExtensionType.CanvasSystem,
         ],
-        name: 'view',
+        name: 'surface',
         priority: 0,
     } as const;
 
@@ -110,7 +110,7 @@ export class ViewSystem implements System
     public init(options: ViewSystemOptions): void
     {
         options = {
-            ...ViewSystem.defaultOptions,
+            ...ViewSurfaceSystem.defaultOptions,
             ...options,
         };
 

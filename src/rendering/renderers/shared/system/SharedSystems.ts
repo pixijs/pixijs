@@ -13,13 +13,13 @@ import { GlobalUniformSystem } from '../renderTarget/GlobalUniformSystem';
 import { UniformBufferSystem } from '../shader/UniformBufferSystem';
 import { HelloSystem } from '../startup/HelloSystem';
 import { TextureGCSystem } from '../texture/TextureGCSystem';
-import { ViewSystem } from '../view/ViewSystem';
+import { ViewSurfaceSystem } from '../view/ViewSurfaceSystem';
 
 export const SharedSystems = [
     BackgroundSystem,
     GlobalUniformSystem,
     HelloSystem,
-    ViewSystem,
+    ViewSurfaceSystem,
     RenderGroupSystem,
     UniformBufferSystem,
     TextureGCSystem,

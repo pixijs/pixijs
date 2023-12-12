@@ -145,7 +145,7 @@ describe('Application', () =>
             const spy = jest.fn();
             const { app, forceResizeApp, cleanup } = await getAppWithDiv();
 
-            app.renderer.view.texture.source.on('resize', spy);
+            app.renderer.surface.texture.source.on('resize', spy);
 
             forceResizeApp(200, 400);
             forceResizeApp(300, 500);
@@ -174,7 +174,7 @@ describe('Application', () =>
                 });
             };
 
-            app.renderer.view.texture.source.on('resize', onResize);
+            app.renderer.surface.texture.source.on('resize', onResize);
             forceQueueResizeApp(200, 400);
             forceQueueResizeApp(300, 500);
         });
@@ -185,7 +185,7 @@ describe('Application', () =>
             const spy = jest.fn();
             const { app, forceQueueResizeApp, cleanup } = await getAppWithDiv();
 
-            app.renderer.view.texture.source.on('resize', spy);
+            app.renderer.surface.texture.source.on('resize', spy);
             forceQueueResizeApp(200, 400);
             app.destroy();
 
@@ -203,7 +203,7 @@ describe('Application', () =>
             const spy = jest.fn();
             const { app, forceQueueResizeApp, forceResizeApp, cleanup } = await getAppWithDiv();
 
-            app.renderer.view.texture.source.on('resize', spy);
+            app.renderer.surface.texture.source.on('resize', spy);
             forceQueueResizeApp(200, 400);
             forceResizeApp(300, 500);
             app.destroy();
