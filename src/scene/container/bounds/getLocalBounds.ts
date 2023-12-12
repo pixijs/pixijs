@@ -15,8 +15,7 @@ export function getLocalBounds(target: Container, bounds: Bounds, relativeMatrix
 
     if (target.boundsArea)
     {
-        bounds.setMatrix(relativeMatrix);
-        bounds.addRect(target.boundsArea);
+        bounds.addRect(target.boundsArea, relativeMatrix);
     }
     else if (target.view)
     {
@@ -68,7 +67,6 @@ function _getLocalBounds(target: Container, bounds: Bounds, parentTransform: Mat
         if (target.view)
         {
             bounds.setMatrix(relativeTransform);
-
             target.view.addBounds(bounds);
         }
 
