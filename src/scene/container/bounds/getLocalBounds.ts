@@ -1,22 +1,17 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { warn } from '../../../utils/logging/warn';
 import { updateLocalTransform } from '../utils/updateLocalTransform';
-import { Bounds } from './Bounds';
+import { getBounds, returnBounds } from './utils/boundsPool';
+import { getMatrix, returnMatrix } from './utils/matrixPool';
 
 import type { Container } from '../Container';
+import type { Bounds } from './Bounds';
 
 export function getLocalBounds(target: Container, bounds: Bounds, relativeMatrix?: Matrix): Bounds
 {
     bounds.clear();
 
-    // if (!target.visible)// || !target.measurable)
-    // {
-    //     bounds.set(0, 0, 0, 0);
-
-    //     return bounds;
-    // }
-
-    relativeMatrix ||= new Matrix();
+    relativeMatrix ||= Matrix.IDENTITY;
 
     if (target.boundsArea)
     {
@@ -46,7 +41,6 @@ function _getLocalBounds(target: Container, bounds: Bounds, parentTransform: Mat
 {
     if (!target.visible || !target.measurable) return;
 
-    // // make sure localTransform is upto date...
     if (target.didChange)
     {
         updateLocalTransform(target.localTransform, target);
@@ -54,7 +48,7 @@ function _getLocalBounds(target: Container, bounds: Bounds, parentTransform: Mat
 
     const localTransform = target.localTransform;
 
-    const relativeTransform = Matrix.shared.appendFrom(localTransform, parentTransform).clone();
+    const relativeTransform = getMatrix().appendFrom(localTransform, parentTransform);
 
     const parentBounds = bounds;
     const preserveBounds = !!target.effects.length;
@@ -62,13 +56,12 @@ function _getLocalBounds(target: Container, bounds: Bounds, parentTransform: Mat
     if (preserveBounds)
     {
         // TODO - cloning bounds is slow, we should have a pool (its on the todo list!)
-        bounds = new Bounds();
+        bounds = getBounds().clear();
     }
 
     if (target.boundsArea)
     {
-        bounds.setMatrix(relativeTransform);
-        bounds.addRect(target.boundsArea);
+        bounds.addRect(target.boundsArea, relativeTransform);
     }
     else
     {
@@ -79,9 +72,11 @@ function _getLocalBounds(target: Container, bounds: Bounds, parentTransform: Mat
             target.view.addBounds(bounds);
         }
 
-        for (let i = 0; i < target.children.length; i++)
+        const children = target.children;
+
+        for (let i = 0; i < children.length; i++)
         {
-            _getLocalBounds(target.children[i], bounds, relativeTransform, rootContainer);
+            _getLocalBounds(children[i], bounds, relativeTransform, rootContainer);
         }
     }
 
@@ -93,9 +88,12 @@ function _getLocalBounds(target: Container, bounds: Bounds, parentTransform: Mat
         }
 
         // TODO - make a add transformed bounds?
-        parentBounds.setMatrix(Matrix.IDENTITY);
-        parentBounds.addBounds(bounds);
+        parentBounds.addBounds(bounds, Matrix.IDENTITY);
+
+        returnBounds(bounds);
     }
+
+    returnMatrix(relativeTransform);
 }
 
 export function getParent(target: Container, root: Container, matrix: Matrix)
