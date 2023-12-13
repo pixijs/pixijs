@@ -1,8 +1,6 @@
 import { DOMAdapter } from '../../../../../environment/adapter';
 import { ExtensionType } from '../../../../../extensions/Extensions';
 import { warn } from '../../../../../utils/logging/warn';
-import { NOOP } from '../../../../../utils/misc/NOOP';
-import { Texture } from '../Texture';
 import { TextureSource } from './TextureSource';
 
 import type { ICanvas } from '../../../../../environment/canvas/ICanvas';
@@ -45,35 +43,3 @@ export class ImageSource extends TextureSource<ImageResource>
         || (typeof ImageBitmap !== 'undefined' && resource instanceof ImageBitmap);
     }
 }
-
-// create a white canvas
-const canvas = DOMAdapter.get().createCanvas();
-
-const size = 1;
-
-canvas.width = size;
-canvas.height = size;
-
-const ctx = canvas.getContext('2d');
-
-ctx.fillStyle = '#ffffff';
-ctx.fillRect(0, 0, size, size);
-
-// draw red triangle
-ctx.beginPath();
-ctx.moveTo(0, 0);
-ctx.lineTo(size, 0);
-ctx.lineTo(size, size);
-ctx.closePath();
-ctx.fillStyle = '#ffffff';
-ctx.fill();
-
-Texture.WHITE = new Texture({
-    source: new ImageSource({
-        resource: canvas,
-        alphaMode: 'premultiply-alpha-on-upload'
-    }),
-});
-
-Texture.WHITE.label = 'WHITE';
-Texture.WHITE.destroy = NOOP;

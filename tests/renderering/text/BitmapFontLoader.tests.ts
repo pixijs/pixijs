@@ -3,8 +3,8 @@ import { Loader } from '../../../src/assets/loader/Loader';
 import { loadTxt } from '../../../src/assets/loader/parsers/loadTxt';
 import { loadTextures } from '../../../src/assets/loader/parsers/textures/loadTextures';
 import { Sprite } from '../../../src/scene/sprite/Sprite';
-import { loadBitmapFont } from '../../../src/scene/text/bitmap/asset/loadBitmapFont';
-import { BitmapFont } from '../../../src/scene/text/bitmap/BitmapFont';
+import { loadBitmapFont } from '../../../src/scene/text-bitmap/asset/loadBitmapFont';
+import { BitmapFont } from '../../../src/scene/text-bitmap/BitmapFont';
 import { basePath } from '../../assets/basePath';
 import { getRenderer } from '../../utils/getRenderer';
 

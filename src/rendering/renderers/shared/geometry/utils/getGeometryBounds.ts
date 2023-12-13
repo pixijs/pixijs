@@ -14,7 +14,10 @@ export function getGeometryBounds(geometry: Geometry, attributeId: string, bound
 
     if (!attribute)
     {
-        bounds.clear();
+        bounds.minX = 0;
+        bounds.minY = 0;
+        bounds.maxX = 0;
+        bounds.maxY = 0;
 
         return bounds;
     }

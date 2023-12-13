@@ -3,6 +3,9 @@ import { Container } from '../../../src/scene/container/Container';
 import { Sprite } from '../../../src/scene/sprite/Sprite';
 import { Text } from '../../../src/scene/text/Text';
 import { getRenderer } from '../../utils/getRenderer';
+import '../../../src/scene/text/init';
+import '../../../src/scene/text-bitmap/init';
+import '../../../src/scene/graphics/init';
 
 import type { DestroyOptions } from '../../../src/scene/container/destroyTypes';
 

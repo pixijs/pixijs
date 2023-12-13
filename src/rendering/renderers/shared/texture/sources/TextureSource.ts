@@ -62,7 +62,7 @@ export interface TextureSourceOptions<T extends Record<string, any> = any>
  *
  * This is an class is extended depending on the source of the texture.
  * Eg if you are using an an image as your resource, then an ImageSource is used.
- * @memberof core
+ * @memberof rendering
  * @typeParam T - The TextureSource's Resource type.
  */
 export class TextureSource<T extends Record<string, any> = any> extends EventEmitter<{

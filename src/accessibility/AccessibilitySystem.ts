@@ -28,6 +28,7 @@ import type { isMobileResult } from '../utils/browser/isMobile';
  * @namespace accessibility
  */
 
+/** @ignore */
 const KEY_CODE_TAB = 9;
 
 const DIV_TOUCH_SIZE = 100;
