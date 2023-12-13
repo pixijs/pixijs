@@ -377,7 +377,7 @@ export class AccessibilitySystem implements System
                 }
                 else
                 {
-                    hitArea = child.getBounds();
+                    hitArea = child.getBounds().rectangle;
 
                     this._capHitArea(hitArea);
 

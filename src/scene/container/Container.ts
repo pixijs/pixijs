@@ -517,6 +517,16 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      */
     public boundsArea: Rectangle;
 
+    /**
+     * A value that increments each time the container is modified
+     * the first 12 bits represent the container changes (eg transform, alpha, visible etc)
+     * the second 12 bits represent the view changes (eg texture swap, geometry change etc)
+     *
+     *  view          container
+     * [000000000000][00000000000]
+     */
+    public _didChangeId = 0;
+
     constructor(options: Partial<ContainerOptions<T>> = {})
     {
         super();
@@ -668,6 +678,8 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
             }
         }
 
+        this._didChangeId++;
+
         if (this.didChange) return;
         this.didChange = true;
 
@@ -690,6 +702,9 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     /** @ignore */
     public onViewUpdate()
     {
+        // increment from the 12th bit!
+        this._didChangeId += 1 << 12;
+
         if (this.didViewUpdate) return;
         this.didViewUpdate = true;
 
