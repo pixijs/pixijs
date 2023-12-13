@@ -32,20 +32,25 @@ PixiJS has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamles
 
 **Boost your development and feel free to use your imagination!**
 
-### Learn ###
-- Website: Find out more about PixiJS on the [official website](https://www.pixijs.com/).
-- Getting started:
-    - Check out @kittykatattack's comprehensive [tutorial](https://github.com/kittykatattack/learningPixi).
-    - Also check out @miltoncandelero's PixiJS tutorials aimed toward videogames with recipes, best practices, and TypeScript / npm / webpack setup [here](https://www.pixijselementals.com/)
-- Examples: Get stuck right in and play around with PixiJS code and features right [here](https://pixijs.io/examples/)!
-- Docs: Get to know the PixiJS API by checking out the [docs](https://pixijs.io/docs/).
-- Guide: Supplementary guide to the API documentation [here](https://pixijs.io/guides/).
-- Wiki: Other misc. tutorials and resources are [on the Wiki](https://github.com/pixijs/pixijs/wiki).
+### Current features ###
 
-### Community ###
-- Forums: Check out the [forum](https://www.html5gamedevs.com/forum/15-pixijs/) and [Stackoverflow](http://stackoverflow.com/search?q=pixi.js) -- both friendly places to ask your PixiJS questions.
-- Inspiration: Check out the [gallery](https://www.pixijs.com/gallery) to see some of the amazing things people have created!
-- Chat: You can join us on [Discord](https://discord.gg/QrnxmQUPGV) to chat about PixiJS.
+- WebGL renderer (with automatic smart batching, allowing for REALLY fast performance)
+- WebGPU renderer (new to the latest browsers!)
+- Canvas renderer (Fastest in town!)
+- Full scene graph
+- Super easy to use API (similar to the flash display list API)
+- Support for texture atlases
+- Asset loader / sprite sheet loader
+- Auto-detect which renderer should be used
+- Full Mouse and Multi-touch Interaction
+- Text
+- BitmapFont text
+- Multiline Text
+- Render Texture
+- Primitive Drawing
+- Masking
+- Filters
+- [User Plugins](https://github.com/pixijs/pixijs/wiki/v6-Resources)
 
 ### Setup ###
 
@@ -80,50 +85,6 @@ Or via unpkg:
 ```html
 <script src="https://unpkg.com/pixi.js@7.x/dist/pixi.min.js"></script>
 ```
-
-### Demos ###
-
-- [Filters Demo](https://pixijs.io/filters/tools/demo/)
-- [Run Pixie Run](http://work.goodboydigital.com/runpixierun/)
-- [Bunny Demo](http://www.goodboydigital.com/pixijs/bunnymark)
-- [Storm Brewing](http://www.goodboydigital.com/pixijs/storm)
-- [Render Texture Demo](http://www.goodboydigital.com/pixijs/examples/11)
-- [Primitives Demo](http://www.goodboydigital.com/pixijs/examples/13)
-- [Masking Demo](http://www.goodboydigital.com/pixijs/examples/14)
-- [Interaction Demo](http://www.goodboydigital.com/pixijs/examples/6)
-- [photonstorm's Balls Demo](http://gametest.mobi/pixi/balls)
-- [photonstorm's Morph Demo](http://gametest.mobi/pixi/morph)
-
-Thanks to [@photonstorm](https://twitter.com/photonstorm) for providing
-those last 2 examples and allowing us to share the source code :)
-
-### Contribute ###
-
-Want to be part of the PixiJS project? Great! All are welcome! We will get there quicker
-together :) Whether you find a bug, have a great feature request, or you fancy owning a task
-from the road map above, feel free to get in touch.
-
-Make sure to read the [Contributing Guide](.github/CONTRIBUTING.md)
-before submitting changes.
-
-### Current features ###
-
-- WebGL renderer (with automatic smart batching, allowing for REALLY fast performance)
-- Canvas renderer (Fastest in town!)
-- Full scene graph
-- Super easy to use API (similar to the flash display list API)
-- Support for texture atlases
-- Asset loader / sprite sheet loader
-- Auto-detect which renderer should be used
-- Full Mouse and Multi-touch Interaction
-- Text
-- BitmapFont text
-- Multiline Text
-- Render Texture
-- Primitive Drawing
-- Masking
-- Filters
-- [User Plugins](https://github.com/pixijs/pixijs/wiki/v6-Resources)
 
 ### Basic Usage Example ###
 
@@ -163,6 +124,37 @@ app.ticker.add(() => {
 });
 ```
 
+### Learn ###
+- Website: Find out more about PixiJS on the [official website](https://www.pixijs.com/).
+- Getting started:
+    - Check out @kittykatattack's comprehensive [tutorial](https://github.com/kittykatattack/learningPixi).
+    - Also check out @miltoncandelero's PixiJS tutorials aimed toward videogames with recipes, best practices, and TypeScript / npm / webpack setup [here](https://www.pixijselementals.com/)
+- Examples: Get stuck right in and play around with PixiJS code and features right [here](https://pixijs.io/examples/)!
+- Docs: Get to know the PixiJS API by checking out the [docs](https://pixijs.io/docs/).
+- Guide: Supplementary guide to the API documentation [here](https://pixijs.io/guides/).
+- Wiki: Other misc. tutorials and resources are [on the Wiki](https://github.com/pixijs/pixijs/wiki).
+
+### Demos ###
+
+- [Filters Demo](https://pixijs.io/filters/tools/demo/)
+- [Run Pixie Run](http://work.goodboydigital.com/runpixierun/)
+- [Bunny Demo](http://www.goodboydigital.com/pixijs/bunnymark)
+- [Storm Brewing](http://www.goodboydigital.com/pixijs/storm)
+- [Render Texture Demo](http://www.goodboydigital.com/pixijs/examples/11)
+- [Primitives Demo](http://www.goodboydigital.com/pixijs/examples/13)
+- [Masking Demo](http://www.goodboydigital.com/pixijs/examples/14)
+- [Interaction Demo](http://www.goodboydigital.com/pixijs/examples/6)
+- [photonstorm's Balls Demo](http://gametest.mobi/pixi/balls)
+- [photonstorm's Morph Demo](http://gametest.mobi/pixi/morph)
+
+Thanks to [@photonstorm](https://twitter.com/photonstorm) for providing
+those last 2 examples and allowing us to share the source code :)
+
+### Community ###
+- Forums: Check out the [forum](https://www.html5gamedevs.com/forum/15-pixijs/) and [Stackoverflow](http://stackoverflow.com/search?q=pixi.js) -- both friendly places to ask your PixiJS questions.
+- Inspiration: Check out the [gallery](https://www.pixijs.com/gallery) to see some of the amazing things people have created!
+- Chat: You can join us on [Discord](https://discord.gg/QrnxmQUPGV) to chat about PixiJS.
+
 ### How to build ###
 
 Note that for most users you don't need to build this project. If all you want is to use PixiJS, then
@@ -191,6 +183,15 @@ npm run docs
 ```
 
 The documentation uses [webdoc](https://github.com/webdoc-labs/webdoc) in combination with this template: [pixi-webdoc-template](https://github.com/pixijs/pixi-webdoc-template). The configuration file can be found at [webdoc.conf.json](webdoc.conf.json)
+
+### Contribute ###
+
+Want to be part of the PixiJS project? Great! All are welcome! We will get there quicker
+together :) Whether you find a bug, have a great feature request, or you fancy owning a task
+from the road map above, feel free to get in touch.
+
+Make sure to read the [Contributing Guide](.github/CONTRIBUTING.md)
+before submitting changes.
 
 ### License ###
 
