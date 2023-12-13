@@ -186,7 +186,6 @@ export class Bounds
         this.minY = minY;
         this.maxX = maxX;
         this.maxY = maxY;
-
     }
 
     public addRect(rect: Rectangle, matrix?: Matrix)
