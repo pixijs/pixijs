@@ -56,6 +56,11 @@ export class GraphicsView implements View
         return this._context;
     }
 
+    get bounds(): Bounds
+    {
+        return this._context.bounds;
+    }
+
     public addBounds(bounds: Bounds)
     {
         bounds.addBounds(this._context.bounds);

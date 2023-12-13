@@ -2,12 +2,12 @@ import { Matrix } from '../../../maths/matrix/Matrix';
 import { Rectangle } from '../../../maths/shapes/Rectangle';
 
 /** Simple bounds implementation instead of more ambiguous [number, number, number, number] */
-export interface SimpleBounds
+export interface BoundsData
 {
-    left: number;
-    top: number;
-    right: number;
-    bottom: number;
+    minX: number;
+    minY: number;
+    maxX: number;
+    maxY: number;
 }
 
 // TODO optimisations
@@ -131,10 +131,11 @@ export class Bounds
      * @param y0 - top Y of frame
      * @param x1 - right X of frame
      * @param y1 - bottom Y of frame
+     * @param matrix
      */
-    public addFrame(x0: number, y0: number, x1: number, y1: number)
+    public addFrame(x0: number, y0: number, x1: number, y1: number, matrix?: Matrix): void
     {
-        const matrix = this.matrix;
+        matrix ||= this.matrix;
 
         const a = matrix.a;
         const b = matrix.b;
@@ -143,6 +144,7 @@ export class Bounds
         const tx = matrix.tx;
         const ty = matrix.ty;
 
+        //  console.log('addframe', tx);
         let minX = this.minX;
         let minY = this.minY;
         let maxX = this.maxX;
@@ -151,31 +153,34 @@ export class Bounds
         let x = (a * x0) + (c * y0) + tx;
         let y = (b * x0) + (d * y0) + ty;
 
-        minX = x < minX ? x : minX;
-        minY = y < minY ? y : minY;
-        maxX = x > maxX ? x : maxX;
-        maxY = y > maxY ? y : maxY;
+        if (x < minX) minX = x;
+        if (y < minY) minY = y;
+        if (x > maxX) maxX = x;
+        if (y > maxY) maxY = y;
 
         x = (a * x1) + (c * y0) + tx;
         y = (b * x1) + (d * y0) + ty;
-        minX = x < minX ? x : minX;
-        minY = y < minY ? y : minY;
-        maxX = x > maxX ? x : maxX;
-        maxY = y > maxY ? y : maxY;
+
+        if (x < minX) minX = x;
+        if (y < minY) minY = y;
+        if (x > maxX) maxX = x;
+        if (y > maxY) maxY = y;
 
         x = (a * x0) + (c * y1) + tx;
         y = (b * x0) + (d * y1) + ty;
-        minX = x < minX ? x : minX;
-        minY = y < minY ? y : minY;
-        maxX = x > maxX ? x : maxX;
-        maxY = y > maxY ? y : maxY;
+
+        if (x < minX) minX = x;
+        if (y < minY) minY = y;
+        if (x > maxX) maxX = x;
+        if (y > maxY) maxY = y;
 
         x = (a * x1) + (c * y1) + tx;
         y = (b * x1) + (d * y1) + ty;
-        minX = x < minX ? x : minX;
-        minY = y < minY ? y : minY;
-        maxX = x > maxX ? x : maxX;
-        maxY = y > maxY ? y : maxY;
+
+        if (x < minX) minX = x;
+        if (y < minY) minY = y;
+        if (x > maxX) maxX = x;
+        if (y > maxY) maxY = y;
 
         this.minX = minX;
         this.minY = minY;
@@ -183,14 +188,14 @@ export class Bounds
         this.maxY = maxY;
     }
 
-    public addRect(rect: Rectangle)
+    public addRect(rect: Rectangle, matrix?: Matrix)
     {
-        this.addFrame(rect.x, rect.y, rect.x + rect.width, rect.y + rect.height);
+        this.addFrame(rect.x, rect.y, rect.x + rect.width, rect.y + rect.height, matrix);
     }
 
-    public addBounds(bounds: Bounds)
+    public addBounds(bounds: Bounds, matrix?: Matrix)
     {
-        this.addFrame(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY);
+        this.addFrame(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY, matrix);
     }
 
     public addBoundsMask(mask: Bounds): void
@@ -323,15 +328,16 @@ export class Bounds
      * @param vertexData - calculated vertices
      * @param beginOffset - begin offset
      * @param endOffset - end offset, excluded
+     * @param matrix
      */
-    public addVertexData(vertexData: Float32Array, beginOffset: number, endOffset: number): void
+    public addVertexData(vertexData: Float32Array, beginOffset: number, endOffset: number, matrix?: Matrix): void
     {
         let minX = this.minX;
         let minY = this.minY;
         let maxX = this.maxX;
         let maxY = this.maxY;
 
-        const matrix = this.matrix;
+        matrix ||= this.matrix;
 
         const a = matrix.a;
         const b = matrix.b;

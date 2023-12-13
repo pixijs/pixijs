@@ -7,7 +7,7 @@ import { UniformGroup } from '../rendering/renderers/shared/shader/UniformGroup'
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { TexturePool } from '../rendering/renderers/shared/texture/TexturePool';
 import { Bounds } from '../scene/container/bounds/Bounds';
-import { getGlobalBounds } from '../scene/container/bounds/getGlobalBounds';
+import { getFastGlobalBounds } from '../scene/container/bounds/getFastGlobalBounds';
 import { getGlobalRenderableBounds } from '../scene/container/bounds/getRenderableBounds';
 import { warn } from '../utils/logging/warn';
 
@@ -155,7 +155,7 @@ export class FilterSystem implements System
         // measuring.
         else
         {
-            getGlobalBounds(instruction.container, true, bounds);
+            getFastGlobalBounds(instruction.container, bounds);
         }
         // get GLOBAL bounds of the item we are going to apply the filter to
 

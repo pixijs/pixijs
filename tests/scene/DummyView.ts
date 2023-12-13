@@ -3,7 +3,7 @@ import { Rectangle } from '../../src/maths/shapes/Rectangle';
 
 import type { Point } from '../../src/maths/point/Point';
 import type { View, ViewObserver } from '../../src/rendering/renderers/shared/view/View';
-import type { Bounds } from '../../src/scene/container/bounds/Bounds';
+import type { Bounds, BoundsData } from '../../src/scene/container/bounds/Bounds';
 
 export class DummyView extends EventEmitter implements View
 {
@@ -13,9 +13,25 @@ export class DummyView extends EventEmitter implements View
     public renderPipeId = 'dummy';
     public renderableUpdateRequested: boolean;
     public onUpdate: () => void;
+    public get bounds(): BoundsData
+    {
+        return {
+            minX: this.size.x,
+            minY: this.size.y,
+            maxX: this.size.x + this.size.width,
+            maxY: this.size.y + this.size.height,
+        };
+    }
     public addBounds = (bounds: Bounds) =>
     {
-        bounds.addFrame(this.size.x, this.size.y, this.size.width, this.size.height);
+        const dummyBounds = this.bounds;
+
+        bounds.addFrame(
+            dummyBounds.minX,
+            dummyBounds.minY,
+            dummyBounds.maxX,
+            dummyBounds.maxY,
+        );
     };
     public containsPoint: (point: Point) => boolean;
     public destroy: () => void;
