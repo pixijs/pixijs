@@ -1,7 +1,6 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { updateLocalTransform } from '../utils/updateLocalTransform';
-import { getBounds, returnBounds } from './utils/boundsPool';
-import { getMatrix, returnMatrix } from './utils/matrixPool';
+import { boundsPool, matrixPool } from './utils/matrixAndBoundsPool';
 
 import type { Container } from '../Container';
 import type { Bounds } from './Bounds';
@@ -17,7 +16,7 @@ export function getGlobalBounds(target: Container, skipUpdateTransform: boolean,
     {
         if (!skipUpdateTransform)
         {
-            pooledMatrix = getMatrix().identity();
+            pooledMatrix = matrixPool.get().identity();
             parentTransform = updateTransformBackwards(target, pooledMatrix);
         }
         else
@@ -36,7 +35,7 @@ export function getGlobalBounds(target: Container, skipUpdateTransform: boolean,
 
     if (pooledMatrix)
     {
-        returnMatrix(pooledMatrix);
+        matrixPool.put(pooledMatrix);
     }
 
     if (!bounds.isValid)
@@ -65,7 +64,7 @@ export function _getGlobalBounds(
             updateLocalTransform(target.localTransform, target);
         }
 
-        worldTransform = getMatrix();
+        worldTransform = matrixPool.get();
 
         worldTransform.appendFrom(target.localTransform, parentTransform);
     }
@@ -79,7 +78,7 @@ export function _getGlobalBounds(
 
     if (preserveBounds)
     {
-        bounds = getBounds().clear();
+        bounds = boundsPool.get().clear();
     }
 
     if (target.boundsArea)
@@ -111,12 +110,12 @@ export function _getGlobalBounds(
 
         parentBounds.addBounds(bounds, Matrix.IDENTITY);
 
-        returnBounds(bounds);
+        boundsPool.put(bounds);
     }
 
     if (!skipUpdateTransform)
     {
-        returnMatrix(worldTransform);
+        matrixPool.put(worldTransform);
     }
 }
 

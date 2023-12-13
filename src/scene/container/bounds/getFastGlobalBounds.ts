@@ -1,5 +1,5 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
-import { getBounds, returnBounds } from './utils/boundsPool';
+import { boundsPool } from './utils/matrixAndBoundsPool';
 
 import type { Container } from '../Container';
 import type { Bounds } from './Bounds';
@@ -52,7 +52,7 @@ export function _getGlobalBoundsRecursive(
 
     if (target.isRenderGroupRoot || manageEffects)
     {
-        localBounds = getBounds().clear();
+        localBounds = boundsPool.get().clear();
     }
 
     if (target.boundsArea)
@@ -107,11 +107,11 @@ export function _getGlobalBoundsRecursive(
         }
 
         bounds.addBounds(localBounds);
-        returnBounds(localBounds);
+        boundsPool.put(localBounds);
     }
     else if (target.isRenderGroupRoot)
     {
         bounds.addBounds(localBounds, target.rgTransform);
-        returnBounds(localBounds);
+        boundsPool.put(localBounds);
     }
 }
