@@ -1,4 +1,4 @@
-import { loadFontCSS } from '../../../src/scene/text/html/utils/loadFontCSS';
+import { loadFontCSS } from '../../../src/scene/text-html/utils/loadFontCSS';
 import { basePath } from '../../assets/basePath';
 
 describe('loadFontCSS', () =>

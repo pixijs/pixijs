@@ -2,6 +2,7 @@ import { Container } from '../../../src/scene/container/Container';
 import { Text } from '../../../src/scene/text/Text';
 import { getRenderer } from '../../utils/getRenderer';
 import '../../../src/rendering/renderers/shared/texture/Texture';
+import '../../../src/scene/text/init';
 
 describe('RenderGroupSystem', () =>
 {

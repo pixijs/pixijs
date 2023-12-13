@@ -1,16 +1,15 @@
 import { deprecation } from '../../../utils/logging/deprecation';
 import { Container } from '../../container/Container';
 import { GraphicsContext } from './GraphicsContext';
-// @ts-expect-error - used for jsdoc typedefs
-// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
-import { ConvertedFillStyle, ConvertedStrokeStyle } from './GraphicsContext';
 import { GraphicsView } from './GraphicsView';
 
 import type { ColorSource } from '../../../color/Color';
 import type { Matrix } from '../../../maths/matrix/Matrix';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { ContainerOptions } from '../../container/Container';
-import type { FillStyleInputs } from './GraphicsContext';
+// @ts-expect-error - used for jsdoc typedefs
+// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
+import type { ConvertedFillStyle, ConvertedStrokeStyle, FillStyleInputs } from './GraphicsContext';
 
 /**
  * Options for the Graphics.
@@ -77,6 +76,14 @@ export class Graphics extends Container<GraphicsView>
     }
 
     // --------------------------------------- GraphicsContext methods ---------------------------------------
+    public setFillStyle(style: FillStyleInputs): this
+    {
+        return this._callContextMethod('setFillStyle', [style]);
+    }
+    public setStrokeStyle(style: FillStyleInputs): this
+    {
+        return this._callContextMethod('setStrokeStyle', [style]);
+    }
     /** @deprecated 8.0.0 */
     public fill(color: ColorSource, alpha: number): this;
     public fill(style?: FillStyleInputs): this;
