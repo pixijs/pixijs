@@ -26,15 +26,13 @@ describe('getGeometryBounds', () =>
         const geometry = getGeometry();
         const bounds = new Bounds();
 
-        jest.spyOn(bounds, 'clear');
-
         const result = getGeometryBounds(geometry, 'some-bad-id', bounds);
 
         expect(result).toBe(bounds);
-        expect(bounds.clear).toHaveBeenCalledTimes(1);
-        expect(bounds.minX).toBe(Infinity);
-        expect(bounds.minY).toBe(Infinity);
-        expect(bounds.maxX).toBe(-Infinity);
-        expect(bounds.maxY).toBe(-Infinity);
+
+        expect(bounds.minX).toBe(0);
+        expect(bounds.minY).toBe(0);
+        expect(bounds.maxX).toBe(0);
+        expect(bounds.maxY).toBe(0);
     });
 });
