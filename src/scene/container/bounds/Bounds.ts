@@ -187,7 +187,6 @@ export class Bounds
         this.maxX = maxX;
         this.maxY = maxY;
 
-        // console.log('addframe', this.minX, this.minY, this.maxX, this.maxY);
     }
 
     public addRect(rect: Rectangle, matrix?: Matrix)
