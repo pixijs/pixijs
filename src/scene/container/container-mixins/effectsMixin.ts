@@ -9,7 +9,7 @@ import type { Effect } from '../Effect';
 
 export interface EffectsMixinConstructor
 {
-    mask?: number | Container | null | undefined;
+    mask?: number | Container | null;
     filters?: Filter | Filter[];
 }
 export interface EffectsMixin extends Required<EffectsMixinConstructor>
