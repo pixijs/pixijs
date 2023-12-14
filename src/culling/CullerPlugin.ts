@@ -6,12 +6,13 @@ import type { Renderer } from '../rendering/renderers/types';
 import type { Container } from '../scene/container/Container';
 
 /**
- * An Application plugin that will automatically cull your stage using the renderers screen size.
+ * An {@link app.Application} plugin that will automatically cull your stage using the renderers screen size.
  * @example
  * import { extensions, CullerPlugin } from 'pixi.js';
  *
  * extensions.add(CullerPlugin);
  * @memberof app
+ * @see {@link scene.Culler}
  */
 export class CullerPlugin
 {
