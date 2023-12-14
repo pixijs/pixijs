@@ -560,7 +560,7 @@ export class GraphicsContext extends EventEmitter<{
         return this;
     }
 
-    public star(x: number, y: number, points: number, radius: number, innerRadius: number, rotation: number): this
+    public star(x: number, y: number, points: number, radius: number, innerRadius = 0, rotation = 0): this
     {
         this._tick++;
 
