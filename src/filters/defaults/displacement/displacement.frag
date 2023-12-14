@@ -2,7 +2,7 @@
 in vec2 vTextureCoord;
 in vec2 vFilterUv;
 
-out vec4 fragColor;
+out vec4 finalColor;
 
 uniform sampler2D uSampler;
 uniform sampler2D mapTexture;
@@ -21,5 +21,5 @@ vec4 map = texture(mapTexture, vFilterUv);
     
     vec2 offset = inputSize.zw * (rotation * (map.xy - 0.5)) * scale; 
 
-    fragColor = texture(uSampler, clamp(vTextureCoord + offset, inputClamp.xy, inputClamp.zw));
+    finalColor = texture(uSampler, clamp(vTextureCoord + offset, inputClamp.xy, inputClamp.zw));
 }

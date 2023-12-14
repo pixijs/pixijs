@@ -5,7 +5,7 @@ in vec4 vColor;
 uniform vec4 inputSize;
 uniform vec4 inputClamp;
 
-out vec4 fragColor;
+out vec4 finalColor;
 
 uniform vec2 uCenter;
 uniform float uTime;
@@ -32,7 +32,7 @@ void main()
 
     if (maxRadius > 0.0) {
         if (currentRadius > maxRadius) {
-            fragColor = texture(uSampler, vTextureCoord);
+            finalColor = texture(uSampler, vTextureCoord);
             return;
         }
         fade = 1.0 - pow(currentRadius / maxRadius, 2.0);
@@ -43,7 +43,7 @@ void main()
     float dist = length(dir);
 
     if (dist <= 0.0 || dist < currentRadius - halfWavelength || dist > currentRadius + halfWavelength) {
-        fragColor = texture(uSampler, vTextureCoord);
+        finalColor = texture(uSampler, vTextureCoord);
         return;
     }
 
@@ -67,9 +67,9 @@ void main()
     }
 
     // No clamp :
-    // fragColor = texture(uSampler, vTextureCoord + offset);
+    // finalColor = texture(uSampler, vTextureCoord + offset);
 
     color.rgb *= 1.0 + (uBrightness - 1.0) * p * fade;
 
-    fragColor = color;
+    finalColor = color;
 }

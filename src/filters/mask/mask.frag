@@ -7,7 +7,7 @@ uniform sampler2D mapTexture;
 uniform float alpha;
 uniform vec4 maskClamp;
 
-out vec4 fragColor;
+out vec4 finalColor;
 
 void main(void)
 {
@@ -25,5 +25,5 @@ void main(void)
 
     original *= (alphaMul * masky.r * alpha * clip);
 
-    fragColor = original;
+    finalColor = original;
 }

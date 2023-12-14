@@ -2,7 +2,7 @@
 in vec2 vTextureCoord;
 in vec4 vColor;
 
-out vec4 fragColor;
+out vec4 finalColor;
 
 uniform float uColorMatrix[20];
 uniform float uAlpha;
@@ -19,12 +19,9 @@ void main()
     vec4 color = texture(uSampler, vTextureCoord);
     float randomValue = rand(gl_FragCoord.xy * 0.2);
     float diff = (randomValue - 0.5) *  0.5;
-    
-    float[20] cm = uColorMatrix;
-
 
     if (uAlpha == 0.0) {
-        fragColor = color;
+        finalColor = color;
         return;
     }
 
@@ -34,34 +31,34 @@ void main()
 
     vec4 result;
 
-    result.r = (cm[0] * color.r);
-        result.r += (cm[1] * color.g);
-        result.r += (cm[2] * color.b);
-        result.r += (cm[3] * color.a);
-        result.r += cm[4];
+    result.r = (uColorMatrix[0] * color.r);
+        result.r += (uColorMatrix[1] * color.g);
+        result.r += (uColorMatrix[2] * color.b);
+        result.r += (uColorMatrix[3] * color.a);
+        result.r += uColorMatrix[4];
 
-    result.g = (cm[5] * color.r);
-        result.g += (cm[6] * color.g);
-        result.g += (cm[7] * color.b);
-        result.g += (cm[8] * color.a);
-        result.g += cm[9];
+    result.g = (uColorMatrix[5] * color.r);
+        result.g += (uColorMatrix[6] * color.g);
+        result.g += (uColorMatrix[7] * color.b);
+        result.g += (uColorMatrix[8] * color.a);
+        result.g += uColorMatrix[9];
 
-    result.b = (cm[10] * color.r);
-       result.b += (cm[11] * color.g);
-       result.b += (cm[12] * color.b);
-       result.b += (cm[13] * color.a);
-       result.b += cm[14];
+    result.b = (uColorMatrix[10] * color.r);
+       result.b += (uColorMatrix[11] * color.g);
+       result.b += (uColorMatrix[12] * color.b);
+       result.b += (uColorMatrix[13] * color.a);
+       result.b += uColorMatrix[14];
 
-    result.a = (cm[15] * color.r);
-       result.a += (cm[16] * color.g);
-       result.a += (cm[17] * color.b);
-       result.a += (cm[18] * color.a);
-       result.a += cm[19];
+    result.a = (uColorMatrix[15] * color.r);
+       result.a += (uColorMatrix[16] * color.g);
+       result.a += (uColorMatrix[17] * color.b);
+       result.a += (uColorMatrix[18] * color.a);
+       result.a += uColorMatrix[19];
 
     vec3 rgb = mix(color.rgb, result.rgb, uAlpha);
 
     // Premultiply alpha again.
     rgb *= result.a;
 
-    fragColor = vec4(rgb, result.a);
+    finalColor = vec4(rgb, result.a);
 }

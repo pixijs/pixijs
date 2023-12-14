@@ -72,9 +72,9 @@ fn mainFragment(
   %blur-fragment-in%
 ) -> @location(0) vec4<f32> {
 
-    var   fragColor = vec4(0.0);
+    var   finalColor = vec4(0.0);
 
     %blur-sampling%
 
-    return fragColor;
+    return finalColor;
 }

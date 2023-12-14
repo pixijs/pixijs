@@ -42,7 +42,7 @@ export class LinearLightBlend extends BlendModeFilter
                 }
             `,
                 main: `
-                fragColor = vec4(blendLinearLight(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendLinearLight(back.rgb, front.rgb, front.a), uBlend);
                 `
             },
             gpu: {

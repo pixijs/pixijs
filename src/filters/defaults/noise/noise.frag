@@ -2,7 +2,7 @@
 in vec2 vTextureCoord;
 in vec4 vColor;
 
-out vec4 fragColor;
+out vec4 finalColor;
 
 uniform float uNoise;
 uniform float uSeed;
@@ -31,5 +31,5 @@ void main()
     // Premultiply alpha again.
     color.rgb *= color.a;
 
-    fragColor = color;
+    finalColor = color;
 }
