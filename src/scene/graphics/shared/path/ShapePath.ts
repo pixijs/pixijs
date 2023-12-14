@@ -510,9 +510,7 @@ export class ShapePath
 
             if (shapePrimitive.transform)
             {
-                bounds.pushMatrix(shapePrimitive.transform);
-                bounds.addRect(boundsRect);
-                bounds.popMatrix();
+                bounds.addRect(boundsRect, shapePrimitive.transform);
             }
             else
             {
