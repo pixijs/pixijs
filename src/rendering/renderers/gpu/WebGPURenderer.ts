@@ -83,6 +83,7 @@ export class WebGPURenderer<T extends ICanvas = HTMLCanvasElement>
             systems,
             renderPipes,
             renderPipeAdaptors,
+            supportsUbo: true,
         };
 
         super(systemConfig);

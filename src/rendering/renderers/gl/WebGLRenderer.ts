@@ -84,6 +84,7 @@ export class WebGLRenderer<T extends ICanvas = HTMLCanvasElement>
             systems,
             renderPipes,
             renderPipeAdaptors,
+            supportsUbo: false,
         };
 
         super(systemConfig);

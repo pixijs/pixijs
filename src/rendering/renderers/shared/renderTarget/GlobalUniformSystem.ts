@@ -44,6 +44,7 @@ interface GlobalUniformRenderer
     renderTarget: GlRenderTargetSystem | GpuRenderTargetSystem
     renderPipes: Renderer['renderPipes'];
     uniformBuffer: UniformBufferSystem;
+    supportsUbo: boolean;
 }
 
 export class GlobalUniformSystem implements System
@@ -158,7 +159,10 @@ export class GlobalUniformSystem implements System
         }
         else
         {
-            this._renderer.uniformBuffer.updateUniformGroup(uniformGroup as UniformGroup);
+            if (this._renderer.supportsUbo)
+            {
+                this._renderer.uniformBuffer.updateUniformGroup(uniformGroup as UniformGroup);
+            }
 
             bindGroup = this._bindGroupPool.pop() || new BindGroup();
             this._activeBindGroups.push(bindGroup);
@@ -201,7 +205,7 @@ export class GlobalUniformSystem implements System
             worldColorAlpha: { value: new Float32Array(4), type: 'vec4<f32>' },
             uResolution: { value: [0, 0], type: 'vec2<f32>' },
         }, {
-            ubo: true,
+            ubo: this._renderer.supportsUbo,
             isStatic: true,
         });
 

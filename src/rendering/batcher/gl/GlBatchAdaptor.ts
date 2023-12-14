@@ -60,7 +60,14 @@ export class GlBatchAdaptor implements BatcherAdaptor
 
         renderer.shader.bind(this._shader, this._didUpload);
 
-        renderer.shader.bindUniformBlock(renderer.globalUniforms.uniformGroup, 'globalUniforms', 0);
+        if (renderer.supportsUbo)
+        {
+            renderer.shader.bindUniformBlock(renderer.globalUniforms.uniformGroup, 'globalUniforms', 0);
+        }
+        else
+        {
+            renderer.shader.updateUniformGroup(renderer.globalUniforms.uniformGroup);
+        }
 
         renderer.geometry.bind(geometry, this._shader.glProgram);
     }

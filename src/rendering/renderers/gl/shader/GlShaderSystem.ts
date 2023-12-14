@@ -87,7 +87,7 @@ export class GlShaderSystem
                     }
                     else
                     {
-                        this._updateUniformGroup(resource);
+                        this.updateUniformGroup(resource);
                     }
                 }
                 else if (resource instanceof BufferResource)
@@ -126,7 +126,7 @@ export class GlShaderSystem
         }
     }
 
-    private _updateUniformGroup(uniformGroup: UniformGroup): void
+    public updateUniformGroup(uniformGroup: UniformGroup): void
     {
         this._renderer.uniformGroup.updateUniformGroup(uniformGroup, this._activeProgram, defaultSyncData);
     }
