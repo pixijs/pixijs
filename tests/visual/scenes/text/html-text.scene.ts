@@ -1,5 +1,5 @@
 import { Sprite } from '../../../../src/scene/sprite/Sprite';
-import { HTMLTextStyle } from '../../../../src/scene/text/html/HtmlTextStyle';
+import { HTMLTextStyle } from '../../../../src/scene/text-html/HtmlTextStyle';
 
 import type { Renderer } from '../../../../src/rendering/renderers/types';
 import type { Container } from '../../../../src/scene/container/Container';

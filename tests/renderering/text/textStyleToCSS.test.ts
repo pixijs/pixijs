@@ -1,5 +1,5 @@
-import { HTMLTextStyle } from '../../../src/scene/text/html/HtmlTextStyle';
-import { textStyleToCSS } from '../../../src/scene/text/html/utils/textStyleToCSS';
+import { HTMLTextStyle } from '../../../src/scene/text-html/HtmlTextStyle';
+import { textStyleToCSS } from '../../../src/scene/text-html/utils/textStyleToCSS';
 
 function formatCSSString(cssString: string)
 {
@@ -50,8 +50,8 @@ describe('textStyleToCSS', () =>
             }
         }));
 
-        const expected = `div 
-            { 
+        const expected = `div
+            {
                 color: #000000;
                 font-size: 26px;
                 font-family: Cargo;
@@ -65,7 +65,7 @@ describe('textStyleToCSS', () =>
             } 
             comic { 
                 font-family: Comic Sans;
-                font-size: 20px 
+                font-size: 20px
             }`;
 
         expect(formatCSSString(css)).toBe(formatCSSString(expected));

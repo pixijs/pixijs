@@ -5,11 +5,11 @@ import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { uid } from '../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { NOOP } from '../../../../utils/misc/NOOP';
+import { BufferImageSource, type BufferSourceOptions } from './sources/BufferSource';
 import { resourceToTexture } from './sources/resourceToTexture';
 import { TextureSource } from './sources/TextureSource';
 import { TextureMatrix } from './TextureMatrix';
 
-import type { BufferSourceOptions } from './sources/BufferSource';
 import type { TextureSourceOptions } from './sources/TextureSource';
 
 /** Stores the width of the non-scalable borders, for example when used with {@link scene.NineSlicePlane} texture. */
@@ -385,8 +385,19 @@ export class Texture extends EventEmitter<{
 }
 
 Texture.EMPTY = new Texture({
-
+    label: 'EMPTY',
 });
 
-Texture.EMPTY.label = 'EMPTY';
 Texture.EMPTY.destroy = NOOP;
+
+Texture.WHITE = new Texture({
+    source: new BufferImageSource({
+        resource: new Uint8Array([255, 255, 255, 255]),
+        width: 1,
+        height: 1,
+        alphaMode: 'premultiply-alpha-on-upload'
+    }),
+    label: 'WHITE',
+});
+
+Texture.WHITE.destroy = NOOP;

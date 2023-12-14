@@ -1,9 +1,9 @@
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { emptyViewObserver } from '../../rendering/renderers/shared/view/View';
 import { uid } from '../../utils/data/uid';
-import { BitmapFontManager } from './bitmap/BitmapFontManager';
+import { BitmapFontManager } from '../text-bitmap/BitmapFontManager';
+import { measureHtmlText } from '../text-html/utils/measureHtmlText';
 import { CanvasTextMetrics } from './canvas/CanvasTextMetrics';
-import { measureHtmlText } from './html/utils/measureHtmlText';
 import { detectRenderType } from './utils/detectRenderType';
 import { ensureTextStyle } from './utils/ensureTextStyle';
 
@@ -11,7 +11,7 @@ import type { PointData } from '../../maths/point/PointData';
 import type { View, ViewObserver } from '../../rendering/renderers/shared/view/View';
 import type { Bounds, BoundsData } from '../container/bounds/Bounds';
 import type { TextureDestroyOptions, TypeOrBool } from '../container/destroyTypes';
-import type { HTMLTextStyle, HTMLTextStyleOptions } from './html/HtmlTextStyle';
+import type { HTMLTextStyle, HTMLTextStyleOptions } from '../text-html/HtmlTextStyle';
 import type { TextStyle, TextStyleOptions } from './TextStyle';
 
 export type TextString = string | number | { toString: () => string };

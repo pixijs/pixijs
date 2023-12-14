@@ -9,6 +9,7 @@ import { Sprite } from '../../../src/scene/sprite/Sprite';
 import { getRenderer } from '../../utils/getRenderer';
 import { getTexture } from '../../utils/getTexture';
 import '../../../src/rendering/init';
+import '../../../src/scene/graphics/init';
 
 import type { WebGLRenderer } from '../../../src/rendering/renderers/gl/WebGLRenderer';
 

@@ -14,7 +14,7 @@ const defaultMatrix = new Matrix();
 
 // TODO optimisations
 // 1 - get rectangle could use a dirty flag, rather than setting the data each time is called
-// 62- getFrame ALWAYS assumes a matrix, could be optimised to avoid the matrix calculation if not needed
+// 2- getFrame ALWAYS assumes a matrix, could be optimised to avoid the matrix calculation if not needed
 export class Bounds
 {
     public minX = Infinity;
@@ -272,6 +272,26 @@ export class Bounds
     get height(): number
     {
         return this.maxY - this.minY;
+    }
+
+    get left(): number
+    {
+        return this.minX;
+    }
+
+    get right(): number
+    {
+        return this.maxX;
+    }
+
+    get top(): number
+    {
+        return this.minY;
+    }
+
+    get bottom(): number
+    {
+        return this.maxY;
     }
 
     get isPositive(): boolean
