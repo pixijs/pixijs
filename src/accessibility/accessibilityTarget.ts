@@ -15,6 +15,7 @@ import type { Container } from '../scene/container/Container';
  * - `all`
  * - `inherit`
  * @memberof accessibility
+ * @see https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events
  */
 export type PointerEvents = 'auto'
 | 'none'
@@ -29,7 +30,7 @@ export type PointerEvents = 'auto'
 | 'inherit';
 
 /**
- * The options for accessible objects.
+ * When `accessible` is enabled on any display object, these properties will affect its accessibility.
  * @memberof accessibility
  */
 export interface AccessibleOptions
