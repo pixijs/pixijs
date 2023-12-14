@@ -1,8 +1,7 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { warn } from '../../../utils/logging/warn';
 import { updateLocalTransform } from '../utils/updateLocalTransform';
-import { getBounds, returnBounds } from './utils/boundsPool';
-import { getMatrix, returnMatrix } from './utils/matrixPool';
+import { boundsPool, matrixPool } from './utils/matrixAndBoundsPool';
 
 import type { Container } from '../Container';
 import type { Bounds } from './Bounds';
@@ -47,7 +46,7 @@ function _getLocalBounds(target: Container, bounds: Bounds, parentTransform: Mat
 
     const localTransform = target.localTransform;
 
-    const relativeTransform = getMatrix().appendFrom(localTransform, parentTransform);
+    const relativeTransform = matrixPool.get().appendFrom(localTransform, parentTransform);
 
     const parentBounds = bounds;
     const preserveBounds = !!target.effects.length;
@@ -55,7 +54,7 @@ function _getLocalBounds(target: Container, bounds: Bounds, parentTransform: Mat
     if (preserveBounds)
     {
         // TODO - cloning bounds is slow, we should have a pool (its on the todo list!)
-        bounds = getBounds().clear();
+        bounds = boundsPool.get().clear();
     }
 
     if (target.boundsArea)
@@ -88,10 +87,10 @@ function _getLocalBounds(target: Container, bounds: Bounds, parentTransform: Mat
         // TODO - make a add transformed bounds?
         parentBounds.addBounds(bounds, Matrix.IDENTITY);
 
-        returnBounds(bounds);
+        boundsPool.put(bounds);
     }
 
-    returnMatrix(relativeTransform);
+    matrixPool.put(relativeTransform);
 }
 
 export function getParent(target: Container, root: Container, matrix: Matrix)
