@@ -274,6 +274,26 @@ export class Bounds
         return this.maxY - this.minY;
     }
 
+    get left(): number
+    {
+        return this.minX;
+    }
+
+    get right(): number
+    {
+        return this.maxX;
+    }
+
+    get top(): number
+    {
+        return this.minY;
+    }
+
+    get bottom(): number
+    {
+        return this.maxY;
+    }
+
     get isPositive(): boolean
     {
         return (this.maxX - this.minX > 0) && (this.maxY - this.minY > 0);

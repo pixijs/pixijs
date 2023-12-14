@@ -50,6 +50,7 @@ export class RGRenderable<T extends View = View> extends EventEmitter implements
     public onViewUpdate()
     {
         this.didViewUpdate = true;
+        this._original._didChangeId += 1 << 12;
         this._original.renderGroup.onChildViewUpdate(this);
     }
 
