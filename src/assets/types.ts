@@ -45,7 +45,7 @@ export interface ResolvedAsset<T=any>
  * @memberof assets
  */
 // NOTE: Omit does not seem to work here
-export type ResolvedSrc = Pick<ResolvedAsset, 'src' | 'format' | 'loadParser' | 'data'> & {[key: string]: any;};
+export type ResolvedSrc = Pick<ResolvedAsset, 'src' | 'format' | 'loadParser' | 'data'> & { [key: string]: any; };
 
 /**
  * A valid asset src. This can be a string, or a [ResolvedSrc]{@link assets.ResolvedSrc},
@@ -69,7 +69,7 @@ export type UnresolvedAsset<T=any> = Pick<ResolvedAsset<T>, 'data' | 'format' | 
 };
 
 /**
- * Structure of a bundle found in a manifest file
+ * Structure of a bundle found in a {@link assets.AssetsManifest Manifest} file
  * @memberof assets
  */
 export interface AssetsBundle
@@ -81,7 +81,7 @@ export interface AssetsBundle
 }
 
 /**
- * The expected format of a manifest. This would normally be auto generated or made by the developer
+ * The expected format of a manifest. This could be auto generated or hand made
  * @memberof assets
  */
 export interface AssetsManifest

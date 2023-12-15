@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { extensions, ExtensionType } from '../extensions/Extensions';
 import { warn } from '../utils/logging/warn';
 import { BackgroundLoader } from './BackgroundLoader';
@@ -68,29 +69,21 @@ export interface AssetInitOptions
  * Super modern and easy to use, with enough flexibility to customize and do what you need!
  * @namespace assets
  *
- * Only one Asset Class exists accessed via the Global Assets object. See [here]{@link assets.Assets},
- * for full documentation.
+ * Use the singleton class [Assets]{@link assets.Assets} to easily load and manage all your assets.
  *
- * <br>
+ * ```typescript
+ * import { Assets, Texture } from 'pixi.js';
  *
- * **It has four main responsibilities:**
- * 1. Allows users to map URLs to keys and resolve them according to the user's browser capabilities
- * 2. Loads the resources and transforms them into assets that developers understand.
- * 3. Caches the assets and provides a way to access them.
- * 4. Allow developers to unload assets and clear the cache.
+ * const bunnyTexture = await Assets.load<Texture>('bunny.png');
  *
- * <br>
+ * const sprite = new Sprite(bunnyTexture);
+ * ```
  *
- * **It also has a few advanced features:**
- * 1. Allows developers to provide a manifest upfront of all assets and help manage them via 'bundles'.
- * 2. Allows users to background load assets. Shortening (or eliminating) load times and improving UX. With this feature,
- * in-game loading bars can be a thing of the past!
- *
- * <br>
+ * Check out the sections below for more information on how to deal with assets.
  *
  * <details id="assets-loading">
  *
- * <summary>Assets Loading</summary>
+ * <summary>Asset Loading</summary>
  *
  * Do not be afraid to load things multiple times - under the hood, it will **NEVER** load anything more than once.
  *
@@ -107,15 +100,16 @@ export interface AssetInitOptions
  *
  * Here both promises will be the same. Once resolved... Forever resolved! It makes for really easy resource management!
  *
- * *Out of the box it supports the following files:*
- * - Textures (**_avif_**, **_webp_**, **_png_**, **_jpg_**, **_gif_**, **_svg_**)
- * - Sprite sheets (**_json_**)
- * - Bitmap fonts (**_xml_**, **_fnt_**, **_txt_**)
- * - Web fonts (**_ttf_**, **_woff_**, **_woff2_**)
- * - JSON files (**_json_**)
- * - Text Files (**_txt_**)
- *
- * More types can be added fairly easily by creating additional loader parsers.
+ * Out of the box Pixi supports the following files:
+ * - Textures (**_avif_**, **_webp_**, **_png_**, **_jpg_**, **_gif_**, **_svg_**) via {@link assets.loadTextures}, {@link assets.loadSvg}
+ * - Video Textures (**_mp4_**, **_m4v_**, **_webm_**, **_ogg_**, **_ogv_**, **_h264_**, **_avi_**, **_mov_**) via {@link assets.loadVideoTextures}
+ * - Sprite sheets (**_json_**) via {@link assets.spritesheetAsset}
+ * - Bitmap fonts (**_xml_**, **_fnt_**, **_txt_**) via {@link assets.loadBitmapFont}
+ * - Web fonts (**_ttf_**, **_woff_**, **_woff2_**) via {@link assets.loadWebFont}
+ * - JSON files (**_json_**) via {@link assets.loadJson}
+ * - Text Files (**_txt_**) via {@link assets.loadTxt}
+ * <br/>
+ * More types can be added fairly easily by creating additional {@link assets.LoaderParser LoaderParsers}.
  * </details>
  *
  * <details id="textures">
@@ -125,7 +119,8 @@ export interface AssetInitOptions
  * - Textures are loaded as ImageBitmap on a worker thread where possible. Leading to much less janky load + parse times.
  * - By default, we will prefer to load AVIF and WebP image files if you specify them.
  * But if the browser doesn't support AVIF or WebP we will fall back to png and jpg.
- * - Textures can also be accessed via `Texture.from(...)` and now use this asset manager under the hood!
+ * - Textures can also be accessed via `Texture.from()` (see {@link core.from|Texture.from})
+ * and now use this asset manager under the hood!
  * - Don't worry if you set preferences for textures that don't exist
  * (for example you prefer 2x resolutions images but only 1x is available for that texture,
  * the Assets manager will pick that up as a fallback automatically)
@@ -134,7 +129,7 @@ export interface AssetInitOptions
  * - It's hard to know what resolution a sprite sheet is without loading it first, to address this
  * there is a naming convention we have added that will let Pixi understand the image format and resolution
  * of the spritesheet via its file name: `my-spritesheet{resolution}.{imageFormat}.json`
- * <br><br>*For example:*
+ * <br><br>For example:
  *   - `my-spritesheet@2x.webp.json`* // 2x resolution, WebP sprite sheet*
  *   - `my-spritesheet@0.5x.png.json`* // 0.5x resolution, png sprite sheet*
  * - This is optional! You can just load a sprite sheet as normal.
@@ -182,8 +177,8 @@ export interface AssetInitOptions
  *
  * <summary>Manifest and Bundles</summary>
  *
- * - Manifest is a JSON file that contains a list of all assets and their properties.
- * - Bundles are a way to group assets together.
+ * - {@link assets.AssetsManifest Manifest} is a descriptor that contains a list of all assets and their properties.
+ * - {@link assets.AssetsBundle Bundles} are a way to group assets together.
  *
  * ```js
  * import { Assets } from 'pixi.js';
@@ -232,6 +227,21 @@ export interface AssetInitOptions
 
 /**
  * The global Assets class, it's a singleton so you don't need to instantiate it.
+ *
+ * <br>
+ * **The `Assets` class has four main responsibilities:**
+ * 1. Allows users to map URLs to keys and resolve them according to the user's browser capabilities
+ * 2. Loads the resources and transforms them into assets that developers understand.
+ * 3. Caches the assets and provides a way to access them.
+ * 4. Allow developers to unload assets and clear the cache.
+ *
+ * <br>
+ *
+ * **It also has a few advanced features:**
+ * 1. Allows developers to provide a {@link assets.Manifest} upfront of all assets and help manage
+ * them via {@link assets.AssetsBundles Bundles}.
+ * 2. Allows users to background load assets. Shortening (or eliminating) load times and improving UX. With this feature,
+ * in-game loading bars can be a thing of the past!
  * @example
  * import { Assets } from 'pixi.js';
  *
