@@ -139,16 +139,9 @@ app.ticker.add(() => {
 - [Filters Demo](https://pixijs.io/filters/tools/demo/)
 - [Run Pixie Run](http://work.goodboydigital.com/runpixierun/)
 - [Bunny Demo](http://www.goodboydigital.com/pixijs/bunnymark)
-- [Storm Brewing](http://www.goodboydigital.com/pixijs/storm)
-- [Render Texture Demo](http://www.goodboydigital.com/pixijs/examples/11)
-- [Primitives Demo](http://www.goodboydigital.com/pixijs/examples/13)
 - [Masking Demo](http://www.goodboydigital.com/pixijs/examples/14)
 - [Interaction Demo](http://www.goodboydigital.com/pixijs/examples/6)
-- [photonstorm's Balls Demo](http://gametest.mobi/pixi/balls)
-- [photonstorm's Morph Demo](http://gametest.mobi/pixi/morph)
-
-Thanks to [@photonstorm](https://twitter.com/photonstorm) for providing
-those last 2 examples and allowing us to share the source code :)
+- [More examples](https://pixijs.io/examples/)
 
 ### Community ###
 - Forums: Check out the [forum](https://www.html5gamedevs.com/forum/15-pixijs/) and [Stackoverflow](http://stackoverflow.com/search?q=pixi.js) -- both friendly places to ask your PixiJS questions.
