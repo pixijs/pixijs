@@ -82,7 +82,7 @@ export class WebGPURenderer<T extends ICanvas = HTMLCanvasElement>
             type: RendererType.WEBGPU,
             systems,
             renderPipes,
-            renderPipeAdaptors
+            renderPipeAdaptors,
         };
 
         super(systemConfig);

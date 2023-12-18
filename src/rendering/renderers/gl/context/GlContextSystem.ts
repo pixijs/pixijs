@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { warn } from '../../../../utils/logging/warn';
-import { type GpuPowerPreference, RendererType } from '../../types';
+import { type GpuPowerPreference } from '../../types';
 
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { System } from '../../shared/system/System';
@@ -276,7 +276,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
             bptc: gl.getExtension('EXT_texture_compression_bptc')
         };
 
-        if (this._renderer.type === RendererType.WEBGL)
+        if (this.webGLVersion === 1)
         {
             this.extensions = {
                 ...common,
