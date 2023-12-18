@@ -18,6 +18,9 @@ export interface TextureShader extends Shader
     texture: Texture;
 }
 
+/**
+ * @memberof scene
+ */
 export interface MeshViewOptions<
     GEOMETRY extends MeshGeometry = MeshGeometry,
     SHADER extends TextureShader = TextureShader
