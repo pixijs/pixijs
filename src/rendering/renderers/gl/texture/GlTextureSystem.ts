@@ -263,7 +263,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         if (this._uploads[source.uploadMethodId])
         {
-            this._uploads[source.uploadMethodId].upload(source, glTexture, this._gl);
+            this._uploads[source.uploadMethodId].upload(source, glTexture, gl, this._renderer.context.webGLVersion);
         }
         else
         {

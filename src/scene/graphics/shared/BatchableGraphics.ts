@@ -109,7 +109,7 @@ export class BatchableGraphics implements BatchableObject
                 float32View[index + 3] = uvs[i + 1];
 
                 uint32View[index + 4] = argb;
-                uint32View[index + 5] = textureId;
+                uint32View[index + 5] = textureId << 16;
 
                 index += 6;
             }

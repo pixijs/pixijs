@@ -8,7 +8,7 @@ export const glUploadImageResource = {
 
     id: 'image',
 
-    upload(source: ImageSource | CanvasSource, glTexture: GlTexture, gl: GlRenderingContext)
+    upload(source: ImageSource | CanvasSource, glTexture: GlTexture, gl: GlRenderingContext, webGLVersion: number)
     {
         const premultipliedAlpha = source.alphaMode === 'premultiply-alpha-on-upload';
 
@@ -58,6 +58,21 @@ export const glUploadImageResource = {
                 gl.TEXTURE_2D,
                 0,
                 0,
+                0,
+                glTexture.format,
+                glTexture.type,
+                source.resource as TexImageSource
+            );
+        }
+        else
+        if (webGLVersion === 2)
+        {
+            gl.texImage2D(
+                glTexture.target,
+                0,
+                glTexture.internalFormat,
+                textureWidth,
+                textureHeight,
                 0,
                 glTexture.format,
                 glTexture.type,
