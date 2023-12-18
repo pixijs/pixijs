@@ -72,7 +72,26 @@ export class GlGeometrySystem implements System
     /** Sets up the renderer context and necessary buffers. */
     protected contextChange(): void
     {
-        this.gl = this._renderer.gl;
+        const gl = this.gl = this._renderer.gl;
+
+        if (!this._renderer.context.supports.vertexArrayObject)
+        {
+            throw new Error('[PixiJS] Vertex Array Objects are not supported on this device');
+        }
+
+        const nativeVaoExtension = this._renderer.context.extensions.vertexArrayObject;
+
+        if (nativeVaoExtension)
+        {
+            gl.createVertexArray = (): WebGLVertexArrayObject =>
+                nativeVaoExtension.createVertexArrayOES();
+
+            gl.bindVertexArray = (vao): void =>
+                nativeVaoExtension.bindVertexArrayOES(vao);
+
+            gl.deleteVertexArray = (vao): void =>
+                nativeVaoExtension.deleteVertexArrayOES(vao);
+        }
     }
 
     /**

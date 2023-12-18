@@ -33,7 +33,7 @@ export function isWebGLSupported(
             }
 
             const canvas = DOMAdapter.get().createCanvas();
-            let gl = canvas.getContext('webgl2', contextOptions);
+            let gl = canvas.getContext('webgl', contextOptions);
 
             const success = !!gl?.getContextAttributes()?.stencil;
 

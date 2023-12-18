@@ -1,17 +1,12 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { warn } from '../../../../utils/logging/warn';
+import { type GpuPowerPreference, RendererType } from '../../types';
 
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { System } from '../../shared/system/System';
-import type { GpuPowerPreference } from '../../types';
 import type { WebGLRenderer } from '../WebGLRenderer';
 import type { GlRenderingContext } from './GlRenderingContext';
 import type { WebGLExtensions } from './WebGLExtensions';
-
-export interface ISupportDict
-{
-    uint32Indices: boolean;
-}
 
 /**
  * Options for the context system.
@@ -38,6 +33,8 @@ export interface ContextSystemOptions
     preserveDrawingBuffer: boolean;
 
     antialias?: boolean;
+
+    preferWebGLVersion?: 1 | 2;
 }
 
 /** System plugin to the renderer to manage the context. */
@@ -73,24 +70,35 @@ export class GlContextSystem implements System<ContextSystemOptions>
          * @default default
          */
         powerPreference: undefined,
+        /**
+         * {@link WebGLOptions.webGLVersion}
+         * @default 2
+         */
+        preferWebGLVersion: 2,
     };
-
-    /**
-     * Either 1 or 2 to reflect the WebGL version being used.
-     * @readonly
-     */
-    public webGLVersion: number;
-
-    /**
-     * Features supported by current context.
-     * @type {object}
-     * @readonly
-     * @property {boolean} uint32Indices - Support for 32-bit indices buffer.
-     */
-    public readonly supports: ISupportDict;
 
     protected CONTEXT_UID: number;
     protected gl: WebGL2RenderingContext;
+
+    /**
+     * Features supported by current renderer.
+     * @type {object}
+     * @readonly
+     */
+    public supports = {
+        /** Support for 32-bit indices buffer. */
+        uint32Indices: true,
+        /** Support for UniformBufferObjects */
+        uniformBufferObject: true,
+        /** Support for VertexArrayObjects */
+        vertexArrayObject: true,
+        /** Support for SRGB texture format */
+        srgbTextures: true,
+        /** Support for wrapping modes if a texture is non-power of two */
+        nonPowOf2wrapping: true,
+        /** Support for MSAA (antialiasing of dynamic textures) */
+        msaa: true,
+    };
 
     /**
      * Extensions available.
@@ -105,6 +113,8 @@ export class GlContextSystem implements System<ContextSystemOptions>
      */
     public extensions: WebGLExtensions;
 
+    public webGLVersion: 1 | 2;
+
     private _renderer: WebGLRenderer;
 
     /** @param renderer - The renderer this System works for. */
@@ -112,12 +122,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
     {
         this._renderer = renderer;
 
-        this.webGLVersion = 2;
         this.extensions = Object.create(null);
-
-        this.supports = {
-            uint32Indices: false,
-        };
 
         // Bind functions
         this.handleContextLost = this.handleContextLost.bind(this);
@@ -151,10 +156,12 @@ export class GlContextSystem implements System<ContextSystemOptions>
 
     public init(options: ContextSystemOptions): void
     {
+        options = { ...GlContextSystem.defaultOptions, ...options };
+
         /*
          * The options passed in to create a new WebGL context.
          */
-        if (options?.context)
+        if (options.context)
         {
             this.initFromContext(options.context);
         }
@@ -164,7 +171,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
             const premultipliedAlpha = options.premultipliedAlpha ?? true;
             const antialias = options.antialias && !this._renderer.backBuffer.useBackBuffer;
 
-            this.initFromOptions({
+            this.initFromOptions(options.preferWebGLVersion, {
                 alpha,
                 premultipliedAlpha,
                 antialias,
@@ -183,6 +190,11 @@ export class GlContextSystem implements System<ContextSystemOptions>
     protected initFromContext(gl: WebGL2RenderingContext): void
     {
         this.gl = gl;
+
+        this.webGLVersion = gl instanceof WebGL2RenderingContext ? 2 : 1;
+
+        this.getExtensions();
+
         this.validateContext(gl);
 
         this._renderer.runners.contextChange.emit(gl);
@@ -197,11 +209,12 @@ export class GlContextSystem implements System<ContextSystemOptions>
      * Initialize from context options
      * @protected
      * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/getContext
+     * @param preferWebGLVersion
      * @param {object} options - context attributes
      */
-    protected initFromOptions(options: WebGLContextAttributes): void
+    protected initFromOptions(preferWebGLVersion: 1 | 2, options: WebGLContextAttributes): void
     {
-        const gl = this.createContext(this._renderer.view.canvas, options);
+        const gl = this.createContext(this._renderer.view.canvas, preferWebGLVersion, options);
 
         this.initFromContext(gl);
     }
@@ -209,16 +222,32 @@ export class GlContextSystem implements System<ContextSystemOptions>
     /**
      * Helper class to create a WebGL Context
      * @param canvas - the canvas element that we will get the context from
+     * @param preferWebGLVersion
      * @param options - An options object that gets passed in to the canvas element containing the
      *    context attributes
      * @see https://developer.mozilla.org/en/docs/Web/API/HTMLCanvasElement/getContext
      * @returns {WebGLRenderingContext} the WebGL context
      */
-    public createContext(canvas: ICanvas, options: WebGLContextAttributes): GlRenderingContext
+    public createContext(canvas: ICanvas, preferWebGLVersion: 1 | 2, options: WebGLContextAttributes): GlRenderingContext
     {
-        const gl = canvas.getContext('webgl2', options);
+        let gl: WebGL2RenderingContext | WebGLRenderingContext;
 
-        this.webGLVersion = 2;
+        if (preferWebGLVersion === 2)
+        {
+            gl = canvas.getContext('webgl2', options);
+        }
+
+        if (!gl)
+        {
+            gl = canvas.getContext('webgl', options);
+
+            if (!gl)
+            {
+                // fail, not able to get a context
+                throw new Error('This browser does not support WebGL. Try using the canvas renderer');
+            }
+        }
+
         this.gl = gl as WebGL2RenderingContext;
 
         this.getExtensions();
@@ -247,10 +276,32 @@ export class GlContextSystem implements System<ContextSystemOptions>
             bptc: gl.getExtension('EXT_texture_compression_bptc')
         };
 
-        Object.assign(this.extensions, common, {
-            // Floats and half-floats
-            colorBufferFloat: gl.getExtension('EXT_color_buffer_float'),
-        });
+        if (this._renderer.type === RendererType.WEBGL)
+        {
+            this.extensions = {
+                ...common,
+
+                drawBuffers: gl.getExtension('WEBGL_draw_buffers'),
+                depthTexture: gl.getExtension('WEBGL_depth_texture'),
+                vertexArrayObject: gl.getExtension('OES_vertex_array_object')
+                    || gl.getExtension('MOZ_OES_vertex_array_object')
+                    || gl.getExtension('WEBKIT_OES_vertex_array_object'),
+                uint32ElementIndex: gl.getExtension('OES_element_index_uint'),
+                // Floats and half-floats
+                floatTexture: gl.getExtension('OES_texture_float'),
+                floatTextureLinear: gl.getExtension('OES_texture_float_linear'),
+                textureHalfFloat: gl.getExtension('OES_texture_half_float'),
+                textureHalfFloatLinear: gl.getExtension('OES_texture_half_float_linear'),
+                srgb: gl.getExtension('EXT_sRGB'),
+            };
+        }
+        else
+        {
+            this.extensions = {
+                ...common,
+                colorBufferFloat: gl.getExtension('EXT_color_buffer_float'),
+            };
+        }
     }
 
     /**
@@ -294,13 +345,6 @@ export class GlContextSystem implements System<ContextSystemOptions>
     {
         const attributes = gl.getContextAttributes();
 
-        const isWebGl2 = 'WebGL2RenderingContext' in globalThis && gl instanceof globalThis.WebGL2RenderingContext;
-
-        if (isWebGl2)
-        {
-            this.webGLVersion = 2;
-        }
-
         // this is going to be fairly simple for now.. but at least we have room to grow!
         if (attributes && !attributes.stencil)
         {
@@ -311,15 +355,24 @@ export class GlContextSystem implements System<ContextSystemOptions>
             // #endif
         }
 
-        const hasUint32 = isWebGl2 || !!(gl as WebGLRenderingContext).getExtension('OES_element_index_uint');
+        // support
+        const supports = this.supports;
 
-        this.supports.uint32Indices = hasUint32;
+        const isWebGl2 = this.webGLVersion === 2;
+        const extensions = this.extensions;
 
-        if (!hasUint32)
+        supports.uint32Indices = isWebGl2 || !!extensions.uint32ElementIndex;
+        supports.uniformBufferObject = isWebGl2;
+        supports.vertexArrayObject = isWebGl2 || !!extensions.vertexArrayObject;
+        supports.srgbTextures = isWebGl2 || !!extensions.srgb;
+        supports.nonPowOf2wrapping = isWebGl2;
+        supports.msaa = isWebGl2;
+
+        if (!supports.uint32Indices)
         {
             // #if _DEBUG
             /* eslint-disable max-len, no-console */
-            warn('Provided WebGL context does not support 32 index buffer, complex graphics may not render correctly');
+            warn('Provided WebGL context does not support 32 index buffer, large scenes may not render correctly');
             /* eslint-enable max-len, no-console */
             // #endif
         }

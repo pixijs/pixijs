@@ -1,4 +1,5 @@
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
+import { warn } from '../../../../utils/logging/warn';
 import { CLEAR } from '../../gl/const';
 import { GlRenderTarget } from '../../gl/GlRenderTarget';
 import { CanvasSource } from '../../shared/texture/sources/CanvasSource';
@@ -240,7 +241,14 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
             if (source.antialias)
             {
-                glRenderTarget.msaa = true;
+                if (renderer.context.supports.msaa)
+                {
+                    glRenderTarget.msaa = true;
+                }
+                else
+                {
+                    warn('[RenderTexture] Antialiasing on textures is not supported in WebGL1');
+                }
             }
 
             // TODO bindSource could return the glTexture
@@ -384,7 +392,9 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         {
             gl.renderbufferStorage(
                 gl.RENDERBUFFER,
-                gl.DEPTH24_STENCIL8,
+                this._renderer.context.webGLVersion === 2
+                    ? gl.DEPTH24_STENCIL8
+                    : gl.DEPTH_STENCIL,
                 glRenderTarget.width,
                 glRenderTarget.height
             );

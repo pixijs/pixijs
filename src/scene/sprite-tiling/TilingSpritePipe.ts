@@ -2,15 +2,16 @@
 import { ExtensionType } from '../../extensions/Extensions';
 import { Matrix } from '../../maths/matrix/Matrix';
 import { ProxyRenderable } from '../../rendering/renderers/shared/ProxyRenderable';
+import { type Renderer, RendererType } from '../../rendering/renderers/types';
 import { MeshView } from '../mesh/shared/MeshView';
 import { QuadGeometry } from './QuadGeometry';
 import { TilingSpriteShader } from './shader/TilingSpriteShader';
 
+import type { WebGLRenderer } from '../../rendering/renderers/gl/WebGLRenderer';
 import type { TypedArray } from '../../rendering/renderers/shared/buffer/Buffer';
 import type { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderable } from '../../rendering/renderers/shared/Renderable';
-import type { Renderer } from '../../rendering/renderers/types';
 import type { TilingSpriteView } from './TilingSpriteView';
 
 interface RenderableData
@@ -41,23 +42,34 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
     private _renderer: Renderer;
 
     private _renderableHash: Record<number, RenderableData> = Object.create(null);
+    private readonly _nonPowOf2wrapping: boolean;
 
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+
+        this._nonPowOf2wrapping = true;
+
+        if (this._renderer.type === RendererType.WEBGL
+            && (this._renderer as WebGLRenderer).context.supports.nonPowOf2wrapping)
+        {
+            this._nonPowOf2wrapping = false;
+        }
     }
 
     public validateRenderable(renderable: Renderable<TilingSpriteView>): boolean
     {
-        const textureMatrix = renderable.view.texture.textureMatrix;
+        const texture = renderable.view._texture;
 
         let rebuild = false;
 
         const renderableData = this._getRenderableData(renderable);
 
-        if (renderableData.batched !== textureMatrix.isSimple)
+        const canBatch = texture.textureMatrix.isSimple && (!this._nonPowOf2wrapping || texture.source.isPowerOfTwo);
+
+        if (renderableData.batched !== canBatch)
         {
-            renderableData.batched = textureMatrix.isSimple;
+            renderableData.batched = canBatch;
 
             rebuild = true;
         }

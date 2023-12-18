@@ -23,7 +23,7 @@ interface RendererConfig
     systems: {name: string, value: SystemConstructor}[];
     renderPipes: {name: string, value: PipeConstructor}[];
     renderPipeAdaptors: {name: string, value: any}[];
-    supportsUbo?: boolean;
+
 }
 
 export interface RenderOptions
@@ -98,7 +98,7 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
     };
 
     public readonly type: number;
-    public readonly name: string;
+    public name: string;
 
     /** @internal */
     public _roundPixels: 0 | 1;
@@ -107,8 +107,6 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
     public readonly renderPipes = Object.create(null) as PIPES;
     public view: ViewSystem;
     public textureGenerator: GenerateTextureSystem;
-
-    public readonly supportsUbo;
 
     protected _initOptions: OPTIONS = {} as OPTIONS;
 
@@ -122,7 +120,6 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
      */
     constructor(config: RendererConfig)
     {
-        this.supportsUbo = config.supportsUbo;
         this.type = config.type;
         this.name = config.name;
 

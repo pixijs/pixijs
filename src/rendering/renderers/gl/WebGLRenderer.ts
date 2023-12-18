@@ -79,12 +79,11 @@ export class WebGLRenderer<T extends ICanvas = HTMLCanvasElement>
     constructor()
     {
         const systemConfig = {
-            name: 'webgl2',
+            name: 'webgl',
             type: RendererType.WEBGL,
             systems,
             renderPipes,
             renderPipeAdaptors,
-            supportsUbo: false,
         };
 
         super(systemConfig);

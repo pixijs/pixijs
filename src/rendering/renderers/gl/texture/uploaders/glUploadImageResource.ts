@@ -70,9 +70,6 @@ export const glUploadImageResource = {
                 glTexture.target,
                 0,
                 glTexture.internalFormat,
-                textureWidth,
-                textureHeight,
-                0,
                 glTexture.format,
                 glTexture.type,
                 source.resource as TexImageSource

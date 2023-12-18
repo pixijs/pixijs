@@ -8,6 +8,7 @@ import { batchSamplersUniformGroup } from '../../renderers/gl/shader/batchSample
 import { Shader } from '../../renderers/shared/shader/Shader';
 import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
 import { State } from '../../renderers/shared/state/State';
+import { RendererType } from '../../renderers/types';
 import { MAX_TEXTURES } from '../shared/const';
 
 import type { WebGLRenderer } from '../../renderers/gl/WebGLRenderer';
@@ -60,7 +61,7 @@ export class GlBatchAdaptor implements BatcherAdaptor
 
         renderer.shader.bind(this._shader, this._didUpload);
 
-        if (renderer.supportsUbo)
+        if (renderer.type === RendererType.WEBGPU)
         {
             renderer.shader.bindUniformBlock(renderer.globalUniforms.uniformGroup, 'globalUniforms', 0);
         }

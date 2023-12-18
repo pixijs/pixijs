@@ -1,7 +1,8 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { sayHello } from '../../../../utils/sayHello';
+import { type Renderer, RendererType } from '../../types';
 
-import type { Renderer } from '../../types';
+import type { WebGLRenderer } from '../../gl/WebGLRenderer';
 import type { System } from '../system/System';
 
 /**
@@ -24,15 +25,12 @@ export class HelloSystem implements System<HelloSystemOptions>
             ExtensionType.CanvasSystem,
         ],
         name: 'hello',
-        priority: 0,
+        priority: -2,
     } as const;
 
     /** @ignore */
     public static defaultOptions: HelloSystemOptions = {
-        /**
-         * {@link WebGLOptions.hello}
-         * @default false
-         */
+        /** {@link WebGLOptions.hello} */
         hello: false,
     };
 
@@ -51,8 +49,14 @@ export class HelloSystem implements System<HelloSystemOptions>
     {
         if (options.hello)
         {
-            // eslint-disable-next-line no-console
-            sayHello(this._renderer.name);
+            let name = this._renderer.name;
+
+            if (this._renderer.type === RendererType.WEBGL)
+            {
+                name += ` ${(this._renderer as WebGLRenderer).context.webGLVersion}`;
+            }
+
+            sayHello(name);
         }
     }
 }

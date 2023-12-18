@@ -87,7 +87,7 @@ export class BlurFilter extends Filter
 
         super({
             ...options,
-            compatibleRenderers: RendererType.WEBGL | RendererType.WEBGPU,
+            compatibleRenderers: RendererType.BOTH,
             resources: {}
         });
 
