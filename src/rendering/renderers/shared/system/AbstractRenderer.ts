@@ -23,7 +23,6 @@ interface RendererConfig
     systems: {name: string, value: SystemConstructor}[];
     renderPipes: {name: string, value: PipeConstructor}[];
     renderPipeAdaptors: {name: string, value: any}[];
-
 }
 
 export interface RenderOptions
@@ -98,7 +97,7 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
     };
 
     public readonly type: number;
-    public name: string;
+    public readonly name: string;
 
     /** @internal */
     public _roundPixels: 0 | 1;
