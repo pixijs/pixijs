@@ -76,7 +76,7 @@ export const spritesheetAsset = {
         test: (asset: Spritesheet) => asset instanceof Spritesheet,
         getCacheableAssets: (keys: string[], asset: Spritesheet) => getCacheableAssets(keys, asset, false),
     },
-    /** Resolve the the resolution of the asset. */
+    /** Resolve the resolution of the asset. */
     resolver: {
         test: (value: string): boolean =>
         {
