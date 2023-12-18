@@ -14,7 +14,7 @@ export function mapFormatToGlInternalFormat(
     extensions: WebGLExtensions,
 ): Record<string, number>
 {
-    let srgb;
+    let srgb = {};
 
     if (gl instanceof WebGL2RenderingContext)
     {
@@ -56,13 +56,13 @@ export function mapFormatToGlInternalFormat(
         rg16float: gl.RG16F,
         rgba8unorm: gl.RGBA,
 
-        ...srgb ? srgb : {},
+        ...srgb,
 
         // Packed 32-bit formats
         rgba8snorm: gl.RGBA8_SNORM,
         rgba8uint: gl.RGBA8UI,
         rgba8sint: gl.RGBA8I,
-        bgra8unorm: gl.RGBA,
+        bgra8unorm:  gl.RGBA8 ?? gl.RGBA,
         rgb9e5ufloat: gl.RGB9_E5,
         rgb10a2unorm: gl.RGB10_A2,
         rg11b10ufloat: gl.R11F_G11F_B10F,
