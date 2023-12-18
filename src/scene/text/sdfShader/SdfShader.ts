@@ -57,5 +57,7 @@ export class SdfShader extends Shader
                 batchSamplers: batchSamplersUniformGroup,
             }
         });
+
+        this.addResource('globalUniforms', 0, 0);
     }
 }

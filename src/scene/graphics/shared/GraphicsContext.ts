@@ -117,7 +117,7 @@ export class GraphicsContext extends EventEmitter<{
 
     public uid = uid('graphicsContext');
     public dirty = true;
-    public batchMode: BatchMode = 'auto';
+    public batchMode: BatchMode = 'no-batch';
     public instructions: GraphicsInstructions[] = [];
     public customShader?: Shader;
 

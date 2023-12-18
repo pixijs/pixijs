@@ -293,6 +293,8 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
         this._uniformBindMap[groupIndex] ||= {};
 
         this._uniformBindMap[groupIndex][bindIndex] ||= name;
+
+        this.groups[groupIndex] ||= new BindGroup();
     }
 
     private _buildResourceAccessor(groups: ShaderGroups, nameHash: Record<string, GroupsData>)
