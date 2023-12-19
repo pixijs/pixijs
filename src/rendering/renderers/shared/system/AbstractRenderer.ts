@@ -1,5 +1,6 @@
 import { Color, type ColorSource } from '../../../../color/Color';
 import { Container } from '../../../../scene/container/Container';
+import { updateLocalTransform } from '../../../../scene/container/utils/updateLocalTransform';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { SystemRunner } from './SystemRunner';
 
@@ -199,6 +200,12 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
             const isRGBAArray = Array.isArray(options.clearColor) && options.clearColor.length === 4;
 
             options.clearColor = isRGBAArray ? options.clearColor : Color.shared.setValue(options.clearColor).toArray();
+        }
+
+        if (!options.transform)
+        {
+            updateLocalTransform(options.container.localTransform, options.container);
+            options.transform = options.container.localTransform;
         }
 
         this.runners.prerender.emit(options);
