@@ -101,9 +101,7 @@ export function determineCrossOrigin(url: string, loc: Location = globalThis.loc
 }
 
 /**
- * A simple plugin to video textures
- *
- * This will be added automatically if `pixi.js/assets` is imported
+ * A simple plugin to load video textures.
  *
  * You can pass VideoSource options to the loader via the .data property of the asset descriptor
  * when using Asset.load().

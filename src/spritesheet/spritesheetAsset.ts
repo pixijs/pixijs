@@ -54,8 +54,6 @@ function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack:
 
 /**
  * Asset extension for loading spritesheets
- *
- * This will be added automatically if `pixi.js/spritesheet` is imported
  * @example
  * import { Assets } from 'pixi.js';
  *
