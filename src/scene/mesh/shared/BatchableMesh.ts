@@ -24,7 +24,7 @@ export class BatchableMesh implements BatchableObject
         this.batch = null;
     }
 
-    public packIndex(indexBuffer: Uint32Array, index: number, indicesOffset: number)
+    public packIndex(indexBuffer: Uint32Array | Uint16Array, index: number, indicesOffset: number)
     {
         const indices = this.renderable.view.geometry.indices;
 

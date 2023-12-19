@@ -65,7 +65,7 @@ export interface BatchableObject
         index: number,
         textureId: number,
     ) => void;
-    packIndex: (indexBuffer: Uint32Array, index: number, indicesOffset: number) => void;
+    packIndex: (indexBuffer: Uint32Array | Uint16Array, index: number, indicesOffset: number) => void;
 
     texture: Texture;
     blendMode: BLEND_MODES;
@@ -98,7 +98,7 @@ export class Batcher
 
     public uid = uid('batcher');
     public attributeBuffer: ViewableBuffer;
-    public indexBuffer: Uint32Array;
+    public indexBuffer: Uint32Array | Uint16Array;
 
     public attributeSize: number;
     public indexSize: number;
@@ -130,7 +130,7 @@ export class Batcher
 
         this.attributeBuffer = new ViewableBuffer(vertexSize * this._vertexSize * 4);
 
-        this.indexBuffer = new Uint32Array(indexSize);
+        this.indexBuffer = new Uint16Array(indexSize);
     }
 
     public begin()
@@ -374,11 +374,28 @@ export class Batcher
     {
         const indexBuffer = this.indexBuffer;
 
-        const newSize = Math.max(size, indexBuffer.length * 2);
+        let newSize = Math.max(size, indexBuffer.length * 1.5);
 
-        const newIndexBuffer = new Uint32Array(newSize);
+        newSize += newSize % 2;
 
-        fastCopy(indexBuffer.buffer, newIndexBuffer.buffer);
+        // this, is technically not 100% accurate, as really we should
+        // be checking the maximum value in the buffer. This approximation
+        // does the trick though...
+
+        // make sure buffer is always an even number..
+        const newIndexBuffer = (newSize > 65535) ? new Uint32Array(newSize) : new Uint16Array(newSize);
+
+        if (newIndexBuffer.BYTES_PER_ELEMENT > indexBuffer.BYTES_PER_ELEMENT)
+        {
+            for (let i = 0; i < indexBuffer.length; i++)
+            {
+                newIndexBuffer[i] = indexBuffer[i];
+            }
+        }
+        else
+        {
+            fastCopy(indexBuffer.buffer, newIndexBuffer.buffer);
+        }
 
         this.indexBuffer = newIndexBuffer;
     }

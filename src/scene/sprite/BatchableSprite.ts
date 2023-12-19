@@ -97,7 +97,7 @@ export class BatchableSprite implements BatchableObject
         uint32View[index + 23] = textureIdAndRound;
     }
 
-    public packIndex(indexBuffer: Uint32Array, index: number, indicesOffset: number)
+    public packIndex(indexBuffer: Uint32Array | Uint16Array, index: number, indicesOffset: number)
     {
         indexBuffer[index] = indicesOffset + 0;
         indexBuffer[index + 1] = indicesOffset + 1;

@@ -35,7 +35,7 @@ export class BatchableGraphics implements BatchableObject
         return 'normal';
     }
 
-    public packIndex(indexBuffer: Uint32Array, index: number, indicesOffset: number)
+    public packIndex(indexBuffer: Uint32Array | Uint16Array, index: number, indicesOffset: number)
     {
         const indices = this.geometryData.indices;
 

@@ -12,7 +12,7 @@ class DummyBatchableObject implements BatchableObject
     {
         //
     };
-    packIndex = (_indexBuffer: Uint32Array, _index: number, _indicesOffset: number) =>
+    packIndex = (_indexBuffer: Uint32Array | Uint16Array, _index: number, _indicesOffset: number) =>
     {
         //
     };
