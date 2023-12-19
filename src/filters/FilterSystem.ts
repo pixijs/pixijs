@@ -82,7 +82,10 @@ export interface FilterData
     backTexture?: Texture,
 }
 
-// eslint-disable-next-line max-len
+/**
+ * System that manages the filter pipeline
+ * @memberof rendering
+ */
 export class FilterSystem implements System
 {
     /** @ignore */

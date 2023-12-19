@@ -13,7 +13,10 @@ const DEPTH_TEST = 3;
 const WINDING = 4;
 const DEPTH_MASK = 5;
 
-/** System plugin to the renderer to manage WebGL state machines. */
+/**
+ * System plugin to the renderer to manage WebGL state machines
+ * @memberof rendering
+ */
 export class GlStateSystem implements System
 {
     /** @ignore */

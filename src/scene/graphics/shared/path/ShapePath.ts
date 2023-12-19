@@ -20,6 +20,11 @@ import type { RoundedPoint } from './roundShape';
 
 const tempRectangle = new Rectangle();
 
+/**
+ * A helper class for Graphics - converts its API calls
+ * to a shape that can be used by the Graphics2D renderer.
+ * @memberof scene
+ */
 export class ShapePath
 {
     public shapePrimitives: { shape: ShapePrimitive, transform?: Matrix }[] = [];

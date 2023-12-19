@@ -38,6 +38,10 @@ export interface TilingSpriteViewOptions
     applyAnchorToTexture?: boolean
 }
 
+/**
+ * A tiling sprite renderable.
+ * @memberof scene
+ */
 export class TilingSpriteView implements View
 {
     public static defaultOptions: TilingSpriteViewOptions = {

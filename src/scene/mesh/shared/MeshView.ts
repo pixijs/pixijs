@@ -28,6 +28,10 @@ export interface MeshViewOptions<
     texture?: Texture;
 }
 
+/**
+ * The MeshView class allows you to render a mesh.
+ * @memberof scene
+ */
 export class MeshView<
     GEOMETRY extends MeshGeometry = MeshGeometry,
     SHADER extends TextureShader = TextureShader

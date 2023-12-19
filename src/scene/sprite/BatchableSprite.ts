@@ -4,6 +4,10 @@ import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { BoundsData } from '../container/bounds/Bounds';
 
+/**
+ * A batchable sprite object.
+ * @memberof rendering
+ */
 export class BatchableSprite implements BatchableObject
 {
     public indexStart: number;

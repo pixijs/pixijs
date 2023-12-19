@@ -67,6 +67,10 @@ export interface WebGLOptions
     PixiMixins.WebGLOptions {}
 
 /** The default WebGL renderer, uses WebGL2 contexts. */
+/**
+ * The default WebGL renderer, uses WebGL2 contexts.
+ * @memberof rendering
+ */
 export interface WebGLRenderer<T extends ICanvas = HTMLCanvasElement>
     extends AbstractRenderer<WebGLPipes, WebGLOptions, T>,
     WebGLSystems {}

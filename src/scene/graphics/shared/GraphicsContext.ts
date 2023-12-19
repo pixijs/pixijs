@@ -89,6 +89,10 @@ export type GraphicsInstructions = FillInstruction | StrokeInstruction | Texture
 
 const tempMatrix = new Matrix();
 
+/**
+ * A class that holds the render data for a GraphicsContext.
+ * @memberof scene
+ */
 export class GraphicsContext extends EventEmitter<{
     update: GraphicsContext
     destroy: GraphicsContext

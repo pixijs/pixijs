@@ -5,7 +5,11 @@ import type { Buffer } from '../../shared/buffer/Buffer';
 import type { System } from '../../shared/system/System';
 import type { GPU } from '../GpuDeviceSystem';
 
-export class BufferSystem implements System
+/**
+ * System plugin to the renderer to manage buffers.
+ * @memberof rendering
+ */
+export class GpuBufferSystem implements System
 {
     /** @ignore */
     public static extension = {
