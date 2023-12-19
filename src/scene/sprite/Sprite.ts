@@ -8,7 +8,17 @@ import type { TextureSourceLike } from '../../rendering/renderers/shared/texture
 import type { ContainerOptions } from '../container/Container';
 
 /**
- * Options for the {@link scene.Sprite} constructor.
+ * Constructor options used for `Sprite` instances.
+ * ```js
+ * const sprite = new Sprite({
+ *    texture: Texture.from('assets/image.png'),
+ *    anchor: new Point(0.5, 0.5),
+ *    position: new Point(100, 200),
+ *    scale: new Point(2, 2),
+ *    rotation: Math.PI / 2,
+ * });
+ * ```
+ * @see {@link scene.Sprite}
  * @memberof scene
  */
 export interface SpriteOptions extends Partial<ContainerOptions<SpriteView>>

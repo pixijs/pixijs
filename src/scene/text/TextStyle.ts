@@ -42,7 +42,14 @@ export type TextDropShadow = {
 };
 
 /**
- * Generic interface for TextStyle options.
+ * Constructor options used for `TextStyle` instances.
+ * ```js
+ * const textStyle = new TextStyle({
+ *    fontSize: 12,
+ *    fill: 'black',
+ * });
+ * ```
+ * @see {@link scene.TextStyle}
  * @memberof scene
  */
 export interface TextStyleOptions
@@ -52,7 +59,7 @@ export interface TextStyleOptions
      * @type {'left'|'center'|'right'|'justify'}
      */
     align?: TextStyleAlign;
-    /** Indicates if lines can be wrapped within words, it needs wordWrap to be set to true */
+    /** Indicates if lines can be wrapped within words, it needs `wordWrap` to be set to `true` */
     breakWords?: boolean;
     /** Set a drop shadow for the text */
     dropShadow?: boolean | TextDropShadow;

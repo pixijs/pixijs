@@ -4,7 +4,16 @@ import { MeshGeometry } from '../mesh/shared/MeshGeometry';
 import type { MeshGeometryOptions } from '../mesh/shared/MeshGeometry';
 
 /**
- * Options for the {@link PlaneGeometry} constructor.
+ * Constructor options used for `PlaneGeometry` instances.
+ * ```js
+ * const planeGeometry = new PlaneGeometry({
+ *    width: 100,
+ *    height: 100,
+ *    verticesX: 10,
+ *    verticesY: 10,
+ * });
+ * ```
+ * @see {@link scene.PlaneGeometry}
  * @memberof scene
  */
 export interface PlaneGeometryOptions

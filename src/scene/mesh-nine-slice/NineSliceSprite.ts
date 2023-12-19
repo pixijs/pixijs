@@ -8,7 +8,17 @@ import { NineSliceGeometry } from './NineSliceGeometry';
 import type { ContainerOptions } from '../container/Container';
 
 /**
- * Options for the {@link NineSliceSprite} constructor.
+ * Constructor options used for `NineSliceSprite` instances.
+ * ```js
+ * const nineSliceSprite = new NineSliceSprite({
+ *    texture: Texture.from('button.png'),
+ *    leftWidth: 20,
+ *    topHeight: 20,
+ *    rightWidth: 20,
+ *    bottomHeight: 20,
+ * });
+ * ```
+ * @see {@link scene.NineSliceSprite}
  * @memberof scene
  */
 export interface NineSliceSpriteOptions extends ContainerOptions<MeshView<NineSliceGeometry>>
