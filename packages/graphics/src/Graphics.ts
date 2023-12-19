@@ -773,14 +773,14 @@ export class Graphics extends Container
             points = poly.points;
         }
         else
-        if (Array.isArray(path[0]))
-        {
-            points = path[0];
-        }
-        else
-        {
-            points = path;
-        }
+            if (Array.isArray(path[0]))
+            {
+                points = path[0];
+            }
+            else
+            {
+                points = path;
+            }
 
         const shape = new Polygon(points);
 

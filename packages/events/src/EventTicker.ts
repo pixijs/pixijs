@@ -113,7 +113,7 @@ class EventsTickerClass
     }
 
     /**
-     * Updates the state of interactive objects if at least {@link interactionFrequency}
+     * Updates the state of interactive objects if at least {@link PIXI.EventsTicker#interactionFrequency}
      * milliseconds have passed since the last invocation.
      *
      * Invoked by a throttled ticker update from {@link PIXI.Ticker.system}.

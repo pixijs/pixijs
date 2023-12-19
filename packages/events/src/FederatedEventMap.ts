@@ -58,7 +58,6 @@ export type FederatedEventEmitterTypes = {
     //
     // Side note, we disable @typescript-eslint/ban-types since {}&string is the only syntax that works.
     // Nor of the Record/unknown/never alternatives work.
-    // @ts-expect-error This syntax is a hack
     // eslint-disable-next-line @typescript-eslint/ban-types
     [K: ({} & string) | ({} & symbol)]: any;
 };
