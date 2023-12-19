@@ -12,8 +12,9 @@ import type { Texture } from '../../shared/texture/Texture';
 import type { WebGPURenderer } from '../WebGPURenderer';
 
 /**
- * the WebGPPU adaptor for the render target system. Allows the Render Target System to
+ * The WebGPU adaptor for the render target system. Allows the Render Target System to
  * be used with the WebGPU renderer
+ * @memberof rendering
  */
 export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarget>
 {

@@ -235,7 +235,10 @@ export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
     }
 }
 
-/** @deprecated since 8.0.0 */
+/**
+ * @deprecated since 8.0.0
+ * @memberof scene
+ */
 export class NineSlicePlane extends NineSliceSprite
 {
     constructor(options: NineSliceSpriteOptions | Texture);

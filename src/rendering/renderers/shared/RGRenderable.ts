@@ -13,6 +13,7 @@ import type { View } from './view/View';
  *
  * This proxy allows us to override the values. This saves us a lot of extra if statements in the core loop
  * for what is normally a very rare use case!
+ * @memberof rendering
  */
 export class RGRenderable<T extends View = View> extends EventEmitter implements Renderable<T>
 {

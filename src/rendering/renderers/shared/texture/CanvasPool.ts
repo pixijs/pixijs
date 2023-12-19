@@ -17,6 +17,8 @@ export interface CanvasAndContext
  *
  * If you use custom RenderTexturePool for your filters, you can use methods
  * `getFilterTexture` and `returnFilterTexture` same as in
+ * @name CanvasPool
+ * @memberof rendering
  */
 export class CanvasPoolClass
 {

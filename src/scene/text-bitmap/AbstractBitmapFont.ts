@@ -71,6 +71,10 @@ interface BitmapFontEvents<Type>
     destroy: [Type];
 }
 
+/**
+ * An abstract representation of a bitmap font.
+ * @memberof text
+ */
 export abstract class AbstractBitmapFont<FontType>
     extends EventEmitter<BitmapFontEvents<FontType>>
     implements Omit<BitmapFontData, 'chars' | 'pages' | 'fontSize'>

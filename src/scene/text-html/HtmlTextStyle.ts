@@ -20,6 +20,10 @@ export interface HTMLTextStyleOptions extends Omit<TextStyleOptions, 'leading' |
     tagStyles?: Record<string, HTMLTextStyleOptions>;
 }
 
+/**
+ * A TextStyle object rendered by the HTMLTextSystem.
+ * @memberof text
+ */
 export class HTMLTextStyle extends TextStyle
 {
     private _cssOverrides: string[] = [];

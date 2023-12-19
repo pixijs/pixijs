@@ -24,6 +24,10 @@ export interface DynamicBitmapFontOptions
     padding?: number
 }
 
+/**
+ * A BitmapFont that generates its glyphs dynamically.
+ * @memberof text
+ */
 export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
 {
     // this is a resolution modifier for the font size..

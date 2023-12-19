@@ -5,7 +5,10 @@ import { BlendModeFilter } from './BlendModeFilter';
 
 import type { ExtensionMetadata } from '../../extensions/Extensions';
 
-/** Subtracts the blend from the base color using each color channel */
+/**
+ * Subtracts the blend from the base color using each color channel
+ * @memberof filters
+ */
 export class SubtractBlend extends BlendModeFilter
 {
     /** @ignore */

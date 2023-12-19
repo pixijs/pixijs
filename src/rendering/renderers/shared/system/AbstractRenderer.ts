@@ -57,6 +57,7 @@ type Runners = {[key in DefaultRunners]: SystemRunner} & {
 /**
  * The SystemManager is a class that provides functions for managing a set of systems
  * This is a base class, that is generic (no render code or knowledge at all)
+ * @memberof rendering
  */
 export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions, CANVAS extends ICanvas = HTMLCanvasElement>
 {

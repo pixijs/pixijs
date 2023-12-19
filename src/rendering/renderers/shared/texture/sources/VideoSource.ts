@@ -32,6 +32,10 @@ export interface VideoResourceOptionsElement
     mime: string;
 }
 
+/**
+ * A source for video-based textures.
+ * @memberof rendering
+ */
 export class VideoSource extends TextureSource<VideoResource>
 {
     public static extension: ExtensionMetadata = ExtensionType.TextureSource;

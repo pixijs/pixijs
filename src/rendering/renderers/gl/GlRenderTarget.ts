@@ -1,3 +1,7 @@
+/**
+ * Represents a render target.
+ * @memberof rendering
+ */
 export class GlRenderTarget
 {
     public width = -1;

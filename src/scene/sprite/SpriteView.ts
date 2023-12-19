@@ -9,6 +9,10 @@ import type { View, ViewObserver } from '../../rendering/renderers/shared/view/V
 import type { Bounds, BoundsData } from '../container/bounds/Bounds';
 import type { TextureDestroyOptions, TypeOrBool } from '../container/destroyTypes';
 
+/**
+ * A sprite view.
+ * @memberof scene
+ */
 export class SpriteView implements View
 {
     public readonly renderPipeId = 'sprite';
