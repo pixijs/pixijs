@@ -90,6 +90,7 @@ export class RenderTarget
                     height: this.height,
                     resolution: this.resolution,
                     format: 'stencil8',
+                    autoGenerateMipmaps: false,
                 // sampleCount: handled by the render target system..
                 });
             }
