@@ -41,8 +41,6 @@ function setAssetBasePath(): void
 
 describe('Visual Tests', () =>
 {
-    setAssetBasePath();
-
     scenesToTest.forEach((scene) =>
     {
         const id = scene.data.id || path.basename(scene.path).toLowerCase().replaceAll('.', '-');
@@ -73,6 +71,10 @@ describe('Visual Tests', () =>
                 {
                     return;
                 }
+
+                Assets.reset();
+
+                setAssetBasePath();
 
                 const res = await renderTest(
                     id,
