@@ -199,7 +199,6 @@ export class GlobalUniformSystem implements System
             worldColorAlpha: { value: new Float32Array(4), type: 'vec4<f32>' },
             uResolution: { value: [0, 0], type: 'vec2<f32>' },
         }, {
-            // ubo: this._renderer.supports.uniformBufferObject,
             isStatic: true,
         });
 
