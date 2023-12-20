@@ -21,7 +21,7 @@ import type { isMobileResult } from '../utils/browser/isMobile';
  * This module is a mixin for {@link AbstractRenderer} and will need to be imported if you are managing your own renderer.
  * Usage:
  * ```js
- * import 'pixi.js/accessibility';
+ * import 'pixi.js';
  *
  * container.accessible = true; // see `AccessibleOptions` for more properties
  * ```

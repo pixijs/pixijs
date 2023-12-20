@@ -10,7 +10,7 @@ export type Dict<T> = {[key: string]: T};
  * import { isWebGLSupported } from 'pixi.js';
  *
  * if (isWebGLSupported()) {
- *    // WebGL supported, proceed!
+ *    // WebGL is supported, proceed!
  * }
  * ```
  * @namespace utils
