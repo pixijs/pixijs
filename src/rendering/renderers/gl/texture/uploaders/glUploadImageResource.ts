@@ -38,8 +38,6 @@ export const glUploadImageResource = {
                     glTexture.type,
                     null
                 );
-
-                return;
             }
 
             if (webGLVersion === 2)
