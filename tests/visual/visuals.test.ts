@@ -1,6 +1,7 @@
 import glob from 'glob';
 import path from 'path';
 import { Assets } from '../../src/assets/Assets';
+import { TexturePool } from '../../src/rendering/renderers/shared/texture/TexturePool';
 import { isCI } from '../assets/basePath';
 import { renderTest } from './tester';
 
@@ -72,6 +73,7 @@ describe('Visual Tests', () =>
                     return;
                 }
 
+                TexturePool.clear();
                 Assets.reset();
 
                 setAssetBasePath();
