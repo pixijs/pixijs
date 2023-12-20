@@ -26,7 +26,25 @@ export type TextStyleWhiteSpace = 'normal' | 'pre' | 'pre-line';
 
 /**
  * A collection of text related classes.
+ *
+ * To create a new Text object, use either:
+ * - {@link scene.Text} - A Text object which is created using the
+ * [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API).
+ * - {@link scene.BitmapText} - A Text object which uses a bitmap font to render text.
+ * - {@link scene.HTMLText} - A Text object which uses an svg foreignObject to render HTML text.
  * @namespace text
+ * @example
+ * import { Text } from 'pixi.js';
+ *
+ * const text = new Text({
+ *     text: 'Hello Pixi!',
+ *     style: {
+ *         fontFamily: 'cool-font',
+ *         fontSize: 24,
+ *         fill: 0xff1010,
+ *         align: 'center',
+ *     }
+ * });
  */
 
 /**

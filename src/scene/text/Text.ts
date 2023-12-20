@@ -30,8 +30,6 @@ export type TextOptions = Partial<ContainerOptions<TextView>> & TextViewOptions 
     anchor?: PointLike,
     /** The copy for the text object. To split a line you can use '\n'. */
     text?: TextString;
-    /** the render mode - `canvas` renders to a single canvas, `html` renders using css, `bitmap` uses a bitmap font */
-    renderMode?: 'canvas' | 'html' | 'bitmap';
     /** The resolution of the text. */
     resolution?: number;
     /** The text style */
@@ -39,88 +37,17 @@ export type TextOptions = Partial<ContainerOptions<TextView>> & TextViewOptions 
 };
 
 /**
- * A Text Object will create a line or multiple lines of text.
- *
- * To split a line you can use '\n' in your text string, or, on the `style` object,
- * change its `wordWrap` property to true and and give the `wordWrapWidth` property a value.
- *
- * ### Render Mode
- * Text objects also have a `renderMode` property, which can be set to `text`, `bitmap` or `html`:
- *
- * .1 `text`: The text is created using the [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API).
- *
- * The primary advantage of this class over BitmapText is that you have great control over the style of the text,
- * which you can change at runtime.
- *
- *
- * The primary disadvantages is that each piece of text has it's own texture, which can use more memory.
- * When text changes, this texture has to be re-generated and re-uploaded to the GPU, taking up time.
- *
- * .2 `bitmap`: The text is created using a bitmap font.
- *
- * The primary advantage of this render mode over `text` is that all of your textures are pre-generated and loading,
- * meaning that rendering is fast, and changing text has no performance implications.
- *
- * The primary disadvantage is that supporting character sets other than latin, such as CJK languages,
- * may be impractical due to the number of characters.
- *
- * .3 `html` uses an svg foreignObject to render HTML text.
- *
- * The primary advantages of this render mode are:
- *
- *  -- Supports [HTML tags](https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML/HTML_text_fundamentals)
- * for styling such as `<strong>`, or `<em>`, as well as `<span style="">`
- *
- *   -- Better support for emojis and other HTML layout features, better compatibility with CSS
- *     line-height and letter-spacing.
- *
- * The primary disadvantages are:
- *   -- Unlike `text`, `html` rendering will vary slightly between platforms and browsers.
- * `html` uses SVG/DOM to render text and not Context2D's fillText like `text`.
- *
- *   -- Performance and memory usage is on-par with `text` (that is to say, slow and heavy)
- *
- *   -- Only works with browsers that support <foreignObject>.
- * @example
- * import { Text } from 'pixi.js';
- *
- * const text = new Text({
- *     text: 'Hello Pixi!',
- *     renderMode: 'text',
- *     style: {
- *         fontFamily: 'Arial',
- *         fontSize: 24,
- *         fill: 0xff1010,
- *         align: 'center',
- *     }
- * });
+ * The abstract Text class, which acts as a base for {@link scene.Text}, {@link scene.BitmapText} and {@link scene.HTMLText}.
  * @memberof scene
  */
-export class Text extends Container<TextView>
+export abstract class AbstractText extends Container<TextView>
 {
-    constructor(options?: TextOptions);
-    /** @deprecated since 8.0.0 */
-    constructor(text?: TextString, options?: Partial<AnyTextStyle>);
-    constructor(...args: [TextOptions?] | [TextString, Partial<AnyTextStyle>])
+    constructor(view: TextView, options: TextOptions = {})
     {
-        let options = args[0] ?? {} as TextOptions;
-
-        // @deprecated
-        if (typeof options === 'string' || args[1])
-        {
-            deprecation(v8_0_0, 'use new Text({ text: "hi!", style }) instead');
-            options = {
-                text: options,
-                style: args[1],
-            } as TextOptions;
-        }
-
-        const { style, text, renderMode, resolution, ...rest } = options as TextOptions;
-
         super({
-            view: new TextView(definedProps({ style, text, renderMode, resolution })),
+            view,
             label: 'Text',
-            ...rest
+            ...options
         });
 
         this.allowChildren = false;
@@ -187,61 +114,60 @@ export class Text extends Container<TextView>
 }
 
 /**
- * This is a convenience class for generating a Text object with bitmap font.
- * It is an alias for `new Text({ renderMode: 'bitmap' })`.
+ * A Text object which is created using the [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API).
+ *
+ * The primary advantage of this class over `BitmapText` is that you have great control over the style of the text,
+ * which you can change at runtime.
+ *
+ * The primary disadvantages is that each piece of text has it's own texture, which can use more memory.
+ * When text changes, this texture has to be re-generated and re-uploaded to the GPU, taking up time.
+ *
+ * A Text Object will create a line or multiple lines of text.
+ *
+ * To split a line you can use '\n' in your text string, or, on the `style` object,
+ * change its `wordWrap` property to true and and give the `wordWrapWidth` property a value.
+ * @example
+ * import { Text } from 'pixi.js';
+ *
+ * const text = new Text({
+ *     text: 'Hello Pixi!',
+ *     style: {
+ *         fontFamily: 'Arial',
+ *         fontSize: 24,
+ *         fill: 0xff1010,
+ *         align: 'center',
+ *     }
+ * });
  * @memberof scene
  */
-export class BitmapText extends Text
+export class Text extends AbstractText
 {
-    constructor(options: TextOptions);
+    constructor(options?: TextOptions);
     /** @deprecated since 8.0.0 */
-    constructor(text: TextString, options?: Partial<TextStyle>);
-    constructor(...args: [TextOptions] | [TextString, Partial<TextStyle>])
+    constructor(text?: TextString, options?: Partial<AnyTextStyle>);
+    constructor(...args: [TextOptions?] | [TextString, Partial<AnyTextStyle>])
     {
-        let options: TextOptions = args[0] as TextOptions;
+        let options = args[0] ?? {} as TextOptions;
 
         // @deprecated
         if (typeof options === 'string' || args[1])
         {
-            deprecation(v8_0_0, 'use new BitmapText({ text: "hi!", style }) instead');
+            deprecation(v8_0_0, 'use new Text({ text: "hi!", style }) instead');
             options = {
                 text: options,
                 style: args[1],
             } as TextOptions;
         }
 
-        options.renderMode = 'bitmap';
+        const { style, text, resolution, ...rest } = options as TextOptions;
 
-        super(options);
-    }
-}
+        super(
+            new TextView(definedProps({ style, text, resolution })),
+            {
+                label: 'Text',
+                ...rest
+            });
 
-/**
- * This is a convenience class for generating a Text object with HTML text.
- * It is an alias for `new Text({ renderMode: 'html' })`.
- * @memberof scene
- */
-export class HTMLText extends Text
-{
-    constructor(options: TextOptions);
-    /** @deprecated since 8.0.0 */
-    constructor(text: TextString, options?: Partial<HTMLTextStyle>);
-    constructor(...args: [TextOptions] | [TextString, Partial<HTMLTextStyle>])
-    {
-        let options: TextOptions = args[0] as TextOptions;
-
-        // @deprecated
-        if (typeof options === 'string' || args[1])
-        {
-            deprecation(v8_0_0, 'use new HTMLText({ text: "hi!", style }) instead');
-            options = {
-                text: options,
-                style: args[1],
-            } as TextOptions;
-        }
-
-        options.renderMode = 'html';
-
-        super(options);
+        this.allowChildren = false;
     }
 }

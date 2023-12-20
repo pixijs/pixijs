@@ -1,5 +1,5 @@
 import { Assets } from '../../../../src/assets/Assets';
-import { Text } from '../../../../src/scene/text/Text';
+import { BitmapText } from '../../../../src/scene/text-bitmap/BitmapText';
 
 import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
@@ -10,7 +10,7 @@ export const scene: TestScene = {
     {
         await Assets.load('fonts/sdf/comicsdf.fnt');
 
-        const text = new Text({
+        const text = new BitmapText({
             text: 'M',
             style: {
                 fontFamily: 'comicsdf',

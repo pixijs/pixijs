@@ -4,6 +4,8 @@ import { loadTxt } from '../../../src/assets/loader/parsers/loadTxt';
 import { loadTextures } from '../../../src/assets/loader/parsers/textures/loadTextures';
 import { Text } from '../../../src/scene/text/Text';
 import { loadBitmapFont } from '../../../src/scene/text-bitmap/asset/loadBitmapFont';
+import { BitmapText } from '../../../src/scene/text-bitmap/BitmapText';
+import { HTMLText } from '../../../src/scene/text-html/HTMLText';
 import { basePath } from '../../assets/basePath';
 import { getRenderer } from '../../utils/getRenderer';
 import '../../../src/scene/text/init';
@@ -35,12 +37,11 @@ describe('BitmapText', () =>
     {
         const renderer = await getRenderer();
 
-        const text = new Text({
+        const text = new BitmapText({
             text: 'ABCDEFG',
             style: {
                 fontFamily: 'arial',
             },
-            renderMode: 'bitmap',
         });
 
         renderer.render(text);
@@ -49,17 +50,16 @@ describe('BitmapText', () =>
     });
 
     it.each([
-        'bitmap',
-        'html',
-        'canvas',
-    ])('should support %s font without page reference', async (renderMode) =>
+        BitmapText,
+        HTMLText,
+        Text,
+    ])('should support %s font without page reference', async (TextClass) =>
     {
-        const text = new Text({
+        const text = new TextClass({
             text: 'A',
             style: {
                 fontFamily: fontNoPage.fontFamily,
             },
-            renderMode: renderMode as any,
         });
         const width = Math.round(text.width);
         const height = Math.round(text.height);
@@ -72,14 +72,13 @@ describe('BitmapText', () =>
     {
         const renderer = await getRenderer();
 
-        const bmpText = new Text({
+        const bmpText = new BitmapText({
             text: 'A B C D E F G H',
             style: {
                 fontFamily: font.fontFamily,
                 fontSize: 24,
                 wordWrap: true,
             },
-            renderMode: 'bitmap',
         });
 
         renderer.render(bmpText);
@@ -97,9 +96,8 @@ describe('BitmapText', () =>
     it('letterSpacing should add extra space between characters', async () =>
     {
         const renderer = await getRenderer();
-        const bmpText = new Text({
+        const bmpText = new BitmapText({
             text: 'ABCD zz DCBA',
-            renderMode: 'bitmap',
             style: {
                 fontFamily: font.fontFamily,
             }
@@ -120,9 +118,8 @@ describe('BitmapText', () =>
     {
         const renderer = await getRenderer();
 
-        const text = new Text({
+        const text = new BitmapText({
             text: undefined,
-            renderMode: 'bitmap',
             style: {
                 fontFamily: font.fontFamily,
             }
@@ -133,9 +130,8 @@ describe('BitmapText', () =>
 
     it('should call update when style changes', async () =>
     {
-        const text = new Text({
+        const text = new BitmapText({
             text: '123ABCabc',
-            renderMode: 'bitmap',
             style: {
                 fontFamily: 'courier',
             }
@@ -155,9 +151,8 @@ describe('BitmapText', () =>
 
     it('should call update when text changes', async () =>
     {
-        const text = new Text({
+        const text = new BitmapText({
             text: '123ABCabc',
-            renderMode: 'bitmap',
             style: {
                 fontFamily: font.fontFamily,
             }
