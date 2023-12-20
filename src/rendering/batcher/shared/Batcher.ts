@@ -7,6 +7,7 @@ import { BatchTextureArray } from './BatchTextureArray';
 import { MAX_TEXTURES } from './const';
 
 import type { BindGroup } from '../../renderers/gpu/shader/BindGroup';
+import type { IndexBufferArray } from '../../renderers/shared/geometry/Geometry';
 import type { Instruction } from '../../renderers/shared/instructions/Instruction';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { Texture } from '../../renderers/shared/texture/Texture';
@@ -65,7 +66,7 @@ export interface BatchableObject
         index: number,
         textureId: number,
     ) => void;
-    packIndex: (indexBuffer: Uint32Array | Uint16Array, index: number, indicesOffset: number) => void;
+    packIndex: (indexBuffer: IndexBufferArray, index: number, indicesOffset: number) => void;
 
     texture: Texture;
     blendMode: BLEND_MODES;
@@ -98,7 +99,7 @@ export class Batcher
 
     public uid = uid('batcher');
     public attributeBuffer: ViewableBuffer;
-    public indexBuffer: Uint32Array | Uint16Array;
+    public indexBuffer: IndexBufferArray;
 
     public attributeSize: number;
     public indexSize: number;

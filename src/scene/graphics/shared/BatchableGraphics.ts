@@ -1,6 +1,7 @@
 import { mixColors } from '../../container/utils/mixColors';
 
 import type { Batch, BatchableObject, Batcher } from '../../../rendering/batcher/shared/Batcher';
+import type { IndexBufferArray } from '../../../rendering/renderers/shared/geometry/Geometry';
 import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { GraphicsView } from './GraphicsView';
@@ -35,7 +36,7 @@ export class BatchableGraphics implements BatchableObject
         return 'normal';
     }
 
-    public packIndex(indexBuffer: Uint32Array | Uint16Array, index: number, indicesOffset: number)
+    public packIndex(indexBuffer: IndexBufferArray, index: number, indicesOffset: number)
     {
         const indices = this.geometryData.indices;
 
