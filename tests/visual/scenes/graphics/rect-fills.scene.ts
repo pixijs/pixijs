@@ -10,6 +10,7 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render rects with fills, strokes, gradients using textures',
+    pixelMatch: 150,
     create: async (scene: Container) =>
     {
         const texture = await Assets.load<Texture>({

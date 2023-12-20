@@ -270,7 +270,7 @@ export class CanvasTextMetrics
 
         if (style.dropShadow)
         {
-            width += style.dropShadow.distance;
+            width += style.dropShadowDistance;
         }
 
         const lineHeight = style.lineHeight || fontProperties.fontSize + strokeWidth;
@@ -280,7 +280,7 @@ export class CanvasTextMetrics
 
         if (style.dropShadow)
         {
-            height += style.dropShadow.distance;
+            height += style.dropShadowDistance;
         }
 
         const measurements = new CanvasTextMetrics(

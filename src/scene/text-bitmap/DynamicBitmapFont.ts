@@ -157,7 +157,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
             }
 
             const xAdvance = (width / fontScale)
-                - (style.dropShadow?.distance ?? 0)
+                - (style.dropShadow ? style.dropShadowDistance : 0)
                 - (style._stroke?.width ?? 0);
 
             // This is in coord space of the measurements.. not the texture
@@ -321,16 +321,15 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
 
         if (style.dropShadow)
         {
-            const shadowOptions = style.dropShadow;
-            const rgb = Color.shared.setValue(shadowOptions.color).toArray();
+            const rgb = Color.shared.setValue(style.dropShadowColor).toArray();
 
-            const dropShadowBlur = shadowOptions.blur * resolution;
-            const dropShadowDistance = shadowOptions.distance * resolution;
+            const dropShadowBlur = style.dropShadowBlur * resolution;
+            const dropShadowDistance = style.dropShadowDistance * resolution;
 
-            context.shadowColor = `rgba(${rgb[0] * 255},${rgb[1] * 255},${rgb[2] * 255},${shadowOptions.alpha})`;
+            context.shadowColor = `rgba(${rgb[0] * 255},${rgb[1] * 255},${rgb[2] * 255},${style.dropShadowAlpha})`;
             context.shadowBlur = dropShadowBlur;
-            context.shadowOffsetX = Math.cos(shadowOptions.angle) * dropShadowDistance;
-            context.shadowOffsetY = Math.sin(shadowOptions.angle) * dropShadowDistance;
+            context.shadowOffsetX = Math.cos(style.dropShadowAngle) * dropShadowDistance;
+            context.shadowOffsetY = Math.sin(style.dropShadowAngle) * dropShadowDistance;
         }
         else
         {

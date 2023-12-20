@@ -5,7 +5,7 @@ import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
-    it: 'should render text correctly if style changes',
+    it: 'should render trimmed text correctly if style changes',
     create: async (scene: Container, renderer: Renderer) =>
     {
         const text = new Text({

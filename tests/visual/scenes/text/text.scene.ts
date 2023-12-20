@@ -5,7 +5,7 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render text correctly if style changes',
-    pixelMatch: 1000,
+    pixelMatch: 910,
     create: async (scene: Container) =>
     {
         const text = new Text({
@@ -17,15 +17,13 @@ export const scene: TestScene = {
                 lineHeight: 15,
                 letterSpacing: 6,
                 align: 'center',
-                dropShadow: {
-                    alpha: 1,
-                    angle: Math.PI / 6,
-                    blur: 5,
-                    color: 'blue',
-                    distance: 5,
-                },
+                dropShadow: true,
+                dropShadowAlpha: 1,
+                dropShadowAngle: Math.PI / 6,
+                dropShadowBlur: 5,
+                dropShadowColor: 'blue',
+                dropShadowDistance: 5,
             },
-            // renderMode: 'bitmap'
         });
 
         scene.addChild(text);

@@ -30,23 +30,6 @@ export type TextStyleWhiteSpace = 'normal' | 'pre' | 'pre-line';
  */
 
 /**
- * A drop shadow effect.
- * @memberof scene
- */
-export type TextDropShadow = {
-    /** Set alpha for the drop shadow  */
-    alpha: number;
-    /** Set a angle of the drop shadow */
-    angle: number;
-    /** Set a shadow blur radius */
-    blur: number;
-    /** A fill style to be used on the  e.g., 'red', '#00FF00' */
-    color: ColorSource;
-    /** Set a distance of the drop shadow */
-    distance: number;
-};
-
-/**
  * Constructor options used for `TextStyle` instances.
  * ```js
  * const textStyle = new TextStyle({
@@ -66,8 +49,18 @@ export interface TextStyleOptions
     align?: TextStyleAlign;
     /** Indicates if lines can be wrapped within words, it needs `wordWrap` to be set to `true` */
     breakWords?: boolean;
-    /** Set a drop shadow for the text */
-    dropShadow?: boolean | TextDropShadow;
+    /** Enabled a drop shadow for the text */
+    dropShadow?: boolean;
+    /** Set the alpha of the text drop shadow */
+    dropShadowAlpha?: number;
+    /** Set a angle of the text drop shadow */
+    dropShadowAngle?: number;
+    /** Set a shadow blur radius */
+    dropShadowBlur?: number;
+    /** A fill style to be used on the text drop shadow e.g., 'red', '#00FF00' */
+    dropShadowColor?: ColorSource;
+    /** Set a distance of the text drop shadow */
+    dropShadowDistance?: number;
     /**
      * A canvas fillstyle that will be used on the text e.g., 'red', '#00FF00'.
      * Can be an array to create a gradient, e.g., `['#000000','#FFFFFF']`
@@ -139,7 +132,7 @@ export interface TextStyleOptions
  * });
  */
 export class TextStyle extends EventEmitter<{
-    update: TextDropShadow
+    update: void
 }>
 {
     public static defaultTextStyle: TextStyleOptions = {
@@ -150,14 +143,12 @@ export class TextStyle extends EventEmitter<{
         align: 'left',
         /** See {@link TextStyle.breakWords} */
         breakWords: false,
-        /** See {@link TextStyle.dropShadow} */
-        dropShadow:  {
-            alpha: 1,
-            angle: Math.PI / 6,
-            blur: 0,
-            color: 'black',
-            distance: 5,
-        },
+        dropShadow: false,
+        dropShadowAlpha: 1,
+        dropShadowAngle: Math.PI / 6,
+        dropShadowBlur: 0,
+        dropShadowColor: 'black',
+        dropShadowDistance: 5,
         /**
          * See {@link TextStyle.fill}
          * @type {string|string[]|number|number[]|CanvasGradient|CanvasPattern}
@@ -228,7 +219,12 @@ export class TextStyle extends EventEmitter<{
     public _stroke: ConvertedStrokeStyle;
     private _originalStroke: FillStyleInputs;
 
-    private _dropShadow: TextDropShadow;
+    private _dropShadow: boolean;
+    private _dropShadowAlpha: number;
+    private _dropShadowAngle: number;
+    private _dropShadowBlur: number;
+    private _dropShadowColor: ColorSource;
+    private _dropShadowDistance: number;
 
     private _fontFamily: string | string[];
     private _fontSize: number;
@@ -256,18 +252,18 @@ export class TextStyle extends EventEmitter<{
     {
         super();
 
+        const defaultStyle = TextStyle.defaultTextStyle;
+
         convertV7Tov8Style(style);
 
-        const fullStyle = { ...TextStyle.defaultTextStyle, ...style };
+        const fullStyle = { ...defaultStyle, ...style };
 
-        for (const key in TextStyle.defaultTextStyle)
+        for (const key in defaultStyle)
         {
             const thisKey = key as keyof typeof this;
 
             this[thisKey] = fullStyle[key as keyof TextStyleOptions] as any;
         }
-
-        this.dropShadow = null;
 
         if (typeof fullStyle.fill === 'string')
         {
@@ -279,26 +275,12 @@ export class TextStyle extends EventEmitter<{
             this.fontSize = fullStyle.fontSize as number;
         }
 
-        if (style.dropShadow)
-        {
-            // is true / false
-            if (style.dropShadow instanceof Boolean)
-            {
-                if (style.dropShadow === true)
-                {
-                    this.dropShadow = {
-                        ...TextStyle.defaultTextStyle.dropShadow as TextDropShadow
-                    };
-                }
-            }
-            else
-            {
-                this.dropShadow = {
-                    ...TextStyle.defaultTextStyle.dropShadow as TextDropShadow,
-                    ...style.dropShadow as TextDropShadow
-                };
-            }
-        }
+        this._dropShadow = style.dropShadow ?? defaultStyle.dropShadow;
+        this._dropShadowAlpha = style.dropShadowAlpha ?? defaultStyle.dropShadowAlpha;
+        this._dropShadowAngle = style.dropShadowAngle ?? defaultStyle.dropShadowAngle;
+        this._dropShadowBlur = style.dropShadowBlur ?? defaultStyle.dropShadowBlur;
+        this._dropShadowColor = style.dropShadowColor ?? defaultStyle.dropShadowColor;
+        this._dropShadowDistance = style.dropShadowDistance ?? defaultStyle.dropShadowDistance;
 
         this.update();
     }
@@ -312,9 +294,24 @@ export class TextStyle extends EventEmitter<{
     /** Indicates if lines can be wrapped within words, it needs wordWrap to be set to true. */
     get breakWords(): boolean { return this._breakWords; }
     set breakWords(value: boolean) { this._breakWords = value; this.update(); }
-    /** Set a drop shadow for the text. */
-    get dropShadow(): TextDropShadow { return this._dropShadow; }
-    set dropShadow(value: TextDropShadow) { this._dropShadow = value; this.update(); }
+    /** Enable a drop shadow for the text. */
+    get dropShadow(): boolean { return this._dropShadow; }
+    set dropShadow(value: boolean) { this._dropShadow = value; this.update(); }
+    /** Set the alpha of the text drop shadow. */
+    get dropShadowAlpha(): number { return this._dropShadowAlpha; }
+    set dropShadowAlpha(value: number) { this._dropShadowAlpha = value; this.update(); }
+    /** Set a angle of the text drop shadow. */
+    get dropShadowAngle(): number { return this._dropShadowAngle; }
+    set dropShadowAngle(value: number) { this._dropShadowAngle = value; this.update(); }
+    /** Set a shadow blur radius. */
+    get dropShadowBlur(): number { return this._dropShadowBlur; }
+    set dropShadowBlur(value: number) { this._dropShadowBlur = value; this.update(); }
+    /** A fill style to be used on the text drop shadow. */
+    get dropShadowColor(): ColorSource { return this._dropShadowColor; }
+    set dropShadowColor(value: ColorSource) { this._dropShadowColor = value; this.update(); }
+    /** Set a distance of the text drop shadow. */
+    get dropShadowDistance(): number { return this._dropShadowDistance; }
+    set dropShadowDistance(value: number) { this._dropShadowDistance = value; this.update(); }
     /** The font family, can be a single font name, or a list of names where the first is the preferred font. */
     get fontFamily(): string | string[] { return this._fontFamily; }
     set fontFamily(value: string | string[]) { this._fontFamily = value; this.update(); }
@@ -452,6 +449,11 @@ export class TextStyle extends EventEmitter<{
             align: this.align,
             breakWords: this.breakWords,
             dropShadow: this.dropShadow,
+            dropShadowAlpha: this.dropShadowAlpha,
+            dropShadowAngle: this.dropShadowAngle,
+            dropShadowBlur: this.dropShadowBlur,
+            dropShadowColor: this.dropShadowColor,
+            dropShadowDistance: this.dropShadowDistance,
             fill: this._fill,
             fontFamily: this.fontFamily,
             fontSize: this.fontSize,
@@ -510,7 +512,6 @@ export class TextStyle extends EventEmitter<{
 
         this._fill = null;
         this._stroke = null;
-        this.dropShadow = null;
         this._originalStroke = null;
         this._originalFill = null;
     }
@@ -519,19 +520,6 @@ export class TextStyle extends EventEmitter<{
 function convertV7Tov8Style(style: TextStyleOptions)
 {
     const oldStyle = style as any;
-
-    if (typeof oldStyle.dropShadow === 'boolean')
-    {
-        deprecation(v8_0_0, 'dropShadow is now an object, not a boolean');
-
-        style.dropShadow = {
-            alpha: oldStyle.dropShadowAlpha ?? 1,
-            angle: oldStyle.dropShadowAngle,
-            blur: oldStyle.dropShadowBlur ?? 0,
-            color: oldStyle.dropShadowColor,
-            distance:   oldStyle.dropShadowDistance,
-        };
-    }
 
     if (oldStyle.strokeThickness)
     {

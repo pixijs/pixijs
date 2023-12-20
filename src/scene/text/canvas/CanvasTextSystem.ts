@@ -211,22 +211,17 @@ export class CanvasTextSystem implements System
                 context.fillStyle = 'black';
                 context.strokeStyle = 'black';
 
-                const shadowOptions = style.dropShadow;
-
-                const dropShadowColor = shadowOptions.color;
-                const dropShadowAlpha = shadowOptions.alpha;
-
                 context.shadowColor = Color.shared
-                    .setValue(dropShadowColor)
-                    .setAlpha(dropShadowAlpha)
+                    .setValue(style.dropShadowColor)
+                    .setAlpha(style.dropShadowAlpha)
                     .toRgbaString();
 
-                const dropShadowBlur = shadowOptions.blur * resolution;
-                const dropShadowDistance = shadowOptions.distance * resolution;
+                const dropShadowBlur = style.dropShadowBlur * resolution;
+                const dropShadowDistance = style.dropShadowDistance * resolution;
 
                 context.shadowBlur = dropShadowBlur;
-                context.shadowOffsetX = Math.cos(shadowOptions.angle) * dropShadowDistance;
-                context.shadowOffsetY = (Math.sin(shadowOptions.angle) * dropShadowDistance) + dsOffsetShadow;
+                context.shadowOffsetX = Math.cos(style.dropShadowAngle) * dropShadowDistance;
+                context.shadowOffsetY = (Math.sin(style.dropShadowAngle) * dropShadowDistance) + dsOffsetShadow;
             }
             else
             {
