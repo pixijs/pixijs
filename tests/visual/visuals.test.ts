@@ -45,6 +45,8 @@ describe('Visual Tests', () =>
 
     scenesToTest.forEach((scene) =>
     {
+        const id = scene.data.id || path.basename(scene.path).toLowerCase().replaceAll('.', '-');
+
         const defaultRenderers: RenderTypeFlags = {
             webgpu: true,
             webgl2: true,
@@ -64,7 +66,7 @@ describe('Visual Tests', () =>
                 return;
             }
 
-            it(`[${renderer}] - ${scene.data.it}`, async () =>
+            it(`[${renderer}-${id}.png] - "${scene.data.it}" (${scene.path})`, async () =>
             {
                 jest.setTimeout(process.env.DEBUG_MODE ? 10000000 : 10000);
                 if (scene.data.skip)
@@ -73,8 +75,8 @@ describe('Visual Tests', () =>
                 }
 
                 const res = await renderTest(
-                    scene.data.id
-                        || path.basename(scene.path).toLowerCase().replaceAll('.', '-'), scene.data.create,
+                    id,
+                    scene.data.create,
                     renderer as RenderType,
                     scene.data.options ?? {}
                 );
