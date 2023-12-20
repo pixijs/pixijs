@@ -4,6 +4,8 @@ import { Assets } from '../../src/assets/Assets';
 import { isCI } from '../assets/basePath';
 import { renderTest } from './tester';
 
+import type { RenderType, RenderTypeFlags } from './types';
+
 const paths = glob.sync('**/*.scene.ts', { cwd: path.join(process.cwd(), './tests') });
 const scenes = paths.map((p) =>
 {
@@ -43,10 +45,10 @@ describe('Visual Tests', () =>
 
     scenesToTest.forEach((scene) =>
     {
-        const defaultRenderers = {
-            canvas: false,
+        const defaultRenderers: RenderTypeFlags = {
             webgpu: true,
-            webgl: true,
+            webgl2: true,
+            webgl1: true,
         };
 
         const renderers = {
@@ -73,7 +75,7 @@ describe('Visual Tests', () =>
                 const res = await renderTest(
                     scene.data.id
                         || path.basename(scene.path).toLowerCase().replaceAll('.', '-'), scene.data.create,
-                    renderer as 'webgl' | 'webgpu',
+                    renderer as RenderType,
                     scene.data.options ?? {}
                 );
 

@@ -1,6 +1,9 @@
 import type { Renderer, RendererOptions } from '../../src/rendering/renderers/types';
 import type { Container } from '../../src/scene/container/Container';
 
+export type RenderType = 'webgl1' | 'webgl2' | 'webgpu';
+export type RenderTypeFlags = Record<RenderType, boolean>;
+
 export interface TestScene
 {
     it: string;
@@ -10,9 +13,5 @@ export interface TestScene
     pixelMatch?: number;
     skip?: boolean;
     only?: boolean;
-    renderers?: {
-        canvas?: boolean,
-        webgl?: boolean,
-        webgpu?: boolean,
-    }
+    renderers?: Partial<RenderTypeFlags>;
 }

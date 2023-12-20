@@ -8,6 +8,7 @@ import { Container } from '../../src/scene/container/Container';
 import { Graphics } from '../../src/scene/graphics/shared/Graphics';
 
 import type { Renderer, RendererOptions } from '../../src/rendering/renderers/types';
+import type { RenderType } from './types';
 
 function toArrayBuffer(buf: Buffer): ArrayBuffer
 {
@@ -20,6 +21,16 @@ function toArrayBuffer(buf: Buffer): ArrayBuffer
     }
 
     return ab;
+}
+
+function toRenderType(renderType: RenderType): 'webgl' | 'webgpu'
+{
+    if (renderType === 'webgl1' || renderType === 'webgl2')
+    {
+        return 'webgl';
+    }
+
+    return 'webgpu';
 }
 
 /**
@@ -35,7 +46,7 @@ function toArrayBuffer(buf: Buffer): ArrayBuffer
 export async function renderTest(
     id: string,
     createFunction: (scene: Container, renderer: Renderer) => Promise<void>,
-    rendererType: 'webgl' | 'webgpu',
+    rendererType: RenderType,
     options?: Partial<RendererOptions>,
 ): Promise<number>
 {
@@ -47,7 +58,8 @@ export async function renderTest(
     };
 
     const renderer = await autoDetectRenderer({
-        preference: rendererType,
+        preference: toRenderType(rendererType),
+        preferWebGLVersion: rendererType === 'webgl2' ? 2 : 1,
         ...sceneOpts,
     });
     const stage = new Container();
