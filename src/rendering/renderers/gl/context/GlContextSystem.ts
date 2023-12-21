@@ -2,10 +2,8 @@ import { ExtensionType } from '../../../../extensions/Extensions';
 import { warn } from '../../../../utils/logging/warn';
 import { type GpuPowerPreference } from '../../types';
 
-import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { System } from '../../shared/system/System';
 import type { WebGLRenderer } from '../WebGLRenderer';
-import type { GlRenderingContext } from './GlRenderingContext';
 import type { WebGLExtensions } from './WebGLExtensions';
 
 /**
@@ -171,7 +169,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
             const premultipliedAlpha = options.premultipliedAlpha ?? true;
             const antialias = options.antialias && !this._renderer.backBuffer.useBackBuffer;
 
-            this.initFromOptions(options.preferWebGLVersion, {
+            this.createContext(options.preferWebGLVersion, {
                 alpha,
                 premultipliedAlpha,
                 antialias,
@@ -212,25 +210,10 @@ export class GlContextSystem implements System<ContextSystemOptions>
      * @param preferWebGLVersion
      * @param {object} options - context attributes
      */
-    protected initFromOptions(preferWebGLVersion: 1 | 2, options: WebGLContextAttributes): void
-    {
-        const gl = this.createContext(this._renderer.view.canvas, preferWebGLVersion, options);
-
-        this.initFromContext(gl);
-    }
-
-    /**
-     * Helper class to create a WebGL Context
-     * @param canvas - the canvas element that we will get the context from
-     * @param preferWebGLVersion
-     * @param options - An options object that gets passed in to the canvas element containing the
-     *    context attributes
-     * @see https://developer.mozilla.org/en/docs/Web/API/HTMLCanvasElement/getContext
-     * @returns {WebGLRenderingContext} the WebGL context
-     */
-    public createContext(canvas: ICanvas, preferWebGLVersion: 1 | 2, options: WebGLContextAttributes): GlRenderingContext
+    protected createContext(preferWebGLVersion: 1 | 2, options: WebGLContextAttributes): void
     {
         let gl: WebGL2RenderingContext | WebGLRenderingContext;
+        const canvas = this._renderer.view.canvas;
 
         if (preferWebGLVersion === 2)
         {
@@ -250,9 +233,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
 
         this.gl = gl as WebGL2RenderingContext;
 
-        this.getExtensions();
-
-        return this.gl;
+        this.initFromContext(this.gl);
     }
 
     /** Auto-populate the {@link ContextSystem.extensions extensions}. */
