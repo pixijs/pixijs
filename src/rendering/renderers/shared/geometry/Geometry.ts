@@ -7,6 +7,8 @@ import { getGeometryBounds } from './utils/getGeometryBounds';
 import type { Buffer, TypedArray } from '../buffer/Buffer';
 import type { Topology, VertexFormat } from './const';
 
+export type IndexBufferArray = Uint16Array | Uint32Array;
+
 /**
  * The attribute data for a geometries attributes
  * @memberof rendering
