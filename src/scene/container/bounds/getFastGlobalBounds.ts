@@ -23,14 +23,18 @@ export function getFastGlobalBounds(target: Container, bounds: Bounds): Bounds
 
     _getGlobalBoundsRecursive(target, bounds);
 
+    if (!bounds.isValid)
+    {
+        bounds.set(0, 0, 0, 0);
+    }
+
     if (!target.isRenderGroupRoot)
     {
         bounds.applyMatrix(target.renderGroup.worldTransform);
     }
-
-    if (!bounds.isValid)
+    else
     {
-        bounds.set(0, 0, 0, 0);
+        bounds.applyMatrix(target.renderGroup.localTransform);
     }
 
     return bounds;
