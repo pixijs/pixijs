@@ -100,12 +100,12 @@ export class FilterSystem implements System
     private _filterStack: FilterData[] = [];
 
     private readonly _filterGlobalUniforms = new UniformGroup({
-        inputSize: { value: new Float32Array(4), type: 'vec4<f32>' },
-        inputPixel: { value: new Float32Array(4), type: 'vec4<f32>' },
-        inputClamp: { value: new Float32Array(4), type: 'vec4<f32>' },
-        outputFrame: { value: new Float32Array(4), type: 'vec4<f32>' },
-        globalFrame: { value: new Float32Array(4), type: 'vec4<f32>' },
-        outputTexture: { value: new Float32Array(4), type: 'vec4<f32>' },
+        uInputSize: { value: new Float32Array(4), type: 'vec4<f32>' },
+        uInputPixel: { value: new Float32Array(4), type: 'vec4<f32>' },
+        uInputClamp: { value: new Float32Array(4), type: 'vec4<f32>' },
+        uOutputFrame: { value: new Float32Array(4), type: 'vec4<f32>' },
+        uGlobalFrame: { value: new Float32Array(4), type: 'vec4<f32>' },
+        uOutputTexture: { value: new Float32Array(4), type: 'vec4<f32>' },
     });
 
     private readonly _globalFilterBindGroup: BindGroup = new BindGroup({});
@@ -438,12 +438,12 @@ export class FilterSystem implements System
         const filterUniforms = this._filterGlobalUniforms;
         const uniforms = filterUniforms.uniforms;
 
-        const outputFrame = uniforms.outputFrame;
-        const inputSize = uniforms.inputSize;
-        const inputPixel = uniforms.inputPixel;
-        const inputClamp = uniforms.inputClamp;
-        const globalFrame = uniforms.globalFrame;
-        const outputTexture = uniforms.outputTexture;
+        const outputFrame = uniforms.uOutputFrame;
+        const inputSize = uniforms.uInputSize;
+        const inputPixel = uniforms.uInputPixel;
+        const inputClamp = uniforms.uInputClamp;
+        const globalFrame = uniforms.uGlobalFrame;
+        const outputTexture = uniforms.uOutputTexture;
 
         // are we rendering back to the original surface?
         if (isFinalTarget)

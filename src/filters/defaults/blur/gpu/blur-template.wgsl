@@ -1,16 +1,16 @@
 
 
 struct GlobalFilterUniforms {
-  inputSize:vec4<f32>,
-  inputPixel:vec4<f32>,
-  inputClamp:vec4<f32>,
-  outputFrame:vec4<f32>,
-  globalFrame:vec4<f32>,
-  outputTexture:vec4<f32>,
+  uInputSize:vec4<f32>,
+  uInputPixel:vec4<f32>,
+  uInputClamp:vec4<f32>,
+  uOutputFrame:vec4<f32>,
+  uGlobalFrame:vec4<f32>,
+  uOutputTexture:vec4<f32>,
 };
 
 struct BlurUniforms {
-  strength:f32,
+  uStrength:f32,
 };
 
 @group(0) @binding(0) var<uniform> gfu: GlobalFilterUniforms;
@@ -27,27 +27,27 @@ struct VSOutput {
 
 fn filterVertexPosition(aPosition:vec2<f32>) -> vec4<f32>
 {
-    var position = aPosition * gfu.outputFrame.zw + gfu.outputFrame.xy;
+    var position = aPosition * gfu.uOutputFrame.zw + gfu.uOutputFrame.xy;
 
-    position.x = position.x * (2.0 / gfu.outputTexture.x) - 1.0;
-    position.y = position.y * (2.0*gfu.outputTexture.z / gfu.outputTexture.y) - gfu.outputTexture.z;
+    position.x = position.x * (2.0 / gfu.uOutputTexture.x) - 1.0;
+    position.y = position.y * (2.0*gfu.uOutputTexture.z / gfu.uOutputTexture.y) - gfu.uOutputTexture.z;
 
     return vec4(position, 0.0, 1.0);
 }
 
 fn filterTextureCoord( aPosition:vec2<f32> ) -> vec2<f32>
 {
-    return aPosition * (gfu.outputFrame.zw * gfu.inputSize.zw);
+    return aPosition * (gfu.uOutputFrame.zw * gfu.uInputSize.zw);
 }
 
 fn globalTextureCoord( aPosition:vec2<f32> ) -> vec2<f32>
 {
-  return  (aPosition.xy / gfu.globalFrame.zw) + (gfu.globalFrame.xy / gfu.globalFrame.zw);  
+  return  (aPosition.xy / gfu.uGlobalFrame.zw) + (gfu.uGlobalFrame.xy / gfu.uGlobalFrame.zw);  
 }
 
 fn getSize() -> vec2<f32>
 {
-  return gfu.globalFrame.zw;
+  return gfu.uGlobalFrame.zw;
 }
 
 
@@ -58,7 +58,7 @@ fn mainVertex(
 
   let filteredCord = filterTextureCoord(aPosition);
 
-  let strength = gfu.inputSize.w * blurUniforms.strength;
+  let strength = gfu.uInputSize.w * blurUniforms.uStrength;
 
   return VSOutput(
    filterVertexPosition(aPosition),
