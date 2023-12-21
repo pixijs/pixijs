@@ -55,8 +55,6 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
                 localUniforms,
             },
         });
-
-        this.shader.addResource('globalUniforms', 0, 0);
     }
 
     public execute(graphicsPipe: GraphicsPipe, renderable: Renderable<GraphicsView>): void
