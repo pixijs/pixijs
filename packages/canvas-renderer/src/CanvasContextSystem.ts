@@ -196,7 +196,7 @@ export class CanvasContextSystem implements ISystem
 
         this._activeBlendMode = blendMode;
         this._outerBlend = outerBlend;
-        this.activeContext.globalCompositeOperation = this.blendModes[blendMode];
+        this.activeContext.globalCompositeOperation = this.blendModes[blendMode] as GlobalCompositeOperation;
     }
 
     resize(): void

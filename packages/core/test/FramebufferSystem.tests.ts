@@ -23,7 +23,7 @@ describe('FramebufferSystem', () =>
 
         // chrome, general
         framebuffer['msaaSamples'] = [8, 4, 1];
-        expect(framebuffer['detectSamples'](1)).toEqual(0);
+        expect(framebuffer['detectSamples'](1 as MSAA_QUALITY)).toEqual(0);
         expect(framebuffer['detectSamples'](4)).toEqual(4);
         expect(framebuffer['detectSamples'](8)).toEqual(8);
         // some mobile devices
@@ -31,7 +31,7 @@ describe('FramebufferSystem', () =>
         expect(framebuffer['detectSamples'](8)).toEqual(4);
         // firefox on mac
         framebuffer['msaaSamples'] = [8, 4];
-        expect(framebuffer['detectSamples'](1)).toEqual(0);
+        expect(framebuffer['detectSamples'](1 as MSAA_QUALITY)).toEqual(0);
         // no MSAA
         framebuffer['msaaSamples'] = null;
         expect(framebuffer['detectSamples'](8)).toEqual(0);
