@@ -395,7 +395,7 @@ export class TextStyle extends EventEmitter<{
         if (value === this._originalFill) return;
 
         this._originalFill = value;
-        this._fill = convertFillInputToFillStyle(value, GraphicsContext._getDefaultStyle('fill'));
+        this._fill = convertFillInputToFillStyle(value, GraphicsContext.defaultFillStyle);
         this.update();
     }
 
@@ -410,7 +410,7 @@ export class TextStyle extends EventEmitter<{
         if (value === this._originalFill) return;
 
         this._originalFill = value;
-        this._stroke = convertFillInputToFillStyle(value, GraphicsContext._getDefaultStyle('stroke'));
+        this._stroke = convertFillInputToFillStyle(value, GraphicsContext.defaultStrokeStyle);
         this.update();
     }
 

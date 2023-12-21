@@ -26,7 +26,7 @@ describe('Graphics', () =>
     {
         it('should parse the alpha component from a color string value', () =>
         {
-            const style = convertFillInputToFillStyle({ color: '#ff000080' }, GraphicsContext._getDefaultStyle('fill'));
+            const style = convertFillInputToFillStyle({ color: '#ff000080' }, GraphicsContext.defaultFillStyle);
 
             expect(style.alpha).toBe(0.5);
         });
@@ -35,7 +35,7 @@ describe('Graphics', () =>
         {
             const style = convertFillInputToFillStyle(
                 { color: '#ff000080', alpha: 0.5 },
-                GraphicsContext._getDefaultStyle('fill')
+                GraphicsContext.defaultFillStyle
             );
 
             expect(style.alpha).toBe(0.25);
@@ -60,7 +60,7 @@ describe('Graphics', () =>
             };
 
             expect(graphics.strokeStyle).toEqual({
-                ...GraphicsContext._getDefaultStyle('stroke'),
+                ...GraphicsContext.defaultStrokeStyle,
                 width: 1,
                 alpha: 0.5,
                 color: 0xff0000,
@@ -73,7 +73,7 @@ describe('Graphics', () =>
             graphics.strokeStyle = {};
 
             expect(graphics.strokeStyle).toEqual({
-                ...GraphicsContext._getDefaultStyle('stroke'),
+                ...GraphicsContext.defaultStrokeStyle,
                 matrix: null,
                 texture: Texture.WHITE,
             });
@@ -95,7 +95,7 @@ describe('Graphics', () =>
             };
 
             expect(graphics.fillStyle).toEqual({
-                ...GraphicsContext._getDefaultStyle('fill'),
+                ...GraphicsContext.defaultFillStyle,
                 color: 0xff0000,
                 alpha: 0.5,
                 matrix,
@@ -106,7 +106,7 @@ describe('Graphics', () =>
             graphics.fillStyle = {};
 
             expect(graphics.fillStyle).toEqual({
-                ...GraphicsContext._getDefaultStyle('fill'),
+                ...GraphicsContext.defaultFillStyle,
                 matrix: null,
                 texture: Texture.WHITE,
             });
@@ -121,7 +121,7 @@ describe('Graphics', () =>
 
             matrix.scale(2, 3);
 
-            const style = convertFillInputToFillStyle({ texture, matrix }, GraphicsContext._getDefaultStyle('fill'));
+            const style = convertFillInputToFillStyle({ texture, matrix }, GraphicsContext.defaultFillStyle);
 
             expect(style.matrix.a).toBe(1 / 2);
             expect(style.matrix.d).toBe(1 / 3);

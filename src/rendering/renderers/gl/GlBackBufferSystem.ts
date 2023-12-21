@@ -1,5 +1,4 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { lazyInit } from '../../../utils/data/lazyInit';
 import { Shader } from '../shared/shader/Shader';
 import { State } from '../shared/state/State';
 import { TextureSource } from '../shared/texture/sources/TextureSource';
@@ -10,7 +9,7 @@ import type { RenderOptions } from '../shared/system/AbstractRenderer';
 import type { System } from '../shared/system/System';
 import type { WebGLRenderer } from './WebGLRenderer';
 
-const bigTriangleProgram = lazyInit<GlProgram>(() => new GlProgram({
+const bigTriangleProgram = new GlProgram({
     vertex: `
         out vec2 vUv;
 
@@ -32,14 +31,14 @@ const bigTriangleProgram = lazyInit<GlProgram>(() => new GlProgram({
             fragColor = texture(uTexture, vUv);
         }`,
     name: 'big-triangle',
-}));
+});
 
-const bigTriangleShader = lazyInit<Shader>(() => new Shader({
-    glProgram: bigTriangleProgram.value,
+const bigTriangleShader = new Shader({
+    glProgram: bigTriangleProgram,
     resources: {
         uTexture: Texture.WHITE.source,
     },
-}));
+});
 
 /** The options for the back buffer system. */
 export interface GlBackBufferOptions
@@ -141,9 +140,9 @@ export class GlBackBufferSystem implements System
 
         renderer.renderTarget.bind(this._targetTexture, false);
 
-        bigTriangleShader.value.resources.uTexture = this._backBufferTexture.source;
+        bigTriangleShader.resources.uTexture = this._backBufferTexture.source;
 
-        renderer.shader.bind(bigTriangleShader.value, false);
+        renderer.shader.bind(bigTriangleShader, false);
         renderer.state.set(State.for2d());
 
         gl.drawArrays(gl.TRIANGLES, 0, 3);
