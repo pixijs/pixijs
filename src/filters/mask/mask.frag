@@ -1,7 +1,7 @@
 in vec2 vMaskCoord;
 in vec2 vTextureCoord;
 
-uniform sampler2D uSampler;
+uniform sampler2D uTexture;
 uniform sampler2D mapTexture;
 
 uniform float alpha;
@@ -19,7 +19,7 @@ void main(void)
 
     // TODO look into why this is needed
     float npmAlpha = alpha; 
-    vec4 original = texture(uSampler, vTextureCoord);
+    vec4 original = texture(uTexture, vTextureCoord);
     vec4 masky = texture(mapTexture, vMaskCoord);
     float alphaMul = 1.0 - npmAlpha * (1.0 - masky.a);
 

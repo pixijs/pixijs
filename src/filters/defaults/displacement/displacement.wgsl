@@ -17,8 +17,8 @@ struct DisplacementUniforms {
 
 
 @group(0) @binding(0) var<uniform> gfu: GlobalFilterUniforms;
-@group(0) @binding(1) var uSampler: texture_2d<f32>;
-@group(0) @binding(2) var mySampler : sampler;
+@group(0) @binding(1) var uTexture: texture_2d<f32>;
+@group(0) @binding(2) var uSampler : sampler;
 
 @group(1) @binding(0) var<uniform> filterUniforms : DisplacementUniforms;
 @group(1) @binding(1) var mapTexture: texture_2d<f32>;
@@ -84,5 +84,5 @@ fn mainFragment(
     
     var offset =  gfu.inputSize.zw * (filterUniforms.rotation * (map.xy - 0.5)) * filterUniforms.scale; 
    
-     return textureSample(uSampler, mySampler, clamp(uv + offset, gfu.inputClamp.xy, gfu.inputClamp.zw));
+     return textureSample(uTexture, uSampler, clamp(uv + offset, gfu.inputClamp.xy, gfu.inputClamp.zw));
 }

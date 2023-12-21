@@ -15,8 +15,8 @@ struct MaskUniforms {
 
 
 @group(0) @binding(0) var<uniform> gfu: GlobalFilterUniforms;
-@group(0) @binding(1) var uSampler: texture_2d<f32>;
-@group(0) @binding(2) var mySampler : sampler;
+@group(0) @binding(1) var uTexture: texture_2d<f32>;
+@group(0) @binding(2) var uSampler : sampler;
 
 @group(1) @binding(0) var<uniform> filterUniforms : MaskUniforms;
 @group(1) @binding(1) var mapTexture: texture_2d<f32>;
@@ -85,8 +85,8 @@ fn mainFragment(
         step(filterUv.x, maskClamp.z) +
         step(filterUv.y, maskClamp.w));
 
-    var mask = textureSample(mapTexture, mySampler, filterUv);
-    var source = textureSample(uSampler, mySampler, uv);
+    var mask = textureSample(mapTexture, uSampler, filterUv);
+    var source = textureSample(uTexture, uSampler, uv);
     
     var npmAlpha = 0.0;
 

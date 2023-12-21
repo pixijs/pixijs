@@ -27,7 +27,7 @@ export function generateBlurProgram(horizontal: boolean, kernelSize: number)
         const kernelIndex = i < halfLength ? i : (kernelSize - i - 1);
         const kernelValue = kernel[kernelIndex].toString();
 
-        blurSamplingSource[i] = `finalColor += textureSample(uSampler, mySampler, offset${i}) * ${kernelValue};`;
+        blurSamplingSource[i] = `finalColor += textureSample(uTexture, uSampler, offset${i}) * ${kernelValue};`;
     }
 
     const blurStruct = blurStructSource.join('\n');

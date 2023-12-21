@@ -9,7 +9,7 @@ import type { BindResource } from './BindResource';
  * // Create a bind group with a single texture and sampler
  * const bindGroup = new BindGroup({
  *    uTexture: texture.source,
- *    uSampler: texture.style,
+ *    uTexture: texture.style,
  * });
  *
  * Bind groups resources must implement the {@link BindResource} interface.

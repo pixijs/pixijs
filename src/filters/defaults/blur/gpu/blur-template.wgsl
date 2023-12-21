@@ -14,8 +14,8 @@ struct BlurUniforms {
 };
 
 @group(0) @binding(0) var<uniform> gfu: GlobalFilterUniforms;
-@group(0) @binding(1) var uSampler: texture_2d<f32>;
-@group(0) @binding(2) var mySampler : sampler;
+@group(0) @binding(1) var uTexture: texture_2d<f32>;
+@group(0) @binding(2) var uSampler : sampler;
 
 @group(1) @binding(0) var<uniform> blurUniforms : BlurUniforms;
 
