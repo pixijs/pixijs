@@ -74,8 +74,9 @@ describe('Visual Tests', () =>
                 }
 
                 TexturePool.clear();
-                Assets.reset();
 
+                // reset assets each time..
+                Assets.reset();
                 setAssetBasePath();
 
                 const res = await renderTest(
