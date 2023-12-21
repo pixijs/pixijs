@@ -233,7 +233,7 @@ describe('Graphics Drawing', () =>
             };
 
             expect(graphics.strokeStyle).toEqual({
-                ...GraphicsContext._getDefaultStyle('stroke'),
+                ...GraphicsContext.defaultStrokeStyle,
                 width: 123,
                 alpha: 0.25,
                 color: 0xff0000,
@@ -246,7 +246,7 @@ describe('Graphics Drawing', () =>
             // expect defaults from empty assignment
             graphics.strokeStyle = {};
 
-            expect(graphics.strokeStyle).toEqual(GraphicsContext._getDefaultStyle('stroke'));
+            expect(graphics.strokeStyle).toEqual(GraphicsContext.defaultStrokeStyle);
 
             graphics.destroy();
         });

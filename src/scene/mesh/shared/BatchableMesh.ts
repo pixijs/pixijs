@@ -3,6 +3,10 @@ import type { Renderable } from '../../../rendering/renderers/shared/Renderable'
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { MeshView } from './MeshView';
 
+/**
+ * A batchable mesh object.
+ * @memberof rendering
+ */
 export class BatchableMesh implements BatchableObject
 {
     public indexStart: number;

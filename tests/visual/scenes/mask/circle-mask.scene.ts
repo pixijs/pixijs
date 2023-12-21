@@ -9,7 +9,8 @@ export const scene: TestScene = {
     {
         const rect = new Graphics()
             .rect(0, 0, 128, 128)
-            .fill('red');
+            .fill('red')
+            .stroke({ color: 0x00FF00, width: 20, alignment: 1 });
 
         const circle = new Graphics()
             .circle(128 / 2, 128 / 2, 128 / 2)

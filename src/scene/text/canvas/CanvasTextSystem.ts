@@ -21,6 +21,10 @@ interface CanvasAndContext
     context: ICanvasRenderingContext2D;
 }
 
+/**
+ * System that manages the generation of textures from the renderer
+ * @memberof rendering
+ */
 export class CanvasTextSystem implements System
 {
     /** @ignore */

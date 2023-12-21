@@ -7,7 +7,15 @@ import type { DestroyOptions } from '../container/destroyTypes';
 import type { MeshOptions } from '../mesh/shared/Mesh';
 
 /**
- * Options for the {@link scene.MeshPlane} constructor.
+ * Constructor options used for `MeshPlane` instances.
+ * ```js
+ * const meshPlane = new MeshPlane({
+ *    texture: Texture.from('snake.png'),
+ *    verticesX: 20,
+ *    verticesY: 20,
+ * });
+ * ```
+ * @see {@link scene.MeshPlane}
  * @memberof scene
  */
 export interface MeshPlaneOptions extends Omit<MeshOptions, 'geometry'>

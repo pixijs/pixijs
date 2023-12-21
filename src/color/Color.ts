@@ -6,7 +6,24 @@ import type { AnyColor, HslaColor, HslColor, HsvaColor, HsvColor, RgbaColor, Rgb
 extend([namesPlugin]);
 
 /**
- * Color utilities.
+ * Pixi supports multiple color formats, including CSS color strings, hex, numbers, and arrays.
+ *
+ * When providing values for any of the color properties, you can use any of the {@link color.ColorSource} formats.
+ * ```typescript
+ * import { Color } from 'pixi.js';
+ *
+ * // All of these are valid:
+ * sprite.tint = 'red';
+ * sprite.tint = 0xff0000;
+ * sprite.tint = '#ff0000';
+ * sprite.tint = new Color('red');
+ *
+ * // Same for graphics fill/stroke colors and other  color values:
+ * graphics.fill({ color: 'red' });
+ * graphics.fill({ color: 0xff0000 });
+ * graphics.stroke({ color: '#ff0000' });
+ * graphics.stroke({ color: new Color('red')};
+ * ```
  * @namespace color
  */
 
@@ -19,7 +36,8 @@ extend([namesPlugin]);
 export type RgbaArray = [number, number, number, number];
 
 /**
- * Value types for the constructor of {@link Color}.
+ * Valid formats to use when defining any color properties, also valid for the {@link color.Color} constructor.
+ *
  * These types are extended from [colord](https://www.npmjs.com/package/colord) with some PixiJS-specific extensions.
  *
  * Possible value types are:
@@ -50,7 +68,7 @@ export type RgbaArray = [number, number, number, number];
  *   `'hsl(0, 100%, 50%)'`, `'hsl(0deg 100% 50%)'`, `'hsla(0, 100%, 50%, 0.5)'`, `'hsla(0deg 100% 50% / 50%)'`, etc.
  * - HSV(A) objects:
  *   `{ h: 0, s: 100, v: 100 }`, `{ h: 0, s: 100, v: 100, a: 0.5 }`, etc.
- * - {@link Color} objects.
+ * - {@link color.Color} objects.
  * @since 7.2.0
  * @memberof color
  */
@@ -74,9 +92,10 @@ export type ColorSource =
 type ColorSourceTypedArray = Float32Array | Uint8Array | Uint8ClampedArray;
 
 /**
- * Color utility class.
- * @example
+ * Color utility class. Can accept any {@link color.ColorSource} format in its constructor.
+ * ```js
  * import { Color } from 'pixi.js';
+ *
  * new Color('red').toArray(); // [1, 0, 0, 1]
  * new Color(0xff0000).toArray(); // [1, 0, 0, 1]
  * new Color('ff0000').toArray(); // [1, 0, 0, 1]
@@ -93,6 +112,7 @@ type ColorSourceTypedArray = Float32Array | Uint8Array | Uint8ClampedArray;
  * new Color({ h: 0, s: 100, l: 50, a: 0.5 }).toArray(); // [1, 0, 0, 0.5]
  * new Color('hsl(0, 100%, 50%, 50%)').toArray(); // [1, 0, 0, 0.5]
  * new Color({ h: 0, s: 100, v: 100, a: 0.5 }).toArray(); // [1, 0, 0, 0.5]
+ * ```
  * @since 7.2.0
  * @memberof color
  */
@@ -100,6 +120,7 @@ export class Color
 {
     /**
      * Default Color object for static uses
+     * @ignore
      * @example
      * import { Color } from 'pixi.js';
      * Color.shared.setValue(0xffffff).toHex(); // '#ffffff'

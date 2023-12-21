@@ -40,7 +40,10 @@ export interface ContextSystemOptions
     antialias?: boolean;
 }
 
-/** System plugin to the renderer to manage the context. */
+/**
+ * System plugin to the renderer to manage the context
+ * @memberof rendering
+ */
 export class GlContextSystem implements System<ContextSystemOptions>
 {
     /** @ignore */

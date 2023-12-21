@@ -89,19 +89,24 @@ export type GraphicsInstructions = FillInstruction | StrokeInstruction | Texture
 
 const tempMatrix = new Matrix();
 
+/**
+ * A class that holds the render data for a GraphicsContext.
+ * @memberof scene
+ */
 export class GraphicsContext extends EventEmitter<{
     update: GraphicsContext
     destroy: GraphicsContext
 }>
 {
-    public static defaultFillStyle: Partial<ConvertedFillStyle> = {
+    public static defaultFillStyle: ConvertedFillStyle = {
         color: 0xffffff,
         alpha: 1,
+        texture: Texture.WHITE,
         matrix: null,
         fill: null,
     };
 
-    public static defaultStrokeStyle: Partial<ConvertedStrokeStyle> = {
+    public static defaultStrokeStyle: ConvertedStrokeStyle = {
         width: 1,
         color: 0xffffff,
         alpha: 1,
@@ -109,6 +114,7 @@ export class GraphicsContext extends EventEmitter<{
         miterLimit: 10,
         cap: 'butt',
         join: 'miter',
+        texture: Texture.WHITE,
         matrix: null,
         fill: null,
     };
@@ -122,8 +128,8 @@ export class GraphicsContext extends EventEmitter<{
     private _activePath: GraphicsPath = new GraphicsPath();
     private _transform: Matrix = new Matrix();
 
-    private _fillStyle: ConvertedFillStyle = GraphicsContext._getDefaultStyle('fill');
-    private _strokeStyle: ConvertedStrokeStyle = GraphicsContext._getDefaultStyle('stroke');
+    private _fillStyle: ConvertedFillStyle = { ...GraphicsContext.defaultFillStyle };
+    private _strokeStyle: ConvertedStrokeStyle = { ...GraphicsContext.defaultStrokeStyle };
     private _stateStack: { fillStyle: ConvertedFillStyle; strokeStyle: ConvertedStrokeStyle, transform: Matrix }[] = [];
 
     private _tick = 0;
@@ -138,7 +144,7 @@ export class GraphicsContext extends EventEmitter<{
 
     set fillStyle(value: FillStyleInputs)
     {
-        this._fillStyle = convertFillInputToFillStyle(value, GraphicsContext._getDefaultStyle('fill'));
+        this._fillStyle = convertFillInputToFillStyle(value, GraphicsContext.defaultFillStyle);
     }
 
     get strokeStyle(): ConvertedStrokeStyle
@@ -148,19 +154,19 @@ export class GraphicsContext extends EventEmitter<{
 
     set strokeStyle(value: FillStyleInputs)
     {
-        this._strokeStyle = convertFillInputToFillStyle(value, GraphicsContext._getDefaultStyle('stroke'));
+        this._strokeStyle = convertFillInputToFillStyle(value, GraphicsContext.defaultStrokeStyle) as ConvertedStrokeStyle;
     }
 
     public setFillStyle(style: FillStyleInputs): this
     {
-        this._fillStyle = convertFillInputToFillStyle(style, GraphicsContext._getDefaultStyle('fill'));
+        this._fillStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultFillStyle);
 
         return this;
     }
 
     public setStrokeStyle(style: FillStyleInputs): this
     {
-        this._strokeStyle = convertFillInputToFillStyle(style, GraphicsContext._getDefaultStyle('stroke'));
+        this._strokeStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultStrokeStyle) as ConvertedStrokeStyle;
 
         return this;
     }
@@ -227,7 +233,7 @@ export class GraphicsContext extends EventEmitter<{
                 deprecation('8.0.0', 'GraphicsContext.fill(color, alpha) is deprecated, use GraphicsContext.fill({ color, alpha }) instead');
                 style = { color: style, alpha };
             }
-            this._fillStyle = convertFillInputToFillStyle(style, GraphicsContext._getDefaultStyle('fill'));
+            this._fillStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultFillStyle);
         }
 
         // TODO not a fan of the clone!!
@@ -273,7 +279,7 @@ export class GraphicsContext extends EventEmitter<{
 
         if (style)
         {
-            this._strokeStyle = convertFillInputToFillStyle(style, GraphicsContext._getDefaultStyle('stroke'));
+            this._strokeStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultStrokeStyle);
         }
 
         // TODO not a fan of the clone!!
@@ -558,7 +564,7 @@ export class GraphicsContext extends EventEmitter<{
         return this;
     }
 
-    public star(x: number, y: number, points: number, radius: number, innerRadius: number, rotation: number): this
+    public star(x: number, y: number, points: number, radius: number, innerRadius = 0, rotation = 0): this
     {
         this._tick++;
 
@@ -704,9 +710,7 @@ export class GraphicsContext extends EventEmitter<{
             {
                 const data = instruction.data as TextureInstruction['data'];
 
-                bounds.pushMatrix(data.transform);
-                bounds.addFrame(data.dx, data.dy, data.dx + data.dw, data.dy + data.dh);
-                bounds.popMatrix();
+                bounds.addFrame(data.dx, data.dy, data.dx + data.dw, data.dy + data.dh, data.transform);
             }
             if (action === 'stroke')
             {
@@ -800,16 +804,6 @@ export class GraphicsContext extends EventEmitter<{
         return hasHit;
     }
 
-    public static _getDefaultStyle(type: 'fill' | 'stroke'): ConvertedFillStyle | ConvertedStrokeStyle
-    {
-        if (type === 'fill')
-        {
-            return { texture: Texture.WHITE, ...GraphicsContext.defaultFillStyle } as ConvertedFillStyle;
-        }
-
-        return { texture: Texture.WHITE, ...GraphicsContext.defaultStrokeStyle } as ConvertedStrokeStyle;
-    }
-
     /**
      * Destroys the GraphicsData object.
      * @param options - Options parameter. A boolean will act as if all options
@@ -853,4 +847,3 @@ export class GraphicsContext extends EventEmitter<{
         this._transform = null;
     }
 }
-

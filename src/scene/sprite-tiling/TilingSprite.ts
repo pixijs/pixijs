@@ -5,13 +5,24 @@ import { Container } from '../container/Container';
 import { definedProps } from '../container/utils/definedProps';
 import { TilingSpriteView } from './TilingSpriteView';
 
+import type { Point } from '../../maths/point/Point';
 import type { PointData } from '../../maths/point/PointData';
-import type { PointLike } from '../../maths/point/PointLike';
 import type { ContainerOptions } from '../container/Container';
 import type { TilingSpriteViewOptions } from './TilingSpriteView';
 
 /**
- * Options for the {@link scene.TilingSprite} constructor.
+ * Constructor options used for `TilingSprite` instances. Extends {@link scene.TilingSpriteViewOptions}
+ * ```js
+ * const tilingSprite = new TilingSprite({
+ *    texture: Texture.from('assets/image.png'),
+ *    width: 100,
+ *    height: 100,
+ *    tilePosition: { x: 100, y: 100 },
+ *    tileScale: { x: 2, y: 2 },
+ * });
+ * ```
+ * @see {@link scene.TilingSprite}
+ * @see {@link scene.TilingSpriteViewOptions}
  * @memberof scene
  */
 export interface TilingSpriteOptions extends TilingSpriteViewOptions, Partial<ContainerOptions<TilingSpriteView>>
@@ -166,7 +177,7 @@ export class TilingSprite extends Container<TilingSpriteView>
      * const sprite = new TilingSprite({texture: Texture.WHITE});
      * sprite.anchor.set(0.5); // This will set the origin to center. (0.5) is same as (0.5, 0.5).
      */
-    get anchor(): PointLike
+    get anchor(): Point
     {
         return this.view.anchor;
     }

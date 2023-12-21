@@ -12,6 +12,7 @@ export interface TextureGCSystemOptions
 /**
  * System plugin to the renderer to manage texture garbage collection on the GPU,
  * ensuring that it does not get clogged up with textures that are no longer being used.
+ * @memberof rendering
  */
 export class TextureGCSystem implements System
 {

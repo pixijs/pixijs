@@ -14,6 +14,10 @@ export interface NineSliceGeometryOptions
     textureMatrix?: Matrix
 }
 
+/**
+ * The NineSliceGeometry class allows you to create a NineSlicePlane object.
+ * @memberof scene
+ */
 export class NineSliceGeometry extends PlaneGeometry
 {
     public static defaultOptions: NineSliceGeometryOptions = {

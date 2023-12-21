@@ -10,6 +10,10 @@ interface MaskConversionTest
     maskClass: new (item: any) => Effect & PoolItem;
 }
 
+/**
+ * A class that manages the conversion of masks to mask effects.
+ * @memberof rendering
+ */
 export class MaskEffectManagerClass
 {
     /**

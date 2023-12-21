@@ -10,7 +10,10 @@ import type { RenderTarget } from '../../shared/renderTarget/RenderTarget';
 import type { RenderTargetAdaptor, RenderTargetSystem } from '../../shared/renderTarget/RenderTargetSystem';
 import type { Texture } from '../../shared/texture/Texture';
 
-/** the WebGL adaptor for the render target system. Allows the Render Target System to be used with the WebGL renderer */
+/**
+ * The WebGL adaptor for the render target system. Allows the Render Target System to be used with the WebGL renderer
+ * @memberof rendering
+ */
 export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget>
 {
     private _renderTargetSystem: RenderTargetSystem<GlRenderTarget>;

@@ -5,7 +5,7 @@ import type { Observer } from '../../maths/point/ObservablePoint';
 
 /**
  * Options for the {@link utils.Transform} constructor.
- * @memberof utils
+ * @memberof utils.Transform
  */
 export interface TransformOptions
 {
