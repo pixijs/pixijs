@@ -15,24 +15,18 @@ export const scene: TestScene = {
             src: `${basePath}textures/bunny.png`,
             data: {
                 resolution: 1,
-                width: 13,
-                height: 19,
             }
         });
         const texture2 = await Assets.load<Texture>({
             src: `${basePath}textures/bunny.1.png`,
             data: {
                 resolution: 1,
-                width: 13,
-                height: 19,
             }
         });
         const texture3 = await Assets.load<Texture>({
             src: `${basePath}textures/profile-abel@2x.jpg`,
             data: {
                 resolution: 1,
-                width: 128,
-                height: 128,
             }
         });
 
