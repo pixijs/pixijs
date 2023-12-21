@@ -1,5 +1,5 @@
 import type { Point } from '../../../../maths/point/Point';
-import type { Bounds } from '../../../../scene/container/bounds/Bounds';
+import type { Bounds, BoundsData } from '../../../../scene/container/bounds/Bounds';
 import type { DestroyOptions } from '../../../../scene/container/destroyTypes';
 
 export interface ViewObserver
@@ -30,6 +30,9 @@ export interface View
      * @internal
      */
     roundPixels?: 0 | 1;
+
+    /** this is the AABB rectangle bounds of the view in local untransformed space. */
+    bounds: BoundsData;
 
     addBounds: (bounds: Bounds) => void;
     containsPoint: (point: Point) => boolean;

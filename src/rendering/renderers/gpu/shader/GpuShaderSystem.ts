@@ -4,6 +4,10 @@ import type { System } from '../../shared/system/System';
 import type { GPU } from '../GpuDeviceSystem';
 import type { GpuProgram } from './GpuProgram';
 
+/**
+ * A system that manages the rendering of GpuPrograms.
+ * @memberof rendering
+ */
 export class GpuShaderSystem implements System
 {
     /** @ignore */

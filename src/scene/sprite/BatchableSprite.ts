@@ -2,8 +2,12 @@ import type { Batch, BatchableObject, Batcher } from '../../rendering/batcher/sh
 import type { Renderable } from '../../rendering/renderers/shared/Renderable';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { View } from '../../rendering/renderers/shared/view/View';
-import type { SimpleBounds } from '../container/bounds/Bounds';
+import type { BoundsData } from '../container/bounds/Bounds';
 
+/**
+ * A batchable sprite object.
+ * @memberof rendering
+ */
 export class BatchableSprite implements BatchableObject
 {
     public indexStart: number;
@@ -18,7 +22,7 @@ export class BatchableSprite implements BatchableObject
     public location = 0; // location in the buffer
     public batcher: Batcher = null;
     public batch: Batch = null;
-    public bounds: SimpleBounds;
+    public bounds: BoundsData;
     public roundPixels: 0 | 1 = 0;
 
     get blendMode() { return this.renderable.rgBlendMode; }
@@ -44,10 +48,10 @@ export class BatchableSprite implements BatchableObject
 
         const bounds = this.bounds;
 
-        const w0 = bounds.right;
-        const w1 = bounds.left;
-        const h0 = bounds.bottom;
-        const h1 = bounds.top;
+        const w0 = bounds.maxX;
+        const w1 = bounds.minX;
+        const h0 = bounds.maxY;
+        const h1 = bounds.minY;
 
         const uvs = texture.uvs;
 

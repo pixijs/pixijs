@@ -20,18 +20,21 @@ export enum LoaderParserPriority
 }
 
 /**
- * All functions are optional here. The flow:
+ * The interface to define a loader parser *(all functions are optional)*.
  *
- * for every asset,
+ * When you create a `parser` object, the flow for every asset loaded is:
  *
- * 1. `parser.test()`: Test the asset url.
- * 2. `parser.load()`: If test passes call the load function with the url
- * 3. `parser.testParse()`: Test to see if the asset should be parsed by the plugin
- * 4. `parse.parse()`: If test is parsed, then run the parse function on the asset.
+ * 1. `parser.test()` - Each URL to load will be tested here, if the test is passed the assets are
+ * loaded using the load function below. Good place to test for things like file extensions!
+ * 2. `parser.load()` - This is the promise that loads the URL provided resolves with a loaded asset
+ * if returned by the parser.
+ * 3. `parser.testParse()` - This function is used to test if the parse function should be run on the
+ *  asset If this returns true then parse is called with the asset
+ * 4. `parse.parse()` - Gets called on the asset it testParse passes. Useful to convert a raw asset
+ *  into something more useful
  *
- * some plugins may only be used for parsing,
- * some only for loading
- * and some for both!
+ * <br/>
+ * Some loaders may only be used for parsing, some only for loading, and some for both!
  * @memberof assets
  */
 export interface LoaderParser<ASSET = any, META_DATA = any, CONFIG = Record<string, any>>
@@ -46,7 +49,7 @@ export interface LoaderParser<ASSET = any, META_DATA = any, CONFIG = Record<stri
     name: string;
 
     /**
-     * each URL to load will be tested here,
+     * Each URL to load will be tested here,
      * if the test is passed the assets are loaded using the load function below.
      * Good place to test for things like file extensions!
      * @param url - The URL to test
@@ -74,7 +77,7 @@ export interface LoaderParser<ASSET = any, META_DATA = any, CONFIG = Record<stri
     testParse?: (asset: ASSET, resolvedAsset?: ResolvedAsset<META_DATA>, loader?: Loader) => Promise<boolean>;
 
     /**
-     * Gets called on the asset it testParse passes. Useful to convert a raw asset into something more useful than
+     * Gets called on the asset it testParse passes. Useful to convert a raw asset into something more useful
      * @param asset - The loaded asset data
      * @param resolvedAsset - Any custom additional information relevant to the asset being loaded
      * @param loader - The loader instance

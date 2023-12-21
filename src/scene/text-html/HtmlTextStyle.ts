@@ -7,12 +7,23 @@ import { textStyleToCSS } from './utils/textStyleToCSS';
 import type { FillStyleInputs } from '../graphics/shared/GraphicsContext';
 import type { TextStyleOptions } from '../text/TextStyle';
 
+/**
+ * Options for HTML text style, extends {@link scene.TextStyle}.
+ * @memberof scene
+ * @extends scene.TextStyleOptions
+ * @property {string[]} [cssOverrides] - CSS style(s) to add.
+ * @property {Record<string, scene.HTMLTextStyleOptions>} [tagStyles] - Tag styles.
+ */
 export interface HTMLTextStyleOptions extends Omit<TextStyleOptions, 'leading' | 'textBaseline' | 'trim' >
 {
     cssOverrides?: string[];
     tagStyles?: Record<string, HTMLTextStyleOptions>;
 }
 
+/**
+ * A TextStyle object rendered by the HTMLTextSystem.
+ * @memberof text
+ */
 export class HTMLTextStyle extends TextStyle
 {
     private _cssOverrides: string[] = [];

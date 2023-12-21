@@ -2,21 +2,24 @@ import { Matrix } from '../../../maths/matrix/Matrix';
 import { Rectangle } from '../../../maths/shapes/Rectangle';
 
 /** Simple bounds implementation instead of more ambiguous [number, number, number, number] */
-export interface SimpleBounds
+export interface BoundsData
 {
-    left: number;
-    top: number;
-    right: number;
-    bottom: number;
+    minX: number;
+    minY: number;
+    maxX: number;
+    maxY: number;
 }
 
+const defaultMatrix = new Matrix();
+
 // TODO optimisations
-// 1 - setMatrix could set a reference directly, this would save a copy op per object
-// 2 - push and pop matrix could be optimised to use an index counter
-// 3 - get rectangle could use a dirty flag, rather than setting the data each time is called
-// 4 - push matrix can avoid the copy op
-// 5 - pop matrix can avoid the copy op
-// 6 - getFrame ALWAYS assumes a matrix, could be optimised to avoid the matrix calculation if not needed
+// 1 - get rectangle could use a dirty flag, rather than setting the data each time is called
+// 2- getFrame ALWAYS assumes a matrix, could be optimised to avoid the matrix calculation if not needed
+
+/**
+ * A representation of an AABB bounding box.
+ * @memberof rendering
+ */
 export class Bounds
 {
     public minX = Infinity;
@@ -27,9 +30,7 @@ export class Bounds
 
     public maxY = -Infinity;
 
-    // todo optimise.. lots of bounds wont need this!
-    private readonly _matrixStack: Matrix[] = [];
-    public matrix = new Matrix();
+    public matrix = defaultMatrix;
 
     private _rectangle: Rectangle;
 
@@ -65,51 +66,14 @@ export class Bounds
         return rectangle;
     }
 
-    public clear(): void
+    public clear(): this
     {
         this.minX = Infinity;
         this.minY = Infinity;
         this.maxX = -Infinity;
         this.maxY = -Infinity;
 
-        this._matrixStack.length = 0;
-        this.matrix.identity();
-    }
-
-    public pushMatrix(matrix: Matrix)
-    {
-        this._matrixStack.push(matrix);
-
-        if (this._matrixStack.length > 1)
-        {
-            this.matrix.copyFrom(this._matrixStack[this._matrixStack.length - 2]);
-
-            this.matrix.append(matrix);
-        }
-        else
-        {
-            this.matrix.copyFrom(matrix);
-        }
-    }
-
-    public popMatrix()
-    {
-        this._matrixStack.pop();
-
-        if (this._matrixStack.length > 1)
-        {
-            this.matrix.copyFrom(this._matrixStack[this._matrixStack.length - 2]);
-
-            this.matrix.append(this._matrixStack[this._matrixStack.length - 1]);
-        }
-        else if (this._matrixStack.length === 1)
-        {
-            this.matrix.copyFrom(this._matrixStack[0]);
-        }
-        else
-        {
-            this.matrix.identity();
-        }
+        return this;
     }
 
     public setMatrix(matrix: Matrix): void
@@ -131,10 +95,11 @@ export class Bounds
      * @param y0 - top Y of frame
      * @param x1 - right X of frame
      * @param y1 - bottom Y of frame
+     * @param matrix
      */
-    public addFrame(x0: number, y0: number, x1: number, y1: number)
+    public addFrame(x0: number, y0: number, x1: number, y1: number, matrix?: Matrix): void
     {
-        const matrix = this.matrix;
+        matrix ||= this.matrix;
 
         const a = matrix.a;
         const b = matrix.b;
@@ -143,6 +108,7 @@ export class Bounds
         const tx = matrix.tx;
         const ty = matrix.ty;
 
+        //  console.log('addframe', tx);
         let minX = this.minX;
         let minY = this.minY;
         let maxX = this.maxX;
@@ -151,46 +117,51 @@ export class Bounds
         let x = (a * x0) + (c * y0) + tx;
         let y = (b * x0) + (d * y0) + ty;
 
-        minX = x < minX ? x : minX;
-        minY = y < minY ? y : minY;
-        maxX = x > maxX ? x : maxX;
-        maxY = y > maxY ? y : maxY;
+        if (x < minX) minX = x;
+        if (y < minY) minY = y;
+        if (x > maxX) maxX = x;
+        if (y > maxY) maxY = y;
 
         x = (a * x1) + (c * y0) + tx;
         y = (b * x1) + (d * y0) + ty;
-        minX = x < minX ? x : minX;
-        minY = y < minY ? y : minY;
-        maxX = x > maxX ? x : maxX;
-        maxY = y > maxY ? y : maxY;
+
+        if (x < minX) minX = x;
+        if (y < minY) minY = y;
+        if (x > maxX) maxX = x;
+        if (y > maxY) maxY = y;
 
         x = (a * x0) + (c * y1) + tx;
         y = (b * x0) + (d * y1) + ty;
-        minX = x < minX ? x : minX;
-        minY = y < minY ? y : minY;
-        maxX = x > maxX ? x : maxX;
-        maxY = y > maxY ? y : maxY;
+
+        if (x < minX) minX = x;
+        if (y < minY) minY = y;
+        if (x > maxX) maxX = x;
+        if (y > maxY) maxY = y;
 
         x = (a * x1) + (c * y1) + tx;
         y = (b * x1) + (d * y1) + ty;
-        minX = x < minX ? x : minX;
-        minY = y < minY ? y : minY;
-        maxX = x > maxX ? x : maxX;
-        maxY = y > maxY ? y : maxY;
+
+        if (x < minX) minX = x;
+        if (y < minY) minY = y;
+        if (x > maxX) maxX = x;
+        if (y > maxY) maxY = y;
 
         this.minX = minX;
         this.minY = minY;
         this.maxX = maxX;
         this.maxY = maxY;
+
+        // console.log('addframe', this.minX, this.minY, this.maxX, this.maxY);
     }
 
-    public addRect(rect: Rectangle)
+    public addRect(rect: Rectangle, matrix?: Matrix)
     {
-        this.addFrame(rect.x, rect.y, rect.x + rect.width, rect.y + rect.height);
+        this.addFrame(rect.x, rect.y, rect.x + rect.width, rect.y + rect.height, matrix);
     }
 
-    public addBounds(bounds: Bounds)
+    public addBounds(bounds: BoundsData, matrix?: Matrix)
     {
-        this.addFrame(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY);
+        this.addFrame(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY, matrix);
     }
 
     public addBoundsMask(mask: Bounds): void
@@ -308,6 +279,26 @@ export class Bounds
         return this.maxY - this.minY;
     }
 
+    get left(): number
+    {
+        return this.minX;
+    }
+
+    get right(): number
+    {
+        return this.maxX;
+    }
+
+    get top(): number
+    {
+        return this.minY;
+    }
+
+    get bottom(): number
+    {
+        return this.maxY;
+    }
+
     get isPositive(): boolean
     {
         return (this.maxX - this.minX > 0) && (this.maxY - this.minY > 0);
@@ -323,15 +314,16 @@ export class Bounds
      * @param vertexData - calculated vertices
      * @param beginOffset - begin offset
      * @param endOffset - end offset, excluded
+     * @param matrix
      */
-    public addVertexData(vertexData: Float32Array, beginOffset: number, endOffset: number): void
+    public addVertexData(vertexData: Float32Array, beginOffset: number, endOffset: number, matrix?: Matrix): void
     {
         let minX = this.minX;
         let minY = this.minY;
         let maxX = this.maxX;
         let maxY = this.maxY;
 
-        const matrix = this.matrix;
+        matrix ||= this.matrix;
 
         const a = matrix.a;
         const b = matrix.b;

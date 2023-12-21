@@ -10,6 +10,10 @@ import type { Renderable } from '../../../rendering/renderers/shared/Renderable'
 import type { MeshAdaptor, MeshPipe } from '../shared/MeshPipe';
 import type { MeshView } from '../shared/MeshView';
 
+/**
+ * A MeshAdaptor that uses the WebGL to render meshes.
+ * @memberof rendering
+ */
 export class GlMeshAdaptor implements MeshAdaptor
 {
     public static extension = {

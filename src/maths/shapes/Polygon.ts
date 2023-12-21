@@ -7,6 +7,23 @@ import type { ShapePrimitive } from './ShapePrimitive';
 
 /**
  * A class to define a shape via user defined coordinates.
+ * <br/>
+ * `Polygon` can accept the following different constructor arguments:
+ * - An array of `Point` objects
+ * - An array of coordinate pairs
+ * <br/>
+ * These can be passed as a single array, or as a sequence of arguments.
+ * ```js
+ * import { Polygon } from '@pixi.js';
+ *
+ * // create a polygon object from an array of points, or an array of coordinate pairs
+ * const polygon1 = new Polygon([ new Point(0, 0), new Point(0, 100), new Point(100, 100) ]);
+ * const polygon2 = new Polygon([ 0, 0, 0, 100, 100, 100 ]);
+ *
+ * // or create a polygon object from a sequence of points, or coordinate pairs
+ * const polygon3 = new Polygon(new Point(0, 0), new Point(0, 100), new Point(100, 100));
+ * const polygon4 = new Polygon(0, 0, 0, 100, 100, 100);
+ * ```
  * @memberof maths
  */
 export class Polygon implements ShapePrimitive

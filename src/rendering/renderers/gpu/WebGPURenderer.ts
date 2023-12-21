@@ -6,7 +6,7 @@ import { AbstractRenderer } from '../shared/system/AbstractRenderer';
 import { SharedRenderPipes, SharedSystems } from '../shared/system/SharedSystems';
 import { RendererType } from '../types';
 import { BindGroupSystem } from './BindGroupSystem';
-import { BufferSystem } from './buffer/GpuBufferSystem';
+import { GpuBufferSystem } from './buffer/GpuBufferSystem';
 import { GpuColorMaskSystem } from './GpuColorMaskSystem';
 import { type GPU, GpuDeviceSystem } from './GpuDeviceSystem';
 import { GpuEncoderSystem } from './GpuEncoderSystem';
@@ -27,7 +27,7 @@ const DefaultWebGPUSystems = [
     ...SharedSystems,
     GpuEncoderSystem,
     GpuDeviceSystem,
-    BufferSystem,
+    GpuBufferSystem,
     GpuTextureSystem,
     GpuRenderTargetSystem,
     GpuShaderSystem,

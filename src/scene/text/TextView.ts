@@ -9,7 +9,7 @@ import { ensureTextStyle } from './utils/ensureTextStyle';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { View, ViewObserver } from '../../rendering/renderers/shared/view/View';
-import type { Bounds, SimpleBounds } from '../container/bounds/Bounds';
+import type { Bounds, BoundsData } from '../container/bounds/Bounds';
 import type { TextureDestroyOptions, TypeOrBool } from '../container/destroyTypes';
 import type { HTMLTextStyle, HTMLTextStyleOptions } from '../text-html/HtmlTextStyle';
 import type { TextStyle, TextStyleOptions } from './TextStyle';
@@ -39,6 +39,10 @@ const map = {
     bitmap: 'bitmapText',
 };
 
+/**
+ * A text view.
+ * @memberof text
+ */
 export class TextView implements View
 {
     public readonly uid: number = uid('textView');
@@ -54,7 +58,7 @@ export class TextView implements View
     public _didUpdate = true;
     public roundPixels?: 0 | 1 = 0;
 
-    private _bounds: SimpleBounds = { left: 0, right: 1, top: 0, bottom: 0 };
+    private _bounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
     private _boundsDirty = true;
     private _text: string;
     private readonly _renderMode: string;
@@ -67,7 +71,7 @@ export class TextView implements View
 
         this._renderMode = renderMode;
 
-        this.style = ensureTextStyle(renderMode, options.style);
+        this.style = options.style;
 
         this.renderPipeId = map[renderMode];
 
@@ -125,17 +129,17 @@ export class TextView implements View
         const _bounds = this.bounds;
 
         bounds.addFrame(
-            _bounds.left,
-            _bounds.top,
-            _bounds.right,
-            _bounds.bottom,
+            _bounds.minX,
+            _bounds.minY,
+            _bounds.maxX,
+            _bounds.maxY,
         );
     }
 
     public containsPoint(point: PointData)
     {
-        const width = this.bounds.right;
-        const height = this.bounds.bottom;
+        const width = this.bounds.maxX;
+        const height = this.bounds.maxY;
 
         const x1 = -width * this.anchor.x;
         let y1 = 0;
@@ -180,10 +184,10 @@ export class TextView implements View
             const width = bitmapMeasurement.width * scale;
             const height = bitmapMeasurement.height * scale;
 
-            bounds.left = (-anchor._x * width) - padding;
-            bounds.right = bounds.left + width;
-            bounds.top = (-anchor._y * (height + offset)) - padding;
-            bounds.bottom = bounds.top + height;
+            bounds.minX = (-anchor._x * width) - padding;
+            bounds.maxX = bounds.minX + width;
+            bounds.minY = (-anchor._y * (height + offset)) - padding;
+            bounds.maxY = bounds.minY + height;
         }
         else if (this.renderPipeId === 'htmlText')
         {
@@ -191,10 +195,10 @@ export class TextView implements View
 
             const { width, height } = htmlMeasurement;
 
-            bounds.left = (-anchor._x * width) - padding;
-            bounds.right = bounds.left + width;
-            bounds.top = (-anchor._y * height) - padding;
-            bounds.bottom = bounds.top + height;
+            bounds.minX = (-anchor._x * width) - padding;
+            bounds.maxX = bounds.minX + width;
+            bounds.minY = (-anchor._y * height) - padding;
+            bounds.maxY = bounds.minY + height;
         }
         else
         {
@@ -202,10 +206,10 @@ export class TextView implements View
 
             const { width, height } = canvasMeasurement;
 
-            bounds.left = (-anchor._x * width) - padding;
-            bounds.right = bounds.left + width;
-            bounds.top = (-anchor._y * height) - padding;
-            bounds.bottom = bounds.top + height;
+            bounds.minX = (-anchor._x * width) - padding;
+            bounds.maxX = bounds.minX + width;
+            bounds.minY = (-anchor._y * height) - padding;
+            bounds.maxY = bounds.minY + height;
         }
     }
 

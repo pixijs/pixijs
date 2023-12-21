@@ -1,17 +1,15 @@
 import EventEmitter from 'eventemitter3';
 import { Cache } from '../../../../assets/cache/Cache';
-import { DOMAdapter } from '../../../../environment/adapter';
 import { groupD8 } from '../../../../maths/matrix/groupD8';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { uid } from '../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { NOOP } from '../../../../utils/misc/NOOP';
-import { ImageSource } from './sources/ImageSource';
+import { BufferImageSource, type BufferSourceOptions } from './sources/BufferSource';
 import { resourceToTexture } from './sources/resourceToTexture';
 import { TextureSource } from './sources/TextureSource';
 import { TextureMatrix } from './TextureMatrix';
 
-import type { BufferSourceOptions } from './sources/BufferSource';
 import type { TextureSourceOptions } from './sources/TextureSource';
 
 /** Stores the width of the non-scalable borders, for example when used with {@link scene.NineSlicePlane} texture. */
@@ -103,7 +101,7 @@ export type TextureSourceLike = TextureSource | TextureSourceOptions | BufferSou
  *
  * If you didn't pass the texture frame to constructor, it enables `noFrame` mode:
  * it subscribes on baseTexture events, it automatically resizes at the same time as baseTexture.
- * @namespace core
+ * @memberof rendering
  * @class
  */
 export class Texture extends EventEmitter<{
@@ -380,53 +378,26 @@ export class Texture extends EventEmitter<{
         return this._source;
     }
 
-    private static _emptyTexture: Texture;
     /** an Empty Texture used internally by the engine */
-    public static get EMPTY(): Texture
-    {
-        if (!this._emptyTexture)
-        {
-            const texture = new Texture({});
-
-            texture.label = 'EMPTY';
-            texture.destroy = NOOP;
-            this._emptyTexture = texture;
-        }
-
-        return this._emptyTexture;
-    }
-    private static _whiteTexture: Texture;
+    public static EMPTY: Texture;
     /** a White texture used internally by the engine */
-    public static get WHITE(): Texture
-    {
-        if (!this._whiteTexture)
-        {
-            // create a white canvas
-            const canvas = DOMAdapter.get().createCanvas();
-
-            const size = 1;
-
-            canvas.width = size;
-            canvas.height = size;
-
-            const ctx = canvas.getContext('2d');
-
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, size, size);
-
-            const texture = new Texture({
-                source: new ImageSource({
-                    resource: canvas,
-                    alphaMode: 'premultiply-alpha-on-upload',
-                }),
-            });
-
-            texture.label = 'WHITE';
-            texture.destroy = NOOP;
-
-            this._whiteTexture = texture;
-        }
-
-        return this._whiteTexture;
-    }
+    public static WHITE: Texture;
 }
+
+Texture.EMPTY = new Texture({
+    label: 'EMPTY',
+});
+
+Texture.EMPTY.destroy = NOOP;
+
+Texture.WHITE = new Texture({
+    source: new BufferImageSource({
+        resource: new Uint8Array([255, 255, 255, 255]),
+        width: 1,
+        height: 1,
+        alphaMode: 'premultiply-alpha-on-upload'
+    }),
+    label: 'WHITE',
+});
+
+Texture.WHITE.destroy = NOOP;

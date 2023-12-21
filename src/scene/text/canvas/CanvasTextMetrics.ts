@@ -53,6 +53,7 @@ const contextSettings: ICanvasRenderingContext2DSettings = {
  *     align: 'center',
  * });
  * const textMetrics = TextMetrics.measureText('Your text', style);
+ * @memberof text
  */
 export class CanvasTextMetrics
 {

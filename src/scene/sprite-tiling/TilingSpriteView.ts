@@ -6,7 +6,7 @@ import { Transform } from '../../utils/misc/Transform';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';
-import type { Bounds, SimpleBounds } from '../container/bounds/Bounds';
+import type { Bounds, BoundsData } from '../container/bounds/Bounds';
 import type { TextureDestroyOptions, TypeOrBool } from '../container/destroyTypes';
 
 /**
@@ -38,6 +38,10 @@ export interface TilingSpriteViewOptions
     applyAnchorToTexture?: boolean
 }
 
+/**
+ * A tiling sprite renderable.
+ * @memberof scene
+ */
 export class TilingSpriteView implements View
 {
     public static defaultOptions: TilingSpriteViewOptions = {
@@ -64,7 +68,7 @@ export class TilingSpriteView implements View
 
     public roundPixels: 0 | 1 = 0;
 
-    private _bounds: SimpleBounds = { left: 0, right: 1, top: 0, bottom: 0 };
+    private _bounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
     private _boundsDirty = true;
     private _width: number;
     private _height: number;
@@ -139,11 +143,11 @@ export class TilingSpriteView implements View
         const width = this._width;
         const height = this._height;
 
-        bounds.right = -anchor._x * width;
-        bounds.left = bounds.right + width;
+        bounds.maxX = -anchor._x * width;
+        bounds.minX = bounds.maxX + width;
 
-        bounds.bottom = -anchor._y * height;
-        bounds.top = bounds.bottom + height;
+        bounds.maxY = -anchor._y * height;
+        bounds.minY = bounds.maxY + height;
     }
 
     public addBounds(bounds: Bounds)
@@ -151,17 +155,17 @@ export class TilingSpriteView implements View
         const _bounds = this.bounds;
 
         bounds.addFrame(
-            _bounds.left,
-            _bounds.top,
-            _bounds.right,
-            _bounds.bottom,
+            _bounds.minX,
+            _bounds.minY,
+            _bounds.maxX,
+            _bounds.maxY,
         );
     }
 
     public containsPoint(point: PointData)
     {
-        const width = this.bounds.left;
-        const height = this.bounds.top;
+        const width = this.bounds.minX;
+        const height = this.bounds.minY;
         const x1 = -width * this.anchor.x;
         let y1 = 0;
 

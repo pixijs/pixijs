@@ -464,7 +464,10 @@ export class AnimatedSprite extends Sprite
     }
 }
 
-/** @memberof scene */
+/**
+ * A reference to a frame in an {@link scene.AnimatedSprite}
+ * @memberof scene
+ */
 export interface FrameObject
 {
     /** The {@link Texture} of the frame. */
