@@ -92,8 +92,8 @@ export class DisplacementFilter extends Filter
             glProgram,
             resources: {
                 filterUniforms,
-                mapTexture: textureSource,
-                mapSampler: textureSource.style,
+                uMapTexture: textureSource,
+                uMapSampler: textureSource.style,
             }
         });
 
@@ -135,7 +135,7 @@ export class DisplacementFilter extends Filter
             uniforms.rotation[3] = wt.d / lenY;
         }
 
-        this.resources.mapTexture = this._sprite.texture.source;
+        this.resources.uMapTexture = this._sprite.texture.source;
 
         filterManager.applyFilter(this, input, output, clearMode);
     }

@@ -55,7 +55,7 @@ export class MaskFilter extends Filter
             glProgram,
             resources: {
                 filterUniforms,
-                mapTexture: sprite.texture.source,
+                uMaskTexture: sprite.texture.source,
             }
         });
 
@@ -79,7 +79,7 @@ export class MaskFilter extends Filter
             this.sprite
         ).prepend(this._textureMatrix.mapCoord);
 
-        this.resources.mapTexture = this.sprite.texture.source;
+        this.resources.uMaskTexture = this.sprite.texture.source;
 
         filterManager.applyFilter(this, input, output, clearMode);
     }

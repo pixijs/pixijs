@@ -7,13 +7,13 @@ out vec4 finalColor;
 uniform float uBlend;
 
 uniform sampler2D uTexture;
-uniform sampler2D backTexture;
+uniform sampler2D uBackTexture;
 
 {FUNCTIONS}
 
 void main()
 { 
-    vec4 back = texture(backTexture, vTextureCoord);
+    vec4 back = texture(uBackTexture, vTextureCoord);
     vec4 front = texture(uTexture, vTextureCoord);
 
     {MAIN}

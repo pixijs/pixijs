@@ -21,8 +21,8 @@ struct DisplacementUniforms {
 @group(0) @binding(2) var uSampler : sampler;
 
 @group(1) @binding(0) var<uniform> filterUniforms : DisplacementUniforms;
-@group(1) @binding(1) var mapTexture: texture_2d<f32>;
-@group(1) @binding(2) var mapSampler : sampler;
+@group(1) @binding(1) var uMapTexture: texture_2d<f32>;
+@group(1) @binding(2) var uMapSampler : sampler;
 
 struct VSOutput {
     @builtin(position) position: vec4<f32>,
@@ -80,7 +80,7 @@ fn mainFragment(
   @builtin(position) position: vec4<f32>
 ) -> @location(0) vec4<f32> {
 
-    var map = textureSample(mapTexture, mapSampler, filterUv);
+    var map = textureSample(uMapTexture, uMapSampler, filterUv);
     
     var offset =  gfu.inputSize.zw * (filterUniforms.rotation * (map.xy - 0.5)) * filterUniforms.scale; 
    

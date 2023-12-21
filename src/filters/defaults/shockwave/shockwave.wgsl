@@ -18,7 +18,7 @@ struct ShockWaveUniforms {
 @group(1) @binding(0) var<uniform> gfu: GlobalFilterUniforms;
 @group(1) @binding(1) var uTexture: texture_2d<f32>;
 @group(1) @binding(2) var uSampler : sampler;
-@group(1) @binding(3) var backTexture: texture_2d<f32>;
+
 @group(2) @binding(0) var<uniform> shockwaveUniforms : ShockWaveUniforms;
 
 struct VSOutput {

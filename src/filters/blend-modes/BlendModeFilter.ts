@@ -61,7 +61,7 @@ export class BlendModeFilter extends Filter
             blendRequired: true,
             resources: {
                 blendUniforms: uniformGroup,
-                backTexture: Texture.EMPTY
+                uBackTexture: Texture.EMPTY
             }
         });
     }

@@ -19,7 +19,7 @@ struct MaskUniforms {
 @group(0) @binding(2) var uSampler : sampler;
 
 @group(1) @binding(0) var<uniform> filterUniforms : MaskUniforms;
-@group(1) @binding(1) var mapTexture: texture_2d<f32>;
+@group(1) @binding(1) var uMaskTexture: texture_2d<f32>;
 
 struct VSOutput {
     @builtin(position) position: vec4<f32>,
@@ -85,7 +85,7 @@ fn mainFragment(
         step(filterUv.x, maskClamp.z) +
         step(filterUv.y, maskClamp.w));
 
-    var mask = textureSample(mapTexture, uSampler, filterUv);
+    var mask = textureSample(uMaskTexture, uSampler, filterUv);
     var source = textureSample(uTexture, uSampler, uv);
     
     var npmAlpha = 0.0;
