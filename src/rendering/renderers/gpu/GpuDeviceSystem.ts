@@ -26,6 +26,7 @@ export interface GpuContextOptions
 /**
  * System plugin to the renderer to manage the context.
  * @class
+ * @memberof rendering
  */
 export class GpuDeviceSystem implements System<GpuContextOptions>
 {

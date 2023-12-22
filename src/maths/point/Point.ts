@@ -7,7 +7,10 @@ export interface Point extends PixiMixins.Point { }
 
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where `x` represents
- * the position on the horizontal axis and `y` represents the position on the vertical axis
+ * the position on the horizontal axis and `y` represents the position on the vertical axis.
+ * <br/>
+ * Many Pixi functions accept the `PointData` type as an alternative to `Point`,
+ * which only requires `x` and `y` properties.
  * @class
  * @implements {PointLike}
  * @memberof maths

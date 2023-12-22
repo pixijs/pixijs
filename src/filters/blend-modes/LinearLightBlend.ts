@@ -5,7 +5,10 @@ import { BlendModeFilter } from './BlendModeFilter';
 
 import type { ExtensionMetadata } from '../../extensions/Extensions';
 
-/** Increase or decrease brightness by durning or dodging color values, based on the blend color */
+/**
+ * Increase or decrease brightness by burning or dodging color values, based on the blend color
+ * @memberof filters
+ */
 export class LinearLightBlend extends BlendModeFilter
 {
     /** @ignore */

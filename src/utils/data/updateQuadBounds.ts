@@ -1,9 +1,9 @@
 import type { ObservablePoint } from '../../maths/point/ObservablePoint';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
-import type { SimpleBounds } from '../../scene/container/bounds/Bounds';
+import type { BoundsData } from '../../scene/container/bounds/Bounds';
 
 export function updateQuadBounds(
-    bounds: SimpleBounds,
+    bounds: BoundsData,
     anchor: ObservablePoint,
     texture: Texture,
     padding: number
@@ -17,20 +17,20 @@ export function updateQuadBounds(
         const sourceWidth = trim.width;
         const sourceHeight = trim.height;
 
-        bounds.left = (trim.x) - (anchor._x * width) - padding;
-        bounds.right = bounds.left + sourceWidth;
+        bounds.minX = (trim.x) - (anchor._x * width) - padding;
+        bounds.maxX = bounds.minX + sourceWidth;
 
-        bounds.top = (trim.y) - (anchor._y * height) - padding;
-        bounds.bottom = bounds.top + sourceHeight;
+        bounds.minY = (trim.y) - (anchor._y * height) - padding;
+        bounds.maxY = bounds.minY + sourceHeight;
     }
 
     else
     {
-        bounds.left = (-anchor._x * width) - padding;
-        bounds.right = bounds.left + width;
+        bounds.minX = (-anchor._x * width) - padding;
+        bounds.maxX = bounds.minX + width;
 
-        bounds.top = (-anchor._y * height) - padding;
-        bounds.bottom = bounds.top + height;
+        bounds.minY = (-anchor._y * height) - padding;
+        bounds.maxY = bounds.minY + height;
     }
 
     return;

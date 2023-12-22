@@ -5,7 +5,7 @@ export function getGeometry()
 {
     return new Geometry({
         attributes: {
-            aVertexPosition: {
+            aPosition: {
                 buffer: new Buffer({
                     data: new Float32Array([1, 2, 3]),
                     usage: 1,

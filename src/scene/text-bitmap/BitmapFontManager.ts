@@ -9,6 +9,11 @@ import type { BitmapFontInstallOptions } from './AbstractBitmapFont';
 import type { BitmapFont } from './BitmapFont';
 import type { BitmapTextLayoutData } from './utils/getBitmapTextLayout';
 
+/**
+ * The BitmapFontManager is a helper class that exists to install and uninstall fonts
+ * into the cache for BitmapText objects.
+ * @memberof text
+ */
 class BitmapFontManagerClass
 {
     /**

@@ -7,6 +7,11 @@ import type { RGRenderable } from '../../rendering/renderers/shared/RGRenderable
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Container } from './Container';
 
+/**
+ * The render group is the base class for all render groups
+ * It is used to render a group of containers together
+ * @memberof rendering
+ */
 export class RenderGroup implements Instruction
 {
     public renderPipeId = 'renderGroup';

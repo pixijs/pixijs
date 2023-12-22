@@ -5,7 +5,10 @@ import { BlendModeFilter } from './BlendModeFilter';
 
 import type { ExtensionMetadata } from '../../extensions/Extensions';
 
-/** Divides the blend from the base color using each color channel */
+/**
+ * Divides the blend from the base color using each color channel
+ * @memberof filters
+ */
 export class DivideBlend extends BlendModeFilter
 {
     /** @ignore */

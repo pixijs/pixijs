@@ -21,11 +21,19 @@ describe('Transform Alpha', () =>
 
         expect(childContainer.rgAlpha).toEqual(1);
 
+        let rgAlpha = (childContainer.rgColorAlpha >>> 24) / 255;
+
+        expect(rgAlpha).toEqual(1);
+
         parentContainer.alpha = -10;
 
         updateRenderGroupTransforms(root.renderGroup, false);
 
         expect(childContainer.rgAlpha).toEqual(0);
+
+        rgAlpha = (childContainer.rgColorAlpha >>> 24) / 255;
+
+        expect(rgAlpha).toEqual(0);
     });
 });
 

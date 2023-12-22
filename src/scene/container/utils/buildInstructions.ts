@@ -98,6 +98,14 @@ function collectAllRenderablesAdvanced(
     isRoot: boolean
 ): void
 {
+    for (let i = 0; i < container.effects.length; i++)
+    {
+        const effect = container.effects[i];
+        const pipe = renderPipes[effect.pipe as keyof RenderPipes]as InstructionPipe<any>;
+
+        pipe.push(effect, container, instructionSet);
+    }
+
     if (isRoot)
     {
         const renderGroup = container.renderGroup;
@@ -114,16 +122,6 @@ function collectAllRenderablesAdvanced(
                 // eslint-disable-next-line max-len
                 (renderPipes[proxyRenderable.view.renderPipeId as keyof RenderPipes] as any).addRenderable(proxyRenderable, instructionSet);
             }
-        }
-    }
-    else
-    {
-        for (let i = 0; i < container.effects.length; i++)
-        {
-            const effect = container.effects[i];
-            const pipe = renderPipes[effect.pipe as keyof RenderPipes]as InstructionPipe<any>;
-
-            pipe.push(effect, container, instructionSet);
         }
     }
 
@@ -157,16 +155,13 @@ function collectAllRenderablesAdvanced(
         }
     }
 
-    if (!isRoot)
+    // loop backwards through effects
+    for (let i = container.effects.length - 1; i >= 0; i--)
     {
-        // loop backwards through effects
-        for (let i = container.effects.length - 1; i >= 0; i--)
-        {
-            const effect = container.effects[i];
-            const pipe = renderPipes[effect.pipe as keyof RenderPipes]as InstructionPipe<any>;
+        const effect = container.effects[i];
+        const pipe = renderPipes[effect.pipe as keyof RenderPipes]as InstructionPipe<any>;
 
-            pipe.pop(effect, container, instructionSet);
-        }
+        pipe.pop(effect, container, instructionSet);
     }
 }
 

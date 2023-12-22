@@ -30,6 +30,7 @@ import type { System } from '../rendering/renderers/shared/system/System';
  * app.renderer.prepare.upload(app.stage, () => {
  *     app.start();
  * });
+ * @memberof rendering
  */
 export class PrepareSystem extends PrepareUpload implements System
 {

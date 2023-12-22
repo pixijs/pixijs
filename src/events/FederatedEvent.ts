@@ -33,6 +33,7 @@ export interface PixiTouch extends Touch
  * An DOM-compatible synthetic event implementation that is "forwarded" on behalf of an original
  * FederatedEvent or native {@link https://dom.spec.whatwg.org/#event Event}.
  * @typeParam N - The type of native event held.
+ * @memberof events
  */
 export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch> implements UIEvent
 {

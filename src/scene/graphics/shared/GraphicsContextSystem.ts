@@ -11,12 +11,20 @@ import type { PoolItem } from '../../../utils/pool/Pool';
 import type { BatchableGraphics } from './BatchableGraphics';
 import type { GraphicsContext } from './GraphicsContext';
 
+/**
+ * A class that holds batchable graphics data for a GraphicsContext.
+ * @memberof rendering
+ */
 export class GpuGraphicsContext
 {
     public isBatchable: boolean;
     public batches: BatchableGraphics[];
 }
 
+/**
+ * A class that holds the render data for a GraphicsContext.
+ * @memberof rendering
+ */
 export class GraphicsContextRenderData
 {
     public geometry = new BatchGeometry();
@@ -33,6 +41,10 @@ export interface GraphicsContextSystemOptions
     bezierSmoothness?: number;
 }
 
+/**
+ * A system that manages the rendering of GraphicsContexts.
+ * @memberof rendering
+ */
 export class GraphicsContextSystem implements System<GraphicsContextSystemOptions>
 {
     /** @ignore */

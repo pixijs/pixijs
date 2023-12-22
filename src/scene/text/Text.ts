@@ -6,18 +6,36 @@ import { TextView } from './TextView';
 import type { PointData } from '../../maths/point/PointData';
 import type { PointLike } from '../../maths/point/PointLike';
 import type { ContainerOptions } from '../container/Container';
-import type { HTMLTextStyle } from '../text-html/HtmlTextStyle';
+import type { HTMLTextStyle, HTMLTextStyleOptions } from '../text-html/HtmlTextStyle';
 import type { TextStyle } from './TextStyle';
 import type { AnyTextStyle, AnyTextStyleOptions, TextString, TextViewOptions } from './TextView';
 
 /**
  * Options for the {@link scene.Text} class.
+ * @example
+ * const text = new Text({
+ *    text: 'Hello Pixi!',
+ *    style: {
+ *       fontFamily: 'Arial',
+ *       fontSize: 24,
+ *    fill: 0xff1010,
+ *    align: 'center',
+ *  }
+ * });
  * @memberof scene
  */
 export type TextOptions = Partial<ContainerOptions<TextView>> & TextViewOptions &
 {
     /** The anchor point of the text. */
-    anchor?: PointLike
+    anchor?: PointLike,
+    /** The copy for the text object. To split a line you can use '\n'. */
+    text?: TextString;
+    /** the render mode - `canvas` renders to a single canvas, `html` renders using css, `bitmap` uses a bitmap font */
+    renderMode?: 'canvas' | 'html' | 'bitmap';
+    /** The resolution of the text. */
+    resolution?: number;
+    /** The text style */
+    style?: TextStyle | HTMLTextStyleOptions | HTMLTextStyle;
 };
 
 /**

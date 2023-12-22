@@ -4,6 +4,12 @@ import type { ShapePrimitive } from './ShapePrimitive';
 
 /**
  * The Ellipse object is used to help draw graphics and can also be used to specify a hit area for containers.
+ * ```js
+ * import { Ellipse } from '@pixi';
+ *
+ * const ellipse = new Ellipse(0, 0, 20, 10); // 40x20 rectangle
+ * const isPointInEllipse = ellipse.contains(0, 0); // true
+ * ```
  * @memberof maths
  */
 export class Ellipse implements ShapePrimitive

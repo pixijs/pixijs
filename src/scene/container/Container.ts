@@ -25,6 +25,24 @@ import type { Dict } from '../../utils/types';
 import type { DestroyOptions } from './destroyTypes';
 
 /**
+ * This is where you'll find all the display objects available in Pixi.
+ *
+ * All display objects inherit from the {@link scene.Container} class. You can use a `Container` for simple grouping of
+ * other display objects. Here's all the available display object classes.
+ *
+ * - {@link scene.Container} is the base class for all display objects that act as a container for other objects.
+ *   - {@link scene.Sprite} is a display object that uses a texture
+ *      - {@link scene.AnimatedSprite} is a sprite that can play animations
+ *   - {@link scene.TilingSprite} a fast way of rendering a tiling image
+ *   - {@link scene.NineSliceSprite} allows you to stretch a texture using 9-slice scaling
+ *   - {@link scene.Graphics} is a graphic object that can be drawn to the screen.
+ *   - {@link scene.Mesh} empowers you to have maximum flexibility to render any kind of visuals you can think of
+ *      - {@link scene.MeshSimple} mimics Mesh, providing easy-to-use constructor arguments
+ *      - {@link scene.MeshPlane} allows you to draw a texture across several points and then manipulate these points
+ *      - {@link scene.MeshRope} allows you to draw a texture across several points and then manipulate these points
+ *   - {@link scene.Text} render text using custom fonts
+ *      - {@link scene.BitmapText} render text using a bitmap font
+ *      - {@link scene.HTMLText} render text using HTML and CSS
  * @namespace scene
  */
 
@@ -77,7 +95,14 @@ export interface UpdateTransformOptions
 }
 
 /**
- * Constructor options use for Container instances.
+ * Constructor options used for `Container` instances.
+ * ```js
+ * const container = new Container({
+ *    position: new Point(100, 200),
+ *    scale: new Point(2, 2),
+ *    rotation: Math.PI / 2,
+ * });
+ * ```
  * @memberof scene
  * @see scene.Container
  */
@@ -517,6 +542,16 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      */
     public boundsArea: Rectangle;
 
+    /**
+     * A value that increments each time the container is modified
+     * the first 12 bits represent the container changes (eg transform, alpha, visible etc)
+     * the second 12 bits represent the view changes (eg texture swap, geometry change etc)
+     *
+     *  view          container
+     * [000000000000][00000000000]
+     */
+    public _didChangeId = 0;
+
     constructor(options: Partial<ContainerOptions<T>> = {})
     {
         super();
@@ -668,6 +703,8 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
             }
         }
 
+        this._didChangeId++;
+
         if (this.didChange) return;
         this.didChange = true;
 
@@ -690,6 +727,9 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     /** @ignore */
     public onViewUpdate()
     {
+        // increment from the 12th bit!
+        this._didChangeId += 1 << 12;
+
         if (this.didViewUpdate) return;
         this.didViewUpdate = true;
 

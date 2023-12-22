@@ -6,7 +6,10 @@ import type { BLEND_MODES } from '../../shared/state/const';
 import type { System } from '../../shared/system/System';
 import type { GPU } from '../GpuDeviceSystem';
 
-/** System plugin to the renderer to manage WebGL state machines. */
+/**
+ * System plugin to the renderer to manage WebGL state machines.
+ * @memberof rendering
+ */
 export class GpuStateSystem implements System
 {
     /** @ignore */
