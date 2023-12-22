@@ -4,22 +4,19 @@ in vec2 vFilterUv;
 
 out vec4 finalColor;
 
-uniform sampler2D uSampler;
-uniform sampler2D mapTexture;
+uniform sampler2D uTexture;
+uniform sampler2D uMapTexture;
 
-uniform vec4 filterArea;
-uniform vec4 filterClamp;
-uniform vec4 inputClamp;
-uniform highp vec4 inputSize;
-uniform mat2 rotation;
-uniform vec2 scale;
-
+uniform vec4 uInputClamp;
+uniform highp vec4 uInputSize;
+uniform mat2 uRotation;
+uniform vec2 uScale;
 
 void main()
 {
-vec4 map = texture(mapTexture, vFilterUv);
+    vec4 map = texture(uMapTexture, vFilterUv);
     
-    vec2 offset = inputSize.zw * (rotation * (map.xy - 0.5)) * scale; 
+    vec2 offset = uInputSize.zw * (uRotation * (map.xy - 0.5)) * uScale; 
 
-    finalColor = texture(uSampler, clamp(vTextureCoord + offset, inputClamp.xy, inputClamp.zw));
+    finalColor = texture(uTexture, clamp(vTextureCoord + offset, uInputClamp.xy, uInputClamp.zw));
 }

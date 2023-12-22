@@ -12,7 +12,7 @@ uniform float uTime;
 uniform float uSpeed;
 uniform vec4 uWave;
 
-uniform sampler2D uSampler;
+uniform sampler2D uTexture;
 
 
 const float PI = 3.14159;
@@ -32,7 +32,7 @@ void main()
 
     if (maxRadius > 0.0) {
         if (currentRadius > maxRadius) {
-            finalColor = texture(uSampler, vTextureCoord);
+            finalColor = texture(uTexture, vTextureCoord);
             return;
         }
         fade = 1.0 - pow(currentRadius / maxRadius, 2.0);
@@ -43,7 +43,7 @@ void main()
     float dist = length(dir);
 
     if (dist <= 0.0 || dist < currentRadius - halfWavelength || dist > currentRadius + halfWavelength) {
-        finalColor = texture(uSampler, vTextureCoord);
+        finalColor = texture(uTexture, vTextureCoord);
         return;
     }
 
@@ -61,13 +61,13 @@ void main()
     // Do clamp :
     vec2 coord = vTextureCoord + offset;
     vec2 clampedCoord = clamp(coord, inputClamp.xy, inputClamp.zw);
-    vec4 color = texture(uSampler, clampedCoord);
+    vec4 color = texture(uTexture, clampedCoord);
     if (coord != clampedCoord) {
         color *= max(0.0, 1.0 - length(coord - clampedCoord));
     }
 
     // No clamp :
-    // finalColor = texture(uSampler, vTextureCoord + offset);
+    // finalColor = texture(uTexture, vTextureCoord + offset);
 
     color.rgb *= 1.0 + (uBrightness - 1.0) * p * fade;
 

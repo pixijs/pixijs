@@ -7,7 +7,7 @@ out vec4 finalColor;
 uniform float uColorMatrix[20];
 uniform float uAlpha;
 
-uniform sampler2D uSampler;
+uniform sampler2D uTexture;
 
 float rand(vec2 co)
 {
@@ -16,7 +16,7 @@ float rand(vec2 co)
 
 void main()
 {
-    vec4 color = texture(uSampler, vTextureCoord);
+    vec4 color = texture(uTexture, vTextureCoord);
     float randomValue = rand(gl_FragCoord.xy * 0.2);
     float diff = (randomValue - 0.5) *  0.5;
 
