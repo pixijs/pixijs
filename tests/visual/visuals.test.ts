@@ -52,8 +52,6 @@ describe('Visual Tests', () =>
     {
         const id = scene.data.id || path.basename(scene.path).toLowerCase().replaceAll('.', '-');
 
-        //        if (i > 4) return;
-
         const defaultRenderers: RenderTypeFlags = {
             webgl1: true,
             webgl2: true,
