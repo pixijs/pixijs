@@ -24,9 +24,14 @@ const onlyScenes = scenes.filter((s) =>
     }
 
     return s.data.only;
-}).filter((s) => !isCI || !s.data.skipCI);
+});
 
-const scenesToTest = onlyScenes.length ? onlyScenes : scenes;
+let scenesToTest = onlyScenes.length ? onlyScenes : scenes;
+
+if (isCI)
+{
+    scenesToTest = scenesToTest.filter((s) => !s.data.skipCI);
+}
 
 function setAssetBasePath(): void
 {
