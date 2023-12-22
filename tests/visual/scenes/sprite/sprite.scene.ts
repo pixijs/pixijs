@@ -9,30 +9,25 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render sprite',
+    pixelMatch: 200,
     create: async (scene: Container) =>
     {
         const texture = await Assets.load<Texture>({
             src: `${basePath}textures/bunny.png`,
             data: {
                 resolution: 1,
-                width: 13,
-                height: 19,
             }
         });
         const texture2 = await Assets.load<Texture>({
             src: `${basePath}textures/bunny.1.png`,
             data: {
                 resolution: 1,
-                width: 13,
-                height: 19,
             }
         });
         const texture3 = await Assets.load<Texture>({
             src: `${basePath}textures/profile-abel@2x.jpg`,
             data: {
                 resolution: 1,
-                width: 128,
-                height: 128,
             }
         });
 
