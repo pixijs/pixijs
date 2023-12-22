@@ -40,17 +40,32 @@ export const glUploadImageResource = {
                 );
             }
 
-            gl.texSubImage2D(
-                gl.TEXTURE_2D,
-                0,
-                0,
-                0,
-                resourceWidth,
-                resourceHeight,
-                glTexture.format,
-                glTexture.type,
-                source.resource as TexImageSource
-            );
+            if (webGLVersion === 2)
+            {
+                gl.texSubImage2D(
+                    gl.TEXTURE_2D,
+                    0,
+                    0,
+                    0,
+                    resourceWidth,
+                    resourceHeight,
+                    glTexture.format,
+                    glTexture.type,
+                    source.resource as TexImageSource
+                );
+            }
+            else
+            {
+                gl.texSubImage2D(
+                    gl.TEXTURE_2D,
+                    0,
+                    0,
+                    0,
+                    glTexture.format,
+                    glTexture.type,
+                    source.resource as TexImageSource
+                );
+            }
         }
         else if (glWidth === textureWidth || glHeight === textureHeight)
         {
@@ -64,8 +79,7 @@ export const glUploadImageResource = {
                 source.resource as TexImageSource
             );
         }
-        else
-        if (webGLVersion === 2)
+        else if (webGLVersion === 2)
         {
             gl.texImage2D(
                 glTexture.target,

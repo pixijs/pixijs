@@ -33,7 +33,7 @@ export class MaskFilter extends Filter
             uAlpha: { value: 1, type: 'f32' },
         });
 
-        const gpuProgram = new GpuProgram({
+        const gpuProgram = GpuProgram.from({
             vertex: {
                 source,
                 entryPoint: 'mainVertex',

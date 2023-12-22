@@ -180,7 +180,6 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
                 sprite.worldTransform.ty = bounds.minY;
 
                 this._activeMaskStage.push({
-
                     filterEffect,
                     maskedContainer: instruction.maskedContainer,
                     filterTexture,

@@ -50,10 +50,9 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
 
         this._nonPowOf2wrapping = true;
 
-        if (this._renderer.type === RendererType.WEBGL
-            && (this._renderer as WebGLRenderer).context.supports.nonPowOf2wrapping)
+        if (this._renderer.type === RendererType.WEBGL)
         {
-            this._nonPowOf2wrapping = false;
+            this._nonPowOf2wrapping = (this._renderer as WebGLRenderer).context.supports.nonPowOf2wrapping;
         }
     }
 
