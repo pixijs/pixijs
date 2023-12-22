@@ -1,6 +1,7 @@
 import { Color, type ColorSource } from '../../../../color/Color';
 import { Container } from '../../../../scene/container/Container';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
+import { warn } from '../../../../utils/logging/warn';
 import { SystemRunner } from './SystemRunner';
 
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
@@ -262,6 +263,10 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
      */
     get view(): CANVAS
     {
+        // #if _DEBUG
+        warn('[Renderer] The `view` property is now deprecated, please use `canvas` instead.');
+        // #endif
+
         return this.surface.canvas as CANVAS;
     }
 
