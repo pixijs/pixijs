@@ -275,12 +275,12 @@ export class TextStyle extends EventEmitter<{
             this.fontSize = fullStyle.fontSize as number;
         }
 
-        this._dropShadow = style.dropShadow ?? defaultStyle.dropShadow;
-        this._dropShadowAlpha = style.dropShadowAlpha ?? defaultStyle.dropShadowAlpha;
-        this._dropShadowAngle = style.dropShadowAngle ?? defaultStyle.dropShadowAngle;
-        this._dropShadowBlur = style.dropShadowBlur ?? defaultStyle.dropShadowBlur;
-        this._dropShadowColor = style.dropShadowColor ?? defaultStyle.dropShadowColor;
-        this._dropShadowDistance = style.dropShadowDistance ?? defaultStyle.dropShadowDistance;
+        this._dropShadow = fullStyle.dropShadow;
+        this._dropShadowAlpha = fullStyle.dropShadowAlpha;
+        this._dropShadowAngle = fullStyle.dropShadowAngle;
+        this._dropShadowBlur = fullStyle.dropShadowBlur;
+        this._dropShadowColor = fullStyle.dropShadowColor;
+        this._dropShadowDistance = fullStyle.dropShadowDistance;
 
         this.update();
     }
