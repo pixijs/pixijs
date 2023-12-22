@@ -56,7 +56,7 @@ export class TextureStyle extends EventEmitter<{
 {
     public _resourceType = 'textureSampler';
     public _touched = 0;
-    public _sharedResourceId: number;
+    private _sharedResourceId: number;
 
     // override to set styles globally
     public static readonly defaultOptions: TextureStyleOptions = {
@@ -175,7 +175,7 @@ export class TextureStyle extends EventEmitter<{
     // TODO - move this to WebGL?
     get _resourceId(): number
     {
-        return this._generateResourceId();
+        return this._sharedResourceId || this._generateResourceId();
     }
 
     public update()
