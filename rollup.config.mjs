@@ -158,6 +158,9 @@ async function main()
             const nsBanner = bundle.plugin ? `${banner}\nthis.PIXI = this.PIXI || {};` : banner;
             const name = bundle.plugin ? bundle.target.split('/').at(-1).replace(/[^a-z]+/g, '_') : 'PIXI';
             const footer = bundle.plugin ? `Object.assign(this.PIXI, ${name});` : '';
+
+            // if a bundle is a plugin then we need to exclude its imports from the bundle
+            // so they ca nbe added to the global scope
             const external = bundle.plugin ? (id) => bundle.plugin.some((plugin) => id.includes(plugin)) : undefined;
             // eslint-disable-next-line consistent-return
             const externalPlugin = bundle.plugin ? externalGlobals((id) => { if (external(id)) return 'PIXI'; }) : undefined;

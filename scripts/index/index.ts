@@ -47,7 +47,6 @@ directories.forEach((directory) =>
     // Combine the export statements into one file
     exportStatements.push(...shaderExportStatements, '');
 
-    // console.log(join(directory, 'index.ts'), exportStatements.join('\n'));
     // Write the export statements to the index.ts file
     fs.writeFileSync(join(directory, 'index.ts'), exportStatements.join('\n'), { encoding: 'utf-8' });
 });
