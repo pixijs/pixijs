@@ -21,12 +21,14 @@ import type { isMobileResult } from '../utils/browser/isMobile';
  * This module is a mixin for {@link AbstractRenderer} and will need to be imported if you are managing your own renderer.
  * Usage:
  * ```js
- * import 'pixi.js';
- *
- * container.accessible = true; // see `AccessibleOptions` for more properties
+ * import 'pixi.js/accessibility';
  * ```
+ * To make an object accessible do the following:
+ * ```js
+ * container.accessible = true; // object is now accessible to screen readers!
+ * ```
+ * See {@link accessibility.AccessibleOptions} for more accessibility related properties that can be set.
  * @namespace accessibility
- * @see {@link accessibility.AccessibleOptions}
  */
 
 /** @ignore */
