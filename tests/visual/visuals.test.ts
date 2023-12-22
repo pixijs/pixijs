@@ -25,7 +25,13 @@ const onlyScenes = scenes.filter((s) =>
 
     return s.data.only;
 });
-const scenesToTest = onlyScenes.length ? onlyScenes : scenes;
+
+let scenesToTest = onlyScenes.length ? onlyScenes : scenes;
+
+if (isCI)
+{
+    scenesToTest = scenesToTest.filter((s) => !s.data.skipCI);
+}
 
 function setAssetBasePath(): void
 {
@@ -47,8 +53,8 @@ describe('Visual Tests', () =>
         const id = scene.data.id || path.basename(scene.path).toLowerCase().replaceAll('.', '-');
 
         const defaultRenderers: RenderTypeFlags = {
-            webgl2: true,
             webgl1: true,
+            webgl2: true,
             webgpu: true,
         };
 
@@ -74,8 +80,9 @@ describe('Visual Tests', () =>
                 }
 
                 TexturePool.clear();
-                Assets.reset();
 
+                // reset assets each time..
+                Assets.reset();
                 setAssetBasePath();
 
                 const res = await renderTest(

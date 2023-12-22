@@ -12,6 +12,7 @@ export interface TestScene
     options?: Partial<RendererOptions>;
     pixelMatch?: number;
     skip?: boolean;
+    skipCI?: boolean;
     only?: boolean;
     renderers?: Partial<RenderTypeFlags>;
 }

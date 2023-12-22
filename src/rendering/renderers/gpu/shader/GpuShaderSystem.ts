@@ -4,6 +4,11 @@ import type { System } from '../../shared/system/System';
 import type { GPU } from '../GpuDeviceSystem';
 import type { GpuProgram } from './GpuProgram';
 
+export interface GPUProgramData
+{
+    bindGroups: GPUBindGroupLayout[]
+    pipeline: GPUPipelineLayout
+}
 export class GpuShaderSystem implements System
 {
     /** @ignore */
@@ -16,42 +21,45 @@ export class GpuShaderSystem implements System
 
     private _gpu: GPU;
 
+    private readonly _gpuProgramData: Record<number, GPUProgramData> = Object.create(null);
+
     protected contextChange(gpu: GPU): void
     {
         this._gpu = gpu;
     }
 
-    public createProgramLayout(program: GpuProgram)
+    public getProgramData(program: GpuProgram)
+    {
+        return this._gpuProgramData[program._layoutKey] || this._createGPUProgramData(program);
+    }
+
+    private _createGPUProgramData(program: GpuProgram)
     {
         const device = this._gpu.device;
 
-        // TODO rename this... confusing with the below.. gpuLayout is defined by the user
-        if (!program._gpuLayout)
-        {
-            if (program.gpuLayout)
-            {
-                const bindGroups = program.gpuLayout.map((group) => device.createBindGroupLayout({ entries: group }));
+        const bindGroups = program.gpuLayout.map((group) => device.createBindGroupLayout({ entries: group }));
 
-                const pipelineLayoutDesc = { bindGroupLayouts: bindGroups };
+        const pipelineLayoutDesc = { bindGroupLayouts: bindGroups };
 
-                // TODO - this group should be reused for all programs, look into a cache / key setup
-                program._gpuLayout = {
-                    bindGroups,
-                    pipeline: device.createPipelineLayout(pipelineLayoutDesc),
-                };
-            }
-            else
-            {
-                program._gpuLayout = {
-                    bindGroups: null,
-                    pipeline: 'auto',
-                };
-            }
-        }
+        this._gpuProgramData[program._layoutKey] = {
+            bindGroups,
+            pipeline: device.createPipelineLayout(pipelineLayoutDesc),
+        };
+
+        // generally we avoid having to make this automatically
+        // keeping this for a reminder, if any issues popup
+        // program._gpuLayout = {
+        //     bindGroups: null,
+        //     pipeline: 'auto',
+        // };
+
+        return this._gpuProgramData[program._layoutKey];
     }
 
     public destroy(): void
     {
+        // TODO destroy the _gpuProgramData
         this._gpu = null;
+        (this._gpuProgramData as null) = null;
     }
 }

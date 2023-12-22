@@ -1,16 +1,28 @@
 import { AlphaFilter } from '../../../../src/filters/defaults/alpha/AlphaFilter';
-import { Texture } from '../../../../src/rendering/renderers/shared/texture/Texture';
+import { getCanvasTexture } from '../../../../src/rendering/renderers/shared/texture/utils/getCanvasTexture';
 import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
 import { Sprite } from '../../../../src/scene/sprite/Sprite';
 
 import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
 
+const canvas = document.createElement('canvas');
+
+canvas.width = 32;
+canvas.height = 32;
+
+const ctx = canvas.getContext('2d');
+
+ctx.fillStyle = 'red';
+ctx.fillRect(0, 0, 32, 32);
+
+const redTexture = getCanvasTexture(canvas);
+
 function createHierarchy(scene: Container)
 {
-    const root = new Sprite(Texture.WHITE);
-    const child1 = new Sprite(Texture.WHITE);
-    const child2 = new Sprite(Texture.WHITE);
+    const root = new Sprite(redTexture);
+    const child1 = new Sprite(redTexture);
+    const child2 = new Sprite(redTexture);
 
     root.width = root.height = 16;
     child1.position.set(1, 1);
@@ -26,7 +38,7 @@ function createHierarchy(scene: Container)
 
 export const scene: TestScene = {
     it: 'should render nested containers',
-    skip: true,
+    // skip: true,
     create: async (scene: Container) =>
     {
         // Nested w/ scale/transforms
@@ -51,7 +63,7 @@ export const scene: TestScene = {
         // Nested w/ masking with sprite mask
         const [rootD] = createHierarchy(scene);
 
-        const mask2 = new Sprite(Texture.WHITE);
+        const mask2 = new Sprite(redTexture);
 
         rootD.position.set(32, 32);
         mask2.position.set(32, 32);
@@ -84,5 +96,7 @@ export const scene: TestScene = {
         rootG.scale.set(20);
         rootG.tint = 0x00ffff;
         rootG.filters = [new AlphaFilter({ alpha: 0.5 })];
+
+        // scene.addChild(rootG, )
     },
 };

@@ -51,6 +51,7 @@ export class BindGroupSystem implements System
         const device = this._gpu.device;
         const groupLayout = program.layout[groupIndex];
         const entries: GPUBindGroupEntry[] = [];
+        const renderer = this._renderer;
 
         for (const j in groupLayout)
         {
@@ -62,12 +63,12 @@ export class BindGroupSystem implements System
             {
                 const uniformGroup = resource as UniformGroup;
 
-                this._renderer.uniformBuffer.updateUniformGroup(uniformGroup as UniformGroup);
+                renderer.uniformBuffer.updateUniformGroup(uniformGroup as UniformGroup);
 
                 const buffer = uniformGroup.buffer;
 
                 gpuResource = {
-                    buffer: this._renderer.buffer.getGPUBuffer(buffer),
+                    buffer: renderer.buffer.getGPUBuffer(buffer),
                     offset: 0,
                     size: buffer.descriptor.size,
                 };
@@ -77,7 +78,7 @@ export class BindGroupSystem implements System
                 const buffer = resource as Buffer;
 
                 gpuResource = {
-                    buffer: this._renderer.buffer.getGPUBuffer(buffer),
+                    buffer: renderer.buffer.getGPUBuffer(buffer),
                     offset: 0,
                     size: buffer.descriptor.size,
                 };
@@ -87,7 +88,7 @@ export class BindGroupSystem implements System
                 const bufferResource = resource as BufferResource;
 
                 gpuResource = {
-                    buffer: this._renderer.buffer.getGPUBuffer(bufferResource.buffer),
+                    buffer: renderer.buffer.getGPUBuffer(bufferResource.buffer),
                     offset: bufferResource.offset,
                     size: bufferResource.size,
                 };
@@ -96,13 +97,13 @@ export class BindGroupSystem implements System
             {
                 const sampler = resource as TextureStyle;
 
-                gpuResource = this._renderer.texture.getGpuSampler(sampler);
+                gpuResource = renderer.texture.getGpuSampler(sampler);
             }
             else if (resource._resourceType === 'textureSource')
             {
                 const texture = resource as TextureSource;
 
-                gpuResource = this._renderer.texture.getGpuSource(texture).createView({
+                gpuResource = renderer.texture.getGpuSource(texture).createView({
 
                 });
             }
@@ -113,8 +114,10 @@ export class BindGroupSystem implements System
             });
         }
 
+        const layout = renderer.shader.getProgramData(program).bindGroups[groupIndex];
+
         const gpuBindGroup = device.createBindGroup({
-            layout: program._gpuLayout.bindGroups[groupIndex],
+            layout,
             entries,
         });
 
