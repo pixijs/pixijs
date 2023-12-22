@@ -15,6 +15,10 @@ export interface MeshGeometryOptions
     shrinkBuffersToFit?: boolean;
 }
 
+/**
+ * A geometry used to batch multiple meshes with the same texture.
+ * @memberof scene
+ */
 export class MeshGeometry extends Geometry
 {
     public static defaultOptions: MeshGeometryOptions = {

@@ -12,16 +12,23 @@ import type { ContainerOptions } from '../../container/Container';
 import type { ConvertedFillStyle, ConvertedStrokeStyle, FillStyle, FillStyleInputs, StrokeStyle } from './GraphicsContext';
 
 /**
- * Options for the Graphics.
+ * Constructor options used for `Graphics` instances.
+ * ```js
+ * const graphics = new Graphics({
+ *    fillStyle: { color: 0xff0000, alpha: 0.5 },
+ *    strokeStyle: { color: 0x00ff00, width: 2 },
+ * });
+ * ```
+ * @see {@link scene.Graphics}
  * @memberof scene
  */
 export interface GraphicsOptions extends Partial<ContainerOptions<GraphicsView>>
 {
-    /** The GraphicsContext to use. */
+    /** The GraphicsContext to use, useful for reuse and optimisation */
     context?: GraphicsContext;
-    /** The fill style to use. */
+    /** The fill style to use */
     fillStyle?: FillStyleInputs;
-    /** The stroke style to use. */
+    /** The stroke style to use */
     strokeStyle?: FillStyleInputs;
 }
 

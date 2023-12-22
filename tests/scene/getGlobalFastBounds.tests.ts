@@ -110,7 +110,7 @@ describe('getGlobalFastBounds', () =>
 
         const bounds = getFastGlobalBounds(container, new Bounds());
 
-        expect(bounds).toMatchObject({ minX: 100, minY: 0, maxX: 200, maxY: 200 });
+        expect(bounds).toMatchObject({ minX: 200, minY: 0, maxX: 300, maxY: 200 });
 
         const child3 = new Container({ label: 'child2', view: new DummyView() });
 

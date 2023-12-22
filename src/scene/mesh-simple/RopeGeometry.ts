@@ -4,7 +4,15 @@ import type { PointLike } from '../../maths/point/PointLike';
 import type { MeshGeometryOptions } from '../mesh/shared/MeshGeometry';
 
 /**
- * Options for the {@link PlaneGeometry} constructor.
+ * Constructor options used for `RopeGeometry` instances.
+ * ```js
+ * const ropeGeometry = new RopeGeometry({
+ *    points: [new Point(0, 0), new Point(100, 0)],
+ *    width: 10,
+ *    textureScale: 0,
+ * });
+ * ```
+ * @see {@link scene.RopeGeometry}
  * @memberof scene
  */
 export interface RopeGeometryOptions

@@ -15,6 +15,11 @@ const defaultMatrix = new Matrix();
 // TODO optimisations
 // 1 - get rectangle could use a dirty flag, rather than setting the data each time is called
 // 2- getFrame ALWAYS assumes a matrix, could be optimised to avoid the matrix calculation if not needed
+
+/**
+ * A representation of an AABB bounding box.
+ * @memberof rendering
+ */
 export class Bounds
 {
     public minX = Infinity;

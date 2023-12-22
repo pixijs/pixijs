@@ -6,28 +6,30 @@ import type { Renderer } from '../rendering/renderers/types';
 type ResizeableRenderer = Pick<Renderer, 'resize'>;
 
 /**
- * Options for the resize plugin
+ * Application options for the {@link app.ResizePlugin}.
  * @memberof app
- * @property {Window|HTMLElement} [resizeTo=window] - Element to automatically resize stage to.
+ * @property {Window|HTMLElement} [resizeTo=window] - Element to automatically resize the renderer to.
  */
 export interface ResizePluginOptions
 {
     /**
-     * Element to automatically resize stage to.
+     * Element to automatically resize the renderer to.
      * @memberof app.ApplicationOptions
      */
     resizeTo?: Window | HTMLElement;
 }
 
 /**
- * Middleware for for Application's resize functionality.
+ * Middleware for Application's resize functionality.
  *
- * \- Adds [resizeTo]{@link app.Application#resizeTo}.
- * <br>- Adds [resize]{@link app.Application#resize}.
- * <br>- Adds [queueResize]{@link app.Application#queueResize}.
- * <br>- Adds [cancelResize]{@link app.Application#cancelResize}.
+ * Adds the following methods to {@link app.Application}:
+ * * {@link app.Application#resizeTo}
+ * * {@link app.Application#resize}
+ * * {@link app.Application#queueResize}
+ * * {@link app.Application#cancelResize}
  * @example
  * import { extensions, ResizePlugin } from 'pixi.js';
+ *
  * extensions.add(ResizePlugin);
  * @memberof app
  */

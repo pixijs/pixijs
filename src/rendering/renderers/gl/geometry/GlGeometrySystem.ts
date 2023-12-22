@@ -19,7 +19,10 @@ const topologyToGlMap = {
     'triangle-strip': 0x0005
 };
 
-/** System plugin to the renderer to manage geometry. */
+/**
+ * System plugin to the renderer to manage geometry.
+ * @memberof rendering
+ */
 export class GlGeometrySystem implements System
 {
     /** @ignore */

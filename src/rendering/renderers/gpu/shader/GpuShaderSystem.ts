@@ -9,6 +9,11 @@ export interface GPUProgramData
     bindGroups: GPUBindGroupLayout[]
     pipeline: GPUPipelineLayout
 }
+
+/**
+ * A system that manages the rendering of GpuPrograms.
+ * @memberof rendering
+ */
 export class GpuShaderSystem implements System
 {
     /** @ignore */

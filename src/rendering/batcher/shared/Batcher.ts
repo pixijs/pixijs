@@ -14,6 +14,10 @@ import type { Texture } from '../../renderers/shared/texture/Texture';
 
 export type BatchAction = 'startBatch' | 'renderBatch';
 
+/**
+ * A batch pool is used to store batches when they are not currently in use.
+ * @memberof rendering
+ */
 export class Batch implements Instruction
 {
     public renderPipeId = 'batch';
@@ -90,6 +94,10 @@ export interface BatcherOptions
     indexSize?: number;
 }
 
+/**
+ * A batcher is used to batch together objects with the same texture.
+ * @memberof rendering
+ */
 export class Batcher
 {
     public static defaultOptions: BatcherOptions = {

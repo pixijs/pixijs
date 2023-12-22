@@ -57,6 +57,10 @@ interface HTMLTextTexture
     promise: Promise<Texture>,
 }
 
+/**
+ * System plugin to the renderer to manage HTMLText
+ * @memberof rendering
+ */
 export class HTMLTextSystem implements System
 {
     /** @ignore */

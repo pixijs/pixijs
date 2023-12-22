@@ -39,6 +39,10 @@ const map = {
     bitmap: 'bitmapText',
 };
 
+/**
+ * A text view.
+ * @memberof scene
+ */
 export class TextView implements View
 {
     public readonly uid: number = uid('textView');

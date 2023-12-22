@@ -5,7 +5,10 @@ import { BlendModeFilter } from './BlendModeFilter';
 
 import type { ExtensionMetadata } from '../../extensions/Extensions';
 
-/** Replaces colors based on the blend color. */
+/**
+ * Replaces colors based on the blend color.
+ * @memberof filters
+ */
 export class PinLightBlend extends BlendModeFilter
 {
     /** @ignore */

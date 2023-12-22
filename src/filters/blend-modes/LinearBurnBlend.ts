@@ -8,6 +8,7 @@ import type { ExtensionMetadata } from '../../extensions/Extensions';
 /**
  Looks at the color information in each channel and darkens the base color to
  reflect the blend color by increasing the contrast between the two.
+ @memberof filters
  */
 export class LinearBurnBlend extends BlendModeFilter
 {

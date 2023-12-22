@@ -101,7 +101,7 @@ export type TextureSourceLike = TextureSource | TextureSourceOptions | BufferSou
  *
  * If you didn't pass the texture frame to constructor, it enables `noFrame` mode:
  * it subscribes on baseTexture events, it automatically resizes at the same time as baseTexture.
- * @namespace core
+ * @memberof rendering
  * @class
  */
 export class Texture extends EventEmitter<{

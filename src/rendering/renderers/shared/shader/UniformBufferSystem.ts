@@ -10,6 +10,10 @@ import type { UniformGroup } from './UniformGroup';
 import type { UBOElement, UniformBufferLayout } from './utils/createUBOElements';
 import type { UniformsSyncCallback } from './utils/createUniformBufferSyncTypes';
 
+/**
+ * System plugin to the renderer to manage uniform buffers.
+ * @memberof rendering
+ */
 export class UniformBufferSystem implements System
 {
     /** @ignore */
