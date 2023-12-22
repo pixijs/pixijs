@@ -1,5 +1,5 @@
-import KTXWorker from 'web-worker:./KTXWorker';
 import { ktxTranscoderUrls } from '../utils/setKTXTranscoderPath';
+import KTXWorker from './ktx.worker.js';
 
 import type { TEXTURE_FORMATS } from '../../../rendering/renderers/shared/texture/const';
 import type { TextureSourceOptions } from '../../../rendering/renderers/shared/texture/sources/TextureSource';

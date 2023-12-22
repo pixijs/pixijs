@@ -9,6 +9,7 @@ import { getRenderer } from '../../utils/getRenderer';
 import '../../../src/scene/text/init';
 import '../../../src/scene/text-bitmap/init';
 import '../../../src/scene/graphics/init';
+import '../../../src/assets/init';
 
 import type { BitmapFont } from '../../../src/scene/text-bitmap/BitmapFont';
 

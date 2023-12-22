@@ -72,8 +72,9 @@
     "@pixi/jest-electron": "^26.0.0",
     "@pixi/rollup-plugin-web-worker-loader": "^1.6.1",
     "@pixi/webdoc-template": "^2.2.2",
-    "@rollup/plugin-commonjs": "^15.1.0",
-    "@rollup/plugin-json": "^4.1.0",
+    "@pixi/webworker-plugins": "^0.1.0",
+    "@rollup/plugin-commonjs": "^25.0.0",
+    "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.0",
     "@types/fs-extra": "^11.0.1",
     "@types/glob": "^8.1.0",
@@ -86,7 +87,7 @@
     "copyfiles": "^2.4.1",
     "cross-env": "^7.0.3",
     "electron": "^12.0.0",
-    "esbuild": "^0.17.18",
+    "esbuild": "^0.19.0",
     "eslint": "^8.38.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jest": "^27.6.0",
@@ -108,8 +109,9 @@
     "pngjs": "^7.0.0",
     "pre-commit": "^1.2.2",
     "rimraf": "^5.0.0",
-    "rollup": "^2.78.0",
-    "rollup-plugin-esbuild": "^4.9.1",
+    "rollup": "^3.0.0",
+    "rollup-plugin-esbuild": "^6.0.0",
+    "rollup-plugin-external-globals": "^0.9.1",
     "rollup-plugin-jscc": "^2.0.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
     "rollup-plugin-string": "^3.0.0",
@@ -126,22 +128,30 @@
     {
       "src": "src/bundle.browser.ts",
       "target": "dist/pixi.js",
-      "module": "dist/pixi.mjs"
+      "module": "dist/pixi.mjs",
+      "plugin": false
     },
     {
       "src": "src/bundle.math-extras.ts",
       "target": "dist/packages/math-extras.js",
-      "module": "dist/packages/math-extras.mjs"
+      "module": "dist/packages/math-extras.mjs",
+      "plugin": [
+        "/maths/"
+      ]
     },
     {
       "src": "src/bundle.unsafe-eval.ts",
       "target": "dist/packages/unsafe-eval.js",
-      "module": "dist/packages/unsafe-eval.mjs"
+      "module": "dist/packages/unsafe-eval.mjs",
+      "plugin": [
+        "/rendering/"
+      ]
     },
     {
       "src": "src/bundle.webworker.ts",
       "target": "dist/webworker.js",
-      "module": "dist/webworker.mjs"
+      "module": "dist/webworker.mjs",
+      "plugin": false
     }
   ],
   "sideEffects": [

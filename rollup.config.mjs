@@ -1,16 +1,22 @@
 import path from 'path';
 import esbuild from 'rollup-plugin-esbuild';
+import externalGlobals from 'rollup-plugin-external-globals';
 import jscc from 'rollup-plugin-jscc';
 import sourcemaps from 'rollup-plugin-sourcemaps';
 import { string } from 'rollup-plugin-string';
+import { fileURLToPath } from 'url';
 import webWorkerLoader from '@pixi/rollup-plugin-web-worker-loader';
-import repo from './package.json';
+import webworker from '@pixi/webworker-plugins/rollup-plugin';
+import repo from './package.json' assert { type: 'json' };
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import resolve from '@rollup/plugin-node-resolve';
 
 const bundleTarget = 'es2017';
 const moduleTarget = 'es2020';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * Convert a development file name to minified.
@@ -63,18 +69,21 @@ async function main()
     ];
 
     const plugins = [
+        webworker(),
         jscc({ values: { _VERSION: repo.version, _DEBUG: true } }),
         esbuild({ target: moduleTarget }),
         ...commonPlugins
     ];
 
     const bundlePlugins = [
+        webworker(),
         jscc({ values: { _VERSION: repo.version, _DEBUG: true } }),
         esbuild({ target: bundleTarget }),
         ...commonPlugins
     ];
 
     const bundlePluginsProd = [
+        webworker(),
         jscc({ values: { _VERSION: repo.version, _DEBUG: false } }),
         esbuild({ target: bundleTarget, minify: true }),
         ...commonPlugins,
@@ -146,20 +155,29 @@ async function main()
         {
             const file = path.join(process.cwd(), bundle.target);
             const moduleFile = bundle.module ? path.join(process.cwd(), bundle.module) : '';
+            const nsBanner = bundle.plugin ? `${banner}\nthis.PIXI = this.PIXI || {};` : banner;
+            const name = bundle.plugin ? bundle.target.split('/').at(-1).replace(/[^a-z]+/g, '_') : 'PIXI';
+            const footer = bundle.plugin ? `Object.assign(this.PIXI, ${name});` : '';
+            const external = bundle.plugin ? (id) => bundle.plugin.some((plugin) => id.includes(plugin)) : undefined;
+            // eslint-disable-next-line consistent-return
+            const externalPlugin = bundle.plugin ? externalGlobals((id) => { if (external(id)) return 'PIXI'; }) : undefined;
 
             results.push({
                 input: path.join(process.cwd(), bundle.src),
+                external,
                 output: [
                     {
-                        name: 'PIXI',
-                        banner,
+                        name,
+                        banner: nsBanner,
+                        footer,
                         file,
                         format: 'iife',
                         freeze: false,
                         sourcemap: true,
                     },
-                    {
-                        banner,
+                    !bundle.plugin
+                    && {
+                        banner: nsBanner,
                         file: moduleFile,
                         format: 'esm',
                         freeze: false,
@@ -167,20 +185,23 @@ async function main()
                     }
                 ],
                 treeshake: false,
-                plugins: bundlePlugins,
+                plugins: [...bundlePlugins, externalPlugin],
             }, {
                 input: path.join(process.cwd(), bundle.src),
+                external,
                 output: [
                     {
-                        name: 'PIXI',
-                        banner,
+                        name,
+                        banner: nsBanner,
+                        footer,
                         file: prodName(file),
                         format: 'iife',
                         freeze: false,
                         sourcemap: true,
                     },
-                    {
-                        banner,
+                    !bundle.plugin
+                    && {
+                        banner: nsBanner,
                         file: prodName(moduleFile),
                         format: 'esm',
                         freeze: false,
@@ -188,7 +209,7 @@ async function main()
                     }
                 ],
                 treeshake: false,
-                plugins: bundlePluginsProd,
+                plugins: [...bundlePluginsProd, externalPlugin]
             });
         });
     }

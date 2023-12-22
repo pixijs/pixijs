@@ -1,5 +1,5 @@
-import KTXWorker from 'web-worker:./BasisWorker';
 import { basisTranscoderUrls } from '../utils/setBasisTranscoderPath';
+import BasisWorker from './basis.worker.js';
 
 import type { TEXTURE_FORMATS } from '../../../rendering/renderers/shared/texture/const';
 import type { TextureSourceOptions } from '../../../rendering/renderers/shared/texture/sources/TextureSource';
@@ -11,7 +11,7 @@ function getBasisWorker(supportedTextures: TEXTURE_FORMATS[]): Worker
 {
     if (!basisWorker)
     {
-        basisWorker = new KTXWorker();
+        basisWorker = new BasisWorker();
 
         basisWorker.onmessage = (messageEvent) =>
         {

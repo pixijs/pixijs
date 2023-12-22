@@ -9,6 +9,7 @@ import { Sprite } from '../../src/scene/sprite/Sprite';
 import { QuadGeometry } from '../../src/scene/sprite-tiling/QuadGeometry';
 import { TilingSprite } from '../../src/scene/sprite-tiling/TilingSprite';
 import { Text } from '../../src/scene/text/Text';
+import '../../src/environment-browser/browserAll';
 
 import type { GlGraphicsAdaptor } from '../../src/scene/graphics/gl/GlGraphicsAdaptor';
 

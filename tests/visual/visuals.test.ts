@@ -3,6 +3,7 @@ import path from 'path';
 import { Assets } from '../../src/assets/Assets';
 import { isCI } from '../assets/basePath';
 import { renderTest } from './tester';
+import '../../src/environment-browser/browserAll';
 
 const paths = glob.sync('**/*.scene.ts', { cwd: path.join(process.cwd(), './tests') });
 const scenes = paths.map((p) =>

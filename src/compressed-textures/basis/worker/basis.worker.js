@@ -1,10 +1,6 @@
 import { createLevelBuffers } from '../utils/createLevelBuffers';
 import { gpuFormatToBasisTranscoderFormat } from '../utils/gpuFormatToBasisTranscoderFormat';
 
-import type { TEXTURE_FORMATS } from '../../../rendering/renderers/shared/texture/const';
-import type { TextureSourceOptions } from '../../../rendering/renderers/shared/texture/sources/TextureSource';
-import type { BASISModuleCreator, BasisTextureConstructor } from '../types';
-
 /**
  * -----------------------------------------------------------
  * This code includes parts that are adapted from the webGPU(GL) wizard @toji's web-texture-tool.
@@ -16,19 +12,19 @@ import type { BASISModuleCreator, BasisTextureConstructor } from '../types';
  * -----------------------------------------------------------
  */
 
-declare let BASIS: BASISModuleCreator;
+let BASIS;
 
 const settings = {
     jsUrl: 'basis/basis_transcoder.js',
     wasmUrl: 'basis/basis_transcoder.wasm',
 };
 
-let basisTranscoderFormat: number;
-let basisTranscodedTextureFormat: TEXTURE_FORMATS;
+let basisTranscoderFormat;
+let basisTranscodedTextureFormat;
 
-let basisPromise: Promise<BasisTextureConstructor>;
+let basisPromise;
 
-async function getBasis(): Promise<BasisTextureConstructor>
+async function getBasis()
 {
     if (!basisPromise)
     {
@@ -37,6 +33,7 @@ async function getBasis(): Promise<BasisTextureConstructor>
 
         try
         {
+            // eslint-disable-next-line no-undef
             importScripts(absoluteJsUrl);
         }
         catch (e)
@@ -70,7 +67,7 @@ async function getBasis(): Promise<BasisTextureConstructor>
     return basisPromise;
 }
 
-async function fetchBasisTexture(url: string, BasisTexture: BasisTextureConstructor)
+async function fetchBasisTexture(url, BasisTexture)
 {
     const basisResponse = await fetch(url);
 
@@ -84,7 +81,7 @@ async function fetchBasisTexture(url: string, BasisTexture: BasisTextureConstruc
     throw new Error(`Failed to load Basis texture: ${url}`);
 }
 
-const preferredTranscodedFormat: Partial<TEXTURE_FORMATS>[] = [
+const preferredTranscodedFormat = [
     'etc2-rgba8unorm',
     'bc7-rgba-unorm',
     'bc3-rgba-unorm',
@@ -92,7 +89,7 @@ const preferredTranscodedFormat: Partial<TEXTURE_FORMATS>[] = [
     'rgba8unorm',
 ];
 
-async function load(url: string): Promise<TextureSourceOptions>
+async function load(url)
 {
     const BasisTexture = await getBasis();
 
@@ -106,20 +103,20 @@ async function load(url: string): Promise<TextureSourceOptions>
         format: basisTranscodedTextureFormat,
         resource: levelBuffers,
         alphaMode: 'no-premultiply-alpha'
-    } as TextureSourceOptions;
+    };
 }
 
 async function init(
-    jsUrl: string,
-    wasmUrl: string,
-    supportedTextures: TEXTURE_FORMATS[]
-): Promise<void>
+    jsUrl,
+    wasmUrl,
+    supportedTextures
+)
 {
     if (jsUrl)settings.jsUrl = jsUrl;
     if (wasmUrl)settings.wasmUrl = wasmUrl;
 
     basisTranscodedTextureFormat = preferredTranscodedFormat
-        .filter((format) => supportedTextures.includes(format))[0] as TEXTURE_FORMATS;
+        .filter((format) => supportedTextures.includes(format))[0];
 
     basisTranscoderFormat = gpuFormatToBasisTranscoderFormat(basisTranscodedTextureFormat);
 
@@ -127,17 +124,17 @@ async function init(
 }
 
 const messageHandlers = {
-    init: async (data: { wasmUrl: string, jsUrl: string, supportedTextures: TEXTURE_FORMATS[]}) =>
+    init: async (data) =>
     {
         const { jsUrl, wasmUrl, supportedTextures } = data;
 
         await init(jsUrl, wasmUrl, supportedTextures);
     },
-    load: async (data: {url: string}) =>
+    load: async (data) =>
     {
         try
         {
-            const textureOptions = await load(data.url) as TextureSourceOptions<Uint8Array[]>;
+            const textureOptions = await load(data.url);
 
             return {
                 type: 'load',
@@ -158,11 +155,11 @@ const messageHandlers = {
 self.onmessage = (async (messageEvent) =>
 {
     const message = messageEvent.data;
-    const response = await messageHandlers[message.type as 'load' | 'init'](message as any);
+    const response = await messageHandlers[message.type](message);
 
     if (response)
     {
-        (self as any).postMessage(response, response.transferables);
+        self.postMessage(response, response.transferables);
     }
 });
 
