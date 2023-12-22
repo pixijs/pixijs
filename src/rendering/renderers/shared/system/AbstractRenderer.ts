@@ -12,7 +12,7 @@ import type { GenerateTextureOptions, GenerateTextureSystem } from '../extract/G
 import type { PipeConstructor } from '../instructions/RenderPipe';
 import type { RenderSurface } from '../renderTarget/RenderTargetSystem';
 import type { Texture } from '../texture/Texture';
-import type { ViewSurfaceSystem } from '../view/ViewSurfaceSystem';
+import type { CanvasViewSystem } from '../view/CanvasViewSystem';
 import type { System, SystemConstructor } from './System';
 
 interface RendererConfig
@@ -104,7 +104,7 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
 
     public readonly runners: Runners = Object.create(null) as Runners;
     public readonly renderPipes = Object.create(null) as PIPES;
-    public surface: ViewSurfaceSystem;
+    public surface: CanvasViewSystem;
     public textureGenerator: GenerateTextureSystem;
 
     protected _initOptions: OPTIONS = {} as OPTIONS;

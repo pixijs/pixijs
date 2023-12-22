@@ -10,8 +10,8 @@ import type { System } from '../system/System';
 import type { CanvasSourceOptions } from '../texture/sources/CanvasSource';
 import type { Texture } from '../texture/Texture';
 
-/** Options passed to the ViewSystem */
-export interface ViewSystemOptions
+/** Options passed to the CanvasViewSystem */
+export interface CanvasViewSystemOptions
 {
     /** The width of the screen. */
     width?: number;
@@ -35,7 +35,7 @@ export interface ViewSystemOptions
  * The view surface system manages the main canvas that is attached to the DOM.
  * This main role is to deal with how the holding the view reference and dealing with how it is resized.
  */
-export class ViewSurfaceSystem implements System
+export class CanvasViewSystem implements System
 {
     /** @ignore */
     public static extension = {
@@ -49,7 +49,7 @@ export class ViewSurfaceSystem implements System
     } as const;
 
     /** @ignore */
-    public static defaultOptions: ViewSystemOptions = {
+    public static defaultOptions: CanvasViewSystemOptions = {
         /**
          * {@link WebGLOptions.width}
          * @default 800
@@ -107,16 +107,16 @@ export class ViewSurfaceSystem implements System
      * initiates the view system
      * @param options - the options for the view
      */
-    public init(options: ViewSystemOptions): void
+    public init(options: CanvasViewSystemOptions): void
     {
         options = {
-            ...ViewSurfaceSystem.defaultOptions,
+            ...CanvasViewSystem.defaultOptions,
             ...options,
         };
 
         if (options.element)
         {
-            deprecation(v8_0_0, 'ViewSystem.element has been renamed to ViewSystem.canvas');
+            deprecation(v8_0_0, 'CanvasViewSystem.element has been renamed to CanvasViewSystem.canvas');
             options.canvas = options.element;
         }
 
