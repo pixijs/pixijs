@@ -34,6 +34,7 @@ export interface ViewSystemOptions
 /**
  * The view system manages the main canvas that is attached to the DOM.
  * This main role is to deal with how the holding the view reference and dealing with how it is resized.
+ * @memberof rendering
  */
 export class ViewSystem implements System
 {
@@ -145,8 +146,8 @@ export class ViewSystem implements System
     {
         this.texture.source.resize(desiredScreenWidth, desiredScreenHeight, resolution);
 
-        this.screen.width = this.texture.frameWidth;
-        this.screen.height = this.texture.frameHeight;
+        this.screen.width = this.texture.frame.width;
+        this.screen.height = this.texture.frame.height;
 
         if (this.autoDensity)
         {

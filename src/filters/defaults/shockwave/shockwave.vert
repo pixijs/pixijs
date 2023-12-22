@@ -1,12 +1,6 @@
 in vec2 aPosition;
 out vec2 vTextureCoord;
 
-uniform globalUniforms {
-  mat3 projectionMatrix;
-  mat3 worldTransformMatrix;
-  float worldAlpha;
-};
-
 uniform vec4 inputSize;
 uniform vec4 outputFrame;
 

@@ -2,13 +2,13 @@ import { LoaderParserPriority } from '../assets/loader/parsers/LoaderParser';
 import { Resolver } from '../assets/resolver/Resolver';
 import { copySearchParams } from '../assets/utils/copySearchParams';
 import { ExtensionType } from '../extensions/Extensions';
+import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { path } from '../utils/path';
 import { Spritesheet } from './Spritesheet';
 
 import type { AssetExtension } from '../assets/AssetExtension';
 import type { Loader } from '../assets/loader/Loader';
 import type { ResolvedAsset, UnresolvedAsset } from '../assets/types';
-import type { Texture } from '../rendering/renderers/shared/texture/Texture';
 import type { SpritesheetData } from './Spritesheet';
 
 export interface SpriteSheetJson extends SpritesheetData
@@ -54,8 +54,6 @@ function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack:
 
 /**
  * Asset extension for loading spritesheets
- *
- * This will be added automatically if `pixi.js/spritesheet` is imported
  * @example
  * import { Assets } from 'pixi.js';
  *
@@ -76,7 +74,7 @@ export const spritesheetAsset = {
         test: (asset: Spritesheet) => asset instanceof Spritesheet,
         getCacheableAssets: (keys: string[], asset: Spritesheet) => getCacheableAssets(keys, asset, false),
     },
-    /** Resolve the the resolution of the asset. */
+    /** Resolve the resolution of the asset. */
     resolver: {
         test: (value: string): boolean =>
         {
@@ -117,8 +115,17 @@ export const spritesheetAsset = {
             return (path.extname(options.src).toLowerCase() === '.json' && !!asset.frames);
         },
 
-        async parse(asset: SpriteSheetJson, options: ResolvedAsset, loader: Loader): Promise<Spritesheet>
+        async parse(
+            asset: SpriteSheetJson,
+            options: ResolvedAsset<{texture: Texture, imageFilename: string, ignoreMultiPack: boolean}>,
+            loader: Loader
+        ): Promise<Spritesheet>
         {
+            const {
+                texture: imageTexture, // if user need to use preloaded texture
+                imageFilename // if user need to use custom filename (not from jsonFile.meta.image)
+            } = options?.data ?? {};
+
             let basePath = path.dirname(options.src);
 
             if (basePath && basePath.lastIndexOf('/') !== (basePath.length - 1))
@@ -126,12 +133,21 @@ export const spritesheetAsset = {
                 basePath += '/';
             }
 
-            let imagePath = basePath + asset.meta.image;
+            let texture: Texture;
 
-            imagePath = copySearchParams(imagePath, options.src);
+            if (imageTexture instanceof Texture)
+            {
+                texture = imageTexture;
+            }
+            else
+            {
+                const imagePath = copySearchParams(basePath + (imageFilename ?? asset.meta.image), options.src);
 
-            const assets = await loader.load<Texture>([imagePath]);
-            const texture = assets[imagePath];
+                const assets = await loader.load<Texture>([imagePath]);
+
+                texture = assets[imagePath];
+            }
+
             const spritesheet = new Spritesheet(
                 texture.source,
                 asset,

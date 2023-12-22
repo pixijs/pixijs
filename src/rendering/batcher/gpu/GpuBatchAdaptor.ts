@@ -16,6 +16,10 @@ import type { BatcherAdaptor, BatcherPipe } from '../shared/BatcherPipe';
 
 const tempState = State.for2d();
 
+/**
+ * A BatcherAdaptor that uses the GPU to render batches.
+ * @memberof rendering
+ */
 export class GpuBatchAdaptor implements BatcherAdaptor
 {
     /** @ignore */

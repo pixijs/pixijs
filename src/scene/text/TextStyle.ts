@@ -24,6 +24,15 @@ export type TextStyleLineJoin = 'miter' | 'round' | 'bevel';
 export type TextStyleTextBaseline = 'alphabetic' | 'top' | 'hanging' | 'middle' | 'ideographic' | 'bottom';
 export type TextStyleWhiteSpace = 'normal' | 'pre' | 'pre-line';
 
+/**
+ * The namespace for Text related objects.
+ * @namespace text
+ */
+
+/**
+ * A drop shadow effect.
+ * @memberof scene
+ */
 export type TextDropShadow = {
     /** Set alpha for the drop shadow  */
     alpha: number;
@@ -37,7 +46,17 @@ export type TextDropShadow = {
     distance: number;
 };
 
-/** Generic interface for TextStyle options. */
+/**
+ * Constructor options used for `TextStyle` instances.
+ * ```js
+ * const textStyle = new TextStyle({
+ *    fontSize: 12,
+ *    fill: 'black',
+ * });
+ * ```
+ * @see {@link scene.TextStyle}
+ * @memberof scene
+ */
 export interface TextStyleOptions
 {
     /**
@@ -45,7 +64,7 @@ export interface TextStyleOptions
      * @type {'left'|'center'|'right'|'justify'}
      */
     align?: TextStyleAlign;
-    /** Indicates if lines can be wrapped within words, it needs wordWrap to be set to true */
+    /** Indicates if lines can be wrapped within words, it needs `wordWrap` to be set to `true` */
     breakWords?: boolean;
     /** Set a drop shadow for the text */
     dropShadow?: boolean | TextDropShadow;
@@ -107,6 +126,18 @@ export interface TextStyleOptions
     wordWrapWidth?: number;
 }
 
+/**
+ * A TextStyle Object contains information to decorate a Text objects.
+ *
+ * An instance can be shared between multiple Text objects; then changing the style will update all text objects using it.
+ * @memberof text
+ * @example
+ * import { TextStyle } from 'pixi.js';
+ * const style = new TextStyle({
+ *   fontFamily: ['Helvetica', 'Arial', 'sans-serif'],
+ *   fontSize: 36,
+ * });
+ */
 export class TextStyle extends EventEmitter<{
     update: TextDropShadow
 }>
@@ -219,6 +250,7 @@ export class TextStyle extends EventEmitter<{
     private _padding: number;
 
     protected _styleKey: string;
+    private _trim: boolean;
 
     constructor(style: Partial<TextStyleOptions> = {})
     {
@@ -271,39 +303,88 @@ export class TextStyle extends EventEmitter<{
         this.update();
     }
 
+    /**
+     * Alignment for multiline text, does not affect single line text.
+     * @member {'left'|'center'|'right'|'justify'}
+     */
     get align(): TextStyleAlign { return this._align; }
     set align(value: TextStyleAlign) { this._align = value; this.update(); }
+    /** Indicates if lines can be wrapped within words, it needs wordWrap to be set to true. */
     get breakWords(): boolean { return this._breakWords; }
     set breakWords(value: boolean) { this._breakWords = value; this.update(); }
+    /** Set a drop shadow for the text. */
     get dropShadow(): TextDropShadow { return this._dropShadow; }
     set dropShadow(value: TextDropShadow) { this._dropShadow = value; this.update(); }
+    /** The font family, can be a single font name, or a list of names where the first is the preferred font. */
     get fontFamily(): string | string[] { return this._fontFamily; }
     set fontFamily(value: string | string[]) { this._fontFamily = value; this.update(); }
+    /** The font size (as a number it converts to px, but as a string, equivalents are '26px','20pt','160%' or '1.6em') */
     get fontSize(): number { return this._fontSize; }
     set fontSize(value: number) { this._fontSize = value; this.update(); }
+    /**
+     * The font style.
+     * @member {'normal'|'italic'|'oblique'}
+     */
     get fontStyle(): TextStyleFontStyle { return this._fontStyle; }
     set fontStyle(value: TextStyleFontStyle) { this._fontStyle = value; this.update(); }
+    /**
+     * The font variant.
+     * @member {'normal'|'small-caps'}
+     */
     get fontVariant(): TextStyleFontVariant { return this._fontVariant; }
     set fontVariant(value: TextStyleFontVariant) { this._fontVariant = value; this.update(); }
+    /**
+     * The font weight.
+     * @member {'normal'|'bold'|'bolder'|'lighter'|'100'|'200'|'300'|'400'|'500'|'600'|'700'|'800'|'900'}
+     */
     get fontWeight(): TextStyleFontWeight { return this._fontWeight; }
     set fontWeight(value: TextStyleFontWeight) { this._fontWeight = value; this.update(); }
+    /** The space between lines. */
     get leading(): number { return this._leading; }
     set leading(value: number) { this._leading = value; this.update(); }
+    /** The amount of spacing between letters, default is 0. */
     get letterSpacing(): number { return this._letterSpacing; }
     set letterSpacing(value: number) { this._letterSpacing = value; this.update(); }
+    /** The line height, a number that represents the vertical space that a letter uses. */
     get lineHeight(): number { return this._lineHeight; }
     set lineHeight(value: number) { this._lineHeight = value; this.update(); }
+    /**
+     * Occasionally some fonts are cropped. Adding some padding will prevent this from happening
+     * by adding padding to all sides of the text.
+     */
     get padding(): number { return this._padding; }
     set padding(value: number) { this._padding = value; this.update(); }
+
+    /** Trim transparent borders. This is an expensive operation so only use this if you have to! */
+    get trim(): boolean { return this._trim; }
+    set trim(value: boolean) { this._trim = value; this.update(); }
+    /**
+     * The baseline of the text that is rendered.
+     * @member {'alphabetic'|'top'|'hanging'|'middle'|'ideographic'|'bottom'}
+     */
     get textBaseline(): TextStyleTextBaseline { return this._textBaseline; }
     set textBaseline(value: TextStyleTextBaseline) { this._textBaseline = value; this.update(); }
+    /**
+     * How newlines and spaces should be handled.
+     * Default is 'pre' (preserve, preserve).
+     *
+     *  value       | New lines     |   Spaces
+     *  ---         | ---           |   ---
+     * 'normal'     | Collapse      |   Collapse
+     * 'pre'        | Preserve      |   Preserve
+     * 'pre-line'   | Preserve      |   Collapse
+     * @member {'normal'|'pre'|'pre-line'}
+     */
     get whiteSpace(): TextStyleWhiteSpace { return this._whiteSpace; }
     set whiteSpace(value: TextStyleWhiteSpace) { this._whiteSpace = value; this.update(); }
+    /** Indicates if word wrap should be used. */
     get wordWrap(): boolean { return this._wordWrap; }
     set wordWrap(value: boolean) { this._wordWrap = value; this.update(); }
+    /** The width at which text will wrap, it needs wordWrap to be set to true. */
     get wordWrapWidth(): number { return this._wordWrapWidth; }
     set wordWrapWidth(value: number) { this._wordWrapWidth = value; this.update(); }
 
+    /** A fillstyle that will be used on the text e.g., 'red', '#00FF00'. */
     get fill(): FillStyleInputs
     {
         return this._originalFill;
@@ -318,6 +399,7 @@ export class TextStyle extends EventEmitter<{
         this.update();
     }
 
+    /** A fillstyle that will be used on the text stroke, e.g., 'blue', '#FCFF00'. */
     get stroke(): FillStyleInputs
     {
         return this._originalStroke;
@@ -345,11 +427,25 @@ export class TextStyle extends EventEmitter<{
         this.emit('update', this);
     }
 
+    public reset()
+    {
+        const defaultStyle = TextStyle.defaultTextStyle;
+
+        for (const key in defaultStyle)
+        {
+            this[key as keyof typeof this] = defaultStyle[key as keyof TextStyleOptions] as any;
+        }
+    }
+
     get styleKey()
     {
         return this._styleKey || this._generateKey();
     }
 
+    /**
+     * Creates a new TextStyle object with the same values as this one.
+     * @returns New cloned TextStyle object
+     */
     public clone(): TextStyle
     {
         return new TextStyle({

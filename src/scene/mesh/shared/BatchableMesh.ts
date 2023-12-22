@@ -3,6 +3,10 @@ import type { Renderable } from '../../../rendering/renderers/shared/Renderable'
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { MeshView } from './MeshView';
 
+/**
+ * A batchable mesh object.
+ * @memberof rendering
+ */
 export class BatchableMesh implements BatchableObject
 {
     public indexStart: number;
@@ -14,7 +18,7 @@ export class BatchableMesh implements BatchableObject
     public renderable: Renderable<MeshView>;
     public roundPixels: 0 | 1 = 0;
 
-    get blendMode() { return this.renderable.layerBlendMode; }
+    get blendMode() { return this.renderable.rgBlendMode; }
 
     public reset()
     {
@@ -46,7 +50,7 @@ export class BatchableMesh implements BatchableObject
         const view = this.renderable.view;
 
         const geometry = view.geometry;
-        const wt = renderable.layerTransform;
+        const wt = renderable.rgTransform;
 
         const textureIdAndRound = (textureId << 16) | (this.roundPixels & 0xFFFF);
 
@@ -61,7 +65,7 @@ export class BatchableMesh implements BatchableObject
         const positions = geometry.positions;
         const uvs = geometry.uvs;
 
-        const abgr = renderable.layerColor;
+        const abgr = renderable.rgColorAlpha;
 
         for (let i = 0; i < positions.length; i += 2)
         {

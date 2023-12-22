@@ -10,11 +10,39 @@ import type { Texture } from '../../../rendering/renderers/shared/texture/Textur
 import type { ContainerOptions } from '../../container/Container';
 import type { MeshViewOptions, TextureShader } from './MeshView';
 
+/**
+ * Constructor options used for `Mesh` instances. Extends {@link scene.MeshViewOptions}
+ * ```js
+ * const mesh = new Mesh({
+ *    texture: Texture.from('assets/image.png'),
+ *    geometry: new PlaneGeometry(),
+ *    shader: Shader.from(VERTEX, FRAGMENT),
+ * });
+ * ```
+ * @see {@link scene.Mesh}
+ * @see {@link scene.MeshViewOptions}
+ * @memberof scene
+ */
 export type MeshOptions<
     GEOMETRY extends MeshGeometry = MeshGeometry,
     SHADER extends TextureShader = TextureShader
 > = Partial<ContainerOptions<MeshView<GEOMETRY, SHADER>>> & MeshViewOptions<GEOMETRY, SHADER>;
 
+/**
+ * Base mesh class.
+ *
+ * This class empowers you to have maximum flexibility to render any kind of WebGL/WebGPU visuals you can think of.
+ * This class assumes a certain level of WebGL/WebGPU knowledge.
+ * If you know a bit this should abstract enough away to make your life easier!
+ *
+ * Pretty much ALL WebGL/WebGPU can be broken down into the following:
+ * - Geometry - The structure and data for the mesh. This can include anything from positions, uvs, normals, colors etc..
+ * - Shader - This is the shader that PixiJS will render the geometry with (attributes in the shader must match the geometry)
+ * - State - This is the state of WebGL required to render the mesh.
+ *
+ * Through a combination of the above elements you can render anything you want, 2D or 3D!
+ * @memberof scene
+ */
 export class Mesh<
     GEOMETRY extends MeshGeometry = MeshGeometry,
     SHADER extends TextureShader = TextureShader
@@ -38,7 +66,7 @@ export class Mesh<
 
             if (args[3])
             {
-                deprecation(v8_0_0, 'Mesh: topology argument has been removed, use geometry.topology instead');
+                deprecation(v8_0_0, 'Mesh: drawMode argument has been removed, use geometry.topology instead');
                 options.geometry.topology = args[3];
             }
         }
@@ -54,6 +82,7 @@ export class Mesh<
         this.allowChildren = false;
     }
 
+    /** The texture that the Mesh uses. Null for non-MeshMaterial shaders */
     get texture()
     {
         return this.view.texture;
@@ -64,6 +93,11 @@ export class Mesh<
         this.view.texture = value;
     }
 
+    /**
+     * Includes vertex positions, face indices, colors, UVs, and
+     * custom attributes within buffers, reducing the cost of passing all
+     * this data to the GPU. Can be shared between multiple Mesh objects.
+     */
     get geometry()
     {
         return this.view.geometry;
@@ -74,6 +108,7 @@ export class Mesh<
         this.view.geometry = value;
     }
 
+    /** Alias for {@link scene.Mesh#shader}. */
     get material()
     {
         deprecation(v8_0_0, 'mesh.material property has been removed, use mesh.shader instead');
@@ -81,11 +116,16 @@ export class Mesh<
         return this.view.shader;
     }
 
+    /**
+     * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
+     * Can be shared between multiple Mesh objects.
+     */
     get shader()
     {
         return this.view.shader;
     }
 
+    /** Whether or not to round the x/y position of the mesh. */
     get roundPixels()
     {
         return !!this.view.roundPixels;

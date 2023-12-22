@@ -50,9 +50,7 @@ export function preloadVideo(element: HTMLVideoElement): Promise<void>
 }
 
 /**
- * A simple plugin to video textures
- *
- * This will be added automatically if `pixi.js/assets` is imported
+ * A simple plugin to load video textures.
  *
  * You can pass VideoSource options to the loader via the .data property of the asset descriptor
  * when using Asset.load().
@@ -147,17 +145,27 @@ export const loadVideoTextures = {
             sourceElement.type = mime;
         }
 
-        videoElement.appendChild(sourceElement);
-
-        // --- Create texture ---
-        const base = new VideoSource({ ...options, resource: videoElement });
-
-        if (asset.data.preload)
+        // this promise will make sure that video is ready to play - as in we have a valid width, height and it can be
+        // uploaded to the GPU. Our textures are kind of dumb now, and don't want to handle resizing right now.
+        return new Promise((resolve) =>
         {
-            await preloadVideo(videoElement);
-        }
+            const onCanPlay = async () =>
+            {
+                const base = new VideoSource({ ...options, resource: videoElement });
 
-        return createTexture(base, loader, url);
+                videoElement.removeEventListener('canplay', onCanPlay);
+
+                if (asset.data.preload)
+                {
+                    await preloadVideo(videoElement);
+                }
+
+                resolve(createTexture(base, loader, url));
+            };
+
+            videoElement.addEventListener('canplay', onCanPlay);
+            videoElement.appendChild(sourceElement);
+        });
     },
 
     unload(texture: Texture): void

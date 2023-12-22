@@ -17,6 +17,7 @@ const tempMat = new Matrix();
  * @see Texture
  * @see Mesh
  * @see TilingSprite
+ * @memberof rendering
  */
 export class TextureMatrix
 {
@@ -84,7 +85,16 @@ export class TextureMatrix
         this._updateID = 0;
 
         this.clampOffset = 0;
-        this.clampMargin = (typeof clampMargin === 'undefined') ? 0.5 : clampMargin;
+
+        if ((typeof clampMargin === 'undefined'))
+        {
+            this.clampMargin = (texture.width < 10) ? 0 : 0.5;
+        }
+        else
+        {
+            this.clampMargin = clampMargin;
+        }
+
         this.isSimple = false;
 
         this.texture = texture;
@@ -140,12 +150,12 @@ export class TextureMatrix
 
         this._updateID++;
 
-        const uvs = tex.layout.uvs;
+        const uvs = tex.uvs;
 
         this.mapCoord.set(uvs.x1 - uvs.x0, uvs.y1 - uvs.y0, uvs.x3 - uvs.x0, uvs.y3 - uvs.y0, uvs.x0, uvs.y0);
 
-        const orig = tex.layout.orig;
-        const trim = tex.layout.trim;
+        const orig = tex.orig;
+        const trim = tex.trim;
 
         if (trim)
         {
@@ -164,16 +174,17 @@ export class TextureMatrix
         const margin = this.clampMargin / texBase._resolution;
         const offset = this.clampOffset;
 
-        frame[0] = (tex.frameX + margin + offset) / texBase.width;
-        frame[1] = (tex.frameY + margin + offset) / texBase.height;
-        frame[2] = (tex.frameX + tex.frameWidth - margin + offset) / texBase.width;
-        frame[3] = (tex.frameY + tex.frameHeight - margin + offset) / texBase.height;
+        frame[0] = (tex.frame.x + margin + offset) / texBase.width;
+        frame[1] = (tex.frame.y + margin + offset) / texBase.height;
+        frame[2] = (tex.frame.x + tex.frame.width - margin + offset) / texBase.width;
+        frame[3] = (tex.frame.y + tex.frame.height - margin + offset) / texBase.height;
+
         this.uClampOffset[0] = offset / texBase.pixelWidth;
         this.uClampOffset[1] = offset / texBase.pixelHeight;
 
-        this.isSimple = tex.frameWidth === texBase.width
-            && tex.frameHeight === texBase.height
-            && tex.layout.rotate === 0;
+        this.isSimple = tex.frame.width === texBase.width
+            && tex.frame.height === texBase.height
+            && tex.rotate === 0;
 
         return true;
     }

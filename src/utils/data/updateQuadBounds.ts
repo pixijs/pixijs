@@ -1,45 +1,36 @@
 import type { ObservablePoint } from '../../maths/point/ObservablePoint';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
+import type { BoundsData } from '../../scene/container/bounds/Bounds';
 
 export function updateQuadBounds(
-    bounds: [number, number, number, number],
+    bounds: BoundsData,
     anchor: ObservablePoint,
     texture: Texture,
     padding: number
 )
 {
-    const textureSource = texture._source;
-
-    const layout = texture.layout;
-
-    const orig = layout.orig;
-    const trim = layout.trim;
-
-    const textureSourceWidth = textureSource.width;
-    const textureSourceHeight = textureSource.height;
-
-    const width = textureSourceWidth * orig.width;
-    const height = textureSourceHeight * orig.height;
+    const { width, height } = texture.orig;
+    const trim = texture.trim;
 
     if (trim)
     {
-        const sourceWidth = textureSourceWidth * trim.width;
-        const sourceHeight = textureSourceHeight * trim.height;
+        const sourceWidth = trim.width;
+        const sourceHeight = trim.height;
 
-        bounds[0] = (trim.x * textureSourceWidth) - (anchor._x * width) - padding;
-        bounds[1] = bounds[0] + sourceWidth;
+        bounds.minX = (trim.x) - (anchor._x * width) - padding;
+        bounds.maxX = bounds.minX + sourceWidth;
 
-        bounds[2] = (trim.y * textureSourceHeight) - (anchor._y * height) - padding;
-        bounds[3] = bounds[2] + sourceHeight;
+        bounds.minY = (trim.y) - (anchor._y * height) - padding;
+        bounds.maxY = bounds.minY + sourceHeight;
     }
 
     else
     {
-        bounds[0] = (-anchor._x * width) - padding;
-        bounds[1] = bounds[0] + width;
+        bounds.minX = (-anchor._x * width) - padding;
+        bounds.maxX = bounds.minX + width;
 
-        bounds[2] = (-anchor._y * height) - padding;
-        bounds[3] = bounds[2] + height;
+        bounds.minY = (-anchor._y * height) - padding;
+        bounds.maxY = bounds.minY + height;
     }
 
     return;

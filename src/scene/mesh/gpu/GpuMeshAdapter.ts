@@ -11,6 +11,10 @@ import type { Renderable } from '../../../rendering/renderers/shared/Renderable'
 import type { MeshAdaptor, MeshPipe } from '../shared/MeshPipe';
 import type { MeshView } from '../shared/MeshView';
 
+/**
+ * The WebGL adaptor for the mesh system. Allows the Mesh System to be used with the WebGl renderer
+ * @memberof rendering
+ */
 export class GpuMeshAdapter implements MeshAdaptor
 {
     /** @ignore */

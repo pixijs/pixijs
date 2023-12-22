@@ -73,6 +73,8 @@
                     "assets",
                     "app",
                     "accessibility",
+                    "scene",
+                    "maths",
                     "AddEventListenerOptions",
                     "EventListenerOptions",
                     "EventListenerOrEventListenerObject",
@@ -129,6 +131,8 @@
     "overrides": [
         {
             "files": ["*.tests.ts", "*.test.ts"],
+            "plugins": ["jest"],
+            "extends": ["plugin:jest/recommended"],
             "globals": {
                 "expect": false,
                 "assert": false,
@@ -145,7 +149,17 @@
                         "allowIndexSignaturePropertyAccess": true
                     }
                 ],
-                "dot-notation": 0
+                "dot-notation": 0,
+                "jest/no-disabled-tests": "off",
+                "jest/no-conditional-expect": "off",
+                "jest/no-standalone-expect": "off",
+                "jest/expect-expect": [
+                    "error",
+                    {
+                      "assertFunctionNames": ["expect", "check32BitColorMatches", "assertRemovedFromParent"],
+                      "additionalTestBlockFunctions": [""]
+                    }
+                  ]
             }
         }
     ]

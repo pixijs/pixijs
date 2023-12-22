@@ -157,15 +157,11 @@ export class CanvasTextPipe implements RenderPipe<TextView>
 
     private _getGpuText(renderable: Renderable<TextView>)
     {
-        return this._gpuText[renderable.uid] || this._initGpuText(renderable);
+        return this._gpuText[renderable.uid] || this.initGpuText(renderable);
     }
 
-    private _initGpuText(renderable: Renderable<TextView>)
+    public initGpuText(renderable: Renderable<TextView>)
     {
-        const view = renderable.view;
-
-        view._style.update();
-
         const gpuTextData: CanvasTextPipe['_gpuText'][number] = {
             texture: null,
             currentKey: '--',
@@ -173,7 +169,7 @@ export class CanvasTextPipe implements RenderPipe<TextView>
         };
 
         gpuTextData.batchableSprite.renderable = renderable;
-        gpuTextData.batchableSprite.bounds = [0, 1, 0, 0];
+        gpuTextData.batchableSprite.bounds = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
         gpuTextData.batchableSprite.roundPixels = (this._renderer._roundPixels | renderable.view.roundPixels) as 0 | 1;
 
         this._gpuText[renderable.uid] = gpuTextData;

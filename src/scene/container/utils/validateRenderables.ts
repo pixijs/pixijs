@@ -1,10 +1,10 @@
 import type { RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
 import type { RenderPipes } from '../../../rendering/renderers/types';
-import type { LayerGroup } from '../LayerGroup';
+import type { RenderGroup } from '../RenderGroup';
 
-export function validateRenderables(layerGroup: LayerGroup, renderPipes: RenderPipes): boolean
+export function validateRenderables(renderGroup: RenderGroup, renderPipes: RenderPipes): boolean
 {
-    const { list, index } = layerGroup.childrenRenderablesToUpdate;
+    const { list, index } = renderGroup.childrenRenderablesToUpdate;
 
     let rebuildRequired = false;
 
@@ -23,12 +23,7 @@ export function validateRenderables(layerGroup: LayerGroup, renderPipes: RenderP
         }
     }
 
-    layerGroup.structureDidChange = rebuildRequired;
-
-    if (rebuildRequired)
-    {
-        layerGroup.childrenRenderablesToUpdate.index = 0;
-    }
+    renderGroup.structureDidChange = rebuildRequired;
 
     return rebuildRequired;
 }

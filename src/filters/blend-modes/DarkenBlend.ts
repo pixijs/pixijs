@@ -3,7 +3,10 @@ import { BlendModeFilter } from './BlendModeFilter';
 
 import type { ExtensionMetadata } from '../../extensions/Extensions';
 
-/** Uses each color channel to select the darker of the following two values; base or blend color */
+/**
+ * Uses each color channel to select the darker of the following two values; base or blend color
+ * @memberof filters
+ */
 export class DarkenBlend extends BlendModeFilter
 {
     /** @ignore */

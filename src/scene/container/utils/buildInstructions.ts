@@ -1,16 +1,16 @@
-import { LayerRenderable } from '../../../rendering/renderers/shared/LayerRenderable';
+import { RGRenderable } from '../../../rendering/renderers/shared/RGRenderable';
 
 import type { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
 import type { InstructionPipe, RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
 import type { RenderPipes } from '../../../rendering/renderers/types';
 import type { Container } from '../Container';
-import type { LayerGroup } from '../LayerGroup';
+import type { RenderGroup } from '../RenderGroup';
 
-export function buildInstructions(layerGroup: LayerGroup, renderPipes: RenderPipes)
+export function buildInstructions(renderGroup: RenderGroup, renderPipes: RenderPipes)
 {
-    const root = layerGroup.root;
-    const instructionSet = layerGroup.instructionSet;
+    const root = renderGroup.root;
+    const instructionSet = renderGroup.instructionSet;
 
     instructionSet.reset();
 
@@ -42,7 +42,7 @@ export function collectAllRenderables(
 {
     // if there is 0b01 or 0b10 the return value
 
-    if (container.layerVisibleRenderable < 0b11 || !container.includeInBuild) return;
+    if (container.rgVisibleRenderable < 0b11 || !container.includeInBuild) return;
 
     if (container.sortableChildren)
     {
@@ -70,7 +70,7 @@ function collectAllRenderablesSimple(
     if (view)
     {
         // TODO add blends in
-        renderPipes.blendMode.setBlendMode(container as Renderable, container.layerBlendMode, instructionSet);
+        renderPipes.blendMode.setBlendMode(container as Renderable, container.rgBlendMode, instructionSet);
 
         container.didViewUpdate = false;
 
@@ -79,7 +79,7 @@ function collectAllRenderablesSimple(
         rp[view.renderPipeId].addRenderable(container, instructionSet);
     }
 
-    if (!container.isLayerRoot)
+    if (!container.isRenderGroupRoot)
     {
         const children = container.children;
         const length = children.length;
@@ -98,38 +98,36 @@ function collectAllRenderablesAdvanced(
     isRoot: boolean
 ): void
 {
+    for (let i = 0; i < container.effects.length; i++)
+    {
+        const effect = container.effects[i];
+        const pipe = renderPipes[effect.pipe as keyof RenderPipes]as InstructionPipe<any>;
+
+        pipe.push(effect, container, instructionSet);
+    }
+
     if (isRoot)
     {
-        const layerGroup = container.layerGroup;
+        const renderGroup = container.renderGroup;
 
-        if (layerGroup.root.view)
+        if (renderGroup.root.view)
         {
             // proxy renderable is needed here as we do not want to inherit the transform / color of the root container
-            const proxyRenderable = layerGroup.proxyRenderable ?? initProxyRenderable(layerGroup);
+            const proxyRenderable = renderGroup.proxyRenderable ?? initProxyRenderable(renderGroup);
 
             if (proxyRenderable)
             {
-                renderPipes.blendMode.setBlendMode(proxyRenderable, proxyRenderable.layerBlendMode, instructionSet);
+                renderPipes.blendMode.setBlendMode(proxyRenderable, proxyRenderable.rgBlendMode, instructionSet);
 
                 // eslint-disable-next-line max-len
                 (renderPipes[proxyRenderable.view.renderPipeId as keyof RenderPipes] as any).addRenderable(proxyRenderable, instructionSet);
             }
         }
     }
-    else
-    {
-        for (let i = 0; i < container.effects.length; i++)
-        {
-            const effect = container.effects[i];
-            const pipe = renderPipes[effect.pipe as keyof RenderPipes]as InstructionPipe<any>;
 
-            pipe.push(effect, container, instructionSet);
-        }
-    }
-
-    if (!isRoot && container.isLayerRoot)
+    if (!isRoot && container.isRenderGroupRoot)
     {
-        renderPipes.layer.addLayerGroup(container.layerGroup, instructionSet);
+        renderPipes.renderGroup.addRenderGroup(container.renderGroup, instructionSet);
     }
     else
     {
@@ -138,7 +136,7 @@ function collectAllRenderablesAdvanced(
         if (view)
         {
             // TODO add blends in
-            renderPipes.blendMode.setBlendMode(container as Renderable, container.layerBlendMode, instructionSet);
+            renderPipes.blendMode.setBlendMode(container as Renderable, container.rgBlendMode, instructionSet);
             container.didViewUpdate = false;
 
             const pipe = renderPipes[view.renderPipeId as keyof RenderPipes]as RenderPipe<any>;
@@ -157,24 +155,21 @@ function collectAllRenderablesAdvanced(
         }
     }
 
-    if (!isRoot)
+    // loop backwards through effects
+    for (let i = container.effects.length - 1; i >= 0; i--)
     {
-        // loop backwards through effects
-        for (let i = container.effects.length - 1; i >= 0; i--)
-        {
-            const effect = container.effects[i];
-            const pipe = renderPipes[effect.pipe as keyof RenderPipes]as InstructionPipe<any>;
+        const effect = container.effects[i];
+        const pipe = renderPipes[effect.pipe as keyof RenderPipes]as InstructionPipe<any>;
 
-            pipe.pop(effect, container, instructionSet);
-        }
+        pipe.pop(effect, container, instructionSet);
     }
 }
 
-function initProxyRenderable(layerGroup: LayerGroup)
+function initProxyRenderable(renderGroup: RenderGroup)
 {
-    const root = layerGroup.root;
+    const root = renderGroup.root;
 
-    layerGroup.proxyRenderable = new LayerRenderable({
+    renderGroup.proxyRenderable = new RGRenderable({
         original: root,
         view: root.view,
     });

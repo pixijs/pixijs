@@ -10,8 +10,9 @@ function createGlobalUniformSystem(): GlobalUniformSystem
 {
     const renderer = {
         renderTarget: {
+            projectionMatrix: new Matrix(2, 2, 2, 2, 2, 2),
             renderTarget: {
-                projectionMatrix: new Matrix(2, 2, 2, 2, 2, 2),
+                size: [1, 1],
             }
         },
         renderPipes: {},
@@ -26,10 +27,9 @@ function createGlobalUniformSystem(): GlobalUniformSystem
     const globalUniformSystem = new GlobalUniformSystem(renderer);
 
     globalUniformSystem.start({
-        projectionData: {
-            projectionMatrix: new Matrix(1, 1, 1, 1, 1, 1),
-            size: [1, 1]
-        },
+        projectionMatrix: new Matrix(1, 1, 1, 1, 1, 1),
+        size: [1, 1],
+
         worldTransformMatrix: new Matrix(2, 2, 2, 2, 2, 2),
     });
 
@@ -60,19 +60,17 @@ describe('GlobalUniformSystem', () =>
         const bindGroup = globalUniformSystem.bindGroup;
 
         globalUniformSystem.push({
-            projectionData: {
-                projectionMatrix: new Matrix(3, 3, 3, 3, 3, 3),
-                size: [1, 1]
-            },
+
+            projectionMatrix: new Matrix(3, 3, 3, 3, 3, 3),
+            size: [1, 1]
+
         });
 
         const bindGroup2 = globalUniformSystem.bindGroup;
 
         globalUniformSystem.push({
-            projectionData: {
-                projectionMatrix: new Matrix(4, 4, 4, 4, 4, 4),
-                size: [1, 1]
-            },
+            projectionMatrix: new Matrix(4, 4, 4, 4, 4, 4),
+            size: [1, 1],
             worldTransformMatrix: new Matrix(5, 5, 5, 5, 5, 5),
         });
 
@@ -174,25 +172,25 @@ describe('GlobalUniformSystem', () =>
             worldTransformMatrix: new Matrix(2, 2, 2, 2, 2, 2),
         });
 
-        expect(globalUniformSystem['_activeUniforms'].length).toEqual(3);
-        expect(globalUniformSystem['_activeBindGroups'].length).toEqual(3);
+        expect(globalUniformSystem['_activeUniforms']).toHaveLength(3);
+        expect(globalUniformSystem['_activeBindGroups']).toHaveLength(3);
 
         globalUniformSystem.pop();
 
-        expect(globalUniformSystem['_activeBindGroups'].length).toEqual(3);
+        expect(globalUniformSystem['_activeBindGroups']).toHaveLength(3);
 
         globalUniformSystem.push({
             worldTransformMatrix: new Matrix(2, 2, 2, 2, 2, 2),
         });
 
-        expect(globalUniformSystem['_activeBindGroups'].length).toEqual(4);
+        expect(globalUniformSystem['_activeBindGroups']).toHaveLength(4);
 
         // start again!
         globalUniformSystem.reset();
 
         expect(globalUniformSystem['_stackIndex']).toEqual(0);
-        expect(globalUniformSystem['_activeUniforms'].length).toEqual(0);
-        expect(globalUniformSystem['_activeBindGroups'].length).toEqual(0);
+        expect(globalUniformSystem['_activeUniforms']).toHaveLength(0);
+        expect(globalUniformSystem['_activeBindGroups']).toHaveLength(0);
     });
 
     it('should store color correctly second time', async () =>
@@ -215,10 +213,10 @@ describe('GlobalUniformSystem', () =>
 
         const bindGroup3 = globalUniformSystem.bindGroup;
 
-        expect((bindGroup.resources[0] as UniformGroup).uniforms.worldAlpha).toEqual(1);
+        expect((bindGroup.resources[0] as UniformGroup).uniforms.worldColorAlpha).toEqual(new Float32Array([1, 1, 1, 1]));
 
-        expect((bindGroup2.resources[0]as UniformGroup).uniforms.worldAlpha).toEqual(0);
+        expect((bindGroup2.resources[0]as UniformGroup).uniforms.worldColorAlpha).toEqual(new Float32Array([1, 1, 1, 0]));
 
-        expect((bindGroup3.resources[0]as UniformGroup).uniforms.worldAlpha).toEqual(1);
+        expect((bindGroup3.resources[0]as UniformGroup).uniforms.worldColorAlpha).toEqual(new Float32Array([1, 1, 1, 1]));
     });
 });

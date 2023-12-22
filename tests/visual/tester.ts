@@ -85,8 +85,10 @@ export async function renderTest(
     );
 
     // Write the diff to a file for visual inspection
-    ensureDirSync('.artifacts');
-    await writeFile(`.artifacts/${rendererType}-${id}-diff.png`, PNG.sync.write(diff));
+    ensureDirSync('.pr_uploads/visual');
+    await writeFile(`.pr_uploads/visual/${rendererType}-${id}-diff.png`, PNG.sync.write(diff));
+    // save output image
+    await saveSnapShot(`.pr_uploads/visual/${rendererType}-${id}.png`, stage, renderer);
 
     renderer.destroy();
 

@@ -15,6 +15,7 @@ import type { Container } from '../scene/container/Container';
  * - `all`
  * - `inherit`
  * @memberof accessibility
+ * @see https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events
  */
 export type PointerEvents = 'auto'
 | 'none'
@@ -29,7 +30,7 @@ export type PointerEvents = 'auto'
 | 'inherit';
 
 /**
- * The options for accessible objects.
+ * When `accessible` is enabled on any display object, these properties will affect its accessibility.
  * @memberof accessibility
  */
 export interface AccessibleOptions
@@ -104,7 +105,7 @@ export const accessibilityTarget: AccessibleTarget = {
      * Flag for if the object is accessible. If true AccessibilityManager will overlay a
      * shadow div with attributes set
      * @member {boolean}
-     * @memberof Container#
+     * @memberof scene.Container#
      */
     accessible: false,
 
@@ -112,33 +113,33 @@ export const accessibilityTarget: AccessibleTarget = {
      * Sets the title attribute of the shadow div
      * If accessibleTitle AND accessibleHint has not been this will default to 'container [tabIndex]'
      * @member {string}
-     * @memberof Container#
+     * @memberof scene.Container#
      */
     accessibleTitle: null,
 
     /**
      * Sets the aria-label attribute of the shadow div
      * @member {string}
-     * @memberof Container#
+     * @memberof scene.Container#
      */
     accessibleHint: null,
 
     /**
      * @member {number}
-     * @memberof Container#
+     * @memberof scene.Container#
      * @todo Needs docs.
      */
     tabIndex: 0,
 
     /**
      * @member {boolean}
-     * @memberof Container#
+     * @memberof scene.Container#
      * @private
      */
     _accessibleActive: false,
 
     /**
-     * @memberof Container#
+     * @memberof scene.Container#
      * @private
      */
     _accessibleDiv: null,
@@ -147,7 +148,7 @@ export const accessibilityTarget: AccessibleTarget = {
      * Specify the type of div the accessible layer is. Screen readers treat the element differently
      * depending on this type. Defaults to button.
      * @member {string}
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default 'button'
      */
     accessibleType: 'button',
@@ -156,7 +157,7 @@ export const accessibilityTarget: AccessibleTarget = {
      * Specify the pointer-events the accessible div will use
      * Defaults to auto.
      * @type {PointerEvents}
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default 'auto'
      */
     accessiblePointerEvents: 'auto',
@@ -165,14 +166,14 @@ export const accessibilityTarget: AccessibleTarget = {
      * Setting to false will prevent any children inside this container to
      * be accessible. Defaults to true.
      * @member {boolean}
-     * @memberof Container#
+     * @memberof scene.Container#
      * @default true
      */
     accessibleChildren: true,
 
     /**
      * @member {number}
-     * @memberof Container#
+     * @memberof scene.Container#
      * @private
      */
     _renderId: -1,

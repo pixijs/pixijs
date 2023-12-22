@@ -3,7 +3,7 @@
 import { Sprite } from '../../scene/sprite/Sprite';
 
 import type { Container } from '../../scene/container/Container';
-import type { LayerGroup } from '../../scene/container/LayerGroup';
+import type { RenderGroup } from '../../scene/container/RenderGroup';
 
 const colors = [
     '#000080', // Navy Blue
@@ -22,7 +22,7 @@ let colorTick = 0;
 
 export function logScene(container: Container, depth = 0, data: {color?: string} = { color: '#000000' })
 {
-    if (container.isLayerRoot)
+    if (container.isRenderGroupRoot)
     {
         data.color = colors[colorTick++];
     }
@@ -43,11 +43,11 @@ export function logScene(container: Container, depth = 0, data: {color?: string}
     }
 
     // eslint-disable-next-line max-len
-    let output = `%c ${spaces}|- ${label} (worldX:${container.worldTransform.tx}, layerX:${container.layerTransform.tx}, localX:${container.x})`;
+    let output = `%c ${spaces}|- ${label} (worldX:${container.worldTransform.tx}, renderX:${container.rgTransform.tx}, localX:${container.x})`;
 
-    if (container.isLayerRoot)
+    if (container.isRenderGroupRoot)
     {
-        output += ' (LayerGroup)';
+        output += ' (RenderGroup)';
     }
 
     if (container.filters)
@@ -67,8 +67,8 @@ export function logScene(container: Container, depth = 0, data: {color?: string}
     }
 }
 
-export function logLayerGroupScene(
-    layerGroup: LayerGroup, depth = 0,
+export function logRenderGroupScene(
+    renderGroup: RenderGroup, depth = 0,
     data: {index: number, color?: string} = { index: 0, color: '#000000' }
 )
 {
@@ -80,16 +80,16 @@ export function logLayerGroupScene(
         spaces += '    ';
     }
 
-    const output = `%c ${spaces}- ${data.index}: ${layerGroup.root.label} worldX:${layerGroup.worldTransform.tx}`;
+    const output = `%c ${spaces}- ${data.index}: ${renderGroup.root.label} worldX:${renderGroup.worldTransform.tx}`;
 
     console.log(output, `color:${data.color}; font-weight:bold;`);
 
     depth++;
 
-    for (let i = 0; i < layerGroup.layerGroupChildren.length; i++)
+    for (let i = 0; i < renderGroup.renderGroupChildren.length; i++)
     {
-        const child = layerGroup.layerGroupChildren[i];
+        const child = renderGroup.renderGroupChildren[i];
 
-        logLayerGroupScene(child, depth, { ...data, index: i });
+        logRenderGroupScene(child, depth, { ...data, index: i });
     }
 }

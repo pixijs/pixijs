@@ -23,11 +23,13 @@ import type { isMobileResult } from '../utils/browser/isMobile';
  * ```js
  * import 'pixi.js/accessibility';
  *
- * container.accessible = true; // see AccessibleTarget for more properties
+ * container.accessible = true; // see `AccessibleOptions` for more properties
  * ```
  * @namespace accessibility
+ * @see {@link accessibility.AccessibleOptions}
  */
 
+/** @ignore */
 const KEY_CODE_TAB = 9;
 
 const DIV_TOUCH_SIZE = 100;
@@ -377,7 +379,7 @@ export class AccessibilitySystem implements System
                 }
                 else
                 {
-                    hitArea = child.getBounds();
+                    hitArea = child.getBounds().rectangle;
 
                     this._capHitArea(hitArea);
 
@@ -393,7 +395,7 @@ export class AccessibilitySystem implements System
                         div.title = child.accessibleTitle;
                     }
                     if (div.getAttribute('aria-label') !== child.accessibleHint
-                       && child.accessibleHint !== null)
+                        && child.accessibleHint !== null)
                     {
                         div.setAttribute('aria-label', child.accessibleHint);
                     }
@@ -516,7 +518,7 @@ export class AccessibilitySystem implements System
             div.title = container.accessibleTitle;
         }
         else if (!container.accessibleHint
-                 || container.accessibleHint === null)
+            || container.accessibleHint === null)
         {
             div.title = `container ${container.tabIndex}`;
         }

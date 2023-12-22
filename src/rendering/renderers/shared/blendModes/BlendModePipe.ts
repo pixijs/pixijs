@@ -13,7 +13,7 @@ import type { BLEND_MODES } from '../state/const';
 
 interface AdvancedBlendInstruction extends Instruction
 {
-    type: 'blendMode',
+    renderPipeId: 'blendMode',
     blendMode: BLEND_MODES,
     activeBlend: Renderable[],
 }
@@ -127,7 +127,7 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
         }
 
         const instruction: FilterInstruction = {
-            type: 'filter',
+            renderPipeId: 'filter',
             action: 'pushFilter',
             renderables: [],
             filterEffect: this._filterHash[blendMode],
@@ -144,7 +144,7 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
         this._renderer.renderPipes.batch.break(instructionSet);
 
         instructionSet.add({
-            type: 'filter',
+            renderPipeId: 'filter',
             action: 'popFilter',
             canBundle: false,
         });

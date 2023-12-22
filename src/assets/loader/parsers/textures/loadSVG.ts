@@ -18,8 +18,6 @@ const validSVGMIME = 'image/svg+xml';
 
 /**
  * A simple loader plugin for loading json data
- *
- * This will be added automatically if `pixi.js/assets` is imported
  * @memberof assets
  */
 export const loadSvg = {

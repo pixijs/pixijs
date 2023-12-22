@@ -1,6 +1,8 @@
 import EventEmitter from 'eventemitter3';
+import { Bounds } from '../../../../scene/container/bounds/Bounds';
 import { uid } from '../../../../utils/data/uid';
 import { ensureIsBuffer } from './utils/ensureIsBuffer';
+import { getGeometryBounds } from './utils/getGeometryBounds';
 
 import type { Buffer, TypedArray } from '../buffer/Buffer';
 import type { Topology, VertexFormat } from './const';
@@ -73,7 +75,7 @@ export interface GeometryDescriptor
  *
  * const geometry = new Geometry({
  *   attributes: {
- *     aVertexPosition: [ // add some positions
+ *     aPosition: [ // add some positions
  *       0, 0,
  *       0, 100,
  *       100, 100,
@@ -119,6 +121,9 @@ export class Geometry extends EventEmitter<{
     /** the instance count of the geometry to draw */
     public instanceCount: number;
 
+    private readonly _bounds: Bounds = new Bounds();
+    private _boundsDirty = true;
+
     /**
      * Create a new instance of a geometry
      * @param options - The options for the geometry.
@@ -160,6 +165,7 @@ export class Geometry extends EventEmitter<{
 
     protected onBufferUpdate(): void
     {
+        this._boundsDirty = true;
         this.emit('update', this);
     }
 
@@ -210,6 +216,16 @@ export class Geometry extends EventEmitter<{
         return 0;
     }
 
+    /** Returns the bounds of the geometry. */
+    get bounds(): Bounds
+    {
+        if (!this._boundsDirty) return this._bounds;
+
+        this._boundsDirty = false;
+
+        return getGeometryBounds(this, 'aPosition', this._bounds);
+    }
+
     /**
      * destroys the geometry.
      * @param destroyBuffers - destroy the buffers associated with this geometry
@@ -227,6 +243,8 @@ export class Geometry extends EventEmitter<{
 
         (this.attributes as null) = null;
         (this.buffers as null) = null;
+        (this.indexBuffer as null) = null;
+        (this._bounds as null) = null;
     }
 }
 

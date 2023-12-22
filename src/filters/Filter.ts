@@ -1,13 +1,41 @@
 import { Shader } from '../rendering/renderers/shared/shader/Shader';
 import { State } from '../rendering/renderers/shared/state/State';
 
-import type { RenderSurface } from '../rendering/renderers/gpu/renderTarget/GpuRenderTargetSystem';
+import type { RenderSurface } from '../rendering/renderers/shared/renderTarget/RenderTargetSystem';
 import type { ShaderWithResourcesDescriptor } from '../rendering/renderers/shared/shader/Shader';
 import type { BLEND_MODES } from '../rendering/renderers/shared/state/const';
 import type { Texture } from '../rendering/renderers/shared/texture/Texture';
 import type { FilterSystem } from './FilterSystem';
 
 /**
+ * Filters provide additional shading and post-processing effects to any display object and its children
+ * they are attached to.
+ *
+ * You attached filters to a display object using its `filters` array property.
+ *
+ * ```js
+ * import { Sprite, BlurFilter } from '@pixi';
+ *
+ * const sprite = Sprite.from('myTexture.png');
+ *
+ * sprite.filters = [new BlurFilter({ strength: 8 })];
+ * ```
+ *
+ * Pixi has a number of built-in filters which can be used in your game or application:
+ *
+ * - {@link filters.AlphaFilter} - Applies alpha to the display object and any of its children.
+ * - {@link filters.BlurFilter} - Applies a Gaussian blur to the display object.
+ * - {@link filters.BlurFilterPass} - Applies a blur pass to an object.
+ * - {@link filters.ColorMatrixFilter} - Transform the color channels by matrix multiplication.
+ * - {@link filters.DisplacementFilter} - Applies a displacement map to distort an object.
+ * - {@link filters.NoiseFilter} - Applies random noise to an object.
+ * - {@link filters.ShockwaveFilter} - Applies a shockwave distortion.
+ *
+ * For more available filters, check out the
+ *  {@link https://api.pixijs.io/pixi-filters-monorepo.html|pixi-filters} repository.
+ *
+ * You can also check out the awesome {@link https://filters.pixijs.download/dev/demo/index.html|Filter demo} to see
+ * filters in action and combine them!
  * @namespace filters
  */
 

@@ -2,7 +2,7 @@ import { Container } from '../../src/scene/container/Container';
 import { Graphics } from '../../src/scene/graphics/shared/Graphics';
 import { Mesh } from '../../src/scene/mesh/shared/Mesh';
 import { MeshGeometry } from '../../src/scene/mesh/shared/MeshGeometry';
-import { NineSliceSprite } from '../../src/scene/mesh-extras/NineSliceSprite';
+import { NineSliceSprite } from '../../src/scene/mesh-nine-slice/NineSliceSprite';
 import { Sprite } from '../../src/scene/sprite/Sprite';
 import { TilingSprite } from '../../src/scene/sprite-tiling/TilingSprite';
 import { Text } from '../../src/scene/text/Text';

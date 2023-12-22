@@ -2,9 +2,27 @@ import { Rectangle } from './Rectangle';
 
 import type { ShapePrimitive } from './ShapePrimitive';
 
+// Check corner within stroke width
+const isCornerWithinStroke = (
+    pX: number,
+    pY: number,
+    cornerX: number,
+    cornerY: number,
+    radius: number,
+    halfStrokeWidth: number
+) =>
+{
+    const dx = pX - cornerX;
+    const dy = pY - cornerY;
+    const distance = Math.sqrt((dx * dx) + (dy * dy));
+
+    return distance >= radius - halfStrokeWidth && distance <= radius + halfStrokeWidth;
+};
+
 /**
- * The Rounded Rectangle object is an area that has nice rounded corners, as indicated by its
- * top-left corner point (x, y) and by its width and its height and its radius.
+ * The `RoundedRectangle` object is an area defined by its position, as indicated by its top-left corner
+ * point (`x`, `y`) and by its `width` and its `height`, including a `radius` property that
+ * defines the radius of the rounded corners.
  * @memberof maths
  */
 export class RoundedRectangle implements ShapePrimitive
@@ -164,6 +182,50 @@ export class RoundedRectangle implements ShapePrimitive
         }
 
         return false;
+    }
+
+    public strokeContains(pX: number, pY: number, strokeWidth: number): boolean
+    {
+        const { x, y, width, height, radius } = this;
+
+        const halfStrokeWidth = strokeWidth / 2;
+        const innerX = x + radius;
+        const innerY = y + radius;
+        const innerWidth = width - (radius * 2);
+        const innerHeight = height - (radius * 2);
+        const rightBound = x + width;
+        const bottomBound = y + height;
+
+        // Check if point is within the vertical edges (excluding corners)
+        if (((pX >= x - halfStrokeWidth && pX <= x + halfStrokeWidth)
+             || (pX >= rightBound - halfStrokeWidth && pX <= rightBound + halfStrokeWidth))
+            && pY >= innerY && pY <= innerY + innerHeight)
+        {
+            return true;
+        }
+
+        // Check if point is within the horizontal edges (excluding corners)
+        if (((pY >= y - halfStrokeWidth && pY <= y + halfStrokeWidth)
+             || (pY >= bottomBound - halfStrokeWidth && pY <= bottomBound + halfStrokeWidth))
+            && pX >= innerX && pX <= innerX + innerWidth)
+        {
+            return true;
+        }
+
+        // Top-left, top-right, bottom-right, bottom-left corners
+        return (
+            // Top-left
+            (pX < innerX && pY < innerY
+                && isCornerWithinStroke(pX, pY, innerX, innerY, radius, halfStrokeWidth))
+            //  top-right
+            || (pX > rightBound - radius && pY < innerY
+                && isCornerWithinStroke(pX, pY, rightBound - radius, innerY, radius, halfStrokeWidth))
+            // bottom-right
+            || (pX > rightBound - radius && pY > bottomBound - radius
+                && isCornerWithinStroke(pX, pY, rightBound - radius, bottomBound - radius, radius, halfStrokeWidth))
+            // bottom-left
+            || (pX < innerX && pY > bottomBound - radius
+                && isCornerWithinStroke(pX, pY, innerX, bottomBound - radius, radius, halfStrokeWidth)));
     }
 
     // #if _DEBUG

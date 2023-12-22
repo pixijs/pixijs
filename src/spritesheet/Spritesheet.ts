@@ -3,8 +3,7 @@ import { Texture } from '../rendering/renderers/shared/texture/Texture';
 
 import type { PointData } from '../maths/point/PointData';
 import type { TextureSource } from '../rendering/renderers/shared/texture/sources/TextureSource';
-import type { BindableTexture } from '../rendering/renderers/shared/texture/Texture';
-import type { TextureBorders } from '../rendering/renderers/shared/texture/TextureLayout';
+import type { BindableTexture, TextureBorders } from '../rendering/renderers/shared/texture/Texture';
 import type { Dict } from '../utils/types';
 
 /**
@@ -68,7 +67,7 @@ export interface SpritesheetData
             name: string;
             opacity: number;
         }[];
-        scale: string;
+        scale: number | string;
         size?: {
             h: number;
             w: number;
@@ -161,6 +160,33 @@ export interface SpritesheetData
  * Default anchor points (see {@link Texture#defaultAnchor}), default 9-slice borders
  * (see {@link Texture#defaultBorders}) and grouping of animation sprites are currently only
  * supported by TexturePacker.
+ *
+ * Alternative ways for loading spritesheet image if you need more control:
+ *
+ * ```js
+ * import { Assets } from 'pixi.js';
+ *
+ * const sheetTexture = await Assets.load('images/spritesheet.png');
+ * Assets.add({
+ *     alias: 'atlas',
+ *     src: 'images/spritesheet.json'
+ *     data: {texture: sheetTexture} // using of preloaded texture
+ * });
+ * const sheet = await Assets.load('atlas')
+ * ```
+ *
+ * or:
+ *
+ * ```js
+ * import { Assets } from 'pixi.js';
+ *
+ * Assets.add({
+ *     alias: 'atlas',
+ *     src: 'images/spritesheet.json'
+ *     data: {imageFilename: 'my-spritesheet.2x.avif'} // using of custom filename located in "images/my-spritesheet.2x.avif"
+ * });
+ * const sheet = await Assets.load('atlas')
+ * ```
  * @memberof assets
  */
 export class Spritesheet<S extends SpritesheetData = SpritesheetData>
@@ -192,7 +218,7 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
      *
      * new AnimatedSprite(sheet.animations['anim_name']);
      */
-    public animations: Record<keyof S['animations'], Texture[]>;
+    public animations: Record<keyof NonNullable<S['animations']>, Texture[]>;
 
     /**
      * Reference to the original JSON data.
@@ -236,10 +262,10 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
         this._texture = texture instanceof Texture ? texture : null;
         this.textureSource = texture.source;
         this.textures = {} as Record<keyof S['frames'], Texture>;
-        this.animations = {} as Record<keyof S['animations'], Texture[]>;
+        this.animations = {} as Record<keyof NonNullable<S['animations']>, Texture[]>;
         this.data = data;
 
-        const metaResolution = parseFloat(data.meta.scale);
+        const metaResolution = parseFloat(data.meta.scale as string);
 
         if (metaResolution)
         {
@@ -338,34 +364,18 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
                         Math.floor(rect.w) / this.resolution,
                         Math.floor(rect.h) / this.resolution
                     );
-
-                    trim.x /= this.textureSource.width;
-                    trim.y /= this.textureSource.height;
-                    trim.width /= this.textureSource.width;
-                    trim.height /= this.textureSource.height;
                 }
-
-                // normalise...
-                frame.x /= this.textureSource.width;
-                frame.y /= this.textureSource.height;
-                frame.width /= this.textureSource.width;
-                frame.height /= this.textureSource.height;
-
-                orig.x /= this.textureSource.width;
-                orig.y /= this.textureSource.height;
-                orig.width /= this.textureSource.width;
-                orig.height /= this.textureSource.height;
 
                 this.textures[i] = new Texture({
                     source: this.textureSource,
-                    layout: {
-                        frame,
-                        orig,
-                        trim,
-                        rotate: data.rotated ? 2 : 0,
-                        defaultAnchor: data.anchor,
-                        defaultBorders: data.borders
-                    },
+
+                    frame,
+                    orig,
+                    trim,
+                    rotate: data.rotated ? 2 : 0,
+                    defaultAnchor: data.anchor,
+                    defaultBorders: data.borders,
+
                     label: i.toString(),
                 });
             }

@@ -45,8 +45,6 @@ export class CanvasSource extends TextureSource<ICanvas>
             }
         }
 
-        options.alphaMode ??= 'premultiply-alpha-on-upload';
-
         super(options);
 
         this.autoDensity = options.autoDensity;

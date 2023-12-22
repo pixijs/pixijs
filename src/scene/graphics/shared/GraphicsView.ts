@@ -7,6 +7,10 @@ import type { View } from '../../../rendering/renderers/shared/view/View';
 import type { Bounds } from '../../container/bounds/Bounds';
 import type { ContextDestroyOptions, TextureDestroyOptions, TypeOrBool } from '../../container/destroyTypes';
 
+/**
+ * A GraphicsView is a view that renders a GraphicsContext.
+ * @memberof scene
+ */
 export class GraphicsView implements View
 {
     public readonly uid = uid('graphicsView');
@@ -21,10 +25,19 @@ export class GraphicsView implements View
     public _didUpdate: boolean;
 
     private _context: GraphicsContext;
+    private readonly _ownedContext: GraphicsContext;
 
     constructor(graphicsContext?: GraphicsContext)
     {
-        this._context = graphicsContext || new GraphicsContext();
+        if (!graphicsContext)
+        {
+            this._context = this._ownedContext = new GraphicsContext();
+        }
+        else
+        {
+            this._context = graphicsContext;
+        }
+
         this._context.on('update', this.onGraphicsContextUpdate, this);
     }
 
@@ -47,6 +60,11 @@ export class GraphicsView implements View
         return this._context;
     }
 
+    get bounds(): Bounds
+    {
+        return this._context.bounds;
+    }
+
     public addBounds(bounds: Bounds)
     {
         bounds.addBounds(this._context.bounds);
@@ -66,22 +84,32 @@ export class GraphicsView implements View
     /**
      * Destroys this graphics renderable and optionally its context.
      * @param options - Options parameter. A boolean will act as if all options
-     *  have been set to that value
+     *
+     * If the context was created by this graphics view and `destroy(false)` or `destroy()` is called
+     * then the context will still be destroyed.
+     *
+     * If you want to explicitly not destroy this context that this graphics created,
+     * then you should pass destroy({ context: false })
+     *
+     * If the context was passed in as an argument to the constructor then it will not be destroyed
      * @param {boolean} [options.texture=false] - Should destroy the texture of the graphics context
      * @param {boolean} [options.textureSource=false] - Should destroy the texture source of the graphics context
      * @param {boolean} [options.context=false] - Should destroy the context
      */
-    public destroy(options: TypeOrBool<TextureDestroyOptions & ContextDestroyOptions> = false): void
+    public destroy(options: TypeOrBool<TextureDestroyOptions & ContextDestroyOptions>): void
     {
         (this as any).owner = null;
 
-        const destroyContext = typeof options === 'boolean' ? options : options?.context;
-
-        if (destroyContext)
+        if (this._ownedContext && options === false)
+        {
+            this._ownedContext.destroy(options);
+        }
+        else if (options === true || (options as ContextDestroyOptions)?.context === true)
         {
             this._context.destroy(options);
         }
 
+        (this._ownedContext as null) = null;
         this._context = null;
     }
 }

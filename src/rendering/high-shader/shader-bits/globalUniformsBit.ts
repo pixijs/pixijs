@@ -5,7 +5,7 @@ export const globalUniformsBit = {
         struct GlobalUniforms {
             projectionMatrix:mat3x3<f32>,
             worldTransformMatrix:mat3x3<f32>,
-            worldAlpha: f32,
+            worldColorAlpha: vec4<f32>,
             uResolution: vec2<f32>,
         }
 
@@ -21,7 +21,7 @@ export const globalUniformsBitGl = {
           uniform globalUniforms {
             mat3 projectionMatrix;
             mat3 worldTransformMatrix;
-            float worldAlpha;
+            vec4 worldColorAlpha;
             vec2 uResolution;
           };
         `

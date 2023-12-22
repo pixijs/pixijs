@@ -150,11 +150,12 @@ describe('Application', () =>
             forceResizeApp(200, 400);
             forceResizeApp(300, 500);
 
-            expect(spy).toBeCalledTimes(2);
+            expect(spy).toHaveBeenCalledTimes(2);
 
             cleanup();
         });
 
+        // eslint-disable-next-line jest/no-done-callback
         it('should throttle multiple resizes', async (done) =>
         {
             const { app, forceQueueResizeApp, cleanup } = await getAppWithDiv();
@@ -178,6 +179,7 @@ describe('Application', () =>
             forceQueueResizeApp(300, 500);
         });
 
+        // eslint-disable-next-line jest/no-done-callback
         it('should cancel resize on destroy', async (done) =>
         {
             const spy = jest.fn();
@@ -189,12 +191,13 @@ describe('Application', () =>
 
             requestAnimationFrame(() =>
             {
-                expect(spy).not.toBeCalled();
+                expect(spy).not.toHaveBeenCalled();
                 cleanup(false); // don't destroy, we already did
                 done();
             });
         });
 
+        // eslint-disable-next-line jest/no-done-callback
         it('should resize cancel resize queue', async (done) =>
         {
             const spy = jest.fn();
@@ -207,7 +210,7 @@ describe('Application', () =>
 
             requestAnimationFrame(() =>
             {
-                expect(spy).toBeCalledTimes(1);
+                expect(spy).toHaveBeenCalledTimes(1);
                 cleanup(false); // don't destroy, we already did
                 done();
             });

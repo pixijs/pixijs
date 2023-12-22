@@ -29,18 +29,8 @@ export interface ResolvedAsset<T=any>
 {
     /** Aliases associated with asset */
     alias?: string[];
-    /**
-     * Please use `alias` instead.
-     * @deprecated since 7.3.0
-     */
-    name?: string[];
     /** The URL or relative path to the asset */
     src?: string;
-    /**
-     * Please use `src` instead.
-     * @deprecated since 7.3.0
-     */
-    srcs?: string;
     /** Optional data */
     data?: T;
     /** Format, usually the file extension */
@@ -55,7 +45,7 @@ export interface ResolvedAsset<T=any>
  * @memberof assets
  */
 // NOTE: Omit does not seem to work here
-export type ResolvedSrc = Pick<ResolvedAsset, 'src' | 'srcs' | 'format' | 'loadParser' | 'data'> & {[key: string]: any;};
+export type ResolvedSrc = Pick<ResolvedAsset, 'src' | 'format' | 'loadParser' | 'data'> & { [key: string]: any; };
 
 /**
  * A valid asset src. This can be a string, or a [ResolvedSrc]{@link assets.ResolvedSrc},
@@ -68,32 +58,18 @@ export type AssetSrc = ArrayOr<string> | ArrayOr<ResolvedSrc>;
  * An asset that has not been resolved yet.
  * @memberof assets
  */
-export interface UnresolvedAsset<T=any> extends Omit<ResolvedAsset<T>, 'src' | 'srcs' | 'name' | 'alias'>
+// NOTE: Omit does not seem to work here
+export type UnresolvedAsset<T=any> = Pick<ResolvedAsset<T>, 'data' | 'format' | 'loadParser'> &
 {
     /** Aliases associated with asset */
     alias?: ArrayOr<string>;
     /** The URL or relative path to the asset */
     src?: AssetSrc;
-    /**
-     * Please use `alias` instead.
-     * @deprecated since 7.3.0
-     */
-    name?: ArrayOr<string>;
-    /**
-     * Please use `src` instead.
-     * @deprecated since 7.3.0
-     */
-    srcs?: AssetSrc;
-}
+    [key: string]: any;
+};
 
 /**
- * The object version of an unresolved asset
- * @memberof assets
- */
-export type UnresolvedAssetObject = Omit<UnresolvedAsset, 'name' | 'alias'>;
-
-/**
- * Structure of a bundle found in a manifest file
+ * Structure of a bundle found in a {@link assets.AssetsManifest Manifest} file
  * @memberof assets
  */
 export interface AssetsBundle
@@ -101,11 +77,11 @@ export interface AssetsBundle
     /** The name of the bundle */
     name: string;
     /** The assets in the bundle */
-    assets: UnresolvedAsset[] | Record<string, ArrayOr<string> | UnresolvedAssetObject>;
+    assets: UnresolvedAsset[];
 }
 
 /**
- * The expected format of a manifest. This would normally be auto generated or made by the developer
+ * The expected format of a manifest. This could be auto generated or hand made
  * @memberof assets
  */
 export interface AssetsManifest

@@ -13,7 +13,9 @@ let count = 0;
  * Stores collection of temporary pow2 or screen-sized renderTextures
  *
  * If you use custom RenderTexturePool for your filters, you can use methods
- * `getFilterTexture` and `returnFilterTexture` same as in
+ * `getFilterTexture` and `returnFilterTexture` same as in default pool
+ * @memberof rendering
+ * @name TexturePool
  */
 export class TexturePoolClass
 {
@@ -101,13 +103,14 @@ export class TexturePoolClass
         texture.source.pixelHeight = po2Height;
 
         // fit the layout to the requested original size
-        texture.frameX = 0;
-        texture.frameY = 0;
-        texture.frameWidth = frameWidth;
-        texture.frameHeight = frameHeight;
-        texture.layout.update();
+        texture.frame.x = 0;
+        texture.frame.y = 0;
+        texture.frame.width = frameWidth;
+        texture.frame.height = frameHeight;
 
-        this._poolKeyHash[texture.id] = key;
+        texture.updateUvs();
+
+        this._poolKeyHash[texture.uid] = key;
 
         return texture;
     }
@@ -125,7 +128,7 @@ export class TexturePoolClass
      */
     public returnTexture(renderTexture: Texture): void
     {
-        const key = this._poolKeyHash[renderTexture.id];
+        const key = this._poolKeyHash[renderTexture.uid];
 
         this._texturePool[key].push(renderTexture);
     }

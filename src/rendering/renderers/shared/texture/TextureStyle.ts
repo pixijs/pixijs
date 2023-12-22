@@ -49,6 +49,10 @@ export interface TextureStyleOptions extends Partial<TextureStyle>
 
 }
 
+/**
+ * A texture style describes how a texture should be sampled by a shader.
+ * @memberof rendering
+ */
 export class TextureStyle extends EventEmitter<{
     change: TextureStyle,
     destroy: TextureStyle,

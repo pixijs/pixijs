@@ -18,6 +18,9 @@ export interface TextureShader extends Shader
     texture: Texture;
 }
 
+/**
+ * @memberof scene
+ */
 export interface MeshViewOptions<
     GEOMETRY extends MeshGeometry = MeshGeometry,
     SHADER extends TextureShader = TextureShader
@@ -28,6 +31,10 @@ export interface MeshViewOptions<
     texture?: Texture;
 }
 
+/**
+ * The MeshView class allows you to render a mesh.
+ * @memberof scene
+ */
 export class MeshView<
     GEOMETRY extends MeshGeometry = MeshGeometry,
     SHADER extends TextureShader = TextureShader
@@ -116,6 +123,11 @@ export class MeshView<
         return this._geometry.batchMode === 'batch';
     }
 
+    get bounds()
+    {
+        return this._geometry.bounds;
+    }
+
     public addBounds(bounds: Bounds)
     {
         bounds.addVertexData(this.geometry.positions, 0, this.geometry.positions.length);
@@ -124,6 +136,8 @@ export class MeshView<
     public containsPoint(point: PointData)
     {
         const { x, y } = point;
+
+        if (!this.bounds.containsPoint(x, y)) return false;
 
         const vertices = this.geometry.getBuffer('aPosition').data;
 
@@ -177,6 +191,8 @@ export class MeshView<
 
             this._texture.destroy(destroyTextureSource);
         }
+
+        this._geometry?.off('update', this.onUpdate, this);
 
         this._texture = null;
         this._geometry = null;

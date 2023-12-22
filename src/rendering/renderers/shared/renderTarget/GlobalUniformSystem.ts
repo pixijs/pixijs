@@ -1,6 +1,7 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Matrix } from '../../../../maths/matrix/Matrix';
 import { Point } from '../../../../maths/point/Point';
+import { color32BitToUniform } from '../../../../scene/graphics/gpu/colorToUniform';
 import { BindGroup } from '../../gpu/shader/BindGroup';
 import { UniformGroup } from '../shader/UniformGroup';
 
@@ -15,13 +16,14 @@ import type { System } from '../system/System';
 export type GlobalUniformGroup = UniformGroup<{
     projectionMatrix: { value: Matrix; type: 'mat3x3<f32>' }
     worldTransformMatrix: { value: Matrix; type: 'mat3x3<f32>' }
-    worldAlpha: { value: number; type: 'f32' }
+    worldColorAlpha: { value: Float32Array; type: 'vec4<f32>' }
     uResolution: { value: number[]; type: 'vec2<f32>' }
 }>;
 
 export interface GlobalUniformOptions
 {
-    projectionData?: {size: [number, number], projectionMatrix: Matrix}
+    size?: number[],
+    projectionMatrix?: Matrix,
     worldTransformMatrix?: Matrix
     worldColor?: number
     offset?: PointData
@@ -100,7 +102,8 @@ export class GlobalUniformSystem implements System
     }
 
     public bind({
-        projectionData,
+        size,
+        projectionMatrix,
         worldTransformMatrix,
         worldColor,
         offset,
@@ -116,8 +119,8 @@ export class GlobalUniformSystem implements System
         };
 
         const globalUniformData: GlobalUniformData = {
-            projectionMatrix: projectionData?.projectionMatrix || renderTarget.projectionMatrix,
-            resolution: projectionData?.size || renderTarget.size,
+            projectionMatrix: projectionMatrix || this._renderer.renderTarget.projectionMatrix,
+            resolution: size || renderTarget.size,
             worldTransformMatrix: worldTransformMatrix || currentGlobalUniformData.worldTransformMatrix,
             worldColor: worldColor || currentGlobalUniformData.worldColor,
             offset: offset || currentGlobalUniformData.offset,
@@ -139,8 +142,11 @@ export class GlobalUniformSystem implements System
         uniforms.worldTransformMatrix.tx -= globalUniformData.offset.x;
         uniforms.worldTransformMatrix.ty -= globalUniformData.offset.y;
 
-        // TODO - this should be the full rgb color...
-        uniforms.worldAlpha = ((globalUniformData.worldColor >> 24) & 0xFF) / 255;
+        color32BitToUniform(
+            globalUniformData.worldColor,
+            uniforms.worldColorAlpha,
+            0
+        );
 
         uniformGroup.update();
 
@@ -192,7 +198,7 @@ export class GlobalUniformSystem implements System
             projectionMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
             worldTransformMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
             // TODO - someone smart - set this to be a unorm8x4 rather than a vec4<f32>
-            worldAlpha: { value: 1, type: 'f32' },
+            worldColorAlpha: { value: new Float32Array(4), type: 'vec4<f32>' },
             uResolution: { value: [0, 0], type: 'vec2<f32>' },
         }, {
             ubo: true,

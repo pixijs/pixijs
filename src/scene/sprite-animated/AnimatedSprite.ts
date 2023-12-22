@@ -33,6 +33,7 @@ import { Sprite } from '../sprite/Sprite';
  *
  * const sheet = await Assets.load('assets/spritesheet.json');
  * animatedSprite = new AnimatedSprite(sheet.animations['image_sequence']);
+ * @memberof scene
  */
 export class AnimatedSprite extends Sprite
 {
@@ -303,7 +304,7 @@ export class AnimatedSprite extends Sprite
 
         if (this.updateAnchor)
         {
-            this.anchor.copyFrom(this.texture.layout.defaultAnchor);
+            this.anchor.copyFrom(this.texture.defaultAnchor);
         }
 
         if (this.onFrameChange)
@@ -463,7 +464,10 @@ export class AnimatedSprite extends Sprite
     }
 }
 
-/** @memberof AnimatedSprite */
+/**
+ * A reference to a frame in an {@link scene.AnimatedSprite}
+ * @memberof scene
+ */
 export interface FrameObject
 {
     /** The {@link Texture} of the frame. */

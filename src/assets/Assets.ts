@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { extensions, ExtensionType } from '../extensions/Extensions';
 import { warn } from '../utils/logging/warn';
 import { BackgroundLoader } from './BackgroundLoader';
@@ -20,7 +21,7 @@ export type ProgressCallback = (progress: number) => void;
  */
 export interface AssetsPreferences extends LoadTextureConfig, PixiMixins.AssetsPreferences {}
 
-/** Initialization options object for Asset Class. */
+/** Initialization options object for the Assets Class. */
 export interface AssetInitOptions
 {
     // basic...
@@ -68,24 +69,25 @@ export interface AssetInitOptions
  * Super modern and easy to use, with enough flexibility to customize and do what you need!
  * @namespace assets
  *
- * Only one Asset Class exists accessed via the Global Asset object. See [here]{@link assets.Assets}, for full documentation.
+ * Use the singleton class [Assets]{@link assets.Assets} to easily load and manage all your assets.
  *
- * It has four main responsibilities:
- * <br>     1. Allows users to map URLs to keys and resolve them according to the user's browser capabilities
- * <br>     2. Loads the resources and transforms them into assets that developers understand.
- * <br>     3. Caches the assets and provides a way to access them.
- * <br>     4. Allow developers to unload assets and clear the cache.
+ * ```typescript
+ * import { Assets, Texture } from 'pixi.js';
  *
- * It also has a few advanced features:
- * <br>1. Allows developers to provide a manifest upfront of all assets and help manage them via 'bundles'.
- * <br>2. Allows users to background load assets. Shortening (or eliminating) load times and improving UX. With this feature,
- * in-game loading bars can be a thing of the past!
+ * const bunnyTexture = await Assets.load<Texture>('bunny.png');
  *
- * ### Assets Loading
+ * const sprite = new Sprite(bunnyTexture);
+ * ```
  *
- * Do not be afraid to load things multiple times - under the hood, it will NEVER load anything more than once.
+ * Check out the sections below for more information on how to deal with assets.
  *
- * For example:
+ * <details id="assets-loading">
+ *
+ * <summary>Asset Loading</summary>
+ *
+ * Do not be afraid to load things multiple times - under the hood, it will **NEVER** load anything more than once.
+ *
+ * *For example:*
  *
  * ```js
  * import { Assets } from 'pixi.js';
@@ -98,41 +100,46 @@ export interface AssetInitOptions
  *
  * Here both promises will be the same. Once resolved... Forever resolved! It makes for really easy resource management!
  *
- * Out of the box it supports the following files:
- * <br>- textures (avif, webp, png, jpg, gif, svg)
- * <br>- sprite sheets (json)
- * <br>- bitmap fonts (xml, fnt, txt)
- * <br>- web fonts (ttf, woff, woff2)
- * <br>- json files (json)
- * <br>- text files (txt)
+ * Out of the box Pixi supports the following files:
+ * - Textures (**_avif_**, **_webp_**, **_png_**, **_jpg_**, **_gif_**, **_svg_**) via {@link assets.loadTextures}, {@link assets.loadSvg}
+ * - Video Textures (**_mp4_**, **_m4v_**, **_webm_**, **_ogg_**, **_ogv_**, **_h264_**, **_avi_**, **_mov_**) via {@link assets.loadVideoTextures}
+ * - Sprite sheets (**_json_**) via {@link assets.spritesheetAsset}
+ * - Bitmap fonts (**_xml_**, **_fnt_**, **_txt_**) via {@link assets.loadBitmapFont}
+ * - Web fonts (**_ttf_**, **_woff_**, **_woff2_**) via {@link assets.loadWebFont}
+ * - JSON files (**_json_**) via {@link assets.loadJson}
+ * - Text Files (**_txt_**) via {@link assets.loadTxt}
+ * <br/>
+ * More types can be added fairly easily by creating additional {@link assets.LoaderParser LoaderParsers}.
+ * </details>
  *
- * More types can be added fairly easily by creating additional loader parsers.
+ * <details id="textures">
  *
- * ### Textures
- * \- Textures are loaded as ImageBitmap on a worker thread where possible.
- * Leading to much less janky load + parse times.
- * <br>- By default, we will prefer to load AVIF and WebP image files if you specify them.
+ * <summary>Textures</summary>
+ *
+ * - Textures are loaded as ImageBitmap on a worker thread where possible. Leading to much less janky load + parse times.
+ * - By default, we will prefer to load AVIF and WebP image files if you specify them.
  * But if the browser doesn't support AVIF or WebP we will fall back to png and jpg.
- * <br>- Textures can also be accessed via Texture.from(...) and now use this asset manager under the hood!
- * <br>- Don't worry if you set preferences for textures that don't exist (for example you prefer 2x resolutions images
- *  but only 1x is available for that texture, the Asset manager will pick that up as a fallback automatically)
+ * - Textures can also be accessed via `Texture.from()` (see {@link core.from|Texture.from})
+ * and now use this asset manager under the hood!
+ * - Don't worry if you set preferences for textures that don't exist
+ * (for example you prefer 2x resolutions images but only 1x is available for that texture,
+ * the Assets manager will pick that up as a fallback automatically)
  *
  * #### Sprite sheets
- * <br>- It's hard to know what resolution a sprite sheet is without loading it first, to address this
+ * - It's hard to know what resolution a sprite sheet is without loading it first, to address this
  * there is a naming convention we have added that will let Pixi understand the image format and resolution
- * of the spritesheet via its file name:
- *
- * `my-spritesheet{resolution}.{imageFormat}.json`
- *
- * For example:
- *
- * `my-spritesheet@2x.webp.json` // 2x resolution, WebP sprite sheet
- * `my-spritesheet@0.5x.png.json` // 0.5x resolution, png sprite sheet
- *
- * This is optional! You can just load a sprite sheet as normal.
+ * of the spritesheet via its file name: `my-spritesheet{resolution}.{imageFormat}.json`
+ * <br><br>For example:
+ *   - `my-spritesheet@2x.webp.json`* // 2x resolution, WebP sprite sheet*
+ *   - `my-spritesheet@0.5x.png.json`* // 0.5x resolution, png sprite sheet*
+ * - This is optional! You can just load a sprite sheet as normal.
  * This is only useful if you have a bunch of different res / formatted spritesheets.
+ * </details>
  *
- * ### Fonts
+ * <details id="fonts">
+ *
+ * <summary>Fonts</summary>
+ *
  * Web fonts will be loaded with all weights.
  * It is possible to load only specific weights by doing the following:
  *
@@ -150,8 +157,12 @@ export interface AssetInitOptions
  * // Load everything...
  * await Assets.load(`outfit.woff2`);
  * ```
+ * </details>
  *
- * ### Background Loading
+ * <details id="background-loading">
+ *
+ * <summary>Background Loading</summary>
+ *
  * Background loading will load stuff for you passively behind the scenes. To minimize jank,
  * it will only load one asset at a time. As soon as a developer calls `Assets.load(...)` the
  * background loader is paused and requested assets are loaded as a priority.
@@ -160,10 +171,14 @@ export interface AssetInitOptions
  * You still need to call `Assets.load(...)` to get an asset that has been loaded in the background.
  * It's just that this promise will resolve instantly if the asset
  * has already been loaded.
+ * </details>
  *
- * ### Manifest and Bundles
- * <br>- Manifest is a JSON file that contains a list of all assets and their properties.
- * <br>- Bundles are a way to group assets together.
+ * <details id="manifests-and-bundles">
+ *
+ * <summary>Manifest and Bundles</summary>
+ *
+ * - {@link assets.AssetsManifest Manifest} is a descriptor that contains a list of all assets and their properties.
+ * - {@link assets.AssetsBundle Bundles} are a way to group assets together.
  *
  * ```js
  * import { Assets } from 'pixi.js';
@@ -200,21 +215,33 @@ export interface AssetInitOptions
  *     ]
  * };
  *
- * await Asset.init({ manifest });
+ * await Assets.init({ manifest });
  *
  * // Load a bundle...
  * loadScreenAssets = await Assets.loadBundle('load-screen');
  * // Load another bundle...
  * gameScreenAssets = await Assets.loadBundle('game-screen');
  * ```
- * @example
- * import { Assets } from 'pixi.js';
- *
- * const bunny = await Assets.load('bunny.png');
+ * </details>
  */
 
 /**
- * The global Asset class, it's a singleton so you don't need to instantiate it.
+ * The global Assets class, it's a singleton so you don't need to instantiate it.
+ *
+ * <br>
+ * **The `Assets` class has four main responsibilities:**
+ * 1. Allows users to map URLs to keys and resolve them according to the user's browser capabilities
+ * 2. Loads the resources and transforms them into assets that developers understand.
+ * 3. Caches the assets and provides a way to access them.
+ * 4. Allow developers to unload assets and clear the cache.
+ *
+ * <br>
+ *
+ * **It also has a few advanced features:**
+ * 1. Allows developers to provide a {@link assets.Manifest} upfront of all assets and help manage
+ * them via {@link assets.AssetsBundles Bundles}.
+ * 2. Allows users to background load assets. Shortening (or eliminating) load times and improving UX. With this feature,
+ * in-game loading bars can be a thing of the past!
  * @example
  * import { Assets } from 'pixi.js';
  *
@@ -257,15 +284,15 @@ export class AssetsClass
      * Best practice is to call this function before any loading commences
      * Initiating is the best time to add any customization to the way things are loaded.
      *
-     * you do not need to call this for the Asset class to work, only if you want to set any initial properties
-     * @param options - options to initialize the Asset manager with
+     * you do not need to call this for the Assets class to work, only if you want to set any initial properties
+     * @param options - options to initialize the Assets manager with
      */
     public async init(options: AssetInitOptions = {}): Promise<void>
     {
         if (this._initialized)
         {
             // #if _DEBUG
-            warn('[Assets]AssetManager already initialized, did you load before calling this Asset.init()?');
+            warn('[Assets]AssetManager already initialized, did you load before calling this Assets.init()?');
             // #endif
 
             return;
@@ -501,7 +528,7 @@ export class AssetsClass
      *     ]
      * };
      *
-     * await Asset.init({ manifest });
+     * await Assets.init({ manifest });
      *
      * // Load a bundle...
      * loadScreenAssets = await Assets.loadBundle('load-screen');
@@ -685,8 +712,7 @@ export class AssetsClass
         onProgress?: ProgressCallback
     ): Promise<Record<string, T>>
     {
-        const resolveArray = Object.values(resolveResults) as ResolvedAsset[];
-        const resolveKeys = Object.keys(resolveResults);
+        const resolveArray = [...new Set(Object.values(resolveResults))] as ResolvedAsset[];
 
         // pause background loader...
         this._backgroundLoader.active = false;
@@ -700,7 +726,7 @@ export class AssetsClass
 
         const out: Record<string, T> = {};
 
-        resolveArray.forEach((resolveResult, i) =>
+        resolveArray.forEach((resolveResult) =>
         {
             const asset = loadedAssets[resolveResult.src];
 
@@ -711,7 +737,10 @@ export class AssetsClass
                 keys.push(...resolveResult.alias);
             }
 
-            out[resolveKeys[i]] = asset;
+            keys.forEach((key) =>
+            {
+                out[key] = asset;
+            });
 
             Cache.set(keys, asset);
         });

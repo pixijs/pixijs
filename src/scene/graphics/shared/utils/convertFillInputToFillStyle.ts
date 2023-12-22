@@ -78,18 +78,33 @@ export function convertFillInputToFillStyle(
 
     const style: FillStyle = { ...defaultStyle, ...(value as FillStyle) };
 
-    if (style.texture !== Texture.WHITE)
+    if (style.texture)
     {
-        const m = style.matrix || new Matrix();
+        if (style.texture !== Texture.WHITE)
+        {
+            const m = style.matrix?.invert() || new Matrix();
 
-        m.scale(1 / style.texture.frameWidth, 1 / style.texture.frameHeight);
+            m.scale(
+                1 / style.texture.frame.width,
+                1 / style.texture.frame.height
+            );
 
-        style.matrix = m;
+            style.matrix = m;
+        }
 
-        style.color = 0xffffff;
+        const sourceStyle = style.texture.source.style;
+
+        if (sourceStyle.addressMode === 'clamp-to-edge')
+        {
+            sourceStyle.addressMode = 'repeat';
+        }
     }
 
-    style.color = Color.shared.setValue(style.color).toNumber();
+    const color = Color.shared.setValue(style.color);
+
+    style.alpha *= color.alpha;
+    style.color = color.toNumber();
+    style.matrix = style.matrix ? style.matrix.clone() : null; // todo: lets optimise this!
 
     // its a regular fill style!
     return style as ConvertedFillStyle;

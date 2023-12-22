@@ -23,7 +23,7 @@ export interface GraphicsAdaptor
 
 export interface GraphicsInstruction extends Instruction
 {
-    type: 'graphics';
+    renderPipeId: 'graphics';
     renderable: Renderable<GraphicsView>;
 }
 
@@ -104,7 +104,7 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
         {
             this.renderer.renderPipes.batch.break(instructionSet);
             instructionSet.add({
-                type: 'graphics',
+                renderPipeId: 'graphics',
                 renderable
             } as GraphicsInstruction);
         }
@@ -144,15 +144,15 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
 
         const shader = context.customShader || this._adaptor.shader;
 
-        this.state.blendMode = renderable.layerBlendMode;
+        this.state.blendMode = renderable.rgBlendMode;
 
         const localUniforms = shader.resources.localUniforms.uniforms;
 
-        localUniforms.uTransformMatrix = renderable.layerTransform;
+        localUniforms.uTransformMatrix = renderable.rgTransform;
         localUniforms.uRound = renderer._roundPixels | renderable.view.roundPixels;
 
         color32BitToUniform(
-            renderable.layerColor,
+            renderable.rgColorAlpha,
             localUniforms.uColor,
             0
         );

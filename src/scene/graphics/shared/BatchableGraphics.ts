@@ -5,6 +5,10 @@ import type { Renderable } from '../../../rendering/renderers/shared/Renderable'
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { GraphicsView } from './GraphicsView';
 
+/**
+ * A batchable graphics object.
+ * @memberof rendering
+ */
 export class BatchableGraphics implements BatchableObject
 {
     public indexStart: number;
@@ -29,7 +33,7 @@ export class BatchableGraphics implements BatchableObject
     {
         if (this.applyTransform)
         {
-            return this.renderable.layerBlendMode;
+            return this.renderable.rgBlendMode;
         }
 
         return 'normal';
@@ -66,9 +70,10 @@ export class BatchableGraphics implements BatchableObject
 
         if (this.applyTransform)
         {
-            const argb = mixColors(bgr + ((this.alpha * 255) << 24), graphics.layerColor);
+            const argb = mixColors(bgr, graphics.rgColor)
+            + ((this.alpha * graphics.rgAlpha * 255) << 24);
 
-            const wt = graphics.layerTransform;
+            const wt = graphics.rgTransform;
             const textureIdAndRound = (textureId << 16) | (this.roundPixels & 0xFFFF);
 
             const a = wt.a;

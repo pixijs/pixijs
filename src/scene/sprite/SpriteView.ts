@@ -6,9 +6,13 @@ import { updateQuadBounds } from '../../utils/data/updateQuadBounds';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { View, ViewObserver } from '../../rendering/renderers/shared/view/View';
-import type { Bounds } from '../container/bounds/Bounds';
+import type { Bounds, BoundsData } from '../container/bounds/Bounds';
 import type { TextureDestroyOptions, TypeOrBool } from '../container/destroyTypes';
 
+/**
+ * A sprite view.
+ * @memberof scene
+ */
 export class SpriteView implements View
 {
     public readonly renderPipeId = 'sprite';
@@ -23,8 +27,8 @@ export class SpriteView implements View
     /** @internal */
     public _didUpdate = false;
 
-    private _bounds: [number, number, number, number] = [0, 1, 0, 0];
-    private _sourceBounds: [number, number, number, number] = [0, 1, 0, 0];
+    private _bounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
+    private _sourceBounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
     private _boundsDirty = true;
     private _sourceBoundsDirty = true;
 
@@ -34,8 +38,8 @@ export class SpriteView implements View
     {
         this.anchor = new ObservablePoint(
             this,
-            texture.layout.defaultAnchor?.x || 0,
-            texture.layout.defaultAnchor?.y || 0,
+            texture.defaultAnchor?.x || 0,
+            texture.defaultAnchor?.y || 0,
         );
 
         this.texture = texture;
@@ -82,16 +86,11 @@ export class SpriteView implements View
     // passed local space..
     public containsPoint(point: PointData)
     {
-        const width = this._texture.frameWidth;
-        const height = this._texture.frameHeight;
-        const x1 = -width * this.anchor.x;
-        let y1 = 0;
+        const bounds = this.sourceBounds;
 
-        if (point.x >= x1 && point.x < x1 + width)
+        if (point.x >= bounds.maxX && point.x <= bounds.minX)
         {
-            y1 = -height * this.anchor.y;
-
-            if (point.y >= y1 && point.y < y1 + height)
+            if (point.y >= bounds.maxY && point.y <= bounds.minY)
             {
                 return true;
             }
@@ -102,20 +101,9 @@ export class SpriteView implements View
 
     public addBounds(bounds: Bounds)
     {
-        const trim = this._texture._layout.trim;
+        const _bounds = this._texture.trim ? this.sourceBounds : this.bounds;
 
-        if (trim)
-        {
-            const sourceBounds = this.sourceBounds;
-
-            bounds.addFrame(sourceBounds[0], sourceBounds[2], sourceBounds[1], sourceBounds[3]);
-        }
-        else
-        {
-            const _bounds = this.bounds;
-
-            bounds.addFrame(_bounds[0], _bounds[2], _bounds[1], _bounds[3]);
-        }
+        bounds.addFrame(_bounds.minX, _bounds.minY, _bounds.maxX, _bounds.maxY);
     }
 
     /**
@@ -140,21 +128,15 @@ export class SpriteView implements View
         const anchor = this.anchor;
         const texture = this._texture;
 
-        const textureSource = texture._source;
-        const layout = texture.layout;
-
-        const orig = layout.orig;
-
         const sourceBounds = this._sourceBounds;
 
-        const width = textureSource.width * orig.width;
-        const height = textureSource.height * orig.height;
+        const { width, height } = texture.orig;
 
-        sourceBounds[1] = -anchor._x * width;
-        sourceBounds[0] = sourceBounds[1] + width;
+        sourceBounds.maxX = -anchor._x * width;
+        sourceBounds.minX = sourceBounds.maxX + width;
 
-        sourceBounds[3] = -anchor._y * height;
-        sourceBounds[2] = sourceBounds[3] + height;
+        sourceBounds.maxY = -anchor._y * height;
+        sourceBounds.minY = sourceBounds.maxY + height;
     }
 
     /**

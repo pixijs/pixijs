@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { bitmapFontXMLStringParser } from '../../src/scene/text/bitmap/asset/bitmapFontXMLStringParser';
+import { bitmapFontXMLStringParser } from '../../src/scene/text-bitmap/asset/bitmapFontXMLStringParser';
 
 const rawFontString = `<?xml version="1.0"?>
 <font>
@@ -16,7 +16,7 @@ const rawFontString = `<?xml version="1.0"?>
 
 describe('XMLStringFormat', () =>
 {
-    it('should parse text chars, if no letter or char property is present ', async () =>
+    it('should parse text chars, if no letter or char property is present', async () =>
     {
         const parsedText = bitmapFontXMLStringParser.parse(rawFontString);
 

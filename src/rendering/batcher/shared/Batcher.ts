@@ -7,14 +7,19 @@ import { BatchTextureArray } from './BatchTextureArray';
 import { MAX_TEXTURES } from './const';
 
 import type { BindGroup } from '../../renderers/gpu/shader/BindGroup';
+import type { Instruction } from '../../renderers/shared/instructions/Instruction';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { Texture } from '../../renderers/shared/texture/Texture';
 
 export type BatchAction = 'startBatch' | 'renderBatch';
 
-export class Batch
+/**
+ * A batch pool is used to store batches when they are not currently in use.
+ * @memberof rendering
+ */
+export class Batch implements Instruction
 {
-    public type = 'batch';
+    public renderPipeId = 'batch';
     public action: BatchAction = 'startBatch';
 
     // TODO - eventually this could be useful for flagging batches as dirty and then only rebuilding those ones
@@ -88,6 +93,10 @@ export interface BatcherOptions
     indexSize?: number;
 }
 
+/**
+ * A batcher is used to batch together objects with the same texture.
+ * @memberof rendering
+ */
 export class Batcher
 {
     public static defaultOptions: BatcherOptions = {

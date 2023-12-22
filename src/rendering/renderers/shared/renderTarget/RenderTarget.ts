@@ -1,21 +1,20 @@
 // what we are building is a platform and a framework.
 // import { Matrix } from '../../shared/maths/Matrix';
-import { Matrix } from '../../../../maths/matrix/Matrix';
-import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { uid } from '../../../../utils/data/uid';
-import { calculateProjection } from '../../gpu/renderTarget/calculateProjection';
 import { TextureSource } from '../texture/sources/TextureSource';
 import { Texture } from '../texture/Texture';
+
+import type { BindableTexture } from '../texture/Texture';
 
 export interface RenderTargetDescriptor
 {
     width?: number;
     height?: number;
     resolution?: number;
-    colorTextures?: Texture[] | number;
+    colorTextures?: BindableTexture[] | number;
 
     // TODO this is actually depth and stencil buffer..
-    depthTexture?: Texture | boolean;
+    depthTexture?: BindableTexture | boolean;
     stencil?: boolean;
     antialias?: boolean;
 }
@@ -33,54 +32,42 @@ export class RenderTarget
 
     public uid = uid('renderTarget');
 
-    public width = 0;
-    public height = 0;
-    public resolution = 1;
+    public colorTextures: TextureSource[] = [];
 
-    public colorTextures: Texture[] = [];
-
-    public depthTexture: Texture;
+    public depthTexture: TextureSource;
     public stencil: boolean;
 
     public dirtyId = 0;
     public isRoot = false;
 
-    private readonly _viewport: Rectangle;
-    private readonly _projectionMatrix = new Matrix();
     private readonly _size = new Float32Array(2);
 
     constructor(descriptor: RenderTargetDescriptor = {})
     {
         descriptor = { ...RenderTarget.defaultDescriptor, ...descriptor };
 
-        this.width = descriptor.width;
-        this.height = descriptor.height;
-        this.resolution = descriptor.resolution;
         this.stencil = descriptor.stencil;
-
-        this._viewport = new Rectangle(0, 0, this.width, this.height);
 
         if (typeof descriptor.colorTextures === 'number')
         {
             for (let i = 0; i < descriptor.colorTextures; i++)
             {
-                this.colorTextures.push(new Texture({
-                    source: new TextureSource({
-                        width: this.width,
-                        height: this.height,
-                        resolution: descriptor.resolution,
-                        antialias: descriptor.antialias,
-                    })
-                }));
+                this.colorTextures.push(new TextureSource({
+                    width: descriptor.width,
+                    height: descriptor.height,
+                    resolution: descriptor.resolution,
+                    antialias: descriptor.antialias,
+                })
+                );
             }
         }
         else
         {
-            this.colorTextures = [...descriptor.colorTextures];
+            this.colorTextures = [...descriptor.colorTextures.map((texture) => texture.source)];
 
             const colorSource = this.colorTexture.source;
 
-            this._resize(colorSource.width, colorSource.height, colorSource._resolution);
+            this.resize(colorSource.width, colorSource.height, colorSource._resolution);
         }
 
         // the first color texture drives the size of all others..
@@ -90,15 +77,22 @@ export class RenderTarget
 
         if (descriptor.depthTexture)
         {
-            this.depthTexture = new Texture({
-                source: new TextureSource({
+            // TODO add a test
+            if (descriptor.depthTexture instanceof Texture
+                || descriptor.depthTexture instanceof TextureSource)
+            {
+                this.depthTexture = descriptor.depthTexture.source;
+            }
+            else
+            {
+                this.depthTexture = new TextureSource({
                     width: this.width,
                     height: this.height,
                     resolution: this.resolution,
                     format: 'stencil8',
-                    // sampleCount: handled by the render target system..
-                })
-            });
+                // sampleCount: handled by the render target system..
+                });
+            }
         }
     }
 
@@ -112,62 +106,42 @@ export class RenderTarget
         return _size as any as [number, number];
     }
 
+    get width(): number
+    {
+        return this.colorTexture.source.width;
+    }
+
+    get height(): number
+    {
+        return this.colorTexture.source.height;
+    }
     get pixelWidth(): number
     {
-        return this.width * this.resolution;
+        return this.colorTexture.source.pixelWidth;
     }
 
     get pixelHeight(): number
     {
-        return this.height * this.resolution;
+        return this.colorTexture.source.pixelHeight;
     }
 
-    get colorTexture(): Texture
+    get resolution(): number
+    {
+        return this.colorTexture.source._resolution;
+    }
+
+    get colorTexture(): TextureSource
     {
         return this.colorTextures[0];
     }
 
-    get projectionMatrix(): Matrix
-    {
-        const texture = this.colorTexture;
-
-        // TODO - this needs to only happen on resize - or behind a dirty flag
-        calculateProjection(this._projectionMatrix, 0, 0, texture.frameWidth, texture.frameHeight, !this.isRoot);
-
-        return this._projectionMatrix;
-    }
-
-    get viewport(): Rectangle
-    {
-        // TODO - this needs to only happen on resize or when a texture frame changes
-        const texture = this.colorTexture;
-        const source = texture.source;
-
-        const pixelWidth = source.pixelWidth;
-        const pixelHeight = source.pixelHeight;
-
-        const viewport = this._viewport;
-        const frame = texture.layout.frame;
-
-        viewport.x = (frame.x * pixelWidth) | 0;
-        viewport.y = (frame.y * pixelHeight) | 0;
-        viewport.width = (frame.width * pixelWidth) | 0;
-        viewport.height = (frame.height * pixelHeight) | 0;
-
-        return viewport;
-    }
-
     protected onSourceResize(source: TextureSource)
     {
-        this._resize(source.width, source.height, source._resolution, true);
+        this.resize(source.width, source.height, source._resolution, true);
     }
 
-    private _resize(width: number, height: number, resolution = this.resolution, skipColorTexture = false)
+    public resize(width: number, height: number, resolution = this.resolution, skipColorTexture = false)
     {
-        this.width = width;
-        this.height = height;
-        this.resolution = resolution;
-
         this.dirtyId++;
 
         this.colorTextures.forEach((colorTexture, i) =>
@@ -185,6 +159,12 @@ export class RenderTarget
 
     public destroy()
     {
-        throw new Error('Method not implemented.');
+        this.colorTexture.source.off('resize', this.onSourceResize, this);
+
+        if (this.depthTexture)
+        {
+            this.depthTexture.destroy();
+            delete this.depthTexture;
+        }
     }
 }

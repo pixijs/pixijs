@@ -4,6 +4,12 @@ import type { ShapePrimitive } from './ShapePrimitive';
 
 /**
  * The Ellipse object is used to help draw graphics and can also be used to specify a hit area for containers.
+ * ```js
+ * import { Ellipse } from '@pixi';
+ *
+ * const ellipse = new Ellipse(0, 0, 20, 10); // 40x20 rectangle
+ * const isPointInEllipse = ellipse.contains(0, 0); // true
+ * ```
  * @memberof maths
  */
 export class Ellipse implements ShapePrimitive
@@ -82,6 +88,32 @@ export class Ellipse implements ShapePrimitive
         normy *= normy;
 
         return (normx + normy <= 1);
+    }
+
+    public strokeContains(x: number, y: number, width: number): boolean
+    {
+        const { halfWidth, halfHeight } = this;
+
+        if (halfWidth <= 0 || halfHeight <= 0)
+        {
+            return false;
+        }
+
+        const halfStrokeWidth = width / 2;
+        const innerA = halfWidth - halfStrokeWidth;
+        const innerB = halfHeight - halfStrokeWidth;
+        const outerA = halfWidth + halfStrokeWidth;
+        const outerB = halfHeight + halfStrokeWidth;
+
+        const normalizedX = x - this.x;
+        const normalizedY = y - this.y;
+
+        const innerEllipse = ((normalizedX * normalizedX) / (innerA * innerA))
+                           + ((normalizedY * normalizedY) / (innerB * innerB));
+        const outerEllipse = ((normalizedX * normalizedX) / (outerA * outerA))
+                           + ((normalizedY * normalizedY) / (outerB * outerB));
+
+        return innerEllipse > 1 && outerEllipse <= 1;
     }
 
     /**

@@ -6,9 +6,7 @@ import type { Transform } from '../../utils/misc/Transform';
 import type { PointData } from '../point/PointData';
 
 /**
- * The PixiJS Matrix as a class makes it a lot faster.
- *
- * Here is a representation of it:
+ * A fast matrix for 2D transformations.
  * ```js
  * | a | c | tx|
  * | b | d | ty|
@@ -106,7 +104,7 @@ export class Matrix
      * @param [out=new Float32Array(9)] - If provided the array will be assigned to out
      * @returns The newly created array which contains the matrix
      */
-    public toArray(transpose: boolean, out?: Float32Array): Float32Array
+    public toArray(transpose?: boolean, out?: Float32Array): Float32Array
     {
         if (!this.array)
         {
@@ -501,7 +499,9 @@ export class Matrix
     // #endif
 
     /**
-     * A default (identity) matrix
+     * A default (identity) matrix.
+     *
+     * This is a shared object, if you want to modify it consider creating a new `Matrix`
      * @readonly
      */
     static get IDENTITY(): Readonly<Matrix>
@@ -512,6 +512,8 @@ export class Matrix
     /**
      * A static Matrix that can be used to avoid creating new objects.
      * Will always ensure the matrix is reset to identity when requested.
+     * Use this object for fast but temporary calculations, as it may be mutated later on.
+     * This is a different object to the `IDENTITY` object and so can be modified without changing `IDENTITY`.
      * @readonly
      */
     static get shared(): Matrix

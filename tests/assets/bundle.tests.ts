@@ -33,10 +33,10 @@ describe('Assets bundles', () =>
             basePath,
         });
 
-        Assets.addBundle('testBundle', {
-            bunny: 'textures/bunny.{png,webp}',
-            spritesheet: 'spritesheet/spritesheet.json',
-        });
+        Assets.addBundle('testBundle', [
+            { alias: 'bunny', src: 'textures/bunny.{png,webp}' },
+            { alias: 'spritesheet', src: 'spritesheet/spritesheet.json' },
+        ]);
 
         const assets = await Assets.loadBundle('testBundle');
 
@@ -112,10 +112,10 @@ describe('Assets bundles', () =>
             basePath,
         });
 
-        Assets.addBundle('testBundle', {
-            bunny: 'textures/bunny.{png,webp}',
-            spritesheet: 'spritesheet/spritesheet.json',
-        });
+        Assets.addBundle('testBundle', [
+            { alias: 'bunny', src: 'textures/bunny.{png,webp}' },
+            { alias: 'spritesheet', src: 'spritesheet/spritesheet.json' },
+        ]);
 
         const assets = await Assets.loadBundle('testBundle');
 
@@ -135,7 +135,7 @@ describe('Assets bundles', () =>
                     name: 'bunny1',
                     assets: [
                         {
-                            name: 'character',
+                            alias: 'character',
                             src: 'textures/bunny.png',
                         },
                     ],
@@ -144,7 +144,7 @@ describe('Assets bundles', () =>
                     name: 'bunny2',
                     assets: [
                         {
-                            name: 'character',
+                            alias: 'character',
                             src: 'textures/bunny-2.png',
                         },
                     ],
@@ -160,34 +160,7 @@ describe('Assets bundles', () =>
         expect(resources.character).not.toBe(resources2.character);
     });
 
-    it('should load bundles with clashing names correctly with key value pairs', async () =>
-    {
-        const manifest = {
-            bundles: [
-                {
-                    name: 'bunny1',
-                    assets: {
-                        character: 'textures/bunny.png',
-                    }
-                },
-                {
-                    name: 'bunny2',
-                    assets: {
-                        character: 'textures/bunny-2.png',
-                    }
-                },
-            ]
-        };
-
-        await Assets.init({ manifest, basePath });
-
-        const resources = await Assets.loadBundle('bunny1');
-        const resources2 = await Assets.loadBundle('bunny2');
-
-        expect(resources.character).not.toBe(resources2.character);
-    });
-
-    it('should load bundles with clashing multiple names correctly with key value pairs', async () =>
+    it('should load bundles with clashing names correctly with custom connector', async () =>
     {
         const manifest = {
             bundles: [
@@ -195,7 +168,7 @@ describe('Assets bundles', () =>
                     name: 'bunny1',
                     assets: [
                         {
-                            name: ['character', 'character2'],
+                            alias: ['character', 'character2'],
                             src: 'textures/bunny.png',
                         },
                     ],
@@ -204,40 +177,7 @@ describe('Assets bundles', () =>
                     name: 'bunny2',
                     assets: [
                         {
-                            name: ['character', 'character2'],
-                            src: 'textures/bunny-2.png',
-                        },
-                    ],
-                },
-            ]
-        };
-
-        await Assets.init({ manifest, basePath });
-
-        const resources = await Assets.loadBundle('bunny1');
-        const resources2 = await Assets.loadBundle('bunny2');
-
-        expect(resources.character).not.toBe(resources2.character);
-    });
-
-    it('should load bundles with clashing names correctly', async () =>
-    {
-        const manifest = {
-            bundles: [
-                {
-                    name: 'bunny1',
-                    assets: [
-                        {
-                            name: 'character',
-                            src: 'textures/bunny.png',
-                        },
-                    ],
-                },
-                {
-                    name: 'bunny2',
-                    assets: [
-                        {
-                            name: 'character',
+                            alias: ['character', 'character2'],
                             src: 'textures/bunny-2.png',
                         },
                     ],
@@ -270,7 +210,7 @@ describe('Assets bundles', () =>
                     name: 'bunny1',
                     assets: [
                         {
-                            name: 'character',
+                            alias: 'character',
                             src: 'textures/bunny.png',
                         },
                     ],
@@ -279,7 +219,7 @@ describe('Assets bundles', () =>
                     name: 'bunny2',
                     assets: [
                         {
-                            name: 'character',
+                            alias: 'character',
                             src: 'textures/bunny-2.png',
                         },
                     ],
@@ -313,7 +253,7 @@ describe('Assets bundles', () =>
                     name: 'bunny1',
                     assets: [
                         {
-                            name: 'character',
+                            alias: 'character',
                             src: 'textures/bunny.png',
                         },
                     ],
@@ -322,7 +262,7 @@ describe('Assets bundles', () =>
                     name: 'bunny2',
                     assets: [
                         {
-                            name: 'character',
+                            alias: 'character',
                             src: 'textures/bunny-2.png',
                         },
                     ],
@@ -347,7 +287,7 @@ describe('Assets bundles', () =>
                     name: 'bunny1',
                     assets: [
                         {
-                            name: 'character',
+                            alias: 'character',
                             src: 'textures/bunny.png',
                             data: {
                                 otherData: 'thing'
@@ -362,6 +302,7 @@ describe('Assets bundles', () =>
         await Assets.init({ manifest, basePath });
 
         // expect promise to throw an error..
+        // eslint-disable-next-line jest/valid-expect
         expect(async () => await Assets.init({ manifest, basePath }));
 
         const bundle = Assets.resolver.resolveBundle('bunny1');

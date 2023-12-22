@@ -12,12 +12,18 @@ export interface MeshGeometryOptions
     uvs?: Float32Array;
     indices?: Uint32Array;
     topology?: Topology;
+    shrinkBuffersToFit?: boolean;
 }
 
+/**
+ * A geometry used to batch multiple meshes with the same texture.
+ * @memberof scene
+ */
 export class MeshGeometry extends Geometry
 {
     public static defaultOptions: MeshGeometryOptions = {
         topology: 'triangle-list',
+        shrinkBuffersToFit: false,
     };
 
     public batchMode: BatchMode = 'auto';
@@ -46,21 +52,26 @@ export class MeshGeometry extends Geometry
         const uvs = options.uvs || new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]);
         const indices = options.indices || new Uint32Array([0, 1, 2, 0, 2, 3]);
 
+        const shrinkToFit = options.shrinkBuffersToFit;
+
         const positionBuffer = new Buffer({
             data: positions,
             label: 'attribute-mesh-positions',
+            shrinkToFit,
             usage: BufferUsage.VERTEX | BufferUsage.COPY_DST,
         });
 
         const uvBuffer = new Buffer({
             data: uvs,
             label: 'attribute-mesh-uvs',
+            shrinkToFit,
             usage: BufferUsage.VERTEX | BufferUsage.COPY_DST,
         });
 
         const indexBuffer = new Buffer({
             data: indices,
             label: 'index-mesh-buffer',
+            shrinkToFit,
             usage: BufferUsage.INDEX | BufferUsage.COPY_DST,
         });
 

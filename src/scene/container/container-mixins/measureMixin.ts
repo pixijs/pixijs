@@ -2,8 +2,8 @@ import { Matrix } from '../../../maths/matrix/Matrix';
 import { Bounds } from '../bounds/Bounds';
 import { getGlobalBounds } from '../bounds/getGlobalBounds';
 import { getLocalBounds } from '../bounds/getLocalBounds';
+import { checkChildrenDidChange } from '../utils/checkChildrenDidChange';
 
-import type { Rectangle } from '../../../maths/shapes/Rectangle';
 import type { Container } from '../Container';
 
 export interface MeasureMixinConstructor
@@ -13,63 +13,114 @@ export interface MeasureMixinConstructor
 }
 export interface MeasureMixin extends Required<MeasureMixinConstructor>
 {
-    getLocalBounds(rect?: Rectangle): Rectangle;
-    getBounds(skipUpdate?: boolean, rect?: Rectangle): Rectangle;
+    getLocalBounds(bounds?: Bounds): Bounds;
+    getBounds(skipUpdate?: boolean, bounds?: Bounds): Bounds;
+    _localBoundsCacheData: LocalBoundsCacheData;
+    _localBoundsCacheId: number;
+
 }
 
-const tempBounds = new Bounds();
+interface LocalBoundsCacheData
+{
+    data: number[];
+    index: number;
+    didChange: boolean;
+    localBounds: Bounds;
+}
+
 const tempMatrix = new Matrix();
 
 export const measureMixin: Partial<Container> = {
 
+    _localBoundsCacheId: -1,
+    _localBoundsCacheData: null,
+
+    /**
+     * The width of the Container, setting this will actually modify the scale to achieve the value set.
+     * @memberof scene.Container#
+     */
     get width(): number
     {
-        return Math.abs(this.scale.x * getLocalBounds(this, tempBounds, tempMatrix).width);
+        return Math.abs(this.scale.x * this.getLocalBounds().width);
     },
 
     set width(value: number)
     {
-        const localWidth = getLocalBounds(this, tempBounds, tempMatrix).width;
+        const localWidth = this.getLocalBounds().width;
+
+        const sign = Math.sign(this.scale.x) || 1;
 
         if (localWidth !== 0)
         {
-            this.scale.x = value / localWidth;
+            this.scale.x = (value / localWidth) * sign;
         }
         else
         {
-            this.scale.x = 1;
+            this.scale.x = sign;
         }
     },
 
+    /**
+     * The height of the Container, setting this will actually modify the scale to achieve the value set.
+     * @memberof scene.Container#
+     */
     get height(): number
     {
-        return Math.abs(this.scale.y * getLocalBounds(this, tempBounds, tempMatrix).height);
+        return Math.abs(this.scale.y * this.getLocalBounds().height);
     },
 
     set height(value: number)
     {
-        const localHeight = getLocalBounds(this, tempBounds, tempMatrix).height;
+        const localHeight = this.getLocalBounds().height;
+
+        const sign = Math.sign(this.scale.y) || 1;
 
         if (localHeight !== 0)
         {
-            this.scale.y = value / localHeight;
+            this.scale.y = (value / localHeight) * sign;
         }
         else
         {
-            this.scale.y = 1;
+            this.scale.y = sign;
         }
     },
 
     /**
      * Retrieves the local bounds of the container as a Bounds object.
-     * @param rect - Optional rectangle to store the result of the bounds calculation.
      * @returns - The bounding area.
+     * @memberof scene.Container#
      */
-    getLocalBounds(rect?: Rectangle): Rectangle
+    getLocalBounds(): Bounds
     {
-        const bounds = getLocalBounds(this, new Bounds(), tempMatrix);
+        if (!this._localBoundsCacheData)
+        {
+            this._localBoundsCacheData = {
+                data: [],
+                index: 1,
+                didChange: false,
+                localBounds: new Bounds()
+            };
+        }
 
-        return rect ? rect.copyFromBounds(bounds) : bounds.rectangle.clone();
+        const localBoundsCacheData = this._localBoundsCacheData;
+
+        localBoundsCacheData.index = 1;
+        localBoundsCacheData.didChange = false;
+
+        if (localBoundsCacheData.data[0] !== this._didChangeId >> 12)
+        {
+            localBoundsCacheData.didChange = true;
+            localBoundsCacheData.data[0] = this._didChangeId >> 12;
+        }
+
+        checkChildrenDidChange(this, localBoundsCacheData);
+
+        if (localBoundsCacheData.didChange)
+        {
+            getLocalBounds(this, localBoundsCacheData.localBounds, tempMatrix);
+        }
+
+        return localBoundsCacheData.localBounds;
     },
 
     /**
@@ -77,14 +128,14 @@ export const measureMixin: Partial<Container> = {
      * @param skipUpdate - Setting to `true` will stop the transforms of the scene graph from
      *  being updated. This means the calculation returned MAY be out of date BUT will give you a
      *  nice performance boost.
-     * @param rect - Optional rectangle to store the result of the bounds calculation.
+     * @param bounds - Optional bounds to store the result of the bounds calculation.
      * @returns - The minimum axis-aligned rectangle in world space that fits around this object.
+     * @memberof scene.Container#
      */
-    getBounds(skipUpdate?: boolean, rect?: Rectangle): Rectangle
+    getBounds(skipUpdate?: boolean, bounds?: Bounds): Bounds
     {
-        const bounds = getGlobalBounds(this, skipUpdate, tempBounds);
-
-        return rect ? rect.copyFromBounds(bounds) : bounds.rectangle.clone();
+        return getGlobalBounds(this, skipUpdate, bounds || new Bounds());
     }
 
 } as Container;
+

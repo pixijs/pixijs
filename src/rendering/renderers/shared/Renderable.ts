@@ -8,10 +8,12 @@ export interface Renderable<VIEW extends View = View> extends EventEmitter
     uid: number;
     view: VIEW;
     didViewUpdate: boolean;
-    layerTransform: Matrix;
+    rgTransform: Matrix;
     worldTransform: Matrix;
-    layerColor: number;
-    layerBlendMode: BLEND_MODES;
-    layerVisibleRenderable: number;
+    rgAlpha: number;
+    rgColor: number;
+    rgColorAlpha: number;
+    rgBlendMode: BLEND_MODES;
+    rgVisibleRenderable: number;
     isRenderable: boolean;
 }

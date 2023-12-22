@@ -16,6 +16,12 @@ import type { TilingSpriteView } from './TilingSpriteView';
 interface RenderableData
 {
     batched: boolean;
+    renderable: Renderable<TilingSpriteView>
+    batchedMesh?: Renderable<MeshView>;
+    gpuTilingSprite?: {
+        meshRenderable: Renderable<MeshView>
+        textureMatrix: Matrix;
+    };
 }
 
 const sharedQuad = new QuadGeometry();
@@ -35,15 +41,6 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
     private _renderer: Renderer;
 
     private _renderableHash: Record<number, RenderableData> = Object.create(null);
-
-    // TODO can prolly merge these properties into a single mesh and
-    // add them onto the renderableHash (rather than having them on separate hashes)
-    private _gpuBatchedTilingSprite: Record<string, Renderable<MeshView>> = Object.create(null);
-
-    private _gpuTilingSprite: Record<string, {
-        meshRenderable: Renderable<MeshView>
-        textureMatrix: Matrix;
-    }> = Object.create(null);
 
     constructor(renderer: Renderer)
     {
@@ -125,10 +122,15 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
 
     public destroyRenderable(renderable: Renderable<TilingSpriteView>)
     {
+        const data = this._renderableHash[renderable.uid];
+
+        data.batchedMesh?.view.destroy();
+        data.gpuTilingSprite?.meshRenderable.view.destroy();
+
         // TODO pooling for the items... not a biggie though!
         this._renderableHash[renderable.uid] = null;
-        this._gpuTilingSprite[renderable.uid] = null;
-        this._gpuBatchedTilingSprite[renderable.uid] = null;
+
+        renderable.off('destroyed', this.destroyRenderable, this);
     }
 
     private _getRenderableData(renderable: Renderable<TilingSpriteView>): RenderableData
@@ -140,6 +142,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
     {
         const renderableData = {
             batched: true,
+            renderable
         };
 
         this._renderableHash[renderable.uid] = renderableData;
@@ -223,7 +226,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
 
     private _getGpuTilingSprite(renderable: Renderable<TilingSpriteView>)
     {
-        return this._gpuTilingSprite[renderable.uid] || this._initGpuTilingSprite(renderable);
+        return this._renderableHash[renderable.uid].gpuTilingSprite || this._initGpuTilingSprite(renderable);
     }
 
     private _initGpuTilingSprite(renderable: Renderable<TilingSpriteView>)
@@ -254,14 +257,14 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
             textureMatrix,
         };
 
-        this._gpuTilingSprite[renderable.uid] = gpuTilingSpriteData;
+        this._renderableHash[renderable.uid].gpuTilingSprite = gpuTilingSpriteData;
 
         return gpuTilingSpriteData;
     }
 
     private _getBatchedTilingSprite(renderable: Renderable<TilingSpriteView>): Renderable<MeshView>
     {
-        return this._gpuBatchedTilingSprite[renderable.uid] || this._initBatchedTilingSprite(renderable);
+        return this._renderableHash[renderable.uid].batchedMesh || this._initBatchedTilingSprite(renderable);
     }
 
     private _initBatchedTilingSprite(renderable: Renderable<TilingSpriteView>)
@@ -278,7 +281,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
             view: meshView,
         });
 
-        this._gpuBatchedTilingSprite[renderable.uid] = batchableMeshRenderable;
+        this._renderableHash[renderable.uid].batchedMesh = batchableMeshRenderable;
 
         return batchableMeshRenderable;
     }
@@ -307,8 +310,8 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
     private _updateBatchUvs(renderable: Renderable<TilingSpriteView>)
     {
         const view = renderable.view;
-        const width = view.texture.frameWidth;
-        const height = view.texture.frameHeight;
+        const width = view.texture.frame.width;
+        const height = view.texture.frame.height;
 
         const meshRenderable = this._getBatchedTilingSprite(renderable);
 
@@ -346,10 +349,12 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
 
     public destroy()
     {
-        this._renderableHash = null;
-        this._gpuTilingSprite = null;
-        this._gpuBatchedTilingSprite = null;
+        for (const i in this._renderableHash)
+        {
+            this.destroyRenderable(this._renderableHash[i].renderable);
+        }
 
+        this._renderableHash = null;
         this._renderer = null;
     }
 }

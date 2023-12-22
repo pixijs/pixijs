@@ -37,7 +37,7 @@ export interface MeshAdaptor
 
 export interface MeshInstruction extends Instruction
 {
-    type: 'mesh';
+    renderPipeId: 'mesh';
     renderable: Renderable<MeshView>;
 }
 
@@ -141,7 +141,7 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
             batcher.break(instructionSet);
 
             instructionSet.add({
-                type: 'mesh',
+                renderPipeId: 'mesh',
                 renderable
             } as MeshInstruction);
         }
@@ -176,16 +176,16 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
 
         const view = renderable.view;
 
-        view.state.blendMode = renderable.layerBlendMode;
+        view.state.blendMode = renderable.rgBlendMode;
 
         const localUniforms = this.localUniforms;
 
-        localUniforms.uniforms.uTransformMatrix = renderable.layerTransform;
+        localUniforms.uniforms.uTransformMatrix = renderable.rgTransform;
         localUniforms.uniforms.uRound = this.renderer._roundPixels | renderable.view.roundPixels;
         localUniforms.update();
 
         color32BitToUniform(
-            renderable.layerColor,
+            renderable.rgColorAlpha,
             localUniforms.uniforms.uColor,
             0
         );

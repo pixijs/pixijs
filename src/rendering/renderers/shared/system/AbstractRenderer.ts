@@ -1,5 +1,6 @@
 import { Color, type ColorSource } from '../../../../color/Color';
 import { Container } from '../../../../scene/container/Container';
+import { updateLocalTransform } from '../../../../scene/container/utils/updateLocalTransform';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { SystemRunner } from './SystemRunner';
 
@@ -7,10 +8,10 @@ import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { Matrix } from '../../../../maths/matrix/Matrix';
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
 import type { DestroyOptions } from '../../../../scene/container/destroyTypes';
-import type { RenderSurface } from '../../gpu/renderTarget/GpuRenderTargetSystem';
 import type { Renderer } from '../../types';
 import type { GenerateTextureOptions, GenerateTextureSystem } from '../extract/GenerateTextureSystem';
 import type { PipeConstructor } from '../instructions/RenderPipe';
+import type { RenderSurface } from '../renderTarget/RenderTargetSystem';
 import type { Texture } from '../texture/Texture';
 import type { ViewSystem } from '../view/ViewSystem';
 import type { System, SystemConstructor } from './System';
@@ -57,6 +58,7 @@ type Runners = {[key in DefaultRunners]: SystemRunner} & {
 /**
  * The SystemManager is a class that provides functions for managing a set of systems
  * This is a base class, that is generic (no render code or knowledge at all)
+ * @memberof rendering
  */
 export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions, CANVAS extends ICanvas = HTMLCanvasElement>
 {
@@ -107,6 +109,8 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
     public view: ViewSystem;
     public textureGenerator: GenerateTextureSystem;
 
+    protected _initOptions: OPTIONS = {} as OPTIONS;
+
     private _systemsHash: Record<string, System> = Object.create(null);
     private _lastObjectRendered: Container;
 
@@ -151,6 +155,9 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
         {
             await this.runners.init.items[i].init(options);
         }
+
+        // store options
+        this._initOptions = options as OPTIONS;
     }
 
     /** @deprecated since 8.0.0 */
@@ -195,6 +202,12 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
             options.clearColor = isRGBAArray ? options.clearColor : Color.shared.setValue(options.clearColor).toArray();
         }
 
+        if (!options.transform)
+        {
+            updateLocalTransform(options.container.localTransform, options.container);
+            options.transform = options.container.localTransform;
+        }
+
         this.runners.prerender.emit(options);
         this.runners.renderStart.emit(options);
         this.runners.render.emit(options);
@@ -233,7 +246,7 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
      */
     get width(): number
     {
-        return this.view.texture.frameWidth;
+        return this.view.texture.frame.width;
     }
 
     /**
@@ -242,7 +255,7 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
      */
     get height(): number
     {
-        return this.view.texture.frameHeight;
+        return this.view.texture.frame.height;
     }
 
     // NOTE: this was `view` in v7

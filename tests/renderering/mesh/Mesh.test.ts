@@ -3,6 +3,7 @@ import { Mesh } from '../../../src/scene/mesh/shared/Mesh';
 import { MeshGeometry } from '../../../src/scene/mesh/shared/MeshGeometry';
 import { getRenderer } from '../../utils/getRenderer';
 import { getTexture } from '../../utils/getTexture';
+import '../../../src/scene/mesh/init';
 
 function getMesh()
 {
@@ -55,5 +56,16 @@ describe('Mesh', () =>
         expect(renderer.renderPipes.mesh['_gpuBatchableMeshHash'][mesh.uid]).toBeNull();
 
         expect(gpuMesh.renderable).toBeNull();
+    });
+
+    it('should support color tinting', () =>
+    {
+        const mesh = getMesh();
+
+        mesh.tint = 'red';
+
+        expect(mesh.tint).toBe(0xff0000);
+
+        mesh.destroy();
     });
 });

@@ -7,17 +7,16 @@ import { UniformGroup } from '../rendering/renderers/shared/shader/UniformGroup'
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { TexturePool } from '../rendering/renderers/shared/texture/TexturePool';
 import { Bounds } from '../scene/container/bounds/Bounds';
-import { getGlobalBounds } from '../scene/container/bounds/getGlobalBounds';
+import { getFastGlobalBounds } from '../scene/container/bounds/getFastGlobalBounds';
 import { getGlobalRenderableBounds } from '../scene/container/bounds/getRenderableBounds';
 import { warn } from '../utils/logging/warn';
 
-import type { GlRenderTargetSystem } from '../rendering/renderers/gl/GlRenderTargetSystem';
 import type { WebGLRenderer } from '../rendering/renderers/gl/WebGLRenderer';
-import type { RenderSurface } from '../rendering/renderers/gpu/renderTarget/GpuRenderTargetSystem';
 import type { WebGPURenderer } from '../rendering/renderers/gpu/WebGPURenderer';
 import type { Instruction } from '../rendering/renderers/shared/instructions/Instruction';
 import type { Renderable } from '../rendering/renderers/shared/Renderable';
 import type { RenderTarget } from '../rendering/renderers/shared/renderTarget/RenderTarget';
+import type { RenderSurface } from '../rendering/renderers/shared/renderTarget/RenderTargetSystem';
 import type { System } from '../rendering/renderers/shared/system/System';
 import type { Renderer } from '../rendering/renderers/types';
 import type { Container } from '../scene/container/Container';
@@ -64,7 +63,7 @@ const quadGeometry = new Geometry({
  */
 export interface FilterInstruction extends Instruction
 {
-    type: 'filter',
+    renderPipeId: 'filter',
     action: FilterAction,
     container?: Container,
     renderables?: Renderable[],
@@ -83,7 +82,10 @@ export interface FilterData
     backTexture?: Texture,
 }
 
-// eslint-disable-next-line max-len
+/**
+ * System that manages the filter pipeline
+ * @memberof rendering
+ */
 export class FilterSystem implements System
 {
     /** @ignore */
@@ -156,7 +158,7 @@ export class FilterSystem implements System
         // measuring.
         else
         {
-            getGlobalBounds(instruction.container, true, bounds);
+            getFastGlobalBounds(instruction.container, bounds);
         }
         // get GLOBAL bounds of the item we are going to apply the filter to
 
@@ -234,7 +236,7 @@ export class FilterSystem implements System
         // her we constrain the bounds to the viewport we will render too
         // need to factor in resolutions also..
         bounds.scale(resolution)
-            .fit(renderer.renderTarget.rootRenderTarget.viewport)
+            .fit(renderer.renderTarget.rootViewPort)
             .scale(1 / resolution)
             .pad(padding)
             .ceil();
@@ -296,18 +298,12 @@ export class FilterSystem implements System
 
         let backTexture = Texture.EMPTY;
 
-        // TODO - another area we need to know about the renderer
-        // but its still not worth making ana adaptor for this yet
-        (renderer.renderTarget as GlRenderTargetSystem).finishRenderPass?.();
+        renderer.renderTarget.finishRenderPass();
 
         if (filterData.blendRequired)
         {
             // this actually forces the current commandQueue to render everything so far.
             // if we don't do this, we won't be able to copy pixels for the background
-
-            renderer.encoder.finishRenderPass();
-
-            // renderer.renderTarget.finishRenderPass();
             const previousBounds = this._filterStackIndex > 0 ? this._filterStack[this._filterStackIndex - 1].bounds : null;
 
             backTexture = this.getBackTexture(filterData.previousRenderSurface, bounds, previousBounds);
@@ -428,9 +424,18 @@ export class FilterSystem implements System
 
         let resolution = this.renderer.renderTarget.rootRenderTarget.colorTexture.source._resolution;
 
-        if (this._filterStackIndex > 0)
+        // to find the previous resolution we need to account for the skipped filters
+        // the following will find the last non skipped filter...
+        let currentIndex = this._filterStackIndex - 1;
+
+        while (currentIndex > 0 && this._filterStack[currentIndex].skip)
         {
-            resolution = this._filterStack[this._filterStackIndex - 1].inputTexture.source._resolution;
+            --currentIndex;
+        }
+
+        if (currentIndex > 0)
+        {
+            resolution = this._filterStack[currentIndex].inputTexture.source._resolution;
         }
 
         const filterUniforms = this._filterGlobalUniforms;
@@ -462,8 +467,8 @@ export class FilterSystem implements System
             outputFrame[1] = 0;
         }
 
-        outputFrame[2] = input.frameWidth;
-        outputFrame[3] = input.frameHeight;
+        outputFrame[2] = input.frame.width;
+        outputFrame[3] = input.frame.height;
 
         inputSize[0] = input.source.width;
         inputSize[1] = input.source.height;
@@ -477,8 +482,8 @@ export class FilterSystem implements System
 
         inputClamp[0] = 0.5 * inputPixel[2];
         inputClamp[1] = 0.5 * inputPixel[3];
-        inputClamp[2] = (input.frameWidth * inputSize[2]) - (0.5 * inputPixel[2]);
-        inputClamp[3] = (input.frameHeight * inputSize[3]) - (0.5 * inputPixel[3]);
+        inputClamp[2] = (input.frame.width * inputSize[2]) - (0.5 * inputPixel[2]);
+        inputClamp[3] = (input.frame.height * inputSize[3]) - (0.5 * inputPixel[3]);
 
         const rootTexture = this.renderer.renderTarget.rootRenderTarget.colorTexture;
 
@@ -488,13 +493,25 @@ export class FilterSystem implements System
         globalFrame[2] = rootTexture.source.width * resolution;
         globalFrame[3] = rootTexture.source.height * resolution;
 
-        // set the output texture - this is where we are going to rendr to
-        const renderSurface = this.renderer.renderTarget.getRenderTarget(output);
+        // set the output texture - this is where we are going to render to
 
-        outputTexture[0] = renderSurface.colorTexture.frameWidth;
-        outputTexture[1] = renderSurface.colorTexture.frameHeight;
-        outputTexture[2] = renderSurface.isRoot ? -1 : 1;
+        const renderTarget = this.renderer.renderTarget.getRenderTarget(output);
 
+        renderer.renderTarget.bind(output, !!clear);
+
+        if (output instanceof Texture)
+        {
+            outputTexture[0] = output.frame.width;
+            outputTexture[1] = output.frame.height;
+        }
+        else
+        {
+            // this means a renderTarget was passed directly
+            outputTexture[0] = renderTarget.width;
+            outputTexture[1] = renderTarget.height;
+        }
+
+        outputTexture[2] = renderTarget.isRoot ? -1 : 1;
         filterUniforms.update();
 
         // TODO - should prolly use a adaptor...
@@ -515,8 +532,6 @@ export class FilterSystem implements System
         // set bind group..
         this._globalFilterBindGroup.setResource(input.source, 1);
         this._globalFilterBindGroup.setResource(input.source.style, 2);
-
-        renderer.renderTarget.bind(output, !!clear);
 
         filter.groups[0] = this._globalFilterBindGroup;
 
@@ -564,7 +579,10 @@ export class FilterSystem implements System
 
         worldTransform.invert();
         mappedMatrix.prepend(worldTransform);
-        mappedMatrix.scale(1.0 / (sprite.texture.frameWidth), 1.0 / (sprite.texture.frameHeight));
+        mappedMatrix.scale(
+            1.0 / sprite.texture.frame.width,
+            1.0 / sprite.texture.frame.height
+        );
 
         mappedMatrix.translate(sprite.anchor.x, sprite.anchor.y);
 

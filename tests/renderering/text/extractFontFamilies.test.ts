@@ -1,9 +1,9 @@
-import { HTMLTextStyle } from '../../../src/scene/text/html/HtmlTextStyle';
-import { extractFontFamilies } from '../../../src/scene/text/html/utils/extractFontFamilies';
+import { HTMLTextStyle } from '../../../src/scene/text-html/HtmlTextStyle';
+import { extractFontFamilies } from '../../../src/scene/text-html/utils/extractFontFamilies';
 
 describe('extractFontFamilies', () =>
 {
-    it('should extract font string correctly if embedded in the text string', async () =>
+    it('should extract font family correctly if embedded in the text string', async () =>
     {
         const families = extractFontFamilies(
             'Hello<br /><span style="font-family:Cabin">World<span>',

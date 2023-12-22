@@ -69,7 +69,9 @@ describe('Compressed Loader', () =>
         Assets['_detections'].push(detectCompressed);
         Assets['_detections'].push(detectBasis);
         await Assets.init();
+        // eslint-disable-next-line jest/expect-expect
         expect((Assets.resolver['_preferredOrder'][0].params.format as string[]).includes('basis')).toBe(true);
+        // eslint-disable-next-line jest/expect-expect
         expect((Assets.resolver['_preferredOrder'][0].params.format as string[]).includes('bc3')).toBe(true);
     });
 
@@ -77,7 +79,9 @@ describe('Compressed Loader', () =>
     {
         detectCompressed.test = jest.fn(async () => false);
         await Assets.init();
+        // eslint-disable-next-line jest/expect-expect
         expect(Assets.resolver['_preferredOrder'][0].params.format.every(
+            // eslint-disable-next-line jest/expect-expect
             (f: string) => !['bc3', 'bc2'].includes(f))).toBeTrue();
     });
 });

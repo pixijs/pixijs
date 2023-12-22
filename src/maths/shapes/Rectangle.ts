@@ -8,9 +8,15 @@ import type { ShapePrimitive } from './ShapePrimitive';
 
 const tempPoints = [new Point(), new Point(), new Point(), new Point()];
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Rectangle extends PixiMixins.Rectangle { }
+
 /**
- * Rectangle object is an area defined by its position, as indicated by its top-left corner
- * point (x, y) and by its width and its height.
+ * The `Rectangle` object is an area defined by its position, as indicated by its top-left corner
+ * point (`x`, `y`) and by its `width` and its `height`.
+ *
+ * It also provides convenience methods to get and set the position and size of the rectangle such as
+ * {@link maths.Rectangle#bottom|bottom}, {@link maths.Rectangle#right|right} and {@link maths.Rectangle#isEmpty|isEmpty}.
  * @memberof maths
  */
 export class Rectangle implements ShapePrimitive
@@ -83,7 +89,13 @@ export class Rectangle implements ShapePrimitive
         return this.y + this.height;
     }
 
-    /** A constant empty rectangle. */
+    /** Determines whether the Rectangle is empty. */
+    public isEmpty(): boolean
+    {
+        return this.left === this.right || this.top === this.bottom;
+    }
+
+    /** A constant empty rectangle. This is a new object every time the property is accessed */
     static get EMPTY(): Rectangle
     {
         return new Rectangle(0, 0, 0, 0);
@@ -164,6 +176,27 @@ export class Rectangle implements ShapePrimitive
         return false;
     }
 
+    public strokeContains(x: number, y: number, strokeWidth: number): boolean
+    {
+        const { width, height } = this;
+
+        if (width <= 0 || height <= 0) return false;
+
+        const _x = this.x;
+        const _y = this.y;
+
+        const outerLeft = _x - (strokeWidth / 2);
+        const outerRight = _x + width + (strokeWidth / 2);
+        const outerTop = _y - (strokeWidth / 2);
+        const outerBottom = _y + height + (strokeWidth / 2);
+        const innerLeft = _x + (strokeWidth / 2);
+        const innerRight = _x + width - (strokeWidth / 2);
+        const innerTop = _y + (strokeWidth / 2);
+        const innerBottom = _y + height - (strokeWidth / 2);
+
+        return (x >= outerLeft && x <= outerRight && y >= outerTop && y <= outerBottom)
+        && !(x > innerLeft && x < innerRight && y > innerTop && y < innerBottom);
+    }
     /**
      * Determines whether the `other` Rectangle transformed by `transform` intersects with `this` Rectangle object.
      * Returns true only if the area of the intersection is >0, this means that Rectangles

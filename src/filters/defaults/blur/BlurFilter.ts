@@ -4,7 +4,7 @@ import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import { Filter } from '../../Filter';
 import { BlurFilterPass } from './BlurFilterPass';
 
-import type { RenderSurface } from '../../../rendering/renderers/gpu/renderTarget/GpuRenderTargetSystem';
+import type { RenderSurface } from '../../../rendering/renderers/shared/renderTarget/RenderTargetSystem';
 import type { BLEND_MODES } from '../../../rendering/renderers/shared/state/const';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { FilterOptions } from '../../Filter';
@@ -39,6 +39,7 @@ export interface BlurFilterOptions extends Partial<FilterOptions>
  * The BlurFilter applies a Gaussian blur to an object.
  *
  * The strength of the blur can be set for the x-axis and y-axis separately.
+ * @memberof filters
  */
 export class BlurFilter extends Filter
 {
