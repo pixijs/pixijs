@@ -392,9 +392,10 @@ export class Batcher
         // does the trick though...
 
         // make sure buffer is always an even number..
-        const newIndexBuffer = (newSize > 65535) ? new Uint32Array(newSize) : new Uint16Array(newSize);
+        // const newIndexBuffer = (newSize > 65535) ? new Uint32Array(newSize) : new Uint16Array(newSize);
+        const newIndexBuffer = new Uint32Array(newSize);
 
-        if (newIndexBuffer.BYTES_PER_ELEMENT > indexBuffer.BYTES_PER_ELEMENT)
+        if (newIndexBuffer.BYTES_PER_ELEMENT !== indexBuffer.BYTES_PER_ELEMENT)
         {
             for (let i = 0; i < indexBuffer.length; i++)
             {
