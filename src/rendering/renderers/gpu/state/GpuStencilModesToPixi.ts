@@ -20,19 +20,13 @@ GpuStencilModesToPixi[STENCIL_MODES.RENDERING_MASK_ADD] = {
     format: 'stencil8',
     depthCompare: 'always',
     depthWriteEnabled: false,
-    stencilBack: {
+    stencilFront: {
         compare: 'always',
-        passOp: 'increment-clamp',
+        passOp: 'replace',
     },
-};
-
-GpuStencilModesToPixi[STENCIL_MODES.RENDERING_MASK_ADD] = {
-    format: 'stencil8',
-    depthCompare: 'always',
-    depthWriteEnabled: false,
     stencilBack: {
         compare: 'always',
-        passOp: 'increment-clamp',
+        passOp: 'replace',
     },
 };
 
@@ -40,6 +34,10 @@ GpuStencilModesToPixi[STENCIL_MODES.RENDERING_MASK_REMOVE] = {
     format: 'stencil8',
     depthCompare: 'always',
     depthWriteEnabled: false,
+    stencilFront: {
+        compare: 'always',
+        passOp: 'decrement-clamp',
+    },
     stencilBack: {
         compare: 'always',
         passOp: 'decrement-clamp',
@@ -51,6 +49,10 @@ GpuStencilModesToPixi[STENCIL_MODES.MASK_ACTIVE] = {
     depthCompare: 'always',
     depthWriteEnabled: false,
     stencilWriteMask: 0,
+    stencilFront: {
+        compare: 'equal',
+        passOp: 'keep',
+    },
     stencilBack: {
         compare: 'equal',
         passOp: 'keep',

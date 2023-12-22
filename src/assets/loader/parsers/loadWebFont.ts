@@ -116,8 +116,6 @@ function encodeURIWhenNeeded(uri: string)
 
 /**
  * A loader plugin for handling web fonts
- *
- * This will be added automatically if `pixi.js/assets` is imported
  * @example
  * import { Assets } from 'pixi.js';
  *

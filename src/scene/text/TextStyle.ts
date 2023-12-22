@@ -25,6 +25,11 @@ export type TextStyleTextBaseline = 'alphabetic' | 'top' | 'hanging' | 'middle' 
 export type TextStyleWhiteSpace = 'normal' | 'pre' | 'pre-line';
 
 /**
+ * A collection of text related classes.
+ * @namespace text
+ */
+
+/**
  * A drop shadow effect.
  * @memberof scene
  */
@@ -42,7 +47,14 @@ export type TextDropShadow = {
 };
 
 /**
- * Generic interface for TextStyle options.
+ * Constructor options used for `TextStyle` instances.
+ * ```js
+ * const textStyle = new TextStyle({
+ *    fontSize: 12,
+ *    fill: 'black',
+ * });
+ * ```
+ * @see {@link scene.TextStyle}
  * @memberof scene
  */
 export interface TextStyleOptions
@@ -52,7 +64,7 @@ export interface TextStyleOptions
      * @type {'left'|'center'|'right'|'justify'}
      */
     align?: TextStyleAlign;
-    /** Indicates if lines can be wrapped within words, it needs wordWrap to be set to true */
+    /** Indicates if lines can be wrapped within words, it needs `wordWrap` to be set to `true` */
     breakWords?: boolean;
     /** Set a drop shadow for the text */
     dropShadow?: boolean | TextDropShadow;
@@ -118,7 +130,7 @@ export interface TextStyleOptions
  * A TextStyle Object contains information to decorate a Text objects.
  *
  * An instance can be shared between multiple Text objects; then changing the style will update all text objects using it.
- * @memberof scene
+ * @memberof text
  * @example
  * import { TextStyle } from 'pixi.js';
  * const style = new TextStyle({

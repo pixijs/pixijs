@@ -3,6 +3,11 @@ import { Texture } from './Texture';
 
 import type { TextureSourceOptions } from './sources/TextureSource';
 
+/**
+ * A render texture, extends `Texture`.
+ * @see {@link rendering.Texture}
+ * @memberof rendering
+ */
 export class RenderTexture extends Texture
 {
     public static create(options: TextureSourceOptions): Texture

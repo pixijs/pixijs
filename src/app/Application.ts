@@ -10,16 +10,17 @@ import type { DestroyOptions } from '../scene/container/destroyTypes';
 /**
  * The app module provides a set of classes to use as a starting point when building applications.
  *
- * This module has a mixin for a TickerPlugin and a ResizePlugin. These will need to be imported
- * if you are managing your own renderer.
- * Usage:
+ * <aside>This module has a mixin for <code>TickerPlugin</code> and <code>ResizePlugin</code>.
+ * These will need to be imported if you are managing your own renderer.</aside>
+ *
  * ```js
- * import 'pixi.js/app';
  * import { Application } from 'pixi.js';
  *
  * const app = new Application();
+ *
  * await app.init();
- * // Add the canvas to the DOM
+ *
+ * // don't forget to add the canvas to the DOM
  * document.body.appendChild(app.canvas);
  * ```
  * @namespace app
@@ -29,24 +30,26 @@ import type { DestroyOptions } from '../scene/container/destroyTypes';
  * Any plugin that's usable for Application should contain these methods.
  * @example
  * import { ApplicationPlugin } from 'pixi.js';
- * class MyPlugin implements ApplicationPlugin
- * {
- *    static init(options)
+ *
+ * const plugin: ApplicationPlugin = {
+ *    init: (options: Partial<ApplicationOptions>) =>
  *    {
- *      // do something with options
- *    }
- *    static destroy()
+ *       // handle init here, use app options if needed
+ *    },
+ *    destroy: () =>
  *    {
- *     // destruction code here
+ *       // handle destruction code here
  *    }
  * }
  * @memberof app
+ * @see {@link app.ApplicationOptions}
+ * @ignore
  */
 export interface ApplicationPlugin
 {
     /**
      * Called when Application is constructed, scoped to Application instance.
-     * Passes in `options` as the only argument, which are Application init options.
+     * Passes in `options` as the only argument, which are Application `init()` options.
      * @param {object} options - Application options.
      */
     init(options: Partial<ApplicationOptions>): void;
@@ -55,13 +58,23 @@ export interface ApplicationPlugin
 }
 
 /**
- * Application options supplied to the applications init method.
+ * Application options supplied to the {@link app.Application#init} method.
  * @memberof app
+ * @example
+ * import { Application } from 'pixi.js';
+ *
+ * const app = new Application();
+ *
+ * await app.init({
+ *    autoStart: false,
+ *    resizeTo: window,
+ *    sharedTicker: true,
+ * });
  */
-export interface ApplicationOptions extends AutoDetectOptions, PixiMixins.ApplicationOptions {}
+export interface ApplicationOptions extends AutoDetectOptions, PixiMixins.ApplicationOptions { }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface Application extends PixiMixins.Application {}
+export interface Application extends PixiMixins.Application { }
 
 /**
  * Convenience class to create a new PixiJS application.

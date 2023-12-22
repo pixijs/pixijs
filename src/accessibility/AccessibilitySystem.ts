@@ -22,11 +22,13 @@ import type { isMobileResult } from '../utils/browser/isMobile';
  * Usage:
  * ```js
  * import 'pixi.js/accessibility';
- *
- * container.accessible = true; // see `AccessibleOptions` for more properties
  * ```
+ * To make an object accessible do the following:
+ * ```js
+ * container.accessible = true; // object is now accessible to screen readers!
+ * ```
+ * See {@link accessibility.AccessibleOptions} for more accessibility related properties that can be set.
  * @namespace accessibility
- * @see {@link accessibility.AccessibleOptions}
  */
 
 /** @ignore */

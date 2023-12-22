@@ -15,6 +15,10 @@ import type { Geometry } from '../../renderers/shared/geometry/Geometry';
 import type { Batch } from '../shared/Batcher';
 import type { BatcherAdaptor, BatcherPipe } from '../shared/BatcherPipe';
 
+/**
+ * A BatcherAdaptor that uses WebGL to render batches.
+ * @memberof rendering
+ */
 export class GlBatchAdaptor implements BatcherAdaptor
 {
     /** @ignore */

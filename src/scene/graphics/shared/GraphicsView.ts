@@ -7,6 +7,10 @@ import type { View } from '../../../rendering/renderers/shared/view/View';
 import type { Bounds } from '../../container/bounds/Bounds';
 import type { ContextDestroyOptions, TextureDestroyOptions, TypeOrBool } from '../../container/destroyTypes';
 
+/**
+ * A GraphicsView is a view that renders a GraphicsContext.
+ * @memberof scene
+ */
 export class GraphicsView implements View
 {
     public readonly uid = uid('graphicsView');

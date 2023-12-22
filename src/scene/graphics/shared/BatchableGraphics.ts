@@ -5,6 +5,10 @@ import type { Renderable } from '../../../rendering/renderers/shared/Renderable'
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { GraphicsView } from './GraphicsView';
 
+/**
+ * A batchable graphics object.
+ * @memberof rendering
+ */
 export class BatchableGraphics implements BatchableObject
 {
     public indexStart: number;

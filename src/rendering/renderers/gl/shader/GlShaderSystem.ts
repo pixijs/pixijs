@@ -17,6 +17,10 @@ const defaultSyncData = {
     blockIndex: 0,
 };
 
+/**
+ * System plugin to the renderer to manage the shaders.
+ * @memberof rendering
+ */
 export class GlShaderSystem
 {
     /** @ignore */

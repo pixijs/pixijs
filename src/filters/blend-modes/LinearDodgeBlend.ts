@@ -5,7 +5,10 @@ import { BlendModeFilter } from './BlendModeFilter';
 
 import type { ExtensionMetadata } from '../../extensions/Extensions';
 
-/** Looks at the color information in each channel and brightens the base color to reflect the blend color by decreasing contrast between the two.  */
+/**
+ * Looks at the color information in each channel and brightens the base color to reflect the blend color by decreasing contrast between the two.
+ * @memberof filters
+ */
 export class LinearDodgeBlend extends BlendModeFilter
 {
     /** @ignore */

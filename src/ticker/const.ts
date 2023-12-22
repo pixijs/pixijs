@@ -1,6 +1,6 @@
 /**
- * Represents the update priorities used by internal PIXI classes when registered with
- * the {@link Ticker} object. Higher priority items are updated first and lower
+ * Represents the update priorities used by internal Pixi classes when registered with
+ * the {@link ticker.Ticker} object. Higher priority items are updated first and lower
  * priority items, such as render, should go later.
  * @static
  * @enum {number}

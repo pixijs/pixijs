@@ -39,6 +39,7 @@ export interface BlurFilterOptions extends Partial<FilterOptions>
  * The BlurFilter applies a Gaussian blur to an object.
  *
  * The strength of the blur can be set for the x-axis and y-axis separately.
+ * @memberof filters
  */
 export class BlurFilter extends Filter
 {

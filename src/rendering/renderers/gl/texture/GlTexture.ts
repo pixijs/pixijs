@@ -1,6 +1,9 @@
 import { GL_FORMATS, GL_TARGETS, GL_TYPES } from './const';
 
-/** Internal texture for WebGL context. */
+/**
+ * Internal texture for WebGL context
+ * @memberof rendering
+ */
 export class GlTexture
 {
     public target: GL_TARGETS = GL_TARGETS.TEXTURE_2D;
