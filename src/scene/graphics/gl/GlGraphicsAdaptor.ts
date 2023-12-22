@@ -52,8 +52,6 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
                 batchSamplers: batchSamplersUniformGroup,
             }
         });
-
-        this.shader.addResource('globalUniforms', 0, 0);
     }
 
     public execute(graphicsPipe: GraphicsPipe, renderable: Renderable<GraphicsView>): void
@@ -68,7 +66,7 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
         } = contextSystem.getContextRenderData(context);
 
         // WebGL specific..
-        shader.groups[0].setResource(renderer.globalUniforms.uniformGroup, 0);
+        shader.groups[0] = renderer.globalUniforms.bindGroup;
 
         renderer.shader.bind(shader);
 
