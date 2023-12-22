@@ -10,6 +10,7 @@ import type { ICanvasRenderingContext2D } from './canvas/ICanvasRenderingContext
  * However you can manually set the environment using the {@link environment.DOMAdapter} singleton.
  * ```js
  * import { DOMAdapter, WebWorkerAdapter } from 'pixi.js';
+ *
  * DOMAdapter.set(WebWorkerAdapter);
  * DOMAdapter.get().createCanvas(800, 600); // returns an offscreen canvas
  * ```

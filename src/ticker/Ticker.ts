@@ -26,6 +26,7 @@ export type TickerCallback<T> = (this: T, ticker: Ticker) => any;
  * // create a ticker
  * const ticker = new Ticker();
  *
+ * // register the callback and start the ticker
  * ticker.add(callback);
  * ticker.start();
  * ```
@@ -33,7 +34,6 @@ export type TickerCallback<T> = (this: T, ticker: Ticker) => any;
  * You can always use the {@link ticker.Ticker.shared|shared} ticker that Pixi renders with by default.
  * ```js
  * Ticker.shared.add(callback);
- *
  * ```
  * @namespace ticker
  */
