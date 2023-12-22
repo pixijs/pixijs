@@ -11,7 +11,16 @@ import type { ContainerOptions } from '../../container/Container';
 import type { MeshViewOptions, TextureShader } from './MeshView';
 
 /**
- * Options for the {@link Mesh} constructor.
+ * Constructor options used for `Mesh` instances. Extends {@link scene.MeshViewOptions}
+ * ```js
+ * const mesh = new Mesh({
+ *    texture: Texture.from('assets/image.png'),
+ *    geometry: new PlaneGeometry(),
+ *    shader: Shader.from(VERTEX, FRAGMENT),
+ * });
+ * ```
+ * @see {@link scene.Mesh}
+ * @see {@link scene.MeshViewOptions}
  * @memberof scene
  */
 export type MeshOptions<

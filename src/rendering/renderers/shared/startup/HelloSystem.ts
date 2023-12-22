@@ -13,7 +13,11 @@ export interface HelloSystemOptions
     /** Whether to log the version and type information of renderer to console. */
     hello: boolean;
 }
-/** A simple system responsible for initiating the renderer. */
+
+/**
+ * A simple system responsible for initiating the renderer.
+ * @memberof rendering
+ */
 export class HelloSystem implements System<HelloSystemOptions>
 {
     /** @ignore */

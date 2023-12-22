@@ -133,6 +133,11 @@ function normalizeStringPosix(path: string, allowAboveRoot: boolean)
 /**
  * Path utilities for working with URLs and file paths in a cross-platform way.
  * All paths that are passed in will become normalized to have posix separators.
+ * ```js
+ * import { path } from 'pixi.js';
+ *
+ * path.normalize('http://www.example.com/foo/bar/../baz'); // http://www.example.com/foo/baz
+ * ```
  * @memberof utils
  */
 export interface Path
@@ -230,6 +235,11 @@ export interface Path
 /**
  * Path utilities for working with URLs and file paths in a cross-platform way.
  * All paths that are passed in will become normalized to have posix separators.
+ * ```js
+ * import { path } from 'pixi.js';
+ *
+ * path.normalize('http://www.example.com/foo/bar/../baz'); // http://www.example.com/foo/baz
+ * ```
  * @see {@link utils.Path}
  * @memberof utils
  */

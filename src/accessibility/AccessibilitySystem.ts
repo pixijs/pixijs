@@ -22,9 +22,12 @@ import type { isMobileResult } from '../utils/browser/isMobile';
  * Usage:
  * ```js
  * import 'pixi.js/accessibility';
- *
- * container.accessible = true; // see AccessibleTarget for more properties
  * ```
+ * To make an object accessible do the following:
+ * ```js
+ * container.accessible = true; // object is now accessible to screen readers!
+ * ```
+ * See {@link accessibility.AccessibleOptions} for more accessibility related properties that can be set.
  * @namespace accessibility
  */
 
@@ -378,7 +381,7 @@ export class AccessibilitySystem implements System
                 }
                 else
                 {
-                    hitArea = child.getBounds();
+                    hitArea = child.getBounds().rectangle;
 
                     this._capHitArea(hitArea);
 

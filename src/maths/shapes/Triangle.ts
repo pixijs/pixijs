@@ -7,6 +7,17 @@ import type { ShapePrimitive } from './ShapePrimitive';
 
 /**
  * A class to define a shape of a triangle via user defined coordinates.
+ *
+ * Create a `Triangle` object with the `x`, `y`, `x2`, `y2`, `x3`, `y3` properties.
+ *
+ * ```js
+ * import { Triangle } from 'pixi.js';
+ *
+ * const triangle = new Triangle(0, 0, 100, 0, 50, 50);
+ *
+ * // test whether a point is contained within this triangle
+ * triangle.contains(50, 50); // true
+ * ```
  * @memberof maths
  */
 export class Triangle implements ShapePrimitive

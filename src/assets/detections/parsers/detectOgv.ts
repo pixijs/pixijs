@@ -5,8 +5,6 @@ import type { FormatDetectionParser } from '../types';
 
 /**
  * Detects if the browser supports the OGV video format.
- *
- * This will be added automatically if `pixi.js/assets` is imported
  * @memberof assets
  */
 export const detectOgv = {

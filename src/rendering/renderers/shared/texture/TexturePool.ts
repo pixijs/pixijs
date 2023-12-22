@@ -13,7 +13,9 @@ let count = 0;
  * Stores collection of temporary pow2 or screen-sized renderTextures
  *
  * If you use custom RenderTexturePool for your filters, you can use methods
- * `getFilterTexture` and `returnFilterTexture` same as in
+ * `getFilterTexture` and `returnFilterTexture` same as in default pool
+ * @memberof rendering
+ * @name TexturePool
  */
 export class TexturePoolClass
 {

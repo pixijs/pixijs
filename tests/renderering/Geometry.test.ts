@@ -86,4 +86,42 @@ describe('Geometry', () =>
 
         expect(renderer.geometry['_geometryVaoHash'][geometry.uid]).toBeNull();
     });
+
+    it('should return bounds of a geometry correctly', () =>
+    {
+        const geometry = new Geometry({
+            attributes: {
+                aPosition: {
+                    buffer: new Buffer({
+                        data: [-5, -5, 5, -5, 5, 5, -5, 5],
+                        usage: 1,
+                    }),
+                    shaderLocation: 0,
+                    format: 'float32x2',
+                    stride: 2 * 4,
+                    offset: 0,
+                }
+            }
+        });
+
+        let bounds = geometry.bounds;
+
+        expect(bounds.minX).toEqual(-5);
+        expect(bounds.minY).toEqual(-5);
+        expect(bounds.maxX).toEqual(5);
+        expect(bounds.maxY).toEqual(5);
+
+        // now update the geometry and check the bounds are updated
+
+        geometry.attributes.aPosition.buffer.data = new Float32Array([-10, -10, 10, -10, 10, 10, -10, 10]);
+
+        expect(geometry['_boundsDirty']).toEqual(true);
+
+        bounds = geometry.bounds;
+
+        expect(bounds.minX).toEqual(-10);
+        expect(bounds.minY).toEqual(-10);
+        expect(bounds.maxX).toEqual(10);
+        expect(bounds.maxY).toEqual(10);
+    });
 });

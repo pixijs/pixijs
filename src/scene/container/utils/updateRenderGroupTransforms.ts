@@ -71,8 +71,8 @@ export function updateRenderGroupTransform(renderGroup: RenderGroup)
 
     // eslint-disable-next-line no-nested-ternary
     worldAlpha = worldAlpha < 0 ? 0 : (worldAlpha > 1 ? 1 : worldAlpha);
-
     renderGroup.worldAlpha = worldAlpha;
+
     renderGroup.worldColorAlpha = renderGroup.worldColor
             + (((worldAlpha * 255) | 0) << 24);
 }
@@ -149,11 +149,12 @@ function updateColorBlendVisibility(
             parent.rgColor
         );
 
-        const rgAlpha = container.localAlpha * parent.rgAlpha;
+        let rgAlpha = container.localAlpha * parent.rgAlpha;
 
         // eslint-disable-next-line no-nested-ternary
-        container.rgAlpha = rgAlpha < 0 ? 0 : (rgAlpha > 1 ? 1 : rgAlpha);
+        rgAlpha = rgAlpha < 0 ? 0 : (rgAlpha > 1 ? 1 : rgAlpha);
 
+        container.rgAlpha = rgAlpha;
         container.rgColorAlpha = container.rgColor + (((rgAlpha * 255) | 0) << 24);
     }
 

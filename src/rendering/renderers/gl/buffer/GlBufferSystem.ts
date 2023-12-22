@@ -25,6 +25,7 @@ import type { WebGLRenderer } from '../WebGLRenderer';
  * them. With this system, you never need to work directly with GPU buffers, but instead work with
  * the Buffer class.
  * @class
+ * @memberof rendering
  */
 export class GlBufferSystem implements System
 {

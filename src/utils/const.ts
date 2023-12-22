@@ -5,6 +5,7 @@ import EventEmitter from 'eventemitter3';
  * Based on: {@link https://github.com/ragingwind/data-uri-regex}
  * @static
  * @type {RegExp}
+ * @default /(?:^data:image\/([\w+]+);(?:[\w=]+|charset=[\w-]+)?(?:;base64)?,)/i
  * @example
  * import { DATA_URI } from 'pixi.js';
  *

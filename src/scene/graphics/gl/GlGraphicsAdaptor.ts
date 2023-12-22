@@ -16,6 +16,10 @@ import type { Renderable } from '../../../rendering/renderers/shared/Renderable'
 import type { GraphicsAdaptor, GraphicsPipe } from '../shared/GraphicsPipe';
 import type { GraphicsView } from '../shared/GraphicsView';
 
+/**
+ * A GraphicsAdaptor that uses WebGL to render graphics.
+ * @memberof rendering
+ */
 export class GlGraphicsAdaptor implements GraphicsAdaptor
 {
     /** @ignore */

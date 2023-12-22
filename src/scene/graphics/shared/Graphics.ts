@@ -9,19 +9,26 @@ import type { Texture } from '../../../rendering/renderers/shared/texture/Textur
 import type { ContainerOptions } from '../../container/Container';
 // @ts-expect-error - used for jsdoc typedefs
 // eslint-disable-next-line @typescript-eslint/no-duplicate-imports
-import type { ConvertedFillStyle, ConvertedStrokeStyle, FillStyleInputs } from './GraphicsContext';
+import type { ConvertedFillStyle, ConvertedStrokeStyle, FillStyle, FillStyleInputs, StrokeStyle } from './GraphicsContext';
 
 /**
- * Options for the Graphics.
+ * Constructor options used for `Graphics` instances.
+ * ```js
+ * const graphics = new Graphics({
+ *    fillStyle: { color: 0xff0000, alpha: 0.5 },
+ *    strokeStyle: { color: 0x00ff00, width: 2 },
+ * });
+ * ```
+ * @see {@link scene.Graphics}
  * @memberof scene
  */
 export interface GraphicsOptions extends Partial<ContainerOptions<GraphicsView>>
 {
-    /** The GraphicsContext to use. */
+    /** The GraphicsContext to use, useful for reuse and optimisation */
     context?: GraphicsContext;
-    /** The fill style to use. */
+    /** The fill style to use */
     fillStyle?: FillStyleInputs;
-    /** The stroke style to use. */
+    /** The stroke style to use */
     strokeStyle?: FillStyleInputs;
 }
 
@@ -266,7 +273,31 @@ export class Graphics extends Container<GraphicsView>
         this.view.context.strokeStyle = value;
     }
 
-    // v7 deprecations
+    // -------- v7 deprecations ---------
+
+    /**
+     * @param width
+     * @param color
+     * @param alpha
+     * @deprecated since 8.0.0
+     */
+    public lineStyle(width?: number, color?: ColorSource, alpha?: number): this
+    {
+        // eslint-disable-next-line max-len
+        deprecation('8.0.0', 'Graphics#lineStyle is no longer needed. Use Graphics#setStrokeStyle to set the stroke style.');
+
+        const strokeStyle: Partial<StrokeStyle> = {};
+
+        // avoid undefined assignment
+        width && (strokeStyle.width = width);
+        color && (strokeStyle.color = color);
+        alpha && (strokeStyle.alpha = alpha);
+
+        this.context.strokeStyle = strokeStyle;
+
+        return this;
+    }
+
     /**
      * @param color
      * @param alpha
@@ -277,9 +308,13 @@ export class Graphics extends Container<GraphicsView>
         // eslint-disable-next-line max-len
         deprecation('8.0.0', 'Graphics#beginFill is no longer needed. Use Graphics#fill to fill the shape with the desired style.');
 
-        this.endFill();
+        const fillStyle: Partial<FillStyle> = {};
 
-        this.context.fillStyle = { color, alpha };
+        // avoid undefined assignment
+        color && (fillStyle.color = color);
+        alpha && (fillStyle.alpha = alpha);
+
+        this.context.fillStyle = fillStyle;
 
         return this;
     }
@@ -291,7 +326,16 @@ export class Graphics extends Container<GraphicsView>
     {
         // eslint-disable-next-line max-len
         deprecation('8.0.0', 'Graphics#endFill is no longer needed. Use Graphics#fill to fill the shape with the desired style.');
+
         this.context.fill();
+        const strokeStyle = this.context.strokeStyle;
+
+        if (strokeStyle.width !== GraphicsContext.defaultStrokeStyle.width
+            || strokeStyle.color !== GraphicsContext.defaultStrokeStyle.color
+            || strokeStyle.alpha !== GraphicsContext.defaultStrokeStyle.alpha)
+        {
+            this.context.stroke();
+        }
 
         return this;
     }

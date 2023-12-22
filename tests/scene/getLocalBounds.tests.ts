@@ -1,6 +1,7 @@
 import { Rectangle } from '../../src/maths/shapes/Rectangle';
 import { StencilMask } from '../../src/rendering/mask/stencil/StencilMask';
 import { addMaskLocalBounds } from '../../src/rendering/mask/utils/addMaskLocalBounds';
+import { RenderTexture } from '../../src/rendering/renderers/shared/texture/RenderTexture';
 import { TextureSource } from '../../src/rendering/renderers/shared/texture/sources/TextureSource';
 import { Texture } from '../../src/rendering/renderers/shared/texture/Texture';
 import { Bounds } from '../../src/scene/container/bounds/Bounds';
@@ -294,5 +295,109 @@ describe('getLocalBounds', () =>
         const bounds = getLocalBounds(container, new Bounds());
 
         expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 500 / 2, maxY: 500 / 2 });
+    });
+
+    it('should cache local bounds on a container', async () =>
+    {
+        const container = new Container({ label: 'container' });
+
+        container.x = 100;
+
+        const child = new Container({ label: 'child', view: new DummyView(0, 0, 500, 500) });
+
+        container.addChild(child);
+
+        child.scale.set(0.5);
+
+        let bounds = container.getLocalBounds();
+
+        expect(container._localBoundsCacheData.didChange).toEqual(true);
+
+        expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 500 / 2, maxY: 500 / 2 });
+
+        bounds = container.getLocalBounds();
+
+        expect(container._localBoundsCacheData.didChange).toEqual(false);
+
+        child.scale.set(1);
+
+        bounds = container.getLocalBounds();
+
+        expect(container._localBoundsCacheData.didChange).toEqual(true);
+
+        expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 500, maxY: 500 });
+
+        bounds = container.getLocalBounds();
+
+        expect(container._localBoundsCacheData.didChange).toEqual(false);
+    });
+
+    it('should invalidate local bounds cache on a container if a view changes', async () =>
+    {
+        const container = new Container({ label: 'container' });
+
+        container.x = 100;
+
+        const child = new Sprite(RenderTexture.create({ width: 10, height: 10 }));
+
+        container.addChild(child);
+
+        container.getLocalBounds();
+
+        expect(container._localBoundsCacheData.didChange).toEqual(true);
+
+        container.getLocalBounds();
+
+        expect(container._localBoundsCacheData.didChange).toEqual(false);
+
+        child.texture = Texture.EMPTY;
+
+        container.getLocalBounds();
+
+        expect(container._localBoundsCacheData.didChange).toEqual(true);
+
+        container.getLocalBounds();
+
+        expect(container._localBoundsCacheData.didChange).toEqual(false);
+    });
+
+    it('should not invalidate local bounds cache container if it changes its local transform', async () =>
+    {
+        const container = new Container({ label: 'container' });
+
+        const child = new Sprite(RenderTexture.create({ width: 10, height: 10 }));
+
+        container.addChild(child);
+
+        container.getLocalBounds();
+
+        expect(container._localBoundsCacheData.didChange).toEqual(true);
+
+        container.x = 100;
+
+        container.getLocalBounds();
+
+        expect(container._localBoundsCacheData.didChange).toEqual(false);
+    });
+
+    it('should invalidate local bounds cache container view changes', async () =>
+    {
+        const child = new Sprite(RenderTexture.create({ width: 10, height: 10 }));
+
+        const bounds = child.getLocalBounds();
+
+        expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 10, maxY: 10 });
+
+        expect(child._localBoundsCacheData.didChange).toEqual(true);
+
+        child.getLocalBounds();
+
+        expect(child._localBoundsCacheData.didChange).toEqual(false);
+
+        child.texture = Texture.EMPTY;
+
+        child.getLocalBounds();
+
+        expect(child._localBoundsCacheData.didChange).toEqual(true);
     });
 });

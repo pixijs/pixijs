@@ -36,7 +36,10 @@ const tempRect = new Rectangle();
 const tempBounds = new Bounds();
 const noColor: ColorSource = [0, 0, 0, 0];
 
-/** System that manages the generation of textures from the renderer. */
+/**
+ * System that manages the generation of textures from the renderer
+ * @memberof rendering
+ */
 export class GenerateTextureSystem implements System
 {
     /** @ignore */

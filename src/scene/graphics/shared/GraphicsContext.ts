@@ -89,6 +89,10 @@ export type GraphicsInstructions = FillInstruction | StrokeInstruction | Texture
 
 const tempMatrix = new Matrix();
 
+/**
+ * A class that holds the render data for a GraphicsContext.
+ * @memberof scene
+ */
 export class GraphicsContext extends EventEmitter<{
     update: GraphicsContext
     destroy: GraphicsContext
@@ -560,7 +564,7 @@ export class GraphicsContext extends EventEmitter<{
         return this;
     }
 
-    public star(x: number, y: number, points: number, radius: number, innerRadius: number, rotation: number): this
+    public star(x: number, y: number, points: number, radius: number, innerRadius = 0, rotation = 0): this
     {
         this._tick++;
 
@@ -706,9 +710,7 @@ export class GraphicsContext extends EventEmitter<{
             {
                 const data = instruction.data as TextureInstruction['data'];
 
-                bounds.pushMatrix(data.transform);
-                bounds.addFrame(data.dx, data.dy, data.dx + data.dw, data.dy + data.dh);
-                bounds.popMatrix();
+                bounds.addFrame(data.dx, data.dy, data.dx + data.dw, data.dy + data.dh, data.transform);
             }
             if (action === 'stroke')
             {

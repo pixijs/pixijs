@@ -34,6 +34,7 @@ export interface CanvasViewSystemOptions
 /**
  * The view surface system manages the main canvas that is attached to the DOM.
  * This main role is to deal with how the holding the view reference and dealing with how it is resized.
+ * @memberof rendering
  */
 export class CanvasViewSystem implements System
 {
