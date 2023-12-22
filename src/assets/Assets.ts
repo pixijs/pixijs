@@ -75,7 +75,6 @@ export interface AssetInitOptions
  * import { Assets, Texture } from 'pixi.js';
  *
  * const bunnyTexture = await Assets.load<Texture>('bunny.png');
- *
  * const sprite = new Sprite(bunnyTexture);
  * ```
  *

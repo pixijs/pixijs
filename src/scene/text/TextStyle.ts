@@ -25,7 +25,7 @@ export type TextStyleTextBaseline = 'alphabetic' | 'top' | 'hanging' | 'middle' 
 export type TextStyleWhiteSpace = 'normal' | 'pre' | 'pre-line';
 
 /**
- * The namespace for Text related objects.
+ * A collection of text related classes.
  * @namespace text
  */
 
