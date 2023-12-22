@@ -14,11 +14,15 @@ import type { FilterSystem } from './FilterSystem';
  * You attached filters to a display object using its `filters` array property.
  *
  * ```js
- * import { Sprite, BlurFilter } from '@pixi';
+ * import { Sprite, BlurFilter, HardMixBlend } from 'pixi.js';
  *
  * const sprite = Sprite.from('myTexture.png');
  *
- * sprite.filters = [new BlurFilter({ strength: 8 })];
+ * // single filter
+ * sprite.filters = new BlurFilter({ strength: 8 });
+ *
+ * // or multiple filters
+ * sprite.filters = [new BlurFilter({ strength: 8 }), new HardMixBlend()];
  * ```
  *
  * Pixi has a number of built-in filters which can be used in your game or application:
@@ -26,11 +30,22 @@ import type { FilterSystem } from './FilterSystem';
  * - {@link filters.AlphaFilter} - Applies alpha to the display object and any of its children.
  * - {@link filters.BlurFilter} - Applies a Gaussian blur to the display object.
  * - {@link filters.BlurFilterPass} - Applies a blur pass to an object.
+ * - {@link filters.ColorBurnBlend} - Blend mode to add color burn to display objects.
+ * - {@link filters.ColorDodgeBlend} - Blend mode to add color dodge to display objects.
  * - {@link filters.ColorMatrixFilter} - Transform the color channels by matrix multiplication.
+ * - {@link filters.DarkenBlend} - Blend mode to darken display objects.
  * - {@link filters.DisplacementFilter} - Applies a displacement map to distort an object.
+ * - {@link filters.DivideBlend} - Blend mode to divide display objects.
+ * - {@link filters.HardMixBlend} - Blend mode to hard mix display objects.
+ * - {@link filters.LinearBurnBlend} - Blend mode to add linear burn to display objects.
+ * - {@link filters.LinearDodgeBlend} - Blend mode to add linear dodge to display objects.
+ * - {@link filters.LinearLightBlend} - Blend mode to add linear light to display objects.
  * - {@link filters.NoiseFilter} - Applies random noise to an object.
+ * - {@link filters.PinLightBlend} - Blend mode to add pin light to display objects.
  * - {@link filters.ShockwaveFilter} - Applies a shockwave distortion.
+ * - {@link filters.SubtractBlend} - Blend mode to subtract display objects.
  *
+ * <br/>
  * For more available filters, check out the
  *  {@link https://api.pixijs.io/pixi-filters-monorepo.html|pixi-filters} repository.
  *

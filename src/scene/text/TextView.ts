@@ -41,7 +41,7 @@ const map = {
 
 /**
  * A text view.
- * @memberof text
+ * @memberof scene
  */
 export class TextView implements View
 {
