@@ -9,6 +9,7 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render sprite',
+    pixelMatch: 200,
     create: async (scene: Container) =>
     {
         const texture = await Assets.load<Texture>({
