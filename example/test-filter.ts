@@ -3,14 +3,18 @@
 /* eslint-disable newline-after-var */
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/quotes */
-import dat from "dat.gui";
 import { Application } from "../src/app/Application";
 import { Assets } from "../src/assets/Assets";
-import { GrainFilter } from "../src/filters/defaults/grain/GrainFilter";
-import { OilFilter } from "../src/filters/defaults/oil/OilFilter";
 import { Sprite } from "../src/scene/sprite/Sprite";
+import { ColorMatrixFilter } from "../src/filters/defaults/color-matrix/ColorMatrixFilter";
+import { Container } from "../src/scene/container/Container";
 import { AdjustFilter } from "../src/filters/defaults/adjust/AdjustFilter";
-// import { analyzer } from "./gpu";
+import { AdjustFilter2 } from "../src/filters/defaults/adjust/AdjustPass2";
+import { RenderTexture } from "../src/rendering/renderers/shared/texture/RenderTexture";
+import { Texture } from "../src/rendering/renderers/shared/texture/Texture";
+import { ImageSource } from "../src/rendering/renderers/shared/texture/sources/ImageSource";
+import { NoiseFilter } from "../src/filters/defaults/noise/NoiseFilter";
+import { BlurFilter } from "../src/filters/defaults/blur/BlurFilter";
 
 async function myTest() {
     // analyzer();
@@ -19,53 +23,31 @@ async function myTest() {
     await app.init({
         width: 1000,
         height: 1000,
+        backgroundColor: 0xffffff,
         preference: "webgl",
         autoDensity: true,
         resolution: window.devicePixelRatio,
     });
     document.body.appendChild(app.canvas);
 
+    const container = new Container();
+    app.stage.addChild(container);
+
     const texture = await Assets.load("assets/boat2.jpeg");
-    const sprite = Sprite.from(texture);
-    sprite.position.set(150);
-    sprite.width = 648;
-    sprite.height = 431;
-    app.stage.addChild(sprite);
-    const filters = [];
 
-    const gui = new dat.GUI();
-    const group = gui.addFolder("texture");
+    const sprite1 = Sprite.from(texture);
+    sprite1.position.set(0, 0);
+    // sprite1.width = 648;
+    // sprite1.height = 431;
+    container.addChild(sprite1);
 
-    const grainTexture = await Assets.load("assets/grain.png");
-    const grainFilter = new GrainFilter({
-        mapTexture: grainTexture,
-        width: texture.width,
-        height: texture.height,
-        value: 0,
-    });
-    grainFilter.resolution = window.devicePixelRatio;
-    filters.push(grainFilter);
-    group.add(grainFilter, "value", 0, 1, 0.1).name("grain");
+    // const adjust = await Assets.load("assets/adjust.png");
+    // const filter = new AdjustFilter({ mapTexture: adjust });
+    // sprite1.filters = [filter];
 
-    const oilTexture = await Assets.load("assets/oil.png");
-    const oilFilter = new OilFilter({
-        mapTexture: oilTexture,
-        width: texture.width,
-        height: texture.height,
-        value: 0,
-    });
-    oilFilter.resolution = window.devicePixelRatio;
-    filters.push(oilFilter);
-    group.add(oilFilter, "value", 0, 1, 0.1).name("oil");
-
-    // const adjustTexture = await Assets.load("assets/adjust.png");
-    // const adjustFilter = new AdjustFilter({ mapTexture: adjustTexture });
-    // adjustFilter.resolution = window.devicePixelRatio;
-    // filters.push(adjustFilter);
-    // const adjust = gui.addFolder("adjust");
-    // adjust.add(adjustFilter, "brightness", 0, 1, 0.1).name("adjust");
-
-    sprite.filters = filters;
+    const color = new ColorMatrixFilter();
+    color.brightness(0.5,true);
+    sprite1.filters = [new BlurFilter(),color,new NoiseFilter(),]
 }
 
 myTest();
