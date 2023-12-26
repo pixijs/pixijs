@@ -14,8 +14,7 @@ import {
     QuadraticUtils,
 } from './utils';
 
-import type { SHAPES } from '@pixi/core';
-import type { BatchDrawCall } from '@pixi/core/';
+import type { BatchDrawCall, SHAPES } from '@pixi/core';
 import type { IShapeBuildCommand } from './utils/IShapeBuildCommand';
 
 export * from './const';

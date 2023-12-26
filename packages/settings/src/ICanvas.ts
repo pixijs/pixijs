@@ -50,7 +50,7 @@ export interface WebGLContextEventMap
     'webglcontextlost': WebGLContextEvent;
     'webglcontextrestore': WebGLContextEvent;
 }
-
+/* eslint-disable jsdoc/no-undefined-types */
 /**
  * Common interface for HTMLCanvasElement, OffscreenCanvas, and other custom canvas classes.
  * @memberof PIXI
@@ -59,6 +59,7 @@ export interface WebGLContextEventMap
  */
 export interface ICanvas extends GlobalMixins.ICanvas, Partial<EventTarget>
 {
+    /* eslint-enable jsdoc/no-undefined-types */
     /** Width of the canvas. */
     width: number;
     /** Height of the canvas. */
