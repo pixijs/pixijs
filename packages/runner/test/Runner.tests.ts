@@ -24,7 +24,7 @@ describe('Runner', () =>
         complete.emit();
         expect(callback).toBeCalledTimes(3);
         complete.destroy();
-        expect(!complete.items).toBe(true);
+        expect(complete.items.length === 0).toBe(true);
         expect(!complete.name).toBe(true);
     });
 

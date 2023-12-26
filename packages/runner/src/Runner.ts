@@ -168,8 +168,8 @@ export class Runner
     public destroy(): void
     {
         this.removeAll();
-        this.items = null;
-        this._name = null;
+        this.items = [];
+        this._name = '';
     }
 
     /**
