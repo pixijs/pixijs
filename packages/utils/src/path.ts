@@ -315,7 +315,7 @@ export const path: Path = {
                 {
                     const prevArg = segments[i - 1] ?? '';
 
-                    if (this.extname(prevArg))
+                    if (this.extname(prevArg) === '.html')
                     {
                         joined += `/../${arg}`;
                     }
