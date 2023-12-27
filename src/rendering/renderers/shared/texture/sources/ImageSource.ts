@@ -31,7 +31,9 @@ export class ImageSource extends TextureSource<ImageResource>
             context.drawImage(options.resource, 0, 0);
             options.resource = canvas;
 
+            // #if _DEBUG
             warn('ImageSource: Image element passed, converting to canvas. Use CanvasSource instead.');
+            // #endif
         }
 
         super(options);
