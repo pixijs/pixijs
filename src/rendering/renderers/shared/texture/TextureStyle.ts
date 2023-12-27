@@ -9,24 +9,24 @@ export interface TextureStyleOptions extends Partial<TextureStyle>
 {
     /** setting this will set wrapModeU,wrapModeV and wrapModeW all at once! */
     addressMode?: WRAP_MODE;
-    /** */
+    /** specifies the {{GPUAddressMode|address modes}} for the texture width, height, and depth coordinates, respectively. */
     addressModeU?: WRAP_MODE;
-    /** */
+    /** specifies the {{GPUAddressMode|address modes}} for the texture width, height, and depth coordinates, respectively. */
     addressModeV?: WRAP_MODE;
     /** Specifies the {{GPUAddressMode|address modes}} for the texture width, height, and depth coordinates, respectively. */
     addressModeW?: WRAP_MODE;
 
     /** setting this will set magFilter,minFilter and mipmapFilter all at once!  */
     scaleMode?: SCALE_MODE;
-    /** Specifies the sampling behavior when the sample footprint is smaller than or equal to one texel. */
+    /** specifies the sampling behavior when the sample footprint is smaller than or equal to one texel. */
 
     magFilter?: SCALE_MODE;
-    /** Specifies the sampling behavior when the sample footprint is larger than one texel. */
+    /** specifies the sampling behavior when the sample footprint is larger than one texel. */
     minFilter?: SCALE_MODE;
-    /** Specifies behavior for sampling between mipmap levels. */
+    /** specifies behavior for sampling between mipmap levels. */
     mipmapFilter?: SCALE_MODE;
 
-    /** */
+    /** specifies the minimum and maximum levels of detail, respectively, used internally when sampling a texture. */
     lodMinClamp?: number;
     /** Specifies the minimum and maximum levels of detail, respectively, used internally when sampling a texture. */
     lodMaxClamp?: number;
