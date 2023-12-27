@@ -51,6 +51,8 @@ export class TextView implements View
     private _boundsDirty = true;
     private _text: string;
 
+    public readonly renderPipeId: string = 'text';
+
     constructor(options: TextViewOptions)
     {
         this.text = options.text ?? '';
@@ -59,11 +61,6 @@ export class TextView implements View
         this.anchor = new ObservablePoint(this, 0, 0);
 
         this.resolution = options.resolution ?? null;
-    }
-
-    get renderPipeId(): string
-    {
-        return 'text';
     }
 
     set text(value: TextString)

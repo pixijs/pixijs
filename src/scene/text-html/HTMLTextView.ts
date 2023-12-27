@@ -7,6 +7,8 @@ import type { HTMLTextStyleOptions } from './HtmlTextStyle';
 
 export class HTMLTextView extends TextView
 {
+    public readonly renderPipeId = 'htmlText';
+
     protected _updateBounds()
     {
         const bounds = this._bounds;
@@ -19,11 +21,6 @@ export class HTMLTextView extends TextView
         bounds.maxX = bounds.minX + width;
         bounds.minY = (-anchor._y * height) - padding;
         bounds.maxY = bounds.minY + height;
-    }
-
-    get renderPipeId(): string
-    {
-        return 'htmlText';
     }
 
     protected ensureTextStyle(style: TextStyle | HTMLTextStyle | TextStyleOptions | HTMLTextStyleOptions): TextStyle

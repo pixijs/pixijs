@@ -3,6 +3,8 @@ import { BitmapFontManager } from './BitmapFontManager';
 
 export class BitmapTextView extends TextView
 {
+    public readonly renderPipeId = 'bitmapText';
+
     protected _updateBounds()
     {
         const bounds = this._bounds;
@@ -18,10 +20,5 @@ export class BitmapTextView extends TextView
         bounds.maxX = bounds.minX + width;
         bounds.minY = (-anchor._y * (height + offset)) - padding;
         bounds.maxY = bounds.minY + height;
-    }
-
-    get renderPipeId(): string
-    {
-        return 'bitmapText';
     }
 }
