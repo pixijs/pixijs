@@ -59,7 +59,7 @@
   },
   "dependencies": {
     "@pixi/colord": "^2.9.6",
-    "@types/css-font-loading-module": "^0.0.8",
+    "@types/css-font-loading-module": "^0.0.12",
     "@types/earcut": "^2.1.1",
     "@webgpu/types": "^0.1.30",
     "@xmldom/xmldom": "^0.8.10",
