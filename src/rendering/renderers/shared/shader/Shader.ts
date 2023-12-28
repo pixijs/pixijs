@@ -1,11 +1,14 @@
+/* eslint-disable no-new */
 import EventEmitter from 'eventemitter3';
+import { GlProgram } from '../../gl/shader/GlProgram';
 import { BindGroup } from '../../gpu/shader/BindGroup';
+import { GpuProgram } from '../../gpu/shader/GpuProgram';
 import { RendererType } from '../../types';
 import { UniformGroup } from './UniformGroup';
 
-import type { GlProgram } from '../../gl/shader/GlProgram';
+import type { GlProgramOptions } from '../../gl/shader/GlProgram';
 import type { BindResource } from '../../gpu/shader/BindResource';
-import type { GpuProgram } from '../../gpu/shader/GpuProgram';
+import type { GpuProgramOptions } from '../../gpu/shader/GpuProgram';
 
 /**
  * A record of {@link BindGroup}'s used by the shader.
@@ -15,16 +18,12 @@ import type { GpuProgram } from '../../gpu/shader/GpuProgram';
  */
 export type ShaderGroups = Record<number, BindGroup>;
 
-/**
- * A descriptor for a shader
- * @memberof rendering
- */
-export interface ShaderWith
+interface ShaderBase
 {
     /** The WebGL program used by the WebGL renderer. */
-    glProgram?: GlProgram;
+    glProgram?: GlProgram
     /** The WebGPU program used by the WebGPU renderer. */
-    gpuProgram?: GpuProgram;
+    gpuProgram?: GpuProgram
     /**
      * A number that uses two bits on whether the shader is compatible with the WebGL renderer and/or the WebGPU renderer.
      * 0b00 - not compatible with either
@@ -32,14 +31,22 @@ export interface ShaderWith
      * 0b10 - compatible with WebGPU
      * This is automatically set based on if a {@link GlProgram} or {@link GpuProgram} is provided.
      */
-    compatibleRenderers?: number;
+    compatibleRenderers?: number
 }
 
-/**
- * A descriptor for a shader with groups.
- * @memberof rendering
- */
-export interface ShaderWithGroupsDescriptor extends ShaderWith
+interface GlShaderWith extends ShaderBase
+{
+    /** The WebGL program used by the WebGL renderer. */
+    glProgram: GlProgram
+}
+
+interface GpuShaderWith extends ShaderBase
+{
+    /** The WebGPU program used by the WebGPU renderer. */
+    gpuProgram: GpuProgram
+}
+
+interface ShaderWithGroupsDescriptor
 {
     /** A record of {@link BindGroup}'s used by the shader. */
     groups: ShaderGroups;
@@ -47,12 +54,7 @@ export interface ShaderWithGroupsDescriptor extends ShaderWith
     groupMap?: Record<string, Record<string, any>>;
 }
 
-/**
- * A descriptor for a shader with resources. This is an easier way to work with uniforms.
- * especially when you are not working with bind groups
- * @memberof rendering
- */
-export interface ShaderWithResourcesDescriptor extends ShaderWith
+interface ShaderWithResourcesDescriptor
 {
     /**
      * A key value of uniform resources used by the shader.
@@ -70,7 +72,40 @@ interface GroupsData
     name: string
 }
 
-type ShaderDescriptor = ShaderWithGroupsDescriptor & ShaderWithResourcesDescriptor;
+/**
+ * A descriptor for a shader
+ * @memberof rendering
+ */
+export type ShaderWith = GlShaderWith | GpuShaderWith;
+
+/**
+ * A descriptor for a shader with groups.
+ * @memberof rendering
+ */
+export type ShaderWithGroups = ShaderWithGroupsDescriptor & ShaderWith;
+export interface IShaderWithGroups extends ShaderWithGroupsDescriptor, ShaderBase {}
+
+/**
+ * A descriptor for a shader with resources. This is an easier way to work with uniforms.
+ * especially when you are not working with bind groups
+ * @memberof rendering
+ */
+export type ShaderWithResources = ShaderWithResourcesDescriptor & ShaderWith;
+export interface IShaderWithResources extends ShaderWithResourcesDescriptor, ShaderBase {}
+
+export type ShaderDescriptor = ShaderWithGroups & ShaderWithResources;
+
+type GlShaderFromWith = {
+    gpu?: GpuProgramOptions,
+    gl: GlProgramOptions
+};
+type GpuShaderFromWith = {
+    gpu: GpuProgramOptions,
+    gl?: GlProgramOptions
+};
+export type ShaderFromGroups = (GlShaderFromWith | GpuShaderFromWith) & Omit<ShaderWithGroups, 'glProgram' | 'gpuProgram'>;
+export type ShaderFromResources = (GlShaderFromWith | GpuShaderFromWith)
+& Omit<ShaderWithResources, 'glProgram' | 'gpuProgram'>;
 
 /**
  * The Shader class is an integral part of the PixiJS graphics pipeline.
@@ -149,11 +184,22 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
      * you cannot mix and match - either use resources or groups.
      * @param {ShaderWithResourcesDescriptor} options - The options for the shader using ShaderWithResourcesDescriptor.
      */
-    constructor({ gpuProgram, glProgram, resources, compatibleRenderers }: ShaderWithResourcesDescriptor);
-    constructor({ gpuProgram, glProgram, groups, groupMap, compatibleRenderers }: ShaderWithGroupsDescriptor);
-    constructor({ gpuProgram, glProgram, groups, resources, groupMap, compatibleRenderers }: ShaderDescriptor)
+    constructor(options: ShaderWithResources);
+    constructor(options: ShaderWithGroups);
+    constructor(options: ShaderDescriptor)
     {
         super();
+
+        /* eslint-disable prefer-const */
+        let {
+            gpuProgram,
+            glProgram,
+            groups,
+            resources,
+            compatibleRenderers,
+            groupMap
+        } = options;
+        /* eslint-enable prefer-const */
 
         this.gpuProgram = gpuProgram;
         this.glProgram = glProgram;
@@ -345,5 +391,36 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
         this._uniformBindMap = null;
 
         this.resources = null;
+    }
+
+    /**
+     * A short hand function to create a shader based of a vertex and fragment shader.
+     * @param options
+     * @returns A shiny new PixiJS shader!
+     */
+    public static from(options: ShaderFromGroups): Shader;
+    public static from(options: ShaderFromResources): Shader;
+    public static from(options: ShaderFromGroups & ShaderFromResources): Shader
+    {
+        const { gpu, gl, ...rest } = options;
+
+        let gpuProgram: GpuProgram;
+        let glProgram: GlProgram;
+
+        if (gpu)
+        {
+            gpuProgram = GpuProgram.from(gpu);
+        }
+
+        if (gl)
+        {
+            glProgram = GlProgram.from(gl);
+        }
+
+        return new Shader({
+            gpuProgram,
+            glProgram,
+            ...rest
+        });
     }
 }
