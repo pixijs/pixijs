@@ -273,6 +273,22 @@ describe('Paths', () =>
         expect(path.toAbsolute('./img3.0/browser.png', 'http://example.com/page-1/'))
             .toEqual(`http://example.com/page-1/img3.0/browser.png`);
 
+        expect(path.toAbsolute('./browser.png', 'http://example.com/page-1/bar3.0'))
+            .toEqual(`http://example.com/page-1/bar3.0/browser.png`);
+        expect(path.toAbsolute('./img/browser.png', 'http://example.com/page-1/bar3.0'))
+            .toEqual(`http://example.com/page-1/bar3.0/img/browser.png`);
+        expect(path.toAbsolute('img/browser.png', 'http://example.com/page-1/bar3.0'))
+            .toEqual(`http://example.com/page-1/bar3.0/img/browser.png`);
+        expect(path.toAbsolute('windows.png', 'C:/foo/bar/baz3.0')).toEqual(`C:/foo/bar/baz3.0/windows.png`);
+        expect(path.toAbsolute('mac.png', '/foo/bar/baz3.0')).toEqual(`/foo/bar/baz3.0/mac.png`);
+
+        expect(path.toAbsolute('./browser.png', 'http://example.com/page-1/bar3.0?var=a#hash'))
+            .toEqual(`http://example.com/page-1/bar3.0/browser.png`);
+        expect(path.toAbsolute('./img/browser.png', 'http://example.com/page-1/bar3.0?var=a#hash'))
+            .toEqual(`http://example.com/page-1/bar3.0/img/browser.png`);
+        expect(path.toAbsolute('img/browser.png', 'http://example.com/page-1/bar3.0?var=a#hash'))
+            .toEqual(`http://example.com/page-1/bar3.0/img/browser.png`);
+
         // paths with extensions
         expect(path.toAbsolute('./browser.png', 'http://example.com/page-1/index.html'))
             .toEqual(`http://example.com/page-1/browser.png`);
