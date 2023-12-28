@@ -7,9 +7,7 @@ import type { ColorSource } from '../../../color/Color';
 import type { Matrix } from '../../../maths/matrix/Matrix';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { ContainerOptions } from '../../container/Container';
-// @ts-expect-error - used for jsdoc typedefs
-// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
-import type { ConvertedFillStyle, ConvertedStrokeStyle, FillStyle, FillStyleInputs, StrokeStyle } from './GraphicsContext';
+import type { FillStyle, FillStyleInputs, StrokeStyle } from './GraphicsContext';
 
 /**
  * Constructor options used for `Graphics` instances.

@@ -229,7 +229,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
         return this.gl;
     }
 
-    /** Auto-populate the {@link ContextSystem.extensions extensions}. */
+    /** Auto-populate the {@link GlContextSystem.extensions extensions}. */
     protected getExtensions(): void
     {
         // time to set up default extensions that Pixi uses.

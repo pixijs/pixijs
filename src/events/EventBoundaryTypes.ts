@@ -1,9 +1,4 @@
-import type { Container } from '../scene/container/Container';
 import type { FederatedEventTarget } from './FederatedEventTarget';
-// @ts-expect-error - used for jsdoc typedefs
-import type { FederatedPointerEvent } from './FederatedPointerEvent';
-// @ts-expect-error - used for jsdoc typedefs
-import type { FederatedWheelEvent } from './FederatedWheelEvent';
 
 /**
  * The tracking data for each pointer held in the state of an {@link EventBoundary}.
