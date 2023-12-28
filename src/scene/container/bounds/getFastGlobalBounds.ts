@@ -111,11 +111,11 @@ export function _getGlobalBoundsRecursive(
         }
 
         bounds.addBounds(localBounds);
-        boundsPool.put(localBounds);
+        boundsPool.return(localBounds);
     }
     else if (target.isRenderGroupRoot)
     {
         bounds.addBounds(localBounds, target.rgTransform);
-        boundsPool.put(localBounds);
+        boundsPool.return(localBounds);
     }
 }
