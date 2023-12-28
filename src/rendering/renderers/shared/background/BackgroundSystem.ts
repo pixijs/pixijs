@@ -86,7 +86,7 @@ export class BackgroundSystem implements System
         this._backgroundColor = new Color(0x000000);
 
         this.color = this._backgroundColor; // run bg color setter
-        this.alpha = 1;
+        this.alpha = 0;
     }
 
     /**
@@ -97,11 +97,11 @@ export class BackgroundSystem implements System
     {
         options = { ...BackgroundSystem.defaultOptions, ...options };
 
+        const optionsHasBackgroundColor = !!(options.background || options.backgroundColor);
+
         this.clearBeforeRender = options.clearBeforeRender;
         this.color = options.background || options.backgroundColor || this._backgroundColor; // run bg color setter
-        this.alpha = options.backgroundAlpha;
-
-        this._backgroundColor.setAlpha(options.backgroundAlpha);
+        this.alpha = optionsHasBackgroundColor ? options.backgroundAlpha : 0;
     }
 
     /** The background color to fill if not transparent */
