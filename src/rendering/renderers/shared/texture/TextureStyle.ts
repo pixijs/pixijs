@@ -46,8 +46,22 @@ export interface TextureStyleOptions extends Partial<TextureStyle>
      * setting this to anything higher than 1 will set scale modes to 'linear'
      */
     maxAnisotropy?: number;
-
 }
+
+export const styleKeys: readonly (keyof TextureStyleOptions)[] = [
+    'addressMode',
+    'addressModeU',
+    'addressModeV',
+    'addressModeW',
+    'scaleMode',
+    'magFilter',
+    'minFilter',
+    'mipmapFilter',
+    'lodMinClamp',
+    'lodMaxClamp',
+    'compare',
+    'maxAnisotropy',
+] as const;
 
 /**
  * A texture style describes how a texture should be sampled by a shader.

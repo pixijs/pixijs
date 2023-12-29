@@ -1,7 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import { uid } from '../../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../../utils/logging/deprecation';
-import { TextureStyle } from '../TextureStyle';
+import { styleKeys, TextureStyle } from '../TextureStyle';
 
 import type { BindResource } from '../../../gpu/shader/BindResource';
 import type { ALPHA_MODES, SCALE_MODE, TEXTURE_DIMENSIONS, TEXTURE_FORMATS, WRAP_MODE } from '../const';
@@ -238,21 +238,9 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.antialias = options.antialias;
         this.alphaMode = options.alphaMode;
 
-        const styleOptions: TextureStyleOptions = {};
-
-        // conditionally assign the values so we don't blat default values in TextureStyle constructor
-        options.addressMode !== undefined && (styleOptions.addressMode = options.addressMode);
-        options.addressModeU !== undefined && (styleOptions.addressModeU = options.addressModeU);
-        options.addressModeV !== undefined && (styleOptions.addressModeV = options.addressModeV);
-        options.addressModeW !== undefined && (styleOptions.addressModeW = options.addressModeW);
-        options.scaleMode !== undefined && (styleOptions.scaleMode = options.scaleMode);
-        options.magFilter !== undefined && (styleOptions.magFilter = options.magFilter);
-        options.minFilter !== undefined && (styleOptions.minFilter = options.minFilter);
-        options.mipmapFilter !== undefined && (styleOptions.mipmapFilter = options.mipmapFilter);
-        options.lodMinClamp !== undefined && (styleOptions.lodMinClamp = options.lodMinClamp);
-        options.lodMaxClamp !== undefined && (styleOptions.lodMaxClamp = options.lodMaxClamp);
-        options.compare !== undefined && (styleOptions.compare = options.compare);
-        options.maxAnisotropy !== undefined && (styleOptions.maxAnisotropy = options.maxAnisotropy);
+        const styleOptions: TextureStyleOptions = Object.entries(options)
+            .filter(([key, value]) => styleKeys.includes(key as keyof TextureStyleOptions) && value !== undefined)
+            .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
 
         this.style = new TextureStyle(styleOptions);
 
