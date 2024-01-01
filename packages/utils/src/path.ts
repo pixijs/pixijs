@@ -148,7 +148,8 @@ export interface Path
     extname: (path: string) => string;
     parse: (path: string) => { root?: string, dir?: string, base?: string, ext?: string, name?: string };
     sep: string,
-    delimiter: string
+    delimiter: string,
+    joinExtensions: string[],
 }
 
 export const path: Path = {
@@ -315,7 +316,7 @@ export const path: Path = {
                 {
                     const prevArg = segments[i - 1] ?? '';
 
-                    if (this.extname(prevArg))
+                    if (this.joinExtensions.includes(this.extname(prevArg).toLowerCase()))
                     {
                         joined += `/../${arg}`;
                     }
@@ -690,5 +691,6 @@ export const path: Path = {
     },
 
     sep: '/',
-    delimiter: ':'
+    delimiter: ':',
+    joinExtensions: ['.html'],
 } as Path;
