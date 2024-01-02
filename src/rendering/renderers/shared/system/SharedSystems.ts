@@ -3,7 +3,6 @@ import { RenderGroupSystem } from '../../../../scene/container/RenderGroupSystem
 import { NineSliceSpritePipe } from '../../../../scene/mesh-nine-slice/NiceSliceSpritePipe';
 import { SpritePipe } from '../../../../scene/sprite/SpritePipe';
 import { TilingSpritePipe } from '../../../../scene/sprite-tiling/TilingSpritePipe';
-import { HTMLTextPipe } from '../../../../scene/text-html/HTMLTextPipe';
 import { HTMLTextSystem } from '../../../../scene/text-html/HTMLTextSystem';
 import { BatcherPipe } from '../../../batcher/shared/BatcherPipe';
 import { AlphaMaskPipe } from '../../../mask/alpha/AlphaMaskPipe';
@@ -41,6 +40,5 @@ export const SharedRenderPipes = [
     AlphaMaskPipe,
     StencilMaskPipe,
     ColorMaskPipe,
-    HTMLTextPipe,
     TilingSpritePipe,
 ];
