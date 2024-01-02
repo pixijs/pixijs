@@ -2,6 +2,7 @@ import { Matrix } from '../../../maths/matrix/Matrix';
 import { updateLocalTransform } from '../utils/updateLocalTransform';
 import { boundsPool, matrixPool } from './utils/matrixAndBoundsPool';
 
+import type { ContainerWithView } from '../../../rendering/renderers/shared/Renderable';
 import type { Container } from '../Container';
 import type { Bounds } from './Bounds';
 
@@ -87,12 +88,12 @@ export function _getGlobalBounds(
     }
     else
     {
-        if (target.view)
+        if ((target as ContainerWithView).addBounds)
         {
             // save a copy
             bounds.matrix = worldTransform;
 
-            target.view.addBounds(bounds);
+            (target as ContainerWithView).addBounds(bounds);
         }
 
         for (let i = 0; i < target.children.length; i++)

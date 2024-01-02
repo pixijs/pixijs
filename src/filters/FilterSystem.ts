@@ -14,7 +14,7 @@ import { warn } from '../utils/logging/warn';
 import type { WebGLRenderer } from '../rendering/renderers/gl/WebGLRenderer';
 import type { WebGPURenderer } from '../rendering/renderers/gpu/WebGPURenderer';
 import type { Instruction } from '../rendering/renderers/shared/instructions/Instruction';
-import type { Renderable } from '../rendering/renderers/shared/Renderable';
+import type { ContainerWithView } from '../rendering/renderers/shared/Renderable';
 import type { RenderTarget } from '../rendering/renderers/shared/renderTarget/RenderTarget';
 import type { RenderSurface } from '../rendering/renderers/shared/renderTarget/RenderTargetSystem';
 import type { System } from '../rendering/renderers/shared/system/System';
@@ -66,7 +66,7 @@ export interface FilterInstruction extends Instruction
     renderPipeId: 'filter',
     action: FilterAction,
     container?: Container,
-    renderables?: Renderable[],
+    renderables?: ContainerWithView[],
     filterEffect: FilterEffect,
 }
 

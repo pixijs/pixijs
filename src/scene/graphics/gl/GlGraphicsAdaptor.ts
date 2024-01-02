@@ -12,9 +12,8 @@ import { UniformGroup } from '../../../rendering/renderers/shared/shader/Uniform
 
 import type { Batch } from '../../../rendering/batcher/shared/Batcher';
 import type { WebGLRenderer } from '../../../rendering/renderers/gl/WebGLRenderer';
-import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
+import type { Graphics } from '../shared/Graphics';
 import type { GraphicsAdaptor, GraphicsPipe } from '../shared/GraphicsPipe';
-import type { GraphicsView } from '../shared/GraphicsView';
 
 /**
  * A GraphicsAdaptor that uses WebGL to render graphics.
@@ -58,9 +57,9 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
         });
     }
 
-    public execute(graphicsPipe: GraphicsPipe, renderable: Renderable<GraphicsView>): void
+    public execute(graphicsPipe: GraphicsPipe, renderable: Graphics): void
     {
-        const context = renderable.view.context;
+        const context = renderable.context;
         const shader = context.customShader || this.shader;
         const renderer = graphicsPipe.renderer as WebGLRenderer;
         const contextSystem = renderer.graphicsContext;

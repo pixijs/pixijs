@@ -50,12 +50,11 @@ describe('Mesh', () =>
 
         expect(mesh.geometry).toBeNull();
         expect(mesh.texture).toBeNull();
-        expect(mesh.view.owner).toBeNull();
 
-        expect(renderer.renderPipes.mesh['_renderableHash'][mesh.uid]).toBeNull();
+        expect(renderer.renderPipes.mesh['_meshDataHash'][mesh.uid]).toBeNull();
         expect(renderer.renderPipes.mesh['_gpuBatchableMeshHash'][mesh.uid]).toBeNull();
 
-        expect(gpuMesh.renderable).toBeNull();
+        expect(gpuMesh.mesh).toBeNull();
     });
 
     it('should support color tinting', () =>

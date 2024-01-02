@@ -90,7 +90,7 @@ export function updateTransformAndChildren(container: Container, updateTick: num
 
     const parent = container.parent;
 
-    if (parent && !parent.isRenderGroupRoot)
+    if ((parent && !parent.isRenderGroupRoot))
     {
         updateFlags = updateFlags | container._updateFlags;
 
@@ -129,7 +129,7 @@ export function updateTransformAndChildren(container: Container, updateTick: num
 
         const renderGroup = container.renderGroup;
 
-        if (container.view && !renderGroup.structureDidChange)
+        if (container.renderPipeId && !renderGroup.structureDidChange)
         {
             renderGroup.updateRenderable(container);
         }

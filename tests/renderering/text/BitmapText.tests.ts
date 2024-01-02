@@ -141,7 +141,7 @@ describe('BitmapText', () =>
             }
         });
 
-        const spy = jest.spyOn(text.view, 'onUpdate');
+        const spy = jest.spyOn(text, 'onViewUpdate');
 
         // force style re-assignment otherwise mock won't work (binding is in constructor)
         text.style = {
@@ -163,7 +163,7 @@ describe('BitmapText', () =>
             }
         });
 
-        const spy = jest.spyOn(text.view, 'onUpdate');
+        const spy = jest.spyOn(text, 'onViewUpdate');
 
         text.text = 'foo';
 

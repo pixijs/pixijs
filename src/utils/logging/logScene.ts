@@ -39,7 +39,7 @@ export function logScene(container: Container, depth = 0, data: {color?: string}
 
     if (!label && container instanceof Sprite)
     {
-        label = `sprite:${container.view.texture.label}`;
+        label = `sprite:${container.texture.label}`;
     }
 
     // eslint-disable-next-line max-len

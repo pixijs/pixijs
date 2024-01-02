@@ -8,6 +8,7 @@ import type { Effect } from '../../../scene/container/Effect';
 import type { Instruction } from '../../renderers/shared/instructions/Instruction';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { InstructionPipe } from '../../renderers/shared/instructions/RenderPipe';
+import type { ContainerWithView } from '../../renderers/shared/Renderable';
 import type { Renderer } from '../../renderers/types';
 import type { StencilMask } from './StencilMask';
 
@@ -53,7 +54,7 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         const renderer = this._renderer;
 
         renderer.renderPipes.batch.break(instructionSet);
-        renderer.renderPipes.blendMode.setBlendMode(effect.mask, 'none', instructionSet);
+        renderer.renderPipes.blendMode.setBlendMode(effect.mask as ContainerWithView, 'none', instructionSet);
 
         instructionSet.add({
             renderPipeId: 'stencilMask',
@@ -122,7 +123,7 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         this._maskStackHash[renderTargetUid]--;
 
         renderer.renderPipes.batch.break(instructionSet);
-        renderer.renderPipes.blendMode.setBlendMode(effect.mask, 'none', instructionSet);
+        renderer.renderPipes.blendMode.setBlendMode(effect.mask as ContainerWithView, 'none', instructionSet);
 
         instructionSet.add({
             renderPipeId: 'stencilMask',

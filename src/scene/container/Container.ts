@@ -18,9 +18,7 @@ import { assignWithIgnore } from './utils/assignWithIgnore';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { Rectangle } from '../../maths/shapes/Rectangle';
-import type { Renderable } from '../../rendering/renderers/shared/Renderable';
 import type { BLEND_MODES } from '../../rendering/renderers/shared/state/const';
-import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Dict } from '../../utils/types';
 import type { DestroyOptions } from './destroyTypes';
 
@@ -58,7 +56,7 @@ export interface ContainerEvents extends PixiMixins.ContainerEvents
     childAdded: [child: Container, container: Container, index: number];
     removed: [container: Container];
     childRemoved: [child: Container, container: Container, index: number];
-    destroyed: [];
+    destroyed: [container: Container];
 }
 
 type AnyEvent = {
@@ -106,12 +104,10 @@ export interface UpdateTransformOptions
  * @memberof scene
  * @see scene.Container
  */
-export interface ContainerOptions<T extends View> extends PixiMixins.ContainerOptions
+export interface ContainerOptions extends PixiMixins.ContainerOptions
 {
     /** @see scene.Container#isRenderGroup */
     isRenderGroup?: boolean;
-    /** @see scene.Container#view */
-    view?: T;
 
     /** @see scene.Container#blendMode */
     blendMode?: BLEND_MODES;
@@ -337,7 +333,7 @@ export interface Container
  * 3 - worldTransform, this is the transform of the container relative to the Scene being rendered
  * @memberof scene
  */
-export class Container<T extends View = View> extends EventEmitter<ContainerEvents & AnyEvent> implements Renderable
+export class Container extends EventEmitter<ContainerEvents & AnyEvent>
 {
     /**
      * Mixes all enumerable properties and methods from a source object to Container.
@@ -530,8 +526,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      */
     public rgVisibleRenderable = 0b11; // 0b11 | 0b10 | 0b01 | 0b00
 
-    /** A view that is used to render this container. */
-    public readonly view: T;
+    public renderPipeId: string;
 
     /**
      * An optional bounds area for this container. Setting this rectangle will stop the renderer
@@ -552,18 +547,9 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      */
     public _didChangeId = 0;
 
-    constructor(options: Partial<ContainerOptions<T>> = {})
+    constructor(options: ContainerOptions = {})
     {
         super();
-
-        if (options.view)
-        {
-            this.view = options.view;
-            // in the future we could de-couple container and view..
-            // but for now this is just faster!
-            this.view.owner = this;
-            options.view = undefined;
-        }
 
         assignWithIgnore(this, options, {
             children: true,
@@ -725,19 +711,19 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     }
 
     /** @ignore */
-    public onViewUpdate()
-    {
-        // increment from the 12th bit!
-        this._didChangeId += 1 << 12;
+    // public onViewUpdate()
+    // {
+    //     // increment from the 12th bit!
+    //     this._didChangeId += 1 << 12;
 
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
+    //     if (this.didViewUpdate) return;
+    //     this.didViewUpdate = true;
 
-        if (this.renderGroup)
-        {
-            this.renderGroup.onChildViewUpdate(this);
-        }
-    }
+    //     if (this.renderGroup)
+    //     {
+    //         this.renderGroup.onChildViewUpdate(this);
+    //     }
+    // }
 
     set isRenderGroup(value: boolean)
     {
@@ -1182,12 +1168,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         this._pivot = null;
         this._skew = null;
 
-        if (this.isRenderGroupRoot)
-        {
-            this.renderGroup.proxyRenderable = null;
-        }
-
-        this.emit('destroyed');
+        this.emit('destroyed', this);
 
         this.removeAllListeners();
 
@@ -1201,12 +1182,6 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
             {
                 oldChildren[i].destroy(options);
             }
-        }
-
-        if (this.view)
-        {
-            this.view.destroy(options);
-            this.view.owner = null;
         }
     }
 }

@@ -115,7 +115,7 @@ describe('PrepareSystem', () =>
             await prepare.upload(text);
 
             expect(prepare.getQueue()).toHaveLength(0);
-            expect(spy).toHaveBeenCalledWith(text.view);
+            expect(spy).toHaveBeenCalledWith(text);
         });
 
         it('should respected maximum number of uploads per frame', async () =>

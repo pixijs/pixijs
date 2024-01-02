@@ -5,12 +5,11 @@ import { BigPool } from '../../utils/pool/PoolGroup';
 import { BatchableSprite } from '../sprite/BatchableSprite';
 
 import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
-import type { Renderable } from '../../rendering/renderers/shared/Renderable';
 import type { Renderer } from '../../rendering/renderers/types';
-import type { TextView } from '../text/TextView';
+import type { Text } from '../text/Text';
 import type { HTMLTextStyle } from './HtmlTextStyle';
 
-export class HTMLTextPipe implements RenderPipe<TextView>
+export class HTMLTextPipe implements RenderPipe<Text>
 {
     /** @ignore */
     public static extension = {
@@ -37,11 +36,11 @@ export class HTMLTextPipe implements RenderPipe<TextView>
         this._renderer = renderer;
     }
 
-    public validateRenderable(renderable: Renderable<TextView>): boolean
+    public validateRenderable(htmlText: Text): boolean
     {
-        const gpuText = this._getGpuText(renderable);
+        const gpuText = this._getGpuText(htmlText);
 
-        const newKey = renderable.view._getKey();
+        const newKey = htmlText._getKey();
 
         if (gpuText.textureNeedsUploading)
         {
@@ -61,79 +60,79 @@ export class HTMLTextPipe implements RenderPipe<TextView>
         return false;
     }
 
-    public addRenderable(renderable: Renderable<TextView>)
+    public addRenderable(htmlText: Text)
     {
-        const gpuText = this._getGpuText(renderable);
+        const gpuText = this._getGpuText(htmlText);
 
         const batchableSprite = gpuText.batchableSprite;
 
-        if (renderable.view._didUpdate)
+        if (htmlText._didTextUpdate)
         {
-            this._updateText(renderable);
+            this._updateText(htmlText);
         }
 
         this._renderer.renderPipes.batch.addToBatch(batchableSprite);
     }
 
-    public updateRenderable(renderable: Renderable<TextView>)
+    public updateRenderable(htmlText: Text)
     {
-        const gpuText = this._getGpuText(renderable);
+        const gpuText = this._getGpuText(htmlText);
         const batchableSprite = gpuText.batchableSprite;
 
-        if (renderable.view._didUpdate)
+        if (htmlText._didTextUpdate)
         {
-            this._updateText(renderable);
+            this._updateText(htmlText);
         }
 
         batchableSprite.batcher.updateElement(batchableSprite);
     }
 
-    public destroyRenderable(renderable: Renderable<TextView>)
+    public destroyRenderable(htmlText: Text)
     {
-        this._destroyRenderableById(renderable.uid);
+        this._destroyRenderableById(htmlText.uid);
     }
 
-    private _destroyRenderableById(renderableUid: number)
+    private _destroyRenderableById(htmlTextUid: number)
     {
-        const gpuText = this._gpuText[renderableUid];
+        const gpuText = this._gpuText[htmlTextUid];
 
         this._renderer.htmlText.decreaseReferenceCount(gpuText.currentKey);
 
         BigPool.return(gpuText.batchableSprite);
 
-        this._gpuText[renderableUid] = null;
+        this._gpuText[htmlTextUid] = null;
     }
 
-    private _updateText(renderable: Renderable<TextView>)
+    private _updateText(htmlText: Text)
     {
-        const newKey = renderable.view._getKey();
-        const gpuText = this._getGpuText(renderable);
+        const newKey = htmlText._getKey();
+        const gpuText = this._getGpuText(htmlText);
         const batchableSprite = gpuText.batchableSprite;
 
         if (gpuText.currentKey !== newKey)
         {
-            this._updateGpuText(renderable).catch((e) =>
+            this._updateGpuText(htmlText).catch((e) =>
             {
                 console.error(e);
             });
         }
 
-        renderable.view._didUpdate = false;
+        htmlText._didTextUpdate = false;
 
-        const padding = renderable.view._style.padding;
+        const padding = htmlText._style.padding;
 
-        updateQuadBounds(batchableSprite.bounds, renderable.view.anchor, batchableSprite.texture, padding);
+        updateQuadBounds(batchableSprite.bounds, htmlText._anchor, batchableSprite.texture, padding);
     }
 
-    private async _updateGpuText(renderable: Renderable<TextView>)
+    private async _updateGpuText(htmlText: Text)
     {
-        renderable.view._didUpdate = false;
+        htmlText._didTextUpdate = false;
 
-        const gpuText = this._getGpuText(renderable);
+        const gpuText = this._getGpuText(htmlText);
 
         if (gpuText.generatingTexture) return;
 
-        const newKey = renderable.view._getKey();
+        const newKey = htmlText._getKey();
 
         this._renderer.htmlText.decreaseReferenceCount(gpuText.currentKey);
 
@@ -141,15 +140,13 @@ export class HTMLTextPipe implements RenderPipe<TextView>
 
         gpuText.currentKey = newKey;
 
-        const view = renderable.view;
-
-        const resolution = view.resolution ?? this._renderer.resolution;
+        const resolution = htmlText.resolution ?? this._renderer.resolution;
 
         const texture = await this._renderer.htmlText.getManagedTexture(
-            view.text,
+            htmlText.text,
             resolution,
-            view._style as HTMLTextStyle,
-            view._getKey()
+            htmlText._style as HTMLTextStyle,
+            htmlText._getKey()
         );
 
         const batchableSprite = gpuText.batchableSprite;
@@ -159,19 +156,19 @@ export class HTMLTextPipe implements RenderPipe<TextView>
         gpuText.generatingTexture = false;
 
         gpuText.textureNeedsUploading = true;
-        renderable.view.onUpdate();
+        htmlText.onUpdate();
 
-        const padding = renderable.view._style.padding;
+        const padding = htmlText._style.padding;
 
-        updateQuadBounds(batchableSprite.bounds, renderable.view.anchor, batchableSprite.texture, padding);
+        updateQuadBounds(batchableSprite.bounds, htmlText._anchor, batchableSprite.texture, padding);
     }
 
-    private _getGpuText(renderable: Renderable<TextView>)
+    private _getGpuText(htmlText: Text)
     {
-        return this._gpuText[renderable.uid] || this.initGpuText(renderable);
+        return this._gpuText[htmlText.uid] || this.initGpuText(htmlText);
     }
 
-    public initGpuText(renderable: Renderable<TextView>)
+    public initGpuText(htmlText: Text)
     {
         const gpuTextData: HTMLTextPipe['_gpuText'][number] = {
             texture: Texture.EMPTY,
@@ -183,17 +180,17 @@ export class HTMLTextPipe implements RenderPipe<TextView>
 
         const batchableSprite = gpuTextData.batchableSprite;
 
-        batchableSprite.renderable = renderable;
+        batchableSprite.renderable = htmlText;
         batchableSprite.texture = Texture.EMPTY;
         batchableSprite.bounds = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
-        batchableSprite.roundPixels = (this._renderer._roundPixels | renderable.view.roundPixels) as 0 | 1;
+        batchableSprite.roundPixels = (this._renderer._roundPixels | htmlText._roundPixels) as 0 | 1;
 
-        this._gpuText[renderable.uid] = gpuTextData;
+        this._gpuText[htmlText.uid] = gpuTextData;
 
         // TODO perhaps manage this outside this pipe? (a bit like how we update / add)
-        renderable.on('destroyed', () =>
+        htmlText.on('destroyed', () =>
         {
-            this.destroyRenderable(renderable);
+            this.destroyRenderable(htmlText);
         });
 
         return gpuTextData;

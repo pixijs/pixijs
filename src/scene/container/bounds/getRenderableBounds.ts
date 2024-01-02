@@ -1,7 +1,7 @@
-import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
+import type { ContainerWithView } from '../../../rendering/renderers/shared/Renderable';
 import type { Bounds } from './Bounds';
 
-export function getGlobalRenderableBounds(renderables: Renderable[], bounds: Bounds): Bounds
+export function getGlobalRenderableBounds(renderables: ContainerWithView[], bounds: Bounds): Bounds
 {
     bounds.clear();
 
@@ -21,7 +21,7 @@ export function getGlobalRenderableBounds(renderables: Renderable[], bounds: Bou
         }
 
         bounds.matrix = renderable.worldTransform;
-        renderable.view.addBounds(bounds);
+        renderable.addBounds(bounds);
     }
 
     bounds.matrix = tempMatrix;

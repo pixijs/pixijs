@@ -1,15 +1,10 @@
 import type { Point } from '../../../../maths/point/Point';
 import type { Bounds, BoundsData } from '../../../../scene/container/bounds/Bounds';
-import type { DestroyOptions } from '../../../../scene/container/destroyTypes';
 
 export interface ViewObserver
 {
     onViewUpdate: () => void;
 }
-
-export const emptyViewObserver: ViewObserver = {
-    onViewUpdate: () => { /* empty */ },
-};
 
 export interface View
 {
@@ -23,20 +18,16 @@ export interface View
      */
     renderPipeId: string;
 
-    owner: ViewObserver;
-
     /**
      * this is an int because it is packed directly into an attribute in the shader
      * @internal
      */
-    roundPixels?: 0 | 1;
+    _roundPixels?: 0 | 1;
 
     /** this is the AABB rectangle bounds of the view in local untransformed space. */
     bounds: BoundsData;
 
     addBounds: (bounds: Bounds) => void;
     containsPoint: (point: Point) => boolean;
-
-    destroy(options?: DestroyOptions): void;
 }
 

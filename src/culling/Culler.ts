@@ -29,7 +29,7 @@ export class Culler
 
     private _cullRecursive(container: Container, view: RectangleLike, skipUpdateTransform = true)
     {
-        if (container.cullable && container.view)
+        if (container.cullable && container.renderPipeId)
         {
             const bounds = container.cullArea ?? getGlobalBounds(container, skipUpdateTransform, tempBounds);
 

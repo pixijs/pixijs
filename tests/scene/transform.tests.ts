@@ -229,7 +229,7 @@ describe('Transform updates', () =>
         const container = new Container({ label: 'container' });
         const container2 = new Container({ label: 'container2' });
 
-        const child = new Container({ label: 'child', view: new DummyView() });
+        const child = new DummyView({ label: 'child' });
 
         //  |- root // rendergroup
         //      |- container
