@@ -43,8 +43,6 @@ export class RenderGroupSystem implements System
         const parent = container.parent;
 
         container.parent = null;
-
-
         const renderer = this._renderer;
 
         // collect all the renderGroups in the scene and then render them one by one..
