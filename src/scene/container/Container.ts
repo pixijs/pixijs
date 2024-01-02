@@ -710,21 +710,6 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
         }
     }
 
-    /** @ignore */
-    // public onViewUpdate()
-    // {
-    //     // increment from the 12th bit!
-    //     this._didChangeId += 1 << 12;
-
-    //     if (this.didViewUpdate) return;
-    //     this.didViewUpdate = true;
-
-    //     if (this.renderGroup)
-    //     {
-    //         this.renderGroup.onChildViewUpdate(this);
-    //     }
-    // }
-
     set isRenderGroup(value: boolean)
     {
         if (this.isRenderGroupRoot && value === false)
