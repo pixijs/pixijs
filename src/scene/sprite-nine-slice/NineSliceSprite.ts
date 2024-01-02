@@ -139,8 +139,8 @@ export class NineSliceSprite extends Container implements View
         this._topHeight = topHeight;
         this._rightWidth = rightWidth;
         this._bottomHeight = bottomHeight;
-        this._width = width ?? texture.width;
-        this._height = height ?? texture.height;
+        this.bounds.maxX = this._width = width ?? texture.width;
+        this.bounds.maxY = this._height = height ?? texture.height;
 
         this.allowChildren = false;
         this._texture = texture;
@@ -279,9 +279,9 @@ export class NineSliceSprite extends Container implements View
     {
         const bounds = this.bounds;
 
-        if (point.x >= bounds.maxX && point.x <= bounds.minX)
+        if (point.x >= bounds.minX && point.x <= bounds.maxX)
         {
-            if (point.y >= bounds.maxY && point.y <= bounds.minY)
+            if (point.y >= bounds.minY && point.y <= bounds.maxY)
             {
                 return true;
             }
