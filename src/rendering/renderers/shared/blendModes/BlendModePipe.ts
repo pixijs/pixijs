@@ -8,14 +8,14 @@ import type { Renderer } from '../../types';
 import type { Instruction } from '../instructions/Instruction';
 import type { InstructionSet } from '../instructions/InstructionSet';
 import type { InstructionPipe } from '../instructions/RenderPipe';
-import type { ContainerWithView } from '../Renderable';
+import type { Renderable } from '../Renderable';
 import type { BLEND_MODES } from '../state/const';
 
 interface AdvancedBlendInstruction extends Instruction
 {
     renderPipeId: 'blendMode',
     blendMode: BLEND_MODES,
-    activeBlend: ContainerWithView[],
+    activeBlend: Renderable[],
 }
 
 // class map
@@ -59,7 +59,7 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
 
     private _renderer: Renderer;
 
-    private _renderableList: ContainerWithView[];
+    private _renderableList: Renderable[];
     private _activeBlendMode: BLEND_MODES;
 
     private _isAdvanced = false;
@@ -77,7 +77,7 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
      * @param blendMode - The blend mode of the renderable
      * @param instructionSet - The instruction set we are adding to
      */
-    public setBlendMode(renderable: ContainerWithView, blendMode: BLEND_MODES, instructionSet: InstructionSet)
+    public setBlendMode(renderable: Renderable, blendMode: BLEND_MODES, instructionSet: InstructionSet)
     {
         if (this._activeBlendMode === blendMode)
         {

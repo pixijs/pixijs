@@ -1,7 +1,7 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { boundsPool } from './utils/matrixAndBoundsPool';
 
-import type { ContainerWithView } from '../../../rendering/renderers/shared/Renderable';
+import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
 import type { Container } from '../Container';
 import type { Bounds } from './Bounds';
 
@@ -68,7 +68,7 @@ export function _getGlobalBoundsRecursive(
     {
         if (target.renderPipeId)
         {
-            const viewBounds = (target as ContainerWithView).bounds;
+            const viewBounds = (target as Renderable).bounds;
 
             localBounds.addFrame(
                 viewBounds.minX,

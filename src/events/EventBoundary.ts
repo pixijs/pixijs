@@ -6,7 +6,7 @@ import { FederatedMouseEvent } from './FederatedMouseEvent';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
 
-import type { ContainerWithView } from '../rendering/renderers/shared/Renderable';
+import type { Renderable } from '../rendering/renderers/shared/Renderable';
 import type { Container } from '../scene/container/Container';
 import type { EmitterListeners, TrackingData } from './EventBoundaryTypes';
 import type { FederatedEvent } from './FederatedEvent';
@@ -625,11 +625,11 @@ export class EventBoundary
             return true;
         }
 
-        if ((container as ContainerWithView)?.containsPoint)
+        if ((container as Renderable)?.containsPoint)
         {
             container.worldTransform.applyInverse(location, tempLocalMapping);
 
-            return (container as ContainerWithView).containsPoint(tempLocalMapping) as boolean;
+            return (container as Renderable).containsPoint(tempLocalMapping) as boolean;
         }
 
         // TODO: Should we hit test based on bounds?

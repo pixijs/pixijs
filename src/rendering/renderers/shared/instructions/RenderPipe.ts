@@ -2,7 +2,7 @@ import type { Container } from '../../../../scene/container/Container';
 import type { Effect } from '../../../../scene/container/Effect';
 import type { BatchableObject } from '../../../batcher/shared/Batcher';
 import type { Renderer } from '../../types';
-import type { ContainerWithView } from '../Renderable';
+import type { Renderable } from '../Renderable';
 import type { Instruction } from './Instruction';
 import type { InstructionSet } from './InstructionSet';
 
@@ -60,7 +60,7 @@ export interface InstructionPipe<INSTRUCTION extends Instruction>
  * RenderPipes are specifically used to render Renderables like a Mesh.
  * @memberof rendering
  */
-export interface RenderPipe<RENDERABLE = ContainerWithView>
+export interface RenderPipe<RENDERABLE = Renderable>
 {
     /**
      * This is where the renderable is added to the instruction set. This is called once per renderable.

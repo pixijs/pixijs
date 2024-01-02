@@ -8,7 +8,7 @@ import { getBitmapTextLayout } from './utils/getBitmapTextLayout';
 
 import type { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
-import type { ContainerWithView } from '../../rendering/renderers/shared/Renderable';
+import type { Renderable } from '../../rendering/renderers/shared/Renderable';
 import type { Renderer } from '../../rendering/renderers/types';
 import type { PoolItem } from '../../utils/pool/Pool';
 import type { Text } from '../text/Text';
@@ -229,7 +229,7 @@ export class BitmapTextPipe implements RenderPipe<Text>
     }
 }
 
-function syncWithProxy(container: ContainerWithView, proxy: ContainerWithView)
+function syncWithProxy(container: Renderable, proxy: Renderable)
 {
     proxy.rgTransform = container.rgTransform;
     proxy.rgColorAlpha = container.rgColorAlpha;

@@ -1,6 +1,6 @@
 import type { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
 import type { InstructionPipe, RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
-import type { ContainerWithView } from '../../../rendering/renderers/shared/Renderable';
+import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
 import type { RenderPipes } from '../../../rendering/renderers/types';
 import type { Container } from '../Container';
 import type { RenderGroup } from '../RenderGroup';
@@ -66,13 +66,13 @@ function collectAllRenderablesSimple(
     if (container.renderPipeId)
     {
         // TODO add blends in
-        renderPipes.blendMode.setBlendMode(container as ContainerWithView, container.rgBlendMode, instructionSet);
+        renderPipes.blendMode.setBlendMode(container as Renderable, container.rgBlendMode, instructionSet);
 
         container.didViewUpdate = false;
 
         const rp = renderPipes as unknown as Record<string, RenderPipe>;
 
-        rp[container.renderPipeId].addRenderable(container as ContainerWithView, instructionSet);
+        rp[container.renderPipeId].addRenderable(container as Renderable, instructionSet);
     }
 
     if (!container.isRenderGroupRoot)
@@ -113,7 +113,7 @@ function collectAllRenderablesAdvanced(
         if (renderPipeId)
         {
             // TODO add blends in
-            renderPipes.blendMode.setBlendMode(container as ContainerWithView, container.rgBlendMode, instructionSet);
+            renderPipes.blendMode.setBlendMode(container as Renderable, container.rgBlendMode, instructionSet);
             container.didViewUpdate = false;
 
             const pipe = renderPipes[renderPipeId as keyof RenderPipes]as RenderPipe<any>;
