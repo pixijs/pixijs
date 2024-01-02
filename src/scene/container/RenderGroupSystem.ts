@@ -44,7 +44,6 @@ export class RenderGroupSystem implements System
 
         container.parent = null;
 
-        //  container.__rooty = true;
 
         const renderer = this._renderer;
 
