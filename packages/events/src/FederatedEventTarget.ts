@@ -172,7 +172,7 @@ export interface FederatedEventTarget extends utils.EventEmitter, EventTarget
     onwheel: FederatedEventHandler<FederatedWheelEvent> | null;
 }
 
-type AddListenerOptions = boolean | AddEventListenerOptions;
+type AddListenerOptions = boolean | Omit<AddEventListenerOptions, 'signal'>;
 type RemoveListenerOptions = boolean | EventListenerOptions;
 
 export interface IFederatedDisplayObject
