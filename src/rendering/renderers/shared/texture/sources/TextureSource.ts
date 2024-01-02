@@ -1,7 +1,8 @@
 import EventEmitter from 'eventemitter3';
+import { definedProps } from '../../../../../scene/container/utils/definedProps';
 import { uid } from '../../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../../utils/logging/deprecation';
-import { styleKeys, TextureStyle } from '../TextureStyle';
+import { TextureStyle } from '../TextureStyle';
 
 import type { BindResource } from '../../../gpu/shader/BindResource';
 import type { ALPHA_MODES, SCALE_MODE, TEXTURE_DIMENSIONS, TEXTURE_FORMATS, WRAP_MODE } from '../const';
@@ -238,11 +239,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.antialias = options.antialias;
         this.alphaMode = options.alphaMode;
 
-        const styleOptions: TextureStyleOptions = Object.entries(options)
-            .filter(([key, value]) => styleKeys.includes(key as keyof TextureStyleOptions) && value !== undefined)
-            .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
-
-        this.style = new TextureStyle(styleOptions);
+        this.style = new TextureStyle(definedProps(options));
 
         this.destroyed = false;
     }
