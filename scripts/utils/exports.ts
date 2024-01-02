@@ -25,6 +25,7 @@ const subImports = [
     ['./spritesheet', './lib/spritesheet'],
     ['./rendering', './lib/rendering'], // rename to core?
     ['./unsafe-eval', './lib/unsafe-eval'],
+    ['./sprite-nine-slice', './lib/sprite-nine-slice'],
 ];
 
 interface ExportField

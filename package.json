@@ -147,7 +147,8 @@
     "./lib/prepare/init.*",
     "./lib/spritesheet/init.*",
     "./lib/rendering/init.*",
-    "./lib/unsafe-eval/init.*"
+    "./lib/unsafe-eval/init.*",
+    "./lib/sprite-nine-slice/init.*"
   ],
   "exports": {
     ".": {
@@ -334,6 +335,14 @@
       },
       "require": {
         "default": "./lib/unsafe-eval/init.js"
+      }
+    },
+    "./sprite-nine-slice": {
+      "import": {
+        "default": "./lib/sprite-nine-slice/init.mjs"
+      },
+      "require": {
+        "default": "./lib/sprite-nine-slice/init.js"
       }
     }
   }
