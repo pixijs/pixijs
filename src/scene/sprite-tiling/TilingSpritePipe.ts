@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { ExtensionType } from '../../extensions/Extensions';
-import { Matrix } from '../../maths/matrix/Matrix';
 import { State } from '../../rendering/renderers/shared/state/State';
 import { type Renderer, RendererType } from '../../rendering/renderers/types';
 import { color32BitToUniform } from '../graphics/gpu/colorToUniform';
 import { BatchableMesh } from '../mesh/shared/BatchableMesh';
 import { MeshGeometry } from '../mesh/shared/MeshGeometry';
-import { QuadGeometry } from './QuadGeometry';
 import { TilingSpriteShader } from './shader/TilingSpriteShader';
+import { QuadGeometry } from './utils/QuadGeometry';
+import { setPositions } from './utils/setPositions';
+import { setUvs } from './utils/setUvs';
 
 import type { WebGLRenderer } from '../../rendering/renderers/gl/WebGLRenderer';
-import type { TypedArray } from '../../rendering/renderers/shared/buffer/Buffer';
 import type { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
 import type { TilingSprite } from './TilingSprite';
@@ -261,80 +261,3 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
     }
 }
 
-function applyMatrix(array: TypedArray, stride: number, offset: number, matrix: Matrix)
-{
-    let index = 0;
-    const size = array.length / (stride || 2);
-
-    const a = matrix.a;
-    const b = matrix.b;
-    const c = matrix.c;
-    const d = matrix.d;
-    const tx = matrix.tx;
-    const ty = matrix.ty;
-
-    offset *= stride;
-
-    while (index < size)
-    {
-        const x = array[offset];
-        const y = array[offset + 1];
-
-        array[offset] = (a * x) + (c * y) + tx;
-        array[offset + 1] = (b * x) + (d * y) + ty;
-
-        offset += stride;
-
-        index++;
-    }
-}
-
-function setPositions(tilingSprite: TilingSprite, positions: Float32Array)
-{
-    const anchorX = tilingSprite.anchor.x;
-    const anchorY = tilingSprite.anchor.y;
-
-    positions[0] = -anchorX * tilingSprite.width;
-    positions[1] = -anchorY * tilingSprite.height;
-    positions[2] = (1 - anchorX) * tilingSprite.width;
-    positions[3] = -anchorY * tilingSprite.height;
-    positions[4] = (1 - anchorX) * tilingSprite.width;
-    positions[5] = (1 - anchorY) * tilingSprite.height;
-    positions[6] = -anchorX * tilingSprite.width;
-    positions[7] = (1 - anchorY) * tilingSprite.height;
-}
-
-function setUvs(tilingSprite: TilingSprite, uvs: Float32Array)
-{
-    const texture = tilingSprite.texture;
-
-    const width = texture.frame.width;
-    const height = texture.frame.height;
-
-    let anchorX = 0;
-    let anchorY = 0;
-
-    if (tilingSprite._applyAnchorToTexture)
-    {
-        anchorX = tilingSprite.anchor.x;
-        anchorY = tilingSprite.anchor.y;
-    }
-
-    uvs[0] = uvs[6] = -anchorX;
-    uvs[2] = uvs[4] = 1 - anchorX;
-    uvs[1] = uvs[3] = -anchorY;
-    uvs[5] = uvs[7] = 1 - anchorY;
-
-    const textureMatrix = Matrix.shared;
-
-    textureMatrix.copyFrom(tilingSprite._tileTransform.matrix);
-
-    textureMatrix.tx /= tilingSprite.width;
-    textureMatrix.ty /= tilingSprite.height;
-
-    textureMatrix.invert();
-
-    textureMatrix.scale(tilingSprite.width / width, tilingSprite.height / height);
-
-    applyMatrix(uvs, 2, 0, textureMatrix);
-}
