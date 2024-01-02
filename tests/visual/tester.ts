@@ -64,7 +64,7 @@ export async function renderTest(
         container: stage,
     });
 
-    const imageLocation = `./tests/visual/snapshots/${rendererType}-${id}.png`;
+    const imageLocation = `./tests/visual/snapshots/${id}-${rendererType}.png`;
 
     if (!existsSync(imageLocation))
     {
