@@ -18,8 +18,9 @@ export interface RendererOptions extends WebGLOptions, WebGPUOptions {}
  */
 export enum RendererType
 {
-    WEBGL = 0b1,
-    WEBGPU = 0b10
+    WEBGL = 0b01,
+    WEBGPU = 0b10,
+    BOTH = 0b11
 }
 
 export type GpuPowerPreference = 'low-power' | 'high-performance';

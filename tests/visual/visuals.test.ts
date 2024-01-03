@@ -1,9 +1,12 @@
 import glob from 'glob';
 import path from 'path';
 import { Assets } from '../../src/assets/Assets';
+import { TexturePool } from '../../src/rendering/renderers/shared/texture/TexturePool';
 import { isCI } from '../assets/basePath';
 import { renderTest } from './tester';
 import '../../src/environment-browser/browserAll';
+
+import type { RenderType, RenderTypeFlags } from './types';
 
 const paths = glob.sync('**/*.scene.ts', { cwd: path.join(process.cwd(), './tests') });
 const scenes = paths.map((p) =>
@@ -23,7 +26,13 @@ const onlyScenes = scenes.filter((s) =>
 
     return s.data.only;
 });
-const scenesToTest = onlyScenes.length ? onlyScenes : scenes;
+
+let scenesToTest = onlyScenes.length ? onlyScenes : scenes;
+
+if (isCI)
+{
+    scenesToTest = scenesToTest.filter((s) => !s.data.skipCI);
+}
 
 function setAssetBasePath(): void
 {
@@ -40,14 +49,14 @@ function setAssetBasePath(): void
 
 describe('Visual Tests', () =>
 {
-    setAssetBasePath();
-
     scenesToTest.forEach((scene) =>
     {
-        const defaultRenderers = {
-            canvas: false,
+        const id = scene.data.id || path.basename(scene.path).toLowerCase().replaceAll('.', '-');
+
+        const defaultRenderers: RenderTypeFlags = {
+            webgl1: true,
+            webgl2: true,
             webgpu: true,
-            webgl: true,
         };
 
         const renderers = {
@@ -63,7 +72,7 @@ describe('Visual Tests', () =>
                 return;
             }
 
-            it(`[${renderer}] - ${scene.data.it}`, async () =>
+            it(`[${renderer}-${id}.png] - "${scene.data.it}" (${scene.path})`, async () =>
             {
                 jest.setTimeout(process.env.DEBUG_MODE ? 10000000 : 10000);
                 if (scene.data.skip)
@@ -71,10 +80,16 @@ describe('Visual Tests', () =>
                     return;
                 }
 
+                TexturePool.clear();
+
+                // reset assets each time..
+                Assets.reset();
+                setAssetBasePath();
+
                 const res = await renderTest(
-                    scene.data.id
-                        || path.basename(scene.path).toLowerCase().replaceAll('.', '-'), scene.data.create,
-                    renderer as 'webgl' | 'webgpu',
+                    id,
+                    scene.data.create,
+                    renderer as RenderType,
                     scene.data.options ?? {}
                 );
 

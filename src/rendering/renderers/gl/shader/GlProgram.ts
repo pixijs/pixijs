@@ -1,7 +1,7 @@
+import { addWebGL1Defines } from './program/addWebGL1Defines';
 import { ensurePrecision } from './program/ensurePrecision';
 import { getMaxFragmentPrecision } from './program/getMaxFragmentPrecision';
 import { setProgramName } from './program/setProgramName';
-import { setProgramVersion } from './program/setProgramVersion';
 
 import type { TypedArray } from '../../shared/buffer/Buffer';
 
@@ -51,8 +51,8 @@ export interface GlProgramOptions
 
 const processes: Record<string, ((source: string, options: any, isFragment?: boolean) => string)> = {
     ensurePrecision,
+    addWebGL1Defines,
     setProgramName,
-    setProgramVersion
 };
 
 const programCache: Record<string, GlProgram> = Object.create(null);
@@ -144,9 +144,6 @@ export class GlProgram
             setProgramName: {
                 name: options.name,
             },
-            setProgramVersion: {
-                version: '300 es',
-            }
         };
 
         let fragment = options.fragment;

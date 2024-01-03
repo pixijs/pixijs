@@ -45,7 +45,7 @@ export class VividLightBlend extends BlendModeFilter
                 }
             `,
                 main: `
-                fragColor = vec4(blendVividLight(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendVividLight(back.rgb, front.rgb, front.a), uBlend);
             `
             },
             gpu: {

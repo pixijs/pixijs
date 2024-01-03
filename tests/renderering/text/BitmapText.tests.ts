@@ -9,7 +9,6 @@ import { getRenderer } from '../../utils/getRenderer';
 import '../../../src/scene/text/init';
 import '../../../src/scene/text-bitmap/init';
 import '../../../src/scene/graphics/init';
-import '../../../src/assets/init';
 
 import type { BitmapFont } from '../../../src/scene/text-bitmap/BitmapFont';
 
@@ -142,7 +141,7 @@ describe('BitmapText', () =>
             }
         });
 
-        const spy = jest.spyOn(text.view, 'onUpdate');
+        const spy = jest.spyOn(text, 'onViewUpdate');
 
         // force style re-assignment otherwise mock won't work (binding is in constructor)
         text.style = {
@@ -164,7 +163,7 @@ describe('BitmapText', () =>
             }
         });
 
-        const spy = jest.spyOn(text.view, 'onUpdate');
+        const spy = jest.spyOn(text, 'onViewUpdate');
 
         text.text = 'foo';
 

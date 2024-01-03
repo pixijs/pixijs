@@ -9,9 +9,7 @@ describe('Renderable Containers', () =>
             isRenderGroup: true,
         });
 
-        const child = new Container({
-            view: new DummyView()
-        });
+        const child = new DummyView();
 
         container.addChild(child);
 
@@ -29,9 +27,7 @@ describe('Renderable Containers', () =>
             isRenderGroup: true,
         });
 
-        const child = new Container({
-            view: new DummyView()
-        });
+        const child = new DummyView();
 
         container.addChild(child);
 

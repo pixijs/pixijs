@@ -72,9 +72,8 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         if (!this._mapFormatToInternalFormat)
         {
-            const extensions = this._renderer.context.extensions;
+            this._mapFormatToInternalFormat = mapFormatToGlInternalFormat(gl, this._renderer.context.extensions);
 
-            this._mapFormatToInternalFormat = mapFormatToGlInternalFormat(gl, extensions);
             this._mapFormatToType = mapFormatToGlType(gl);
             this._mapFormatToFormat = mapFormatToGlFormat(gl);
         }
@@ -234,7 +233,9 @@ export class GlTextureSystem implements System, CanvasGenerator
             source.mipLevelCount > 1,
             this._renderer.context.extensions.anisotropicFiltering,
             'texParameteri',
-            gl.TEXTURE_2D
+            gl.TEXTURE_2D,
+            // will force a clamp to edge if the texture is not a power of two
+            !this._renderer.context.supports.nonPowOf2wrapping && !source.isPowerOfTwo
         );
     }
 
@@ -262,7 +263,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         if (this._uploads[source.uploadMethodId])
         {
-            this._uploads[source.uploadMethodId].upload(source, glTexture, this._gl);
+            this._uploads[source.uploadMethodId].upload(source, glTexture, gl, this._renderer.context.webGLVersion);
         }
         else
         {
@@ -312,7 +313,8 @@ export class GlTextureSystem implements System, CanvasGenerator
             this._boundTextures[this._activeTextureLocation].mipLevelCount > 1,
             this._renderer.context.extensions.anisotropicFiltering,
             'samplerParameteri',
-            glSampler
+            glSampler,
+            false
         );
 
         return this._glSamplers[style._resourceId];
