@@ -2,7 +2,7 @@ import { Shader } from '../rendering/renderers/shared/shader/Shader';
 import { State } from '../rendering/renderers/shared/state/State';
 
 import type { RenderSurface } from '../rendering/renderers/shared/renderTarget/RenderTargetSystem';
-import type { ShaderWithResourcesDescriptor } from '../rendering/renderers/shared/shader/Shader';
+import type { IShaderWithResources, ShaderWithResources } from '../rendering/renderers/shared/shader/Shader';
 import type { BLEND_MODES } from '../rendering/renderers/shared/state/const';
 import type { Texture } from '../rendering/renderers/shared/texture/Texture';
 import type { FilterSystem } from './FilterSystem';
@@ -58,9 +58,9 @@ import type { FilterSystem } from './FilterSystem';
  * The options to use when creating a new filter.
  * @memberof filters
  */
-export interface FilterOptions extends ShaderWithResourcesDescriptor
+export interface FilterOptions extends IShaderWithResources
 {
-    /** optional blend mode used by the filter when rendererig (defaults to 'normal') */
+    /** optional blend mode used by the filter when rendering (defaults to 'normal') */
     blendMode?: BLEND_MODES;
     /**
      * the resolution the filter should be rendered at. The lower the resolution, the more performant
@@ -188,7 +188,7 @@ export class Filter extends Shader
     {
         options = { ...Filter.defaultOptions, ...options };
 
-        super(options);
+        super(options as ShaderWithResources);
 
         this.padding = options.padding;
 
@@ -205,8 +205,7 @@ export class Filter extends Shader
         this.resolution = options.resolution;
         this.blendRequired = options.blendRequired;
 
-        this.addResource('filterUniforms', 0, 0);
-        this.addResource('uSampler', 0, 1);
+        this.addResource('uTexture', 0, 1);
     }
 
     /**

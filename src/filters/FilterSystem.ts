@@ -7,7 +7,7 @@ import { UniformGroup } from '../rendering/renderers/shared/shader/UniformGroup'
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { TexturePool } from '../rendering/renderers/shared/texture/TexturePool';
 import { Bounds } from '../scene/container/bounds/Bounds';
-import { getFastGlobalBounds } from '../scene/container/bounds/getFastGlobalBounds';
+import { getGlobalBounds } from '../scene/container/bounds/getGlobalBounds';
 import { getGlobalRenderableBounds } from '../scene/container/bounds/getRenderableBounds';
 import { warn } from '../utils/logging/warn';
 
@@ -103,12 +103,12 @@ export class FilterSystem implements System
     private _filterStack: FilterData[] = [];
 
     private readonly _filterGlobalUniforms = new UniformGroup({
-        inputSize: { value: new Float32Array(4), type: 'vec4<f32>' },
-        inputPixel: { value: new Float32Array(4), type: 'vec4<f32>' },
-        inputClamp: { value: new Float32Array(4), type: 'vec4<f32>' },
-        outputFrame: { value: new Float32Array(4), type: 'vec4<f32>' },
-        globalFrame: { value: new Float32Array(4), type: 'vec4<f32>' },
-        outputTexture: { value: new Float32Array(4), type: 'vec4<f32>' },
+        uInputSize: { value: new Float32Array(4), type: 'vec4<f32>' },
+        uInputPixel: { value: new Float32Array(4), type: 'vec4<f32>' },
+        uInputClamp: { value: new Float32Array(4), type: 'vec4<f32>' },
+        uOutputFrame: { value: new Float32Array(4), type: 'vec4<f32>' },
+        uGlobalFrame: { value: new Float32Array(4), type: 'vec4<f32>' },
+        uOutputTexture: { value: new Float32Array(4), type: 'vec4<f32>' },
     });
 
     private readonly _globalFilterBindGroup: BindGroup = new BindGroup({});
@@ -158,7 +158,8 @@ export class FilterSystem implements System
         // measuring.
         else
         {
-            getFastGlobalBounds(instruction.container, bounds);
+            // TODO - this should use getFastGlobalBounds. But there is an issue with the bounds
+            getGlobalBounds(instruction.container, true, bounds);
         }
         // get GLOBAL bounds of the item we are going to apply the filter to
 
@@ -441,12 +442,12 @@ export class FilterSystem implements System
         const filterUniforms = this._filterGlobalUniforms;
         const uniforms = filterUniforms.uniforms;
 
-        const outputFrame = uniforms.outputFrame;
-        const inputSize = uniforms.inputSize;
-        const inputPixel = uniforms.inputPixel;
-        const inputClamp = uniforms.inputClamp;
-        const globalFrame = uniforms.globalFrame;
-        const outputTexture = uniforms.outputTexture;
+        const outputFrame = uniforms.uOutputFrame;
+        const inputSize = uniforms.uInputSize;
+        const inputPixel = uniforms.uInputPixel;
+        const inputClamp = uniforms.uInputClamp;
+        const globalFrame = uniforms.uGlobalFrame;
+        const outputTexture = uniforms.uOutputTexture;
 
         // are we rendering back to the original surface?
         if (isFinalTarget)

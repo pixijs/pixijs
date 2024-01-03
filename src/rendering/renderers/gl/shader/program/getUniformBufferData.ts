@@ -9,6 +9,9 @@ import type { GlUniformBlockData } from '../GlProgram';
  */
 export function getUniformBufferData(program: WebGLProgram, gl: WebGL2RenderingContext): Record<string, GlUniformBlockData>
 {
+    // if uniform buffer data is not supported, early out
+    if (!gl.ACTIVE_UNIFORM_BLOCKS) return {};
+
     const uniformBlocks: Record<string, GlUniformBlockData> = {};
 
     // const totalUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);

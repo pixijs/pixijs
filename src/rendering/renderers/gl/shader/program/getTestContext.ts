@@ -15,7 +15,7 @@ export function getTestContext(): WebGLRenderingContext | WebGL2RenderingContext
     {
         const canvas = DOMAdapter.get().createCanvas();
 
-        context = canvas.getContext('webgl2', {});
+        context = canvas.getContext('webgl', {});
     }
 
     return context;

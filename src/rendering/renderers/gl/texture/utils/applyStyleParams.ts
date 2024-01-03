@@ -14,15 +14,22 @@ export function applyStyleParams(
     // eslint-disable-next-line camelcase
     anisotropicExt: EXT_texture_filter_anisotropic,
     glFunctionName: 'samplerParameteri' | 'texParameteri',
-    firstParam: 3553 | WebGLSampler
+    firstParam: 3553 | WebGLSampler,
+    forceClamp: boolean
 )
 {
     const castParam = firstParam as 3553;
 
     // 1. set the wrapping mode
-    gl[glFunctionName](castParam, gl.TEXTURE_WRAP_S, wrapModeToGlAddress[style.addressModeU]);
-    gl[glFunctionName](castParam, gl.TEXTURE_WRAP_T, wrapModeToGlAddress[style.addressModeV]);
-    gl[glFunctionName](castParam, gl.TEXTURE_WRAP_R, wrapModeToGlAddress[style.addressModeW]);
+    const wrapModeS = wrapModeToGlAddress[forceClamp ? 'clamp-to-edge' : style.addressModeU];
+    const wrapModeT = wrapModeToGlAddress[forceClamp ? 'clamp-to-edge' : style.addressModeV];
+    const wrapModeR = wrapModeToGlAddress[forceClamp ? 'clamp-to-edge' : style.addressModeW];
+
+    gl[glFunctionName](castParam, gl.TEXTURE_WRAP_S, wrapModeS);
+    gl[glFunctionName](castParam, gl.TEXTURE_WRAP_T, wrapModeT);
+
+    // does not exist in webGL1
+    if (gl.TEXTURE_WRAP_R) gl[glFunctionName](castParam, gl.TEXTURE_WRAP_R, wrapModeR);
 
     // 2. set the filtering mode
     gl[glFunctionName](castParam, gl.TEXTURE_MAG_FILTER, scaleModeToGlFilter[style.magFilter]);

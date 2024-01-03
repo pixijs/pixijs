@@ -77,7 +77,7 @@ describe('Application', () =>
 
             stage.addChild(child);
 
-            app.destroy(true);
+            app.destroy(true, true);
             expect(child.destroyed).toBeTrue();
         });
     });

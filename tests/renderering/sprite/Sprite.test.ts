@@ -187,28 +187,28 @@ describe('Sprite', () =>
         {
             const point = new Point(10, 10);
 
-            expect(sprite.view.containsPoint(point)).toBe(true);
+            expect(sprite.containsPoint(point)).toBe(true);
         });
 
         it('should return true when point on left edge', () =>
         {
             const point = new Point(0, 15);
 
-            expect(sprite.view.containsPoint(point)).toBe(true);
+            expect(sprite.containsPoint(point)).toBe(true);
         });
 
         it('should return true when point on top edge', () =>
         {
             const point = new Point(10, 0);
 
-            expect(sprite.view.containsPoint(point)).toBe(true);
+            expect(sprite.containsPoint(point)).toBe(true);
         });
 
         it('should return false when point outside', () =>
         {
             const point = new Point(100, 100);
 
-            expect(sprite.view.containsPoint(point)).toBe(false);
+            expect(sprite.containsPoint(point)).toBe(false);
         });
 
         it('should return true when point inside a trimmed sprite', () =>
@@ -242,11 +242,11 @@ describe('Sprite', () =>
 
             const sprite = new Sprite({ texture });
 
-            expect(sprite.view.containsPoint(
+            expect(sprite.containsPoint(
                 new Point(108, 108)
             )).toBe(true);
 
-            expect(sprite.view.containsPoint(
+            expect(sprite.containsPoint(
                 new Point(1, 1)
             )).toBe(true);
         });

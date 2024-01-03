@@ -260,10 +260,25 @@ export class Bounds
     {
         return this.minX;
     }
+    set x(value: number)
+    {
+        const width = this.maxX - this.minX;
+
+        this.minX = value;
+        this.maxX = value + width;
+    }
 
     get y(): number
     {
         return this.minY;
+    }
+
+    set y(value: number)
+    {
+        const height = this.maxY - this.minY;
+
+        this.minY = value;
+        this.maxY = value + height;
     }
 
     get width(): number
@@ -271,9 +286,19 @@ export class Bounds
         return this.maxX - this.minX;
     }
 
+    set width(value: number)
+    {
+        this.maxX = this.minX + value;
+    }
+
     get height(): number
     {
         return this.maxY - this.minY;
+    }
+
+    set height(value: number)
+    {
+        this.maxY = this.minY + value;
     }
 
     get left(): number

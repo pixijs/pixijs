@@ -1,9 +1,9 @@
 import { mixColors } from '../../container/utils/mixColors';
 
 import type { Batch, BatchableObject, Batcher } from '../../../rendering/batcher/shared/Batcher';
-import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
+import type { IndexBufferArray } from '../../../rendering/renderers/shared/geometry/Geometry';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import type { GraphicsView } from './GraphicsView';
+import type { Graphics } from './Graphics';
 
 /**
  * A batchable graphics object.
@@ -17,7 +17,7 @@ export class BatchableGraphics implements BatchableObject
     public location: number;
     public batcher: Batcher = null;
     public batch: Batch = null;
-    public renderable: Renderable<GraphicsView>;
+    public renderable: Graphics;
     public indexOffset: number;
     public indexSize: number;
     public vertexOffset: number;
@@ -33,13 +33,13 @@ export class BatchableGraphics implements BatchableObject
     {
         if (this.applyTransform)
         {
-            return this.renderable.rgBlendMode;
+            return this.renderable.groupBlendMode;
         }
 
         return 'normal';
     }
 
-    public packIndex(indexBuffer: Uint32Array, index: number, indicesOffset: number)
+    public packIndex(indexBuffer: IndexBufferArray, index: number, indicesOffset: number)
     {
         const indices = this.geometryData.indices;
 
@@ -70,10 +70,10 @@ export class BatchableGraphics implements BatchableObject
 
         if (this.applyTransform)
         {
-            const argb = mixColors(bgr, graphics.rgColor)
-            + ((this.alpha * graphics.rgAlpha * 255) << 24);
+            const argb = mixColors(bgr, graphics.groupColor)
+            + ((this.alpha * graphics.groupAlpha * 255) << 24);
 
-            const wt = graphics.rgTransform;
+            const wt = graphics.groupTransform;
             const textureIdAndRound = (textureId << 16) | (this.roundPixels & 0xFFFF);
 
             const a = wt.a;
@@ -113,7 +113,7 @@ export class BatchableGraphics implements BatchableObject
                 float32View[index + 3] = uvs[i + 1];
 
                 uint32View[index + 4] = argb;
-                uint32View[index + 5] = textureId;
+                uint32View[index + 5] = textureId << 16;
 
                 index += 6;
             }

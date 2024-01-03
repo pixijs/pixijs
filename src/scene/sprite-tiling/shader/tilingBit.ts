@@ -84,7 +84,7 @@ export const tilingBitGl = {
         vec2 unclamped = coord;
         coord = clamp(coord, uClampFrame.xy, uClampFrame.zw);
         
-        outColor = texture(uTexture, coord, unclamped == coord ? 0.0f : -32.0f);// lod-bias very negative to force lod 0
+        outColor = texture(uTexture, coord, unclamped == coord ? 0.0 : -32.0);// lod-bias very negative to force lod 0
     
         `
     }

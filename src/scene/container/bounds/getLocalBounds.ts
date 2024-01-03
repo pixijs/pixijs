@@ -3,6 +3,7 @@ import { warn } from '../../../utils/logging/warn';
 import { updateLocalTransform } from '../utils/updateLocalTransform';
 import { boundsPool, matrixPool } from './utils/matrixAndBoundsPool';
 
+import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
 import type { Container } from '../Container';
 import type { Bounds } from './Bounds';
 
@@ -16,10 +17,10 @@ export function getLocalBounds(target: Container, bounds: Bounds, relativeMatrix
     {
         bounds.addRect(target.boundsArea, relativeMatrix);
     }
-    else if (target.view)
+    else if ((target as Renderable).addBounds)
     {
         bounds.setMatrix(relativeMatrix);
-        target.view.addBounds(bounds);
+        (target as Renderable).addBounds(bounds);
     }
 
     for (let i = 0; i < target.children.length; i++)
@@ -63,10 +64,10 @@ function _getLocalBounds(target: Container, bounds: Bounds, parentTransform: Mat
     }
     else
     {
-        if (target.view)
+        if (target.renderPipeId)
         {
             bounds.setMatrix(relativeTransform);
-            target.view.addBounds(bounds);
+            (target as Renderable).addBounds(bounds);
         }
 
         const children = target.children;

@@ -33,7 +33,7 @@ describe('Transform Tints', () =>
     {
         const root = new Container();
 
-        root.onUpdate = jest.fn();
+        root._onUpdate = jest.fn();
 
         root.alpha = 0.5;
 
@@ -41,28 +41,28 @@ describe('Transform Tints', () =>
 
         root.alpha = 0.5;
 
-        expect(root.onUpdate).toHaveBeenCalledTimes(1);
+        expect(root._onUpdate).toHaveBeenCalledTimes(1);
     });
 
     it('should set and return tints correctly', async () =>
     {
         const root = new Container();
 
-        root.onUpdate = jest.fn();
+        root._onUpdate = jest.fn();
 
         root.tint = 0xFF0000;
 
         expect((root.tint)).toEqual(0xFF0000);
         root.tint = 0xFF0000;
 
-        expect(root.onUpdate).toHaveBeenCalledTimes(1);
+        expect(root._onUpdate).toHaveBeenCalledTimes(1);
     });
 
     it('should set and return both alpha and tint correctly', async () =>
     {
         const root = new Container();
 
-        root.onUpdate = jest.fn();
+        root._onUpdate = jest.fn();
 
         root.tint = 0xFF00FF;
         root.alpha = 0.5;
@@ -72,7 +72,7 @@ describe('Transform Tints', () =>
         expect((root.alpha)).toEqual(0.5);
         expect((root.localColor)).toEqual(0xFF00FF);
 
-        expect(root.onUpdate).toHaveBeenCalledTimes(2);
+        expect(root._onUpdate).toHaveBeenCalledTimes(2);
     });
 
     it('should update global alpha correctly', async () =>
@@ -92,7 +92,7 @@ describe('Transform Tints', () =>
 
         updateRenderGroupTransforms(root.renderGroup, true);
 
-        check32BitColorMatches(child.rgColorAlpha, [63, 255, 255, 255]);
+        check32BitColorMatches(child.groupColorAlpha, [63, 255, 255, 255]);
     });
 
     it('should update global color (parent set only) correctly', async () =>
@@ -110,7 +110,7 @@ describe('Transform Tints', () =>
 
         updateRenderGroupTransforms(root.renderGroup, true);
 
-        check32BitColorMatches(child.rgColorAlpha, [255, 0, 0, 255]);
+        check32BitColorMatches(child.groupColorAlpha, [255, 0, 0, 255]);
     });
 
     it('should update global color (child set only) correctly', async () =>
@@ -128,7 +128,7 @@ describe('Transform Tints', () =>
 
         updateRenderGroupTransforms(root.renderGroup, true);
 
-        check32BitColorMatches(child.rgColorAlpha, [255, 0, 0, 255]);
+        check32BitColorMatches(child.groupColorAlpha, [255, 0, 0, 255]);
     });
 
     it('should update global color (parent and child set) correctly', async () =>
@@ -151,7 +151,7 @@ describe('Transform Tints', () =>
 
         updateRenderGroupTransforms(root.renderGroup, true);
         // ABGR
-        check32BitColorMatches(child.rgColorAlpha, [255, 0, 127, 128]);
+        check32BitColorMatches(child.groupColorAlpha, [255, 0, 127, 128]);
     });
 
     it('should update  alpha and color with nested layer group correctly', async () =>
@@ -184,7 +184,7 @@ describe('Transform Tints', () =>
 
         updateRenderGroupTransforms(root.renderGroup, true);
 
-        check32BitColorMatches(child.rgColorAlpha, [255, 0, 255, 0]);
+        check32BitColorMatches(child.groupColorAlpha, [255, 0, 255, 0]);
     });
 
     it('should update cap alpha to 1', async () =>
@@ -223,6 +223,6 @@ describe('Transform Tints', () =>
 
         check32BitColorMatches(container2.renderGroup.worldColorAlpha, [127, 255, 255, 255]);
 
-        check32BitColorMatches(child.rgColorAlpha, [255, 255, 255, 255]);
+        check32BitColorMatches(child.groupColorAlpha, [255, 255, 255, 255]);
     });
 });
