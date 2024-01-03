@@ -58,7 +58,7 @@ export class Buffer
     /**
      * A map of renderer IDs to webgl buffer
      * @private
-     * @type {Object<number, GLBuffer>}
+     * @type {Record<number, GLBuffer>}
      */
     _glBuffers: {[key: number]: GLBuffer};
     _updateID: number;

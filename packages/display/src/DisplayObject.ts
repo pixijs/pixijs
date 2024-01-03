@@ -916,6 +916,11 @@ export abstract class DisplayObject extends utils.EventEmitter<DisplayObjectEven
 
     set zIndex(value: number)
     {
+        if (this._zIndex === value)
+        {
+            return;
+        }
+
         this._zIndex = value;
         if (this.parent)
         {

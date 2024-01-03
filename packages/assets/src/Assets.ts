@@ -10,7 +10,15 @@ import { isSingleItem } from './utils/isSingleItem';
 import type { FormatDetectionParser } from './detections';
 import type { LoadTextureConfig } from './loader/parsers';
 import type { BundleIdentifierOptions } from './resolver/Resolver';
-import type { ArrayOr, AssetsBundle, AssetsManifest, LoadParserName, ResolvedAsset, UnresolvedAsset } from './types';
+import type {
+    ArrayOr,
+    AssetsBundle,
+    AssetsManifest,
+    AssetSrc,
+    LoadParserName,
+    ResolvedAsset,
+    UnresolvedAsset
+} from './types';
 
 export type ProgressCallback = (progress: number) => void;
 
@@ -180,12 +188,12 @@ export interface AssetInitOptions
  *             name: 'load-screen',
  *             assets: [
  *                 {
- *                     name: 'background',
- *                     srcs: 'sunset.png',
+ *                     alias: 'background',
+ *                     src: 'sunset.png',
  *                 },
  *                 {
- *                     name: 'bar',
- *                     srcs: 'load-bar.{png,webp}',
+ *                     alias: 'bar',
+ *                     src: 'load-bar.{png,webp}',
  *                 },
  *             ],
  *         },
@@ -193,19 +201,19 @@ export interface AssetInitOptions
  *             name: 'game-screen',
  *             assets: [
  *                 {
- *                     name: 'character',
- *                     srcs: 'robot.png',
+ *                     alias: 'character',
+ *                     src: 'robot.png',
  *                 },
  *                 {
- *                     name: 'enemy',
- *                     srcs: 'bad-guy.png',
+ *                     alias: 'enemy',
+ *                     src: 'bad-guy.png',
  *                 },
  *             ],
  *         },
  *     ]
  * };
  *
- * await Asset.init({ manifest });
+ * await Assets.init({ manifest });
  *
  * // Load a bundle...
  * loadScreenAssets = await Assets.loadBundle('load-screen');
@@ -264,7 +272,7 @@ export class AssetsClass
         {
             if (process.env.DEBUG)
             {
-                console.warn('[Assets]AssetManager already initialized, did you load before calling this Asset.init()?');
+                console.warn('[Assets]AssetManager already initialized, did you load before calling this Assets.init()?');
             }
 
             return;
@@ -321,6 +329,8 @@ export class AssetsClass
         }
     }
 
+    /** @deprecated */
+    public add(a: ArrayOr<string>, s?: string | string[], d?: unknown, f?: string, lp?: LoadParserName): void;
     /**
      * Allows you to specify how to resolve any assets load requests.
      * There are a few ways to add things here as shown below:
@@ -359,22 +369,24 @@ export class AssetsClass
      * });
      *
      * const bunny = await Assets.load('bunnyBooBoo'); // Will try to load WebP if available
-     * @param aliases - the key or keys that you will reference when loading this asset
-     * @param srcs - the asset or assets that will be chosen from when loading via the specified key
-     * @param data - asset-specific data that will be passed to the loaders
+     * @param data - the data to add
+     * @param data.aliases - the key or keys that you will reference when loading this asset
+     * @param data.srcs - the asset or assets that will be chosen from when loading via the specified key
+     * @param data.data - asset-specific data that will be passed to the loaders
      * - Useful if you want to initiate loaded objects with specific data
-     * @param format - the format of the asset
-     * @param loadParser - the name of the load parser to use
+     * @param data.format - the format of the asset
+     * @param data.loadParser - the name of the load parser to use
      */
+    public add(data:(ArrayOr<UnresolvedAsset>)): void;
     public add(
-        aliases: ArrayOr<string> | (ArrayOr<UnresolvedAsset>),
-        srcs?: string | string[],
+        aliases: ArrayOr<string> | ArrayOr<UnresolvedAsset>,
+        srcs?: AssetSrc,
         data?: unknown,
         format?: string,
         loadParser?: LoadParserName
     ): void
     {
-        this.resolver.add(aliases, srcs, data, format, loadParser);
+        this.resolver.add(aliases as ArrayOr<string>, srcs, data, format, loadParser);
     }
 
     /**
@@ -486,12 +498,12 @@ export class AssetsClass
      *             name: 'load-screen',
      *             assets: [
      *                 {
-     *                     name: 'background',
-     *                     srcs: 'sunset.png',
+     *                     alias: 'background',
+     *                     src: 'sunset.png',
      *                 },
      *                 {
-     *                     name: 'bar',
-     *                     srcs: 'load-bar.{png,webp}',
+     *                     alias: 'bar',
+     *                     src: 'load-bar.{png,webp}',
      *                 },
      *             ],
      *         },
@@ -499,19 +511,19 @@ export class AssetsClass
      *             name: 'game-screen',
      *             assets: [
      *                 {
-     *                     name: 'character',
-     *                     srcs: 'robot.png',
+     *                     alias: 'character',
+     *                     src: 'robot.png',
      *                 },
      *                 {
-     *                     name: 'enemy',
-     *                     srcs: 'bad-guy.png',
+     *                     alias: 'enemy',
+     *                     src: 'bad-guy.png',
      *                 },
      *             ],
      *         },
      *     ]
      * };
      *
-     * await Asset.init({ manifest });
+     * await Assets.init({ manifest });
      *
      * // Load a bundle...
      * loadScreenAssets = await Assets.loadBundle('load-screen');

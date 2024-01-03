@@ -116,9 +116,9 @@ export enum INTERNAL_FORMATS
      */
     COMPRESSED_RGB_ATC_WEBGL = 0x8C92,
     /**
-     * @default 0x8C92
+     * @default 0x8C93
      */
-    COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL = 0x8C92, // TODO: Probably a bug on the MDN site
+    COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL = 0x8C93,
     /**
      * @default 0x87EE
      */
