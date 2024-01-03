@@ -721,12 +721,22 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
     {
         const capture = (typeof options === 'boolean' && options)
             || (typeof options === 'object' && options.capture);
+        const once = typeof options === 'object' ? (options.once === true) : false;
         const context = typeof listener === 'function' ? undefined : listener;
 
         type = capture ? `${type}capture` : type;
         listener = typeof listener === 'function' ? listener : listener.handleEvent;
 
-        (this as unknown as utils.EventEmitter).on(type, listener, context);
+        const emitter = (this as unknown as utils.EventEmitter);
+
+        if (once)
+        {
+            emitter.once(type, listener, context);
+        }
+        else
+        {
+            emitter.on(type, listener, context);
+        }
     },
 
     /**
