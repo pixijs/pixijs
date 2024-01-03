@@ -329,7 +329,7 @@ export interface Container
  * This means that Containers have 3 levels of matrix to be mindful of:
  *
  * 1 - localTransform, this is the transform of the container based on its own properties
- * 2 - rgTransform, this it the transform of the container relative to the renderGroup it belongs too
+ * 2 - groupTransform, this it the transform of the container relative to the renderGroup it belongs too
  * 3 - worldTransform, this is the transform of the container relative to the Scene being rendered
  * @memberof scene
  */
@@ -408,7 +408,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
      * transforms and up to the render group (think of it as kind of like a stage - but the stage can be nested).
      * @readonly
      */
-    public rgTransform: Matrix = new Matrix();
+    public groupTransform: Matrix = new Matrix();
     // the global transform taking into account the render group and all parents
     private _worldTransform: Matrix;
 
@@ -493,9 +493,9 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
      * @internal
      * @ignore
      */
-    public rgAlpha = 1; // A
-    public rgColor = 0xFFFFFF; // BGR
-    public rgColorAlpha = 0xFFFFFFFF; // ABGR
+    public groupAlpha = 1; // A
+    public groupColor = 0xFFFFFF; // BGR
+    public groupColorAlpha = 0xFFFFFFFF; // ABGR
 
     /// BLEND related props //////////////
 
@@ -508,7 +508,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
      * @internal
      * @ignore
      */
-    public rgBlendMode: BLEND_MODES = 'normal';
+    public groupBlendMode: BLEND_MODES = 'normal';
 
     /// VISIBILITY related props //////////////
 
@@ -797,7 +797,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
             }
             else
             {
-                this._worldTransform.appendFrom(this.rgTransform, this.renderGroup.worldTransform);
+                this._worldTransform.appendFrom(this.groupTransform, this.renderGroup.worldTransform);
             }
         }
 
@@ -1121,7 +1121,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
     /** Whether or not the object should be rendered. */
     get isRenderable(): boolean
     {
-        return (this.localVisibleRenderable === 0b11 && this.rgAlpha > 0);
+        return (this.localVisibleRenderable === 0b11 && this.groupAlpha > 0);
     }
 
     /**

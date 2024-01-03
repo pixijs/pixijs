@@ -199,7 +199,7 @@ export class BitmapTextPipe implements RenderPipe<Text>
         const dynamicFont = Cache.get(`${fontFamily as string}-bitmap`);
 
         // Inject the shader code with the correct value
-        const { a, b, c, d } = bitmapText.rgTransform;
+        const { a, b, c, d } = bitmapText.groupTransform;
 
         const dx = Math.sqrt((a * a) + (b * b));
         const dy = Math.sqrt((c * c) + (d * d));
@@ -231,12 +231,12 @@ export class BitmapTextPipe implements RenderPipe<Text>
 
 function syncWithProxy(container: Renderable, proxy: Renderable)
 {
-    proxy.rgTransform = container.rgTransform;
-    proxy.rgColorAlpha = container.rgColorAlpha;
-    proxy.rgColor = container.rgColor;
-    proxy.rgBlendMode = container.rgBlendMode;
+    proxy.groupTransform = container.groupTransform;
+    proxy.groupColorAlpha = container.groupColorAlpha;
+    proxy.groupColor = container.groupColor;
+    proxy.groupBlendMode = container.groupBlendMode;
     proxy.rgVisibleRenderable = container.rgVisibleRenderable;
     proxy.localVisibleRenderable = container.localVisibleRenderable;
-    proxy.rgAlpha = container.rgAlpha;
+    proxy.groupAlpha = container.groupAlpha;
     proxy._roundPixels = container._roundPixels;
 }

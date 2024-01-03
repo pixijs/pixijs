@@ -9,7 +9,7 @@ describe('Container', () =>
             const object = new Container();
 
             expect(object.alpha).toEqual(1);
-            expect(object.rgColor).toEqual(0xffffff);
+            expect(object.groupColor).toEqual(0xffffff);
             expect(object.renderable).toBe(true);
             expect(object.visible).toBe(true);
         });

@@ -25,7 +25,7 @@ export class BatchableSprite implements BatchableObject
     public bounds: BoundsData;
     public roundPixels: 0 | 1 = 0;
 
-    get blendMode() { return this.renderable.rgBlendMode; }
+    get blendMode() { return this.renderable.groupBlendMode; }
 
     public packAttributes(
         float32View: Float32Array,
@@ -37,7 +37,7 @@ export class BatchableSprite implements BatchableObject
         const sprite = this.renderable;
         const texture = this.texture;
 
-        const wt = sprite.rgTransform;
+        const wt = sprite.groupTransform;
 
         const a = wt.a;
         const b = wt.b;
@@ -57,7 +57,7 @@ export class BatchableSprite implements BatchableObject
 
         // _ _ _ _
         // a b g r
-        const argb = sprite.rgColorAlpha;
+        const argb = sprite.groupColorAlpha;
 
         const textureIdAndRound = (textureId << 16) | (this.roundPixels & 0xFFFF);
 

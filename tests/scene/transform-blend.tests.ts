@@ -45,7 +45,7 @@ describe('Transform Blend Modes', () =>
 
         updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(child.rgBlendMode).toEqual('add');
+        expect(child.groupBlendMode).toEqual('add');
     });
 
     it('should inherit blend modes when children swapped around on the scene graph', async () =>
@@ -66,13 +66,13 @@ describe('Transform Blend Modes', () =>
 
         updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(child.rgBlendMode).toEqual('normal');
+        expect(child.groupBlendMode).toEqual('normal');
 
         containerAdd.addChild(child);
 
         updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(child.rgBlendMode).toEqual('add');
+        expect(child.groupBlendMode).toEqual('add');
     });
 });
 
