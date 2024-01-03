@@ -537,7 +537,9 @@ export class Color
         // Number is a primative so typeof works fine, but in the case
         // that someone creates a class that extends Number, we also
         // need to check for instanceof Number
-        if ((typeof value === 'number' || value instanceof Number) && value >= 0 && value <= 0xffffff)
+        if ((typeof value === 'number' || value instanceof Number)
+            && (value as number) >= 0
+            && (value as number) <= 0xffffff)
         {
             const int = value as number; // cast required because instanceof Number is ambiguous for TS
 

@@ -1,8 +1,9 @@
 import { Rectangle, Renderer } from '@pixi/core';
 import { Container } from '@pixi/display';
+// eslint-disable-next-line import/no-duplicates
 import { EventSystem } from '@pixi/events';
 import { Graphics } from '@pixi/graphics';
-// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
+// eslint-disable-next-line import/no-duplicates
 import '@pixi/events';
 
 import type { IRendererOptions } from '@pixi/core';

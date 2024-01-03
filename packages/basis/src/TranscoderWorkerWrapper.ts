@@ -38,7 +38,7 @@ export interface ITranscodedImage
 }
 
 /**
- * Response format for {@link TranscoderWorker}.
+ * Response format for {@link PIXI.TranscoderWorker}.
  * @ignore
  */
 export interface ITranscodeResponse

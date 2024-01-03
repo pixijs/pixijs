@@ -434,7 +434,7 @@ export class EventBoundary
         const isInteractiveMode = this._isInteractive(eventMode);
         const isInteractiveTarget = currentTarget.isInteractive();
 
-        if (isInteractiveTarget && isInteractiveTarget) this._allInteractiveElements.push(currentTarget);
+        if (isInteractiveMode && isInteractiveTarget) this._allInteractiveElements.push(currentTarget);
 
         // we don't carry on hit testing something once we have found a hit,
         // now only care about gathering the interactive elements
