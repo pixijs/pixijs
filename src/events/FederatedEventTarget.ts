@@ -725,15 +725,10 @@ export const FederatedContainer: IFederatedContainer = {
         options?: AddListenerOptions
     )
     {
-        const defaultOptions: AddListenerOptions = {
-            capture: false,
-            once: false,
-            passive: false,
-            signal: null,
-        };
-        const mergedOptions = Object.assign(defaultOptions, options);
-
-        const { capture, once, signal } = mergedOptions;
+        const capture = (typeof options === 'boolean' && options)
+        || (typeof options === 'object' && options.capture);
+        const once = typeof options === 'object' ? (options.once === true) : false;
+        const signal = typeof options === 'object' ? options.signal : null;
         const context = typeof listener === 'function' ? undefined : listener;
 
         type = capture ? `${type}capture` : type;
