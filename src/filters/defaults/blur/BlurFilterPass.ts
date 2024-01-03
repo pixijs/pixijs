@@ -64,7 +64,7 @@ export class BlurFilterPass extends Filter
             gpuProgram,
             resources: {
                 blurUniforms: {
-                    strength: { value: 0, type: 'f32' },
+                    uStrength: { value: 0, type: 'f32' },
                 }
             },
             ...options
@@ -95,7 +95,7 @@ export class BlurFilterPass extends Filter
         clearMode: boolean
     ): void
     {
-        this._uniforms.strength = this.strength / this.passes;
+        this._uniforms.uStrength = this.strength / this.passes;
 
         if (this.passes === 1)
         {

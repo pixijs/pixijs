@@ -12,7 +12,7 @@ export interface TransformOptions
     /** The matrix to use. */
     matrix?: Matrix;
     /** The observer to use. */
-    observer?: {onUpdate: (transform: Transform) => void}
+    observer?: {_onUpdate: (transform: Transform) => void}
 }
 
 /**
@@ -122,7 +122,7 @@ export class Transform
      * @internal
      * @private
      */
-    public onUpdate(point?: ObservablePoint): void
+    public _onUpdate(point?: ObservablePoint): void
     {
         this.dirty = true;
 
@@ -131,7 +131,7 @@ export class Transform
             this.updateSkew();
         }
 
-        this.observer?.onUpdate(this);
+        this.observer?._onUpdate(this);
     }
 
     /** Called when the skew or the rotation changes. */

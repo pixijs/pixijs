@@ -22,7 +22,7 @@ export class DifferenceBlend extends BlendModeFilter
                 }
             `,
                 main: `
-                fragColor = vec4(blendDifference(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendDifference(back.rgb, front.rgb, front.a), uBlend);
             `
             },
             gpu: {

@@ -1,32 +1,32 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { ExtensionType } from '../../extensions/Extensions';
-import { Matrix } from '../../maths/matrix/Matrix';
-import { ProxyRenderable } from '../../rendering/renderers/shared/ProxyRenderable';
-import { MeshView } from '../mesh/shared/MeshView';
-import { QuadGeometry } from './QuadGeometry';
+import { State } from '../../rendering/renderers/shared/state/State';
+import { type Renderer, RendererType } from '../../rendering/renderers/types';
+import { color32BitToUniform } from '../graphics/gpu/colorToUniform';
+import { BatchableMesh } from '../mesh/shared/BatchableMesh';
+import { MeshGeometry } from '../mesh/shared/MeshGeometry';
 import { TilingSpriteShader } from './shader/TilingSpriteShader';
+import { QuadGeometry } from './utils/QuadGeometry';
+import { setPositions } from './utils/setPositions';
+import { setUvs } from './utils/setUvs';
 
-import type { TypedArray } from '../../rendering/renderers/shared/buffer/Buffer';
+import type { WebGLRenderer } from '../../rendering/renderers/gl/WebGLRenderer';
 import type { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
-import type { Renderable } from '../../rendering/renderers/shared/Renderable';
-import type { Renderer } from '../../rendering/renderers/types';
-import type { TilingSpriteView } from './TilingSpriteView';
+import type { TilingSprite } from './TilingSprite';
 
 interface RenderableData
 {
-    batched: boolean;
-    renderable: Renderable<TilingSpriteView>
-    batchedMesh?: Renderable<MeshView>;
-    gpuTilingSprite?: {
-        meshRenderable: Renderable<MeshView>
-        textureMatrix: Matrix;
-    };
+    canBatch: boolean;
+    renderable: TilingSprite
+    batchableMesh?: BatchableMesh;
+    geometry?: MeshGeometry;
+    shader?: TilingSpriteShader;
 }
 
 const sharedQuad = new QuadGeometry();
 
-export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
+export class TilingSpritePipe implements RenderPipe<TilingSprite>
 {
     /** @ignore */
     public static extension = {
@@ -40,349 +40,224 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
 
     private _renderer: Renderer;
 
-    private _renderableHash: Record<number, RenderableData> = Object.create(null);
+    private readonly _tilingSpriteDataHash: Record<number, RenderableData> = Object.create(null);
 
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
     }
 
-    public validateRenderable(renderable: Renderable<TilingSpriteView>): boolean
+    public validateRenderable(renderable: TilingSprite): boolean
     {
-        const textureMatrix = renderable.view.texture.textureMatrix;
+        const tilingSpriteData = this._getTilingSpriteData(renderable);
 
-        let rebuild = false;
+        const couldBatch = tilingSpriteData.canBatch;
 
-        const renderableData = this._getRenderableData(renderable);
+        this._updateCanBatch(renderable);
 
-        if (renderableData.batched !== textureMatrix.isSimple)
+        const canBatch = tilingSpriteData.canBatch;
+
+        if (canBatch && canBatch === couldBatch)
         {
-            renderableData.batched = textureMatrix.isSimple;
+            const { batchableMesh } = tilingSpriteData;
 
-            rebuild = true;
+            // we are batching.. check a texture change!
+            if (batchableMesh.texture._source !== renderable.texture._source)
+
+            { return !batchableMesh.batcher.checkAndUpdateTexture(batchableMesh, renderable.texture); }
         }
 
-        // TODO - only update if required?
-        // only texture
-        // only uvs
-        // only positions?
+        return (couldBatch !== canBatch);
 
-        return rebuild;
+        // // TODO - only update if required?
+        // // only texture
+        // // only uvs
+        // // only positions?
     }
 
-    public addRenderable(renderable: Renderable<TilingSpriteView>, instructionSet: InstructionSet)
+    public addRenderable(tilingSprite: TilingSprite, instructionSet: InstructionSet)
     {
-        if (renderable.view._didUpdate)
+        const batcher = this._renderer.renderPipes.batch;
+
+        // init
+        this._updateCanBatch(tilingSprite);
+
+        const tilingSpriteData = this._getTilingSpriteData(tilingSprite);
+
+        const { geometry, canBatch } = tilingSpriteData;
+
+        if (canBatch)
         {
-            renderable.view._didUpdate = false;
+            tilingSpriteData.batchableMesh ||= new BatchableMesh();
 
-            this._rebuild(renderable);
-        }
+            const batchableMesh = tilingSpriteData.batchableMesh;
 
-        const { batched } = this._getRenderableData(renderable);
-
-        if (batched)
-        {
-            const batchableTilingSprite = this._getBatchedTilingSprite(renderable);
-
-            this._renderer.renderPipes.mesh.addRenderable(batchableTilingSprite, instructionSet);
-        }
-        else
-        {
-            const gpuTilingSprite = this._getGpuTilingSprite(renderable);
-
-            this._renderer.renderPipes.mesh.addRenderable(gpuTilingSprite.meshRenderable, instructionSet);
-        }
-    }
-
-    public updateRenderable(renderable: Renderable<TilingSpriteView>)
-    {
-        if (renderable.view._didUpdate)
-        {
-            renderable.view._didUpdate = false;
-
-            this._rebuild(renderable);
-        }
-
-        const { batched } = this._getRenderableData(renderable);
-
-        if (batched)
-        {
-            const batchableTilingSprite = this._getBatchedTilingSprite(renderable);
-
-            this._renderer.renderPipes.mesh.updateRenderable(batchableTilingSprite);
-        }
-        else
-        {
-            const gpuTilingSprite = this._getGpuTilingSprite(renderable);
-
-            this._renderer.renderPipes.mesh.updateRenderable(gpuTilingSprite.meshRenderable);
-        }
-    }
-
-    public destroyRenderable(renderable: Renderable<TilingSpriteView>)
-    {
-        const data = this._renderableHash[renderable.uid];
-
-        data.batchedMesh?.view.destroy();
-        data.gpuTilingSprite?.meshRenderable.view.destroy();
-
-        // TODO pooling for the items... not a biggie though!
-        this._renderableHash[renderable.uid] = null;
-
-        renderable.off('destroyed', this.destroyRenderable, this);
-    }
-
-    private _getRenderableData(renderable: Renderable<TilingSpriteView>): RenderableData
-    {
-        return this._renderableHash[renderable.uid] || this._initRenderableData(renderable);
-    }
-
-    private _initRenderableData(renderable: Renderable<TilingSpriteView>): RenderableData
-    {
-        const renderableData = {
-            batched: true,
-            renderable
-        };
-
-        this._renderableHash[renderable.uid] = renderableData;
-
-        this.validateRenderable(renderable);
-
-        renderable.on('destroyed', () =>
-        {
-            this.destroyRenderable(renderable);
-        });
-
-        return renderableData;
-    }
-
-    private _rebuild(renderable: Renderable<TilingSpriteView>)
-    {
-        const renderableData = this._getRenderableData(renderable);
-        const view = renderable.view;
-        const textureMatrix = view.texture.textureMatrix;
-
-        if (renderableData.batched)
-        {
-            const batchedMesh = this._getBatchedTilingSprite(renderable);
-
-            batchedMesh.view.texture = view.texture;
-
-            const style = view.texture.source.style;
-
-            if (style.addressMode !== 'repeat')
+            if (tilingSprite._didTilingSpriteUpdate)
             {
-                style.addressMode = 'repeat';
-                style.update();
+                tilingSprite._didTilingSpriteUpdate = false;
+
+                this._updateBatchableMesh(tilingSprite);
+
+                batchableMesh.geometry = geometry;
+                batchableMesh.mesh = tilingSprite;
+                batchableMesh.texture = tilingSprite._texture;
             }
 
-            this._updateBatchPositions(renderable);
-            this._updateBatchUvs(renderable);
+            batchableMesh.roundPixels = (this._renderer._roundPixels | tilingSprite._roundPixels) as 0 | 1;
+
+            batcher.addToBatch(batchableMesh);
         }
         else
         {
-            const gpuTilingSprite = this._getGpuTilingSprite(renderable);
-            const { meshRenderable } = gpuTilingSprite;
+            batcher.break(instructionSet);
 
-            const meshView = meshRenderable.view;
+            tilingSpriteData.shader ||= new TilingSpriteShader();
 
-            meshView.shader.texture = view.texture;
+            this.updateRenderable(tilingSprite);
 
-            const tilingUniforms = meshView.shader.resources.tilingUniforms;
-
-            const originalWidth = view.width;
-            const originalHeight = view.height;
-
-            const tilingSpriteWidth = view.texture.width;
-            const tilingSpriteHeight = view.texture.height;
-
-            const matrix = view._tileTransform.matrix;
-
-            const uTextureTransform = tilingUniforms.uniforms.uTextureTransform;
-
-            uTextureTransform.set(
-                matrix.a * tilingSpriteWidth / originalWidth,
-                matrix.b * tilingSpriteWidth / originalHeight,
-                matrix.c * tilingSpriteHeight / originalWidth,
-                matrix.d * tilingSpriteHeight / originalHeight,
-                matrix.tx / originalWidth,
-                matrix.ty / originalHeight);
-
-            uTextureTransform.invert();
-
-            tilingUniforms.uniforms.uMapCoord = textureMatrix.mapCoord;
-            tilingUniforms.uniforms.uClampFrame = textureMatrix.uClampFrame;
-            tilingUniforms.uniforms.uClampOffset = textureMatrix.uClampOffset;
-            tilingUniforms.uniforms.uTextureTransform = uTextureTransform;
-            tilingUniforms.uniforms.uSizeAnchor[0] = originalWidth;
-            tilingUniforms.uniforms.uSizeAnchor[1] = originalHeight;
-            tilingUniforms.uniforms.uSizeAnchor[2] = renderable.view.anchor.x;
-            tilingUniforms.uniforms.uSizeAnchor[3] = renderable.view.anchor.y;
-
-            tilingUniforms.update();
+            instructionSet.add(tilingSprite);
         }
     }
 
-    private _getGpuTilingSprite(renderable: Renderable<TilingSpriteView>)
+    public execute(tilingSprite: TilingSprite)
     {
-        return this._renderableHash[renderable.uid].gpuTilingSprite || this._initGpuTilingSprite(renderable);
+        const { shader } = this._tilingSpriteDataHash[tilingSprite.uid];
+
+        shader.groups[0] = this._renderer.globalUniforms.bindGroup;
+
+        // deal with local uniforms...
+        const localUniforms = shader.resources.localUniforms.uniforms;
+
+        localUniforms.uTransformMatrix = tilingSprite.groupTransform;
+        localUniforms.uRound = this._renderer._roundPixels | tilingSprite._roundPixels;
+
+        color32BitToUniform(
+            tilingSprite.groupColorAlpha,
+            localUniforms.uColor,
+            0
+        );
+
+        this._renderer.encoder.draw({
+            geometry: sharedQuad,
+            shader,
+            state: State.default2d,
+        });
     }
 
-    private _initGpuTilingSprite(renderable: Renderable<TilingSpriteView>)
+    public updateRenderable(tilingSprite: TilingSprite)
     {
-        const view = renderable.view;
+        const tilingSpriteData = this._getTilingSpriteData(tilingSprite);
 
-        const style = view.texture.source.style;
+        const { canBatch } = tilingSpriteData;
 
-        style.addressMode = 'repeat';
-        style.update();
+        if (canBatch)
+        {
+            const { batchableMesh } = tilingSpriteData;
 
-        const meshView = new MeshView({
-            geometry: sharedQuad,
-            shader: new TilingSpriteShader({
-                texture: view.texture,
-            }),
+            if (tilingSprite._didTilingSpriteUpdate) this._updateBatchableMesh(tilingSprite);
+
+            batchableMesh.batcher.updateElement(batchableMesh);
+        }
+        else if (tilingSprite._didTilingSpriteUpdate)
+        {
+            const { shader } = tilingSpriteData;
+            // now update uniforms...
+
+            shader.updateUniforms(
+                tilingSprite.width,
+                tilingSprite.height,
+                tilingSprite._tileTransform.matrix,
+                tilingSprite.anchor.x,
+                tilingSprite.anchor.y,
+                tilingSprite.texture,
+            );
+        }
+
+        tilingSprite._didTilingSpriteUpdate = false;
+    }
+
+    public destroyRenderable(tilingSprite: TilingSprite)
+    {
+        const tilingSpriteData = this._getTilingSpriteData(tilingSprite);
+
+        tilingSpriteData.batchableMesh = null;
+
+        tilingSpriteData.shader?.destroy();
+
+        this._tilingSpriteDataHash[tilingSprite.uid] = null;
+    }
+
+    private _getTilingSpriteData(renderable: TilingSprite): RenderableData
+    {
+        return this._tilingSpriteDataHash[renderable.uid] || this._initTilingSpriteData(renderable);
+    }
+
+    private _initTilingSpriteData(tilingSprite: TilingSprite): RenderableData
+    {
+        const geometry = new MeshGeometry({
+            indices: sharedQuad.indices,
+            positions: sharedQuad.positions.slice(),
+            uvs: sharedQuad.uvs.slice(),
         });
 
-        const meshRenderable = new ProxyRenderable({
-            original: renderable,
-            view: meshView,
-        });
-
-        const textureMatrix = new Matrix();
-
-        const gpuTilingSpriteData = {
-            meshRenderable,
-            textureMatrix,
+        this._tilingSpriteDataHash[tilingSprite.uid] = {
+            canBatch: true,
+            renderable: tilingSprite,
+            geometry,
         };
 
-        this._renderableHash[renderable.uid].gpuTilingSprite = gpuTilingSpriteData;
-
-        return gpuTilingSpriteData;
-    }
-
-    private _getBatchedTilingSprite(renderable: Renderable<TilingSpriteView>): Renderable<MeshView>
-    {
-        return this._renderableHash[renderable.uid].batchedMesh || this._initBatchedTilingSprite(renderable);
-    }
-
-    private _initBatchedTilingSprite(renderable: Renderable<TilingSpriteView>)
-    {
-        const meshView = new MeshView({
-            geometry: new QuadGeometry(),
-            texture: renderable.view.texture,
-        });
-
-        meshView.roundPixels = (this._renderer._roundPixels | renderable.view.roundPixels) as 0 | 1;
-
-        const batchableMeshRenderable = new ProxyRenderable({
-            original: renderable,
-            view: meshView,
-        });
-
-        this._renderableHash[renderable.uid].batchedMesh = batchableMeshRenderable;
-
-        return batchableMeshRenderable;
-    }
-
-    private _updateBatchPositions(renderable: Renderable<TilingSpriteView>)
-    {
-        const meshRenderable = this._getBatchedTilingSprite(renderable);
-        const view = renderable.view;
-
-        const positionBuffer = meshRenderable.view.geometry.getBuffer('aPosition');
-
-        const positions = positionBuffer.data;
-        const anchorX = view.anchor.x;
-        const anchorY = view.anchor.y;
-
-        positions[0] = -anchorX * view.width;
-        positions[1] = -anchorY * view.height;
-        positions[2] = (1 - anchorX) * view.width;
-        positions[3] = -anchorY * view.height;
-        positions[4] = (1 - anchorX) * view.width;
-        positions[5] = (1 - anchorY) * view.height;
-        positions[6] = -anchorX * view.width;
-        positions[7] = (1 - anchorY) * view.height;
-    }
-
-    private _updateBatchUvs(renderable: Renderable<TilingSpriteView>)
-    {
-        const view = renderable.view;
-        const width = view.texture.frame.width;
-        const height = view.texture.frame.height;
-
-        const meshRenderable = this._getBatchedTilingSprite(renderable);
-
-        const uvBuffer = meshRenderable.view.geometry.getBuffer('aUV');
-
-        const uvs = uvBuffer.data;
-
-        let anchorX = 0;
-        let anchorY = 0;
-
-        if (view._applyAnchorToTexture)
+        tilingSprite.on('destroyed', () =>
         {
-            anchorX = view.anchor.x;
-            anchorY = view.anchor.y;
+            this.destroyRenderable(tilingSprite);
+        });
+
+        return this._tilingSpriteDataHash[tilingSprite.uid];
+    }
+
+    private _updateBatchableMesh(tilingSprite: TilingSprite)
+    {
+        const renderableData = this._getTilingSpriteData(tilingSprite);
+
+        const { geometry } = renderableData;
+
+        const style = tilingSprite.texture.source.style;
+
+        if (style.addressMode !== 'repeat')
+        {
+            style.addressMode = 'repeat';
+            style.update();
         }
 
-        uvs[0] = uvs[6] = -anchorX;
-        uvs[2] = uvs[4] = 1 - anchorX;
-        uvs[1] = uvs[3] = -anchorY;
-        uvs[5] = uvs[7] = 1 - anchorY;
-
-        const textureMatrix = Matrix.shared;
-
-        textureMatrix.copyFrom(view._tileTransform.matrix);
-
-        textureMatrix.tx /= view.width;
-        textureMatrix.ty /= view.height;
-
-        textureMatrix.invert();
-
-        textureMatrix.scale(view.width / width, view.height / height);
-
-        applyMatrix(uvs, 2, 0, textureMatrix);
+        setUvs(tilingSprite, geometry.uvs);
+        setPositions(tilingSprite, geometry.positions);
     }
 
     public destroy()
     {
-        for (const i in this._renderableHash)
+        for (const i in this._tilingSpriteDataHash)
         {
-            this.destroyRenderable(this._renderableHash[i].renderable);
+            this.destroyRenderable(this._tilingSpriteDataHash[i].renderable);
         }
 
-        this._renderableHash = null;
+        (this._tilingSpriteDataHash as null) = null;
         this._renderer = null;
     }
-}
 
-function applyMatrix(array: TypedArray, stride: number, offset: number, matrix: Matrix)
-{
-    let index = 0;
-    const size = array.length / (stride || 2);
-
-    const a = matrix.a;
-    const b = matrix.b;
-    const c = matrix.c;
-    const d = matrix.d;
-    const tx = matrix.tx;
-    const ty = matrix.ty;
-
-    offset *= stride;
-
-    while (index < size)
+    private _updateCanBatch(tilingSprite: TilingSprite)
     {
-        const x = array[offset];
-        const y = array[offset + 1];
+        const renderableData = this._getTilingSpriteData(tilingSprite);
+        const texture = tilingSprite.texture;
 
-        array[offset] = (a * x) + (c * y) + tx;
-        array[offset + 1] = (b * x) + (d * y) + ty;
+        let _nonPowOf2wrapping = true;
 
-        offset += stride;
+        if (this._renderer.type === RendererType.WEBGL)
+        {
+            _nonPowOf2wrapping = (this._renderer as WebGLRenderer).context.supports.nonPowOf2wrapping;
+        }
 
-        index++;
+        renderableData.canBatch = texture.textureMatrix.isSimple && (_nonPowOf2wrapping || texture.source.isPowerOfTwo);
+
+        return renderableData.canBatch;
     }
 }
+

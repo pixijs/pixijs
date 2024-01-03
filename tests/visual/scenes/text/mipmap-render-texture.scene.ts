@@ -16,7 +16,7 @@ export const scene: TestScene = {
             height: 128,
             resolution: 1,
             autoGenerateMipmaps: true,
-            antialias: true,
+            //  antialias: true,
         });
 
         const g = new Graphics();

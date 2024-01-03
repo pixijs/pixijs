@@ -7,26 +7,18 @@ import { localUniformBit, localUniformBitGl } from '../../../rendering/high-shad
 import { roundPixelsBit, roundPixelsBitGl } from '../../../rendering/high-shader/shader-bits/roundPixelsBit';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
+import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { tilingBit, tilingBitGl } from './tilingBit';
 
 import type { GlProgram } from '../../../rendering/renderers/gl/shader/GlProgram';
 import type { GpuProgram } from '../../../rendering/renderers/gpu/shader/GpuProgram';
-import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import type { TextureShader } from '../../mesh/shared/MeshView';
-
-interface TilingSpriteOptions
-{
-    texture: Texture;
-}
 
 let gpuProgram: GpuProgram;
 let glProgram: GlProgram;
 
-export class TilingSpriteShader extends Shader implements TextureShader
+export class TilingSpriteShader extends Shader
 {
-    private _texture: Texture;
-
-    constructor(options: TilingSpriteOptions)
+    constructor()
     {
         gpuProgram ??= compileHighShaderGpuProgram({
             name: 'tiling-sprite-shader',
@@ -51,32 +43,63 @@ export class TilingSpriteShader extends Shader implements TextureShader
             uClampFrame: { value: new Float32Array([0, 0, 1, 1]), type: 'vec4<f32>' },
             uClampOffset: { value: new Float32Array([0, 0]), type: 'vec2<f32>' },
             uTextureTransform: { value: new Matrix(), type: 'mat3x3<f32>' },
-            uSizeAnchor: { value: new Float32Array([100, 200, 0.5, 0.5]), type: 'vec4<f32>' },
+            uSizeAnchor: { value: new Float32Array([100, 100, 0.5, 0.5]), type: 'vec4<f32>' },
         });
 
         super({
             glProgram,
             gpuProgram,
             resources: {
+                localUniforms: new UniformGroup({
+                    uTransformMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
+                    uColor: { value: new Float32Array([1, 1, 1, 1]), type: 'vec4<f32>' },
+                    uRound: { value: 0, type: 'f32' },
+                }),
                 tilingUniforms,
-                uTexture: options.texture.source,
-                uSampler: options.texture.source.style,
+                uTexture: Texture.EMPTY.source,
+                uSampler: Texture.EMPTY.source.style,
             }
         });
     }
 
-    get texture(): Texture
+    public updateUniforms(
+        width: number, height: number,
+        matrix: Matrix,
+        anchorX: number, anchorY: number,
+        texture: Texture
+    ): void
     {
-        return this._texture;
-    }
+        const tilingUniforms = this.resources.tilingUniforms;
 
-    set texture(value: Texture)
-    {
-        if (this._texture === value) return;
+        const textureWidth = texture.width;
+        const textureHeight = texture.height;
+        const textureMatrix = texture.textureMatrix;
 
-        this._texture = value;
+        const uTextureTransform = tilingUniforms.uniforms.uTextureTransform;
 
-        this.resources.uTexture = value.source;
-        this.resources.uSampler = value.source.style;
+        uTextureTransform.set(
+            matrix.a * textureWidth / width,
+            matrix.b * textureWidth / height,
+            matrix.c * textureHeight / width,
+            matrix.d * textureHeight / height,
+            matrix.tx / width,
+            matrix.ty / height);
+
+        uTextureTransform.invert();
+
+        tilingUniforms.uniforms.uMapCoord = textureMatrix.mapCoord;
+        tilingUniforms.uniforms.uClampFrame = textureMatrix.uClampFrame;
+        tilingUniforms.uniforms.uClampOffset = textureMatrix.uClampOffset;
+        tilingUniforms.uniforms.uTextureTransform = uTextureTransform;
+        tilingUniforms.uniforms.uSizeAnchor[0] = width;
+        tilingUniforms.uniforms.uSizeAnchor[1] = height;
+        tilingUniforms.uniforms.uSizeAnchor[2] = anchorX;
+        tilingUniforms.uniforms.uSizeAnchor[3] = anchorY;
+
+        if (texture)
+        {
+            this.resources.uTexture = texture.source;
+            this.resources.uSampler = texture.source.style;
+        }
     }
 }

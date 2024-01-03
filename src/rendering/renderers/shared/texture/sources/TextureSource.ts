@@ -1,6 +1,6 @@
 import EventEmitter from 'eventemitter3';
+import { isPow2 } from '../../../../../maths/misc/pow2';
 import { uid } from '../../../../../utils/data/uid';
-import { deprecation, v8_0_0 } from '../../../../../utils/logging/deprecation';
 import { TextureStyle } from '../TextureStyle';
 
 import type { BindResource } from '../../../gpu/shader/BindResource';
@@ -200,6 +200,8 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      */
     public _textureBindLocation = -1;
 
+    public isPowerOfTwo: boolean;
+
     // eslint-disable-next-line @typescript-eslint/no-parameter-properties
     constructor(protected readonly options: TextureSourceOptions<T> = {})
     {
@@ -246,6 +248,8 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.style = style instanceof TextureStyle ? style : new TextureStyle(style);
 
         this.destroyed = false;
+
+        this._refreshPOT();
     }
 
     /** returns itself */
@@ -444,6 +448,8 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
             return;
         }
 
+        this._refreshPOT();
+
         this.pixelWidth = newPixelWidth;
         this.pixelHeight = newPixelHeight;
 
@@ -471,38 +477,33 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         }
     }
 
-    /** @deprecated since 8.0.0 */
     set wrapMode(value: WRAP_MODE)
     {
-        // eslint-disable-next-line max-len
-        deprecation(v8_0_0, 'TextureSource.wrapMode property has been deprecated. Use TextureSource.style.addressMode instead.');
         this._style.wrapMode = value;
     }
 
-    /** @deprecated since 8.0.0 */
     get wrapMode(): WRAP_MODE
     {
-        // eslint-disable-next-line max-len
-        deprecation(v8_0_0, 'TextureSource.wrapMode property has been deprecated. Use TextureSource.style.addressMode instead.');
-
         return this._style.wrapMode;
     }
 
-    /** @deprecated since 8.0.0 */
     set scaleMode(value: SCALE_MODE)
     {
-        // eslint-disable-next-line max-len
-        deprecation(v8_0_0, 'TextureSource.scaleMode property has been deprecated. Use TextureSource.style.scaleMode instead.');
         this._style.scaleMode = value;
     }
 
-    /** @deprecated since 8.0.0 */
     get scaleMode(): SCALE_MODE
     {
-        // eslint-disable-next-line max-len
-        deprecation(v8_0_0, 'TextureSource.scaleMode property has been deprecated. Use TextureSource.style.scaleMode instead.');
-
         return this._style.scaleMode;
+    }
+
+    /**
+     * Refresh check for isPowerOfTwo texture based on size
+     * @private
+     */
+    protected _refreshPOT(): void
+    {
+        this.isPowerOfTwo = isPow2(this.pixelWidth) && isPow2(this.pixelHeight);
     }
 
     public static test(_resource: any): any

@@ -6,7 +6,7 @@ import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
-    it: 'should a dds texture',
+    it: 'should load a dds texture',
     create: async (scene: Container) =>
     {
         const texture = await Assets.load('explosion_dxt5_mip.dds');

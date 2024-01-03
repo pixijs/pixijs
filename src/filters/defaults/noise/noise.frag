@@ -2,11 +2,11 @@
 in vec2 vTextureCoord;
 in vec4 vColor;
 
-out vec4 fragColor;
+out vec4 finalColor;
 
 uniform float uNoise;
 uniform float uSeed;
-uniform sampler2D uSampler;
+uniform sampler2D uTexture;
 
 float rand(vec2 co)
 {
@@ -15,7 +15,7 @@ float rand(vec2 co)
 
 void main()
 {
-    vec4 color = texture(uSampler, vTextureCoord);
+    vec4 color = texture(uTexture, vTextureCoord);
     float randomValue = rand(gl_FragCoord.xy * 0.2);
     float diff = (randomValue - 0.5) *  0.5;
 
@@ -31,5 +31,5 @@ void main()
     // Premultiply alpha again.
     color.rgb *= color.a;
 
-    fragColor = color;
+    finalColor = color;
 }

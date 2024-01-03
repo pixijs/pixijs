@@ -14,11 +14,11 @@ export function getGlProgram()
 
         fragment: `
 
-            out vec4 fragColor;
+            out vec4 finalColor;
 
             void main(void)
             {
-                fragColor = vec4(1.0);
+                finalColor = vec4(1.0);
             }
         `,
     });

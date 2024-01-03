@@ -9,7 +9,7 @@ export const glUploadVideoResource = {
 
     id: 'video',
 
-    upload(source: VideoSource, glTexture: GlTexture, gl: GlRenderingContext)
+    upload(source: VideoSource, glTexture: GlTexture, gl: GlRenderingContext, webGLVersion: number)
     {
         if (!source.isValid)
         {
@@ -28,7 +28,7 @@ export const glUploadVideoResource = {
             return;
         }
 
-        glUploadImageResource.upload(source, glTexture, gl);
+        glUploadImageResource.upload(source, glTexture, gl, webGLVersion);
     }
 } as GLTextureUploader;
 

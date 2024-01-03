@@ -28,7 +28,7 @@ describe('Text', () =>
         {
             const text = new Text({ text: 'foo', resolution: 3 });
 
-            expect(text.view.resolution).toEqual(3);
+            expect(text.resolution).toEqual(3);
         });
 
         it('should update the text resolution to match the renderer resolution when being rendered to screen', async () =>
@@ -48,11 +48,11 @@ describe('Text', () =>
         {
             const text = new Text({ text: 'foo', resolution: 3 });
 
-            expect(text.view.resolution).toEqual(3);
+            expect(text.resolution).toEqual(3);
 
             const renderer = await getRenderer({ resolution: 2 });
 
-            const texture = renderer.canvasText.getTexture(text.text, text.view.resolution, text.style, 'foo');
+            const texture = renderer.canvasText.getTexture(text.text, text.resolution, text.style, 'foo');
 
             expect(texture.source.resolution).toEqual(3);
 
@@ -126,7 +126,7 @@ describe('Text', () =>
 
             const text = new Text({ text: 'foo' });
 
-            const key = text.view._getKey();
+            const key = text._getKey();
 
             container.addChild(text);
 

@@ -4,7 +4,7 @@ import '../../src/math-extras/init';
 
 describe('Point', () =>
 {
-    const observer = { onUpdate: () => { /* empty */ } };
+    const observer = { _onUpdate: () => { /* empty */ } };
 
     describe('add', () =>
     {

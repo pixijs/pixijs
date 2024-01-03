@@ -129,12 +129,6 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
     public readonly _signature: string;
 
     /**
-     * @internal
-     * @ignore
-     */
-    public _syncFunction?: (uniforms: UNIFORMS, data: Float32Array, offset: number) => void;
-
-    /**
      * Create a new Uniform group
      * @param uniformStructures - The structures of the uniform group
      * @param options - The optional parameters of this uniform group
