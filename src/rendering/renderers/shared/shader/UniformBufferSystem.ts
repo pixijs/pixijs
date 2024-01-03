@@ -39,7 +39,7 @@ export class UniformBufferSystem implements System
     }
 
     /**
-     * Overrideable function by `@pixi/unsafe-eval` to silence
+     * Overrideable function by `pixi.js/unsafe-eval` to silence
      * throwing an error if platform doesn't support unsafe-evals.
      * @private
      */
@@ -48,7 +48,7 @@ export class UniformBufferSystem implements System
         if (!unsafeEvalSupported())
         {
             throw new Error('Current environment does not allow unsafe-eval, '
-                 + 'please use @pixi/unsafe-eval module to enable support.');
+                 + 'please use pixi.js/unsafe-eval module to enable support.');
         }
     }
 

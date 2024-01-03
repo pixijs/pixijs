@@ -36,7 +36,7 @@ export function getGlobalBounds(target: Container, skipUpdateTransform: boolean,
 
     if (pooledMatrix)
     {
-        matrixPool.put(pooledMatrix);
+        matrixPool.return(pooledMatrix);
     }
 
     if (!bounds.isValid)
@@ -111,12 +111,12 @@ export function _getGlobalBounds(
 
         parentBounds.addBounds(bounds, Matrix.IDENTITY);
 
-        boundsPool.put(bounds);
+        boundsPool.return(bounds);
     }
 
     if (!skipUpdateTransform)
     {
-        matrixPool.put(worldTransform);
+        matrixPool.return(worldTransform);
     }
 }
 

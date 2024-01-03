@@ -88,10 +88,10 @@ function _getLocalBounds(target: Container, bounds: Bounds, parentTransform: Mat
         // TODO - make a add transformed bounds?
         parentBounds.addBounds(bounds, Matrix.IDENTITY);
 
-        boundsPool.put(bounds);
+        boundsPool.return(bounds);
     }
 
-    matrixPool.put(relativeTransform);
+    matrixPool.return(relativeTransform);
 }
 
 export function getParent(target: Container, root: Container, matrix: Matrix)
