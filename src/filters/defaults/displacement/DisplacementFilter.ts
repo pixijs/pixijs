@@ -63,9 +63,9 @@ export class DisplacementFilter extends Filter
         }
 
         const filterUniforms = new UniformGroup({
-            filterMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
-            scale: { value: scale, type: 'vec2<f32>' },
-            rotation: { value: new Float32Array([0, 0, 0, 0]), type: 'vec4<f32>' },
+            uFilterMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
+            uScale: { value: scale, type: 'vec2<f32>' },
+            uRotation: { value: new Float32Array([0, 0, 0, 0]), type: 'vec4<f32>' },
         });
 
         const glProgram = GlProgram.from({
@@ -92,8 +92,8 @@ export class DisplacementFilter extends Filter
             glProgram,
             resources: {
                 filterUniforms,
-                mapTexture: textureSource,
-                mapSampler: textureSource.style,
+                uMapTexture: textureSource,
+                uMapSampler: textureSource.style,
             }
         });
 
@@ -118,7 +118,7 @@ export class DisplacementFilter extends Filter
         const uniforms = this.resources.filterUniforms.uniforms;
 
         filterManager.calculateSpriteMatrix(
-            uniforms.filterMatrix,
+            uniforms.uFilterMatrix,
             this._sprite
         );
 
@@ -129,13 +129,13 @@ export class DisplacementFilter extends Filter
 
         if (lenX !== 0 && lenY !== 0)
         {
-            uniforms.rotation[0] = wt.a / lenX;
-            uniforms.rotation[1] = wt.b / lenX;
-            uniforms.rotation[2] = wt.c / lenY;
-            uniforms.rotation[3] = wt.d / lenY;
+            uniforms.uRotation[0] = wt.a / lenX;
+            uniforms.uRotation[1] = wt.b / lenX;
+            uniforms.uRotation[2] = wt.c / lenY;
+            uniforms.uRotation[3] = wt.d / lenY;
         }
 
-        this.resources.mapTexture = this._sprite.texture.source;
+        this.resources.uMapTexture = this._sprite.texture.source;
 
         filterManager.applyFilter(this, input, output, clearMode);
     }

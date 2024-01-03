@@ -96,15 +96,15 @@ type ShaderDescriptor = ShaderWithGroupsDescriptor & ShaderWithResourcesDescript
  *     glProgram: glProgram,
  *     gpuProgram: gpuProgram,
  *     resources: {
- *         uSampler: texture.source,
- *         mySampler: texture.sampler,
+ *         uTexture: texture.source,
+ *         uSampler: texture.sampler,
  *         uColor: [1, 0, 0, 1],
  *     },
  * });
  *
  * // update the uniforms
  * shader.resources.uColor[1] = 1;
- * shader.resources.uSampler = texture2.source;
+ * shader.resources.uTexture = texture2.source;
  * @class
  * @memberof rendering
  */
@@ -293,6 +293,8 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
         this._uniformBindMap[groupIndex] ||= {};
 
         this._uniformBindMap[groupIndex][bindIndex] ||= name;
+
+        this.groups[groupIndex] ||= new BindGroup();
     }
 
     private _buildResourceAccessor(groups: ShaderGroups, nameHash: Record<string, GroupsData>)

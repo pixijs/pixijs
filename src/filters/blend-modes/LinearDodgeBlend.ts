@@ -36,7 +36,7 @@ export class LinearDodgeBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                fragColor = vec4(blendLinearDodge(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendLinearDodge(back.rgb, front.rgb, front.a), uBlend);
                 `
             },
             gpu: {

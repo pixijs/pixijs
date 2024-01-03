@@ -42,10 +42,6 @@ export class GlMeshAdaptor implements MeshAdaptor
                 uTexture: Texture.EMPTY.source,
             }
         });
-
-        // will be added later in the shader so declare them here:
-        this._shader.addResource('globalUniforms', 0, 0);
-        this._shader.addResource('localUniforms', 1, 0);
     }
 
     public execute(meshPipe: MeshPipe, renderable: Renderable<MeshView>): void

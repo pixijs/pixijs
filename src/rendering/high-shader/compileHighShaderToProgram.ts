@@ -19,7 +19,7 @@ export function compileHighShaderGpuProgram({ bits, name }: {bits: HighShaderBit
         ]
     });
 
-    return new GpuProgram({
+    return GpuProgram.from({
         name,
         vertex: {
             source: source.vertex,

@@ -1,11 +1,11 @@
 
 struct GlobalFilterUniforms {
-    inputSize:vec4<f32>,
-    inputPixel:vec4<f32>,
-    inputClamp:vec4<f32>,
-    outputFrame:vec4<f32>,
-    backgroundFrame:vec4<f32>,
-    globalFrame:vec4<f32>,
+    uInputSize:vec4<f32>,
+    uInputPixel:vec4<f32>,
+    uInputClamp:vec4<f32>,
+    uOutputFrame:vec4<f32>,
+    uBackgroundFrame:vec4<f32>,
+    uGlobalFrame:vec4<f32>,
 };
 
 struct ShockWaveUniforms {
@@ -16,9 +16,9 @@ struct ShockWaveUniforms {
 };
 @group(0) @binding(0) var<uniform> globalUniforms : GlobalUniforms;
 @group(1) @binding(0) var<uniform> gfu: GlobalFilterUniforms;
-@group(1) @binding(1) var uSampler: texture_2d<f32>;
-@group(1) @binding(2) var mySampler : sampler;
-@group(1) @binding(3) var backTexture: texture_2d<f32>;
+@group(1) @binding(1) var uTexture: texture_2d<f32>;
+@group(1) @binding(2) var uSampler : sampler;
+
 @group(2) @binding(0) var<uniform> shockwaveUniforms : ShockWaveUniforms;
 
 struct VSOutput {
@@ -29,13 +29,13 @@ struct VSOutput {
 
 fn filterVertexPosition(aPosition:vec2<f32>) -> vec4<f32>
 {
-    var position = aPosition * gfu.outputFrame.zw + gfu.outputFrame.xy;
+    var position = aPosition * gfu.uOutputFrame.zw + gfu.uOutputFrame.xy;
     return vec4((globalUniforms.projectionMatrix * vec3(position, 1.0)).xy, 0.0, 1.0);
 }
 
 fn filterTextureCoord( aPosition:vec2<f32> ) -> vec2<f32>
 {
-    return aPosition * (gfu.outputFrame.zw * gfu.inputSize.zw);
+    return aPosition * (gfu.uOutputFrame.zw * gfu.uInputSize.zw);
 }
 
 fn filterBackgroundTextureCoord( aPosition:vec2<f32> ) -> vec2<f32>
@@ -45,11 +45,11 @@ fn filterBackgroundTextureCoord( aPosition:vec2<f32> ) -> vec2<f32>
 
 fn globalTextureCoord( aPosition:vec2<f32> ) -> vec2<f32>
 {
-    return  (aPosition.xy / gfu.globalFrame.zw) + (gfu.globalFrame.xy / gfu.globalFrame.zw);  
+    return  (aPosition.xy / gfu.uGlobalFrame.zw) + (gfu.uGlobalFrame.xy / gfu.uGlobalFrame.zw);  
 }
 fn getSize() -> vec2<f32>
 {
-    return gfu.globalFrame.zw;
+    return gfu.uGlobalFrame.zw;
 }
 
 @vertex
@@ -77,9 +77,9 @@ fn mainFragment(
     let uWavelength = shockwaveUniforms.uWave[1];
     let uBrightness = shockwaveUniforms.uWave[2];
     let uRadius = shockwaveUniforms.uWave[3];
-    let halfWavelength: f32 = uWavelength * 0.5 / gfu.inputSize.x;
-    let maxRadius: f32 = uRadius / gfu.inputSize.x;
-    let currentRadius: f32 = uTime * uSpeed / gfu.inputSize.x;
+    let halfWavelength: f32 = uWavelength * 0.5 / gfu.uInputSize.x;
+    let maxRadius: f32 = uRadius / gfu.uInputSize.x;
+    let currentRadius: f32 = uTime * uSpeed / gfu.uInputSize.x;
     var fade: f32 = 1.0;
     var returnColorOnly: bool = false;
     
@@ -89,8 +89,8 @@ fn mainFragment(
         }
         fade = 1.0 - pow(currentRadius / maxRadius, 2.0);
     }
-    var dir: vec2<f32> = vec2<f32>(uv - uOffset / gfu.inputSize.xy);
-    dir.y *= gfu.inputSize.y / gfu.inputSize.x;
+    var dir: vec2<f32> = vec2<f32>(uv - uOffset / gfu.uInputSize.xy);
+    dir.y *= gfu.uInputSize.y / gfu.uInputSize.x;
 
     let dist:f32 = length(dir);
 
@@ -102,19 +102,19 @@ fn mainFragment(
     let diff: f32 = (dist - currentRadius) / halfWavelength;
     let p: f32 = 1.0 - pow(abs(diff), 2.0);
     let powDiff: f32 = 1.25 * sin(diff * PI) * p * ( uAmplitude * fade );
-    let offset: vec2<f32> = diffUV * powDiff / gfu.inputSize.xy;
+    let offset: vec2<f32> = diffUV * powDiff / gfu.uInputSize.xy;
     // Do clamp :
     let coord: vec2<f32> = uv + offset;
-    let clampedCoord: vec2<f32> = clamp(coord, gfu.inputClamp.xy, gfu.inputClamp.zw);
+    let clampedCoord: vec2<f32> = clamp(coord, gfu.uInputClamp.xy, gfu.uInputClamp.zw);
 
-    var clampedColor: vec4<f32> = textureSample(uSampler, mySampler, clampedCoord);
+    var clampedColor: vec4<f32> = textureSample(uTexture, uSampler, clampedCoord);
     
     if (boolVec2(coord, clampedCoord)) 
     {
         clampedColor *= max(0.0, 1.0 - length(coord - clampedCoord));
     }
     // No clamp :
-    return select(clampedColor * vec4<f32>(vec3<f32>(1.0 + (uBrightness - 1.0) * p * fade), clampedColor.a), textureSample(uSampler, mySampler, uv), returnColorOnly);
+    return select(clampedColor * vec4<f32>(vec3<f32>(1.0 + (uBrightness - 1.0) * p * fade), clampedColor.a), textureSample(uTexture, uSampler, uv), returnColorOnly);
 }
 
 fn boolVec2(x: vec2<f32>, y: vec2<f32>) -> bool

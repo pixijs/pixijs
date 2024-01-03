@@ -35,7 +35,7 @@ export class SoftLightBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                fragColor = vec4(blendSoftLight(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendSoftLight(back.rgb, front.rgb, front.a), uBlend);
                 `
             },
             gpu: {

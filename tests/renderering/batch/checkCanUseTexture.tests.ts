@@ -3,6 +3,7 @@ import { InstructionSet } from '../../../src/rendering/renderers/shared/instruct
 import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
 import '../../../src/rendering/renderers/shared/texture/sources/ImageSource';
 
+import type { IndexBufferArray } from '../../../src/rendering/renderers/shared/geometry/Geometry';
 import type { BLEND_MODES } from '../../../src/rendering/renderers/shared/state/const';
 
 class DummyBatchableObject implements BatchableObject
@@ -12,7 +13,7 @@ class DummyBatchableObject implements BatchableObject
     {
         //
     };
-    packIndex = (_indexBuffer: Uint32Array, _index: number, _indicesOffset: number) =>
+    packIndex = (_indexBuffer: IndexBufferArray, _index: number, _indicesOffset: number) =>
     {
         //
     };

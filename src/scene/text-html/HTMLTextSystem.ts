@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../extensions/Extensions';
 import { TexturePool } from '../../rendering/renderers/shared/texture/TexturePool';
-import { RendererType } from '../../rendering/renderers/types';
+import { type Renderer, RendererType } from '../../rendering/renderers/types';
 import { isSafari } from '../../utils/browser/isSafari';
 import { warn } from '../../utils/logging/warn';
 import { BigPool } from '../../utils/pool/PoolGroup';
@@ -12,11 +12,9 @@ import { getTemporaryCanvasFromImage } from './utils/getTemporaryCanvasFromImage
 import { loadSVGImage } from './utils/loadSVGImage';
 import { measureHtmlText } from './utils/measureHtmlText';
 
-import type { WebGPURenderer } from '../../rendering/renderers/gpu/WebGPURenderer';
 import type { System } from '../../rendering/renderers/shared/system/System';
 import type { CanvasAndContext } from '../../rendering/renderers/shared/texture/CanvasPool';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
-import type { Renderer } from '../../rendering/renderers/types';
 import type { PoolItem } from '../../utils/pool/Pool';
 import type { TextViewOptions } from '../text/TextView';
 import type { HTMLTextStyle } from './HtmlTextStyle';
@@ -168,8 +166,7 @@ export class HTMLTextSystem implements System
 
         if (this._createCanvas)
         {
-            // TODO initSource will be in webGL soon too, we can remove this cast then
-            (this._renderer as WebGPURenderer).texture.initSource(texture.source);
+            this._renderer.texture.initSource(texture.source);
         }
 
         BigPool.return(htmlTextData as PoolItem);

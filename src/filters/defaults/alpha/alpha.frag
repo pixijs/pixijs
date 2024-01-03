@@ -1,12 +1,12 @@
 
 in vec2 vTextureCoord;
 
-out vec4 fragColor;
+out vec4 finalColor;
 
 uniform float uAlpha;
-uniform sampler2D uSampler;
+uniform sampler2D uTexture;
 
 void main()
 {
-    fragColor =  texture(uSampler, vTextureCoord) * uAlpha;
+    finalColor =  texture(uTexture, vTextureCoord) * uAlpha;
 }

@@ -1,4 +1,5 @@
 import type { Batch, BatchableObject, Batcher } from '../../rendering/batcher/shared/Batcher';
+import type { IndexBufferArray } from '../../rendering/renderers/shared/geometry/Geometry';
 import type { Renderable } from '../../rendering/renderers/shared/Renderable';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { View } from '../../rendering/renderers/shared/view/View';
@@ -101,7 +102,7 @@ export class BatchableSprite implements BatchableObject
         uint32View[index + 23] = textureIdAndRound;
     }
 
-    public packIndex(indexBuffer: Uint32Array, index: number, indicesOffset: number)
+    public packIndex(indexBuffer: IndexBufferArray, index: number, indicesOffset: number)
     {
         indexBuffer[index] = indicesOffset + 0;
         indexBuffer[index + 1] = indicesOffset + 1;
