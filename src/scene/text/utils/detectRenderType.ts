@@ -20,7 +20,14 @@ export function detectRenderType(style: TextStyleOptions | AnyTextStyle): 'canva
         return 'html';
     }
 
-    const fontData = Cache.get(`${style?.fontFamily as string}-bitmap`);
+    const name = `${style?.fontFamily as string}-bitmap`;
+
+    if (!Cache.has(name))
+    {
+        return 'canvas';
+    }
+
+    const fontData = Cache.get(name);
 
     if (fontData instanceof DynamicBitmapFont || fontData instanceof BitmapFont)
     {
