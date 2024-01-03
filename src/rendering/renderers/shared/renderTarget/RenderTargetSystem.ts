@@ -204,7 +204,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
         this.push(
             target,
             clear,
-            clearColor ?? this._renderer.background.colorRgba,
+            clearColor,
             frame
         );
 
