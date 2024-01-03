@@ -60,5 +60,9 @@ export interface WebGLExtensions
     atc?: WEBGL_compressed_texture_atc;
     astc?: WEBGL_compressed_texture_astc;
     bptc?: EXT_texture_compression_bptc;
+
+    // webgl1 EXT_sRGB
+    srgb?: EXT_sRGB;
+
 }
 /* eslint-enable camelcase */

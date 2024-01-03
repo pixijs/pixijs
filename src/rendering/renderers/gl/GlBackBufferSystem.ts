@@ -1,4 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { warn } from '../../../utils/logging/warn';
+import { Geometry } from '../shared/geometry/Geometry';
 import { Shader } from '../shared/shader/Shader';
 import { State } from '../shared/state/State';
 import { TextureSource } from '../shared/texture/sources/TextureSource';
@@ -11,32 +13,49 @@ import type { WebGLRenderer } from './WebGLRenderer';
 
 const bigTriangleProgram = new GlProgram({
     vertex: `
+        attribute vec2 aPosition;
         out vec2 vUv;
 
         void main() {
-            vUv = vec2((gl_VertexID << 1) & 2, (gl_VertexID & 2));
+            gl_Position = gl_Position = vec4(aPosition, 0.0, 1.0);
 
-            gl_Position = vec4(vUv * 2.0f + -1.0f, 0.0f, 1.0f);
-
+            vUv = (aPosition + 1.0) / 2.0;
+           
             // flip dem UVs
-            vUv.y = 1.0f - vUv.y;
+            vUv.y = 1.0 - vUv.y;
         }`,
     fragment: `
         in vec2 vUv;
-        out vec4 fragColor;
+        out vec4 finalColor;
 
         uniform sampler2D uTexture;
 
         void main() {
-            fragColor = texture(uTexture, vUv);
+            finalColor = texture(uTexture, vUv);
         }`,
     name: 'big-triangle',
 });
 
-const bigTriangleShader = new Shader({
+const bigTriangleShaderWebGL = new Shader({
     glProgram: bigTriangleProgram,
     resources: {
         uTexture: Texture.WHITE.source,
+    },
+});
+
+const bigTriangleGeometry = new Geometry({
+    attributes: {
+        aPosition: {
+            buffer: [
+                -1.0, -1.0, // Bottom left corner
+                3.0, -1.0, // Bottom right corner, extending beyond right edge
+                -1.0, 3.0 // Top left corner, extending beyond top edge
+            ],
+            format: 'float32x2',
+            shaderLocation: 0,
+            offset: 0,
+            stride: 0,
+        },
     },
 });
 
@@ -88,6 +107,7 @@ export class GlBackBufferSystem implements System
     private _targetTexture: TextureSource;
     private _useBackBufferThisRender = false;
     private _antialias: boolean;
+    private _state: State;
 
     constructor(renderer: WebGLRenderer)
     {
@@ -99,7 +119,17 @@ export class GlBackBufferSystem implements System
         const { useBackBuffer, antialias } = { ...GlBackBufferSystem.defaultOptions, ...options };
 
         this.useBackBuffer = useBackBuffer;
+
         this._antialias = antialias;
+
+        if (!this._renderer.context.supports.msaa)
+        {
+            warn('antialiasing, is not supported on when using the back buffer');
+
+            this._antialias = false;
+        }
+
+        this._state = State.for2d();
     }
 
     /**
@@ -136,16 +166,15 @@ export class GlBackBufferSystem implements System
 
         if (!this._useBackBufferThisRender) return;
 
-        const gl = renderer.gl;
-
         renderer.renderTarget.bind(this._targetTexture, false);
 
-        bigTriangleShader.resources.uTexture = this._backBufferTexture.source;
+        bigTriangleShaderWebGL.resources.uTexture = this._backBufferTexture.source;
 
-        renderer.shader.bind(bigTriangleShader, false);
-        renderer.state.set(State.for2d());
-
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        renderer.encoder.draw({
+            geometry: bigTriangleGeometry,
+            shader: bigTriangleShaderWebGL,
+            state: this._state,
+        });
     }
 
     private _getBackBufferTexture(targetSourceTexture: TextureSource)

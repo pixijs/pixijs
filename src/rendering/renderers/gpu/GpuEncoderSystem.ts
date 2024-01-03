@@ -114,7 +114,9 @@ export class GpuEncoderSystem implements System
 
         this._boundIndexBuffer = buffer;
 
-        this.renderPassEncoder.setIndexBuffer(this._renderer.buffer.updateBuffer(buffer), 'uint32');
+        const indexFormat = buffer.data.BYTES_PER_ELEMENT === 2 ? 'uint16' : 'uint32';
+
+        this.renderPassEncoder.setIndexBuffer(this._renderer.buffer.updateBuffer(buffer), indexFormat);
     }
 
     public setBindGroup(index: number, bindGroup: BindGroup, program: GpuProgram)

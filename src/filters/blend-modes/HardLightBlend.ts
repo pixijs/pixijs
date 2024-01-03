@@ -35,7 +35,7 @@ export class HardLightBlend extends BlendModeFilter
                 }
             `,
                 main: `
-                fragColor = vec4(blendHardLight(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendHardLight(back.rgb, front.rgb, front.a), uBlend);
             `
             },
             gpu: {

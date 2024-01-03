@@ -5,7 +5,7 @@ import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { getCanvasTexture } from '../texture/utils/getCanvasTexture';
 
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
-import type { DestroyOptions } from '../../../../scene/container/destroyTypes';
+import type { TypeOrBool } from '../../../../scene/container/destroyTypes';
 import type { System } from '../system/System';
 import type { CanvasSourceOptions } from '../texture/sources/CanvasSource';
 import type { Texture } from '../texture/Texture';
@@ -31,12 +31,18 @@ export interface ViewSystemOptions
     multiView?: boolean;
 }
 
+export interface ViewSystemDestroyOptions
+{
+    /** Whether to remove the view element from the DOM. Defaults to `false`. */
+    removeView?: boolean;
+}
+
 /**
  * The view system manages the main canvas that is attached to the DOM.
  * This main role is to deal with how the holding the view reference and dealing with how it is resized.
  * @memberof rendering
  */
-export class ViewSystem implements System
+export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSystemDestroyOptions>>
 {
     /** @ignore */
     public static extension = {
@@ -161,7 +167,7 @@ export class ViewSystem implements System
      * @param {options | false} options - The options for destroying the view, or "false".
      * @param options.removeView - Whether to remove the view element from the DOM. Defaults to `false`.
      */
-    public destroy(options: DestroyOptions = false): void
+    public destroy(options: TypeOrBool<ViewSystemDestroyOptions> = false): void
     {
         const removeView = typeof options === 'boolean' ? options : !!options?.removeView;
 

@@ -40,6 +40,9 @@ export class RenderGroupSystem implements System
     {
         container.isRenderGroup = true;
 
+        const parent = container.parent;
+
+        container.parent = null;
         const renderer = this._renderer;
 
         // collect all the renderGroups in the scene and then render them one by one..
@@ -103,6 +106,8 @@ export class RenderGroupSystem implements System
         {
             renderPipes.uniformBatch.renderEnd();
         }
+
+        container.parent = parent;
     }
 
     public destroy()

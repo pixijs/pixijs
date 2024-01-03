@@ -1,32 +1,28 @@
+import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
+import { updateQuadBounds } from '../../utils/data/updateQuadBounds';
 import { Container } from '../container/Container';
-import { SpriteView } from './SpriteView';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { PointLike } from '../../maths/point/PointLike';
 import type { TextureSourceLike } from '../../rendering/renderers/shared/texture/Texture';
+import type { View } from '../../rendering/renderers/shared/view/View';
+import type { Bounds, BoundsData } from '../container/bounds/Bounds';
 import type { ContainerOptions } from '../container/Container';
+import type { DestroyOptions } from '../container/destroyTypes';
 
 /**
- * Constructor options used for `Sprite` instances.
- * ```js
- * const sprite = new Sprite({
- *    texture: Texture.from('assets/image.png'),
- *    anchor: new Point(0.5, 0.5),
- *    position: new Point(100, 200),
- *    scale: new Point(2, 2),
- *    rotation: Math.PI / 2,
- * });
- * ```
- * @see {@link scene.Sprite}
+ * Options for the {@link scene.Sprite} constructor.
  * @memberof scene
  */
-export interface SpriteOptions extends Partial<ContainerOptions<SpriteView>>
+export interface SpriteOptions extends ContainerOptions
 {
     /** The texture to use for the sprite. */
     texture?: Texture;
     /** The anchor point of the sprite. */
     anchor?: PointLike
+    /** Whether or not to round the x/y position. */
+    roundPixels?: boolean;
 }
 
 /**
@@ -53,7 +49,7 @@ export interface SpriteOptions extends Partial<ContainerOptions<SpriteView>>
  * @memberof scene
  * @extends scene.Container
  */
-export class Sprite extends Container<SpriteView>
+export class Sprite extends Container implements View
 {
     /**
      * Helper function that creates a new sprite based on the source you provide.
@@ -72,6 +68,24 @@ export class Sprite extends Container<SpriteView>
         return new Sprite(Texture.from(source, skipCache));
     }
 
+    public readonly renderPipeId = 'sprite';
+
+    public batched = true;
+    public readonly _anchor: ObservablePoint;
+
+    // sprite specific..
+    /** @internal */
+    public _texture: Texture;
+    /** @internal */
+    public _didSpriteUpdate = false;
+
+    private readonly _bounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
+    private readonly _sourceBounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
+    private _boundsDirty = true;
+    private _sourceBoundsDirty = true;
+
+    public _roundPixels: 0 | 1 = 0;
+
     /**
      * @param options - The options for creating the sprite.
      */
@@ -82,15 +96,155 @@ export class Sprite extends Container<SpriteView>
             options = { texture: options };
         }
 
-        const { texture, ...rest } = options;
+        // split out
+        const { texture, anchor, ...rest } = options;
 
         super({
-            view: new SpriteView(texture ?? Texture.EMPTY),
             label: 'Sprite',
             ...rest
         });
 
+        this._anchor = new ObservablePoint(
+            {
+                _onUpdate: () =>
+                {
+                    this.onViewUpdate();
+                }
+            },
+            anchor?.x ?? texture.defaultAnchor?.x ?? 0,
+            anchor?.y ?? texture.defaultAnchor?.y ?? 0,
+        );
+
+        this.texture = texture;
+
         this.allowChildren = false;
+    }
+
+    set texture(value: Texture)
+    {
+        value ||= Texture.EMPTY;
+
+        if (this._texture === value) return;
+
+        this._texture = value;
+
+        this.onViewUpdate();
+    }
+
+    get texture()
+    {
+        return this._texture;
+    }
+
+    get bounds()
+    {
+        if (this._boundsDirty)
+        {
+            this._updateBounds();
+            this._boundsDirty = false;
+        }
+
+        return this._bounds;
+    }
+
+    get sourceBounds()
+    {
+        if (this._sourceBoundsDirty)
+        {
+            this._updateSourceBounds();
+            this._sourceBoundsDirty = false;
+        }
+
+        return this._sourceBounds;
+    }
+
+    // passed local space..
+    public containsPoint(point: PointData)
+    {
+        const bounds = this.sourceBounds;
+
+        if (point.x >= bounds.maxX && point.x <= bounds.minX)
+        {
+            if (point.y >= bounds.maxY && point.y <= bounds.minY)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public addBounds(bounds: Bounds)
+    {
+        const _bounds = this._texture.trim ? this.sourceBounds : this.bounds;
+
+        bounds.addFrame(_bounds.minX, _bounds.minY, _bounds.maxX, _bounds.maxY);
+    }
+
+    /**
+     * @internal
+     */
+    public onViewUpdate()
+    {
+        // increment from the 12th bit!
+        this._didChangeId += 1 << 12;
+        this._didSpriteUpdate = true;
+        this._sourceBoundsDirty = this._boundsDirty = true;
+
+        if (this.didViewUpdate) return;
+        this.didViewUpdate = true;
+
+        if (this.renderGroup)
+        {
+            this.renderGroup.onChildViewUpdate(this);
+        }
+    }
+
+    private _updateBounds()
+    {
+        updateQuadBounds(this._bounds, this._anchor, this._texture, 0);
+    }
+
+    private _updateSourceBounds()
+    {
+        const anchor = this._anchor;
+        const texture = this._texture;
+
+        const sourceBounds = this._sourceBounds;
+
+        const { width, height } = texture.orig;
+
+        sourceBounds.maxX = -anchor._x * width;
+        sourceBounds.minX = sourceBounds.maxX + width;
+
+        sourceBounds.maxY = -anchor._y * height;
+        sourceBounds.minY = sourceBounds.maxY + height;
+    }
+
+    /**
+     * Destroys this sprite renderable and optionally its texture.
+     * @param options - Options parameter. A boolean will act as if all options
+     *  have been set to that value
+     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
+     * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
+     */
+    public destroy(options: DestroyOptions = false)
+    {
+        super.destroy(options);
+
+        const destroyTexture = typeof options === 'boolean' ? options : options?.texture;
+
+        if (destroyTexture)
+        {
+            const destroyTextureSource = typeof options === 'boolean' ? options : options?.textureSource;
+
+            this._texture.destroy(destroyTextureSource);
+        }
+
+        this._texture = null;
+        (this._bounds as null) = null;
+        (this._sourceBounds as null) = null;
+        (this._anchor as null) = null;
     }
 
     /**
@@ -112,35 +266,23 @@ export class Sprite extends Container<SpriteView>
      */
     get anchor(): PointLike
     {
-        return this.view.anchor;
+        return this._anchor;
     }
 
     set anchor(value: PointData)
     {
-        this.view.anchor.x = value.x;
-        this.view.anchor.y = value.y;
-    }
-
-    /** The texture that the sprite is using. */
-    get texture()
-    {
-        return this.view.texture;
-    }
-
-    set texture(value: Texture)
-    {
-        this.view.texture = value;
+        this._anchor.x = value.x;
+        this._anchor.y = value.y;
     }
 
     /** Whether or not to round the x/y position of the sprite. */
     get roundPixels()
     {
-        return !!this.view.roundPixels;
+        return !!this._roundPixels;
     }
 
     set roundPixels(value: boolean)
     {
-        this.view.roundPixels = value ? 1 : 0;
+        this._roundPixels = value ? 1 : 0;
     }
 }
-

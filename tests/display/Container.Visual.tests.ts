@@ -97,7 +97,7 @@ describe('Container Visual', () =>
 
             updateRenderGroupTransforms(rootContainer.renderGroup, true);
 
-            const alpha = child.rgAlpha;
+            const alpha = child.groupAlpha;
 
             expect(alpha).toBe(0.5);
         });

@@ -39,7 +39,7 @@ export class PinLightBlend extends BlendModeFilter
                 }
             `,
                 main: `
-                fragColor = vec4(blendPinLight(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendPinLight(back.rgb, front.rgb, front.a), uBlend);
                 `
             },
             gpu: {

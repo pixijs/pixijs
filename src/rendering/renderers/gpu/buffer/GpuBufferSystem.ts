@@ -21,6 +21,7 @@ export class GpuBufferSystem implements System
 
     protected CONTEXT_UID: number;
     private _gpuBuffers: { [key: number]: GPUBuffer } = Object.create(null);
+    private readonly _managedBuffers: Buffer[] = [];
 
     private _gpu: GPU;
 
@@ -79,6 +80,8 @@ export class GpuBufferSystem implements System
         buffer.on('change', this.onBufferChange, this);
         buffer.on('destroy', this.onBufferDestroy, this);
 
+        this._managedBuffers.push(buffer);
+
         return gpuBuffer;
     }
 
@@ -101,19 +104,22 @@ export class GpuBufferSystem implements System
 
         gpuBuffer.destroy();
 
+        this._managedBuffers.splice(this._managedBuffers.indexOf(buffer), 1);
+
+        buffer.off('update', this.updateBuffer, this);
+        buffer.off('change', this.onBufferChange, this);
+        buffer.off('destroy', this.onBufferDestroy, this);
+
         this._gpuBuffers[buffer.uid] = null;
     }
 
     public destroy(): void
     {
-        for (const k of Object.keys(this._gpuBuffers))
-        {
-            const key = Number(k);
-            const gpuBuffer = this._gpuBuffers[key];
+        this._managedBuffers
+            .slice()
+            .forEach((buffer) => this.onBufferDestroy(buffer));
 
-            gpuBuffer.destroy();
-            this._gpuBuffers[key] = null;
-        }
+        (this._managedBuffers as null) = null;
 
         this._gpuBuffers = null;
     }

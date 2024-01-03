@@ -108,7 +108,6 @@ export class Bounds
         const tx = matrix.tx;
         const ty = matrix.ty;
 
-        //  console.log('addframe', tx);
         let minX = this.minX;
         let minY = this.minY;
         let maxX = this.maxX;
@@ -150,8 +149,6 @@ export class Bounds
         this.minY = minY;
         this.maxX = maxX;
         this.maxY = maxY;
-
-        // console.log('addframe', this.minX, this.minY, this.maxX, this.maxY);
     }
 
     public addRect(rect: Rectangle, matrix?: Matrix)
@@ -263,10 +260,25 @@ export class Bounds
     {
         return this.minX;
     }
+    set x(value: number)
+    {
+        const width = this.maxX - this.minX;
+
+        this.minX = value;
+        this.maxX = value + width;
+    }
 
     get y(): number
     {
         return this.minY;
+    }
+
+    set y(value: number)
+    {
+        const height = this.maxY - this.minY;
+
+        this.minY = value;
+        this.maxY = value + height;
     }
 
     get width(): number
@@ -274,9 +286,19 @@ export class Bounds
         return this.maxX - this.minX;
     }
 
+    set width(value: number)
+    {
+        this.maxX = this.minX + value;
+    }
+
     get height(): number
     {
         return this.maxY - this.minY;
+    }
+
+    set height(value: number)
+    {
+        this.maxY = this.minY + value;
     }
 
     get left(): number
