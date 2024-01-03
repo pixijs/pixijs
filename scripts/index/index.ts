@@ -18,11 +18,8 @@ directories.forEach((directory) =>
             '**/browserAll.ts',
             // same as above
             '**/webworkerAll.ts',
-            // TODO: we need to convert these to strings with a rollup plugin otherwise they get added to the global scope
-            // the current rollup plugin only fixes this issue for the non bundled build as it replaces the import string
-            // with a new file that is formatted correctly
-            '**/BasisWorker.ts',
-            '**/KTXWorker.ts',
+            // these shouldn't be exported as the webworker plugin will handle them
+            '**/*.worker.ts',
         ],
     });
 
