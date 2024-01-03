@@ -378,6 +378,27 @@ export class Graphics extends Container implements View, Instruction
         this._context.strokeStyle = value;
     }
 
+    /**
+     * Creates a new Graphics object.
+     * Note that only the context of the object is cloned, not its transform (position,scale,etc)
+     * @param deep - Whether to create a deep clone of the graphics object. If false, the context
+     * will be shared between the two objects (default false). If true, the context will be
+     * cloned (recommended if you need to modify the context in any way).
+     * @returns - A clone of the graphics object
+     */
+    public clone(deep = false): Graphics
+    {
+        if (deep)
+        {
+            return new Graphics(this._context.clone());
+        }
+
+        (this._ownedContext as null) = null;
+        const clone = new Graphics(this._context);
+
+        return clone;
+    }
+
     // -------- v7 deprecations ---------
 
     /**
