@@ -5,7 +5,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render cloned circles',
-    only: true,
     create: async (scene: Container) =>
     {
         const circle = new Graphics();
