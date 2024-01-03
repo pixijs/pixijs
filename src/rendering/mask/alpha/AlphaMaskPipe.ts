@@ -157,7 +157,6 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
 
                 bounds.ceil();
 
-                /// /////
                 const filterTexture = TexturePool.getOptimalTexture(
                     bounds.width,
                     bounds.height,

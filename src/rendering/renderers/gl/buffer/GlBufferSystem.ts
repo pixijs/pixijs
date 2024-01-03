@@ -5,8 +5,6 @@ import { GlBuffer } from './GlBuffer';
 
 import type { Buffer } from '../../shared/buffer/Buffer';
 import type { System } from '../../shared/system/System';
-// @ts-expect-error - used for jsdoc typedefs
-import type { Renderer } from '../../types';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
 

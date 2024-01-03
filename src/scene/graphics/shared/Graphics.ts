@@ -11,9 +11,7 @@ import type { View } from '../../../rendering/renderers/shared/view/View';
 import type { Bounds } from '../../container/bounds/Bounds';
 import type { ContainerOptions } from '../../container/Container';
 import type { ContextDestroyOptions, DestroyOptions } from '../../container/destroyTypes';
-// @ts-expect-error - used for jsdoc typedefs
-// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
-import type { ConvertedFillStyle, ConvertedStrokeStyle, FillStyle, FillStyleInputs, StrokeStyle } from './GraphicsContext';
+import type { FillStyle, FillStyleInputs, StrokeStyle } from './GraphicsContext';
 
 /**
  * Constructor options used for `Graphics` instances.

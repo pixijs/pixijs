@@ -388,7 +388,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
     /** @private */
     public isSimple = true;
 
-    /// /////////////Transform related props//////////////
+    // / /////////////Transform related props//////////////
 
     // used by the transform system to check if a container needs to be updated that frame
     // if the tick matches the current transform system tick, it is not updated again
@@ -479,7 +479,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
     /** The rotation amount. */
     private _rotation = 0;
 
-    /// COLOR related props //////////////
+    // / COLOR related props //////////////
 
     // color stored as ABGR
     /**
@@ -497,7 +497,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
     public groupColor = 0xFFFFFF; // BGR
     public groupColorAlpha = 0xFFFFFFFF; // ABGR
 
-    /// BLEND related props //////////////
+    // / BLEND related props //////////////
 
     /**
      * @internal
@@ -510,7 +510,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
      */
     public groupBlendMode: BLEND_MODES = 'normal';
 
-    /// VISIBILITY related props //////////////
+    // / VISIBILITY related props //////////////
 
     // visibility
     // 0b11
@@ -804,7 +804,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
         return this._worldTransform;
     }
 
-    /// ////// transform related stuff
+    // / ////// transform related stuff
 
     /**
      * The position of the container on the x axis relative to the local coordinates of the parent.
@@ -995,7 +995,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
         return this;
     }
 
-    /// ///// color related stuff
+    // / ///// color related stuff
 
     set alpha(value: number)
     {
@@ -1042,7 +1042,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
         return ((bgr & 0xFF) << 16) + (bgr & 0xFF00) + ((bgr >> 16) & 0xFF);
     }
 
-    /// //////////////// blend related stuff
+    // / //////////////// blend related stuff
 
     set blendMode(value: BLEND_MODES)
     {
@@ -1068,7 +1068,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
         return this.localBlendMode;
     }
 
-    /// ///////// VISIBILITY / RENDERABLE /////////////////
+    // / ///////// VISIBILITY / RENDERABLE /////////////////
 
     /** The visibility of the object. If false the object will not be drawn, and the transform will not be updated. */
     get visible()

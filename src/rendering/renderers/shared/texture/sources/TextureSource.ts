@@ -202,7 +202,6 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
     public isPowerOfTwo: boolean;
 
-    // eslint-disable-next-line @typescript-eslint/no-parameter-properties
     constructor(protected readonly options: TextureSourceOptions<T> = {})
     {
         super();

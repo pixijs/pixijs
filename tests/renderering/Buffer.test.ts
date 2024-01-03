@@ -92,7 +92,7 @@ describe('Buffer', () =>
 
         expect(buffer.descriptor.size).toBe(4 * 4);
 
-        ///
+        // /
 
         changeObserver.mockClear();
         updateObserver.mockClear();
@@ -102,7 +102,7 @@ describe('Buffer', () =>
         expect(changeObserver).toHaveBeenCalled();
         expect(updateObserver).not.toHaveBeenCalled();
 
-        ///
+        // /
 
         changeObserver.mockClear();
         updateObserver.mockClear();
@@ -112,7 +112,7 @@ describe('Buffer', () =>
         expect(changeObserver).not.toHaveBeenCalled();
         expect(updateObserver).toHaveBeenCalled();
 
-        ///
+        // /
 
         changeObserver.mockClear();
         updateObserver.mockClear();
@@ -149,7 +149,7 @@ describe('Buffer', () =>
 
         expect(buffer.descriptor.size).toBe(4 * 4);
 
-        /// shrink the buffer
+        // / shrink the buffer
 
         changeObserver.mockClear();
         updateObserver.mockClear();

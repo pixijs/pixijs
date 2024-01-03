@@ -1,10 +1,10 @@
 /* eslint-disable quote-props */
 import { WGSL_TO_STD40_SIZE } from './createUBOElements';
-import { UBO_TO_SINGLE_SETTERS, type UniformsSyncCallback } from './createUniformBufferSyncTypes';
+import { UBO_TO_SINGLE_SETTERS } from './createUniformBufferSyncTypes';
 import { uniformBufferParsers } from './uniformBufferParsers';
 
 import type { UBOElement } from './createUBOElements';
-import type { UBO_TYPE } from './createUniformBufferSyncTypes';
+import type { UBO_TYPE, UniformsSyncCallback } from './createUniformBufferSyncTypes';
 
 export function generateUniformBufferSync(
     uboElements: UBOElement[],
