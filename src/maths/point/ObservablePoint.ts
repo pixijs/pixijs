@@ -11,7 +11,7 @@ export interface ObservablePoint extends PixiMixins.ObservablePoint { }
 export interface Observer<T>
 {
     /** Callback to call when the point has updated. */
-    onUpdate: (point?: T) => void;
+    _onUpdate: (point?: T) => void;
 }
 
 /**
@@ -68,7 +68,7 @@ export class ObservablePoint implements PointLike
         {
             this._x = x;
             this._y = y;
-            this._observer.onUpdate(this);
+            this._observer._onUpdate(this);
         }
 
         return this;
@@ -85,7 +85,7 @@ export class ObservablePoint implements PointLike
         {
             this._x = p.x;
             this._y = p.y;
-            this._observer.onUpdate(this);
+            this._observer._onUpdate(this);
         }
 
         return this;
@@ -131,7 +131,7 @@ export class ObservablePoint implements PointLike
         if (this._x !== value)
         {
             this._x = value;
-            this._observer.onUpdate(this);
+            this._observer._onUpdate(this);
         }
     }
 
@@ -146,7 +146,7 @@ export class ObservablePoint implements PointLike
         if (this._y !== value)
         {
             this._y = value;
-            this._observer.onUpdate(this);
+            this._observer._onUpdate(this);
         }
     }
 }

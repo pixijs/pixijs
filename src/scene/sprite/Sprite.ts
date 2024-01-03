@@ -106,7 +106,7 @@ export class Sprite extends Container implements View
 
         this._anchor = new ObservablePoint(
             {
-                onUpdate: () =>
+                _onUpdate: () =>
                 {
                     this.onViewUpdate();
                 }
