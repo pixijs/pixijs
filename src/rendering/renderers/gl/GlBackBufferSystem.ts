@@ -1,5 +1,4 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { lazyInit } from '../../../utils/data/lazyInit';
 import { warn } from '../../../utils/logging/warn';
 import { Geometry } from '../shared/geometry/Geometry';
 import { Shader } from '../shared/shader/Shader';
@@ -11,38 +10,6 @@ import { GlProgram } from './shader/GlProgram';
 import type { RenderOptions } from '../shared/system/AbstractRenderer';
 import type { System } from '../shared/system/System';
 import type { WebGLRenderer } from './WebGLRenderer';
-
-const bigTriangleProgram = lazyInit<GlProgram>(() => new GlProgram({
-    vertex: `
-        attribute vec2 aPosition;
-        out vec2 vUv;
-
-        void main() {
-            gl_Position = gl_Position = vec4(aPosition, 0.0, 1.0);
-
-            vUv = (aPosition + 1.0) / 2.0;
-
-            // flip dem UVs
-            vUv.y = 1.0 - vUv.y;
-        }`,
-    fragment: `
-        in vec2 vUv;
-        out vec4 finalColor;
-
-        uniform sampler2D uTexture;
-
-        void main() {
-            finalColor = texture(uTexture, vUv);
-        }`,
-    name: 'big-triangle',
-}));
-
-const bigTriangleShader = lazyInit<Shader>(() => new Shader({
-    glProgram: bigTriangleProgram.value,
-    resources: {
-        uTexture: Texture.WHITE.source,
-    },
-}));
 
 const bigTriangleGeometry = new Geometry({
     attributes: {
@@ -109,6 +76,7 @@ export class GlBackBufferSystem implements System
     private _useBackBufferThisRender = false;
     private _antialias: boolean;
     private _state: State;
+    private _bigTriangleShader: Shader;
 
     constructor(renderer: WebGLRenderer)
     {
@@ -131,6 +99,38 @@ export class GlBackBufferSystem implements System
         }
 
         this._state = State.for2d();
+
+        const bigTriangleProgram = new GlProgram({
+            vertex: `
+                attribute vec2 aPosition;
+                out vec2 vUv;
+        
+                void main() {
+                    gl_Position = gl_Position = vec4(aPosition, 0.0, 1.0);
+        
+                    vUv = (aPosition + 1.0) / 2.0;
+        
+                    // flip dem UVs
+                    vUv.y = 1.0 - vUv.y;
+                }`,
+            fragment: `
+                in vec2 vUv;
+                out vec4 finalColor;
+        
+                uniform sampler2D uTexture;
+        
+                void main() {
+                    finalColor = texture(uTexture, vUv);
+                }`,
+            name: 'big-triangle',
+        });
+
+        this._bigTriangleShader = new Shader({
+            glProgram: bigTriangleProgram,
+            resources: {
+                uTexture: Texture.WHITE.source,
+            },
+        });
     }
 
     /**
@@ -169,11 +169,11 @@ export class GlBackBufferSystem implements System
 
         renderer.renderTarget.bind(this._targetTexture, false);
 
-        bigTriangleShader.value.resources.uTexture = this._backBufferTexture.source;
+        this._bigTriangleShader.resources.uTexture = this._backBufferTexture.source;
 
         renderer.encoder.draw({
             geometry: bigTriangleGeometry,
-            shader: bigTriangleShader.value,
+            shader: this._bigTriangleShader,
             state: this._state,
         });
     }
