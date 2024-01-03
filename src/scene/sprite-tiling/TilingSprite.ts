@@ -1,14 +1,17 @@
 import { Cache } from '../../assets/cache/Cache';
+import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
+import { Transform } from '../../utils/misc/Transform';
 import { Container } from '../container/Container';
-import { definedProps } from '../container/utils/definedProps';
-import { TilingSpriteView } from './TilingSpriteView';
 
 import type { Point } from '../../maths/point/Point';
 import type { PointData } from '../../maths/point/PointData';
+import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
+import type { View } from '../../rendering/renderers/shared/view/View';
+import type { Bounds, BoundsData } from '../container/bounds/Bounds';
 import type { ContainerOptions } from '../container/Container';
-import type { TilingSpriteViewOptions } from './TilingSpriteView';
+import type { DestroyOptions } from '../container/destroyTypes';
 
 /**
  * Constructor options used for `TilingSprite` instances. Extends {@link scene.TilingSpriteViewOptions}
@@ -25,7 +28,7 @@ import type { TilingSpriteViewOptions } from './TilingSpriteView';
  * @see {@link scene.TilingSpriteViewOptions}
  * @memberof scene
  */
-export interface TilingSpriteOptions extends TilingSpriteViewOptions, Partial<ContainerOptions<TilingSpriteView>>
+export interface TilingSpriteOptions extends ContainerOptions
 {
     /**
      * The anchor point of the sprite
@@ -47,6 +50,29 @@ export interface TilingSpriteOptions extends TilingSpriteViewOptions, Partial<Co
      * @default 0
      */
     tileRotation?: number
+    /**
+     * The texture to use for the sprite.
+     * @default Texture.WHITE
+     */
+    texture?: Texture
+    /**
+     * The width of the tiling sprite. #
+     * @default 256
+     */
+    width?: number
+    /**
+     * The height of the tiling sprite.
+     * @default 256
+     */
+    height?: number
+    // TODO needs a better name..
+    /**
+     * @todo
+     * @default false
+     */
+    applyAnchorToTexture?: boolean
+    /** Whether or not to round the x/y position. */
+    roundPixels?: boolean;
 }
 
 /**
@@ -65,7 +91,7 @@ export interface TilingSpriteOptions extends TilingSpriteViewOptions, Partial<Co
  * @memberof scene
  * @extends scene.Container
  */
-export class TilingSprite extends Container<TilingSpriteView>
+export class TilingSprite extends Container implements View, Instruction
 {
     /**
      * Creates a new tiling sprite.
@@ -89,13 +115,44 @@ export class TilingSprite extends Container<TilingSpriteView>
         });
     }
 
+    public static defaultOptions: TilingSpriteOptions = {
+        texture: Texture.EMPTY,
+        anchor: { x: 0, y: 0 },
+        tilePosition: { x: 0, y: 0 },
+        tileScale: { x: 1, y: 1 },
+        tileRotation: 0,
+        applyAnchorToTexture: false,
+    };
+
+    public readonly renderPipeId = 'tilingSprite';
+    public readonly canBundle = true;
+    public readonly batched = true;
+
+    public _anchor: ObservablePoint;
+
+    /** @internal */
+    public _tileTransform: Transform;
+    /** @internal */
+    public _texture: Texture;
+    /** @internal */
+    public _applyAnchorToTexture: boolean;
+    /** @internal */
+    public _didTilingSpriteUpdate: boolean;
+
+    public _roundPixels: 0 | 1 = 0;
+
+    private _bounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
+    private _boundsDirty = true;
+    private _width: number;
+    private _height: number;
+
     /**
      * @param options - The options for creating the tiling sprite.
      */
     constructor(options?: Texture | TilingSpriteOptions);
     /** @deprecated since 8.0.0 */
     constructor(texture: Texture, width: number, height: number);
-    constructor(...args: [(Texture | TilingSpriteViewOptions)?] | [Texture, number, number])
+    constructor(...args: [(Texture | TilingSpriteOptions)?] | [Texture, number, number])
     {
         let options = args[0] || {};
 
@@ -112,25 +169,47 @@ export class TilingSprite extends Container<TilingSpriteView>
             options.height = args[2];
         }
 
-        if (options instanceof Texture)
-        {
-            options = { texture: options };
-        }
+        options = { ...TilingSprite.defaultOptions, ...options };
 
-        const { texture, width, height, applyAnchorToTexture, ...rest } = options ?? {};
+        const {
+            texture,
+            anchor,
+            tilePosition,
+            tileScale,
+            tileRotation,
+            width,
+            height,
+            applyAnchorToTexture,
+            ...rest
+        } = options ?? {};
 
         super({
-            view: new TilingSpriteView(definedProps({
-                texture,
-                width,
-                height,
-                applyAnchorToTexture,
-            })),
+
             label: 'TilingSprite',
             ...rest
         });
 
         this.allowChildren = false;
+
+        this._anchor = new ObservablePoint(this, anchor.x, anchor.y);
+
+        this._applyAnchorToTexture = applyAnchorToTexture;
+
+        this.texture = texture;
+        this._width = width ?? texture.width;
+        this._height = height ?? texture.height;
+
+        this._tileTransform = new Transform({
+            observer: {
+                _onUpdate: () => this.onTilingSpriteUpdate(),
+            }
+        });
+
+        this._tileTransform.position.copyFrom(tilePosition);
+
+        this._tileTransform.scale.copyFrom(tileScale);
+
+        this._tileTransform.rotation = tileRotation;
     }
 
     /**
@@ -141,23 +220,12 @@ export class TilingSprite extends Container<TilingSpriteView>
      */
     get clampMargin()
     {
-        return this.view.texture.textureMatrix.clampMargin;
+        return this._texture.textureMatrix.clampMargin;
     }
 
     set clampMargin(value: number)
     {
-        this.view.texture.textureMatrix.clampMargin = value;
-    }
-
-    set texture(value)
-    {
-        this.view.texture = value;
-    }
-
-    /** The texture that the sprite is using. */
-    get texture()
-    {
-        return this.view.texture;
+        this._texture.textureMatrix.clampMargin = value;
     }
 
     /**
@@ -179,85 +247,204 @@ export class TilingSprite extends Container<TilingSpriteView>
      */
     get anchor(): Point
     {
-        return this.view.anchor;
+        return this._anchor;
     }
 
     set anchor(value: PointData)
     {
-        this.view.anchor.x = value.x;
-        this.view.anchor.y = value.y;
-    }
-
-    /** The width of the tiling area. */
-    get width(): number
-    {
-        return this.view.width;
-    }
-
-    set width(value: number)
-    {
-        this.view.width = value;
-    }
-
-    /** The height of the tiling area. */
-    get height(): number
-    {
-        return this.view.height;
-    }
-
-    set height(value: number)
-    {
-        this.view.height = value;
+        this._anchor.x = value.x;
+        this._anchor.y = value.y;
     }
 
     /** The offset of the image that is being tiled. */
     get tilePosition()
     {
-        return this.view._tileTransform.position;
+        return this._tileTransform.position;
     }
 
     set tilePosition(value: PointData)
     {
-        this.view._tileTransform.position.copyFrom(value);
+        this._tileTransform.position.copyFrom(value);
     }
 
     /** The scaling of the image that is being tiled. */
     get tileScale()
     {
-        return this.view._tileTransform.scale;
+        return this._tileTransform.scale;
     }
 
     set tileScale(value: PointData)
     {
-        this.view._tileTransform.scale.copyFrom(value);
+        this._tileTransform.scale.copyFrom(value);
     }
 
     set tileRotation(value)
     {
-        this.view._tileTransform.rotation = value;
+        this._tileTransform.rotation = value;
     }
 
     /** The rotation of the image that is being tiled. */
     get tileRotation()
     {
-        return this.view._tileTransform.rotation;
+        return this._tileTransform.rotation;
     }
 
     /** The transform of the image that is being tiled. */
     get tileTransform()
     {
-        return this.view._tileTransform;
+        return this._tileTransform;
     }
 
     /** Whether or not to round the x/y position of the tiling sprite. */
     get roundPixels()
     {
-        return !!this.view.roundPixels;
+        return !!this._roundPixels;
     }
 
     set roundPixels(value: boolean)
     {
-        this.view.roundPixels = value ? 1 : 0;
+        this._roundPixels = value ? 1 : 0;
+    }
+
+    get bounds()
+    {
+        if (this._boundsDirty)
+        {
+            this._updateBounds();
+            this._boundsDirty = false;
+        }
+
+        return this._bounds;
+    }
+
+    set texture(value: Texture)
+    {
+        if (this._texture === value) return;
+
+        this._texture = value;
+
+        this.onTilingSpriteUpdate();
+    }
+
+    /** The texture that the sprite is using. */
+    get texture()
+    {
+        return this._texture;
+    }
+
+    /** The width of the tiling area. */
+    set width(value: number)
+    {
+        this._width = value;
+        this.onTilingSpriteUpdate();
+    }
+
+    get width()
+    {
+        return this._width;
+    }
+
+    set height(value: number)
+    {
+        this._height = value;
+        this.onTilingSpriteUpdate();
+    }
+
+    /** The height of the tiling area. */
+    get height()
+    {
+        return this._height;
+    }
+
+    private _updateBounds()
+    {
+        const bounds = this._bounds;
+
+        const anchor = this._anchor;
+
+        const width = this._width;
+        const height = this._height;
+
+        bounds.maxX = -anchor._x * width;
+        bounds.minX = bounds.maxX + width;
+
+        bounds.maxY = -anchor._y * height;
+        bounds.minY = bounds.maxY + height;
+    }
+
+    public addBounds(bounds: Bounds)
+    {
+        const _bounds = this.bounds;
+
+        bounds.addFrame(
+            _bounds.minX,
+            _bounds.minY,
+            _bounds.maxX,
+            _bounds.maxY,
+        );
+    }
+
+    public containsPoint(point: PointData)
+    {
+        const width = this.bounds.minX;
+        const height = this.bounds.minY;
+        const x1 = -width * this._anchor._x;
+        let y1 = 0;
+
+        if (point.x >= x1 && point.x <= x1 + width)
+        {
+            y1 = -height * this._anchor._y;
+
+            if (point.y >= y1 && point.y <= y1 + height) return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @internal
+     */
+    public onTilingSpriteUpdate()
+    {
+        this._boundsDirty = true;
+        this._didTilingSpriteUpdate = true;
+
+        this._didChangeId += 1 << 12;
+
+        if (this.didViewUpdate) return;
+        this.didViewUpdate = true;
+
+        if (this.renderGroup)
+        {
+            this.renderGroup.onChildViewUpdate(this);
+        }
+    }
+
+    /**
+     * Destroys this sprite renderable and optionally its texture.
+     * @param options - Options parameter. A boolean will act as if all options
+     *  have been set to that value
+     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
+     * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
+     */
+    public destroy(options: DestroyOptions = false)
+    {
+        super.destroy(options);
+
+        this._anchor = null;
+        this._tileTransform = null;
+        this._bounds = null;
+
+        const destroyTexture = typeof options === 'boolean' ? options : options?.texture;
+
+        if (destroyTexture)
+        {
+            const destroyTextureSource = typeof options === 'boolean' ? options : options?.textureSource;
+
+            this._texture.destroy(destroyTextureSource);
+        }
+
+        this._texture = null;
     }
 }
 

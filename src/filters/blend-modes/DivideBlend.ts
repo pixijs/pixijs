@@ -39,7 +39,7 @@ export class DivideBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                fragColor = vec4(blendDivide(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendDivide(back.rgb, front.rgb, front.a), uBlend);
                 `
             },
             gpu: {

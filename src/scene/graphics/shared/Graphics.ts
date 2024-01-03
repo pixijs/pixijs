@@ -1,12 +1,16 @@
 import { deprecation } from '../../../utils/logging/deprecation';
 import { Container } from '../../container/Container';
 import { GraphicsContext } from './GraphicsContext';
-import { GraphicsView } from './GraphicsView';
 
 import type { ColorSource } from '../../../color/Color';
 import type { Matrix } from '../../../maths/matrix/Matrix';
+import type { PointData } from '../../../maths/point/PointData';
+import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
+import type { View } from '../../../rendering/renderers/shared/view/View';
+import type { Bounds } from '../../container/bounds/Bounds';
 import type { ContainerOptions } from '../../container/Container';
+import type { ContextDestroyOptions, DestroyOptions } from '../../container/destroyTypes';
 import type { FillStyle, FillStyleInputs, StrokeStyle } from './GraphicsContext';
 
 /**
@@ -20,14 +24,12 @@ import type { FillStyle, FillStyleInputs, StrokeStyle } from './GraphicsContext'
  * @see {@link scene.Graphics}
  * @memberof scene
  */
-export interface GraphicsOptions extends Partial<ContainerOptions<GraphicsView>>
+export interface GraphicsOptions extends ContainerOptions
 {
     /** The GraphicsContext to use, useful for reuse and optimisation */
     context?: GraphicsContext;
-    /** The fill style to use */
-    fillStyle?: FillStyleInputs;
-    /** The stroke style to use */
-    strokeStyle?: FillStyleInputs;
+    /** Whether or not to round the x/y position. */
+    roundPixels?: boolean;
 }
 
 /**
@@ -37,8 +39,20 @@ export interface GraphicsOptions extends Partial<ContainerOptions<GraphicsView>>
  * @memberof scene
  * @extends scene.Container
  */
-export class Graphics extends Container<GraphicsView>
+export class Graphics extends Container implements View, Instruction
 {
+    public readonly canBundle = true;
+    public readonly renderPipeId = 'graphics';
+    public batched: boolean;
+
+    public _roundPixels: 0 | 1 = 0;
+
+    /** @internal */
+    public _didGraphicsUpdate: boolean;
+
+    private _context: GraphicsContext;
+    private readonly _ownedContext: GraphicsContext;
+
     /**
      * @param options - Options for the Graphics.
      */
@@ -52,43 +66,134 @@ export class Graphics extends Container<GraphicsView>
         const { context, ...rest } = options || {};
 
         super({
-            view: new GraphicsView(context),
             label: 'Graphics',
             ...rest
         });
 
-        this.allowChildren = false;
-    }
+        if (!context)
+        {
+            this._context = this._ownedContext = new GraphicsContext();
+        }
+        else
+        {
+            this._context = context;
+        }
 
-    /**
-     * @todo
-     */
-    get context(): GraphicsContext
-    {
-        return this.view.context;
+        this._context.on('update', this.onViewUpdate, this);
+
+        this.allowChildren = false;
     }
 
     set context(context: GraphicsContext)
     {
-        this.view.context = context;
+        if (context === this._context) return;
+
+        this._context.off('update', this.onViewUpdate, this);
+
+        this._context = context;
+
+        // TODO store this bound function somewhere else..
+        this._context.on('update', this.onViewUpdate, this);
+
+        this.onViewUpdate();
+    }
+
+    get context(): GraphicsContext
+    {
+        return this._context;
+    }
+
+    get bounds(): Bounds
+    {
+        return this._context.bounds;
+    }
+
+    public addBounds(bounds: Bounds)
+    {
+        bounds.addBounds(this._context.bounds);
+    }
+
+    public containsPoint(point: PointData)
+    {
+        return this._context.containsPoint(point);
+    }
+
+    /** Whether or not to round the x/y position. */
+    get roundPixels()
+    {
+        return !!this._roundPixels;
+    }
+
+    set roundPixels(value: boolean)
+    {
+        this._roundPixels = value ? 1 : 0;
+    }
+
+    protected onViewUpdate()
+    {
+        // increment from the 12th bit!
+        this._didChangeId += 1 << 12;
+        this._didGraphicsUpdate = true;
+
+        if (this.didViewUpdate) return;
+        this.didViewUpdate = true;
+
+        if (this.renderGroup)
+        {
+            this.renderGroup.onChildViewUpdate(this);
+        }
+    }
+
+    /**
+     * Destroys this graphics renderable and optionally its context.
+     * @param options - Options parameter. A boolean will act as if all options
+     *
+     * If the context was created by this graphics and `destroy(false)` or `destroy()` is called
+     * then the context will still be destroyed.
+     *
+     * If you want to explicitly not destroy this context that this graphics created,
+     * then you should pass destroy({ context: false })
+     *
+     * If the context was passed in as an argument to the constructor then it will not be destroyed
+     * @param {boolean} [options.texture=false] - Should destroy the texture of the graphics context
+     * @param {boolean} [options.textureSource=false] - Should destroy the texture source of the graphics context
+     * @param {boolean} [options.context=false] - Should destroy the context
+     */
+    public destroy(options?: DestroyOptions): void
+    {
+        if (this._ownedContext && !options)
+        {
+            this._ownedContext.destroy(options);
+        }
+        else if (options === true || (options as ContextDestroyOptions)?.context === true)
+        {
+            this._context.destroy(options);
+        }
+
+        (this._ownedContext as null) = null;
+        this._context = null;
+
+        super.destroy(options);
     }
 
     private _callContextMethod(method: keyof GraphicsContext, args: any[]): this
     {
-        (this.view.context as any)[method](...args);
+        (this.context as any)[method](...args);
 
         return this;
     }
 
     // --------------------------------------- GraphicsContext methods ---------------------------------------
-    public setFillStyle(style: FillStyleInputs): this
+    public setFillStyle(...args: Parameters<GraphicsContext['setFillStyle']>): this
     {
-        return this._callContextMethod('setFillStyle', [style]);
+        return this._callContextMethod('setFillStyle', args);
     }
-    public setStrokeStyle(style: FillStyleInputs): this
+
+    public setStrokeStyle(...args: Parameters<GraphicsContext['setStrokeStyle']>): this
     {
-        return this._callContextMethod('setStrokeStyle', [style]);
+        return this._callContextMethod('setStrokeStyle', args);
     }
+
     /** @deprecated 8.0.0 */
     public fill(color: ColorSource, alpha: number): this;
     public fill(style?: FillStyleInputs): this;
@@ -252,11 +357,11 @@ export class Graphics extends Container<GraphicsView>
      */
     get fillStyle(): GraphicsContext['fillStyle']
     {
-        return this.view.context.fillStyle;
+        return this._context.fillStyle;
     }
     set fillStyle(value: FillStyleInputs)
     {
-        this.view.context.fillStyle = value;
+        this._context.fillStyle = value;
     }
     /**
      * The stroke style to use.
@@ -264,11 +369,11 @@ export class Graphics extends Container<GraphicsView>
      */
     get strokeStyle(): GraphicsContext['strokeStyle']
     {
-        return this.view.context.strokeStyle;
+        return this._context.strokeStyle;
     }
     set strokeStyle(value: FillStyleInputs)
     {
-        this.view.context.strokeStyle = value;
+        this._context.strokeStyle = value;
     }
 
     // -------- v7 deprecations ---------
@@ -402,15 +507,5 @@ export class Graphics extends Container<GraphicsView>
         deprecation('8.0.0', 'Graphics#drawStar has been renamed to Graphics#star');
 
         return this._callContextMethod('star', args);
-    }
-
-    get roundPixels()
-    {
-        return !!this.view.roundPixels;
-    }
-
-    set roundPixels(value: boolean)
-    {
-        this.view.roundPixels = value ? 1 : 0;
     }
 }

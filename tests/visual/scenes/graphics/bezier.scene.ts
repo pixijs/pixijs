@@ -22,21 +22,17 @@ function drawCurve(
 
     const bezierA = new Graphics();
 
-    bezierA.beginPath();
     bezierA.moveTo(startX, startY);
     bezierA.quadraticCurveTo(cpX, cpY, endX, endY, smoothness);
     bezierA.moveTo(endX, endY);
-    bezierA.closePath();
     bezierA.stroke({ color: 0xff0000, width: thickness, alignment: 0 });
     bezierA.position.set(x, y);
 
     const bezierB = new Graphics();
 
-    bezierB.beginPath();
     bezierB.moveTo(startX, startY);
     bezierB.bezierCurveTo(cpX, cpY, cpX, cpY, endX, endY, smoothness);
     bezierB.moveTo(endX, endY);
-    bezierB.closePath();
     bezierB.stroke({ color: 0x00ff00, width: thickness, alignment: 0 });
     bezierB.position.set(x, y);
 

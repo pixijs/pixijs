@@ -19,21 +19,21 @@ describe('Transform Alpha', () =>
 
         updateRenderGroupTransforms(root.renderGroup, false);
 
-        expect(childContainer.rgAlpha).toEqual(1);
+        expect(childContainer.groupAlpha).toEqual(1);
 
-        let rgAlpha = (childContainer.rgColorAlpha >>> 24) / 255;
+        let groupAlpha = (childContainer.groupColorAlpha >>> 24) / 255;
 
-        expect(rgAlpha).toEqual(1);
+        expect(groupAlpha).toEqual(1);
 
         parentContainer.alpha = -10;
 
         updateRenderGroupTransforms(root.renderGroup, false);
 
-        expect(childContainer.rgAlpha).toEqual(0);
+        expect(childContainer.groupAlpha).toEqual(0);
 
-        rgAlpha = (childContainer.rgColorAlpha >>> 24) / 255;
+        groupAlpha = (childContainer.groupColorAlpha >>> 24) / 255;
 
-        expect(rgAlpha).toEqual(0);
+        expect(groupAlpha).toEqual(0);
     });
 });
 

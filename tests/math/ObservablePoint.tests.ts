@@ -4,7 +4,7 @@ describe('ObservablePoint', () =>
 {
     it('should create a new observable point', () =>
     {
-        const cb = { onUpdate: jest.fn() };
+        const cb = { _onUpdate: jest.fn() };
         const pt = new ObservablePoint(cb);
 
         expect(pt.x).toEqual(0);
@@ -14,7 +14,7 @@ describe('ObservablePoint', () =>
         expect(pt.x).toEqual(2);
         expect(pt.y).toEqual(5);
 
-        expect(cb.onUpdate).toHaveBeenCalled();
+        expect(cb._onUpdate).toHaveBeenCalled();
 
         pt.set(2, 6);
         expect(pt.x).toEqual(2);
@@ -28,12 +28,12 @@ describe('ObservablePoint', () =>
         expect(pt.x).toEqual(0);
         expect(pt.y).toEqual(0);
 
-        expect(cb.onUpdate.mock.calls).toHaveLength(4);
+        expect(cb._onUpdate.mock.calls).toHaveLength(4);
     });
 
     it('should copy a new observable point', () =>
     {
-        const cb = { onUpdate() { /** do nothing */ } };
+        const cb = { _onUpdate() { /** do nothing */ } };
 
         const p1 = new ObservablePoint(cb, 10, 20);
         const p2 = new ObservablePoint(cb, 5, 2);

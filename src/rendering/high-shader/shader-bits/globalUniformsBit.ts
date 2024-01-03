@@ -14,8 +14,8 @@ export const globalUniformsBit = {
     }
 };
 
-export const globalUniformsBitGl = {
-    name: 'global-uniforms-bit',
+export const globalUniformsUBOBitGl = {
+    name: 'global-uniforms-ubo-bit',
     vertex: {
         header: /* glsl */`
           uniform globalUniforms {
@@ -26,4 +26,17 @@ export const globalUniformsBitGl = {
           };
         `
     }
+};
+
+export const globalUniformsBitGl = {
+    name: 'global-uniforms-bit',
+    vertex: {
+        header: /* glsl */`
+          uniform mat3 projectionMatrix;
+          uniform mat3 worldTransformMatrix;
+          uniform vec4 worldColorAlpha;
+          uniform vec2 uResolution;
+        `
+    }
+
 };

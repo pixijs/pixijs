@@ -54,7 +54,7 @@ export class GlShaderSystem
     {
         this._gl = gl;
 
-        this._maxBindings = gl.getParameter(gl.MAX_UNIFORM_BUFFER_BINDINGS);
+        this._maxBindings = gl.MAX_UNIFORM_BUFFER_BINDINGS ? gl.getParameter(gl.MAX_UNIFORM_BUFFER_BINDINGS) : 0;
     }
 
     public bind(shader: Shader, skipSync?: boolean): void
@@ -91,7 +91,7 @@ export class GlShaderSystem
                     }
                     else
                     {
-                        this._updateUniformGroup(resource);
+                        this.updateUniformGroup(resource);
                     }
                 }
                 else if (resource instanceof BufferResource)
@@ -130,7 +130,7 @@ export class GlShaderSystem
         }
     }
 
-    private _updateUniformGroup(uniformGroup: UniformGroup): void
+    public updateUniformGroup(uniformGroup: UniformGroup): void
     {
         this._renderer.uniformGroup.updateUniformGroup(uniformGroup, this._activeProgram, defaultSyncData);
     }

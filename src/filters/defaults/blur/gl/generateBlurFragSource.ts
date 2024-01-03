@@ -2,12 +2,12 @@ import { GAUSSIAN_VALUES } from '../const';
 
 const fragTemplate = [
     'in vec2 vBlurTexCoords[%size%];',
-    'uniform sampler2D uSampler;',
-    'out vec4 fragColor;',
+    'uniform sampler2D uTexture;',
+    'out vec4 finalColor;',
 
     'void main(void)',
     '{',
-    '    fragColor = vec4(0.0);',
+    '    finalColor = vec4(0.0);',
     '    %blur%',
     '}',
 
@@ -21,7 +21,7 @@ export function generateBlurFragSource(kernelSize: number): string
     let fragSource = fragTemplate;
 
     let blurLoop = '';
-    const template = 'fragColor += texture(uSampler, vBlurTexCoords[%index%]) * %value%;';
+    const template = 'finalColor += texture(uTexture, vBlurTexCoords[%index%]) * %value%;';
     let value: number;
 
     for (let i = 0; i < kernelSize; i++)
