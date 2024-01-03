@@ -13,6 +13,7 @@ export interface Observer<T>
     /** Callback to call when the point has updated. */
     onUpdate: (point?: T) => void;
 }
+
 /**
  * The ObservablePoint object represents a location in a two-dimensional coordinate system, where `x` represents
  * the position on the horizontal axis and `y` represents the position on the vertical axis.

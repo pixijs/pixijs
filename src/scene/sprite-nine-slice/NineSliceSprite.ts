@@ -1,11 +1,12 @@
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { Container } from '../container/Container';
-import { definedProps } from '../container/utils/definedProps';
-import { MeshView } from '../mesh/shared/MeshView';
-import { NineSliceGeometry } from './NineSliceGeometry';
 
+import type { Point } from '../../maths/point/Point';
+import type { View } from '../../rendering/renderers/shared/view/View';
+import type { Bounds, BoundsData } from '../container/bounds/Bounds';
 import type { ContainerOptions } from '../container/Container';
+import type { DestroyOptions } from '../container/destroyTypes';
 
 /**
  * Constructor options used for `NineSliceSprite` instances.
@@ -21,7 +22,7 @@ import type { ContainerOptions } from '../container/Container';
  * @see {@link scene.NineSliceSprite}
  * @memberof scene
  */
-export interface NineSliceSpriteOptions extends ContainerOptions<MeshView<NineSliceGeometry>>
+export interface NineSliceSpriteOptions extends ContainerOptions
 {
     /** The texture to use on the NineSlicePlane. */
     texture: Texture;
@@ -33,6 +34,12 @@ export interface NineSliceSpriteOptions extends ContainerOptions<MeshView<NineSl
     rightWidth?: number;
     /** Height of the bottom horizontal bar (D) */
     bottomHeight?: number;
+    /** Width of the NineSlicePlane, setting this will actually modify the vertices and not the UV's of this plane. */
+    width?: number;
+    /** Height of the NineSlicePlane, setting this will actually modify the vertices and not UV's of this plane. */
+    height?: number;
+    /** Whether or not to round the x/y position. */
+    roundPixels?: boolean;
 }
 
 /**
@@ -62,7 +69,7 @@ export interface NineSliceSpriteOptions extends ContainerOptions<MeshView<NineSl
  * const plane9 = new NineSlicePlane(Texture.from('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
  * @memberof scene
  */
-export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
+export class NineSliceSprite extends Container implements View
 {
     /** The default options, used to override the initial values of any options passed in the constructor. */
     public static defaultOptions: NineSliceSpriteOptions = {
@@ -77,6 +84,23 @@ export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
         /** @default 10 */
         bottomHeight: 10,
     };
+
+    public _roundPixels: 0 | 1 = 0;
+    public readonly renderPipeId = 'nineSliceSprite';
+    public _texture: Texture;
+
+    public batched = true;
+
+    private _leftWidth: number;
+    private _topHeight: number;
+    private _rightWidth: number;
+    private _bottomHeight: number;
+    private _width: number;
+    private _height: number;
+
+    public _didSpriteUpdate = true;
+
+    public bounds: BoundsData = { minX: 0, minY: 0, maxX: 0, maxY: 0 };
 
     /**
      * @param {scene.NineSliceSpriteOptions|Texture} options - Options to use
@@ -97,141 +121,192 @@ export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
             options = { texture: options };
         }
 
-        const { leftWidth, rightWidth, topHeight, bottomHeight, texture: optTex, ...rest } = options;
-        const texture = optTex ?? NineSliceSprite.defaultOptions.texture;
-        const borders = texture.defaultBorders;
-
-        const nineSliceGeometry = new NineSliceGeometry(definedProps({
-            width: texture.width,
-            height: texture.height,
-            originalWidth: texture.width,
-            originalHeight: texture.height,
-            leftWidth: leftWidth ?? borders?.left ?? NineSliceSprite.defaultOptions.leftWidth,
-            topHeight: topHeight ?? borders?.top ?? NineSliceSprite.defaultOptions.topHeight,
-            rightWidth: rightWidth ?? borders?.right ?? NineSliceSprite.defaultOptions.rightWidth,
-            bottomHeight: bottomHeight ?? borders?.bottom ?? NineSliceSprite.defaultOptions.bottomHeight,
-            textureMatrix: texture.textureMatrix.mapCoord,
-        }));
+        const {
+            width,
+            height,
+            leftWidth,
+            rightWidth,
+            topHeight,
+            bottomHeight,
+            texture,
+            ...rest
+        } = options;
 
         super({
-            view: new MeshView<NineSliceGeometry>(definedProps({
-                geometry: nineSliceGeometry,
-                texture,
-            })),
             label: 'NineSliceSprite',
             ...rest
         });
 
+        this._leftWidth = leftWidth;
+        this._topHeight = topHeight;
+        this._rightWidth = rightWidth;
+        this._bottomHeight = bottomHeight;
+        this.bounds.maxX = this._width = width ?? texture.width;
+        this.bounds.maxY = this._height = height ?? texture.height;
+
         this.allowChildren = false;
+        this._texture = texture;
     }
 
     /** The width of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane. */
     get width(): number
     {
-        return this.view.geometry.width;
+        return this._width;
     }
 
     set width(value: number)
     {
-        this.view.geometry.updatePositions({
-            width: value,
-        });
+        this.bounds.maxX = this._width = value;
+        this.onViewUpdate();
     }
 
     /** The height of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane. */
     get height(): number
     {
-        return this.view.geometry.height;
+        return this._height;
     }
 
     set height(value: number)
     {
-        this.view.geometry.updatePositions({
-            height: value,
-        });
+        this.bounds.maxY = this._height = value;
+        this.onViewUpdate();
     }
 
     /** The width of the left column (a) of the NineSlicePlane. */
     get leftWidth(): number
     {
-        return this.view.geometry._leftWidth;
+        return this._leftWidth;
     }
 
     set leftWidth(value: number)
     {
-        this.view.geometry.updateUvs({
-            leftWidth: value,
-        });
+        this._leftWidth = value;
+
+        this.onViewUpdate();
     }
 
     /** The width of the right column (b) of the NineSlicePlane. */
     get topHeight(): number
     {
-        return this.view.geometry._topHeight;
+        return this._topHeight;
     }
 
     set topHeight(value: number)
     {
-        this.view.geometry.updateUvs({
-            topHeight: value,
-        });
+        this._topHeight = value;
+        this.onViewUpdate();
     }
 
     /** The width of the right column (b) of the NineSlicePlane. */
     get rightWidth(): number
     {
-        return this.view.geometry._rightWidth;
+        return this._rightWidth;
     }
 
     set rightWidth(value: number)
     {
-        this.view.geometry.updateUvs({
-            rightWidth: value,
-        });
+        this._rightWidth = value;
+        this.onViewUpdate();
     }
 
     /** The width of the right column (b) of the NineSlicePlane. */
     get bottomHeight(): number
     {
-        return this.view.geometry._bottomHeight;
+        return this._bottomHeight;
     }
 
     set bottomHeight(value: number)
     {
-        this.view.geometry.updateUvs({
-            bottomHeight: value,
-        });
+        this._bottomHeight = value;
+        this.onViewUpdate();
     }
 
     /** The texture that the NineSlicePlane is using. */
     get texture(): Texture
     {
-        return this.view.texture;
+        return this._texture;
     }
 
     set texture(value: Texture)
     {
-        if (value === this.view.texture) return;
+        if (value === this._texture) return;
 
-        // // calculate the matrix..
-        this.view.geometry.updateUvs({
-            originalWidth: value.width,
-            originalHeight: value.height,
-            textureMatrix: value.textureMatrix.mapCoord,
-        });
+        this._texture = value;
 
-        this.view.texture = value;
+        this.onViewUpdate();
     }
 
     /** Whether or not to round the x/y position of the nine slice. */
     get roundPixels()
     {
-        return !!this.view.roundPixels;
+        return !!this._roundPixels;
     }
 
     set roundPixels(value: boolean)
     {
-        this.view.roundPixels = value ? 1 : 0;
+        this._roundPixels = value ? 1 : 0;
+    }
+
+    get textureMatrix()
+    {
+        return this._texture.textureMatrix.mapCoord;
+    }
+
+    /**
+     * @internal
+     */
+    public onViewUpdate()
+    {
+        // increment from the 12th bit!
+        this._didChangeId += 1 << 12;
+        this._didSpriteUpdate = true;
+
+        if (this.didViewUpdate) return;
+        this.didViewUpdate = true;
+
+        if (this.renderGroup)
+        {
+            this.renderGroup.onChildViewUpdate(this);
+        }
+    }
+
+    public addBounds(bounds: Bounds)
+    {
+        const _bounds = this.bounds;
+
+        bounds.addFrame(_bounds.minX, _bounds.minY, _bounds.maxX, _bounds.maxY);
+    }
+
+    public containsPoint(point: Point)
+    {
+        const bounds = this.bounds;
+
+        if (point.x >= bounds.minX && point.x <= bounds.maxX)
+        {
+            if (point.y >= bounds.minY && point.y <= bounds.maxY)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public destroy(options?: DestroyOptions): void
+    {
+        super.destroy(options);
+
+        const destroyTexture = typeof options === 'boolean' ? options : options?.texture;
+
+        if (destroyTexture)
+        {
+            const destroyTextureSource = typeof options === 'boolean' ? options : options?.textureSource;
+
+            this._texture.destroy(destroyTextureSource);
+        }
+
+        this._texture = null;
+        (this.bounds as null) = null;
     }
 }
 

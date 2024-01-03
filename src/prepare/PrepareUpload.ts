@@ -1,10 +1,9 @@
 import { TextureSource } from '../rendering/renderers/shared/texture/sources/TextureSource';
 import { GraphicsContext } from '../scene/graphics/shared/GraphicsContext';
-import { TextView } from '../scene/text/TextView';
+import { Text } from '../scene/text/Text';
 import { PrepareQueue } from './PrepareQueue';
 
 import type { FillInstruction, TextureInstruction } from '../scene/graphics/shared/GraphicsContext';
-import type { Text } from '../scene/text/Text';
 import type { PrepareQueueItem } from './PrepareBase';
 
 /**
@@ -24,7 +23,7 @@ export abstract class PrepareUpload extends PrepareQueue
         {
             this.uploadTextureSource(item);
         }
-        else if (item instanceof TextView)
+        else if (item instanceof Text)
         {
             this.uploadText(item);
         }
@@ -39,11 +38,11 @@ export abstract class PrepareUpload extends PrepareQueue
         this.renderer.texture.initSource(textureSource);
     }
 
-    protected uploadText(_text: TextView): void
+    protected uploadText(_text: Text): void
     {
         const pipeId = _text.renderPipeId as 'text' | 'bitmapText' | 'htmlText';
 
-        this.renderer.renderPipes[pipeId].initGpuText(_text.owner as Text);
+        this.renderer.renderPipes[pipeId].initGpuText(_text);
     }
 
     /**

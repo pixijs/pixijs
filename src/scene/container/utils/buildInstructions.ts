@@ -1,5 +1,3 @@
-import { RGRenderable } from '../../../rendering/renderers/shared/RGRenderable';
-
 import type { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
 import type { InstructionPipe, RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
@@ -65,9 +63,7 @@ function collectAllRenderablesSimple(
     renderPipes: RenderPipes
 ): void
 {
-    const view = container.view;
-
-    if (view)
+    if (container.renderPipeId)
     {
         // TODO add blends in
         renderPipes.blendMode.setBlendMode(container as Renderable, container.rgBlendMode, instructionSet);
@@ -76,7 +72,7 @@ function collectAllRenderablesSimple(
 
         const rp = renderPipes as unknown as Record<string, RenderPipe>;
 
-        rp[view.renderPipeId].addRenderable(container, instructionSet);
+        rp[container.renderPipeId].addRenderable(container as Renderable, instructionSet);
     }
 
     if (!container.isRenderGroupRoot)
@@ -106,40 +102,21 @@ function collectAllRenderablesAdvanced(
         pipe.push(effect, container, instructionSet);
     }
 
-    if (isRoot)
-    {
-        const renderGroup = container.renderGroup;
-
-        if (renderGroup.root.view)
-        {
-            // proxy renderable is needed here as we do not want to inherit the transform / color of the root container
-            const proxyRenderable = renderGroup.proxyRenderable ?? initProxyRenderable(renderGroup);
-
-            if (proxyRenderable)
-            {
-                renderPipes.blendMode.setBlendMode(proxyRenderable, proxyRenderable.rgBlendMode, instructionSet);
-
-                // eslint-disable-next-line max-len
-                (renderPipes[proxyRenderable.view.renderPipeId as keyof RenderPipes] as any).addRenderable(proxyRenderable, instructionSet);
-            }
-        }
-    }
-
     if (!isRoot && container.isRenderGroupRoot)
     {
         renderPipes.renderGroup.addRenderGroup(container.renderGroup, instructionSet);
     }
     else
     {
-        const view = container.view;
+        const renderPipeId = container.renderPipeId;
 
-        if (view)
+        if (renderPipeId)
         {
             // TODO add blends in
             renderPipes.blendMode.setBlendMode(container as Renderable, container.rgBlendMode, instructionSet);
             container.didViewUpdate = false;
 
-            const pipe = renderPipes[view.renderPipeId as keyof RenderPipes]as RenderPipe<any>;
+            const pipe = renderPipes[renderPipeId as keyof RenderPipes]as RenderPipe<any>;
 
             pipe.addRenderable(container, instructionSet);
         }
@@ -165,12 +142,3 @@ function collectAllRenderablesAdvanced(
     }
 }
 
-function initProxyRenderable(renderGroup: RenderGroup)
-{
-    const root = renderGroup.root;
-
-    renderGroup.proxyRenderable = new RGRenderable({
-        original: root,
-        view: root.view,
-    });
-}

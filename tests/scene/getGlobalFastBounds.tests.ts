@@ -15,7 +15,7 @@ describe('getGlobalFastBounds', () =>
 
         const container = new Container({ label: 'container' });
 
-        const child = new Container({ label: 'child', view: new DummyView() });
+        const child = new DummyView({ label: 'child' });
 
         root.addChild(container);
 
@@ -34,7 +34,7 @@ describe('getGlobalFastBounds', () =>
 
         const container = new Container({ label: 'container' });
 
-        const child = new Container({ label: 'child', view: new DummyView() });
+        const child = new DummyView({ label: 'child' });
 
         container.x = 100;
 
@@ -63,7 +63,7 @@ describe('getGlobalFastBounds', () =>
 
         const container = new Container({ label: 'container', isRenderGroup: true });
 
-        const child = new Container({ label: 'child', view: new DummyView() });
+        const child = new DummyView({ label: 'child' });
 
         container.x = 100;
 
@@ -94,8 +94,8 @@ describe('getGlobalFastBounds', () =>
 
         const container = new Container({ label: 'container', isRenderGroup: true });
 
-        const child = new Container({ label: 'child', view: new DummyView() });
-        const child2 = new Container({ label: 'child2', view: new DummyView() });
+        const child = new DummyView({ label: 'child' });
+        const child2 = new DummyView({ label: 'child2' });
 
         child2.y = 100;
 
@@ -112,7 +112,7 @@ describe('getGlobalFastBounds', () =>
 
         expect(bounds).toMatchObject({ minX: 200, minY: 0, maxX: 300, maxY: 200 });
 
-        const child3 = new Container({ label: 'child2', view: new DummyView() });
+        const child3 = new DummyView({ label: 'child2' });
 
         child3.x = -200;
 
@@ -129,7 +129,7 @@ describe('getGlobalFastBounds', () =>
     {
         const container = new Container({ label: 'container', isRenderGroup: true });
 
-        const child = new Container({ label: 'child', view: new DummyView() });
+        const child = new DummyView({ label: 'child' });
 
         child.visible = false;
 
@@ -146,7 +146,7 @@ describe('getGlobalFastBounds', () =>
     {
         const container = new Container({ label: 'container', isRenderGroup: true });
 
-        const child = new Container({ label: 'child', view: new DummyView() });
+        const child = new DummyView({ label: 'child' });
 
         child.effects = [new DummyEffect()];
 
@@ -173,11 +173,11 @@ describe('getGlobalFastBounds', () =>
 
         const container = new Container({ isRenderGroup: true });
 
-        const bg = new Container({ label: 'bg', view: new DummyView(0, 0, 500, 500) });
+        const bg = new DummyView({ label: 'bg', width: 500, height: 500 });
 
-        const maskedContainer = new Container({ label: 'maskedContainer', view: new DummyView(50, 50, 200, 200) });
+        const maskedContainer = new Container({ label: 'maskedContainer', x: 50, y: 50, width: 200, height: 200 });
 
-        const mask = new Container({ label: 'mask', view: new DummyView(100, 100, 100, 100) });
+        const mask = new DummyView({ label: 'mask', x: 100, y: 100, width: 100, height: 100 });
 
         container.addChild(bg, maskedContainer, mask);
 
@@ -197,7 +197,7 @@ describe('getGlobalFastBounds', () =>
         const child3 = new Container({ label: 'child3' });
         const child2 = new Container({ label: 'child2', isRenderGroup: true });
 
-        const child = new Container({ label: 'child', view: new DummyView() });
+        const child = new DummyView({ label: 'child' });
 
         child2.scale.set(2);
         child2.x = 50;

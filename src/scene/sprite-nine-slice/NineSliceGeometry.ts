@@ -45,7 +45,7 @@ export class NineSliceGeometry extends PlaneGeometry
     private _originalHeight: number;
     private readonly _textureMatrix: Matrix = new Matrix();
 
-    constructor(options: NineSliceGeometryOptions)
+    constructor(options: NineSliceGeometryOptions = {})
     {
         options = { ...NineSliceGeometry.defaultOptions, ...options };
 

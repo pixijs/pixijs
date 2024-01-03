@@ -1,4 +1,4 @@
-import { MeshGeometry } from '../mesh/shared/MeshGeometry';
+import { MeshGeometry } from '../../mesh/shared/MeshGeometry';
 
 export class QuadGeometry extends MeshGeometry
 {

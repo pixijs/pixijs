@@ -1,6 +1,7 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { boundsPool } from './utils/matrixAndBoundsPool';
 
+import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
 import type { Container } from '../Container';
 import type { Bounds } from './Bounds';
 
@@ -65,9 +66,9 @@ export function _getGlobalBoundsRecursive(
     }
     else
     {
-        if (target.view)
+        if (target.renderPipeId)
         {
-            const viewBounds = target.view.bounds;
+            const viewBounds = (target as Renderable).bounds;
 
             localBounds.addFrame(
                 viewBounds.minX,
@@ -100,7 +101,7 @@ export function _getGlobalBoundsRecursive(
                     localBounds.applyMatrix(target.renderGroup.worldTransform);
                 }
 
-                target.effects[i].addBounds?.(localBounds);
+                target.effects[i].addBounds(localBounds);
             }
         }
 

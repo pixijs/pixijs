@@ -3,7 +3,6 @@ import type { Effect } from '../../../../scene/container/Effect';
 import type { BatchableObject } from '../../../batcher/shared/Batcher';
 import type { Renderer } from '../../types';
 import type { Renderable } from '../Renderable';
-import type { View } from '../view/View';
 import type { Instruction } from './Instruction';
 import type { InstructionSet } from './InstructionSet';
 
@@ -61,7 +60,7 @@ export interface InstructionPipe<INSTRUCTION extends Instruction>
  * RenderPipes are specifically used to render Renderables like a Mesh.
  * @memberof rendering
  */
-export interface RenderPipe<VIEW extends View = View>
+export interface RenderPipe<RENDERABLE = Renderable>
 {
     /**
      * This is where the renderable is added to the instruction set. This is called once per renderable.
@@ -74,7 +73,7 @@ export interface RenderPipe<VIEW extends View = View>
      * @param renderable - the renderable that needs to be rendered
      * @param instructionSet - the instruction set currently being built
      */
-    addRenderable: (renderable: Renderable<VIEW>, instructionSet: InstructionSet) => void;
+    addRenderable: (renderable: RENDERABLE, instructionSet: InstructionSet) => void;
     /**
      * Called whenever a renderable has been been updated, eg its position has changed.
      * This is only called in the render loop if the instructions set is being reused
@@ -82,14 +81,14 @@ export interface RenderPipe<VIEW extends View = View>
      * @param renderable - the renderable that needs to be rendered
      * @param instructionSet - the instruction set currently being built
      */
-    updateRenderable: (renderable: Renderable<VIEW>, instructionSet?: InstructionSet) => void;
+    updateRenderable: (renderable: RENDERABLE, instructionSet?: InstructionSet) => void;
     /**
      * Called whenever a renderable is destroyed, often the pipes keep a webGL / webGPU specific representation
      * of the renderable that needs to be tidied up when the renderable is destroyed.
      * @param renderable - the renderable that needs to be rendered
      * @returns
      */
-    destroyRenderable: (renderable: Renderable<VIEW>) => void;
+    destroyRenderable: (renderable: RENDERABLE) => void;
     /**
      * This function is called when the renderer is determining if it can use the same instruction set again to
      * improve performance. If this function returns false, the renderer will rebuild the whole instruction set
@@ -97,7 +96,7 @@ export interface RenderPipe<VIEW extends View = View>
      * @param renderable
      * @returns
      */
-    validateRenderable?: (renderable: Renderable<VIEW>) => boolean;
+    validateRenderable?: (renderable: RENDERABLE) => boolean;
 }
 
 /**

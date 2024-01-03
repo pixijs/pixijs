@@ -3,8 +3,8 @@ import { BitmapFont } from '../../text-bitmap/BitmapFont';
 import { DynamicBitmapFont } from '../../text-bitmap/DynamicBitmapFont';
 import { HTMLTextStyle } from '../../text-html/HtmlTextStyle';
 
+import type { AnyTextStyle } from '../Text';
 import type { TextStyleOptions } from '../TextStyle';
-import type { AnyTextStyle } from '../TextView';
 
 /**
  * Takes a text style and returns the recommended renderMode for that style.

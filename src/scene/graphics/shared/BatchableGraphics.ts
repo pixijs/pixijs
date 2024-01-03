@@ -2,9 +2,8 @@ import { mixColors } from '../../container/utils/mixColors';
 
 import type { Batch, BatchableObject, Batcher } from '../../../rendering/batcher/shared/Batcher';
 import type { IndexBufferArray } from '../../../rendering/renderers/shared/geometry/Geometry';
-import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import type { GraphicsView } from './GraphicsView';
+import type { Graphics } from './Graphics';
 
 /**
  * A batchable graphics object.
@@ -18,7 +17,7 @@ export class BatchableGraphics implements BatchableObject
     public location: number;
     public batcher: Batcher = null;
     public batch: Batch = null;
-    public renderable: Renderable<GraphicsView>;
+    public renderable: Graphics;
     public indexOffset: number;
     public indexSize: number;
     public vertexOffset: number;

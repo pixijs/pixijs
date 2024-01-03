@@ -84,14 +84,15 @@ export class MeshPlane extends Mesh
 
     set texture(value: Texture)
     {
-        this.view.texture = value;
+        super.texture = value;
+
         value.once('update', this.textureUpdated, this);
         this.textureUpdated();
     }
 
     get texture(): Texture
     {
-        return this.view.texture;
+        return this._texture;
     }
 
     public destroy(options?: DestroyOptions): void

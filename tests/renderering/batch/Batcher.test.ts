@@ -37,7 +37,8 @@ describe('Batcher', () =>
         });
 
         expect(batcher.indexBuffer).toHaveLength(2);
-        // expect(batcher.indexBuffer.BYTES_PER_ELEMENT).toBe(2);
+        // disable until i get to the bottom of uint 16 vs uint 32
+        expect(batcher.indexBuffer.BYTES_PER_ELEMENT).toBe(2);
 
         batcher.ensureIndexBuffer(30);
 
@@ -52,6 +53,7 @@ describe('Batcher', () =>
         batcher.ensureIndexBuffer(36);
 
         expect(batcher.indexBuffer).toHaveLength(46);
+        // disable until i get to the bottom of uint 16 vs uint 32
         // expect(batcher.indexBuffer.BYTES_PER_ELEMENT).toBe(2);
 
         expect(batcher.indexBuffer).toBe(ref);
@@ -59,6 +61,7 @@ describe('Batcher', () =>
         batcher.ensureIndexBuffer(70000);
 
         expect(batcher.indexBuffer).toHaveLength(70000);
+        // disable until i get to the bottom of uint 16 vs uint 32
         // expect(batcher.indexBuffer.BYTES_PER_ELEMENT).toBe(4);
     });
 });

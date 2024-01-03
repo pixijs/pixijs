@@ -41,7 +41,7 @@ describe('Graphics Destroy', () =>
 
         expect(graphics.context).toBeNull();
 
-        expect(renderer.renderPipes.graphics['_renderableBatchesHash'][graphics.uid]).toBeNull();
+        expect(renderer.renderPipes.graphics['_graphicsBatchesHash'][graphics.uid]).toBeNull();
 
         expect(renderer.graphicsContext['_gpuContextHash'][context.uid]).not.toBeNull();
         expect(renderer.graphicsContext['_gpuContextHash'][context.uid]).not.toBeNull();

@@ -224,5 +224,7 @@ export class State
 
         return state;
     }
+
+    public static default2d = State.for2d();
 }
 

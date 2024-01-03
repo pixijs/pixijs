@@ -61,7 +61,7 @@ export abstract class PrepareQueue extends PrepareBase
         }
         else if (container instanceof Text)
         {
-            queue.push(container.view);
+            queue.push(container);
         }
         else if (container instanceof Graphics)
         {

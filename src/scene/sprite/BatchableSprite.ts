@@ -1,9 +1,8 @@
 import type { Batch, BatchableObject, Batcher } from '../../rendering/batcher/shared/Batcher';
 import type { IndexBufferArray } from '../../rendering/renderers/shared/geometry/Geometry';
-import type { Renderable } from '../../rendering/renderers/shared/Renderable';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
-import type { View } from '../../rendering/renderers/shared/view/View';
 import type { BoundsData } from '../container/bounds/Bounds';
+import type { Container } from '../container/Container';
 
 /**
  * A batchable sprite object.
@@ -12,7 +11,7 @@ import type { BoundsData } from '../container/bounds/Bounds';
 export class BatchableSprite implements BatchableObject
 {
     public indexStart: number;
-    public renderable: Renderable<View>;
+    public renderable: Container;
 
     // batch specific..
     public vertexSize = 4;

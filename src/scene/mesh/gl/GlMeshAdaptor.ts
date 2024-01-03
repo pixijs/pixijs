@@ -6,9 +6,8 @@ import { textureBitGl } from '../../../rendering/high-shader/shader-bits/texture
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 
-import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
+import type { Mesh } from '../shared/Mesh';
 import type { MeshAdaptor, MeshPipe } from '../shared/MeshPipe';
-import type { MeshView } from '../shared/MeshView';
 
 /**
  * A MeshAdaptor that uses the WebGL to render meshes.
@@ -44,18 +43,17 @@ export class GlMeshAdaptor implements MeshAdaptor
         });
     }
 
-    public execute(meshPipe: MeshPipe, renderable: Renderable<MeshView>): void
+    public execute(meshPipe: MeshPipe, mesh: Mesh): void
     {
         const renderer = meshPipe.renderer;
-        const view = renderable.view;
 
-        let shader: Shader = view._shader;
+        let shader: Shader = mesh._shader;
 
         if (!shader)
         {
             shader = this._shader;
 
-            const source = view.texture.source;
+            const source = mesh.texture.source;
 
             shader.resources.uTexture = source;
             shader.resources.uSampler = source.style;
@@ -65,9 +63,9 @@ export class GlMeshAdaptor implements MeshAdaptor
         shader.groups[1] = meshPipe.localUniformsBindGroup;
 
         renderer.encoder.draw({
-            geometry: view._geometry,
+            geometry: mesh._geometry,
             shader,
-            state: view.state
+            state: mesh.state
         });
     }
 
