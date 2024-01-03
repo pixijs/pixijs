@@ -388,7 +388,7 @@ export class Graphics extends Container implements View, Instruction
      */
     public clone(deep = false): Graphics
     {
-        if (!deep)
+        if (deep)
         {
             return new Graphics(this._context.clone());
         }

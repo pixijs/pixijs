@@ -137,6 +137,10 @@ export class GraphicsContext extends EventEmitter<{
     private _bounds = new Bounds();
     private _boundsDirty = true;
 
+    /**
+     * Creates a new GraphicsContext object with the same values as this one.
+     * @returns A clone of this GraphicsContext
+     */
     public clone(): GraphicsContext
     {
         const clone = new GraphicsContext();
