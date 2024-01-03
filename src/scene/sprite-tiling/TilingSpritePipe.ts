@@ -128,11 +128,11 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
         // deal with local uniforms...
         const localUniforms = shader.resources.localUniforms.uniforms;
 
-        localUniforms.uTransformMatrix = tilingSprite.rgTransform;
+        localUniforms.uTransformMatrix = tilingSprite.groupTransform;
         localUniforms.uRound = this._renderer._roundPixels | tilingSprite._roundPixels;
 
         color32BitToUniform(
-            tilingSprite.rgColorAlpha,
+            tilingSprite.groupColorAlpha,
             localUniforms.uColor,
             0
         );

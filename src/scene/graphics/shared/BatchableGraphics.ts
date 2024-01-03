@@ -33,7 +33,7 @@ export class BatchableGraphics implements BatchableObject
     {
         if (this.applyTransform)
         {
-            return this.renderable.rgBlendMode;
+            return this.renderable.groupBlendMode;
         }
 
         return 'normal';
@@ -70,10 +70,10 @@ export class BatchableGraphics implements BatchableObject
 
         if (this.applyTransform)
         {
-            const argb = mixColors(bgr, graphics.rgColor)
-            + ((this.alpha * graphics.rgAlpha * 255) << 24);
+            const argb = mixColors(bgr, graphics.groupColor)
+            + ((this.alpha * graphics.groupAlpha * 255) << 24);
 
-            const wt = graphics.rgTransform;
+            const wt = graphics.groupTransform;
             const textureIdAndRound = (textureId << 16) | (this.roundPixels & 0xFFFF);
 
             const a = wt.a;

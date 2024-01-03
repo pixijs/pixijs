@@ -174,16 +174,16 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<MeshInstructi
     {
         if (!mesh.isRenderable) return;
 
-        mesh.state.blendMode = mesh.rgBlendMode;
+        mesh.state.blendMode = mesh.groupBlendMode;
 
         const localUniforms = this.localUniforms;
 
-        localUniforms.uniforms.uTransformMatrix = mesh.rgTransform;
+        localUniforms.uniforms.uTransformMatrix = mesh.groupTransform;
         localUniforms.uniforms.uRound = this.renderer._roundPixels | mesh._roundPixels;
         localUniforms.update();
 
         color32BitToUniform(
-            mesh.rgColorAlpha,
+            mesh.groupColorAlpha,
             localUniforms.uniforms.uColor,
             0
         );

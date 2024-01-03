@@ -52,9 +52,9 @@ export class RenderGroup implements Instruction
         return this.root.localTransform;
     }
 
-    get rgTransform()
+    get groupTransform()
     {
-        return this.root.rgTransform;
+        return this.root.groupTransform;
     }
 
     public addRenderGroupChild(renderGroupChild: RenderGroup)

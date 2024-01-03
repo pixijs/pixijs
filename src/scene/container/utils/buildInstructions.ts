@@ -66,7 +66,7 @@ function collectAllRenderablesSimple(
     if (container.renderPipeId)
     {
         // TODO add blends in
-        renderPipes.blendMode.setBlendMode(container as Renderable, container.rgBlendMode, instructionSet);
+        renderPipes.blendMode.setBlendMode(container as Renderable, container.groupBlendMode, instructionSet);
 
         container.didViewUpdate = false;
 
@@ -113,7 +113,7 @@ function collectAllRenderablesAdvanced(
         if (renderPipeId)
         {
             // TODO add blends in
-            renderPipes.blendMode.setBlendMode(container as Renderable, container.rgBlendMode, instructionSet);
+            renderPipes.blendMode.setBlendMode(container as Renderable, container.groupBlendMode, instructionSet);
             container.didViewUpdate = false;
 
             const pipe = renderPipes[renderPipeId as keyof RenderPipes]as RenderPipe<any>;
