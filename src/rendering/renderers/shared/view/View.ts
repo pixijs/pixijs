@@ -22,7 +22,10 @@ export interface View
      * this is an int because it is packed directly into an attribute in the shader
      * @internal
      */
-    _roundPixels?: 0 | 1;
+    _roundPixels: 0 | 1;
+
+    get roundPixels(): boolean;
+    set roundPixels(value: boolean);
 
     /** this is the AABB rectangle bounds of the view in local untransformed space. */
     bounds: BoundsData;

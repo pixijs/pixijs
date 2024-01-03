@@ -21,6 +21,8 @@ export interface SpriteOptions extends ContainerOptions
     texture?: Texture;
     /** The anchor point of the sprite. */
     anchor?: PointLike
+    /** Whether or not to round the x/y position. */
+    roundPixels?: boolean;
 }
 
 /**
@@ -284,4 +286,3 @@ export class Sprite extends Container implements View
         this._roundPixels = value ? 1 : 0;
     }
 }
-

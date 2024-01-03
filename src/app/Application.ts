@@ -4,6 +4,7 @@ import { Container } from '../scene/container/Container';
 
 import type { Rectangle } from '../maths/shapes/Rectangle';
 import type { AutoDetectOptions } from '../rendering/renderers/autoDetectRenderer';
+import type { RendererDestroyOptions } from '../rendering/renderers/shared/system/AbstractRenderer';
 import type { Renderer } from '../rendering/renderers/types';
 import type { DestroyOptions } from '../scene/container/destroyTypes';
 
@@ -164,8 +165,9 @@ export class Application<R extends Renderer = Renderer>
 
     /**
      * Destroys the application and all of its resources.
-     * @param {object|boolean} [options=false] - The options for destroying the application.
-     * @param {boolean} [options.removeView=false] - Whether to remove the application's canvas element from the DOM.
+     * @param {object|boolean}[rendererDestroyOptions=false] - The options for destroying the renderer.
+     * @param {boolean}[rendererDestroyOptions.removeView=false] - Removes the Canvas element from the DOM.
+     * @param {object|boolean} [options=false] - The options for destroying the stage.
      * @param {boolean} [options.children=false] - If set to true, all the children will have their destroy method
      * called as well. `options` will be passed on to those calls.
      * @param {boolean} [options.texture=false] - Only used for children with textures e.g. Sprites.
@@ -178,7 +180,7 @@ export class Application<R extends Renderer = Renderer>
      * If options.children is set to true,
      * it should destroy the context of the child graphics.
      */
-    public destroy(options: DestroyOptions = false): void
+    public destroy(rendererDestroyOptions: RendererDestroyOptions = false, options: DestroyOptions = false): void
     {
         // Destroy plugins in the opposite order
         // which they were constructed
@@ -193,7 +195,7 @@ export class Application<R extends Renderer = Renderer>
         this.stage.destroy(options);
         this.stage = null;
 
-        this.renderer.destroy(options);
+        this.renderer.destroy(rendererDestroyOptions);
         this.renderer = null;
     }
 }
