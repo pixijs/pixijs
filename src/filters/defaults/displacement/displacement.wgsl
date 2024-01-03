@@ -10,7 +10,7 @@ struct GlobalFilterUniforms {
 
 struct DisplacementUniforms {
   uFilterMatrix:mat3x3<f32>,
-  uScale:vec2<f32>,
+  @size(32) uScale:vec2<f32>,
   uRotation:mat2x2<f32>
 };
 
