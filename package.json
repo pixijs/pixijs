@@ -45,7 +45,7 @@
     "codesandbox-ci": "run-s build",
     "prerelease": "run-s clean:build test dist",
     "release": "ts-node ./scripts/release.ts",
-    "publish-ci": "npm publish"
+    "publish-ci": "ts-node ./scripts/publish.ts"
   },
   "husky": {
     "hooks": {

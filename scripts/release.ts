@@ -3,10 +3,7 @@ import { bump } from './utils/bump';
 import { readJSON } from './utils/json';
 import { spawn } from './utils/spawn';
 
-/**
- * Bump the version of all packages in the monorepo
- * and their dependencies. Replacement for lerna version --exact --force-publish
- */
+/** Bump the version in package.json and package-lock.json */
 async function main(): Promise<void>
 {
     try
