@@ -67,6 +67,8 @@ export interface TextOptions extends ContainerOptions
     resolution?: number;
     /** The text style */
     style?: TextStyle | HTMLTextStyleOptions | HTMLTextStyle;
+    /** Whether or not to round the x/y position. */
+    roundPixels?: boolean;
 }
 
 /**
@@ -138,7 +140,7 @@ export class Text extends Container implements View
     public _style: AnyTextStyle;
     /** @internal */
     public _didTextUpdate = true;
-    public _roundPixels?: 0 | 1 = 0;
+    public _roundPixels: 0 | 1 = 0;
 
     private _bounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
     private _boundsDirty = true;

@@ -10,7 +10,7 @@ import type { Texture } from '../../../rendering/renderers/shared/texture/Textur
 import type { View } from '../../../rendering/renderers/shared/view/View';
 import type { Bounds } from '../../container/bounds/Bounds';
 import type { ContainerOptions } from '../../container/Container';
-import type { ContextDestroyOptions, DestroyOptions, TypeOrBool } from '../../container/destroyTypes';
+import type { ContextDestroyOptions, DestroyOptions } from '../../container/destroyTypes';
 // @ts-expect-error - used for jsdoc typedefs
 // eslint-disable-next-line @typescript-eslint/no-duplicate-imports
 import type { ConvertedFillStyle, ConvertedStrokeStyle, FillStyle, FillStyleInputs, StrokeStyle } from './GraphicsContext';
@@ -30,6 +30,8 @@ export interface GraphicsOptions extends ContainerOptions
 {
     /** The GraphicsContext to use, useful for reuse and optimisation */
     context?: GraphicsContext;
+    /** Whether or not to round the x/y position. */
+    roundPixels?: boolean;
 }
 
 /**
@@ -118,6 +120,7 @@ export class Graphics extends Container implements View, Instruction
         return this._context.containsPoint(point);
     }
 
+    /** Whether or not to round the x/y position. */
     get roundPixels()
     {
         return !!this._roundPixels;
@@ -147,7 +150,7 @@ export class Graphics extends Container implements View, Instruction
      * Destroys this graphics renderable and optionally its context.
      * @param options - Options parameter. A boolean will act as if all options
      *
-     * If the context was created by this graphics view and `destroy(false)` or `destroy()` is called
+     * If the context was created by this graphics and `destroy(false)` or `destroy()` is called
      * then the context will still be destroyed.
      *
      * If you want to explicitly not destroy this context that this graphics created,
@@ -158,7 +161,7 @@ export class Graphics extends Container implements View, Instruction
      * @param {boolean} [options.textureSource=false] - Should destroy the texture source of the graphics context
      * @param {boolean} [options.context=false] - Should destroy the context
      */
-    public destroy(options?: TypeOrBool<DestroyOptions & ContextDestroyOptions>): void
+    public destroy(options?: DestroyOptions): void
     {
         if (this._ownedContext && !options)
         {

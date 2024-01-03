@@ -71,6 +71,8 @@ export interface TilingSpriteOptions extends ContainerOptions
      * @default false
      */
     applyAnchorToTexture?: boolean
+    /** Whether or not to round the x/y position. */
+    roundPixels?: boolean;
 }
 
 /**

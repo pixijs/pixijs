@@ -38,6 +38,8 @@ export interface NineSliceSpriteOptions extends ContainerOptions
     width?: number;
     /** Height of the NineSlicePlane, setting this will actually modify the vertices and not UV's of this plane. */
     height?: number;
+    /** Whether or not to round the x/y position. */
+    roundPixels?: boolean;
 }
 
 /**

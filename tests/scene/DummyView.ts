@@ -28,6 +28,7 @@ export class DummyView extends Container implements View
     public batched: boolean;
     public renderPipeId = 'dummy';
     public renderableUpdateRequested: boolean;
+    public _roundPixels: 1 | 0 = 0;
     public onUpdate: () => void;
     public get bounds(): BoundsData
     {
@@ -72,5 +73,15 @@ export class DummyView extends Container implements View
         {
             this.renderGroup.onChildViewUpdate(this);
         }
+    }
+
+    get roundPixels(): boolean
+    {
+        return false;
+    }
+
+    set roundPixels(_value: boolean)
+    {
+        // nothing
     }
 }

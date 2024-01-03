@@ -43,9 +43,21 @@ export interface MeshOptions<
     SHADER extends TextureShader = TextureShader
 > extends ContainerOptions
 {
+    /**
+     * Includes vertex positions, face indices, colors, UVs, and
+     * custom attributes within buffers, reducing the cost of passing all
+     * this data to the GPU. Can be shared between multiple Mesh objects.
+     */
     geometry: GEOMETRY;
+    /**
+     * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
+     * Can be shared between multiple Mesh objects.
+     */
     shader?: SHADER;
+    /** The texture that the Mesh uses. Null for non-MeshMaterial shaders */
     texture?: Texture;
+    /** Whether or not to round the x/y position. */
+    roundPixels?: boolean;
 }
 /**
  * Base mesh class.
