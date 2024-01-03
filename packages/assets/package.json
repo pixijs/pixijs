@@ -43,10 +43,9 @@
     "url": "https://github.com/pixijs/pixijs/issues"
   },
   "dependencies": {
-    "@types/css-font-loading-module": "^0.0.7"
+    "@types/css-font-loading-module": "^0.0.12"
   },
   "peerDependencies": {
-    "@pixi/core": "file:../core",
-    "@pixi/utils": "file:../utils"
+    "@pixi/core": "file:../core"
   }
 }

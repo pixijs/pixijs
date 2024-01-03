@@ -213,7 +213,7 @@ export interface AssetInitOptions
  *     ]
  * };
  *
- * await Asset.init({ manifest });
+ * await Assets.init({ manifest });
  *
  * // Load a bundle...
  * loadScreenAssets = await Assets.loadBundle('load-screen');
@@ -272,7 +272,7 @@ export class AssetsClass
         {
             if (process.env.DEBUG)
             {
-                console.warn('[Assets]AssetManager already initialized, did you load before calling this Asset.init()?');
+                console.warn('[Assets]AssetManager already initialized, did you load before calling this Assets.init()?');
             }
 
             return;
@@ -523,7 +523,7 @@ export class AssetsClass
      *     ]
      * };
      *
-     * await Asset.init({ manifest });
+     * await Assets.init({ manifest });
      *
      * // Load a bundle...
      * loadScreenAssets = await Assets.loadBundle('load-screen');

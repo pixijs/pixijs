@@ -126,7 +126,7 @@ export class CanvasObjectRendererSystem implements ISystem
         context2D.globalAlpha = 1;
         _context._activeBlendMode = BLEND_MODES.NORMAL;
         _context._outerBlend = false;
-        context2D.globalCompositeOperation = _context.blendModes[BLEND_MODES.NORMAL];
+        context2D.globalCompositeOperation = _context.blendModes[BLEND_MODES.NORMAL] as GlobalCompositeOperation;
 
         if (clear ?? renderer.background.clearBeforeRender)
         {
