@@ -185,7 +185,7 @@ export class Text extends Container implements View
         this.allowChildren = false;
 
         this._anchor = new ObservablePoint({
-            onUpdate: () =>
+            _onUpdate: () =>
             {
                 this.onViewUpdate();
             }

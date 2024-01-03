@@ -201,7 +201,7 @@ export class TilingSprite extends Container implements View, Instruction
 
         this._tileTransform = new Transform({
             observer: {
-                onUpdate: () => this.onTilingSpriteUpdate(),
+                _onUpdate: () => this.onTilingSpriteUpdate(),
             }
         });
 

@@ -677,7 +677,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
     }
 
     /** @ignore */
-    public onUpdate(point?: ObservablePoint)
+    public _onUpdate(point?: ObservablePoint)
     {
         if (point)
         {
@@ -862,7 +862,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
         if (this._rotation !== value)
         {
             this._rotation = value;
-            this.onUpdate(this._skew);
+            this._onUpdate(this._skew);
         }
     }
 
@@ -1005,7 +1005,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
 
         this._updateFlags |= UPDATE_COLOR;
 
-        this.onUpdate();
+        this._onUpdate();
     }
 
     /** The opacity of the object. */
@@ -1025,7 +1025,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
 
         this._updateFlags |= UPDATE_COLOR;
 
-        this.onUpdate();
+        this._onUpdate();
     }
 
     /**
@@ -1056,7 +1056,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
 
         this.localBlendMode = value;
 
-        this.onUpdate();
+        this._onUpdate();
     }
 
     /**
@@ -1091,7 +1091,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
 
         this.localVisibleRenderable = (this.localVisibleRenderable & 0b01) | (valueNumber << 1);
 
-        this.onUpdate();
+        this._onUpdate();
     }
 
     /** Can this object be rendered, if false the object will not be drawn but the transform will still be updated. */
@@ -1115,7 +1115,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
             this.renderGroup.structureDidChange = true;
         }
 
-        this.onUpdate();
+        this._onUpdate();
     }
 
     /** Whether or not the object should be rendered. */

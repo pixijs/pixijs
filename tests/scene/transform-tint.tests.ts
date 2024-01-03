@@ -33,7 +33,7 @@ describe('Transform Tints', () =>
     {
         const root = new Container();
 
-        root.onUpdate = jest.fn();
+        root._onUpdate = jest.fn();
 
         root.alpha = 0.5;
 
@@ -41,28 +41,28 @@ describe('Transform Tints', () =>
 
         root.alpha = 0.5;
 
-        expect(root.onUpdate).toHaveBeenCalledTimes(1);
+        expect(root._onUpdate).toHaveBeenCalledTimes(1);
     });
 
     it('should set and return tints correctly', async () =>
     {
         const root = new Container();
 
-        root.onUpdate = jest.fn();
+        root._onUpdate = jest.fn();
 
         root.tint = 0xFF0000;
 
         expect((root.tint)).toEqual(0xFF0000);
         root.tint = 0xFF0000;
 
-        expect(root.onUpdate).toHaveBeenCalledTimes(1);
+        expect(root._onUpdate).toHaveBeenCalledTimes(1);
     });
 
     it('should set and return both alpha and tint correctly', async () =>
     {
         const root = new Container();
 
-        root.onUpdate = jest.fn();
+        root._onUpdate = jest.fn();
 
         root.tint = 0xFF00FF;
         root.alpha = 0.5;
@@ -72,7 +72,7 @@ describe('Transform Tints', () =>
         expect((root.alpha)).toEqual(0.5);
         expect((root.localColor)).toEqual(0xFF00FF);
 
-        expect(root.onUpdate).toHaveBeenCalledTimes(2);
+        expect(root._onUpdate).toHaveBeenCalledTimes(2);
     });
 
     it('should update global alpha correctly', async () =>
