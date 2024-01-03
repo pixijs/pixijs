@@ -5,7 +5,6 @@ import jscc from 'rollup-plugin-jscc';
 import sourcemaps from 'rollup-plugin-sourcemaps';
 import { string } from 'rollup-plugin-string';
 import { fileURLToPath } from 'url';
-import webWorkerLoader from '@pixi/rollup-plugin-web-worker-loader';
 import webworker from '@pixi/webworker-plugins/rollup-plugin';
 import repo from './package.json' assert { type: 'json' };
 import commonjs from '@rollup/plugin-commonjs';
@@ -48,9 +47,6 @@ function convertPackageNameToRegExp(packageName)
 async function main()
 {
     const commonPlugins = [
-        webWorkerLoader({
-            external: [],
-        }),
         sourcemaps(),
         resolve({
             browser: true,

@@ -19,7 +19,7 @@
     "prebuild": "npm run clean",
     "build": "run-s build:index test:types build:pkg build:rollup build:tsc build:dts",
     "build:rollup": "npx rollup -c",
-    "build:tsc": "tsc-silent -p tsconfig.types.json --suppress @",
+    "build:tsc": "tsc -p tsconfig.types.json",
     "build:index": "ts-node --transpile-only ./scripts/index/index.ts",
     "build:dts": "ts-node --transpile-only ./scripts/types/fixTypes.ts && copyfiles -u 1 \"src/**/*.d.ts\" lib/",
     "build:pkg": "ts-node ./scripts/utils/exports.ts",
@@ -71,7 +71,6 @@
   "devDependencies": {
     "@pixi/eslint-config": "^4.0.1",
     "@pixi/jest-electron": "^26.0.0",
-    "@pixi/rollup-plugin-web-worker-loader": "^1.6.1",
     "@pixi/webdoc-template": "^2.2.2",
     "@pixi/webworker-plugins": "^0.1.0",
     "@rollup/plugin-commonjs": "^25.0.0",
@@ -120,7 +119,6 @@
     "tree-kill": "^1.2.2",
     "ts-jest": "^26.0.0",
     "ts-node": "^9.0.0",
-    "tsc-silent": "^1.2.2",
     "tsconfig-paths": "^3.10.1",
     "typescript": "^5.0.4",
     "yargs-parser": "^21.0.1"

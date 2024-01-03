@@ -1,5 +1,6 @@
 import { basisTranscoderUrls } from '../utils/setBasisTranscoderPath';
-import BasisWorker from './basis.worker.js';
+// @ts-expect-error - TODO: fix ts error
+import BasisWorker from './basis.worker.ts';
 
 import type { TEXTURE_FORMATS } from '../../../rendering/renderers/shared/texture/const';
 import type { TextureSourceOptions } from '../../../rendering/renderers/shared/texture/sources/TextureSource';
