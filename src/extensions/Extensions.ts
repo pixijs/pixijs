@@ -210,13 +210,13 @@ export const normalizeExtensionPriority = (ext: ExtensionFormat | any, defaultPr
 const extensions = {
 
     /** @ignore */
-    _addHandlers: {} as Record<ExtensionType, ExtensionHandler>,
+    _addHandlers: {} as Partial<Record<ExtensionType, ExtensionHandler>>,
 
     /** @ignore */
-    _removeHandlers: {} as Record<ExtensionType, ExtensionHandler>,
+    _removeHandlers: {} as Partial<Record<ExtensionType, ExtensionHandler>>,
 
     /** @ignore */
-    _queue: {} as Record<ExtensionType, StrictExtensionFormat[]>,
+    _queue: {} as Partial<Record<ExtensionType, StrictExtensionFormat[]>>,
 
     /**
      * Remove extensions from PixiJS.
@@ -251,11 +251,11 @@ const extensions = {
                 if (!handlers[type])
                 {
                     queue[type] = queue[type] || [];
-                    queue[type].push(ext);
+                    queue[type]?.push(ext);
                 }
                 else
                 {
-                    handlers[type](ext);
+                    handlers[type]?.(ext);
                 }
             });
         });
@@ -291,7 +291,7 @@ const extensions = {
         // Process any plugins that have been registered before the handler
         if (queue[type])
         {
-            queue[type].forEach((ext) => onAdd(ext));
+            queue[type]?.forEach((ext) => onAdd(ext));
             delete queue[type];
         }
 
@@ -309,11 +309,17 @@ const extensions = {
         return this.handle(type,
             (extension) =>
             {
-                map[extension.name] = extension.ref;
+                if (extension.name)
+                {
+                    map[extension.name] = extension.ref;
+                }
             },
             (extension) =>
             {
-                delete map[extension.name];
+                if (extension.name)
+                {
+                    delete map[extension.name];
+                }
             }
         );
     },
