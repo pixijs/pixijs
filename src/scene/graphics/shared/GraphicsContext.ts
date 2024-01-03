@@ -137,6 +137,23 @@ export class GraphicsContext extends EventEmitter<{
     private _bounds = new Bounds();
     private _boundsDirty = true;
 
+    public clone(): GraphicsContext
+    {
+        const clone = new GraphicsContext();
+
+        clone.batchMode = this.batchMode;
+        clone.instructions = this.instructions.slice();
+        clone._activePath = this._activePath.clone();
+        clone._transform = this._transform.clone();
+        clone._fillStyle = { ...this._fillStyle };
+        clone._strokeStyle = { ...this._strokeStyle };
+        clone._stateStack = this._stateStack.slice();
+        clone._bounds = this._bounds.clone();
+        clone._boundsDirty = true;
+
+        return clone;
+    }
+
     get fillStyle(): ConvertedFillStyle
     {
         return this._fillStyle;
