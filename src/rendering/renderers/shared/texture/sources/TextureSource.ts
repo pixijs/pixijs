@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import { isPow2 } from '../../../../../maths/misc/pow2';
+import { definedProps } from '../../../../../scene/container/utils/definedProps';
 import { uid } from '../../../../../utils/data/uid';
 import { TextureStyle } from '../TextureStyle';
 
@@ -8,7 +9,7 @@ import type { ALPHA_MODES, SCALE_MODE, TEXTURE_DIMENSIONS, TEXTURE_FORMATS, WRAP
 import type { TextureStyleOptions } from '../TextureStyle';
 
 /** options for creating a new TextureSource */
-export interface TextureSourceOptions<T extends Record<string, any> = any>
+export interface TextureSourceOptions<T extends Record<string, any> = any> extends TextureStyleOptions
 {
     /**
      * the resource that will be upladed to the GPU. This is where we get our pixels from
@@ -49,8 +50,6 @@ export interface TextureSourceOptions<T extends Record<string, any> = any>
     autoGenerateMipmaps?: boolean;
     /** the alpha mode of the texture */
     alphaMode?: ALPHA_MODES;
-    /** the style of the texture */
-    style?: TextureStyleOptions | TextureStyle;
     /** optional label, can be used for debugging */
     label?: string;
 }
@@ -86,7 +85,6 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         autoGenerateMipmaps: false,
         sampleCount: 1,
         antialias: false,
-        style: {} as TextureStyleOptions,
     };
 
     /** unique id for this Texture source */
@@ -242,9 +240,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.antialias = options.antialias;
         this.alphaMode = options.alphaMode;
 
-        const style = options.style ?? {};
-
-        this.style = style instanceof TextureStyle ? style : new TextureStyle(style);
+        this.style = new TextureStyle(definedProps(options));
 
         this.destroyed = false;
 
