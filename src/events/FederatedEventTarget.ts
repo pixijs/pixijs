@@ -725,14 +725,48 @@ export const FederatedContainer: IFederatedContainer = {
         options?: AddListenerOptions
     )
     {
-        const capture = (typeof options === 'boolean' && options)
-            || (typeof options === 'object' && options.capture);
+        const defaultOptions: AddListenerOptions = {
+            capture: false,
+            once: false,
+            passive: false,
+            signal: null,
+        };
+        const mergedOptions = Object.assign(defaultOptions, options);
+
+        const { capture, once, signal } = mergedOptions;
         const context = typeof listener === 'function' ? undefined : listener;
 
         type = capture ? `${type}capture` : type;
         listener = typeof listener === 'function' ? listener : listener.handleEvent;
 
-        (this as unknown as EventEmitter).on(type, listener, context);
+        const emitter = (this as unknown as EventEmitter);
+
+        if (signal)
+        {
+            const extractedListenerFn = listener;
+
+            listener = (e: Event) =>
+            {
+                if (signal.aborted)
+                {
+                    return;
+                }
+                extractedListenerFn(e);
+            };
+            signal.addEventListener('abort', () =>
+            {
+                emitter.off(type, listener as EventListener, context);
+            });
+        }
+
+        if (once)
+        {
+            emitter.once(type, listener, context);
+        }
+        else
+        {
+            emitter.on(type, listener, context);
+        }
     },
 
     /**
