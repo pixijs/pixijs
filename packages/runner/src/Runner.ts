@@ -223,8 +223,8 @@ export class Runner<T = any, ARG extends unknown[] = any[]>
     public destroy(): void
     {
         this.removeAll();
-        this.items = null;
-        this._name = null;
+        this.items.length = 0;
+        this._name = '' as T;
     }
 
     /**
