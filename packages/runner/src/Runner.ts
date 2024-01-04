@@ -224,7 +224,7 @@ export class Runner<T = any, ARG extends unknown[] = any[]>
     {
         this.removeAll();
         this.items.length = 0;
-        this._name = '';
+        this._name = '' as T;
     }
 
     /**
