@@ -40,7 +40,7 @@ export class SpritePipe implements RenderPipe<Sprite>
 
     public updateRenderable(sprite: Sprite)
     {
-        const gpuSprite = this._getGpuSprite(sprite);
+        const gpuSprite = this._gpuSpriteHash[sprite.uid];
 
         if (sprite._didSpriteUpdate) this._updateBatchableSprite(sprite, gpuSprite);
 
