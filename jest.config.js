@@ -14,6 +14,7 @@ module.exports = {
         '\\.frag$': 'jest-raw-loader',
     },
     moduleNameMapper: {
+        '^worker:(.*)$': '$1',
         '^@pixi/(?!colord)(.*)$': '<rootDir>/packages/$1/src',
     },
     testMatch: ['**/?(*.)+(spec|tests).[tj]s?(x)'],
