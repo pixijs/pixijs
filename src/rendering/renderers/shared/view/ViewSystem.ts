@@ -20,7 +20,7 @@ export interface ViewSystemOptions
     /** The canvas to use as a view, optional. */
     canvas?: ICanvas;
     /** @deprecated */
-    element?: ICanvas;
+    view?: ICanvas;
     /** Resizes renderer view in CSS pixels to allow for resolutions other than 1. */
     autoDensity?: boolean;
     /** The resolution / device pixel ratio of the renderer. */
@@ -121,10 +121,10 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
             ...options,
         };
 
-        if (options.element)
+        if (options.view)
         {
-            deprecation(v8_0_0, 'ViewSystem.element has been renamed to ViewSystem.canvas');
-            options.canvas = options.element;
+            deprecation(v8_0_0, 'ViewSystem.view has been renamed to ViewSystem.canvas');
+            options.canvas = options.view;
         }
 
         this.screen = new Rectangle(0, 0, options.width, options.height);
