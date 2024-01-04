@@ -17,7 +17,7 @@ const subImports = [
     ['./sprite-tiling', './lib/scene/sprite-tiling'],
     ['./text', './lib/scene/text'],
     ['./text-bitmap', './lib/scene/text-bitmap'],
-    ['./text-html', './lib/text-html'],
+    ['./text-html', './lib/scene/text-html'],
     ['./graphics', './lib/scene/graphics'],
     ['./mesh', './lib/scene/mesh'],
     ['./prepare', './lib/prepare'], // to be implemented
@@ -52,24 +52,24 @@ const exportFields: Record<string, ExportField> = {
     },
     './browser': {
         import: {
-            default: './lib/environment/browser/browserAll.mjs',
+            default: './lib/environment-browser/browserAll.mjs',
         },
         require: {
-            default: './lib/environment/browser/browserAll.js',
+            default: './lib/environment-browser/browserAll.js',
         },
     },
     './webworker': {
         import: {
-            default: './lib/environment/webworker/webworkerAll.mjs',
+            default: './lib/environment-webworker/webworkerAll.mjs',
         },
         require: {
-            default: './lib/environment/webworker/webworkerAll.js',
+            default: './lib/environment-webworker/webworkerAll.js',
         },
     },
 };
 const sideEffects = [
-    './lib/environment/browser/browserAll.*',
-    './lib/environment/webworker/webworkerAll.*',
+    './lib/environment-browser/browserAll.*',
+    './lib/environment-webworker/webworkerAll.*',
 ];
 
 for (const [name, path] of subImports)

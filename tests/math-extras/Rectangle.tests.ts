@@ -1,5 +1,5 @@
 import { Rectangle } from '../../src/maths/shapes/Rectangle';
-import '../../src/math-extras/rectangleExtras';
+import '../../src/math-extras/init';
 
 describe('Rectangle', () =>
 {

@@ -1,6 +1,7 @@
 import { Application } from '../../src/app/Application';
 import { Graphics } from '../../src/scene/graphics/shared/Graphics';
 import { GraphicsContextSystem } from '../../src/scene/graphics/shared/GraphicsContextSystem';
+import '../../src/environment-browser/browserAll';
 
 import type { Polygon } from '../../src/maths/shapes/Polygon';
 

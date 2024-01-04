@@ -14,18 +14,18 @@
     "start": "run-s watch",
     "clean": "run-s clean:*",
     "clean:build": "rimraf \"{lib,dist,out}\" --glob",
-    "clean:index": "rimraf \"src/**/index.ts\" --glob",
+    "clean:index": "rimraf \"src/*/**/index.ts\" --glob",
     "clean:uploads": "rimraf .pr_uploads .s3_uploads --glob",
     "prebuild": "npm run clean",
-    "build": "run-s build:index build:rollup build:tsc build:dts",
+    "build": "run-s build:index test:types build:pkg build:rollup build:tsc build:dts",
     "build:rollup": "npx rollup -c",
-    "build:tsc": "tsc-silent -p tsconfig.types.json --suppress @",
-    "build:index": "ts-node --transpile-only ./scripts/index/generateIndexFiles.ts",
+    "build:tsc": "tsc -p tsconfig.types.json",
+    "build:index": "ts-node --transpile-only ./scripts/index/index.ts",
     "build:dts": "ts-node --transpile-only ./scripts/types/fixTypes.ts && copyfiles -u 1 \"src/**/*.d.ts\" lib/",
     "build:pkg": "ts-node ./scripts/utils/exports.ts",
-    "dist": "run-s lint test:types build docs && copyfiles -u 1 \"dist/*\" .s3_uploads/",
+    "dist": "run-s lint build docs && copyfiles -u 1 \"dist/*\" .s3_uploads/",
     "prewatch": "npm run build",
-    "postbuild": "rimraf \"src/**/index.ts\" --glob && npm run build:pkg",
+    "postbuild": "rimraf \"src/*/**/index.ts\" --glob",
     "watch": "nodemon --watch \"./src/*\" --exec \"npm run watch:build\" -e ts,js,vert,frag,wgsl,d.ts --ignore \"index.ts\"",
     "watch:lib": "cross-env LIB_ONLY=1 nodemon --watch \"./src/*\" --exec \"npm run watch:build\" -e ts,js,vert,frag,wgsl,d.ts --ignore \"index.ts\"",
     "watch:build": "run-s build:index build:rollup build:tsc build:dts postbuild",
@@ -71,10 +71,10 @@
   "devDependencies": {
     "@pixi/eslint-config": "^5.1.0",
     "@pixi/jest-electron": "^26.0.0",
-    "@pixi/rollup-plugin-web-worker-loader": "^1.6.1",
     "@pixi/webdoc-template": "^2.2.2",
-    "@rollup/plugin-commonjs": "^15.1.0",
-    "@rollup/plugin-json": "^4.1.0",
+    "@pixi/webworker-plugins": "^0.1.0",
+    "@rollup/plugin-commonjs": "^25.0.0",
+    "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.0",
     "@types/fs-extra": "^11.0.1",
     "@types/glob": "^8.1.0",
@@ -87,12 +87,11 @@
     "copyfiles": "^2.4.1",
     "cross-env": "^7.0.3",
     "electron": "^12.0.0",
-    "esbuild": "^0.17.18",
-    "eslint": "^8.56.0",
-    "eslint-plugin-jsdoc": "^46.9.1",
-    "eslint-plugin-import": "^2.29.1",
+    "esbuild": "^0.19.0",
+    "eslint": "^8.38.0",
     "eslint-plugin-jest": "^27.6.0",
     "eslint-plugin-no-mixed-operators": "^1.1.1",
+    "eslint-plugin-jsdoc": "^48.0.0",
     "fs-extra": "^11.2.0",
     "glob": "^8.1.0",
     "http-server": "^14.1.1",
@@ -108,25 +107,53 @@
     "pngjs": "^7.0.0",
     "pre-commit": "^1.2.2",
     "rimraf": "^5.0.0",
-    "rollup": "^2.78.0",
-    "rollup-plugin-esbuild": "^4.9.1",
+    "rollup": "^3.0.0",
+    "rollup-plugin-esbuild": "^6.0.0",
+    "rollup-plugin-external-globals": "^0.9.1",
     "rollup-plugin-jscc": "^2.0.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
     "rollup-plugin-string": "^3.0.0",
     "semver": "^7.3.8",
     "tree-kill": "^1.2.2",
     "ts-jest": "^26.0.0",
-    "ts-node": "^9.1.1",
-    "tsc-silent": "^1.2.2",
-    "tsconfig-paths": "^3.15.0",
-    "typescript": "^5.3.3",
-    "yargs-parser": "^21.1.1"
+    "ts-node": "^9.0.0",
+    "tsconfig-paths": "^3.10.1",
+    "typescript": "^5.0.4",
+    "yargs-parser": "^21.0.1"
   },
-  "bundle": "dist/pixi.js",
-  "bundleModule": "dist/pixi.mjs",
+  "bundles": [
+    {
+      "src": "src/bundle.browser.ts",
+      "target": "dist/pixi.js",
+      "module": "dist/pixi.mjs",
+      "plugin": false
+    },
+    {
+      "src": "src/bundle.math-extras.ts",
+      "target": "dist/packages/math-extras.js",
+      "module": "dist/packages/math-extras.mjs",
+      "plugin": [
+        "/maths/"
+      ]
+    },
+    {
+      "src": "src/bundle.unsafe-eval.ts",
+      "target": "dist/packages/unsafe-eval.js",
+      "module": "dist/packages/unsafe-eval.mjs",
+      "plugin": [
+        "/rendering/"
+      ]
+    },
+    {
+      "src": "src/bundle.webworker.ts",
+      "target": "dist/webworker.js",
+      "module": "dist/webworker.mjs",
+      "plugin": false
+    }
+  ],
   "sideEffects": [
-    "./lib/environment/browser/browserAll.*",
-    "./lib/environment/webworker/webworkerAll.*",
+    "./lib/environment-browser/browserAll.*",
+    "./lib/environment-webworker/webworkerAll.*",
     "./lib/accessibility/init.*",
     "./lib/filters/blend-modes/init.*",
     "./lib/app/init.*",
@@ -139,7 +166,7 @@
     "./lib/scene/sprite-tiling/init.*",
     "./lib/scene/text/init.*",
     "./lib/scene/text-bitmap/init.*",
-    "./lib/text-html/init.*",
+    "./lib/scene/text-html/init.*",
     "./lib/scene/graphics/init.*",
     "./lib/scene/mesh/init.*",
     "./lib/prepare/init.*",
@@ -161,18 +188,18 @@
     },
     "./browser": {
       "import": {
-        "default": "./lib/environment/browser/browserAll.mjs"
+        "default": "./lib/environment-browser/browserAll.mjs"
       },
       "require": {
-        "default": "./lib/environment/browser/browserAll.js"
+        "default": "./lib/environment-browser/browserAll.js"
       }
     },
     "./webworker": {
       "import": {
-        "default": "./lib/environment/webworker/webworkerAll.mjs"
+        "default": "./lib/environment-webworker/webworkerAll.mjs"
       },
       "require": {
-        "default": "./lib/environment/webworker/webworkerAll.js"
+        "default": "./lib/environment-webworker/webworkerAll.js"
       }
     },
     "./accessibility": {
@@ -273,10 +300,10 @@
     },
     "./text-html": {
       "import": {
-        "default": "./lib/text-html/init.mjs"
+        "default": "./lib/scene/text-html/init.mjs"
       },
       "require": {
-        "default": "./lib/text-html/init.js"
+        "default": "./lib/scene/text-html/init.js"
       }
     },
     "./graphics": {

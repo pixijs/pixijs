@@ -4,6 +4,7 @@ import { Assets } from '../../src/assets/Assets';
 import { TexturePool } from '../../src/rendering/renderers/shared/texture/TexturePool';
 import { isCI } from '../assets/basePath';
 import { renderTest } from './tester';
+import '../../src/environment-browser/browserAll';
 
 import type { RenderType, RenderTypeFlags } from './types';
 

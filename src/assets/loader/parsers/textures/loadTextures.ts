@@ -4,8 +4,8 @@ import { ImageSource } from '../../../../rendering/renderers/shared/texture/sour
 import { getResolutionOfUrl } from '../../../../utils/network/getResolutionOfUrl';
 import { checkDataUrl } from '../../../utils/checkDataUrl';
 import { checkExtension } from '../../../utils/checkExtension';
+import { WorkerManager } from '../../workers/WorkerManager';
 import { LoaderParserPriority } from '../LoaderParser';
-import { WorkerManager } from '../WorkerManager';
 import { createTexture } from './utils/createTexture';
 
 import type { TextureSourceOptions } from '../../../../rendering/renderers/shared/texture/sources/TextureSource';

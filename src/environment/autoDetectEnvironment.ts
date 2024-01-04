@@ -1,11 +1,8 @@
 import { extensions, ExtensionType } from '../extensions/Extensions';
-import { browserExt } from './browser/browserExt';
-import { webworkerExt } from './webworker/webworkerExt';
 
 const environments: { name: string; value: { test: () => boolean; load: () => Promise<boolean> } }[] = [];
 
 extensions.handleByNamedList(ExtensionType.Environment, environments);
-extensions.add(browserExt, webworkerExt);
 
 /**
  * Automatically detects the environment and loads the appropriate extensions.

@@ -1,4 +1,5 @@
 import { WebGLRenderer } from '../../src/rendering/renderers/gl/WebGLRenderer';
+import '../../src/environment-browser/browserAll';
 
 import type { WebGLOptions } from '../../src/rendering/renderers/gl/WebGLRenderer';
 import type { Renderer } from '../../src/rendering/renderers/types';

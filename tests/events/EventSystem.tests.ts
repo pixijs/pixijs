@@ -4,6 +4,8 @@ import { Container } from '../../src/scene/container/Container';
 import { Graphics } from '../../src/scene/graphics/shared/Graphics';
 import { getApp } from '../utils/getApp';
 import { getRenderer } from '../utils/getRenderer';
+import '../../src/events/init';
+import '../../src/scene/graphics/init';
 
 import type { RendererOptions } from '../../src/rendering/renderers/types';
 
