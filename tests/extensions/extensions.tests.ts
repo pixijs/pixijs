@@ -20,10 +20,10 @@ describe('extensions', () =>
 {
     afterEach(() =>
     {
-        extensions['_addHandlers'][exampleType] = undefined;
-        extensions['_removeHandlers'][exampleType] = undefined;
-        extensions['_addHandlers'][exampleType2] = undefined;
-        extensions['_removeHandlers'][exampleType2] = undefined;
+        delete extensions['_addHandlers'][exampleType];
+        delete extensions['_removeHandlers'][exampleType];
+        delete extensions['_addHandlers'][exampleType2];
+        delete extensions['_removeHandlers'][exampleType2];
     });
 
     describe('handle', () =>
