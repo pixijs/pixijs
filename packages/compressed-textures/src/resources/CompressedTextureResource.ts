@@ -203,7 +203,7 @@ export class CompressedTextureResource extends BlobResource
         {
             return 'etc1';
         }
-        else if (format === 0x8C92 || format === 0x87EE)
+        else if (format === 0x8C92 || format === 0x8C93 || format === 0x87EE)
         {
             return 'atc';
         }
