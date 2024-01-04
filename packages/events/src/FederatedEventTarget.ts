@@ -750,11 +750,11 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
 
         if (once)
         {
-            emitter.once(type, listener, context);
+            emitter.once(type, listenerFn, context);
         }
         else
         {
-            emitter.on(type, listener, context);
+            emitter.on(type, listenerFn, context);
         }
     },
 
