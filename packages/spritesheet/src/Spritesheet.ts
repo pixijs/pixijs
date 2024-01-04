@@ -146,6 +146,33 @@ export interface ISpritesheetData
  * Default anchor points (see {@link PIXI.Texture#defaultAnchor}), default 9-slice borders
  * (see {@link PIXI.Texture#defaultBorders}) and grouping of animation sprites are currently only
  * supported by TexturePacker.
+ *
+ * Alternative ways for loading spritesheet image if you need more control:
+ *
+ * ```js
+ * import { Assets } from 'pixi.js';
+ *
+ * const sheetTexture = await Assets.load('images/spritesheet.png');
+ * Assets.add({
+ *     alias: 'atlas',
+ *     src: 'images/spritesheet.json'
+ *     data: {texture: sheetTexture} // using of preloaded texture
+ * });
+ * const sheet = await Assets.load('atlas')
+ * ```
+ *
+ * or:
+ *
+ * ```js
+ * import { Assets } from 'pixi.js';
+ *
+ * Assets.add({
+ *     alias: 'atlas',
+ *     src: 'images/spritesheet.json'
+ *     data: {imageFilename: 'my-spritesheet.2x.avif'} // using of custom filename located in "images/my-spritesheet.2x.avif"
+ * });
+ * const sheet = await Assets.load('atlas')
+ * ```
  * @memberof PIXI
  */
 export class Spritesheet<S extends ISpritesheetData = ISpritesheetData>

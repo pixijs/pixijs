@@ -1077,4 +1077,39 @@ describe('EventSystem', () =>
 
         expect(eventSpy).toHaveBeenCalledTimes(2);
     });
+
+    it('should respect \'once\' option', () =>
+    {
+        const renderer = createRenderer();
+        const [stage, graphics] = createScene();
+        const eventSpy = jest.fn();
+
+        renderer.render(stage);
+
+        graphics.addEventListener('pointertap', (e) =>
+        {
+            expect(e.type).toEqual('click');
+            eventSpy();
+        }, { once: true });
+
+        const click = () =>
+        {
+            const event = new PointerEvent('pointerdown', { clientX: 25, clientY: 25 });
+
+            renderer.events.onPointerDown(event);
+            const e = new PointerEvent('pointerup', { clientX: 30, clientY: 20 });
+            // so it isn't a pointerupoutside
+
+            Object.defineProperty(e, 'target', {
+                writable: false,
+                value: renderer.view
+            });
+            renderer.events.onPointerUp(e);
+        };
+
+        click(); // Once
+        click(); // Twice
+
+        expect(eventSpy).toHaveBeenCalledOnce();
+    });
 });
