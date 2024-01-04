@@ -8,8 +8,6 @@ import type { Renderer } from '../../rendering/renderers/types';
 import type { PoolItem } from '../../utils/pool/Pool';
 import type { Sprite } from './Sprite';
 
-let gpuSpriteHash: Record<number, BatchableSprite>;
-
 export class SpritePipe implements RenderPipe<Sprite>
 {
     /** @ignore */
@@ -28,7 +26,6 @@ export class SpritePipe implements RenderPipe<Sprite>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
-        gpuSpriteHash = this._gpuSpriteHash;
     }
 
     public addRenderable(sprite: Sprite, _instructionSet: InstructionSet)
@@ -43,7 +40,7 @@ export class SpritePipe implements RenderPipe<Sprite>
 
     public updateRenderable(sprite: Sprite)
     {
-        const gpuSprite = gpuSpriteHash[sprite.uid];
+        const gpuSprite = this._gpuSpriteHash[sprite.uid];
 
         if (sprite._didSpriteUpdate) this._updateBatchableSprite(sprite, gpuSprite);
 
@@ -65,12 +62,12 @@ export class SpritePipe implements RenderPipe<Sprite>
 
     public destroyRenderable(sprite: Sprite)
     {
-        const batchableSprite = gpuSpriteHash[sprite.uid];
+        const batchableSprite = this._gpuSpriteHash[sprite.uid];
 
         // this will call reset!
         BigPool.return(batchableSprite as PoolItem);
 
-        gpuSpriteHash[sprite.uid] = null;
+        this._gpuSpriteHash[sprite.uid] = null;
     }
 
     private _updateBatchableSprite(sprite: Sprite, batchableSprite: BatchableSprite)
@@ -82,7 +79,7 @@ export class SpritePipe implements RenderPipe<Sprite>
 
     private _getGpuSprite(sprite: Sprite): BatchableSprite
     {
-        return gpuSpriteHash[sprite.uid] || this._initGPUSprite(sprite);
+        return this._gpuSpriteHash[sprite.uid] || this._initGPUSprite(sprite);
     }
 
     private _initGPUSprite(sprite: Sprite): BatchableSprite
@@ -95,7 +92,7 @@ export class SpritePipe implements RenderPipe<Sprite>
         batchableSprite.bounds = sprite.bounds;
         batchableSprite.roundPixels = (this._renderer._roundPixels | sprite._roundPixels) as 0 | 1;
 
-        gpuSpriteHash[sprite.uid] = batchableSprite;
+        this._gpuSpriteHash[sprite.uid] = batchableSprite;
 
         sprite._didSpriteUpdate = false;
 
