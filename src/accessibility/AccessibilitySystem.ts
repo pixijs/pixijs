@@ -1,5 +1,5 @@
 import { FederatedEvent } from '../events/FederatedEvent';
-import { extensions, ExtensionType } from '../extensions/Extensions';
+import { ExtensionType } from '../extensions/Extensions';
 import { isMobile } from '../utils/browser/isMobile';
 import { removeItems } from '../utils/data/removeItems';
 import { type AccessibleHTMLElement } from './accessibilityTarget';
@@ -640,5 +640,3 @@ export class AccessibilitySystem implements System
         this._renderer = null;
     }
 }
-
-extensions.add(AccessibilitySystem);

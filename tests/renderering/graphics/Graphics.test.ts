@@ -33,7 +33,10 @@ describe('Graphics', () =>
 
         it('should multiply alpha component from a color string value with a passed alpha value', () =>
         {
-            const style = convertFillInputToFillStyle({ color: '#ff000080', alpha: 0.5 }, GraphicsContext.defaultFillStyle);
+            const style = convertFillInputToFillStyle(
+                { color: '#ff000080', alpha: 0.5 },
+                GraphicsContext.defaultFillStyle
+            );
 
             expect(style.alpha).toBe(0.25);
         });

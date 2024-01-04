@@ -130,7 +130,6 @@
     "./lib/accessibility/init.*",
     "./lib/filters/blend-modes/init.*",
     "./lib/app/init.*",
-    "./lib/assets/init.*",
     "./lib/compressed-textures/dds/init.*",
     "./lib/compressed-textures/ktx/init.*",
     "./lib/compressed-textures/basis/init.*",
@@ -198,14 +197,6 @@
       },
       "require": {
         "default": "./lib/app/init.js"
-      }
-    },
-    "./assets": {
-      "import": {
-        "default": "./lib/assets/init.mjs"
-      },
-      "require": {
-        "default": "./lib/assets/init.js"
       }
     },
     "./dds": {

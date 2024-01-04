@@ -8,7 +8,6 @@ const subImports = [
     ['./accessibility', './lib/accessibility'],
     ['./advanced-blend-modes', './lib/filters/blend-modes'],
     ['./app', './lib/app'],
-    ['./assets', './lib/assets'],
     ['./dds', './lib/compressed-textures/dds'],
     ['./ktx', './lib/compressed-textures/ktx'],
     ['./basis', './lib/compressed-textures/basis'], // to be implemented

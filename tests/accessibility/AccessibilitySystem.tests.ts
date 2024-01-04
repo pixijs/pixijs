@@ -1,6 +1,7 @@
 import { AccessibilitySystem } from '../../src/accessibility/AccessibilitySystem';
 import { Container } from '../../src/scene/container/Container';
 import { getRenderer } from '../utils/getRenderer';
+import '../../src/accessibility/init';
 
 describe('AccessibilitySystem', () =>
 {
