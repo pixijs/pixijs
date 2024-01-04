@@ -33,7 +33,7 @@ const pathPrefixs = [
     // 'packages/core/',
     // 'packages/display/',
     // 'packages/events/',
-    // 'packages/extensions/',
+    'packages/extensions/',
     'packages/extract/',
     'packages/filter-alpha/',
     'packages/filter-blur/',
