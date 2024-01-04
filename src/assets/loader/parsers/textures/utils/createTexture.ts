@@ -37,8 +37,8 @@ export function createTexture(source: TextureSource, loader: Loader, url: string
         if (url in loader.promiseCache)
         {
             // #if _DEBUG
-            warn('[Assets] A BaseTexture managed by Assets was destroyed instead of unloaded! '
-                + 'Use Assets.unload() instead of destroying the BaseTexture.');
+            warn('[Assets] A Texture managed by Assets was destroyed instead of unloaded! '
+                + 'Use Assets.unload() instead of destroying the Texture.');
             // #endif
 
             unload();

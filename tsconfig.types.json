@@ -6,6 +6,10 @@
         "outDir": "lib"
     },
     "include": [
-        "./src"
+        "./src",
+        "./types"
     ],
+    "exclude": [
+        "./src/bundle.*"
+    ]
 }

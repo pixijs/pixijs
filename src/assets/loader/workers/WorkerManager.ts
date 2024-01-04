@@ -1,32 +1,8 @@
+import CheckImageBitmapWorker from './checkImageBitmap.worker.js';
+import LoadImageBitmapWorker from './loadImageBitmap.worker.js';
+
 let UUID = 0;
 let MAX_WORKERS: number;
-
-// 1x1 White PNG Data URL
-const WHITE_PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42m'
-    + 'P8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=';
-const checkImageBitmapCode = {
-    id: 'checkImageBitmap',
-    code: `
-    async function checkImageBitmap()
-    {
-        try
-        {
-            if (typeof createImageBitmap !== 'function') return false;
-
-            const response = await fetch('${WHITE_PNG}');
-            const imageBlob =  await response.blob();
-            const imageBitmap = await createImageBitmap(imageBlob);
-
-            return imageBitmap.width === 1 && imageBitmap.height === 1;
-        }
-        catch (e)
-        {
-            return false;
-        }
-    }
-    checkImageBitmap().then((result) => { self.postMessage(result); });
-    `,
-};
 
 type LoadImageBitmapResult = {
     data?: ImageBitmap,
@@ -34,49 +10,6 @@ type LoadImageBitmapResult = {
     uuid: number,
     id: string,
 };
-
-const workerCode = {
-    id: 'loadImageBitmap',
-    code: `
-    async function loadImageBitmap(url)
-    {
-        const response = await fetch(url);
-
-        if (!response.ok)
-        {
-            throw new Error(\`[WorkerManager.loadImageBitmap] Failed to fetch \${url}: \`
-                + \`\${response.status} \${response.statusText}\`);
-        }
-
-        const imageBlob =  await response.blob();
-        const imageBitmap = await createImageBitmap(imageBlob);
-
-        return imageBitmap;
-    }
-    self.onmessage = async (event) =>
-    {
-        try
-        {
-            const imageBitmap = await loadImageBitmap(event.data.data[0]);
-
-            self.postMessage({
-                data: imageBitmap,
-                uuid: event.data.uuid,
-                id: event.data.id,
-            }, [imageBitmap]);
-        }
-        catch(e)
-        {
-            self.postMessage({
-                error: e,
-                uuid: event.data.uuid,
-                id: event.data.id,
-            });
-        }
-    };`,
-};
-
-let workerURL: string;
 
 class WorkerManagerClass
 {
@@ -112,14 +45,12 @@ class WorkerManagerClass
 
         this._isImageBitmapSupported = new Promise((resolve) =>
         {
-            const workerURL = URL.createObjectURL(new Blob([checkImageBitmapCode.code],
-                { type: 'application/javascript' }));
-            const worker = new Worker(workerURL);
+            const worker = new CheckImageBitmapWorker();
 
             worker.addEventListener('message', (event: MessageEvent<boolean>) =>
             {
                 worker.terminate();
-                URL.revokeObjectURL(workerURL);
+                CheckImageBitmapWorker.revokeObjectURL();
                 resolve(event.data);
             });
         });
@@ -149,14 +80,9 @@ class WorkerManagerClass
 
         if (!worker && this._createdWorkers < MAX_WORKERS)
         {
-            if (!workerURL)
-            {
-                workerURL = URL.createObjectURL(new Blob([workerCode.code], { type: 'application/javascript' }));
-            }
-
             // only create as many as MAX_WORKERS allows..
             this._createdWorkers++;
-            worker = new Worker(workerURL);
+            worker = new LoadImageBitmapWorker();
 
             worker.addEventListener('message', (event: MessageEvent) =>
             {

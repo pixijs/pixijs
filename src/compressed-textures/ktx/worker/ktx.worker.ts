@@ -1,9 +1,11 @@
-import { createLevelBuffers } from '../utils/createLevelBuffers';
-import { gpuFormatToBasisTranscoderFormat } from '../utils/gpuFormatToBasisTranscoderFormat';
+import { convertFormatIfRequired } from '../utils/convertFormatIfRequired';
+import { createLevelBuffersFromKTX } from '../utils/createLevelBuffersFromKTX';
+import { getTextureFormatFromKTXTexture } from '../utils/getTextureFormatFromKTXTexture';
+import { gpuFormatToKTXBasisTranscoderFormat } from '../utils/gpuFormatToKTXBasisTranscoderFormat';
 
 import type { TEXTURE_FORMATS } from '../../../rendering/renderers/shared/texture/const';
 import type { TextureSourceOptions } from '../../../rendering/renderers/shared/texture/sources/TextureSource';
-import type { BASISModuleCreator, BasisTextureConstructor } from '../types';
+import type { COMPRESSED_TEXTURE_FORMATS, LIBKTXModule, LIBKTXModuleCreator } from '../types';
 
 /**
  * -----------------------------------------------------------
@@ -16,21 +18,21 @@ import type { BASISModuleCreator, BasisTextureConstructor } from '../types';
  * -----------------------------------------------------------
  */
 
-declare let BASIS: BASISModuleCreator;
+declare let LIBKTX: LIBKTXModuleCreator;
 
 const settings = {
-    jsUrl: 'basis/basis_transcoder.js',
-    wasmUrl: 'basis/basis_transcoder.wasm',
+    jsUrl: '',
+    wasmUrl: '',
 };
 
-let basisTranscoderFormat: number;
-let basisTranscodedTextureFormat: TEXTURE_FORMATS;
+let basisTranscoderFormat: string;
+let basisTranscodedTextureFormat: COMPRESSED_TEXTURE_FORMATS;
 
-let basisPromise: Promise<BasisTextureConstructor>;
+let ktxPromise: Promise<LIBKTXModule>;
 
-async function getBasis(): Promise<BasisTextureConstructor>
+async function getKTX(): Promise<LIBKTXModule>
 {
-    if (!basisPromise)
+    if (!ktxPromise)
     {
         const absoluteJsUrl = new URL(settings.jsUrl, location.origin).href;
         const absoluteWasmUrl = new URL(settings.wasmUrl, location.origin).href;
@@ -42,46 +44,45 @@ async function getBasis(): Promise<BasisTextureConstructor>
         catch (e)
         {
             // #if _DEBUG
-            console.warn('[Pixi.js] Failed to load Basis in worker via importScripts. Falling back to eval.');
+            console.warn('Failed to load KTX(2) in worker via importScripts. Falling back to eval.');
             // #endif
 
             const response = await fetch(absoluteJsUrl);
             let text = await response.text();
 
-            text += '\nself.BASIS = BASIS;';
+            text += '\nself.LIBKTX = LIBKTX;';
 
             // eslint-disable-next-line no-eval
             eval(text);
         }
 
-        basisPromise = new Promise((resolve) =>
+        ktxPromise = new Promise((resolve) =>
         {
-            BASIS({
+            LIBKTX({
                 locateFile: (_file) =>
                     absoluteWasmUrl
-            }).then((module) =>
+            }).then((libktx: LIBKTXModule) =>
             {
-                module.initializeBasis();
-                resolve(module.BasisFile);
+                resolve(libktx);
             });
         });
     }
 
-    return basisPromise;
+    return ktxPromise;
 }
 
-async function fetchBasisTexture(url: string, BasisTexture: BasisTextureConstructor)
+async function fetchKTXTexture(url: string, ktx: LIBKTXModule)
 {
-    const basisResponse = await fetch(url);
+    const ktx2Response = await fetch(url);
 
-    if (basisResponse.ok)
+    if (ktx2Response.ok)
     {
-        const basisArrayBuffer = await basisResponse.arrayBuffer();
+        const ktx2ArrayBuffer = await ktx2Response.arrayBuffer();
 
-        return new BasisTexture(new Uint8Array(basisArrayBuffer));
+        return new ktx.ktxTexture(new Uint8Array(ktx2ArrayBuffer));
     }
 
-    throw new Error(`Failed to load Basis texture: ${url}`);
+    throw new Error(`Failed to load KTX(2) texture: ${url}`);
 }
 
 const preferredTranscodedFormat: Partial<TEXTURE_FORMATS>[] = [
@@ -94,19 +95,43 @@ const preferredTranscodedFormat: Partial<TEXTURE_FORMATS>[] = [
 
 async function load(url: string): Promise<TextureSourceOptions>
 {
-    const BasisTexture = await getBasis();
+    const ktx = await getKTX();
 
-    const basisTexture = await fetchBasisTexture(url, BasisTexture);
+    const ktxTexture = await fetchKTXTexture(url, ktx);
 
-    const levelBuffers = createLevelBuffers(basisTexture, basisTranscoderFormat);
+    let format: COMPRESSED_TEXTURE_FORMATS;
 
-    return {
-        width: basisTexture.getImageWidth(0, 0),
-        height: basisTexture.getImageHeight(0, 0),
-        format: basisTranscodedTextureFormat,
+    if (ktxTexture.needsTranscoding)
+    {
+        format = basisTranscodedTextureFormat;
+
+        const transcodeFormat = ktx.TranscodeTarget[basisTranscoderFormat];
+        const result = ktxTexture.transcodeBasis(transcodeFormat, 0);
+
+        if (result !== ktx.ErrorCode.SUCCESS)
+        {
+            throw new Error('Unable to transcode basis texture.');
+        }
+    }
+    else
+    {
+        format = getTextureFormatFromKTXTexture(ktxTexture);
+    }
+
+    const levelBuffers = createLevelBuffersFromKTX(ktxTexture);
+
+    const textureOptions = {
+        width: ktxTexture.baseWidth,
+        height: ktxTexture.baseHeight,
+        format: format as TEXTURE_FORMATS,
+        mipLevelCount: ktxTexture.numLevels,
         resource: levelBuffers,
         alphaMode: 'no-premultiply-alpha'
     } as TextureSourceOptions;
+
+    convertFormatIfRequired(textureOptions);
+
+    return textureOptions;
 }
 
 async function init(
@@ -119,11 +144,11 @@ async function init(
     if (wasmUrl)settings.wasmUrl = wasmUrl;
 
     basisTranscodedTextureFormat = preferredTranscodedFormat
-        .filter((format) => supportedTextures.includes(format))[0] as TEXTURE_FORMATS;
+        .filter((format) => supportedTextures.includes(format))[0] as COMPRESSED_TEXTURE_FORMATS;
 
-    basisTranscoderFormat = gpuFormatToBasisTranscoderFormat(basisTranscodedTextureFormat);
+    basisTranscoderFormat = gpuFormatToKTXBasisTranscoderFormat(basisTranscodedTextureFormat);
 
-    await getBasis();
+    await getKTX();
 }
 
 const messageHandlers = {
@@ -158,11 +183,10 @@ const messageHandlers = {
 self.onmessage = (async (messageEvent) =>
 {
     const message = messageEvent.data;
-    const response = await messageHandlers[message.type as 'load' | 'init'](message as any);
+    const response = await messageHandlers[message.type as 'load' | 'init']?.(message as any);
 
     if (response)
     {
         (self as any).postMessage(response, response.transferables);
     }
 });
-

@@ -1,6 +1,7 @@
 import { extensions, ExtensionType } from '../extensions/Extensions';
 import { autoDetectRenderer } from '../rendering/renderers/autoDetectRenderer';
 import { Container } from '../scene/container/Container';
+import { deprecation, v8_0_0 } from '../utils/logging/deprecation';
 
 import type { Rectangle } from '../maths/shapes/Rectangle';
 import type { AutoDetectOptions } from '../rendering/renderers/autoDetectRenderer';
@@ -150,6 +151,19 @@ export class Application<R extends Renderer = Renderer>
      */
     get canvas(): R['canvas']
     {
+        return this.renderer.canvas as R['canvas'];
+    }
+
+    /**
+     * Reference to the renderer's canvas element.
+     * @deprecated since 8.0.0
+     */
+    get view(): R['canvas']
+    {
+        // #if _DEBUG
+        deprecation(v8_0_0, '[Application] Application.view is deprecated, please use Application.canvas instead.');
+        // #endif
+
         return this.renderer.canvas as R['canvas'];
     }
 

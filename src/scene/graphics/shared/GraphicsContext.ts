@@ -868,4 +868,3 @@ export class GraphicsContext extends EventEmitter<{
         this._transform = null;
     }
 }
-

@@ -73,6 +73,7 @@ export interface FilterInstruction extends Instruction
 export interface FilterData
 {
     skip: boolean;
+    enabledLength?: number;
     inputTexture: Texture
     bounds: Bounds,
     blendRequired: boolean,
@@ -136,6 +137,14 @@ export class FilterSystem implements System
 
         this._filterStackIndex++;
 
+        // if there are no filters, we skip the pass
+        if (filters.length === 0)
+        {
+            filterData.skip = true;
+
+            return;
+        }
+
         const bounds: Bounds = filterData.bounds;
 
         // this path is used by the blend modes mostly!
@@ -163,22 +172,16 @@ export class FilterSystem implements System
         }
         // get GLOBAL bounds of the item we are going to apply the filter to
 
-        // if there are no filters, we skip the pass
-        if (filters.length === 0)
-        {
-            filterData.skip = true;
-
-            return;
-        }
+        const colorTextureSource = renderer.renderTarget.rootRenderTarget.colorTexture.source;
 
         // next we get the settings for the filter
         // we need to find the LOWEST resolution for the filter list
-        let resolution = renderer.renderTarget.rootRenderTarget.colorTexture.source._resolution;
+        let resolution = colorTextureSource._resolution;
 
         // Padding is additive to add padding to our padding
         let padding = 0;
         // if this is true for any filter, it should be true
-        let antialias = renderer.renderTarget.rootRenderTarget.colorTexture.source.antialias;
+        let antialias = colorTextureSource.antialias;
         // true if any filter requires the previous render target
         let blendRequired = false;
         // true if any filter in the list is enabled
