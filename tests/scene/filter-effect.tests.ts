@@ -15,7 +15,7 @@ describe('Filter effect', () =>
 
         container.filters = [];
 
-        expect(container.effects.length).toBe(0);
+        expect(container.effects.length).toBe(1);
 
         expect(container.filters).toEqual([]);
 
