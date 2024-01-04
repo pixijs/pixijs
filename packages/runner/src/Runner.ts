@@ -168,7 +168,7 @@ export class Runner
     public destroy(): void
     {
         this.removeAll();
-        this.items = [];
+        this.items.length = 0;
         this._name = '';
     }
 
