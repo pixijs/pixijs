@@ -108,7 +108,7 @@ export function _getGlobalBoundsRecursive(
         if (advanced)
         {
             localBounds.applyMatrix(target.renderGroup.worldTransform.copyTo(tempMatrix).invert());
-            bounds.addBounds(localBounds, target.groupTransform);
+            bounds.addBounds(localBounds, target.relativeGroupTransform);
         }
 
         bounds.addBounds(localBounds);
@@ -116,7 +116,7 @@ export function _getGlobalBoundsRecursive(
     }
     else if (target.isRenderGroupRoot)
     {
-        bounds.addBounds(localBounds, target.groupTransform);
+        bounds.addBounds(localBounds, target.relativeGroupTransform);
         boundsPool.return(localBounds);
     }
 }

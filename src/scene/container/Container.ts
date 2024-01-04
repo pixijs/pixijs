@@ -404,11 +404,21 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
      */
     public localTransform: Matrix = new Matrix();
     /**
-     * The render group transform is a transform relative to the render group it belongs too. It will include all parent
+     * The relative group transform is a transform relative to the render group it belongs too. It will include all parent
      * transforms and up to the render group (think of it as kind of like a stage - but the stage can be nested).
+     * If this container is is self a render group matrix will be relative to its parent render group
      * @readonly
      */
-    public groupTransform: Matrix = new Matrix();
+    public relativeGroupTransform: Matrix = new Matrix();
+    /**
+     * The group transform is a transform relative to the render group it belongs too.
+     * If this container is render group then this will be an identity matrix. other wise it
+     * will be the same as the relativeGroupTransform.
+     * Use this value when actually rendering things to the screen
+     * @readonly
+     */
+    public groupTransform: Matrix = this.relativeGroupTransform;
+
     // the global transform taking into account the render group and all parents
     private _worldTransform: Matrix;
 
@@ -524,7 +534,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
      * @internal
      * @ignore
      */
-    public rgVisibleRenderable = 0b11; // 0b11 | 0b10 | 0b01 | 0b00
+    public groupVisibleRenderable = 0b11; // 0b11 | 0b10 | 0b01 | 0b00
 
     public renderPipeId: string;
 
@@ -773,6 +783,10 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
         }
 
         this._updateIsSimple();
+
+        // this group matrix will now forever be an identity matrix,
+        // as its own transform will be passed to the GPU
+        this.groupTransform = Matrix.IDENTITY;
     }
 
     /** @ignore */
@@ -797,7 +811,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
             }
             else
             {
-                this._worldTransform.appendFrom(this.groupTransform, this.renderGroup.worldTransform);
+                this._worldTransform.appendFrom(this.relativeGroupTransform, this.renderGroup.worldTransform);
             }
         }
 

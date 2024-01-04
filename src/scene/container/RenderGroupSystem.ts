@@ -48,6 +48,11 @@ export class RenderGroupSystem implements System
         // collect all the renderGroups in the scene and then render them one by one..
         const renderGroups = collectRenderGroups(container.renderGroup, []);
 
+        if (transform)
+        {
+            container.renderGroup.localTransform.copyFrom(transform);
+        }
+
         const renderPipes = (renderer as WebGPURenderer).renderPipes;
 
         for (let i = 0; i < renderGroups.length; i++)
@@ -88,16 +93,9 @@ export class RenderGroupSystem implements System
             renderer.renderPipes.batch.upload(renderGroup.instructionSet);
         }
 
-        if (transform)
-        {
-            container.renderGroup.worldTransform.copyFrom(transform);
-        }
-
-        renderer.globalUniforms.start(
-            {
-                worldTransformMatrix: container.renderGroup.worldTransform
-            }
-        );
+        renderer.globalUniforms.start({
+            worldTransformMatrix: transform ? container.renderGroup.localTransform : container.renderGroup.worldTransform
+        });
 
         executeInstructions(container.renderGroup, renderPipes);
 

@@ -73,12 +73,9 @@ export class Bounds
         this.maxX = -Infinity;
         this.maxY = -Infinity;
 
-        return this;
-    }
+        this.matrix = defaultMatrix;
 
-    public setMatrix(matrix: Matrix): void
-    {
-        this.matrix.copyFrom(matrix);
+        return this;
     }
 
     public set(x0: number, y0: number, x1: number, y1: number)

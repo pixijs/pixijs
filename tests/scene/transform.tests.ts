@@ -1,3 +1,4 @@
+import { Matrix } from '../../src/maths/matrix/Matrix';
 import { Container } from '../../src/scene/container/Container';
 import { updateRenderGroupTransforms } from '../../src/scene/container/utils/updateRenderGroupTransforms';
 import { DummyView } from './DummyView';
@@ -114,8 +115,8 @@ describe('Transform updates', () =>
 
         updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(container.groupTransform.tx).toEqual(10);
-        expect(child.groupTransform.tx).toEqual(30);
+        expect(container.relativeGroupTransform.tx).toEqual(10);
+        expect(child.relativeGroupTransform.tx).toEqual(30);
 
         container.isRenderGroup = true;
 
@@ -125,8 +126,8 @@ describe('Transform updates', () =>
 
         updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(container.groupTransform.tx).toEqual(10);
-        expect(child.groupTransform.tx).toEqual(20);
+        expect(container.relativeGroupTransform.tx).toEqual(10);
+        expect(child.relativeGroupTransform.tx).toEqual(20);
     });
 
     it('should give a correct world transform', async () =>
@@ -194,8 +195,8 @@ describe('Transform updates', () =>
         expect(child.renderGroup.worldTransform.tx).toEqual(35);
 
         // TODO this bit!
-        expect(container2.renderGroup.groupTransform.tx).toEqual(25);
-        expect(child.renderGroup.groupTransform.tx).toEqual(10);
+        expect(container2.renderGroup.root.relativeGroupTransform.tx).toEqual(25);
+        expect(child.renderGroup.root.relativeGroupTransform.tx).toEqual(10);
 
         // expect(container.layerGroup.layerTransform.tx).toEqual(10);
         // expect(child.layerGroup.layerTransform.tx).toEqual(20);
@@ -257,5 +258,34 @@ describe('Transform updates', () =>
         updateRenderGroupTransforms(root.renderGroup, true);
 
         expect(updateRenderable).toHaveBeenCalledTimes(0);
+    });
+
+    it('should give the correct group transform for a renderGroup', async () =>
+    {
+        const root = new Container({ label: 'root', isRenderGroup: true });
+
+        const container = new Container({ label: 'container', x: 10 });
+        const container2 = new Container({ label: 'container2', x: 10 });
+
+        root.addChild(container);
+        container.addChild(container2);
+
+        updateRenderGroupTransforms(root.renderGroup, true);
+
+        expect(container2.groupTransform.tx).toEqual(20);
+        expect(container2.groupTransform).toBe(container2.relativeGroupTransform);
+
+        container2.isRenderGroup = true;
+
+        expect(container2.groupTransform).not.toBe(container2.relativeGroupTransform);
+
+        expect(container2.groupTransform).toBe(Matrix.IDENTITY);
+
+        updateRenderGroupTransforms(root.renderGroup, true);
+
+        expect(container2.groupTransform.tx).toEqual(0);
+
+        expect(container2.relativeGroupTransform.tx).toEqual(20);
+        expect(container2.worldTransform.tx).toEqual(20);
     });
 });
