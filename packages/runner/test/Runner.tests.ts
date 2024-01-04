@@ -8,6 +8,34 @@ describe('Runner', () =>
         expect(typeof Runner).toEqual('function');
     });
 
+    it('should instantiate a type safe runner', () =>
+    {
+        const runner = new Runner<'update', [number]>('update');
+
+        const item = {
+            id: 0,
+            update: jest.fn(),
+            destroy()
+            {
+                // Destroy the game
+            },
+        };
+
+        runner.add(item);
+        runner.emit(10);
+
+        expect(item.update).toHaveBeenCalledWith(
+            10,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined
+        );
+    });
+
     it('should implement emit', () =>
     {
         const complete = new Runner('complete');
