@@ -47,7 +47,6 @@
     "@pixi/settings": "file:../settings",
     "@pixi/ticker": "file:../ticker",
     "@pixi/utils": "file:../utils",
-    "@types/dom-webcodecs": "0.1.3",
     "@types/offscreencanvas": "^2019.6.4"
   }
 }
