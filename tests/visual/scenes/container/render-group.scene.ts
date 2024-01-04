@@ -4,9 +4,7 @@ import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
 import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
-    it: 'should render render groups correctly',
-    only: true,
-    pixelMatch: 1000,
+    it: 'should render renderGroups correctly',
     create: async (scene: Container) =>
     {
         const square = new Graphics()
