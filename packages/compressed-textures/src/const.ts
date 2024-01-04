@@ -130,6 +130,24 @@ export enum INTERNAL_FORMATS
      * @default 0x93B0
      */
     COMPRESSED_RGBA_ASTC_4x4_KHR = 0x93B0,
+
+    // EXT_texture_compression_bptc
+    /**
+     * @default 0x8E8C
+     */
+    COMPRESSED_RGBA_BPTC_UNORM_EXT = 0x8E8C,
+    /**
+     * @default 0x8E8D
+     */
+    COMPRESSED_SRGB_ALPHA_BPTC_UNORM_EXT = 0x8E8D,
+    /**
+     * @default 0x8E8E
+     */
+    COMPRESSED_RGB_BPTC_SIGNED_FLOAT_EXT = 0x8E8E,
+    /**
+     * @default 0x8E8F
+     */
+    COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_EXT = 0x8E8F
 }
 
 /**
@@ -183,4 +201,11 @@ export const INTERNAL_FORMAT_TO_BYTES_PER_PIXEL: { [id: number]: number } = {
     // WEBGL_compressed_texture_astc
     /* eslint-disable-next-line camelcase */
     [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_4x4_KHR]: 1,
+
+    // @see https://registry.khronos.org/OpenGL/extensions/EXT/EXT_texture_compression_bptc.txt
+    // EXT_texture_compression_bptc
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_BPTC_UNORM_EXT]: 1,
+    [INTERNAL_FORMATS.COMPRESSED_SRGB_ALPHA_BPTC_UNORM_EXT]: 1,
+    [INTERNAL_FORMATS.COMPRESSED_RGB_BPTC_SIGNED_FLOAT_EXT]: 1,
+    [INTERNAL_FORMATS.COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_EXT]: 1,
 };

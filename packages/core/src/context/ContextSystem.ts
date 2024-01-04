@@ -314,7 +314,8 @@ export class ContextSystem implements ISystem<ContextSystemOptions>
             pvrtc: gl.getExtension('WEBGL_compressed_texture_pvrtc')
                 || gl.getExtension('WEBKIT_WEBGL_compressed_texture_pvrtc'),
             atc: gl.getExtension('WEBGL_compressed_texture_atc'),
-            astc: gl.getExtension('WEBGL_compressed_texture_astc')
+            astc: gl.getExtension('WEBGL_compressed_texture_astc'),
+            bptc: gl.getExtension('EXT_texture_compression_bptc')
         };
 
         if (this.webGLVersion === 1)

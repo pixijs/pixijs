@@ -316,6 +316,7 @@ export class BasisParser
                 pvrtc: gl.getExtension('WEBGL_compressed_texture_pvrtc')
                     || gl.getExtension('WEBKIT_WEBGL_compressed_texture_pvrtc'),
                 atc: gl.getExtension('WEBGL_compressed_texture_atc'),
+                bptc: gl.getExtension('EXT_texture_compression_bptc'),
             };
         }
 
