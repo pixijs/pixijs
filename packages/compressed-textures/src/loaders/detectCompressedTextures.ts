@@ -16,7 +16,8 @@ function getCompressedTextureExtensions()
         pvrtc: storedGl.getExtension('WEBGL_compressed_texture_pvrtc')
             || storedGl.getExtension('WEBKIT_WEBGL_compressed_texture_pvrtc'),
         atc: storedGl.getExtension('WEBGL_compressed_texture_atc'),
-        astc: storedGl.getExtension('WEBGL_compressed_texture_astc')
+        astc: storedGl.getExtension('WEBGL_compressed_texture_astc'),
+        bptc: storedGl.getExtension('EXT_texture_compression_bptc'),
     } as Partial<CompressedTextureExtensions>;
 }
 

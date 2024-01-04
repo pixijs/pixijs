@@ -28,7 +28,8 @@ export interface ICompressedTextureResourceOptions
 }
 
 /**
- * Resource for compressed texture formats, as follows: S3TC/DXTn (& their sRGB formats), ATC, ASTC, ETC 1/2, PVRTC.
+ * Resource for compressed texture formats, as follows: S3TC/DXTn (& their sRGB formats), ATC, ASTC, ETC 1/2, PVRTC,
+ * BPTC (BC6H, BC7).
  *
  * Compressed textures improve performance when rendering is texture-bound. The texture data stays compressed in
  * graphics memory, increasing memory locality and speeding up texture fetches. These formats can also be used to store
@@ -88,7 +89,7 @@ export class CompressedTextureResource extends BlobResource
     public levels: number;
 
     // Easy access to the WebGL extension providing support for the compression format via ContextSystem
-    private _extension: 's3tc' | 's3tc_sRGB' | 'atc' | 'astc' | 'etc' | 'etc1' | 'pvrtc';
+    private _extension: 's3tc' | 's3tc_sRGB' | 'atc' | 'astc' | 'etc' | 'etc1' | 'pvrtc' | 'bptc';
     // Buffer views for each mipmap level in the main buffer
     private _levelBuffers: CompressedLevelBuffer[];
 
@@ -180,11 +181,15 @@ export class CompressedTextureResource extends BlobResource
      */
     private static _formatToExtension(format: INTERNAL_FORMATS):
     's3tc' | 's3tc_sRGB' | 'atc' |
-    'astc' | 'etc' | 'etc1' | 'pvrtc'
+    'astc' | 'etc' | 'etc1' | 'pvrtc' | 'bptc'
     {
         if (format >= 0x83F0 && format <= 0x83F3)
         {
             return 's3tc';
+        }
+        if (format >= 35916 && format <= 35919)
+        {
+            return 's3tc_sRGB';
         }
         else if (format >= 0x9270 && format <= 0x9279)
         {
@@ -194,16 +199,24 @@ export class CompressedTextureResource extends BlobResource
         {
             return 'pvrtc';
         }
-        else if (format >= 0x8D64)
+        else if (format === 0x8D64)
         {
             return 'etc1';
         }
-        else if (format >= 0x8C92 && format <= 0x87EE)
+        else if (format === 0x8C92 || format === 0x8C93 || format === 0x87EE)
         {
             return 'atc';
         }
+        else if (format >= 0x8E8C && format <= 0x8E8F)
+        {
+            return 'bptc';
+        }
+        else if (format === 0x93B0)
+        {
+            return 'astc';
+        }
 
-        throw new Error('Invalid (compressed) texture format given!');
+        throw new Error(`Invalid (compressed) texture format given: ${format}`);
     }
 
     /**

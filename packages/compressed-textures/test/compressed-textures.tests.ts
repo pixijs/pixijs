@@ -1,4 +1,5 @@
 import { Assets } from '@pixi/assets';
+import { CompressedTextureResource, INTERNAL_FORMATS } from '@pixi/compressed-textures';
 import { Loader } from '../../assets/src/loader/Loader';
 import { Resolver } from '../../assets/src/resolver/Resolver';
 import { detectCompressedTextures, loadDDS, loadKTX, resolveCompressedTextureUrl } from '../src/loaders';
@@ -54,6 +55,20 @@ describe('Compressed Loader', () =>
         expect(texture.height).toBe(664);
     });
 
+    it('should load BC7 DDS image', async () =>
+    {
+        await Assets.init({ basePath });
+
+        // eslint-disable-next-line max-len
+        const texture = await Assets.load<Texture>(`test-image-bc7-dds.dds`);
+
+        expect(texture.baseTexture.valid).toBe(true);
+        expect((texture.baseTexture.resource as CompressedTextureResource).format)
+            .toBe(INTERNAL_FORMATS.COMPRESSED_RGBA_BPTC_UNORM_EXT);
+        expect(texture.width).toBe(512);
+        expect(texture.height).toBe(512);
+    });
+
     it('should resolve asset', () =>
     {
         const resolver = new Resolver();
@@ -102,6 +117,67 @@ describe('Compressed Loader', () =>
         detectCompressedTextures.test = jest.fn(async () => false);
         await Assets.init();
         expect(Assets.resolver['_preferredOrder'][0].params.format.every(
-            (f: string) => !['s3tc', 's3tc_sRGB', 'etc', 'etc1', 'pvrtc', 'atc', 'astc'].includes(f))).toBeTrue();
+            (f: string) => !['s3tc', 's3tc_sRGB', 'etc', 'etc1', 'pvrtc', 'atc', 'astc', 'bptc'].includes(f))).toBeTrue();
+    });
+
+    it('should resolve extension by format', async () =>
+    {
+        const extensions: { [key: string]: number[] } = {
+            s3tc: [INTERNAL_FORMATS.COMPRESSED_RGB_S3TC_DXT1_EXT, INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT1_EXT,
+                INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT3_EXT, INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT5_EXT],
+            // eslint-disable-next-line camelcase
+            s3tc_sRGB: [INTERNAL_FORMATS.COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT,
+                INTERNAL_FORMATS.COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT,
+                INTERNAL_FORMATS.COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT,
+                INTERNAL_FORMATS.COMPRESSED_SRGB_S3TC_DXT1_EXT],
+            etc: [INTERNAL_FORMATS.COMPRESSED_R11_EAC, INTERNAL_FORMATS.COMPRESSED_SIGNED_R11_EAC,
+                INTERNAL_FORMATS.COMPRESSED_RG11_EAC, INTERNAL_FORMATS.COMPRESSED_SIGNED_RG11_EAC,
+                INTERNAL_FORMATS.COMPRESSED_RGB8_ETC2, INTERNAL_FORMATS.COMPRESSED_RGBA8_ETC2_EAC,
+                INTERNAL_FORMATS.COMPRESSED_SRGB8_ETC2, INTERNAL_FORMATS.COMPRESSED_SRGB8_ALPHA8_ETC2_EAC,
+                INTERNAL_FORMATS.COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2,
+                INTERNAL_FORMATS.COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2],
+            etc1: [INTERNAL_FORMATS.COMPRESSED_RGB_ETC1_WEBGL],
+            pvrtc: [INTERNAL_FORMATS.COMPRESSED_RGB_PVRTC_4BPPV1_IMG, INTERNAL_FORMATS.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG,
+                INTERNAL_FORMATS.COMPRESSED_RGB_PVRTC_2BPPV1_IMG, INTERNAL_FORMATS.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG],
+            atc: [INTERNAL_FORMATS.COMPRESSED_RGB_ATC_WEBGL, INTERNAL_FORMATS.COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL,
+                INTERNAL_FORMATS.COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL],
+            astc: [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_4x4_KHR],
+            bptc: [INTERNAL_FORMATS.COMPRESSED_RGBA_BPTC_UNORM_EXT, INTERNAL_FORMATS.COMPRESSED_SRGB_ALPHA_BPTC_UNORM_EXT,
+                INTERNAL_FORMATS.COMPRESSED_RGB_BPTC_SIGNED_FLOAT_EXT,
+                INTERNAL_FORMATS.COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_EXT]
+        };
+
+        // Validate all INTERNAL_FORMATS are mapped to extensions
+        Object.values(INTERNAL_FORMATS)
+            .filter((v) => !isNaN(Number(v)))
+            .map((value) => Number(value))
+            .forEach((value) =>
+            {
+                let found = false;
+
+                for (const ext in extensions)
+                {
+                    if (extensions[ext].includes(value))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                expect(found).toBeTrue();
+            });
+
+        // test CompressedTextureResource._formatToExtension
+        for (const ext in extensions)
+        {
+            for (const format of extensions[ext])
+            {
+                const texture = new CompressedTextureResource(null, {
+                    height: 1, width: 1,
+                    format
+                });
+
+                expect(texture['_extension']).toBe(ext);
+            }
+        }
     });
 });
