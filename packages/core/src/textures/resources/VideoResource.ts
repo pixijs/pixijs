@@ -68,7 +68,8 @@ export class VideoResource extends BaseImageResource
      * @param {boolean} [options.autoLoad=true] - Start loading the video immediately
      * @param {boolean} [options.autoPlay=true] - Start playing video immediately
      * @param {number} [options.updateFPS=0] - How many times a second to update the texture from the video.
-     * Leave at 0 to update at every render.
+     * If 0, `requestVideoFrameCallback` is used to update the texture.
+     * If `requestVideoFrameCallback` is not available, the texture is updated every render.
      * @param {boolean} [options.crossorigin=true] - Load image using cross origin
      * @param {boolean} [options.loop=false] - Loops the video
      * @param {boolean} [options.muted=false] - Mutes the video audio, useful for autoplay
@@ -419,7 +420,8 @@ export class VideoResource extends BaseImageResource
     }
 
     /**
-     * How many times a second to update the texture from the video. Leave at 0 to update at every render.
+     * How many times a second to update the texture from the video. If 0, `requestVideoFrameCallback` is used to
+     * update the texture. If `requestVideoFrameCallback` is not available, the texture is updated every render.
      * A lower fps can help performance, as updating the texture at 60fps on a 30ps video may not be efficient.
      */
     get updateFPS(): number

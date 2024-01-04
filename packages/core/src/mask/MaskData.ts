@@ -1,7 +1,7 @@
 import { MASK_TYPES } from '@pixi/constants';
 import { Filter } from '../filters/Filter';
 
-import type { COLOR_MASK_BITS, MSAA_QUALITY } from '@pixi/constants';
+import type { MSAA_QUALITY } from '@pixi/constants';
 import type { Matrix, Rectangle } from '@pixi/math';
 import type { IFilterTarget } from '../filters/IFilterTarget';
 import type { ISpriteMaskFilter } from '../filters/spriteMask/SpriteMaskFilter';
@@ -62,8 +62,11 @@ export class MaskData
     /** If enabled is true the mask is applied, if false it will not. */
     public enabled: boolean;
 
-    /** Color mask. */
-    public colorMask: COLOR_MASK_BITS;
+    /**
+     * Color mask.
+     * @see PIXI.COLOR_MASK_BITS
+     */
+    public colorMask: number;
 
     /**
      * The sprite mask filter wrapped in an array.

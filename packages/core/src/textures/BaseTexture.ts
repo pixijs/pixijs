@@ -16,7 +16,16 @@ const defaultBufferOptions = {
     alphaMode: ALPHA_MODES.NPM,
 };
 
-export type ImageSource = HTMLImageElement | HTMLVideoElement | ImageBitmap | ICanvas;
+/**
+ * Value types for the constructor of {@link PIXI.BaseTexture}, including:
+ * - `HTMLImageElement`
+ * - `HTMLVideoElement`
+ * - `ImageBitmap`
+ * - {@link PIXI.ICanvas}
+ * - `VideoFrame`
+ * @memberof PIXI
+ */
+export type ImageSource = HTMLImageElement | HTMLVideoElement | ImageBitmap | ICanvas | VideoFrame;
 
 export interface IBaseTextureOptions<RO = any>
 {
@@ -251,7 +260,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     };
 
     /**
-     * @param {PIXI.Resource|HTMLImageElement|HTMLVideoElement|ImageBitmap|ICanvas|string} [resource=null] -
+     * @param {PIXI.Resource|PIXI.ImageSource|string} [resource=null] -
      *        The current resource to use, for things that aren't Resource objects, will be converted
      *        into a Resource.
      * @param options - Collection of options, default options inherited from {@link PIXI.BaseTexture.defaultOptions}.
@@ -643,7 +652,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * source is an image url or an image element and not in the base texture
      * cache, it will be created and loaded.
      * @static
-     * @param {HTMLImageElement|HTMLVideoElement|ImageBitmap|PIXI.ICanvas|string|string[]} source - The
+     * @param {PIXI.ImageSource|string|string[]} source - The
      *        source to create base texture from.
      * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
      * @param {string} [options.pixiIdPrefix=pixiid] - If a source has no id, this is the prefix of the generated id
