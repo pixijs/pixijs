@@ -146,8 +146,7 @@ function recursive(
                 }
             }
         }
-        else
-        if (d2 > FLT_EPSILON)
+        else if (d2 > FLT_EPSILON)
         {
             // p1,p3,p4 are collinear, p2 is considerable
             // ----------------------

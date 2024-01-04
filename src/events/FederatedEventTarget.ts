@@ -72,8 +72,8 @@ export type FederatedEventHandler<T = FederatedPointerEvent> = (event: T) => voi
  * This is the {@link scene.Container#eventMode|Container.eventMode} property of any {@link scene.Container}.
  *
  * Can be one of the following:
- * - `'none'`: **(default)** Ignores all interaction events, even on its children.
- * - `'passive'`: Does not emit events and ignores all hit testing on itself and non-interactive children.
+ * - `'none'`: Ignores all interaction events, even on its children.
+ * - `'passive'`: **(default)** Does not emit events and ignores all hit testing on itself and non-interactive children.
  * Interactive children will still emit events.
  * - `'auto'`: Does not emit events but is hit tested if parent is interactive. Same as `interactive = false` in v7
  * - `'static'`: Emit events and is hit tested. Same as `interaction = true` in v7
@@ -609,10 +609,9 @@ export const FederatedContainer: IFederatedContainer = {
     _internalEventMode: undefined,
     /**
      * Enable interaction events for the Container. Touch, pointer and mouse.
-     * This now replaces the deprecated `interactive` property from v6.
      * There are 5 types of interaction settings:
-     * - `'none'`: **(default)** Ignores all interaction events, even on its children.
-     * - `'passive'`: Does not emit events and ignores all hit testing on itself and non-interactive children.
+     * - `'none'`: Ignores all interaction events, even on its children.
+     * - `'passive'`: **(default)** Does not emit events and ignores all hit testing on itself and non-interactive children.
      * Interactive children will still emit events.
      * - `'auto'`: Does not emit events but is hit tested if parent is interactive. Same as `interactive = false` in v7
      * - `'static'`: Emit events and is hit tested. Same as `interaction = true` in v7
@@ -727,13 +726,42 @@ export const FederatedContainer: IFederatedContainer = {
     )
     {
         const capture = (typeof options === 'boolean' && options)
-            || (typeof options === 'object' && options.capture);
+        || (typeof options === 'object' && options.capture);
+        const once = typeof options === 'object' ? (options.once === true) : false;
+        const signal = typeof options === 'object' ? options.signal : null;
         const context = typeof listener === 'function' ? undefined : listener;
 
         type = capture ? `${type}capture` : type;
         listener = typeof listener === 'function' ? listener : listener.handleEvent;
 
-        (this as unknown as EventEmitter).on(type, listener, context);
+        const emitter = (this as unknown as EventEmitter);
+
+        if (signal)
+        {
+            const extractedListenerFn = listener;
+
+            listener = (e: Event) =>
+            {
+                if (signal.aborted)
+                {
+                    return;
+                }
+                extractedListenerFn(e);
+            };
+            signal.addEventListener('abort', () =>
+            {
+                emitter.off(type, listener as EventListener, context);
+            });
+        }
+
+        if (once)
+        {
+            emitter.once(type, listener, context);
+        }
+        else
+        {
+            emitter.on(type, listener, context);
+        }
     },
 
     /**

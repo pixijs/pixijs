@@ -261,9 +261,7 @@ describe('GenerateTexture', () =>
             height: 2,
             resource: texturePixels,
             alphaMode: 'premultiply-alpha-on-upload',
-            style: {
-                scaleMode: 'nearest'
-            }
+            scaleMode: 'nearest'
         });
 
         const renderer = await getRenderer({ width: 2, height: 2, resolution: 2 });
@@ -303,9 +301,7 @@ describe('GenerateTexture', () =>
             height: 2,
             resource: texturePixels,
             alphaMode: 'premultiply-alpha-on-upload',
-            style: {
-                scaleMode: 'nearest'
-            }
+            scaleMode: 'nearest'
         });
 
         const sprite = new Sprite(texture);

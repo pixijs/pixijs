@@ -14,7 +14,7 @@ import type { ShapePrimitive } from './ShapePrimitive';
  * <br/>
  * These can be passed as a single array, or as a sequence of arguments.
  * ```js
- * import { Polygon } from '@pixi.js';
+ * import { Polygon } from 'pixi.js';
  *
  * // create a polygon object from an array of points, or an array of coordinate pairs
  * const polygon1 = new Polygon([ new Point(0, 0), new Point(0, 100), new Point(100, 100) ]);

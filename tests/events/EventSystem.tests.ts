@@ -1074,4 +1074,83 @@ describe('EventSystem', () =>
 
         expect(eventSpy).toHaveBeenCalledTimes(1);
     });
+
+    it('should respect \'once\' option', async () =>
+    {
+        const renderer = await createRenderer();
+        const [stage, graphics] = createScene();
+        const eventSpy = jest.fn();
+
+        renderer.render(stage);
+
+        graphics.addEventListener('pointertap', (e) =>
+        {
+            expect(e.type).toEqual('click');
+            eventSpy();
+        }, { once: true });
+
+        const click = () =>
+        {
+            renderer.events['_onPointerDown'](
+                new PointerEvent('pointerdown', { clientX: 25, clientY: 25 })
+            );
+            const e = new PointerEvent('pointerup', { clientX: 30, clientY: 20 });
+
+            // so it isn't a pointerupoutside
+            Object.defineProperty(e, 'target', {
+                writable: false,
+                value: renderer.canvas
+            });
+            renderer.events['_onPointerUp'](e);
+        };
+
+        click(); // Once
+        click(); // Twice
+
+        expect(eventSpy).toHaveBeenCalledOnce();
+    });
+
+    it('should respect AbortController signals', async () =>
+    {
+        const renderer = await createRenderer();
+        const [stage, graphics] = createScene();
+        const eventSpy = jest.fn();
+
+        renderer.render(stage);
+        const controller = new AbortController();
+        let count = 0;
+
+        graphics.addEventListener('pointertap', (e) =>
+        {
+            expect(e.type).toEqual('click');
+            count = count + 1;
+            if (count >= 2)
+            {
+                controller.abort();
+            }
+
+            eventSpy();
+        }, { signal: controller.signal });
+
+        const click = () =>
+        {
+            renderer.events['_onPointerDown'](
+                new PointerEvent('pointerdown', { clientX: 25, clientY: 25 })
+            );
+            const e = new PointerEvent('pointerup', { clientX: 30, clientY: 20 });
+
+            // so it isn't a pointerupoutside
+            Object.defineProperty(e, 'target', {
+                writable: false,
+                value: renderer.canvas
+            });
+            renderer.events['_onPointerUp'](e);
+        };
+
+        click(); // Once
+        click(); // Twice
+        click(); // Three times
+
+        expect(eventSpy).toHaveBeenCalledTimes(2);
+    });
 });

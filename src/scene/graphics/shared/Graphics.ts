@@ -11,9 +11,7 @@ import type { View } from '../../../rendering/renderers/shared/view/View';
 import type { Bounds } from '../../container/bounds/Bounds';
 import type { ContainerOptions } from '../../container/Container';
 import type { ContextDestroyOptions, DestroyOptions } from '../../container/destroyTypes';
-// @ts-expect-error - used for jsdoc typedefs
-// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
-import type { ConvertedFillStyle, ConvertedStrokeStyle, FillStyle, FillStyleInputs, StrokeStyle } from './GraphicsContext';
+import type { FillStyle, FillStyleInputs, StrokeStyle } from './GraphicsContext';
 
 /**
  * Constructor options used for `Graphics` instances.
@@ -376,6 +374,27 @@ export class Graphics extends Container implements View, Instruction
     set strokeStyle(value: FillStyleInputs)
     {
         this._context.strokeStyle = value;
+    }
+
+    /**
+     * Creates a new Graphics object.
+     * Note that only the context of the object is cloned, not its transform (position,scale,etc)
+     * @param deep - Whether to create a deep clone of the graphics object. If false, the context
+     * will be shared between the two objects (default false). If true, the context will be
+     * cloned (recommended if you need to modify the context in any way).
+     * @returns - A clone of the graphics object
+     */
+    public clone(deep = false): Graphics
+    {
+        if (deep)
+        {
+            return new Graphics(this._context.clone());
+        }
+
+        (this._ownedContext as null) = null;
+        const clone = new Graphics(this._context);
+
+        return clone;
     }
 
     // -------- v7 deprecations ---------

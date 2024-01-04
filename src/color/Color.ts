@@ -120,7 +120,6 @@ export class Color
 {
     /**
      * Default Color object for static uses
-     * @ignore
      * @example
      * import { Color } from 'pixi.js';
      * Color.shared.setValue(0xffffff).toHex(); // '#ffffff'

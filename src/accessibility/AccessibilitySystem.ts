@@ -5,10 +5,6 @@ import { removeItems } from '../utils/data/removeItems';
 import { type AccessibleHTMLElement } from './accessibilityTarget';
 
 import type { Rectangle } from '../maths/shapes/Rectangle';
-// @ts-expect-error - used for jsdoc typedefs
-import type { WebGLRenderer } from '../rendering/renderers/gl/WebGLRenderer';
-// @ts-expect-error - used for jsdoc typedefs
-import type { WebGPURenderer } from '../rendering/renderers/gpu/WebGPURenderer';
 import type { System } from '../rendering/renderers/shared/system/System';
 import type { Renderer } from '../rendering/renderers/types';
 import type { Container } from '../scene/container/Container';
@@ -112,7 +108,6 @@ export class AccessibilitySystem implements System
     /**
      * @param {WebGLRenderer|WebGPURenderer} renderer - A reference to the current renderer
      */
-    // eslint-disable-next-line @typescript-eslint/no-parameter-properties
     constructor(renderer: Renderer, private readonly _mobileInfo: isMobileResult = isMobile)
     {
         this._hookDiv = null;
