@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js';
+import * as PIXI from 'pixijs';
 
 (async () => {
     const app = new PIXI.Application();
