@@ -1,5 +1,5 @@
 {
-  "name": "pixi.js",
+  "name": "pixijs",
   "version": "8.0.0-rc",
   "author": "PixiJS Team",
   "main": "lib/index.js",
