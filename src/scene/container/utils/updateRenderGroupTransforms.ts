@@ -51,7 +51,7 @@ export function updateRenderGroupTransform(renderGroup: RenderGroup)
         const renderGroupParent = renderGroup.renderGroupParent;
 
         renderGroup.worldTransform.appendFrom(
-            root.groupTransform,
+            root.relativeGroupTransform,
             renderGroupParent.worldTransform,
         );
 
@@ -64,7 +64,7 @@ export function updateRenderGroupTransform(renderGroup: RenderGroup)
     }
     else
     {
-        renderGroup.worldTransform.copyFrom(root.groupTransform);
+        renderGroup.worldTransform.copyFrom(root.localTransform);
         renderGroup.worldColor = root.localColor;
         worldAlpha = root.localAlpha;
     }
@@ -94,9 +94,9 @@ export function updateTransformAndChildren(container: Container, updateTick: num
     {
         updateFlags = updateFlags | container._updateFlags;
 
-        container.groupTransform.appendFrom(
+        container.relativeGroupTransform.appendFrom(
             localTransform,
-            parent.groupTransform,
+            parent.relativeGroupTransform,
         );
 
         if (updateFlags)
@@ -108,7 +108,7 @@ export function updateTransformAndChildren(container: Container, updateTick: num
     {
         updateFlags = container._updateFlags;
 
-        container.groupTransform.copyFrom(localTransform);
+        container.relativeGroupTransform.copyFrom(localTransform);
 
         if (updateFlags)
         {
@@ -165,7 +165,7 @@ function updateColorBlendVisibility(
 
     if (updateFlags & UPDATE_VISIBLE)
     {
-        container.rgVisibleRenderable = container.localVisibleRenderable & parent.rgVisibleRenderable;
+        container.groupVisibleRenderable = container.localVisibleRenderable & parent.groupVisibleRenderable;
     }
 
     container._updateFlags = 0;

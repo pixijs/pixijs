@@ -52,11 +52,6 @@ export class RenderGroup implements Instruction
         return this.root.localTransform;
     }
 
-    get groupTransform()
-    {
-        return this.root.groupTransform;
-    }
-
     public addRenderGroupChild(renderGroupChild: RenderGroup)
     {
         if (renderGroupChild.renderGroupParent)
@@ -203,7 +198,7 @@ export class RenderGroup implements Instruction
     public updateRenderable(container: Container)
     {
         // only update if its visible!
-        if (container.rgVisibleRenderable < 0b11) return;
+        if (container.groupVisibleRenderable < 0b11) return;
 
         container.didViewUpdate = false;
         // actually updates the renderable..

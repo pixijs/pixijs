@@ -19,7 +19,7 @@ export function getLocalBounds(target: Container, bounds: Bounds, relativeMatrix
     }
     else if ((target as Renderable).addBounds)
     {
-        bounds.setMatrix(relativeMatrix);
+        bounds.matrix = relativeMatrix;
         (target as Renderable).addBounds(bounds);
     }
 
@@ -66,7 +66,7 @@ function _getLocalBounds(target: Container, bounds: Bounds, parentTransform: Mat
     {
         if (target.renderPipeId)
         {
-            bounds.setMatrix(relativeTransform);
+            bounds.matrix = relativeTransform;
             (target as Renderable).addBounds(bounds);
         }
 

@@ -40,7 +40,7 @@ export function collectAllRenderables(
 {
     // if there is 0b01 or 0b10 the return value
 
-    if (container.rgVisibleRenderable < 0b11 || !container.includeInBuild) return;
+    if (container.groupVisibleRenderable < 0b11 || !container.includeInBuild) return;
 
     if (container.sortableChildren)
     {
