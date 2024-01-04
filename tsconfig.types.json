@@ -9,4 +9,7 @@
         "./src",
         "./types"
     ],
+    "exclude": [
+        "./src/bundle.*"
+    ]
 }
