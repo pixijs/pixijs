@@ -79,7 +79,7 @@ export class PolygonUtils
 
     /**
      * Determine the intersection point of two line segments
-     * @see {@link here http://paulbourke.net/geometry/pointlineplane/}
+     * @see http://paulbourke.net/geometry/pointlineplane/
      * @private
      * @param {number} x1 - x-coordinate of start point at first line
      * @param {number} y1 - y-coordinate of start point at first line

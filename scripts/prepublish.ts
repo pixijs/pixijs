@@ -12,7 +12,7 @@ async function main()
     {
         if (workspace.config.private) return;
 
-        if ('version' in workspace.config)
+        if (workspace.config.version)
         {
             console.error(
                 `Error: ${workspace.dir}/package.json should not have a "version" property. `

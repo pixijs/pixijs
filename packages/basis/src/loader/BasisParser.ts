@@ -58,7 +58,7 @@ export class BasisParser
     private static workerPool: TranscoderWorker[] = [];
 
     /**
-     * Runs transcoding and populates {@link imageArray}. It will run the transcoding in a web worker
+     * Runs transcoding and populates imageArray. It will run the transcoding in a web worker
      * if they are available.
      * @private
      */

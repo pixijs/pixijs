@@ -43,7 +43,7 @@ export class StateSystem implements ISystem
      * @default PIXI.BLEND_MODES.NONE
      * @readonly
      */
-    public blendMode: BLEND_MODES;
+    public blendMode: BLEND_MODES | -1;
 
     /** Whether current blend equation is different */
     protected _blendEq: boolean;

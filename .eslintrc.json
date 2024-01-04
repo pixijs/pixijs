@@ -15,37 +15,10 @@
         }
     },
     "rules": {
-        "no-multi-spaces": [1, { "exceptions": {} }],
-        "object-curly-newline": [1, { "multiline": true, "consistent": true }],
-
-        // Imports and Exports
-        "import/first": 1,
-        "import/newline-after-import": 1,
-        "simple-import-sort/imports": [1, {
-            "groups": [
-                [
-                    "^\\w", // External
-                    "^\\u0000", // External side effect
-                    "^@pixi/", // @pixi/*
-                    "^\\u0000@pixi/", // @pixi/* side effect
-                    "^\\.", // Relative
-                    "^\\u0000\\.", // Relative side effect
-                    "^" // Others
-                ],
-                [
-                    "^\\w.*\\u0000$", // External types
-                    "^@pixi/.*\\u0000$", // @pixi/* types
-                    "^\\..*\\u0000$", // Relative types
-                    "\\u0000$" // Other types
-                ]
-            ]
-        }],
-        "simple-import-sort/exports": 1,
-
-        "spaced-comment": [1, "always", { "markers": ["/"] }],
         "@typescript-eslint/triple-slash-reference": [1, { "path": "always" }],
         "@typescript-eslint/consistent-type-imports": [1, { "disallowTypeAnnotations": false }],
-        "@typescript-eslint/no-parameter-properties": 1,
+        "@typescript-eslint/no-unsafe-declaration-merging": 0,
+        "@typescript-eslint/no-duplicate-enum-values": 0,
         "@typescript-eslint/type-annotation-spacing": 1,
         "jsdoc/multiline-blocks": [
             1,
@@ -60,7 +33,6 @@
         "jsdoc/check-values": 1,
         "jsdoc/empty-tags": 1,
         "jsdoc/implements-on-classes": 1,
-        "jsdoc/newline-after-description": [1, "never"],
         "jsdoc/no-multi-asterisks": [1, { "allowWhitespace": true }],
         "jsdoc/no-undefined-types": [
             "warn",
@@ -101,7 +73,8 @@
             "globals": {
                 "expect": false,
                 "assert": false,
-                "sinon": false
+                "sinon": false,
+                "GlobalMixins": false
             },
             "rules": {
                 "@typescript-eslint/no-unused-expressions": 0,

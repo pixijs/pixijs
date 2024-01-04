@@ -17,7 +17,7 @@ describe('autoDetectResource', () =>
     it('should have installed resources', () =>
     {
         expect(INSTALLED).toBeArray();
-        expect(INSTALLED.length).toEqual(8);
+        expect(INSTALLED.length).toEqual(9);
     });
 
     it('should auto-detect canvas element', () =>
