@@ -52,7 +52,7 @@ const pathPrefixs = [
     'packages/mixin-get-global-position/',
     // 'packages/particle-container/',
     // 'packages/prepare/',
-    // 'packages/runner/',
+    'packages/runner/',
     'packages/settings/',
     // 'packages/sprite/',
     // 'packages/sprite-animated/',
