@@ -15,7 +15,7 @@ export const WGSL_TO_STD40_SIZE: Record<string, number> = {
     'vec3<f32>': 12,
     'vec4<f32>': 16,
 
-    'mat2x2<f32>': 16 * 3,
+    'mat2x2<f32>': 16 * 2,
     'mat3x3<f32>': 16 * 3,
     'mat4x4<f32>': 16 * 4,
 
