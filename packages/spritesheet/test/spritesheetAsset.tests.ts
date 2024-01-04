@@ -1,9 +1,10 @@
 import { Cache, loadJson, loadTextures } from '@pixi/assets';
-import { Texture, utils } from '@pixi/core';
+import { BaseTexture, Texture, utils } from '@pixi/core';
 import { Spritesheet, spritesheetAsset } from '@pixi/spritesheet';
 import { Loader } from '../../assets/src/loader/Loader';
 
 import type { CacheParser } from '@pixi/assets';
+import type { SpriteSheetJson } from '@pixi/spritesheet';
 
 describe('spritesheetAsset', () =>
 {
@@ -43,6 +44,38 @@ describe('spritesheetAsset', () =>
         expect(senseiTexture.baseTexture.valid).toBe(true);
         expect(senseiTexture.width).toBe(125);
         expect(senseiTexture.height).toBe(125);
+    });
+
+    it('should use preloaded texture via data.texture instead of loading texture using imagePath', async () =>
+    {
+        const spritesheetJsonUrl = `${serverPath}spritesheet.json`;
+        const preloadedTexture = Texture.from(new BaseTexture());
+        const json = await loadJson.load<SpriteSheetJson>(spritesheetJsonUrl);
+        const spritesheet = await spritesheetAsset.loader.parse<Spritesheet>(
+            json,
+            {
+                src: spritesheetJsonUrl,
+                data: { texture: preloadedTexture }
+            });
+
+        expect(spritesheet.baseTexture).toEqual(preloadedTexture.baseTexture);
+    });
+
+    it('should use image filename via data.imageFilename instead of meta.image', async () =>
+    {
+        const spritesheetJsonUrl = `${serverPath}spritesheet.json`;
+        const customImageFilename = 'multi-pack-1.png';
+        const json = await loadJson.load<SpriteSheetJson>(spritesheetJsonUrl);
+        const spritesheet = await spritesheetAsset.loader.parse<Spritesheet>(
+            json,
+            {
+                src: spritesheetJsonUrl,
+                data: { imageFilename: customImageFilename }
+            }, loader);
+
+        const texture = await loader.load({ src: `${serverPath}${customImageFilename}` });
+
+        expect(spritesheet.baseTexture).toEqual(texture.baseTexture);
     });
 
     it('should do nothing if the resource is not JSON', async () =>

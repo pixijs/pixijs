@@ -103,6 +103,11 @@ export const spritesheetAsset = {
 
         async parse(asset: SpriteSheetJson, options: ResolvedAsset, loader: Loader): Promise<Spritesheet>
         {
+            const {
+                texture: imageTexture, // if user need to use preloaded texture
+                imageFilename // if user need to use custom filename (not from jsonFile.meta.image)
+            } = options?.data ?? {};
+
             let basePath = utils.path.dirname(options.src);
 
             if (basePath && basePath.lastIndexOf('/') !== (basePath.length - 1))
@@ -110,12 +115,21 @@ export const spritesheetAsset = {
                 basePath += '/';
             }
 
-            let imagePath = basePath + asset.meta.image;
+            let texture: Texture;
 
-            imagePath = copySearchParams(imagePath, options.src);
+            if (imageTexture && imageTexture.baseTexture)
+            {
+                texture = imageTexture;
+            }
+            else
+            {
+                const imagePath = copySearchParams(basePath + (imageFilename ?? asset.meta.image), options.src);
 
-            const assets = await loader.load<Texture>([imagePath]);
-            const texture = assets[imagePath];
+                const assets = await loader.load<Texture>([imagePath]);
+
+                texture = assets[imagePath];
+            }
+
             const spritesheet = new Spritesheet(
                 texture.baseTexture,
                 asset,
