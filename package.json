@@ -23,7 +23,7 @@
     "build:index": "ts-node --transpile-only ./scripts/index/index.ts",
     "build:dts": "ts-node --transpile-only ./scripts/types/fixTypes.ts && copyfiles -u 1 \"src/**/*.d.ts\" lib/",
     "build:pkg": "ts-node ./scripts/utils/exports.ts",
-    "dist": "run-s lint build docs && copyfiles -u 1 \"dist/*\" .s3_uploads/",
+    "dist": "run-s lint build docs && copyfiles -u 1 \"dist/**/*\" .s3_uploads/",
     "prewatch": "npm run build",
     "postbuild": "rimraf \"src/*/**/index.ts\" --glob",
     "watch": "nodemon --watch \"./src/*\" --exec \"npm run watch:build\" -e ts,js,vert,frag,wgsl,d.ts --ignore \"index.ts\"",
