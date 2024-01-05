@@ -16,13 +16,13 @@
 // }
 import { parseFunctionBody } from '../../utils/parseFunctionBody';
 
-import type { Color } from '../../../../../color';
+import type { Color } from '../../../../../color/Color';
 import type { Matrix } from '../../../../../maths/matrix/Matrix';
 import type { PointLike } from '../../../../../maths/point/PointLike';
 import type { Rectangle } from '../../../../../maths/shapes/Rectangle';
 import type { UNIFORM_TYPES, UniformData } from './createUBOElements';
 
-type UniformParserKey = 'UPLOAD_PIXI_MAT_TO_MAT3' | 'VEC4_RECTANGLE' | 'VEC2_POINT' | 'VEC4_COLOR';
+type UniformParserKey = 'UPLOAD_PIXI_MAT_TO_MAT3' | 'VEC4_RECTANGLE' | 'VEC2_POINT' | 'VEC4_COLOR' | 'VEC3_COLOR';
 
 interface UniformParserDefinition
 {
@@ -90,6 +90,18 @@ const parsers: Record<UniformParserKey, UniformParserDefinition> = {
             data[offset + 3] = v.alpha;
         }
     },
+    VEC3_COLOR: {
+        test: (data: UniformData): boolean =>
+            data.type === 'vec3<f32>' && data.size === 1 && (data.value as Color).red !== undefined,
+        exec: (name: string, uv: any, data: any, offset: any, v: any): void =>
+        {
+            v = uv[name];
+
+            data[offset] = v.red;
+            data[offset + 1] = v.green;
+            data[offset + 2] = v.blue;
+        }
+    },
     VEC2_POINT: {
         test: (data: UniformData): boolean =>
             data.type === 'vec2<f32>' && data.size === 1 && (data.value as PointLike).x !== undefined,
@@ -131,6 +143,12 @@ export const uniformBufferParsers: UniformParser[] = [
         test: parsers.VEC4_COLOR.test,
         exec: parsers.VEC4_COLOR.exec,
         code: parseFunctionBody(parsers.VEC4_COLOR.exec)
+    },
+    {
+        type: 'vec3<f32>',
+        test: parsers.VEC3_COLOR.test,
+        exec: parsers.VEC3_COLOR.exec,
+        code: parseFunctionBody(parsers.VEC3_COLOR.exec)
     },
     // uploading a pixi point as a vec2 with caching layer
     // {
