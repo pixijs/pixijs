@@ -3,9 +3,9 @@ import { Container } from '../../../src/scene/container/Container';
 import { Sprite } from '../../../src/scene/sprite/Sprite';
 import { Text } from '../../../src/scene/text/Text';
 import { getWebGLRenderer } from '../../utils/getRenderer';
-import '../../../src/scene/text/init';
-import '../../../src/scene/text-bitmap/init';
 import '../../../src/scene/graphics/init';
+import '../../../src/scene/text-bitmap/init';
+import '../../../src/scene/text/init';
 
 import type { DestroyOptions } from '../../../src/scene/container/destroyTypes';
 
@@ -193,21 +193,6 @@ describe('Text', () =>
         it('should prevent setting undefined', () =>
         {
             const text = new Text({});
-
-            expect(text.text).toEqual('');
-        });
-
-        // note: ticket add Trim
-        // ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=45756485
-        it.skip('should trim an empty string', () =>
-        {
-            // note: why?
-            const text = new Text({
-                text: ' ',
-                style: {
-                    //   trim: true
-                }
-            });
 
             expect(text.text).toEqual('');
         });

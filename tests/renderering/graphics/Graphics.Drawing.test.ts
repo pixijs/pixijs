@@ -290,9 +290,7 @@ describe('Graphics Drawing', () =>
 
     describe('lineTo', () =>
     {
-        // note: width & height are zero?
-        // Ticket for Mat - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44798775
-        it.skip('should return correct bounds - north', () =>
+        it('should return correct bounds - north', () =>
         {
             const graphics = new Graphics();
 
@@ -307,6 +305,7 @@ describe('Graphics Drawing', () =>
 
         // note: width & height are zero?
         // Ticket for Mat - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44798775
+        // eslint-disable-next-line jest/no-disabled-tests
         it.skip('should return correct bounds - south', () =>
         {
             const graphics = new Graphics();
@@ -321,6 +320,7 @@ describe('Graphics Drawing', () =>
 
         // note: width & height are zero?
         // Ticket for Mat - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44798775
+        // eslint-disable-next-line jest/no-disabled-tests
         it.skip('should return correct bounds - east', () =>
         {
             const graphics = new Graphics();
@@ -335,6 +335,7 @@ describe('Graphics Drawing', () =>
 
         // note: width & height are zero?
         // Ticket for Mat - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44798775
+        // eslint-disable-next-line jest/no-disabled-tests
         it.skip('should return correct bounds - west', () =>
         {
             const graphics = new Graphics();
@@ -347,8 +348,6 @@ describe('Graphics Drawing', () =>
             expect(graphics.width).toBeCloseTo(11, 0.0001);
         });
 
-        // note: width & height are zero?
-        // Ticket for Mat - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44798775
         it('should return correct bounds when stacked with circle', () =>
         {
             const graphics = new Graphics();
@@ -368,6 +367,7 @@ describe('Graphics Drawing', () =>
 
         // note: width & height are zero?
         // Ticket for Mat - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44798775
+        // eslint-disable-next-line jest/no-disabled-tests
         it.skip('should return correct bounds when square', () =>
         {
             const graphics = new Graphics();
@@ -404,6 +404,7 @@ describe('Graphics Drawing', () =>
 
         // note: zero dimensions
         // Ticket for Mat - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44798775
+        // eslint-disable-next-line jest/no-disabled-tests
         it.skip('should not have miter join on 180 degree corner', () =>
         {
             const graphics = new Graphics();
@@ -424,6 +425,7 @@ describe('Graphics Drawing', () =>
 
         // note: zero dimensions
         // Ticket for Mat - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44798775
+        // eslint-disable-next-line jest/no-disabled-tests
         it.skip('should not have bevel join on 180 degree corner', () =>
         {
             const graphics = new Graphics();
@@ -439,6 +441,7 @@ describe('Graphics Drawing', () =>
 
         // note: zero dimensions
         // Ticket for Mat - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44798775
+        // eslint-disable-next-line jest/no-disabled-tests
         it.skip('should have round join on 180 degree corner', () =>
         {
             const graphics = new Graphics();
