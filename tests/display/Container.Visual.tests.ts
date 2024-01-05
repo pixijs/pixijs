@@ -7,6 +7,7 @@ describe('Container Visual', () =>
     describe('mask', () =>
     {
         // todo: ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44913565
+        // eslint-disable-next-line jest/no-disabled-tests
         it.skip('should set isMask and renderable properties correctly even if the same mask is used by multiple objects',
             () =>
             {

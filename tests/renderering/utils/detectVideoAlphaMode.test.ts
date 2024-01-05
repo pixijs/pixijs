@@ -12,6 +12,7 @@ describe('detectVideoAlphaMode', () =>
 {
     // todo: Mat to investigate - getting zero'd values for the expected pixels
     // ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=45105979
+    // eslint-disable-next-line jest/no-disabled-tests
     it.skip('should detect the correct alpha mode for video textures', async () =>
     {
         const video = document.createElement('video');
