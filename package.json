@@ -154,6 +154,8 @@
   "sideEffects": [
     "./lib/environment-browser/browserAll.*",
     "./lib/environment-webworker/webworkerAll.*",
+    "./lib/index.*",
+    "./lib/rendering/renderers/shared/texture/sources/resourceToTexture.*",
     "./lib/accessibility/init.*",
     "./lib/filters/blend-modes/init.*",
     "./lib/app/init.*",

@@ -6,6 +6,7 @@ import { BufferImageSource } from './renderers/shared/texture/sources/BufferSour
 import { CanvasSource } from './renderers/shared/texture/sources/CanvasSource';
 import { ImageSource } from './renderers/shared/texture/sources/ImageSource';
 import { VideoSource } from './renderers/shared/texture/sources/VideoSource';
+import './renderers/shared/texture/sources/resourceToTexture';
 
 /**
  * The rendering namespace contains all the classes used for core rendering in PixiJS
