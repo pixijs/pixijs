@@ -1,6 +1,6 @@
 import { Container } from '../../../src/scene/container/Container';
 import { Text } from '../../../src/scene/text/Text';
-import { getRenderer } from '../../utils/getRenderer';
+import { getWebGLRenderer } from '../../utils/getRenderer';
 import '../../../src/rendering/renderers/shared/texture/Texture';
 import '../../../src/scene/text/init';
 
@@ -8,7 +8,7 @@ describe('RenderGroupSystem', () =>
 {
     it('should reset childrenRenderablesToUpdate index between renders', async () =>
     {
-        const renderer = await getRenderer();
+        const renderer = await getWebGLRenderer();
 
         const container = new Container({ isRenderGroup: true });
         const text = new Text({ text: 'hello world' });

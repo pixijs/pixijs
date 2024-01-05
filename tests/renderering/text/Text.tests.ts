@@ -2,7 +2,7 @@
 import { Container } from '../../../src/scene/container/Container';
 import { Sprite } from '../../../src/scene/sprite/Sprite';
 import { Text } from '../../../src/scene/text/Text';
-import { getRenderer } from '../../utils/getRenderer';
+import { getWebGLRenderer } from '../../utils/getRenderer';
 import '../../../src/scene/text/init';
 import '../../../src/scene/text-bitmap/init';
 import '../../../src/scene/graphics/init';
@@ -35,7 +35,7 @@ describe('Text', () =>
         {
             const text = new Text({ text: 'foo' });
 
-            const renderer = await getRenderer({ resolution: 2 });
+            const renderer = await getWebGLRenderer({ resolution: 2 });
 
             const texture = renderer.renderPipes.text['_getGpuText'](text).texture;
 
@@ -50,7 +50,7 @@ describe('Text', () =>
 
             expect(text.resolution).toEqual(3);
 
-            const renderer = await getRenderer({ resolution: 2 });
+            const renderer = await getWebGLRenderer({ resolution: 2 });
 
             const texture = renderer.canvasText.getTexture(text.text, text.resolution, text.style, 'foo');
 
@@ -120,7 +120,7 @@ describe('Text', () =>
 
         it('should destroy canvas text correctly on the pipes and systems', async () =>
         {
-            const renderer = await getRenderer();
+            const renderer = await getWebGLRenderer();
 
             const container = new Container();
 
@@ -142,7 +142,7 @@ describe('Text', () =>
 
         it('should destroy bitmap text correctly on the pipes and systems', async () =>
         {
-            const renderer = await getRenderer();
+            const renderer = await getWebGLRenderer();
 
             const container = new Container();
 

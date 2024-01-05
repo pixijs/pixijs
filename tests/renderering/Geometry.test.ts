@@ -2,7 +2,7 @@ import { Buffer } from '../../src/rendering/renderers/shared/buffer/Buffer';
 import { Geometry } from '../../src/rendering/renderers/shared/geometry/Geometry';
 import { getGeometry } from '../utils/getGeometry';
 import { getGlProgram } from '../utils/getGlProgram';
-import { getRenderer } from '../utils/getRenderer';
+import { getWebGLRenderer } from '../utils/getRenderer';
 
 import type { WebGLRenderer } from '../../src/rendering/renderers/gl/WebGLRenderer';
 
@@ -32,7 +32,7 @@ describe('Geometry', () =>
 
         const program = getGlProgram();
 
-        const renderer = (await getRenderer()) as WebGLRenderer;
+        const renderer = (await getWebGLRenderer()) as WebGLRenderer;
 
         renderer.geometry.bind(geometry, program);
 
@@ -50,7 +50,7 @@ describe('Geometry', () =>
 
         const program = getGlProgram();
 
-        const renderer = (await getRenderer()) as WebGLRenderer;
+        const renderer = (await getWebGLRenderer()) as WebGLRenderer;
 
         renderer.geometry.bind(geometry, program);
 
@@ -78,7 +78,7 @@ describe('Geometry', () =>
 
         const program = getGlProgram();
 
-        const renderer = (await getRenderer()) as WebGLRenderer;
+        const renderer = (await getWebGLRenderer()) as WebGLRenderer;
 
         renderer.geometry.bind(geometry, program);
 

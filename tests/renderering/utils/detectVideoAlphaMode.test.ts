@@ -4,7 +4,7 @@ import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture
 import { Container } from '../../../src/scene/container/Container';
 import { Sprite } from '../../../src/scene/sprite/Sprite';
 import { detectVideoAlphaMode } from '../../../src/utils/browser/detectVideoAlphaMode';
-import { getRenderer } from '../../utils/getRenderer';
+import { getWebGLRenderer } from '../../utils/getRenderer';
 
 import type { WebGLRenderer } from '../../../src/rendering/renderers/gl/WebGLRenderer';
 
@@ -67,7 +67,7 @@ describe('detectVideoAlphaMode', () =>
         const sprite = new Sprite(Texture.WHITE);
 
         container.addChild(sprite);
-        const renderer = await getRenderer({ width: 1, height: 1 }) as WebGLRenderer;
+        const renderer = await getWebGLRenderer({ width: 1, height: 1 }) as WebGLRenderer;
         const gl = renderer.gl;
         const renderTexture = RenderTexture.create({ width: 1, height: 1 });
 

@@ -1,13 +1,13 @@
 import { AccessibilitySystem } from '../../src/accessibility/AccessibilitySystem';
 import { Container } from '../../src/scene/container/Container';
-import { getRenderer } from '../utils/getRenderer';
+import { getWebGLRenderer } from '../utils/getRenderer';
 import '../../src/accessibility/init';
 
 describe('accessibleTarget', () =>
 {
     it('should have target public properties', async () =>
     {
-        const renderer = await getRenderer();
+        const renderer = await getWebGLRenderer();
 
         // eslint-disable-next-line no-new
         new AccessibilitySystem(renderer, {

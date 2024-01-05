@@ -6,7 +6,7 @@ import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture
 import { Container } from '../../../src/scene/container/Container';
 import { Graphics } from '../../../src/scene/graphics/shared/Graphics';
 import { Sprite } from '../../../src/scene/sprite/Sprite';
-import { getRenderer } from '../../utils/getRenderer';
+import { getWebGLRenderer } from '../../utils/getRenderer';
 import { getTexture } from '../../utils/getTexture';
 
 describe('Sprite', () =>
@@ -29,7 +29,7 @@ describe('Sprite', () =>
 
         it('should clean up correctly on the pipe and system when destroyed', async () =>
         {
-            const renderer = await getRenderer();
+            const renderer = await getWebGLRenderer();
 
             const container = new Container();
 
