@@ -6,7 +6,7 @@ import { Sprite } from '../../../src/scene/sprite/Sprite';
 import { loadBitmapFont } from '../../../src/scene/text-bitmap/asset/loadBitmapFont';
 import { BitmapFont } from '../../../src/scene/text-bitmap/BitmapFont';
 import { basePath } from '../../assets/basePath';
-import { getRenderer } from '../../utils/getRenderer';
+import { getWebGLRenderer } from '../../utils/getRenderer';
 
 import type { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
 
@@ -211,7 +211,7 @@ describe('BitmapFontLoader', () =>
     // eslint-disable-next-line jest/no-disabled-tests
     it.skip('should properly register SCALED bitmap font', async () =>
     {
-        const renderer = await getRenderer();
+        const renderer = await getWebGLRenderer();
         const font = await loader.load<BitmapFont>(`${basePath}fonts/font@0.5x.fnt`);
 
         expect(font).toBeObject();

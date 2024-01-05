@@ -62,6 +62,13 @@ export class GpuBufferSystem implements System
 
     public createGPUBuffer(buffer: Buffer): GPUBuffer
     {
+        if (!this._gpuBuffers[buffer.uid])
+        {
+            buffer.on('update', this.updateBuffer, this);
+            buffer.on('change', this.onBufferChange, this);
+            buffer.on('destroy', this.onBufferDestroy, this);
+        }
+
         const gpuBuffer = this._gpu.device.createBuffer(buffer.descriptor);
 
         buffer._updateID = 0;
@@ -75,10 +82,6 @@ export class GpuBufferSystem implements System
         }
 
         this._gpuBuffers[buffer.uid] = gpuBuffer;
-
-        buffer.on('update', this.updateBuffer, this);
-        buffer.on('change', this.onBufferChange, this);
-        buffer.on('destroy', this.onBufferDestroy, this);
 
         this._managedBuffers.push(buffer);
 
