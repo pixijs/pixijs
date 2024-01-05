@@ -8,7 +8,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should nested masks correctly',
-    only: true,
     create: async (scene: Container) =>
     {
         const innerMask = new Graphics().rect(0, 0, 100, 100).fill('red');
