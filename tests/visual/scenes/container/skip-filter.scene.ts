@@ -7,7 +7,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should skip filters correctly',
-    only: true,
     create: async (scene: Container) =>
     {
         const container = new Container({
