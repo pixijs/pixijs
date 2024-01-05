@@ -30,13 +30,11 @@ import type { ArrayOr, AssetsBundle, AssetsManifest, ResolvedAsset, UnresolvedAs
 
 export type ProgressCallback = (progress: number) => void;
 
-type LoadConfig = LoadTextureConfig & LoadSVGConfig;
-
 /**
  * Extensible preferences that can be used, for instance, when configuring loaders.
  * @since 7.2.0
  */
-export interface AssetsPreferences extends LoadConfig, PixiMixins.AssetsPreferences {}
+export interface AssetsPreferences extends LoadTextureConfig, LoadSVGConfig, PixiMixins.AssetsPreferences {}
 
 /** Initialization options object for the Assets Class. */
 export interface AssetInitOptions
@@ -986,4 +984,3 @@ extensions.handle(ExtensionType.Asset, (extension) =>
         .filter((key) => !!ref[key as AssetType])
         .forEach((key) => extensions.remove(ref[key as AssetType]));
 });
-

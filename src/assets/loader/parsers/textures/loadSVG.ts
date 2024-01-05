@@ -13,18 +13,23 @@ import type { Texture } from '../../../../rendering/renderers/shared/texture/Tex
 import type { ResolvedAsset } from '../../../types';
 import type { Loader } from '../../Loader';
 
+/**
+ * Configuration for the [loadSVG]{@link assets.loadSVG} plugin.
+ * @see assets.loadSVG
+ * @memberof assets
+ */
 export interface LoadSVGConfig
 {
     /**
-     * The crossOrigin value to use for images when `preferCreateImageBitmap` is `false`.
+     * The crossOrigin value to use for loading the SVG as an image.
      * @default 'anonymous'
      */
     crossOrigin: HTMLImageElement['crossOrigin'];
     /**
-     * When set to `true`, loading and decoding images will happen with `createImageBitmap`
+     * When set to `true`, loading and decoding images will happen with `new Image()`,
      * @default false
      */
-    preferGraphics: boolean;
+    preferSVGGraphics: boolean;
 }
 
 /**
@@ -59,12 +64,12 @@ export const loadSvg = {
 
     async load(url: string, asset: ResolvedAsset<TextureSourceOptions>, loader: Loader): Promise<Texture | GraphicsContext>
     {
-        if (this.config.preferGraphics)
+        if (this.config.preferSVGGraphics)
         {
             return loadAsGraphics(url);
         }
 
-        return loadAsTexture(url, asset, loader);
+        return loadAsTexture(url, asset, loader, this.config.crossOrigin);
     },
 
     unload(asset: Texture | GraphicsContext): void
@@ -72,9 +77,14 @@ export const loadSvg = {
         asset.destroy(true);
     }
 
-} as LoaderParser<Texture | GraphicsContext, TextureSourceOptions>;
+} as LoaderParser<Texture | GraphicsContext, TextureSourceOptions, LoadSVGConfig>;
 
-async function loadAsTexture(url: string, asset: ResolvedAsset<TextureSourceOptions>, loader: Loader)
+async function loadAsTexture(
+    url: string,
+    asset: ResolvedAsset<TextureSourceOptions>,
+    loader: Loader,
+    crossOrigin: HTMLImageElement['crossOrigin']
+): Promise<Texture>
 {
     const response = await DOMAdapter.get().fetch(url);
 
@@ -85,6 +95,7 @@ async function loadAsTexture(url: string, asset: ResolvedAsset<TextureSourceOpti
     const image = new Image();
 
     image.src = blobUrl;
+    image.crossOrigin = crossOrigin;
     await image.decode();
 
     URL.revokeObjectURL(blobUrl);
