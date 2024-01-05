@@ -63,7 +63,7 @@ export class Graphics extends Container implements View, Instruction
             options = { context: options };
         }
 
-        const { context, ...rest } = options || {};
+        const { context, roundPixels, ...rest } = options || {};
 
         super({
             label: 'Graphics',
@@ -82,6 +82,7 @@ export class Graphics extends Container implements View, Instruction
         this._context.on('update', this.onViewUpdate, this);
 
         this.allowChildren = false;
+        this.roundPixels = roundPixels ?? false;
     }
 
     set context(context: GraphicsContext)

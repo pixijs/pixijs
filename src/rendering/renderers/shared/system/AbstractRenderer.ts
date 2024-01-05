@@ -9,6 +9,7 @@ import type { Matrix } from '../../../../maths/matrix/Matrix';
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
 import type { TypeOrBool } from '../../../../scene/container/destroyTypes';
 import type { Renderer } from '../../types';
+import type { BackgroundSystem } from '../background/BackgroundSystem';
 import type { GenerateTextureOptions, GenerateTextureSystem } from '../extract/GenerateTextureSystem';
 import type { PipeConstructor } from '../instructions/RenderPipe';
 import type { RenderSurface } from '../renderTarget/RenderTargetSystem';
@@ -109,6 +110,7 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
     public readonly runners: Runners = Object.create(null) as Runners;
     public readonly renderPipes = Object.create(null) as PIPES;
     public view: ViewSystem;
+    public background: BackgroundSystem;
     public textureGenerator: GenerateTextureSystem;
 
     protected _initOptions: OPTIONS = {} as OPTIONS;
@@ -195,6 +197,7 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
         {
             // TODO get rid of this
             this._lastObjectRendered = options.container;
+            options.clearColor = this.background.colorRgba;
         }
 
         if (options.clearColor)
