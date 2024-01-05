@@ -20,7 +20,10 @@ export interface LoadSVGConfig
      * @default 'anonymous'
      */
     crossOrigin: HTMLImageElement['crossOrigin'];
-
+    /**
+     * When set to `true`, loading and decoding images will happen with `createImageBitmap`
+     * @default false
+     */
     preferGraphics: boolean;
 }
 
@@ -44,6 +47,11 @@ export const loadSvg = {
 
     name: 'loadSVG',
 
+    config: {
+        crossOrigin: 'anonymous',
+        preferSVGGraphics: false,
+    },
+
     test(url: string): boolean
     {
         return checkDataUrl(url, validSVGMIME) || checkExtension(url, validSVGExtension);
@@ -51,14 +59,12 @@ export const loadSvg = {
 
     async load(url: string, asset: ResolvedAsset<TextureSourceOptions>, loader: Loader): Promise<Texture | GraphicsContext>
     {
-        const preferTexture = true;
-
-        if (preferTexture)
+        if (this.config.preferGraphics)
         {
-            return loadAsTexture(url, asset, loader);
+            return loadAsGraphics(url);
         }
 
-        return loadAsGraphics(url);
+        return loadAsTexture(url, asset, loader);
     },
 
     unload(asset: Texture | GraphicsContext): void

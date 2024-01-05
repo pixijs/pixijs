@@ -24,16 +24,19 @@ import { isSingleItem } from './utils/isSingleItem';
 
 import type { AssetExtension } from './AssetExtension';
 import type { FormatDetectionParser } from './detections/types';
+import type { LoadSVGConfig } from './loader/parsers/textures/loadSVG';
 import type { BundleIdentifierOptions } from './resolver/Resolver';
 import type { ArrayOr, AssetsBundle, AssetsManifest, ResolvedAsset, UnresolvedAsset } from './types';
 
 export type ProgressCallback = (progress: number) => void;
 
+type LoadConfig = LoadTextureConfig & LoadSVGConfig;
+
 /**
  * Extensible preferences that can be used, for instance, when configuring loaders.
  * @since 7.2.0
  */
-export interface AssetsPreferences extends LoadTextureConfig, PixiMixins.AssetsPreferences {}
+export interface AssetsPreferences extends LoadConfig, PixiMixins.AssetsPreferences {}
 
 /** Initialization options object for the Assets Class. */
 export interface AssetInitOptions
