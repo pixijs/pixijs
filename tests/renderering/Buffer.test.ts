@@ -1,5 +1,6 @@
 import { Buffer } from '../../src/rendering/renderers/shared/buffer/Buffer';
 import { getWebGLRenderer, getWebGPURenderer } from '../utils/getRenderer';
+import { itLocalOnly } from '../utils/localTest';
 
 import type { WebGLRenderer } from '../../src/rendering/renderers/gl/WebGLRenderer';
 import type { WebGPURenderer } from '../../src/rendering/renderers/gpu/WebGPURenderer';
@@ -216,7 +217,7 @@ describe('Buffer', () =>
         expect(buffer._updateSize).toBe(2 * 4);
     });
 
-    it('should only add add listeners to buffer on first gpu init', async () =>
+    itLocalOnly('should only add add listeners to buffer on first gpu init', async () =>
     {
         const renderer = (await getWebGPURenderer()) as WebGPURenderer;
 
