@@ -1,7 +1,7 @@
 import { Container } from '../../../src/scene/container/Container';
 import { Mesh } from '../../../src/scene/mesh/shared/Mesh';
 import { MeshGeometry } from '../../../src/scene/mesh/shared/MeshGeometry';
-import { getRenderer } from '../../utils/getRenderer';
+import { getWebGLRenderer } from '../../utils/getRenderer';
 import { getTexture } from '../../utils/getTexture';
 import '../../../src/scene/mesh/init';
 
@@ -34,7 +34,7 @@ describe('Mesh', () =>
 
     it('should clean up correctly on the pipe when destroyed', async () =>
     {
-        const renderer = await getRenderer();
+        const renderer = await getWebGLRenderer();
 
         const container = new Container();
 

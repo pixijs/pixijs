@@ -1,7 +1,8 @@
 import { Buffer } from '../../src/rendering/renderers/shared/buffer/Buffer';
-import { getRenderer } from '../utils/getRenderer';
+import { getWebGLRenderer, getWebGPURenderer } from '../utils/getRenderer';
 
 import type { WebGLRenderer } from '../../src/rendering/renderers/gl/WebGLRenderer';
+import type { WebGPURenderer } from '../../src/rendering/renderers/gpu/WebGPURenderer';
 
 describe('Buffer', () =>
 {
@@ -24,7 +25,7 @@ describe('Buffer', () =>
             usage: 1,
         });
 
-        const renderer = (await getRenderer()) as WebGLRenderer;
+        const renderer = (await getWebGLRenderer()) as WebGLRenderer;
 
         renderer.buffer.updateBuffer(buffer);
 
@@ -50,7 +51,7 @@ describe('Buffer', () =>
             usage: 1,
         });
 
-        const renderer = (await getRenderer()) as WebGLRenderer;
+        const renderer = (await getWebGLRenderer()) as WebGLRenderer;
 
         renderer.buffer.updateBuffer(buffer);
 
@@ -213,5 +214,23 @@ describe('Buffer', () =>
         buffer.update();
 
         expect(buffer._updateSize).toBe(2 * 4);
+    });
+
+    it('should only add add listeners to buffer on first gpu init', async () =>
+    {
+        const renderer = (await getWebGPURenderer()) as WebGPURenderer;
+
+        const buffer = new Buffer({
+            data: new Float32Array([1, 2, 3]),
+            usage: 1,
+        });
+
+        renderer.buffer.updateBuffer(buffer);
+
+        expect(buffer.listenerCount('update')).toBe(1);
+
+        buffer.data = new Float32Array([1, 2, 3, 4]);
+
+        expect(buffer.listenerCount('update')).toBe(1);
     });
 });

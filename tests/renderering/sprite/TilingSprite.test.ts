@@ -4,7 +4,7 @@ import { Bounds } from '../../../src/scene/container/bounds/Bounds';
 import { getGlobalBounds } from '../../../src/scene/container/bounds/getGlobalBounds';
 import { Container } from '../../../src/scene/container/Container';
 import { TilingSprite } from '../../../src/scene/sprite-tiling/TilingSprite';
-import { getRenderer } from '../../utils/getRenderer';
+import { getWebGLRenderer } from '../../utils/getRenderer';
 import { getTexture } from '../../utils/getTexture';
 import '../../../src/scene/sprite-tiling/init';
 import '../../../src/scene/mesh/init';
@@ -73,7 +73,7 @@ describe('TilingSprite', () =>
 
         it('should clean up correctly on the pipe and system when destroyed using simple render', async () =>
         {
-            const renderer = await getRenderer();
+            const renderer = await getWebGLRenderer();
 
             const container = new Container();
 
