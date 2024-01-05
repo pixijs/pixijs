@@ -115,7 +115,7 @@ export class Mesh<
             }
         }
 
-        const { geometry, shader, texture, ...rest } = options;
+        const { geometry, shader, texture, roundPixels, ...rest } = options;
 
         super({
             label: 'Mesh',
@@ -129,6 +129,8 @@ export class Mesh<
 
         this._geometry = geometry;
         this._geometry.on('update', this.onViewUpdate, this);
+
+        this.roundPixels = roundPixels ?? false;
     }
 
     /** Whether or not to round the x/y position of the mesh. */
