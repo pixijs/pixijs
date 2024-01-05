@@ -726,22 +726,12 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
         const context = typeof listener === 'function' ? undefined : listener;
 
         type = capture ? `${type}capture` : type;
-        let listenerFn = typeof listener === 'function' ? listener : listener.handleEvent;
+        const listenerFn = typeof listener === 'function' ? listener : listener.handleEvent;
 
         const emitter = (this as unknown as utils.EventEmitter);
 
         if (signal)
         {
-            const extractedListenerFn = listenerFn;
-
-            listenerFn = (e: Event) =>
-            {
-                if (signal.aborted)
-                {
-                    return;
-                }
-                extractedListenerFn(e);
-            };
             signal.addEventListener('abort', () =>
             {
                 emitter.off(type, listenerFn, context);
