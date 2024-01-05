@@ -180,6 +180,7 @@ export class TilingSprite extends Container implements View, Instruction
             width,
             height,
             applyAnchorToTexture,
+            roundPixels,
             ...rest
         } = options ?? {};
 
@@ -206,10 +207,10 @@ export class TilingSprite extends Container implements View, Instruction
         });
 
         this._tileTransform.position.copyFrom(tilePosition);
-
         this._tileTransform.scale.copyFrom(tileScale);
-
         this._tileTransform.rotation = tileRotation;
+
+        this.roundPixels = roundPixels ?? false;
     }
 
     /**

@@ -129,6 +129,7 @@ export class NineSliceSprite extends Container implements View
             topHeight,
             bottomHeight,
             texture,
+            roundPixels,
             ...rest
         } = options;
 
@@ -146,6 +147,7 @@ export class NineSliceSprite extends Container implements View
 
         this.allowChildren = false;
         this._texture = texture;
+        this.roundPixels = roundPixels ?? false;
     }
 
     /** The width of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane. */

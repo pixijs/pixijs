@@ -164,7 +164,7 @@ export class Text extends Container implements View
             } as TextOptions;
         }
 
-        const { text, renderMode, resolution, style, anchor, ...rest } = options as TextOptions;
+        const { text, renderMode, resolution, style, anchor, roundPixels, ...rest } = options as TextOptions;
 
         super({
             //   view: new TextView(definedProps({ style, text, renderMode, resolution })),
@@ -189,11 +189,13 @@ export class Text extends Container implements View
                 _onUpdate: () =>
                 {
                     this.onViewUpdate();
-                }
+                },
             },
             anchor?.x ?? 0,
-            anchor?.y ?? 0,
+            anchor?.y ?? 0
         );
+
+        this.roundPixels = roundPixels ?? false;
     }
 
     /**
