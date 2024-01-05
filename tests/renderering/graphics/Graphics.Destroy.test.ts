@@ -1,7 +1,7 @@
 import { Container } from '../../../src/scene/container/Container';
 import { Graphics } from '../../../src/scene/graphics/shared/Graphics';
 import { GraphicsContext } from '../../../src/scene/graphics/shared/GraphicsContext';
-import { getRenderer } from '../../utils/getRenderer';
+import { getWebGLRenderer } from '../../utils/getRenderer';
 import '../../../src/scene/graphics/init';
 
 describe('Graphics Destroy', () =>
@@ -22,7 +22,7 @@ describe('Graphics Destroy', () =>
 
     it('should clean up correctly on the pipe and system when destroyed', async () =>
     {
-        const renderer = await getRenderer();
+        const renderer = await getWebGLRenderer();
 
         const container = new Container();
 

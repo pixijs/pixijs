@@ -97,7 +97,7 @@ export class Sprite extends Container implements View
         }
 
         // split out
-        const { texture, anchor, ...rest } = options;
+        const { texture, anchor, roundPixels, ...rest } = options;
 
         super({
             label: 'Sprite',
@@ -116,8 +116,8 @@ export class Sprite extends Container implements View
         );
 
         this.texture = texture;
-
         this.allowChildren = false;
+        this.roundPixels = roundPixels ?? false;
     }
 
     set texture(value: Texture)

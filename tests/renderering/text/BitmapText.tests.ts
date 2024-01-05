@@ -5,7 +5,7 @@ import { loadTextures } from '../../../src/assets/loader/parsers/textures/loadTe
 import { Text } from '../../../src/scene/text/Text';
 import { loadBitmapFont } from '../../../src/scene/text-bitmap/asset/loadBitmapFont';
 import { basePath } from '../../assets/basePath';
-import { getRenderer } from '../../utils/getRenderer';
+import { getWebGLRenderer } from '../../utils/getRenderer';
 import '../../../src/scene/text/init';
 import '../../../src/scene/text-bitmap/init';
 import '../../../src/scene/graphics/init';
@@ -33,7 +33,7 @@ describe('BitmapText', () =>
 
     it('should render text even if there are unsupported characters', async () =>
     {
-        const renderer = await getRenderer();
+        const renderer = await getWebGLRenderer();
 
         const text = new Text({
             text: 'ABCDEFG',
@@ -70,7 +70,7 @@ describe('BitmapText', () =>
 
     it('should break line on space', async () =>
     {
-        const renderer = await getRenderer();
+        const renderer = await getWebGLRenderer();
 
         const bmpText = new Text({
             text: 'A B C D E F G H',
@@ -96,7 +96,7 @@ describe('BitmapText', () =>
 
     it('letterSpacing should add extra space between characters', async () =>
     {
-        const renderer = await getRenderer();
+        const renderer = await getWebGLRenderer();
         const bmpText = new Text({
             text: 'ABCD zz DCBA',
             renderMode: 'bitmap',
@@ -118,7 +118,7 @@ describe('BitmapText', () =>
 
     it('should not crash if text is undefined', async () =>
     {
-        const renderer = await getRenderer();
+        const renderer = await getWebGLRenderer();
 
         const text = new Text({
             text: undefined,

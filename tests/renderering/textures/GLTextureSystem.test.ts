@@ -1,4 +1,4 @@
-import { getRenderer } from '../../utils/getRenderer';
+import { getWebGLRenderer } from '../../utils/getRenderer';
 import { getTexture } from '../../utils/getTexture';
 
 import type { WebGLRenderer } from '../../../src/rendering/renderers/gl/WebGLRenderer';
@@ -7,7 +7,7 @@ describe('GLTextureSystem', () =>
 {
     it('should generate canvas from texture', async () =>
     {
-        const renderer = (await getRenderer()) as WebGLRenderer;
+        const renderer = (await getWebGLRenderer()) as WebGLRenderer;
         const texture = getTexture({ width: 10, height: 10 });
         const canvas = renderer.texture.generateCanvas(texture);
 
@@ -18,7 +18,7 @@ describe('GLTextureSystem', () =>
 
     it('should get pixels from texture', async () =>
     {
-        const renderer = (await getRenderer()) as WebGLRenderer;
+        const renderer = (await getWebGLRenderer()) as WebGLRenderer;
         const texture = getTexture({ width: 10, height: 10 });
         const pixelInfo = renderer.texture.getPixels(texture);
 

@@ -70,6 +70,8 @@ const exportFields: Record<string, ExportField> = {
 const sideEffects = [
     './lib/environment-browser/browserAll.*',
     './lib/environment-webworker/webworkerAll.*',
+    './lib/index.*',
+    './lib/rendering/renderers/shared/texture/sources/resourceToTexture.*',
 ];
 
 for (const [name, path] of subImports)
