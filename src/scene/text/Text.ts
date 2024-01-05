@@ -164,7 +164,7 @@ export class Text extends Container implements View
             } as TextOptions;
         }
 
-        const { text, renderMode, resolution, style, ...rest } = options as TextOptions;
+        const { text, renderMode, resolution, style, anchor, ...rest } = options as TextOptions;
 
         super({
             //   view: new TextView(definedProps({ style, text, renderMode, resolution })),
@@ -184,12 +184,16 @@ export class Text extends Container implements View
 
         this.allowChildren = false;
 
-        this._anchor = new ObservablePoint({
-            _onUpdate: () =>
+        this._anchor = new ObservablePoint(
             {
-                this.onViewUpdate();
-            }
-        }, 0, 0);
+                _onUpdate: () =>
+                {
+                    this.onViewUpdate();
+                }
+            },
+            anchor?.x ?? 0,
+            anchor?.y ?? 0,
+        );
     }
 
     /**
