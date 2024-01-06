@@ -2,9 +2,6 @@ import { Matrix } from '../../maths/matrix/Matrix';
 import { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
-import type { Renderable } from '../../rendering/renderers/shared/Renderable';
-import type { RGRenderable } from '../../rendering/renderers/shared/RGRenderable';
-import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Container } from './Container';
 
 /**
@@ -34,7 +31,7 @@ export class RenderGroup implements Instruction
     public updateTick = 0;
 
     // these update are renderable changes..
-    public readonly childrenRenderablesToUpdate: { list: Renderable[]; index: number; } = { list: [], index: 0 };
+    public readonly childrenRenderablesToUpdate: { list: Container[]; index: number; } = { list: [], index: 0 };
 
     // other
     public structureDidChange = true;
@@ -42,13 +39,6 @@ export class RenderGroup implements Instruction
     public instructionSet: InstructionSet = new InstructionSet();
 
     private readonly _onRenderContainers: Container[] = [];
-
-    /**
-     * proxy renderable is used to render the root containers view if it has one
-     * this is used as we do not want to inherit the transform / color of the root container
-     * it is only used by the parent root render group
-     */
-    public proxyRenderable: RGRenderable<View>;
 
     constructor(root: Container)
     {
@@ -60,11 +50,6 @@ export class RenderGroup implements Instruction
     get localTransform()
     {
         return this.root.localTransform;
-    }
-
-    get rgTransform()
-    {
-        return this.root.rgTransform;
     }
 
     public addRenderGroupChild(renderGroupChild: RenderGroup)
@@ -210,17 +195,17 @@ export class RenderGroup implements Instruction
     }
 
     // SHOULD THIS BE HERE?
-    public updateRenderable(container: Renderable)
+    public updateRenderable(container: Container)
     {
         // only update if its visible!
-        if (container.rgVisibleRenderable < 0b11) return;
+        if (container.groupVisibleRenderable < 0b11) return;
 
         container.didViewUpdate = false;
         // actually updates the renderable..
-        this.instructionSet.renderPipes[container.view.renderPipeId].updateRenderable(container);
+        this.instructionSet.renderPipes[container.renderPipeId].updateRenderable(container);
     }
 
-    public onChildViewUpdate(child: Renderable)
+    public onChildViewUpdate(child: Container)
     {
         this.childrenRenderablesToUpdate.list[this.childrenRenderablesToUpdate.index++] = child;
     }

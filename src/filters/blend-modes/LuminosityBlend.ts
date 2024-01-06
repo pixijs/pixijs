@@ -27,7 +27,7 @@ export class LuminosityBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                fragColor = vec4(blendLuminosity(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendLuminosity(back.rgb, front.rgb, front.a), uBlend);
                 `
             },
             gpu: {

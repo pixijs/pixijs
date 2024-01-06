@@ -1,14 +1,45 @@
+import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { Container } from '../container/Container';
-import { definedProps } from '../container/utils/definedProps';
-import { TextView } from './TextView';
+import { BitmapFontManager } from '../text-bitmap/BitmapFontManager';
+import { measureHtmlText } from '../text-html/utils/measureHtmlText';
+import { CanvasTextMetrics } from './canvas/CanvasTextMetrics';
+import { detectRenderType } from './utils/detectRenderType';
+import { ensureTextStyle } from './utils/ensureTextStyle';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { PointLike } from '../../maths/point/PointLike';
+import type { View } from '../../rendering/renderers/shared/view/View';
+import type { Bounds, BoundsData } from '../container/bounds/Bounds';
 import type { ContainerOptions } from '../container/Container';
+import type { DestroyOptions } from '../container/destroyTypes';
 import type { HTMLTextStyle, HTMLTextStyleOptions } from '../text-html/HtmlTextStyle';
-import type { TextStyle } from './TextStyle';
-import type { AnyTextStyle, AnyTextStyleOptions, TextString, TextViewOptions } from './TextView';
+import type { TextStyle, TextStyleOptions } from './TextStyle';
+
+export type TextString = string | number | { toString: () => string };
+export type AnyTextStyle = TextStyle | HTMLTextStyle;
+export type AnyTextStyleOptions = TextStyleOptions | HTMLTextStyleOptions;
+
+type Filter<T> = { [K in keyof T]: {
+    text?: TextString;
+    renderMode?: K;
+    resolution?: number;
+    style?: T[K]
+} }[keyof T];
+
+export type TextStyles = {
+    canvas: TextStyleOptions | TextStyle;
+    html: HTMLTextStyleOptions | HTMLTextStyle;
+    bitmap: TextStyleOptions | TextStyle;
+};
+
+export type TextViewOptions = Filter<TextStyles>;
+
+const map = {
+    canvas: 'text',
+    html: 'htmlText',
+    bitmap: 'bitmapText',
+};
 
 /**
  * Options for the {@link scene.Text} class.
@@ -24,7 +55,7 @@ import type { AnyTextStyle, AnyTextStyleOptions, TextString, TextViewOptions } f
  * });
  * @memberof scene
  */
-export type TextOptions = Partial<ContainerOptions<TextView>> & TextViewOptions &
+export interface TextOptions extends ContainerOptions
 {
     /** The anchor point of the text. */
     anchor?: PointLike,
@@ -36,7 +67,9 @@ export type TextOptions = Partial<ContainerOptions<TextView>> & TextViewOptions 
     resolution?: number;
     /** The text style */
     style?: TextStyle | HTMLTextStyleOptions | HTMLTextStyle;
-};
+    /** Whether or not to round the x/y position. */
+    roundPixels?: boolean;
+}
 
 /**
  * A Text Object will create a line or multiple lines of text.
@@ -96,8 +129,24 @@ export type TextOptions = Partial<ContainerOptions<TextView>> & TextViewOptions 
  * });
  * @memberof scene
  */
-export class Text extends Container<TextView>
+export class Text extends Container implements View
 {
+    public readonly renderPipeId: string = 'text';
+    public batched = true;
+    public _anchor: ObservablePoint;
+    public resolution: number = null;
+
+    /** @internal */
+    public _style: AnyTextStyle;
+    /** @internal */
+    public _didTextUpdate = true;
+    public _roundPixels: 0 | 1 = 0;
+
+    private _bounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
+    private _boundsDirty = true;
+    private _text: string;
+    private readonly _renderMode: 'canvas' | 'html' | 'bitmap';
+
     constructor(options?: TextOptions);
     /** @deprecated since 8.0.0 */
     constructor(text?: TextString, options?: Partial<AnyTextStyle>);
@@ -115,15 +164,38 @@ export class Text extends Container<TextView>
             } as TextOptions;
         }
 
-        const { style, text, renderMode, resolution, ...rest } = options as TextOptions;
+        const { text, renderMode, resolution, style, anchor, roundPixels, ...rest } = options as TextOptions;
 
         super({
-            view: new TextView(definedProps({ style, text, renderMode, resolution })),
+            //   view: new TextView(definedProps({ style, text, renderMode, resolution })),
             label: 'Text',
             ...rest
         });
 
+        this.text = text ?? '';
+
+        this._renderMode = renderMode ?? detectRenderType(style);
+
+        this.style = style;
+
+        this.renderPipeId = map[this._renderMode];
+
+        this.resolution = resolution ?? null;
+
         this.allowChildren = false;
+
+        this._anchor = new ObservablePoint(
+            {
+                _onUpdate: () =>
+                {
+                    this.onViewUpdate();
+                },
+            },
+            anchor?.x ?? 0,
+            anchor?.y ?? 0
+        );
+
+        this.roundPixels = roundPixels ?? false;
     }
 
     /**
@@ -143,46 +215,186 @@ export class Text extends Container<TextView>
      */
     get anchor(): PointLike
     {
-        return this.view.anchor;
+        return this._anchor;
     }
 
     set anchor(value: PointData)
     {
-        this.view.anchor.x = value.x;
-        this.view.anchor.y = value.y;
-    }
-
-    set text(value: TextString)
-    {
-        this.view.text = value;
-    }
-
-    /** The copy for the text object. To split a line you can use '\n'. */
-    get text(): string
-    {
-        return this.view.text;
-    }
-
-    set style(value: AnyTextStyle | Partial<AnyTextStyle> | AnyTextStyleOptions)
-    {
-        this.view.style = value;
-    }
-
-    /** The style of the text. If setting the `style` can also be partial {@link scene.TextStyle}. */
-    get style(): AnyTextStyle
-    {
-        return this.view.style;
+        this._anchor.x = value.x;
+        this._anchor.y = value.y;
     }
 
     /** Whether or not to round the x/y position of the sprite. */
     get roundPixels()
     {
-        return !!this.view.roundPixels;
+        return !!this._roundPixels;
     }
 
     set roundPixels(value: boolean)
     {
-        this.view.roundPixels = value ? 1 : 0;
+        this._roundPixels = value ? 1 : 0;
+    }
+
+    set text(value: TextString)
+    {
+        // check its a string
+        value = value.toString();
+
+        if (this._text === value) return;
+
+        this._text = value as string;
+        this.onViewUpdate();
+    }
+
+    get text(): string
+    {
+        return this._text;
+    }
+
+    get style(): AnyTextStyle
+    {
+        return this._style;
+    }
+
+    set style(style: AnyTextStyle | Partial<AnyTextStyle> | AnyTextStyleOptions)
+    {
+        style = style || {};
+
+        this._style?.off('update', this.onViewUpdate, this);
+
+        this._style = ensureTextStyle(this._renderMode, style);
+
+        this._style.on('update', this.onViewUpdate, this);
+        this.onViewUpdate();
+    }
+
+    get bounds()
+    {
+        if (this._boundsDirty)
+        {
+            this._updateBounds();
+            this._boundsDirty = false;
+        }
+
+        return this._bounds;
+    }
+
+    public addBounds(bounds: Bounds)
+    {
+        const _bounds = this.bounds;
+
+        bounds.addFrame(
+            _bounds.minX,
+            _bounds.minY,
+            _bounds.maxX,
+            _bounds.maxY,
+        );
+    }
+
+    public containsPoint(point: PointData)
+    {
+        const width = this.bounds.maxX;
+        const height = this.bounds.maxY;
+
+        const x1 = -width * this.anchor.x;
+        let y1 = 0;
+
+        if (point.x >= x1 && point.x <= x1 + width)
+        {
+            y1 = -height * this.anchor.y;
+
+            if (point.y >= y1 && point.y <= y1 + height) return true;
+        }
+
+        return false;
+    }
+
+    /** @internal */
+    public onViewUpdate()
+    {
+        this._didChangeId += 1 << 12;
+
+        if (this.didViewUpdate) return;
+        this.didViewUpdate = true;
+
+        this._didTextUpdate = true;
+        this._boundsDirty = true;
+
+        if (this.renderGroup)
+        {
+            this.renderGroup.onChildViewUpdate(this);
+        }
+    }
+
+    /** @internal */
+    public _getKey(): string
+    {
+        // TODO add a dirty flag...
+        return `${this.text}:${this._style.styleKey}`;
+    }
+
+    private _updateBounds()
+    {
+        const bounds = this._bounds;
+        const padding = this._style.padding;
+        const anchor = this._anchor;
+
+        if (this.renderPipeId === 'bitmapText')
+        {
+            const bitmapMeasurement = BitmapFontManager.measureText(this.text, this._style);
+            const scale = bitmapMeasurement.scale;
+            const offset = bitmapMeasurement.offsetY * scale;
+
+            const width = bitmapMeasurement.width * scale;
+            const height = bitmapMeasurement.height * scale;
+
+            bounds.minX = (-anchor._x * width) - padding;
+            bounds.maxX = bounds.minX + width;
+            bounds.minY = (-anchor._y * (height + offset)) - padding;
+            bounds.maxY = bounds.minY + height;
+        }
+        else if (this.renderPipeId === 'htmlText')
+        {
+            const htmlMeasurement = measureHtmlText(this.text, this._style as HTMLTextStyle);
+
+            const { width, height } = htmlMeasurement;
+
+            bounds.minX = (-anchor._x * width) - padding;
+            bounds.maxX = bounds.minX + width;
+            bounds.minY = (-anchor._y * height) - padding;
+            bounds.maxY = bounds.minY + height;
+        }
+        else
+        {
+            const canvasMeasurement = CanvasTextMetrics.measureText(this.text, this._style);
+
+            const { width, height } = canvasMeasurement;
+
+            bounds.minX = (-anchor._x * width) - padding;
+            bounds.maxX = bounds.minX + width;
+            bounds.minY = (-anchor._y * height) - padding;
+            bounds.maxY = bounds.minY + height;
+        }
+    }
+
+    /**
+     * Destroys this text renderable and optionally its style texture.
+     * @param options - Options parameter. A boolean will act as if all options
+     *  have been set to that value
+     * @param {boolean} [options.texture=false] - Should it destroy the texture of the text style
+     * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the text style
+     */
+    public destroy(options: DestroyOptions = false): void
+    {
+        super.destroy(options);
+
+        (this as any).owner = null;
+        this._bounds = null;
+        this._anchor = null;
+
+        this._style.destroy(options);
+        this._style = null;
+        this._text = null;
     }
 }
 

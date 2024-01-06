@@ -1,6 +1,7 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { boundsPool } from './utils/matrixAndBoundsPool';
 
+import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
 import type { Container } from '../Container';
 import type { Bounds } from './Bounds';
 
@@ -65,16 +66,16 @@ export function _getGlobalBoundsRecursive(
     }
     else
     {
-        if (target.view)
+        if (target.renderPipeId)
         {
-            const viewBounds = target.view.bounds;
+            const viewBounds = (target as Renderable).bounds;
 
             localBounds.addFrame(
                 viewBounds.minX,
                 viewBounds.minY,
                 viewBounds.maxX,
                 viewBounds.maxY,
-                target.rgTransform
+                target.groupTransform
             );
         }
 
@@ -100,22 +101,22 @@ export function _getGlobalBoundsRecursive(
                     localBounds.applyMatrix(target.renderGroup.worldTransform);
                 }
 
-                target.effects[i].addBounds?.(localBounds);
+                target.effects[i].addBounds(localBounds);
             }
         }
 
         if (advanced)
         {
             localBounds.applyMatrix(target.renderGroup.worldTransform.copyTo(tempMatrix).invert());
-            bounds.addBounds(localBounds, target.rgTransform);
+            bounds.addBounds(localBounds, target.relativeGroupTransform);
         }
 
         bounds.addBounds(localBounds);
-        boundsPool.put(localBounds);
+        boundsPool.return(localBounds);
     }
     else if (target.isRenderGroupRoot)
     {
-        bounds.addBounds(localBounds, target.rgTransform);
-        boundsPool.put(localBounds);
+        bounds.addBounds(localBounds, target.relativeGroupTransform);
+        boundsPool.return(localBounds);
     }
 }

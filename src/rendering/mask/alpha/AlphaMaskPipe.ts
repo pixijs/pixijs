@@ -157,7 +157,6 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
 
                 bounds.ceil();
 
-                /// /////
                 const filterTexture = TexturePool.getOptimalTexture(
                     bounds.width,
                     bounds.height,
@@ -180,7 +179,6 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
                 sprite.worldTransform.ty = bounds.minY;
 
                 this._activeMaskStage.push({
-
                     filterEffect,
                     maskedContainer: instruction.maskedContainer,
                     filterTexture,

@@ -1,4 +1,3 @@
-// import { SHAPES } from '../const';
 import { squaredDistanceToLineSegment } from '../misc/squaredDistanceToLineSegment';
 import { Rectangle } from './Rectangle';
 
@@ -14,9 +13,6 @@ import type { ShapePrimitive } from './ShapePrimitive';
  * import { Triangle } from 'pixi.js';
  *
  * const triangle = new Triangle(0, 0, 100, 0, 50, 50);
- *
- * // test whether a point is contained within this triangle
- * triangle.contains(50, 50); // true
  * ```
  * @memberof maths
  */

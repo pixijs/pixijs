@@ -26,6 +26,12 @@ export class UniformBufferSystem implements System
         name: 'uniformBuffer',
     } as const;
 
+    /** Cache of uniform buffer layouts and sync functions, so we don't have to re-create them */
+    private _syncFunctionHash: Record<string, {
+        layout: UniformBufferLayout,
+        syncFunction: (uniforms: Record<string, any>, data: Float32Array, offset: number) => void
+    }> = Object.create(null);
+
     constructor()
     {
         // Validation check that this environment support `new Function`
@@ -33,7 +39,7 @@ export class UniformBufferSystem implements System
     }
 
     /**
-     * Overrideable function by `@pixi/unsafe-eval` to silence
+     * Overrideable function by `pixi.js/unsafe-eval` to silence
      * throwing an error if platform doesn't support unsafe-evals.
      * @private
      */
@@ -42,25 +48,26 @@ export class UniformBufferSystem implements System
         if (!unsafeEvalSupported())
         {
             throw new Error('Current environment does not allow unsafe-eval, '
-                 + 'please use @pixi/unsafe-eval module to enable support.');
+                 + 'please use pixi.js/unsafe-eval module to enable support.');
         }
     }
-
-    /** Cache of uniform buffer layouts and sync functions, so we don't have to re-create them */
-    private _syncFunctionHash: Record<string, {
-        layout: UniformBufferLayout,
-        syncFunction: (uniforms: Record<string, any>, data: Float32Array, offset: number) => void
-    }> = Object.create(null);
 
     public ensureUniformGroup(uniformGroup: UniformGroup): void
     {
-        if (!uniformGroup._syncFunction)
-        {
-            this._initUniformGroup(uniformGroup);
-        }
+        const uniformData = this.getUniformGroupData(uniformGroup);
+
+        uniformGroup.buffer ||= new Buffer({
+            data: new Float32Array(uniformData.layout.size / 4),
+            usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST,
+        });
     }
 
-    private _initUniformGroup(uniformGroup: UniformGroup): UniformsSyncCallback
+    public getUniformGroupData(uniformGroup: UniformGroup)
+    {
+        return this._syncFunctionHash[uniformGroup._signature] || this._initUniformGroup(uniformGroup);
+    }
+
+    private _initUniformGroup(uniformGroup: UniformGroup)
     {
         const uniformGroupSignature = uniformGroup._signature;
 
@@ -80,14 +87,7 @@ export class UniformBufferSystem implements System
             };
         }
 
-        uniformGroup._syncFunction = uniformData.syncFunction;
-
-        uniformGroup.buffer = new Buffer({
-            data: new Float32Array(uniformData.layout.size / 4),
-            usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST,
-        });
-
-        return uniformGroup._syncFunction;
+        return this._syncFunctionHash[uniformGroupSignature];
     }
 
     private _generateUniformBufferSync(
@@ -99,12 +99,17 @@ export class UniformBufferSystem implements System
 
     public syncUniformGroup(uniformGroup: UniformGroup, data?: Float32Array, offset?: number): boolean
     {
-        const syncFunction = uniformGroup._syncFunction || this._initUniformGroup(uniformGroup);
+        const uniformGroupData = this.getUniformGroupData(uniformGroup);
+
+        uniformGroup.buffer ||= new Buffer({
+            data: new Float32Array(uniformGroupData.layout.size / 4),
+            usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST,
+        });
 
         data ||= (uniformGroup.buffer.data as Float32Array);
         offset ||= 0;
 
-        syncFunction(uniformGroup.uniforms, data, offset);
+        uniformGroupData.syncFunction(uniformGroup.uniforms, data, offset);
 
         return true;
     }

@@ -1,4 +1,5 @@
 import { Application } from '../../src/app/Application';
+import '../../src/environment-browser/browserAll';
 
 import type { ApplicationOptions } from '../../src/app/Application';
 

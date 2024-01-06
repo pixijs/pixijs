@@ -18,9 +18,7 @@ import { assignWithIgnore } from './utils/assignWithIgnore';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { Rectangle } from '../../maths/shapes/Rectangle';
-import type { Renderable } from '../../rendering/renderers/shared/Renderable';
 import type { BLEND_MODES } from '../../rendering/renderers/shared/state/const';
-import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Dict } from '../../utils/types';
 import type { DestroyOptions } from './destroyTypes';
 
@@ -58,7 +56,7 @@ export interface ContainerEvents extends PixiMixins.ContainerEvents
     childAdded: [child: Container, container: Container, index: number];
     removed: [container: Container];
     childRemoved: [child: Container, container: Container, index: number];
-    destroyed: [];
+    destroyed: [container: Container];
 }
 
 type AnyEvent = {
@@ -106,12 +104,10 @@ export interface UpdateTransformOptions
  * @memberof scene
  * @see scene.Container
  */
-export interface ContainerOptions<T extends View> extends PixiMixins.ContainerOptions
+export interface ContainerOptions extends PixiMixins.ContainerOptions
 {
     /** @see scene.Container#isRenderGroup */
     isRenderGroup?: boolean;
-    /** @see scene.Container#view */
-    view?: T;
 
     /** @see scene.Container#blendMode */
     blendMode?: BLEND_MODES;
@@ -333,11 +329,11 @@ export interface Container
  * This means that Containers have 3 levels of matrix to be mindful of:
  *
  * 1 - localTransform, this is the transform of the container based on its own properties
- * 2 - rgTransform, this it the transform of the container relative to the renderGroup it belongs too
+ * 2 - groupTransform, this it the transform of the container relative to the renderGroup it belongs too
  * 3 - worldTransform, this is the transform of the container relative to the Scene being rendered
  * @memberof scene
  */
-export class Container<T extends View = View> extends EventEmitter<ContainerEvents & AnyEvent> implements Renderable
+export class Container extends EventEmitter<ContainerEvents & AnyEvent>
 {
     /**
      * Mixes all enumerable properties and methods from a source object to Container.
@@ -392,7 +388,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     /** @private */
     public isSimple = true;
 
-    /// /////////////Transform related props//////////////
+    // / /////////////Transform related props//////////////
 
     // used by the transform system to check if a container needs to be updated that frame
     // if the tick matches the current transform system tick, it is not updated again
@@ -408,11 +404,21 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      */
     public localTransform: Matrix = new Matrix();
     /**
-     * The render group transform is a transform relative to the render group it belongs too. It will include all parent
+     * The relative group transform is a transform relative to the render group it belongs too. It will include all parent
      * transforms and up to the render group (think of it as kind of like a stage - but the stage can be nested).
+     * If this container is is self a render group matrix will be relative to its parent render group
      * @readonly
      */
-    public rgTransform: Matrix = new Matrix();
+    public relativeGroupTransform: Matrix = new Matrix();
+    /**
+     * The group transform is a transform relative to the render group it belongs too.
+     * If this container is render group then this will be an identity matrix. other wise it
+     * will be the same as the relativeGroupTransform.
+     * Use this value when actually rendering things to the screen
+     * @readonly
+     */
+    public groupTransform: Matrix = this.relativeGroupTransform;
+
     // the global transform taking into account the render group and all parents
     private _worldTransform: Matrix;
 
@@ -483,7 +489,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     /** The rotation amount. */
     private _rotation = 0;
 
-    /// COLOR related props //////////////
+    // / COLOR related props //////////////
 
     // color stored as ABGR
     /**
@@ -497,11 +503,11 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      * @internal
      * @ignore
      */
-    public rgAlpha = 1; // A
-    public rgColor = 0xFFFFFF; // BGR
-    public rgColorAlpha = 0xFFFFFFFF; // ABGR
+    public groupAlpha = 1; // A
+    public groupColor = 0xFFFFFF; // BGR
+    public groupColorAlpha = 0xFFFFFFFF; // ABGR
 
-    /// BLEND related props //////////////
+    // / BLEND related props //////////////
 
     /**
      * @internal
@@ -512,9 +518,9 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      * @internal
      * @ignore
      */
-    public rgBlendMode: BLEND_MODES = 'normal';
+    public groupBlendMode: BLEND_MODES = 'normal';
 
-    /// VISIBILITY related props //////////////
+    // / VISIBILITY related props //////////////
 
     // visibility
     // 0b11
@@ -528,10 +534,9 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      * @internal
      * @ignore
      */
-    public rgVisibleRenderable = 0b11; // 0b11 | 0b10 | 0b01 | 0b00
+    public groupVisibleRenderable = 0b11; // 0b11 | 0b10 | 0b01 | 0b00
 
-    /** A view that is used to render this container. */
-    public readonly view: T;
+    public renderPipeId: string;
 
     /**
      * An optional bounds area for this container. Setting this rectangle will stop the renderer
@@ -552,18 +557,9 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      */
     public _didChangeId = 0;
 
-    constructor(options: Partial<ContainerOptions<T>> = {})
+    constructor(options: ContainerOptions = {})
     {
         super();
-
-        if (options.view)
-        {
-            this.view = options.view;
-            // in the future we could de-couple container and view..
-            // but for now this is just faster!
-            this.view.owner = this;
-            options.view = undefined;
-        }
 
         assignWithIgnore(this, options, {
             children: true,
@@ -691,7 +687,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     }
 
     /** @ignore */
-    public onUpdate(point?: ObservablePoint)
+    public _onUpdate(point?: ObservablePoint)
     {
         if (point)
         {
@@ -721,21 +717,6 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         else if (this.renderGroup)
         {
             this.renderGroup.onChildUpdate(this);
-        }
-    }
-
-    /** @ignore */
-    public onViewUpdate()
-    {
-        // increment from the 12th bit!
-        this._didChangeId += 1 << 12;
-
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
-        if (this.renderGroup)
-        {
-            this.renderGroup.onChildViewUpdate(this);
         }
     }
 
@@ -802,6 +783,10 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         }
 
         this._updateIsSimple();
+
+        // this group matrix will now forever be an identity matrix,
+        // as its own transform will be passed to the GPU
+        this.groupTransform = Matrix.IDENTITY;
     }
 
     /** @ignore */
@@ -826,14 +811,14 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
             }
             else
             {
-                this._worldTransform.appendFrom(this.rgTransform, this.renderGroup.worldTransform);
+                this._worldTransform.appendFrom(this.relativeGroupTransform, this.renderGroup.worldTransform);
             }
         }
 
         return this._worldTransform;
     }
 
-    /// ////// transform related stuff
+    // / ////// transform related stuff
 
     /**
      * The position of the container on the x axis relative to the local coordinates of the parent.
@@ -891,7 +876,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         if (this._rotation !== value)
         {
             this._rotation = value;
-            this.onUpdate(this._skew);
+            this._onUpdate(this._skew);
         }
     }
 
@@ -1024,7 +1009,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         return this;
     }
 
-    /// ///// color related stuff
+    // / ///// color related stuff
 
     set alpha(value: number)
     {
@@ -1034,7 +1019,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
         this._updateFlags |= UPDATE_COLOR;
 
-        this.onUpdate();
+        this._onUpdate();
     }
 
     /** The opacity of the object. */
@@ -1054,7 +1039,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
         this._updateFlags |= UPDATE_COLOR;
 
-        this.onUpdate();
+        this._onUpdate();
     }
 
     /**
@@ -1071,7 +1056,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         return ((bgr & 0xFF) << 16) + (bgr & 0xFF00) + ((bgr >> 16) & 0xFF);
     }
 
-    /// //////////////// blend related stuff
+    // / //////////////// blend related stuff
 
     set blendMode(value: BLEND_MODES)
     {
@@ -1085,7 +1070,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
         this.localBlendMode = value;
 
-        this.onUpdate();
+        this._onUpdate();
     }
 
     /**
@@ -1097,7 +1082,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         return this.localBlendMode;
     }
 
-    /// ///////// VISIBILITY / RENDERABLE /////////////////
+    // / ///////// VISIBILITY / RENDERABLE /////////////////
 
     /** The visibility of the object. If false the object will not be drawn, and the transform will not be updated. */
     get visible()
@@ -1120,7 +1105,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
         this.localVisibleRenderable = (this.localVisibleRenderable & 0b01) | (valueNumber << 1);
 
-        this.onUpdate();
+        this._onUpdate();
     }
 
     /** Can this object be rendered, if false the object will not be drawn but the transform will still be updated. */
@@ -1144,13 +1129,13 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
             this.renderGroup.structureDidChange = true;
         }
 
-        this.onUpdate();
+        this._onUpdate();
     }
 
     /** Whether or not the object should be rendered. */
     get isRenderable(): boolean
     {
-        return (this.localVisibleRenderable === 0b11 && this.rgAlpha > 0);
+        return (this.localVisibleRenderable === 0b11 && this.groupAlpha > 0);
     }
 
     /**
@@ -1182,12 +1167,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         this._pivot = null;
         this._skew = null;
 
-        if (this.isRenderGroupRoot)
-        {
-            this.renderGroup.proxyRenderable = null;
-        }
-
-        this.emit('destroyed');
+        this.emit('destroyed', this);
 
         this.removeAllListeners();
 
@@ -1201,12 +1181,6 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
             {
                 oldChildren[i].destroy(options);
             }
-        }
-
-        if (this.view)
-        {
-            this.view.destroy(options);
-            this.view.owner = null;
         }
     }
 }

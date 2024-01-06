@@ -3,8 +3,8 @@ import { BitmapFont } from '../../text-bitmap/BitmapFont';
 import { DynamicBitmapFont } from '../../text-bitmap/DynamicBitmapFont';
 import { HTMLTextStyle } from '../../text-html/HtmlTextStyle';
 
+import type { AnyTextStyle } from '../Text';
 import type { TextStyleOptions } from '../TextStyle';
-import type { AnyTextStyle } from '../TextView';
 
 /**
  * Takes a text style and returns the recommended renderMode for that style.
@@ -20,7 +20,14 @@ export function detectRenderType(style: TextStyleOptions | AnyTextStyle): 'canva
         return 'html';
     }
 
-    const fontData = Cache.get(`${style?.fontFamily as string}-bitmap`);
+    const name = `${style?.fontFamily as string}-bitmap`;
+
+    if (!Cache.has(name))
+    {
+        return 'canvas';
+    }
+
+    const fontData = Cache.get(name);
 
     if (fontData instanceof DynamicBitmapFont || fontData instanceof BitmapFont)
     {

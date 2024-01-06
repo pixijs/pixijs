@@ -4,7 +4,7 @@ import { Bounds } from '../../../src/scene/container/bounds/Bounds';
 import { getGlobalBounds } from '../../../src/scene/container/bounds/getGlobalBounds';
 import { Container } from '../../../src/scene/container/Container';
 import { TilingSprite } from '../../../src/scene/sprite-tiling/TilingSprite';
-import { getRenderer } from '../../utils/getRenderer';
+import { getWebGLRenderer } from '../../utils/getRenderer';
 import { getTexture } from '../../utils/getTexture';
 import '../../../src/scene/sprite-tiling/init';
 import '../../../src/scene/mesh/init';
@@ -73,7 +73,7 @@ describe('TilingSprite', () =>
 
         it('should clean up correctly on the pipe and system when destroyed using simple render', async () =>
         {
-            const renderer = await getRenderer();
+            const renderer = await getWebGLRenderer();
 
             const container = new Container();
 
@@ -85,24 +85,24 @@ describe('TilingSprite', () =>
 
             renderer.render({ container });
 
-            const renderData = renderer.renderPipes.tilingSprite['_renderableHash'][sprite.uid];
+            const renderData = renderer.renderPipes.tilingSprite['_tilingSpriteDataHash'][sprite.uid];
 
             expect(renderData).not.toBeNull();
 
-            expect(renderData.gpuTilingSprite).toBeUndefined();
-            expect(renderData.batchedMesh).not.toBeNull();
+            expect(renderData.shader).toBeUndefined();
+            expect(renderData.batchableMesh).not.toBeNull();
 
             sprite.texture = getTexture({ width: 10, height: 10 });
 
             renderer.render({ container });
 
-            expect(renderData.gpuTilingSprite).not.toBeNull();
+            expect(renderData.shader).not.toBeNull();
 
             sprite.destroy();
 
-            expect(renderer.renderPipes.tilingSprite['_renderableHash'][sprite.uid]).toBeNull();
+            expect(renderer.renderPipes.tilingSprite['_tilingSpriteDataHash'][sprite.uid]).toBeNull();
 
-            expect(sprite.view.texture).toBeNull();
+            expect(sprite.texture).toBeNull();
         });
 
         it('should global bounds to be correct', async () =>
@@ -143,11 +143,11 @@ describe('TilingSprite', () =>
             const sprite = setup({ width: 200, height: 300 });
 
             // note: containsPoint works in local coords
-            expect(sprite.view.containsPoint(new Point(0, 0))).toEqual(true);
-            expect(sprite.view.containsPoint(new Point(100, 150))).toEqual(true);
-            expect(sprite.view.containsPoint(new Point(200, 300))).toEqual(true);
-            expect(sprite.view.containsPoint(new Point(201, 301))).toEqual(false);
-            expect(sprite.view.containsPoint(new Point(-1, -1))).toEqual(false);
+            expect(sprite.containsPoint(new Point(0, 0))).toEqual(true);
+            expect(sprite.containsPoint(new Point(100, 150))).toEqual(true);
+            expect(sprite.containsPoint(new Point(200, 300))).toEqual(true);
+            expect(sprite.containsPoint(new Point(201, 301))).toEqual(false);
+            expect(sprite.containsPoint(new Point(-1, -1))).toEqual(false);
         });
 
         it('should get and set height & width correctly', () =>

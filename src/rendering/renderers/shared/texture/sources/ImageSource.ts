@@ -23,7 +23,7 @@ export class ImageSource extends TextureSource<ImageResource>
 
     constructor(options: TextureSourceOptions<ImageResource>)
     {
-        if (options.resource && options.resource instanceof HTMLImageElement)
+        if (options.resource && (globalThis.HTMLImageElement && options.resource instanceof HTMLImageElement))
         {
             const canvas = DOMAdapter.get().createCanvas(options.resource.width, options.resource.height);
             const context = canvas.getContext('2d');
@@ -31,7 +31,9 @@ export class ImageSource extends TextureSource<ImageResource>
             context.drawImage(options.resource, 0, 0);
             options.resource = canvas;
 
+            // #if _DEBUG
             warn('ImageSource: Image element passed, converting to canvas. Use CanvasSource instead.');
+            // #endif
         }
 
         super(options);
@@ -39,7 +41,7 @@ export class ImageSource extends TextureSource<ImageResource>
 
     public static test(resource: any): resource is ImageResource
     {
-        return (typeof HTMLImageElement !== 'undefined' && resource instanceof HTMLImageElement)
+        return (globalThis.HTMLImageElement && resource instanceof HTMLImageElement)
         || (typeof ImageBitmap !== 'undefined' && resource instanceof ImageBitmap);
     }
 }

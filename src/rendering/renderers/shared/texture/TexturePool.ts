@@ -2,7 +2,6 @@ import { nextPow2 } from '../../../../maths/misc/pow2';
 import { TextureSource } from './sources/TextureSource';
 import { Texture } from './Texture';
 
-import type { SCALE_MODE } from './const';
 import type { TextureSourceOptions } from './sources/TextureSource';
 
 let count = 0;

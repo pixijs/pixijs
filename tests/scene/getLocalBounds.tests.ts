@@ -15,8 +15,7 @@ describe('getLocalBounds', () =>
 {
     it('should measure correctly', async () =>
     {
-        const child = new Container({ label: 'child', view: new DummyView() });
-
+        const child = new DummyView({ label: 'child' });
         const bounds = getLocalBounds(child, new Bounds());
 
         expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 100, maxY: 100 });
@@ -28,7 +27,7 @@ describe('getLocalBounds', () =>
 
         const container = new Container({ label: 'container', isRenderGroup: true });
 
-        const child = new Container({ label: 'child', view: new DummyView() });
+        const child = new DummyView({ label: 'child' });
 
         container.x = 100;
 
@@ -51,8 +50,8 @@ describe('getLocalBounds', () =>
 
         const container = new Container({ label: 'container', isRenderGroup: true });
 
-        const child = new Container({ label: 'child', view: new DummyView() });
-        const child2 = new Container({ label: 'child2', view: new DummyView() });
+        const child = new DummyView({ label: 'child' });
+        const child2 = new DummyView({ label: 'child2' });
 
         container.x = 100;
         child2.y = 100;
@@ -75,7 +74,7 @@ describe('getLocalBounds', () =>
     {
         const container = new Container({ label: 'container', isRenderGroup: true });
 
-        const child = new Container({ label: 'child', view: new DummyView() });
+        const child = new DummyView({ label: 'child' });
 
         child.effects = [new DummyEffect()];
 
@@ -90,7 +89,7 @@ describe('getLocalBounds', () =>
     {
         const container = new Container({ label: 'container', isRenderGroup: true });
 
-        const child = new Container({ label: 'child', view: new DummyView() });
+        const child = new DummyView({ label: 'child' });
 
         child.visible = false;
 
@@ -105,7 +104,7 @@ describe('getLocalBounds', () =>
     {
         const container = new Container({ label: 'container', isRenderGroup: true });
 
-        const child = new Container({ label: 'child', view: new DummyView() });
+        const child = new DummyView({ label: 'child' });
 
         child.visible = false;
 
@@ -125,7 +124,7 @@ describe('getLocalBounds', () =>
 
         const root = new Container({ label: 'root', isRenderGroup: true });
 
-        const mask = new Container({ label: 'mask', view: new DummyView() });
+        const mask = new DummyView({ label: 'mask' });
 
         addMaskLocalBounds(mask, bounds, root);
 
@@ -142,11 +141,11 @@ describe('getLocalBounds', () =>
         const root = new Container({ label: 'root', isRenderGroup: true });
 
         const maskedContent = new Container({ label: 'maskedContent' });
-        const child = new Container({ label: 'child', view: new DummyView() });
+        const child = new DummyView({ label: 'child' });
 
         maskedContent.addChild(child);
 
-        const mask = new Container({ label: 'mask', view: new DummyView() });
+        const mask = new DummyView({ label: 'mask' });
 
         mask.x = 50;
         // root.x = 50;
@@ -171,8 +170,8 @@ describe('getLocalBounds', () =>
         const container = new Container({ label: 'container', isRenderGroup: true });
 
         const maskedContent = new Container({ label: 'maskedContent' });
-        const mask = new Container({ label: 'mask', view: new DummyView(0, 0, 50, 50) });
-        const content = new Container({ label: 'content', view: new DummyView() });
+        const mask = new DummyView({ label: 'mask', width: 50, height: 50 });
+        const content = new DummyView({ label: 'content' });
 
         content.addEffect(new StencilMask({ mask }));
 
@@ -188,8 +187,8 @@ describe('getLocalBounds', () =>
         expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 50, maxY: 50 });
 
         const maskedContent2 = new Container({ label: 'maskedContent2' });
-        const mask2 = new Container({ label: 'mask2', view: new DummyView(0, 0, 50, 50) });
-        const content2 = new Container({ label: 'content2', view: new DummyView() });
+        const mask2 = new DummyView({ label: 'mask2', width: 50, height: 50 });
+        const content2 = new DummyView({ label: 'content2' });
 
         content2.addEffect(new StencilMask({ mask: mask2 }));
 
@@ -214,9 +213,9 @@ describe('getLocalBounds', () =>
         const container = new Container({ label: 'container', isRenderGroup: true });
 
         const maskedContent = new Container({ label: 'maskedContent' });
-        const mask = new Container({ label: 'mask', view: new DummyView(0, 0, 50, 50) });
-        const content = new Container({ label: 'content', view: new DummyView() });
-        const bg = new Container({ label: 'content', view: new DummyView(0, 0, 50, 50) });
+        const mask = new DummyView({ label: 'mask', width: 50, height: 50 });
+        const content = new DummyView({ label: 'content' });
+        const bg = new DummyView({ label: 'content', width: 50, height: 50 });
 
         content.addEffect(new StencilMask({ mask }));
 
@@ -233,8 +232,8 @@ describe('getLocalBounds', () =>
         expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 50, maxY: 50 });
 
         const maskedContent2 = new Container({ label: 'maskedContent2' });
-        const mask2 = new Container({ label: 'mask2', view: new DummyView(0, 0, 50, 50) });
-        const content2 = new Container({ label: 'content2', view: new DummyView() });
+        const mask2 = new DummyView({ label: 'mask2', width: 50, height: 50 });
+        const content2 = new DummyView({ label: 'content2' });
 
         content2.addEffect(new StencilMask({ mask: mask2 }));
 
@@ -303,7 +302,7 @@ describe('getLocalBounds', () =>
 
         container.x = 100;
 
-        const child = new Container({ label: 'child', view: new DummyView(0, 0, 500, 500) });
+        const child = new DummyView({ label: 'child', width: 500, height: 500 });
 
         container.addChild(child);
 

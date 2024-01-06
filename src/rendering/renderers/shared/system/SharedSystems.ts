@@ -34,5 +34,5 @@ export const SharedRenderPipes = [
     RenderGroupPipe,
     AlphaMaskPipe,
     StencilMaskPipe,
-    ColorMaskPipe,
+    ColorMaskPipe
 ];

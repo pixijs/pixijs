@@ -4,14 +4,11 @@ import { BatchableSprite } from './BatchableSprite';
 
 import type { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
-import type { Renderable } from '../../rendering/renderers/shared/Renderable';
 import type { Renderer } from '../../rendering/renderers/types';
 import type { PoolItem } from '../../utils/pool/Pool';
-import type { SpriteView } from './SpriteView';
+import type { Sprite } from './Sprite';
 
-let gpuSpriteHash: Record<number, BatchableSprite>;
-
-export class SpritePipe implements RenderPipe<SpriteView>
+export class SpritePipe implements RenderPipe<Sprite>
 {
     /** @ignore */
     public static extension = {
@@ -29,32 +26,31 @@ export class SpritePipe implements RenderPipe<SpriteView>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
-        gpuSpriteHash = this._gpuSpriteHash;
     }
 
-    public addRenderable(renderable: Renderable<SpriteView>, _instructionSet: InstructionSet)
+    public addRenderable(sprite: Sprite, _instructionSet: InstructionSet)
     {
-        const gpuSprite = this._getGpuSprite(renderable);
+        const gpuSprite = this._getGpuSprite(sprite);
 
-        if (renderable.view._didUpdate) this._updateBatchableSprite(renderable, gpuSprite);
+        if (sprite._didSpriteUpdate) this._updateBatchableSprite(sprite, gpuSprite);
 
         // TODO visibility
         this._renderer.renderPipes.batch.addToBatch(gpuSprite);
     }
 
-    public updateRenderable(renderable: Renderable<SpriteView>)
+    public updateRenderable(sprite: Sprite)
     {
-        const gpuSprite = gpuSpriteHash[renderable.uid];
+        const gpuSprite = this._gpuSpriteHash[sprite.uid];
 
-        if (renderable.view._didUpdate) this._updateBatchableSprite(renderable, gpuSprite);
+        if (sprite._didSpriteUpdate) this._updateBatchableSprite(sprite, gpuSprite);
 
         gpuSprite.batcher.updateElement(gpuSprite);
     }
 
-    public validateRenderable(renderable: Renderable<SpriteView>): boolean
+    public validateRenderable(sprite: Sprite): boolean
     {
-        const texture = renderable.view._texture;
-        const gpuSprite = this._getGpuSprite(renderable);
+        const texture = sprite._texture;
+        const gpuSprite = this._getGpuSprite(sprite);
 
         if (gpuSprite.texture._source !== texture._source)
         {
@@ -64,50 +60,46 @@ export class SpritePipe implements RenderPipe<SpriteView>
         return false;
     }
 
-    public destroyRenderable(renderable: Renderable<SpriteView>)
+    public destroyRenderable(sprite: Sprite)
     {
-        const batchableSprite = gpuSpriteHash[renderable.uid];
+        const batchableSprite = this._gpuSpriteHash[sprite.uid];
 
         // this will call reset!
         BigPool.return(batchableSprite as PoolItem);
 
-        gpuSpriteHash[renderable.uid] = null;
+        this._gpuSpriteHash[sprite.uid] = null;
     }
 
-    private _updateBatchableSprite(renderable: Renderable<SpriteView>, batchableSprite: BatchableSprite)
+    private _updateBatchableSprite(sprite: Sprite, batchableSprite: BatchableSprite)
     {
-        const view = renderable.view;
-
-        view._didUpdate = false;
-        batchableSprite.bounds = view.bounds;
-        batchableSprite.texture = view._texture;
+        sprite._didSpriteUpdate = false;
+        batchableSprite.bounds = sprite.bounds;
+        batchableSprite.texture = sprite._texture;
     }
 
-    private _getGpuSprite(renderable: Renderable<SpriteView>): BatchableSprite
+    private _getGpuSprite(sprite: Sprite): BatchableSprite
     {
-        return gpuSpriteHash[renderable.uid] || this._initGPUSprite(renderable);
+        return this._gpuSpriteHash[sprite.uid] || this._initGPUSprite(sprite);
     }
 
-    private _initGPUSprite(renderable: Renderable<SpriteView>): BatchableSprite
+    private _initGPUSprite(sprite: Sprite): BatchableSprite
     {
         const batchableSprite = BigPool.get(BatchableSprite);
 
-        batchableSprite.renderable = renderable;
+        batchableSprite.renderable = sprite;
 
-        const view = renderable.view;
+        batchableSprite.texture = sprite._texture;
+        batchableSprite.bounds = sprite.bounds;
+        batchableSprite.roundPixels = (this._renderer._roundPixels | sprite._roundPixels) as 0 | 1;
 
-        batchableSprite.texture = view._texture;
-        batchableSprite.bounds = view.bounds;
-        batchableSprite.roundPixels = (this._renderer._roundPixels | view.roundPixels) as 0 | 1;
+        this._gpuSpriteHash[sprite.uid] = batchableSprite;
 
-        gpuSpriteHash[renderable.uid] = batchableSprite;
-
-        renderable.view._didUpdate = false;
+        sprite._didSpriteUpdate = false;
 
         // TODO perhaps manage this outside this pipe? (a bit like how we update / add)
-        renderable.on('destroyed', () =>
+        sprite.on('destroyed', () =>
         {
-            this.destroyRenderable(renderable);
+            this.destroyRenderable(sprite);
         });
 
         return batchableSprite;

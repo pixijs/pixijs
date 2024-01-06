@@ -410,7 +410,7 @@ export class TextStyle extends EventEmitter<{
         if (value === this._originalFill) return;
 
         this._originalFill = value;
-        this._stroke = convertFillInputToFillStyle(value, GraphicsContext.defaultStrokeStyle) as ConvertedStrokeStyle;
+        this._stroke = convertFillInputToFillStyle(value, GraphicsContext.defaultStrokeStyle);
         this.update();
     }
 

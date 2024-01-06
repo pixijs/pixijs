@@ -7,7 +7,7 @@ import { UniformGroup } from '../rendering/renderers/shared/shader/UniformGroup'
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { TexturePool } from '../rendering/renderers/shared/texture/TexturePool';
 import { Bounds } from '../scene/container/bounds/Bounds';
-import { getFastGlobalBounds } from '../scene/container/bounds/getFastGlobalBounds';
+import { getGlobalBounds } from '../scene/container/bounds/getGlobalBounds';
 import { getGlobalRenderableBounds } from '../scene/container/bounds/getRenderableBounds';
 import { warn } from '../utils/logging/warn';
 
@@ -73,6 +73,7 @@ export interface FilterInstruction extends Instruction
 export interface FilterData
 {
     skip: boolean;
+    enabledLength?: number;
     inputTexture: Texture
     bounds: Bounds,
     blendRequired: boolean,
@@ -103,12 +104,12 @@ export class FilterSystem implements System
     private _filterStack: FilterData[] = [];
 
     private readonly _filterGlobalUniforms = new UniformGroup({
-        inputSize: { value: new Float32Array(4), type: 'vec4<f32>' },
-        inputPixel: { value: new Float32Array(4), type: 'vec4<f32>' },
-        inputClamp: { value: new Float32Array(4), type: 'vec4<f32>' },
-        outputFrame: { value: new Float32Array(4), type: 'vec4<f32>' },
-        globalFrame: { value: new Float32Array(4), type: 'vec4<f32>' },
-        outputTexture: { value: new Float32Array(4), type: 'vec4<f32>' },
+        uInputSize: { value: new Float32Array(4), type: 'vec4<f32>' },
+        uInputPixel: { value: new Float32Array(4), type: 'vec4<f32>' },
+        uInputClamp: { value: new Float32Array(4), type: 'vec4<f32>' },
+        uOutputFrame: { value: new Float32Array(4), type: 'vec4<f32>' },
+        uGlobalFrame: { value: new Float32Array(4), type: 'vec4<f32>' },
+        uOutputTexture: { value: new Float32Array(4), type: 'vec4<f32>' },
     });
 
     private readonly _globalFilterBindGroup: BindGroup = new BindGroup({});
@@ -136,6 +137,14 @@ export class FilterSystem implements System
 
         this._filterStackIndex++;
 
+        // if there are no filters, we skip the pass
+        if (filters.length === 0)
+        {
+            filterData.skip = true;
+
+            return;
+        }
+
         const bounds: Bounds = filterData.bounds;
 
         // this path is used by the blend modes mostly!
@@ -158,26 +167,21 @@ export class FilterSystem implements System
         // measuring.
         else
         {
-            getFastGlobalBounds(instruction.container, bounds);
+            // TODO - this should use getFastGlobalBounds. But there is an issue with the bounds
+            getGlobalBounds(instruction.container, true, bounds);
         }
         // get GLOBAL bounds of the item we are going to apply the filter to
 
-        // if there are no filters, we skip the pass
-        if (filters.length === 0)
-        {
-            filterData.skip = true;
-
-            return;
-        }
+        const colorTextureSource = renderer.renderTarget.rootRenderTarget.colorTexture.source;
 
         // next we get the settings for the filter
         // we need to find the LOWEST resolution for the filter list
-        let resolution = renderer.renderTarget.rootRenderTarget.colorTexture.source._resolution;
+        let resolution = colorTextureSource._resolution;
 
         // Padding is additive to add padding to our padding
         let padding = 0;
         // if this is true for any filter, it should be true
-        let antialias = renderer.renderTarget.rootRenderTarget.colorTexture.source.antialias;
+        let antialias = colorTextureSource.antialias;
         // true if any filter requires the previous render target
         let blendRequired = false;
         // true if any filter in the list is enabled
@@ -441,12 +445,12 @@ export class FilterSystem implements System
         const filterUniforms = this._filterGlobalUniforms;
         const uniforms = filterUniforms.uniforms;
 
-        const outputFrame = uniforms.outputFrame;
-        const inputSize = uniforms.inputSize;
-        const inputPixel = uniforms.inputPixel;
-        const inputClamp = uniforms.inputClamp;
-        const globalFrame = uniforms.globalFrame;
-        const outputTexture = uniforms.outputTexture;
+        const outputFrame = uniforms.uOutputFrame;
+        const inputSize = uniforms.uInputSize;
+        const inputPixel = uniforms.uInputPixel;
+        const inputClamp = uniforms.uInputClamp;
+        const globalFrame = uniforms.uGlobalFrame;
+        const outputTexture = uniforms.uOutputTexture;
 
         // are we rendering back to the original surface?
         if (isFinalTarget)

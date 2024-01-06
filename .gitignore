@@ -34,7 +34,7 @@ coverage.lcov
 dist
 lib
 out
-index.ts
+src/*/**/index.ts
 
 # jetBrains IDE ignores
 .idea

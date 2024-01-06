@@ -7,9 +7,8 @@ import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 
 import type { WebGPURenderer } from '../../../rendering/renderers/gpu/WebGPURenderer';
-import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
+import type { Mesh } from '../shared/Mesh';
 import type { MeshAdaptor, MeshPipe } from '../shared/MeshPipe';
-import type { MeshView } from '../shared/MeshView';
 
 /**
  * The WebGL adaptor for the mesh system. Allows the Mesh System to be used with the WebGl renderer
@@ -47,19 +46,18 @@ export class GpuMeshAdapter implements MeshAdaptor
         });
     }
 
-    public execute(meshPipe: MeshPipe, renderable: Renderable<MeshView>)
+    public execute(meshPipe: MeshPipe, mesh: Mesh)
     {
         const renderer = meshPipe.renderer;
-        const view = renderable.view;
 
-        let shader: Shader = view._shader;
+        let shader: Shader = mesh._shader;
 
         if (!shader)
         {
             shader = this._shader;
 
             shader.groups[2] = (renderer as WebGPURenderer)
-                .texture.getTextureBindGroup(view.texture);
+                .texture.getTextureBindGroup(mesh.texture);
         }
 
         // GPU..
@@ -71,9 +69,9 @@ export class GpuMeshAdapter implements MeshAdaptor
             .renderPipes.uniformBatch.getUniformBindGroup(localUniforms, true);
 
         renderer.encoder.draw({
-            geometry: view._geometry,
+            geometry: mesh._geometry,
             shader,
-            state: view.state
+            state: mesh.state
         });
     }
 

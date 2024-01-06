@@ -19,7 +19,7 @@ export type TickerCallback<T> = (this: T, ticker: Ticker) => any;
  * ```js
  * import { Ticker } from 'pixi.js';
  *
- * const callback = () => {
+ * const callback = (ticker: Ticker) => {
  *    // do something on the next animation frame
  * };
  *

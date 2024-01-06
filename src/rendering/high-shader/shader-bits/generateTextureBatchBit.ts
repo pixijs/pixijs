@@ -126,7 +126,7 @@ function generateSampleGlSrc(maxTextures: number): string
         }
 
         src.push('{');
-        src.push(`\toutColor = texture(uSamplers[${i}], vUV);`);
+        src.push(`\toutColor = texture(uTextures[${i}], vUV);`);
         src.push('}');
     }
 
@@ -159,7 +159,7 @@ export function generateTextureBatchBitGl(maxTextures: number): HighShaderBit
                 header: `
                 in float vTextureId;
     
-                uniform sampler2D uSamplers[${maxTextures}];
+                uniform sampler2D uTextures[${maxTextures}];
               
             `,
                 main: `

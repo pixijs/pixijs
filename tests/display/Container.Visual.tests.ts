@@ -7,6 +7,7 @@ describe('Container Visual', () =>
     describe('mask', () =>
     {
         // todo: ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44913565
+        // eslint-disable-next-line jest/no-disabled-tests
         it.skip('should set isMask and renderable properties correctly even if the same mask is used by multiple objects',
             () =>
             {
@@ -97,7 +98,7 @@ describe('Container Visual', () =>
 
             updateRenderGroupTransforms(rootContainer.renderGroup, true);
 
-            const alpha = child.rgAlpha;
+            const alpha = child.groupAlpha;
 
             expect(alpha).toBe(0.5);
         });
@@ -114,14 +115,14 @@ describe('Container Visual', () =>
             rootContainer.addChild(parent);
             parent.addChild(child);
 
-            expect(child.rgVisibleRenderable).toBe(0b11);
+            expect(child.groupVisibleRenderable).toBe(0b11);
             expect(child.localVisibleRenderable).toBe(0b11);
 
             parent.visible = false;
 
             updateRenderGroupTransforms(rootContainer.renderGroup, true);
 
-            expect(child.rgVisibleRenderable).toBe(0b01);
+            expect(child.groupVisibleRenderable).toBe(0b01);
             expect(child.localVisibleRenderable).toBe(0b11);
         });
     });

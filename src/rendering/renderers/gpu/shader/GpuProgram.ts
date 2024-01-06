@@ -1,3 +1,4 @@
+import { createIdFromString } from '../../shared/utils/createIdFromString';
 import { extractStructAndGroups } from './extractStructAndGroups';
 import { generateGpuLayoutGroups } from './generateGpuLayoutGroups';
 import { generateLayoutHash } from './generateLayoutHash';
@@ -102,11 +103,6 @@ export class GpuProgram
 
     /** @internal */
     public _layoutKey = 0;
-    /** @internal */
-    public _gpuLayout: {
-        bindGroups: GPUBindGroupLayout[];
-        pipeline: GPUPipelineLayout | 'auto';
-    };
 
     /** the structs and groups extracted from the shader sources */
     public readonly structsAndGroups: StructsAndGroups;
@@ -150,12 +146,23 @@ export class GpuProgram
         // struct properties!
 
         this.gpuLayout = gpuLayout ?? generateGpuLayoutGroups(this.structsAndGroups);
+
+        this._generateProgramKey();
+    }
+
+    // TODO maker this pure
+    private _generateProgramKey()
+    {
+        const { vertex, fragment } = this;
+
+        const bigKey = vertex.source + fragment.source + vertex.entryPoint + fragment.entryPoint;
+
+        this._layoutKey = createIdFromString(bigKey, 'program');
     }
 
     /** destroys the program */
     public destroy(): void
     {
-        this._gpuLayout = null;
         (this.gpuLayout as null) = null;
         (this.layout as null) = null;
         (this.structsAndGroups as null) = null;

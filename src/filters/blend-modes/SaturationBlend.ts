@@ -27,7 +27,7 @@ export class SaturationBlend extends BlendModeFilter
                 }
             `,
                 main: `
-                fragColor = vec4(blendSaturation(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendSaturation(back.rgb, front.rgb, front.a), uBlend);
             `
             },
             gpu: {

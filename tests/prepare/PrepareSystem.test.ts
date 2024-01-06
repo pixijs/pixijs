@@ -5,7 +5,7 @@ import { Container } from '../../src/scene/container/Container';
 import { Graphics } from '../../src/scene/graphics/shared/Graphics';
 import { Sprite } from '../../src/scene/sprite/Sprite';
 import { Text } from '../../src/scene/text/Text';
-import { getRenderer } from '../utils/getRenderer';
+import { getWebGLRenderer } from '../utils/getRenderer';
 import '../../src/scene/text/init';
 import '../../src/scene/text-bitmap/init';
 import '../../src/scene/text-html/init';
@@ -14,7 +14,7 @@ describe('PrepareSystem', () =>
 {
     const setup = async () =>
     {
-        const renderer = await getRenderer();
+        const renderer = await getWebGLRenderer();
         const prepare = new PrepareSystem(renderer);
 
         return { renderer, prepare };
@@ -115,7 +115,7 @@ describe('PrepareSystem', () =>
             await prepare.upload(text);
 
             expect(prepare.getQueue()).toHaveLength(0);
-            expect(spy).toHaveBeenCalledWith(text.view);
+            expect(spy).toHaveBeenCalledWith(text);
         });
 
         it('should respected maximum number of uploads per frame', async () =>

@@ -124,13 +124,6 @@ export class PipelineSystem implements System
             this._generateBufferKey(geometry);
         }
 
-        if (!program._layoutKey)
-        {
-            // prepare the program for the pipeline
-            this._generateProgramKey(program);
-            this._renderer.shader.createProgramLayout(program);
-        }
-
         topology = topology || geometry.topology;
 
         // now we have set the Ids - the key is different...
@@ -168,6 +161,8 @@ export class PipelineSystem implements System
 
         blendModes[0].writeMask = this._stencilMode === STENCIL_MODES.RENDERING_MASK_ADD ? 0 : this._colorMask;
 
+        const layout = this._renderer.shader.getProgramData(program).pipeline;
+
         const descriptor: GPURenderPipelineDescriptor = {
             // TODO later check if its helpful to create..
             // layout,
@@ -186,7 +181,7 @@ export class PipelineSystem implements System
                 topology,
                 cullMode: state.cullMode,
             },
-            layout: program._gpuLayout.pipeline,
+            layout,
             multisample: {
                 count: this._multisampleCount,
             },
@@ -213,17 +208,6 @@ export class PipelineSystem implements System
         });
 
         return this._moduleCache[code];
-    }
-
-    private _generateProgramKey(program: GpuProgram): number
-    {
-        const { vertex, fragment } = program;
-
-        const bigKey = vertex.source + fragment.source + vertex.entryPoint + fragment.entryPoint;
-
-        program._layoutKey = createIdFromString(bigKey, 'program');
-
-        return program._layoutKey;
     }
 
     private _generateBufferKey(geometry: Geometry): number

@@ -6,7 +6,7 @@ import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture
 import { Container } from '../../../src/scene/container/Container';
 import { Graphics } from '../../../src/scene/graphics/shared/Graphics';
 import { Sprite } from '../../../src/scene/sprite/Sprite';
-import { getRenderer } from '../../utils/getRenderer';
+import { getWebGLRenderer } from '../../utils/getRenderer';
 import { getTexture } from '../../utils/getTexture';
 import '../../../src/rendering/init';
 import '../../../src/scene/graphics/init';
@@ -19,7 +19,7 @@ describe('GenerateTexture', () =>
     {
         it('should generate canvas from Container', async () =>
         {
-            const renderer = (await getRenderer()) as WebGLRenderer;
+            const renderer = (await getWebGLRenderer()) as WebGLRenderer;
             const container = new Container();
             const canvas = renderer.extract.canvas(container);
 
@@ -28,7 +28,7 @@ describe('GenerateTexture', () =>
 
         it('should generate base64 from Container', async () =>
         {
-            const renderer = (await getRenderer()) as WebGLRenderer;
+            const renderer = (await getWebGLRenderer()) as WebGLRenderer;
             const container = new Container();
             const base64 = await renderer.extract.base64(container);
 
@@ -37,7 +37,7 @@ describe('GenerateTexture', () =>
 
         it('should generate image from Container', async () =>
         {
-            const renderer = (await getRenderer()) as WebGLRenderer;
+            const renderer = (await getWebGLRenderer()) as WebGLRenderer;
             const container = new Container();
             const image = await renderer.extract.image(container);
 
@@ -46,7 +46,7 @@ describe('GenerateTexture', () =>
 
         it('should generate pixels from Container', async () =>
         {
-            const renderer = (await getRenderer()) as WebGLRenderer;
+            const renderer = (await getWebGLRenderer()) as WebGLRenderer;
             const container = new Container();
             const pixels = renderer.extract.pixels(container);
 
@@ -57,7 +57,7 @@ describe('GenerateTexture', () =>
 
         it('should generate texture from Container', async () =>
         {
-            const renderer = (await getRenderer()) as WebGLRenderer;
+            const renderer = (await getWebGLRenderer()) as WebGLRenderer;
             const container = new Container();
             const texture = renderer.extract.texture(container);
 
@@ -69,7 +69,7 @@ describe('GenerateTexture', () =>
     {
         it('should generate canvas from Texture', async () =>
         {
-            const renderer = (await getRenderer()) as WebGLRenderer;
+            const renderer = (await getWebGLRenderer()) as WebGLRenderer;
             const renderTexture = getTexture({ width: 10, height: 10 });
             const canvas = renderer.extract.canvas(renderTexture);
 
@@ -78,7 +78,7 @@ describe('GenerateTexture', () =>
 
         it('should generate base64 from Container', async () =>
         {
-            const renderer = (await getRenderer()) as WebGLRenderer;
+            const renderer = (await getWebGLRenderer()) as WebGLRenderer;
             const renderTexture = getTexture({ width: 10, height: 10 });
             const base64 = await renderer.extract.base64(renderTexture);
 
@@ -87,7 +87,7 @@ describe('GenerateTexture', () =>
 
         it('should generate image from Container', async () =>
         {
-            const renderer = (await getRenderer()) as WebGLRenderer;
+            const renderer = (await getWebGLRenderer()) as WebGLRenderer;
             const renderTexture = getTexture({ width: 10, height: 10 });
             const image = await renderer.extract.image(renderTexture);
 
@@ -96,7 +96,7 @@ describe('GenerateTexture', () =>
 
         it('should generate pixels from Container', async () =>
         {
-            const renderer = (await getRenderer()) as WebGLRenderer;
+            const renderer = (await getWebGLRenderer()) as WebGLRenderer;
             const renderTexture = getTexture({ width: 10, height: 10 });
             const pixels = renderer.extract.pixels(renderTexture);
 
@@ -108,7 +108,7 @@ describe('GenerateTexture', () =>
 
     it('should access extract on renderer', async () =>
     {
-        const renderer = (await getRenderer()) as WebGLRenderer;
+        const renderer = (await getWebGLRenderer()) as WebGLRenderer;
 
         expect(renderer.extract).toBeInstanceOf(ExtractSystem);
 
@@ -117,7 +117,7 @@ describe('GenerateTexture', () =>
 
     it('should extract the same pixels', async () =>
     {
-        const renderer = (await getRenderer({ width: 2, height: 2 })) as WebGLRenderer;
+        const renderer = (await getWebGLRenderer({ width: 2, height: 2 })) as WebGLRenderer;
 
         const graphics = new Graphics()
             .rect(0, 0, 1, 1)
@@ -143,7 +143,7 @@ describe('GenerateTexture', () =>
 
     it('should extract pixels from renderer correctly', async () =>
     {
-        const renderer = (await getRenderer({ width: 2, height: 2 })) as WebGLRenderer;
+        const renderer = (await getWebGLRenderer({ width: 2, height: 2 })) as WebGLRenderer;
         const texturePixels = new Uint8Array([
             255, 0, 0, 255, 0, 255, 0, 153,
             0, 0, 255, 102, 255, 255, 0, 51
@@ -168,7 +168,7 @@ describe('GenerateTexture', () =>
 
     it('should extract canvas from renderer correctly', async () =>
     {
-        const renderer = (await getRenderer({ width: 2, height: 2 })) as WebGLRenderer;
+        const renderer = (await getWebGLRenderer({ width: 2, height: 2 })) as WebGLRenderer;
 
         const texturePixels = new Uint8Array([
             255, 0, 0, 255, 0, 255, 0, 153,
@@ -200,7 +200,7 @@ describe('GenerateTexture', () =>
 
     it('should extract pixels from render texture correctly', async () =>
     {
-        const renderer = (await getRenderer({ width: 2, height: 2 })) as WebGLRenderer;
+        const renderer = (await getWebGLRenderer({ width: 2, height: 2 })) as WebGLRenderer;
 
         const texturePixels = new Uint8ClampedArray([
             255, 0, 0, 255, 0, 255, 0, 153,
@@ -225,7 +225,7 @@ describe('GenerateTexture', () =>
 
     it('should extract canvas from render texture correctly', async () =>
     {
-        const renderer = (await getRenderer({ width: 2, height: 2 })) as WebGLRenderer;
+        const renderer = (await getWebGLRenderer({ width: 2, height: 2 })) as WebGLRenderer;
         const texturePixels = new Uint8Array([
             255, 0, 0, 255, 0, 255, 0, 153,
             0, 0, 255, 102, 255, 255, 0, 51
@@ -261,12 +261,10 @@ describe('GenerateTexture', () =>
             height: 2,
             resource: texturePixels,
             alphaMode: 'premultiply-alpha-on-upload',
-            style: {
-                scaleMode: 'nearest'
-            }
+            scaleMode: 'nearest'
         });
 
-        const renderer = await getRenderer({ width: 2, height: 2, resolution: 2 });
+        const renderer = await getWebGLRenderer({ width: 2, height: 2, resolution: 2 });
 
         const sprite = new Sprite(texture);
 
@@ -291,7 +289,7 @@ describe('GenerateTexture', () =>
 
     it('should extract canvas with resolution !== 1', async () =>
     {
-        const renderer = (await getRenderer({ width: 2, height: 2, resolution: 2 })) as WebGLRenderer;
+        const renderer = (await getWebGLRenderer({ width: 2, height: 2, resolution: 2 })) as WebGLRenderer;
 
         const texturePixels = new Uint8ClampedArray([
             255, 0, 0, 255, 0, 255, 0, 153,
@@ -303,9 +301,7 @@ describe('GenerateTexture', () =>
             height: 2,
             resource: texturePixels,
             alphaMode: 'premultiply-alpha-on-upload',
-            style: {
-                scaleMode: 'nearest'
-            }
+            scaleMode: 'nearest'
         });
 
         const sprite = new Sprite(texture);
@@ -331,7 +327,7 @@ describe('GenerateTexture', () =>
 
     it('should extract an sprite', async () =>
     {
-        const renderer = (await getRenderer()) as WebGLRenderer;
+        const renderer = (await getWebGLRenderer()) as WebGLRenderer;
         const sprite = new Sprite(Texture.WHITE);
         const extract = renderer.extract;
 
@@ -346,7 +342,7 @@ describe('GenerateTexture', () =>
 
     it('should extract a render texture', async () =>
     {
-        const renderer = (await getRenderer()) as WebGLRenderer;
+        const renderer = (await getWebGLRenderer()) as WebGLRenderer;
         const extract = renderer.extract;
         const renderTexture = RenderTexture.create({ width: 10, height: 10 });
         const sprite = new Sprite(Texture.WHITE);
@@ -364,7 +360,7 @@ describe('GenerateTexture', () =>
 
     it('should extract with multisample', async () =>
     {
-        const renderer = (await getRenderer({ antialias: true })) as WebGLRenderer;
+        const renderer = (await getWebGLRenderer({ antialias: true })) as WebGLRenderer;
         const extract = renderer.extract;
         const sprite = new Sprite(Texture.WHITE);
 
@@ -379,7 +375,7 @@ describe('GenerateTexture', () =>
 
     it('should extract from object with frame correctly', async () =>
     {
-        const renderer = (await getRenderer()) as WebGLRenderer;
+        const renderer = (await getWebGLRenderer()) as WebGLRenderer;
         const graphics = new Graphics();
 
         graphics.context
@@ -423,7 +419,7 @@ describe('GenerateTexture', () =>
 
     it('should extract from multisampled render texture', async () =>
     {
-        const renderer = (await getRenderer()) as WebGLRenderer;
+        const renderer = (await getWebGLRenderer()) as WebGLRenderer;
         const extract = renderer.extract;
         const sprite = new Sprite(Texture.WHITE);
 
@@ -446,7 +442,7 @@ describe('GenerateTexture', () =>
 
     it('should not throw an error if frame is empty', async () =>
     {
-        const renderer = (await getRenderer()) as WebGLRenderer;
+        const renderer = (await getWebGLRenderer()) as WebGLRenderer;
         const extract = renderer.extract;
         const emptyFrame = new Rectangle(0, 0, 0, 0);
 
@@ -484,7 +480,7 @@ describe('GenerateTexture', () =>
     it('should convert image element to canvas resource and warn user', async () =>
     {
         const spy = jest.spyOn(console, 'warn');
-        const renderer = (await getRenderer()) as WebGLRenderer;
+        const renderer = (await getWebGLRenderer()) as WebGLRenderer;
         const sprite = new Sprite(Texture.WHITE);
         const image = await renderer.extract.image(sprite);
         const imageSource = new ImageSource({ resource: image });

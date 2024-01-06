@@ -8,7 +8,6 @@ const subImports = [
     ['./accessibility', './lib/accessibility'],
     ['./advanced-blend-modes', './lib/filters/blend-modes'],
     ['./app', './lib/app'],
-    ['./assets', './lib/assets'],
     ['./dds', './lib/compressed-textures/dds'],
     ['./ktx', './lib/compressed-textures/ktx'],
     ['./basis', './lib/compressed-textures/basis'], // to be implemented
@@ -18,13 +17,14 @@ const subImports = [
     ['./sprite-tiling', './lib/scene/sprite-tiling'],
     ['./text', './lib/scene/text'],
     ['./text-bitmap', './lib/scene/text-bitmap'],
-    ['./text-html', './lib/text-html'],
+    ['./text-html', './lib/scene/text-html'],
     ['./graphics', './lib/scene/graphics'],
     ['./mesh', './lib/scene/mesh'],
     ['./prepare', './lib/prepare'], // to be implemented
     ['./spritesheet', './lib/spritesheet'],
     ['./rendering', './lib/rendering'], // rename to core?
     ['./unsafe-eval', './lib/unsafe-eval'],
+    ['./sprite-nine-slice', './lib/scene/sprite-nine-slice'],
 ];
 
 interface ExportField
@@ -52,24 +52,26 @@ const exportFields: Record<string, ExportField> = {
     },
     './browser': {
         import: {
-            default: './lib/environment/browser/browserAll.mjs',
+            default: './lib/environment-browser/browserAll.mjs',
         },
         require: {
-            default: './lib/environment/browser/browserAll.js',
+            default: './lib/environment-browser/browserAll.js',
         },
     },
     './webworker': {
         import: {
-            default: './lib/environment/webworker/webworkerAll.mjs',
+            default: './lib/environment-webworker/webworkerAll.mjs',
         },
         require: {
-            default: './lib/environment/webworker/webworkerAll.js',
+            default: './lib/environment-webworker/webworkerAll.js',
         },
     },
 };
 const sideEffects = [
-    './lib/environment/browser/browserAll.*',
-    './lib/environment/webworker/webworkerAll.*',
+    './lib/environment-browser/browserAll.*',
+    './lib/environment-webworker/webworkerAll.*',
+    './lib/index.*',
+    './lib/rendering/renderers/shared/texture/sources/resourceToTexture.*',
 ];
 
 for (const [name, path] of subImports)

@@ -19,9 +19,7 @@ describe('Graphics Bounds', () =>
             expect(height).toEqual(200);
         });
 
-        // note: not getting expected values - expected to break, part of stroke bounds measurement fix
-        // Ticket for Mat - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44798775
-        it.skip('should give correct bounds with stroke', () =>
+        it('should give correct bounds with stroke', () =>
         {
             const graphics = new Graphics();
 
@@ -112,6 +110,7 @@ describe('Graphics Bounds', () =>
 
         // note: ticket to fix these tests
         // Ticket for Mat - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44798775
+        // eslint-disable-next-line jest/no-disabled-tests
         it.skip('should return true when point inside just lines', () =>
         {
             const point = new Point(-1, -1);
@@ -128,9 +127,7 @@ describe('Graphics Bounds', () =>
             expect(graphics.context.containsPoint(point)).toBe(true);
         });
 
-        // note: ticket to fix these tests
-        // Ticket for Mat - https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44798775
-        it.skip('should return false when point outside just lines', () =>
+        it('should return false when point outside just lines', () =>
         {
             const point = new Point(5, 5);
             const graphics = new Graphics();
@@ -179,6 +176,7 @@ describe('Graphics Bounds', () =>
         });
 
         // note: failing, needs investigation
+        // eslint-disable-next-line jest/no-disabled-tests
         it.skip('should handle extra shapes in holes', () =>
         {
             const graphics = new Graphics();

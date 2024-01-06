@@ -7,13 +7,14 @@ import { SystemRunner } from './SystemRunner';
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { Matrix } from '../../../../maths/matrix/Matrix';
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
-import type { DestroyOptions } from '../../../../scene/container/destroyTypes';
+import type { TypeOrBool } from '../../../../scene/container/destroyTypes';
 import type { Renderer } from '../../types';
+import type { BackgroundSystem } from '../background/BackgroundSystem';
 import type { GenerateTextureOptions, GenerateTextureSystem } from '../extract/GenerateTextureSystem';
 import type { PipeConstructor } from '../instructions/RenderPipe';
 import type { RenderSurface } from '../renderTarget/RenderTargetSystem';
 import type { Texture } from '../texture/Texture';
-import type { ViewSystem } from '../view/ViewSystem';
+import type { ViewSystem, ViewSystemDestroyOptions } from '../view/ViewSystem';
 import type { System, SystemConstructor } from './System';
 
 interface RendererConfig
@@ -34,6 +35,8 @@ export interface RenderOptions
     clearColor?: ColorSource;
     clear?: boolean;
 }
+
+export type RendererDestroyOptions = TypeOrBool<ViewSystemDestroyOptions>;
 
 const defaultRunners = [
     'init',
@@ -107,6 +110,7 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
     public readonly runners: Runners = Object.create(null) as Runners;
     public readonly renderPipes = Object.create(null) as PIPES;
     public view: ViewSystem;
+    public background: BackgroundSystem;
     public textureGenerator: GenerateTextureSystem;
 
     protected _initOptions: OPTIONS = {} as OPTIONS;
@@ -193,6 +197,7 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
         {
             // TODO get rid of this
             this._lastObjectRendered = options.container;
+            options.clearColor = this.background.colorRgba;
         }
 
         if (options.clearColor)
@@ -375,7 +380,7 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
         });
     }
 
-    public destroy(options: DestroyOptions = false): void
+    public destroy(options: RendererDestroyOptions = false): void
     {
         this.runners.destroy.items.reverse();
         this.runners.destroy.emit(options);

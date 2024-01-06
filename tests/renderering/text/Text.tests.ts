@@ -2,10 +2,10 @@
 import { Container } from '../../../src/scene/container/Container';
 import { Sprite } from '../../../src/scene/sprite/Sprite';
 import { Text } from '../../../src/scene/text/Text';
-import { getRenderer } from '../../utils/getRenderer';
-import '../../../src/scene/text/init';
-import '../../../src/scene/text-bitmap/init';
+import { getWebGLRenderer } from '../../utils/getRenderer';
 import '../../../src/scene/graphics/init';
+import '../../../src/scene/text-bitmap/init';
+import '../../../src/scene/text/init';
 
 import type { DestroyOptions } from '../../../src/scene/container/destroyTypes';
 
@@ -28,14 +28,14 @@ describe('Text', () =>
         {
             const text = new Text({ text: 'foo', resolution: 3 });
 
-            expect(text.view.resolution).toEqual(3);
+            expect(text.resolution).toEqual(3);
         });
 
         it('should update the text resolution to match the renderer resolution when being rendered to screen', async () =>
         {
             const text = new Text({ text: 'foo' });
 
-            const renderer = await getRenderer({ resolution: 2 });
+            const renderer = await getWebGLRenderer({ resolution: 2 });
 
             const texture = renderer.renderPipes.text['_getGpuText'](text).texture;
 
@@ -48,11 +48,11 @@ describe('Text', () =>
         {
             const text = new Text({ text: 'foo', resolution: 3 });
 
-            expect(text.view.resolution).toEqual(3);
+            expect(text.resolution).toEqual(3);
 
-            const renderer = await getRenderer({ resolution: 2 });
+            const renderer = await getWebGLRenderer({ resolution: 2 });
 
-            const texture = renderer.canvasText.getTexture(text.text, text.view.resolution, text.style, 'foo');
+            const texture = renderer.canvasText.getTexture(text.text, text.resolution, text.style, 'foo');
 
             expect(texture.source.resolution).toEqual(3);
 
@@ -120,13 +120,13 @@ describe('Text', () =>
 
         it('should destroy canvas text correctly on the pipes and systems', async () =>
         {
-            const renderer = await getRenderer();
+            const renderer = await getWebGLRenderer();
 
             const container = new Container();
 
             const text = new Text({ text: 'foo' });
 
-            const key = text.view._getKey();
+            const key = text._getKey();
 
             container.addChild(text);
 
@@ -142,7 +142,7 @@ describe('Text', () =>
 
         it('should destroy bitmap text correctly on the pipes and systems', async () =>
         {
-            const renderer = await getRenderer();
+            const renderer = await getWebGLRenderer();
 
             const container = new Container();
 
@@ -193,21 +193,6 @@ describe('Text', () =>
         it('should prevent setting undefined', () =>
         {
             const text = new Text({});
-
-            expect(text.text).toEqual('');
-        });
-
-        // note: ticket add Trim
-        // ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=45756485
-        it.skip('should trim an empty string', () =>
-        {
-            // note: why?
-            const text = new Text({
-                text: ' ',
-                style: {
-                    //   trim: true
-                }
-            });
 
             expect(text.text).toEqual('');
         });
