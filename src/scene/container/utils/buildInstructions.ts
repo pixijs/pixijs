@@ -29,7 +29,7 @@ export function buildInstructions(renderGroup: RenderGroup, renderPipes: RenderP
     renderPipes.batch.buildEnd(instructionSet);
     renderPipes.blendMode.buildEnd(instructionSet);
 
-    // instructionSet.log();
+    instructionSet.log();
 }
 
 export function collectAllRenderables(
@@ -94,20 +94,20 @@ function collectAllRenderablesAdvanced(
     isRoot: boolean
 ): void
 {
-    for (let i = 0; i < container.effects.length; i++)
-    {
-        const effect = container.effects[i];
-        const pipe = renderPipes[effect.pipe as keyof RenderPipes]as InstructionPipe<any>;
-
-        pipe.push(effect, container, instructionSet);
-    }
-
     if (!isRoot && container.isRenderGroupRoot)
     {
         renderPipes.renderGroup.addRenderGroup(container.renderGroup, instructionSet);
     }
     else
     {
+        for (let i = 0; i < container.effects.length; i++)
+        {
+            const effect = container.effects[i];
+            const pipe = renderPipes[effect.pipe as keyof RenderPipes]as InstructionPipe<any>;
+
+            pipe.push(effect, container, instructionSet);
+        }
+
         const renderPipeId = container.renderPipeId;
 
         if (renderPipeId)
@@ -130,15 +130,15 @@ function collectAllRenderablesAdvanced(
                 collectAllRenderables(children[i], instructionSet, renderPipes);
             }
         }
-    }
 
-    // loop backwards through effects
-    for (let i = container.effects.length - 1; i >= 0; i--)
-    {
-        const effect = container.effects[i];
-        const pipe = renderPipes[effect.pipe as keyof RenderPipes]as InstructionPipe<any>;
+        // loop backwards through effects
+        for (let i = container.effects.length - 1; i >= 0; i--)
+        {
+            const effect = container.effects[i];
+            const pipe = renderPipes[effect.pipe as keyof RenderPipes]as InstructionPipe<any>;
 
-        pipe.pop(effect, container, instructionSet);
+            pipe.pop(effect, container, instructionSet);
+        }
     }
 }
 
