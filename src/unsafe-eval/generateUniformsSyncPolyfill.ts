@@ -2,7 +2,7 @@ import {
     GLSL_TO_ARRAY_SETTERS_FN,
     GLSL_TO_SINGLE_SETTERS_FN_CACHED
 } from '../rendering/renderers/gl/shader/program/generateUniformsSyncTypes';
-import { uniformParsers } from '../rendering/renderers/gl/shader/program/uniformParsers';
+import { UNIFORM_PARSERS } from '../rendering/renderers/gl/shader/program/uniformParsers';
 import { BufferResource } from '../rendering/renderers/shared/buffer/BufferResource';
 import { UniformGroup } from '../rendering/renderers/shared/shader/UniformGroup';
 
@@ -52,11 +52,11 @@ export function generateUniformsSyncPolyfill(
 
             let executed = false;
 
-            for (let j = 0; j < uniformParsers.length; j++)
+            for (let j = 0; j < UNIFORM_PARSERS.length; j++)
             {
-                if (uniformParsers[j].test(data, uniform))
+                if (UNIFORM_PARSERS[j].test(data, uniform))
                 {
-                    uniformParsers[j].exec(i, cv, ud, uv, v, t, gl, renderer, syncData);
+                    UNIFORM_PARSERS[j].exec(i, cv, ud, uv, v, t, gl, renderer, syncData);
                     executed = true;
 
                     break;

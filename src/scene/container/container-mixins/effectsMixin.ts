@@ -134,32 +134,34 @@ export const effectsMixin: Partial<Container> = {
         return this._mask?.mask;
     },
 
-    set filters(value: Filter | Filter[])
+    set filters(value: Filter | Filter[] | null | undefined)
     {
-        if (!Array.isArray(value) && value !== null) value = [value];
+        if (!Array.isArray(value) && value) value = [value];
 
-        // TODO - not massively important, but could optimise here
         // by reusing the same effect.. rather than adding and removing from the pool!
         this._filters ||= { filters: null, effect: null, filterArea: null };
 
-        if (this._filters.filters === value) return;
-
-        if (this._filters.effect)
-        {
-            this.removeEffect(this._filters.effect);
-            returnFilterEffect(this._filters.effect);
-            this._filters.effect = null;
-        }
+        const hasFilters = value && (value as Filter[]).length > 0;
+        const didChange = (this._filters.effect && !hasFilters) || (!this._filters.effect && hasFilters);
 
         this._filters.filters = value as Filter[];
 
-        if (!value) return;
+        if (didChange)
+        {
+            if (hasFilters)
+            {
+                const effect = getFilterEffect(value as Filter[], this.filterArea);
 
-        const effect = getFilterEffect(value as Filter[], this.filterArea);
-
-        this._filters.effect = effect;
-
-        this.addEffect(effect);
+                this._filters.effect = effect;
+                this.addEffect(effect);
+            }
+            else
+            {
+                this.removeEffect(this._filters.effect);
+                returnFilterEffect(this._filters.effect);
+                this._filters.effect = null;
+            }
+        }
     },
 
     /**
