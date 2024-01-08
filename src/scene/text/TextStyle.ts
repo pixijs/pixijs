@@ -162,7 +162,7 @@ export class TextStyle extends EventEmitter<{
          * See {@link TextStyle.fill}
          * @type {string|string[]|number|number[]|CanvasGradient|CanvasPattern}
          */
-        fill: 'black',
+        fill: 'white',
         /**
          * See {@link TextStyle.fontFamily}
          * @type {string|string[]}

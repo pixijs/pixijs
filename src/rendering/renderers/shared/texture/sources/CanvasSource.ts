@@ -8,7 +8,10 @@ import type { TextureSourceOptions } from './TextureSource';
 
 export interface CanvasSourceOptions extends TextureSourceOptions<ICanvas>
 {
+    /** should the canvas be resized to preserve its screen width and height regardless of the resolution of the renderer */
     autoDensity?: boolean;
+    /** if true, this canvas will be set up to be transparent where possible */
+    transparent?: boolean;
 }
 
 export class CanvasSource extends TextureSource<ICanvas>
@@ -17,6 +20,7 @@ export class CanvasSource extends TextureSource<ICanvas>
 
     public uploadMethodId = 'image';
     public autoDensity: boolean;
+    public transparent: boolean;
 
     constructor(options: CanvasSourceOptions)
     {
@@ -55,6 +59,8 @@ export class CanvasSource extends TextureSource<ICanvas>
         {
             this.resizeCanvas();
         }
+
+        this.transparent = !!options.transparent;
     }
 
     public resizeCanvas()

@@ -29,7 +29,7 @@ export function buildInstructions(renderGroup: RenderGroup, renderPipes: RenderP
     renderPipes.batch.buildEnd(instructionSet);
     renderPipes.blendMode.buildEnd(instructionSet);
 
-    instructionSet.log();
+    // instructionSet.log();
 }
 
 export function collectAllRenderables(
