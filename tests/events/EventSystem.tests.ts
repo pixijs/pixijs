@@ -1110,6 +1110,44 @@ describe('EventSystem', () =>
         expect(eventSpy).toHaveBeenCalledOnce();
     });
 
+    it('should allow explicit removal of a listener even when the signal option is used', async () =>
+    {
+        const renderer = await createRenderer();
+        const [stage, graphics] = createScene();
+        const eventSpy = jest.fn();
+
+        renderer.render(stage);
+        const controller = new AbortController();
+
+        const listener = (e: Event) =>
+        {
+            expect(e.type).toEqual('click');
+            eventSpy();
+        };
+
+        graphics.addEventListener('pointertap', listener, { signal: controller.signal });
+
+        const click = () =>
+        {
+            renderer.events['_onPointerDown'](
+                new PointerEvent('pointerdown', { clientX: 25, clientY: 25 })
+            );
+            const e = new PointerEvent('pointerup', { clientX: 30, clientY: 20 });
+
+            // so it isn't a pointerupoutside
+            Object.defineProperty(e, 'target', {
+                writable: false,
+                value: renderer.canvas
+            });
+            renderer.events['_onPointerUp'](e);
+        };
+
+        click(); // Once
+        graphics.removeEventListener('pointertap', listener);
+        click(); // Twice
+        expect(eventSpy).toHaveBeenCalledOnce();
+    });
+
     it('should respect AbortController signals', async () =>
     {
         const renderer = await createRenderer();
