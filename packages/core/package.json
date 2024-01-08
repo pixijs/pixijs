@@ -46,7 +46,6 @@
     "@pixi/runner": "file:../runner",
     "@pixi/settings": "file:../settings",
     "@pixi/ticker": "file:../ticker",
-    "@pixi/utils": "file:../utils",
-    "@types/offscreencanvas": "^2019.6.4"
+    "@pixi/utils": "file:../utils"
   }
 }

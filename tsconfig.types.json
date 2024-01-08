@@ -6,13 +6,14 @@
         "outDir": "out"
     },
     "exclude": [
+        "bundles/**/*.d.ts",
         "node_modules",
+        "scripts",
+        "tools",
         "**/dist/**",
         "**/lib/**",
-        "bundles/**/*.d.ts",
         "**/out/**",
-        "tools",
-        "scripts",
-        "**/test/**"
+        "**/test/**",
+        "**/*.worker.ts"
     ]
 }

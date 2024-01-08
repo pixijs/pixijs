@@ -5,6 +5,7 @@ import esbuild from 'rollup-plugin-esbuild';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import alias from '@rollup/plugin-alias';
+import webworker from '@pixi/webworker-plugins/rollup-plugin';
 import workspacesRun from 'workspaces-run';
 import repo from './package.json' assert { type: 'json' };
 
@@ -40,6 +41,8 @@ function convertPackageNameToRegExp(packageName)
 
 async function main()
 {
+    const webworkerPlugin = webworker();
+
     const commonPlugins = [
         resolve({
             browser: true,
@@ -73,19 +76,22 @@ async function main()
         },
         treeShaking: true,
         tsconfigRaw: '{"compilerOptions":{"useDefineForClassFields":false}}'
-    }
+    };
 
     const plugins = [
+        webworkerPlugin,
         esbuild(esbuildConfig),
         ...commonPlugins,
     ];
 
     const bundlePlugins = [
+        webworkerPlugin,
         esbuild({ ...esbuildConfig, target: bundleTarget }),
         ...commonPlugins,
     ];
 
     const bundlePluginsProd = [
+        webworkerPlugin,
         esbuild({
             ...esbuildConfig,
             target: bundleTarget,
