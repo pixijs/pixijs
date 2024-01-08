@@ -7,7 +7,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render a custom triangle correctly',
-    only: true,
     create: async (scene: Container) =>
     {
         const geometry = new Geometry({

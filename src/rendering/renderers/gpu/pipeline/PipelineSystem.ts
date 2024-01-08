@@ -265,6 +265,7 @@ export class PipelineSystem implements System
                     attribute.stride ||= getUniformInfoFromFormat(attribute.format).stride;
 
                     bufferEntry.arrayStride = attribute.stride;
+                    bufferEntry.stepMode = attribute.instance ? 'instance' : 'vertex';
 
                     bufferEntryAttributes.push({
                         shaderLocation: attribute.shaderLocation,

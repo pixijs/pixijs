@@ -7,8 +7,7 @@ import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
-    it: 'should render a custom triangle correctly',
-    only: true,
+    it: 'should render a custom mesh correctly',
     create: async (scene: Container) =>
     {
         const spinnyBG = await Assets.load('bg_scene_rotate.jpg');

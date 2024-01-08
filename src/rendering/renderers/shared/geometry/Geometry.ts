@@ -59,6 +59,8 @@ export interface GeometryDescriptor
     indexBuffer?: Buffer | TypedArray | number[];
     /** the topology of the geometry, defaults to 'triangle-list' */
     topology?: Topology;
+
+    instanceCount?: number;
 }
 
 /**
@@ -118,10 +120,8 @@ export class Geometry extends EventEmitter<{
      */
     public _layoutKey = 0;
 
-    /** true if the geometry is instanced */
-    public instanced: boolean;
     /** the instance count of the geometry to draw */
-    public instanceCount: number;
+    public instanceCount = 1;
 
     private readonly _bounds: Bounds = new Bounds();
     private _boundsDirty = true;
@@ -138,6 +138,8 @@ export class Geometry extends EventEmitter<{
 
         this.attributes = attributes as Record<string, Attribute>;
         this.buffers = [];
+
+        this.instanceCount = options.instanceCount || 1;
 
         for (const i in attributes)
         {
