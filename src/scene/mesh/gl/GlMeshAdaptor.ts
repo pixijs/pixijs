@@ -5,6 +5,7 @@ import { roundPixelsBitGl } from '../../../rendering/high-shader/shader-bits/rou
 import { textureBitGl } from '../../../rendering/high-shader/shader-bits/textureBit';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
+import { warn } from '../../../utils/logging/warn';
 
 import type { Mesh } from '../shared/Mesh';
 import type { MeshAdaptor, MeshPipe } from '../shared/MeshPipe';
@@ -57,6 +58,12 @@ export class GlMeshAdaptor implements MeshAdaptor
 
             shader.resources.uTexture = source;
             shader.resources.uSampler = source.style;
+        }
+        else if (!shader.glProgram)
+        {
+            warn('Mesh shader has no glProgram', mesh.shader);
+
+            return;
         }
 
         shader.groups[0] = renderer.globalUniforms.bindGroup;

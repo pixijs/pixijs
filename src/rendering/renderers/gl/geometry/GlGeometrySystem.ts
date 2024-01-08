@@ -1,6 +1,7 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { warn } from '../../../../utils/logging/warn';
-import { getGlInfoFromFormat } from './utils/getGlInfoFromFormat';
+import { getUniformInfoFromFormat } from '../../shared/shader/utils/getUniformInfoFromFormat';
+import { getGlTypeFromFormat } from './utils/getGlTypeFromFormat';
 
 import type { Topology } from '../../shared/geometry/const';
 import type { Geometry } from '../../shared/geometry/Geometry';
@@ -412,12 +413,12 @@ export class GlGeometrySystem implements System
                 // we can optimise this for older devices that have no VAOs
                 gl.enableVertexAttribArray(location);
 
-                const glInfo = getGlInfoFromFormat(attribute.format);
+                const uniformInfo = getUniformInfoFromFormat(attribute.format);
 
                 gl.vertexAttribPointer(location,
-                    glInfo.size,
-                    glInfo.type, // attribute.type || gl.FLOAT,
-                    glInfo.normalised,
+                    uniformInfo.size,
+                    getGlTypeFromFormat(attribute.format),
+                    uniformInfo.normalised,
                     attribute.stride,
                     attribute.offset);
 

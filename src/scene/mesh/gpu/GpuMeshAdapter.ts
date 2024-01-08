@@ -5,6 +5,7 @@ import { roundPixelsBit } from '../../../rendering/high-shader/shader-bits/round
 import { textureBit } from '../../../rendering/high-shader/shader-bits/textureBit';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
+import { warn } from '../../../utils/logging/warn';
 
 import type { WebGPURenderer } from '../../../rendering/renderers/gpu/WebGPURenderer';
 import type { Mesh } from '../shared/Mesh';
@@ -59,7 +60,12 @@ export class GpuMeshAdapter implements MeshAdaptor
             shader.groups[2] = (renderer as WebGPURenderer)
                 .texture.getTextureBindGroup(mesh.texture);
         }
+        else if (!shader.gpuProgram)
+        {
+            warn('Mesh shader has no gpuProgram', mesh.shader);
 
+            return;
+        }
         // GPU..
         shader.groups[0] = renderer.globalUniforms.bindGroup;
 

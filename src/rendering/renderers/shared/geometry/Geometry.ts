@@ -17,16 +17,16 @@ export interface Attribute
 {
     /** the buffer that this attributes data belongs to */
     buffer: Buffer;
-    /** the stride of the data in the buffer*/
-    stride: number;
-    /** the offset of the attribute from the buffer */
-    offset: number;
     /** the format of the attribute */
     format: VertexFormat;
-    /** is this an instanced buffer? (defaults to false) */
-    instance?: boolean;
     /** set where the shader location is for this attribute */
     shaderLocation: number; // TODO - auto assign this move this?? introspection??
+    /** the stride of the data in the buffer*/
+    stride?: number;
+    /** the offset of the attribute from the buffer, defaults to 0 */
+    offset?: number;
+    /** is this an instanced buffer? (defaults to false) */
+    instance?: boolean;
     /**  The number of elements to be rendered. If not specified, all vertices after the starting vertex will be drawn. */
     size?: number;
     /** the type of attribute  */
