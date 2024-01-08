@@ -14,6 +14,9 @@ import type { PointData } from '../../../maths/point/PointData';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { FilterSystem } from '../../FilterSystem';
 
+let gpuProgram: GpuProgram;
+let glProgram: GlProgram;
+
 /**
  * Options for DisplacementFilter
  * @memberof filters
@@ -68,13 +71,13 @@ export class DisplacementFilter extends Filter
             uRotation: { value: new Float32Array([0, 0, 0, 0]), type: 'vec4<f32>' },
         });
 
-        const glProgram = GlProgram.from({
+        glProgram ??= GlProgram.from({
             vertex,
             fragment,
             name: 'displacement-filter'
         });
 
-        const gpuProgram = GpuProgram.from({
+        gpuProgram ??= GpuProgram.from({
             vertex: {
                 source,
                 entryPoint: 'mainVertex',

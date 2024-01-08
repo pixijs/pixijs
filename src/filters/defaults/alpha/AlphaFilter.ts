@@ -8,6 +8,9 @@ import source from './alpha.wgsl';
 
 import type { FilterOptions } from '../../Filter';
 
+let gpuProgram: GpuProgram;
+let glProgram: GlProgram;
+
 /**
  * Options for AlphaFilter
  * @memberof filters
@@ -46,7 +49,7 @@ export class AlphaFilter extends Filter
     {
         options = { ...AlphaFilter.defaultOptions, ...options };
 
-        const gpuProgram = new GpuProgram({
+        gpuProgram ??= new GpuProgram({
             vertex: {
                 source,
                 entryPoint: 'mainVertex',
@@ -57,7 +60,7 @@ export class AlphaFilter extends Filter
             },
         });
 
-        const glProgram = new GlProgram({
+        glProgram ??= new GlProgram({
             vertex,
             fragment,
             name: 'alpha-filter'

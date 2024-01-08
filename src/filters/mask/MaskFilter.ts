@@ -12,6 +12,9 @@ import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { Sprite } from '../../scene/sprite/Sprite';
 import type { FilterSystem } from '../FilterSystem';
 
+let gpuProgram: GpuProgram;
+let glProgram: GlProgram;
+
 export interface MaskFilterOptions
 {
     sprite: Sprite,
@@ -33,7 +36,7 @@ export class MaskFilter extends Filter
             uAlpha: { value: 1, type: 'f32' },
         });
 
-        const gpuProgram = GpuProgram.from({
+        gpuProgram ??= GpuProgram.from({
             vertex: {
                 source,
                 entryPoint: 'mainVertex',
@@ -44,7 +47,7 @@ export class MaskFilter extends Filter
             },
         });
 
-        const glProgram = GlProgram.from({
+        glProgram ??= GlProgram.from({
             vertex,
             fragment,
             name: 'mask-filter',

@@ -10,6 +10,9 @@ import source from './colorMatrixFilter.wgsl';
 import type { ColorSource } from '../../../color/Color';
 import type { ArrayFixed } from '../../../utils/types';
 
+let gpuProgram: GpuProgram;
+let glProgram: GlProgram;
+
 /**
  * 5x4 matrix for transforming RGBA color and alpha
  * @memberof filters
@@ -50,7 +53,7 @@ export class ColorMatrixFilter extends Filter
             }
         });
 
-        const gpuProgram = GpuProgram.from({
+        gpuProgram ??= GpuProgram.from({
             vertex: {
                 source,
                 entryPoint: 'mainVertex',
@@ -61,7 +64,7 @@ export class ColorMatrixFilter extends Filter
             },
         });
 
-        const glProgram = GlProgram.from({
+        glProgram ??= GlProgram.from({
             vertex,
             fragment,
             name: 'color-matrix-filter'

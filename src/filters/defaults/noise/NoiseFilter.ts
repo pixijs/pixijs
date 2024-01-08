@@ -6,6 +6,9 @@ import vertex from '../defaultFilter.vert';
 import fragment from './noise.frag';
 import source from './noise.wgsl';
 
+let gpuProgram: GpuProgram;
+let glProgram: GlProgram;
+
 /**
  * Options for NoiseFilter
  * @memberof filters
@@ -39,7 +42,7 @@ export class NoiseFilter extends Filter
             }, ...options
         };
 
-        const gpuProgram = new GpuProgram({
+        gpuProgram ??= new GpuProgram({
             vertex: {
                 source,
                 entryPoint: 'mainVertex',
@@ -50,7 +53,7 @@ export class NoiseFilter extends Filter
             },
         });
 
-        const glProgram = new GlProgram({
+        glProgram ??= new GlProgram({
             vertex,
             fragment,
             name: 'noise-filter'
