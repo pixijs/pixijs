@@ -176,6 +176,11 @@ export class Text extends Container implements View
 
         this._renderMode = renderMode ?? detectRenderType(style);
 
+        if (this._renderMode === 'bitmap')
+        {
+            style.fill ??= 0xffffff;
+        }
+
         this.style = style;
 
         this.renderPipeId = map[this._renderMode];
