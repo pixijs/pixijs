@@ -61,7 +61,9 @@ export class GlMeshAdaptor implements MeshAdaptor
         }
         else if (!shader.glProgram)
         {
+            // #if _DEBUG
             warn('Mesh shader has no glProgram', mesh.shader);
+            // #endif
 
             return;
         }

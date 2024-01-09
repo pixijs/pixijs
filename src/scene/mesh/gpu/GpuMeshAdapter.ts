@@ -62,7 +62,9 @@ export class GpuMeshAdapter implements MeshAdaptor
         }
         else if (!shader.gpuProgram)
         {
+            // #if _DEBUG
             warn('Mesh shader has no gpuProgram', mesh.shader);
+            // #endif
 
             return;
         }
