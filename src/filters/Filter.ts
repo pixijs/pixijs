@@ -58,7 +58,7 @@ import type { FilterSystem } from './FilterSystem';
  * The options to use when creating a new filter.
  * @memberof filters
  */
-export interface FilterOptions extends IShaderWithResources
+export interface FilterOptions
 {
     /** optional blend mode used by the filter when rendering (defaults to 'normal') */
     blendMode?: BLEND_MODES;
@@ -91,6 +91,9 @@ export interface FilterOptions extends IShaderWithResources
      */
     blendRequired?: boolean;
 }
+
+/** Filter options mixed with shader resources. A filter needs a shader and some resources to work. */
+export type FilterWithShader = FilterOptions & IShaderWithResources;
 
 /**
  * The antialiasing mode of the filter. This can be either:
@@ -136,7 +139,7 @@ export class Filter extends Shader
      * The default filter settings
      * @static
      */
-    public static readonly defaultOptions: Partial<FilterOptions> = {
+    public static readonly defaultOptions: FilterOptions = {
         blendMode: 'normal',
         resolution: 1,
         padding: 0,
@@ -184,7 +187,7 @@ export class Filter extends Shader
     /**
      * @param options - The optional parameters of this filter.
      */
-    constructor(options: FilterOptions)
+    constructor(options: FilterWithShader)
     {
         options = { ...Filter.defaultOptions, ...options };
 

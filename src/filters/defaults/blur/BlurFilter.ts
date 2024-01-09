@@ -14,7 +14,7 @@ import type { FilterSystem } from '../../FilterSystem';
  * Options for BlurFilter
  * @memberof filters
  */
-export interface BlurFilterOptions extends Partial<FilterOptions>
+export interface BlurFilterOptions extends FilterOptions
 {
     /**
      * The strength of the blur filter.
@@ -86,8 +86,10 @@ export class BlurFilter extends Filter
 
         options = { ...BlurFilterPass.defaultOptions, ...options };
 
+        const { strength, quality, ...rest } = options;
+
         super({
-            ...options,
+            ...rest,
             compatibleRenderers: RendererType.BOTH,
             resources: {}
         });
@@ -95,8 +97,8 @@ export class BlurFilter extends Filter
         this.blurXFilter = new BlurFilterPass({ horizontal: false, ...options });
         this.blurYFilter = new BlurFilterPass({ horizontal: true, ...options });
 
-        this.quality = options.quality;
-        this.blur = options.strength;
+        this.quality = quality;
+        this.blur = strength;
 
         this.repeatEdgePixels = false;
     }

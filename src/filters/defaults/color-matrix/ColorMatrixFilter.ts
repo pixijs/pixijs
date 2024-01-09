@@ -9,6 +9,7 @@ import source from './colorMatrixFilter.wgsl';
 
 import type { ColorSource } from '../../../color/Color';
 import type { ArrayFixed } from '../../../utils/types';
+import type { FilterOptions } from '../../Filter';
 
 /**
  * 5x4 matrix for transforming RGBA color and alpha
@@ -31,7 +32,7 @@ export type ColorMatrix = ArrayFixed<number, 20>;
  */
 export class ColorMatrixFilter extends Filter
 {
-    constructor()
+    constructor(options: FilterOptions = {})
     {
         const colorMatrixUniforms = new UniformGroup({
             uColorMatrix: {
@@ -68,11 +69,12 @@ export class ColorMatrixFilter extends Filter
         });
 
         super({
+            ...options,
             gpuProgram,
             glProgram,
             resources: {
                 colorMatrixUniforms
-            }
+            },
         });
 
         this.alpha = 1;
