@@ -278,6 +278,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
                 floatTextureLinear: gl.getExtension('OES_texture_float_linear'),
                 textureHalfFloat: gl.getExtension('OES_texture_half_float'),
                 textureHalfFloatLinear: gl.getExtension('OES_texture_half_float_linear'),
+                vertexAttribDivisorANGLE: gl.getExtension('ANGLE_instanced_arrays'),
                 srgb: gl.getExtension('EXT_sRGB'),
             };
         }
