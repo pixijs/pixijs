@@ -19,7 +19,6 @@
 // }
 
 import { Texture } from '../../../shared/texture/Texture';
-import { parseFunctionBody } from '../../../shared/utils/parseFunctionBody';
 
 type UniformParserKey =
     | 'FLOAT_CACHE_LAYER'
@@ -179,62 +178,112 @@ const parsers: Record<UniformParserKey, UniformParserDefinition> = {
     }
 };
 
-export const uniformParsers: IUniformParser[] = [
+export const UNIFORM_PARSERS: IUniformParser[] = [
 
     // a float cache layer
     {
         test: parsers.FLOAT_CACHE_LAYER.test,
-        code: parseFunctionBody(parsers.FLOAT_CACHE_LAYER.exec),
+        code: `if (uv[name] !== ud[name].value) {
+            ud[name].value = uv[name];
+            gl.uniform1f(ud[name].location, uv[name]);
+        }`,
         exec: parsers.FLOAT_CACHE_LAYER.exec
     },
     // handling samplers
     {
         test: parsers.HANDLE_SAMPLERS.test,
-        code: parseFunctionBody(parsers.HANDLE_SAMPLERS.exec),
+        code: `t = syncData.textureCount++;
+            renderer.texture.bind(uv[name], t);
+            if (ud[name].value !== t) {
+                ud[name].value = t;
+                gl.uniform1i(ud[name].location, t);
+            }`,
         exec: parsers.HANDLE_SAMPLERS.exec
     },
     // uploading pixi matrix object to mat3
     {
         test: parsers.UPLOAD_PIXI_MAT3.test,
-        code: parseFunctionBody(parsers.UPLOAD_PIXI_MAT3.exec),
+        code: `gl.uniformMatrix3fv(ud[name].location, false, uv[name].toArray(true));`,
         exec: parsers.UPLOAD_PIXI_MAT3.exec
     },
     // uploading a pixi point as a vec2 with caching layer
     {
         test: parsers.UPLOAD_PIXI_VEC2_CACHE.test,
-        code: parseFunctionBody(parsers.UPLOAD_PIXI_VEC2_CACHE.exec),
+        code: `cv = ud[name].value;
+            v = uv[name];
+            if (cv[0] !== v.x || cv[1] !== v.y) {
+                cv[0] = v.x;
+                cv[1] = v.y;
+                gl.uniform2f(ud[name].location, v.x, v.y);
+            }`,
         exec: parsers.UPLOAD_PIXI_VEC2_CACHE.exec
     },
     // caching layer for a vec2
     {
         test: parsers.VEC2_CACHE_LAYER.test,
-        code: parseFunctionBody(parsers.VEC2_CACHE_LAYER.exec),
+        code: `cv = ud[name].value;
+            v = uv[name];
+            if (cv[0] !== v[0] || cv[1] !== v[1]) {
+                cv[0] = v[0];
+                cv[1] = v[1];
+                gl.uniform2f(ud[name].location, v[0], v[1]);
+            }`,
         exec: parsers.VEC2_CACHE_LAYER.exec
     },
     // upload a pixi rectangle as a vec4 with caching layer
     {
         test: parsers.UPLOAD_PIXI_RECT_VEC4_CACHE.test,
-        code: parseFunctionBody(parsers.UPLOAD_PIXI_RECT_VEC4_CACHE.exec),
+        code: `cv = ud[name].value;
+            v = uv[name];
+            if (cv[0] !== v.x || cv[1] !== v.y || cv[2] !== v.width || cv[3] !== v.height) {
+                cv[0] = v.x;
+                cv[1] = v.y;
+                cv[2] = v.width;
+                cv[3] = v.height;
+                gl.uniform4f(ud[name].location, v.x, v.y, v.width, v.height);
+            }`,
         exec: parsers.UPLOAD_PIXI_RECT_VEC4_CACHE.exec
     },
     // upload a pixi color as vec4 with caching layer
     {
         test: parsers.UPLOAD_PIXI_COLOR_VEC4_CACHE.test,
-        code: parseFunctionBody(parsers.UPLOAD_PIXI_COLOR_VEC4_CACHE.exec),
+        code: `cv = ud[name].value;
+            v = uv[name];
+            if (cv[0] !== v.red || cv[1] !== v.green || cv[2] !== v.blue || cv[3] !== v.alpha) {
+                cv[0] = v.red;
+                cv[1] = v.green;
+                cv[2] = v.blue;
+                cv[3] = v.alpha;
+                gl.uniform4f(ud[name].location, v.red, v.green, v.blue, v.alpha);
+            }`,
         exec: parsers.UPLOAD_PIXI_COLOR_VEC4_CACHE.exec
     },
     // upload a pixi color as a vec3 with caching layer
     {
         test: parsers.UPLOAD_PIXI_COLOR_VEC3_CACHE.test,
-        code: parseFunctionBody(parsers.UPLOAD_PIXI_COLOR_VEC3_CACHE.exec),
+        code: `cv = ud[name].value;
+            v = uv[name];
+            if (cv[0] !== v.red || cv[1] !== v.green || cv[2] !== v.blue) {
+                cv[0] = v.red;
+                cv[1] = v.green;
+                cv[2] = v.blue;
+                gl.uniform3f(ud[name].location, v.red, v.green, v.blue);
+            }`,
         exec: parsers.UPLOAD_PIXI_COLOR_VEC3_CACHE.exec
     },
 
     // a caching layer for vec4 uploading
     {
         test: parsers.VEC4_CACHE_LAYER.test,
-        code: parseFunctionBody(parsers.VEC4_CACHE_LAYER.exec),
+        code: `cv = ud[name].value;
+            v = uv[name];
+            if (cv[0] !== v[0] || cv[1] !== v[1] || cv[2] !== v[2] || cv[3] !== v[3]) {
+                cv[0] = v[0];
+                cv[1] = v[1];
+                cv[2] = v[2];
+                cv[3] = v[3];
+                gl.uniform4f(ud[name].location, v[0], v[1], v[2], v[3]);
+            }`,
         exec: parsers.VEC4_CACHE_LAYER.exec
     },
 ];
-
