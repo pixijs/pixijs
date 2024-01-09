@@ -8,7 +8,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render filters correctly with antialiasing',
-    only: true,
     create: async (scene: Container) =>
     {
         const g = new Graphics();
