@@ -22,11 +22,11 @@ GpuStencilModesToPixi[STENCIL_MODES.RENDERING_MASK_ADD] = {
     depthWriteEnabled: false,
     stencilFront: {
         compare: 'always',
-        passOp: 'replace',
+        passOp: 'increment-clamp',
     },
     stencilBack: {
         compare: 'always',
-        passOp: 'replace',
+        passOp: 'increment-clamp',
     },
 };
 

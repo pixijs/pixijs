@@ -455,11 +455,21 @@ export class FilterSystem implements System
         // are we rendering back to the original surface?
         if (isFinalTarget)
         {
-            // get previous bounds..
-            if (this._filterStackIndex > 0)
+            let lastIndex = this._filterStackIndex;
+
+            // get previous bounds.. we must take into account skipped filters also..
+            while (lastIndex > 0)
             {
-                offset.x = this._filterStack[this._filterStackIndex - 1].bounds.minX;
-                offset.y = this._filterStack[this._filterStackIndex - 1].bounds.minY;
+                lastIndex--;
+                const filterData = this._filterStack[this._filterStackIndex - 1];
+
+                if (!filterData.skip)
+                {
+                    offset.x = filterData.bounds.minX;
+                    offset.y = filterData.bounds.minY;
+
+                    break;
+                }
             }
 
             outputFrame[0] = bounds.minX - offset.x;

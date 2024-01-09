@@ -1,6 +1,6 @@
 import { type UBOElement, WGSL_TO_STD40_SIZE } from '../rendering/renderers/shared/shader/utils/createUBOElements';
 import { UBO_TO_SINGLE_SETTERS_FN } from '../rendering/renderers/shared/shader/utils/createUniformBufferSyncTypes';
-import { uniformBufferParsers } from '../rendering/renderers/shared/shader/utils/uniformBufferParsers';
+import { UNIFORM_BUFFER_PARSERS } from '../rendering/renderers/shared/shader/utils/uniformBufferParsers';
 
 import type {
     UBO_TYPE,
@@ -27,9 +27,9 @@ export function generateUniformBufferSyncPolyfill(
             let executed = false;
             let offset = 0;
 
-            for (let j = 0; j < uniformBufferParsers.length; j++)
+            for (let j = 0; j < UNIFORM_BUFFER_PARSERS.length; j++)
             {
-                const uniformParser = uniformBufferParsers[j];
+                const uniformParser = UNIFORM_BUFFER_PARSERS[j];
 
                 if (uniformParser.test(uboElement.data))
                 {
@@ -37,7 +37,7 @@ export function generateUniformBufferSyncPolyfill(
 
                     o += offset - prev;
 
-                    uniformBufferParsers[j].exec(name, uv, data, o, v);
+                    UNIFORM_BUFFER_PARSERS[j].exec(name, uv, data, o, v);
 
                     executed = true;
 
