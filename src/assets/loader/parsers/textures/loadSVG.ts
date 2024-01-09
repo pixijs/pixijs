@@ -29,7 +29,7 @@ export interface LoadSVGConfig
      * When set to `true`, loading and decoding images will happen with `new Image()`,
      * @default false
      */
-    preferSVGGraphics: boolean;
+    parseAsGraphicsContext: boolean;
 }
 
 /**
@@ -54,7 +54,7 @@ export const loadSvg = {
 
     config: {
         crossOrigin: 'anonymous',
-        preferSVGGraphics: false,
+        parseAsGraphicsContext: false,
     },
 
     test(url: string): boolean
@@ -64,7 +64,7 @@ export const loadSvg = {
 
     async load(url: string, asset: ResolvedAsset<TextureSourceOptions>, loader: Loader): Promise<Texture | GraphicsContext>
     {
-        if (this.config.preferSVGGraphics)
+        if (asset.parseAsGraphicsContext ?? this.config.parseAsGraphicsContext)
         {
             return loadAsGraphics(url);
         }
