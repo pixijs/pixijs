@@ -554,6 +554,8 @@ export class FilterSystem implements System
             state: filter._state,
             topology: 'triangle-list'
         });
+
+        renderer.renderTarget.finishRenderPass();
     }
 
     private _getFilterData(): FilterData

@@ -99,6 +99,8 @@ export class GlContextSystem implements System<ContextSystemOptions>
         nonPowOf2wrapping: true,
         /** Support for MSAA (antialiasing of dynamic textures) */
         msaa: true,
+        /** Support for mipmaps if a texture is non-power of two */
+        nonPowOf2mipmaps: true,
     };
 
     /**
@@ -276,6 +278,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
                 floatTextureLinear: gl.getExtension('OES_texture_float_linear'),
                 textureHalfFloat: gl.getExtension('OES_texture_half_float'),
                 textureHalfFloatLinear: gl.getExtension('OES_texture_half_float_linear'),
+                vertexAttribDivisorANGLE: gl.getExtension('ANGLE_instanced_arrays'),
                 srgb: gl.getExtension('EXT_sRGB'),
             };
         }
@@ -350,6 +353,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
         supports.vertexArrayObject = isWebGl2 || !!extensions.vertexArrayObject;
         supports.srgbTextures = isWebGl2 || !!extensions.srgb;
         supports.nonPowOf2wrapping = isWebGl2;
+        supports.nonPowOf2mipmaps = isWebGl2;
         supports.msaa = isWebGl2;
 
         if (!supports.uint32Indices)

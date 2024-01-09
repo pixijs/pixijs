@@ -197,11 +197,15 @@ export class GpuEncoderSystem implements System
 
         if (geometry.indexBuffer)
         {
-            this.renderPassEncoder.drawIndexed(size || geometry.indexBuffer.data.length, instanceCount || 1, start || 0);
+            this.renderPassEncoder.drawIndexed(
+                size || geometry.indexBuffer.data.length,
+                instanceCount || geometry.instanceCount,
+                start || 0
+            );
         }
         else
         {
-            this.renderPassEncoder.draw(size || geometry.getSize(), instanceCount || 1, start || 0);
+            this.renderPassEncoder.draw(size || geometry.getSize(), instanceCount || geometry.instanceCount, start || 0);
         }
     }
 

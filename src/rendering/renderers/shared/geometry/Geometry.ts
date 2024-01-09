@@ -17,16 +17,16 @@ export interface Attribute
 {
     /** the buffer that this attributes data belongs to */
     buffer: Buffer;
-    /** the stride of the data in the buffer*/
-    stride: number;
-    /** the offset of the attribute from the buffer */
-    offset: number;
     /** the format of the attribute */
     format: VertexFormat;
-    /** is this an instanced buffer? (defaults to false) */
-    instance?: boolean;
     /** set where the shader location is for this attribute */
     shaderLocation: number; // TODO - auto assign this move this?? introspection??
+    /** the stride of the data in the buffer*/
+    stride?: number;
+    /** the offset of the attribute from the buffer, defaults to 0 */
+    offset?: number;
+    /** is this an instanced buffer? (defaults to false) */
+    instance?: boolean;
     /**  The number of elements to be rendered. If not specified, all vertices after the starting vertex will be drawn. */
     size?: number;
     /** the type of attribute  */
@@ -59,6 +59,8 @@ export interface GeometryDescriptor
     indexBuffer?: Buffer | TypedArray | number[];
     /** the topology of the geometry, defaults to 'triangle-list' */
     topology?: Topology;
+
+    instanceCount?: number;
 }
 
 /**
@@ -118,10 +120,8 @@ export class Geometry extends EventEmitter<{
      */
     public _layoutKey = 0;
 
-    /** true if the geometry is instanced */
-    public instanced: boolean;
     /** the instance count of the geometry to draw */
-    public instanceCount: number;
+    public instanceCount = 1;
 
     private readonly _bounds: Bounds = new Bounds();
     private _boundsDirty = true;
@@ -138,6 +138,8 @@ export class Geometry extends EventEmitter<{
 
         this.attributes = attributes as Record<string, Attribute>;
         this.buffers = [];
+
+        this.instanceCount = options.instanceCount || 1;
 
         for (const i in attributes)
         {

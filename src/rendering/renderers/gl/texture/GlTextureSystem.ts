@@ -193,7 +193,7 @@ export class GlTextureSystem implements System, CanvasGenerator
         glTexture.internalFormat = this._mapFormatToInternalFormat[source.format];
         glTexture.format = this._mapFormatToFormat[source.format];
 
-        if (source.autoGenerateMipmaps)
+        if (source.autoGenerateMipmaps && (this._renderer.context.supports.nonPowOf2mipmaps || source.isPowerOfTwo))
         {
             const biggestDimension = Math.max(source.width, source.height);
 

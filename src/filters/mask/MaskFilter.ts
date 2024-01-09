@@ -10,9 +10,10 @@ import source from './mask.wgsl';
 
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { Sprite } from '../../scene/sprite/Sprite';
+import type { FilterOptions } from '../Filter';
 import type { FilterSystem } from '../FilterSystem';
 
-export interface MaskFilterOptions
+export interface MaskFilterOptions extends FilterOptions
 {
     sprite: Sprite,
     scale?: number | { x: number, y: number },
@@ -23,8 +24,10 @@ export class MaskFilter extends Filter
     public sprite: Sprite;
     private readonly _textureMatrix: TextureMatrix;
 
-    constructor({ sprite }: MaskFilterOptions)
+    constructor(options: MaskFilterOptions)
     {
+        const { sprite, ...rest } = options;
+
         const textureMatrix = new TextureMatrix(sprite.texture);
 
         const filterUniforms = new UniformGroup({
@@ -51,12 +54,13 @@ export class MaskFilter extends Filter
         });
 
         super({
+            ...rest,
             gpuProgram,
             glProgram,
             resources: {
                 filterUniforms,
                 uMaskTexture: sprite.texture.source,
-            }
+            },
         });
 
         this.sprite = sprite;

@@ -1,9 +1,7 @@
 import { Assets } from '../../../../src/assets/Assets';
 import { AlphaFilter } from '../../../../src/filters/defaults/alpha/AlphaFilter';
 import { Sprite } from '../../../../src/scene/sprite/Sprite';
-import { basePath } from '../../../assets/basePath';
 
-import type { Texture } from '../../../../src/rendering/renderers/shared/texture/Texture';
 import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
 
@@ -12,24 +10,20 @@ export const scene: TestScene = {
     pixelMatch: 200,
     create: async (scene: Container) =>
     {
-        const texture = await Assets.load<Texture>({
-            src: `${basePath}textures/bunny.png`,
-            data: {
-                resolution: 1,
+        const textures = await Assets.load([
+            `bunny.png`,
+            'bunny.1.png',
+            {
+                src: `profile-abel@2x.jpg`,
+                data: {
+                    resolution: 1,
+                }
             }
-        });
-        const texture2 = await Assets.load<Texture>({
-            src: `${basePath}textures/bunny.1.png`,
-            data: {
-                resolution: 1,
-            }
-        });
-        const texture3 = await Assets.load<Texture>({
-            src: `${basePath}textures/profile-abel@2x.jpg`,
-            data: {
-                resolution: 1,
-            }
-        });
+        ]);
+
+        const texture = textures[`bunny.png`];
+        const texture2 = textures[`bunny.1.png`];
+        const texture3 = textures[`profile-abel@2x.jpg`];
 
         texture2.source.style.scaleMode = 'nearest';
 
