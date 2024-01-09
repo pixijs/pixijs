@@ -140,7 +140,7 @@ export class Filter extends Shader
         blendMode: 'normal',
         resolution: 1,
         padding: 0,
-        antialias: 'inherit',
+        antialias: 'off',
         blendRequired: false,
     };
 
@@ -199,7 +199,7 @@ export class Filter extends Shader
         }
         else
         {
-            this.antialias = options.antialias ?? 'inherit';
+            this.antialias = options.antialias;
         }
 
         this.resolution = options.resolution;
