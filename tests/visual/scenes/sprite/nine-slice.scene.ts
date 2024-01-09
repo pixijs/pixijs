@@ -6,7 +6,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render a nine slice sprite correctly',
-    only: true,
     create: async (scene: Container) =>
     {
         const texture = await Assets.load('big-rect-button-border.png');
