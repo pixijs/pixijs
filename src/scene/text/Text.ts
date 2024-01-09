@@ -58,7 +58,7 @@ const map = {
 export interface TextOptions extends ContainerOptions
 {
     /** The anchor point of the text. */
-    anchor?: PointLike,
+    anchor?: PointData,
     /** The copy for the text object. To split a line you can use '\n'. */
     text?: TextString;
     /** the render mode - `canvas` renders to a single canvas, `html` renders using css, `bitmap` uses a bitmap font */

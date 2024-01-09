@@ -26,8 +26,6 @@ export interface BlurFilterOptions extends FilterOptions
      * @default 4
      */
     quality?: number;
-    /** The resolution of the blur filter. */
-    resolution?: number;
     /**
      * The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      * @default 5
