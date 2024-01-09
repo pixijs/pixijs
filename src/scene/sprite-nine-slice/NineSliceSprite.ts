@@ -254,6 +254,16 @@ export class NineSliceSprite extends Container implements View
         return this._texture.textureMatrix.mapCoord;
     }
 
+    get originalWidth()
+    {
+        return this._texture.width;
+    }
+
+    get originalHeight()
+    {
+        return this._texture.height;
+    }
+
     /**
      * @internal
      */
@@ -338,6 +348,7 @@ export class NineSlicePlane extends NineSliceSprite
                 bottomHeight: args[4],
             };
         }
+
         deprecation(v8_0_0, 'NineSlicePlane is deprecated. Use NineSliceSprite instead.');
         super(options);
     }

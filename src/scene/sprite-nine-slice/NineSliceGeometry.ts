@@ -61,20 +61,26 @@ export class NineSliceGeometry extends PlaneGeometry
 
     public update(options: NineSliceGeometryOptions)
     {
-        this.updateUvs(options);
-        this.updatePositions(options);
-    }
-
-    public updatePositions(options: NineSliceGeometryOptions)
-    {
         this.width = options.width ?? this.width;
         this.height = options.height ?? this.height;
-
+        this._originalWidth = options.originalWidth ?? this._originalWidth;
+        this._originalHeight = options.originalHeight ?? this._originalHeight;
         this._leftWidth = options.leftWidth ?? this._leftWidth;
         this._rightWidth = options.rightWidth ?? this._rightWidth;
         this._topHeight = options.topHeight ?? this._topHeight;
         this._bottomHeight = options.bottomHeight ?? this._bottomHeight;
 
+        if (options.textureMatrix)
+        {
+            this._textureMatrix.copyFrom(options.textureMatrix);
+        }
+
+        this.updateUvs();
+        this.updatePositions();
+    }
+
+    public updatePositions()
+    {
         const positions = this.positions;
 
         const w = this._leftWidth + this._rightWidth;
@@ -96,20 +102,8 @@ export class NineSliceGeometry extends PlaneGeometry
         this.getBuffer('aPosition').update();
     }
 
-    public updateUvs(options: NineSliceGeometryOptions)
+    public updateUvs()
     {
-        this._originalWidth = options.originalWidth ?? this._originalWidth;
-        this._originalHeight = options.originalHeight ?? this._originalHeight;
-        this._leftWidth = options.leftWidth ?? this._leftWidth;
-        this._rightWidth = options.rightWidth ?? this._rightWidth;
-        this._topHeight = options.topHeight ?? this._topHeight;
-        this._bottomHeight = options.bottomHeight ?? this._bottomHeight;
-
-        if (options.textureMatrix)
-        {
-            this._textureMatrix.copyFrom(options.textureMatrix);
-        }
-
         const textureMatrix = this._textureMatrix;
 
         const uvs = this.uvs;
