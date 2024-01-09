@@ -1,6 +1,6 @@
 import { RenderTexture } from '../../src/rendering/renderers/shared/texture/RenderTexture';
 import { Container } from '../../src/scene/container/Container';
-import { getRenderer } from '../utils/getRenderer';
+import { getWebGLRenderer } from '../utils/getRenderer';
 
 import type { WebGLRenderer } from '../../src/rendering/renderers/gl/WebGLRenderer';
 
@@ -8,7 +8,7 @@ describe('GlBackBufferSystem', () =>
 {
     it('should activate only when the target is a canvas element (rather than a render texture)', async () =>
     {
-        const renderer = await getRenderer({}) as WebGLRenderer;
+        const renderer = await getWebGLRenderer({}) as WebGLRenderer;
         const container = new Container();
 
         renderer.backBuffer.useBackBuffer = false;
@@ -44,7 +44,7 @@ describe('GlBackBufferSystem', () =>
 
     it('should deactivate antialiasing if active', async () =>
     {
-        const renderer = await getRenderer({ antialias: true, useBackBuffer: true }) as WebGLRenderer;
+        const renderer = await getWebGLRenderer({ antialias: true, useBackBuffer: true }) as WebGLRenderer;
 
         const container = new Container();
 

@@ -1,4 +1,5 @@
 import { Polygon } from '../../../maths/shapes/Polygon';
+import { Geometry } from '../../../rendering/renderers/shared/geometry/Geometry';
 import { State } from '../../../rendering/renderers/shared/state/State';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
@@ -39,8 +40,8 @@ export interface TextureShader extends Shader
  * @memberof scene
  */
 export interface MeshOptions<
-    GEOMETRY extends MeshGeometry = MeshGeometry,
-    SHADER extends TextureShader = TextureShader
+    GEOMETRY extends Geometry = MeshGeometry,
+    SHADER extends Shader = TextureShader
 > extends ContainerOptions
 {
     /**
@@ -75,8 +76,8 @@ export interface MeshOptions<
  * @memberof scene
  */
 export class Mesh<
-    GEOMETRY extends MeshGeometry = MeshGeometry,
-    SHADER extends TextureShader = TextureShader
+    GEOMETRY extends Geometry = MeshGeometry,
+    SHADER extends Shader = TextureShader
 > extends Container implements View, Instruction
 {
     public readonly renderPipeId = 'mesh';
@@ -99,7 +100,7 @@ export class Mesh<
     {
         let options = args[0];
 
-        if (options instanceof MeshGeometry)
+        if (options instanceof Geometry)
         {
             deprecation(v8_0_0, 'Mesh: use new Mesh({ geometry, shader }) instead');
 
@@ -115,7 +116,7 @@ export class Mesh<
             }
         }
 
-        const { geometry, shader, texture, ...rest } = options;
+        const { geometry, shader, texture, roundPixels, ...rest } = options;
 
         super({
             label: 'Mesh',
@@ -125,10 +126,12 @@ export class Mesh<
         this.allowChildren = false;
 
         this.shader = shader;
-        this.texture = texture ?? shader?.texture ?? Texture.WHITE;
+        this.texture = texture ?? (shader as unknown as TextureShader)?.texture ?? Texture.WHITE;
 
         this._geometry = geometry;
         this._geometry.on('update', this.onViewUpdate, this);
+
+        this.roundPixels = roundPixels ?? false;
     }
 
     /** Whether or not to round the x/y position of the mesh. */
@@ -195,7 +198,7 @@ export class Mesh<
 
         if (this.shader)
         {
-            this.shader.texture = value;
+            (this.shader as unknown as TextureShader).texture = value;
         }
 
         this._texture = value;
@@ -211,12 +214,17 @@ export class Mesh<
     {
         if (this._shader) return false;
 
-        if (this._geometry.batchMode === 'auto')
+        if (this._geometry instanceof MeshGeometry)
         {
-            return this._geometry.positions.length / 2 <= 100;
+            if (this._geometry.batchMode === 'auto')
+            {
+                return this._geometry.positions.length / 2 <= 100;
+            }
+
+            return this._geometry.batchMode === 'batch';
         }
 
-        return this._geometry.batchMode === 'batch';
+        return false;
     }
 
     get bounds()
@@ -226,7 +234,7 @@ export class Mesh<
 
     public addBounds(bounds: Bounds)
     {
-        bounds.addVertexData(this.geometry.positions, 0, this.geometry.positions.length);
+        bounds.addBounds(this.geometry.bounds);
     }
 
     public containsPoint(point: PointData)

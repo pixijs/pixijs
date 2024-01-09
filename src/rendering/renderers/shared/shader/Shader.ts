@@ -62,7 +62,7 @@ interface ShaderWithResourcesDescriptor
      * the resources are mapped. Its up to you to make sure the resource key
      * matches the uniform name in the webGPU program. WebGL is a little more forgiving!
      */
-    resources: Record<string, any>;
+    resources?: Record<string, any>;
 }
 
 interface GroupsData
@@ -168,6 +168,7 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
      * @ignore
      */
     public _uniformBindMap: Record<number, Record<number, string>> = Object.create(null);
+    private readonly _ownedBindGroups: BindGroup[] = [];
 
     /**
      * Fired after rendering finishes.
@@ -216,13 +217,14 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
 
         const nameHash: Record<string, GroupsData> = {};
 
+        if (!resources && !groups)
+        {
+            resources = {};
+        }
+
         if (resources && groups)
         {
             throw new Error('[Shader] Cannot have both resources and groups');
-        }
-        else if (!resources && !groups)
-        {
-            throw new Error('[Shader] Must provide either resources or groups descriptor');
         }
         else if (!gpuProgram && groups && !groupMap)
         {
@@ -267,6 +269,8 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
                 groups = {
                     99: new BindGroup(),
                 };
+
+                this._ownedBindGroups.push(groups[99]);
 
                 let bindTick = 0;
 
@@ -314,7 +318,12 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
 
                 if (data)
                 {
-                    groups[data.group] = groups[data.group] || new BindGroup();
+                    if (!groups[data.group])
+                    {
+                        groups[data.group] = new BindGroup();
+
+                        this._ownedBindGroups.push(groups[data.group]);
+                    }
 
                     groups[data.group].setResource(value, data.binding);
                 }
@@ -340,7 +349,11 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
 
         this._uniformBindMap[groupIndex][bindIndex] ||= name;
 
-        this.groups[groupIndex] ||= new BindGroup();
+        if (!this.groups[groupIndex])
+        {
+            this.groups[groupIndex] = new BindGroup();
+            this._ownedBindGroups.push(this.groups[groupIndex]);
+        }
     }
 
     private _buildResourceAccessor(groups: ShaderGroups, nameHash: Record<string, GroupsData>)
@@ -386,13 +399,19 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
         this.gpuProgram = null;
         this.glProgram = null;
 
-        this.groups = null;
-
         this.removeAllListeners();
 
         this._uniformBindMap = null;
 
+        this._ownedBindGroups.forEach((bindGroup) =>
+        {
+            bindGroup.destroy();
+        });
+
+        (this._ownedBindGroups as null) = null;
+
         this.resources = null;
+        this.groups = null;
     }
 
     /**

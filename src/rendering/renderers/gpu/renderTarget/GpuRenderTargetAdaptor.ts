@@ -211,9 +211,11 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         {
             if (CanvasSource.test(colorTexture.resource))
             {
-                const context = renderTarget.colorTexture.resource.getContext(
+                const context = colorTexture.resource.getContext(
                     'webgpu'
                 ) as unknown as GPUCanvasContext;
+
+                const alphaMode = (colorTexture as CanvasSource).transparent ? 'premultiplied' : 'opaque';
 
                 try
                 {
@@ -225,7 +227,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                             | GPUTextureUsage.RENDER_ATTACHMENT
                             | GPUTextureUsage.COPY_SRC,
                         format: 'bgra8unorm',
-                        alphaMode: 'opaque',
+                        alphaMode,
                     });
                 }
                 catch (e)

@@ -98,7 +98,6 @@
                     }
                 ],
                 "dot-notation": 0,
-                "jest/no-disabled-tests": "off",
                 "jest/no-conditional-expect": "off",
                 "jest/no-standalone-expect": "off",
                 "jest/expect-expect": [

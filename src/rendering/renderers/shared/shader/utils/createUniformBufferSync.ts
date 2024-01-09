@@ -1,7 +1,7 @@
 /* eslint-disable quote-props */
 import { WGSL_TO_STD40_SIZE } from './createUBOElements';
 import { UBO_TO_SINGLE_SETTERS } from './createUniformBufferSyncTypes';
-import { uniformBufferParsers } from './uniformBufferParsers';
+import { UNIFORM_BUFFER_PARSERS } from './uniformBufferParsers';
 
 import type { UBOElement } from './createUBOElements';
 import type { UBO_TYPE, UniformsSyncCallback } from './createUniformBufferSyncTypes';
@@ -29,9 +29,9 @@ export function generateUniformBufferSync(
         let parsed = false;
         let offset = 0;
 
-        for (let j = 0; j < uniformBufferParsers.length; j++)
+        for (let j = 0; j < UNIFORM_BUFFER_PARSERS.length; j++)
         {
-            const uniformParser = uniformBufferParsers[j];
+            const uniformParser = UNIFORM_BUFFER_PARSERS[j];
 
             if (uniformParser.test(uboElement.data))
             {
@@ -40,7 +40,7 @@ export function generateUniformBufferSync(
                 funcFragments.push(
                     `name = "${name}";`,
                     `offset += ${offset - prev};`,
-                    uniformBufferParsers[j].code);
+                    UNIFORM_BUFFER_PARSERS[j].code);
                 parsed = true;
 
                 break;
