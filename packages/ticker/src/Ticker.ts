@@ -1,7 +1,9 @@
 import { UPDATE_PRIORITY } from './const';
 import { TickerListener } from './TickerListener';
 
-export type TickerCallback<T> = (this: T, dt: number) => any;
+import type { TickerCallback, TickerListenerContext } from './TickerListener';
+
+export { TickerCallback };
 
 /**
  * A Ticker class that runs an update loop that other objects listen to.
@@ -85,9 +87,9 @@ export class Ticker
     public started = false;
 
     /** The first listener. All new listeners added are chained on this. */
-    private _head: TickerListener;
+    private _head: TickerListener | null;
     /** Internal current frame request ID */
-    private _requestId: number = null;
+    private _requestId: number | null = null;
     /**
      * Internal value managed by minFPS property setter and getter.
      * This is the maximum allowed milliseconds between updates.
@@ -128,7 +130,7 @@ export class Ticker
                 // Invoke listeners now
                 this.update(time);
                 // Listener side effects may have modified ticker state.
-                if (this.started && this._requestId === null && this._head.next)
+                if (this.started && this._requestId === null && this._head?.next)
                 {
                     this._requestId = requestAnimationFrame(this._tick);
                 }
@@ -144,7 +146,7 @@ export class Ticker
      */
     private _requestIfNeeded(): void
     {
-        if (this._requestId === null && this._head.next)
+        if (this._requestId === null && this._head?.next)
         {
             // ensure callbacks get correct delta
             this.lastTime = performance.now();
@@ -195,7 +197,11 @@ export class Ticker
      * @param {number} [priority=PIXI.UPDATE_PRIORITY.NORMAL] - The priority for emitting
      * @returns This instance of a ticker
      */
-    add<T = any>(fn: TickerCallback<T>, context?: T, priority = UPDATE_PRIORITY.NORMAL): this
+    add<T extends TickerListenerContext = null>(
+        fn: TickerCallback<T>,
+        context?: T,
+        priority = UPDATE_PRIORITY.NORMAL
+    ): this
     {
         return this._addListener(new TickerListener(fn, context, priority));
     }
@@ -207,7 +213,11 @@ export class Ticker
      * @param {number} [priority=PIXI.UPDATE_PRIORITY.NORMAL] - The priority for emitting
      * @returns This instance of a ticker
      */
-    addOnce<T = any>(fn: TickerCallback<T>, context?: T, priority = UPDATE_PRIORITY.NORMAL): this
+    addOnce<T extends TickerListenerContext = null>(
+        fn: TickerCallback<T>,
+        context?: T,
+        priority = UPDATE_PRIORITY.NORMAL
+    ): this
     {
         return this._addListener(new TickerListener(fn, context, priority, true));
     }
@@ -220,8 +230,13 @@ export class Ticker
      * @param listener - Current listener being added.
      * @returns This instance of a ticker
      */
-    private _addListener(listener: TickerListener): this
+    private _addListener<T extends TickerListenerContext>(listener: TickerListener<T>): this
     {
+        if (!this._head)
+        {
+            return this;
+        }
+
         // For attaching to head
         let current = this._head.next;
         let previous = this._head;
@@ -264,8 +279,13 @@ export class Ticker
      * @param context - The listener context to be removed
      * @returns This instance of a ticker
      */
-    remove<T = any>(fn: TickerCallback<T>, context?: T): this
+    remove<T extends TickerListenerContext = null>(fn: TickerCallback<T>, context?: T): this
     {
+        if (!this._head)
+        {
+            return this;
+        }
+
         let listener = this._head.next;
 
         while (listener)
@@ -304,7 +324,7 @@ export class Ticker
         }
 
         let count = 0;
-        let current = this._head;
+        let current: TickerListener | null = this._head;
 
         while ((current = current.next))
         {
@@ -337,7 +357,7 @@ export class Ticker
     /** Destroy the ticker and don't use after this. Calling this method removes all references to internal events. */
     destroy(): void
     {
-        if (!this._protected)
+        if (!this._protected && this._head)
         {
             this.stop();
 
@@ -418,6 +438,11 @@ export class Ticker
             // Cache a local reference, in-case ticker is destroyed
             // during the emit, we can still check for head.next
             const head = this._head;
+
+            if (!head)
+            {
+                return;
+            }
 
             // Invoke listeners added to internal emitter
             let listener = head.next;

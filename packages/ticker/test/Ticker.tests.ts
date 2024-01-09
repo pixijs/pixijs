@@ -1,5 +1,7 @@
 import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
 
+import type { TickerListener } from '../src/TickerListener';
+
 const { shared, system } = Ticker;
 
 describe('Ticker', () =>
@@ -17,7 +19,7 @@ describe('Ticker', () =>
                 return 0;
             }
 
-            let listener = ticker['_head'].next;
+            let listener: TickerListener | null = ticker['_head'].next;
             let i = 0;
 
             while (listener)
