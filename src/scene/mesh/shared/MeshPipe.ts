@@ -200,8 +200,8 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<MeshInstructi
     {
         this._meshDataHash[mesh.uid] = {
             batched: mesh.batched,
-            indexSize: mesh._geometry.indices.length,
-            vertexSize: mesh._geometry.positions.length,
+            indexSize: mesh._geometry.indices?.length,
+            vertexSize: mesh._geometry.positions?.length,
         };
 
         mesh.on('destroyed', () =>
