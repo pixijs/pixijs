@@ -12,7 +12,7 @@ import type { FilterOptions } from '../../Filter';
  * Options for AlphaFilter
  * @memberof filters
  */
-export interface AlphaFilterOptions
+export interface AlphaFilterOptions extends FilterOptions
 {
     /**
      * Amount of alpha from 0 to 1, where 0 is transparent
@@ -37,8 +37,7 @@ export interface AlphaFilterOptions
  */
 export class AlphaFilter extends Filter
 {
-    public static readonly defaultOptions: AlphaFilterOptions & Partial<FilterOptions> = {
-        ...Filter.defaultOptions,
+    public static readonly defaultOptions: AlphaFilterOptions = {
         alpha: 1,
     };
 
@@ -63,16 +62,19 @@ export class AlphaFilter extends Filter
             name: 'alpha-filter'
         });
 
+        const { alpha, ...rest } = options;
+
         const alphaUniforms = new UniformGroup({
-            uAlpha: { value: options.alpha, type: 'f32' },
+            uAlpha: { value: alpha, type: 'f32' },
         });
 
         super({
+            ...rest,
             gpuProgram,
             glProgram,
             resources: {
                 alphaUniforms
-            }
+            },
         });
     }
 

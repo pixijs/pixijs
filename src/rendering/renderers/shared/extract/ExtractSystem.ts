@@ -24,6 +24,7 @@ export interface BaseExtractOptions
     frame?: Rectangle;
     resolution?: number;
     clearColor?: ColorSource;
+    antialias?: boolean;
 }
 export type ExtractImageOptions = BaseExtractOptions & ImageOptions;
 export type ExtractDownloadOptions = BaseExtractOptions & {
@@ -150,17 +151,17 @@ export class ExtractSystem implements System
         const target = options.target;
 
         const renderer = this._renderer;
-        const texture = target instanceof Texture
-            ? target
-            : renderer.textureGenerator.generateTexture(options as GenerateTextureOptions);
+
+        if (target instanceof Texture)
+        {
+            return renderer.texture.generateCanvas(target);
+        }
+
+        const texture = renderer.textureGenerator.generateTexture(options as GenerateTextureOptions);
 
         const canvas = renderer.texture.generateCanvas(texture);
 
-        if (target instanceof Container)
-        {
-            // destroy generated texture
-            texture.destroy();
-        }
+        texture.destroy();
 
         return canvas;
     }
