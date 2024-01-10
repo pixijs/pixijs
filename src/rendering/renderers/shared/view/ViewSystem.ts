@@ -7,7 +7,7 @@ import { getCanvasTexture } from '../texture/utils/getCanvasTexture';
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { TypeOrBool } from '../../../../scene/container/destroyTypes';
 import type { System } from '../system/System';
-import type { CanvasSourceOptions } from '../texture/sources/CanvasSource';
+import type { CanvasSource, CanvasSourceOptions } from '../texture/sources/CanvasSource';
 import type { Texture } from '../texture/Texture';
 
 /** Options passed to the ViewSystem */
@@ -29,6 +29,8 @@ export interface ViewSystemOptions
     antialias?: boolean;
     /** TODO: multiView */
     multiView?: boolean;
+
+    backgroundAlpha?: number;
 }
 
 export interface ViewSystemDestroyOptions
@@ -131,6 +133,7 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
         this.canvas = options.canvas || DOMAdapter.get().createCanvas();
         this.antialias = !!options.antialias;
         this.texture = getCanvasTexture(this.canvas, options as CanvasSourceOptions);
+        (this.texture.source as CanvasSource).transparent = options.backgroundAlpha < 1;
         this.multiView = !!options.multiView;
 
         if (this.autoDensity)

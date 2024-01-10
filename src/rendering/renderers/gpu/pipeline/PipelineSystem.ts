@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { getUniformInfoFromFormat } from '../../shared/shader/utils/getUniformInfoFromFormat';
 import { STENCIL_MODES } from '../../shared/state/const';
 import { createIdFromString } from '../../shared/utils/createIdFromString';
 import { GpuStencilModesToPixi } from '../state/GpuStencilModesToPixi';
@@ -260,7 +261,11 @@ export class PipelineSystem implements System
 
                 if (attribute.buffer === buffer)
                 {
+                    attribute.offset ||= 0;
+                    attribute.stride ||= getUniformInfoFromFormat(attribute.format).stride;
+
                     bufferEntry.arrayStride = attribute.stride;
+                    bufferEntry.stepMode = attribute.instance ? 'instance' : 'vertex';
 
                     bufferEntryAttributes.push({
                         shaderLocation: attribute.shaderLocation,

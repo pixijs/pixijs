@@ -20,7 +20,7 @@ export interface SpriteOptions extends ContainerOptions
     /** The texture to use for the sprite. */
     texture?: Texture;
     /** The anchor point of the sprite. */
-    anchor?: PointLike
+    anchor?: PointData
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }

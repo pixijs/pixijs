@@ -12,13 +12,14 @@ import source from './displacement.wgsl';
 
 import type { PointData } from '../../../maths/point/PointData';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
+import type { FilterOptions } from '../../Filter';
 import type { FilterSystem } from '../../FilterSystem';
 
 /**
  * Options for DisplacementFilter
  * @memberof filters
  */
-export interface DisplacementFilterOptions
+export interface DisplacementFilterOptions extends FilterOptions
 {
     /** The texture used for the displacement map. */
     sprite: Sprite,
@@ -54,7 +55,9 @@ export class DisplacementFilter extends Filter
             options = { sprite: options, scale: args[1] };
         }
 
-        let scale = options.scale ?? 20;
+        const { sprite, scale: scaleOption, ...rest } = options;
+
+        let scale = scaleOption ?? 20;
 
         // check if is a number or a point
         if (typeof scale === 'number')
@@ -85,16 +88,17 @@ export class DisplacementFilter extends Filter
             },
         });
 
-        const textureSource = options.sprite.texture.source;
+        const textureSource = sprite.texture.source;
 
         super({
+            ...rest,
             gpuProgram,
             glProgram,
             resources: {
                 filterUniforms,
                 uMapTexture: textureSource,
                 uMapSampler: textureSource.style,
-            }
+            },
         });
 
         this._sprite = options.sprite;

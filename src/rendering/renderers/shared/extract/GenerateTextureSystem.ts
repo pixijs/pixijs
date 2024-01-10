@@ -28,6 +28,8 @@ export type GenerateTextureOptions =
 
     clearColor?: ColorSource;
 
+    antialias?: boolean;
+
     /** The options passed to the texture source. */
     textureSourceOptions?: GenerateTextureSourceOptions,
 };
@@ -81,6 +83,7 @@ export class GenerateTextureSystem implements System
         }
 
         const resolution = options.resolution || this._renderer.resolution;
+        const antialias = options.antialias || this._renderer.view.antialias;
 
         const container = options.target;
 
@@ -108,6 +111,7 @@ export class GenerateTextureSystem implements System
             width: region.width,
             height: region.height,
             resolution,
+            antialias,
         });
 
         const transform = Matrix.shared.translate(-region.x, -region.y);

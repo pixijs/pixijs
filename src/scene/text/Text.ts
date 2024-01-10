@@ -58,7 +58,7 @@ const map = {
 export interface TextOptions extends ContainerOptions
 {
     /** The anchor point of the text. */
-    anchor?: PointLike,
+    anchor?: PointData,
     /** The copy for the text object. To split a line you can use '\n'. */
     text?: TextString;
     /** the render mode - `canvas` renders to a single canvas, `html` renders using css, `bitmap` uses a bitmap font */
@@ -177,6 +177,11 @@ export class Text extends Container implements View
         this._renderMode = renderMode ?? detectRenderType(style);
 
         this.style = style;
+
+        if (this._renderMode === 'bitmap')
+        {
+            this.style.fill ??= 0xffffff;
+        }
 
         this.renderPipeId = map[this._renderMode];
 

@@ -58,7 +58,7 @@ export class GlEncoderSystem implements System
             renderer.state.set(state);
         }
 
-        renderer.geometry.draw(type, size, start, instanceCount);
+        renderer.geometry.draw(type, size, start, instanceCount ?? geometry.instanceCount);
     }
 
     public destroy()

@@ -1,6 +1,7 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { warn } from '../../../../utils/logging/warn';
-import { getGlInfoFromFormat } from './utils/getGlInfoFromFormat';
+import { getUniformInfoFromFormat } from '../../shared/shader/utils/getUniformInfoFromFormat';
+import { getGlTypeFromFormat } from './utils/getGlTypeFromFormat';
 
 import type { Topology } from '../../shared/geometry/const';
 import type { Geometry } from '../../shared/geometry/Geometry';
@@ -94,6 +95,24 @@ export class GlGeometrySystem implements System
 
             gl.deleteVertexArray = (vao): void =>
                 nativeVaoExtension.deleteVertexArrayOES(vao);
+        }
+
+        const nativeInstancedExtension = this._renderer.context.extensions.vertexAttribDivisorANGLE;
+
+        if (nativeInstancedExtension)
+        {
+            gl.drawArraysInstanced = (a, b, c, d): void =>
+            {
+                nativeInstancedExtension.drawArraysInstancedANGLE(a, b, c, d);
+            };
+
+            gl.drawElementsInstanced = (a, b, c, d, e): void =>
+            {
+                nativeInstancedExtension.drawElementsInstancedANGLE(a, b, c, d, e);
+            };
+
+            gl.vertexAttribDivisor = (a, b): void =>
+                nativeInstancedExtension.vertexAttribDivisorANGLE(a, b);
         }
     }
 
@@ -412,12 +431,12 @@ export class GlGeometrySystem implements System
                 // we can optimise this for older devices that have no VAOs
                 gl.enableVertexAttribArray(location);
 
-                const glInfo = getGlInfoFromFormat(attribute.format);
+                const uniformInfo = getUniformInfoFromFormat(attribute.format);
 
                 gl.vertexAttribPointer(location,
-                    glInfo.size,
-                    glInfo.type, // attribute.type || gl.FLOAT,
-                    glInfo.normalised,
+                    uniformInfo.size,
+                    getGlTypeFromFormat(attribute.format),
+                    uniformInfo.normalised,
                     attribute.stride,
                     attribute.offset);
 
@@ -454,15 +473,17 @@ export class GlGeometrySystem implements System
 
         const glTopology = topologyToGlMap[geometry.topology || topology];
 
+        instanceCount ||= geometry.instanceCount;
+
         if (geometry.indexBuffer)
         {
             const byteSize = geometry.indexBuffer.data.BYTES_PER_ELEMENT;
             const glType = byteSize === 2 ? gl.UNSIGNED_SHORT : gl.UNSIGNED_INT;
 
-            if (geometry.instanced)
+            if (instanceCount > 1)
             {
                 /* eslint-disable max-len */
-                gl.drawElementsInstanced(glTopology, size || geometry.indexBuffer.data.length, glType, (start || 0) * byteSize, geometry.instanceCount || 1);
+                gl.drawElementsInstanced(glTopology, size || geometry.indexBuffer.data.length, glType, (start || 0) * byteSize, instanceCount);
                 /* eslint-enable max-len */
             }
             else
@@ -472,10 +493,10 @@ export class GlGeometrySystem implements System
                 /* eslint-enable max-len */
             }
         }
-        else if (geometry.instanced)
+        else if (instanceCount > 1)
         {
             // TODO need a better way to calculate size..
-            gl.drawArraysInstanced(glTopology, start, size || geometry.getSize(), instanceCount || 1);
+            gl.drawArraysInstanced(glTopology, start, size || geometry.getSize(), instanceCount);
         }
         else
         {

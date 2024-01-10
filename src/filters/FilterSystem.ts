@@ -6,8 +6,9 @@ import { Geometry } from '../rendering/renderers/shared/geometry/Geometry';
 import { UniformGroup } from '../rendering/renderers/shared/shader/UniformGroup';
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { TexturePool } from '../rendering/renderers/shared/texture/TexturePool';
+import { type Renderer, RendererType } from '../rendering/renderers/types';
 import { Bounds } from '../scene/container/bounds/Bounds';
-import { getGlobalBounds } from '../scene/container/bounds/getGlobalBounds';
+import { getFastGlobalBounds } from '../scene/container/bounds/getFastGlobalBounds';
 import { getGlobalRenderableBounds } from '../scene/container/bounds/getRenderableBounds';
 import { warn } from '../utils/logging/warn';
 
@@ -18,7 +19,6 @@ import type { Renderable } from '../rendering/renderers/shared/Renderable';
 import type { RenderTarget } from '../rendering/renderers/shared/renderTarget/RenderTarget';
 import type { RenderSurface } from '../rendering/renderers/shared/renderTarget/RenderTargetSystem';
 import type { System } from '../rendering/renderers/shared/system/System';
-import type { Renderer } from '../rendering/renderers/types';
 import type { Container } from '../scene/container/Container';
 import type { Sprite } from '../scene/sprite/Sprite';
 import type { Filter } from './Filter';
@@ -167,8 +167,7 @@ export class FilterSystem implements System
         // measuring.
         else
         {
-            // TODO - this should use getFastGlobalBounds. But there is an issue with the bounds
-            getGlobalBounds(instruction.container, true, bounds);
+            getFastGlobalBounds(instruction.container, bounds);
         }
         // get GLOBAL bounds of the item we are going to apply the filter to
 
@@ -555,6 +554,12 @@ export class FilterSystem implements System
             state: filter._state,
             topology: 'triangle-list'
         });
+
+        // WebGPU blit's automatically, but WebGL does not!
+        if (renderer.type === RendererType.WEBGL)
+        {
+            renderer.renderTarget.finishRenderPass();
+        }
     }
 
     private _getFilterData(): FilterData
