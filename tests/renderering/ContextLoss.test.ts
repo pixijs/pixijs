@@ -1,82 +1,92 @@
+import { Texture } from '../../src/rendering/renderers/shared/texture/Texture';
+import { Sprite } from '../../src/scene/sprite/Sprite';
+import { getWebGLRenderer } from '../utils/getRenderer';
+
 describe('Context Lose', () =>
 {
-    // it('calling forceContextLoss should reset context', async () =>
-    // {
-    //     const render = await getWebGLRenderer();
+    it('calling forceContextLoss should reset context', async () =>
+    {
+        if (!process.env.CI)
+        {
+            const render = await getWebGLRenderer();
 
-    //     const success = await new Promise((resolve) =>
-    //     {
-    //         render.view.canvas.addEventListener('webglcontextlost', () =>
-    //         {
-    //             resolve(true);
-    //         });
+            const success = await new Promise((resolve) =>
+            {
+                render.view.canvas.addEventListener('webglcontextlost', () =>
+                {
+                    resolve(true);
+                });
 
-    //         // this can take a moment to execute, so wrapping into a promise
-    //         render.context.forceContextLoss();
-    //     });
+                // this can take a moment to execute, so wrapping into a promise
+                render.context.forceContextLoss();
+            });
 
-    //     expect(success).toEqual(true);
-    // });
+            expect(success).toEqual(true);
+        }
+    });
 
-    // it('should null systems that hold things created by the lost context', async () =>
-    // {
-    //     const checkObjectHasEntries = (obj: Record<string, any>): void =>
-    //     {
-    //         expect(Object.keys(obj).length).toBeGreaterThan(0);
-    //     };
+    it('should null systems that hold things created by the lost context', async () =>
+    {
+        if (!process.env.CI)
+        {
+            const checkObjectHasEntries = (obj: Record<string, any>): void =>
+            {
+                expect(Object.keys(obj).length).toBeGreaterThan(0);
+            };
 
-    //     const checkObjectIsEmpty = (obj: Record<string, any>): void =>
-    //     {
-    //         expect(Object.keys(obj).length).toEqual(0);
-    //     };
+            const checkObjectIsEmpty = (obj: Record<string, any>): void =>
+            {
+                expect(Object.keys(obj).length).toEqual(0);
+            };
 
-    //     const render = await getWebGLRenderer();
+            const render = await getWebGLRenderer();
 
-    //     const sprite = new Sprite(Texture.WHITE);
+            const sprite = new Sprite(Texture.WHITE);
 
-    //     render.render(sprite);
+            render.render(sprite);
 
-    //     checkObjectHasEntries(render.buffer['_gpuBuffers']);
+            checkObjectHasEntries(render.buffer['_gpuBuffers']);
 
-    //     checkObjectHasEntries(render.geometry['_geometryVaoHash']);
-    //     expect(render.geometry['_activeGeometry']).not.toBeNull();
-    //     expect(render.geometry['_activeVao']).not.toBeNull();
+            checkObjectHasEntries(render.geometry['_geometryVaoHash']);
+            expect(render.geometry['_activeGeometry']).not.toBeNull();
+            expect(render.geometry['_activeVao']).not.toBeNull();
 
-    //     checkObjectHasEntries(render.shader['_programDataHash']);
-    //     expect(render.shader['_activeProgram']).not.toBeNull();
+            checkObjectHasEntries(render.shader['_programDataHash']);
+            expect(render.shader['_activeProgram']).not.toBeNull();
 
-    //     checkObjectHasEntries(render.texture['_glTextures']);
+            checkObjectHasEntries(render.texture['_glTextures']);
 
-    //     checkObjectHasEntries(render.renderTarget['_gpuRenderTargetHash']);
+            checkObjectHasEntries(render.renderTarget['_gpuRenderTargetHash']);
 
-    //     const success = await new Promise((resolve) =>
-    //     {
-    //         render.view.canvas.addEventListener('webglcontextrestored', () =>
-    //         {
-    //             resolve(true);
-    //         });
+            const success = await new Promise((resolve) =>
+            {
+                render.view.canvas.addEventListener('webglcontextrestored', () =>
+                {
+                    resolve(true);
+                });
 
-    //         // this can take a moment to execute, so wrapping into a promise
-    //         render.context.forceContextLoss();
-    //     });
+                // this can take a moment to execute, so wrapping into a promise
+                render.context.forceContextLoss();
+            });
 
-    //     expect(success).toEqual(true);
+            expect(success).toEqual(true);
 
-    //     checkObjectIsEmpty(render.buffer['_gpuBuffers']);
+            checkObjectIsEmpty(render.buffer['_gpuBuffers']);
 
-    //     checkObjectIsEmpty(render.geometry['_geometryVaoHash']);
+            checkObjectIsEmpty(render.geometry['_geometryVaoHash']);
 
-    //     expect(render.geometry['_activeGeometry']).toBeNull();
+            expect(render.geometry['_activeGeometry']).toBeNull();
 
-    //     expect(render.geometry['_activeVao']).toBeNull();
+            expect(render.geometry['_activeVao']).toBeNull();
 
-    //     checkObjectIsEmpty(render.shader['_programDataHash']);
+            checkObjectIsEmpty(render.shader['_programDataHash']);
 
-    //     expect(render.shader['_activeProgram']).toBeNull();
+            expect(render.shader['_activeProgram']).toBeNull();
 
-    //     // this is one as we have bound an empty texture..
-    //     expect(Object.keys(render.texture['_glTextures']).length).toEqual(1);
+            // this is one as we have bound an empty texture..
+            expect(Object.keys(render.texture['_glTextures']).length).toEqual(1);
 
-    //     checkObjectIsEmpty(render.renderTarget['_gpuRenderTargetHash']);
-    // });
+            checkObjectIsEmpty(render.renderTarget['_gpuRenderTargetHash']);
+        }
+    });
 });
