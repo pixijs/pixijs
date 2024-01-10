@@ -37,7 +37,7 @@ describe('Loader', () =>
 
         const graphicsContext = await loader.load<GraphicsContext>({
             src: `${basePath}svg/logo.svg`,
-            parseAsGraphicsContext: true,
+            data: { parseAsGraphicsContext: true }
         });
 
         expect(graphicsContext.bounds.width).toBe(512);

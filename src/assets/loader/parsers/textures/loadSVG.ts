@@ -62,9 +62,13 @@ export const loadSvg = {
         return checkDataUrl(url, validSVGMIME) || checkExtension(url, validSVGExtension);
     },
 
-    async load(url: string, asset: ResolvedAsset<TextureSourceOptions>, loader: Loader): Promise<Texture | GraphicsContext>
+    async load(
+        url: string,
+        asset: ResolvedAsset<TextureSourceOptions & LoadSVGConfig>,
+        loader: Loader
+    ): Promise<Texture | GraphicsContext>
     {
-        if (asset.parseAsGraphicsContext ?? this.config.parseAsGraphicsContext)
+        if (asset.data.parseAsGraphicsContext ?? this.config.parseAsGraphicsContext)
         {
             return loadAsGraphics(url);
         }
@@ -81,7 +85,7 @@ export const loadSvg = {
 
 async function loadAsTexture(
     url: string,
-    asset: ResolvedAsset<TextureSourceOptions>,
+    asset: ResolvedAsset<TextureSourceOptions & LoadSVGConfig>,
     loader: Loader,
     crossOrigin: HTMLImageElement['crossOrigin']
 ): Promise<Texture>
@@ -114,11 +118,13 @@ async function loadAsTexture(
 
     context.drawImage(image, 0, 0, width * resolution, height * resolution);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { parseAsGraphicsContext: _p, ...rest } = asset.data;
     const base = new ImageSource({
         resource: canvas,
         alphaMode: 'premultiply-alpha-on-upload',
         resolution,
-        ...asset.data,
+        ...rest,
     });
 
     return createTexture(base, loader, url);
