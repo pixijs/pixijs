@@ -3,7 +3,7 @@ import { TickerListener } from './TickerListener';
 
 import type { TickerCallback, TickerListenerContext } from './TickerListener';
 
-export { TickerCallback };
+export type { TickerCallback };
 
 /**
  * A Ticker class that runs an update loop that other objects listen to.

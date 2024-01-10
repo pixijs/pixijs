@@ -1,13 +1,10 @@
-type AnyInstance = Record<string, any>;
+export type TickerListenerContext = Record<string, any> | null;
 
-export type TickerListenerContext = AnyInstance | null;
-
-export type TickerCallback<T> = T extends null ? (dt: number) => any : (this: T, dt: number) => any;
-
-function isAnyInstance(obj: TickerListenerContext): obj is AnyInstance
-{
-    return typeof obj === 'object' && obj !== null;
-}
+export type TickerCallback<
+    T extends TickerListenerContext = TickerListenerContext
+> =
+    | ((deltaTime: number) => void)
+    | (T extends null ? never : (this: T, deltaTime: number) => void);
 
 /**
  * Internal class for handling the priority sorting of ticker handlers.
@@ -52,7 +49,7 @@ export class TickerListener<T extends TickerListenerContext = TickerListenerCont
      * @param context - The listener context
      * @returns `true` if the listener match the arguments
      */
-    match(fn: TickerCallback<T>, context: any = null): boolean
+    match(fn: TickerCallback, context: any = null): boolean
     {
         return this.fn === fn && this.context === context;
     }
@@ -67,7 +64,7 @@ export class TickerListener<T extends TickerListenerContext = TickerListenerCont
     {
         if (this.fn)
         {
-            if (isAnyInstance(this.context))
+            if (this.context !== null)
             {
                 this.fn.call(this.context, deltaTime);
             }
@@ -104,10 +101,10 @@ export class TickerListener<T extends TickerListenerContext = TickerListenerCont
         this.previous = previous;
         if (previous.next)
         {
-            previous.next.previous = this as TickerListener;
+            previous.next.previous = this;
         }
         this.next = previous.next;
-        previous.next = this as TickerListener;
+        previous.next = this;
     }
 
     /**
