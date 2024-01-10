@@ -19,8 +19,8 @@ import type { IGLUniformData } from '../GlProgramData';
  */
 export function generateProgram(gl: GlRenderingContext, program: GlProgram): GlProgramData
 {
-    const glVertShader = compileShader(gl, 35633, program.vertex);
-    const glFragShader = compileShader(gl, 35632, program.fragment);
+    const glVertShader = compileShader(gl, gl.VERTEX_SHADER, program.vertex);
+    const glFragShader = compileShader(gl, gl.FRAGMENT_SHADER, program.fragment);
 
     const webGLProgram = gl.createProgram();
 
