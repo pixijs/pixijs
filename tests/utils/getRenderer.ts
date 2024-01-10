@@ -4,9 +4,8 @@ import '../../src/environment-browser/browserAll';
 
 import type { WebGLOptions } from '../../src/rendering/renderers/gl/WebGLRenderer';
 import type { WebGPUOptions } from '../../src/rendering/renderers/gpu/WebGPURenderer';
-import type { Renderer } from '../../src/rendering/renderers/types';
 
-export async function getWebGLRenderer(options: Partial<WebGLOptions> = {}): Promise<Renderer>
+export async function getWebGLRenderer(options: Partial<WebGLOptions> = {}): Promise<WebGLRenderer>
 {
     const renderer = new WebGLRenderer();
 
@@ -24,7 +23,7 @@ export async function getWebGLRenderer(options: Partial<WebGLOptions> = {}): Pro
     return renderer;
 }
 
-export async function getWebGPURenderer(options: Partial<WebGPUOptions> = {}): Promise<Renderer>
+export async function getWebGPURenderer(options: Partial<WebGPUOptions> = {}): Promise<WebGPURenderer>
 {
     const renderer = new WebGPURenderer();
 

@@ -55,6 +55,11 @@ export class GlShaderSystem
         this._gl = gl;
 
         this._maxBindings = gl.MAX_UNIFORM_BUFFER_BINDINGS ? gl.getParameter(gl.MAX_UNIFORM_BUFFER_BINDINGS) : 0;
+
+        this._programDataHash = Object.create(null);
+        this._boundUniformsIdsToIndexHash = Object.create(null);
+        this._boundIndexToUniformsHash = Object.create(null);
+        this._activeProgram = null;
     }
 
     public bind(shader: Shader, skipSync?: boolean): void
