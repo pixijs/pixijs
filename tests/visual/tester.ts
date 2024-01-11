@@ -105,10 +105,11 @@ export async function renderTest(
         { threshold: 0.2 }
     );
 
-    if (match < pixelMatch)
+    if (match > pixelMatch)
     {
         // Write the diff to a file for visual inspection
-        { ensureDirSync('.pr_uploads/visual'); }
+        ensureDirSync('.pr_uploads/visual');
+
         await writeFile(`.pr_uploads/visual/${id}-${rendererType}-diff.png`, PNG.sync.write(diff));
         // save output image
         await saveSnapShot(`.pr_uploads/visual/${id}-${rendererType}.png`, stage, renderer);
