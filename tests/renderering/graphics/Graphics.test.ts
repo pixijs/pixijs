@@ -4,6 +4,7 @@ import { Graphics } from '../../../src/scene/graphics/shared/Graphics';
 import { GraphicsContext } from '../../../src/scene/graphics/shared/GraphicsContext';
 import { GraphicsPath } from '../../../src/scene/graphics/shared/path/GraphicsPath';
 import { convertFillInputToFillStyle } from '../../../src/scene/graphics/shared/utils/convertFillInputToFillStyle';
+import { getWebGLRenderer } from '../../utils/getRenderer';
 
 describe('Graphics', () =>
 {
@@ -182,6 +183,26 @@ describe('Graphics', () =>
 
             // just to pass test, the chaining above is the real test
             expect(graphics).not.toBeUndefined();
+        });
+
+        it('should destroy correctly if there are no batches', async () =>
+        {
+            const renderer = await getWebGLRenderer();
+
+            const container = new Graphics();
+
+            const rect = new Graphics();
+
+            rect.rect(192, 192, 128, 128);
+
+            container.addChild(rect);
+            renderer.render(container);
+
+            rect.clear();
+            renderer.render(container);
+
+            // dont throw an error:
+            expect(() => rect.destroy()).not.toThrow();
         });
     });
 

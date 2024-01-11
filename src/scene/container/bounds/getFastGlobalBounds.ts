@@ -101,7 +101,7 @@ export function _getGlobalBoundsRecursive(
                     localBounds.applyMatrix(target.renderGroup.worldTransform);
                 }
 
-                target.effects[i].addBounds(localBounds);
+                target.effects[i].addBounds(localBounds, true);
             }
         }
 

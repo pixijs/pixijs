@@ -128,10 +128,7 @@ export function updateTransformBackwards(target: Container, parentTransform: Mat
     {
         updateTransformBackwards(parent, parentTransform);
 
-        if (parent.didChange)
-        {
-            updateLocalTransform(parent.localTransform, parent);
-        }
+        updateLocalTransform(parent.localTransform, parent);
 
         parentTransform.append(parent.localTransform);
     }

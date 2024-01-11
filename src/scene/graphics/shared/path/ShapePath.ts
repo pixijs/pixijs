@@ -228,7 +228,7 @@ export class ShapePath
             );
         }
 
-        this.poly(polygon, false, transform);
+        this.poly(polygon, true, transform);
 
         return this;
     }
@@ -383,7 +383,7 @@ export class ShapePath
             }
         }
 
-        return this.poly(points, undefined, transform);
+        return this.poly(points, true, transform);
     }
 
     public ellipse(x: number, y: number, radiusX: number, radiusY: number, transform?: Matrix): this
