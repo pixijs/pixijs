@@ -48,6 +48,90 @@ describe('BitmapText', () =>
         expect(Cache.get('arial-bitmap').pages).toHaveLength(1);
     });
 
+    it('should default to white fill', async () =>
+    {
+        let text = new Text({
+            text: 'ABCDEFG',
+            renderMode: 'bitmap',
+        });
+
+        expect(text.style.fill).toEqual(0xffffff);
+
+        text = new Text({
+            text: 'ABCDEFG',
+            style: {
+                fill: 0xff0000,
+            },
+            renderMode: 'bitmap',
+        });
+
+        expect(text.style.fill).toEqual(0xff0000);
+
+        text = new Text({
+            text: 'ABCDEFG',
+            style: {
+                dropShadow: true,
+            },
+            renderMode: 'bitmap',
+        });
+
+        expect(text.style.fill).toEqual(0xffffff);
+    });
+
+    it('should apply dropShadow defaults correctly', async () =>
+    {
+        let text = new Text({
+            text: 'ABCDEFG',
+            renderMode: 'bitmap',
+        });
+
+        expect(text.style.dropShadow).toEqual(null);
+
+        text = new Text({
+            text: 'ABCDEFG',
+            style: {
+                dropShadow: {
+                    color: 'blue',
+                }
+            },
+            renderMode: 'bitmap',
+        });
+
+        expect(text.style.dropShadow).toMatchObject({
+            alpha: 1,
+            angle: Math.PI / 6,
+            blur: 0,
+            color: 'blue',
+            distance: 5,
+        });
+
+        text = new Text({
+            text: 'ABCDEFG',
+            style: {
+                dropShadow: true
+            },
+            renderMode: 'bitmap',
+        });
+
+        expect(text.style.dropShadow).toMatchObject({
+            alpha: 1,
+            angle: Math.PI / 6,
+            blur: 0,
+            color: 'black',
+            distance: 5,
+        });
+
+        text = new Text({
+            text: 'ABCDEFG',
+            style: {
+                dropShadow: false
+            },
+            renderMode: 'bitmap',
+        });
+
+        expect(text.style.dropShadow).toEqual(null);
+    });
+
     it.each([
         'bitmap',
         'html',

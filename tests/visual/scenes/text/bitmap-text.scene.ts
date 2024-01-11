@@ -28,7 +28,6 @@ export const scene: TestScene = {
             style: {
                 fontFamily: 'Outfit',
                 fontSize: 16,
-                fill: 'white',
                 letterSpacing: 5,
                 // lineHeight: 20, // todo: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=46297431
             },
