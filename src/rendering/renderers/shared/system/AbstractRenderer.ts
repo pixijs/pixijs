@@ -1,11 +1,11 @@
-import { Color } from '../../../../color';
+import { Color } from '../../../../color/Color';
 import { Container } from '../../../../scene/container/Container';
 import { updateLocalTransform } from '../../../../scene/container/utils/updateLocalTransform';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { CLEAR } from '../../gl/const';
 import { SystemRunner } from './SystemRunner';
 
-import type { ColorSource, RgbaArray } from '../../../../color';
+import type { ColorSource, RgbaArray } from '../../../../color/Color';
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { Matrix } from '../../../../maths/matrix/Matrix';
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
