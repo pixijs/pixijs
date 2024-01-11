@@ -56,7 +56,6 @@ export class GlBufferSystem implements System
      */
     public destroy(): void
     {
-        this.destroyAll(true);
         this._renderer = null;
         this._gl = null;
         this._gpuBuffers = null;
@@ -66,8 +65,7 @@ export class GlBufferSystem implements System
     /** Sets up the renderer context and necessary buffers. */
     protected contextChange(): void
     {
-        this.destroyAll(true);
-
+        this._gpuBuffers = Object.create(null);
         this._gl = this._renderer.gl;
     }
 
@@ -166,23 +164,17 @@ export class GlBufferSystem implements System
         return glBuffer;
     }
 
-    /**
-     * dispose all WebGL resources of all managed buffers
-     * @param {boolean} [contextLost=false] - If context was lost, we suppress `gl.delete` calls
-     */
-    public destroyAll(contextLost?: boolean): void
+    /** dispose all WebGL resources of all managed buffers */
+    public destroyAll(): void
     {
         const gl = this._gl;
 
-        if (!contextLost)
+        for (const id in this._gpuBuffers)
         {
-            for (const id in this._gpuBuffers)
-            {
-                gl.deleteBuffer(this._gpuBuffers[id].buffer);
-            }
+            gl.deleteBuffer(this._gpuBuffers[id].buffer);
         }
 
-        this._gpuBuffers = {};
+        this._gpuBuffers = Object.create(null);
     }
 
     /**

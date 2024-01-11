@@ -33,7 +33,7 @@ export class GlBatchAdaptor implements BatcherAdaptor
     private _didUpload = false;
     private readonly _tempState = State.for2d();
 
-    public init()
+    public init(batcherPipe: BatcherPipe): void
     {
         const uniforms = new UniformGroup({
             tint: { value: new Float32Array([1, 1, 1, 1]), type: 'f32' },
@@ -56,6 +56,13 @@ export class GlBatchAdaptor implements BatcherAdaptor
                 batchSamplers: batchSamplersUniformGroup,
             }
         });
+
+        batcherPipe.renderer.runners.contextChange.add(this);
+    }
+
+    public contextChange(): void
+    {
+        this._didUpload = false;
     }
 
     public start(batchPipe: BatcherPipe, geometry: Geometry): void
