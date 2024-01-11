@@ -6,7 +6,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render regularPoly correctly',
-    only: true,
     create: async (scene: Container) =>
     {
         const poly = new Graphics();
