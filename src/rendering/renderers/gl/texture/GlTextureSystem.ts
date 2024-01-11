@@ -277,13 +277,13 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         if (source.autoGenerateMipmaps && source.mipLevelCount > 1)
         {
-            this.onUpdateMipmaps(source);
+            this.onUpdateMipmaps(source, false);
         }
     }
 
-    protected onUpdateMipmaps(source: TextureSource): void
+    protected onUpdateMipmaps(source: TextureSource, bind = true): void
     {
-        this.bindSource(source, 0);
+        if (bind) this.bindSource(source, 0);
 
         const glTexture = this.getGlSource(source);
 
