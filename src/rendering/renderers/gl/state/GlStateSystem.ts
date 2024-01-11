@@ -107,8 +107,6 @@ export class GlStateSystem implements System
 
         this.blendModesMap = mapWebGLBlendModesToPixi(gl);
 
-        this.set(this.defaultState);
-
         this.reset();
     }
 

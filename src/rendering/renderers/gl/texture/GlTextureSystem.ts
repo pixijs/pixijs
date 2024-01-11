@@ -39,12 +39,12 @@ export class GlTextureSystem implements System, CanvasGenerator
     private readonly _renderer: WebGLRenderer;
 
     private _glTextures: Record<number, GlTexture> = Object.create(null);
-    private readonly _glSamplers: Record<string, WebGLSampler> = Object.create(null);
+    private _glSamplers: Record<string, WebGLSampler> = Object.create(null);
 
     private _boundTextures: TextureSource[] = [];
     private _activeTextureLocation = -1;
 
-    private readonly _boundSamplers: Record<number, WebGLSampler> = Object.create(null);
+    private _boundSamplers: Record<number, WebGLSampler> = Object.create(null);
 
     private readonly _uploads: Record<string, GLTextureUploader> = {
         image: glUploadImageResource,
@@ -77,6 +77,10 @@ export class GlTextureSystem implements System, CanvasGenerator
             this._mapFormatToType = mapFormatToGlType(gl);
             this._mapFormatToFormat = mapFormatToGlFormat(gl);
         }
+
+        this._glTextures = Object.create(null);
+        this._glSamplers = Object.create(null);
+        this._boundSamplers = Object.create(null);
 
         for (let i = 0; i < 16; i++)
         {
@@ -273,13 +277,13 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         if (source.autoGenerateMipmaps && source.mipLevelCount > 1)
         {
-            this.onUpdateMipmaps(source);
+            this.onUpdateMipmaps(source, false);
         }
     }
 
-    protected onUpdateMipmaps(source: TextureSource): void
+    protected onUpdateMipmaps(source: TextureSource, bind = true): void
     {
-        this.bindSource(source, 0);
+        if (bind) this.bindSource(source, 0);
 
         const glTexture = this.getGlSource(source);
 

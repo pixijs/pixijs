@@ -149,12 +149,6 @@ export class GlContextSystem implements System<ContextSystemOptions>
     {
         this.gl = gl;
         this._renderer.gl = gl;
-
-        // restore a context if it was previously lost
-        if (gl.isContextLost() && gl.getExtension('WEBGL_lose_context'))
-        {
-            gl.getExtension('WEBGL_lose_context').restoreContext();
-        }
     }
 
     public init(options: ContextSystemOptions): void
@@ -259,7 +253,8 @@ export class GlContextSystem implements System<ContextSystemOptions>
                 || gl.getExtension('WEBKIT_WEBGL_compressed_texture_pvrtc'),
             atc: gl.getExtension('WEBGL_compressed_texture_atc'),
             astc: gl.getExtension('WEBGL_compressed_texture_astc'),
-            bptc: gl.getExtension('EXT_texture_compression_bptc')
+            bptc: gl.getExtension('EXT_texture_compression_bptc'),
+            loseContext: gl.getExtension('WEBGL_lose_context'),
         };
 
         if (this.webGLVersion === 1)
@@ -298,6 +293,15 @@ export class GlContextSystem implements System<ContextSystemOptions>
     protected handleContextLost(event: WebGLContextEvent): void
     {
         event.preventDefault();
+
+        // Restore the context after this event has exited
+        setTimeout(() =>
+        {
+            if (this.gl.isContextLost() && this.extensions.loseContext)
+            {
+                this.extensions.loseContext.restoreContext();
+            }
+        }, 0);
     }
 
     /** Handles a restored webgl context. */
@@ -318,12 +322,23 @@ export class GlContextSystem implements System<ContextSystemOptions>
 
         this.gl.useProgram(null);
 
+        this.forceContextLoss();
+    }
+
+    /**
+     * this function can be called to force a webGL context loss
+     * this will release all resources on the GPU.
+     * Useful if you need to put Pixi to sleep, and save some GPU memory
+     *
+     * As soon as render is called - all resources will be created again.
+     */
+    public forceContextLoss(): void
+    {
         if (this.extensions.loseContext)
         {
             this.extensions.loseContext.loseContext();
         }
     }
-
     /**
      * Validate context.
      * @param {WebGLRenderingContext} gl - Render context.
