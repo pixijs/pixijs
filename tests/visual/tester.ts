@@ -79,12 +79,14 @@ async function getRenderer(type: RenderType, options?: Partial<RendererOptions>)
  * @param createFunction - a function that takes a scene and adds stuff to it for our snapshot
  * @param rendererType
  * @param options
+ * @param pixelMatch
  */
 export async function renderTest(
     id: string,
     createFunction: (scene: Container, renderer: Renderer) => Promise<void>,
     rendererType: RenderType,
     options?: Partial<RendererOptions>,
+    pixelMatch = 100,
 ): Promise<number>
 {
     const renderer = await getRenderer(rendererType, options);
@@ -129,11 +131,15 @@ export async function renderTest(
         { threshold: 0.2 }
     );
 
-    // Write the diff to a file for visual inspection
-    ensureDirSync('.pr_uploads/visual');
-    await writeFile(`.pr_uploads/visual/${id}-${rendererType}-diff.png`, PNG.sync.write(diff));
-    // save output image
-    await saveSnapShot(`.pr_uploads/visual/${id}-${rendererType}.png`, canvas);
+    if (match > pixelMatch)
+    {
+        // Write the diff to a file for visual inspection
+        ensureDirSync('.pr_uploads/visual');
+
+        await writeFile(`.pr_uploads/visual/${id}-${rendererType}-diff.png`, PNG.sync.write(diff));
+        // save output image
+        await saveSnapShot(`.pr_uploads/visual/${id}-${rendererType}.png`, canvas);
+    }
 
     // this means we created a custom renderer.. so lts clean up after ourselves!
     if (options)
