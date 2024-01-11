@@ -178,9 +178,9 @@ export class Text extends Container implements View
 
         this.style = style;
 
-        if (this._renderMode === 'bitmap')
+        if (this._renderMode === 'bitmap' && !style?.fill)
         {
-            this.style.fill ??= 0xffffff;
+            this.style.fill = 0xffffff;
         }
 
         this.renderPipeId = map[this._renderMode];
