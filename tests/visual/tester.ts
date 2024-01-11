@@ -45,6 +45,13 @@ const renderTypeSettings: Record<RenderType, Partial<RendererOptions>> = {
     } as Partial<RendererOptions>,
 };
 
+/**
+ * returns an instance of a renderer to test with. If no options are passed, we always return the same renderer
+ * instance for each type. If options are passed, we create a new renderer instance for each call.
+ * @param type - the type of renderer to create
+ * @param options - any custom options to pass to the renderer
+ * @returns
+ */
 async function getRenderer(type: RenderType, options?: Partial<RendererOptions>): Promise<Renderer>
 {
     if (!options)
