@@ -310,6 +310,11 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
         );
     }
 
+    protected contextChange(): void
+    {
+        this._gpuRenderTargetHash = Object.create(null);
+    }
+
     /**
      * Push a render surface to the renderer. This will bind the render surface to the renderer,
      * @param renderSurface - the render surface to push

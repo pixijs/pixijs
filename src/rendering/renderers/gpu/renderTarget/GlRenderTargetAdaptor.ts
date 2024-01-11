@@ -19,13 +19,21 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 {
     private _renderTargetSystem: RenderTargetSystem<GlRenderTarget>;
     private _renderer: WebGLRenderer<HTMLCanvasElement>;
-    private readonly _clearColorCache: RgbaArray = [0, 0, 0, 0];
-    private readonly _viewPortCache: Rectangle = new Rectangle();
+    private _clearColorCache: RgbaArray = [0, 0, 0, 0];
+    private _viewPortCache: Rectangle = new Rectangle();
 
     public init(renderer: WebGLRenderer, renderTargetSystem: RenderTargetSystem<GlRenderTarget>): void
     {
         this._renderer = renderer;
         this._renderTargetSystem = renderTargetSystem;
+
+        renderer.runners.contextChange.add(this);
+    }
+
+    public contextChange(): void
+    {
+        this._clearColorCache = [0, 0, 0, 0];
+        this._viewPortCache = new Rectangle();
     }
 
     public copyToTexture(

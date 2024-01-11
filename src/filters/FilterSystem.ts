@@ -157,6 +157,8 @@ export class FilterSystem implements System
         // if a filterArea is provided, we save our selves some measuring and just use that area supplied
         else if (instruction.filterEffect.filterArea)
         {
+            bounds.clear();
+
             // transform the filterArea into global space..
             bounds.addRect(instruction.filterEffect.filterArea);
 

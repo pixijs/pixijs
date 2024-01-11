@@ -17,7 +17,7 @@ jobs:
       AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
       SOURCE_DIR: '.s3_uploads'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-32-cores
     steps:
     - name: Checkout
       uses: actions/checkout@v3
