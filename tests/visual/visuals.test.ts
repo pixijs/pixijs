@@ -90,7 +90,7 @@ describe('Visual Tests', () =>
                     id,
                     scene.data.create,
                     renderer as RenderType,
-                    scene.data.options ?? {}
+                    scene.data.options
                 );
 
                 expect(res).toBeLessThanOrEqual(scene.data.pixelMatch || 100);
