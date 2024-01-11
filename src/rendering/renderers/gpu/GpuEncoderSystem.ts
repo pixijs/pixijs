@@ -225,6 +225,8 @@ export class GpuEncoderSystem implements System
         this._gpu.device.queue.submit([this.commandEncoder.finish()]);
 
         this._resolveCommandFinished();
+
+        this.commandEncoder = null;
     }
 
     // restores a render pass if finishRenderPass was called

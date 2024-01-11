@@ -1,13 +1,16 @@
-import { Color, type ColorSource } from '../../../../color/Color';
+import { Color } from '../../../../color';
 import { Container } from '../../../../scene/container/Container';
 import { updateLocalTransform } from '../../../../scene/container/utils/updateLocalTransform';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
+import { CLEAR } from '../../gl/const';
 import { SystemRunner } from './SystemRunner';
 
+import type { ColorSource, RgbaArray } from '../../../../color';
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { Matrix } from '../../../../maths/matrix/Matrix';
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
 import type { TypeOrBool } from '../../../../scene/container/destroyTypes';
+import type { CLEAR_OR_BOOL } from '../../gl/const';
 import type { Renderer } from '../../types';
 import type { BackgroundSystem } from '../background/BackgroundSystem';
 import type { GenerateTextureOptions, GenerateTextureSystem } from '../extract/GenerateTextureSystem';
@@ -27,13 +30,17 @@ interface RendererConfig
     renderPipeAdaptors: {name: string, value: any}[];
 }
 
-export interface RenderOptions
+export interface RenderOptions extends ClearOptions
 {
     container: Container;
     transform?: Matrix;
+}
+
+export interface ClearOptions
+{
     target?: RenderSurface;
     clearColor?: ColorSource;
-    clear?: boolean;
+    clear?: CLEAR_OR_BOOL
 }
 
 export type RendererDestroyOptions = TypeOrBool<ViewSystemDestroyOptions>;
@@ -229,6 +236,22 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
     public resize(desiredScreenWidth: number, desiredScreenHeight: number, resolution?: number): void
     {
         this.view.resize(desiredScreenWidth, desiredScreenHeight, resolution);
+    }
+
+    public clear(options: ClearOptions = {}): void
+    {
+        options.target ||= this.view.texture;
+        options.clearColor ||= this.background.colorRgba;
+        options.clear ??= CLEAR.ALL;
+
+        const { clear, clearColor, target } = options;
+
+        // override!
+        const renderer = this as unknown as Renderer;
+
+        Color.shared.setValue(clearColor ?? this.background.colorRgba);
+
+        renderer.renderTarget.clear(target, clear, Color.shared.toArray() as RgbaArray);
     }
 
     /** The resolution / device pixel ratio of the renderer. */
