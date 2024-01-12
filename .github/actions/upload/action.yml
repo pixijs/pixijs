@@ -9,6 +9,7 @@ runs:
   using: "composite"
   steps:
     - name: Extract Branch Name
+      shell: bash
       id: branch_name
       if: github.event_name == 'push'
       run: echo BRANCH_NAME=${GITHUB_REF/refs\/heads\//} >> $GITHUB_OUTPUT

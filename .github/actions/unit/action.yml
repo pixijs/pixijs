@@ -4,9 +4,11 @@ runs:
   using: "composite"
   steps:
     - name: Type Tests
+      shell: bash
       run: npm run test:types
 
     - name: Unit Tests
+      shell: bash
       run: xvfb-run --auto-servernum npm run coverage
       env:
         NODE_ENV: production

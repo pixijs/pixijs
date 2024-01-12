@@ -8,14 +8,17 @@ jobs:
   build:
     runs-on: ubuntu-4-cores
     steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
     - name: Setup project
-    uses: ./.github/actions/setup
-    with:
-      node-version: '18'
-      npm-version: '8'
+      uses: ./.github/actions/setup
+      with:
+        node-version: '18'
+        npm-version: '8'
 
     - name: Test Project
-    uses: ./.github/actions/unit
+      uses: ./.github/actions/unit
 
     - name: Test Build
       run: npm run dist
