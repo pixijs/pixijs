@@ -1,0 +1,28 @@
+name: Visual Tests (Release)
+
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  build:
+    runs-on: ubuntu-4-cores
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Project
+      uses: ./.github/actions/setup
+      with:
+        node-version: '18'
+        npm-version: '8'
+
+    # Check linting and types
+    - name: Lint/Type Tests
+      uses: ./.github/actions/lint
+
+    # Check unit tests
+    - name: Visual Tests
+      uses: ./.github/actions/unit
+      with:
+        type: Visuals
