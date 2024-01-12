@@ -119,7 +119,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
     public webGLVersion: 1 | 2;
 
     private _renderer: WebGLRenderer;
-    private _contextLossForced: any;
+    private _contextLossForced: boolean;
 
     /** @param renderer - The renderer this System works for. */
     constructor(renderer: WebGLRenderer)
