@@ -4,6 +4,7 @@ import { updateQuadBounds } from '../../utils/data/updateQuadBounds';
 import { Container } from '../container/Container';
 
 import type { PointData } from '../../maths/point/PointData';
+import type { PointLike } from '../../maths/point/PointLike';
 import type { TextureSourceLike } from '../../rendering/renderers/shared/texture/Texture';
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Bounds, BoundsData } from '../container/bounds/Bounds';
@@ -53,11 +54,11 @@ export class Sprite extends Container implements View
     /**
      * Helper function that creates a new sprite based on the source you provide.
      * The source can be - frame id, image, video, canvas element, video element, texture
-     * @param {TextureSourceLike} source - Source to create texture from
+     * @param source - Source to create texture from
      * @param [skipCache] - Whether to skip the cache or not
      * @returns The newly created sprite
      */
-    public static from(source: TextureSourceLike, skipCache = false): Sprite
+    public static from(source: Texture | TextureSourceLike, skipCache = false): Sprite
     {
         if (source instanceof Texture)
         {
@@ -263,7 +264,7 @@ export class Sprite extends Container implements View
      * const sprite = new Sprite({texture: Texture.WHITE});
      * sprite.anchor.set(0.5); // This will set the origin to center. (0.5) is same as (0.5, 0.5).
      */
-    get anchor(): ObservablePoint
+    get anchor(): PointLike
     {
         return this._anchor;
     }

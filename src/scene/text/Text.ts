@@ -8,6 +8,7 @@ import { detectRenderType } from './utils/detectRenderType';
 import { ensureTextStyle } from './utils/ensureTextStyle';
 
 import type { PointData } from '../../maths/point/PointData';
+import type { PointLike } from '../../maths/point/PointLike';
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Bounds, BoundsData } from '../container/bounds/Bounds';
 import type { ContainerOptions } from '../container/Container';
@@ -217,7 +218,7 @@ export class Text extends Container implements View
      * const text = new Text('hello world');
      * text.anchor.set(0.5); // This will set the origin to center. (0.5) is same as (0.5, 0.5).
      */
-    get anchor(): ObservablePoint
+    get anchor(): PointLike
     {
         return this._anchor;
     }
