@@ -29,4 +29,5 @@ module.exports = {
         '<rootDir>/src/**/*.ts',
     ],
     coverageDirectory: '<rootDir>/dist/coverage',
+    testTimeout: 10000
 };

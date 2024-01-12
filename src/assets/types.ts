@@ -37,7 +37,6 @@ export interface ResolvedAsset<T=any>
     format?: string;
     /** An override that will ensure that the asset is loaded with a specific parser */
     loadParser?: LoadParserName;
-    [key: string]: any;
 }
 
 /**
@@ -45,14 +44,14 @@ export interface ResolvedAsset<T=any>
  * @memberof assets
  */
 // NOTE: Omit does not seem to work here
-export type ResolvedSrc = Pick<ResolvedAsset, 'src' | 'format' | 'loadParser' | 'data'> & { [key: string]: any; };
+export type ResolvedSrc = Pick<ResolvedAsset, 'src' | 'format' | 'loadParser' | 'data'>;
 
 /**
  * A valid asset src. This can be a string, or a [ResolvedSrc]{@link assets.ResolvedSrc},
  * or an array of either.
  * @memberof assets
  */
-export type AssetSrc = ArrayOr<string> | ArrayOr<ResolvedSrc>;
+export type AssetSrc = ArrayOr<string> | ArrayOr<ResolvedSrc> & { [key: string]: any; };
 
 /**
  * An asset that has not been resolved yet.

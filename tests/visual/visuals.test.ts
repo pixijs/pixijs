@@ -86,14 +86,17 @@ describe('Visual Tests', () =>
                 Assets.reset();
                 setAssetBasePath();
 
+                const pixelMatch = scene.data.pixelMatch || 100;
+
                 const res = await renderTest(
                     id,
                     scene.data.create,
                     renderer as RenderType,
-                    scene.data.options ?? {}
+                    scene.data.options ?? {},
+                    pixelMatch
                 );
 
-                expect(res).toBeLessThanOrEqual(scene.data.pixelMatch || 100);
+                expect(res).toBeLessThanOrEqual(pixelMatch);
             });
         });
     });

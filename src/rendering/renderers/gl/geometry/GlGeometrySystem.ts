@@ -46,17 +46,11 @@ export class GlGeometrySystem implements System
      */
     public hasInstance: boolean;
 
-    /**
-     * `true` if support `gl.UNSIGNED_INT` in `gl.drawElements` or `gl.drawElementsInstanced`.
-     * @readonly
-     */
-    public canUseUInt32ElementIndex: boolean;
-
     protected gl: GlRenderingContext;
     protected _activeGeometry: Geometry;
     protected _activeVao: WebGLVertexArrayObject;
 
-    protected _geometryVaoHash: Record<number, Record<string, WebGLVertexArrayObject>> = {};
+    protected _geometryVaoHash: Record<number, Record<string, WebGLVertexArrayObject>> = Object.create(null);
 
     /** Renderer that owns this {@link GeometrySystem}. */
     private _renderer: WebGLRenderer;
@@ -70,7 +64,6 @@ export class GlGeometrySystem implements System
 
         this.hasVao = true;
         this.hasInstance = true;
-        this.canUseUInt32ElementIndex = true;
     }
 
     /** Sets up the renderer context and necessary buffers. */
@@ -114,6 +107,10 @@ export class GlGeometrySystem implements System
             gl.vertexAttribDivisor = (a, b): void =>
                 nativeInstancedExtension.vertexAttribDivisorANGLE(a, b);
         }
+
+        this._activeGeometry = null;
+        this._activeVao = null;
+        this._geometryVaoHash = Object.create(null);
     }
 
     /**
