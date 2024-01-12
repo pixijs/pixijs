@@ -6,6 +6,7 @@ import { Transform } from '../../utils/misc/Transform';
 import { Container } from '../container/Container';
 
 import type { PointData } from '../../maths/point/PointData';
+import type { PointLike } from '../../maths/point/PointLike';
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Bounds, BoundsData } from '../container/bounds/Bounds';
@@ -245,7 +246,7 @@ export class TilingSprite extends Container implements View, Instruction
      * const sprite = new TilingSprite({texture: Texture.WHITE});
      * sprite.anchor.set(0.5); // This will set the origin to center. (0.5) is same as (0.5, 0.5).
      */
-    get anchor(): ObservablePoint
+    get anchor(): PointLike
     {
         return this._anchor;
     }
@@ -257,7 +258,7 @@ export class TilingSprite extends Container implements View, Instruction
     }
 
     /** The offset of the image that is being tiled. */
-    get tilePosition(): ObservablePoint
+    get tilePosition(): PointLike
     {
         return this._tileTransform.position;
     }
@@ -268,7 +269,7 @@ export class TilingSprite extends Container implements View, Instruction
     }
 
     /** The scaling of the image that is being tiled. */
-    get tileScale(): ObservablePoint
+    get tileScale(): PointLike
     {
         return this._tileTransform.scale;
     }
