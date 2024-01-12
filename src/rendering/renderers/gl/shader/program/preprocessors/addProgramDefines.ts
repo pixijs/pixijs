@@ -1,5 +1,7 @@
-export function addWebGL1Defines(src: string, _options: any, isFragment?: boolean)
+export function addWebGL1Defines(src: string, isES300: boolean, isFragment?: boolean)
 {
+    if (isES300) return src;
+
     if (isFragment)
     {
         src = src.replace('out vec4 finalColor;', '');
@@ -10,11 +12,7 @@ export function addWebGL1Defines(src: string, _options: any, isFragment?: boolea
         #define in varying
         #define finalColor gl_FragColor
         #define texture texture2D
-        #else
-        // WebGL2 code remains unchanged
-        out vec4 finalColor;
         #endif
-
         ${src}
         `;
     }
@@ -24,10 +22,7 @@ export function addWebGL1Defines(src: string, _options: any, isFragment?: boolea
         #ifdef GL_ES // This checks if it's WebGL1
         #define in attribute
         #define out varying
-        #else
-        // WebGL2 code remains unchanged
         #endif
-
         ${src}
         `;
 }

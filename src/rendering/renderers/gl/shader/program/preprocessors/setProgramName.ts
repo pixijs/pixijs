@@ -24,14 +24,5 @@ export function setProgramName(src: string, { name = `pixi-program` }: { name: s
 
     const shaderName = `#define SHADER_NAME ${name}`;
 
-    if (src.substring(0, 8) !== '#version')
-    {
-        return `${shaderName}\n${src}`;
-    }
-
-    // get the first line break in the src
-    const firstLineBreak = src.indexOf('\n');
-
-    // insert the precision statement after the first line
-    return `${src.substring(0, firstLineBreak + 1)}${shaderName}\n${src.substring(firstLineBreak + 1)}`;
+    return `${shaderName}\n${src}`;
 }

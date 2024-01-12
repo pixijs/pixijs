@@ -30,8 +30,10 @@ export function getGeometryBounds(geometry: Geometry, attributeId: string, bound
     let maxY = -Infinity;
 
     const byteSize = data.BYTES_PER_ELEMENT;
-    const offset = attribute.offset / byteSize;
-    const stride = attribute.stride / byteSize;
+
+    // stride and offset MAY have not been calculated yet.. so go with assumed defaults
+    const offset = (attribute.offset || 0) / byteSize;
+    const stride = (attribute.stride || (2 * 4)) / byteSize;
 
     for (let i = offset; i < data.length; i += stride)
     {
