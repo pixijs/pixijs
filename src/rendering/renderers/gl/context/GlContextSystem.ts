@@ -119,6 +119,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
     public webGLVersion: 1 | 2;
 
     private _renderer: WebGLRenderer;
+    private _contextLossForced: any;
 
     /** @param renderer - The renderer this System works for. */
     constructor(renderer: WebGLRenderer)
@@ -294,14 +295,19 @@ export class GlContextSystem implements System<ContextSystemOptions>
     {
         event.preventDefault();
 
-        // Restore the context after this event has exited
-        setTimeout(() =>
+        // only restore if we purposefully nuked it
+        if (this._contextLossForced)
         {
-            if (this.gl.isContextLost() && this.extensions.loseContext)
+            this._contextLossForced = false;
+            // Restore the context after this event has exited
+            setTimeout(() =>
             {
-                this.extensions.loseContext.restoreContext();
-            }
-        }, 0);
+                if (this.gl.isContextLost())
+                {
+                    this.extensions.loseContext?.restoreContext();
+                }
+            }, 0);
+        }
     }
 
     /** Handles a restored webgl context. */
@@ -322,7 +328,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
 
         this.gl.useProgram(null);
 
-        this.forceContextLoss();
+        this.extensions.loseContext?.loseContext();
     }
 
     /**
@@ -334,10 +340,8 @@ export class GlContextSystem implements System<ContextSystemOptions>
      */
     public forceContextLoss(): void
     {
-        if (this.extensions.loseContext)
-        {
-            this.extensions.loseContext.loseContext();
-        }
+        this.extensions.loseContext?.loseContext();
+        this._contextLossForced = true;
     }
     /**
      * Validate context.
