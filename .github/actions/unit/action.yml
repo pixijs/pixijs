@@ -4,19 +4,19 @@ inputs:
   type:
     description: "Type of tests to run"
     required: true
-    default: "Both"
+    default: Both
 runs:
   using: "composite"
   steps:
     - name: Visual Tests
-      if: ${{ inputs.type }} == "Both" || ${{ inputs.type }} == "Visuals"
+      if: ${{ inputs.type == 'Both' || inputs.type == 'Visuals' }}
       shell: bash
       run: xvfb-run --auto-servernum npm run test:scene -- --maxWorkers=50%
       env:
         NODE_ENV: production
 
     - name: Unit Tests
-      if: ${{ inputs.type }} == "Both" || ${{ inputs.type }} == "Unit"
+      if: ${{ inputs.type == 'Both' || inputs.type == 'Unit' }}
       shell: bash
       run: xvfb-run --auto-servernum npm run test:unit -- --maxWorkers=50%
       env:
