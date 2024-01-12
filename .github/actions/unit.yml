@@ -1,0 +1,19 @@
+name: "Test Project"
+description: "Runs unit tests"
+runs:
+  using: "composite"
+  steps:
+    - name: Type Tests
+      run: npm run test:types
+
+    - name: Unit Tests
+      run: xvfb-run --auto-servernum npm run coverage
+      env:
+        NODE_ENV: production
+
+    - name: Upload Unit Test Images
+      if: ${{ success() || failure() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: pr_uploads
+        path: .pr_uploads/

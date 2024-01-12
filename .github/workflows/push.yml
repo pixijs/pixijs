@@ -1,0 +1,39 @@
+name: Upload (Push)
+
+on:
+  push:
+    branches: [ '**' ]
+
+jobs:
+  build:
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || '' }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID || '' }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      SOURCE_DIR: '.s3_uploads'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Setup project
+    uses: ./.github/actions/setup-project
+    with:
+      node-version: '18'
+      npm-version: '8'
+
+    - name: Extract Branch Name
+      id: branch_name
+      if: github.event_name == 'push'
+      run: echo BRANCH_NAME=${GITHUB_REF/refs\/heads\//} >> $GITHUB_OUTPUT
+
+    - name: Build for Distribution
+      run: npm run dist
+
+    # Examples:
+    # 1) PR feature/acme merged into dev
+    # 2) branch A merged into branch B
+    # 3) branch A pushed directly to git
+    - name: Deploy Non-Tag Branches
+      uses: ./.github/actions/upload
+      with:
+        type: "Non-Tag"

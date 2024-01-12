@@ -1,0 +1,43 @@
+name: "S3 Upload"
+description: "Uploads files to s3 bucket"
+inputs:
+  type:
+    description: "Type of upload"
+    required: true
+    default: "Non-Tag"
+runs:
+  using: "composite"
+  steps:
+    - name: Extract Branch Name
+      id: branch_name
+      if: github.event_name == 'push'
+      run: echo BRANCH_NAME=${GITHUB_REF/refs\/heads\//} >> $GITHUB_OUTPUT
+    # Examples:
+    # 1) PR feature/acme merged into dev
+    # 2) branch A merged into branch B
+    # 3) branch A pushed directly to git
+    - name: Deploy Non-Tag Branches
+      uses: jakejarvis/s3-sync-action@master
+      if: ${{ inputs.type }} == "Non-Tag" && env.AWS_ACCESS_KEY_ID != ''
+      with:
+        args: --acl public-read --follow-symlinks --delete --cache-control "max-age=60"
+      env:
+        DEST_DIR: ${{ steps.branch_name.outputs.BRANCH_NAME }}
+
+    # Release is published and deployed into s3://bucket-name/v5.22/
+    - name: Deploy Released Branches
+      uses: jakejarvis/s3-sync-action@master
+      if: ${{ inputs.type }} == "Release-Branch" && env.AWS_ACCESS_KEY_ID != ''
+      with:
+        args: --acl public-read --follow-symlinks --delete --cache-control "max-age=2592000"
+      env:
+        DEST_DIR: ${{ github.event.release.tag_name }}
+
+    # Same release from previous deployed into s3://bucket-name/release/
+    - name: Deploy Latest Release
+      uses: jakejarvis/s3-sync-action@master
+      if: ${{ inputs.type }} == "Release" && github.event.release.prerelease == false && env.AWS_ACCESS_KEY_ID != ''
+      with:
+        args: --acl public-read --follow-symlinks --delete --cache-control "max-age=1209600"
+      env:
+        DEST_DIR: 'release'
