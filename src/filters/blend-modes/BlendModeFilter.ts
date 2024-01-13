@@ -28,7 +28,7 @@ export class BlendModeFilter extends Filter
 
         const gpuSource = compileBlendModeShader({ source: blendTemplate, ...gpuOptions });
 
-        const gpuProgram = new GpuProgram({
+        const gpuProgram = GpuProgram.from({
             vertex: {
                 source: gpuSource,
                 entryPoint: 'mainVertex',
@@ -43,7 +43,7 @@ export class BlendModeFilter extends Filter
 
         const glSource = compileBlendModeShader({ source: blendTemplateFrag, ...glOptions });
 
-        const glProgram = new GlProgram({
+        const glProgram = GlProgram.from({
             vertex: blendTemplateVert,
             fragment: glSource
         });
