@@ -1,0 +1,20 @@
+name: Visual Tests (Pull Request)
+
+on:
+  pull_request:
+    branches: [ '**' ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Project
+      uses: ./.github/actions/setup
+
+    - name: Test Project
+      uses: ./.github/actions/unit
+      with:
+        type: 'Visuals'
