@@ -1,7 +1,8 @@
 import { DOMAdapter } from '../../../../../environment/adapter';
 
-const unknownContext = {};
-let context: WebGLRenderingContext | WebGL2RenderingContext = unknownContext as any;
+import type { GlRenderingContext } from '../../context/GlRenderingContext';
+
+let context: GlRenderingContext;
 
 /**
  * returns a little WebGL context to use for program inspection.
@@ -9,13 +10,13 @@ let context: WebGLRenderingContext | WebGL2RenderingContext = unknownContext as 
  * @private
  * @returns {WebGLRenderingContext} a gl context to test with
  */
-export function getTestContext(): WebGLRenderingContext | WebGL2RenderingContext
+export function getTestContext(): GlRenderingContext
 {
-    if (context === unknownContext || context?.isContextLost())
+    if (!context || context?.isContextLost())
     {
         const canvas = DOMAdapter.get().createCanvas();
 
-        context = canvas.getContext('webgl', {});
+        context = canvas.getContext('webgl', {}) as GlRenderingContext;
     }
 
     return context;

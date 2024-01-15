@@ -1,5 +1,5 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { getUniformInfoFromFormat } from '../../shared/shader/utils/getUniformInfoFromFormat';
+import { ensureAttributes } from '../../gl/shader/program/ensureAttributes';
 import { STENCIL_MODES } from '../../shared/state/const';
 import { createIdFromString } from '../../shared/utils/createIdFromString';
 import { GpuStencilModesToPixi } from '../state/GpuStencilModesToPixi';
@@ -151,7 +151,7 @@ export class PipelineSystem implements System
     {
         const device = this._gpu.device;
 
-        const buffers = this._createVertexBufferLayouts(geometry);
+        const buffers = this._createVertexBufferLayouts(geometry, program);
 
         const blendModes = this._renderer.state.getColorTargets(state);
 
@@ -223,7 +223,7 @@ export class PipelineSystem implements System
         {
             const attribute = geometry.attributes[attributeKeys[i]];
 
-            keyGen[index++] = attribute.shaderLocation;
+            keyGen[index++] = attribute.location;
             keyGen[index++] = attribute.offset;
             keyGen[index++] = attribute.format;
             keyGen[index++] = attribute.stride;
@@ -236,7 +236,7 @@ export class PipelineSystem implements System
         return geometry._layoutKey;
     }
 
-    private _createVertexBufferLayouts(geometry: Geometry): GPUVertexBufferLayout[]
+    private _createVertexBufferLayouts(geometry: Geometry, program: GpuProgram): GPUVertexBufferLayout[]
     {
         if (this._bufferLayoutsCache[geometry._layoutKey])
         {
@@ -244,6 +244,8 @@ export class PipelineSystem implements System
         }
 
         const vertexBuffersLayout: GPUVertexBufferLayout[] = [];
+
+        ensureAttributes(geometry, program.attributeData);
 
         geometry.buffers.forEach((buffer) =>
         {
@@ -261,14 +263,11 @@ export class PipelineSystem implements System
 
                 if (attribute.buffer === buffer)
                 {
-                    attribute.offset ||= 0;
-                    attribute.stride ||= getUniformInfoFromFormat(attribute.format).stride;
-
                     bufferEntry.arrayStride = attribute.stride;
                     bufferEntry.stepMode = attribute.instance ? 'instance' : 'vertex';
 
                     bufferEntryAttributes.push({
-                        shaderLocation: attribute.shaderLocation,
+                        shaderLocation: attribute.location,
                         offset: attribute.offset,
                         format: attribute.format,
                     });

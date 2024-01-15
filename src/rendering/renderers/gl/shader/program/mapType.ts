@@ -1,4 +1,5 @@
 import type { Dict } from '../../../../../utils/types';
+import type { VertexFormat } from '../../../shared/geometry/const';
 
 let GL_TABLE: Dict<string> = null;
 
@@ -38,7 +39,30 @@ const GL_TO_GLSL_TYPES: Dict<string> = {
     UNSIGNED_INT_SAMPLER_2D_ARRAY: 'sampler2DArray',
 };
 
+const GLSL_TO_VERTEX_TYPES: Record<string, VertexFormat> = {
+
+    float: 'float32',
+    vec2: 'float32x2',
+    vec3: 'float32x3',
+    vec4: 'float32x4',
+
+    int: 'sint32',
+    ivec2: 'sint32x2',
+    ivec3: 'sint32x3',
+    ivec4: 'sint32x4',
+
+    uint: 'uint32',
+    uvec2: 'uint32x2',
+    uvec3: 'uint32x3',
+    uvec4: 'uint32x4',
+
+    bool: 'uint32',
+    bvec2: 'uint32x2',
+    bvec3: 'uint32x3',
+    bvec4: 'uint32x4',
+};
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+
 export function mapType(gl: any, type: number): string
 {
     if (!GL_TABLE)
@@ -56,4 +80,11 @@ export function mapType(gl: any, type: number): string
     }
 
     return GL_TABLE[type];
+}
+
+export function mapGlToVertexFormat(gl: any, type: number): VertexFormat
+{
+    const typeValue = mapType(gl, type);
+
+    return GLSL_TO_VERTEX_TYPES[typeValue] || 'float32';
 }

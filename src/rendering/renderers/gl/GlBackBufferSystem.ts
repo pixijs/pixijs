@@ -20,7 +20,7 @@ const bigTriangleGeometry = new Geometry({
                 -1.0, 3.0 // Top left corner, extending beyond top edge
             ],
             format: 'float32x2',
-            shaderLocation: 0,
+            location: 0,
             offset: 0,
             stride: 0,
         },

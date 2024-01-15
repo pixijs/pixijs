@@ -14,25 +14,17 @@ export const scene: TestScene = {
 
         const geometry = new Geometry({
             attributes: {
-                aPosition: {
-                    buffer: [
-                        -10, -10, // x, y
-                        10, -20, // x, y
-                        10, 10,
-                    ],
-                    shaderLocation: 0,
-                    format: 'float32x2',
-                },
-                aUV: {
-                    buffer: [
-                        0, 0, // u, v
-                        1, 0, // u, v
-                        1, 1,
-                        0, 1
-                    ], // u, v,
-                    shaderLocation: 1,
-                    format: 'float32x2',
-                },
+                aPosition: [
+                    -10, -10, // x, y
+                    10, -20, // x, y
+                    10, 10,
+                ],
+                aUV:  [
+                    0, 0, // u, v
+                    1, 0, // u, v
+                    1, 1,
+                    0, 1
+                ],
                 aPositionOffset: {
                     buffer: [
                         -50, -50, // x, y
@@ -45,8 +37,6 @@ export const scene: TestScene = {
                         -50, 50,
                         50, -50,
                     ],
-                    shaderLocation: 2,
-                    format: 'float32x2',
                     instance: true,
                 },
             },

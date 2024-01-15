@@ -1,9 +1,11 @@
 import { createIdFromString } from '../../shared/utils/createIdFromString';
+import { extractAttributesFromGpuProgram } from './extractAttributesFromGpuProgram';
 import { extractStructAndGroups } from './extractStructAndGroups';
 import { generateGpuLayoutGroups } from './generateGpuLayoutGroups';
 import { generateLayoutHash } from './generateLayoutHash';
 import { removeStructAndGroupDuplicates } from './removeStructAndGroupDuplicates';
 
+import type { ExtractedAttributeData } from '../../shared/shader/utils/extractAttributesFromGlProgram';
 import type { StructsAndGroups } from './extractStructAndGroups';
 
 /**
@@ -111,6 +113,7 @@ export class GpuProgram
      * Makes it much easier to debug!
      */
     public readonly name: string;
+    private _attributeData: Record<string, ExtractedAttributeData>;
 
     /**
      * Create a new GpuProgram
@@ -160,6 +163,12 @@ export class GpuProgram
         this._layoutKey = createIdFromString(bigKey, 'program');
     }
 
+    get attributeData()
+    {
+        this._attributeData ??= extractAttributesFromGpuProgram(this.vertex);
+
+        return this._attributeData;
+    }
     /** destroys the program */
     public destroy(): void
     {

@@ -1,8 +1,8 @@
 import { warn } from '../../../../../utils/logging/warn';
+import { extractAttributesFromGlProgram } from '../../../shared/shader/utils/extractAttributesFromGlProgram';
 import { GlProgramData } from '../GlProgramData';
 import { compileShader } from './compileShader';
 import { defaultValue } from './defaultValue';
-import { getAttributeData } from './getAttributeData';
 import { getUniformBufferData } from './getUniformBufferData';
 import { getUniformData } from './getUniformData';
 import { logProgramError } from './logProgramError';
@@ -56,7 +56,7 @@ export function generateProgram(gl: GlRenderingContext, program: GlProgram): GlP
         logProgramError(gl, webGLProgram, glVertShader, glFragShader);
     }
 
-    program._attributeData = getAttributeData(webGLProgram, gl);
+    program._attributeData = extractAttributesFromGlProgram(webGLProgram, gl);
     program._uniformData = getUniformData(webGLProgram, gl);
     program._uniformBlockData = getUniformBufferData(webGLProgram, gl);
 
