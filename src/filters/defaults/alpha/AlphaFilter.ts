@@ -45,7 +45,7 @@ export class AlphaFilter extends Filter
     {
         options = { ...AlphaFilter.defaultOptions, ...options };
 
-        const gpuProgram = new GpuProgram({
+        const gpuProgram = GpuProgram.from({
             vertex: {
                 source,
                 entryPoint: 'mainVertex',
@@ -56,7 +56,7 @@ export class AlphaFilter extends Filter
             },
         });
 
-        const glProgram = new GlProgram({
+        const glProgram = GlProgram.from({
             vertex,
             fragment,
             name: 'alpha-filter'
