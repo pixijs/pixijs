@@ -41,17 +41,21 @@ jobs:
 
     # Release is published and deployed into s3://bucket-name/v5.22/
     - name: Deploy Released Branches
-      if: env.AWS_ACCESS_KEY_ID != ''
-      uses: ./.github/actions/upload
+      uses: jakejarvis/s3-sync-action@master
+      if: github.event_name == 'release' && env.AWS_ACCESS_KEY_ID != ''
       with:
-        type: "Release-Branch"
+        args: --acl public-read --follow-symlinks --delete --cache-control "max-age=2592000"
+      env:
+        DEST_DIR: ${{ github.event.release.tag_name }}
 
     # Same release from previous deployed into s3://bucket-name/release/
     - name: Deploy Latest Release
-      if: github.event.release.prerelease == false && env.AWS_ACCESS_KEY_ID != ''
-      uses: ./.github/actions/upload
+      uses: jakejarvis/s3-sync-action@master
+      if: github.event_name == 'release' && github.event.release.prerelease == false && env.AWS_ACCESS_KEY_ID != ''
       with:
-        type: "Release"
+        args: --acl public-read --follow-symlinks --delete --cache-control "max-age=1209600"
+      env:
+        DEST_DIR: 'release'
 
     # Publish to NPM
     - name: Publish Latest Release
