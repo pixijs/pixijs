@@ -5,8 +5,7 @@ on:
     types: [ published ]
 
 jobs:
-  on-success:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+  release:
     env:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || '' }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID || '' }}
