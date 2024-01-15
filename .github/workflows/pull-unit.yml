@@ -1,0 +1,26 @@
+name: Unit Tests (Pull Request)
+
+on:
+  pull_request:
+    branches: [ '**' ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Project
+      uses: ./.github/actions/setup
+
+    - name: Lint Project
+      uses: ./.github/actions/lint
+
+    - name: Unit Project
+      uses: ./.github/actions/unit
+      with:
+        type: Unit
+
+    - name: Build
+      run: npm run dist
