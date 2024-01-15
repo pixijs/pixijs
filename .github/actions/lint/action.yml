@@ -1,0 +1,12 @@
+name: "Test Project Linting"
+description: "Runs lint and type checks"
+runs:
+  using: "composite"
+  steps:
+    - name: Lint Tests
+      shell: bash
+      run: npm run lint
+
+    - name: Type Tests
+      shell: bash
+      run: npm run test:types

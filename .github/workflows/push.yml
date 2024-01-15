@@ -1,0 +1,43 @@
+name: Upload (Push)
+
+on:
+  push:
+    branches: [ '**' ]
+
+jobs:
+  build:
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || '' }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID || '' }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      SOURCE_DIR: '.s3_uploads'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup project
+      uses: ./.github/actions/setup
+
+    - name: Build for Distribution
+      run: npm run dist
+
+    - name: Extract Branch Name
+      shell: bash
+      id: branch_name
+      if: github.event_name == 'push'
+      run: echo BRANCH_NAME=${GITHUB_REF/refs\/heads\//} >> $GITHUB_OUTPUT
+
+    # Examples:
+    # 1) PR feature/acme merged into dev
+    # 2) branch A merged into branch B
+    # 3) branch A pushed directly to git
+    - name: Deploy Non-Tag Branches
+      uses: jakejarvis/s3-sync-action@master
+      if: env.AWS_ACCESS_KEY_ID != ''
+      with:
+        args: --acl public-read --follow-symlinks --delete --cache-control "max-age=60"
+      env:
+        DEST_DIR: ${{ steps.branch_name.outputs.BRANCH_NAME }}
