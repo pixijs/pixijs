@@ -179,7 +179,7 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
             }
             else
             {
-                renderer.renderTarget.clear(CLEAR.STENCIL);
+                renderer.renderTarget.clear(null, CLEAR.STENCIL);
             }
         }
         else if (instruction.action === 'popMaskEnd')

@@ -190,12 +190,33 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
     public clear(renderTarget: RenderTarget, clear: CLEAR_OR_BOOL = true, clearColor?: RgbaArray, viewport?: Rectangle)
     {
-        this.startRenderPass(
-            renderTarget,
-            clear,
-            clearColor,
-            viewport
-        );
+        if (!clear) return;
+
+        const { gpu, encoder } = this._renderer;
+
+        const device = gpu.device;
+
+        const standAlone = encoder.commandEncoder === null;
+
+        if (standAlone)
+        {
+            const commandEncoder = device.createCommandEncoder();
+            const renderPassDescriptor = this.getDescriptor(renderTarget, clear, clearColor);
+
+            const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor);
+
+            passEncoder.setViewport(viewport.x, viewport.y, viewport.width, viewport.height, 0, 1);
+
+            passEncoder.end();
+
+            const gpuCommands = commandEncoder.finish();
+
+            device.queue.submit([gpuCommands]);
+        }
+        else
+        {
+            this.startRenderPass(renderTarget, clear, clearColor, viewport);
+        }
     }
 
     public initGpuRenderTarget(renderTarget: RenderTarget): GpuRenderTarget
