@@ -1,0 +1,30 @@
+name: "Test Project"
+description: "Runs unit tests"
+inputs:
+  type:
+    description: "Type of tests to run"
+    required: true
+    default: Both
+runs:
+  using: "composite"
+  steps:
+    - name: Visual Tests
+      if: ${{ inputs.type == 'Both' || inputs.type == 'Visuals' }}
+      shell: bash
+      run: xvfb-run --auto-servernum npm run test:scene -- --maxWorkers=50%
+      env:
+        NODE_ENV: production
+
+    - name: Unit Tests
+      if: ${{ inputs.type == 'Both' || inputs.type == 'Unit' }}
+      shell: bash
+      run: xvfb-run --auto-servernum npm run test:unit -- --maxWorkers=50%
+      env:
+        NODE_ENV: production
+
+    - name: Upload Visual Test Images
+      if: ${{ success() || failure() }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: pr_uploads
+        path: .pr_uploads/

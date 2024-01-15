@@ -39,6 +39,8 @@ export function checkChildrenDidChange(
             previousData.didChange = true;
         }
 
+        previousData.index++;
+
         if (child.children.length)
         {
             checkChildrenDidChange(child, previousData);

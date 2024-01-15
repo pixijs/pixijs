@@ -7,6 +7,7 @@ import { Texture } from '../../src/rendering/renderers/shared/texture/Texture';
 import { Bounds } from '../../src/scene/container/bounds/Bounds';
 import { getLocalBounds } from '../../src/scene/container/bounds/getLocalBounds';
 import { Container } from '../../src/scene/container/Container';
+import { Graphics } from '../../src/scene/graphics/shared/Graphics';
 import { Sprite } from '../../src/scene/sprite/Sprite';
 import { DummyEffect } from './DummyEffect';
 import { DummyView } from './DummyView';
@@ -294,6 +295,25 @@ describe('getLocalBounds', () =>
         const bounds = getLocalBounds(container, new Bounds());
 
         expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 500 / 2, maxY: 500 / 2 });
+    });
+
+    it('should calculate correct bounds when target has a mask', async () =>
+    {
+        const root = new Container({ label: 'root' });
+
+        const rect = new Graphics().rect(0, 0, 50, 50).fill('red');
+        const mask = new Graphics().rect(10, 10, 10, 10).fill('red');
+
+        root.addChild(rect);
+        root.addChild(mask);
+
+        root.effects.push(new StencilMask({
+            mask
+        }));
+
+        const bounds = root.getLocalBounds();
+
+        expect(bounds).toMatchObject({ minX: 10, minY: 10, maxX: 20, maxY: 20 });
     });
 
     it('should cache local bounds on a container', async () =>

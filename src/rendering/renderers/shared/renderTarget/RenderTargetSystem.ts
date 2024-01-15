@@ -296,14 +296,20 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
     }
 
     public clear(
+        target?: RenderSurface,
         clear: CLEAR_OR_BOOL = CLEAR.ALL,
-        clearColor?: RgbaArray
+        clearColor?: RgbaArray,
     )
     {
         if (!clear) return;
 
+        if (target)
+        {
+            target = this.getRenderTarget(target);
+        }
+
         this.adaptor.clear(
-            this.renderTarget,
+            (target as RenderTarget) || this.renderTarget,
             clear,
             clearColor,
             this.viewport

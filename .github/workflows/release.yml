@@ -1,0 +1,68 @@
+name: Release
+
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  release:
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || '' }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID || '' }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      SOURCE_DIR: '.s3_uploads'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup project
+      uses: ./.github/actions/setup
+
+    # Check unit tests
+    - name: Unit Tests
+      uses: ./.github/actions/unit
+      with:
+        type: Unit
+
+    # Build the project
+    - name: Build
+      run: npm run dist
+
+    # Append assets to releases
+    - name: Upload Assets to Release
+      if: github.event_name == 'release'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          ./dist/**/*
+
+    # Release is published and deployed into s3://bucket-name/v5.22/
+    - name: Deploy Released Branches
+      uses: jakejarvis/s3-sync-action@master
+      if: github.event_name == 'release' && env.AWS_ACCESS_KEY_ID != ''
+      with:
+        args: --acl public-read --follow-symlinks --delete --cache-control "max-age=2592000"
+      env:
+        DEST_DIR: ${{ github.event.release.tag_name }}
+
+    # Same release from previous deployed into s3://bucket-name/release/
+    - name: Deploy Latest Release
+      uses: jakejarvis/s3-sync-action@master
+      if: github.event_name == 'release' && github.event.release.prerelease == false && env.AWS_ACCESS_KEY_ID != ''
+      with:
+        args: --acl public-read --follow-symlinks --delete --cache-control "max-age=1209600"
+      env:
+        DEST_DIR: 'release'
+
+    # Publish to NPM
+    - name: Publish Latest Release
+      if: github.event.release.prerelease == false && env.NODE_AUTH_TOKEN != ''
+      run: npm run publish-ci
+
+    # Publish to NPM with prerelease dist-tag
+    - name: Publish Latest Prerelease
+      if: github.event.release.prerelease && env.NODE_AUTH_TOKEN != ''
+      run: npm run publish-ci -- --tag prerelease-v8
