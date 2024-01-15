@@ -1,0 +1,60 @@
+name: Release
+
+on:
+  workflow_run:
+    workflows: [Unit Tests (Release), Visual Tests (Release)]
+    types: [completed]
+
+jobs:
+  on-success:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || '' }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID || '' }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      SOURCE_DIR: '.s3_uploads'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup project
+      uses: ./.github/actions/setup
+
+    # Build the project
+    - name: Build
+      run: npm run dist
+
+    # Append assets to releases
+    - name: Upload Assets to Release
+      if: github.event_name == 'release'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          ./dist/**/*
+
+    # Release is published and deployed into s3://bucket-name/v5.22/
+    - name: Deploy Released Branches
+      if: env.AWS_ACCESS_KEY_ID != ''
+      uses: ./.github/actions/upload
+      with:
+        type: "Release-Branch"
+
+    # Same release from previous deployed into s3://bucket-name/release/
+    - name: Deploy Latest Release
+      if: github.event.release.prerelease == false && env.AWS_ACCESS_KEY_ID != ''
+      uses: ./.github/actions/upload
+      with:
+        type: "Release"
+
+    # Publish to NPM
+    - name: Publish Latest Release
+      if: github.event.release.prerelease == false && env.NODE_AUTH_TOKEN != ''
+      run: npm run publish-ci
+
+    # Publish to NPM with prerelease dist-tag
+    - name: Publish Latest Prerelease
+      if: github.event.release.prerelease && env.NODE_AUTH_TOKEN != ''
+      run: npm run publish-ci -- --tag prerelease-v8
