@@ -54,11 +54,11 @@ export class Sprite extends Container implements View
     /**
      * Helper function that creates a new sprite based on the source you provide.
      * The source can be - frame id, image, video, canvas element, video element, texture
-     * @param {TextureSourceLike} source - Source to create texture from
+     * @param source - Source to create texture from
      * @param [skipCache] - Whether to skip the cache or not
      * @returns The newly created sprite
      */
-    public static from(source: TextureSourceLike, skipCache = false): Sprite
+    public static from(source: Texture | TextureSourceLike, skipCache = false): Sprite
     {
         if (source instanceof Texture)
         {

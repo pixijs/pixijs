@@ -1,0 +1,34 @@
+name: "Install Project"
+description: "Installs node, npm, and dependencies"
+inputs:
+  node-version:
+    description: "Node.js version"
+    required: true
+    default: "18"
+  npm-version:
+    description: "npm version"
+    required: true
+    default: "8"
+runs:
+  using: "composite"
+  steps:
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+        registry-url: "https://registry.npmjs.org"
+    - name: Install npm
+      shell: bash
+      run: npm install -g npm@${{ inputs.npm-version }}
+    - name: Cache Dependencies
+      id: node-modules-cache
+      uses: actions/cache@v3
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-modules-
+    - name: Install Dependencies
+      if: steps.node-modules-cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: npm ci
