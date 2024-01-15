@@ -1,8 +1,8 @@
-import { getUniformInfoFromFormat } from '../../shared/shader/utils/getUniformInfoFromFormat';
+import { getUniformInfoFromFormat } from '../../../shared/shader/utils/getUniformInfoFromFormat';
 
-import type { VertexFormat } from '../../shared/geometry/const';
-import type { ExtractedAttributeData } from '../../shared/shader/utils/extractAttributesFromGlProgram';
-import type { ProgramSource } from './GpuProgram';
+import type { VertexFormat } from '../../../shared/geometry/const';
+import type { ExtractedAttributeData } from '../../../shared/shader/utils/extractAttributesFromGlProgram';
+import type { ProgramSource } from '../GpuProgram';
 
 const WGSL_TO_VERTEX_TYPES: Record<string, VertexFormat> = {
 

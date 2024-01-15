@@ -1,4 +1,4 @@
-import { extractAttributesFromGpuProgram } from '../../src/rendering/renderers/gpu/shader/extractAttributesFromGpuProgram';
+import { extractAttributesFromGpuProgram } from '../../src/rendering/renderers/gpu/shader/utils/extractAttributesFromGpuProgram';
 
 const shaderCode = `
 struct VSOutput {

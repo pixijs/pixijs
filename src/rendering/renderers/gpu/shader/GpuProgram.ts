@@ -1,12 +1,12 @@
 import { createIdFromString } from '../../shared/utils/createIdFromString';
-import { extractAttributesFromGpuProgram } from './extractAttributesFromGpuProgram';
-import { extractStructAndGroups } from './extractStructAndGroups';
-import { generateGpuLayoutGroups } from './generateGpuLayoutGroups';
-import { generateLayoutHash } from './generateLayoutHash';
-import { removeStructAndGroupDuplicates } from './removeStructAndGroupDuplicates';
+import { extractAttributesFromGpuProgram } from './utils/extractAttributesFromGpuProgram';
+import { extractStructAndGroups } from './utils/extractStructAndGroups';
+import { generateGpuLayoutGroups } from './utils/generateGpuLayoutGroups';
+import { generateLayoutHash } from './utils/generateLayoutHash';
+import { removeStructAndGroupDuplicates } from './utils/removeStructAndGroupDuplicates';
 
 import type { ExtractedAttributeData } from '../../shared/shader/utils/extractAttributesFromGlProgram';
-import type { StructsAndGroups } from './extractStructAndGroups';
+import type { StructsAndGroups } from './utils/extractStructAndGroups';
 
 /**
  * a WebGPU descriptions of how the program is layed out
