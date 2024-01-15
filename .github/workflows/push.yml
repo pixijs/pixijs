@@ -20,9 +20,6 @@ jobs:
 
     - name: Setup project
       uses: ./.github/actions/setup
-      with:
-        node-version: '18'
-        npm-version: '8'
 
     - name: Build for Distribution
       run: npm run dist

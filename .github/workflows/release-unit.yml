@@ -13,9 +13,6 @@ jobs:
 
     - name: Setup Project
       uses: ./.github/actions/setup
-      with:
-        node-version: '18'
-        npm-version: '8'
 
     # Check linting and types
     - name: Lint/Type Tests
