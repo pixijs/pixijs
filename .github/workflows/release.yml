@@ -1,9 +1,8 @@
 name: Release
 
 on:
-  workflow_run:
-    workflows: [Unit Tests (Release), Visual Tests (Release)]
-    types: [completed]
+  release:
+    types: [ published ]
 
 jobs:
   on-success:
@@ -22,6 +21,12 @@ jobs:
 
     - name: Setup project
       uses: ./.github/actions/setup
+
+    # Check unit tests
+    - name: Unit Tests
+      uses: ./.github/actions/unit
+      with:
+        type: Unit
 
     # Build the project
     - name: Build
