@@ -1,7 +1,9 @@
-import { addWebGL1Defines } from './program/addWebGL1Defines';
-import { ensurePrecision } from './program/ensurePrecision';
 import { getMaxFragmentPrecision } from './program/getMaxFragmentPrecision';
-import { setProgramName } from './program/setProgramName';
+import { addProgramDefines } from './program/preprocessors/addProgramDefines';
+import { ensurePrecision } from './program/preprocessors/ensurePrecision';
+import { insertVersion } from './program/preprocessors/insertVersion';
+import { setProgramName } from './program/preprocessors/setProgramName';
+import { stripVersion } from './program/preprocessors/stripVersion';
 
 import type { TypedArray } from '../../shared/buffer/Buffer';
 
@@ -50,9 +52,16 @@ export interface GlProgramOptions
 }
 
 const processes: Record<string, ((source: string, options: any, isFragment?: boolean) => string)> = {
+    // strips any version headers..
+    stripVersion,
+    // adds precision string if not already present
     ensurePrecision,
-    addWebGL1Defines,
+    // add some defines if WebGL1 to make it more compatible with WebGL2 shaders
+    addProgramDefines,
+    // add the program name to the shader
     setProgramName,
+    // add the version string to the shader header
+    insertVersion,
 };
 
 const programCache: Record<string, GlProgram> = Object.create(null);
@@ -134,7 +143,12 @@ export class GlProgram
     {
         options = { ...GlProgram.defaultOptions, ...options };
 
+        // only need to check one as they both need to be the same or
+        // errors ensue!
+        const isES300 = options.fragment.indexOf('#version 300 es') !== -1;
+
         const preprocessorOptions = {
+            stripVersion: isES300,
             ensurePrecision: {
                 requestedFragmentPrecision: options.preferredFragmentPrecision,
                 requestedVertexPrecision: options.preferredVertexPrecision,
@@ -144,6 +158,7 @@ export class GlProgram
             setProgramName: {
                 name: options.name,
             },
+            insertVersion: isES300
         };
 
         let fragment = options.fragment;
@@ -151,7 +166,7 @@ export class GlProgram
 
         Object.keys(processes).forEach((processKey) =>
         {
-            const processOptions = preprocessorOptions[processKey as keyof typeof preprocessorOptions] ?? {};
+            const processOptions = preprocessorOptions[processKey as keyof typeof preprocessorOptions];
 
             fragment = processes[processKey](fragment, processOptions, true);
             vertex = processes[processKey](vertex, processOptions, false);

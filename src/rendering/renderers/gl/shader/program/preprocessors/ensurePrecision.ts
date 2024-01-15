@@ -1,4 +1,4 @@
-import type { PRECISION } from '../const';
+import type { PRECISION } from '../../const';
 
 interface EnsurePrecisionOptions
 {
@@ -39,16 +39,7 @@ export function ensurePrecision(
             precision = 'mediump';
         }
 
-        if (src.substring(0, 8) !== '#version')
-        {
-            return `precision ${precision} float;\n${src}`;
-        }
-
-        // get the first line break in the src
-        const firstLineBreak = src.indexOf('\n');
-
-        // insert the precision statement after the first line
-        return `${src.substring(0, firstLineBreak + 1)}precision ${precision} float;\n${src.substring(firstLineBreak + 1)}`;
+        return `precision ${precision} float;\n${src}`;
     }
     else if (maxSupportedPrecision !== 'highp' && src.substring(0, 15) === 'precision highp')
     {
