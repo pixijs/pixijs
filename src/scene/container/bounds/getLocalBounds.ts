@@ -13,20 +13,7 @@ export function getLocalBounds(target: Container, bounds: Bounds, relativeMatrix
 
     relativeMatrix ||= Matrix.IDENTITY;
 
-    if (target.boundsArea)
-    {
-        bounds.addRect(target.boundsArea, relativeMatrix);
-    }
-    else if ((target as Renderable).addBounds)
-    {
-        bounds.matrix = relativeMatrix;
-        (target as Renderable).addBounds(bounds);
-    }
-
-    for (let i = 0; i < target.children.length; i++)
-    {
-        _getLocalBounds(target.children[i], bounds, relativeMatrix, target);
-    }
+    _getLocalBounds(target, bounds, relativeMatrix, target, true);
 
     if (!bounds.isValid)
     {
@@ -36,25 +23,38 @@ export function getLocalBounds(target: Container, bounds: Bounds, relativeMatrix
     return bounds;
 }
 
-function _getLocalBounds(target: Container, bounds: Bounds, parentTransform: Matrix, rootContainer: Container): void
+function _getLocalBounds(
+    target: Container,
+    bounds: Bounds,
+    parentTransform: Matrix,
+    rootContainer: Container,
+    isRoot: boolean
+): void
 {
-    if (!target.visible || !target.measurable) return;
+    let relativeTransform: Matrix;
 
-    if (target.didChange)
+    if (!isRoot)
     {
+        if (!target.visible || !target.measurable) return;
+
         updateLocalTransform(target.localTransform, target);
+
+        const localTransform = target.localTransform;
+
+        relativeTransform = matrixPool.get();
+        relativeTransform.appendFrom(localTransform, parentTransform);
     }
-
-    const localTransform = target.localTransform;
-
-    const relativeTransform = matrixPool.get().appendFrom(localTransform, parentTransform);
+    else
+    {
+        relativeTransform = matrixPool.get();
+        relativeTransform = parentTransform.copyTo(relativeTransform);
+    }
 
     const parentBounds = bounds;
     const preserveBounds = !!target.effects.length;
 
     if (preserveBounds)
     {
-        // TODO - cloning bounds is slow, we should have a pool (its on the todo list!)
         bounds = boundsPool.get().clear();
     }
 
@@ -74,7 +74,7 @@ function _getLocalBounds(target: Container, bounds: Bounds, parentTransform: Mat
 
         for (let i = 0; i < children.length; i++)
         {
-            _getLocalBounds(children[i], bounds, relativeTransform, rootContainer);
+            _getLocalBounds(children[i], bounds, relativeTransform, rootContainer, false);
         }
     }
 
