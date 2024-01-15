@@ -1,5 +1,5 @@
 import { getMaxFragmentPrecision } from './program/getMaxFragmentPrecision';
-import { addWebGL1Defines } from './program/preprocessors/addProgramDefines';
+import { addProgramDefines } from './program/preprocessors/addProgramDefines';
 import { ensurePrecision } from './program/preprocessors/ensurePrecision';
 import { insertVersion } from './program/preprocessors/insertVersion';
 import { setProgramName } from './program/preprocessors/setProgramName';
@@ -57,7 +57,7 @@ const processes: Record<string, ((source: string, options: any, isFragment?: boo
     // adds precision string if not already present
     ensurePrecision,
     // add some defines if WebGL1 to make it more compatible with WebGL2 shaders
-    addWebGL1Defines,
+    addProgramDefines,
     // add the program name to the shader
     setProgramName,
     // add the version string to the shader header
@@ -166,7 +166,7 @@ export class GlProgram
 
         Object.keys(processes).forEach((processKey) =>
         {
-            const processOptions = preprocessorOptions[processKey as keyof typeof preprocessorOptions] ?? {};
+            const processOptions = preprocessorOptions[processKey as keyof typeof preprocessorOptions];
 
             fragment = processes[processKey](fragment, processOptions, true);
             vertex = processes[processKey](vertex, processOptions, false);

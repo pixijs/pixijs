@@ -1,4 +1,4 @@
-export function addWebGL1Defines(src: string, isES300: boolean, isFragment?: boolean)
+export function addProgramDefines(src: string, isES300: boolean, isFragment?: boolean)
 {
     if (isES300) return src;
 
