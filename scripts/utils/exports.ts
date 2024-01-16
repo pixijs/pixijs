@@ -21,8 +21,6 @@ const subImports = [
     ['./graphics', './lib/scene/graphics'],
     ['./mesh', './lib/scene/mesh'],
     ['./prepare', './lib/prepare'], // to be implemented
-    ['./spritesheet', './lib/spritesheet'],
-    ['./rendering', './lib/rendering'], // rename to core?
     ['./unsafe-eval', './lib/unsafe-eval'],
     ['./sprite-nine-slice', './lib/scene/sprite-nine-slice'],
 ];
@@ -71,6 +69,8 @@ const sideEffects = [
     './lib/environment-browser/browserAll.*',
     './lib/environment-webworker/webworkerAll.*',
     './lib/index.*',
+    './lib/rendering/init.*',
+    './lib/spritesheet/init.*',
     './lib/rendering/renderers/shared/texture/sources/resourceToTexture.*',
 ];
 

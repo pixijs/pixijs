@@ -154,6 +154,8 @@
     "./lib/environment-browser/browserAll.*",
     "./lib/environment-webworker/webworkerAll.*",
     "./lib/index.*",
+    "./lib/rendering/init.*",
+    "./lib/spritesheet/init.*",
     "./lib/rendering/renderers/shared/texture/sources/resourceToTexture.*",
     "./lib/accessibility/init.*",
     "./lib/filters/blend-modes/init.*",
@@ -171,8 +173,6 @@
     "./lib/scene/graphics/init.*",
     "./lib/scene/mesh/init.*",
     "./lib/prepare/init.*",
-    "./lib/spritesheet/init.*",
-    "./lib/rendering/init.*",
     "./lib/unsafe-eval/init.*",
     "./lib/scene/sprite-nine-slice/init.*"
   ],
@@ -329,22 +329,6 @@
       },
       "require": {
         "default": "./lib/prepare/init.js"
-      }
-    },
-    "./spritesheet": {
-      "import": {
-        "default": "./lib/spritesheet/init.mjs"
-      },
-      "require": {
-        "default": "./lib/spritesheet/init.js"
-      }
-    },
-    "./rendering": {
-      "import": {
-        "default": "./lib/rendering/init.mjs"
-      },
-      "require": {
-        "default": "./lib/rendering/init.js"
       }
     },
     "./unsafe-eval": {
