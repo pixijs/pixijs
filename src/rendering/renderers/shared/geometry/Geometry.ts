@@ -1,10 +1,11 @@
 import EventEmitter from 'eventemitter3';
 import { Bounds } from '../../../../scene/container/bounds/Bounds';
 import { uid } from '../../../../utils/data/uid';
+import { Buffer } from '../buffer/Buffer';
 import { ensureIsBuffer } from './utils/ensureIsBuffer';
 import { getGeometryBounds } from './utils/getGeometryBounds';
 
-import type { Buffer, TypedArray } from '../buffer/Buffer';
+import type { TypedArray } from '../buffer/Buffer';
 import type { Topology, VertexFormat } from './const';
 
 export type IndexBufferArray = Uint16Array | Uint32Array;
@@ -18,9 +19,9 @@ export interface Attribute
     /** the buffer that this attributes data belongs to */
     buffer: Buffer;
     /** the format of the attribute */
-    format: VertexFormat;
+    format?: VertexFormat;
     /** set where the shader location is for this attribute */
-    shaderLocation: number; // TODO - auto assign this move this?? introspection??
+    location?: number;
     /** the stride of the data in the buffer*/
     stride?: number;
     /** the offset of the attribute from the buffer, defaults to 0 */
@@ -43,7 +44,8 @@ export interface Attribute
  * extends {@link rendering.Attribute} but allows for the buffer to be a typed or number array
  * @memberof rendering
  */
-type AttributesOption = Omit<Attribute, 'buffer'> & { buffer: Buffer | TypedArray | number[]};
+type AttributesOption = Omit<Attribute, 'buffer'> & { buffer: Buffer | TypedArray | number[]}
+| Buffer | TypedArray | number[];
 
 /**
  * the interface that describes the structure of the geometry
@@ -61,6 +63,19 @@ export interface GeometryDescriptor
     topology?: Topology;
 
     instanceCount?: number;
+}
+function ensureIsAttribute(attribute: AttributesOption): Attribute
+{
+    if (attribute instanceof Buffer || Array.isArray(attribute) || (attribute as TypedArray).BYTES_PER_ELEMENT)
+    {
+        attribute = {
+            buffer: attribute as Buffer | TypedArray | number[],
+        };
+    }
+
+    (attribute as Attribute).buffer = ensureIsBuffer(attribute.buffer as Buffer | TypedArray | number[], false);
+
+    return attribute as Attribute;
 }
 
 /**
@@ -143,9 +158,7 @@ export class Geometry extends EventEmitter<{
 
         for (const i in attributes)
         {
-            const attribute = attributes[i];
-
-            attribute.buffer = ensureIsBuffer(attribute.buffer, false);
+            const attribute = attributes[i] = ensureIsAttribute(attributes[i]);
 
             const bufferIndex = this.buffers.indexOf(attribute.buffer);
 

@@ -11,13 +11,7 @@ export const scene: TestScene = {
     {
         const geometry = new Geometry({
             attributes: {
-                aPosition: {
-                    buffer: [-50, -50, 50, -50, 0, 50],
-                    shaderLocation: 0,
-                    stride: 2 * 4,
-                    offset: 0,
-                    format: 'float32x2',
-                }
+                aPosition: [-50, -50, 50, -50, 0, 50]
             },
         });
 

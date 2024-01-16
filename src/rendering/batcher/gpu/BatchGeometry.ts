@@ -31,28 +31,28 @@ export class BatchGeometry extends Geometry
             attributes: {
                 aPosition: {
                     buffer: attributeBuffer,
-                    shaderLocation: 0,
+                    location: 0,
                     format: 'float32x2',
                     stride,
                     offset: 0,
                 },
                 aUV: {
                     buffer: attributeBuffer,
-                    shaderLocation: 1,
+                    location: 1,
                     format: 'float32x2',
                     stride,
                     offset: 2 * 4,
                 },
                 aColor: {
                     buffer: attributeBuffer,
-                    shaderLocation: 2,
+                    location: 2,
                     format: 'unorm8x4',
                     stride,
                     offset: 4 * 4,
                 },
                 aTextureIdAndRound: {
                     buffer: attributeBuffer,
-                    shaderLocation: 3,
+                    location: 3,
                     format: 'uint16x2',
                     stride,
                     offset: 5 * 4,
