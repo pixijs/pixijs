@@ -10,10 +10,6 @@ GpuStencilModesToPixi[STENCIL_MODES.DISABLED] = {
     depthWriteEnabled: false,
     stencilWriteMask: 0,
     stencilReadMask: 0,
-    stencilBack: {
-        compare: 'always',
-        passOp: 'keep',
-    },
 };
 
 GpuStencilModesToPixi[STENCIL_MODES.RENDERING_MASK_ADD] = {

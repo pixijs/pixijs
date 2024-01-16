@@ -40,7 +40,7 @@ export class NoiseFilter extends Filter
     {
         options = { ...NoiseFilter.defaultOptions, ...options };
 
-        const gpuProgram = new GpuProgram({
+        const gpuProgram = GpuProgram.from({
             vertex: {
                 source,
                 entryPoint: 'mainVertex',
@@ -51,7 +51,7 @@ export class NoiseFilter extends Filter
             },
         });
 
-        const glProgram = new GlProgram({
+        const glProgram = GlProgram.from({
             vertex,
             fragment,
             name: 'noise-filter'
