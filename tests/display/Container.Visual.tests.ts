@@ -1,6 +1,7 @@
 import { DEG_TO_RAD, RAD_TO_DEG } from '../../src/maths/misc/const';
 import { Container } from '../../src/scene/container/Container';
 import { updateRenderGroupTransforms } from '../../src/scene/container/utils/updateRenderGroupTransforms';
+import { Sprite } from '../../src/scene/sprite/Sprite';
 
 describe('Container Visual', () =>
 {
@@ -159,6 +160,39 @@ describe('Container Visual', () =>
 
             expect(container.width).toEqual(0);
             expect(container.scale.x).toEqual(1);
+        });
+
+        it('should get/set size', () =>
+        {
+            const container = new Sprite();
+
+            container.setSize(5);
+
+            expect(container.getSize().width).toEqual(5);
+            expect(container.width).toEqual(5);
+            expect(container.getSize().height).toEqual(5);
+            expect(container.height).toEqual(5);
+
+            container.setSize(10, 15);
+
+            expect(container.getSize().width).toEqual(10);
+            expect(container.width).toEqual(10);
+            expect(container.getSize().height).toEqual(15);
+            expect(container.height).toEqual(15);
+
+            container.setSize({ width: 20, height: 25 });
+
+            expect(container.getSize().width).toEqual(20);
+            expect(container.width).toEqual(20);
+            expect(container.getSize().height).toEqual(25);
+            expect(container.height).toEqual(25);
+
+            container.setSize({ width: 30 });
+
+            expect(container.getSize().width).toEqual(30);
+            expect(container.width).toEqual(30);
+            expect(container.getSize().height).toEqual(30);
+            expect(container.height).toEqual(30);
         });
     });
 
