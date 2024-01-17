@@ -161,6 +161,34 @@ describe('spritesheetAsset', () =>
         await loader.unload(src);
     });
 
+    it('should load a spritesheet with cachePrefix and cache parser', async () =>
+    {
+        const cacheParser = spritesheetAsset.cache as CacheParser;
+
+        Cache['_parsers'].push(cacheParser);
+
+        const src = `${serverPath}spritesheet.json`;
+        const cachePrefix = 'spritesheet.json/';
+        const data = { cachePrefix };
+        const spriteSheet = await loader.load<Spritesheet>({ src, data });
+
+        Cache.set('spritesheet.json', spriteSheet);
+
+        const bunnyTexture = spriteSheet.textures['bunny.png'];
+        const senseiTexture = spriteSheet.textures['pic-sensei.jpg'];
+        const cacheTexture1 = Cache.get(`${cachePrefix}bunny.png`);
+        const cacheTexture2 = Cache.get(`${cachePrefix}pic-sensei.jpg`);
+
+        expect(cacheTexture1).toBeDefined();
+        expect(cacheTexture2).toBeDefined();
+        expect(cacheTexture1).toBe(bunnyTexture);
+        expect(cacheTexture2).toBe(senseiTexture);
+
+        Cache['_parsers'].splice(Cache['_parsers'].indexOf(cacheParser), 1);
+
+        await loader.unload(src);
+    });
+
     it('should not create multipack resources when related_multi_packs field is missing or the wrong type', async () =>
     {
         const validLinked = `${serverPath}building1-1.json`;

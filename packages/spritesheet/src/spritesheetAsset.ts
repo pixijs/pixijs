@@ -23,9 +23,10 @@ function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack:
     const out: Record<string, Texture> = keys.reduce((acc, key: string) =>
         Object.assign(acc, { [key]: asset }), {});
 
-    Object.keys(asset.textures)
-        .map((key) => `${asset.cachePrefix}${key}`)
-        .reduce((acc, key) => Object.assign(acc, { [key]: asset.textures[key] }), out);
+    Object.keys(asset.textures).forEach((key) =>
+    {
+        out[`${asset.cachePrefix}${key}`] = asset.textures[key];
+    });
 
     if (!ignoreMultiPack)
     {
