@@ -2,7 +2,10 @@ import { Assets } from '../../src/assets/Assets';
 import { loadTextures } from '../../src/assets/loader/parsers/textures/loadTextures';
 import { Culler } from '../../src/culling/Culler';
 import { extensions } from '../../src/extensions/Extensions';
+import { AlphaFilter } from '../../src/filters/defaults/alpha/AlphaFilter';
+import { Rectangle } from '../../src/maths/shapes/Rectangle';
 import { Container } from '../../src/scene/container/Container';
+import { Graphics } from '../../src/scene/graphics/shared/Graphics';
 import { Sprite } from '../../src/scene/sprite/Sprite';
 import { basePath } from '../assets/basePath';
 
@@ -49,5 +52,122 @@ describe('Culler', () =>
 
         expect(container.visible).toBe(true);
         expect(child.visible).toBe(false);
+    });
+
+    it('noncullable container should always be rendered even if bounds do not intersect the frame', () =>
+    {
+        const graphics = container.addChild(new Graphics().rect(0, 0, 10, 10).fill());
+
+        container.cullable = false;
+        graphics.x = -1000;
+        graphics.y = -1000;
+
+        Culler.shared.cull(container, view, false);
+
+        expect(container.visible).toBe(true);
+        expect(graphics.visible).toBe(true);
+    });
+
+    it('cullable container should not be rendered if bounds do not intersect the frame', () =>
+    {
+        const container = new Container();
+        const graphics = container.addChild(new Graphics().rect(0, 0, 10, 10).fill());
+
+        container.cullable = true;
+        graphics.x = 0;
+        graphics.y = -10;
+
+        Culler.shared.cull(container, view, false);
+
+        expect(container.visible).toBe(false);
+        expect(graphics.visible).toBe(true);
+    });
+
+    it('cullable container should be rendered if bounds intersects the frame', () =>
+    {
+        const container = new Container();
+        const graphics = container.addChild(new Graphics().rect(0, 0, 10, 10).fill());
+
+        container.cullable = true;
+        graphics.x = 0;
+        graphics.y = -9;
+
+        Culler.shared.cull(container, view, false);
+
+        expect(container.visible).toBe(true);
+        expect(graphics.visible).toBe(true);
+    });
+
+    it('cullable container that contains a child with a padded filter'
+            + 'such that the child in out of frame but the filter padding intersects the frame '
+            + 'should render the filter padding but not the container or child', () =>
+    {
+        const container = new Container();
+        const graphics = container.addChild(new Graphics().rect(0, 0, 10, 10).fill());
+        const filter = new AlphaFilter();
+
+        filter.padding = 30;
+
+        container.cullable = true;
+        graphics.filters = [filter];
+        graphics.x = 0;
+        graphics.y = -15;
+
+        Culler.shared.cull(container, view, false);
+
+        expect(container.visible).toBe(false);
+        expect(graphics.visible).toBe(true);
+    });
+
+    it('cullable container with a filter should not render the container or children '
+            + 'if the bounds as well as the filter padding do no intersect the frame', () =>
+    {
+        const container = new Container();
+        const graphics = container.addChild(new Graphics().rect(0, 0, 10, 10).fill());
+        const filter = new AlphaFilter();
+
+        filter.padding = 5;
+
+        container.cullable = true;
+        container.filters = [filter];
+        graphics.x = 0;
+        graphics.y = -15;
+
+        Culler.shared.cull(container, view, false);
+
+        expect(container.visible).toBe(false);
+        expect(graphics.visible).toBe(true);
+    });
+
+    it('cullable container with cullArea should be rendered if the bounds intersect the frame', () =>
+    {
+        const container = new Container();
+        const graphics = container.addChild(new Graphics().rect(0, 0, 10, 10).fill());
+
+        container.cullable = true;
+        container.cullArea = new Rectangle(-10, -10, 11, 11);
+        container.x = container.y = 107.07;
+        container.rotation = Math.PI / 4;
+
+        Culler.shared.cull(container, view, false);
+
+        expect(container.visible).toBe(true);
+        expect(graphics.visible).toBe(true);
+    });
+
+    it('cullable container with cullArea should not be rendered if the bounds do not intersect the frame', () =>
+    {
+        const container = new Container();
+        const graphics = container.addChild(new Graphics().rect(0, 0, 10, 10).fill());
+
+        container.cullable = true;
+        container.cullArea = new Rectangle(-10, -10, 10, 10);
+        container.x = container.y = 107.08;
+        container.rotation = Math.PI / 4;
+
+        Culler.shared.cull(container, view, false);
+
+        expect(container.visible).toBe(false);
+        expect(graphics.visible).toBe(true);
     });
 });
