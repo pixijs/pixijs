@@ -78,6 +78,26 @@ export interface ISpritesheetData
 }
 
 /**
+ * Options for loading a spritesheet from an atlas.
+ * @memberof PIXI
+ */
+interface SpritesheetOptions<S extends ISpritesheetData = ISpritesheetData>
+{
+    /** Reference to Texture */
+    texture: BaseTexture | Texture;
+    /** JSON data for the atlas. */
+    data: S;
+    /** The filename to consider when determining the resolution of the spritesheet. */
+    resolutionFilename?: string;
+    /**
+     * Prefix to add to texture names when adding to global TextureCache,
+     * using this option can be helpful if you have multiple texture atlases
+     * that share texture names and you need to disambiguate them.
+     */
+    cachePrefix?: string;
+}
+
+/**
  * Utility class for maintaining reference to a collection
  * of Textures on a single Spritesheet.
  *
@@ -239,15 +259,35 @@ export class Spritesheet<S extends ISpritesheetData = ISpritesheetData>
      */
     private _callback: (textures: utils.Dict<Texture>) => void;
 
+    /** Prefix string to add to global cache */
+    public readonly cachePrefix: string;
+
     /**
+     * @class
+     * @param options - Options to use when constructing a new Spritesheet.
+     */
+    constructor(options: SpritesheetOptions<S>);
+
+    /**
+     * @class
      * @param texture - Reference to the source BaseTexture object.
      * @param {object} data - Spritesheet image data.
      * @param resolutionFilename - The filename to consider when determining
      *        the resolution of the spritesheet. If not provided, the imageUrl will
      *        be used on the BaseTexture.
      */
-    constructor(texture: BaseTexture | Texture, data: S, resolutionFilename: string = null)
+    constructor(texture: BaseTexture | Texture, data: S, resolutionFilename?: string);
+
+    /** @ignore */
+    constructor(optionsOrTexture: SpritesheetOptions<S> | BaseTexture | Texture, arg1?: S, arg2?: string)
     {
+        if (optionsOrTexture instanceof BaseTexture || optionsOrTexture instanceof Texture)
+        {
+            optionsOrTexture = { texture: optionsOrTexture, data: arg1, resolutionFilename: arg2 };
+        }
+        const { texture, data, resolutionFilename = null, cachePrefix = '' } = optionsOrTexture;
+
+        this.cachePrefix = cachePrefix;
         this._texture = texture instanceof Texture ? texture : null;
         this.baseTexture = texture instanceof BaseTexture ? texture : this._texture.baseTexture;
         this.textures = {} as Record<keyof S['frames'], Texture>;
@@ -388,7 +428,7 @@ export class Spritesheet<S extends ISpritesheetData = ISpritesheetData>
                 );
 
                 // lets also add the frame to pixi's global cache for 'from' and 'fromLoader' functions
-                Texture.addToCache(this.textures[i], i.toString());
+                Texture.addToCache(this.textures[i], this.cachePrefix + i.toString());
             }
 
             frameIndex++;
