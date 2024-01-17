@@ -1,14 +1,16 @@
-import { ExtensionType } from '../../../../extensions/Extensions';
 import { unsafeEvalSupported } from '../../../../utils/browser/unsafeEvalSupported';
 import { Buffer } from '../buffer/Buffer';
 import { BufferUsage } from '../buffer/const';
-import { createUBOElements } from './utils/createUBOElements';
-import { generateUniformBufferSync } from './utils/createUniformBufferSync';
 
 import type { System } from '../system/System';
+import type { UBOElement, UniformBufferLayout, UniformData, UniformsSyncCallback } from './types';
 import type { UniformGroup } from './UniformGroup';
-import type { UBOElement, UniformBufferLayout } from './utils/createUBOElements';
-import type { UniformsSyncCallback } from './utils/createUniformBufferSyncTypes';
+
+export interface UniformBufferAdaptor
+{
+    createUBOElements: (uniformData: UniformData[]) => UniformBufferLayout;
+    generateUniformBufferSync: (uboElements: UBOElement[]) => UniformsSyncCallback;
+}
 
 /**
  * System plugin to the renderer to manage uniform buffers.
@@ -16,24 +18,18 @@ import type { UniformsSyncCallback } from './utils/createUniformBufferSyncTypes'
  */
 export class UniformBufferSystem implements System
 {
-    /** @ignore */
-    public static extension = {
-        type: [
-            ExtensionType.WebGLSystem,
-            ExtensionType.WebGPUSystem,
-            ExtensionType.CanvasSystem,
-        ],
-        name: 'uniformBuffer',
-    } as const;
-
     /** Cache of uniform buffer layouts and sync functions, so we don't have to re-create them */
     private _syncFunctionHash: Record<string, {
         layout: UniformBufferLayout,
         syncFunction: (uniforms: Record<string, any>, data: Float32Array, offset: number) => void
     }> = Object.create(null);
 
-    constructor()
+    private readonly _adaptor: UniformBufferAdaptor;
+
+    constructor(adaptor: UniformBufferAdaptor)
     {
+        this._adaptor = adaptor;
+
         // Validation check that this environment support `new Function`
         this._systemCheck();
     }
@@ -77,7 +73,7 @@ export class UniformBufferSystem implements System
         {
             const elements = Object.keys(uniformGroup.uniformStructures).map((i) => uniformGroup.uniformStructures[i]);
 
-            const layout = createUBOElements(elements);
+            const layout = this._adaptor.createUBOElements(elements);
 
             const syncFunction = this._generateUniformBufferSync(layout.uboElements);
 
@@ -94,7 +90,7 @@ export class UniformBufferSystem implements System
         uboElements: UBOElement[],
     ): UniformsSyncCallback
     {
-        return generateUniformBufferSync(uboElements);
+        return this._adaptor.generateUniformBufferSync(uboElements);
     }
 
     public syncUniformGroup(uniformGroup: UniformGroup, data?: Float32Array, offset?: number): boolean

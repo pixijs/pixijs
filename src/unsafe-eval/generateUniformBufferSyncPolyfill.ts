@@ -1,93 +1,92 @@
-import { type UBOElement, WGSL_TO_STD40_SIZE } from '../rendering/renderers/shared/shader/utils/createUBOElements';
-import { UBO_TO_SINGLE_SETTERS_FN } from '../rendering/renderers/shared/shader/utils/createUniformBufferSyncTypes';
-import { UNIFORM_BUFFER_PARSERS } from '../rendering/renderers/shared/shader/utils/uniformBufferParsers';
-
-import type {
-    UBO_TYPE,
-    UniformsSyncCallback
-} from '../rendering/renderers/shared/shader/utils/createUniformBufferSyncTypes';
+import type { UniformsSyncCallback} from '../rendering/renderers/shared/shader/types';
+import { type UBOElement } from '../rendering/renderers/shared/shader/types';
 
 export function generateUniformBufferSyncPolyfill(
-    uboElements: UBOElement[],
+    _uboElements: UBOElement[],
 ): UniformsSyncCallback
 {
-    return ((uv: any, data: any, o: any) =>
+    return () =>
     {
-        let v = null;
-        let t = 0;
 
-        let prev = 0;
+    };
 
-        for (let i = 0; i < uboElements.length; i++)
-        {
-            const uboElement = uboElements[i];
+    // ((uv: any, data: any, o: any) =>
+    // {
+    //     let v = null;
+    //     let t = 0;
 
-            const name = uboElement.data.name;
+    //     let prev = 0;
 
-            let executed = false;
-            let offset = 0;
+    //     for (let i = 0; i < uboElements.length; i++)
+    //     {
+    //         const uboElement = uboElements[i];
 
-            for (let j = 0; j < UNIFORM_BUFFER_PARSERS.length; j++)
-            {
-                const uniformParser = UNIFORM_BUFFER_PARSERS[j];
+    //         const name = uboElement.data.name;
 
-                if (uniformParser.test(uboElement.data))
-                {
-                    offset = uboElement.offset / 4;
+    //         let executed = false;
+    //         let offset = 0;
 
-                    o += offset - prev;
+    //         for (let j = 0; j < UNIFORM_PARSERS.length; j++)
+    //         {
+    //             const uniformParser = UNIFORM_PARSERS[j];
 
-                    UNIFORM_BUFFER_PARSERS[j].exec(name, uv, data, o, v);
+    //             if (uniformParser.test(uboElement.data))
+    //             {
+    //                 offset = uboElement.offset / 4;
 
-                    executed = true;
+    //                 o += offset - prev;
 
-                    break;
-                }
-            }
+    //                 UNIFORM_PARSERS[j].exec(name, uv, data, o, v);
 
-            if (!executed)
-            {
-                if (uboElement.data.size > 1)
-                {
-                    const rowSize = Math.max(WGSL_TO_STD40_SIZE[uboElement.data.type] / 16, 1);
-                    const elementSize = (uboElement.data.value as Array<number>).length / uboElement.data.size;
+    //                 executed = true;
 
-                    const remainder = (4 - (elementSize % 4)) % 4;
+    //                 break;
+    //             }
+    //         }
 
-                    offset = uboElement.offset / 4;
+    //         if (!executed)
+    //         {
+    //             if (uboElement.data.size > 1)
+    //             {
+    //                 const rowSize = Math.max(WGSL_TO_STD40_SIZE[uboElement.data.type] / 16, 1);
+    //                 const elementSize = (uboElement.data.value as Array<number>).length / uboElement.data.size;
 
-                    v = uv[name];
-                    o += offset - prev;
+    //                 const remainder = (4 - (elementSize % 4)) % 4;
 
-                    let arrayOffset = o;
+    //                 offset = uboElement.offset / 4;
 
-                    t = 0;
+    //                 v = uv[name];
+    //                 o += offset - prev;
 
-                    for (let i = 0; i < uboElement.data.size * rowSize; i++)
-                    {
-                        for (let j = 0; j < elementSize; j++)
-                        {
-                            data[arrayOffset++] = v[t++];
-                        }
-                        if (remainder !== 0)
-                        {
-                            arrayOffset += remainder;
-                        }
-                    }
-                }
-                else
-                {
-                    const template = UBO_TO_SINGLE_SETTERS_FN[uboElement.data.type as UBO_TYPE];
+    //                 let arrayOffset = o;
 
-                    offset = uboElement.offset / 4;
+    //                 t = 0;
 
-                    v = uv[name];
-                    o += offset - prev;
-                    template(data, o, v);
-                }
-            }
+    //                 for (let i = 0; i < uboElement.data.size * rowSize; i++)
+    //                 {
+    //                     for (let j = 0; j < elementSize; j++)
+    //                     {
+    //                         data[arrayOffset++] = v[t++];
+    //                     }
+    //                     if (remainder !== 0)
+    //                     {
+    //                         arrayOffset += remainder;
+    //                     }
+    //                 }
+    //             }
+    //             else
+    //             {
+    //                 const template = UBO_TO_SINGLE_SETTERS_FN[uboElement.data.type as UBO_TYPE];
 
-            prev = offset;
-        }
-    }) as UniformsSyncCallback;
+    //                 offset = uboElement.offset / 4;
+
+    //                 v = uv[name];
+    //                 o += offset - prev;
+    //                 template(data, o, v);
+    //             }
+    //         }
+
+    //         prev = offset;
+    //     }
+    // }) as UniformsSyncCallback;
 }

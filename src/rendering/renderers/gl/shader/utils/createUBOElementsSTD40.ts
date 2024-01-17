@@ -1,16 +1,7 @@
-/* eslint-disable quote-props */
-type UNIFORM_TYPES_SINGLE =
-'f32' | 'vec2<f32>' | 'vec3<f32>' | 'vec4<f32>' |
-'mat2x2<f32>' | 'mat3x3<f32>' | 'mat4x4<f32>' | 'u32';
-
-type OPTIONAL_SPACE = ' ' | '';
-
-type UNIFORM_TYPES_ARRAY = `array<${UNIFORM_TYPES_SINGLE},${OPTIONAL_SPACE}${number}>`;
-
-export type UNIFORM_TYPES = UNIFORM_TYPES_SINGLE | UNIFORM_TYPES_ARRAY;
+import type { UBOElement, UniformBufferLayout, UniformData } from '../../../shared/shader/types';
 
 export const WGSL_TO_STD40_SIZE: Record<string, number> = {
-    'f32': 4,
+    f32: 4,
     'vec2<f32>': 8,
     'vec3<f32>': 12,
     'vec4<f32>': 16,
@@ -19,11 +10,7 @@ export const WGSL_TO_STD40_SIZE: Record<string, number> = {
     'mat3x3<f32>': 16 * 3,
     'mat4x4<f32>': 16 * 4,
 
-    // float:  4,
-    // vec2:   8,
-    // vec3:   12,
-    // vec4:   16,
-
+    // TODO - not essential for now but support these in the future
     // int:      4,
     // ivec2:    8,
     // ivec3:    12,
@@ -44,32 +31,7 @@ export const WGSL_TO_STD40_SIZE: Record<string, number> = {
     // mat4:     16 * 4,
 };
 
-export interface UniformData
-{
-    /** the value of the uniform, this could be any object - a parser will figure out how to write it to the buffer */
-    value: unknown;
-
-    type: UNIFORM_TYPES;
-    /** the size of the variable (eg 2 for vec2, 3 for vec3, 4 for vec4) */
-    size?: number;
-    name?: string;
-}
-
-export interface UBOElement
-{
-    data: UniformData;
-    offset: number;
-    size: number;
-}
-
-export interface UniformBufferLayout
-{
-    uboElements: UBOElement[];
-    /** float32 size // TODO change to bytes */
-    size: number;
-}
-
-export function createUBOElements(uniformData: UniformData[]): UniformBufferLayout
+export function createUBOElementsSTD40(uniformData: UniformData[]): UniformBufferLayout
 {
     const uboElements: UBOElement[] = uniformData.map((data: UniformData) =>
         ({
@@ -102,7 +64,6 @@ export function createUBOElements(uniformData: UniformData[]): UniformBufferLayo
 
         // add some size offset..
         // must align to the nearest 16 bytes or internally nearest round size
-
         if (chunkSize % size !== 0 && chunkSize < 16)
         {
             // diff required to line up..
@@ -131,3 +92,4 @@ export function createUBOElements(uniformData: UniformData[]): UniformBufferLayo
 
     return { uboElements, size: offset };
 }
+

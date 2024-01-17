@@ -1,8 +1,8 @@
 import { warn } from '../../../../../utils/logging/warn';
-import { extractAttributesFromGlProgram } from '../../../shared/shader/utils/extractAttributesFromGlProgram';
 import { GlProgramData } from '../GlProgramData';
 import { compileShader } from './compileShader';
 import { defaultValue } from './defaultValue';
+import { extractAttributesFromGlProgram } from './extractAttributesFromGlProgram';
 import { getUniformBufferData } from './getUniformBufferData';
 import { getUniformData } from './getUniformData';
 import { logProgramError } from './logProgramError';

@@ -12,6 +12,7 @@ import { type GPU, GpuDeviceSystem } from './GpuDeviceSystem';
 import { GpuEncoderSystem } from './GpuEncoderSystem';
 import { GpuStencilSystem } from './GpuStencilSystem';
 import { GpuUniformBatchPipe } from './GpuUniformBatchPipe';
+import { GpuUniformBufferSystem } from './GpuUniformBufferSystem';
 import { PipelineSystem } from './pipeline/PipelineSystem';
 import { GpuRenderTargetSystem } from './renderTarget/GpuRenderTargetSystem';
 import { GpuShaderSystem } from './shader/GpuShaderSystem';
@@ -25,6 +26,7 @@ import type { ExtractRendererOptions, ExtractSystemTypes } from '../shared/syste
 
 const DefaultWebGPUSystems = [
     ...SharedSystems,
+    GpuUniformBufferSystem,
     GpuEncoderSystem,
     GpuDeviceSystem,
     GpuBufferSystem,

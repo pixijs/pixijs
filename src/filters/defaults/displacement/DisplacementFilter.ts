@@ -68,7 +68,7 @@ export class DisplacementFilter extends Filter
         const filterUniforms = new UniformGroup({
             uFilterMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
             uScale: { value: scale, type: 'vec2<f32>' },
-            uRotation: { value: new Float32Array([0, 0, 0, 0]), type: 'vec4<f32>' },
+            uRotation: { value: new Float32Array([0, 0, 0, 0]), type: 'mat2x2<f32>' },
         });
 
         const glProgram = GlProgram.from({

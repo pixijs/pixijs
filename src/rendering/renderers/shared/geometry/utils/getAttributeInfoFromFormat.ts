@@ -1,6 +1,6 @@
-import type { VertexFormat } from '../../geometry/const';
+import type { VertexFormat } from '../const';
 
-const uniformFormatData = {
+const attributeFormatData = {
     uint8x2: { size: 2, stride: 2, normalised: false },
     uint8x4: { size: 4, stride: 4, normalised: false },
     sint8x2: { size: 2, stride: 2, normalised: false },
@@ -33,7 +33,7 @@ const uniformFormatData = {
     sint32x4: { size: 4, stride: 16, normalised: false },
 };
 
-export function getUniformInfoFromFormat(format: VertexFormat): { size: number; stride: number; normalised: boolean }
+export function getAttributeInfoFromFormat(format: VertexFormat): { size: number; stride: number; normalised: boolean }
 {
-    return uniformFormatData[format] ?? uniformFormatData.float32;
+    return attributeFormatData[format] ?? attributeFormatData.float32;
 }

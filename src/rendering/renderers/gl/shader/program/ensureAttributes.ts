@@ -1,7 +1,7 @@
-import { getUniformInfoFromFormat } from '../../../shared/shader/utils/getUniformInfoFromFormat';
+import { getAttributeInfoFromFormat } from '../../../shared/geometry/utils/getAttributeInfoFromFormat';
 
 import type { Geometry } from '../../../shared/geometry/Geometry';
-import type { ExtractedAttributeData } from '../../../shared/shader/utils/extractAttributesFromGlProgram';
+import type { ExtractedAttributeData } from './extractAttributesFromGlProgram';
 
 /**
  * This function looks at the attribute information provided to the geometry and attempts
@@ -52,7 +52,7 @@ function ensureStartAndStride(geometry: Geometry): void
     {
         const attribute = attributes[j];
 
-        tempStride[attribute.buffer.uid] += getUniformInfoFromFormat(attribute.format).stride;
+        tempStride[attribute.buffer.uid] += getAttributeInfoFromFormat(attribute.format).stride;
     }
 
     for (const j in attributes)
@@ -63,6 +63,6 @@ function ensureStartAndStride(geometry: Geometry): void
 
         attribute.start ??= tempStart[attribute.buffer.uid];
 
-        tempStart[attribute.buffer.uid] += getUniformInfoFromFormat(attribute.format).stride;
+        tempStart[attribute.buffer.uid] += getAttributeInfoFromFormat(attribute.format).stride;
     }
 }

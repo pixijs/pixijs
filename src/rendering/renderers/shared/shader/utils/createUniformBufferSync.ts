@@ -1,13 +1,13 @@
 /* eslint-disable quote-props */
-import { WGSL_TO_STD40_SIZE } from './createUBOElements';
-import { UBO_TO_SINGLE_SETTERS } from './createUniformBufferSyncTypes';
-import { UNIFORM_BUFFER_PARSERS } from './uniformBufferParsers';
+import { uniformParsers } from './uniformParsers';
 
-import type { UBOElement } from './createUBOElements';
-import type { UBO_TYPE, UniformsSyncCallback } from './createUniformBufferSyncTypes';
+import type { UBOElement, UNIFORM_TYPES_SINGLE, UniformsSyncCallback } from '../types';
 
 export function generateUniformBufferSync(
     uboElements: UBOElement[],
+    parserCode: 'uboWgsl' | 'uboStd40',
+    arrayGenerationFunction: (uboElement: UBOElement, offsetToAdd: number) => string,
+    singleSettersMap: Record<UNIFORM_TYPES_SINGLE, string>,
 ): UniformsSyncCallback
 {
     const funcFragments = [`
@@ -29,9 +29,9 @@ export function generateUniformBufferSync(
         let parsed = false;
         let offset = 0;
 
-        for (let j = 0; j < UNIFORM_BUFFER_PARSERS.length; j++)
+        for (let j = 0; j < uniformParsers.length; j++)
         {
-            const uniformParser = UNIFORM_BUFFER_PARSERS[j];
+            const uniformParser = uniformParsers[j];
 
             if (uniformParser.test(uboElement.data))
             {
@@ -40,7 +40,7 @@ export function generateUniformBufferSync(
                 funcFragments.push(
                     `name = "${name}";`,
                     `offset += ${offset - prev};`,
-                    UNIFORM_BUFFER_PARSERS[j].code);
+                    uniformParsers[j][parserCode] || uniformParsers[j].ubo);
                 parsed = true;
 
                 break;
@@ -51,34 +51,13 @@ export function generateUniformBufferSync(
         {
             if (uboElement.data.size > 1)
             {
-                const rowSize = Math.max(WGSL_TO_STD40_SIZE[uboElement.data.type] / 16, 1);
-                const elementSize = (uboElement.data.value as Array<number>).length / uboElement.data.size;// size / rowSize;
-
-                const remainder = (4 - (elementSize % 4)) % 4;
-
                 offset = uboElement.offset / 4;
 
-                funcFragments.push(/* wgsl */`
-                    v = uv.${name};
-                    offset += ${offset - prev};
-
-                    let arrayOffset = offset;
-
-                    t = 0;
-
-                    for(var i=0; i < ${uboElement.data.size * rowSize}; i++)
-                    {
-                        for(var j = 0; j < ${elementSize}; j++)
-                        {
-                            data[arrayOffset++] = v[t++];
-                        }
-                        ${remainder !== 0 ? 'arrayOffset += ${remainder};' : ''}
-                    }
-                `);
+                funcFragments.push(arrayGenerationFunction(uboElement, offset - prev));
             }
             else
             {
-                const template = UBO_TO_SINGLE_SETTERS[uboElement.data.type as UBO_TYPE];
+                const template = singleSettersMap[uboElement.data.type as UNIFORM_TYPES_SINGLE];
 
                 offset = uboElement.offset / 4;
 
