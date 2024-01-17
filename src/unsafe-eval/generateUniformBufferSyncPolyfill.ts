@@ -1,5 +1,6 @@
-import type { UniformsSyncCallback} from '../rendering/renderers/shared/shader/types';
-import { type UBOElement } from '../rendering/renderers/shared/shader/types';
+import { type UBOElement  } from '../rendering/renderers/shared/shader/types';
+
+import type { UniformsSyncCallback } from '../rendering/renderers/shared/shader/types';
 
 export function generateUniformBufferSyncPolyfill(
     _uboElements: UBOElement[],

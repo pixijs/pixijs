@@ -1,4 +1,4 @@
-import { ExtensionType } from '../../../extensions';
+import { ExtensionType } from '../../../extensions/Extensions';
 import { UniformBufferSystem } from '../shared/shader/UniformBufferSystem';
 import { createUBOElementsSTD40 } from './shader/utils/createUBOElementsSTD40';
 import { generateUniformBufferSyncSTD40 } from './shader/utils/createUniformBufferSyncSTD40';

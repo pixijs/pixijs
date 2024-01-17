@@ -1,4 +1,4 @@
-import { ExtensionType } from '../../../extensions';
+import { ExtensionType } from '../../../extensions/Extensions';
 import { UniformBufferSystem } from '../shared/shader/UniformBufferSystem';
 import { createUBOElementsWGSL } from './shader/utils/createUBOElementsWGSL';
 import { generateUniformBufferSyncWGSL } from './shader/utils/createUniformBufferSyncWGSL';
