@@ -55,6 +55,8 @@ export interface MeshOptions<
      * Can be shared between multiple Mesh objects.
      */
     shader?: SHADER;
+    /** The state of WebGL required to render the mesh. */
+    state?: State;
     /** The texture that the Mesh uses. Null for non-MeshMaterial shaders */
     texture?: Texture;
     /** Whether or not to round the x/y position. */
@@ -82,7 +84,7 @@ export class Mesh<
 {
     public readonly renderPipeId = 'mesh';
     public readonly canBundle = true;
-    public state = State.for2d();
+    public state: State;
 
     /** @ignore */
     public _texture: Texture;
@@ -116,7 +118,7 @@ export class Mesh<
             }
         }
 
-        const { geometry, shader, texture, roundPixels, ...rest } = options;
+        const { geometry, shader, texture, roundPixels, state, ...rest } = options;
 
         super({
             label: 'Mesh',
@@ -127,6 +129,7 @@ export class Mesh<
 
         this.shader = shader;
         this.texture = texture ?? (shader as unknown as TextureShader)?.texture ?? Texture.WHITE;
+        this.state = state ?? State.for2d();
 
         this._geometry = geometry;
         this._geometry.on('update', this.onViewUpdate, this);
