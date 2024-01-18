@@ -1,4 +1,5 @@
 import { Buffer } from '../../src/rendering/renderers/shared/buffer/Buffer';
+import { BufferUsage } from '../../src/rendering/renderers/shared/buffer/const';
 import { Geometry } from '../../src/rendering/renderers/shared/geometry/Geometry';
 import { getGeometry } from '../utils/getGeometry';
 import { getGlProgram } from '../utils/getGlProgram';
@@ -96,7 +97,7 @@ describe('Geometry', () =>
                         data: [-5, -5, 5, -5, 5, 5, -5, 5],
                         usage: 1,
                     }),
-                    shaderLocation: 0,
+                    location: 0,
                     format: 'float32x2',
                     stride: 2 * 4,
                     offset: 0,
@@ -123,5 +124,44 @@ describe('Geometry', () =>
         expect(bounds.minY).toEqual(-10);
         expect(bounds.maxX).toEqual(10);
         expect(bounds.maxY).toEqual(10);
+    });
+
+    it('should allow attribute array to be passed into constructor', () =>
+    {
+        const geometry = new Geometry({
+            attributes: {
+                aPosition: [0, 1, 2, 3]
+            }
+        });
+
+        expect(geometry.attributes.aPosition.buffer.data).toEqual(new Float32Array([0, 1, 2, 3]));
+    });
+
+    it('should allow attribute typed array to be passed into constructor', () =>
+    {
+        const float32Array = new Float32Array([0, 1, 2, 3]);
+        const geometry = new Geometry({
+            attributes: {
+                aPosition: float32Array
+            }
+        });
+
+        expect(geometry.attributes.aPosition.buffer.data).toBe(float32Array);
+    });
+
+    it('should allow attribute Buffer to be passed into constructor', () =>
+    {
+        const buffer = new Buffer({
+            data: new Float32Array([0, 1, 2, 3]),
+            usage: BufferUsage.VERTEX | BufferUsage.COPY_DST,
+        });
+
+        const geometry = new Geometry({
+            attributes: {
+                aPosition: buffer
+            }
+        });
+
+        expect(geometry.attributes.aPosition.buffer).toBe(buffer);
     });
 });

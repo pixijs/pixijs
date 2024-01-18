@@ -4,7 +4,10 @@ import { getGlobalBounds } from '../bounds/getGlobalBounds';
 import { getLocalBounds } from '../bounds/getLocalBounds';
 import { checkChildrenDidChange } from '../utils/checkChildrenDidChange';
 
+import type { Size } from '../../../maths/misc/Size';
 import type { Container } from '../Container';
+
+type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export interface MeasureMixinConstructor
 {
@@ -13,11 +16,15 @@ export interface MeasureMixinConstructor
 }
 export interface MeasureMixin extends Required<MeasureMixinConstructor>
 {
+    getSize(out?: Size): Size;
+    setSize(width: number, height?: number): void;
+    setSize(value: Optional<Size, 'height'>): void;
     getLocalBounds(bounds?: Bounds): Bounds;
     getBounds(skipUpdate?: boolean, bounds?: Bounds): Bounds;
     _localBoundsCacheData: LocalBoundsCacheData;
     _localBoundsCacheId: number;
-
+    _setWidth(width: number, localWidth: number): void;
+    _setHeight(height: number, localHeight: number): void;
 }
 
 interface LocalBoundsCacheData
@@ -48,16 +55,7 @@ export const measureMixin: Partial<Container> = {
     {
         const localWidth = this.getLocalBounds().width;
 
-        const sign = Math.sign(this.scale.x) || 1;
-
-        if (localWidth !== 0)
-        {
-            this.scale.x = (value / localWidth) * sign;
-        }
-        else
-        {
-            this.scale.x = sign;
-        }
+        this._setWidth(value, localWidth);
     },
 
     /**
@@ -73,6 +71,82 @@ export const measureMixin: Partial<Container> = {
     {
         const localHeight = this.getLocalBounds().height;
 
+        this._setHeight(value, localHeight);
+    },
+
+    /**
+     * Retrieves the size of the container as a [Size]{@link Size} object.
+     * This is faster than get the width and height separately.
+     * @param out - Optional object to store the size in.
+     * @returns - The size of the container.
+     * @memberof scene.Container#
+     */
+    getSize(out?: Size): Size
+    {
+        if (!out)
+        {
+            out = {} as Size;
+        }
+
+        const bounds = this.getLocalBounds();
+
+        out.width = Math.abs(this.scale.x * bounds.width);
+        out.height = Math.abs(this.scale.y * bounds.height);
+
+        return out;
+    },
+
+    /**
+     * Sets the size of the container to the specified width and height.
+     * This is faster than setting the width and height separately.
+     * @param value - This can be either a number or a [Size]{@link Size} object.
+     * @param height - The height to set. Defaults to the value of `width` if not provided.
+     * @memberof scene.Container#
+     */
+    setSize(value: number | Optional<Size, 'height'>, height?: number)
+    {
+        const size = this.getLocalBounds();
+        let convertedWidth: number;
+        let convertedHeight: number;
+
+        if (typeof value !== 'object')
+        {
+            convertedWidth = value;
+            convertedHeight = height ?? value;
+        }
+        else
+        {
+            convertedWidth = value.width;
+            convertedHeight = value.height ?? value.width;
+        }
+
+        if (convertedWidth !== undefined)
+        {
+            this._setWidth(convertedWidth, size.width);
+        }
+
+        if (convertedHeight !== undefined)
+        {
+            this._setHeight(convertedHeight, size.height);
+        }
+    },
+
+    _setWidth(value: number, localWidth: number)
+    {
+        const sign = Math.sign(this.scale.x) || 1;
+
+        if (localWidth !== 0)
+        {
+            this.scale.x = (value / localWidth) * sign;
+        }
+        else
+        {
+            this.scale.x = sign;
+        }
+    },
+
+    _setHeight(value: number, localHeight: number)
+    {
         const sign = Math.sign(this.scale.y) || 1;
 
         if (localHeight !== 0)
@@ -135,7 +209,5 @@ export const measureMixin: Partial<Container> = {
     getBounds(skipUpdate?: boolean, bounds?: Bounds): Bounds
     {
         return getGlobalBounds(this, skipUpdate, bounds || new Bounds());
-    }
-
+    },
 } as Container;
-

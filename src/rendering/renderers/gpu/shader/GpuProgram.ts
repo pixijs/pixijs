@@ -1,10 +1,12 @@
 import { createIdFromString } from '../../shared/utils/createIdFromString';
-import { extractStructAndGroups } from './extractStructAndGroups';
-import { generateGpuLayoutGroups } from './generateGpuLayoutGroups';
-import { generateLayoutHash } from './generateLayoutHash';
-import { removeStructAndGroupDuplicates } from './removeStructAndGroupDuplicates';
+import { extractAttributesFromGpuProgram } from './utils/extractAttributesFromGpuProgram';
+import { extractStructAndGroups } from './utils/extractStructAndGroups';
+import { generateGpuLayoutGroups } from './utils/generateGpuLayoutGroups';
+import { generateLayoutHash } from './utils/generateLayoutHash';
+import { removeStructAndGroupDuplicates } from './utils/removeStructAndGroupDuplicates';
 
-import type { StructsAndGroups } from './extractStructAndGroups';
+import type { ExtractedAttributeData } from '../../shared/shader/utils/extractAttributesFromGlProgram';
+import type { StructsAndGroups } from './utils/extractStructAndGroups';
 
 /**
  * a WebGPU descriptions of how the program is layed out
@@ -111,6 +113,7 @@ export class GpuProgram
      * Makes it much easier to debug!
      */
     public readonly name: string;
+    private _attributeData: Record<string, ExtractedAttributeData>;
 
     /**
      * Create a new GpuProgram
@@ -160,6 +163,12 @@ export class GpuProgram
         this._layoutKey = createIdFromString(bigKey, 'program');
     }
 
+    get attributeData()
+    {
+        this._attributeData ??= extractAttributesFromGpuProgram(this.vertex);
+
+        return this._attributeData;
+    }
     /** destroys the program */
     public destroy(): void
     {

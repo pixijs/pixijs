@@ -4,6 +4,8 @@
 import { browserExt } from './environment-browser/browserExt';
 import { webworkerExt } from './environment-webworker/webworkerExt';
 import { extensions } from './extensions/Extensions';
+import './rendering/init';
+import './spritesheet/init';
 
 export * from './accessibility';
 export * from './app';

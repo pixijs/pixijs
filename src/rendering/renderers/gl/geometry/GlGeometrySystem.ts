@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { warn } from '../../../../utils/logging/warn';
 import { getUniformInfoFromFormat } from '../../shared/shader/utils/getUniformInfoFromFormat';
+import { ensureAttributes } from '../shader/program/ensureAttributes';
 import { getGlTypeFromFormat } from './utils/getGlTypeFromFormat';
 
 import type { Topology } from '../../shared/geometry/const';
@@ -9,8 +9,6 @@ import type { System } from '../../shared/system/System';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { GlProgram } from '../shader/GlProgram';
 import type { WebGLRenderer } from '../WebGLRenderer';
-
-const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
 
 const topologyToGlMap = {
     'point-list': 0x0000,
@@ -247,57 +245,9 @@ export class GlGeometrySystem implements System
             return vao;
         }
 
+        ensureAttributes(geometry, program._attributeData);
+
         const buffers = geometry.buffers;
-        const attributes = geometry.attributes;
-        const tempStride: Record<string, number> = {};
-        const tempStart: Record<string, number> = {};
-
-        for (const j in buffers)
-        {
-            tempStride[j] = 0;
-            tempStart[j] = 0;
-        }
-
-        for (const j in attributes)
-        {
-            if (!attributes[j].size && program._attributeData[j])
-            {
-                attributes[j].size = program._attributeData[j].size;
-            }
-            else if (!attributes[j].size)
-            {
-                // #if _DEBUG
-                warn(`PIXI Geometry attribute '${j}' size cannot be determined (likely the bound shader does not have the attribute)`);  // eslint-disable-line
-                // #endif
-            }
-
-            tempStride[attributes[j].buffer.uid] += attributes[j].size * byteSizeMap[attributes[j].type];
-        }
-
-        for (const j in attributes)
-        {
-            const attribute = attributes[j];
-            const attribSize = attribute.size;
-
-            if (attribute.stride === undefined)
-            {
-                if (tempStride[attribute.buffer.uid] === attribSize * byteSizeMap[attribute.type])
-                {
-                    attribute.stride = 0;
-                }
-                else
-                {
-                    attribute.stride = tempStride[attribute.buffer.uid];
-                }
-            }
-
-            if (attribute.start === undefined)
-            {
-                attribute.start = tempStart[attribute.buffer.uid];
-
-                tempStart[attribute.buffer.uid] += attribSize * byteSizeMap[attribute.type];
-            }
-        }
 
         // @TODO: We don't know if VAO is supported.
         vao = gl.createVertexArray();
@@ -422,7 +372,7 @@ export class GlGeometrySystem implements System
                     lastBuffer = glBuffer;
                 }
 
-                const location = program._attributeData[j].location;
+                const location = attribute.location;
 
                 // TODO introduce state again
                 // we can optimise this for older devices that have no VAOs

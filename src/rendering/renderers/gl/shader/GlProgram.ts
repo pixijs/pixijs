@@ -6,6 +6,7 @@ import { setProgramName } from './program/preprocessors/setProgramName';
 import { stripVersion } from './program/preprocessors/stripVersion';
 
 import type { TypedArray } from '../../shared/buffer/Buffer';
+import type { ExtractedAttributeData } from '../../shared/shader/utils/extractAttributesFromGlProgram';
 
 export interface GlAttributeData
 {
@@ -113,7 +114,7 @@ export class GlProgram
      * @internal
      * @ignore
      */
-    public _attributeData: Record<string, GlAttributeData>;
+    public _attributeData: Record<string, ExtractedAttributeData>;
     /**
      * uniform data extracted from the program once created this happens when the program is used for the first time
      * @internal
