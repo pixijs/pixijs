@@ -8,7 +8,7 @@ import type { UNIFORM_TYPES } from '../../../shared/shader/types';
 
 export type ArraySetterFunction = (v: any, location: WebGLUniformLocation, gl: any) => void;
 
-export const GLSL_TO_SINGLE_SETTERS: Record<UNIFORM_TYPES | string, string> = {
+export const UNIFORM_TO_SINGLE_SETTERS: Record<UNIFORM_TYPES | string, string> = {
     f32: `if (cv !== v) {
             cu.value = v;
             gl.uniform1f(location, v);
@@ -102,7 +102,7 @@ export const GLSL_TO_SINGLE_SETTERS: Record<UNIFORM_TYPES | string, string> = {
     'mat4x4<f32>': `gl.uniformMatrix4fv(location, false, v);`,
 };
 
-export const GLSL_TO_ARRAY_SETTERS: Record<UNIFORM_TYPES | string, string> = {
+export const UNIFORM_TO_ARRAY_SETTERS: Record<UNIFORM_TYPES | string, string> = {
     f32: `gl.uniform1fv(location, v);`,
     'vec2<f32>': `gl.uniform2fv(location, v);`,
     'vec3<f32>': `gl.uniform3fv(location, v);`,

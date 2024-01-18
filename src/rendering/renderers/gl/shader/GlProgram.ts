@@ -159,6 +159,7 @@ export class GlProgram
             setProgramName: {
                 name: options.name,
             },
+            addProgramDefines: isES300,
             insertVersion: isES300
         };
 

@@ -1,3 +1,4 @@
+import { warn } from '../../../../../utils';
 import { getAttributeInfoFromFormat } from '../../../shared/geometry/utils/getAttributeInfoFromFormat';
 
 import type { Geometry } from '../../../shared/geometry/Geometry';
@@ -24,10 +25,18 @@ export function ensureAttributes(
         const attribute = geometry.attributes[i];
         const attributeData = extractedData[i];
 
-        attribute.location ??= attributeData.location;
-        attribute.format ??= attributeData.format;
-        attribute.offset ??= attributeData.offset;
-        attribute.instance ??= attributeData.instance;
+        if (attributeData)
+        {
+            attribute.location ??= attributeData.location;
+            attribute.format ??= attributeData.format;
+            attribute.offset ??= attributeData.offset;
+            attribute.instance ??= attributeData.instance;
+        }
+        else
+        {
+            // eslint-disable-next-line max-len
+            warn(`Attribute ${i} is not present in the shader, but is present in the geometry. Unable to infer attribute details.`);
+        }
     }
 
     ensureStartAndStride(geometry);

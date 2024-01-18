@@ -7,7 +7,7 @@
 import { BufferResource } from '../../../shared/buffer/BufferResource';
 import { UniformGroup } from '../../../shared/shader/UniformGroup';
 import { uniformParsers } from '../../../shared/shader/utils/uniformParsers';
-import { GLSL_TO_ARRAY_SETTERS, GLSL_TO_SINGLE_SETTERS } from './generateUniformsSyncTypes';
+import { UNIFORM_TO_ARRAY_SETTERS, UNIFORM_TO_SINGLE_SETTERS } from './generateUniformsSyncTypes';
 
 import type { UniformsSyncCallback } from '../../../shared/shader/types';
 
@@ -70,7 +70,7 @@ export function generateUniformsSync(group: UniformGroup, uniformData: Record<st
 
         if (!parsed)
         {
-            const templateType = uniform.size === 1 ? GLSL_TO_SINGLE_SETTERS : GLSL_TO_ARRAY_SETTERS;
+            const templateType = uniform.size === 1 ? UNIFORM_TO_SINGLE_SETTERS : UNIFORM_TO_ARRAY_SETTERS;
 
             const template = templateType[uniform.type].replace('location', `ud["${i}"].location`);
 

@@ -1,6 +1,6 @@
+import { GlUniformBufferSystem, GpuUniformBufferSystem } from '../rendering';
 import { GlUniformGroupSystem } from '../rendering/renderers/gl/shader/GlUniformGroupSystem';
-import { UniformBufferSystem } from '../rendering/renderers/shared/shader/UniformBufferSystem';
-import { generateUniformBufferSyncPolyfill } from './generateUniformBufferSyncPolyfill';
+import { generateUniformBufferSyncPolyfillSTD40 } from './generateUniformBufferSyncPolyfill';
 import { generateUniformsSyncPolyfill } from './generateUniformsSyncPolyfill';
 
 function selfInstall()
@@ -17,7 +17,7 @@ function selfInstall()
         }
     );
 
-    Object.assign(UniformBufferSystem.prototype,
+    Object.assign(GlUniformBufferSystem.prototype,
         {
             _systemCheck()
             {
@@ -25,7 +25,19 @@ function selfInstall()
             },
 
             // use polyfill which avoids eval method
-            _generateUniformBufferSync: generateUniformBufferSyncPolyfill,
+            _generateUniformBufferSync: generateUniformBufferSyncPolyfillSTD40,
+        }
+    );
+
+    Object.assign(GpuUniformBufferSystem.prototype,
+        {
+            _systemCheck()
+            {
+                // Do nothing, don't throw error
+            },
+
+            // use polyfill which avoids eval method
+            _generateUniformBufferSync: generateUniformBufferSyncPolyfillSTD40,
         }
     );
 }
