@@ -167,6 +167,8 @@ export class BitmapTextPipe implements RenderPipe<Text>
 
             currentY += bitmapFont.lineHeight;
         }
+        style._stroke.width /= scale;
+        context.stroke(style._stroke);
     }
 
     private _getGpuBitmapText(bitmapText: Text)
