@@ -6,13 +6,14 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should alpha tint scenes correctly',
-    only: true,
     create: async (scene: Container) =>
     {
         // layer green container..
         const squareContext = new GraphicsContext()
             .rect(0, 0, 20, 20)
             .fill('black');
+
+        squareContext.batchMode = 'no-batch';
 
         const alphaSquare = new Graphics(squareContext);
 
