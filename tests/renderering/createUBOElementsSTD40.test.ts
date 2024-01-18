@@ -1,4 +1,4 @@
-import { createUboElementsSTD40 } from '../../src/rendering/renderers/gl/shader/utils/createUboElementsSTD40_';
+import { createUboElementsSTD40 } from '../../src/rendering/renderers/gl/shader/utils/createUboElementsSTD40';
 
 import type { UNIFORM_TYPES, UniformData } from '../../src/rendering/renderers/shared/shader/types';
 

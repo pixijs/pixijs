@@ -1,5 +1,5 @@
 /* eslint-disable quote-props */
-import { createUboSyncFunction } from '../../../shared/shader/utils/createUboSyncFunction_';
+import { createUboSyncFunction } from '../../../shared/shader/utils/createUboSyncFunction';
 import { uboSyncFunctionsWGSL } from '../../../shared/shader/utils/uboSyncFunctions';
 import { generateArraySyncWGSL } from './generateArraySyncWGSL';
 

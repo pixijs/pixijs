@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { UboSystem } from '../shared/shader/UboSystem';
-import { createUboElementsWGSL } from './shader/utils/createUboElementsWGSL_';
+import { createUboElementsWGSL } from './shader/utils/createUboElementsWGSL';
 import { createUboSyncFunctionWGSL } from './shader/utils/createUboSyncFunctionWGSL';
 
 /**

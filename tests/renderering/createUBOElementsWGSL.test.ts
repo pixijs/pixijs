@@ -1,4 +1,4 @@
-import { createUboElementsWGSL } from '../../src/rendering/renderers/gpu/shader/utils/createUboElementsWGSL_';
+import { createUboElementsWGSL } from '../../src/rendering/renderers/gpu/shader/utils/createUboElementsWGSL';
 
 import type { UniformData } from '../../src/rendering/renderers/shared/shader/types';
 

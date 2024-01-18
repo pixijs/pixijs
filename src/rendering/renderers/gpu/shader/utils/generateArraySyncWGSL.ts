@@ -1,4 +1,4 @@
-import { WGSL_ALIGN_SIZE_DATA } from './createUboElementsWGSL_';
+import { WGSL_ALIGN_SIZE_DATA } from './createUboElementsWGSL';
 
 import type { UboElement } from '../../../shared/shader/types';
 

@@ -1,4 +1,4 @@
-import { WGSL_TO_STD40_SIZE } from './createUboElementsSTD40_';
+import { WGSL_TO_STD40_SIZE } from './createUboElementsSTD40';
 
 import type { UboElement } from '../../../shared/shader/types';
 

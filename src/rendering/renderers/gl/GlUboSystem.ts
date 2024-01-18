@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { UboSystem } from '../shared/shader/UboSystem';
-import { createUboElementsSTD40 } from './shader/utils/createUboElementsSTD40_';
+import { createUboElementsSTD40 } from './shader/utils/createUboElementsSTD40';
 import { createUboSyncFunctionSTD40 } from './shader/utils/createUboSyncSTD40';
 
 /**
