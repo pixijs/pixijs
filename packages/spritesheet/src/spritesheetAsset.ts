@@ -20,7 +20,7 @@ const validImages = ['jpg', 'png', 'jpeg', 'avif', 'webp'];
 
 function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack: boolean)
 {
-    const out: Record<string, any> = {};
+    const out: Record<string, Texture | Spritesheet> = {};
 
     keys.forEach((key: string) =>
     {
@@ -29,7 +29,7 @@ function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack:
 
     Object.keys(asset.textures).forEach((key) =>
     {
-        out[key] = asset.textures[key];
+        out[`${asset.cachePrefix}${key}`] = asset.textures[key];
     });
 
     if (!ignoreMultiPack)
@@ -38,9 +38,11 @@ function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack:
 
         asset.linkedSheets.forEach((item: Spritesheet, i) =>
         {
-            const out2 = getCacheableAssets([`${basePath}/${asset.data.meta.related_multi_packs[i]}`], item, true);
-
-            Object.assign(out, out2);
+            Object.assign(out, getCacheableAssets(
+                [`${basePath}/${asset.data.meta.related_multi_packs[i]}`],
+                item,
+                true
+            ));
         });
     }
 
@@ -105,7 +107,8 @@ export const spritesheetAsset = {
         {
             const {
                 texture: imageTexture, // if user need to use preloaded texture
-                imageFilename // if user need to use custom filename (not from jsonFile.meta.image)
+                imageFilename, // if user need to use custom filename (not from jsonFile.meta.image)
+                cachePrefix, // if user need to use custom cache prefix
             } = options?.data ?? {};
 
             let basePath = utils.path.dirname(options.src);
@@ -130,11 +133,12 @@ export const spritesheetAsset = {
                 texture = assets[imagePath];
             }
 
-            const spritesheet = new Spritesheet(
-                texture.baseTexture,
-                asset,
-                options.src,
-            );
+            const spritesheet = new Spritesheet({
+                texture: texture.baseTexture,
+                data: asset,
+                resolutionFilename: options.src,
+                cachePrefix,
+            });
 
             await spritesheet.parse();
 
