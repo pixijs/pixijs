@@ -1,4 +1,5 @@
-import { WGSL_ALIGN_SIZE_DATA, WGSL_TO_STD40_SIZE } from '../rendering';
+import { WGSL_TO_STD40_SIZE } from '../rendering/renderers/gl/shader/utils/createUBOElementsSTD40';
+import { WGSL_ALIGN_SIZE_DATA } from '../rendering/renderers/gpu/shader/utils/createUBOElementsWGSL';
 import { uniformParsers } from '../rendering/renderers/shared/shader/utils/uniformParsers';
 import {
     uniformBufferFunctionsWGSL,

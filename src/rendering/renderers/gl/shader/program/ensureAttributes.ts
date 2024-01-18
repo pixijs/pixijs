@@ -1,4 +1,4 @@
-import { warn } from '../../../../../utils';
+import { warn } from '../../../../../utils/logging/warn';
 import { getAttributeInfoFromFormat } from '../../../shared/geometry/utils/getAttributeInfoFromFormat';
 
 import type { Geometry } from '../../../shared/geometry/Geometry';
