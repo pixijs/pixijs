@@ -2,7 +2,7 @@ import { createUboElementsWGSL } from '../../src/rendering/renderers/gpu/shader/
 
 import type { UniformData } from '../../src/rendering/renderers/shared/shader/types';
 
-describe('createUBOElements', () =>
+describe('createUboElements', () =>
 {
     it('do the things', async () =>
     {
@@ -82,9 +82,9 @@ describe('createUBOElements', () =>
             {
                 values: [{ format: 'vec3<f32>', size: 3 }, 'mat3x3<f32>', 'vec2<f32>'],
                 expected: {
-                    size: [12, 48, 8],
-                    offset: [0, 16, 64],
-                    totalSize: 80
+                    size: [48, 48, 8],
+                    offset: [0, 48, 96],
+                    totalSize: 112
                 },
             }
         ];
