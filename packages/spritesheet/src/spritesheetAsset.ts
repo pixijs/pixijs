@@ -20,8 +20,12 @@ const validImages = ['jpg', 'png', 'jpeg', 'avif', 'webp'];
 
 function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack: boolean)
 {
-    const out: Record<string, Texture> = keys.reduce((acc, key: string) =>
-        Object.assign(acc, { [key]: asset }), {});
+    const out: Record<string, Texture | Spritesheet> = {};
+
+    keys.forEach((key: string) =>
+    {
+        out[key] = asset;
+    });
 
     Object.keys(asset.textures).forEach((key) =>
     {
