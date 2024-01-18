@@ -1,6 +1,6 @@
-import { WGSL_TO_STD40_SIZE } from './createUBOElementsSTD40';
+import { WGSL_TO_STD40_SIZE } from './createUboElementsSTD40_';
 
-import type { UBOElement } from '../../../shared/shader/types';
+import type { UboElement } from '../../../shared/shader/types';
 
 /**
  * This generates a function that will sync an array to the uniform buffer
@@ -9,7 +9,7 @@ import type { UBOElement } from '../../../shared/shader/types';
  * @param offsetToAdd - the offset to append at the start of the code
  * @returns - the generated code
  */
-export function generateArraySyncSTD40(uboElement: UBOElement, offsetToAdd: number): string
+export function generateArraySyncSTD40(uboElement: UboElement, offsetToAdd: number): string
 {
     const rowSize = Math.max(WGSL_TO_STD40_SIZE[uboElement.data.type] / 16, 1);
     const elementSize = (uboElement.data.value as Array<number>).length / uboElement.data.size;// size / rowSize;

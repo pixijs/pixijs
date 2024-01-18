@@ -1,10 +1,10 @@
-import { GlUniformBufferSystem } from '../rendering/renderers/gl/GlUniformBufferSystem';
+import { GlUboSystem } from '../rendering/renderers/gl/GlUboSystem';
 import { GlUniformGroupSystem } from '../rendering/renderers/gl/shader/GlUniformGroupSystem';
-import { GpuUniformBufferSystem } from '../rendering/renderers/gpu/GpuUniformBufferSystem';
+import { GpuUboSystem } from '../rendering/renderers/gpu/GpuUboSystem';
 import {
-    generateUniformBufferSyncPolyfillSTD40,
-    generateUniformBufferSyncPolyfillWGSL
-} from './generateUniformBufferSyncPolyfill';
+    generateUboSyncPolyfillSTD40,
+    generateUboSyncPolyfillWGSL
+} from './generateUboSyncPolyfill';
 import { generateUniformsSyncPolyfill } from './generateUniformsSyncPolyfill';
 
 function selfInstall()
@@ -21,7 +21,7 @@ function selfInstall()
         }
     );
 
-    Object.assign(GlUniformBufferSystem.prototype,
+    Object.assign(GlUboSystem.prototype,
         {
             _systemCheck()
             {
@@ -29,11 +29,11 @@ function selfInstall()
             },
 
             // use polyfill which avoids eval method
-            _generateUniformBufferSync: generateUniformBufferSyncPolyfillSTD40,
+            _generateUniformBufferSync: generateUboSyncPolyfillSTD40,
         }
     );
 
-    Object.assign(GpuUniformBufferSystem.prototype,
+    Object.assign(GpuUboSystem.prototype,
         {
             _systemCheck()
             {
@@ -41,7 +41,7 @@ function selfInstall()
             },
 
             // use polyfill which avoids eval method
-            _generateUniformBufferSync: generateUniformBufferSyncPolyfillWGSL,
+            _generateUniformBufferSync: generateUboSyncPolyfillWGSL,
         }
     );
 }

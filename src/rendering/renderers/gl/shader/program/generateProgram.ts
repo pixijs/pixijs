@@ -3,7 +3,7 @@ import { GlProgramData } from '../GlProgramData';
 import { compileShader } from './compileShader';
 import { defaultValue } from './defaultValue';
 import { extractAttributesFromGlProgram } from './extractAttributesFromGlProgram';
-import { getUniformBufferData } from './getUniformBufferData';
+import { getUboData } from './getUboData';
 import { getUniformData } from './getUniformData';
 import { logProgramError } from './logProgramError';
 
@@ -58,7 +58,7 @@ export function generateProgram(gl: GlRenderingContext, program: GlProgram): GlP
 
     program._attributeData = extractAttributesFromGlProgram(webGLProgram, gl);
     program._uniformData = getUniformData(webGLProgram, gl);
-    program._uniformBlockData = getUniformBufferData(webGLProgram, gl);
+    program._uniformBlockData = getUboData(webGLProgram, gl);
 
     gl.deleteShader(glVertShader);
     gl.deleteShader(glFragShader);

@@ -65,7 +65,7 @@ export type UniformGroupOptions = {
  *
  * ```js
  * // A new Uniform Buffer Object...
- * const myCoolData = new UniformBufferGroup({
+ * const myCoolData = new UniformGroup({
  *     uCoolMatrix: {value:new Matrix(), type: 'mat4<f32>'},
  *     uFloatyMcFloatFace: {value:23, type: 'f32'},
  * }}

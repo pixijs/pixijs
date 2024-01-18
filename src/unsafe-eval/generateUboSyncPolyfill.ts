@@ -1,22 +1,18 @@
-import { WGSL_TO_STD40_SIZE } from '../rendering/renderers/gl/shader/utils/createUBOElementsSTD40';
-import { WGSL_ALIGN_SIZE_DATA } from '../rendering/renderers/gpu/shader/utils/createUBOElementsWGSL';
+import { WGSL_TO_STD40_SIZE } from '../rendering/renderers/gl/shader/utils/createUboElementsSTD40_';
+import { WGSL_ALIGN_SIZE_DATA } from '../rendering/renderers/gpu/shader/utils/createUboElementsWGSL_';
 import { uniformParsers } from '../rendering/renderers/shared/shader/utils/uniformParsers';
-import {
-    uniformBufferFunctionsWGSL,
-    uniformBufferParsersFunctions,
-    uniformBufferSyncFunctionsSTD40
-} from './uniformBufferSyncFunctions';
+import { uboParserFunctions, uboSingleFunctionsSTD40, uboSingleFunctionsWGSL } from './uboSyncFunctions';
 
-import type { UBOElement, UniformsSyncCallback } from '../rendering/renderers/shared/shader/types';
+import type { UboElement, UniformsSyncCallback } from '../rendering/renderers/shared/shader/types';
 import type { UniformGroup } from '../rendering/renderers/shared/shader/UniformGroup';
-import type { UniformBufferUploadFunction } from './uniformBufferSyncFunctions';
+import type { UboUploadFunction } from './uboSyncFunctions';
 
-export function generateUniformBufferSyncPolyfillSTD40(uboElements: UBOElement[]): UniformsSyncCallback
+export function generateUboSyncPolyfillSTD40(uboElements: UboElement[]): UniformsSyncCallback
 {
-    return generateUniformBufferSyncPolyfill(
+    return generateUboSyncPolyfill(
         uboElements,
-        uniformBufferSyncFunctionsSTD40,
-        (uboElement: UBOElement) =>
+        uboSingleFunctionsSTD40,
+        (uboElement: UboElement) =>
         {
             const rowSize = Math.max(WGSL_TO_STD40_SIZE[uboElement.data.type] / 16, 1);
             const elementSize = (uboElement.data.value as Array<number>).length / uboElement.data.size;// size / rowSize;
@@ -41,12 +37,12 @@ export function generateUniformBufferSyncPolyfillSTD40(uboElements: UBOElement[]
     );
 }
 
-export function generateUniformBufferSyncPolyfillWGSL(uboElements: UBOElement[]): UniformsSyncCallback
+export function generateUboSyncPolyfillWGSL(uboElements: UboElement[]): UniformsSyncCallback
 {
-    return generateUniformBufferSyncPolyfill(
+    return generateUboSyncPolyfill(
         uboElements,
-        uniformBufferFunctionsWGSL,
-        (uboElement: UBOElement) =>
+        uboSingleFunctionsWGSL,
+        (uboElement: UboElement) =>
         {
             const { size, align } = WGSL_ALIGN_SIZE_DATA[uboElement.data.type];
 
@@ -69,14 +65,14 @@ export function generateUniformBufferSyncPolyfillWGSL(uboElements: UBOElement[])
     );
 }
 
-function generateUniformBufferSyncPolyfill(
-    uboElements: UBOElement[],
-    uniformBufferFunctions: Record<string, UniformBufferUploadFunction>,
-    arrayUploadFunction: (uboElement: UBOElement) => UniformBufferUploadFunction
+function generateUboSyncPolyfill(
+    uboElements: UboElement[],
+    uboFunctions: Record<string, UboUploadFunction>,
+    arrayUploadFunction: (uboElement: UboElement) => UboUploadFunction
 ): UniformsSyncCallback
 {
     // loop through all the uniforms..
-    const functionMap: Record<string, {offset: number, func: UniformBufferUploadFunction}> = {};
+    const functionMap: Record<string, {offset: number, func: UboUploadFunction}> = {};
 
     for (const i in uboElements)
     {
@@ -96,7 +92,7 @@ function generateUniformBufferSyncPolyfill(
 
             if (uniform.type === parser.type && parser.test(uniform))
             {
-                functionMap[uniform.name].func = uniformBufferParsersFunctions[j];
+                functionMap[uniform.name].func = uboParserFunctions[j];
 
                 parsed = true;
 
@@ -110,7 +106,7 @@ function generateUniformBufferSyncPolyfill(
         {
             if (uniform.size === 1)
             {
-                functionMap[uniform.name].func = uniformBufferFunctions[uniform.type];
+                functionMap[uniform.name].func = uboFunctions[uniform.type];
             }
             else
             {

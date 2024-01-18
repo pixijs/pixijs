@@ -5,9 +5,8 @@
 
 import type { UNIFORM_TYPES } from '../rendering/renderers/shared/shader/types';
 
-export type UniformBufferUploadFunction = (name: string, data: Float32Array, offset: number, uv: any, v: any) => void;
-
-export const uniformBufferParsersFunctions: UniformBufferUploadFunction[] = [
+export type UboUploadFunction = (name: string, data: Float32Array, offset: number, uv: any, v: any) => void;
+export const uboParserFunctions: UboUploadFunction[] = [
     (name: string, data: Float32Array, offset: number, uv: any, _v: any): void =>
     {
         const matrix = uv[name].toArray(true);
@@ -52,7 +51,7 @@ export const uniformBufferParsersFunctions: UniformBufferUploadFunction[] = [
         data[offset + 2] = v.blue;
     },
 ];
-export const uniformBufferFunctionsWGSL: Record<UNIFORM_TYPES | string, UniformBufferUploadFunction> = {
+export const uboSingleFunctionsWGSL: Record<UNIFORM_TYPES | string, UboUploadFunction> = {
     f32: (_name: string, data: Float32Array, offset: number, _uv: any, v: any): void =>
     {
         data[offset] = v;
@@ -148,7 +147,7 @@ export const uniformBufferFunctionsWGSL: Record<UNIFORM_TYPES | string, UniformB
         }
     },
 };
-export const uniformBufferSyncFunctionsSTD40: Record<UNIFORM_TYPES | string, UniformBufferUploadFunction> = {
+export const uboSingleFunctionsSTD40: Record<UNIFORM_TYPES | string, UboUploadFunction> = {
     f32: (_name: string, data: Float32Array, offset: number, _uv: any, v: any): void =>
     {
         data[offset] = v;

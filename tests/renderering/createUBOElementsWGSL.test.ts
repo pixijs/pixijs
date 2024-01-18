@@ -1,4 +1,4 @@
-import { createUBOElementsWGSL } from '../../src/rendering/renderers/gpu/shader/utils/createUBOElementsWGSL';
+import { createUboElementsWGSL } from '../../src/rendering/renderers/gpu/shader/utils/createUboElementsWGSL_';
 
 import type { UniformData } from '../../src/rendering/renderers/shared/shader/types';
 
@@ -112,7 +112,7 @@ describe('createUBOElements', () =>
                     offset: expected.offset[i],
                 }));
 
-            const uboElements = createUBOElementsWGSL(uboData);
+            const uboElements = createUboElementsWGSL(uboData);
 
             expect(uboElements).toMatchObject({
                 uboElements: uboResults,

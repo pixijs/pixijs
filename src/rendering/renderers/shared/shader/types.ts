@@ -36,16 +36,16 @@ export interface UniformData
     name?: string;
 }
 
-export interface UBOElement
+export interface UboElement
 {
     data: UniformData;
     offset: number;
     size: number;
 }
 
-export interface UniformBufferLayout
+export interface UboLayout
 {
-    uboElements: UBOElement[];
+    uboElements: UboElement[];
     /** float32 size // TODO change to bytes */
     size: number;
 }

@@ -1,12 +1,12 @@
 /* eslint-disable quote-props */
 import { uniformParsers } from './uniformParsers';
 
-import type { UBOElement, UNIFORM_TYPES_SINGLE, UniformsSyncCallback } from '../types';
+import type { UboElement, UNIFORM_TYPES_SINGLE, UniformsSyncCallback } from '../types';
 
-export function generateUniformBufferSync(
-    uboElements: UBOElement[],
+export function createUboSyncFunction(
+    uboElements: UboElement[],
     parserCode: 'uboWgsl' | 'uboStd40',
-    arrayGenerationFunction: (uboElement: UBOElement, offsetToAdd: number) => string,
+    arrayGenerationFunction: (uboElement: UboElement, offsetToAdd: number) => string,
     singleSettersMap: Record<UNIFORM_TYPES_SINGLE, string>,
 ): UniformsSyncCallback
 {

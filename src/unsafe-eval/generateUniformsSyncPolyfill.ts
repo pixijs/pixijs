@@ -1,5 +1,5 @@
 import { uniformParsers } from '../rendering/renderers/shared/shader/utils/uniformParsers';
-import { UNIFORM_TO_ARRAY_FUNCTIONS, UNIFORM_TO_SINGLE_FUNCTIONS, uniformParsersFunctions } from './uniformSyncFunctions';
+import { uniformArrayParserFunctions, uniformParserFunctions, uniformSingleParserFunctions } from './uniformSyncFunctions';
 
 import type { GlUniformData } from '../rendering/renderers/gl/shader/GlProgram';
 import type { WebGLRenderer } from '../rendering/renderers/gl/WebGLRenderer';
@@ -29,7 +29,7 @@ export function generateUniformsSyncPolyfill(
 
             if (uniform.type === parser.type && parser.test(uniform))
             {
-                functionMap[i] = uniformParsersFunctions[j];
+                functionMap[i] = uniformParserFunctions[j];
 
                 parsed = true;
 
@@ -41,7 +41,7 @@ export function generateUniformsSyncPolyfill(
 
         if (!parsed)
         {
-            const templateType = uniform.size === 1 ? UNIFORM_TO_SINGLE_FUNCTIONS : UNIFORM_TO_ARRAY_FUNCTIONS;
+            const templateType = uniform.size === 1 ? uniformSingleParserFunctions : uniformArrayParserFunctions;
 
             functionMap[i] = templateType[uniform.type];
         }
@@ -56,7 +56,7 @@ export function generateUniformsSyncPolyfill(
 
         for (const i in functionMap)
         {
-            const v = group.uniforms[i];
+            const v = uv[i];
             const cu = ud[i];
             const cv = ud[i].value;
 

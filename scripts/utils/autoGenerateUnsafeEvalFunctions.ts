@@ -4,9 +4,9 @@ import {
     UNIFORM_TO_SINGLE_SETTERS
 } from '../../src/rendering/renderers/gl/shader/utils/generateUniformsSyncTypes';
 import {
-    uniformBufferSyncFunctionsSTD40,
-    uniformBufferSyncFunctionsWGSL
-} from '../../src/rendering/renderers/shared/shader/utils/uniformBufferSyncFunctions';
+    uboSyncFunctionsSTD40,
+    uboSyncFunctionsWGSL
+} from '../../src/rendering/renderers/shared/shader/utils/uboSyncFunctions';
 import { uniformParsers } from '../../src/rendering/renderers/shared/shader/utils/uniformParsers';
 
 /**
@@ -51,7 +51,7 @@ function autoGenerateUnsafeEvalFunctions()
     // eslint-disable-next-line max-len
     out.push(`export type UniformUploadFunction = (name: string, cu: any, cv: any, v: any, ud: any, uv: any, gl: any) => void;`);
 
-    out.push('export const UNIFORM_TO_SINGLE_FUNCTIONS:Record<UNIFORM_TYPES|string, UniformUploadFunction> = {');
+    out.push('export const uniformSingleParserFunctions:Record<UNIFORM_TYPES|string, UniformUploadFunction> = {');
     for (const i in UNIFORM_TO_SINGLE_SETTERS)
     {
         const fn = UNIFORM_TO_SINGLE_SETTERS[i];
@@ -60,7 +60,7 @@ function autoGenerateUnsafeEvalFunctions()
     }
     out.push('};\n');
 
-    out.push('export const UNIFORM_TO_ARRAY_FUNCTIONS:Record<UNIFORM_TYPES|string, UniformUploadFunction> = {');
+    out.push('export const uniformArrayParserFunctions:Record<UNIFORM_TYPES|string, UniformUploadFunction> = {');
     for (const i in UNIFORM_TO_ARRAY_SETTERS)
     {
         const fn = UNIFORM_TO_ARRAY_SETTERS[i];
@@ -70,7 +70,7 @@ function autoGenerateUnsafeEvalFunctions()
     out.push('};\n');
 
     // now add the uniform parsers..
-    out.push('export const uniformParsersFunctions:UniformUploadFunction[] = [');
+    out.push('export const uniformParserFunctions:UniformUploadFunction[] = [');
     for (const i in uniformParsers)
     {
         const fn = uniformParsers[i].uniform;
@@ -92,7 +92,7 @@ function autoGenerateUboUnsafeEvalFunctions()
     const out: string[] = [header];
 
     // eslint-disable-next-line max-len
-    out.push(`export type UniformBufferUploadFunction = (name:string, data:Float32Array, offset:number, uv:any, v:any) => void;`);
+    out.push(`export type UboUploadFunction = (name:string, data:Float32Array, offset:number, uv:any, v:any) => void;`);
 
     function convertToFunction(body: string)
     {
@@ -103,7 +103,7 @@ function autoGenerateUboUnsafeEvalFunctions()
     }
 
     // now add the uniform parsers..
-    out.push('export const uniformBufferParsersFunctions:UniformBufferUploadFunction[] = [');
+    out.push('export const uboParserFunctions:UboUploadFunction[] = [');
     for (const i in uniformParsers)
     {
         const fn = uniformParsers[i].uboWgsl ?? uniformParsers[i].ubo;
@@ -115,10 +115,10 @@ function autoGenerateUboUnsafeEvalFunctions()
     // and the basic uploads
 
     // now add the uniform parsers..
-    out.push('export const uniformBufferFunctionsWGSL:Record<UNIFORM_TYPES|string, UniformBufferUploadFunction> = {');
-    for (const i in uniformBufferSyncFunctionsWGSL)
+    out.push('export const uboSingleFunctionsWGSL:Record<UNIFORM_TYPES|string, UboUploadFunction> = {');
+    for (const i in uboSyncFunctionsWGSL)
     {
-        const fn = uniformBufferSyncFunctionsWGSL[i as keyof typeof uniformBufferSyncFunctionsWGSL];
+        const fn = uboSyncFunctionsWGSL[i as keyof typeof uboSyncFunctionsWGSL];
 
         out.push(`'${i}': ${convertToFunction(fn)},`);
     }
@@ -126,10 +126,10 @@ function autoGenerateUboUnsafeEvalFunctions()
     out.push('};');
 
     // now add the uniform parsers..
-    out.push('export const uniformBufferSyncFunctionsSTD40:Record<UNIFORM_TYPES|string, UniformBufferUploadFunction> = {');
-    for (const i in uniformBufferSyncFunctionsSTD40)
+    out.push('export const uboSingleFunctionsSTD40:Record<UNIFORM_TYPES|string, UboUploadFunction> = {');
+    for (const i in uboSyncFunctionsSTD40)
     {
-        const fn = uniformBufferSyncFunctionsSTD40[i as keyof typeof uniformBufferSyncFunctionsSTD40];
+        const fn = uboSyncFunctionsSTD40[i as keyof typeof uboSyncFunctionsSTD40];
 
         out.push(`'${i}': ${convertToFunction(fn)},`);
     }
@@ -138,7 +138,7 @@ function autoGenerateUboUnsafeEvalFunctions()
 
     const final = out.join('\n');
 
-    const path = 'src/unsafe-eval/uniformBufferSyncFunctions.ts';
+    const path = 'src/unsafe-eval/uboSyncFunctions.ts';
 
     writeFileSync(path, final, 'utf8');
 }

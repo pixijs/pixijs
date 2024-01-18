@@ -2,7 +2,7 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import { Buffer } from '../shared/buffer/Buffer';
 import { BufferResource } from '../shared/buffer/BufferResource';
 import { BufferUsage } from '../shared/buffer/const';
-import { UniformBufferBatch } from './buffer/UniformBufferBatch';
+import { UboBatch } from './buffer/UboBatch';
 import { BindGroup } from './shader/BindGroup';
 
 import type { UniformGroup } from '../shared/shader/UniformGroup';
@@ -25,7 +25,7 @@ export class GpuUniformBatchPipe
     private _renderer: WebGPURenderer;
 
     private _bindGroupHash: Record<number, BindGroup> = Object.create(null);
-    private readonly _batchBuffer: UniformBufferBatch;
+    private readonly _batchBuffer: UboBatch;
 
     // number of buffers..
     private _buffers: Buffer[] = [];
@@ -37,7 +37,7 @@ export class GpuUniformBatchPipe
     {
         this._renderer = renderer;
 
-        this._batchBuffer = new UniformBufferBatch({ minUniformOffsetAlignment });
+        this._batchBuffer = new UboBatch({ minUniformOffsetAlignment });
 
         const totalBuffers = (256 / minUniformOffsetAlignment);
 
@@ -78,22 +78,22 @@ export class GpuUniformBatchPipe
             return this._bindGroupHash[group.uid];
         }
 
-        this._renderer.uniformBuffer.ensureUniformGroup(group);
+        this._renderer.ubo.ensureUniformGroup(group);
 
         const data = group.buffer.data as Float32Array;
 
         const offset = this._batchBuffer.addEmptyGroup(data.length);
 
-        this._renderer.uniformBuffer.syncUniformGroup(group, this._batchBuffer.data, offset / 4);
+        this._renderer.ubo.syncUniformGroup(group, this._batchBuffer.data, offset / 4);
 
         this._bindGroupHash[group.uid] = this._getBindGroup(offset / minUniformOffsetAlignment);
 
         return this._bindGroupHash[group.uid];
     }
 
-    public getUniformBufferResource(group: UniformGroup<any>): BufferResource
+    public getUboResource(group: UniformGroup<any>): BufferResource
     {
-        this._renderer.uniformBuffer.updateUniformGroup(group);
+        this._renderer.ubo.updateUniformGroup(group);
 
         const data = group.buffer.data as Float32Array;
 

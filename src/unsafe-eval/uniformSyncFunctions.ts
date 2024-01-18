@@ -7,7 +7,7 @@ import type { UNIFORM_TYPES } from '../rendering/renderers/shared/shader/types';
 
 export type UniformUploadFunction = (name: string, cu: any, cv: any, v: any, ud: any, uv: any, gl: any) => void;
 
-export const UNIFORM_TO_SINGLE_FUNCTIONS: Record<UNIFORM_TYPES | string, UniformUploadFunction> = {
+export const uniformSingleParserFunctions: Record<UNIFORM_TYPES | string, UniformUploadFunction> = {
     f32(name: string, cu: any, cv: any, v: any, ud: any, _uv: any, gl: any): void
     {
         if (cv !== v)
@@ -174,7 +174,7 @@ export const UNIFORM_TO_SINGLE_FUNCTIONS: Record<UNIFORM_TYPES | string, Uniform
     },
 };
 
-export const UNIFORM_TO_ARRAY_FUNCTIONS: Record<UNIFORM_TYPES | string, UniformUploadFunction> = {
+export const uniformArrayParserFunctions: Record<UNIFORM_TYPES | string, UniformUploadFunction> = {
     f32(name: string, _cu: any, _cv: any, v: any, ud: any, _uv: any, gl: any): void
     {
         gl.uniform1fv(ud[name].location, v);
@@ -253,7 +253,7 @@ export const UNIFORM_TO_ARRAY_FUNCTIONS: Record<UNIFORM_TYPES | string, UniformU
     },
 };
 
-export const uniformParsersFunctions: UniformUploadFunction[] = [
+export const uniformParserFunctions: UniformUploadFunction[] = [
     (name: string, _cu: any, _cv: any, _v: any, ud: any, uv: any, gl: any): void =>
     {
         gl.uniformMatrix3fv(ud[name].location, false, uv[name].toArray(true));

@@ -7,7 +7,7 @@ import type { GlUniformBlockData } from '../GlProgram';
  * @param gl - the WebGL context
  * @returns {object} the uniform data for this program
  */
-export function getUniformBufferData(program: WebGLProgram, gl: WebGL2RenderingContext): Record<string, GlUniformBlockData>
+export function getUboData(program: WebGLProgram, gl: WebGL2RenderingContext): Record<string, GlUniformBlockData>
 {
     // if uniform buffer data is not supported, early out
     if (!gl.ACTIVE_UNIFORM_BLOCKS) return {};

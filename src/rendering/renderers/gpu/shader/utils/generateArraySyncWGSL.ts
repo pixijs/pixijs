@@ -1,6 +1,6 @@
-import { WGSL_ALIGN_SIZE_DATA } from './createUBOElementsWGSL';
+import { WGSL_ALIGN_SIZE_DATA } from './createUboElementsWGSL_';
 
-import type { UBOElement } from '../../../shared/shader/types';
+import type { UboElement } from '../../../shared/shader/types';
 
 /**
  * This generates a function that will sync an array to the uniform buffer
@@ -9,7 +9,7 @@ import type { UBOElement } from '../../../shared/shader/types';
  * @param offsetToAdd - the offset to append at the start of the code
  * @returns - the generated code
  */
-export function generateArraySyncWGSL(uboElement: UBOElement, offsetToAdd: number): string
+export function generateArraySyncWGSL(uboElement: UboElement, offsetToAdd: number): string
 {
     // this is in byte..
     const { size, align } = WGSL_ALIGN_SIZE_DATA[uboElement.data.type];

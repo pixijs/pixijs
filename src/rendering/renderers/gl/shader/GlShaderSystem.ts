@@ -149,7 +149,7 @@ export class GlShaderSystem
 
         if (isBufferResource)
         {
-            this._renderer.uniformBuffer.updateUniformGroup(uniformGroup as UniformGroup);
+            this._renderer.ubo.updateUniformGroup(uniformGroup as UniformGroup);
         }
 
         bufferSystem.updateBuffer(uniformGroup.buffer);

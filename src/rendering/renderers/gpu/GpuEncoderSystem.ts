@@ -173,7 +173,7 @@ export class GpuEncoderSystem implements System
 
             if ((resource as UniformGroup).isUniformGroup)
             {
-                this._renderer.uniformBuffer.updateUniformGroup(resource as UniformGroup);
+                this._renderer.ubo.updateUniformGroup(resource as UniformGroup);
             }
         }
     }

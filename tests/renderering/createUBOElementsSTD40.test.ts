@@ -1,4 +1,4 @@
-import { createUBOElementsSTD40 } from '../../src/rendering/renderers/gl/shader/utils/createUBOElementsSTD40';
+import { createUboElementsSTD40 } from '../../src/rendering/renderers/gl/shader/utils/createUboElementsSTD40_';
 
 import type { UNIFORM_TYPES, UniformData } from '../../src/rendering/renderers/shared/shader/types';
 
@@ -99,7 +99,7 @@ describe('createUBOElements', () =>
                     offset: expected.offset[i],
                 }));
 
-            const uboElements = createUBOElementsSTD40(uboData);
+            const uboElements = createUboElementsSTD40(uboData);
 
             expect(uboElements).toMatchObject({
                 uboElements: uboResults,

@@ -11,7 +11,7 @@ function loopMatrix(col: number, row: number)
     `;
 }
 
-export const uniformBufferSyncFunctionsSTD40: Record<UNIFORM_TYPES_SINGLE, string> = {
+export const uboSyncFunctionsSTD40: Record<UNIFORM_TYPES_SINGLE, string> = {
     f32: `
         data[offset] = v;`,
     i32: `
@@ -55,8 +55,8 @@ export const uniformBufferSyncFunctionsSTD40: Record<UNIFORM_TYPES_SINGLE, strin
     'mat3x4<f32>': loopMatrix(3, 4),
 };
 
-export const uniformBufferSyncFunctionsWGSL: Record<UNIFORM_TYPES_SINGLE, string> = {
-    ...uniformBufferSyncFunctionsSTD40,
+export const uboSyncFunctionsWGSL: Record<UNIFORM_TYPES_SINGLE, string> = {
+    ...uboSyncFunctionsSTD40,
     'mat2x2<f32>': `
         data[offset] = v[0];
         data[offset + 1] = v[1];
