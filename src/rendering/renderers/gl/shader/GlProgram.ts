@@ -6,7 +6,7 @@ import { setProgramName } from './program/preprocessors/setProgramName';
 import { stripVersion } from './program/preprocessors/stripVersion';
 
 import type { TypedArray } from '../../shared/buffer/Buffer';
-import type { ExtractedAttributeData } from '../../shared/shader/utils/extractAttributesFromGlProgram';
+import type { ExtractedAttributeData } from './program/extractAttributesFromGlProgram';
 
 export interface GlAttributeData
 {
@@ -159,6 +159,7 @@ export class GlProgram
             setProgramName: {
                 name: options.name,
             },
+            addProgramDefines: isES300,
             insertVersion: isES300
         };
 

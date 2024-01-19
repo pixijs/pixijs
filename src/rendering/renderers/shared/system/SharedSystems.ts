@@ -10,7 +10,6 @@ import { BlendModePipe } from '../blendModes/BlendModePipe';
 import { ExtractSystem } from '../extract/ExtractSystem';
 import { GenerateTextureSystem } from '../extract/GenerateTextureSystem';
 import { GlobalUniformSystem } from '../renderTarget/GlobalUniformSystem';
-import { UniformBufferSystem } from '../shader/UniformBufferSystem';
 import { HelloSystem } from '../startup/HelloSystem';
 import { TextureGCSystem } from '../texture/TextureGCSystem';
 import { ViewSystem } from '../view/ViewSystem';
@@ -21,7 +20,6 @@ export const SharedSystems = [
     HelloSystem,
     ViewSystem,
     RenderGroupSystem,
-    UniformBufferSystem,
     TextureGCSystem,
     GenerateTextureSystem,
     ExtractSystem,

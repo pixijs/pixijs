@@ -1,9 +1,9 @@
 import { uid } from '../../../../utils/data/uid';
-import { defaultUniformValue } from './utils/defaultUniformValue';
+import { getDefaultUniformValue } from './utils/getDefaultUniformValue';
 
 import type { BindResource } from '../../gpu/shader/BindResource';
 import type { Buffer } from '../buffer/Buffer';
-import type { UniformData } from './utils/createUBOElements';
+import type { UniformData } from './types';
 
 type FLOPS<T = UniformData> = T extends { value: infer V } ? V : never;
 
@@ -65,7 +65,7 @@ export type UniformGroupOptions = {
  *
  * ```js
  * // A new Uniform Buffer Object...
- * const myCoolData = new UniformBufferGroup({
+ * const myCoolData = new UniformGroup({
  *     uCoolMatrix: {value:new Matrix(), type: 'mat4<f32>'},
  *     uFloatyMcFloatFace: {value:23, type: 'f32'},
  * }}
@@ -147,7 +147,7 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
 
             uniformData.name = i;
             uniformData.size = uniformData.size ?? 1;
-            uniformData.value ??= defaultUniformValue(uniformData.type, uniformData.size);
+            uniformData.value ??= getDefaultUniformValue(uniformData.type, uniformData.size);
 
             uniforms[i] = uniformData.value as ExtractUniformObject<UNIFORMS>[keyof UNIFORMS];
         }

@@ -42,8 +42,8 @@ export class ColorMatrixFilter extends Filter
                     0, 0, 1, 0, 0,
                     0, 0, 0, 1, 0,
                 ],
-                type: 'vec4<f32>',
-                size: 5,
+                type: 'f32',
+                size: 20,
             },
             uAlpha: {
                 value: 1,

@@ -4,7 +4,7 @@
  * @param {number} size
  * @private
  */
-export function defaultUniformValue(
+export function getDefaultUniformValue(
     type: string,
     size: number
 ): number | Float32Array | Int32Array | Uint32Array | boolean | boolean[]

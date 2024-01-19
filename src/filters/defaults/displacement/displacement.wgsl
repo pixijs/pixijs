@@ -9,9 +9,9 @@ struct GlobalFilterUniforms {
 };
 
 struct DisplacementUniforms {
-  @align(16) uFilterMatrix:mat3x3<f32>,
-  @align(16) uScale:vec2<f32>,
-  @align(16) uRotation:vec4<f32>
+  uFilterMatrix:mat3x3<f32>,
+  uScale:vec2<f32>,
+  uRotation:mat2x2<f32>
 };
 
 
@@ -81,13 +81,8 @@ fn mainFragment(
 ) -> @location(0) vec4<f32> {
 
     var map = textureSample(uMapTexture, uMapSampler, filterUv);
-    
-    let rotation: mat2x2<f32> = mat2x2<f32>(
-      filterUniforms.uRotation.x, filterUniforms.uRotation.y,  // first column
-      filterUniforms.uRotation.z, filterUniforms.uRotation.w   // second column
-    );
 
-    var offset =  gfu.uInputSize.zw * (rotation * (map.xy - 0.5)) * filterUniforms.uScale; 
+    var offset =  gfu.uInputSize.zw * (filterUniforms.uRotation * (map.xy - 0.5)) * filterUniforms.uScale; 
    
-     return textureSample(uTexture, uSampler, clamp(uv + offset, gfu.uInputClamp.xy, gfu.uInputClamp.zw));
+    return textureSample(uTexture, uSampler, clamp(uv + offset, gfu.uInputClamp.xy, gfu.uInputClamp.zw));
 }
