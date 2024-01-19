@@ -1,6 +1,6 @@
 import type { Buffer } from '../../shared/buffer/Buffer';
 
-export class UniformBufferBatch
+export class UboBatch
 {
     private _buffer: Buffer;
     public data: Float32Array;

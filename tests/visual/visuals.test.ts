@@ -54,9 +54,9 @@ describe('Visual Tests', () =>
         const id = scene.data.id || path.basename(scene.path).toLowerCase().replaceAll('.', '-');
 
         const defaultRenderers: RenderTypeFlags = {
+            webgpu: true,
             webgl1: true,
             webgl2: true,
-            webgpu: true,
         };
 
         const renderers = {

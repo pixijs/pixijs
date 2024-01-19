@@ -1,12 +1,10 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { Matrix } from '../../../maths/matrix/Matrix';
 import { compileHighShaderGlProgram } from '../../high-shader/compileHighShaderToProgram';
 import { colorBitGl } from '../../high-shader/shader-bits/colorBit';
 import { generateTextureBatchBitGl } from '../../high-shader/shader-bits/generateTextureBatchBit';
 import { roundPixelsBitGl } from '../../high-shader/shader-bits/roundPixelsBit';
 import { batchSamplersUniformGroup } from '../../renderers/gl/shader/batchSamplersUniformGroup';
 import { Shader } from '../../renderers/shared/shader/Shader';
-import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
 import { State } from '../../renderers/shared/state/State';
 import { MAX_TEXTURES } from '../shared/const';
 
@@ -35,11 +33,6 @@ export class GlBatchAdaptor implements BatcherAdaptor
 
     public init(batcherPipe: BatcherPipe): void
     {
-        const uniforms = new UniformGroup({
-            tint: { value: new Float32Array([1, 1, 1, 1]), type: 'f32' },
-            translationMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
-        });
-
         const glProgram = compileHighShaderGlProgram({
             name: 'batch',
             bits: [
@@ -52,7 +45,6 @@ export class GlBatchAdaptor implements BatcherAdaptor
         this._shader = new Shader({
             glProgram,
             resources: {
-                uniforms,
                 batchSamplers: batchSamplersUniformGroup,
             }
         });

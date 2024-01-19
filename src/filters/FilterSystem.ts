@@ -533,7 +533,7 @@ export class FilterSystem implements System
         if ((renderer as WebGPURenderer).renderPipes.uniformBatch)
         {
             const batchUniforms = (renderer as WebGPURenderer).renderPipes.uniformBatch
-                .getUniformBufferResource(this._filterGlobalUniforms);
+                .getUboResource(this._filterGlobalUniforms);
 
             this._globalFilterBindGroup.setResource(batchUniforms, 0);
         }

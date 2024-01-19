@@ -13,6 +13,7 @@ import { GlColorMaskSystem } from './GlColorMaskSystem';
 import { GlEncoderSystem } from './GlEncoderSystem';
 import { GlRenderTargetSystem } from './GlRenderTargetSystem';
 import { GlStencilSystem } from './GlStencilSystem';
+import { GlUboSystem } from './GlUboSystem';
 import { GlShaderSystem } from './shader/GlShaderSystem';
 import { GlUniformGroupSystem } from './shader/GlUniformGroupSystem';
 import { GlStateSystem } from './state/GlStateSystem';
@@ -26,6 +27,7 @@ import type { GlRenderingContext } from './context/GlRenderingContext';
 
 const DefaultWebGLSystems = [
     ...SharedSystems,
+    GlUboSystem,
     GlBackBufferSystem,
     GlContextSystem,
     GlBufferSystem,
