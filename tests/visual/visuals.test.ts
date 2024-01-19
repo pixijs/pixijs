@@ -51,9 +51,6 @@ describe('Visual Tests', () =>
 {
     scenesToTest.forEach((scene) =>
     {
-        //        if (i > 6 || i < 4) return;
-        //  if (i !== 4) return;
-
         const id = scene.data.id || path.basename(scene.path).toLowerCase().replaceAll('.', '-');
 
         const defaultRenderers: RenderTypeFlags = {
