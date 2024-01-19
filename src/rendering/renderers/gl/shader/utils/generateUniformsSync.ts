@@ -6,11 +6,10 @@
 
 import { BufferResource } from '../../../shared/buffer/BufferResource';
 import { UniformGroup } from '../../../shared/shader/UniformGroup';
-import { GLSL_TO_ARRAY_SETTERS, GLSL_TO_SINGLE_SETTERS_CACHED } from './generateUniformsSyncTypes';
-import { UNIFORM_PARSERS } from './uniformParsers';
+import { uniformParsers } from '../../../shared/shader/utils/uniformParsers';
+import { UNIFORM_TO_ARRAY_SETTERS, UNIFORM_TO_SINGLE_SETTERS } from './generateUniformsSyncTypes';
 
-import type { UniformsSyncCallback } from '../../../shared/shader/utils/createUniformBufferSyncTypes';
-import type { GLSL_TYPE } from './generateUniformsSyncTypes';
+import type { UniformsSyncCallback } from '../../../shared/shader/types';
 
 export function generateUniformsSync(group: UniformGroup, uniformData: Record<string, any>): UniformsSyncCallback
 {
@@ -25,9 +24,7 @@ export function generateUniformsSync(group: UniformGroup, uniformData: Record<st
 
     for (const i in group.uniforms)
     {
-        const data = uniformData[i];
-
-        if (!data)
+        if (!uniformData[i])
         {
             if (group.uniforms[i] instanceof UniformGroup)
             {
@@ -54,15 +51,17 @@ export function generateUniformsSync(group: UniformGroup, uniformData: Record<st
             continue;
         }
 
-        const uniform = group.uniforms[i];
+        const uniform = group.uniformStructures[i];
 
         let parsed = false;
 
-        for (let j = 0; j < UNIFORM_PARSERS.length; j++)
+        for (let j = 0; j < uniformParsers.length; j++)
         {
-            if (UNIFORM_PARSERS[j].test(data, uniform))
+            const parser = uniformParsers[j];
+
+            if (uniform.type === parser.type && parser.test(uniform))
             {
-                funcFragments.push(`name = "${i}";`, UNIFORM_PARSERS[j].code);
+                funcFragments.push(`name = "${i}";`, uniformParsers[j].uniform);
                 parsed = true;
 
                 break;
@@ -71,8 +70,9 @@ export function generateUniformsSync(group: UniformGroup, uniformData: Record<st
 
         if (!parsed)
         {
-            const templateType = data.size === 1 && !data.isArray ? GLSL_TO_SINGLE_SETTERS_CACHED : GLSL_TO_ARRAY_SETTERS;
-            const template = templateType[data.type as GLSL_TYPE].replace('location', `ud["${i}"].location`);
+            const templateType = uniform.size === 1 ? UNIFORM_TO_SINGLE_SETTERS : UNIFORM_TO_ARRAY_SETTERS;
+
+            const template = templateType[uniform.type].replace('location', `ud["${i}"].location`);
 
             funcFragments.push(`
             cu = ud["${i}"];

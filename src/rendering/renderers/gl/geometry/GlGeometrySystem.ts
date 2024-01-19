@@ -1,5 +1,5 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { getUniformInfoFromFormat } from '../../shared/shader/utils/getUniformInfoFromFormat';
+import { getAttributeInfoFromFormat } from '../../shared/geometry/utils/getAttributeInfoFromFormat';
 import { ensureAttributes } from '../shader/program/ensureAttributes';
 import { getGlTypeFromFormat } from './utils/getGlTypeFromFormat';
 
@@ -378,12 +378,12 @@ export class GlGeometrySystem implements System
                 // we can optimise this for older devices that have no VAOs
                 gl.enableVertexAttribArray(location);
 
-                const uniformInfo = getUniformInfoFromFormat(attribute.format);
+                const attributeInfo = getAttributeInfoFromFormat(attribute.format);
 
                 gl.vertexAttribPointer(location,
-                    uniformInfo.size,
+                    attributeInfo.size,
                     getGlTypeFromFormat(attribute.format),
-                    uniformInfo.normalised,
+                    attributeInfo.normalised,
                     attribute.stride,
                     attribute.offset);
 

@@ -1,90 +1,66 @@
-import {
-    GLSL_TO_ARRAY_SETTERS_FN,
-    GLSL_TO_SINGLE_SETTERS_FN_CACHED
-} from '../rendering/renderers/gl/shader/program/generateUniformsSyncTypes';
-import { UNIFORM_PARSERS } from '../rendering/renderers/gl/shader/program/uniformParsers';
-import { BufferResource } from '../rendering/renderers/shared/buffer/BufferResource';
-import { UniformGroup } from '../rendering/renderers/shared/shader/UniformGroup';
+import { uniformParsers } from '../rendering/renderers/shared/shader/utils/uniformParsers';
+import { uniformArrayParserFunctions, uniformParserFunctions, uniformSingleParserFunctions } from './uniformSyncFunctions';
 
 import type { GlUniformData } from '../rendering/renderers/gl/shader/GlProgram';
-import type { GLSL_TYPE } from '../rendering/renderers/gl/shader/program/generateUniformsSyncTypes';
-import type { UniformsSyncCallback } from '../rendering/renderers/shared/shader/utils/createUniformBufferSyncTypes';
+import type { WebGLRenderer } from '../rendering/renderers/gl/WebGLRenderer';
+import type { UniformsSyncCallback } from '../rendering/renderers/shared/shader/types';
+import type { UniformGroup } from '../rendering/renderers/shared/shader/UniformGroup';
+import type { UniformUploadFunction } from './uniformSyncFunctions';
 
 export function generateUniformsSyncPolyfill(
     group: UniformGroup,
     uniformData: Record<string, GlUniformData>
 ): UniformsSyncCallback
 {
-    return ((ud: any, uv: any, renderer: any, syncData: any) =>
+    // loop through all the uniforms..
+    const functionMap: Record<string, UniformUploadFunction> = {};
+
+    for (const i in group.uniformStructures)
     {
-        let v = null;
-        let cv = null;
-        let cu = null;
-        const t = 0;
-        const gl = renderer.gl;
+        if (!uniformData[i]) continue;
 
-        for (const i in group.uniforms)
+        const uniform = group.uniformStructures[i];
+
+        let parsed = false;
+
+        for (let j = 0; j < uniformParsers.length; j++)
         {
-            const data = uniformData[i];
+            const parser = uniformParsers[j];
 
-            if (!data)
+            if (uniform.type === parser.type && parser.test(uniform))
             {
-                if (group.uniforms[i] instanceof UniformGroup)
-                {
-                    if ((group.uniforms[i] as UniformGroup).ubo)
-                    {
-                        renderer.shader.bindUniformBlock(uv[i], i);
-                    }
-                    else
-                    {
-                        renderer.shader.updateUniformGroup(uv[i]);
-                    }
-                }
-                else if (group.uniforms[i] instanceof BufferResource)
-                {
-                    renderer.shader.bindBufferResource(uv[i], i);
-                }
+                functionMap[i] = uniformParserFunctions[j];
 
-                continue;
-            }
+                parsed = true;
 
-            const uniform = group.uniforms[i];
-
-            let executed = false;
-
-            for (let j = 0; j < UNIFORM_PARSERS.length; j++)
-            {
-                if (UNIFORM_PARSERS[j].test(data, uniform))
-                {
-                    UNIFORM_PARSERS[j].exec(i, cv, ud, uv, v, t, gl, renderer, syncData);
-                    executed = true;
-
-                    break;
-                }
-            }
-
-            if (!executed)
-            {
-                cu = ud[i];
-                cv = cu.value;
-                v = uv[i];
-
-                const isSingleSetter = data.size === 1 && !data.isArray;
-
-                if (isSingleSetter)
-                {
-                    GLSL_TO_SINGLE_SETTERS_FN_CACHED[data.type as GLSL_TYPE](cu, cv, v, ud[i].location, gl);
-                }
-                else
-                {
-                    GLSL_TO_ARRAY_SETTERS_FN[data.type as GLSL_TYPE](v, ud[i].location, gl);
-                }
-
-                cu = ud[i];
-                cv = cu.value;
-                v = uv[i];
+                break;
             }
         }
-    }) as UniformsSyncCallback;
-}
 
+        // if not parsed...
+
+        if (!parsed)
+        {
+            const templateType = uniform.size === 1 ? uniformSingleParserFunctions : uniformArrayParserFunctions;
+
+            functionMap[i] = templateType[uniform.type];
+        }
+    }
+
+    return (
+        ud: Record<string, any>,
+        uv: Record<string, any>,
+        renderer: WebGLRenderer) =>
+    {
+        const gl = renderer.gl;
+
+        for (const i in functionMap)
+        {
+            const v = uv[i];
+            const cu = ud[i];
+            const cv = ud[i].value;
+
+            functionMap[i](i, cu, cv, v, ud, uv, gl);
+        }
+    };
+}

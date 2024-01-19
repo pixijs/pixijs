@@ -11,6 +11,7 @@ import { GpuColorMaskSystem } from './GpuColorMaskSystem';
 import { type GPU, GpuDeviceSystem } from './GpuDeviceSystem';
 import { GpuEncoderSystem } from './GpuEncoderSystem';
 import { GpuStencilSystem } from './GpuStencilSystem';
+import { GpuUboSystem } from './GpuUboSystem';
 import { GpuUniformBatchPipe } from './GpuUniformBatchPipe';
 import { PipelineSystem } from './pipeline/PipelineSystem';
 import { GpuRenderTargetSystem } from './renderTarget/GpuRenderTargetSystem';
@@ -25,6 +26,7 @@ import type { ExtractRendererOptions, ExtractSystemTypes } from '../shared/syste
 
 const DefaultWebGPUSystems = [
     ...SharedSystems,
+    GpuUboSystem,
     GpuEncoderSystem,
     GpuDeviceSystem,
     GpuBufferSystem,
