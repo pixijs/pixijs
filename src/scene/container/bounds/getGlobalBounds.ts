@@ -1,5 +1,4 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
-import { updateLocalTransform } from '../utils/updateLocalTransform';
 import { boundsPool, matrixPool } from './utils/matrixAndBoundsPool';
 
 import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
@@ -62,7 +61,7 @@ export function _getGlobalBounds(
     {
         if (target.didChange)
         {
-            updateLocalTransform(target.localTransform, target);
+            target.updateLocalTransform();
         }
 
         worldTransform = matrixPool.get();
@@ -128,7 +127,7 @@ export function updateTransformBackwards(target: Container, parentTransform: Mat
     {
         updateTransformBackwards(parent, parentTransform);
 
-        updateLocalTransform(parent.localTransform, parent);
+        parent.updateLocalTransform();
 
         parentTransform.append(parent.localTransform);
     }
