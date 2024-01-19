@@ -1,9 +1,9 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { unsafeEvalSupported } from '../../../../utils/browser/unsafeEvalSupported';
-import { generateUniformsSync } from './program/generateUniformsSync';
+import { generateUniformsSync } from './utils/generateUniformsSync';
 
+import type { UniformsSyncCallback } from '../../shared/shader/types';
 import type { UniformGroup } from '../../shared/shader/UniformGroup';
-import type { UniformsSyncCallback } from '../../shared/shader/utils/createUniformBufferSyncTypes';
 import type { System } from '../../shared/system/System';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';

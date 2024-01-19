@@ -1,7 +1,8 @@
-import { getUniformInfoFromFormat } from '../../../shared/shader/utils/getUniformInfoFromFormat';
+import { warn } from '../../../../../utils/logging/warn';
+import { getAttributeInfoFromFormat } from '../../../shared/geometry/utils/getAttributeInfoFromFormat';
 
 import type { Geometry } from '../../../shared/geometry/Geometry';
-import type { ExtractedAttributeData } from '../../../shared/shader/utils/extractAttributesFromGlProgram';
+import type { ExtractedAttributeData } from './extractAttributesFromGlProgram';
 
 /**
  * This function looks at the attribute information provided to the geometry and attempts
@@ -24,10 +25,18 @@ export function ensureAttributes(
         const attribute = geometry.attributes[i];
         const attributeData = extractedData[i];
 
-        attribute.location ??= attributeData.location;
-        attribute.format ??= attributeData.format;
-        attribute.offset ??= attributeData.offset;
-        attribute.instance ??= attributeData.instance;
+        if (attributeData)
+        {
+            attribute.location ??= attributeData.location;
+            attribute.format ??= attributeData.format;
+            attribute.offset ??= attributeData.offset;
+            attribute.instance ??= attributeData.instance;
+        }
+        else
+        {
+            // eslint-disable-next-line max-len
+            warn(`Attribute ${i} is not present in the shader, but is present in the geometry. Unable to infer attribute details.`);
+        }
     }
 
     ensureStartAndStride(geometry);
@@ -52,7 +61,7 @@ function ensureStartAndStride(geometry: Geometry): void
     {
         const attribute = attributes[j];
 
-        tempStride[attribute.buffer.uid] += getUniformInfoFromFormat(attribute.format).stride;
+        tempStride[attribute.buffer.uid] += getAttributeInfoFromFormat(attribute.format).stride;
     }
 
     for (const j in attributes)
@@ -63,6 +72,6 @@ function ensureStartAndStride(geometry: Geometry): void
 
         attribute.start ??= tempStart[attribute.buffer.uid];
 
-        tempStart[attribute.buffer.uid] += getUniformInfoFromFormat(attribute.format).stride;
+        tempStart[attribute.buffer.uid] += getAttributeInfoFromFormat(attribute.format).stride;
     }
 }

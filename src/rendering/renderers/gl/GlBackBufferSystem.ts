@@ -13,17 +13,11 @@ import type { WebGLRenderer } from './WebGLRenderer';
 
 const bigTriangleGeometry = new Geometry({
     attributes: {
-        aPosition: {
-            buffer: [
-                -1.0, -1.0, // Bottom left corner
-                3.0, -1.0, // Bottom right corner, extending beyond right edge
-                -1.0, 3.0 // Top left corner, extending beyond top edge
-            ],
-            format: 'float32x2',
-            location: 0,
-            offset: 0,
-            stride: 0,
-        },
+        aPosition: [
+            -1.0, -1.0, // Bottom left corner
+            3.0, -1.0, // Bottom right corner, extending beyond right edge
+            -1.0, 3.0 // Top left corner, extending beyond top edge
+        ],
     },
 });
 

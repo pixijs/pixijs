@@ -3,7 +3,7 @@ import { Point } from '../../src/maths/point/Point';
 import { GlobalUniformSystem } from '../../src/rendering/renderers/shared/renderTarget/GlobalUniformSystem';
 
 import type { WebGLRenderer } from '../../src/rendering/renderers/gl/WebGLRenderer';
-import type { UniformBufferSystem } from '../../src/rendering/renderers/shared/shader/UniformBufferSystem';
+import type { UboSystem } from '../../src/rendering/renderers/shared/shader/UboSystem';
 import type { UniformGroup } from '../../src/rendering/renderers/shared/shader/UniformGroup';
 
 function createGlobalUniformSystem(): GlobalUniformSystem
@@ -16,12 +16,12 @@ function createGlobalUniformSystem(): GlobalUniformSystem
             }
         },
         renderPipes: {},
-        uniformBuffer: {
+        ubo: {
             updateUniformGroup: () =>
             {
                 // do nothing
             },
-        } as unknown as UniformBufferSystem,
+        } as unknown as UboSystem,
     } as WebGLRenderer;
 
     const globalUniformSystem = new GlobalUniformSystem(renderer);

@@ -1,7 +1,7 @@
-import { mapGlToVertexFormat } from '../../../gl/shader/program/mapType';
-import { getUniformInfoFromFormat } from './getUniformInfoFromFormat';
+import { getAttributeInfoFromFormat } from '../../../shared/geometry/utils/getAttributeInfoFromFormat';
+import { mapGlToVertexFormat } from './mapType';
 
-import type { Attribute } from '../../geometry/Geometry';
+import type { Attribute } from '../../../shared/geometry/Geometry';
 
 export type ExtractedAttributeData = Omit<Attribute, 'buffer'>;
 
@@ -37,7 +37,7 @@ export function extractAttributesFromGlProgram(
         attributes[attribData.name] = {
             location: gl.getAttribLocation(program, attribData.name),
             format,
-            stride: getUniformInfoFromFormat(format).stride,
+            stride: getAttributeInfoFromFormat(format).stride,
             offset: 0,
             instance: false,
             start: 0,
