@@ -1017,8 +1017,8 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
 
     public updateLocalTransform(): void
     {
-        if (!this.didChange) return;
         // TODO add a dirty flag!
+        // if (!this.didChange) return;
 
         const lt = this.localTransform;
         const scale = this._scale;
