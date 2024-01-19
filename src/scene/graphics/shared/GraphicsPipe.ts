@@ -145,7 +145,7 @@ export class GraphicsPipe implements RenderPipe<Graphics>
         color32BitToUniform(
             graphics.groupColorAlpha,
             localUniforms.uColor,
-            0
+            0,
         );
 
         this._adaptor.execute(this, graphics);
