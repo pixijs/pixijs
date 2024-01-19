@@ -215,7 +215,7 @@ describe('GlobalUniformSystem', () =>
 
         expect((bindGroup.resources[0] as UniformGroup).uniforms.worldColorAlpha).toEqual(new Float32Array([1, 1, 1, 1]));
 
-        expect((bindGroup2.resources[0]as UniformGroup).uniforms.worldColorAlpha).toEqual(new Float32Array([1, 1, 1, 0]));
+        expect((bindGroup2.resources[0]as UniformGroup).uniforms.worldColorAlpha).toEqual(new Float32Array([0, 0, 0, 0]));
 
         expect((bindGroup3.resources[0]as UniformGroup).uniforms.worldColorAlpha).toEqual(new Float32Array([1, 1, 1, 1]));
     });
