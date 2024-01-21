@@ -94,6 +94,23 @@ describe('Spritesheet', () =>
         spritesheet.destroy(true);
     });
 
+    it('should create an instance with options', () =>
+    {
+        const baseTexture = new BaseTexture();
+        const data = {
+            frames: {},
+            meta: {},
+        } as unknown as ISpritesheetData;
+
+        const spritesheet = new Spritesheet({ texture: baseTexture, data });
+
+        expect(spritesheet.data).toEqual(data);
+        expect(spritesheet.baseTexture).toEqual(baseTexture);
+        expect(spritesheet.resolution).toEqual(1);
+
+        spritesheet.destroy(true);
+    });
+
     it('should create instance with scale resolution', (done) =>
     {
         jest.setTimeout(10000);
