@@ -165,7 +165,7 @@ describe('Geometry', () =>
         expect(geometry.attributes.aPosition.buffer).toBe(buffer);
     });
 
-    it.only('should have dirty bounds if the buffer size changes', () =>
+    it('should have dirty bounds if the buffer size changes', () =>
     {
         const geometry = new Geometry({
             attributes: {
