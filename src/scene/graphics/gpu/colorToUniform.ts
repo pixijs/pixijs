@@ -9,8 +9,10 @@ export function colorToUniform(rgb: number, alpha: number, out: Float32Array, of
 
 export function color32BitToUniform(abgr: number, out: Float32Array, offset: number)
 {
-    out[offset++] = (abgr & 0xFF) / 255;
-    out[offset++] = ((abgr >> 8) & 0xFF) / 255;
-    out[offset++] = ((abgr >> 16) & 0xFF) / 255;
-    out[offset++] = ((abgr >> 24) & 0xFF) / 255;
+    const alpha = ((abgr >> 24) & 0xFF) / 255;
+
+    out[offset++] = ((abgr & 0xFF) / 255) * alpha;
+    out[offset++] = (((abgr >> 8) & 0xFF) / 255) * alpha;
+    out[offset++] = (((abgr >> 16) & 0xFF) / 255) * alpha;
+    out[offset++] = alpha;
 }

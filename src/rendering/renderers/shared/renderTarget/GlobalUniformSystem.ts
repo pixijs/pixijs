@@ -10,7 +10,7 @@ import type { PointData } from '../../../../maths/point/PointData';
 import type { GlRenderTargetSystem } from '../../gl/GlRenderTargetSystem';
 import type { GpuRenderTargetSystem } from '../../gpu/renderTarget/GpuRenderTargetSystem';
 import type { WebGPURenderer } from '../../gpu/WebGPURenderer';
-import type { UniformBufferSystem } from '../shader/UniformBufferSystem';
+import type { UboSystem } from '../shader/UboSystem';
 import type { System } from '../system/System';
 
 export type GlobalUniformGroup = UniformGroup<{
@@ -43,7 +43,7 @@ interface GlobalUniformRenderer
 {
     renderTarget: GlRenderTargetSystem | GpuRenderTargetSystem
     renderPipes: Renderer['renderPipes'];
-    uniformBuffer: UniformBufferSystem;
+    ubo: UboSystem;
     type: RendererType;
 }
 
