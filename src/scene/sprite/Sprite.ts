@@ -294,9 +294,7 @@ export class Sprite extends Container implements View
 
     set width(value: number)
     {
-        const s = Math.sign(this.scale.x) || 1;
-
-        this.scale.x = s * value / this._texture.orig.width;
+        this._setWidth(value, this._texture.orig.width);
     }
 
     /** The height of the sprite, setting this will actually modify the scale to achieve the value set. */
@@ -307,8 +305,6 @@ export class Sprite extends Container implements View
 
     set height(value: number)
     {
-        const s = Math.sign(this.scale.y) || 1;
-
-        this.scale.y = s * value / this._texture.orig.height;
+        this._setHeight(value, this._texture.orig.width);
     }
 }
