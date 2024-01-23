@@ -1,0 +1,94 @@
+import { GlProgram } from '../../../../src/rendering/renderers/gl/shader/GlProgram';
+import { GpuProgram } from '../../../../src/rendering/renderers/gpu/shader/GpuProgram';
+import { Geometry } from '../../../../src/rendering/renderers/shared/geometry/Geometry';
+import { Shader } from '../../../../src/rendering/renderers/shared/shader/Shader';
+import { Mesh } from '../../../../src/scene/mesh/shared/Mesh';
+
+import type { Container } from '../../../../src/scene/container/Container';
+import type { TestScene } from '../../types';
+
+export const scene: TestScene = {
+    it: 'should render a fully custom mesh',
+    only: true,
+    create: async (scene: Container) =>
+    {
+        // Create our application instance
+        const shaderSrc = `
+            struct MyUniforms {
+                uTint: vec4<f32>,
+            }
+
+            @binding(0) @group(0) var<uniform> myUniforms : MyUniforms;
+
+            @vertex 
+            fn vsMain(
+                @location(0) aPosition : vec2<f32>,
+            ) -> @builtin(position) vec4f {
+            return vec4f(aPosition, 0, 1);
+            }
+
+            @fragment 
+            fn fsMain() -> @location(0) vec4<f32> {
+                return myUniforms.uTint;
+            }
+        `;
+
+        const geometry = new Geometry({
+            attributes: {
+                aPosition: [-1, -1, -1, 1, 1, 1],
+            },
+            indexBuffer: [0, 1, 2],
+        });
+
+        const gpuProgram = new GpuProgram({
+            name: 'my-shader',
+            vertex: {
+                source: shaderSrc,
+                entryPoint: 'vsMain'
+            },
+            fragment: {
+                source: shaderSrc,
+                entryPoint: 'fsMain'
+            }
+        });
+
+        const glProgram = new GlProgram({
+            name: 'my-shader',
+            vertex: `
+            attribute vec2 aPosition;
+
+            void main() {
+                gl_Position = vec4(aPosition, 0.0, 1.0);
+            }
+        `,
+            fragment: `
+
+            uniform vec4 uTint;
+
+            void main() {
+                gl_FragColor = uTint;
+            }
+        `
+        });
+
+        const shader = new Shader({
+            glProgram,
+            gpuProgram,
+            resources: {
+                myUniforms: {
+                    uTint: {
+                        value: [1, 1, 0, 1],
+                        type: 'vec4<f32>'
+                    }
+                }
+            }
+        });
+
+        const mesh = new Mesh({
+            geometry,
+            shader,
+        });
+
+        scene.addChild(mesh);
+    },
+};
