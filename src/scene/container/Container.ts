@@ -557,6 +557,8 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
      * [000000000000][00000000000]
      */
     public _didChangeId = 0;
+    /** property that tracks if the container transform has changed */
+    private _didLocalTransformChangeId = -1;
 
     constructor(options: ContainerOptions = {})
     {
@@ -1017,8 +1019,10 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
 
     public updateLocalTransform(): void
     {
-        // TODO add a dirty flag!
-        // if (!this.didChange) return;
+        if ((this._didLocalTransformChangeId & 0b1111) === this._didChangeId) return;
+
+        this._didLocalTransformChangeId = this._didChangeId;
+        //   this.didChange = false;
 
         const lt = this.localTransform;
         const scale = this._scale;

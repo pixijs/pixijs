@@ -59,10 +59,7 @@ export function _getGlobalBounds(
 
     if (!skipUpdateTransform)
     {
-        if (target.didChange)
-        {
-            target.updateLocalTransform();
-        }
+        target.updateLocalTransform();
 
         worldTransform = matrixPool.get();
 
