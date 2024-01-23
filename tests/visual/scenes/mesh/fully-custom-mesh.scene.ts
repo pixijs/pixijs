@@ -7,9 +7,15 @@ import { Mesh } from '../../../../src/scene/mesh/shared/Mesh';
 import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
 
+/**
+ * NOTE on the result:
+ * The webGL triangles will be upside down in this test - this is actually correct as rendering to a
+ * texture in WebGL causes it to be inverted on the Y. This is not the case in WebGPU
+ * We usually handle this automatically with our transform uniforms, but as this example
+ * does not use them.. they come out flipped!
+ */
 export const scene: TestScene = {
     it: 'should render a fully custom mesh',
-    only: true,
     create: async (scene: Container) =>
     {
         // Create our application instance
