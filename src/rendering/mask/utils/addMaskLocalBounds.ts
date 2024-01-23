@@ -1,9 +1,10 @@
-import { Matrix } from '../../../maths/matrix/Matrix';
 import { Bounds } from '../../../scene/container/bounds/Bounds';
 import { getLocalBounds } from '../../../scene/container/bounds/getLocalBounds';
+import { matrixPool } from '../../../scene/container/bounds/utils/matrixAndBoundsPool';
 import { updateLocalTransform } from '../../../scene/container/utils/updateLocalTransform';
 import { warn } from '../../../utils/logging/warn';
 
+import type { Matrix } from '../../../maths/matrix/Matrix';
 import type { Container } from '../../../scene/container/Container';
 
 export function addMaskLocalBounds(mask: Container, bounds: Bounds, localRoot: Container): void
@@ -12,7 +13,9 @@ export function addMaskLocalBounds(mask: Container, bounds: Bounds, localRoot: C
 
     mask.measurable = true;
 
-    const relativeMask = getMatrixRelativeToParent(mask, localRoot, new Matrix());
+    const tempMatrix = matrixPool.get();
+
+    const relativeMask = getMatrixRelativeToParent(mask, localRoot, tempMatrix);
 
     getLocalBounds(mask, boundsToMask, relativeMask);
 
@@ -20,6 +23,8 @@ export function addMaskLocalBounds(mask: Container, bounds: Bounds, localRoot: C
     mask.measurable = false;
 
     bounds.addBoundsMask(boundsToMask);
+
+    matrixPool.return(tempMatrix);
 }
 
 export function getMatrixRelativeToParent(target: Container, root: Container, matrix: Matrix): Matrix
@@ -28,7 +33,7 @@ export function getMatrixRelativeToParent(target: Container, root: Container, ma
     {
         // we have reach the top of the tree!
         // #if _DEBUG
-        warn('Item is not inside the root container');
+        warn('Mask bounds, renderable is not inside the root container');
         // #endif
 
         return matrix;

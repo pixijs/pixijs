@@ -285,4 +285,30 @@ export class Sprite extends Container implements View
     {
         this._roundPixels = value ? 1 : 0;
     }
+
+    /** The width of the sprite, setting this will actually modify the scale to achieve the value set. */
+    get width(): number
+    {
+        return Math.abs(this.scale.x) * this._texture.orig.width;
+    }
+
+    set width(value: number)
+    {
+        const s = Math.sign(this.scale.x) || 1;
+
+        this.scale.x = s * value / this._texture.orig.width;
+    }
+
+    /** The height of the sprite, setting this will actually modify the scale to achieve the value set. */
+    get height(): number
+    {
+        return Math.abs(this.scale.y) * this._texture.orig.height;
+    }
+
+    set height(value: number)
+    {
+        const s = Math.sign(this.scale.y) || 1;
+
+        this.scale.y = s * value / this._texture.orig.height;
+    }
 }
