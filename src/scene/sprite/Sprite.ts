@@ -305,6 +305,6 @@ export class Sprite extends Container implements View
 
     set height(value: number)
     {
-        this._setHeight(value, this._texture.orig.width);
+        this._setHeight(value, this._texture.orig.height);
     }
 }
