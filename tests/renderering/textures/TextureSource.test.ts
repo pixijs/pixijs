@@ -44,6 +44,8 @@ describe('TextureSource', () =>
         renderer.texture.bind(textureSource);
 
         expect(renderer.texture.managedTextures.length).toBe(2);
+    });
+
     it('expect lable to be set form constructor', () =>
     {
         const textureSource = new TextureSource({ label: 'test' });
