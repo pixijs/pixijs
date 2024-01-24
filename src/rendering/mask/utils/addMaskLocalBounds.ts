@@ -1,7 +1,6 @@
 import { Bounds } from '../../../scene/container/bounds/Bounds';
 import { getLocalBounds } from '../../../scene/container/bounds/getLocalBounds';
 import { matrixPool } from '../../../scene/container/bounds/utils/matrixAndBoundsPool';
-import { updateLocalTransform } from '../../../scene/container/utils/updateLocalTransform';
 import { warn } from '../../../utils/logging/warn';
 
 import type { Matrix } from '../../../maths/matrix/Matrix';
@@ -43,10 +42,7 @@ export function getMatrixRelativeToParent(target: Container, root: Container, ma
     {
         getMatrixRelativeToParent(target.parent, root, matrix);
 
-        if (target.didChange)
-        {
-            updateLocalTransform(target.localTransform, target);
-        }
+        target.updateLocalTransform();
 
         matrix.append(target.localTransform);
     }
