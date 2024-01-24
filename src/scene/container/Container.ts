@@ -557,6 +557,8 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
      * [000000000000][00000000000]
      */
     public _didChangeId = 0;
+    /** property that tracks if the container transform has changed */
+    private _didLocalTransformChangeId = -1;
 
     constructor(options: ContainerOptions = {})
     {
@@ -1008,6 +1010,39 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
         );
 
         return this;
+    }
+
+    public setFromMatrix(matrix: Matrix): void
+    {
+        matrix.decompose(this);
+    }
+
+    public updateLocalTransform(): void
+    {
+        if ((this._didLocalTransformChangeId & 0b1111) === this._didChangeId) return;
+
+        this._didLocalTransformChangeId = this._didChangeId;
+        //   this.didChange = false;
+
+        const lt = this.localTransform;
+        const scale = this._scale;
+        const pivot = this._pivot;
+        const position = this._position;
+
+        const sx = scale._x;
+        const sy = scale._y;
+
+        const px = pivot._x;
+        const py = pivot._y;
+
+        // get the matrix values of the container based on its this properties..
+        lt.a = this._cx * sx;
+        lt.b = this._sx * sx;
+        lt.c = this._cy * sy;
+        lt.d = this._sy * sy;
+
+        lt.tx = position._x - ((px * lt.a) + (py * lt.c));
+        lt.ty = position._y - ((px * lt.b) + (py * lt.d));
     }
 
     // / ///// color related stuff
