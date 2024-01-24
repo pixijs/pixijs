@@ -44,7 +44,13 @@ export function getPo2TextureFromSource(
     texture.frame.width = width / resolution;
     texture.frame.height = height / resolution;
 
-    texture.source.update();
+    // We want to update the resource on the GPU,
+    // but we do not want to resize the texture.
+    // calling `texture.source.update` will fit the resource to the texture
+    // causing a resize of the texture on the GPU.
+    // which is not what we want!
+    texture.source.emit('update', texture.source);
+
     texture.updateUvs();
 
     return texture;

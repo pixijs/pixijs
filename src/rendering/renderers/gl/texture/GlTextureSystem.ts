@@ -297,6 +297,7 @@ export class GlTextureSystem implements System, CanvasGenerator
     {
         source.off('destroy', this.onSourceDestroy, this);
         source.off('update', this.onSourceUpdate, this);
+        source.off('resize', this.onSourceUpdate, this);
         source.off('unload', this.onSourceUnload, this);
         source.off('styleChange', this.onStyleChange, this);
         source.off('updateMipmaps', this.onUpdateMipmaps, this);

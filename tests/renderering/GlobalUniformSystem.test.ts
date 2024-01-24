@@ -44,11 +44,11 @@ describe('GlobalUniformSystem', () =>
 
         const bindGroup = globalUniformSystem.bindGroup;
 
-        expect((bindGroup.resources[0] as UniformGroup).uniforms.projectionMatrix).toMatchObject({
+        expect((bindGroup.resources[0] as UniformGroup).uniforms.uProjectionMatrix).toMatchObject({
             a: 1, b: 1, c: 1, d: 1, tx: 1, ty: 1,
         });
 
-        expect((bindGroup.resources[0] as UniformGroup).uniforms.worldTransformMatrix).toMatchObject({
+        expect((bindGroup.resources[0] as UniformGroup).uniforms.uWorldTransformMatrix).toMatchObject({
             a: 2, b: 2, c: 2, d: 2, tx: 2, ty: 2,
         });
     });
@@ -84,21 +84,21 @@ describe('GlobalUniformSystem', () =>
 
         const bindGroup5 = globalUniformSystem.bindGroup;
 
-        expect((bindGroup2.resources[0] as UniformGroup).uniforms.projectionMatrix).toMatchObject({
+        expect((bindGroup2.resources[0] as UniformGroup).uniforms.uProjectionMatrix).toMatchObject({
             a: 3, b: 3, c: 3, d: 3, tx: 3, ty: 3,
         });
 
-        expect((bindGroup2.resources[0] as UniformGroup).uniforms.worldTransformMatrix).toMatchObject({
+        expect((bindGroup2.resources[0] as UniformGroup).uniforms.uWorldTransformMatrix).toMatchObject({
             a: 2, b: 2, c: 2, d: 2, tx: 2, ty: 2,
         });
 
         //
 
-        expect((bindGroup3.resources[0] as UniformGroup).uniforms.projectionMatrix).toMatchObject({
+        expect((bindGroup3.resources[0] as UniformGroup).uniforms.uProjectionMatrix).toMatchObject({
             a: 4, b: 4, c: 4, d: 4, tx: 4, ty: 4,
         });
 
-        expect((bindGroup3.resources[0] as UniformGroup).uniforms.worldTransformMatrix).toMatchObject({
+        expect((bindGroup3.resources[0] as UniformGroup).uniforms.uWorldTransformMatrix).toMatchObject({
             a: 5, b: 5, c: 5, d: 5, tx: 5, ty: 5,
         });
 
@@ -142,19 +142,19 @@ describe('GlobalUniformSystem', () =>
 
         const bindGroup4 = globalUniformSystem.bindGroup;
 
-        expect((bindGroup.resources[0] as UniformGroup).uniforms.worldTransformMatrix).toMatchObject({
+        expect((bindGroup.resources[0] as UniformGroup).uniforms.uWorldTransformMatrix).toMatchObject({
             a: 1, b: 1, c: 1, d: 1, tx: 101, ty: 101,
         });
 
-        expect((bindGroup2.resources[0] as UniformGroup).uniforms.worldTransformMatrix).toMatchObject({
+        expect((bindGroup2.resources[0] as UniformGroup).uniforms.uWorldTransformMatrix).toMatchObject({
             a: 2, b: 2, c: 2, d: 2, tx: 102, ty: 102,
         });
 
-        expect((bindGroup3.resources[0] as UniformGroup).uniforms.worldTransformMatrix).toMatchObject({
+        expect((bindGroup3.resources[0] as UniformGroup).uniforms.uWorldTransformMatrix).toMatchObject({
             a: 3, b: 3, c: 3, d: 3, tx: 103, ty: 103,
         });
 
-        expect((bindGroup4.resources[0] as UniformGroup).uniforms.worldTransformMatrix).toMatchObject({
+        expect((bindGroup4.resources[0] as UniformGroup).uniforms.uWorldTransformMatrix).toMatchObject({
             a: 1, b: 1, c: 1, d: 1, tx: 1001, ty: 1001,
         });
     });
@@ -213,10 +213,10 @@ describe('GlobalUniformSystem', () =>
 
         const bindGroup3 = globalUniformSystem.bindGroup;
 
-        expect((bindGroup.resources[0] as UniformGroup).uniforms.worldColorAlpha).toEqual(new Float32Array([1, 1, 1, 1]));
+        expect((bindGroup.resources[0] as UniformGroup).uniforms.uWorldColorAlpha).toEqual(new Float32Array([1, 1, 1, 1]));
 
-        expect((bindGroup2.resources[0]as UniformGroup).uniforms.worldColorAlpha).toEqual(new Float32Array([0, 0, 0, 0]));
+        expect((bindGroup2.resources[0]as UniformGroup).uniforms.uWorldColorAlpha).toEqual(new Float32Array([0, 0, 0, 0]));
 
-        expect((bindGroup3.resources[0]as UniformGroup).uniforms.worldColorAlpha).toEqual(new Float32Array([1, 1, 1, 1]));
+        expect((bindGroup3.resources[0]as UniformGroup).uniforms.uWorldColorAlpha).toEqual(new Float32Array([1, 1, 1, 1]));
     });
 });

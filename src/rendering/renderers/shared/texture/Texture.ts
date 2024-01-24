@@ -334,6 +334,12 @@ export class Texture extends EventEmitter<{
         }
     }
 
+    /** call this if you have modified the `texture.source.resource outside` of the constructor */
+    public update(): void
+    {
+        this._source.update();
+    }
+
     /**
      * Destroys this texture
      * @param destroySource - Destroy the source when the texture is destroyed.

@@ -164,4 +164,21 @@ describe('Geometry', () =>
 
         expect(geometry.attributes.aPosition.buffer).toBe(buffer);
     });
+
+    it('should have dirty bounds if the buffer size changes', () =>
+    {
+        const geometry = new Geometry({
+            attributes: {
+                aPosition: [0, 1, 2, 3]
+            }
+        });
+
+        expect(geometry['_boundsDirty']).toEqual(true);
+
+        geometry['_boundsDirty'] = false;
+
+        geometry.attributes.aPosition.buffer.data = new Float32Array([0, 1, 2, 3, 4, 5]);
+
+        expect(geometry['_boundsDirty']).toEqual(true);
+    });
 });

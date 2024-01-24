@@ -1,7 +1,6 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { Point } from '../../../maths/point/Point';
 import { updateTransformBackwards } from '../bounds/getGlobalBounds';
-import { updateLocalTransform } from '../utils/updateLocalTransform';
 
 import type { PointData } from '../../../maths/point/PointData';
 import type { Container } from '../Container';
@@ -49,10 +48,7 @@ export const toLocalGlobalMixin: Partial<Container> = {
     {
         if (!skipUpdate)
         {
-            if (this.didChange)
-            {
-                updateLocalTransform(this.localTransform, this);
-            }
+            this.updateLocalTransform();
 
             const globalMatrix = updateTransformBackwards(this, new Matrix());
 
@@ -84,10 +80,7 @@ export const toLocalGlobalMixin: Partial<Container> = {
 
         if (!skipUpdate)
         {
-            if (this.didChange)
-            {
-                updateLocalTransform(this.localTransform, this);
-            }
+            this.updateLocalTransform();
 
             const globalMatrix = updateTransformBackwards(this, new Matrix());
 
