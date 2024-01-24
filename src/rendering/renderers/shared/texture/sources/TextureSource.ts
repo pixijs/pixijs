@@ -90,7 +90,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     /** unique id for this Texture source */
     public readonly uid = uid('textureSource');
     /** optional label, can be used for debugging */
-    public label = '';
+    public label: string;
 
     /**
      * The resource type used by this TextureSource. This is used by the bind groups to determine
@@ -206,7 +206,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
         options = { ...TextureSource.defaultOptions, ...options };
 
-        this.label ??= options.label;
+        this.label = options.label ?? '';
         this.resource = options.resource;
 
         this._resolution = options.resolution;
@@ -348,6 +348,18 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     /** call this if you have modified the texture outside of the constructor */
     public update()
     {
+        // update resource...
+        if (this.resource)
+        {
+            const resolution = this._resolution;
+
+            const didResize = this.resize(this.resourceWidth / resolution, this.resourceHeight / resolution);
+
+            // no ned to dispatch the update we resized as that will
+            // notify the texture systems anyway
+            if (didResize) return;
+        }
+
         this.emit('update', this);
     }
 
@@ -422,8 +434,9 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      * @param width - the new width of the texture
      * @param height - the new height of the texture
      * @param resolution - the new resolution of the texture
+     * @returns - if the texture was resized
      */
-    public resize(width?: number, height?: number, resolution?: number)
+    public resize(width?: number, height?: number, resolution?: number): boolean
     {
         resolution = resolution || this._resolution;
         width = width || this.width;
@@ -440,7 +453,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
         if (this.pixelWidth === newPixelWidth && this.pixelHeight === newPixelHeight)
         {
-            return;
+            return false;
         }
 
         this._refreshPOT();
@@ -452,6 +465,8 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
         this._resourceId++;
         this.emit('change', this);
+
+        return true;
     }
 
     /**
