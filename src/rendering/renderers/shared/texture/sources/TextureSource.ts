@@ -53,7 +53,7 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
     /** optional label, can be used for debugging */
     label?: string;
     /** If true, the Garbage Collector will unload this texture if it is not used after a period of time */
-    gcManaged?: boolean;
+    autoGarbageCollect?: boolean;
 }
 
 /**
@@ -87,7 +87,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         autoGenerateMipmaps: false,
         sampleCount: 1,
         antialias: false,
-        gcManaged: false,
+        autoGarbageCollect: false,
     };
 
     /** unique id for this Texture source */
@@ -203,7 +203,8 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
     public isPowerOfTwo: boolean;
 
-    public gcManaged: boolean;
+    /** If true, the Garbage Collector will unload this texture if it is not used after a period of time */
+    public autoGarbageCollect: boolean;
 
     constructor(protected readonly options: TextureSourceOptions<T> = {})
     {
@@ -213,7 +214,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
         this.label = options.label ?? '';
         this.resource = options.resource;
-        this.gcManaged = options.gcManaged;
+        this.autoGarbageCollect = options.autoGarbageCollect;
         this._resolution = options.resolution;
 
         if (options.width)

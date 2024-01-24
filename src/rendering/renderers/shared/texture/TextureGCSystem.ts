@@ -119,7 +119,7 @@ export class TextureGCSystem implements System
 
             // Only supports non generated textures at the moment!
             if (
-                texture.gcManaged
+                texture.autoGarbageCollect
                 && texture.resource
                 && texture._touched > -1
                 && this.count - texture._touched > this.maxIdle
