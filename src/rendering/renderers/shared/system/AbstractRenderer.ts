@@ -1,6 +1,5 @@
 import { Color } from '../../../../color/Color';
 import { Container } from '../../../../scene/container/Container';
-import { updateLocalTransform } from '../../../../scene/container/utils/updateLocalTransform';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { CLEAR } from '../../gl/const';
 import { SystemRunner } from './SystemRunner';
@@ -216,7 +215,7 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
 
         if (!options.transform)
         {
-            updateLocalTransform(options.container.localTransform, options.container);
+            options.container.updateLocalTransform();
             options.transform = options.container.localTransform;
         }
 

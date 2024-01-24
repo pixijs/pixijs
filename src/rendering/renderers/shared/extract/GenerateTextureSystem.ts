@@ -66,6 +66,7 @@ export class GenerateTextureSystem implements System
      * @param {GenerateTextureOptions | Container} options - Generate texture options.
      * @param {Container} [options.container] - If not given, the renderer's resolution is used.
      * @param {Rectangle} options.region - The region of the container, that shall be rendered,
+     * @param {number} [options.resolution] - The resolution of the texture being generated.
      *        if no region is specified, defaults to the local bounds of the container.
      * @param {GenerateTextureSourceOptions} [options.textureSourceOptions] - Texture options for GPU.
      * @returns a shiny new texture of the container passed in

@@ -1,6 +1,5 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { warn } from '../../../utils/logging/warn';
-import { updateLocalTransform } from '../utils/updateLocalTransform';
 import { boundsPool, matrixPool } from './utils/matrixAndBoundsPool';
 
 import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
@@ -37,7 +36,7 @@ function _getLocalBounds(
     {
         if (!target.visible || !target.measurable) return;
 
-        updateLocalTransform(target.localTransform, target);
+        target.updateLocalTransform();
 
         const localTransform = target.localTransform;
 
@@ -112,7 +111,7 @@ export function getParent(target: Container, root: Container, matrix: Matrix)
     {
         getParent(parent, root, matrix);
 
-        updateLocalTransform(parent.localTransform, parent);
+        parent.updateLocalTransform();
         matrix.append(parent.localTransform);
     }
 }

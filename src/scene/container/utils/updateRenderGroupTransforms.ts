@@ -1,6 +1,5 @@
 import { Container, UPDATE_BLEND, UPDATE_COLOR, UPDATE_VISIBLE } from '../Container';
 import { mixColors } from './mixColors';
-import { updateLocalTransform } from './updateLocalTransform';
 
 import type { RenderGroup } from '../RenderGroup';
 
@@ -86,7 +85,7 @@ export function updateTransformAndChildren(container: Container, updateTick: num
 
     const localTransform = container.localTransform;
 
-    updateLocalTransform(localTransform, container);
+    container.updateLocalTransform();
 
     const parent = container.parent;
 
