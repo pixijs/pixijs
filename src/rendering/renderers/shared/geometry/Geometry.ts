@@ -166,14 +166,16 @@ export class Geometry extends EventEmitter<{
             {
                 this.buffers.push(attribute.buffer);
 
+                // two events here - one for a resize (new buffer change)
+                // and one for an update (existing buffer change)
                 attribute.buffer.on('update', this.onBufferUpdate, this);
+                attribute.buffer.on('change', this.onBufferUpdate, this);
             }
         }
 
         if (indexBuffer)
         {
             this.indexBuffer = ensureIsBuffer(indexBuffer, true);
-
             this.buffers.push(this.indexBuffer);
         }
 
