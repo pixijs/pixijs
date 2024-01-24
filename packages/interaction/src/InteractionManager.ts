@@ -1665,6 +1665,7 @@ export class InteractionManager extends EventEmitter
         {
             delete this.activeInteractionData[pointerId];
             interactionData.reset();
+            if (interactionData.identifier === MOUSE_POINTER_ID) return;
             this.interactionDataPool.push(interactionData);
         }
     }
