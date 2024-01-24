@@ -56,7 +56,15 @@ export function generateProgram(gl: GlRenderingContext, program: GlProgram): GlP
         logProgramError(gl, webGLProgram, glVertShader, glFragShader);
     }
 
-    program._attributeData = extractAttributesFromGlProgram(webGLProgram, gl);
+    // GLSL 1.00: bind attributes sorted by name in ascending order
+    // GLSL 3.00: don't change the attribute locations that where chosen by the compiler
+    //            or assigned by the layout specifier in the shader source code
+    program._attributeData = extractAttributesFromGlProgram(
+        webGLProgram,
+        gl,
+        !(/^[ \t]*#[ \t]*version[ \t]+300[ \t]+es[ \t]*$/m).test(program.vertex)
+    );
+
     program._uniformData = getUniformData(webGLProgram, gl);
     program._uniformBlockData = getUboData(webGLProgram, gl);
 
