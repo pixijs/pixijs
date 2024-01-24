@@ -37,14 +37,14 @@ export const scene: TestScene = {
         
         out vec2 vUV;
 
-        uniform mat3 projectionMatrix;
-        uniform mat3 worldTransformMatrix;
+        uniform mat3 uProjectionMatrix;
+        uniform mat3 uWorldTransformMatrix;
         uniform mat3 uTransformMatrix;
         
         
         void main() {
 
-            mat3 mvp = projectionMatrix * worldTransformMatrix * uTransformMatrix;
+            mat3 mvp = uProjectionMatrix * uWorldTransformMatrix * uTransformMatrix;
             gl_Position = vec4((mvp * vec3(aPosition, 1.0)).xy, 0.0, 1.0);
 
             vUV = aUV;
@@ -66,9 +66,9 @@ export const scene: TestScene = {
                 entryPoint: 'main',
                 source: /* wgsl */`
             struct GlobalUniforms {
-                projectionMatrix:mat3x3<f32>,
-                worldTransformMatrix:mat3x3<f32>,
-                worldColorAlpha: vec4<f32>,
+                uProjectionMatrix:mat3x3<f32>,
+                uWorldTransformMatrix:mat3x3<f32>,
+                uWorldColorAlpha: vec4<f32>,
                 uResolution: vec2<f32>,
             }
     
@@ -93,8 +93,8 @@ export const scene: TestScene = {
                 @location(0) aPosition : vec2<f32>,
                 @location(1) aUV : vec2<f32>,
             ) -> VertexOutput {     
-                var mvp = globalUniforms.projectionMatrix 
-                    * globalUniforms.worldTransformMatrix 
+                var mvp = globalUniforms.uProjectionMatrix 
+                    * globalUniforms.uWorldTransformMatrix 
                     * localUniforms.uTransformMatrix;
                 
                 var output: VertexOutput;
