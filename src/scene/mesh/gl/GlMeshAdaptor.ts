@@ -68,8 +68,10 @@ export class GlMeshAdaptor implements MeshAdaptor
             return;
         }
 
-        shader.groups[0] = renderer.globalUniforms.bindGroup;
-        shader.groups[1] = meshPipe.localUniformsBindGroup;
+        // setting the groups to be high to be compatible and not
+        // overlap any other groups
+        shader.groups[100] = renderer.globalUniforms.bindGroup;
+        shader.groups[101] = meshPipe.localUniformsBindGroup;
 
         renderer.encoder.draw({
             geometry: mesh._geometry,
