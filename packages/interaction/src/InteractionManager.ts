@@ -1642,7 +1642,7 @@ export class InteractionManager extends EventEmitter
         }
         else
         {
-            interactionData = new InteractionData();
+            interactionData = this.interactionDataPool.pop() || new InteractionData();
             interactionData.identifier = pointerId;
             this.activeInteractionData[pointerId] = interactionData;
         }
@@ -1665,6 +1665,8 @@ export class InteractionManager extends EventEmitter
         {
             delete this.activeInteractionData[pointerId];
             interactionData.reset();
+            if(interactionData == this.mouse) return
+            this.interactionDataPool.push(interactionData);
         }
     }
 
