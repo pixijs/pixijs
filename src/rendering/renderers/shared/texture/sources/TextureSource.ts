@@ -52,6 +52,8 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
     alphaMode?: ALPHA_MODES;
     /** optional label, can be used for debugging */
     label?: string;
+    /** If true, the Garbage Collector will unload this texture if it is not used after a period of time */
+    gcManaged?: boolean;
 }
 
 /**
@@ -85,6 +87,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         autoGenerateMipmaps: false,
         sampleCount: 1,
         antialias: false,
+        gcManaged: false,
     };
 
     /** unique id for this Texture source */
@@ -200,6 +203,8 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
     public isPowerOfTwo: boolean;
 
+    public gcManaged: boolean;
+
     constructor(protected readonly options: TextureSourceOptions<T> = {})
     {
         super();
@@ -208,7 +213,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
         this.label ??= options.label;
         this.resource = options.resource;
-
+        this.gcManaged = options.gcManaged;
         this._resolution = options.resolution;
 
         if (options.width)
@@ -374,7 +379,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      */
     public unload()
     {
-        this._resourceId++;
+        this._resourceId = uid('textureResource');
         this.emit('change', this);
         this.emit('unload', this);
     }
@@ -450,7 +455,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
         this.emit('resize', this);
 
-        this._resourceId++;
+        this._resourceId = uid('textureResource');
         this.emit('change', this);
     }
 

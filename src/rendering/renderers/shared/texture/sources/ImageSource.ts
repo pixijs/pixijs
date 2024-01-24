@@ -37,6 +37,8 @@ export class ImageSource extends TextureSource<ImageResource>
         }
 
         super(options);
+
+        this.gcManaged = true;
     }
 
     public static test(resource: any): resource is ImageResource

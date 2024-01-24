@@ -386,6 +386,9 @@ export class Texture extends EventEmitter<{
 
 Texture.EMPTY = new Texture({
     label: 'EMPTY',
+    source: new TextureSource({
+        label: 'EMPTY',
+    })
 });
 
 Texture.EMPTY.destroy = NOOP;
@@ -395,7 +398,8 @@ Texture.WHITE = new Texture({
         resource: new Uint8Array([255, 255, 255, 255]),
         width: 1,
         height: 1,
-        alphaMode: 'premultiply-alpha-on-upload'
+        alphaMode: 'premultiply-alpha-on-upload',
+        label: 'WHITE',
     }),
     label: 'WHITE',
 });
