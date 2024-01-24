@@ -15,7 +15,8 @@ export type ExtractedAttributeData = Omit<Attribute, 'buffer'>;
 
 export function extractAttributesFromGlProgram(
     program: WebGLProgram,
-    gl: WebGLRenderingContextBase
+    gl: WebGLRenderingContextBase,
+    sortAttributes = false
 ): Record<string, ExtractedAttributeData>
 {
     const attributes: {[key: string]: ExtractedAttributeData} = {};
@@ -35,13 +36,36 @@ export function extractAttributesFromGlProgram(
         const format = mapGlToVertexFormat(gl, attribData.type);
 
         attributes[attribData.name] = {
-            location: gl.getAttribLocation(program, attribData.name),
+            location: 0, // set further down..
             format,
             stride: getAttributeInfoFromFormat(format).stride,
             offset: 0,
             instance: false,
             start: 0,
         };
+    }
+
+    const keys = Object.keys(attributes);
+
+    if (sortAttributes)
+    {
+        keys.sort((a, b) => (a > b) ? 1 : -1); // eslint-disable-line no-confusing-arrow
+
+        for (let i = 0; i < keys.length; i++)
+        {
+            attributes[keys[i]].location = i;
+
+            gl.bindAttribLocation(program, i, keys[i]);
+        }
+
+        gl.linkProgram(program);
+    }
+    else
+    {
+        for (let i = 0; i < keys.length; i++)
+        {
+            attributes[keys[i]].location = gl.getAttribLocation(program, keys[i]);
+        }
     }
 
     return attributes;

@@ -79,14 +79,12 @@ export class MeshGeometry extends Geometry
             attributes: {
                 aPosition: {
                     buffer: positionBuffer,
-                    location: 0,
                     format: 'float32x2',
                     stride: 2 * 4,
                     offset: 0,
                 },
                 aUV: {
                     buffer: uvBuffer,
-                    location: 1,
                     format: 'float32x2',
                     stride: 2 * 4,
                     offset: 0,
