@@ -15,7 +15,6 @@ import type { TestScene } from '../../types';
  * does not use them.. they come out flipped!
  */
 export const scene: TestScene = {
-    only: true,
     it: 'should render a fully custom mesh',
     create: async (scene: Container) =>
     {
