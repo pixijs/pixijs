@@ -235,9 +235,9 @@ function syncWithProxy(container: Renderable, proxy: Renderable)
     proxy.groupColorAlpha = container.groupColorAlpha;
     proxy.groupColor = container.groupColor;
     proxy.groupBlendMode = container.groupBlendMode;
-    proxy.groupVisibleRenderable = container.groupVisibleRenderable;
+    proxy.globalDisplayStatus = container.globalDisplayStatus;
     proxy.groupTransform = container.groupTransform;
-    proxy.localVisibleRenderable = container.localVisibleRenderable;
+    proxy.localDisplayStatus = container.localDisplayStatus;
     proxy.groupAlpha = container.groupAlpha;
     proxy._roundPixels = container._roundPixels;
 }
