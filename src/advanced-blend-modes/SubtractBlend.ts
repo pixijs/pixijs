@@ -1,9 +1,9 @@
 /* eslint-disable max-len */
 
-import { ExtensionType } from '../../extensions/Extensions';
-import { BlendModeFilter } from './BlendModeFilter';
+import { ExtensionType } from '../extensions/Extensions';
+import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 
-import type { ExtensionMetadata } from '../../extensions/Extensions';
+import type { ExtensionMetadata } from '../extensions/Extensions';
 
 /**
  * Subtracts the blend from the base color using each color channel
