@@ -24,6 +24,45 @@ describe('Application', () =>
             expect(app.renderer).toBeNull();
         });
 
+        it('should pass init options correctly', async () =>
+        {
+            const app = new Application();
+
+            await app.init({
+                preference: 'webgl',
+                width: 800,
+                height: 600,
+                webgpu: {
+                    antialias: true,
+                    backgroundColor: 'red'
+                },
+                webgl: {
+                    antialias: true,
+                    backgroundColor: 'green'
+                }
+            });
+
+            expect(app.renderer.background.color.value).toEqual('green');
+
+            const app2 = new Application();
+
+            await app2.init({
+                preference: 'webgpu',
+                width: 800,
+                height: 600,
+                webgpu: {
+                    antialias: true,
+                    backgroundColor: 'red'
+                },
+                webgl: {
+                    antialias: true,
+                    backgroundColor: 'green'
+                }
+            });
+
+            expect(app2.renderer.background.color.value).toEqual('red');
+        });
+
         it('register a new plugin, then destroy it', async () =>
         {
             const plugin = {
