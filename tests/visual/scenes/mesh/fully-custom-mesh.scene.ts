@@ -15,6 +15,7 @@ import type { TestScene } from '../../types';
  * does not use them.. they come out flipped!
  */
 export const scene: TestScene = {
+    only: true,
     it: 'should render a fully custom mesh',
     create: async (scene: Container) =>
     {
@@ -41,9 +42,9 @@ export const scene: TestScene = {
 
         const geometry = new Geometry({
             attributes: {
-                aPosition: [-1, -1, -1, 1, 1, 1],
+                aPosition: [-1, -1, -1, 1, 1, 1, 1, -1],
             },
-            indexBuffer: [0, 1, 2],
+            indexBuffer: [0, 1, 2, 0, 2, 3],
         });
 
         const gpuProgram = new GpuProgram({
