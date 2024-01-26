@@ -35,24 +35,7 @@ async function getBasis(): Promise<BasisTextureConstructor>
         const absoluteJsUrl = new URL(settings.jsUrl, location.origin).href;
         const absoluteWasmUrl = new URL(settings.wasmUrl, location.origin).href;
 
-        try
-        {
-            importScripts(absoluteJsUrl);
-        }
-        catch (e)
-        {
-            // #if _DEBUG
-            console.warn('[Pixi.js] Failed to load Basis in worker via importScripts. Falling back to eval.');
-            // #endif
-
-            const response = await fetch(absoluteJsUrl);
-            let text = await response.text();
-
-            text += '\nself.BASIS = BASIS;';
-
-            // eslint-disable-next-line no-eval
-            eval(text);
-        }
+        importScripts(absoluteJsUrl);
 
         basisPromise = new Promise((resolve) =>
         {

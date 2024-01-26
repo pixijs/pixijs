@@ -37,24 +37,7 @@ async function getKTX(): Promise<LIBKTXModule>
         const absoluteJsUrl = new URL(settings.jsUrl, location.origin).href;
         const absoluteWasmUrl = new URL(settings.wasmUrl, location.origin).href;
 
-        try
-        {
-            importScripts(absoluteJsUrl);
-        }
-        catch (e)
-        {
-            // #if _DEBUG
-            console.warn('Failed to load KTX(2) in worker via importScripts. Falling back to eval.');
-            // #endif
-
-            const response = await fetch(absoluteJsUrl);
-            let text = await response.text();
-
-            text += '\nself.LIBKTX = LIBKTX;';
-
-            // eslint-disable-next-line no-eval
-            eval(text);
-        }
+        importScripts(absoluteJsUrl);
 
         ktxPromise = new Promise((resolve) =>
         {
