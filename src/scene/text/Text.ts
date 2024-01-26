@@ -1,5 +1,6 @@
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
+import { Bounds } from '../container/bounds/Bounds';
 import { Container } from '../container/Container';
 import { BitmapFontManager } from '../text-bitmap/BitmapFontManager';
 import { measureHtmlText } from '../text-html/utils/measureHtmlText';
@@ -10,7 +11,6 @@ import { ensureTextStyle } from './utils/ensureTextStyle';
 import type { PointData } from '../../maths/point/PointData';
 import type { PointLike } from '../../maths/point/PointLike';
 import type { View } from '../../rendering/renderers/shared/view/View';
-import type { Bounds, BoundsData } from '../container/bounds/Bounds';
 import type { ContainerOptions } from '../container/Container';
 import type { DestroyOptions } from '../container/destroyTypes';
 import type { HTMLTextStyle, HTMLTextStyleOptions } from '../text-html/HtmlTextStyle';
@@ -142,7 +142,7 @@ export class Text extends Container implements View
     public _didTextUpdate = true;
     public _roundPixels: 0 | 1 = 0;
 
-    private _bounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
+    private _bounds: Bounds = new Bounds();
     private _boundsDirty = true;
     private _text: string;
     private readonly _renderMode: 'canvas' | 'html' | 'bitmap';
@@ -282,6 +282,28 @@ export class Text extends Container implements View
         }
 
         return this._bounds;
+    }
+
+    /** The width of the sprite, setting this will actually modify the scale to achieve the value set. */
+    get width(): number
+    {
+        return Math.abs(this.scale.x) * this.bounds.width;
+    }
+
+    set width(value: number)
+    {
+        this._setWidth(value, this.bounds.width);
+    }
+
+    /** The height of the sprite, setting this will actually modify the scale to achieve the value set. */
+    get height(): number
+    {
+        return Math.abs(this.scale.y) * this.bounds.height;
+    }
+
+    set height(value: number)
+    {
+        this._setHeight(value, this.bounds.height);
     }
 
     public addBounds(bounds: Bounds)
