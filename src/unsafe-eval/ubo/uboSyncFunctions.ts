@@ -3,7 +3,7 @@
  * Do not edit manually - or you will be sad.
  */
 
-import type { UNIFORM_TYPES } from '../rendering/renderers/shared/shader/types';
+import type { UNIFORM_TYPES } from '../../rendering/renderers/shared/shader/types';
 
 export type UboUploadFunction = (name: string, data: Float32Array, offset: number, uv: any, v: any) => void;
 export const uboParserFunctions: UboUploadFunction[] = [
