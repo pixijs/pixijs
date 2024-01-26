@@ -1,4 +1,4 @@
-import { extensions } from '../../extensions/Extensions';
+import { extensions } from '../extensions/Extensions';
 import { ColorBlend } from './ColorBlend';
 import { ColorBurnBlend } from './ColorBurnBlend';
 import { ColorDodgeBlend } from './ColorDodgeBlend';
@@ -44,3 +44,25 @@ extensions.add(
     SubtractBlend,
     VividLightBlend,
 );
+
+export * from './ColorBlend';
+export * from './ColorBurnBlend';
+export * from './ColorDodgeBlend';
+export * from './DarkenBlend';
+export * from './DifferenceBlend';
+export * from './DivideBlend';
+export * from './ExclusionBlend';
+export * from './HardLightBlend';
+export * from './HardMixBlend';
+export * from './LightenBlend';
+export * from './LinearBurnBlend';
+export * from './LinearDodgeBlend';
+export * from './LinearLightBlend';
+export * from './LuminosityBlend';
+export * from './NegationBlend';
+export * from './OverlayBlend';
+export * from './PinLightBlend';
+export * from './SaturationBlend';
+export * from './SoftLightBlend';
+export * from './SubtractBlend';
+export * from './VividLightBlend';

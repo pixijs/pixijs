@@ -67,7 +67,7 @@ function compileInputsAndOutputs(template: HighShaderTemplate, bits: HighShaderB
     const fragmentFragments = bits.map((shaderBit) => shaderBit.fragment).filter((v) => !!v);
 
     // WebGPU compile inputs and outputs..
-    let compiledVertex = compileInputs(vertexFragments, template.vertex);
+    let compiledVertex = compileInputs(vertexFragments, template.vertex, true);
 
     compiledVertex = compileOutputs(vertexFragments, compiledVertex);
 

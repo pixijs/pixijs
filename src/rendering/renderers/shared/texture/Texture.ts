@@ -5,12 +5,12 @@ import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { uid } from '../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { NOOP } from '../../../../utils/misc/NOOP';
-import { BufferImageSource, type BufferSourceOptions } from './sources/BufferSource';
+import { BufferImageSource } from './sources/BufferSource';
 import { resourceToTexture } from './sources/resourceToTexture';
 import { TextureSource } from './sources/TextureSource';
 import { TextureMatrix } from './TextureMatrix';
 
-import type { TextureSourceOptions } from './sources/TextureSource';
+import type { TextureResourceOrOptions } from './sources/resourceToTexture';
 
 /** Stores the width of the non-scalable borders, for example when used with {@link scene.NineSlicePlane} texture. */
 export interface TextureBorders
@@ -62,7 +62,7 @@ export interface BindableTexture
     source: TextureSource;
 }
 
-export type TextureSourceLike = TextureSource | TextureSourceOptions | BufferSourceOptions | string;
+export type TextureSourceLike = TextureSource | TextureResourceOrOptions | string;
 
 /**
  * A texture stores the information that represents an image or part of an image.
