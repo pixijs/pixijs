@@ -529,6 +529,10 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
     // 0b11
     // first bit is visible, second bit is renderable
     /**
+     * This property holds three bits: culled, visible, renderable
+     * the third bit represents culling (0 = culled, 1 = not culled) 0b100
+     * the second bit represents visibility (0 = not visible, 1 = visible) 0b010
+     * the first bit represents renderable (0 = renderable, 1 = not renderable) 0b001
      * @internal
      * @ignore
      */
