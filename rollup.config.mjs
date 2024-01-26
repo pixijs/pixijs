@@ -99,7 +99,6 @@ async function main()
         .concat(Object.keys(peerDependencies))
         .map(convertPackageNameToRegExp);
     const input = [
-        path.join(process.cwd(), 'src/index.ts'),
         ...sideEffects.map((name) => path.join(process.cwd(), name.replace('/lib/', '/src/').replace('.*', '.ts'))),
     ];
 

@@ -50,8 +50,16 @@ describe('Culler', () =>
 
         Culler.shared.cull(container, view, false);
 
-        expect(container.visible).toBe(true);
-        expect(child.visible).toBe(false);
+        expect(container.culled).toBe(false);
+        expect(child.culled).toBe(true);
+
+        child.x = 0;
+        child.y = 0;
+
+        Culler.shared.cull(container, view, false);
+
+        expect(container.culled).toBe(false);
+        expect(child.culled).toBe(false);
     });
 
     it('noncullable container should always be rendered even if bounds do not intersect the frame', () =>
@@ -64,8 +72,8 @@ describe('Culler', () =>
 
         Culler.shared.cull(container, view, false);
 
-        expect(container.visible).toBe(true);
-        expect(graphics.visible).toBe(true);
+        expect(container.culled).toBe(false);
+        expect(graphics.culled).toBe(false);
     });
 
     it('cullable container should not be rendered if bounds do not intersect the frame', () =>
@@ -79,8 +87,14 @@ describe('Culler', () =>
 
         Culler.shared.cull(container, view, false);
 
-        expect(container.visible).toBe(false);
-        expect(graphics.visible).toBe(true);
+        expect(container.culled).toBe(true);
+        expect(graphics.culled).toBe(false);
+
+        graphics.x = 10;
+        graphics.y = 10;
+        Culler.shared.cull(container, view, false);
+        expect(container.culled).toBe(false);
+        expect(graphics.culled).toBe(false);
     });
 
     it('cullable container should be rendered if bounds intersects the frame', () =>
@@ -94,8 +108,15 @@ describe('Culler', () =>
 
         Culler.shared.cull(container, view, false);
 
-        expect(container.visible).toBe(true);
-        expect(graphics.visible).toBe(true);
+        expect(container.culled).toBe(false);
+        expect(graphics.culled).toBe(false);
+
+        graphics.x = -30;
+        graphics.y = -30;
+        Culler.shared.cull(container, view, false);
+
+        expect(container.culled).toBe(true);
+        expect(graphics.culled).toBe(false);
     });
 
     it('cullable container that contains a child with a padded filter'
@@ -115,8 +136,8 @@ describe('Culler', () =>
 
         Culler.shared.cull(container, view, false);
 
-        expect(container.visible).toBe(false);
-        expect(graphics.visible).toBe(true);
+        expect(container.culled).toBe(true);
+        expect(graphics.culled).toBe(false);
     });
 
     it('cullable container with a filter should not render the container or children '
@@ -135,8 +156,8 @@ describe('Culler', () =>
 
         Culler.shared.cull(container, view, false);
 
-        expect(container.visible).toBe(false);
-        expect(graphics.visible).toBe(true);
+        expect(container.culled).toBe(true);
+        expect(graphics.culled).toBe(false);
     });
 
     it('cullable container with cullArea should be rendered if the bounds intersect the frame', () =>
@@ -151,8 +172,8 @@ describe('Culler', () =>
 
         Culler.shared.cull(container, view, false);
 
-        expect(container.visible).toBe(true);
-        expect(graphics.visible).toBe(true);
+        expect(container.culled).toBe(false);
+        expect(graphics.culled).toBe(false);
     });
 
     it('cullable container with cullArea should not be rendered if the bounds do not intersect the frame', () =>
@@ -167,7 +188,7 @@ describe('Culler', () =>
 
         Culler.shared.cull(container, view, false);
 
-        expect(container.visible).toBe(false);
-        expect(graphics.visible).toBe(true);
+        expect(container.culled).toBe(true);
+        expect(graphics.culled).toBe(false);
     });
 });
