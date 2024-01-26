@@ -1,9 +1,9 @@
-import { ExtensionType } from '../../extensions/Extensions';
-import { BlendModeFilter } from './BlendModeFilter';
-import { hslgl } from './hls/GLhls';
-import { hslgpu } from './hls/GPUhls';
+import { ExtensionType } from '../extensions/Extensions';
+import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
+import { hslgl } from '../filters/blend-modes/hls/GLhls';
+import { hslgpu } from '../filters/blend-modes/hls/GPUhls';
 
-import type { ExtensionMetadata } from '../../extensions/Extensions';
+import type { ExtensionMetadata } from '../extensions/Extensions';
 
 export class LuminosityBlend extends BlendModeFilter
 {

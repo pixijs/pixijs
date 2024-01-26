@@ -144,6 +144,16 @@
       ]
     },
     {
+      "src": "src/bundle.advanced-blend-modes.ts",
+      "target": "dist/packages/advanced-blend-modes.js",
+      "module": "dist/packages/advanced-blend-modes.mjs",
+      "plugin": [
+        "/rendering/",
+        "/extensions/",
+        "/filters/"
+      ]
+    },
+    {
       "src": "src/bundle.webworker.ts",
       "target": "dist/webworker.js",
       "module": "dist/webworker.mjs",
@@ -158,7 +168,7 @@
     "./lib/spritesheet/init.*",
     "./lib/rendering/renderers/shared/texture/sources/resourceToTexture.*",
     "./lib/accessibility/init.*",
-    "./lib/filters/blend-modes/init.*",
+    "./lib/advanced-blend-modes/init.*",
     "./lib/app/init.*",
     "./lib/compressed-textures/dds/init.*",
     "./lib/compressed-textures/ktx/init.*",
@@ -213,10 +223,10 @@
     },
     "./advanced-blend-modes": {
       "import": {
-        "default": "./lib/filters/blend-modes/init.mjs"
+        "default": "./lib/advanced-blend-modes/init.mjs"
       },
       "require": {
-        "default": "./lib/filters/blend-modes/init.js"
+        "default": "./lib/advanced-blend-modes/init.js"
       }
     },
     "./app": {

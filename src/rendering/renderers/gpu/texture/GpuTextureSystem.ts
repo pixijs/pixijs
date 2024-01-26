@@ -94,13 +94,16 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
         this._gpuSources[source.uid] = gpuTexture;
 
-        source.on('update', this.onSourceUpdate, this);
-        source.on('resize', this.onSourceResize, this);
-        source.on('destroy', this.onSourceDestroy, this);
-        source.on('unload', this.onSourceUnload, this);
-        source.on('updateMipmaps', this.onUpdateMipmaps, this);
+        if (!this.managedTextures.includes(source))
+        {
+            source.on('update', this.onSourceUpdate, this);
+            source.on('resize', this.onSourceResize, this);
+            source.on('destroy', this.onSourceDestroy, this);
+            source.on('unload', this.onSourceUnload, this);
+            source.on('updateMipmaps', this.onUpdateMipmaps, this);
 
-        this.managedTextures.push(source);
+            this.managedTextures.push(source);
+        }
 
         this.onSourceUpdate(source);
 

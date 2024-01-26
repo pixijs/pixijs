@@ -1,7 +1,7 @@
-import { ExtensionType } from '../../extensions/Extensions';
-import { BlendModeFilter } from './BlendModeFilter';
+import { ExtensionType } from '../extensions/Extensions';
+import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 
-import type { ExtensionMetadata } from '../../extensions/Extensions';
+import type { ExtensionMetadata } from '../extensions/Extensions';
 
 /**
  * Uses each color channel to select the darker of the following two values; base or blend color
