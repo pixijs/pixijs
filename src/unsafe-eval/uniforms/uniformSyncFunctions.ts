@@ -3,7 +3,7 @@
  * Do not edit manually - or you will be sad.
  */
 
-import type { UNIFORM_TYPES } from '../rendering/renderers/shared/shader/types';
+import type { UNIFORM_TYPES } from '../../rendering/renderers/shared/shader/types';
 
 export type UniformUploadFunction = (name: string, cu: any, cv: any, v: any, ud: any, uv: any, gl: any) => void;
 

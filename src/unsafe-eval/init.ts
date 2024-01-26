@@ -1,49 +1,43 @@
+import { generateShaderSyncPolyfill } from '../bundle.unsafe-eval';
+import { AbstractRenderer, GlShaderSystem } from '../rendering';
 import { GlUboSystem } from '../rendering/renderers/gl/GlUboSystem';
 import { GlUniformGroupSystem } from '../rendering/renderers/gl/shader/GlUniformGroupSystem';
 import { GpuUboSystem } from '../rendering/renderers/gpu/GpuUboSystem';
 import {
     generateUboSyncPolyfillSTD40,
     generateUboSyncPolyfillWGSL
-} from './generateUboSyncPolyfill';
-import { generateUniformsSyncPolyfill } from './generateUniformsSyncPolyfill';
+} from './ubo/generateUboSyncPolyfill';
+import { generateUniformsSyncPolyfill } from './uniforms/generateUniformsSyncPolyfill';
 
 function selfInstall()
 {
-    Object.assign(GlUniformGroupSystem.prototype,
+    Object.assign(AbstractRenderer.prototype, {
+        // override unsafeEval check, as we don't need to use it
+        _unsafeEvalCheck()
         {
-            _systemCheck()
-            {
-                // Do nothing, don't throw error
-            },
+            // Do nothing, don't throw error
+        },
+    });
 
-            // use polyfill which avoids eval method
-            _generateUniformsSync: generateUniformsSyncPolyfill,
-        }
-    );
+    Object.assign(GlUniformGroupSystem.prototype, {
+        // use polyfill which avoids eval method
+        _generateUniformsSync: generateUniformsSyncPolyfill,
+    });
 
-    Object.assign(GlUboSystem.prototype,
-        {
-            _systemCheck()
-            {
-                // Do nothing, don't throw error
-            },
+    Object.assign(GlUboSystem.prototype, {
+        // use polyfill which avoids eval method
+        _generateUniformBufferSync: generateUboSyncPolyfillSTD40,
+    });
 
-            // use polyfill which avoids eval method
-            _generateUniformBufferSync: generateUboSyncPolyfillSTD40,
-        }
-    );
+    Object.assign(GpuUboSystem.prototype, {
+        // use polyfill which avoids eval method
+        _generateUniformBufferSync: generateUboSyncPolyfillWGSL,
+    });
 
-    Object.assign(GpuUboSystem.prototype,
-        {
-            _systemCheck()
-            {
-                // Do nothing, don't throw error
-            },
-
-            // use polyfill which avoids eval method
-            _generateUniformBufferSync: generateUboSyncPolyfillWGSL,
-        }
-    );
+    Object.assign(GlShaderSystem.prototype, {
+        // use polyfill which avoids eval method
+        _generateShaderSync: generateShaderSyncPolyfill,
+    });
 }
 
 selfInstall();

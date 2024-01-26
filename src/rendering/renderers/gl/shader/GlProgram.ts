@@ -1,3 +1,4 @@
+import { createIdFromString } from '../../shared/utils/createIdFromString';
 import { getMaxFragmentPrecision } from './program/getMaxFragmentPrecision';
 import { addProgramDefines } from './program/preprocessors/addProgramDefines';
 import { ensurePrecision } from './program/preprocessors/ensurePrecision';
@@ -134,7 +135,7 @@ export class GlProgram
      * @internal
      * @ignore
      */
-    public readonly _key: string;
+    public readonly _key: number;
 
     /**
      * Creates a shiny new GlProgram. Used by WebGL renderer.
@@ -177,7 +178,7 @@ export class GlProgram
         this.fragment = fragment;
         this.vertex = vertex;
 
-        this._key = `${this.vertex}:${this.fragment}`;
+        this._key = createIdFromString(`${this.vertex}:${this.fragment}`, 'gl-program');
     }
 
     /** destroys the program */
