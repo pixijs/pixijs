@@ -121,6 +121,8 @@ export class PipelineSystem implements System
     {
         if (!geometry._layoutKey)
         {
+            ensureAttributes(geometry, program.attributeData);
+
             // prepare the geometry for the pipeline
             this._generateBufferKey(geometry);
         }
@@ -151,7 +153,7 @@ export class PipelineSystem implements System
     {
         const device = this._gpu.device;
 
-        const buffers = this._createVertexBufferLayouts(geometry, program);
+        const buffers = this._createVertexBufferLayouts(geometry);
 
         const blendModes = this._renderer.state.getColorTargets(state);
 
@@ -236,7 +238,7 @@ export class PipelineSystem implements System
         return geometry._layoutKey;
     }
 
-    private _createVertexBufferLayouts(geometry: Geometry, program: GpuProgram): GPUVertexBufferLayout[]
+    private _createVertexBufferLayouts(geometry: Geometry): GPUVertexBufferLayout[]
     {
         if (this._bufferLayoutsCache[geometry._layoutKey])
         {
@@ -244,8 +246,6 @@ export class PipelineSystem implements System
         }
 
         const vertexBuffersLayout: GPUVertexBufferLayout[] = [];
-
-        ensureAttributes(geometry, program.attributeData);
 
         geometry.buffers.forEach((buffer) =>
         {

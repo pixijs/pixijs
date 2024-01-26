@@ -1,5 +1,6 @@
 import { Color } from '../../../../color/Color';
 import { Container } from '../../../../scene/container/Container';
+import { unsafeEvalSupported } from '../../../../utils/browser/unsafeEvalSupported';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { CLEAR } from '../../gl/const';
 import { SystemRunner } from './SystemRunner';
@@ -139,6 +140,9 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
         this._addRunners(...combinedRunners);
         this._addSystems(config.systems);
         this._addPipes(config.renderPipes, config.renderPipeAdaptors);
+
+        // Validation check that this environment support `new Function`
+        this._unsafeEvalCheck();
     }
 
     /**
@@ -436,5 +440,20 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
     get roundPixels(): boolean
     {
         return !!this._roundPixels;
+    }
+
+    /**
+     * Overrideable function by `pixi.js/unsafe-eval` to silence
+     * throwing an error if platform doesn't support unsafe-evals.
+     * @private
+     * @ignore
+     */
+    public _unsafeEvalCheck(): void
+    {
+        if (!unsafeEvalSupported())
+        {
+            throw new Error('Current environment does not allow unsafe-eval, '
+               + 'please use pixi.js/unsafe-eval module to enable support.');
+        }
     }
 }

@@ -226,7 +226,7 @@ export class Geometry extends EventEmitter<{
         for (const i in this.attributes)
         {
             const attribute = this.attributes[i];
-            const buffer = this.getBuffer(i);
+            const buffer = attribute.buffer;
 
             // TODO use SIZE again like v7..
             return (buffer.data as any).length / ((attribute.stride / 4) || attribute.size);

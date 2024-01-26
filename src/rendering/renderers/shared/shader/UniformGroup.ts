@@ -1,4 +1,5 @@
 import { uid } from '../../../../utils/data/uid';
+import { createIdFromString } from '../utils/createIdFromString';
 import { getDefaultUniformValue } from './utils/getDefaultUniformValue';
 
 import type { BindResource } from '../../gpu/shader/BindResource';
@@ -126,7 +127,7 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
      * @internal
      * @ignore
      */
-    public readonly _signature: string;
+    public readonly _signature: number;
 
     /**
      * Create a new Uniform group
@@ -158,9 +159,9 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
         this.ubo = options.ubo;
         this.isStatic = options.isStatic;
 
-        this._signature = Object.keys(uniforms).map(
+        this._signature = createIdFromString(Object.keys(uniforms).map(
             (i) => `${i}-${(uniformStructures[i as keyof typeof uniformStructures] as UniformData).type}`
-        ).join('-');
+        ).join('-'), 'uniform-group');
     }
 
     /** Call this if you want the uniform groups data to be uploaded to the GPU only useful if `isStatic` is true. */

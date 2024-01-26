@@ -34,7 +34,7 @@ export class Culler
             const bounds = container.cullArea ?? getGlobalBounds(container, skipUpdateTransform, tempBounds);
 
             // check view intersection..
-            container.visible = !(bounds.x >= view.x + view.width
+            container.culled = !(bounds.x >= view.x + view.width
                 || bounds.y >= view.y + view.height
                 || bounds.x + bounds.width <= view.x
                 || bounds.y + bounds.height <= view.y);
@@ -43,7 +43,7 @@ export class Culler
         // dont process children if not needed
         if (
             !container.cullableChildren
-            || !container.visible
+            || container.culled
             || !container.renderable
             || !container.measurable
             || !container.includeInBuild

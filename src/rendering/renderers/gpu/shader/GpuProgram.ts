@@ -155,8 +155,8 @@ export class GpuProgram
 
         this.gpuLayout = gpuLayout ?? generateGpuLayoutGroups(this.structsAndGroups);
 
-        this.autoAssignGlobalUniforms = !!this.layout[0]?.globalUniforms;
-        this.autoAssignLocalUniforms = !!this.layout[1]?.localUniforms;
+        this.autoAssignGlobalUniforms = !!(this.layout[0]?.globalUniforms !== undefined);
+        this.autoAssignLocalUniforms = !!(this.layout[1]?.localUniforms !== undefined);
 
         this._generateProgramKey();
     }
