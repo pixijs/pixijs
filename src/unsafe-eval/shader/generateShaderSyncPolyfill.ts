@@ -1,6 +1,11 @@
-import { BufferResource, type Shader, TextureSource, TextureStyle, UniformGroup, type WebGLRenderer } from '../../rendering';
+import { BufferResource } from '../../rendering/renderers/shared/buffer/BufferResource';
+import { UniformGroup } from '../../rendering/renderers/shared/shader/UniformGroup';
+import { TextureSource } from '../../rendering/renderers/shared/texture/sources/TextureSource';
+import { TextureStyle } from '../../rendering/renderers/shared/texture/TextureStyle';
 
 import type { ShaderSyncData, ShaderSyncFunction } from '../../rendering/renderers/gl/shader/GlShaderSystem';
+import type { WebGLRenderer } from '../../rendering/renderers/gl/WebGLRenderer';
+import type { Shader } from '../../rendering/renderers/shared/shader/Shader';
 
 export function generateShaderSyncPolyfill(): ShaderSyncFunction
 {
