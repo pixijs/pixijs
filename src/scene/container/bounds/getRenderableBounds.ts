@@ -15,7 +15,7 @@ export function getGlobalRenderableBounds(renderables: Renderable[], bounds: Bou
     {
         const renderable = renderables[i];
 
-        if (renderable.groupVisibleRenderable < 0b11)
+        if (renderable.globalDisplayStatus < 0b111)
         {
             continue;
         }
