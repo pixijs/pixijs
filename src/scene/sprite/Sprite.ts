@@ -3,12 +3,14 @@ import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { updateQuadBounds } from '../../utils/data/updateQuadBounds';
 import { Container } from '../container/Container';
 
+import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
 import type { PointLike } from '../../maths/point/PointLike';
 import type { TextureSourceLike } from '../../rendering/renderers/shared/texture/Texture';
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Bounds, BoundsData } from '../container/bounds/Bounds';
 import type { ContainerOptions } from '../container/Container';
+import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
 
 /**
@@ -307,4 +309,57 @@ export class Sprite extends Container implements View
     {
         this._setHeight(value, this._texture.orig.height);
     }
+
+    /**
+     * Retrieves the size of the Sprite as a [Size]{@link Size} object.
+     * This is faster than get the width and height separately.
+     * @param out - Optional object to store the size in.
+     * @returns - The size of the Sprite.
+     */
+    public override getSize = (out?: Size): Size =>
+    {
+        if (!out)
+        {
+            out = {} as Size;
+        }
+
+        out.width = Math.abs(this.scale.x) * this._texture.orig.width;
+        out.height = Math.abs(this.scale.y) * this._texture.orig.height;
+
+        return out;
+    };
+
+    /**
+     * Sets the size of the container to the specified width and height.
+     * This is faster than setting the width and height separately.
+     * @param value - This can be either a number or a [Size]{@link Size} object.
+     * @param height - The height to set. Defaults to the value of `width` if not provided.
+     * @memberof scene.Container#
+     */
+    public override setSize = (value: number | Optional<Size, 'height'>, height?: number) =>
+    {
+        let convertedWidth: number;
+        let convertedHeight: number;
+
+        if (typeof value !== 'object')
+        {
+            convertedWidth = value;
+            convertedHeight = height ?? value;
+        }
+        else
+        {
+            convertedWidth = value.width;
+            convertedHeight = value.height ?? value.width;
+        }
+
+        if (convertedWidth !== undefined)
+        {
+            this._setWidth(convertedWidth, this._texture.orig.width);
+        }
+
+        if (convertedHeight !== undefined)
+        {
+            this._setHeight(convertedHeight, this._texture.orig.height);
+        }
+    };
 }
