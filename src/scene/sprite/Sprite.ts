@@ -330,11 +330,10 @@ export class Sprite extends Container implements View
     };
 
     /**
-     * Sets the size of the container to the specified width and height.
+     * Sets the size of the Sprite to the specified width and height.
      * This is faster than setting the width and height separately.
      * @param value - This can be either a number or a [Size]{@link Size} object.
      * @param height - The height to set. Defaults to the value of `width` if not provided.
-     * @memberof scene.Container#
      */
     public override setSize = (value: number | Optional<Size, 'height'>, height?: number) =>
     {
