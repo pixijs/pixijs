@@ -17,6 +17,7 @@ import { loadWebFont } from './loader/parsers/loadWebFont';
 import { loadSvg } from './loader/parsers/textures/loadSVG';
 import { type LoadTextureConfig, loadTextures } from './loader/parsers/textures/loadTextures';
 import { loadVideoTextures } from './loader/parsers/textures/loadVideoTextures';
+import { resolveJsonUrl } from './resolver/parsers/resolveJsonUrl';
 import { resolveTextureUrl } from './resolver/parsers/resolveTextureUrl';
 import { Resolver } from './resolver/Resolver';
 import { convertToList } from './utils/convertToList';
@@ -951,6 +952,7 @@ extensions.add(
     loadVideoTextures,
 
     resolveTextureUrl,
+    resolveJsonUrl
 );
 
 const assetKeyMap = {
