@@ -79,7 +79,10 @@ export class CanvasSource extends TextureSource<ICanvas>
     {
         const didResize = super.resize(width, height, resolution);
 
-        this.resizeCanvas();
+        if (didResize)
+        {
+            this.resizeCanvas();
+        }
 
         return didResize;
     }
