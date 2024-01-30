@@ -166,14 +166,16 @@ export class Geometry extends EventEmitter<{
             {
                 this.buffers.push(attribute.buffer);
 
+                // two events here - one for a resize (new buffer change)
+                // and one for an update (existing buffer change)
                 attribute.buffer.on('update', this.onBufferUpdate, this);
+                attribute.buffer.on('change', this.onBufferUpdate, this);
             }
         }
 
         if (indexBuffer)
         {
             this.indexBuffer = ensureIsBuffer(indexBuffer, true);
-
             this.buffers.push(this.indexBuffer);
         }
 
@@ -224,7 +226,7 @@ export class Geometry extends EventEmitter<{
         for (const i in this.attributes)
         {
             const attribute = this.attributes[i];
-            const buffer = this.getBuffer(i);
+            const buffer = attribute.buffer;
 
             // TODO use SIZE again like v7..
             return (buffer.data as any).length / ((attribute.stride / 4) || attribute.size);

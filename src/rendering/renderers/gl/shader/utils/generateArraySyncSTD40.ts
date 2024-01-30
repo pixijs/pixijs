@@ -20,7 +20,7 @@ export function generateArraySyncSTD40(uboElement: UboElement, offsetToAdd: numb
         v = uv.${uboElement.data.name};
         offset += ${offsetToAdd};
 
-        let arrayOffset = offset;
+        arrayOffset = offset;
 
         t = 0;
 

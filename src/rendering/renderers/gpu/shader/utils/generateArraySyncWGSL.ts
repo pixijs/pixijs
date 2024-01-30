@@ -20,7 +20,7 @@ export function generateArraySyncWGSL(uboElement: UboElement, offsetToAdd: numbe
          v = uv.${uboElement.data.name};
          ${remainder !== 0 ? `offset += ${offsetToAdd};` : ''}
 
-         let arrayOffset = offset;
+         arrayOffset = offset;
 
          t = 0;
 

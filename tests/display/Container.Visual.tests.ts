@@ -116,15 +116,15 @@ describe('Container Visual', () =>
             rootContainer.addChild(parent);
             parent.addChild(child);
 
-            expect(child.groupVisibleRenderable).toBe(0b11);
-            expect(child.localVisibleRenderable).toBe(0b11);
+            expect(child.globalDisplayStatus).toBe(0b111);
+            expect(child.localDisplayStatus).toBe(0b111);
 
             parent.visible = false;
 
             updateRenderGroupTransforms(rootContainer.renderGroup, true);
 
-            expect(child.groupVisibleRenderable).toBe(0b01);
-            expect(child.localVisibleRenderable).toBe(0b11);
+            expect(child.globalDisplayStatus).toBe(0b101);
+            expect(child.localDisplayStatus).toBe(0b111);
         });
     });
 

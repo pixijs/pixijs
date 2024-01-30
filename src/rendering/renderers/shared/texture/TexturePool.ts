@@ -57,6 +57,7 @@ export class TexturePoolClass
             height: pixelHeight,
             resolution: 1,
             antialias,
+            autoGarbageCollect: true,
         });
 
         return new Texture({

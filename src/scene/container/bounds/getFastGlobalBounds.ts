@@ -46,7 +46,7 @@ export function _getGlobalBoundsRecursive(
     bounds: Bounds,
 )
 {
-    if (target.localVisibleRenderable !== 0b11 || !target.measurable)
+    if (target.localDisplayStatus !== 0b111 || !target.measurable)
     {
         return;
     }

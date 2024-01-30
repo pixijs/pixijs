@@ -16,6 +16,7 @@ export function createUboSyncFunction(
         var t = 0;
         var index = 0;
         var name = null;
+        var arrayOffset = null;
     `];
 
     let prev = 0;

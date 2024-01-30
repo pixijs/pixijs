@@ -68,13 +68,22 @@ export class GpuMeshAdapter implements MeshAdaptor
 
             return;
         }
+
+        const gpuProgram = shader.gpuProgram;
         // GPU..
-        shader.groups[0] = renderer.globalUniforms.bindGroup;
 
-        const localUniforms = meshPipe.localUniforms;
+        if (gpuProgram.autoAssignGlobalUniforms)
+        {
+            shader.groups[0] = renderer.globalUniforms.bindGroup;
+        }
 
-        shader.groups[1] = (renderer as WebGPURenderer)
-            .renderPipes.uniformBatch.getUniformBindGroup(localUniforms, true);
+        if (gpuProgram.autoAssignLocalUniforms)
+        {
+            const localUniforms = meshPipe.localUniforms;
+
+            shader.groups[1] = (renderer as WebGPURenderer)
+                .renderPipes.uniformBatch.getUniformBindGroup(localUniforms, true);
+        }
 
         renderer.encoder.draw({
             geometry: mesh._geometry,

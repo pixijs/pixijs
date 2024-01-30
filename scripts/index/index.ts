@@ -10,7 +10,7 @@ const directories = glob.sync('*/', { cwd: directoryPath, absolute: true });
 // Use glob to find all TypeScript files recursively in the directory
 directories.forEach((directory) =>
 {
-    const files = glob.sync('**/*[!.d].ts', {
+    const files = glob.sync('**/!(*.d).ts', {
         cwd: directory,
         ignore: [
             '**/init.ts',

@@ -198,7 +198,7 @@ export class RenderGroup implements Instruction
     public updateRenderable(container: Container)
     {
         // only update if its visible!
-        if (container.groupVisibleRenderable < 0b11) return;
+        if (container.globalDisplayStatus < 0b111) return;
 
         container.didViewUpdate = false;
         // actually updates the renderable..
@@ -230,7 +230,7 @@ export class RenderGroup implements Instruction
 
     get isRenderable(): boolean
     {
-        return (this.root.localVisibleRenderable === 0b11 && this.worldAlpha > 0);
+        return (this.root.localDisplayStatus === 0b111 && this.worldAlpha > 0);
     }
 
     /**

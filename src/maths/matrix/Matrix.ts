@@ -2,8 +2,16 @@
 import { PI_2 } from '../misc/const';
 import { Point } from '../point/Point';
 
-import type { Transform } from '../../utils/misc/Transform';
 import type { PointData } from '../point/PointData';
+
+interface TransformableObject
+{
+    position: PointData;
+    scale: PointData;
+    pivot: PointData;
+    skew: PointData;
+    rotation: number;
+}
 
 /**
  * A fast matrix for 2D transformations.
@@ -357,7 +365,7 @@ export class Matrix
      * @param transform - The transform to apply the properties to.
      * @returns The transform with the newly applied properties
      */
-    public decompose(transform: Transform): Transform
+    public decompose(transform: TransformableObject): TransformableObject
     {
         // sort out rotation / skew..
         const a = this.a;

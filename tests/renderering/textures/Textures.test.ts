@@ -46,7 +46,45 @@ describe('Texture', () =>
             height: 2,
         });
 
-        expect(Texture.from({ resource: buffer })).toBe(texture);
+        expect(Texture.from({ resource: buffer, width: 2, height: 2 })).toBe(texture);
+        expect(Cache.has(buffer)).toBe(true);
+    });
+
+    it('should return the same texture when resource is the same', () =>
+    {
+        const videoElement = document.createElement('video');
+
+        let texture = Texture.from(videoElement);
+
+        expect(Texture.from(videoElement)).toBe(texture);
+        expect(Cache.has(videoElement)).toBe(true);
+
+        const imageElement = document.createElement('img');
+
+        texture = Texture.from(imageElement);
+
+        expect(Texture.from(imageElement)).toBe(texture);
+        expect(Cache.has(imageElement)).toBe(true);
+
+        const canvasElement = document.createElement('canvas');
+
+        texture = Texture.from(canvasElement);
+
+        expect(Texture.from(canvasElement)).toBe(texture);
+        expect(Cache.has(canvasElement)).toBe(true);
+
+        const buffer = new Uint8Array([
+            255, 0, 0, 255, 0, 255, 0, 153,
+            0, 0, 255, 102, 255, 255, 0, 51
+        ]);
+
+        texture = Texture.from({
+            resource: buffer,
+            width: 2,
+            height: 2,
+        });
+
+        expect(Texture.from({ resource: buffer, width: 2, height: 2 })).toBe(texture);
         expect(Cache.has(buffer)).toBe(true);
     });
 

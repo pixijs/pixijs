@@ -115,6 +115,11 @@ export class GpuProgram
     public readonly name: string;
     private _attributeData: Record<string, ExtractedAttributeData>;
 
+    /** if true, the program will automatically assign global uniforms to group[0] */
+    public autoAssignGlobalUniforms: boolean;
+    /** if true, the program will automatically assign local uniforms to group[1] */
+    public autoAssignLocalUniforms: boolean;
+
     /**
      * Create a new GpuProgram
      * @param options - The options for the gpu program
@@ -149,6 +154,9 @@ export class GpuProgram
         // struct properties!
 
         this.gpuLayout = gpuLayout ?? generateGpuLayoutGroups(this.structsAndGroups);
+
+        this.autoAssignGlobalUniforms = !!(this.layout[0]?.globalUniforms !== undefined);
+        this.autoAssignLocalUniforms = !!(this.layout[1]?.localUniforms !== undefined);
 
         this._generateProgramKey();
     }

@@ -7,7 +7,7 @@ import { checkChildrenDidChange } from '../utils/checkChildrenDidChange';
 import type { Size } from '../../../maths/misc/Size';
 import type { Container } from '../Container';
 
-type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export interface MeasureMixinConstructor
 {

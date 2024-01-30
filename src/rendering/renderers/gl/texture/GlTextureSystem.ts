@@ -206,14 +206,17 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         this._glTextures[source.uid] = glTexture;
 
-        source.on('update', this.onSourceUpdate, this);
-        source.on('resize', this.onSourceUpdate, this);
-        source.on('styleChange', this.onStyleChange, this);
-        source.on('destroy', this.onSourceDestroy, this);
-        source.on('unload', this.onSourceUnload, this);
-        source.on('updateMipmaps', this.onUpdateMipmaps, this);
+        if (!this.managedTextures.includes(source))
+        {
+            source.on('update', this.onSourceUpdate, this);
+            source.on('resize', this.onSourceUpdate, this);
+            source.on('styleChange', this.onStyleChange, this);
+            source.on('destroy', this.onSourceDestroy, this);
+            source.on('unload', this.onSourceUnload, this);
+            source.on('updateMipmaps', this.onUpdateMipmaps, this);
 
-        this.managedTextures.push(source);
+            this.managedTextures.push(source);
+        }
 
         this.onSourceUpdate(source);
         this.onStyleChange(source);
@@ -294,6 +297,7 @@ export class GlTextureSystem implements System, CanvasGenerator
     {
         source.off('destroy', this.onSourceDestroy, this);
         source.off('update', this.onSourceUpdate, this);
+        source.off('resize', this.onSourceUpdate, this);
         source.off('unload', this.onSourceUnload, this);
         source.off('styleChange', this.onStyleChange, this);
         source.off('updateMipmaps', this.onUpdateMipmaps, this);
