@@ -8,9 +8,9 @@
  * -----------------------------------------------------------------
  */
 
-import fs from 'fs';
-import glob from 'glob';
-import path from 'path';
+import * as fs from 'node:fs';
+import * as glob from 'glob';
+import * as path from 'node:path';
 
 /**
  * Get every d.ts file in the src folder and add a
