@@ -51,6 +51,14 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         const dynamicOptions = options;
         const style = dynamicOptions.style.clone();
 
+        if (style._stroke)
+        {
+            // we want the stroke to fit the size of the requested text, so we need to scale it
+            // accordingly (eg font size 20, with stroke 10 - stroke is 50% of size,
+            // as dynamic font is size 100, the stroke should be adjusted to 50 to make it look right)
+            style._stroke.width *= this.baseMeasurementFontSize / style.fontSize;
+        }
+
         style.fontSize = this.baseMeasurementFontSize;
 
         if (dynamicOptions.overrideFill)
