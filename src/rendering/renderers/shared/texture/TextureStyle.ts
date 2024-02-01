@@ -1,9 +1,30 @@
 import EventEmitter from 'eventemitter3';
+import { uid } from '../../../../utils';
 import { deprecation } from '../../../../utils/logging/deprecation';
-import { createIdFromString } from '../utils/createIdFromString';
 
 import type { BindResource } from '../../gpu/shader/BindResource';
 import type { COMPARE_FUNCTION, SCALE_MODE, WRAP_MODE } from './const';
+
+const idHash: Record<string, number> = Object.create(null);
+
+/**
+ * This takes a shader string and maps it to a resource id.
+ * This is a little different than regular resource ids as these ids
+ * are not unique to the resource. But must not overlap with other (non sampler) resources Ids.
+ * @param value - the string to turn into a resource id
+ * @returns a unique resource id
+ */
+function createResourceIdFromString(value: string): number
+{
+    const id = idHash[value];
+
+    if (id === undefined)
+    {
+        idHash[value] = uid('resource');
+    }
+
+    return id;
+}
 
 export interface TextureStyleOptions extends Partial<TextureStyle>
 {
@@ -193,7 +214,7 @@ export class TextureStyle extends EventEmitter<{
         // eslint-disable-next-line max-len
         const bigKey = `${this.addressModeU}-${this.addressModeV}-${this.addressModeW}-${this.magFilter}-${this.minFilter}-${this.mipmapFilter}-${this.lodMinClamp}-${this.lodMaxClamp}-${this.compare}-${this._maxAnisotropy}`;
 
-        this._sharedResourceId = createIdFromString(bigKey, 'sampler');
+        this._sharedResourceId = createResourceIdFromString(bigKey);
 
         return this._resourceId;
     }

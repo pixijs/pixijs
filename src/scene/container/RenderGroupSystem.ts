@@ -1,16 +1,18 @@
 import { ExtensionType } from '../../extensions/Extensions';
+import { Matrix } from '../../maths/matrix/Matrix';
 import { buildInstructions } from './utils/buildInstructions';
 import { collectRenderGroups } from './utils/collectRenderGroups';
 import { executeInstructions } from './utils/executeInstructions';
 import { updateRenderGroupTransforms } from './utils/updateRenderGroupTransforms';
 import { validateRenderables } from './utils/validateRenderables';
 
-import type { Matrix } from '../../maths/matrix/Matrix';
 import type { WebGPURenderer } from '../../rendering/renderers/gpu/WebGPURenderer';
 import type { System } from '../../rendering/renderers/shared/system/System';
 import type { Renderer } from '../../rendering/renderers/types';
 import type { Container } from './Container';
 import type { RenderGroup } from './RenderGroup';
+
+const tempMatrix = new Matrix();
 
 /**
  * The view system manages the main canvas that is attached to the DOM.
@@ -51,8 +53,11 @@ export class RenderGroupSystem implements System
         // collect all the renderGroups in the scene and then render them one by one..
         const renderGroups = collectRenderGroups(container.renderGroup, []);
 
+        let originalLocalTransform: Matrix = tempMatrix;
+
         if (transform)
         {
+            originalLocalTransform = originalLocalTransform.copyFrom(container.renderGroup.localTransform);
             container.renderGroup.localTransform.copyFrom(transform);
         }
 
@@ -106,6 +111,11 @@ export class RenderGroupSystem implements System
         if (renderPipes.uniformBatch)
         {
             renderPipes.uniformBatch.renderEnd();
+        }
+
+        if (transform)
+        {
+            container.renderGroup.localTransform.copyFrom(originalLocalTransform);
         }
 
         container.parent = parent;
