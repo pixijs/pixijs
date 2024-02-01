@@ -1,8 +1,10 @@
-import { TextureSource, TextureStyle, UniformGroup } from '../../src/rendering';
 import { BindGroup } from '../../src/rendering/renderers/gpu/shader/BindGroup';
 import { Buffer } from '../../src/rendering/renderers/shared/buffer/Buffer';
 import { BufferResource } from '../../src/rendering/renderers/shared/buffer/BufferResource';
 import { BufferUsage } from '../../src/rendering/renderers/shared/buffer/const';
+import { UniformGroup } from '../../src/rendering/renderers/shared/shader/UniformGroup';
+import { TextureSource } from '../../src/rendering/renderers/shared/texture/sources/TextureSource';
+import { TextureStyle } from '../../src/rendering/renderers/shared/texture/TextureStyle';
 import { resetUids } from '../../src/utils/data/uid';
 
 describe('BindGroup', () =>

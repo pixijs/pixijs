@@ -1,5 +1,5 @@
 import EventEmitter from 'eventemitter3';
-import { uid } from '../../../../utils';
+import { uid } from '../../../../utils/data/uid';
 import { deprecation } from '../../../../utils/logging/deprecation';
 
 import type { BindResource } from '../../gpu/shader/BindResource';
