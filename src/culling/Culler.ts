@@ -29,18 +29,25 @@ export class Culler
 
     private _cullRecursive(container: Container, view: RectangleLike, skipUpdateTransform = true)
     {
-        if (container.cullable && container.renderPipeId)
+        if (container.cullable && container.measurable && container.includeInBuild)
         {
             const bounds = container.cullArea ?? getGlobalBounds(container, skipUpdateTransform, tempBounds);
 
             // check view intersection..
-            container.visible = !(bounds.x >= view.x + view.width
+            container.culled = !(bounds.x >= view.x + view.width
                 || bounds.y >= view.y + view.height
                 || bounds.x + bounds.width <= view.x
                 || bounds.y + bounds.height <= view.y);
         }
 
-        if (!container.cullableChildren) return;
+        // dont process children if not needed
+        if (
+            !container.cullableChildren
+            || container.culled
+            || !container.renderable
+            || !container.measurable
+            || !container.includeInBuild
+        ) return;
 
         for (let i = 0; i < container.children.length; i++)
         {

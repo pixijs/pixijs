@@ -36,6 +36,7 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
         const uniforms = new UniformGroup({
             uColor: { value: new Float32Array([1, 1, 1, 1]), type: 'vec4<f32>' },
             uTransformMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
+            uRound: { value: 0, type: 'f32' },
         });
 
         const glProgram = compileHighShaderGlProgram({

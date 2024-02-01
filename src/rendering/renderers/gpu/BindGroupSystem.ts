@@ -63,7 +63,7 @@ export class BindGroupSystem implements System
             {
                 const uniformGroup = resource as UniformGroup;
 
-                renderer.uniformBuffer.updateUniformGroup(uniformGroup as UniformGroup);
+                renderer.ubo.updateUniformGroup(uniformGroup as UniformGroup);
 
                 const buffer = uniformGroup.buffer;
 

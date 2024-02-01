@@ -112,7 +112,8 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
         if (!BLEND_MODE_FILTERS[blendMode as keyof typeof BLEND_MODE_FILTERS])
         {
             // #if _DEBUG
-            warn(`Unable to assign 'BLEND_MODES.${blendMode}' using the blend mode pipeline`);
+            warn(`Unable to assign BlendMode: '${blendMode}'. `
+            + `You may want to include: import 'pixi.js/advanced-blend-modes'`);
             // #endif
 
             return;

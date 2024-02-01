@@ -141,7 +141,7 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         const renderer = this._renderer;
         const renderTargetUid = renderer.renderTarget.renderTarget.uid;
 
-        let maskStackIndex = this._maskStackHash[renderTargetUid];
+        let maskStackIndex = this._maskStackHash[renderTargetUid] ??= 0;
 
         if (instruction.action === 'pushMaskBegin')
         {

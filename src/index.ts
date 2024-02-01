@@ -8,6 +8,7 @@ import './rendering/init';
 import './spritesheet/init';
 
 export * from './accessibility';
+export * from './advanced-blend-modes';
 export * from './app';
 export * from './assets';
 export * from './color';

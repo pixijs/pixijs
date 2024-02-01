@@ -1,8 +1,14 @@
+import { GlProgram } from '../rendering/renderers/gl/shader/GlProgram';
+import { GpuProgram } from '../rendering/renderers/gpu/shader/GpuProgram';
 import { Shader } from '../rendering/renderers/shared/shader/Shader';
 import { State } from '../rendering/renderers/shared/state/State';
 
 import type { RenderSurface } from '../rendering/renderers/shared/renderTarget/RenderTargetSystem';
-import type { IShaderWithResources, ShaderWithResources } from '../rendering/renderers/shared/shader/Shader';
+import type {
+    IShaderWithResources,
+    ShaderFromResources,
+    ShaderWithResources
+} from '../rendering/renderers/shared/shader/Shader';
 import type { BLEND_MODES } from '../rendering/renderers/shared/state/const';
 import type { Texture } from '../rendering/renderers/shared/texture/Texture';
 import type { FilterSystem } from './FilterSystem';
@@ -241,5 +247,34 @@ export class Filter extends Shader
     set blendMode(value: BLEND_MODES)
     {
         this._state.blendMode = value;
+    }
+
+    /**
+     * A short hand function to create a filter based of a vertex and fragment shader src.
+     * @param options
+     * @returns A shiny new PixiJS filter!
+     */
+    public static from(options: FilterOptions & ShaderFromResources): Filter
+    {
+        const { gpu, gl, ...rest } = options;
+
+        let gpuProgram: GpuProgram;
+        let glProgram: GlProgram;
+
+        if (gpu)
+        {
+            gpuProgram = GpuProgram.from(gpu);
+        }
+
+        if (gl)
+        {
+            glProgram = GlProgram.from(gl);
+        }
+
+        return new Filter({
+            gpuProgram,
+            glProgram,
+            ...rest
+        });
     }
 }

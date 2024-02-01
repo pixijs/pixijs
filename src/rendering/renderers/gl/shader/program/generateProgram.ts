@@ -1,9 +1,9 @@
 import { warn } from '../../../../../utils/logging/warn';
-import { extractAttributesFromGlProgram } from '../../../shared/shader/utils/extractAttributesFromGlProgram';
 import { GlProgramData } from '../GlProgramData';
 import { compileShader } from './compileShader';
 import { defaultValue } from './defaultValue';
-import { getUniformBufferData } from './getUniformBufferData';
+import { extractAttributesFromGlProgram } from './extractAttributesFromGlProgram';
+import { getUboData } from './getUboData';
 import { getUniformData } from './getUniformData';
 import { logProgramError } from './logProgramError';
 
@@ -56,9 +56,17 @@ export function generateProgram(gl: GlRenderingContext, program: GlProgram): GlP
         logProgramError(gl, webGLProgram, glVertShader, glFragShader);
     }
 
-    program._attributeData = extractAttributesFromGlProgram(webGLProgram, gl);
+    // GLSL 1.00: bind attributes sorted by name in ascending order
+    // GLSL 3.00: don't change the attribute locations that where chosen by the compiler
+    //            or assigned by the layout specifier in the shader source code
+    program._attributeData = extractAttributesFromGlProgram(
+        webGLProgram,
+        gl,
+        !(/^[ \t]*#[ \t]*version[ \t]+300[ \t]+es[ \t]*$/m).test(program.vertex)
+    );
+
     program._uniformData = getUniformData(webGLProgram, gl);
-    program._uniformBlockData = getUniformBufferData(webGLProgram, gl);
+    program._uniformBlockData = getUboData(webGLProgram, gl);
 
     gl.deleteShader(glVertShader);
     gl.deleteShader(glFragShader);

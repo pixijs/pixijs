@@ -1,7 +1,7 @@
-import { getUniformInfoFromFormat } from '../../../shared/shader/utils/getUniformInfoFromFormat';
+import { getAttributeInfoFromFormat } from '../../../shared/geometry/utils/getAttributeInfoFromFormat';
 
+import type { ExtractedAttributeData } from '../../../gl/shader/program/extractAttributesFromGlProgram';
 import type { VertexFormat } from '../../../shared/geometry/const';
-import type { ExtractedAttributeData } from '../../../shared/shader/utils/extractAttributesFromGlProgram';
 import type { ProgramSource } from '../GpuProgram';
 
 const WGSL_TO_VERTEX_TYPES: Record<string, VertexFormat> = {
@@ -59,7 +59,7 @@ export function extractAttributesFromGpuProgram(
                 results[match[2]] = {
                     location: parseInt(match[1], 10),
                     format,
-                    stride: getUniformInfoFromFormat(format).stride,
+                    stride: getAttributeInfoFromFormat(format).stride,
                     offset: 0,
                     instance: false,
                     start: 0,

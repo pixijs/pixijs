@@ -97,8 +97,7 @@ export class GlStateSystem implements System
 
         this.checks = [];
 
-        this.defaultState = new State();
-        this.defaultState.blend = true;
+        this.defaultState = State.for2d();
     }
 
     protected contextChange(gl: GlRenderingContext): void

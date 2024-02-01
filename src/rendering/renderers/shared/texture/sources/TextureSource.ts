@@ -52,6 +52,8 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
     alphaMode?: ALPHA_MODES;
     /** optional label, can be used for debugging */
     label?: string;
+    /** If true, the Garbage Collector will unload this texture if it is not used after a period of time */
+    autoGarbageCollect?: boolean;
 }
 
 /**
@@ -85,12 +87,13 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         autoGenerateMipmaps: false,
         sampleCount: 1,
         antialias: false,
+        autoGarbageCollect: false,
     };
 
     /** unique id for this Texture source */
     public readonly uid = uid('textureSource');
     /** optional label, can be used for debugging */
-    public label = '';
+    public label: string;
 
     /**
      * The resource type used by this TextureSource. This is used by the bind groups to determine
@@ -200,15 +203,18 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
     public isPowerOfTwo: boolean;
 
+    /** If true, the Garbage Collector will unload this texture if it is not used after a period of time */
+    public autoGarbageCollect: boolean;
+
     constructor(protected readonly options: TextureSourceOptions<T> = {})
     {
         super();
 
         options = { ...TextureSource.defaultOptions, ...options };
 
-        this.label ??= options.label;
+        this.label = options.label ?? '';
         this.resource = options.resource;
-
+        this.autoGarbageCollect = options.autoGarbageCollect;
         this._resolution = options.resolution;
 
         if (options.width)
@@ -348,6 +354,18 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     /** call this if you have modified the texture outside of the constructor */
     public update()
     {
+        // update resource...
+        if (this.resource)
+        {
+            const resolution = this._resolution;
+
+            const didResize = this.resize(this.resourceWidth / resolution, this.resourceHeight / resolution);
+
+            // no ned to dispatch the update we resized as that will
+            // notify the texture systems anyway
+            if (didResize) return;
+        }
+
         this.emit('update', this);
     }
 
@@ -374,7 +392,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      */
     public unload()
     {
-        this._resourceId++;
+        this._resourceId = uid('textureResource');
         this.emit('change', this);
         this.emit('unload', this);
     }
@@ -422,8 +440,9 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      * @param width - the new width of the texture
      * @param height - the new height of the texture
      * @param resolution - the new resolution of the texture
+     * @returns - if the texture was resized
      */
-    public resize(width?: number, height?: number, resolution?: number)
+    public resize(width?: number, height?: number, resolution?: number): boolean
     {
         resolution = resolution || this._resolution;
         width = width || this.width;
@@ -440,7 +459,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
         if (this.pixelWidth === newPixelWidth && this.pixelHeight === newPixelHeight)
         {
-            return;
+            return false;
         }
 
         this._refreshPOT();
@@ -450,8 +469,10 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
         this.emit('resize', this);
 
-        this._resourceId++;
+        this._resourceId = uid('textureResource');
         this.emit('change', this);
+
+        return true;
     }
 
     /**

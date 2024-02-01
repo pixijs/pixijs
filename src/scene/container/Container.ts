@@ -137,6 +137,8 @@ export interface ContainerOptions extends PixiMixins.ContainerOptions
     skew?: PointData;
     /** @see scene.Container#visible */
     visible?: boolean;
+    /** @see scene.Container#culled */
+    culled?: boolean;
     /** @see scene.Container#x */
     x?: number;
     /** @see scene.Container#y */
@@ -527,15 +529,19 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
     // 0b11
     // first bit is visible, second bit is renderable
     /**
+     * This property holds three bits: culled, visible, renderable
+     * the third bit represents culling (0 = culled, 1 = not culled) 0b100
+     * the second bit represents visibility (0 = not visible, 1 = visible) 0b010
+     * the first bit represents renderable (0 = renderable, 1 = not renderable) 0b001
      * @internal
      * @ignore
      */
-    public localVisibleRenderable = 0b11; // 0b11 | 0b10 | 0b01 | 0b00
+    public localDisplayStatus = 0b111; // 0b11 | 0b10 | 0b01 | 0b00
     /**
      * @internal
      * @ignore
      */
-    public groupVisibleRenderable = 0b11; // 0b11 | 0b10 | 0b01 | 0b00
+    public globalDisplayStatus = 0b111; // 0b11 | 0b10 | 0b01 | 0b00
 
     public renderPipeId: string;
 
@@ -557,6 +563,8 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
      * [000000000000][00000000000]
      */
     public _didChangeId = 0;
+    /** property that tracks if the container transform has changed */
+    private _didLocalTransformChangeId = -1;
 
     constructor(options: ContainerOptions = {})
     {
@@ -1010,6 +1018,39 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
         return this;
     }
 
+    public setFromMatrix(matrix: Matrix): void
+    {
+        matrix.decompose(this);
+    }
+
+    public updateLocalTransform(): void
+    {
+        if ((this._didLocalTransformChangeId & 0b1111) === this._didChangeId) return;
+
+        this._didLocalTransformChangeId = this._didChangeId;
+        //   this.didChange = false;
+
+        const lt = this.localTransform;
+        const scale = this._scale;
+        const pivot = this._pivot;
+        const position = this._position;
+
+        const sx = scale._x;
+        const sy = scale._y;
+
+        const px = pivot._x;
+        const py = pivot._y;
+
+        // get the matrix values of the container based on its this properties..
+        lt.a = this._cx * sx;
+        lt.b = this._sx * sx;
+        lt.c = this._cy * sy;
+        lt.d = this._sy * sy;
+
+        lt.tx = position._x - ((px * lt.a) + (py * lt.c));
+        lt.ty = position._y - ((px * lt.b) + (py * lt.d));
+    }
+
     // / ///// color related stuff
 
     set alpha(value: number)
@@ -1088,14 +1129,14 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
     /** The visibility of the object. If false the object will not be drawn, and the transform will not be updated. */
     get visible()
     {
-        return !!(this.localVisibleRenderable & 0b10);
+        return !!(this.localDisplayStatus & 0b010);
     }
 
     set visible(value: boolean)
     {
         const valueNumber = value ? 1 : 0;
 
-        if ((this.localVisibleRenderable & 0b10) >> 1 === valueNumber) return;
+        if ((this.localDisplayStatus & 0b010) >> 1 === valueNumber) return;
 
         if (this.renderGroup && !this.isRenderGroupRoot)
         {
@@ -1104,7 +1145,31 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
 
         this._updateFlags |= UPDATE_VISIBLE;
 
-        this.localVisibleRenderable = (this.localVisibleRenderable & 0b01) | (valueNumber << 1);
+        this.localDisplayStatus ^= 0b010;
+
+        this._onUpdate();
+    }
+
+    /** @ignore */
+    get culled()
+    {
+        return !(this.localDisplayStatus & 0b100);
+    }
+
+    /** @ignore */
+    set culled(value: boolean)
+    {
+        const valueNumber = value ? 1 : 0;
+
+        if ((this.localDisplayStatus & 0b100) >> 2 === valueNumber) return;
+
+        if (this.renderGroup && !this.isRenderGroupRoot)
+        {
+            this.renderGroup.structureDidChange = true;
+        }
+
+        this._updateFlags |= UPDATE_VISIBLE;
+        this.localDisplayStatus ^= 0b100;
 
         this._onUpdate();
     }
@@ -1112,18 +1177,17 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
     /** Can this object be rendered, if false the object will not be drawn but the transform will still be updated. */
     get renderable()
     {
-        return !!(this.localVisibleRenderable & 0b01);
+        return !!(this.localDisplayStatus & 0b001);
     }
 
     set renderable(value: boolean)
     {
         const valueNumber = value ? 1 : 0;
 
-        if ((this.localVisibleRenderable & 0b01) === valueNumber) return;
-
-        this.localVisibleRenderable = (this.localVisibleRenderable & 0b10) | valueNumber;
+        if ((this.localDisplayStatus & 0b001) === valueNumber) return;
 
         this._updateFlags |= UPDATE_VISIBLE;
+        this.localDisplayStatus ^= 0b001;
 
         if (this.renderGroup && !this.isRenderGroupRoot)
         {
@@ -1136,7 +1200,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
     /** Whether or not the object should be rendered. */
     get isRenderable(): boolean
     {
-        return (this.localVisibleRenderable === 0b11 && this.groupAlpha > 0);
+        return (this.localDisplayStatus === 0b111 && this.groupAlpha > 0);
     }
 
     /**

@@ -1,9 +1,8 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { unsafeEvalSupported } from '../../../../utils/browser/unsafeEvalSupported';
-import { generateUniformsSync } from './program/generateUniformsSync';
+import { generateUniformsSync } from './utils/generateUniformsSync';
 
+import type { UniformsSyncCallback } from '../../shared/shader/types';
 import type { UniformGroup } from '../../shared/shader/UniformGroup';
-import type { UniformsSyncCallback } from '../../shared/shader/utils/createUniformBufferSyncTypes';
 import type { System } from '../../shared/system/System';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
@@ -40,25 +39,8 @@ export class GlUniformGroupSystem implements System
     {
         this._renderer = renderer;
 
-        // Validation check that this environment support `new Function`
-        this._systemCheck();
-
         this.gl = null;
         this._cache = {};
-    }
-
-    /**
-     * Overrideable function by `pixi.js/unsafe-eval` to silence
-     * throwing an error if platform doesn't support unsafe-evals.
-     * @private
-     */
-    private _systemCheck(): void
-    {
-        if (!unsafeEvalSupported())
-        {
-            throw new Error('Current environment does not allow unsafe-eval, '
-                + 'please use pixi.js/unsafe-eval module to enable support.');
-        }
     }
 
     protected contextChange(gl: GlRenderingContext): void
