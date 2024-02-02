@@ -100,7 +100,7 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
     /** a resource type, used to identify how to handle it when its in a bind group / shader resource */
     public _resourceType = 'uniformGroup';
     /** the resource id used internally by the renderer to build bind group keys */
-    public _resourceId = this.uid;
+    public _resourceId = uid('resource');
     /** the structures of the uniform group */
     public uniformStructures: UNIFORMS;
     /** the uniforms as an easily accessible map of properties */

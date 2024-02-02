@@ -14,11 +14,11 @@ export function generateArraySyncWGSL(uboElement: UboElement, offsetToAdd: numbe
     // this is in byte..
     const { size, align } = WGSL_ALIGN_SIZE_DATA[uboElement.data.type];
 
-    const remainder = (size - align) / 4;
+    const remainder = (align - size) / 4;
 
     return `
          v = uv.${uboElement.data.name};
-         ${remainder !== 0 ? `offset += ${offsetToAdd};` : ''}
+         ${offsetToAdd !== 0 ? `offset += ${offsetToAdd};` : ''}
 
          arrayOffset = offset;
 
