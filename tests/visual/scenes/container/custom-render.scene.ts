@@ -9,7 +9,6 @@ import type { TestScene } from '../../types';
 export const scene: TestScene = {
     it: 'should render a custom container GPU code',
     pixelMatch: 200,
-    only: true,
     create: async (scene: Container) =>
     {
         const container = new RenderContainer({
