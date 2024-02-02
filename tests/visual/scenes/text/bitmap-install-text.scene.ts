@@ -1,6 +1,6 @@
-import { BitmapFontManager } from '../../../../src';
 import { Assets } from '../../../../src/assets/Assets';
 import { Text } from '../../../../src/scene/text/Text';
+import { BitmapFontManager } from '../../../../src/scene/text-bitmap/BitmapFontManager';
 
 import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
