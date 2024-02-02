@@ -272,8 +272,12 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
         // Clean up all graphics contexts
         for (const context of this._needsContextNeedsRebuild)
         {
-            this._cleanGraphicsContextData(context);
-            this._gpuContextHash[context.uid] = null;
+            // only clean if it exists
+            if (this._gpuContextHash[context.uid])
+            {
+                this._cleanGraphicsContextData(context);
+                this._gpuContextHash[context.uid] = null;
+            }
         }
 
         this._needsContextNeedsRebuild.length = 0;
