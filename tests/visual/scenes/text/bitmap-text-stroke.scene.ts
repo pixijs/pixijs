@@ -10,6 +10,7 @@ export const scene: TestScene = {
     create: async (scene: Container) =>
     {
         await Assets.load('fonts/outfit.woff2');
+
         const textCanvas = new Text({
             text: 'Canvas',
             style: {
