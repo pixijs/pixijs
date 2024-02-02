@@ -114,7 +114,7 @@ export class Buffer extends EventEmitter<{
      * @internal
      * @ignore
      */
-    public _resourceId = uid('bufferResource');
+    public _resourceId = uid('resource');
 
     /**
      * used internally to know if a uniform group was used in the last render pass
@@ -251,7 +251,7 @@ export class Buffer extends EventEmitter<{
             else
             {
                 this.descriptor.size = value.byteLength;
-                this._resourceId = uid('bufferResource');
+                this._resourceId = uid('resource');
                 this.emit('change', this);
             }
 

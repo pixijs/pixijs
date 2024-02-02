@@ -137,6 +137,8 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
     public renderingToScreen: boolean;
     /** the current active render target */
     public renderTarget: RenderTarget;
+    /** the current active render surface that the render target is created from */
+    public renderSurface: RenderSurface;
     /** the current viewport that the gpu is using */
     public readonly viewport = new Rectangle();
     /**
@@ -237,6 +239,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
         const didChange = this.renderTarget !== renderTarget;
 
         this.renderTarget = renderTarget;
+        this.renderSurface = renderSurface;
 
         const gpuRenderTarget = this.getGpuRenderTarget(renderTarget);
 
@@ -364,9 +367,9 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
      */
     public getRenderTarget(renderSurface: RenderSurface): RenderTarget
     {
-        if ((renderSurface instanceof Texture))
+        if (((renderSurface as Texture).isTexture))
         {
-            renderSurface = renderSurface.source;
+            renderSurface = (renderSurface as Texture).source;
         }
 
         return this._renderSurfaceToRenderTargetHash.get(renderSurface)

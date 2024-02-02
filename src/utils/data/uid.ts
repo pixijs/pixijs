@@ -4,6 +4,7 @@ const uidCache: Record<string, number> = {
 
 type UIDNames =
     | 'default'
+    | 'resource'
     | 'texture'
     | 'textureSource'
     | 'textureResource'
@@ -42,3 +43,11 @@ export function uid(name: UIDNames = 'default'): number
     return ++uidCache[name];
 }
 
+/** Resets the next unique identifier to 0. This is used for some tests, dont touch or things WILL explode :) */
+export function resetUids(): void
+{
+    for (const key in uidCache)
+    {
+        delete uidCache[key];
+    }
+}
