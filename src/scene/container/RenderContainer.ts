@@ -43,9 +43,6 @@ export interface RenderContainerOptions extends ContainerOptions
  */
 export class RenderContainer extends Container implements View, Instruction
 {
-    /** this next part, is focused around letting a dev add a render function to the container */
-    private _render?: RenderFunction;
-
     public batched = false;
     public roundPixels: boolean;
     public _roundPixels: 0 | 1;
@@ -55,6 +52,8 @@ export class RenderContainer extends Container implements View, Instruction
     public addBounds: (bounds: Bounds) => void;
 
     public canBundle = false;
+    public renderPipeId = 'customRender';
+    public render: RenderFunction;
 
     constructor(options: RenderContainerOptions | RenderFunction)
     {
@@ -73,25 +72,5 @@ export class RenderContainer extends Container implements View, Instruction
         this.render = render;
         this.containsPoint = options.containsPoint ?? (() => false);
         this.addBounds = options.addBounds ?? (() => false);
-    }
-
-    /** a custom render function allowing any kind of custom rendering */
-    public set render(value: RenderFunction)
-    {
-        if (value)
-        {
-            this._render = value;
-            this.renderPipeId = 'customRender';
-        }
-        else
-        {
-            this._render = undefined;
-            this.renderPipeId = undefined;
-        }
-    }
-
-    public get render(): (renderer: Renderer) => void
-    {
-        return this._render;
     }
 }
