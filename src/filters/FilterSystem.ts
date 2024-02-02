@@ -79,7 +79,7 @@ export interface FilterData
     blendRequired: boolean,
     container: Container,
     filterEffect: FilterEffect,
-    previousRenderSurface: RenderTarget,
+    previousRenderSurface: RenderSurface,
     backTexture?: Texture,
 }
 
@@ -263,7 +263,7 @@ export class FilterSystem implements System
         filterData.container = instruction.container;
         filterData.filterEffect = instruction.filterEffect;
 
-        filterData.previousRenderSurface = renderer.renderTarget.renderTarget;
+        filterData.previousRenderSurface = renderer.renderTarget.renderSurface;
 
         // bind...
         // get a P02 texture from our pool...
@@ -311,7 +311,9 @@ export class FilterSystem implements System
             // if we don't do this, we won't be able to copy pixels for the background
             const previousBounds = this._filterStackIndex > 0 ? this._filterStack[this._filterStackIndex - 1].bounds : null;
 
-            backTexture = this.getBackTexture(filterData.previousRenderSurface, bounds, previousBounds);
+            const renderTarget = renderer.renderTarget.getRenderTarget(filterData.previousRenderSurface);
+
+            backTexture = this.getBackTexture(renderTarget, bounds, previousBounds);
         }
 
         filterData.backTexture = backTexture;
@@ -425,7 +427,7 @@ export class FilterSystem implements System
         const offset = Point.shared;
         const previousRenderSurface = filterData.previousRenderSurface;
 
-        const isFinalTarget = previousRenderSurface === this.renderer.renderTarget.getRenderTarget(output);
+        const isFinalTarget = previousRenderSurface === output;
 
         let resolution = this.renderer.renderTarget.rootRenderTarget.colorTexture.source._resolution;
 
@@ -533,7 +535,7 @@ export class FilterSystem implements System
         if ((renderer as WebGPURenderer).renderPipes.uniformBatch)
         {
             const batchUniforms = (renderer as WebGPURenderer).renderPipes.uniformBatch
-                .getUboResource(this._filterGlobalUniforms);
+                .getUboResource(filterUniforms);
 
             this._globalFilterBindGroup.setResource(batchUniforms, 0);
         }

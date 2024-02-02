@@ -106,7 +106,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      * i unique resource id, used by the bind group systems.
      * This can change if the texture is resized or its resource changes
      */
-    public _resourceId = uid('textureResource');
+    public _resourceId = uid('resource');
     /**
      * this is how the backends know how to upload this texture to the GPU
      * It changes depending on the resource type. Classes that extend TextureSource
@@ -392,7 +392,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      */
     public unload()
     {
-        this._resourceId = uid('textureResource');
+        this._resourceId = uid('resource');
         this.emit('change', this);
         this.emit('unload', this);
     }
@@ -469,7 +469,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
         this.emit('resize', this);
 
-        this._resourceId = uid('textureResource');
+        this._resourceId = uid('resource');
         this.emit('change', this);
 
         return true;
