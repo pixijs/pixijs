@@ -5,6 +5,19 @@ import type { InstructionPipe } from '../../rendering/renderers/shared/instructi
 import type { Renderer } from '../../rendering/renderers/types';
 import type { RenderContainer } from './RenderContainer';
 
+/**
+ * The CustomRenderPipe is a render pipe that allows for custom rendering logic for your renderable objects.
+ * @example
+ * import { RenderContainer } from 'pixi.js';
+ *
+ * const renderContainer = new RenderContainer(
+ * (renderer) =>  {
+ *     renderer.clear({
+ *       clearColor: 'green', // clear the screen to green when rendering this item
+ *     });
+ * })
+ * @memberof rendering
+ */
 export class CustomRenderPipe implements InstructionPipe<RenderContainer>
 {
     public static extension = {
