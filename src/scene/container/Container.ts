@@ -16,11 +16,13 @@ import { toLocalGlobalMixin } from './container-mixins/toLocalGlobalMixin';
 import { RenderGroup } from './RenderGroup';
 import { assignWithIgnore } from './utils/assignWithIgnore';
 
+import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
 import type { PointLike } from '../../maths/point/PointLike';
 import type { Rectangle } from '../../maths/shapes/Rectangle';
 import type { BLEND_MODES } from '../../rendering/renderers/shared/state/const';
 import type { Dict } from '../../utils/types';
+import type { Optional } from './container-mixins/measureMixin';
 import type { DestroyOptions } from './destroyTypes';
 
 /**
@@ -968,6 +970,95 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
         }
 
         this._scale.copyFrom(value);
+    }
+
+    /**
+     * The width of the Container, setting this will actually modify the scale to achieve the value set.
+     * @memberof scene.Container#
+     */
+    get width(): number
+    {
+        return Math.abs(this.scale.x * this.getLocalBounds().width);
+    }
+
+    set width(value: number)
+    {
+        const localWidth = this.getLocalBounds().width;
+
+        this._setWidth(value, localWidth);
+    }
+
+    /**
+     * The height of the Container, setting this will actually modify the scale to achieve the value set.
+     * @memberof scene.Container#
+     */
+    get height(): number
+    {
+        return Math.abs(this.scale.y * this.getLocalBounds().height);
+    }
+
+    set height(value: number)
+    {
+        const localHeight = this.getLocalBounds().height;
+
+        this._setHeight(value, localHeight);
+    }
+
+    /**
+     * Retrieves the size of the container as a [Size]{@link Size} object.
+     * This is faster than get the width and height separately.
+     * @param out - Optional object to store the size in.
+     * @returns - The size of the container.
+     * @memberof scene.Container#
+     */
+    public getSize(out?: Size): Size
+    {
+        if (!out)
+        {
+            out = {} as Size;
+        }
+
+        const bounds = this.getLocalBounds();
+
+        out.width = Math.abs(this.scale.x * bounds.width);
+        out.height = Math.abs(this.scale.y * bounds.height);
+
+        return out;
+    }
+
+    /**
+     * Sets the size of the container to the specified width and height.
+     * This is faster than setting the width and height separately.
+     * @param value - This can be either a number or a [Size]{@link Size} object.
+     * @param height - The height to set. Defaults to the value of `width` if not provided.
+     * @memberof scene.Container#
+     */
+    public setSize(value: number | Optional<Size, 'height'>, height?: number)
+    {
+        const size = this.getLocalBounds();
+        let convertedWidth: number;
+        let convertedHeight: number;
+
+        if (typeof value !== 'object')
+        {
+            convertedWidth = value;
+            convertedHeight = height ?? value;
+        }
+        else
+        {
+            convertedWidth = value.width;
+            convertedHeight = value.height ?? value.width;
+        }
+
+        if (convertedWidth !== undefined)
+        {
+            this._setWidth(convertedWidth, size.width);
+        }
+
+        if (convertedHeight !== undefined)
+        {
+            this._setHeight(convertedHeight, size.height);
+        }
     }
 
     /** Called when the skew or the rotation changes. */
