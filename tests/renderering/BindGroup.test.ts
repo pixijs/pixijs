@@ -2,6 +2,10 @@ import { BindGroup } from '../../src/rendering/renderers/gpu/shader/BindGroup';
 import { Buffer } from '../../src/rendering/renderers/shared/buffer/Buffer';
 import { BufferResource } from '../../src/rendering/renderers/shared/buffer/BufferResource';
 import { BufferUsage } from '../../src/rendering/renderers/shared/buffer/const';
+import { UniformGroup } from '../../src/rendering/renderers/shared/shader/UniformGroup';
+import { TextureSource } from '../../src/rendering/renderers/shared/texture/sources/TextureSource';
+import { TextureStyle } from '../../src/rendering/renderers/shared/texture/TextureStyle';
+import { resetUids } from '../../src/utils/data/uid';
 
 describe('BindGroup', () =>
 {
@@ -105,5 +109,36 @@ describe('BindGroup', () =>
         buffer.data = new Float32Array(200);
 
         expect(bindGroupKey).not.toBe(bindGroup._key);
+    });
+
+    it('should let have a unique id for a bind group, no clashes', () =>
+    {
+        resetUids();
+
+        const group1 = new UniformGroup({
+            test: { value: 1, type: 'f32' }
+        });
+
+        const bindGroup1 = new BindGroup({
+            0: group1,
+        });
+
+        expect(bindGroup1._key).toBe('0');
+
+        const texture = new TextureSource();
+
+        const bindGroup2 = new BindGroup({
+            0: texture,
+        });
+
+        expect(bindGroup2._key).toBe('1');
+
+        const style = new TextureStyle();
+
+        const bindGroup3 = new BindGroup({
+            0: style,
+        });
+
+        expect(bindGroup3._key).toBe('2');
     });
 });
