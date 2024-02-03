@@ -1,9 +1,14 @@
-declare namespace GlobalMixins
+declare global
 {
-    interface Graphics
+    namespace GlobalMixins
     {
-        _renderCanvas(renderer: import('@pixi/canvas-renderer').CanvasRenderer): void;
-        generateCanvasTexture(scaleMode?: import('@pixi/constants').SCALE_MODES, resolution?: number): Texture;
-        cachedGraphicsData: import('@pixi/graphics').GraphicsData[];
+        interface Graphics
+        {
+            _renderCanvas(renderer: import('@pixi/canvas-renderer').CanvasRenderer): void;
+            generateCanvasTexture(scaleMode?: import('@pixi/constants').SCALE_MODES, resolution?: number): Texture;
+            cachedGraphicsData: import('@pixi/graphics').GraphicsData[];
+        }
     }
 }
+
+export {};

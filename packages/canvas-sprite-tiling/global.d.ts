@@ -1,7 +1,12 @@
-declare namespace GlobalMixins
+declare global
 {
-    interface TilingSprite
+    namespace GlobalMixins
     {
-        _canvasPattern: CanvasPattern;
+        interface TilingSprite
+        {
+            _canvasPattern: CanvasPattern;
+        }
     }
 }
+
+export {};

@@ -1,7 +1,12 @@
-declare namespace GlobalMixins
+declare global
 {
-    interface DisplayObject
+    namespace GlobalMixins
     {
-        getGlobalPosition(point?: import('@pixi/math').Point, skipUpdate?: boolean): import('@pixi/math').Point;
+        interface DisplayObject
+        {
+            getGlobalPosition(point?: import('@pixi/math').Point, skipUpdate?: boolean): import('@pixi/math').Point;
+        }
     }
 }
+
+export {};

@@ -1,12 +1,17 @@
-declare namespace GlobalMixins
+declare global
 {
-    interface Renderer
+    namespace GlobalMixins
     {
-        readonly extract: import('@pixi/extract').Extract;
-    }
+        interface Renderer
+        {
+            readonly extract: import('@pixi/extract').Extract;
+        }
 
-    interface IRenderer
-    {
-        readonly extract: import('@pixi/extract').IExtract;
+        interface IRenderer
+        {
+            readonly extract: import('@pixi/extract').IExtract;
+        }
     }
 }
+
+export {};

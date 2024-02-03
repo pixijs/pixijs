@@ -1,7 +1,12 @@
-declare namespace GlobalMixins
+declare global
 {
-    interface CanvasRenderer
+    namespace GlobalMixins
     {
-        readonly prepare: import('@pixi/canvas-prepare').CanvasPrepare;
+        interface CanvasRenderer
+        {
+            readonly prepare: import('@pixi/canvas-prepare').CanvasPrepare;
+        }
     }
 }
+
+export {};

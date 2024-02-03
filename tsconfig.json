@@ -15,6 +15,7 @@
         "resolveJsonModule": true,
         "downlevelIteration": true,
         "baseUrl": "./",
+        "types": ["node", "css-font-loading-module"],
         "paths": {
             "@pixi/*": [
                 "packages/*/src"
