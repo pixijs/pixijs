@@ -2,7 +2,7 @@ import { DisplacementFilter } from '../../src/filters/defaults/displacement/Disp
 import { Texture } from '../../src/rendering/renderers/shared/texture/Texture';
 import { Sprite } from '../../src/scene/sprite/Sprite';
 
-describe('BlurFilter', () =>
+describe('DisplacementFilter', () =>
 {
     it('should construct filter', () =>
     {
