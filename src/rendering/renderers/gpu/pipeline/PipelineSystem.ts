@@ -46,7 +46,7 @@ function getGraphicsStateKey(
 // stencilState = 8; // 3 bits // 8 states // value 0-7;
 // renderTarget = 1; // 2 bit // 3 states // value 0-3; // none, stencil, depth, depth-stencil
 // multiSampleCount = 1; // 1 bit // 2 states // value 0-1;
-function getStateKey(
+function getGlobalStateKey(
     stencilStateId: number,
     multiSampleCount: number,
     colorMask: number,
@@ -337,7 +337,7 @@ export class PipelineSystem implements System
 
     private _updatePipeHash(): void
     {
-        const key = getStateKey(
+        const key = getGlobalStateKey(
             this._stencilMode,
             this._multisampleCount,
             this._colorMask,
