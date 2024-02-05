@@ -2,6 +2,7 @@ import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
+import { RenderTarget } from '../renderTarget/RenderTarget';
 import { getCanvasTexture } from '../texture/utils/getCanvasTexture';
 
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
@@ -25,8 +26,10 @@ export interface ViewSystemOptions
     autoDensity?: boolean;
     /** The resolution / device pixel ratio of the renderer. */
     resolution?: number;
-    /** **WebGL Only.** Whether to enable anti-aliasing. This may affect performance. */
+    /** Whether to enable anti-aliasing. This may affect performance. */
     antialias?: boolean;
+    /** Whether to ensure the main view has can make use of the depth buffer. Always true for WebGL renderer. */
+    depth?: boolean;
     /** TODO: multiView */
     multiView?: boolean;
 
@@ -97,6 +100,7 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
     public antialias: boolean;
 
     public screen: Rectangle;
+    public renderTarget: RenderTarget;
 
     get resolution(): number
     {
@@ -133,6 +137,12 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
         this.canvas = options.canvas || DOMAdapter.get().createCanvas();
         this.antialias = !!options.antialias;
         this.texture = getCanvasTexture(this.canvas, options as CanvasSourceOptions);
+        this.renderTarget = new RenderTarget({
+            colorTextures: [this.texture],
+            depth: !!options.depth,
+            isRoot: true,
+        });
+
         (this.texture.source as CanvasSource).transparent = options.backgroundAlpha < 1;
         this.multiView = !!options.multiView;
 

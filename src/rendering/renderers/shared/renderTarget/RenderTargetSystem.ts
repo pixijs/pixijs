@@ -402,6 +402,20 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
         );
     }
 
+    /**
+     * ensures that we have a depth stencil buffer available to render to
+     * This is used by the mask system to make sure we have a stencil buffer.
+     */
+    public ensureDepthStencil()
+    {
+        if (!this.renderTarget.stencil)
+        {
+            this.renderTarget.stencil = true;
+
+            this.adaptor.startRenderPass(this.renderTarget, false, null, this.viewport);
+        }
+    }
+
     /** nukes the render target system */
     public destroy()
     {
@@ -437,7 +451,6 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
         {
             renderTarget = new RenderTarget({
                 colorTextures: [renderSurface],
-                depthTexture: renderSurface.source.depthStencil,
             });
 
             if (CanvasSource.test(renderSurface.source.resource))
