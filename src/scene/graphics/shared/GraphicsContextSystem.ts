@@ -240,6 +240,10 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
     protected onGraphicsContextDestroy(context: GraphicsContext)
     {
         this._cleanGraphicsContextData(context);
+
+        context.off('update', this.onGraphicsContextUpdate, this);
+        context.off('destroy', this.onGraphicsContextDestroy, this);
+
         this._gpuContextHash[context.uid] = null;
     }
 
@@ -272,8 +276,11 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
         // Clean up all graphics contexts
         for (const context of this._needsContextNeedsRebuild)
         {
-            this._cleanGraphicsContextData(context);
-            this._gpuContextHash[context.uid] = null;
+            // only clean if it exists
+            if (this._gpuContextHash[context.uid])
+            {
+                this.onGraphicsContextDestroy(context);
+            }
         }
 
         this._needsContextNeedsRebuild.length = 0;

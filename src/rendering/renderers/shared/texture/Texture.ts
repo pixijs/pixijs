@@ -195,6 +195,9 @@ export class Texture extends EventEmitter<{
 
     private _textureMatrix: TextureMatrix;
 
+    /** is it a texture? yes! used for type checking */
+    public readonly isTexture = true;
+
     constructor({
         source,
         label,

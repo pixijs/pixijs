@@ -60,7 +60,7 @@ export class BufferResource extends EventEmitter<{
      * @internal
      * @ignore
      */
-    public _resourceId = uid('buffer');
+    public _resourceId = uid('resource');
 
     /** the underlying buffer that this resource is using */
     public buffer: Buffer;
@@ -97,7 +97,7 @@ export class BufferResource extends EventEmitter<{
 
     protected onBufferChange(): void
     {
-        this._resourceId = uid('buffer');
+        this._resourceId = uid('resource');
 
         this.emit('change', this);
     }

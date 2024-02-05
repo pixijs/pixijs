@@ -289,23 +289,23 @@ export class Sprite extends Container implements View
     }
 
     /** The width of the sprite, setting this will actually modify the scale to achieve the value set. */
-    get width(): number
+    override get width(): number
     {
         return Math.abs(this.scale.x) * this._texture.orig.width;
     }
 
-    set width(value: number)
+    override set width(value: number)
     {
         this._setWidth(value, this._texture.orig.width);
     }
 
     /** The height of the sprite, setting this will actually modify the scale to achieve the value set. */
-    get height(): number
+    override get height(): number
     {
         return Math.abs(this.scale.y) * this._texture.orig.height;
     }
 
-    set height(value: number)
+    override set height(value: number)
     {
         this._setHeight(value, this._texture.orig.height);
     }
@@ -316,7 +316,7 @@ export class Sprite extends Container implements View
      * @param out - Optional object to store the size in.
      * @returns - The size of the Sprite.
      */
-    public override getSize = (out?: Size): Size =>
+    public override getSize(out?: Size): Size
     {
         if (!out)
         {
@@ -327,7 +327,7 @@ export class Sprite extends Container implements View
         out.height = Math.abs(this.scale.y) * this._texture.orig.height;
 
         return out;
-    };
+    }
 
     /**
      * Sets the size of the Sprite to the specified width and height.
@@ -335,7 +335,7 @@ export class Sprite extends Container implements View
      * @param value - This can be either a number or a [Size]{@link Size} object.
      * @param height - The height to set. Defaults to the value of `width` if not provided.
      */
-    public override setSize = (value: number | Optional<Size, 'height'>, height?: number) =>
+    public override setSize(value: number | Optional<Size, 'height'>, height?: number)
     {
         let convertedWidth: number;
         let convertedHeight: number;
@@ -360,5 +360,5 @@ export class Sprite extends Container implements View
         {
             this._setHeight(convertedHeight, this._texture.orig.height);
         }
-    };
+    }
 }
