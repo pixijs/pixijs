@@ -149,7 +149,7 @@ export class GlBufferSystem implements System
         {
             // assuming our buffers are aligned to 4 bits...
             // offset is always zero for now!
-            gl.bufferSubData(glBuffer.type, 0, buffer.data, 0, buffer._updateSize / 4);
+            gl.bufferSubData(glBuffer.type, 0, buffer.data, 0, buffer._updateSize / buffer.data.BYTES_PER_ELEMENT);
         }
         else
         {
