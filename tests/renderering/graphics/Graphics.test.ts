@@ -204,6 +204,28 @@ describe('Graphics', () =>
             // dont throw an error:
             expect(() => rect.destroy()).not.toThrow();
         });
+
+        it('should destroy the graphics after the renderer has been destroyed', async () =>
+        {
+            const renderer = await getWebGLRenderer();
+
+            const container = new Graphics();
+
+            const rect = new Graphics();
+
+            rect.rect(192, 192, 128, 128);
+
+            container.addChild(rect);
+            renderer.render(container);
+
+            rect.clear();
+            renderer.render(container);
+
+            renderer.destroy();
+
+            // dont throw an error:
+            expect(() => rect.destroy()).not.toThrow();
+        });
     });
 
     // todo: all these tests should be moved to GraphicsContext.test.ts, with equivalent changes for api
