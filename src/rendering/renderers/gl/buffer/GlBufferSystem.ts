@@ -155,7 +155,7 @@ export class GlBufferSystem implements System
         }
         else
         {
-            const drawType = (descriptor.usage & BufferUsage.STATIC) ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW;
+            const drawType = (buffer.descriptor.usage & BufferUsage.STATIC) ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW;
 
             glBuffer.byteLength = data.byteLength;
 
