@@ -1,3 +1,4 @@
+import { CustomRenderPipe } from '../../../../scene/container/CustomRenderPipe';
 import { RenderGroupPipe } from '../../../../scene/container/RenderGroupPipe';
 import { RenderGroupSystem } from '../../../../scene/container/RenderGroupSystem';
 import { SpritePipe } from '../../../../scene/sprite/SpritePipe';
@@ -32,5 +33,6 @@ export const SharedRenderPipes = [
     RenderGroupPipe,
     AlphaMaskPipe,
     StencilMaskPipe,
-    ColorMaskPipe
+    ColorMaskPipe,
+    CustomRenderPipe
 ];
