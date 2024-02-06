@@ -392,7 +392,14 @@ export class TextStyle extends EventEmitter<{
         if (value === this._originalFill) return;
 
         this._originalFill = value;
-        this._fill = convertFillInputToFillStyle(value, GraphicsContext.defaultFillStyle);
+        if (value === 0x0)
+        {
+            this._fill = convertFillInputToFillStyle('black', GraphicsContext.defaultFillStyle);
+        }
+        else
+        {
+            this._fill = convertFillInputToFillStyle(value, GraphicsContext.defaultFillStyle);
+        }
         this.update();
     }
 

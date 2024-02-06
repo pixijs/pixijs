@@ -180,7 +180,9 @@ export class Text extends Container implements View
 
         this.style = style;
 
-        if (this._renderMode === 'bitmap' && !style?.fill)
+        const validFill = style?.fill !== undefined || style?.fill === 0x0;
+
+        if (this._renderMode === 'bitmap' && !validFill)
         {
             this.style.fill = 0xffffff;
         }
