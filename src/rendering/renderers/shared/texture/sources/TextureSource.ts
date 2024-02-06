@@ -175,8 +175,6 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      * Blit operation will be required to resolve the texture.
      */
     public antialias = false;
-    /** Should we use a depth stencil texture for this texture. This is only used when rendering to a texture. */
-    public depthStencil = true;
 
     /**
      * Has the source been destroyed?

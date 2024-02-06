@@ -54,6 +54,7 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         const renderer = this._renderer;
 
         renderer.renderPipes.batch.break(instructionSet);
+
         renderer.renderPipes.blendMode.setBlendMode(effect.mask as Renderable, 'none', instructionSet);
 
         instructionSet.add({
@@ -145,6 +146,10 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
 
         if (instruction.action === 'pushMaskBegin')
         {
+            // we create the depth and stencil buffers JIT
+            // as no point allocating the memory if we don't use it
+            renderer.renderTarget.ensureDepthStencil();
+
             maskStackIndex++;
 
             renderer.stencil.setStencilMode(STENCIL_MODES.RENDERING_MASK_ADD, maskStackIndex);
