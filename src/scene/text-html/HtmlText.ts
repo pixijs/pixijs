@@ -1,15 +1,18 @@
-import { AbstractText, ensureOptions } from './AbstractText';
-import { CanvasTextMetrics } from './canvas/CanvasTextMetrics';
-import { TextStyle } from './TextStyle';
+import { AbstractText, ensureOptions } from '../text/AbstractText';
+import { HTMLTextStyle } from './HtmlTextStyle';
+import { measureHtmlText } from './utils/measureHtmlText';
 
 import type { View } from '../../rendering/renderers/shared/view/View';
-import type { TextOptions, TextString } from './AbstractText';
+import type { TextOptions, TextString } from '../text/AbstractText';
+import type { HTMLTextStyleOptions } from './HtmlTextStyle';
+
+export type HTMLTextOptions = TextOptions<HTMLTextStyle, HTMLTextStyleOptions>;
 
 /**
  * A Text Object will create a line or multiple lines of text.
  *
  * To split a line you can use '\n' in your text string, or, on the `style` object,
- * change its `wordWrap` property to true and and givae the `wordWrapWidth` property a value.
+ * change its `wordWrap` property to true and and give the `wordWrapWidth` property a value.
  *
  * ### Render Mode
  * Text objects also have a `renderMode` property, which can be set to `text`, `bitmap` or `html`:
@@ -63,18 +66,18 @@ import type { TextOptions, TextString } from './AbstractText';
  * });
  * @memberof scene
  */
-export class Text extends AbstractText implements View
+export class HtmlText extends AbstractText<HTMLTextStyle, HTMLTextStyleOptions> implements View
 {
-    public readonly renderPipeId: string = 'text';
+    public readonly renderPipeId: string = 'htmlText';
 
-    constructor(options?: TextOptions);
+    constructor(options?: HTMLTextOptions);
     /** @deprecated since 8.0.0 */
-    constructor(text?: TextString, options?: Partial<TextStyle>);
-    constructor(...args: [TextOptions?] | [TextString, Partial<TextStyle>])
+    constructor(text?: TextString, options?: Partial<HTMLTextStyle>);
+    constructor(...args: [HTMLTextOptions?] | [TextString, Partial<HTMLTextStyle>])
     {
-        const options = ensureOptions(args, 'Text');
+        const options = ensureOptions<HTMLTextStyle, HTMLTextStyleOptions>(args, 'HtmlText');
 
-        super(options, TextStyle);
+        super(options, HTMLTextStyle);
     }
 
     protected _updateBounds()
@@ -83,9 +86,9 @@ export class Text extends AbstractText implements View
         const padding = this._style.padding;
         const anchor = this._anchor;
 
-        const canvasMeasurement = CanvasTextMetrics.measureText(this.text, this._style);
+        const htmlMeasurement = measureHtmlText(this.text, this._style as HTMLTextStyle);
 
-        const { width, height } = canvasMeasurement;
+        const { width, height } = htmlMeasurement;
 
         bounds.minX = (-anchor._x * width) - padding;
         bounds.maxX = bounds.minX + width;

@@ -1,6 +1,6 @@
 import { Assets } from '../../../../src/assets/Assets';
-import { Text } from '../../../../src/scene/text/Text';
 import { BitmapFontManager } from '../../../../src/scene/text-bitmap/BitmapFontManager';
+import { BitmapText } from '../../../../src/scene/text-bitmap/BitmapText';
 
 import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
@@ -48,33 +48,30 @@ export const scene: TestScene = {
             }
         });
 
-        const textBitmap = new Text({
+        const textBitmap = new BitmapText({
             text: 'Canvas',
             style: {
                 fontFamily: 'normal-stroke-font',
                 fontSize: 35,
             },
-            renderMode: 'bitmap',
         });
 
-        const textBitmap2 = new Text({
+        const textBitmap2 = new BitmapText({
             text: 'Canvas',
             style: {
                 fontFamily: 'small-stroke-font',
                 fontSize: 35,
             },
             y: 30,
-            renderMode: 'bitmap',
         });
 
-        const textBitmap3 = new Text({
+        const textBitmap3 = new BitmapText({
             text: 'Canvas',
             style: {
                 fontFamily: 'large-stroke-font',
                 fontSize: 35,
             },
             y: 60,
-            renderMode: 'bitmap',
         });
 
         scene.addChild(textBitmap);

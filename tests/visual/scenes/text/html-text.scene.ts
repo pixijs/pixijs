@@ -11,7 +11,6 @@ export const scene: TestScene = {
     {
         const htmlTexture = await renderer.htmlText.getTexture({
             text: '<red>Red</red>\n<blue>Blue</blue>\n<green>Green</green>',
-            renderMode: 'html',
             resolution: 1,
             style: new HTMLTextStyle({
                 fill: 'white',

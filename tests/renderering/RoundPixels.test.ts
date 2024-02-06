@@ -144,7 +144,6 @@ describe('Round Pixels', () =>
         const text = new Text({ text: 'hello world' });
         const textHTML = new Text({
             text: 'hello world',
-            renderMode: 'html'
         });
 
         const batchableTextData = renderer.renderPipes.text['_getGpuText'](text);

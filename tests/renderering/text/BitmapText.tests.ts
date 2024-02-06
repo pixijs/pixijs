@@ -4,6 +4,7 @@ import { loadTxt } from '../../../src/assets/loader/parsers/loadTxt';
 import { loadTextures } from '../../../src/assets/loader/parsers/textures/loadTextures';
 import { Text } from '../../../src/scene/text/Text';
 import { loadBitmapFont } from '../../../src/scene/text-bitmap/asset/loadBitmapFont';
+import { BitmapText } from '../../../src/scene/text-bitmap/BitmapText';
 import { basePath } from '../../assets/basePath';
 import { getWebGLRenderer } from '../../utils/getRenderer';
 import '../../../src/scene/text/init';
@@ -35,12 +36,11 @@ describe('BitmapText', () =>
     {
         const renderer = await getWebGLRenderer();
 
-        const text = new Text({
+        const text = new BitmapText({
             text: 'ABCDEFG',
             style: {
                 fontFamily: 'arial',
-            },
-            renderMode: 'bitmap',
+            }
         });
 
         renderer.render(text);
@@ -50,29 +50,26 @@ describe('BitmapText', () =>
 
     it('should default to white fill', async () =>
     {
-        let text = new Text({
-            text: 'ABCDEFG',
-            renderMode: 'bitmap',
+        let text = new BitmapText({
+            text: 'ABCDEFG'
         });
 
         expect(text.style.fill).toEqual(0xffffff);
 
-        text = new Text({
+        text = new BitmapText({
             text: 'ABCDEFG',
             style: {
                 fill: 0xff0000,
-            },
-            renderMode: 'bitmap',
+            }
         });
 
         expect(text.style.fill).toEqual(0xff0000);
 
-        text = new Text({
+        text = new BitmapText({
             text: 'ABCDEFG',
             style: {
                 dropShadow: true,
-            },
-            renderMode: 'bitmap',
+            }
         });
 
         expect(text.style.fill).toEqual(0xffffff);
@@ -80,21 +77,19 @@ describe('BitmapText', () =>
 
     it('should apply dropShadow defaults correctly', async () =>
     {
-        let text = new Text({
-            text: 'ABCDEFG',
-            renderMode: 'bitmap',
+        let text = new BitmapText({
+            text: 'ABCDEFG'
         });
 
         expect(text.style.dropShadow).toEqual(null);
 
-        text = new Text({
+        text = new BitmapText({
             text: 'ABCDEFG',
             style: {
                 dropShadow: {
                     color: 'blue',
                 }
-            },
-            renderMode: 'bitmap',
+            }
         });
 
         expect(text.style.dropShadow).toMatchObject({
@@ -105,12 +100,11 @@ describe('BitmapText', () =>
             distance: 5,
         });
 
-        text = new Text({
+        text = new BitmapText({
             text: 'ABCDEFG',
             style: {
                 dropShadow: true
-            },
-            renderMode: 'bitmap',
+            }
         });
 
         expect(text.style.dropShadow).toMatchObject({
@@ -121,29 +115,23 @@ describe('BitmapText', () =>
             distance: 5,
         });
 
-        text = new Text({
+        text = new BitmapText({
             text: 'ABCDEFG',
             style: {
                 dropShadow: false
-            },
-            renderMode: 'bitmap',
+            }
         });
 
         expect(text.style.dropShadow).toEqual(null);
     });
 
-    it.each([
-        'bitmap',
-        'html',
-        'canvas',
-    ])('should support %s font without page reference', async (renderMode) =>
+    it('should support %s font without page reference', async () =>
     {
-        const text = new Text({
+        const text = new BitmapText({
             text: 'A',
             style: {
                 fontFamily: fontNoPage.fontFamily,
             },
-            renderMode: renderMode as any,
         });
         const width = Math.round(text.width);
         const height = Math.round(text.height);
@@ -162,8 +150,7 @@ describe('BitmapText', () =>
                 fontFamily: font.fontFamily,
                 fontSize: 24,
                 wordWrap: true,
-            },
-            renderMode: 'bitmap',
+            }
         });
 
         renderer.render(bmpText);
@@ -181,9 +168,8 @@ describe('BitmapText', () =>
     it('letterSpacing should add extra space between characters', async () =>
     {
         const renderer = await getWebGLRenderer();
-        const bmpText = new Text({
+        const bmpText = new BitmapText({
             text: 'ABCD zz DCBA',
-            renderMode: 'bitmap',
             style: {
                 fontFamily: font.fontFamily,
             }
@@ -204,9 +190,8 @@ describe('BitmapText', () =>
     {
         const renderer = await getWebGLRenderer();
 
-        const text = new Text({
+        const text = new BitmapText({
             text: undefined,
-            renderMode: 'bitmap',
             style: {
                 fontFamily: font.fontFamily,
             }
@@ -217,9 +202,8 @@ describe('BitmapText', () =>
 
     it('should call update when style changes', async () =>
     {
-        const text = new Text({
+        const text = new BitmapText({
             text: '123ABCabc',
-            renderMode: 'bitmap',
             style: {
                 fontFamily: 'courier',
             }
@@ -239,9 +223,8 @@ describe('BitmapText', () =>
 
     it('should call update when text changes', async () =>
     {
-        const text = new Text({
+        const text = new BitmapText({
             text: '123ABCabc',
-            renderMode: 'bitmap',
             style: {
                 fontFamily: font.fontFamily,
             }

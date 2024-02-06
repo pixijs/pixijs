@@ -1,5 +1,5 @@
 import { Assets } from '../../../../src/assets/Assets';
-import { Text } from '../../../../src/scene/text/Text';
+import { BitmapText } from '../../../../src/scene/text-bitmap/BitmapText';
 
 import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
@@ -10,31 +10,29 @@ export const scene: TestScene = {
     create: async (scene: Container) =>
     {
         await Assets.load('fonts/outfit.woff2');
-        const blackBM = new Text({
+        const blackBM = new BitmapText({
             text: 'Im fill 0x0',
             style: {
                 fontFamily: 'Outfit',
                 fontSize: 16,
                 fill: 0x0
             },
-            renderMode: 'bitmap',
         });
 
         scene.addChild(blackBM);
 
-        const undefinedBM = new Text({
+        const undefinedBM = new BitmapText({
             text: 'Im fill undefined',
             style: {
                 fontFamily: 'Outfit',
                 fontSize: 16,
             },
             y: 30,
-            renderMode: 'bitmap',
         });
 
         scene.addChild(undefinedBM);
 
-        const redBM = new Text({
+        const redBM = new BitmapText({
             text: 'Im fill red',
             style: {
                 fontFamily: 'Outfit',
@@ -42,7 +40,6 @@ export const scene: TestScene = {
                 fill: 'red'
             },
             y: 60,
-            renderMode: 'bitmap',
         });
 
         scene.addChild(redBM);

@@ -16,7 +16,7 @@ import type { System } from '../../rendering/renderers/shared/system/System';
 import type { CanvasAndContext } from '../../rendering/renderers/shared/texture/CanvasPool';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { PoolItem } from '../../utils/pool/Pool';
-import type { TextViewOptions } from '../text/Text';
+import type { HTMLTextOptions } from './HtmlText';
 import type { HTMLTextStyle } from './HtmlTextStyle';
 import type { FontCSSStyleOptions } from './utils/loadFontCSS';
 
@@ -95,9 +95,13 @@ export class HTMLTextSystem implements System
         this._createCanvas = renderer.type === RendererType.WEBGPU;
     }
 
-    public getTexture(options: TextViewOptions): Promise<Texture>
+    public getTexture(options: HTMLTextOptions): Promise<Texture>
     {
-        return this._buildTexturePromise(options.text as string, options.resolution, options.style as HTMLTextStyle);
+        return this._buildTexturePromise(
+            options.text as string,
+            options.resolution,
+            options.style as HTMLTextStyle
+        );
     }
 
     public getManagedTexture(

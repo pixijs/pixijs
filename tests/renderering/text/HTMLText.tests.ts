@@ -1,12 +1,11 @@
-import { Text } from '../../../src/scene/text/Text';
+import { HtmlText } from '../../../src/scene/text-html/HtmlText';
 
 describe('HTMLText', () =>
 {
     it('should create an HTMLText element', () =>
     {
-        const text = new Text({
+        const text = new HtmlText({
             text: 'Hello World',
-            renderMode: 'html',
         });
 
         expect(text.text).toBe('Hello World');

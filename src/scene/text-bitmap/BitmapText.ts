@@ -1,15 +1,15 @@
-import { AbstractText, ensureOptions } from './AbstractText';
-import { CanvasTextMetrics } from './canvas/CanvasTextMetrics';
-import { TextStyle } from './TextStyle';
+import { AbstractText, ensureOptions } from '../text/AbstractText';
+import { TextStyle } from '../text/TextStyle';
+import { BitmapFontManager } from './BitmapFontManager';
 
 import type { View } from '../../rendering/renderers/shared/view/View';
-import type { TextOptions, TextString } from './AbstractText';
+import type { TextOptions, TextString } from '../text/AbstractText';
 
 /**
  * A Text Object will create a line or multiple lines of text.
  *
  * To split a line you can use '\n' in your text string, or, on the `style` object,
- * change its `wordWrap` property to true and and givae the `wordWrapWidth` property a value.
+ * change its `wordWrap` property to true and and give the `wordWrapWidth` property a value.
  *
  * ### Render Mode
  * Text objects also have a `renderMode` property, which can be set to `text`, `bitmap` or `html`:
@@ -63,16 +63,20 @@ import type { TextOptions, TextString } from './AbstractText';
  * });
  * @memberof scene
  */
-export class Text extends AbstractText implements View
+export class BitmapText extends AbstractText implements View
 {
-    public readonly renderPipeId: string = 'text';
+    public readonly renderPipeId: string = 'bitmapText';
 
     constructor(options?: TextOptions);
     /** @deprecated since 8.0.0 */
     constructor(text?: TextString, options?: Partial<TextStyle>);
     constructor(...args: [TextOptions?] | [TextString, Partial<TextStyle>])
     {
-        const options = ensureOptions(args, 'Text');
+        const options = ensureOptions(args, 'BitmapText');
+
+        const style = options.style;
+
+        style.fill ??= 0xffffff;
 
         super(options, TextStyle);
     }
@@ -83,13 +87,16 @@ export class Text extends AbstractText implements View
         const padding = this._style.padding;
         const anchor = this._anchor;
 
-        const canvasMeasurement = CanvasTextMetrics.measureText(this.text, this._style);
+        const bitmapMeasurement = BitmapFontManager.measureText(this.text, this._style);
+        const scale = bitmapMeasurement.scale;
+        const offset = bitmapMeasurement.offsetY * scale;
 
-        const { width, height } = canvasMeasurement;
+        const width = bitmapMeasurement.width * scale;
+        const height = bitmapMeasurement.height * scale;
 
         bounds.minX = (-anchor._x * width) - padding;
         bounds.maxX = bounds.minX + width;
-        bounds.minY = (-anchor._y * height) - padding;
+        bounds.minY = (-anchor._y * (height + offset)) - padding;
         bounds.maxY = bounds.minY + height;
     }
 }
