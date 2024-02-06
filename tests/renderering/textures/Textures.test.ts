@@ -93,7 +93,7 @@ describe('Texture', () =>
         expect(Texture.WHITE.source.alphaMode).toBe('premultiply-alpha-on-upload');
     });
 
-    it.only('should call update a texture correctly', () =>
+    it('should call update a texture correctly', () =>
     {
         const texture = new Texture();
 
