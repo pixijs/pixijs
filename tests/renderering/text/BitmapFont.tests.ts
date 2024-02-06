@@ -72,8 +72,10 @@ describe('BitmapFont', () =>
 
         it('should render resolution with proportional size', () =>
         {
-            const fontRes1 = BitmapFontManager.install('foo', {}, { chars: 'a' });
-            const fontRes2 = BitmapFontManager.install('bar', {}, { chars: 'a', resolution: 2 });
+            // resolution is adjust based on the size of the font, the base size is 100, so thats what
+            // the size needs to be get the 1-1 resolution in this test
+            const fontRes1 = BitmapFontManager.install('foo', { fontSize: 100 }, { chars: 'a' });
+            const fontRes2 = BitmapFontManager.install('bar', { fontSize: 100 }, { chars: 'a', resolution: 2 });
 
             expect(fontRes1.chars['a'].texture.source.resolution).toEqual(1);
             expect(fontRes2.chars['a'].texture.source.resolution).toEqual(2);
