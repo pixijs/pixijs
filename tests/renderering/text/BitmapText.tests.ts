@@ -51,7 +51,7 @@ describe('BitmapText', () =>
     it('should default to white fill', async () =>
     {
         let text = new BitmapText({
-            text: 'ABCDEFG'
+            text: 'ABCDEFG',
         });
 
         expect(text.style.fill).toEqual(0xffffff);

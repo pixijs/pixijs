@@ -74,9 +74,8 @@ export class BitmapText extends AbstractText implements View
     {
         const options = ensureOptions(args, 'BitmapText');
 
-        const style = options.style;
-
-        style.fill ??= 0xffffff;
+        options.style ??= options.style || {};
+        options.style.fill ??= 0xffffff;
 
         super(options, TextStyle);
     }
