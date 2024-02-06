@@ -244,12 +244,12 @@ export class Texture extends EventEmitter<{
     {
         if (this._source)
         {
-            this._source.off('resize', this.onUpdate, this);
+            this._source.off('resize', this.update, this);
         }
 
         this._source = value;
 
-        value.on('resize', this.onUpdate, this);
+        value.on('resize', this.update, this);
 
         this.emit('update', this);
     }
@@ -337,12 +337,6 @@ export class Texture extends EventEmitter<{
         }
     }
 
-    /** call this if you have modified the `texture.source.resource outside` of the constructor */
-    public update(): void
-    {
-        this._source.update();
-    }
-
     /**
      * Destroys this texture
      * @param destroySource - Destroy the source when the texture is destroyed.
@@ -364,10 +358,8 @@ export class Texture extends EventEmitter<{
         this.removeAllListeners();
     }
 
-    /**
-     * @internal
-     */
-    protected onUpdate()
+    /** call this if you have modified the `texture outside` of the constructor */
+    public update(): void
     {
         if (this.noFrame)
         {
