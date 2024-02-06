@@ -39,11 +39,19 @@ export class GpuBufferSystem implements System
     {
         const gpuBuffer = this._gpuBuffers[buffer.uid] || this.createGPUBuffer(buffer);
 
+        const data = buffer.data;
+
         // TODO this can be better...
-        if (buffer._updateID && buffer.data)
+        if (buffer._updateID && data)
         {
             buffer._updateID = 0;
-            this._gpu.device.queue.writeBuffer(gpuBuffer, 0, buffer.data.buffer, 0, buffer._updateSize);// , 0);
+
+            // make sure
+            this._gpu.device.queue.writeBuffer(
+                gpuBuffer, 0, data.buffer, 0,
+                // round to the nearest 4 bytes
+                (buffer._updateSize + 3) & ~3
+            );
         }
 
         return gpuBuffer;
