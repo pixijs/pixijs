@@ -243,14 +243,14 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
 
     public clear(options: ClearOptions = {}): void
     {
-        options.target ||= this.view.renderTarget;
+        // override!
+        const renderer = this as unknown as Renderer;
+
+        options.target ||= renderer.renderTarget.renderTarget;
         options.clearColor ||= this.background.colorRgba;
         options.clear ??= CLEAR.ALL;
 
         const { clear, clearColor, target } = options;
-
-        // override!
-        const renderer = this as unknown as Renderer;
 
         Color.shared.setValue(clearColor ?? this.background.colorRgba);
 

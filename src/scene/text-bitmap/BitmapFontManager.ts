@@ -70,6 +70,7 @@ class BitmapFontManagerClass
             const fnt = new DynamicBitmapFont({
                 style,
                 overrideFill,
+                overrideSize: true,
                 ...this.defaultOptions,
             });
 
@@ -134,6 +135,7 @@ class BitmapFontManagerClass
             skipKerning: options.skipKerning,
             padding: options.padding,
             resolution: options.resolution,
+            overrideSize: false
         });
         const flatChars = resolveCharacters(options.chars);
 
