@@ -92,4 +92,18 @@ describe('Texture', () =>
     {
         expect(Texture.WHITE.source.alphaMode).toBe('premultiply-alpha-on-upload');
     });
+
+    it.only('should call update a texture correctly', () =>
+    {
+        const texture = new Texture();
+
+        // spy on texture update event
+        const spy = jest.fn();
+
+        texture.on('update', spy);
+
+        texture.update();
+
+        expect(spy).toHaveBeenCalled();
+    });
 });
