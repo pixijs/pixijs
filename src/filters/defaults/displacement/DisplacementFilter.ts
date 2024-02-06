@@ -147,6 +147,6 @@ export class DisplacementFilter extends Filter
     /** scaleX, scaleY for displacements */
     get scale(): Point
     {
-        return this.resources.filterUniforms.uniforms.scale as Point;
+        return this.resources.filterUniforms.uniforms.uScale as Point;
     }
 }
