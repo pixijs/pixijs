@@ -15,8 +15,8 @@ type RenderFunction = (renderer: Renderer) => void;
  */
 export interface RenderContainerOptions extends ContainerOptions
 {
-    /** the custom render function */
-    render: RenderFunction;
+    /** the optional custom render function if you want to inject the function via the constructor */
+    render?: RenderFunction;
     /** how to know if the custom render logic contains a point or not, used for interaction */
     containsPoint?: (point: Point) => boolean;
     /** how to add the bounds of this object when measuring */
@@ -28,9 +28,24 @@ export interface RenderContainerOptions extends ContainerOptions
  * and allows for custom rendering logic - the render could be a WebGL renderer or WebGPU render or even a canvas render.
  * Its up to you to define the logic.
  *
+ * This can be used in two ways, either by extending the class and overriding the render method,
+ * or by passing a custom render function
+ * @example
  * ```js
  * import { RenderContainer } from 'pixi.js';
  *
+ * // extend the class
+ * class MyRenderContainer extends RenderContainer
+ * {
+ *    render(renderer)
+ *    {
+ *      renderer.clear({
+ *         clearColor: 'green', // clear the screen to green when rendering this item
+ *      });
+ *   }
+ * }
+ *
+ * // override the render method
  * const renderContainer = new RenderContainer(
  * (renderer) =>  {
  *     renderer.clear({
@@ -53,7 +68,6 @@ export class RenderContainer extends Container implements View, Instruction
 
     public canBundle = false;
     public renderPipeId = 'customRender';
-    public render: RenderFunction;
 
     constructor(options: RenderContainerOptions | RenderFunction)
     {
@@ -69,8 +83,14 @@ export class RenderContainer extends Container implements View, Instruction
             ...rest,
         });
 
-        this.render = render;
+        if (render) this.render = render;
+
         this.containsPoint = options.containsPoint ?? (() => false);
         this.addBounds = options.addBounds ?? (() => false);
+    }
+
+    public render(_renderer: Renderer): void
+    {
+        // override me!
     }
 }
