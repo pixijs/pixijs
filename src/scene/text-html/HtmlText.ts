@@ -14,27 +14,7 @@ export type HTMLTextOptions = TextOptions<HTMLTextStyle, HTMLTextStyleOptions>;
  * To split a line you can use '\n' in your text string, or, on the `style` object,
  * change its `wordWrap` property to true and and give the `wordWrapWidth` property a value.
  *
- * ### Render Mode
- * Text objects also have a `renderMode` property, which can be set to `text`, `bitmap` or `html`:
- *
- * .1 `text`: The text is created using the [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API).
- *
- * The primary advantage of this class over BitmapText is that you have great control over the style of the text,
- * which you can change at runtime.
- *
- *
- * The primary disadvantages is that each piece of text has it's own texture, which can use more memory.
- * When text changes, this texture has to be re-generated and re-uploaded to the GPU, taking up time.
- *
- * .2 `bitmap`: The text is created using a bitmap font.
- *
- * The primary advantage of this render mode over `text` is that all of your textures are pre-generated and loading,
- * meaning that rendering is fast, and changing text has no performance implications.
- *
- * The primary disadvantage is that supporting character sets other than latin, such as CJK languages,
- * may be impractical due to the number of characters.
- *
- * .3 `html` uses an svg foreignObject to render HTML text.
+ * HTMLText uses an svg foreignObject to render HTML text.
  *
  * The primary advantages of this render mode are:
  *
@@ -52,11 +32,10 @@ export type HTMLTextOptions = TextOptions<HTMLTextStyle, HTMLTextStyleOptions>;
  *
  *   -- Only works with browsers that support <foreignObject>.
  * @example
- * import { Text } from 'pixi.js';
+ * import { HTMLText } from 'pixi.js';
  *
- * const text = new Text({
+ * const text = new HTMLText({
  *     text: 'Hello Pixi!',
- *     renderMode: 'text',
  *     style: {
  *         fontFamily: 'Arial',
  *         fontSize: 24,
@@ -66,7 +45,7 @@ export type HTMLTextOptions = TextOptions<HTMLTextStyle, HTMLTextStyleOptions>;
  * });
  * @memberof scene
  */
-export class HtmlText extends AbstractText<HTMLTextStyle, HTMLTextStyleOptions> implements View
+export class HTMLText extends AbstractText<HTMLTextStyle, HTMLTextStyleOptions> implements View
 {
     public readonly renderPipeId: string = 'htmlText';
 

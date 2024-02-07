@@ -1,10 +1,10 @@
-import { HtmlText } from '../../../src/scene/text-html/HtmlText';
+import { HTMLText } from '../../../src/scene/text-html/HtmlText';
 
 describe('HTMLText', () =>
 {
     it('should create an HTMLText element', () =>
     {
-        const text = new HtmlText({
+        const text = new HTMLText({
             text: 'Hello World',
         });
 

@@ -1,5 +1,5 @@
 import { Assets } from '../../../../src/assets/Assets';
-import { BitmapFontManager } from '../../../../src/scene/text-bitmap/BitmapFontManager';
+import { BitmapFont } from '../../../../src/scene/text-bitmap/BitmapFont';
 import { BitmapText } from '../../../../src/scene/text-bitmap/BitmapText';
 
 import type { Container } from '../../../../src/scene/container/Container';
@@ -12,39 +12,48 @@ export const scene: TestScene = {
     {
         await Assets.load('fonts/outfit.woff2');
 
-        BitmapFontManager.install('normal-stroke-font', {
-            fontFamily: 'Outfit',
-            fontSize: 35,
-            fill: 'green',
-            letterSpacing: 5,
-            lineHeight: 20,
-            stroke: {
-                color: 'yellow',
-                width: 4,
+        BitmapFont.install({
+            name: 'normal-stroke-font',
+            style: {
+                fontFamily: 'Outfit',
+                fontSize: 35,
+                fill: 'green',
+                letterSpacing: 5,
+                lineHeight: 20,
+                stroke: {
+                    color: 'yellow',
+                    width: 4,
+                }
             }
         });
 
-        BitmapFontManager.install('small-stroke-font', {
-            fontFamily: 'Outfit',
-            fontSize: 35 / 2,
-            fill: 'green',
-            letterSpacing: 5,
-            lineHeight: 20,
-            stroke: {
-                color: 'yellow',
-                width: 4 / 2,
+        BitmapFont.install({
+            name: 'small-stroke-font',
+            style: {
+                fontFamily: 'Outfit',
+                fontSize: 35 / 2,
+                fill: 'green',
+                letterSpacing: 5,
+                lineHeight: 20,
+                stroke: {
+                    color: 'yellow',
+                    width: 4 / 2,
+                }
             }
         });
 
-        BitmapFontManager.install('large-stroke-font', {
-            fontFamily: 'Outfit',
-            fontSize: 35 * 2,
-            fill: 'green',
-            letterSpacing: 5,
-            lineHeight: 20,
-            stroke: {
-                color: 'yellow',
-                width: 4 * 2,
+        BitmapFont.install({
+            name: 'large-stroke-font',
+            style: {
+                fontFamily: 'Outfit',
+                fontSize: 35 * 2,
+                fill: 'green',
+                letterSpacing: 5,
+                lineHeight: 20,
+                stroke: {
+                    color: 'yellow',
+                    width: 4 * 2,
+                }
             }
         });
 

@@ -6,10 +6,10 @@ import { BatchableSprite } from '../sprite/BatchableSprite';
 
 import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../../rendering/renderers/types';
-import type { Text } from '../text/Text';
+import type { HTMLText } from './HtmlText';
 import type { HTMLTextStyle } from './HtmlTextStyle';
 
-export class HTMLTextPipe implements RenderPipe<Text>
+export class HTMLTextPipe implements RenderPipe<HTMLText>
 {
     /** @ignore */
     public static extension = {
@@ -36,7 +36,7 @@ export class HTMLTextPipe implements RenderPipe<Text>
         this._renderer = renderer;
     }
 
-    public validateRenderable(htmlText: Text): boolean
+    public validateRenderable(htmlText: HTMLText): boolean
     {
         const gpuText = this._getGpuText(htmlText);
 
@@ -60,7 +60,7 @@ export class HTMLTextPipe implements RenderPipe<Text>
         return false;
     }
 
-    public addRenderable(htmlText: Text)
+    public addRenderable(htmlText: HTMLText)
     {
         const gpuText = this._getGpuText(htmlText);
 
@@ -74,7 +74,7 @@ export class HTMLTextPipe implements RenderPipe<Text>
         this._renderer.renderPipes.batch.addToBatch(batchableSprite);
     }
 
-    public updateRenderable(htmlText: Text)
+    public updateRenderable(htmlText: HTMLText)
     {
         const gpuText = this._getGpuText(htmlText);
         const batchableSprite = gpuText.batchableSprite;
@@ -87,7 +87,7 @@ export class HTMLTextPipe implements RenderPipe<Text>
         batchableSprite.batcher.updateElement(batchableSprite);
     }
 
-    public destroyRenderable(htmlText: Text)
+    public destroyRenderable(htmlText: HTMLText)
     {
         this._destroyRenderableById(htmlText.uid);
     }
@@ -103,7 +103,7 @@ export class HTMLTextPipe implements RenderPipe<Text>
         this._gpuText[htmlTextUid] = null;
     }
 
-    private _updateText(htmlText: Text)
+    private _updateText(htmlText: HTMLText)
     {
         const newKey = htmlText._getKey();
         const gpuText = this._getGpuText(htmlText);
@@ -124,7 +124,7 @@ export class HTMLTextPipe implements RenderPipe<Text>
         updateQuadBounds(batchableSprite.bounds, htmlText._anchor, batchableSprite.texture, padding);
     }
 
-    private async _updateGpuText(htmlText: Text)
+    private async _updateGpuText(htmlText: HTMLText)
     {
         htmlText._didTextUpdate = false;
 
@@ -163,12 +163,12 @@ export class HTMLTextPipe implements RenderPipe<Text>
         updateQuadBounds(batchableSprite.bounds, htmlText._anchor, batchableSprite.texture, padding);
     }
 
-    private _getGpuText(htmlText: Text)
+    private _getGpuText(htmlText: HTMLText)
     {
         return this._gpuText[htmlText.uid] || this.initGpuText(htmlText);
     }
 
-    public initGpuText(htmlText: Text)
+    public initGpuText(htmlText: HTMLText)
     {
         const gpuTextData: HTMLTextPipe['_gpuText'][number] = {
             texture: Texture.EMPTY,
