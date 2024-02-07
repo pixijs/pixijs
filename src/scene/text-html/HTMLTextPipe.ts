@@ -6,7 +6,7 @@ import { BatchableSprite } from '../sprite/BatchableSprite';
 
 import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../../rendering/renderers/types';
-import type { HTMLText } from './_HtmlText';
+import type { HTMLText } from './HTMLText';
 import type { HTMLTextStyle } from './HtmlTextStyle';
 
 export class HTMLTextPipe implements RenderPipe<HTMLText>

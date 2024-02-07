@@ -1,4 +1,4 @@
-import { HTMLText } from '../../../src/scene/text-html/_HtmlText';
+import { HTMLText } from '../../../src/scene/text-html/HTMLText';
 
 describe('HTMLText', () =>
 {
