@@ -1,7 +1,7 @@
 import { Assets } from '../../../../src/assets/Assets';
 import { AlphaFilter } from '../../../../src/filters/defaults/alpha/AlphaFilter';
-import { BitmapText } from '../../../../src/scene/text-bitmap/BitmapText';
 import { Text } from '../../../../src/scene/text/Text';
+import { BitmapText } from '../../../../src/scene/text-bitmap/BitmapText';
 
 import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
