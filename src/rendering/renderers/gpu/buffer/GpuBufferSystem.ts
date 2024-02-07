@@ -50,7 +50,7 @@ export class GpuBufferSystem implements System
             this._gpu.device.queue.writeBuffer(
                 gpuBuffer, 0, data.buffer, 0,
                 // round to the nearest 4 bytes
-                (buffer._updateSize + 3) & ~3
+                ((buffer._updateSize || data.byteLength) + 3) & ~3
             );
         }
 
@@ -98,11 +98,11 @@ export class GpuBufferSystem implements System
 
     protected onBufferChange(buffer: Buffer)
     {
-        let gpuBuffer = this._gpuBuffers[buffer.uid];
+        const gpuBuffer = this._gpuBuffers[buffer.uid];
 
         gpuBuffer.destroy();
-        gpuBuffer = this.createGPUBuffer(buffer);
         buffer._updateID = 0;
+        this._gpuBuffers[buffer.uid] = this.createGPUBuffer(buffer);
     }
 
     /**
