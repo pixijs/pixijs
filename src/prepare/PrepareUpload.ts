@@ -1,7 +1,8 @@
 import { TextureSource } from '../rendering/renderers/shared/texture/sources/TextureSource';
-import { BitmapText, HTMLText } from '../scene';
 import { GraphicsContext } from '../scene/graphics/shared/GraphicsContext';
 import { Text } from '../scene/text/Text';
+import { BitmapText } from '../scene/text-bitmap/BitmapText';
+import { HTMLText } from '../scene/text-html/_HtmlText';
 import { PrepareQueue } from './PrepareQueue';
 
 import type { FillInstruction, TextureInstruction } from '../scene/graphics/shared/GraphicsContext';

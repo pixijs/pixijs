@@ -16,7 +16,7 @@ import type { System } from '../../rendering/renderers/shared/system/System';
 import type { CanvasAndContext } from '../../rendering/renderers/shared/texture/CanvasPool';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { PoolItem } from '../../utils/pool/Pool';
-import type { HTMLTextOptions } from './HtmlText';
+import type { HTMLTextOptions } from './_HtmlText';
 import type { HTMLTextStyle } from './HtmlTextStyle';
 import type { FontCSSStyleOptions } from './utils/loadFontCSS';
 
