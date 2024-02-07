@@ -170,11 +170,6 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         this._initColor(renderTarget, glRenderTarget);
 
-        if (renderTarget.stencil)
-        {
-            this._initStencil(glRenderTarget);
-        }
-
         // set up a depth texture..
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
