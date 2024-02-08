@@ -359,6 +359,9 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
     private _initStencil(glRenderTarget: GlRenderTarget)
     {
+        // this already exists on the default screen
+        if (glRenderTarget.framebuffer === null) return;
+
         const gl = this._renderer.gl;
 
         const depthStencilRenderBuffer = gl.createRenderbuffer();

@@ -27,12 +27,12 @@ function selfInstall()
 
     Object.assign(GlUboSystem.prototype, {
         // use polyfill which avoids eval method
-        _generateUniformBufferSync: generateUboSyncPolyfillSTD40,
+        _generateUboSync: generateUboSyncPolyfillSTD40,
     });
 
     Object.assign(GpuUboSystem.prototype, {
         // use polyfill which avoids eval method
-        _generateUniformBufferSync: generateUboSyncPolyfillWGSL,
+        _generateUboSync: generateUboSyncPolyfillWGSL,
     });
 
     Object.assign(GlShaderSystem.prototype, {

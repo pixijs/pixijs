@@ -169,9 +169,10 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
         // if we have a depth or stencil buffer, we need to ensure we have a texture for it
         // this is WebGPU specific - as WebGL does not require textures to run a depth / stencil buffer
-        if (renderTarget.stencil || renderTarget.depth)
+        if ((renderTarget.stencil || renderTarget.depth) && !renderTarget.depthStencilTexture)
         {
             renderTarget.ensureDepthStencilTexture();
+            renderTarget.depthStencilTexture.source.sampleCount = gpuRenderTarget.msaa ? 4 : 1;
         }
 
         if (renderTarget.depthStencilTexture)
