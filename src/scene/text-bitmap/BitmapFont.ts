@@ -7,12 +7,20 @@ import type { FontMetrics } from '../text/canvas/CanvasTextMetrics';
 import type { BitmapFontData } from './AbstractBitmapFont';
 import type { BitmapFontInstallOptions } from './BitmapFontManager';
 
+/**
+ * Options for creating a BitmapFont.
+ * @memberof text
+ */
 export interface BitmapFontOptions
 {
     data: BitmapFontData
     textures: Texture[]
 }
 
+/**
+ * A BitmapFont object represents a particular font face, size, and style.
+ * @memberof text
+ */
 export class BitmapFont extends AbstractBitmapFont<BitmapFont>
 {
     public url?: string;
