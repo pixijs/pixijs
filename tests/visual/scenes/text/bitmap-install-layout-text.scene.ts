@@ -1,47 +1,42 @@
 import { Assets } from '../../../../src/assets/Assets';
-import { Text } from '../../../../src/scene/text/Text';
+import { BitmapFont } from '../../../../src/scene/text-bitmap/BitmapFont';
 import { BitmapText } from '../../../../src/scene/text-bitmap/BitmapText';
 
 import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
-    it: 'should render both canvas and bitmap text with a stroke',
-    pixelMatch: 250,
+    it: 'should render installed bitmap layout text correctly',
+    pixelMatch: 1100,
     create: async (scene: Container) =>
     {
         await Assets.load('fonts/outfit.woff2');
 
-        const textCanvas = new Text({
-            text: 'Canvas',
+        BitmapFont.install({
+            name: 'normal-stroke-font',
             style: {
                 fontFamily: 'Outfit',
-                fontSize: 35,
-                fill: 'white',
+                fontSize: 36,
+                fill: 'blue',
                 letterSpacing: 5,
-                lineHeight: 20,
                 stroke: {
-                    color: 0xff0000,
+                    color: 'white',
                     width: 4,
                 }
             },
         });
 
         const textBitmap = new BitmapText({
-            text: 'Canvas',
+            text: 'Bitmap\nText,\n so cool!',
             style: {
-                fontFamily: 'Outfit',
+                fontFamily: 'normal-stroke-font',
                 fontSize: 35,
-                letterSpacing: 5,
-                stroke: {
-                    color: 0xff0000,
-                    width: 4,
-                }
             },
-            y: 30,
+            anchor: { x: 0.5, y: 0.5 },
+            position: { x: 128 / 2, y: 128 / 2 }
+
         });
 
-        scene.addChild(textCanvas);
         scene.addChild(textBitmap);
     },
 };

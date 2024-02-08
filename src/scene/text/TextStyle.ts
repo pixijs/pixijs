@@ -112,7 +112,7 @@ export interface TextStyleOptions
      * @type {'alphabetic'|'top'|'hanging'|'middle'|'ideographic'|'bottom'}
      */
     textBaseline?: TextStyleTextBaseline;
-    trim?: false,
+    trim?: boolean,
     /**
      * Determines whether newlines & spaces are collapsed or preserved "normal"
      * (collapse, collapse), "pre" (preserve, preserve) | "pre-line" (preserve,

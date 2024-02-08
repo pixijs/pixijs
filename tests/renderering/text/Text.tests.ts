@@ -2,6 +2,7 @@
 import { Container } from '../../../src/scene/container/Container';
 import { Sprite } from '../../../src/scene/sprite/Sprite';
 import { Text } from '../../../src/scene/text/Text';
+import { BitmapText } from '../../../src/scene/text-bitmap/BitmapText';
 import { getWebGLRenderer } from '../../utils/getRenderer';
 import '../../../src/scene/graphics/init';
 import '../../../src/scene/text-bitmap/init';
@@ -146,7 +147,7 @@ describe('Text', () =>
 
             const container = new Container();
 
-            const text = new Text({ text: 'foo', renderMode: 'bitmap' });
+            const text = new BitmapText({ text: 'foo' });
 
             container.addChild(text);
 

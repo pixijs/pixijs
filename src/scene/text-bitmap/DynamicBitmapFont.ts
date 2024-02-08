@@ -52,23 +52,6 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         const dynamicOptions = options;
         const style = dynamicOptions.style.clone();
 
-        if (dynamicOptions.overrideSize)
-        {
-            if (style._stroke)
-            {
-                // we want the stroke to fit the size of the requested text, so we need to scale it
-                // accordingly (eg font size 20, with stroke 10 - stroke is 50% of size,
-                // as dynamic font is size 100, the stroke should be adjusted to 50 to make it look right)
-                style._stroke.width *= this.baseRenderedFontSize / style.fontSize;
-            }
-
-            style.fontSize = this.baseMeasurementFontSize;
-        }
-        else
-        {
-            this.baseRenderedFontSize = style.fontSize;
-        }
-
         if (dynamicOptions.overrideFill)
         {
             // assuming no shape fill..
@@ -78,12 +61,32 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
             style._fill.fill = null;
         }
 
+        const requestedFontSize = style.fontSize;
+
+        // adjust font size to match the base measurement size
+        style.fontSize = this.baseMeasurementFontSize;
+
+        const font = fontStringFromTextStyle(style);
+
+        if (dynamicOptions.overrideSize)
+        {
+            if (style._stroke)
+            {
+                // we want the stroke to fit the size of the requested text, so we need to scale it
+                // accordingly (eg font size 20, with stroke 10 - stroke is 50% of size,
+                // as dynamic font is size 100, the stroke should be adjusted to 50 to make it look right)
+                style._stroke.width *= this.baseRenderedFontSize / requestedFontSize;
+            }
+        }
+        else
+        {
+            style.fontSize = this.baseRenderedFontSize = requestedFontSize;
+        }
+
         this._style = style;
         this._skipKerning = dynamicOptions.skipKerning ?? false;
         this.resolution = dynamicOptions.resolution ?? 1;
         this._padding = dynamicOptions.padding ?? 4;
-
-        const font = fontStringFromTextStyle(style);
 
         (this.fontMetrics as FontMetrics) = CanvasTextMetrics.measureFont(font);
         (this.lineHeight as number) = style.lineHeight || this.fontMetrics.fontSize || style.fontSize;
