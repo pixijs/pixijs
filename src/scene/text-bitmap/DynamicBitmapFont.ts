@@ -52,6 +52,22 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         const dynamicOptions = options;
         const style = dynamicOptions.style.clone();
 
+        if (dynamicOptions.overrideFill)
+        {
+            // assuming no shape fill..
+            style._fill.color = 0x00ff00;
+            style._fill.alpha = 1;
+            style._fill.texture = Texture.WHITE;
+            style._fill.fill = null;
+        }
+
+        const requestedFontSize = style.fontSize;
+
+        // adjust font size to match the base measurement size
+        style.fontSize = this.baseMeasurementFontSize;
+
+        const font = fontStringFromTextStyle(style);
+
         if (dynamicOptions.overrideSize)
         {
             if (style._stroke)
@@ -61,29 +77,16 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
                 // as dynamic font is size 100, the stroke should be adjusted to 50 to make it look right)
                 style._stroke.width *= this.baseRenderedFontSize / style.fontSize;
             }
-
-            style.fontSize = this.baseMeasurementFontSize;
         }
         else
         {
-            this.baseRenderedFontSize = style.fontSize;
-        }
-
-        if (dynamicOptions.overrideFill)
-        {
-            // assuming no shape fill..
-            style._fill.color = 0xffffff;
-            style._fill.alpha = 1;
-            style._fill.texture = Texture.WHITE;
-            style._fill.fill = null;
+            style.fontSize = this.baseRenderedFontSize = requestedFontSize;
         }
 
         this._style = style;
         this._skipKerning = dynamicOptions.skipKerning ?? false;
         this.resolution = dynamicOptions.resolution ?? 1;
         this._padding = dynamicOptions.padding ?? 4;
-
-        const font = fontStringFromTextStyle(style);
 
         (this.fontMetrics as FontMetrics) = CanvasTextMetrics.measureFont(font);
         (this.lineHeight as number) = style.lineHeight || this.fontMetrics.fontSize || style.fontSize;
