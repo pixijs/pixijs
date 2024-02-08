@@ -9,6 +9,15 @@ import type { TextStyleOptions } from '../text/TextStyle';
 import type { BitmapFont } from './BitmapFont';
 import type { BitmapTextLayoutData } from './utils/getBitmapTextLayout';
 
+/**
+ *
+ * The options for installing a new BitmapFont. Once installed the font will be available for use in the BitmapText.
+ * It can be accessed by the `fontFamily` property of the TextStyle.
+ *
+ * Install a new BitmapFont will create the characters provided for the font and store them in the cache.
+ * But don't worry, if a character is requested that hasn't been generated yet, it will be created on the fly.
+ * @memberof text
+ */
 export interface BitmapFontInstallOptions
 {
     /** the name of the font, this will be the name you use in the fontFamily of text style to access this font */
