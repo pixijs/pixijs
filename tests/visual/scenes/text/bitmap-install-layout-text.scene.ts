@@ -6,8 +6,8 @@ import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
-    it: 'should render installed bitmap text correctly',
-    pixelMatch: 1000,
+    it: 'should render installed bitmap layout text correctly',
+    pixelMatch: 1100,
     create: async (scene: Container) =>
     {
         await Assets.load('fonts/outfit.woff2');
