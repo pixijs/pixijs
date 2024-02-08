@@ -4,9 +4,10 @@ import { BitmapFontManager } from './BitmapFontManager';
 
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from '../text/AbstractText';
+import type { TextStyleOptions } from '../text/TextStyle';
 
 /**
- * A Text Object will create a line or multiple lines of text.
+ * A BitmapText Object will create a line or multiple lines of text.
  *
  * To split a line you can use '\n' in your text string, or, on the `style` object,
  * change its `wordWrap` property to true and and give the `wordWrapWidth` property a value.
@@ -89,7 +90,7 @@ import type { TextOptions, TextString } from '../text/AbstractText';
  * }
  * @memberof scene
  */
-export class BitmapText extends AbstractText implements View
+export class BitmapText extends AbstractText<TextStyle, TextStyleOptions> implements View
 {
     public readonly renderPipeId: string = 'bitmapText';
 

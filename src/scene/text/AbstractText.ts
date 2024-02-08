@@ -53,12 +53,12 @@ export interface TextOptions<
  * @internal
  * @memberof scene
  */
-export class AbstractText<
+export abstract class AbstractText<
     TEXT_STYLE extends TextStyle = TextStyle,
     TEXT_STYLE_OPTIONS extends TextStyleOptions = TextStyleOptions,
 > extends Container implements View
 {
-    public readonly renderPipeId: string = 'canvasText';
+    public abstract readonly renderPipeId: string;
     public batched = true;
     public _anchor: ObservablePoint;
     public resolution: number = null;
@@ -179,7 +179,7 @@ export class AbstractText<
         }
         else
         {
-            this._style = new this._styleClass(style as any) as TEXT_STYLE;
+            this._style = new this._styleClass(style as TEXT_STYLE_OPTIONS);
         }
 
         this._style.on('update', this.onViewUpdate, this);
@@ -325,10 +325,7 @@ export class AbstractText<
         return `${this.text}:${this._style.styleKey}`;
     }
 
-    protected _updateBounds()
-    {
-        // override me!
-    }
+    protected abstract _updateBounds(): void;
 
     /**
      * Destroys this text renderable and optionally its style texture.

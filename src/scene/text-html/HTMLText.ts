@@ -9,7 +9,7 @@ import type { HTMLTextStyleOptions } from './HtmlTextStyle';
 export type HTMLTextOptions = TextOptions<HTMLTextStyle, HTMLTextStyleOptions>;
 
 /**
- * A Text Object will create a line or multiple lines of text.
+ * A HTMLText Object will create a line or multiple lines of text.
  *
  * To split a line you can use '\n' in your text string, or, on the `style` object,
  * change its `wordWrap` property to true and and give the `wordWrapWidth` property a value.

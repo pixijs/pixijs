@@ -4,6 +4,7 @@ import { TextStyle } from './TextStyle';
 
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from './AbstractText';
+import type { TextStyleOptions } from './TextStyle';
 
 /**
  * A Text Object will create a line or multiple lines of text.
@@ -30,7 +31,9 @@ import type { TextOptions, TextString } from './AbstractText';
  * });
  * @memberof scene
  */
-export class Text extends AbstractText implements View
+export class Text
+    extends AbstractText<TextStyle, TextStyleOptions>
+    implements View
 {
     public readonly renderPipeId: string = 'text';
 
@@ -50,7 +53,10 @@ export class Text extends AbstractText implements View
         const padding = this._style.padding;
         const anchor = this._anchor;
 
-        const canvasMeasurement = CanvasTextMetrics.measureText(this.text, this._style);
+        const canvasMeasurement = CanvasTextMetrics.measureText(
+            this.text,
+            this._style
+        );
 
         const { width, height } = canvasMeasurement;
 
