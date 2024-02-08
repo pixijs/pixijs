@@ -55,7 +55,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         if (dynamicOptions.overrideFill)
         {
             // assuming no shape fill..
-            style._fill.color = 0x000000;
+            style._fill.color = 0xffffff;
             style._fill.alpha = 1;
             style._fill.texture = Texture.WHITE;
             style._fill.fill = null;
