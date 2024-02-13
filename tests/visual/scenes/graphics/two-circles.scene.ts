@@ -7,7 +7,6 @@ import type { TestScene } from '../../types';
 export const scene: TestScene = {
     it: 'should correctly swap bind groups and render to non batched circles with a sprite in the middle',
     pixelMatch: 200,
-    only: true,
     create: async (scene: Container) =>
     {
         const createGraphics = () =>
