@@ -209,4 +209,30 @@ describe('Container Visual', () =>
             expect(container.scale.y).toEqual(1);
         });
     });
+
+    describe('scale', () =>
+    {
+        it('should set scale from a single value', () =>
+        {
+            const container = new Container();
+
+            container.scale = 2;
+
+            expect(container.scale.x).toEqual(2);
+            expect(container.scale.y).toEqual(2);
+        });
+    });
+
+    describe('pivot', () =>
+    {
+        it('should set pivot from a single value', () =>
+        {
+            const container = new Container();
+
+            container.pivot = 2;
+
+            expect(container.pivot.x).toEqual(2);
+            expect(container.pivot.y).toEqual(2);
+        });
+    });
 });
