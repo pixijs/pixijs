@@ -130,13 +130,13 @@ export interface ContainerOptions extends PixiMixins.ContainerOptions
     /** @see scene.Container#rotation */
     rotation?: number;
     /** @see scene.Container#scale */
-    scale?: PointData;
+    scale?: PointData | number;
     /** @see scene.Container#pivot */
-    pivot?: PointData;
+    pivot?: PointData | number;
     /** @see scene.Container#position */
-    position?: PointData;
+    position?: PointData | number;
     /** @see scene.Container#skew */
-    skew?: PointData;
+    skew?: PointData | number;
     /** @see scene.Container#visible */
     visible?: boolean;
     /** @see scene.Container#culled */
@@ -868,9 +868,10 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
         return this._position;
     }
 
-    set position(value: PointData)
+    set position(value: PointData | number)
     {
-        this._position.copyFrom(value);
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        typeof value === 'number' ? this._position.set(value) : this._position.copyFrom(value);
     }
 
     /**
@@ -922,14 +923,15 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
         return this._pivot;
     }
 
-    set pivot(value: PointData)
+    set pivot(value: PointData | number)
     {
         if (this._pivot === defaultPivot)
         {
             this._pivot = new ObservablePoint(this, 0, 0);
         }
 
-        this._pivot.copyFrom(value);
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        typeof value === 'number' ? this._pivot.set(value) : this._pivot.copyFrom(value);
     }
 
     /**
@@ -962,14 +964,15 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
         return this._scale;
     }
 
-    set scale(value: PointData)
+    set scale(value: PointData | number)
     {
         if (this._scale === defaultScale)
         {
             this._scale = new ObservablePoint(this, 0, 0);
         }
 
-        this._scale.copyFrom(value);
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        typeof value === 'number' ? this._scale.set(value) : this._scale.copyFrom(value);
     }
 
     /**

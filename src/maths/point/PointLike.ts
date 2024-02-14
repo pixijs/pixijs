@@ -31,5 +31,8 @@ export interface PointLike extends PointData
      * @param {number} [y=x] - position of the point on the y axis
      */
     set: (x?: number, y?: number) => void;
+
+    /** Creates a clone of this point */
+    clone: () => this;
 }
 

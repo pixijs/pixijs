@@ -34,17 +34,17 @@ export interface TilingSpriteOptions extends ContainerOptions
      * The anchor point of the sprite
      * @default {x: 0, y: 0}
      */
-    anchor?: PointData
+    anchor?: PointData | number;
     /**
      * The offset of the image that is being tiled.
      * @default {x: 0, y: 0}
      */
-    tilePosition?: PointData
+    tilePosition?: PointData | number;
     /**
      * Scaling of the image that is being tiled.
      * @default {x: 1, y: 1}
      */
-    tileScale?: PointData
+    tileScale?: PointData | number;
     /**
      * The rotation of the image that is being tiled.
      * @default 0
@@ -205,10 +205,9 @@ export class TilingSprite extends Container implements View, Instruction
                 _onUpdate: () => this.onTilingSpriteUpdate(),
             }
         });
-
-        this._tileTransform.position.copyFrom(tilePosition);
-        this._tileTransform.scale.copyFrom(tileScale);
-        this._tileTransform.rotation = tileRotation;
+        this.tilePosition = tilePosition;
+        this.tileScale = tileScale;
+        this.tileRotation = tileRotation;
 
         this.roundPixels = roundPixels ?? false;
     }
@@ -251,10 +250,10 @@ export class TilingSprite extends Container implements View, Instruction
         return this._anchor;
     }
 
-    set anchor(value: PointData)
+    set anchor(value: PointData | number)
     {
-        this._anchor.x = value.x;
-        this._anchor.y = value.y;
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        typeof value === 'number' ? this._anchor.set(value) : this._anchor.copyFrom(value);
     }
 
     /** The offset of the image that is being tiled. */
@@ -263,9 +262,10 @@ export class TilingSprite extends Container implements View, Instruction
         return this._tileTransform.position;
     }
 
-    set tilePosition(value: PointData)
+    set tilePosition(value: PointData | number)
     {
-        this._tileTransform.position.copyFrom(value);
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        typeof value === 'number' ? this._tileTransform.position.set(value) : this._tileTransform.position.copyFrom(value);
     }
 
     /** The scaling of the image that is being tiled. */
@@ -274,9 +274,10 @@ export class TilingSprite extends Container implements View, Instruction
         return this._tileTransform.scale;
     }
 
-    set tileScale(value: PointData)
+    set tileScale(value: PointData | number)
     {
-        this._tileTransform.scale.copyFrom(value);
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        typeof value === 'number' ? this._tileTransform.scale.set(value) : this._tileTransform.position.copyFrom(value);
     }
 
     set tileRotation(value)

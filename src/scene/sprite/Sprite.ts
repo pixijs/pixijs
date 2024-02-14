@@ -22,7 +22,7 @@ export interface SpriteOptions extends ContainerOptions
     /** The texture to use for the sprite. */
     texture?: Texture;
     /** The anchor point of the sprite. */
-    anchor?: PointData
+    anchor?: PointData | number;
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
@@ -106,6 +106,9 @@ export class Sprite extends Container implements View
             ...rest
         });
 
+        const anchorX = typeof anchor === 'number' ? anchor : anchor?.x;
+        const anchorY = typeof anchor === 'number' ? anchor : anchor?.y;
+
         this._anchor = new ObservablePoint(
             {
                 _onUpdate: () =>
@@ -113,8 +116,8 @@ export class Sprite extends Container implements View
                     this.onViewUpdate();
                 }
             },
-            anchor?.x ?? texture.defaultAnchor?.x ?? 0,
-            anchor?.y ?? texture.defaultAnchor?.y ?? 0,
+            anchorX ?? texture.defaultAnchor?.x ?? 0,
+            anchorY ?? texture.defaultAnchor?.y ?? 0,
         );
 
         this.texture = texture;
@@ -271,10 +274,10 @@ export class Sprite extends Container implements View
         return this._anchor;
     }
 
-    set anchor(value: PointData)
+    set anchor(value: PointData | number)
     {
-        this._anchor.x = value.x;
-        this._anchor.y = value.y;
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        typeof value === 'number' ? this._anchor.set(value) : this._anchor.copyFrom(value);
     }
 
     /** Whether or not to round the x/y position of the sprite. */
