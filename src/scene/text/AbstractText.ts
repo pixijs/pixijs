@@ -5,7 +5,6 @@ import { Container } from '../container/Container';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
-import type { PointLike } from '../../maths/point/PointLike';
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { ContainerOptions } from '../container/Container';
 import type { Optional } from '../container/container-mixins/measureMixin';
@@ -127,7 +126,7 @@ export abstract class AbstractText<
      * const text = new Text('hello world');
      * text.anchor.set(0.5); // This will set the origin to center. (0.5) is same as (0.5, 0.5).
      */
-    get anchor(): PointLike
+    get anchor(): ObservablePoint
     {
         return this._anchor;
     }

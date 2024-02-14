@@ -5,7 +5,6 @@ import { Container } from '../container/Container';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
-import type { PointLike } from '../../maths/point/PointLike';
 import type { TextureSourceLike } from '../../rendering/renderers/shared/texture/Texture';
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Bounds, BoundsData } from '../container/bounds/Bounds';
@@ -269,7 +268,7 @@ export class Sprite extends Container implements View
      * const sprite = new Sprite({texture: Texture.WHITE});
      * sprite.anchor.set(0.5); // This will set the origin to center. (0.5) is same as (0.5, 0.5).
      */
-    get anchor(): PointLike
+    get anchor(): ObservablePoint
     {
         return this._anchor;
     }

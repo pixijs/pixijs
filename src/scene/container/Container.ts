@@ -18,7 +18,6 @@ import { assignWithIgnore } from './utils/assignWithIgnore';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
-import type { PointLike } from '../../maths/point/PointLike';
 import type { Rectangle } from '../../maths/shapes/Rectangle';
 import type { BLEND_MODES } from '../../rendering/renderers/shared/state/const';
 import type { Dict } from '../../utils/types';
@@ -863,7 +862,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
      * The coordinate of the object relative to the local coordinates of the parent.
      * @since 4.0.0
      */
-    get position(): PointLike
+    get position(): ObservablePoint
     {
         return this._position;
     }
@@ -913,7 +912,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
      * By default, the pivot is the origin (0, 0).
      * @since 4.0.0
      */
-    get pivot(): PointLike
+    get pivot(): ObservablePoint
     {
         if (this._pivot === defaultPivot)
         {
@@ -938,7 +937,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
      * The skew factor for the object in radians.
      * @since 4.0.0
      */
-    get skew(): PointLike
+    get skew(): ObservablePoint
     {
         if (this._skew === defaultSkew)
         {
@@ -954,7 +953,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
      * The default scale is (1, 1).
      * @since 4.0.0
      */
-    get scale(): PointLike
+    get scale(): ObservablePoint
     {
         if (this._scale === defaultScale)
         {
