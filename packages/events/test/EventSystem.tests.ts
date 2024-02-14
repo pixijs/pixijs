@@ -1032,6 +1032,52 @@ describe('EventSystem', () =>
         expect(eventSpy).toHaveBeenCalledTimes(1);
     });
 
+    it('should respect AbortController signals', () =>
+    {
+        const renderer = createRenderer();
+        const [stage, graphics] = createScene();
+        const eventSpy = jest.fn();
+
+        renderer.render(stage);
+
+        const controller = new AbortController();
+
+        let count = 0;
+
+        graphics.addEventListener('pointertap', (e) =>
+        {
+            expect(e.type).toEqual('click');
+            count = count + 1;
+            if (count >= 2)
+            {
+                controller.abort();
+            }
+
+            eventSpy();
+        }, { signal: controller.signal });
+
+        const click = () =>
+        {
+            const event = new PointerEvent('pointerdown', { clientX: 25, clientY: 25 });
+
+            renderer.events.onPointerDown(event);
+            const e = new PointerEvent('pointerup', { clientX: 30, clientY: 20 });
+            // so it isn't a pointerupoutside
+
+            Object.defineProperty(e, 'target', {
+                writable: false,
+                value: renderer.view
+            });
+            renderer.events.onPointerUp(e);
+        };
+
+        click(); // Once
+        click(); // Twice
+        click(); // Three times
+
+        expect(eventSpy).toHaveBeenCalledTimes(2);
+    });
+
     it('should respect \'once\' option', () =>
     {
         const renderer = createRenderer();
@@ -1064,6 +1110,44 @@ describe('EventSystem', () =>
         click(); // Once
         click(); // Twice
 
+        expect(eventSpy).toHaveBeenCalledOnce();
+    });
+
+    it('should allow explicit removal of a listener even when the signal option is used', () =>
+    {
+        const renderer = createRenderer();
+        const [stage, graphics] = createScene();
+        const eventSpy = jest.fn();
+
+        renderer.render(stage);
+        const controller = new AbortController();
+
+        const listener = (e: Event) =>
+        {
+            expect(e.type).toEqual('click');
+            eventSpy();
+        };
+
+        graphics.addEventListener('pointertap', listener, { signal: controller.signal });
+
+        const click = () =>
+        {
+            const event = new PointerEvent('pointerdown', { clientX: 25, clientY: 25 });
+
+            renderer.events.onPointerDown(event);
+            const e = new PointerEvent('pointerup', { clientX: 30, clientY: 20 });
+            // so it isn't a pointerupoutside
+
+            Object.defineProperty(e, 'target', {
+                writable: false,
+                value: renderer.view
+            });
+            renderer.events.onPointerUp(e);
+        };
+
+        click(); // Once
+        graphics.removeEventListener('pointertap', listener);
+        click(); // Twice
         expect(eventSpy).toHaveBeenCalledOnce();
     });
 });

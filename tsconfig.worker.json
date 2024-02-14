@@ -1,0 +1,18 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "lib": ["WebWorker", "ES6"],
+        "strict": true
+    },
+    "include": [
+        "**/*.worker.ts"
+    ],
+    "exclude": [
+        "bundles/**/*.d.ts",
+        "node_modules",
+        "**/dist/**",
+        "**/lib/**",
+        "**/out/**"
+    ],
+    "references": []
+}
