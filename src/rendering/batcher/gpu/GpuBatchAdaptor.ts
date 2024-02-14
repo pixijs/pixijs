@@ -73,6 +73,13 @@ export class GpuBatchAdaptor implements BatcherAdaptor
 
         const globalUniformsBindGroup = renderer.globalUniforms.bindGroup;
 
+        // low level - we need to reset the bind group at location 1 to null
+        // this is because we directly manipulate the bound buffer in the execture function for
+        // performance reasons.
+        // setting it to null ensures that the next bind group we set at location 1 will
+        // be the one we want.
+        encoder.resetBindGroup(1);
+
         encoder.setBindGroup(0, globalUniformsBindGroup, program);
     }
 
