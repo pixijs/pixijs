@@ -216,7 +216,7 @@ describe('Container Visual', () =>
         {
             const container = new Container();
 
-            container.scale = 2;
+            container.scale.set(2);
 
             expect(container.scale.x).toEqual(2);
             expect(container.scale.y).toEqual(2);
@@ -229,7 +229,7 @@ describe('Container Visual', () =>
         {
             const container = new Container();
 
-            container.pivot = 2;
+            container.pivot.set(2);
 
             expect(container.pivot.x).toEqual(2);
             expect(container.pivot.y).toEqual(2);

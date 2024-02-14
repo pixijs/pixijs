@@ -130,7 +130,7 @@ export interface ContainerOptions extends PixiMixins.ContainerOptions
     /** @see scene.Container#rotation */
     rotation?: number;
     /** @see scene.Container#scale */
-    scale?: PointData | number;
+    scale?: PointData;
     /** @see scene.Container#pivot */
     pivot?: PointData;
     /** @see scene.Container#position */
@@ -908,7 +908,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
     /**
      * The center of rotation, scaling, and skewing for this display object in its local space. The `position`
      * is the projection of `pivot` in the parent's local space.
-     * this can be set from a point or number like so: `myContainer.pivot.set(2, 3)` or `myContainer.pivot.set(2)`
+     *
      * By default, the pivot is the origin (0, 0).
      * @since 4.0.0
      */
@@ -922,21 +922,14 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
         return this._pivot;
     }
 
-    set pivot(value: PointData | number)
+    set pivot(value: PointData)
     {
         if (this._pivot === defaultPivot)
         {
             this._pivot = new ObservablePoint(this, 0, 0);
         }
 
-        if (typeof value === 'number')
-        {
-            this._pivot.set(value);
-        }
-        else
-        {
-            this._pivot.copyFrom(value);
-        }
+        this._pivot.copyFrom(value);
     }
 
     /**
@@ -955,7 +948,6 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
 
     /**
      * The scale factors of this object along the local coordinate axes.
-     * this can be set from a point or number like so: `myContainer.scale.set(2, 3)` or `myContainer.scale.set(2)`
      *
      * The default scale is (1, 1).
      * @since 4.0.0
@@ -970,21 +962,14 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
         return this._scale;
     }
 
-    set scale(value: PointData | number)
+    set scale(value: PointData)
     {
         if (this._scale === defaultScale)
         {
             this._scale = new ObservablePoint(this, 0, 0);
         }
 
-        if (typeof value === 'number')
-        {
-            this._scale.set(value);
-        }
-        else
-        {
-            this._scale.copyFrom(value);
-        }
+        this._scale.copyFrom(value);
     }
 
     /**
