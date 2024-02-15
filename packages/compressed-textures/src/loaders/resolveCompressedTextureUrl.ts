@@ -2,6 +2,8 @@ import { extensions, ExtensionType, settings, utils } from '@pixi/core';
 
 import type { ResolveURLParser, UnresolvedAsset } from '@pixi/assets';
 
+const knownFormats = ['s3tc', 's3tc_sRGB', 'etc', 'etc1', 'pvrtc', 'atc', 'astc', 'bptc'];
+
 export const resolveCompressedTextureUrl = {
     extension: ExtensionType.ResolveParser,
     test: (value: string) =>
@@ -12,27 +14,19 @@ export const resolveCompressedTextureUrl = {
     },
     parse: (value: string): UnresolvedAsset =>
     {
-        const extension = utils.path.extname(value).slice(1);
+        // value expected in format: {name}{resolution}.{format}.{extension} - texture@2x.astc.ktx
+        const parts = value.split('.');
+        const extension = parts.pop();
 
-        if (extension === 'ktx')
+        if (['ktx', 'dds'].includes(extension))
         {
-            const extensions = [
-                '.s3tc.ktx',
-                '.s3tc_sRGB.ktx',
-                '.etc.ktx',
-                '.etc1.ktx',
-                '.pvrt.ktx',
-                '.atc.ktx',
-                '.astc.ktx',
-                '.bptc.ktx'
-            ];
+            const textureFormat = parts.pop();
 
-            // check if value ends with one of the extensions
-            if (extensions.some((ext) => value.endsWith(ext)))
+            if (knownFormats.includes(textureFormat))
             {
                 return {
                     resolution: parseFloat(settings.RETINA_PREFIX.exec(value)?.[1] ?? '1'),
-                    format: extensions.find((ext) => value.endsWith(ext)),
+                    format: textureFormat,
                     src: value,
                 };
             }
