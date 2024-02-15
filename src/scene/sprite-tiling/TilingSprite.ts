@@ -38,7 +38,7 @@ export interface TilingSpriteOptions extends ContainerOptions
      * The offset of the image that is being tiled.
      * @default {x: 0, y: 0}
      */
-    tilePosition?: PointData | number;
+    tilePosition?: PointData;
     /**
      * Scaling of the image that is being tiled.
      * @default {x: 1, y: 1}
@@ -264,10 +264,9 @@ export class TilingSprite extends Container implements View, Instruction
         return this._tileTransform.position;
     }
 
-    set tilePosition(value: PointData | number)
+    set tilePosition(value: PointData)
     {
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        typeof value === 'number' ? this._tileTransform.position.set(value) : this._tileTransform.position.copyFrom(value);
+        this._tileTransform.position.copyFrom(value);
     }
 
     /** The scaling of the image that is being tiled. */
