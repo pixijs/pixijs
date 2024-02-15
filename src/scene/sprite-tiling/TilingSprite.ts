@@ -33,17 +33,17 @@ export interface TilingSpriteOptions extends ContainerOptions
      * The anchor point of the sprite
      * @default {x: 0, y: 0}
      */
-    anchor?: PointData | number;
+    anchor?: PointData
     /**
      * The offset of the image that is being tiled.
      * @default {x: 0, y: 0}
      */
-    tilePosition?: PointData;
+    tilePosition?: PointData
     /**
      * Scaling of the image that is being tiled.
      * @default {x: 1, y: 1}
      */
-    tileScale?: PointData | number;
+    tileScale?: PointData
     /**
      * The rotation of the image that is being tiled.
      * @default 0
@@ -191,10 +191,7 @@ export class TilingSprite extends Container implements View, Instruction
 
         this.allowChildren = false;
 
-        const anchorX = typeof anchor === 'number' ? anchor : anchor?.x;
-        const anchorY = typeof anchor === 'number' ? anchor : anchor?.y;
-
-        this._anchor = new ObservablePoint(this, anchorX, anchorY);
+        this._anchor = new ObservablePoint(this);
 
         this._applyAnchorToTexture = applyAnchorToTexture;
 
@@ -207,6 +204,8 @@ export class TilingSprite extends Container implements View, Instruction
                 _onUpdate: () => this.onTilingSpriteUpdate(),
             }
         });
+
+        if (anchor) this.anchor = anchor;
         this.tilePosition = tilePosition;
         this.tileScale = tileScale;
         this.tileRotation = tileRotation;
@@ -278,7 +277,7 @@ export class TilingSprite extends Container implements View, Instruction
     set tileScale(value: PointData | number)
     {
         // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        typeof value === 'number' ? this._tileTransform.scale.set(value) : this._tileTransform.position.copyFrom(value);
+        typeof value === 'number' ? this._tileTransform.scale.set(value) : this._tileTransform.scale.copyFrom(value);
     }
 
     set tileRotation(value)

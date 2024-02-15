@@ -94,9 +94,6 @@ export abstract class AbstractText<
 
         this.allowChildren = false;
 
-        const anchorX = typeof anchor === 'number' ? anchor : anchor?.x;
-        const anchorY = typeof anchor === 'number' ? anchor : anchor?.y;
-
         this._anchor = new ObservablePoint(
             {
                 _onUpdate: () =>
@@ -104,10 +101,9 @@ export abstract class AbstractText<
                     this.onViewUpdate();
                 },
             },
-            anchorX ?? 0,
-            anchorY ?? 0
         );
 
+        if (anchor) this.anchor = anchor;
         this.roundPixels = roundPixels ?? false;
     }
 

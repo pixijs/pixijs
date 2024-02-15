@@ -105,9 +105,6 @@ export class Sprite extends Container implements View
             ...rest
         });
 
-        const anchorX = typeof anchor === 'number' ? anchor : anchor?.x;
-        const anchorY = typeof anchor === 'number' ? anchor : anchor?.y;
-
         this._anchor = new ObservablePoint(
             {
                 _onUpdate: () =>
@@ -115,10 +112,9 @@ export class Sprite extends Container implements View
                     this.onViewUpdate();
                 }
             },
-            anchorX ?? texture.defaultAnchor?.x ?? 0,
-            anchorY ?? texture.defaultAnchor?.y ?? 0,
         );
 
+        if (anchor) this.anchor = anchor;
         this.texture = texture;
         this.allowChildren = false;
         this.roundPixels = roundPixels ?? false;
