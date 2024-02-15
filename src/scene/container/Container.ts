@@ -135,7 +135,7 @@ export interface ContainerOptions extends PixiMixins.ContainerOptions
     /** @see scene.Container#position */
     position?: PointData;
     /** @see scene.Container#skew */
-    skew?: PointData | number;
+    skew?: PointData;
     /** @see scene.Container#visible */
     visible?: boolean;
     /** @see scene.Container#culled */
@@ -944,6 +944,16 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
         }
 
         return this._skew;
+    }
+
+    set skew(value: PointData)
+    {
+        if (this._skew === defaultSkew)
+        {
+            this._skew = new ObservablePoint(this, 0, 0);
+        }
+
+        this._skew.copyFrom(value);
     }
 
     /**
