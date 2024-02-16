@@ -1,5 +1,5 @@
 import { decompressFrames, ParsedFrame, parseGIF } from 'gifuct-js';
-import { SCALE_MODE, Sprite, Texture, TextureSource, Ticker, UPDATE_PRIORITY } from 'pixi.js';
+import { DOMAdapter, SCALE_MODE, Sprite, Texture, TextureSource, Ticker, UPDATE_PRIORITY } from 'pixi.js';
 
 /** Represents a single frame of a GIF. Includes image and timing data. */
 interface FrameObject
@@ -195,15 +195,12 @@ class AnimatedGIF extends Sprite
         const frames: FrameObject[] = [];
 
         // Temporary canvases required for compositing frames
-        const canvas = document.createElement('canvas');
+        const canvas = DOMAdapter.get().createCanvas(gif.lsd.width, gif.lsd.height) as HTMLCanvasElement;
         const context = canvas.getContext('2d', {
             willReadFrequently: true,
         }) as CanvasRenderingContext2D;
-        const patchCanvas = document.createElement('canvas');
+        const patchCanvas = DOMAdapter.get().createCanvas() as HTMLCanvasElement;
         const patchContext = patchCanvas.getContext('2d') as CanvasRenderingContext2D;
-
-        canvas.width = gif.lsd.width;
-        canvas.height = gif.lsd.height;
 
         let time = 0;
 
@@ -269,11 +266,8 @@ class AnimatedGIF extends Sprite
         );
 
         // Create the texture
-        const canvas = document.createElement('canvas');
+        const canvas = DOMAdapter.get().createCanvas(width, height) as HTMLCanvasElement;
         const context = canvas.getContext('2d') as CanvasRenderingContext2D;
-
-        canvas.width = width;
-        canvas.height = height;
 
         this.texture = Texture.from(new TextureSource({
             resource: canvas,
@@ -511,7 +505,7 @@ class AnimatedGIF extends Sprite
             autoUpdate: this._autoUpdate,
             loop: this.loop,
             autoPlay: this.autoPlay,
-            scaleMode: this.texture.baseTexture.scaleMode,
+            scaleMode: this.texture.source.scaleMode,
             animationSpeed: this.animationSpeed,
             width: this._context.canvas.width,
             height: this._context.canvas.height,
