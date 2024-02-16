@@ -259,6 +259,9 @@ class AnimatedGIF extends Sprite
     {
         super(Texture.EMPTY);
 
+        // Handle rerenders
+        this.onRender = () => this.updateFrame();
+
         // Get the options, apply defaults
         const { scaleMode, width, height, ...rest } = Object.assign({},
             AnimatedGIF.defaultOptions,
@@ -288,8 +291,6 @@ class AnimatedGIF extends Sprite
         {
             this.play();
         }
-
-        this.onRender = () => this.updateFrame();
     }
 
     /** Stops the animation. */

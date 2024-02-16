@@ -66,7 +66,7 @@
             
             const $ = document.querySelector.bind(document);
             const $$ = document.querySelectorAll.bind(document);
-            const $view = $('#root');
+            const $canvas = $('#root');
             const $preview = $('#preview');
             const $buttons = Array.from($$('button[data-src]'));
             const $play = $('#play');
@@ -104,9 +104,9 @@
             function playAnimation(imageName, imagePath) {
                 clearAnimation();
                 animation = animations[imageName];
-                $view.width = animation.width;
-                $view.height = animation.height;
-                app.renderer.resize($view.width, $view.height);
+                $canvas.width = animation.width;
+                $canvas.height = animation.height;
+                app.renderer.resize($canvas.width, $canvas.height);
                 $preview.src = imagePath || imageName;
                 $slider.max = animation.totalFrames - 1;
                 currentAnimation = animation;
@@ -131,9 +131,10 @@
                 await app.init({
                     width: 476,
                     height: 280,
-                    canvas: $view,
+                    canvas: $canvas,
                     backgroundAlpha: 0,
                     hello: true,
+                    preference: 'webgl',
                 });
                 const resources = await PIXI.Assets.load(sources);
                 $buttons.forEach($button =>
