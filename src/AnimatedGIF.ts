@@ -1,5 +1,5 @@
 import { decompressFrames, ParsedFrame, parseGIF } from 'gifuct-js';
-import { DOMAdapter, SCALE_MODE, Sprite, Texture, TextureSource, Ticker, UPDATE_PRIORITY } from 'pixi.js';
+import { DOMAdapter, SCALE_MODE, Sprite, Texture, Ticker, UPDATE_PRIORITY } from 'pixi.js';
 
 /** Represents a single frame of a GIF. Includes image and timing data. */
 interface FrameObject
