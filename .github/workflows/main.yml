@@ -3,6 +3,8 @@ on:
   push:
     branches: [ '**' ]
     tags: [ '**' ]
+  release:
+    types: [ 'created' ]
   pull_request:
     branches: [ '**' ]
 jobs:
@@ -23,4 +25,9 @@ jobs:
       uses: coactions/setup-xvfb@v1
       with:
         run: npm test
+    - name: Upload to Release
+      if: github.event_name == 'release'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: dist/*
 
