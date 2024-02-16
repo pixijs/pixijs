@@ -272,10 +272,8 @@ class AnimatedGIF extends Sprite
         const canvas = DOMAdapter.get().createCanvas(width, height) as HTMLCanvasElement;
         const context = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-        this.texture = Texture.from(new TextureSource({
-            resource: canvas,
-            scaleMode,
-        }));
+        this.texture = Texture.from(canvas);
+        this.texture.source.scaleMode = scaleMode;
 
         this.duration = (frames[frames.length - 1] as FrameObject).end;
         this._frames = frames;
@@ -409,8 +407,7 @@ class AnimatedGIF extends Sprite
         // See: https://bugs.webkit.org/show_bug.cgi?id=229986
         this._context.fillStyle = 'transparent';
         this._context.fillRect(0, 0, 0, 1);
-
-        this.texture.update();
+        this.texture.source.update();
 
         // Mark as clean
         this.dirty = false;
