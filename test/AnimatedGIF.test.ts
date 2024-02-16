@@ -1,6 +1,6 @@
-import { AnimatedGIF } from '../src';
 import fs from 'fs';
 import path from 'path';
+import { AnimatedGIF } from '../src';
 
 function toArrayBuffer(buffer: Buffer): ArrayBuffer
 {

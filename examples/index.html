@@ -12,7 +12,7 @@
             gtag('js', new Date());
             gtag('config', 'UA-103772589-10');
         </script>
-        <script src="https://pixijs.download/dev/pixi-legacy.min.js"></script>
+        <script src="https://pixijs.download/next-v8/pixi.min.js"></script>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
         <script src="../dist/pixi-gif.js"></script>
         <style>
@@ -67,7 +67,7 @@
             
             const $ = document.querySelector.bind(document);
             const $$ = document.querySelectorAll.bind(document);
-            const $view = $('#root');
+            const $canvas = $('#root');
             const $preview = $('#preview');
             const $buttons = Array.from($$('button[data-src]'));
             const $play = $('#play');
@@ -77,13 +77,7 @@
             const $fileInput = $('#file-input');
 
             // Boilerplate create application
-            const app = new PIXI.Application({
-                width: 476,
-                height: 280,
-                view: $view,
-                backgroundAlpha: 0,
-                hello: true,
-            });
+            const app = new PIXI.Application();
             
             let currentAnimation = null;
             const sources = $buttons.map(i => i.dataset.src);
@@ -111,9 +105,9 @@
             function playAnimation(imageName, imagePath) {
                 clearAnimation();
                 animation = animations[imageName];
-                $view.width = animation.width;
-                $view.height = animation.height;
-                app.renderer.resize($view.width, $view.height);
+                $canvas.width = animation.width;
+                $canvas.height = animation.height;
+                app.renderer.resize($canvas.width, $canvas.height);
                 $preview.src = imagePath || imageName;
                 $slider.max = animation.totalFrames - 1;
                 currentAnimation = animation;
@@ -135,6 +129,13 @@
             }
 
             const main = async () => {
+                await app.init({
+                    width: 476,
+                    height: 280,
+                    canvas: $canvas,
+                    backgroundAlpha: 0,
+                    hello: true,
+                });
                 const resources = await PIXI.Assets.load(sources);
                 $buttons.forEach($button =>
                     $button.addEventListener('click', () => playAnimation($button.dataset.src), false));

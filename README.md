@@ -32,3 +32,11 @@ fetch('image.gif')
     .then(AnimatedGIF.fromBuffer)
     .then(image => app.stage.addChild(image));
 ```
+
+### Version Compatiblity
+
+| PixiJS | PixiJS GIF |
+|--------|------------|
+| v6.x   | v1.x       |
+| v7.x   | v2.x       |
+| v8.x   | v3.x       |

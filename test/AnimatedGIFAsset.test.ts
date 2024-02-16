@@ -1,5 +1,5 @@
-import { AnimatedGIFAsset, AnimatedGIF } from '../src';
-import { Assets } from '@pixi/assets';
+import { Assets } from 'pixi.js';
+import { AnimatedGIF, AnimatedGIFAsset } from '../src';
 import { createServer } from './resources';
 
 describe('AnimatedGIFLoader', () =>
@@ -33,7 +33,7 @@ describe('AnimatedGIFLoader', () =>
     {
         const url = `${baseUrl}/example.gif`;
 
-        Assets.add('test', url);
+        Assets.add({ alias: 'test', src: url });
         const test = await Assets.load('test');
 
         expect(test);
@@ -60,7 +60,7 @@ describe('AnimatedGIFLoader', () =>
 
         const data = { loop: false, autoUpdate: false, animationSpeed: 2 };
 
-        Assets.add('test1', url, data);
+        Assets.add({ alias: 'test1', src: url, data });
         const test = await Assets.load('test1');
 
         expect(test);

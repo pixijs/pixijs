@@ -1,2 +1,2 @@
-export * from './AnimatedGIFAsset';
 export * from './AnimatedGIF';
+export * from './AnimatedGIFAsset';

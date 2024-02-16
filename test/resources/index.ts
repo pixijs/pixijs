@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import * as http from 'http';
 import * as fs from 'fs';
+import * as http from 'http';
 import * as path from 'path';
 
 const mimeTypes: Record<string, string> = {

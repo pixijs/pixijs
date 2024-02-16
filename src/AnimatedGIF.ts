@@ -1,6 +1,5 @@
-import { Sprite } from '@pixi/sprite';
-import { Texture, Renderer, settings, SCALE_MODES, Ticker, UPDATE_PRIORITY } from '@pixi/core';
-import { parseGIF, decompressFrames, ParsedFrame } from 'gifuct-js';
+import { decompressFrames, ParsedFrame, parseGIF } from 'gifuct-js';
+import { DOMAdapter, SCALE_MODE, Sprite, Texture, Ticker, UPDATE_PRIORITY } from 'pixi.js';
 
 /** Represents a single frame of a GIF. Includes image and timing data. */
 interface FrameObject
@@ -20,9 +19,9 @@ interface AnimatedGIFOptions
     autoPlay: boolean;
     /**
      * Scale Mode to use for the texture
-     * @type {PIXI.SCALE_MODES}
+     * @type {PIXI.SCALE_MODE}
      */
-    scaleMode: SCALE_MODES;
+    scaleMode: SCALE_MODE;
     /** To enable looping */
     loop: boolean;
     /** Speed of the animation */
@@ -57,7 +56,7 @@ class AnimatedGIF extends Sprite
 {
     /**
      * Default options for all AnimatedGIF objects.
-     * @property {PIXI.SCALE_MODES} [scaleMode=PIXI.SCALE_MODES.LINEAR] - Scale mode to use for the texture.
+     * @property {PIXI.SCALE_MODE} [scaleMode='linear'] - Scale mode to use for the texture.
      * @property {boolean} [loop=true] - To enable looping.
      * @property {number} [animationSpeed=1] - Speed of the animation.
      * @property {boolean} [autoUpdate=true] - Set to `false` to manage updates yourself.
@@ -68,7 +67,7 @@ class AnimatedGIF extends Sprite
      * @property {number} [fps=30] - Fallback FPS if GIF contains no time information.
      */
     public static defaultOptions: AnimatedGIFOptions = {
-        scaleMode: SCALE_MODES.LINEAR,
+        scaleMode: 'linear',
         fps: 30,
         loop: true,
         animationSpeed: 1,
@@ -196,15 +195,12 @@ class AnimatedGIF extends Sprite
         const frames: FrameObject[] = [];
 
         // Temporary canvases required for compositing frames
-        const canvas = document.createElement('canvas');
+        const canvas = DOMAdapter.get().createCanvas(gif.lsd.width, gif.lsd.height) as HTMLCanvasElement;
         const context = canvas.getContext('2d', {
             willReadFrequently: true,
         }) as CanvasRenderingContext2D;
-        const patchCanvas = document.createElement('canvas');
+        const patchCanvas = DOMAdapter.get().createCanvas() as HTMLCanvasElement;
         const patchContext = patchCanvas.getContext('2d') as CanvasRenderingContext2D;
-
-        canvas.width = gif.lsd.width;
-        canvas.height = gif.lsd.height;
 
         let time = 0;
         let previousFrame: ImageData | null = null;
@@ -273,6 +269,9 @@ class AnimatedGIF extends Sprite
     {
         super(Texture.EMPTY);
 
+        // Handle rerenders
+        this.onRender = () => this.updateFrame();
+
         // Get the options, apply defaults
         const { scaleMode, width, height, ...rest } = Object.assign({},
             AnimatedGIF.defaultOptions,
@@ -280,13 +279,11 @@ class AnimatedGIF extends Sprite
         );
 
         // Create the texture
-        const canvas = document.createElement('canvas');
+        const canvas = DOMAdapter.get().createCanvas(width, height) as HTMLCanvasElement;
         const context = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-        canvas.width = width;
-        canvas.height = height;
-
-        this.texture = Texture.from(canvas, { scaleMode });
+        this.texture = Texture.from(canvas);
+        this.texture.source.scaleMode = scaleMode;
 
         this.duration = (frames[frames.length - 1] as FrameObject).end;
         this._frames = frames;
@@ -363,14 +360,14 @@ class AnimatedGIF extends Sprite
      *
      * @param deltaTime - Time since last tick.
      */
-    update(deltaTime: number): void
+    update(ticker: Ticker): void
     {
         if (!this._playing)
         {
             return;
         }
 
-        const elapsed = this.animationSpeed * deltaTime / (settings.TARGET_FPMS as number);
+        const elapsed = this.animationSpeed * ticker.deltaTime / Ticker.targetFPMS;
         const currentTime = this._currentTime + elapsed;
         const localTime = currentTime % this.duration;
 
@@ -420,40 +417,10 @@ class AnimatedGIF extends Sprite
         // See: https://bugs.webkit.org/show_bug.cgi?id=229986
         this._context.fillStyle = 'transparent';
         this._context.fillRect(0, 0, 0, 1);
-
-        this.texture.update();
+        this.texture.source.update();
 
         // Mark as clean
         this.dirty = false;
-    }
-
-    /**
-     * Renders the object using the WebGL renderer
-     *
-     * @param {PIXI.Renderer} renderer - The renderer
-     * @private
-     */
-    _render(renderer: Renderer): void
-    {
-        this.updateFrame();
-
-        super._render(renderer);
-    }
-
-    /**
-     * Renders the object using the WebGL renderer
-     *
-     * @param {PIXI.CanvasRenderer} renderer - The renderer
-     * @private
-     */
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    _renderCanvas(renderer: any): void
-    {
-        this.updateFrame();
-
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        super._renderCanvas(renderer);
     }
 
     /**
@@ -546,7 +513,7 @@ class AnimatedGIF extends Sprite
             autoUpdate: this._autoUpdate,
             loop: this.loop,
             autoPlay: this.autoPlay,
-            scaleMode: this.texture.baseTexture.scaleMode,
+            scaleMode: this.texture.source.scaleMode,
             animationSpeed: this.animationSpeed,
             width: this._context.canvas.width,
             height: this._context.canvas.height,
