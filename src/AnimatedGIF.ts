@@ -203,6 +203,7 @@ class AnimatedGIF extends Sprite
         const patchContext = patchCanvas.getContext('2d') as CanvasRenderingContext2D;
 
         let time = 0;
+        let previousFrame: ImageData | null = null;
 
         // Some GIFs have a non-zero frame delay, so we need to calculate the fallback
         const { fps } = Object.assign({}, AnimatedGIF.defaultOptions, options);
@@ -227,12 +228,21 @@ class AnimatedGIF extends Sprite
             patchData.data.set(patch);
             patchContext.putImageData(patchData, 0, 0);
 
+            if (disposalType === 3)
+            {
+                previousFrame = context.getImageData(0, 0, canvas.width, canvas.height);
+            }
+
             context.drawImage(patchCanvas, left, top);
             const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
 
-            if (disposalType === 2 || disposalType === 3)
+            if (disposalType === 2)
             {
                 context.clearRect(0, 0, canvas.width, canvas.height);
+            }
+            else if (disposalType === 3)
+            {
+                context.putImageData(previousFrame as ImageData, 0, 0);
             }
 
             frames.push({
