@@ -47,10 +47,12 @@ export class DisplacementFilter extends Filter
 
         if (options instanceof Sprite)
         {
+            // #if _DEBUG
             if (args[1])
             {
                 deprecation(v8_0_0, 'DisplacementFilter now uses options object instead of params. {sprite, scale}');
             }
+            // #endif
 
             options = { sprite: options, scale: args[1] };
         }

@@ -68,8 +68,10 @@ export class PlaneGeometry extends MeshGeometry
 
         if (typeof options === 'number')
         {
+            // #if _DEBUG
             // eslint-disable-next-line max-len
             deprecation(v8_0_0, 'PlaneGeometry constructor changed please use { width, height, verticesX, verticesY } instead');
+            // #endif
 
             options = {
                 width: options,

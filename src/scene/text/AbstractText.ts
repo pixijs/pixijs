@@ -361,7 +361,9 @@ export function ensureOptions<
     // @deprecated
     if (typeof options === 'string' || args[1])
     {
+        // #if _DEBUG
         deprecation(v8_0_0, `use new ${name}({ text: "hi!", style }) instead`);
+        // #endif
 
         options = {
             text: options,

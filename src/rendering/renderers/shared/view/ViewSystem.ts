@@ -129,7 +129,10 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
 
         if (options.view)
         {
+            // #if _DEBUG
             deprecation(v8_0_0, 'ViewSystem.view has been renamed to ViewSystem.canvas');
+            // #endif
+
             options.canvas = options.view;
         }
 

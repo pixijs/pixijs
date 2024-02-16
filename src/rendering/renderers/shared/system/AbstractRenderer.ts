@@ -193,8 +193,10 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
 
             if (deprecated)
             {
+                // #if _DEBUG
                 // eslint-disable-next-line max-len
                 deprecation(v8_0_0, 'passing a second argument is deprecated, please use render options instead');
+                // #endif
 
                 options.target = deprecated.renderTexture;
             }

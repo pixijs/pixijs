@@ -374,7 +374,9 @@ export class Texture extends EventEmitter<{
     /** @deprecated since 8.0.0 */
     get baseTexture(): TextureSource
     {
+        // #if _DEBUG
         deprecation(v8_0_0, 'Texture.baseTexture is now Texture.source');
+        // #endif
 
         return this._source;
     }

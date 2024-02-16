@@ -5,7 +5,7 @@ import { Matrix } from '../../../maths/matrix/Matrix';
 import { Point } from '../../../maths/point/Point';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { uid } from '../../../utils/data/uid';
-import { deprecation } from '../../../utils/logging/deprecation';
+import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import { Bounds } from '../../container/bounds/Bounds';
 import { GraphicsPath } from './path/GraphicsPath';
 import { SVGParser } from './svg/SVGParser';
@@ -251,7 +251,10 @@ export class GraphicsContext extends EventEmitter<{
         {
             if (alpha !== undefined && typeof style === 'number')
             {
-                deprecation('8.0.0', 'GraphicsContext.fill(color, alpha) is deprecated, use GraphicsContext.fill({ color, alpha }) instead');
+                // #if _DEBUG
+                deprecation(v8_0_0, 'GraphicsContext.fill(color, alpha) is deprecated, use GraphicsContext.fill({ color, alpha }) instead');
+                // #endif
+
                 style = { color: style, alpha };
             }
             this._fillStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultFillStyle);
