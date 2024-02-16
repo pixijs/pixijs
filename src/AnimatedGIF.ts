@@ -294,6 +294,8 @@ class AnimatedGIF extends Sprite
         {
             this.play();
         }
+
+        this.onRender = () => this.updateFrame();
     }
 
     /** Stops the animation. */
@@ -418,19 +420,6 @@ class AnimatedGIF extends Sprite
         // Mark as clean
         this.dirty = false;
     }
-
-    /**
-     * Renders the object using the WebGL renderer
-     *
-     * @param {PIXI.Renderer} renderer - The renderer
-     * @private
-     */
-    // _render(renderer: Renderer): void
-    // {
-    //     this.updateFrame();
-
-    //     super._render(renderer);
-    // }
 
     /**
      * Whether to use PIXI.Ticker.shared to auto update animation time.
