@@ -1,6 +1,5 @@
-import { Sprite } from '@pixi/sprite';
-import { Texture, Renderer, settings, SCALE_MODES, Ticker, UPDATE_PRIORITY } from '@pixi/core';
-import { parseGIF, decompressFrames, ParsedFrame } from 'gifuct-js';
+import { decompressFrames, ParsedFrame, parseGIF } from 'gifuct-js';
+import { SCALE_MODE, Sprite, Texture, TextureSource, Ticker, UPDATE_PRIORITY } from 'pixi.js';
 
 /** Represents a single frame of a GIF. Includes image and timing data. */
 interface FrameObject
@@ -20,9 +19,9 @@ interface AnimatedGIFOptions
     autoPlay: boolean;
     /**
      * Scale Mode to use for the texture
-     * @type {PIXI.SCALE_MODES}
+     * @type {PIXI.SCALE_MODE}
      */
-    scaleMode: SCALE_MODES;
+    scaleMode: SCALE_MODE;
     /** To enable looping */
     loop: boolean;
     /** Speed of the animation */
@@ -57,7 +56,7 @@ class AnimatedGIF extends Sprite
 {
     /**
      * Default options for all AnimatedGIF objects.
-     * @property {PIXI.SCALE_MODES} [scaleMode=PIXI.SCALE_MODES.LINEAR] - Scale mode to use for the texture.
+     * @property {PIXI.SCALE_MODE} [scaleMode='linear'] - Scale mode to use for the texture.
      * @property {boolean} [loop=true] - To enable looping.
      * @property {number} [animationSpeed=1] - Speed of the animation.
      * @property {boolean} [autoUpdate=true] - Set to `false` to manage updates yourself.
@@ -68,7 +67,7 @@ class AnimatedGIF extends Sprite
      * @property {number} [fps=30] - Fallback FPS if GIF contains no time information.
      */
     public static defaultOptions: AnimatedGIFOptions = {
-        scaleMode: SCALE_MODES.LINEAR,
+        scaleMode: 'linear',
         fps: 30,
         loop: true,
         animationSpeed: 1,
@@ -276,7 +275,10 @@ class AnimatedGIF extends Sprite
         canvas.width = width;
         canvas.height = height;
 
-        this.texture = Texture.from(canvas, { scaleMode });
+        this.texture = Texture.from(new TextureSource({
+            resource: canvas,
+            scaleMode,
+        }));
 
         this.duration = (frames[frames.length - 1] as FrameObject).end;
         this._frames = frames;
@@ -353,14 +355,14 @@ class AnimatedGIF extends Sprite
      *
      * @param deltaTime - Time since last tick.
      */
-    update(deltaTime: number): void
+    update(ticker: Ticker): void
     {
         if (!this._playing)
         {
             return;
         }
 
-        const elapsed = this.animationSpeed * deltaTime / (settings.TARGET_FPMS as number);
+        const elapsed = this.animationSpeed * ticker.deltaTime / Ticker.targetFPMS;
         const currentTime = this._currentTime + elapsed;
         const localTime = currentTime % this.duration;
 
@@ -423,28 +425,12 @@ class AnimatedGIF extends Sprite
      * @param {PIXI.Renderer} renderer - The renderer
      * @private
      */
-    _render(renderer: Renderer): void
-    {
-        this.updateFrame();
+    // _render(renderer: Renderer): void
+    // {
+    //     this.updateFrame();
 
-        super._render(renderer);
-    }
-
-    /**
-     * Renders the object using the WebGL renderer
-     *
-     * @param {PIXI.CanvasRenderer} renderer - The renderer
-     * @private
-     */
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    _renderCanvas(renderer: any): void
-    {
-        this.updateFrame();
-
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        super._renderCanvas(renderer);
-    }
+    //     super._render(renderer);
+    // }
 
     /**
      * Whether to use PIXI.Ticker.shared to auto update animation time.

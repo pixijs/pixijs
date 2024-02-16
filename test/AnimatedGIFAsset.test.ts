@@ -1,5 +1,5 @@
-import { AnimatedGIFAsset, AnimatedGIF } from '../src';
 import { Assets } from '@pixi/assets';
+import { AnimatedGIF, AnimatedGIFAsset } from '../src';
 import { createServer } from './resources';
 
 describe('AnimatedGIFLoader', () =>

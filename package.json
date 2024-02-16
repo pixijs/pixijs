@@ -63,18 +63,12 @@
     "types"
   ],
   "devDependencies": {
-    "@pixi/assets": "^7.0.0",
-    "@pixi/core": "^7.0.0",
-    "@pixi/display": "^7.0.0",
-    "@pixi/extension-scripts": "^1.4.0",
-    "@pixi/sprite": "^7.0.0",
+    "pixi.js": "^8.0.0-X",
+    "@pixi/extension-scripts": "^2.4.0",
     "gifuct-js": "^2.1.2",
     "pre-commit": "^1.2.2"
   },
   "peerDependencies": {
-    "@pixi/assets": "^7.0.0",
-    "@pixi/core": "^7.0.0",
-    "@pixi/display": "^7.0.0",
-    "@pixi/sprite": "^7.0.0"
+    "pixi.js": ">=8.0.0-0"
   }
 }

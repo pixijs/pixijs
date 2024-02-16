@@ -1,5 +1,8 @@
 {
-    "extends": "@pixi/extension-scripts/lib/configs/tsconfig.json",
+    "extends": "@pixi/extension-scripts/tsconfig",
+    "compilerOptions": {
+        "skipLibCheck": true
+    },
     "include": [
         "src/*"
     ]
