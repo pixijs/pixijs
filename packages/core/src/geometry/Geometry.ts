@@ -32,7 +32,7 @@ const map: Dict<any> = {
  * Geometry can be defined without passing in a style or data if required (thats how I prefer!)
  * @example
  * import { Geometry } from 'pixi.js';
- * 
+ *
  * const geometry = new Geometry();
  * 
  * geometry.addAttribute('positions', [0, 0, 100, 0, 0, 100, 100, 100], 2);
