@@ -34,7 +34,7 @@ const map: Dict<any> = {
  * import { Geometry } from 'pixi.js';
  *
  * const geometry = new Geometry();
- * 
+ *
  * geometry.addAttribute('positions', [0, 0, 100, 0, 0, 100, 100, 100], 2);
  * geometry.addAttribute('uvs', [0, 0, 1, 0, 0, 1, 1, 1], 2);
  * geometry.addIndex([0, 1, 2, 1, 3, 2]);
