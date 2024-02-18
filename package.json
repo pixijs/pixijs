@@ -51,7 +51,7 @@
   "devDependencies": {
     "@pixi/eslint-config": "^5.1.0",
     "@pixi/webdoc-template": "^1.5.5",
-    "@pixi/webworker-plugins": "^0.2.0",
+    "@pixi/webworker-plugins": "^0.3.0",
     "@rollup/plugin-alias": "^5.0.0",
     "@rollup/plugin-commonjs": "^25.0.0",
     "@rollup/plugin-json": "^6.0.0",
