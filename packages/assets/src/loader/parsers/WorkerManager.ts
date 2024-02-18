@@ -45,7 +45,7 @@ class WorkerManagerClass
 
         this._isImageBitmapSupported = new Promise((resolve) =>
         {
-            const worker = new CheckImageBitmapWorker();
+            const worker = (new CheckImageBitmapWorker()).worker;
 
             worker.addEventListener('message', (event: MessageEvent<boolean>) =>
             {
@@ -82,7 +82,7 @@ class WorkerManagerClass
         {
             // only create as many as MAX_WORKERS allows..
             this._createdWorkers++;
-            worker = new LoadImageBitmapWorker();
+            worker = (new LoadImageBitmapWorker()).worker;
 
             worker.addEventListener('message', (event: MessageEvent) =>
             {
