@@ -45,7 +45,7 @@ class WorkerManagerClass
 
         this._isImageBitmapSupported = new Promise((resolve) =>
         {
-            const worker = (new CheckImageBitmapWorker()).worker;
+            const { worker } = new CheckImageBitmapWorker();
 
             worker.addEventListener('message', (event: MessageEvent<boolean>) =>
             {
