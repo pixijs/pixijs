@@ -48,7 +48,7 @@ export function getSupportedGlCompressedTextureFormats(): TEXTURE_FORMATS[]
 
         // ETC2 compressed formats usable if "texture-compression-etc2" is both
         // supported by the device/user agent and enabled in requestDevice.
-        ...gl.getExtension('WEBGL_compressed_texture_astc') ? [
+        ...gl.getExtension('WEBGL_compressed_texture_etc') ? [
             'etc2-rgb8unorm',
             'etc2-rgb8unorm-srgb',
             'etc2-rgba8unorm',
