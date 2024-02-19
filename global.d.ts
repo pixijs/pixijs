@@ -3,8 +3,10 @@
 
 declare module '*.worker.ts'
 {
-    class WorkerInstance extends Worker
+    class WorkerInstance
     {
+        public worker: Worker;
+
         constructor();
 
         static revokeObjectURL(): void;
