@@ -79,7 +79,7 @@ export abstract class AbstractText<
         styleClass: new (options: TEXT_STYLE_OPTIONS) => TEXT_STYLE
     )
     {
-        const { text, resolution, style, anchor, roundPixels, ...rest } = options;
+        const { text, resolution, style, anchor, width, height, roundPixels, ...rest } = options;
 
         super({
             ...rest
@@ -107,6 +107,10 @@ export abstract class AbstractText<
         );
 
         this.roundPixels = roundPixels ?? false;
+
+        // needs to be set after the container has initiated
+        if (width) this.width = width;
+        if (height) this.height = height;
     }
 
     /**

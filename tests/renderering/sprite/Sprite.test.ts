@@ -72,6 +72,16 @@ describe('Sprite', () =>
 
             expect(sprite.scale.x).toEqual(-0.75);
         });
+
+        it('should set width on the constructor', () =>
+        {
+            const sprite = new Sprite({
+                texture: Texture.WHITE,
+                width: 50,
+            });
+
+            expect(sprite.width).toEqual(50);
+        });
     });
 
     describe('height', () =>
@@ -100,6 +110,16 @@ describe('Sprite', () =>
             sprite.height = 75;
 
             expect(sprite.scale.y).toEqual(-0.75);
+        });
+
+        it('should set width on the constructor', () =>
+        {
+            const sprite = new Sprite({
+                texture: Texture.WHITE,
+                height: 50,
+            });
+
+            expect(sprite.height).toEqual(50);
         });
     });
 
