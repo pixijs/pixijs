@@ -211,7 +211,7 @@ export class GraphicsContext extends EventEmitter<{
 
                 transform: this._transform.clone(),
                 alpha: this._fillStyle.alpha,
-                style: tint ? Color.shared.setValue(tint).toNumber() : 0,
+                style: tint ? Color.shared.setValue(tint).toNumber() : 0xFFFFFF,
             }
         });
 
@@ -681,7 +681,7 @@ export class GraphicsContext extends EventEmitter<{
         return this;
     }
 
-    public translate(x: number, y: number): this
+    public translate(x: number, y: number = x): this
     {
         this._transform.translate(x, y);
 
