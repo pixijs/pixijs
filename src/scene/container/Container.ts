@@ -928,7 +928,6 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
             this._pivot = new ObservablePoint(this, 0, 0);
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         typeof value === 'number' ? this._pivot.set(value) : this._pivot.copyFrom(value);
     }
 
@@ -979,7 +978,6 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
             this._scale = new ObservablePoint(this, 0, 0);
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         typeof value === 'number' ? this._scale.set(value) : this._scale.copyFrom(value);
     }
 

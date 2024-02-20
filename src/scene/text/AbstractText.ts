@@ -129,7 +129,6 @@ export abstract class AbstractText<
 
     set anchor(value: PointData | number)
     {
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         typeof value === 'number' ? this._anchor.set(value) : this._anchor.copyFrom(value);
     }
 
