@@ -475,7 +475,6 @@ export class Resolver
             const aliasesToUse = this.getAlias(asset);
 
             // #if _DEBUG
-            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             Array.isArray(aliasesToUse) ? aliasesToUse.forEach(keyCheck) : keyCheck(aliasesToUse);
             // #endif
 

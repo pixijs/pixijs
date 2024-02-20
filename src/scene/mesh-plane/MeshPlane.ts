@@ -84,9 +84,12 @@ export class MeshPlane extends Mesh
 
     set texture(value: Texture)
     {
+        this._texture?.off('update', this.textureUpdated, this);
+
         super.texture = value;
 
-        value.once('update', this.textureUpdated, this);
+        value.on('update', this.textureUpdated, this);
+
         this.textureUpdated();
     }
 
