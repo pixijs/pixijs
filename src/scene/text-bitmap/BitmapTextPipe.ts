@@ -11,9 +11,9 @@ import type { RenderPipe } from '../../rendering/renderers/shared/instructions/R
 import type { Renderable } from '../../rendering/renderers/shared/Renderable';
 import type { Renderer } from '../../rendering/renderers/types';
 import type { PoolItem } from '../../utils/pool/Pool';
-import type { Text } from '../text/Text';
+import type { BitmapText } from './BitmapText';
 
-export class BitmapTextPipe implements RenderPipe<Text>
+export class BitmapTextPipe implements RenderPipe<BitmapText>
 {
     /** @ignore */
     public static extension = {
@@ -34,7 +34,7 @@ export class BitmapTextPipe implements RenderPipe<Text>
         this._renderer = renderer;
     }
 
-    public validateRenderable(bitmapText: Text): boolean
+    public validateRenderable(bitmapText: BitmapText): boolean
     {
         const graphicsRenderable = this._getGpuBitmapText(bitmapText);
 
@@ -52,7 +52,7 @@ export class BitmapTextPipe implements RenderPipe<Text>
         // update the anchor...
     }
 
-    public addRenderable(bitmapText: Text, instructionSet: InstructionSet)
+    public addRenderable(bitmapText: BitmapText, instructionSet: InstructionSet)
     {
         const graphicsRenderable = this._getGpuBitmapText(bitmapText);
 
@@ -74,7 +74,7 @@ export class BitmapTextPipe implements RenderPipe<Text>
         }
     }
 
-    public destroyRenderable(bitmapText: Text)
+    public destroyRenderable(bitmapText: BitmapText)
     {
         this._destroyRenderableByUid(bitmapText.uid);
     }
@@ -85,7 +85,7 @@ export class BitmapTextPipe implements RenderPipe<Text>
         this._gpuBitmapText[renderableUid] = null;
     }
 
-    public updateRenderable(bitmapText: Text)
+    public updateRenderable(bitmapText: BitmapText)
     {
         const graphicsRenderable = this._getGpuBitmapText(bitmapText);
 
@@ -100,7 +100,7 @@ export class BitmapTextPipe implements RenderPipe<Text>
         }
     }
 
-    private _updateContext(bitmapText: Text, proxyGraphics: Graphics)
+    private _updateContext(bitmapText: BitmapText, proxyGraphics: Graphics)
     {
         const { context } = proxyGraphics;
 
@@ -169,12 +169,12 @@ export class BitmapTextPipe implements RenderPipe<Text>
         }
     }
 
-    private _getGpuBitmapText(bitmapText: Text)
+    private _getGpuBitmapText(bitmapText: BitmapText)
     {
         return this._gpuBitmapText[bitmapText.uid] || this.initGpuText(bitmapText);
     }
 
-    public initGpuText(bitmapText: Text)
+    public initGpuText(bitmapText: BitmapText)
     {
         // TODO we could keep a bunch of contexts around and reuse one that hav the same style!
         const proxyRenderable = BigPool.get(Graphics);
@@ -191,7 +191,7 @@ export class BitmapTextPipe implements RenderPipe<Text>
         return this._gpuBitmapText[bitmapText.uid];
     }
 
-    private _updateDistanceField(bitmapText: Text)
+    private _updateDistanceField(bitmapText: BitmapText)
     {
         const context = this._getGpuBitmapText(bitmapText).context;
 

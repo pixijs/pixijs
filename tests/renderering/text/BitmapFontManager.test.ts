@@ -1,5 +1,4 @@
 import { Cache } from '../../../src/assets/cache/Cache';
-import { detectRenderType } from '../../../src/scene/text/utils/detectRenderType';
 import { BitmapFontManager } from '../../../src/scene/text-bitmap/BitmapFontManager';
 
 import type { BitmapFont } from '../../../src/scene/text-bitmap/BitmapFont';
@@ -12,11 +11,9 @@ describe('BitmapFontManager', () =>
             fontFamily: 'Arial',
         }, { resolution: 2, chars: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' });
 
-        const type = detectRenderType({
-            fontFamily: 'cool-font',
-        });
+        const bitmapFont = Cache.get<BitmapFont>('cool-font-bitmap');
 
-        expect(type).toEqual('bitmap');
+        expect(bitmapFont).toBeDefined();
     });
 
     it('should uninstall and remove from Cache', () =>

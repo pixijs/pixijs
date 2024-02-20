@@ -38,34 +38,6 @@ export interface BitmapFontData
     };
 }
 
-export interface BitmapFontInstallOptions
-{
-    /**
-     * Characters included in the font set. You can also use ranges.
-     * For example, `[['a', 'z'], ['A', 'Z'], "!@#$%^&*()~{}[] "]`.
-     * Don't forget to include spaces ' ' in your character set!
-     * @default BitmapFont.ALPHANUMERIC
-     */
-    chars?: string | (string | string[])[];
-    /**
-     * Render resolution for glyphs.
-     * @default 1
-     */
-    resolution?: number;
-    /**
-     * Padding between glyphs on texture atlas. Lower values could mean more visual artifacts
-     * and bleeding from other glyphs, larger values increase the space required on the texture.
-     * @default 4
-     */
-    padding?: number;
-    /**
-     * Skip generation of kerning information for the BitmapFont.
-     * If true, this could potentially increase the performance, but may impact the rendered text appearance.
-     * @default false
-     */
-    skipKerning?: boolean;
-}
-
 interface BitmapFontEvents<Type>
 {
     destroy: [Type];

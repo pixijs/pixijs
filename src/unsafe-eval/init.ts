@@ -2,6 +2,7 @@ import { GlUboSystem } from '../rendering/renderers/gl/GlUboSystem';
 import { GlShaderSystem } from '../rendering/renderers/gl/shader/GlShaderSystem';
 import { GlUniformGroupSystem } from '../rendering/renderers/gl/shader/GlUniformGroupSystem';
 import { GpuUboSystem } from '../rendering/renderers/gpu/GpuUboSystem';
+import { UboSystem } from '../rendering/renderers/shared/shader/UboSystem';
 import { AbstractRenderer } from '../rendering/renderers/shared/system/AbstractRenderer';
 import { generateShaderSyncPolyfill } from './shader/generateShaderSyncPolyfill';
 import {
@@ -20,6 +21,14 @@ function selfInstall()
         },
     });
 
+    Object.assign(UboSystem.prototype, {
+        // override unsafeEval check, as we don't need to use it
+        _systemCheck()
+        {
+            // Do nothing, don't throw error
+        },
+    });
+
     Object.assign(GlUniformGroupSystem.prototype, {
         // use polyfill which avoids eval method
         _generateUniformsSync: generateUniformsSyncPolyfill,
@@ -27,12 +36,12 @@ function selfInstall()
 
     Object.assign(GlUboSystem.prototype, {
         // use polyfill which avoids eval method
-        _generateUniformBufferSync: generateUboSyncPolyfillSTD40,
+        _generateUboSync: generateUboSyncPolyfillSTD40,
     });
 
     Object.assign(GpuUboSystem.prototype, {
         // use polyfill which avoids eval method
-        _generateUniformBufferSync: generateUboSyncPolyfillWGSL,
+        _generateUboSync: generateUboSyncPolyfillWGSL,
     });
 
     Object.assign(GlShaderSystem.prototype, {

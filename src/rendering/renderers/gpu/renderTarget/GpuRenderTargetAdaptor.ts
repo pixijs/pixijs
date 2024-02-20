@@ -75,9 +75,9 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
         // TODO we should not finish a render pass each time we bind
         // for example filters - we would want to push / pop render targets
+        this._renderer.pipeline.setRenderTarget(gpuRenderTarget);
         this._renderer.encoder.beginRenderPass(gpuRenderTarget);
         this._renderer.encoder.setViewport(viewport);
-        this._renderer.pipeline.setMultisampleCount(gpuRenderTarget.msaaSamples);
     }
 
     public finishRenderPass()
@@ -165,18 +165,30 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
             }
         ) as GPURenderPassColorAttachment[];
 
-        let depthStencilAttachment;
+        let depthStencilAttachment: GPURenderPassDepthStencilAttachment;
 
-        if (renderTarget.depthTexture)
+        // if we have a depth or stencil buffer, we need to ensure we have a texture for it
+        // this is WebGPU specific - as WebGL does not require textures to run a depth / stencil buffer
+        if ((renderTarget.stencil || renderTarget.depth) && !renderTarget.depthStencilTexture)
+        {
+            renderTarget.ensureDepthStencilTexture();
+            renderTarget.depthStencilTexture.source.sampleCount = gpuRenderTarget.msaa ? 4 : 1;
+        }
+
+        if (renderTarget.depthStencilTexture)
         {
             const stencilLoadOp = (clear & CLEAR.STENCIL ? 'clear' : 'load') as GPULoadOp;
+            const depthLoadOp = (clear & CLEAR.DEPTH ? 'clear' : 'load') as GPULoadOp;
 
             depthStencilAttachment = {
                 view: this._renderer.texture
-                    .getGpuSource(renderTarget.depthTexture.source)
+                    .getGpuSource(renderTarget.depthStencilTexture.source)
                     .createView(),
-                stencilStoreOp: 'store' as GPUStoreOp,
+                stencilStoreOp: 'store',
                 stencilLoadOp,
+                depthClearValue: 1.0,
+                depthLoadOp,
+                depthStoreOp: 'store',
             };
         }
 
@@ -277,13 +289,24 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         {
             gpuRenderTarget.msaaSamples = 4;
 
-            if (renderTarget.depthTexture)
+            if (renderTarget.depthStencilTexture)
             {
-                renderTarget.depthTexture.source.sampleCount = 4;
+                renderTarget.depthStencilTexture.source.sampleCount = 4;
             }
         }
 
         return gpuRenderTarget;
+    }
+
+    public ensureDepthStencilTexture(renderTarget: RenderTarget)
+    {
+        // TODO This function will be more useful once we cache the descriptors
+        const gpuRenderTarget = this._renderTargetSystem.getGpuRenderTarget(renderTarget);
+
+        if (renderTarget.depthStencilTexture && gpuRenderTarget.msaa)
+        {
+            renderTarget.depthStencilTexture.source.sampleCount = 4;
+        }
     }
 
     public resizeGpuRenderTarget(renderTarget: RenderTarget)

@@ -22,7 +22,12 @@ describe('BitmapFont', () =>
 
             expect(Cache.has(key)).toBeFalse();
 
-            BitmapFontManager.install('foo', { fontFamily: 'Arial' });
+            BitmapFontManager.install({
+                name: 'foo',
+                style: {
+                    fontFamily: 'Arial'
+                }
+            });
 
             expect(Cache.has(key)).toBeTrue();
         });
@@ -38,7 +43,10 @@ describe('BitmapFont', () =>
 
         it('should draw all characters in a provided range', () =>
         {
-            const font = BitmapFontManager.install('foo', undefined, { chars: [['a', 'z']] });
+            const font = BitmapFontManager.install({
+                name: 'foo',
+                chars: [['a', 'z']]
+            });
 
             expect(Object.keys(font.chars).length).toEqual(26);
         });

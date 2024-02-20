@@ -112,7 +112,7 @@ export interface TextStyleOptions
      * @type {'alphabetic'|'top'|'hanging'|'middle'|'ideographic'|'bottom'}
      */
     textBaseline?: TextStyleTextBaseline;
-    trim?: false,
+    trim?: boolean,
     /**
      * Determines whether newlines & spaces are collapsed or preserved "normal"
      * (collapse, collapse), "pre" (preserve, preserve) | "pre-line" (preserve,
@@ -392,7 +392,10 @@ export class TextStyle extends EventEmitter<{
         if (value === this._originalFill) return;
 
         this._originalFill = value;
-        this._fill = convertFillInputToFillStyle(value, GraphicsContext.defaultFillStyle);
+        this._fill = convertFillInputToFillStyle(
+            value === 0x0 ? 'black' : value,
+            GraphicsContext.defaultFillStyle
+        );
         this.update();
     }
 

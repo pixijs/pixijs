@@ -145,20 +145,22 @@ export class GlBufferSystem implements System
 
         gl.bindBuffer(glBuffer.type, glBuffer.buffer);
 
+        const data = buffer.data;
+
         if (glBuffer.byteLength >= buffer.data.byteLength)
         {
             // assuming our buffers are aligned to 4 bits...
             // offset is always zero for now!
-            gl.bufferSubData(glBuffer.type, 0, buffer.data, 0, buffer._updateSize / 4);
+            gl.bufferSubData(glBuffer.type, 0, data, 0, buffer._updateSize / data.BYTES_PER_ELEMENT);
         }
         else
         {
             const drawType = (buffer.descriptor.usage & BufferUsage.STATIC) ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW;
 
-            glBuffer.byteLength = buffer.data.byteLength;
+            glBuffer.byteLength = data.byteLength;
 
             // assuming our buffers are aligned to 4 bits...
-            gl.bufferData(glBuffer.type, buffer.data, drawType);
+            gl.bufferData(glBuffer.type, data, drawType);
         }
 
         return glBuffer;

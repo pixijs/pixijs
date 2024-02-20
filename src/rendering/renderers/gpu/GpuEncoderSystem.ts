@@ -119,6 +119,11 @@ export class GpuEncoderSystem implements System
         this.renderPassEncoder.setIndexBuffer(this._renderer.buffer.updateBuffer(buffer), indexFormat);
     }
 
+    public resetBindGroup(index: number)
+    {
+        this._boundBindGroup[index] = null;
+    }
+
     public setBindGroup(index: number, bindGroup: BindGroup, program: GpuProgram)
     {
         if (this._boundBindGroup[index] === bindGroup) return;

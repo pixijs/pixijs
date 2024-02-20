@@ -1,5 +1,6 @@
 import { Assets } from '../../../../src/assets/Assets';
 import { Text } from '../../../../src/scene/text/Text';
+import { BitmapText } from '../../../../src/scene/text-bitmap/BitmapText';
 
 import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
@@ -24,10 +25,9 @@ export const scene: TestScene = {
                     width: 4,
                 }
             },
-            renderMode: 'canvas',
         });
 
-        const textBitmap = new Text({
+        const textBitmap = new BitmapText({
             text: 'Canvas',
             style: {
                 fontFamily: 'Outfit',
@@ -39,7 +39,6 @@ export const scene: TestScene = {
                 }
             },
             y: 30,
-            renderMode: 'bitmap',
         });
 
         scene.addChild(textCanvas);

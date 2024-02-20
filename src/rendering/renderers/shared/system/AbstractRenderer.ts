@@ -200,10 +200,10 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
             }
         }
 
-        options.target ||= this.view.texture;
+        options.target ||= this.view.renderTarget;
 
         // TODO: we should eventually fix events so that it can handle multiple canvas elements
-        if (options.target === this.view.texture)
+        if (options.target === this.view.renderTarget)
         {
             // TODO get rid of this
             this._lastObjectRendered = options.container;
@@ -243,14 +243,14 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
 
     public clear(options: ClearOptions = {}): void
     {
-        options.target ||= this.view.texture;
+        // override!
+        const renderer = this as unknown as Renderer;
+
+        options.target ||= renderer.renderTarget.renderTarget;
         options.clearColor ||= this.background.colorRgba;
         options.clear ??= CLEAR.ALL;
 
         const { clear, clearColor, target } = options;
-
-        // override!
-        const renderer = this as unknown as Renderer;
 
         Color.shared.setValue(clearColor ?? this.background.colorRgba);
 
