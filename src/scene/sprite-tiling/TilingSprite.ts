@@ -162,7 +162,9 @@ export class TilingSprite extends Container implements View, Instruction
 
         if (args.length > 1)
         {
+            // #if _DEBUG
             deprecation(v8_0_0, 'use new TilingSprite({ texture, width:100, height:100 }) instead');
+            // #endif
 
             options.width = args[1];
             options.height = args[2];

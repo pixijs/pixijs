@@ -35,13 +35,17 @@ export const findMixin: Partial<Container> = {
      */
     get name(): string
     {
+        // #if _DEBUG
         deprecation(v8_0_0, 'Container.name property has been removed, use Container.label instead');
+        // #endif
 
         return this.label;
     },
     set name(value: string)
     {
+        // #if _DEBUG
         deprecation(v8_0_0, 'Container.name property has been removed, use Container.label instead');
+        // #endif
 
         this.label = value;
     },

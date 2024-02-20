@@ -591,10 +591,12 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
      */
     public addChild<U extends Container[]>(...children: U): U[0]
     {
+        // #if _DEBUG
         if (!this.allowChildren)
         {
             deprecation(v8_0_0, 'addChild: Only Containers will be allowed to add children in v8.0.0');
         }
+        // #endif
 
         if (children.length > 1)
         {
