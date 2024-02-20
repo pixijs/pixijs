@@ -5,7 +5,6 @@ import { Container } from '../container/Container';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
-import type { PointLike } from '../../maths/point/PointLike';
 import type { TextureSourceLike } from '../../rendering/renderers/shared/texture/Texture';
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Bounds, BoundsData } from '../container/bounds/Bounds';
@@ -22,7 +21,7 @@ export interface SpriteOptions extends ContainerOptions
     /** The texture to use for the sprite. */
     texture?: Texture;
     /** The anchor point of the sprite. */
-    anchor?: PointData
+    anchor?: PointData | number;
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
@@ -113,10 +112,9 @@ export class Sprite extends Container implements View
                     this.onViewUpdate();
                 }
             },
-            anchor?.x ?? texture.defaultAnchor?.x ?? 0,
-            anchor?.y ?? texture.defaultAnchor?.y ?? 0,
         );
 
+        if (anchor) this.anchor = anchor;
         this.texture = texture;
         this.allowChildren = false;
         this.roundPixels = roundPixels ?? false;
@@ -270,15 +268,14 @@ export class Sprite extends Container implements View
      * const sprite = new Sprite({texture: Texture.WHITE});
      * sprite.anchor.set(0.5); // This will set the origin to center. (0.5) is same as (0.5, 0.5).
      */
-    get anchor(): PointLike
+    get anchor(): ObservablePoint
     {
         return this._anchor;
     }
 
-    set anchor(value: PointData)
+    set anchor(value: PointData | number)
     {
-        this._anchor.x = value.x;
-        this._anchor.y = value.y;
+        typeof value === 'number' ? this._anchor.set(value) : this._anchor.copyFrom(value);
     }
 
     /** Whether or not to round the x/y position of the sprite. */

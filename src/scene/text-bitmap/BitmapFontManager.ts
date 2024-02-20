@@ -177,8 +177,10 @@ class BitmapFontManagerClass
                 skipKerning: args[2]?.skipKerning,
             } as BitmapFontInstallOptions;
 
+            // #if _DEBUG
             // eslint-disable-next-line max-len
             deprecation(v8_0_0, 'BitmapFontManager.install(name, style, options) is deprecated, use BitmapFontManager.install({name, style, ...options})');
+            // #endif
         }
 
         const name = options?.name;

@@ -5,7 +5,7 @@ import { ExtensionType } from '../../extensions/Extensions';
 import type { ResolveURLParser } from '../../assets/resolver/types';
 import type { UnresolvedAsset } from '../../assets/types';
 
-export const validFormats = ['basis', 'etc2', 'bc7', 'bc6h', 'bc5', 'bc4', 'bc3', 'bc2', 'bc1', 'eac', 'astc'];
+export const validFormats = ['basis', 'bc7', 'bc6h', 'astc', 'etc2', 'bc5', 'bc4', 'bc3', 'bc2', 'bc1', 'eac'];
 
 export const resolveCompressedTextureUrl = {
     extension: ExtensionType.ResolveParser,
@@ -21,9 +21,10 @@ export const resolveCompressedTextureUrl = {
         {
             const newFormat = splitValue[splitValue.length - 2];
 
-            validFormats.includes(newFormat);
-
-            format = newFormat;
+            if (validFormats.includes(newFormat))
+            {
+                format = newFormat;
+            }
         }
         else
         {

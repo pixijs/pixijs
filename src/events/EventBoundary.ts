@@ -816,7 +816,6 @@ export class EventBoundary
         const allMethods: string[] = [];
         const allowGlobalPointerEvents = this.enableGlobalMoveEvents ?? true;
 
-        /* eslint-disable @typescript-eslint/no-unused-expressions */
         this.moveOnAll ? allMethods.push('pointermove') : this.dispatchEvent(e, 'pointermove');
         allowGlobalPointerEvents && allMethods.push('globalpointermove');
 
@@ -840,7 +839,6 @@ export class EventBoundary
         }
         this._allInteractiveElements.length = 0;
         this._hitElements.length = 0;
-        /* eslint-enable @typescript-eslint/no-unused-expressions */
 
         trackingData.overTargets = e.composedPath();
 
