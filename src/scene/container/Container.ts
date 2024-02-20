@@ -18,7 +18,6 @@ import { assignWithIgnore } from './utils/assignWithIgnore';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
-import type { PointLike } from '../../maths/point/PointLike';
 import type { Rectangle } from '../../maths/shapes/Rectangle';
 import type { BLEND_MODES } from '../../rendering/renderers/shared/state/const';
 import type { Dict } from '../../utils/types';
@@ -130,9 +129,9 @@ export interface ContainerOptions extends PixiMixins.ContainerOptions
     /** @see scene.Container#rotation */
     rotation?: number;
     /** @see scene.Container#scale */
-    scale?: PointData;
+    scale?: PointData | number;
     /** @see scene.Container#pivot */
-    pivot?: PointData;
+    pivot?: PointData | number;
     /** @see scene.Container#position */
     position?: PointData;
     /** @see scene.Container#skew */
@@ -865,7 +864,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
      * The coordinate of the object relative to the local coordinates of the parent.
      * @since 4.0.0
      */
-    get position(): PointLike
+    get position(): ObservablePoint
     {
         return this._position;
     }
@@ -914,7 +913,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
      * By default, the pivot is the origin (0, 0).
      * @since 4.0.0
      */
-    get pivot(): PointLike
+    get pivot(): ObservablePoint
     {
         if (this._pivot === defaultPivot)
         {
@@ -924,21 +923,21 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
         return this._pivot;
     }
 
-    set pivot(value: PointData)
+    set pivot(value: PointData | number)
     {
         if (this._pivot === defaultPivot)
         {
             this._pivot = new ObservablePoint(this, 0, 0);
         }
 
-        this._pivot.copyFrom(value);
+        typeof value === 'number' ? this._pivot.set(value) : this._pivot.copyFrom(value);
     }
 
     /**
      * The skew factor for the object in radians.
      * @since 4.0.0
      */
-    get skew(): PointLike
+    get skew(): ObservablePoint
     {
         if (this._skew === defaultSkew)
         {
@@ -948,13 +947,23 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
         return this._skew;
     }
 
+    set skew(value: PointData)
+    {
+        if (this._skew === defaultSkew)
+        {
+            this._skew = new ObservablePoint(this, 0, 0);
+        }
+
+        this._skew.copyFrom(value);
+    }
+
     /**
      * The scale factors of this object along the local coordinate axes.
      *
      * The default scale is (1, 1).
      * @since 4.0.0
      */
-    get scale(): PointLike
+    get scale(): ObservablePoint
     {
         if (this._scale === defaultScale)
         {
@@ -964,14 +973,14 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
         return this._scale;
     }
 
-    set scale(value: PointData)
+    set scale(value: PointData | number)
     {
         if (this._scale === defaultScale)
         {
             this._scale = new ObservablePoint(this, 0, 0);
         }
 
-        this._scale.copyFrom(value);
+        typeof value === 'number' ? this._scale.set(value) : this._scale.copyFrom(value);
     }
 
     /**
