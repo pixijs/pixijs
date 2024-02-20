@@ -535,7 +535,9 @@ function convertV7Tov8Style(style: TextStyleOptions)
 
     if (oldStyle.strokeThickness)
     {
+        // #if _DEBUG
         deprecation(v8_0_0, 'strokeThickness is now a part of stroke');
+        // #endif
 
         const color = oldStyle.stroke;
 
@@ -547,7 +549,9 @@ function convertV7Tov8Style(style: TextStyleOptions)
 
     if (Array.isArray(oldStyle.fill))
     {
+        // #if _DEBUG
         deprecation(v8_0_0, 'gradient fill is now a fill pattern: `new FillGradient(...)`');
+        // #endif
 
         const gradientFill = new FillGradient(0, 0, 0, (style.fontSize as number) * 1.7);
 

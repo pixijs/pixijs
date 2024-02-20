@@ -37,7 +37,9 @@ export class MeshGeometry extends Geometry
 
         if (options instanceof Float32Array)
         {
+            // #if _DEBUG
             deprecation(v8_0_0, 'use new MeshGeometry({ positions, uvs, indices }) instead');
+            // #endif
 
             options = {
                 positions: options,

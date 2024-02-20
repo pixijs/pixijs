@@ -5,7 +5,6 @@ import { Container } from '../container/Container';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
-import type { PointLike } from '../../maths/point/PointLike';
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { ContainerOptions } from '../container/Container';
 import type { Optional } from '../container/container-mixins/measureMixin';
@@ -37,7 +36,7 @@ export interface TextOptions<
 > extends ContainerOptions
 {
     /** The anchor point of the text. */
-    anchor?: PointData,
+    anchor?: PointData | number;
     /** The copy for the text object. To split a line you can use '\n'. */
     text?: TextString;
     /** The resolution of the text. */
@@ -102,10 +101,9 @@ export abstract class AbstractText<
                     this.onViewUpdate();
                 },
             },
-            anchor?.x ?? 0,
-            anchor?.y ?? 0
         );
 
+        if (anchor) this.anchor = anchor;
         this.roundPixels = roundPixels ?? false;
     }
 
@@ -124,15 +122,14 @@ export abstract class AbstractText<
      * const text = new Text('hello world');
      * text.anchor.set(0.5); // This will set the origin to center. (0.5) is same as (0.5, 0.5).
      */
-    get anchor(): PointLike
+    get anchor(): ObservablePoint
     {
         return this._anchor;
     }
 
-    set anchor(value: PointData)
+    set anchor(value: PointData | number)
     {
-        this._anchor.x = value.x;
-        this._anchor.y = value.y;
+        typeof value === 'number' ? this._anchor.set(value) : this._anchor.copyFrom(value);
     }
 
     /** Whether or not to round the x/y position of the sprite. */
@@ -361,7 +358,9 @@ export function ensureOptions<
     // @deprecated
     if (typeof options === 'string' || args[1])
     {
+        // #if _DEBUG
         deprecation(v8_0_0, `use new ${name}({ text: "hi!", style }) instead`);
+        // #endif
 
         options = {
             text: options,

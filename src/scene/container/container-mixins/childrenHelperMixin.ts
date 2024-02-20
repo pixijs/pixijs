@@ -144,10 +144,12 @@ export const childrenHelperMixin: Partial<Container> = {
      */
     addChildAt<U extends Container>(child: U, index: number): U
     {
+        // #if _DEBUG
         if (!this.allowChildren)
         {
             deprecation(v8_0_0, 'addChildAt: Only Containers will be allowed to add children in v8.0.0');
         }
+        // #endif
 
         const { children } = this;
 

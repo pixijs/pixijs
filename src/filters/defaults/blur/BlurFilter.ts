@@ -72,8 +72,10 @@ export class BlurFilter extends Filter
         // if options is a number)
         if (typeof options === 'number')
         {
+            // #if _DEBUG
             // eslint-disable-next-line max-len
             deprecation(v8_0_0, 'BlurFilter constructor params are now options object. See params: { strength, quality, resolution, kernelSize }');
+            // #endif
 
             options = { strength: options };
 
