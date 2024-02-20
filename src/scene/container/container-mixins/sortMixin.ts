@@ -8,7 +8,7 @@ export interface SortMixinConstructor
 }
 export interface SortMixin extends Required<SortMixinConstructor>
 {
-    _zIndex: 0;
+    _zIndex: number;
 
     sortChildren: () => void;
     depthOfChildModified: () => void;
@@ -53,7 +53,7 @@ export const sortMixin: Partial<Container> = {
         return this._zIndex;
     },
 
-    set zIndex(value)
+    set zIndex(value: number)
     {
         if (this._zIndex === value) return;
 
