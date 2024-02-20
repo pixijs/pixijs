@@ -250,9 +250,9 @@ export class RenderGroup implements Instruction
 
     public runOnRender()
     {
-        this._onRenderContainers.forEach((container) =>
+        for (let i = 0; i < this._onRenderContainers.length; i++)
         {
-            container._onRender();
-        });
+            this._onRenderContainers[i]._onRender();
+        }
     }
 }
