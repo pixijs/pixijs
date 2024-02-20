@@ -75,7 +75,9 @@ export abstract class AbstractBitmapFont<FontType>
      */
     public get font(): BitmapFontData['fontFamily']
     {
+        // #if _DEBUG
         deprecation(v8_0_0, 'BitmapFont.font is deprecated, please use BitmapFont.fontFamily instead.');
+        // #endif
 
         return this.fontFamily;
     }
@@ -83,7 +85,9 @@ export abstract class AbstractBitmapFont<FontType>
     /** @deprecated since 8.0.0 */
     public get pageTextures(): AbstractBitmapFont<FontType>['pages']
     {
+        // #if _DEBUG
         deprecation(v8_0_0, 'BitmapFont.pageTextures is deprecated, please use BitmapFont.pages instead.');
+        // #endif
 
         return this.pages;
     }
@@ -94,7 +98,9 @@ export abstract class AbstractBitmapFont<FontType>
      */
     public get size(): BitmapFontData['fontSize']
     {
+        // #if _DEBUG
         deprecation(v8_0_0, 'BitmapFont.size is deprecated, please use BitmapFont.fontMetrics.fontSize instead.');
+        // #endif
 
         return this.fontMetrics.fontSize;
     }
@@ -105,8 +111,10 @@ export abstract class AbstractBitmapFont<FontType>
      */
     public get distanceFieldRange(): BitmapFontData['distanceField']['range']
     {
+        // #if _DEBUG
         // eslint-disable-next-line max-len
         deprecation(v8_0_0, 'BitmapFont.distanceFieldRange is deprecated, please use BitmapFont.distanceField.range instead.');
+        // #endif
 
         return this.distanceField.range;
     }
@@ -117,8 +125,10 @@ export abstract class AbstractBitmapFont<FontType>
      */
     public get distanceFieldType(): BitmapFontData['distanceField']['type']
     {
+        // #if _DEBUG
         // eslint-disable-next-line max-len
         deprecation(v8_0_0, 'BitmapFont.distanceFieldType is deprecated, please use BitmapFont.distanceField.type instead.');
+        // #endif
 
         return this.distanceField.type;
     }

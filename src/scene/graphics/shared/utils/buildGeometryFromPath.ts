@@ -5,10 +5,10 @@ import { buildCircle } from '../buildCommands/buildCircle';
 import { buildPolygon } from '../buildCommands/buildPolygon';
 import { buildRectangle } from '../buildCommands/buildRectangle';
 import { buildTriangle } from '../buildCommands/buildTriangle';
+import { GraphicsPath } from '../path/GraphicsPath';
 
 import type { Matrix } from '../../../../maths/matrix/Matrix';
 import type { ShapeBuildCommand } from '../buildCommands/ShapeBuildCommand';
-import type { GraphicsPath } from '../path/GraphicsPath';
 
 const buildMap: Record<string, ShapeBuildCommand> = {
     rectangle: buildRectangle,
@@ -21,13 +21,43 @@ const buildMap: Record<string, ShapeBuildCommand> = {
 
 export interface GeometryPathOptions
 {
+    /** the path to build the geometry from */
     path: GraphicsPath
+    /** a `Matrix` that can be used to modify the the texture UVs of the the path being built */
     textureMatrix?: Matrix
-    out: MeshGeometry
+    /** an optional `MeshGeometry` to write too instead of creating a new one*/
+    out?: MeshGeometry
 }
 
-export function buildGeometryFromPath(options: GeometryPathOptions): MeshGeometry
+/**
+ * When building a mesh, it helps to leverage the simple API we have in `GraphicsPath` as it can often be easier to
+ * to define the geometry in a more human readable way. This function takes a `GraphicsPath` and returns a `MeshGeometry`.
+ * @example
+ * ```ts
+ *
+ * const path = new GraphicsPath()
+ *    .drawRect(0, 0, 100, 100)
+ *
+ * const geometry:MeshGeometry = buildGeometryFromPath(path);
+ *
+ * const mesh = new Mesh({geometry});
+ *
+ * ```
+ * You can also pass in a Matrix to transform the uvs as by defualt you may want to control how they are set up.
+ * @param options - either a `GraphicsPath` or `GeometryPathOptions`
+ * @returns a new `MeshGeometry` instance build from the path
+ */
+export function buildGeometryFromPath(options: GraphicsPath | GeometryPathOptions): MeshGeometry
 {
+    if (options instanceof GraphicsPath)
+    {
+        options = {
+            path: options,
+            textureMatrix: null,
+            out: null,
+        };
+    }
+
     const vertices: number[] = [];
     const uvs: number[] = [];
     const indices: number[] = [];

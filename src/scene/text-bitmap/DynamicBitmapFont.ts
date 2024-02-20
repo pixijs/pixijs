@@ -235,7 +235,9 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
      */
     public override get pageTextures(): DynamicBitmapFont['pages']
     {
+        // #if _DEBUG
         deprecation(v8_0_0, 'BitmapFont.pageTextures is deprecated, please use BitmapFont.pages instead.');
+        // #endif
 
         return this.pages;
     }

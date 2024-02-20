@@ -68,10 +68,10 @@ async function fetchBasisTexture(url: string, BasisTexture: BasisTextureConstruc
 }
 
 const preferredTranscodedFormat: Partial<TEXTURE_FORMATS>[] = [
-    'etc2-rgba8unorm',
     'bc7-rgba-unorm',
-    'bc3-rgba-unorm',
     'astc-4x4-unorm',
+    'etc2-rgba8unorm',
+    'bc3-rgba-unorm',
     'rgba8unorm',
 ];
 
