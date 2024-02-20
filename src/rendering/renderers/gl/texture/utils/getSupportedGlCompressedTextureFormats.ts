@@ -17,28 +17,38 @@ export function getSupportedGlCompressedTextureFormats(): TEXTURE_FORMATS[]
     supportedGLCompressedTextureFormats = [
         // BC compressed formats usable if "texture-compression-bc" is both
         // supported by the device/user agent and enabled in requestDevice.
+        // 'bc6h-rgb-ufloat'
+        // 'bc6h-rgb-float'
+        // 'bc7-rgba-unorm',
+        // 'bc7-rgba-unorm-srgb',
+        ...gl.getExtension('EXT_texture_compression_bptc') ? [
+            'bc6h-rgb-ufloat',
+            'bc6h-rgb-float',
+            'bc7-rgba-unorm',
+            'bc7-rgba-unorm-srgb',
+        ] : [],
+        // BC compressed formats usable if "texture-compression-bc" is both
+        // supported by the device/user agent and enabled in requestDevice.
         // 'bc1-rgba-unorm',
         // 'bc1-rgba-unorm-srgb',
         // 'bc4-r-unorm'
         // 'bc4-r-snorm'
         // 'bc5-rg-unorm'
         // 'bc5-rg-snorm'
-        // 'bc6h-rgb-ufloat'
-        // 'bc6h-rgb-float'
         ...gl.getExtension('WEBGL_compressed_texture_s3tc') ? [
+            'bc1-rgba-unorm',
             'bc2-rgba-unorm',
             'bc3-rgba-unorm',
-            'bc7-rgba-unorm'
         ] : [],
         ...gl.getExtension('WEBGL_compressed_texture_s3tc_srgb') ? [
+            'bc1-rgba-unorm-srgb',
             'bc2-rgba-unorm-srgb',
             'bc3-rgba-unorm-srgb',
-            'bc7-rgba-unorm-srgb'
         ] : [],
 
         // ETC2 compressed formats usable if "texture-compression-etc2" is both
         // supported by the device/user agent and enabled in requestDevice.
-        ...gl.getExtension('WEBGL_compressed_texture_astc') ? [
+        ...gl.getExtension('WEBGL_compressed_texture_etc') ? [
             'etc2-rgb8unorm',
             'etc2-rgb8unorm-srgb',
             'etc2-rgba8unorm',

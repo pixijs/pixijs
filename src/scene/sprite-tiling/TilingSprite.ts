@@ -6,7 +6,6 @@ import { Transform } from '../../utils/misc/Transform';
 import { Container } from '../container/Container';
 
 import type { PointData } from '../../maths/point/PointData';
-import type { PointLike } from '../../maths/point/PointLike';
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Bounds, BoundsData } from '../container/bounds/Bounds';
@@ -192,7 +191,7 @@ export class TilingSprite extends Container implements View, Instruction
 
         this.allowChildren = false;
 
-        this._anchor = new ObservablePoint(this, anchor.x, anchor.y);
+        this._anchor = new ObservablePoint(this);
 
         this._applyAnchorToTexture = applyAnchorToTexture;
 
@@ -206,9 +205,10 @@ export class TilingSprite extends Container implements View, Instruction
             }
         });
 
-        this._tileTransform.position.copyFrom(tilePosition);
-        this._tileTransform.scale.copyFrom(tileScale);
-        this._tileTransform.rotation = tileRotation;
+        if (anchor) this.anchor = anchor;
+        this.tilePosition = tilePosition;
+        this.tileScale = tileScale;
+        this.tileRotation = tileRotation;
 
         this.roundPixels = roundPixels ?? false;
     }
@@ -246,19 +246,18 @@ export class TilingSprite extends Container implements View, Instruction
      * const sprite = new TilingSprite({texture: Texture.WHITE});
      * sprite.anchor.set(0.5); // This will set the origin to center. (0.5) is same as (0.5, 0.5).
      */
-    get anchor(): PointLike
+    get anchor(): ObservablePoint
     {
         return this._anchor;
     }
 
-    set anchor(value: PointData)
+    set anchor(value: PointData | number)
     {
-        this._anchor.x = value.x;
-        this._anchor.y = value.y;
+        typeof value === 'number' ? this._anchor.set(value) : this._anchor.copyFrom(value);
     }
 
     /** The offset of the image that is being tiled. */
-    get tilePosition(): PointLike
+    get tilePosition(): ObservablePoint
     {
         return this._tileTransform.position;
     }
@@ -269,14 +268,14 @@ export class TilingSprite extends Container implements View, Instruction
     }
 
     /** The scaling of the image that is being tiled. */
-    get tileScale(): PointLike
+    get tileScale(): ObservablePoint
     {
         return this._tileTransform.scale;
     }
 
-    set tileScale(value: PointData)
+    set tileScale(value: PointData | number)
     {
-        this._tileTransform.scale.copyFrom(value);
+        typeof value === 'number' ? this._tileTransform.scale.set(value) : this._tileTransform.scale.copyFrom(value);
     }
 
     set tileRotation(value)
