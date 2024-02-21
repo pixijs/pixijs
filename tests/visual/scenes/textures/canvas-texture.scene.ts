@@ -6,7 +6,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should not clear a canvas after it has been resized',
-    only: true,
     create: async (scene: Container) =>
     {
         const rect = new Graphics({
