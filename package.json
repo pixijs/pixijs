@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "8.0.0-rc.9",
+  "version": "8.0.0-rc.10",
   "author": "PixiJS Team",
   "main": "lib/index.js",
   "module": "lib/index.mjs",
@@ -39,7 +39,7 @@
     "docs": "mkdirp out && npm run docs:webdoc",
     "docs:webdoc": "webdoc -R README.md",
     "docs:watch": "nodemon --watch \"./src/*\" --exec \"npm run docs\" -e ts",
-    "lint": "eslint --ext .js --ext .ts ./ --max-warnings 0",
+    "lint": "eslint --ext .js --ext .ts ./ --cache --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "codesandbox-ci": "run-s build",
     "prerelease": "run-s clean:build test dist",
@@ -52,9 +52,7 @@
     }
   },
   "lint-staged": {
-    "*.{ts,js,mjs}": [
-      "eslint --ext .js --ext .ts ./ --cache --fix --max-warnings 0"
-    ]
+    "*.{ts,js,mjs}": "npm run lint --"
   },
   "dependencies": {
     "@pixi/colord": "^2.9.6",

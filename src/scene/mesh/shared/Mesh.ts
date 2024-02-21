@@ -104,7 +104,9 @@ export class Mesh<
 
         if (options instanceof Geometry)
         {
+            // #if _DEBUG
             deprecation(v8_0_0, 'Mesh: use new Mesh({ geometry, shader }) instead');
+            // #endif
 
             options = {
                 geometry: options,
@@ -113,7 +115,10 @@ export class Mesh<
 
             if (args[3])
             {
+                // #if _DEBUG
                 deprecation(v8_0_0, 'Mesh: drawMode argument has been removed, use geometry.topology instead');
+                // #endif
+
                 options.geometry.topology = args[3];
             }
         }
@@ -151,7 +156,9 @@ export class Mesh<
     /** Alias for {@link scene.Mesh#shader}. */
     get material()
     {
+        // #if _DEBUG
         deprecation(v8_0_0, 'mesh.material property has been removed, use mesh.shader instead');
+        // #endif
 
         return this._shader;
     }

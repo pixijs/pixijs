@@ -1,6 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import { uid } from '../../../../utils/data/uid';
-import { deprecation } from '../../../../utils/logging/deprecation';
+import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 
 import type { BindResource } from '../../gpu/shader/BindResource';
 import type { COMPARE_FUNCTION, SCALE_MODE, WRAP_MODE } from './const';
@@ -160,7 +160,10 @@ export class TextureStyle extends EventEmitter<{
 
     set wrapMode(value: WRAP_MODE)
     {
-        deprecation('8', 'TextureStyle.wrapMode is now TextureStyle.addressMode');
+        // #if _DEBUG
+        deprecation(v8_0_0, 'TextureStyle.wrapMode is now TextureStyle.addressMode');
+        // #endif
+
         this.addressMode = value;
     }
 

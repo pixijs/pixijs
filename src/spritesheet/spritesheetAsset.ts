@@ -21,7 +21,8 @@ export interface SpriteSheetJson extends SpritesheetData
     };
 }
 
-const validImages = ['jpg', 'png', 'jpeg', 'avif', 'webp'];
+const validImages = ['jpg', 'png', 'jpeg', 'avif', 'webp',
+    'basis', 'etc2', 'bc7', 'bc6h', 'bc5', 'bc4', 'bc3', 'bc2', 'bc1', 'eac', 'astc'];
 
 function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack: boolean)
 {

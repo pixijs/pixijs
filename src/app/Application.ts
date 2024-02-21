@@ -88,7 +88,7 @@ export interface Application extends PixiMixins.Application { }
  * // Create the application
  * const app = new Application();
  *
- * await app.init();
+ * await app.init({ width: 800, height: 600 });
  *
  * // Add the view to the DOM
  * document.body.appendChild(app.canvas);
@@ -117,18 +117,30 @@ export class Application<R extends Renderer = Renderer>
      */
     public renderer: R;
 
+    /** Create new Application instance */
+    constructor();
+
+    /** @deprecated since 8.0.0 */
+    constructor(options?: Partial<ApplicationOptions>);
+
+    /** @ignore */
+    constructor(...args: [Partial<ApplicationOptions>] | [])
+    {
+        // #if _DEBUG
+        if (args[0] !== undefined)
+        {
+            deprecation(v8_0_0, 'Application constructor options are deprecated, please use Application.init() instead.');
+        }
+        // #endif
+    }
+
     /**
      * @param options - The optional application and renderer parameters.
      */
     public async init(options?: Partial<ApplicationOptions>)
     {
         // The default options
-        options = {
-            ...{
-                // forceCanvas: false,
-            },
-            ...options,
-        };
+        options = { ...options };
 
         this.renderer = await autoDetectRenderer(options as ApplicationOptions) as R;
 
@@ -161,7 +173,7 @@ export class Application<R extends Renderer = Renderer>
     get view(): R['canvas']
     {
         // #if _DEBUG
-        deprecation(v8_0_0, '[Application] Application.view is deprecated, please use Application.canvas instead.');
+        deprecation(v8_0_0, 'Application.view is deprecated, please use Application.canvas instead.');
         // #endif
 
         return this.renderer.canvas as R['canvas'];

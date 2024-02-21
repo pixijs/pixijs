@@ -204,5 +204,18 @@ describe('Text', () =>
 
             expect(text.text).toEqual('');
         });
+
+        it('should set width and height on the constructor', () =>
+        {
+            const text = new Text({
+                text: 'food is so tasty',
+                width: 100,
+                height: 100,
+            });
+
+            // answer locally is 99.999999999999 which is acceptable!
+            expect(text.width).toEqual(100);
+            expect(text.height).toEqual(100);
+        });
     });
 });
