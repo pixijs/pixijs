@@ -416,7 +416,7 @@ export class GeometrySystem implements ISystem
                     buf.refCount--;
                     if (buf.refCount === 0 && !contextLost)
                     {
-                        bufferSystem.dispose(buffers[i], contextLost);
+                        bufferSystem.disposeBuffer(buffers[i], contextLost);
                     }
                 }
             }

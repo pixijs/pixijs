@@ -159,7 +159,7 @@ export class TransformFeedbackSystem implements ISystem
                     buf.refCount--;
                     if (buf.refCount === 0 && !contextLost)
                     {
-                        bufferSystem.dispose(buffer, contextLost);
+                        bufferSystem.disposeBuffer(buffer, contextLost);
                     }
                 }
             }
