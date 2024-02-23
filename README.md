@@ -83,7 +83,7 @@ Or via unpkg:
 
 ### Demos ###
 
-- [Filters Demo](https://pixijs.io/filters/tools/demo/)
+- [Filters Demo](https://pixijs.io/filters/examples/)
 - [Run Pixie Run](http://work.goodboydigital.com/runpixierun/)
 - [Bunny Demo](http://www.goodboydigital.com/pixijs/bunnymark)
 - [Storm Brewing](http://www.goodboydigital.com/pixijs/storm)
@@ -91,11 +91,6 @@ Or via unpkg:
 - [Primitives Demo](http://www.goodboydigital.com/pixijs/examples/13)
 - [Masking Demo](http://www.goodboydigital.com/pixijs/examples/14)
 - [Interaction Demo](http://www.goodboydigital.com/pixijs/examples/6)
-- [photonstorm's Balls Demo](http://gametest.mobi/pixi/balls)
-- [photonstorm's Morph Demo](http://gametest.mobi/pixi/morph)
-
-Thanks to [@photonstorm](https://twitter.com/photonstorm) for providing
-those last 2 examples and allowing us to share the source code :)
 
 ### Contribute ###
 
