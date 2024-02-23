@@ -125,6 +125,8 @@ export function mapFormatToGlInternalFormat(
         ...extensions.astc ? {
             'astc-4x4-unorm': extensions.astc.COMPRESSED_RGBA_ASTC_4x4_KHR,
             'astc-4x4-unorm-srgb': extensions.astc.COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR,
+            'astc-5x4-unorm': extensions.astc.COMPRESSED_RGBA_ASTC_5x4_KHR,
+            'astc-5x4-unorm-srgb': extensions.astc.COMPRESSED_SRGB8_ALPHA8_ASTC_5x4_KHR,
             'astc-5x5-unorm': extensions.astc.COMPRESSED_RGBA_ASTC_5x5_KHR,
             'astc-5x5-unorm-srgb': extensions.astc.COMPRESSED_SRGB8_ALPHA8_ASTC_5x5_KHR,
             'astc-6x5-unorm': extensions.astc.COMPRESSED_RGBA_ASTC_6x5_KHR,
