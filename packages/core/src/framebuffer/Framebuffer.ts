@@ -44,7 +44,7 @@ export class Framebuffer
     depthTexture: BaseTexture;
     colorTextures: Array<BaseTexture>;
     glFramebuffers: {[key: string]: GLFramebuffer};
-    disposeRunner: Runner;
+    disposeRunner: Runner<'disposeFramebuffer', [framebuffer: Framebuffer, contextLost?: boolean]>;
 
     /**
      * @param width - Width of the frame buffer

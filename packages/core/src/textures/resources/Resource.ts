@@ -42,14 +42,15 @@ export abstract class Resource
      * @member {Runner}
      * @private
      */
-    protected onResize: Runner; // TODO: Should this be private? It doesn't seem to be used anywhere else.
+    // TODO: Should this be private? It doesn't seem to be used anywhere else.
+    protected onResize: Runner<'setRealSize', [width: number, height: number]>;
 
     /**
      * Mini-runner for handling update events
      * @member {Runner}
      * @private
      */
-    protected onUpdate: Runner;
+    protected onUpdate: Runner<'update', []>;
 
     /**
      * Handle internal errors, such as loading errors
@@ -57,7 +58,7 @@ export abstract class Resource
      * @member {Runner}
      * @private
      */
-    protected onError: Runner;
+    protected onError: Runner<'onError', [error: any]>;
 
     /**
      * @param width - Width of the resource

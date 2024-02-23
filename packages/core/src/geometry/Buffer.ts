@@ -53,7 +53,7 @@ export class Buffer
 
     public static: boolean;
     public id: number;
-    disposeRunner: Runner;
+    disposeRunner: Runner<'disposeBuffer', [buffer: Buffer, contextLost?: boolean]>;
 
     /**
      * A map of renderer IDs to webgl buffer

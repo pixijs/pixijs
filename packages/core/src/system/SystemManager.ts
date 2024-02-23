@@ -19,7 +19,7 @@ interface ISystemConfig<R>
 export class SystemManager<R=IRenderer> extends EventEmitter
 {
     /** a collection of runners defined by the user */
-    readonly runners: {[key: string]: Runner} = {};
+    readonly runners: {[key: string]: Runner<string, any[]>} = {};
 
     private _systemsHash: Record<string, ISystem> = {};
 
@@ -123,7 +123,7 @@ export class SystemManager<R=IRenderer> extends EventEmitter
      * @param runner - the runner to target
      * @param options - key value options for each system
      */
-    emitWithCustomOptions(runner: Runner, options: Record<string, unknown>): void
+    emitWithCustomOptions(runner: Runner<string, any[]>, options: Record<string, unknown>): void
     {
         const systemHashKeys = Object.keys(this._systemsHash);
 

@@ -14,7 +14,7 @@ export class TransformFeedback
 
     buffers: Buffer[];
 
-    disposeRunner: Runner;
+    disposeRunner: Runner<'disposeTransformFeedback', [tf: TransformFeedback, contextLost?: boolean]>;
 
     constructor()
     {
