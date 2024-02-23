@@ -89,24 +89,25 @@ export function mapFormatToGlInternalFormat(
         'depth32float-stencil8': gl.DEPTH32F_STENCIL8,
 
         // Compressed formats
-        // 'bc1-rgba-unorm',
-        // 'bc1-rgba-unorm-srgb',
         ...extensions.s3tc ? {
+            'bc1-rgba-unorm': extensions.s3tc.COMPRESSED_RGBA_S3TC_DXT1_EXT,
             'bc2-rgba-unorm': extensions.s3tc.COMPRESSED_RGBA_S3TC_DXT3_EXT,
             'bc3-rgba-unorm': extensions.s3tc.COMPRESSED_RGBA_S3TC_DXT5_EXT,
         } : {},
         ...extensions.s3tc_sRGB ? {
+            'bc1-rgba-unorm-srgb': extensions.s3tc_sRGB.COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT,
             'bc2-rgba-unorm-srgb': extensions.s3tc_sRGB.COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT,
-
             'bc3-rgba-unorm-srgb': extensions.s3tc_sRGB.COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT,
         } : {},
-        // 'bc4-r-unorm'
-        // 'bc4-r-snorm'
-        // 'bc5-rg-unorm'
-        // 'bc5-rg-snorm'
-        // 'bc6h-rgb-ufloat'
-        // 'bc6h-rgb-float'
+        ...extensions.rgtc ? {
+            'bc4-r-unorm': extensions.rgtc.COMPRESSED_RED_RGTC1_EXT,
+            'bc4-r-snorm': extensions.rgtc.COMPRESSED_SIGNED_RED_RGTC1_EXT,
+            'bc5-rg-unorm': extensions.rgtc.COMPRESSED_RED_GREEN_RGTC2_EXT,
+            'bc5-rg-snorm': extensions.rgtc.COMPRESSED_SIGNED_RED_GREEN_RGTC2_EXT,
+        } : {},
         ...extensions.bptc ? {
+            'bc6h-rgb-float': extensions.bptc.COMPRESSED_RGB_BPTC_SIGNED_FLOAT_EXT,
+            'bc6h-rgb-ufloat': extensions.bptc.COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_EXT,
             'bc7-rgba-unorm': extensions.bptc.COMPRESSED_RGBA_BPTC_UNORM_EXT,
             'bc7-rgba-unorm-srgb': extensions.bptc.COMPRESSED_SRGB_ALPHA_BPTC_UNORM_EXT,
         } : {},
