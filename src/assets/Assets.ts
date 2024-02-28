@@ -489,6 +489,12 @@ export class AssetsClass
      * @example
      * import { Assets } from 'pixi.js';
      *
+     * Assets.addBundle('animals', [
+     *  { alias: 'bunny', src: 'bunny.png' },
+     *  { alias: 'chicken', src: 'chicken.png' },
+     *  { alias: 'thumper', src: 'thumper.png' },
+     * ]);
+     * // or
      * Assets.addBundle('animals', {
      *     bunny: 'bunny.png',
      *     chicken: 'chicken.png',

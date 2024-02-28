@@ -44,11 +44,42 @@ describe('Assets bundles', () =>
         expect(assets.spritesheet).toBeInstanceOf(Spritesheet);
     });
 
+    it('should add and load bundle object', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        Assets.addBundle('testBundle', {
+            bunny: 'textures/bunny.{png,webp}',
+            spritesheet: 'spritesheet/spritesheet.json',
+        });
+
+        const assets = await Assets.loadBundle('testBundle');
+
+        expect(assets.bunny).toBeInstanceOf(Texture);
+        expect(assets.spritesheet).toBeInstanceOf(Spritesheet);
+    });
+
     it('should load a bundle found in the manifest', async () =>
     {
         await Assets.init({
             basePath,
             manifest: 'json/asset-manifest-2.json',
+        });
+
+        const assets = await Assets.loadBundle('default');
+
+        expect(assets.bunny).toBeInstanceOf(Texture);
+        expect(assets['profile-abel']).toBeInstanceOf(Texture);
+        expect(assets.spritesheet).toBeInstanceOf(Spritesheet);
+    });
+
+    it('should load an object bundle found in the manifest', async () =>
+    {
+        await Assets.init({
+            basePath,
+            manifest: 'json/asset-manifest-object.json',
         });
 
         const assets = await Assets.loadBundle('default');
