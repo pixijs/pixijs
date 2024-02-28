@@ -16,7 +16,7 @@ export interface EffectsMixin extends Required<EffectsMixinConstructor>
 {
     _mask?: {mask: unknown, effect: Effect};
     _filters?: {
-        filters: Filter[],
+        filters: readonly Filter[],
         effect: FilterEffect
         filterArea?: Rectangle,
     },
@@ -144,7 +144,7 @@ export const effectsMixin: Partial<Container> = {
         const hasFilters = value && (value as Filter[]).length > 0;
         const didChange = (this._filters.effect && !hasFilters) || (!this._filters.effect && hasFilters);
 
-        this._filters.filters = value as Filter[];
+        this._filters.filters = Object.freeze(value as Filter[]);
 
         if (didChange)
         {
@@ -170,7 +170,7 @@ export const effectsMixin: Partial<Container> = {
      * To remove filters simply set this property to `'null'`.
      * @memberof scene.Container#
      */
-    get filters(): Filter[]
+    get filters(): readonly Filter[]
     {
         return this._filters?.filters;
     },

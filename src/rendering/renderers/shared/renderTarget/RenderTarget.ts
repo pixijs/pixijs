@@ -6,7 +6,7 @@ import { Texture } from '../texture/Texture';
 
 import type { BindableTexture } from '../texture/Texture';
 
-export interface RenderTargetDescriptor
+export interface RenderTargetOptions
 {
     /** the width of the RenderTarget */
     width?: number;
@@ -38,7 +38,7 @@ export interface RenderTargetDescriptor
  */
 export class RenderTarget
 {
-    public static defaultDescriptor: RenderTargetDescriptor = {
+    public static defaultOptions: RenderTargetOptions = {
         width: 0,
         height: 0,
         resolution: 1,
@@ -68,9 +68,9 @@ export class RenderTarget
 
     private readonly _size = new Float32Array(2);
 
-    constructor(descriptor: RenderTargetDescriptor = {})
+    constructor(descriptor: RenderTargetOptions = {})
     {
-        descriptor = { ...RenderTarget.defaultDescriptor, ...descriptor };
+        descriptor = { ...RenderTarget.defaultOptions, ...descriptor };
 
         this.stencil = descriptor.stencil;
         this.depth = descriptor.depth;
