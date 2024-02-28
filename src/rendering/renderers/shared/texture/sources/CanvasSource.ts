@@ -71,8 +71,12 @@ export class CanvasSource extends TextureSource<ICanvas>
             this.resource.style.height = `${this.height}px`;
         }
 
-        this.resource.width = this.pixelWidth;
-        this.resource.height = this.pixelHeight;
+        // only resize if wee need to, as this clears the canvas (even if values are set to the same)
+        if (this.resource.width !== this.pixelWidth || this.resource.height !== this.pixelHeight)
+        {
+            this.resource.width = this.pixelWidth;
+            this.resource.height = this.pixelHeight;
+        }
     }
 
     public resize(width = this.width, height = this.height, resolution = this._resolution): boolean
