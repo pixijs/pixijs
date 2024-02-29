@@ -1,5 +1,5 @@
-import CheckImageBitmapWorker from './checkImageBitmap.worker.js';
-import LoadImageBitmapWorker from './loadImageBitmap.worker.js';
+import CheckImageBitmapWorker from 'worker:./checkImageBitmap.worker.ts';
+import LoadImageBitmapWorker from 'worker:./loadImageBitmap.worker.ts';
 
 let UUID = 0;
 let MAX_WORKERS: number;
@@ -45,7 +45,7 @@ class WorkerManagerClass
 
         this._isImageBitmapSupported = new Promise((resolve) =>
         {
-            const worker = new CheckImageBitmapWorker();
+            const { worker } = new CheckImageBitmapWorker();
 
             worker.addEventListener('message', (event: MessageEvent<boolean>) =>
             {
@@ -82,7 +82,7 @@ class WorkerManagerClass
         {
             // only create as many as MAX_WORKERS allows..
             this._createdWorkers++;
-            worker = new LoadImageBitmapWorker();
+            worker = new LoadImageBitmapWorker().worker;
 
             worker.addEventListener('message', (event: MessageEvent) =>
             {
