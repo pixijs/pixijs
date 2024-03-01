@@ -92,12 +92,6 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
             this._renderer.texture.unbind(texture);
         });
 
-        // if the stencil buffer has been requested, we need to create a stencil buffer
-        if (!gpuRenderTarget.depthStencilRenderBuffer && (renderTarget.stencil || renderTarget.depth))
-        {
-            this._initStencil(gpuRenderTarget);
-        }
-
         const gl = this._renderer.gl;
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, gpuRenderTarget.framebuffer);
@@ -120,6 +114,12 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
                 viewport.width,
                 viewport.height,
             );
+        }
+
+        // if the stencil buffer has been requested, we need to create a stencil buffer
+        if (!gpuRenderTarget.depthStencilRenderBuffer && (renderTarget.stencil || renderTarget.depth))
+        {
+            this._initStencil(gpuRenderTarget);
         }
 
         this.clear(renderTarget, clear, clearColor);

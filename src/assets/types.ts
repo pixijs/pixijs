@@ -76,7 +76,7 @@ export interface AssetsBundle
     /** The name of the bundle */
     name: string;
     /** The assets in the bundle */
-    assets: UnresolvedAsset[];
+    assets: UnresolvedAsset[] | Record<string, ArrayOr<string> | UnresolvedAsset>;
 }
 
 /**

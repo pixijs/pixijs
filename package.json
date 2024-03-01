@@ -69,7 +69,7 @@
     "@pixi/eslint-config": "^5.1.0",
     "@pixi/jest-electron": "^26.0.0",
     "@pixi/webdoc-template": "^2.2.2",
-    "@pixi/webworker-plugins": "^0.1.0",
+    "@pixi/webworker-plugins": "^0.3.0",
     "@rollup/plugin-commonjs": "^25.0.0",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.0",
