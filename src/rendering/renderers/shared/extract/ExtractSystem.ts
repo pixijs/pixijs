@@ -98,6 +98,8 @@ export class ExtractSystem implements System
 
         const { format, quality } = options;
 
+        const imageFormat = format === 'png' ? 'image/png' : 'image/jpeg';
+
         const canvas = this.canvas(options);
 
         if (canvas.toBlob !== undefined)
@@ -119,16 +121,16 @@ export class ExtractSystem implements System
                     reader.onload = () => resolve(reader.result as string);
                     reader.onerror = reject;
                     reader.readAsDataURL(blob);
-                }, format, quality);
+                }, imageFormat, quality);
             });
         }
         if (canvas.toDataURL !== undefined)
         {
-            return canvas.toDataURL(format, quality);
+            return canvas.toDataURL(imageFormat, quality);
         }
         if (canvas.convertToBlob !== undefined)
         {
-            const blob = await canvas.convertToBlob({ type: format, quality });
+            const blob = await canvas.convertToBlob({ type: imageFormat, quality });
 
             return new Promise<string>((resolve, reject) =>
             {
