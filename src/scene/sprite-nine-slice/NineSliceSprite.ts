@@ -264,9 +264,6 @@ export class NineSliceSprite extends Container implements View
         return this._texture.height;
     }
 
-    /**
-     * @internal
-     */
     public onViewUpdate()
     {
         // increment from the 12th bit!

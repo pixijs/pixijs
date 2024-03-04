@@ -75,9 +75,7 @@ export class Sprite extends Container implements View
     public readonly _anchor: ObservablePoint;
 
     // sprite specific..
-    /** @internal */
     public _texture: Texture;
-    /** @internal */
     public _didSpriteUpdate = false;
 
     private readonly _bounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
@@ -185,9 +183,6 @@ export class Sprite extends Container implements View
         bounds.addFrame(_bounds.minX, _bounds.minY, _bounds.maxX, _bounds.maxY);
     }
 
-    /**
-     * @internal
-     */
     public onViewUpdate()
     {
         // increment from the 12th bit!

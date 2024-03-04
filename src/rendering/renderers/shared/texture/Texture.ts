@@ -141,7 +141,6 @@ export class Texture extends EventEmitter<{
      */
     public destroyed: boolean;
 
-    /** @internal */
     public _source: TextureSource;
 
     /**

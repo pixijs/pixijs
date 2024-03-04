@@ -13,5 +13,5 @@ export enum CLEAR
 
 }
 
-/** Used for clearing render textures true is the same as `ALL` false is the same as `NONE` */
+/** Used for clearing render textures. true is the same as `ALL` false is the same as `NONE` */
 export type CLEAR_OR_BOOL = CLEAR | boolean;

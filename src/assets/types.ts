@@ -42,6 +42,10 @@ export interface ResolvedAsset<T=any>
 /**
  * A fully resolved src, Glob patterns will not work here, and the src will be resolved to a single file.
  * @memberof assets
+ * @property {string} src - The URL or relative path to the asset
+ * @property {string} format - Format, usually the file extension
+ * @property {string} loadParser - An override that will ensure that the asset is loaded with a specific parser
+ * @property {any} data - Optional data
  */
 // NOTE: Omit does not seem to work here
 export type ResolvedSrc = Pick<ResolvedAsset, 'src' | 'format' | 'loadParser' | 'data'>;

@@ -1120,11 +1120,16 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
         return this;
     }
 
+    /**
+     * Updates the local transform using the given matrix.
+     * @param matrix - The matrix to use for updating the transform.
+     */
     public setFromMatrix(matrix: Matrix): void
     {
         matrix.decompose(this);
     }
 
+    /** Updates the local transform. */
     public updateLocalTransform(): void
     {
         if ((this._didLocalTransformChangeId & 0b1111) === this._didChangeId) return;
