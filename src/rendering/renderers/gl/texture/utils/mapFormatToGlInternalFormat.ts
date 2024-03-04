@@ -62,7 +62,10 @@ export function mapFormatToGlInternalFormat(
         rgba8snorm: gl.RGBA8_SNORM,
         rgba8uint: gl.RGBA8UI,
         rgba8sint: gl.RGBA8I,
-        bgra8unorm:  gl.RGBA8 ?? gl.RGBA,
+        // previously we tried to use gl.RGBA8 ?? gl.RGBAas this was webGL2 only
+        // but for some reason this value now exists on the webGL 1 context? Maybe a bug.
+        // both support gl.RGBA so we can keep it at that for now.
+        bgra8unorm:  gl.RGBA,
         rgb9e5ufloat: gl.RGB9_E5,
         rgb10a2unorm: gl.RGB10_A2,
         rg11b10ufloat: gl.R11F_G11F_B10F,
