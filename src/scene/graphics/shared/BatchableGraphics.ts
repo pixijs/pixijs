@@ -7,7 +7,7 @@ import type { Graphics } from './Graphics';
 
 /**
  * A batchable graphics object.
- * @memberof rendering
+ * @ignore
  */
 export class BatchableGraphics implements BatchableObject
 {
