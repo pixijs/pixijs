@@ -30,8 +30,9 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
     public copyToTexture(
         sourceRenderSurfaceTexture: RenderTarget,
         destinationTexture: Texture,
-        origin: { x: number; y: number; },
-        size: { width: number; height: number; }
+        originSrc: { x: number; y: number; },
+        size: { width: number; height: number; },
+        originDest: { x: number; y: number; },
     )
     {
         const renderer = this._renderer;
@@ -47,10 +48,11 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         renderer.encoder.commandEncoder.copyTextureToTexture(
             {
                 texture: baseGpuTexture,
-                origin,
+                origin: originSrc,
             },
             {
                 texture: backGpuTexture,
+                origin: originDest,
             },
             size
         );
