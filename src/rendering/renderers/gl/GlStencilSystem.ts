@@ -6,6 +6,10 @@ import type { RenderTarget } from '../shared/renderTarget/RenderTarget';
 import type { System } from '../shared/system/System';
 import type { WebGLRenderer } from './WebGLRenderer';
 
+/**
+ * This manages the stencil buffer. Used primarily for masking
+ * @memberof rendering
+ */
 export class GlStencilSystem implements System
 {
     /** @ignore */

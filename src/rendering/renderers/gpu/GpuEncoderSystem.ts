@@ -15,6 +15,10 @@ import type { BindGroup } from './shader/BindGroup';
 import type { GpuProgram } from './shader/GpuProgram';
 import type { WebGPURenderer } from './WebGPURenderer';
 
+/**
+ * The system that handles encoding commands for the GPU.
+ * @memberof rendering
+ */
 export class GpuEncoderSystem implements System
 {
     /** @ignore */

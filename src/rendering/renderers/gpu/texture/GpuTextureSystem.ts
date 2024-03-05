@@ -18,6 +18,10 @@ import type { GPU } from '../GpuDeviceSystem';
 import type { WebGPURenderer } from '../WebGPURenderer';
 import type { GpuTextureUploader } from './uploaders/GpuTextureUploader';
 
+/**
+ * The system that handles textures for the GPU.
+ * @memberof rendering
+ */
 export class GpuTextureSystem implements System, CanvasGenerator
 {
     /** @ignore */

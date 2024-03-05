@@ -101,7 +101,7 @@ export interface WebGPURenderer<T extends ICanvas = HTMLCanvasElement>
  *
  * | WebGPU Core Systems                      | Systems that are specific to the WebGL renderer                               |
  * | ---------------------------------------- | ----------------------------------------------------------------------------- |
- * | {@link rendering.GbuUboSystem}           | This manages WebGPU uniform buffer objects feature for shaders                |
+ * | {@link rendering.GpuUboSystem}           | This manages WebGPU uniform buffer objects feature for shaders                |
  * | {@link rendering.GpuEncoderSystem}       | This manages the WebGPU command encoder                                       |
  * | {@link rendering.GpuDeviceSystem}        | This manages the WebGPU Device and its extensions                             |
  * | {@link rendering.GpuBufferSystem}        | This manages buffers and their GPU resources, keeps everything in sync        |
