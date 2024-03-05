@@ -97,9 +97,6 @@ export interface WebGPURenderer<T extends ICanvas = HTMLCanvasElement>
  * const renderer = await rendering.autoDetectRenderer();
  * ```
  *
- * It allows for rendering to a WebGPU context.
- *
- *
  * The renderer is composed of systems that manage specific tasks. The following systems are added by default
  * whenever you create a WebGPU renderer:
  *
