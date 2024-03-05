@@ -5,6 +5,10 @@ import type { RenderTarget } from '../shared/renderTarget/RenderTarget';
 import type { System } from '../shared/system/System';
 import type { WebGPURenderer } from './WebGPURenderer';
 
+/**
+ * This manages the stencil buffer. Used primarily for masking
+ * @memberof rendering
+ */
 export class GpuStencilSystem implements System
 {
     /** @ignore */
