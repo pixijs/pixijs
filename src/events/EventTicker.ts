@@ -8,8 +8,8 @@ import type { EventSystem } from './EventSystem';
  * in the case where the pointer is stationary for too long.
  * This is to ensure that hit-tests are still run on moving objects.
  * @since 7.2.0
- * @see EventsTicker
  * @memberof events
+ * @class EventsTicker
  */
 class EventsTickerClass
 {
@@ -135,12 +135,4 @@ class EventsTickerClass
     }
 }
 
-/**
- * This class handles automatic firing of PointerEvents
- * in the case where the pointer is stationary for too long.
- * This is to ensure that hit-tests are still run on moving objects.
- * @type {EventsTickerClass}
- * @since 7.2.0
- * @memberof events
- */
 export const EventsTicker = new EventsTickerClass();
