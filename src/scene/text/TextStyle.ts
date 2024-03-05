@@ -433,6 +433,7 @@ export class TextStyle extends EventEmitter<{
         this.emit('update', this);
     }
 
+    /** Resets all properties to the default values */
     public reset()
     {
         const defaultStyle = TextStyle.defaultTextStyle;

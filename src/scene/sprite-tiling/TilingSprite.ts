@@ -114,12 +114,19 @@ export class TilingSprite extends Container implements View, Instruction
         });
     }
 
+    /** default options for the TilingSprite */
     public static defaultOptions: TilingSpriteOptions = {
+        /** The texture to use for the sprite. */
         texture: Texture.EMPTY,
+        /** The anchor point of the sprite */
         anchor: { x: 0, y: 0 },
+        /** The offset of the image that is being tiled. */
         tilePosition: { x: 0, y: 0 },
+        /** Scaling of the image that is being tiled. */
         tileScale: { x: 1, y: 1 },
+        /** The rotation of the image that is being tiled. */
         tileRotation: 0,
+        /** TODO */
         applyAnchorToTexture: false,
     };
 

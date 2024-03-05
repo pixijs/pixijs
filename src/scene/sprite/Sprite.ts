@@ -133,6 +133,7 @@ export class Sprite extends Container implements View
         this.onViewUpdate();
     }
 
+    /** The texture that the sprite is using. */
     get texture()
     {
         return this._texture;
