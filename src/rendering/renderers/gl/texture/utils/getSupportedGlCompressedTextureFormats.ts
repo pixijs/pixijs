@@ -6,6 +6,7 @@ export function getSupportedGlCompressedTextureFormats(): TEXTURE_FORMATS[]
 {
     if (supportedGLCompressedTextureFormats) return supportedGLCompressedTextureFormats;
 
+    // TODO: can we use already created context (webgl or webgl2)?
     const canvas = document.createElement('canvas');
     const gl = canvas.getContext('webgl');
 
@@ -44,6 +45,13 @@ export function getSupportedGlCompressedTextureFormats(): TEXTURE_FORMATS[]
             'bc1-rgba-unorm-srgb',
             'bc2-rgba-unorm-srgb',
             'bc3-rgba-unorm-srgb',
+        ] : [],
+
+        ...gl.getExtension('EXT_texture_compression_rgtc') ? [
+            'bc4-r-unorm',
+            'bc4-r-snorm',
+            'bc5-rg-unorm',
+            'bc5-rg-snorm',
         ] : [],
 
         // ETC2 compressed formats usable if "texture-compression-etc2" is both

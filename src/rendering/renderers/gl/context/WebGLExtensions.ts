@@ -38,6 +38,14 @@ export interface EXT_texture_compression_bptc
     COMPRESSED_SRGB_ALPHA_BPTC_UNORM_EXT: number;
 }
 
+export interface EXT_texture_compression_rgtc
+{
+    COMPRESSED_RED_RGTC1_EXT: number;
+    COMPRESSED_SIGNED_RED_RGTC1_EXT: number;
+    COMPRESSED_RED_GREEN_RGTC2_EXT: number;
+    COMPRESSED_SIGNED_RED_GREEN_RGTC2_EXT: number;
+}
+
 export interface WebGLExtensions
 {
     drawBuffers?: WEBGL_draw_buffers;
@@ -61,6 +69,7 @@ export interface WebGLExtensions
     atc?: WEBGL_compressed_texture_atc;
     astc?: WEBGL_compressed_texture_astc;
     bptc?: EXT_texture_compression_bptc;
+    rgtc?: EXT_texture_compression_rgtc;
 
     // webgl1 EXT_sRGB
     srgb?: EXT_sRGB;
