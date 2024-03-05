@@ -120,6 +120,15 @@ export class FilterSystem implements System
         this.renderer = renderer;
     }
 
+    /**
+     * The back texture of the currently active filter. Requires the filter to have `blendRequired` set to true.
+     * @readonly
+     */
+    public get activeBackTexture(): Texture | undefined
+    {
+        return this._activeFilterData?.backTexture;
+    }
+
     public push(instruction: FilterInstruction)
     {
         const renderer = this.renderer;
