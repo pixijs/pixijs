@@ -44,7 +44,7 @@ export type AnyTextStyleOptions = TextStyleOptions | HTMLTextStyleOptions;
  *    align: 'center',
  *  }
  * });
- * @memberof scene
+ * @memberof text
  */
 export interface TextOptions<
     TEXT_STYLE extends TextStyle = TextStyle,
@@ -94,9 +94,7 @@ export abstract class AbstractText<
      */
     public resolution: number = null;
 
-    /** @ignore */
     public _style: TEXT_STYLE;
-    /** @ignore */
     public _didTextUpdate = true;
     public _roundPixels: 0 | 1 = 0;
 
