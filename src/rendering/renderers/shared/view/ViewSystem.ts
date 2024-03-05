@@ -11,7 +11,10 @@ import type { System } from '../system/System';
 import type { CanvasSource, CanvasSourceOptions } from '../texture/sources/CanvasSource';
 import type { Texture } from '../texture/Texture';
 
-/** Options passed to the ViewSystem */
+/**
+ * Options passed to the ViewSystem
+ * @memberof rendering
+ */
 export interface ViewSystemOptions
 {
     /** The width of the screen. */
@@ -60,7 +63,7 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
         priority: 0,
     } as const;
 
-    /** @ignore */
+    /** The default options for the view system. */
     public static defaultOptions: ViewSystemOptions = {
         /**
          * {@link WebGLOptions.width}
@@ -89,6 +92,7 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
     /** The canvas element that everything is drawn to. */
     public canvas: ICanvas;
 
+    /** The texture that is used to draw the canvas to the screen. */
     public texture: Texture;
 
     /**
@@ -97,11 +101,19 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
      */
     public autoDensity: boolean;
 
+    /** Whether to enable anti-aliasing. This may affect performance. */
     public antialias: boolean;
 
+    /**
+     * Measurements of the screen. (0, 0, screenWidth, screenHeight).
+     *
+     * Its safe to use as filterArea or hitArea for the whole stage.
+     */
     public screen: Rectangle;
+    /** The render target that the view is drawn to. */
     public renderTarget: RenderTarget;
 
+    /** The resolution / device pixel ratio of the renderer. */
     get resolution(): number
     {
         return this.texture.source._resolution;

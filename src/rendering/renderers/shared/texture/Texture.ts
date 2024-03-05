@@ -12,7 +12,10 @@ import { TextureMatrix } from './TextureMatrix';
 
 import type { TextureResourceOrOptions } from './sources/resourceToTexture';
 
-/** Stores the width of the non-scalable borders, for example when used with {@link scene.NineSlicePlane} texture. */
+/**
+ * Stores the width of the non-scalable borders, for example when used with {@link scene.NineSlicePlane} texture.
+ * @memberof rendering
+ */
 export interface TextureBorders
 {
     /** left border in pixels */
@@ -25,6 +28,10 @@ export interface TextureBorders
     bottom: number;
 }
 
+/**
+ * The UVs data structure for a texture.
+ * @memberof rendering
+ */
 export type UVs = {
     x0: number;
     y0: number;
@@ -36,7 +43,10 @@ export type UVs = {
     y3: number;
 };
 
-/** the options that can be passed to a new Texture */
+/**
+ * The options that can be passed to a new Texture
+ * @memberof rendering
+ */
 export interface TextureOptions
 {
     /** the underlying texture data that this texture will use  */
@@ -197,6 +207,9 @@ export class Texture extends EventEmitter<{
     /** is it a texture? yes! used for type checking */
     public readonly isTexture = true;
 
+    /**
+     * @param {TextureOptions} param0 - Options for the texture
+     */
     constructor({
         source,
         label,

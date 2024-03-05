@@ -1,6 +1,7 @@
 /**
  * Represents a render target.
  * @memberof rendering
+ * @ignore
  */
 export class GlRenderTarget
 {

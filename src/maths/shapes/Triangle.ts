@@ -92,6 +92,13 @@ export class Triangle implements ShapePrimitive
         return d === 0 || (d < 0) === (s + t <= 0);
     }
 
+    /**
+     * Checks whether the x and y coordinates given are contained within this triangle including the stroke.
+     * @param pointX - The X coordinate of the point to test
+     * @param pointY - The Y coordinate of the point to test
+     * @param strokeWidth - The width of the line to check
+     * @returns Whether the x/y coordinates are within this triangle
+     */
     public strokeContains(pointX: number, pointY: number, strokeWidth: number): boolean
     {
         const halfStrokeWidth = strokeWidth / 2;

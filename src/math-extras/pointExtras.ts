@@ -9,8 +9,8 @@ export const pointExtraMixins: any = {
      * _Note: Only available with **pixi.js/math-extras**._
      * @method add
      * @memberof maths.Point#
-     * @param {PointData} other - The point to add to `this`.
-     * @param {PointData} [outPoint] - A Point-like object in which to store the value,
+     * @param {maths.PointData} other - The point to add to `this`.
+     * @param {maths.PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
      * @returns {PointData} The `outPoint` reference or a new Point, with the result of the addition.
      */
@@ -20,8 +20,8 @@ export const pointExtraMixins: any = {
      * _Note: Only available with **pixi.js/math-extras**._
      * @method add
      * @memberof maths.ObservablePoint#
-     * @param {PointData} other - The point to add to `this`.
-     * @param {PointData} [outPoint] - A Point-like object in which to store the value,
+     * @param {maths.PointData} other - The point to add to `this`.
+     * @param {maths.PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
      * @returns {PointData} The `outPoint` reference or a new Point, with the result of the addition.
      */
@@ -43,8 +43,8 @@ export const pointExtraMixins: any = {
      * _Note: Only available with **pixi.js/math-extras**._
      * @method subtract
      * @memberof maths.Point#
-     * @param {PointData} other - The point to subtract to `this`.
-     * @param {PointData} [outPoint] - A Point-like object in which to store the value,
+     * @param {maths.PointData} other - The point to subtract to `this`.
+     * @param {maths.PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
      * @returns {PointData} The `outPoint` reference or a new Point, with the result of the subtraction.
      */
@@ -54,8 +54,8 @@ export const pointExtraMixins: any = {
      * _Note: Only available with **pixi.js/math-extras**._
      * @method subtract
      * @memberof maths.ObservablePoint#
-     * @param {PointData} other - The point to subtract to `this`.
-     * @param {PointData} [outPoint] - A Point-like object in which to store the value,
+     * @param {maths.PointData} other - The point to subtract to `this`.
+     * @param {maths.PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
      * @returns {PointData} The `outPoint` reference or a new Point, with the result of the subtraction.
      */
@@ -77,8 +77,8 @@ export const pointExtraMixins: any = {
      * _Note: Only available with **pixi.js/math-extras**._
      * @method multiply
      * @memberof maths.Point#
-     * @param {PointData} other - The point to multiply with `this`.
-     * @param {PointData} [outPoint] - A Point-like object in which to store the value,
+     * @param {maths.PointData} other - The point to multiply with `this`.
+     * @param {maths.PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
      * @returns {PointData} The `outPoint` reference or a new Point, with the component-wise multiplication.
      */
@@ -88,8 +88,8 @@ export const pointExtraMixins: any = {
      * _Note: Only available with **pixi.js/math-extras**._
      * @method multiply
      * @memberof maths.ObservablePoint#
-     * @param {PointData} other - The point to multiply with `this`.
-     * @param {PointData} [outPoint] - A Point-like object in which to store the value,
+     * @param {maths.PointData} other - The point to multiply with `this`.
+     * @param {maths.PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
      * @returns {PointData} The `outPoint` reference or a new Point, with the component-wise multiplication.
      */
@@ -112,7 +112,7 @@ export const pointExtraMixins: any = {
      * @method multiplyScalar
      * @memberof maths.Point#
      * @param {number} scalar - The number to multiply both components of `this`.
-     * @param {PointData} [outPoint] - A Point-like object in which to store the value,
+     * @param {maths.PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
      * @returns {PointData} The `outPoint` reference or a new Point, with the multiplication.
      */
@@ -123,7 +123,7 @@ export const pointExtraMixins: any = {
      * @method multiplyScalar
      * @memberof maths.ObservablePoint#
      * @param {number} scalar - The number to multiply both components of `this`.
-     * @param {PointData} [outPoint] - A Point-like object in which to store the value,
+     * @param {maths.PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
      * @returns {PointData} The `outPoint` reference or a new Point, with the multiplication.
      */
@@ -146,7 +146,7 @@ export const pointExtraMixins: any = {
      * _Note: Only available with **pixi.js/math-extras**._
      * @method dot
      * @memberof maths.Point#
-     * @param {PointData} other - The other point to calculate the dot product with `this`.
+     * @param {maths.PointData} other - The other point to calculate the dot product with `this`.
      * @returns {number} The result of the dot product. This is an scalar value.
      */
     /**
@@ -156,7 +156,7 @@ export const pointExtraMixins: any = {
      * _Note: Only available with **pixi.js/math-extras**._
      * @method dot
      * @memberof maths.ObservablePoint#
-     * @param {PointData} other - The other point to calculate the dot product with `this`.
+     * @param {maths.PointData} other - The other point to calculate the dot product with `this`.
      * @returns {number} The result of the dot product. This is an scalar value.
      */
     dot(other: PointData): number
@@ -176,7 +176,7 @@ export const pointExtraMixins: any = {
      * _Note: Only available with **pixi.js/math-extras**._
      * @method cross
      * @memberof maths.Point#
-     * @param {PointData} other - The other point to calculate the cross product with `this`.
+     * @param {maths.PointData} other - The other point to calculate the cross product with `this`.
      * @returns {number} The z component of the result of the cross product.
      */
     /**
@@ -191,7 +191,7 @@ export const pointExtraMixins: any = {
      * _Note: Only available with **pixi.js/math-extras**._
      * @method cross
      * @memberof maths.ObservablePoint#
-     * @param {PointData} other - The other point to calculate the cross product with `this`.
+     * @param {maths.PointData} other - The other point to calculate the cross product with `this`.
      * @returns {number} The z component of the result of the cross product.
      */
     cross(other: PointData): number
@@ -216,7 +216,7 @@ export const pointExtraMixins: any = {
      * _Note: Only available with **pixi.js/math-extras**._
      * @method normalize
      * @memberof maths.Point#
-     * @param {PointData} [outPoint] - A Point-like object in which to store the value,
+     * @param {maths.PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
      * @returns {PointData} The normalized point.
      */
@@ -228,7 +228,7 @@ export const pointExtraMixins: any = {
      * _Note: Only available with **pixi.js/math-extras**._
      * @method normalize
      * @memberof maths.ObservablePoint#
-     * @param {PointData} [outPoint] - A Point-like object in which to store the value,
+     * @param {maths.PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
      * @returns {PointData} The normalized point.
      */
@@ -310,8 +310,8 @@ export const pointExtraMixins: any = {
      * _Note: Only available with **pixi.js/math-extras**._
      * @method project
      * @memberof maths.Point#
-     * @param {PointData} onto - A non zero vector describing a line on which to project `this`.
-     * @param {PointData} [outPoint] - A Point-like object in which to store the value,
+     * @param {maths.PointData} onto - A non zero vector describing a line on which to project `this`.
+     * @param {maths.PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
      * @returns {PointData} The `this` on `onto` projection.
      */
@@ -325,8 +325,8 @@ export const pointExtraMixins: any = {
      * _Note: Only available with **pixi.js/math-extras**._
      * @method project
      * @memberof maths.ObservablePoint#
-     * @param {PointData} onto - A non zero vector describing a line on which to project `this`.
-     * @param {PointData} [outPoint] - A Point-like object in which to store the value,
+     * @param {maths.PointData} onto - A non zero vector describing a line on which to project `this`.
+     * @param {maths.PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
      * @returns {PointData} The `this` on `onto` projection.
      */
@@ -356,8 +356,8 @@ export const pointExtraMixins: any = {
      * _Note: Only available with **pixi.js/math-extras**._
      * @method reflect
      * @memberof maths.Point#
-     * @param {PointData} normal - The normal vector of your reflecting plane.
-     * @param {PointData} [outPoint] - A Point-like object in which to store the value,
+     * @param {maths.PointData} normal - The normal vector of your reflecting plane.
+     * @param {maths.PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
      * @returns {PointData} The reflection of `this` on your reflecting plane.
      */
@@ -372,8 +372,8 @@ export const pointExtraMixins: any = {
      * _Note: Only available with **pixi.js/math-extras**._
      * @method reflect
      * @memberof maths.ObservablePoint#
-     * @param {PointData} normal - The normal vector of your reflecting plane.
-     * @param {PointData} [outPoint] - A Point-like object in which to store the value,
+     * @param {maths.PointData} normal - The normal vector of your reflecting plane.
+     * @param {maths.PointData} [outPoint] - A Point-like object in which to store the value,
      * optional (otherwise will create a new Point).
      * @returns {PointData} The reflection of `this` on your reflecting plane.
      */

@@ -6,6 +6,12 @@ import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from '../text/AbstractText';
 import type { HTMLTextStyleOptions } from './HtmlTextStyle';
 
+/**
+ * Constructor options used for `HTMLText` instances.
+ * @property {string} [text=''] - The string that you would like the text to display.
+ * @property {text.HTMLTextStyle | text.HTMLTextStyleOptions} [style] - The style of the text.
+ * @memberof text
+ */
 export type HTMLTextOptions = TextOptions<HTMLTextStyle, HTMLTextStyleOptions>;
 
 /**
@@ -16,21 +22,23 @@ export type HTMLTextOptions = TextOptions<HTMLTextStyle, HTMLTextStyleOptions>;
  *
  * HTMLText uses an svg foreignObject to render HTML text.
  *
+ *
  * The primary advantages of this render mode are:
  *
- *  -- Supports [HTML tags](https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML/HTML_text_fundamentals)
+ *  - Supports [HTML tags](https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML/HTML_text_fundamentals)
  * for styling such as `<strong>`, or `<em>`, as well as `<span style="">`
  *
- *   -- Better support for emojis and other HTML layout features, better compatibility with CSS
+ *       - Better support for emojis and other HTML layout features, better compatibility with CSS
  *     line-height and letter-spacing.
  *
+ *
  * The primary disadvantages are:
- *   -- Unlike `text`, `html` rendering will vary slightly between platforms and browsers.
+ *   - Unlike `text`, `html` rendering will vary slightly between platforms and browsers.
  * `html` uses SVG/DOM to render text and not Context2D's fillText like `text`.
  *
- *   -- Performance and memory usage is on-par with `text` (that is to say, slow and heavy)
+ *   - Performance and memory usage is on-par with `text` (that is to say, slow and heavy)
  *
- *   -- Only works with browsers that support <foreignObject>.
+ *   - Only works with browsers that support <foreignObject>.
  * @example
  * import { HTMLText } from 'pixi.js';
  *
@@ -49,6 +57,9 @@ export class HTMLText extends AbstractText<HTMLTextStyle, HTMLTextStyleOptions> 
 {
     public readonly renderPipeId: string = 'htmlText';
 
+    /**
+     * @param {text.HTMLTextOptions} options - The options of the html text.
+     */
     constructor(options?: HTMLTextOptions);
     /** @deprecated since 8.0.0 */
     constructor(text?: TextString, options?: Partial<HTMLTextStyle>);

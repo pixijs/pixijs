@@ -5,6 +5,7 @@ import type { PoolItem, PoolItemConstructor } from './Pool';
 /**
  * A type alias for a constructor of a Pool.
  * @template T The type of items in the pool. Must extend PoolItem.
+ * @memberof utils
  */
 export type PoolConstructor<T extends PoolItem> = new () => Pool<T>;
 

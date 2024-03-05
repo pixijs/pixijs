@@ -27,6 +27,10 @@ export interface View
     /** this is an int because it is packed directly into an attribute in the shader */
     _roundPixels: 0 | 1;
 
+    /**
+     *  Whether or not to round the x/y position of the object.
+     * @type {boolean}
+     */
     get roundPixels(): boolean;
     /** if true, the view will have its position rounded to the nearest whole number */
     set roundPixels(value: boolean);

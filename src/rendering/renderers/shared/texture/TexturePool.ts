@@ -18,6 +18,7 @@ let count = 0;
  */
 export class TexturePoolClass
 {
+    /** The default options for texture pool */
     public textureOptions: TextureSourceOptions;
 
     /**
@@ -115,6 +116,12 @@ export class TexturePoolClass
         return texture;
     }
 
+    /**
+     * Gets extra texture of the same size as input renderTexture
+     * @param texture - The texture to check what size it is.
+     * @param antialias - Whether to use antialias.
+     * @returns A texture that is a power of two
+     */
     public getSameSizeTexture(texture: Texture, antialias = false)
     {
         const source = texture.source;

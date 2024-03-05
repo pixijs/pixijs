@@ -176,6 +176,13 @@ export class Rectangle implements ShapePrimitive
         return false;
     }
 
+    /**
+     * Checks whether the x and y coordinates given are contained within this rectangle including the stroke.
+     * @param x - The X coordinate of the point to test
+     * @param y - The Y coordinate of the point to test
+     * @param strokeWidth - The width of the line to check
+     * @returns Whether the x/y coordinates are within this rectangle
+     */
     public strokeContains(x: number, y: number, strokeWidth: number): boolean
     {
         const { width, height } = this;

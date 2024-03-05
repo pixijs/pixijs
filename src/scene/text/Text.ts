@@ -37,6 +37,9 @@ export class Text
 {
     public readonly renderPipeId: string = 'text';
 
+    /**
+     * @param {text.TextOptions} options - The options of the text.
+     */
     constructor(options?: TextOptions);
     /** @deprecated since 8.0.0 */
     constructor(text?: TextString, options?: Partial<TextStyle>);

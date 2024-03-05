@@ -3,6 +3,7 @@ import type { TextureSource } from '../../shared/texture/sources/TextureSource';
 /**
  * A class which holds the canvas contexts and textures for a render target.
  * @memberof rendering
+ * @ignore
  */
 export class GpuRenderTarget
 {

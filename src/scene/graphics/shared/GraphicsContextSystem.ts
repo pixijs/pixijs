@@ -14,6 +14,7 @@ import type { GraphicsContext } from './GraphicsContext';
 /**
  * A class that holds batchable graphics data for a GraphicsContext.
  * @memberof rendering
+ * @ignore
  */
 export class GpuGraphicsContext
 {
@@ -24,6 +25,7 @@ export class GpuGraphicsContext
 /**
  * A class that holds the render data for a GraphicsContext.
  * @memberof rendering
+ * @ignore
  */
 export class GraphicsContextRenderData
 {
@@ -36,8 +38,13 @@ export class GraphicsContextRenderData
     }
 }
 
+/**
+ * Options for the GraphicsContextSystem.
+ * @memberof rendering
+ */
 export interface GraphicsContextSystemOptions
 {
+    /** A value from 0 to 1 that controls the smoothness of bezier curves (the higher the smoother) */
     bezierSmoothness?: number;
 }
 
@@ -57,6 +64,7 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
         name: 'graphicsContext'
     } as const;
 
+    /** The default options for the GraphicsContextSystem. */
     public static readonly defaultOptions: GraphicsContextSystemOptions = {
         /**
          * A value from 0 to 1 that controls the smoothness of bezier curves (the higher the smoother)
