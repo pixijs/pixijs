@@ -39,8 +39,8 @@ export interface TextureStyleOptions extends Partial<TextureStyle>
 
     /** setting this will set magFilter,minFilter and mipmapFilter all at once!  */
     scaleMode?: SCALE_MODE;
-    /** specifies the sampling behavior when the sample footprint is smaller than or equal to one texel. */
 
+    /** specifies the sampling behavior when the sample footprint is smaller than or equal to one texel. */
     magFilter?: SCALE_MODE;
     /** specifies the sampling behavior when the sample footprint is larger than one texel. */
     minFilter?: SCALE_MODE;
@@ -82,7 +82,7 @@ export class TextureStyle extends EventEmitter<{
     public _touched = 0;
     private _sharedResourceId: number;
 
-    // override to set styles globally
+    /** default options for the style */
     public static readonly defaultOptions: TextureStyleOptions = {
         addressMode: 'clamp-to-edge',
         scaleMode: 'linear'
@@ -121,6 +121,9 @@ export class TextureStyle extends EventEmitter<{
      */
     public _maxAnisotropy?: number = 1;
 
+    /**
+     * @param options - options for the style
+     */
     constructor(options: TextureStyleOptions = {})
     {
         super();
@@ -154,6 +157,7 @@ export class TextureStyle extends EventEmitter<{
         this.addressModeW = value;
     }
 
+    /** setting this will set wrapModeU,wrapModeV and wrapModeW all at once! */
     get addressMode(): WRAP_MODE
     {
         return this.addressModeU;
@@ -180,11 +184,13 @@ export class TextureStyle extends EventEmitter<{
         this.mipmapFilter = value;
     }
 
+    /** setting this will set magFilter,minFilter and mipmapFilter all at once!  */
     get scaleMode(): SCALE_MODE
     {
         return this.magFilter;
     }
 
+    /** Specifies the maximum anisotropy value clamp used by the sampler. */
     set maxAnisotropy(value: number)
     {
         this._maxAnisotropy = Math.min(value, 16);

@@ -28,6 +28,29 @@ export class HTMLTextStyle extends TextStyle
 {
     private _cssOverrides: string[] = [];
     private _cssStyle: string;
+    /**
+     * List of styles per tag.
+     * @example
+     * new HTMLText({
+     *   text:'<red>Red</red>,<blue>Blue</blue>,<green>Green</green>',
+     *   style:{
+     *       fontFamily: 'DM Sans',
+     *       fill: 'white',
+     *       fontSize:100,
+     *       tagStyles:{
+     *           red:{
+     *               fill:'red',
+     *           },
+     *           blue:{
+     *               fill:'blue',
+     *           },
+     *           green:{
+     *               fill:'green',
+     *           }
+     *       }
+     *   }
+     * );
+     */
     public tagStyles: Record<string, HTMLTextStyleOptions>;
 
     constructor(options: HTMLTextStyleOptions = {})
@@ -38,6 +61,7 @@ export class HTMLTextStyle extends TextStyle
         this.tagStyles = options.tagStyles ?? {};
     }
 
+    /** List of style overrides that will be applied to the HTML text. */
     set cssOverrides(value: string | string[])
     {
         this._cssOverrides = value instanceof Array ? value : [value];
@@ -62,6 +86,10 @@ export class HTMLTextStyle extends TextStyle
         super.update();
     }
 
+    /**
+     * Creates a new HTMLTextStyle object with the same values as this one.
+     * @returns New cloned HTMLTextStyle object
+     */
     public clone(): HTMLTextStyle
     {
         return new HTMLTextStyle({

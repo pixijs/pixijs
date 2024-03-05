@@ -90,6 +90,13 @@ export class Ellipse implements ShapePrimitive
         return (normx + normy <= 1);
     }
 
+    /**
+     * Checks whether the x and y coordinates given are contained within this ellipse including stroke
+     * @param x - The X coordinate of the point to test
+     * @param y - The Y coordinate of the point to test
+     * @param width
+     * @returns Whether the x/y coords are within this ellipse
+     */
     public strokeContains(x: number, y: number, width: number): boolean
     {
         const { halfWidth, halfHeight } = this;

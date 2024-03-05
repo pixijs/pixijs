@@ -65,6 +65,10 @@ export class GpuStateSystem implements System
         this.gpu = gpu;
     }
 
+    /**
+     * Gets the blend mode data for the current state
+     * @param state - The state to get the blend mode from
+     */
     public getColorTargets(state: State): GPUColorTargetState[]
     {
         const blend = GpuBlendModesToPixi[state.blendMode] || GpuBlendModesToPixi.normal;

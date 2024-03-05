@@ -93,11 +93,19 @@ export class MeshPlane extends Mesh
         this.textureUpdated();
     }
 
+    /** The texture of the MeshPlane */
     get texture(): Texture
     {
         return this._texture;
     }
 
+    /**
+     * Destroys this sprite renderable and optionally its texture.
+     * @param options - Options parameter. A boolean will act as if all options
+     *  have been set to that value
+     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
+     * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
+     */
     public destroy(options?: DestroyOptions): void
     {
         this.texture.off('update', this.textureUpdated, this);

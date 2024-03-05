@@ -28,12 +28,16 @@ export interface DynamicBitmapFontOptions
 /**
  * A BitmapFont that generates its glyphs dynamically.
  * @memberof text
+ * @ignore
  */
 export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
 {
-    // this is a resolution modifier for the font size..
-    // texture resolution will also be used to scale texture according to its font size also
+    /**
+     * this is a resolution modifier for the font size..
+     * texture resolution will also be used to scale texture according to its font size also
+     */
     public resolution = 1;
+    /** The pages of the font. */
     public override readonly pages: {canvasAndContext?: CanvasAndContext, texture: Texture}[] = [];
 
     private readonly _padding: number = 4;
@@ -45,6 +49,9 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
     private readonly _style: TextStyle;
     private readonly _skipKerning: boolean = false;
 
+    /**
+     * @param options - The options for the dynamic bitmap font.
+     */
     constructor(options: DynamicBitmapFontOptions)
     {
         super();

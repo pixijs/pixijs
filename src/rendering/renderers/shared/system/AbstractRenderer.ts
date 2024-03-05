@@ -232,8 +232,6 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
         this._initOptions = options as OPTIONS;
     }
 
-    /** @deprecated since 8.0.0 */
-    public render(container: Container, options: {renderTexture: any}): void;
     /**
      * Renders the object to its view.
      * @param options - The options to render with.
@@ -241,6 +239,8 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
      * @param [options.target] - The target to render to.
      */
     public render(options: RenderOptions | Container): void;
+    /** @deprecated since 8.0.0 */
+    public render(container: Container, options: {renderTexture: any}): void;
     public render(args: RenderOptions | Container, deprecated?: {renderTexture: any}): void
     {
         let options = args;
