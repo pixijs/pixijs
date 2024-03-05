@@ -159,7 +159,9 @@ export interface Container
  * It is the base class of all display objects that act as a container for other objects, including Graphics
  * and Sprite.
  *
- * ## Transforms
+ * <details id="transforms">
+ *
+ * <summary>Transforms</summary>
  *
  * The [transform]{@link scene.Container#transform} of a display object describes the projection from its
  * local coordinate space to its parent's local coordinate space. The following properties are derived
@@ -254,24 +256,30 @@ export interface Container
  *     </tr>
  *   </tbody>
  * </table>
+ * </details>
  *
- * ## Bounds
+ * <details id="bounds">
+ * <summary>Bounds</summary>
  *
  * TODO
+ * </details>
  *
- * ## Alpha
+ * <details id="alpha">
+ * <summary>Alpha</summary>
  *
  * This alpha sets a display object's **relative opacity** w.r.t its parent. For example, if the alpha of a display
  * object is 0.5 and its parent's alpha is 0.5, then it will be rendered with 25% opacity (assuming alpha is not
  * applied on any ancestor further up the chain).
+ * </details>
  *
- * ## Renderable vs Visible
+ * <details id="visible">
+ * <summary>Renderable vs Visible</summary>
  *
  * The `renderable` and `visible` properties can be used to prevent a display object from being rendered to the
  * screen. However, there is a subtle difference between the two. When using `renderable`, the transforms  of the display
  * object (and its children subtree) will continue to be calculated. When using `visible`, the transforms will not
  * be calculated.
- * @example
+ * ```ts
  * import { BlurFilter, Container, Graphics, Sprite } from 'pixi.js';
  *
  * const container = new Container();
@@ -292,9 +300,12 @@ export interface Container
  *     .beginFill(0xffffff)
  *     .drawCircle(sprite.width / 2, sprite.height / 2, Math.min(sprite.width, sprite.height) / 2)
  *     .endFill();
+ * ```
  *
+ * </details>
  *
- * ## RenderGroup
+ * <details id="renderGroup">
+ * <summary>RenderGroup</summary>
  *
  * In PixiJS v8, containers can be set to operate in 'render group mode',
  * transforming them into entities akin to a stage in traditional rendering paradigms.
@@ -332,9 +343,10 @@ export interface Container
  *
  * This means that Containers have 3 levels of matrix to be mindful of:
  *
- * 1 - localTransform, this is the transform of the container based on its own properties
- * 2 - groupTransform, this it the transform of the container relative to the renderGroup it belongs too
- * 3 - worldTransform, this is the transform of the container relative to the Scene being rendered
+ * 1. localTransform, this is the transform of the container based on its own properties
+ * 2. groupTransform, this it the transform of the container relative to the renderGroup it belongs too
+ * 3. worldTransform, this is the transform of the container relative to the Scene being rendered
+ * </details>
  * @memberof scene
  */
 export class Container extends EventEmitter<ContainerEvents & AnyEvent>
@@ -490,23 +502,19 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
      */
     public _sy = 1;
 
-    /** The rotation amount. */
+    /**
+     * The rotation amount.
+     * @internal
+     * @ignore
+     */
     private _rotation = 0;
 
     // / COLOR related props //////////////
 
     // color stored as ABGR
-    /**
-     * @internal
-     * @ignore
-     */
     public localColor = 0xFFFFFF;
     public localAlpha = 1;
 
-    /**
-     * @internal
-     * @ignore
-     */
     public groupAlpha = 1; // A
     public groupColor = 0xFFFFFF; // BGR
     public groupColorAlpha = 0xFFFFFFFF; // ABGR
@@ -562,9 +570,13 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
      *
      *  view          container
      * [000000000000][00000000000]
+     * @ignore
      */
     public _didChangeId = 0;
-    /** property that tracks if the container transform has changed */
+    /**
+     * property that tracks if the container transform has changed
+     * @ignore
+     */
     private _didLocalTransformChangeId = -1;
 
     constructor(options: ContainerOptions = {})

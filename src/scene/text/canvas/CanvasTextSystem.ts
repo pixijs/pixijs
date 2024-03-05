@@ -22,7 +22,7 @@ interface CanvasAndContext
 }
 
 /**
- * System that manages the generation of textures from the renderer
+ * System plugin to the renderer to manage canvas text.
  * @memberof rendering
  */
 export class CanvasTextSystem implements System
