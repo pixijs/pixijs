@@ -19,12 +19,21 @@ import type { FillGradient } from './fill/FillGradient';
 import type { FillPattern } from './fill/FillPattern';
 import type { RoundedPoint } from './path/roundShape';
 
+/**
+ * A fill style object.
+ * @memberof scene
+ */
 export interface FillStyle
 {
+    /** The color to use for the fill. */
     color?: ColorSource;
+    /** The alpha value to use for the fill. */
     alpha?: number;
+    /** The texture to use for the fill. */
     texture?: Texture | null;
+    /** The matrix to apply. */
     matrix?: Matrix | null;
+    /** The fill pattern to use. */
     fill?: FillPattern | FillGradient | null;
 }
 
@@ -37,13 +46,22 @@ export interface PatternFillStyle
     alpha?: number;
 }
 
+/**
+ * A stroke style object.
+ * @memberof scene
+ */
 export interface StrokeStyle extends FillStyle
 {
+    /** The width of the stroke. */
     width?: number;
+    /** The alignment of the stroke. */
     alignment?: number;
     // native?: boolean;
+    /** The line cap style to use. */
     cap?: LineCap;
+    /** The line join style to use. */
     join?: LineJoin;
+    /** The miter limit to use. */
     miterLimit?: number;
 }
 
@@ -102,24 +120,41 @@ export class GraphicsContext extends EventEmitter<{
     destroy: GraphicsContext
 }>
 {
+    /** The default fill style to use when none is provided. */
     public static defaultFillStyle: ConvertedFillStyle = {
+        /** The color to use for the fill. */
         color: 0xffffff,
+        /** The alpha value to use for the fill. */
         alpha: 1,
+        /** The texture to use for the fill. */
         texture: Texture.WHITE,
+        /** The matrix to apply. */
         matrix: null,
+        /** The fill pattern to use. */
         fill: null,
     };
 
+    /** The default stroke style to use when none is provided. */
     public static defaultStrokeStyle: ConvertedStrokeStyle = {
+        /** The width of the stroke. */
         width: 1,
+        /** The color to use for the stroke. */
         color: 0xffffff,
+        /** The alpha value to use for the stroke. */
         alpha: 1,
+        /** The alignment of the stroke. */
         alignment: 0.5,
+        /** The miter limit to use. */
         miterLimit: 10,
+        /** The line cap style to use. */
         cap: 'butt',
+        /** The line join style to use. */
         join: 'miter',
+        /** The texture to use for the fill. */
         texture: Texture.WHITE,
+        /** The matrix to apply. */
         matrix: null,
+        /** The fill pattern to use. */
         fill: null,
     };
 
@@ -163,6 +198,9 @@ export class GraphicsContext extends EventEmitter<{
         return clone;
     }
 
+    /**
+     * The current fill style of the graphics context. This can be a color, gradient, pattern, or a more complex style defined by a FillStyle object.
+     */
     get fillStyle(): ConvertedFillStyle
     {
         return this._fillStyle;
@@ -173,6 +211,9 @@ export class GraphicsContext extends EventEmitter<{
         this._fillStyle = convertFillInputToFillStyle(value, GraphicsContext.defaultFillStyle);
     }
 
+    /**
+     * The current stroke style of the graphics context. Similar to fill styles, stroke styles can encompass colors, gradients, patterns, or more detailed configurations via a StrokeStyle object.
+     */
     get strokeStyle(): ConvertedStrokeStyle
     {
         return this._strokeStyle;
@@ -269,9 +310,9 @@ export class GraphicsContext extends EventEmitter<{
      * @param style - (Optional) The style to fill the path with. Can be a color, gradient, pattern, or a complex style object. If omitted, uses the current fill style.
      * @returns The instance of the current GraphicsContext for method chaining.
      */
+    public fill(style?: FillStyleInputs): this;
     /** @deprecated 8.0.0 */
     public fill(color: ColorSource, alpha: number): this;
-    public fill(style?: FillStyleInputs): this;
     public fill(style?: FillStyleInputs, alpha?: number): this
     {
         let path: GraphicsPath;
@@ -1014,6 +1055,7 @@ export class GraphicsContext extends EventEmitter<{
         this._boundsDirty = true;
     }
 
+    /** The bounds of the graphic shape. */
     get bounds(): Bounds
     {
         if (!this._boundsDirty) return this._bounds;

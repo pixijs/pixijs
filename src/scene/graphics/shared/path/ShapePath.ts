@@ -32,6 +32,7 @@ const tempRectangle = new Rectangle();
  */
 export class ShapePath
 {
+    /** The list of shape primitives that make up the path. */
     public shapePrimitives: { shape: ShapePrimitive, transform?: Matrix }[] = [];
     private _currentPoly: Polygon | null = null;
     private readonly _graphicsPath2D: GraphicsPath;
@@ -666,6 +667,7 @@ export class ShapePath
         }
     }
 
+    /** Builds the path. */
     public buildPath()
     {
         const path = this._graphicsPath2D;
@@ -684,6 +686,7 @@ export class ShapePath
         this.finish();
     }
 
+    /** Gets the bounds of the path. */
     get bounds(): Bounds
     {
         const bounds = this._bounds;
