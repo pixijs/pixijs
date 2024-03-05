@@ -103,22 +103,37 @@ export class Graphics extends Container implements View, Instruction
         return this._context;
     }
 
+    /**
+     * The local bounds of the graphic.
+     * @type {rendering.Bounds}
+     */
     get bounds(): Bounds
     {
         return this._context.bounds;
     }
 
+    /**
+     * Adds the bounds of this object to the bounds object.
+     * @param bounds - The output bounds object.
+     */
     public addBounds(bounds: Bounds)
     {
         bounds.addBounds(this._context.bounds);
     }
 
+    /**
+     * Checks if the object contains the given point.
+     * @param point - The point to check
+     */
     public containsPoint(point: PointData)
     {
         return this._context.containsPoint(point);
     }
 
-    /** Whether or not to round the x/y position. */
+    /**
+     *  Whether or not to round the x/y position of the graphic.
+     * @type {boolean}
+     */
     get roundPixels()
     {
         return !!this._roundPixels;
@@ -194,7 +209,6 @@ export class Graphics extends Container implements View, Instruction
         return this._callContextMethod('setStrokeStyle', args);
     }
 
-    /** @deprecated 8.0.0 */
     public fill(color: ColorSource, alpha: number): this;
     public fill(style?: FillStyleInputs): this;
     public fill(...args: [FillStyleInputs, ColorSource?]): this
@@ -403,7 +417,7 @@ export class Graphics extends Container implements View, Instruction
      * @param width
      * @param color
      * @param alpha
-     * @deprecated since 8.0.0
+     * @deprecated since 8.0.0 Use {@link Graphics#setStrokeStyle} instead
      */
     public lineStyle(width?: number, color?: ColorSource, alpha?: number): this
     {
@@ -427,7 +441,7 @@ export class Graphics extends Container implements View, Instruction
     /**
      * @param color
      * @param alpha
-     * @deprecated since 8.0.0
+     * @deprecated since 8.0.0 Use {@link Graphics#fill} instead
      */
     public beginFill(color: ColorSource, alpha?: number)
     {
@@ -448,7 +462,7 @@ export class Graphics extends Container implements View, Instruction
     }
 
     /**
-     * @deprecated since 8.0.0
+     * @deprecated since 8.0.0 Use {@link Graphics#fill} instead
      */
     public endFill()
     {
@@ -472,7 +486,7 @@ export class Graphics extends Container implements View, Instruction
 
     /**
      * @param {...any} args
-     * @deprecated since 8.0.0
+     * @deprecated since 8.0.0 Use {@link Graphics#circle} instead
      */
     public drawCircle(...args: Parameters<GraphicsContext['circle']>): this
     {
@@ -485,7 +499,7 @@ export class Graphics extends Container implements View, Instruction
 
     /**
      * @param {...any} args
-     * @deprecated since 8.0.0
+     * @deprecated since 8.0.0 Use {@link Graphics#ellipse} instead
      */
     public drawEllipse(...args: Parameters<GraphicsContext['ellipse']>): this
     {
@@ -498,7 +512,7 @@ export class Graphics extends Container implements View, Instruction
 
     /**
      * @param {...any} args
-     * @deprecated since 8.0.0
+     * @deprecated since 8.0.0 Use {@link Graphics#poly} instead
      */
     public drawPolygon(...args: Parameters<GraphicsContext['poly']>): this
     {
@@ -511,7 +525,7 @@ export class Graphics extends Container implements View, Instruction
 
     /**
      * @param {...any} args
-     * @deprecated since 8.0.0
+     * @deprecated since 8.0.0 Use {@link Graphics#rect} instead
      */
     public drawRect(...args: Parameters<GraphicsContext['rect']>): this
     {
@@ -524,7 +538,7 @@ export class Graphics extends Container implements View, Instruction
 
     /**
      * @param {...any} args
-     * @deprecated since 8.0.0
+     * @deprecated since 8.0.0 Use {@link Graphics#roundRect} instead
      */
     public drawRoundedRect(...args: Parameters<GraphicsContext['roundRect']>): this
     {
@@ -537,7 +551,7 @@ export class Graphics extends Container implements View, Instruction
 
     /**
      * @param {...any} args
-     * @deprecated since 8.0.0
+     * @deprecated since 8.0.0 Use {@link Graphics#star} instead
      */
     public drawStar(...args: Parameters<GraphicsContext['star']>): this
     {

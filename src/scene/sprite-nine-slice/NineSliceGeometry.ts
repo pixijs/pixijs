@@ -1,16 +1,30 @@
 import { Matrix } from '../../maths/matrix/Matrix';
 import { PlaneGeometry } from '../mesh-plane/PlaneGeometry';
 
+/**
+ * Options for the NineSliceGeometry.
+ * @memberof scene
+ */
 export interface NineSliceGeometryOptions
 {
+
+    /** The width of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane. */
     width?: number
+    /** The height of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane. */
     height?: number
+    /** The original width of the texture */
     originalWidth?: number
+    /** The original height of the texture */
     originalHeight?: number
+    /** The width of the left column. */
     leftWidth?: number
+    /** The height of the top row. */
     topHeight?: number
+    /** The width of the right column. */
     rightWidth?: number
+    /** The height of the bottom row. */
     bottomHeight?: number
+    /** The texture matrix of the NineSlicePlane. */
     textureMatrix?: Matrix
 }
 
@@ -20,15 +34,24 @@ export interface NineSliceGeometryOptions
  */
 export class NineSliceGeometry extends PlaneGeometry
 {
+    /** The default options for the NineSliceGeometry. */
     public static defaultOptions: NineSliceGeometryOptions = {
+        /** The width of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane. */
         width: 100,
+        /** The height of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane. */
         height: 100,
+        /** The width of the left column. */
         leftWidth: 10,
+        /** The height of the top row. */
         topHeight: 10,
+        /** The width of the right column. */
         rightWidth: 10,
+        /** The height of the bottom row. */
         bottomHeight: 10,
 
+        /** The original width of the texture */
         originalWidth: 100,
+        /** The original height of the texture */
         originalHeight: 100,
     };
 
@@ -55,6 +78,10 @@ export class NineSliceGeometry extends PlaneGeometry
         this.update(options);
     }
 
+    /**
+     * Updates the NineSliceGeometry with the options.
+     * @param options - The options of the NineSliceGeometry.
+     */
     public update(options: NineSliceGeometryOptions)
     {
         this.width = options.width ?? this.width;
@@ -75,6 +102,7 @@ export class NineSliceGeometry extends PlaneGeometry
         this.updatePositions();
     }
 
+    /** Updates the positions of the vertices. */
     public updatePositions()
     {
         const positions = this.positions;
@@ -98,6 +126,7 @@ export class NineSliceGeometry extends PlaneGeometry
         this.getBuffer('aPosition').update();
     }
 
+    /** Updates the UVs of the vertices. */
     public updateUvs()
     {
         const textureMatrix = this._textureMatrix;

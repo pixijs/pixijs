@@ -59,16 +59,35 @@ export interface RenderContainerOptions extends ContainerOptions
 export class RenderContainer extends Container implements View, Instruction
 {
     public batched = false;
+    /**
+     *  Whether or not to round the x/y position of the sprite.
+     * @type {boolean}
+     */
     public roundPixels: boolean;
     public _roundPixels: 0 | 1;
 
+    /**
+     * The local bounds of the sprite.
+     * @type {rendering.Bounds}
+     */
     public bounds = new Bounds();
+    /**
+     * Checks if the object contains the given point.
+     * @param point - The point to check
+     */
     public containsPoint: (point: Point) => boolean;
+    /**
+     * Adds the bounds of this text to the bounds object.
+     * @param bounds - The output bounds object.
+     */
     public addBounds: (bounds: Bounds) => void;
 
     public canBundle = false;
     public renderPipeId = 'customRender';
 
+    /**
+     * @param options - The options for the container.
+     */
     constructor(options: RenderContainerOptions | RenderFunction)
     {
         if (typeof options === 'function')
@@ -89,6 +108,10 @@ export class RenderContainer extends Container implements View, Instruction
         this.addBounds = options.addBounds ?? (() => false);
     }
 
+    /**
+     * An overrideable function that can be used to render the object using the current renderer.
+     * @param _renderer - The current renderer
+     */
     public render(_renderer: Renderer): void
     {
         // override me!

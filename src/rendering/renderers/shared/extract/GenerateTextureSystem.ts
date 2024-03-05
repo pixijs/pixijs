@@ -43,6 +43,9 @@ const noColor: ColorSource = [0, 0, 0, 0];
 
 /**
  * System that manages the generation of textures from the renderer
+ *
+ *
+ * Do not instantiate these plugins directly. It is available from the `renderer.textureGenerator` property.
  * @memberof rendering
  */
 export class GenerateTextureSystem implements System

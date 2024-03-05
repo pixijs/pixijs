@@ -59,10 +59,7 @@ export class BlurFilter extends Filter
     private _repeatEdgePixels = false;
 
     /**
-     * @param options - The options of the blur filter.
-     * @param options.strength - The strength of the blur filter.
-     * @param options.quality - The quality of the blur filter.
-     * @param options.kernelSize - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
+     * @param {filters.BlurFilterOptions} options - The options of the blur filter.
      */
     constructor(options?: BlurFilterOptions);
     /** @deprecated since 8.0.0 */

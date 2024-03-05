@@ -138,6 +138,10 @@ export class Sprite extends Container implements View
         return this._texture;
     }
 
+    /**
+     * The local bounds of the sprite.
+     * @type {rendering.Bounds}
+     */
     get bounds()
     {
         if (this._boundsDirty)
@@ -160,7 +164,10 @@ export class Sprite extends Container implements View
         return this._sourceBounds;
     }
 
-    // passed local space..
+    /**
+     * Checks if the object contains the given point.
+     * @param point - The point to check
+     */
     public containsPoint(point: PointData)
     {
         const bounds = this.sourceBounds;
@@ -176,6 +183,10 @@ export class Sprite extends Container implements View
         return false;
     }
 
+    /**
+     * Adds the bounds of this object to the bounds object.
+     * @param bounds - The output bounds object.
+     */
     public addBounds(bounds: Bounds)
     {
         const _bounds = this._texture.trim ? this.sourceBounds : this.bounds;
@@ -273,7 +284,10 @@ export class Sprite extends Container implements View
         typeof value === 'number' ? this._anchor.set(value) : this._anchor.copyFrom(value);
     }
 
-    /** Whether or not to round the x/y position of the sprite. */
+    /**
+     *  Whether or not to round the x/y position of the sprite.
+     * @type {boolean}
+     */
     get roundPixels()
     {
         return !!this._roundPixels;

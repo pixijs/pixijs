@@ -142,7 +142,7 @@ export class TilingSprite extends Container implements View, Instruction
     private _height: number;
 
     /**
-     * @param options - The options for creating the tiling sprite.
+     * @param {rendering.Texture | scene.TilingSpriteOptions} options - The options for creating the tiling sprite.
      */
     constructor(options?: Texture | TilingSpriteOptions);
     /** @deprecated since 8.0.0 */
@@ -199,7 +199,7 @@ export class TilingSprite extends Container implements View, Instruction
 
         this._tileTransform = new Transform({
             observer: {
-                _onUpdate: () => this.onTilingSpriteUpdate(),
+                _onUpdate: () => this._onTilingSpriteUpdate(),
             }
         });
 
@@ -293,7 +293,10 @@ export class TilingSprite extends Container implements View, Instruction
         return this._tileTransform;
     }
 
-    /** Whether or not to round the x/y position of the tiling sprite. */
+    /**
+     *  Whether or not to round the x/y position of the sprite.
+     * @type {boolean}
+     */
     get roundPixels()
     {
         return !!this._roundPixels;
@@ -304,6 +307,10 @@ export class TilingSprite extends Container implements View, Instruction
         this._roundPixels = value ? 1 : 0;
     }
 
+    /**
+     * The local bounds of the sprite.
+     * @type {rendering.Bounds}
+     */
     get bounds()
     {
         if (this._boundsDirty)
@@ -321,7 +328,7 @@ export class TilingSprite extends Container implements View, Instruction
 
         this._texture = value;
 
-        this.onTilingSpriteUpdate();
+        this._onTilingSpriteUpdate();
     }
 
     /** The texture that the sprite is using. */
@@ -334,7 +341,7 @@ export class TilingSprite extends Container implements View, Instruction
     set width(value: number)
     {
         this._width = value;
-        this.onTilingSpriteUpdate();
+        this._onTilingSpriteUpdate();
     }
 
     get width()
@@ -345,7 +352,7 @@ export class TilingSprite extends Container implements View, Instruction
     set height(value: number)
     {
         this._height = value;
-        this.onTilingSpriteUpdate();
+        this._onTilingSpriteUpdate();
     }
 
     /** The height of the tiling area. */
@@ -370,6 +377,10 @@ export class TilingSprite extends Container implements View, Instruction
         bounds.minY = bounds.maxY + height;
     }
 
+    /**
+     * Adds the bounds of this object to the bounds object.
+     * @param bounds - The output bounds object.
+     */
     public addBounds(bounds: Bounds)
     {
         const _bounds = this.bounds;
@@ -382,6 +393,10 @@ export class TilingSprite extends Container implements View, Instruction
         );
     }
 
+    /**
+     * Checks if the object contains the given point.
+     * @param point - The point to check
+     */
     public containsPoint(point: PointData)
     {
         const width = this.bounds.minX;
@@ -399,7 +414,7 @@ export class TilingSprite extends Container implements View, Instruction
         return false;
     }
 
-    public onTilingSpriteUpdate()
+    private _onTilingSpriteUpdate()
     {
         this._boundsDirty = true;
         this._didTilingSpriteUpdate = true;

@@ -6,6 +6,7 @@ import { createUboSyncFunctionSTD40 } from './shader/utils/createUboSyncSTD40';
 /**
  * System plugin to the renderer to manage uniform buffers. But with an WGSL adaptor.
  * @memberof rendering
+ * @ignore
  */
 export class GlUboSystem extends UboSystem
 {

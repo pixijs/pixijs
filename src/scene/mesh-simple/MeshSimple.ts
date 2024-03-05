@@ -7,6 +7,10 @@ import type { Topology } from '../../rendering/renderers/shared/geometry/const';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { MeshOptions } from '../mesh/shared/Mesh';
 
+/**
+ * Options for the simple mesh.
+ * @memberof scene
+ */
 export interface SimpleMeshOptions extends Omit<MeshOptions, 'geometry'>
 {
     /** The texture to use */

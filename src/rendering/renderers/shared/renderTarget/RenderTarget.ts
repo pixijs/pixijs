@@ -43,14 +43,23 @@ export interface RenderTargetOptions
  */
 export class RenderTarget
 {
+    /** The default options for a render target */
     public static defaultOptions: RenderTargetOptions = {
+        /** the width of the RenderTarget */
         width: 0,
+        /** the height of the RenderTarget */
         height: 0,
+        /** the resolution of the RenderTarget */
         resolution: 1,
+        /** an array of textures, or a number indicating how many color textures there should be */
         colorTextures: 1,
+        /** should this render target have a stencil buffer? */
         stencil: false,
+        /** should this render target have a depth buffer? */
         depth: false,
+        /** should this render target be antialiased? */
         antialias: false, // save on perf by default!
+        /** is this a root element, true if this is gl context owners render target */
         isRoot: false
     };
 
@@ -73,6 +82,9 @@ export class RenderTarget
 
     private readonly _size = new Float32Array(2);
 
+    /**
+     * @param [descriptor] - Options for creating a render target.
+     */
     constructor(descriptor: RenderTargetOptions = {})
     {
         descriptor = { ...RenderTarget.defaultOptions, ...descriptor };

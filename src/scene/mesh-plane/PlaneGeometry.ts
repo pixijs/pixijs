@@ -51,11 +51,7 @@ export class PlaneGeometry extends MeshGeometry
     public height: number;
 
     /**
-     * @param options - Options to be applied to plane geometry
-     * @param options.width - Width of plane
-     * @param options.height - Height of plane
-     * @param options.verticesX - Number of vertices on x-axis
-     * @param options.verticesY - Number of vertices on y-axis
+     * @param {PlaneGeometryOptions} options - Options to be applied to plane geometry
      */
     constructor(options: PlaneGeometryOptions);
     /** @deprecated since 8.0.0 */

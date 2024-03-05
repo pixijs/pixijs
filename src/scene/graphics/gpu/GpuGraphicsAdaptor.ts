@@ -19,6 +19,7 @@ import type { GraphicsAdaptor, GraphicsPipe } from '../shared/GraphicsPipe';
 /**
  * A GraphicsAdaptor that uses the GPU to render graphics.
  * @memberof rendering
+ * @ignore
  */
 export class GpuGraphicsAdaptor implements GraphicsAdaptor
 {

@@ -15,6 +15,7 @@ import type { WebGPURenderer } from '../WebGPURenderer';
  * The WebGPU adaptor for the render target system. Allows the Render Target System to
  * be used with the WebGPU renderer
  * @memberof rendering
+ * @ignore
  */
 export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarget>
 {

@@ -18,6 +18,7 @@ import type { GraphicsAdaptor, GraphicsPipe } from '../shared/GraphicsPipe';
 /**
  * A GraphicsAdaptor that uses WebGL to render graphics.
  * @memberof rendering
+ * @ignore
  */
 export class GlGraphicsAdaptor implements GraphicsAdaptor
 {

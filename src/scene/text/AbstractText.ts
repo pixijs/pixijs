@@ -167,7 +167,7 @@ export abstract class AbstractText<
     }
 
     /**
-     *  Whether or not to round the x/y position of the sprite.
+     *  Whether or not to round the x/y position of the text.
      * @type {boolean}
      */
     get roundPixels()

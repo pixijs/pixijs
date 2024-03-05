@@ -142,13 +142,21 @@ export class TextStyle extends EventEmitter<{
     update: TextDropShadow
 }>
 {
+    /** The default drop shadow settings */
     public static defaultDropShadow: TextDropShadow = {
+        /** Set alpha for the drop shadow */
         alpha: 1,
+        /** Set a angle of the drop shadow */
         angle: Math.PI / 6,
+        /** Set a shadow blur radius */
         blur: 0,
+        /** A fill style to be used on the  e.g., 'red', '#00FF00' */
         color: 'black',
+        /** Set a distance of the drop shadow */
         distance: 5,
     };
+
+    /** The default text style settings */
     public static defaultTextStyle: TextStyleOptions = {
         /**
          * See {@link TextStyle.align}

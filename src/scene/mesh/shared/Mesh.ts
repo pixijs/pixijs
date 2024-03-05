@@ -95,6 +95,9 @@ export class Mesh<
 
     public _roundPixels: 0 | 1 = 0;
 
+    /**
+     * @param {scene.MeshOptions} options - options for the mesh instance
+     */
     constructor(options: MeshOptions<GEOMETRY, SHADER>);
     /** @deprecated since 8.0.0 */
     constructor(geometry: GEOMETRY, shader: SHADER, state?: State, drawMode?: Topology);
@@ -142,7 +145,10 @@ export class Mesh<
         this.roundPixels = roundPixels ?? false;
     }
 
-    /** Whether or not to round the x/y position of the mesh. */
+    /**
+     *  Whether or not to round the x/y position of the mesh.
+     * @type {boolean}
+     */
     get roundPixels()
     {
         return !!this._roundPixels;
@@ -237,16 +243,28 @@ export class Mesh<
         return false;
     }
 
+    /**
+     * The local bounds of the mesh.
+     * @type {rendering.Bounds}
+     */
     get bounds()
     {
         return this._geometry.bounds;
     }
 
+    /**
+     * Adds the bounds of this object to the bounds object.
+     * @param bounds - The output bounds object.
+     */
     public addBounds(bounds: Bounds)
     {
         bounds.addBounds(this.geometry.bounds);
     }
 
+    /**
+     * Checks if the object contains the given point.
+     * @param point - The point to check
+     */
     public containsPoint(point: PointData)
     {
         const { x, y } = point;

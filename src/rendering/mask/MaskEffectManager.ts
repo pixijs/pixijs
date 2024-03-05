@@ -13,6 +13,7 @@ interface MaskConversionTest
 /**
  * A class that manages the conversion of masks to mask effects.
  * @memberof rendering
+ * @ignore
  */
 export class MaskEffectManagerClass
 {

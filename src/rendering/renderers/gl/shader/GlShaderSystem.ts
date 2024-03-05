@@ -25,7 +25,7 @@ const defaultSyncData: ShaderSyncData = {
 };
 
 /**
- * System plugin to the renderer to manage the shaders.
+ * System plugin to the renderer to manage the shaders for WebGL.
  * @memberof rendering
  */
 export class GlShaderSystem
@@ -70,6 +70,12 @@ export class GlShaderSystem
         this._activeProgram = null;
     }
 
+    /**
+     * Changes the current shader to the one given in parameter.
+     * @param shader - the new shader
+     * @param skipSync - false if the shader should automatically sync its uniforms.
+     * @returns the glProgram that belongs to the shader.
+     */
     public bind(shader: Shader, skipSync?: boolean): void
     {
         this._setProgram(shader.glProgram);
@@ -89,11 +95,21 @@ export class GlShaderSystem
         syncFunction(this._renderer, shader, defaultSyncData);
     }
 
+    /**
+     * Updates the uniform group.
+     * @param uniformGroup - the uniform group to update
+     */
     public updateUniformGroup(uniformGroup: UniformGroup): void
     {
         this._renderer.uniformGroup.updateUniformGroup(uniformGroup, this._activeProgram, defaultSyncData);
     }
 
+    /**
+     * Binds a uniform block to the shader.
+     * @param uniformGroup - the uniform group to bind
+     * @param name - the name of the uniform block
+     * @param index - the index of the uniform block
+     */
     public bindUniformBlock(uniformGroup: UniformGroup | BufferResource, name: string, index = 0): void
     {
         const bufferSystem = this._renderer.buffer;
@@ -196,6 +212,7 @@ export class GlShaderSystem
      * @param shader - the shader to generate the sync function for
      * @param shaderSystem - the shader system to use
      * @returns - the generated sync function
+     * @ignore
      */
     public _generateShaderSync(shader: Shader, shaderSystem: GlShaderSystem): ShaderSyncFunction
     {
