@@ -7,7 +7,7 @@ import type { TextureSourceOptions } from '../../../rendering/renderers/shared/t
 let ktxWorker: Worker;
 const urlHash: Record<string, (value: any) => void> = {};
 
-function getKTXWorker(supportedTextures: TEXTURE_FORMATS[]): Worker
+function getKTX2Worker(supportedTextures: TEXTURE_FORMATS[]): Worker
 {
     if (!ktxWorker)
     {
@@ -41,7 +41,7 @@ export function loadKTX2onWorker(
     supportedTextures: TEXTURE_FORMATS[]
 ): Promise<TextureSourceOptions>
 {
-    const ktxWorker = getKTXWorker(supportedTextures);
+    const ktxWorker = getKTX2Worker(supportedTextures);
 
     return new Promise((resolve) =>
     {
