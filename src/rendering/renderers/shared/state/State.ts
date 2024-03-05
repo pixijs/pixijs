@@ -29,7 +29,6 @@ const DEPTH_MASK = 5;
 export class State
 {
     public data: number;
-    /** @internal */
     public _blendModeId: number;
     private _blendMode: BLEND_MODES;
     private _polygonOffset: number;

@@ -103,7 +103,10 @@ export class GpuProgram
     /** @todo */
     public readonly gpuLayout: ProgramPipelineLayoutDescription;
 
-    /** @internal */
+    /**
+     * @internal
+     * @ignore
+     */
     public _layoutKey = 0;
 
     /** the structs and groups extracted from the shader sources */

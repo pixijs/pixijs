@@ -21,12 +21,16 @@ import type { TextStyleOptions } from '../text/TextStyle';
  * may be impractical due to the number of characters.
  *
  * <b>Pre-loaded BitmapFonts:</b>
+ *
+ *
  * PixiJS enables the loading of BitmapFonts through its Asset Manager, supporting both XML and FNT formats.
  * Additionally, PixiJS is compatible with MSDF (Multi-channel Signed Distance Field) and SDF (Signed Distance Field) fonts.
  * These advanced font types allow for scaling without quality degradation and must be created with specific tools,
  * such as the one available at https://msdf-bmfont.donmccurdy.com/.
  *
  * <b>Dynamically Generated BitmapFonts:</b>
+ *
+ *
  * PixiJS also offers the capability to generate BitmapFonts dynamically. This means that fonts are created in real-time
  * based on specified styles, eliminating the need for pre-loading. This process is initiated simply by assigning a style
  * to a BitmapText object, which then automatically generates the required font.
@@ -94,8 +98,17 @@ export class BitmapText extends AbstractText<TextStyle, TextStyleOptions> implem
 {
     public readonly renderPipeId: string = 'bitmapText';
 
+    /**
+     * **Note:** Our docs parser struggles to properly understand the constructor signature.
+     * This is the correct signature.
+     * ```ts
+     * new BitmapText(options?: TextOptions);
+     * ```
+     * @param options - The options of the bitmap text.
+     * @param {string} options.text - The text of the bitmap text.
+     * @param {Partial<text.TextStyle>} options.style - The style of the bitmap text.
+     */
     constructor(options?: TextOptions);
-    /** @deprecated since 8.0.0 */
     constructor(text?: TextString, options?: Partial<TextStyle>);
     constructor(...args: [TextOptions?] | [TextString, Partial<TextStyle>])
     {

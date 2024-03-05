@@ -19,6 +19,13 @@ import type { Renderer } from '../../types';
 import type { System } from '../system/System';
 import type { BindableTexture } from '../texture/Texture';
 
+/**
+ * A render surface is a texture, canvas, or render target
+ * @memberof rendering
+ * @see environment.ICanvas
+ * @see rendering.Texture
+ * @see rendering.RenderTarget
+ */
 export type RenderSurface = ICanvas | BindableTexture | RenderTarget;
 
 /**

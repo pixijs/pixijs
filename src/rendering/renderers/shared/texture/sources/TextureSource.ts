@@ -117,7 +117,6 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     public uploadMethodId = 'unknown';
 
     // dimensions
-    /** @internal */
     public _resolution = 1;
 
     /** the pixel width of this texture source. This is the REAL pure number, not accounting resolution */

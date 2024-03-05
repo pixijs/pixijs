@@ -88,15 +88,21 @@ export interface BatchableObject
 
 let BATCH_TICK = 0;
 
+/**
+ * The options for the batcher.
+ * @ignore
+ */
 export interface BatcherOptions
 {
+    /** The size of the vertex buffer. */
     vertexSize?: number;
+    /** The size of the index buffer. */
     indexSize?: number;
 }
 
 /**
  * A batcher is used to batch together objects with the same texture.
- * @memberof rendering
+ * @ignore
  */
 export class Batcher
 {
