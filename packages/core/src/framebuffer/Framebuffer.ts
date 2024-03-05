@@ -13,10 +13,16 @@ import type { GLFramebuffer } from './GLFramebuffer';
  */
 export class Framebuffer
 {
-    /** Width of framebuffer in pixels. */
+    /**
+     * Width of the framebuffer in pixels.
+     * @readonly
+     */
     public width: number;
 
-    /** Height of framebuffer in pixels. */
+    /**
+     * Height of the framebuffer in pixels.
+     * @readonly
+     */
     public height: number;
 
     /**
@@ -36,8 +42,8 @@ export class Framebuffer
      */
     public multisample: MSAA_QUALITY;
 
-    stencil: boolean;
-    depth: boolean;
+    _stencil: boolean;
+    _depth: boolean;
     dirtyId: number;
     dirtyFormat: number;
     dirtySize: number;
@@ -60,8 +66,8 @@ export class Framebuffer
             throw new Error('Framebuffer width or height is zero');
         }
 
-        this.stencil = false;
-        this.depth = false;
+        this._stencil = false;
+        this._depth = false;
 
         this.dirtyId = 0;
         this.dirtyFormat = 0;
@@ -129,24 +135,54 @@ export class Framebuffer
         return this;
     }
 
+    /** Does this framebuffer need/have a depth buffer? */
+    get depth(): boolean
+    {
+        return this._depth;
+    }
+
+    set depth(value: boolean)
+    {
+        if (this._depth === value)
+        {
+            return;
+        }
+
+        this._depth = value;
+        this.dirtyId++;
+        this.dirtyFormat++;
+    }
+
     /** Enable depth on the frame buffer. */
     enableDepth(): this
     {
         this.depth = true;
 
+        return this;
+    }
+
+    /** Does this framebuffer need/have a stencil buffer? */
+    get stencil(): boolean
+    {
+        return this._stencil;
+    }
+
+    set stencil(value: boolean)
+    {
+        if (this._stencil === value)
+        {
+            return;
+        }
+
+        this._stencil = value;
         this.dirtyId++;
         this.dirtyFormat++;
-
-        return this;
     }
 
     /** Enable stencil on the frame buffer. */
     enableStencil(): this
     {
         this.stencil = true;
-
-        this.dirtyId++;
-        this.dirtyFormat++;
 
         return this;
     }
