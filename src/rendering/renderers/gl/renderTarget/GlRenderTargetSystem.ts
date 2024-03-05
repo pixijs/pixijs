@@ -5,6 +5,10 @@ import { GlRenderTargetAdaptor } from './GlRenderTargetAdaptor';
 import type { GlRenderTarget } from '../GlRenderTarget';
 import type { WebGLRenderer } from '../WebGLRenderer';
 
+/**
+ * The WebGL adaptor for the render target system. Allows the Render Target System to be used with the WebGl renderer
+ * @memberof rendering
+ */
 export class GlRenderTargetSystem extends RenderTargetSystem<GlRenderTarget>
 {
     /** @ignore */

@@ -12,6 +12,10 @@ import type { BindResource } from './shader/BindResource';
 import type { GpuProgram } from './shader/GpuProgram';
 import type { WebGPURenderer } from './WebGPURenderer';
 
+/**
+ * This manages the WebGPU bind groups. this is how data is bound to a shader when rendering
+ * @memberof rendering
+ */
 export class BindGroupSystem implements System
 {
     /** @ignore */

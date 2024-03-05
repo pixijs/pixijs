@@ -3,6 +3,10 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import type { System } from '../shared/system/System';
 import type { WebGPURenderer } from './WebGPURenderer';
 
+/**
+ * The system that handles color masking for the GPU.
+ * @memberof rendering
+ */
 export class GpuColorMaskSystem implements System
 {
     /** @ignore */

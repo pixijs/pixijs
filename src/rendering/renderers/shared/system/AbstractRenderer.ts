@@ -90,6 +90,7 @@ type Runners = {[key in DefaultRunners]: SystemRunner} & {
  * The renderer is composed of systems that manage specific tasks. The following systems are added by default
  * whenever you create a renderer:
  *
+ *
  * | Generic Systems                      | Systems that manage functionality that all renderer types share               |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
  * | {@link rendering.ViewSystem}              | This manages the main view of the renderer usually a Canvas              |
@@ -99,11 +100,13 @@ type Runners = {[key in DefaultRunners]: SystemRunner} & {
  *
  * | Core Systems                   | Provide an optimised, easy to use API to work with WebGL/WebGPU               |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
+ * | {@link rendering.RenderGroupSystem} | This manages the what what we are rendering to (eg - canvas or texture)   |
  * | {@link rendering.GlobalUniformSystem} | This manages shaders, programs that run on the GPU to calculate 'em pixels.   |
  * | {@link rendering.TextureGCSystem}     | This will automatically remove textures from the GPU if they are not used.    |
  *
  * | PixiJS High-Level Systems            | Set of specific systems designed to work with PixiJS objects                  |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
+ * | {@link rendering.HelloSystem}               | Says hello, buy printing out the pixi version into the console log (along with the renderer type)       |
  * | {@link rendering.GenerateTextureSystem} | This adds the ability to generate textures from any Container       |
  * | {@link rendering.FilterSystem}          | This manages the filtering pipeline for post-processing effects.             |
  * | {@link rendering.PrepareSystem}               | This manages uploading assets to the GPU. Requires `import 'pixi.js/prepare'`|
