@@ -3,10 +3,26 @@ import { extensions, ExtensionType } from '../../../../extensions/Extensions';
 import type { Renderer } from '../../types';
 import type { System } from '../system/System';
 
+/**
+ * Options for the {@link TextureGCSystem}.
+ * @memberof rendering
+ */
 export interface TextureGCSystemOptions
 {
+    /**
+     * If set to true, this will enable the garbage collector on the GPU.
+     * @default true
+     */
     textureGCActive: boolean;
+    /**
+     * The maximum idle frames before a texture is destroyed by garbage collection.
+     * @default 60 * 60
+     */
     textureGCAMaxIdle: number;
+    /**
+     * Frames between two garbage collections.
+     * @default 600
+     */
     textureGCCheckCountMax: number;
 }
 /**
@@ -25,9 +41,22 @@ export class TextureGCSystem implements System
         name: 'textureGC',
     } as const;
 
+    /** default options for the TextureGCSystem */
     public static defaultOptions: TextureGCSystemOptions = {
+        /**
+         * If set to true, this will enable the garbage collector on the GPU.
+         * @default true
+         */
         textureGCActive: true,
+        /**
+         * The maximum idle frames before a texture is destroyed by garbage collection.
+         * @default 60 * 60
+         */
         textureGCAMaxIdle: 60 * 60,
+        /**
+         * Frames between two garbage collections.
+         * @default 600
+         */
         textureGCCheckCountMax: 600,
     };
 

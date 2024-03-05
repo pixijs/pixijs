@@ -19,6 +19,7 @@ const tempState = State.for2d();
 /**
  * A BatcherAdaptor that uses the GPU to render batches.
  * @memberof rendering
+ * @ignore
  */
 export class GpuBatchAdaptor implements BatcherAdaptor
 {

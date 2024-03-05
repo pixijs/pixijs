@@ -12,17 +12,31 @@ import type { TextureSourceOptions } from './TextureSource';
 
 type VideoResource = HTMLVideoElement;
 
+/**
+ * Options for video sources.
+ * @memberof rendering
+ */
 export interface VideoSourceOptions extends TextureSourceOptions<VideoResource>
 {
+    /** If true, the video will start loading immediately. */
     autoLoad?: boolean;
+    /** If true, the video will start playing as soon as it is loaded. */
     autoPlay?: boolean;
+    /** The number of times a second to update the texture from the video. Leave at 0 to update at every render. */
     updateFPS?: number;
+    /** If true, the video will be loaded with the `crossorigin` attribute. */
     crossorigin?: boolean | string;
+    /** If true, the video will loop when it ends. */
     loop?: boolean;
+    /** If true, the video will be muted. */
     muted?: boolean;
+    /** If true, the video will play inline. */
     playsinline?: boolean;
+    /** If true, the video will be preloaded. */
     preload?: boolean;
+    /** The time in milliseconds to wait for the video to preload before timing out. */
     preloadTimeoutMs?: number;
+    /** The alpha mode of the video. */
     alphaMode?: ALPHA_MODES;
 }
 
@@ -40,21 +54,31 @@ export class VideoSource extends TextureSource<VideoResource>
 {
     public static extension: ExtensionMetadata = ExtensionType.TextureSource;
 
-    // Public static
+    /** The default options for video sources. */
     public static defaultOptions: VideoSourceOptions = {
         ...TextureSource.defaultOptions,
+        /** If true, the video will start loading immediately. */
         autoLoad: true,
+        /** If true, the video will start playing as soon as it is loaded. */
         autoPlay: true,
+        /** The number of times a second to update the texture from the video. Leave at 0 to update at every render. */
         updateFPS: 0,
+        /** If true, the video will be loaded with the `crossorigin` attribute. */
         crossorigin: true,
+        /** If true, the video will loop when it ends. */
         loop: false,
+        /** If true, the video will be muted. */
         muted: true,
+        /** If true, the video will play inline. */
         playsinline: true,
+        /** If true, the video will be preloaded. */
         preload: false,
     };
 
     // Public
+    /** Whether or not the video is ready to play. */
     public isReady = false;
+    /** The upload method for this texture. */
     public uploadMethodId = 'video';
 
     // Protected

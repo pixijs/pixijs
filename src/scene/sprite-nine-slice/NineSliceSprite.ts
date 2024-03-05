@@ -24,7 +24,7 @@ import type { DestroyOptions } from '../container/destroyTypes';
  */
 export interface NineSliceSpriteOptions extends ContainerOptions
 {
-    /** The texture to use on the NineSlicePlane. */
+    /** The texture to use on the NineSliceSprite. */
     texture: Texture;
     /** Width of the left vertical bar (A) */
     leftWidth?: number;
@@ -34,16 +34,16 @@ export interface NineSliceSpriteOptions extends ContainerOptions
     rightWidth?: number;
     /** Height of the bottom horizontal bar (D) */
     bottomHeight?: number;
-    /** Width of the NineSlicePlane, setting this will actually modify the vertices and not the UV's of this plane. */
+    /** Width of the NineSliceSprite, setting this will actually modify the vertices and not the UV's of this plane. */
     width?: number;
-    /** Height of the NineSlicePlane, setting this will actually modify the vertices and not UV's of this plane. */
+    /** Height of the NineSliceSprite, setting this will actually modify the vertices and not UV's of this plane. */
     height?: number;
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
 
 /**
- * The NineSlicePlane allows you to stretch a texture using 9-slice scaling. The corners will remain unscaled (useful
+ * The NineSliceSprite allows you to stretch a texture using 9-slice scaling. The corners will remain unscaled (useful
  * for buttons with rounded corners for example) and the other areas will be scaled horizontally and or vertically
  *
  * <pre>
@@ -64,9 +64,9 @@ export interface NineSliceSpriteOptions extends ContainerOptions
  *     area 5 will be stretched both horizontally and vertically
  * </pre>
  * @example
- * import { NineSlicePlane, Texture } from 'pixi.js';
+ * import { NineSliceSprite, Texture } from 'pixi.js';
  *
- * const plane9 = new NineSlicePlane(Texture.from('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
+ * const plane9 = new NineSliceSprite(Texture.from('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
  * @memberof scene
  */
 export class NineSliceSprite extends Container implements View
@@ -104,14 +104,14 @@ export class NineSliceSprite extends Container implements View
 
     /**
      * @param {scene.NineSliceSpriteOptions|Texture} options - Options to use
-     * @param options.texture - The texture to use on the NineSlicePlane.
+     * @param options.texture - The texture to use on the NineSliceSprite.
      * @param options.leftWidth - Width of the left vertical bar (A)
      * @param options.topHeight - Height of the top horizontal bar (C)
      * @param options.rightWidth - Width of the right vertical bar (B)
      * @param options.bottomHeight - Height of the bottom horizontal bar (D)
-     * @param options.width - Width of the NineSlicePlane,
+     * @param options.width - Width of the NineSliceSprite,
      * setting this will actually modify the vertices and not the UV's of this plane.
-     * @param options.height - Height of the NineSlicePlane,
+     * @param options.height - Height of the NineSliceSprite,
      * setting this will actually modify the vertices and not UV's of this plane.
      */
     constructor(options: NineSliceSpriteOptions | Texture)
@@ -150,7 +150,7 @@ export class NineSliceSprite extends Container implements View
         this.roundPixels = roundPixels ?? false;
     }
 
-    /** The width of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane. */
+    /** The width of the NineSliceSprite, setting this will actually modify the vertices and UV's of this plane. */
     get width(): number
     {
         return this._width;
@@ -162,7 +162,7 @@ export class NineSliceSprite extends Container implements View
         this.onViewUpdate();
     }
 
-    /** The height of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane. */
+    /** The height of the NineSliceSprite, setting this will actually modify the vertices and UV's of this plane. */
     get height(): number
     {
         return this._height;
@@ -174,7 +174,7 @@ export class NineSliceSprite extends Container implements View
         this.onViewUpdate();
     }
 
-    /** The width of the left column (a) of the NineSlicePlane. */
+    /** The width of the left column (a) of the NineSliceSprite. */
     get leftWidth(): number
     {
         return this._leftWidth;
@@ -187,7 +187,7 @@ export class NineSliceSprite extends Container implements View
         this.onViewUpdate();
     }
 
-    /** The width of the right column (b) of the NineSlicePlane. */
+    /** The width of the right column (b) of the NineSliceSprite. */
     get topHeight(): number
     {
         return this._topHeight;
@@ -199,7 +199,7 @@ export class NineSliceSprite extends Container implements View
         this.onViewUpdate();
     }
 
-    /** The width of the right column (b) of the NineSlicePlane. */
+    /** The width of the right column (b) of the NineSliceSprite. */
     get rightWidth(): number
     {
         return this._rightWidth;
@@ -211,7 +211,7 @@ export class NineSliceSprite extends Container implements View
         this.onViewUpdate();
     }
 
-    /** The width of the right column (b) of the NineSlicePlane. */
+    /** The width of the right column (b) of the NineSliceSprite. */
     get bottomHeight(): number
     {
         return this._bottomHeight;
@@ -223,7 +223,7 @@ export class NineSliceSprite extends Container implements View
         this.onViewUpdate();
     }
 
-    /** The texture that the NineSlicePlane is using. */
+    /** The texture that the NineSliceSprite is using. */
     get texture(): Texture
     {
         return this._texture;
@@ -238,7 +238,10 @@ export class NineSliceSprite extends Container implements View
         this.onViewUpdate();
     }
 
-    /** Whether or not to round the x/y position of the nine slice. */
+    /**
+     *  Whether or not to round the x/y position of the sprite.
+     * @type {boolean}
+     */
     get roundPixels()
     {
         return !!this._roundPixels;
@@ -249,16 +252,19 @@ export class NineSliceSprite extends Container implements View
         this._roundPixels = value ? 1 : 0;
     }
 
+    /** The texture matrix of the NineSliceSprite. */
     get textureMatrix()
     {
         return this._texture.textureMatrix.mapCoord;
     }
 
+    /** The original width of the texture */
     get originalWidth()
     {
         return this._texture.width;
     }
 
+    /** The original height of the texture */
     get originalHeight()
     {
         return this._texture.height;
@@ -279,6 +285,10 @@ export class NineSliceSprite extends Container implements View
         }
     }
 
+    /**
+     * Adds the bounds of this object to the bounds object.
+     * @param bounds - The output bounds object.
+     */
     public addBounds(bounds: Bounds)
     {
         const _bounds = this.bounds;
@@ -286,6 +296,10 @@ export class NineSliceSprite extends Container implements View
         bounds.addFrame(_bounds.minX, _bounds.minY, _bounds.maxX, _bounds.maxY);
     }
 
+    /**
+     * Checks if the object contains the given point.
+     * @param point - The point to check
+     */
     public containsPoint(point: Point)
     {
         const bounds = this.bounds;
@@ -301,6 +315,13 @@ export class NineSliceSprite extends Container implements View
         return false;
     }
 
+    /**
+     * Destroys this sprite renderable and optionally its texture.
+     * @param options - Options parameter. A boolean will act as if all options
+     *  have been set to that value
+     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
+     * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
+     */
     public destroy(options?: DestroyOptions): void
     {
         super.destroy(options);
@@ -320,6 +341,7 @@ export class NineSliceSprite extends Container implements View
 }
 
 /**
+ * Please use the `NineSliceSprite` class instead.
  * @deprecated since 8.0.0
  * @memberof scene
  */

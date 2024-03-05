@@ -3,6 +3,7 @@
  * Thanks to @toji for the original implementation
  * https://github.com/toji/web-texture-tool/blob/main/src/webgpu-mipmap-generator.js
  * @memberof rendering
+ * @ignore
  */
 export class GpuMipmapGenerator
 {

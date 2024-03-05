@@ -7,11 +7,13 @@ import type { ShapePrimitive } from './ShapePrimitive';
 
 /**
  * A class to define a shape via user defined coordinates.
- * <br/>
+ *
+ *
  * `Polygon` can accept the following different constructor arguments:
  * - An array of `Point` objects
  * - An array of coordinate pairs
- * <br/>
+ *
+ *
  * These can be passed as a single array, or as a sequence of arguments.
  * ```js
  * import { Polygon } from 'pixi.js';
@@ -43,7 +45,7 @@ export class Polygon implements ShapePrimitive
     constructor(points: PointData[] | number[]);
     constructor(...points: PointData[] | number[]);
     /**
-     * @param {PointData[]|number[]} points - This can be an array of Points
+     * @param points - This can be an array of Points
      *  that form the polygon, a flat array of numbers that will be interpreted as [x,y, x,y, ...], or
      *  the arguments passed can be all the points of the polygon e.g.
      *  `new Polygon(new Point(), new Point(), ...)`, or the arguments passed can be flat
@@ -116,6 +118,13 @@ export class Polygon implements ShapePrimitive
         return inside;
     }
 
+    /**
+     * Checks whether the x and y coordinates given are contained within this polygon including the stroke.
+     * @param x - The X coordinate of the point to test
+     * @param y - The Y coordinate of the point to test
+     * @param strokeWidth - The width of the line to check
+     * @returns Whether the x/y coordinates are within this polygon
+     */
     public strokeContains(x: number, y: number, strokeWidth: number): boolean
     {
         const halfStrokeWidth = strokeWidth / 2;

@@ -104,11 +104,10 @@ export class BitmapText extends AbstractText<TextStyle, TextStyleOptions> implem
      * ```ts
      * new BitmapText(options?: TextOptions);
      * ```
-     * @param options - The options of the bitmap text.
-     * @param {string} options.text - The text of the bitmap text.
-     * @param {Partial<text.TextStyle>} options.style - The style of the bitmap text.
+     * @param { text.TextOptions } options - The options of the bitmap text.
      */
     constructor(options?: TextOptions);
+    /** @deprecated since 8.0.0 */
     constructor(text?: TextString, options?: Partial<TextStyle>);
     constructor(...args: [TextOptions?] | [TextString, Partial<TextStyle>])
     {

@@ -184,6 +184,13 @@ export class RoundedRectangle implements ShapePrimitive
         return false;
     }
 
+    /**
+     * Checks whether the x and y coordinates given are contained within this rectangle including the stroke.
+     * @param pX - The X coordinate of the point to test
+     * @param pY - The Y coordinate of the point to test
+     * @param strokeWidth - The width of the line to check
+     * @returns Whether the x/y coordinates are within this rectangle
+     */
     public strokeContains(pX: number, pY: number, strokeWidth: number): boolean
     {
         const { x, y, width, height, radius } = this;

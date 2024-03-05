@@ -144,6 +144,10 @@ export class TextureMatrix
         return out;
     }
 
+    /**
+     * Updates matrices if texture was changed
+     * @returns - whether or not it was updated
+     */
     public update(): boolean
     {
         const tex = this._texture;

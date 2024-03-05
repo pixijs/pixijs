@@ -4,12 +4,19 @@ import type { System } from '../shared/system/System';
 import type { GpuPowerPreference } from '../types';
 import type { WebGPURenderer } from './WebGPURenderer';
 
+/** The GPU object. */
 export interface GPU
 {
+    /** The GPU adapter */
     adapter: GPUAdapter;
+    /** The GPU device */
     device: GPUDevice;
 }
 
+/**
+ * Options for the WebGPU context.
+ * @memberof rendering
+ */
 export interface GpuContextOptions
 {
     /**
@@ -38,6 +45,7 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
         name: 'device',
     } as const;
 
+    /** The default options for the GpuDeviceSystem. */
     public static defaultOptions: GpuContextOptions = {
         /**
          * {@link WebGPUOptions.powerPreference}
@@ -51,6 +59,7 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
         forceFallbackAdapter: false,
     };
 
+    /** The GPU device */
     public gpu: GPU;
 
     private _renderer: WebGPURenderer;

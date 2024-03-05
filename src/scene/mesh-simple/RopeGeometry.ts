@@ -47,9 +47,13 @@ export interface RopeGeometryOptions
  */
 export class RopeGeometry extends MeshGeometry
 {
+    /** Default options for RopeGeometry constructor. */
     public static defaultOptions: RopeGeometryOptions & MeshGeometryOptions = {
+        /** The width (i.e., thickness) of the rope. */
         width: 200,
+        /** An array of points that determine the rope. */
         points: [],
+        /** Rope texture scale, if zero then the rope texture is stretched. */
         textureScale: 0,
     };
 
@@ -252,6 +256,7 @@ export class RopeGeometry extends MeshGeometry
         this.buffers[0].update();
     }
 
+    /** Refreshes Rope indices and uvs */
     public update(): void
     {
         if (this.textureScale > 0)

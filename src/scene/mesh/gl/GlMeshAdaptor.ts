@@ -13,6 +13,7 @@ import type { MeshAdaptor, MeshPipe } from '../shared/MeshPipe';
 /**
  * A MeshAdaptor that uses the WebGL to render meshes.
  * @memberof rendering
+ * @ignore
  */
 export class GlMeshAdaptor implements MeshAdaptor
 {

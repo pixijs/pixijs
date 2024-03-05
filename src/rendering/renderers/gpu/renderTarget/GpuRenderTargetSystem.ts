@@ -8,6 +8,7 @@ import type { GpuRenderTarget } from './GpuRenderTarget';
 /**
  * The WebGL adaptor for the render target system. Allows the Render Target System to be used with the WebGl renderer
  * @memberof rendering
+ * @ignore
  */
 export class GpuRenderTargetSystem extends RenderTargetSystem<GpuRenderTarget>
 {

@@ -8,7 +8,10 @@ import type { BindResource } from '../../../gpu/shader/BindResource';
 import type { ALPHA_MODES, SCALE_MODE, TEXTURE_DIMENSIONS, TEXTURE_FORMATS, WRAP_MODE } from '../const';
 import type { TextureStyleOptions } from '../TextureStyle';
 
-/** options for creating a new TextureSource */
+/**
+ * options for creating a new TextureSource
+ * @memberof rendering
+ */
 export interface TextureSourceOptions<T extends Record<string, any> = any> extends TextureStyleOptions
 {
     /**
@@ -203,6 +206,9 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     /** If true, the Garbage Collector will unload this texture if it is not used after a period of time */
     public autoGarbageCollect: boolean;
 
+    /**
+     * @param options - options for creating a new TextureSource
+     */
     constructor(protected readonly options: TextureSourceOptions<T> = {})
     {
         super();
@@ -273,6 +279,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this._onStyleChange();
     }
 
+    /** setting this will set wrapModeU,wrapModeV and wrapModeW all at once! */
     get addressMode(): WRAP_MODE
     {
         return this._style.addressMode;
@@ -283,6 +290,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this._style.addressMode = value;
     }
 
+    /** setting this will set wrapModeU,wrapModeV and wrapModeW all at once! */
     get repeatMode(): WRAP_MODE
     {
         return this._style.addressMode;
@@ -293,6 +301,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this._style.addressMode = value;
     }
 
+    /** Specifies the sampling behavior when the sample footprint is smaller than or equal to one texel. */
     get magFilter(): SCALE_MODE
     {
         return this._style.magFilter;
@@ -303,6 +312,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this._style.magFilter = value;
     }
 
+    /** Specifies the sampling behavior when the sample footprint is larger than one texel. */
     get minFilter(): SCALE_MODE
     {
         return this._style.minFilter;
@@ -313,6 +323,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this._style.minFilter = value;
     }
 
+    /** Specifies behavior for sampling between mipmap levels. */
     get mipmapFilter(): SCALE_MODE
     {
         return this._style.mipmapFilter;
@@ -323,6 +334,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this._style.mipmapFilter = value;
     }
 
+    /** Specifies the minimum and maximum levels of detail, respectively, used internally when sampling a texture. */
     get lodMinClamp(): number
     {
         return this._style.lodMinClamp;
@@ -333,6 +345,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this._style.lodMinClamp = value;
     }
 
+    /** Specifies the minimum and maximum levels of detail, respectively, used internally when sampling a texture. */
     get lodMaxClamp(): number
     {
         return this._style.lodMaxClamp;
@@ -505,6 +518,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this._style.scaleMode = value;
     }
 
+    /** setting this will set magFilter,minFilter and mipmapFilter all at once!  */
     get scaleMode(): SCALE_MODE
     {
         return this._style.scaleMode;

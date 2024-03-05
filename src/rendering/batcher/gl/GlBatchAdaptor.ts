@@ -16,6 +16,7 @@ import type { BatcherAdaptor, BatcherPipe } from '../shared/BatcherPipe';
 /**
  * A BatcherAdaptor that uses WebGL to render batches.
  * @memberof rendering
+ * @ignore
  */
 export class GlBatchAdaptor implements BatcherAdaptor
 {
