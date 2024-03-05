@@ -51,7 +51,9 @@ export class BlurFilter extends Filter
         kernelSize: 5,
     };
 
+    /** The horizontal blur filter */
     public blurXFilter: BlurFilterPass;
+    /** The vertical blur filter */
     public blurYFilter: BlurFilterPass;
 
     private _repeatEdgePixels = false;

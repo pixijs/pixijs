@@ -19,6 +19,13 @@ import type { Renderer } from '../../types';
 import type { System } from '../system/System';
 import type { BindableTexture } from '../texture/Texture';
 
+/**
+ * A render surface is a texture, canvas, or render target
+ * @memberof rendering
+ * @see environment.ICanvas
+ * @see rendering.Texture
+ * @see rendering.RenderTarget
+ */
 export type RenderSurface = ICanvas | BindableTexture | RenderTarget;
 
 /**
@@ -54,9 +61,11 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends GlRenderTarget | GpuR
         /** the texture to copy to */
         destinationTexture: Texture,
         /** the origin of the copy */
-        origin: { x: number; y: number },
+        originSrc: { x: number; y: number },
         /** the size of the copy */
-        size: { width: number; height: number }
+        size: { width: number; height: number },
+        /** the destination origin (top left to paste from!) */
+        originDest?: { x: number; y: number },
     ): Texture
 
     /** starts a render pass on the render target */
@@ -380,25 +389,51 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
      * Copies a render surface to another texture
      * @param sourceRenderSurfaceTexture - the render surface to copy from
      * @param destinationTexture - the texture to copy to
-     * @param origin - the origin of the copy
-     * @param origin.x - the x origin of the copy
-     * @param origin.y - the y origin of the copy
+     * @param originSrc - the origin of the copy
+     * @param originSrc.x - the x origin of the copy
+     * @param originSrc.y - the y origin of the copy
      * @param size - the size of the copy
      * @param size.width - the width of the copy
      * @param size.height - the height of the copy
+     * @param originDest - the destination origin (top left to paste from!)
+     * @param originDest.x - the x origin of the paste
+     * @param originDest.y - the y origin of the paste
      */
     public copyToTexture(
         sourceRenderSurfaceTexture: RenderTarget,
         destinationTexture: Texture,
-        origin: { x: number; y: number },
-        size: { width: number; height: number }
+        originSrc: { x: number; y: number },
+        size: { width: number; height: number },
+        originDest: { x: number; y: number; },
     )
     {
+        // fit the size to the source we don't want to go out of bounds
+
+        if (originSrc.x < 0)
+        {
+            size.width += originSrc.x;
+            originDest.x -= originSrc.x;
+            originSrc.x = 0;
+        }
+
+        if (originSrc.y < 0)
+        {
+            size.height += originSrc.y;
+            originDest.y -= originSrc.y;
+            originSrc.y = 0;
+        }
+
+        const { pixelWidth, pixelHeight } = sourceRenderSurfaceTexture;
+
+        size.width = Math.min(size.width, pixelWidth - originSrc.x);
+        size.height = Math.min(size.height, pixelHeight - originSrc.y);
+
         return this.adaptor.copyToTexture(
             sourceRenderSurfaceTexture,
             destinationTexture,
-            origin,
-            size
+            originSrc,
+            size,
+            originDest
         );
     }
 

@@ -213,7 +213,6 @@ export class Color
      * - A return value of `null` means the previous value was overridden (e.g., {@link Color.multiply multiply},
      *   {@link Color.premultiply premultiply} or {@link Color.round round}).
      * - Otherwise, the color source used when setting is returned.
-     * @type {ColorSource}
      */
     set value(value: ColorSource | null)
     {

@@ -74,6 +74,13 @@ export class Circle implements ShapePrimitive
         return (dx + dy <= r2);
     }
 
+    /**
+     * Checks whether the x and y coordinates given are contained within this circle including the stroke.
+     * @param x - The X coordinate of the point to test
+     * @param y - The Y coordinate of the point to test
+     * @param width - The width of the line to check
+     * @returns Whether the x/y coordinates are within this Circle
+     */
     public strokeContains(x: number, y: number, width: number): boolean
     {
         if (this.radius === 0) return false;

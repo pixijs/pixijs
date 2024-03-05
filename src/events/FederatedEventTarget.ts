@@ -55,9 +55,16 @@ export type Cursor = 'auto'
 | 'grab'
 | 'grabbing';
 
-// @ignore - This is documented elsewhere.
+/**
+ * The hit area specifies the area for which pointer events should be captured by this event target.
+ * @memberof events
+ */
 export interface IHitArea
 {
+    /**
+     * Checks if the x and y coordinates given are contained within this hit area.
+     * @returns Whether the x and y coordinates are contained within this hit area.
+     */
     contains(x: number, y: number): boolean;
 }
 

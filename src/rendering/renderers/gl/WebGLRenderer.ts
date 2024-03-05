@@ -11,9 +11,9 @@ import { GlGeometrySystem } from './geometry/GlGeometrySystem';
 import { GlBackBufferSystem } from './GlBackBufferSystem';
 import { GlColorMaskSystem } from './GlColorMaskSystem';
 import { GlEncoderSystem } from './GlEncoderSystem';
-import { GlRenderTargetSystem } from './GlRenderTargetSystem';
 import { GlStencilSystem } from './GlStencilSystem';
 import { GlUboSystem } from './GlUboSystem';
+import { GlRenderTargetSystem } from './renderTarget/GlRenderTargetSystem';
 import { GlShaderSystem } from './shader/GlShaderSystem';
 import { GlUniformGroupSystem } from './shader/GlUniformGroupSystem';
 import { GlStateSystem } from './state/GlStateSystem';
@@ -62,13 +62,15 @@ type WebGLSystems = ExtractSystemTypes<typeof DefaultWebGLSystems> & PixiMixins.
 /** The default WebGL renderer, uses WebGL2 contexts. */
 export type WebGLPipes = ExtractSystemTypes<typeof DefaultWebGLPipes> & PixiMixins.RendererPipes & PixiMixins.WebGLPipes;
 
-/** Options for WebGLRenderer. */
+/**
+ * Options for WebGLRenderer.
+ * @memberof rendering
+ */
 export interface WebGLOptions
     extends ExtractRendererOptions<typeof DefaultWebGLSystems>,
     PixiMixins.RendererOptions,
     PixiMixins.WebGLOptions {}
 
-/** The default WebGL renderer, uses WebGL2 contexts. */
 /**
  * The default WebGL renderer, uses WebGL2 contexts.
  * @memberof rendering

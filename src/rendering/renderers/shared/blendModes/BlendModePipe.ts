@@ -154,6 +154,7 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
     /**
      * called when the instruction build process is starting this will reset internally to the default blend mode
      * @internal
+     * @ignore
      */
     public buildStart()
     {
@@ -165,6 +166,7 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
      * active, we add the final render instructions added to the instruction set
      * @param instructionSet - The instruction set we are adding to
      * @internal
+     * @ignore
      */
     public buildEnd(instructionSet: InstructionSet)
     {

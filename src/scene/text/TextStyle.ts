@@ -31,7 +31,7 @@ export type TextStyleWhiteSpace = 'normal' | 'pre' | 'pre-line';
 
 /**
  * A drop shadow effect.
- * @memberof scene
+ * @memberof text
  */
 export type TextDropShadow = {
     /** Set alpha for the drop shadow  */
@@ -54,8 +54,8 @@ export type TextDropShadow = {
  *    fill: 'black',
  * });
  * ```
- * @see {@link scene.TextStyle}
- * @memberof scene
+ * @see {@link text.TextStyle}
+ * @memberof text
  */
 export interface TextStyleOptions
 {
@@ -221,11 +221,9 @@ export class TextStyle extends EventEmitter<{
     };
 
     // colors!!
-    /** @internal */
     public _fill: ConvertedFillStyle;
     private _originalFill: FillStyleInputs;
 
-    /** @internal */
     public _stroke: ConvertedStrokeStyle;
     private _originalStroke: FillStyleInputs;
 

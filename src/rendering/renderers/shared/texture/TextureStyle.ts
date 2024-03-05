@@ -117,6 +117,7 @@ export class TextureStyle extends EventEmitter<{
      * between 1 and 16, inclusive. The used value of {@link GPUSamplerDescriptor#maxAnisotropy} will
      * be clamped to the maximum value that the platform supports.
      * @internal
+     * @ignore
      */
     public _maxAnisotropy?: number = 1;
 

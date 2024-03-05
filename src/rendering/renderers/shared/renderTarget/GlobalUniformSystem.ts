@@ -7,7 +7,7 @@ import { type Renderer, RendererType } from '../../types';
 import { UniformGroup } from '../shader/UniformGroup';
 
 import type { PointData } from '../../../../maths/point/PointData';
-import type { GlRenderTargetSystem } from '../../gl/GlRenderTargetSystem';
+import type { GlRenderTargetSystem } from '../../gl/renderTarget/GlRenderTargetSystem';
 import type { GpuRenderTargetSystem } from '../../gpu/renderTarget/GpuRenderTargetSystem';
 import type { WebGPURenderer } from '../../gpu/WebGPURenderer';
 import type { UboSystem } from '../shader/UboSystem';
@@ -47,6 +47,10 @@ interface GlobalUniformRenderer
     type: RendererType;
 }
 
+/**
+ * System plugin to the renderer to manage global uniforms for the renderer.
+ * @memberof rendering
+ */
 export class GlobalUniformSystem implements System
 {
     /** @ignore */

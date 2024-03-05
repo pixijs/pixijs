@@ -125,7 +125,7 @@ export class TickerPlugin
 
         /**
          * Ticker for doing render updates.
-         * @type {Ticker}
+         * @type {ticker.Ticker}
          * @name ticker
          * @memberof app.Application#
          * @default Ticker.shared

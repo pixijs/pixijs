@@ -26,6 +26,14 @@ interface IIntl
     };
 }
 
+/**
+ * A number, or a string containing a number.
+ * @memberof text
+ * @typedef {object} FontMetrics
+ * @property {number} ascent - Font ascent
+ * @property {number} descent - Font descent
+ * @property {number} fontSize - Font size
+ */
 export interface FontMetrics
 {
     ascent: number;
