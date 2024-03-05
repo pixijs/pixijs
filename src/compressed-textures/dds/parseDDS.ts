@@ -1,180 +1,36 @@
+import { DDS, DXGI_TO_TEXTURE_FORMAT, FOURCC_TO_TEXTURE_FORMAT, TEXTURE_FORMAT_BLOCK_SIZE } from './const';
+
 import type { TEXTURE_FORMATS } from '../../rendering/renderers/shared/texture/const';
 import type { TextureSourceOptions } from '../../rendering/renderers/shared/texture/sources/TextureSource';
 
-/**
- * -----------------------------------------------------------
- * This code includes parts that are adapted from the webGPU(GL) wizard @toji's web-texture-tool.
- * Massive thanks to @toji for making this tool and sharing it with the world.
- *
- * Original Repository: https://github.com/toji/web-texture-tool
- *
- * Modifications were made to integrate with PixiJS.
- * -----------------------------------------------------------
- */
-
-// All values and structures referenced from:
-// http://msdn.microsoft.com/en-us/library/bb943991.aspx/
-const DDS_MAGIC = 0x20534444;
-const DDSD_MIPMAPCOUNT = 0x20000;
-const DDPF_FOURCC = 0x4;
-
-/**
- * @param value
- */
-function fourCCToInt32(value: string)
+export function parseDDS(arrayBuffer: ArrayBuffer, supportedFormats: TEXTURE_FORMATS[]): TextureSourceOptions<Uint8Array[]>
 {
-    return value.charCodeAt(0)
-        + (value.charCodeAt(1) << 8)
-        + (value.charCodeAt(2) << 16)
-        + (value.charCodeAt(3) << 24);
-}
+    const {
+        format,
+        fourCC,
+        width,
+        height,
+        dataOffset,
+        mipmapCount,
+    } = parseDDSHeader(arrayBuffer);
 
-/**
- * @param value
- */
-function int32ToFourCC(value: number)
-{
-    return String.fromCharCode(
-        value & 0xff,
-        (value >> 8) & 0xff,
-        (value >> 16) & 0xff,
-        (value >> 24) & 0xff,
-    );
-}
-
-const FOURCC_DXT1 = fourCCToInt32('DXT1');
-const FOURCC_DXT3 = fourCCToInt32('DXT3');
-const FOURCC_DXT5 = fourCCToInt32('DXT5');
-
-const headerLengthInt = 31; // The header length in 32 bit ints
-
-// Offsets into the header array
-const offMagic = 0;
-
-const offSize = 1;
-const offFlags = 2;
-const offHeight = 3;
-const offWidth = 4;
-
-const offMipmapCount = 7;
-
-const offPfFlags = 20;
-const offPfFourCC = 21;
-const offRGBBitCount = 22;
-const offRBitMask = 23;
-const offGBitMask = 24;
-const offBBitMask = 25;
-
-export function parseDDS(buffer: ArrayBuffer, supportedFormats: TEXTURE_FORMATS[]): TextureSourceOptions<Uint8Array[]>
-{
-    const header = new Int32Array(buffer, 0, headerLengthInt);
-
-    if (header[offMagic] !== DDS_MAGIC)
+    if (!supportedFormats.includes(format))
     {
-        throw new Error('Invalid magic number in DDS header');
+        throw new Error(`Unsupported texture format: ${fourCC} ${format}, supported: ${supportedFormats}`);
     }
 
-    const headerIsZero = header[offPfFlags] === 0 ? 1 : 0;
-
-    if (headerIsZero & DDPF_FOURCC)
-    {
-        throw new Error('Unsupported format, must contain a FourCC code');
-    }
-
-    const fourCC = header[offPfFourCC];
-    let blockBytes = 0;
-    let bytesPerPixel = 0;
-    let format: TEXTURE_FORMATS;
-
-    switch (fourCC)
-    {
-        case FOURCC_DXT1:
-            blockBytes = 8;
-            format = 'bc1-rgba-unorm';
-            break;
-
-        case FOURCC_DXT3:
-            blockBytes = 16;
-            format = 'bc2-rgba-unorm';
-            break;
-
-        case FOURCC_DXT5:
-            blockBytes = 16;
-            format = 'bc3-rgba-unorm';
-            break;
-
-        default: {
-            const bitCount = header[offRGBBitCount];
-            const rBitMask = header[offRBitMask];
-            const gBitMask = header[offGBitMask];
-            const bBitMask = header[offBBitMask];
-
-            if (bitCount === 32)
-            {
-                if (rBitMask & 0xff
-                    && gBitMask & 0xff00
-                    && bBitMask & 0xff0000)
-                {
-                    format = 'rgba8unorm';
-                    bytesPerPixel = 4;
-                }
-                else if (rBitMask & 0xff0000
-                   && gBitMask & 0xff00
-                   && bBitMask & 0xff)
-                {
-                    format = 'bgra8unorm';
-                    bytesPerPixel = 4;
-                }
-            }
-        }
-    }
-
-    const width = header[offWidth];
-    const height = header[offHeight];
-    let dataOffset = header[offSize] + 4;
-
-    if (supportedFormats.indexOf(format) === -1)
-    {
-        throw new Error(`Unsupported texture format: ${int32ToFourCC(fourCC)} ${format}`);
-    }
-
-    if (blockBytes === 0)
-    {
+    if (mipmapCount <= 1)
+    { // No need bothering with the imageSize calculation!
         return {
             format,
             width,
             height,
-            resource: [new Uint8Array(buffer, dataOffset, width * height * bytesPerPixel)],
-            alphaMode: 'no-premultiply-alpha'
-        };
+            resource: [new Uint8Array(arrayBuffer, dataOffset)],
+            alphaMode: 'no-premultiply-alpha',
+        } as TextureSourceOptions;
     }
 
-    let mipmapCount = 1;
-
-    if (header[offFlags] & DDSD_MIPMAPCOUNT)
-    {
-        mipmapCount = Math.max(1, header[offMipmapCount]);
-    }
-
-    const levelBuffers = [];
-
-    let mipWidth = width;
-    let mipHeight = height;
-
-    for (let level = 0; level < mipmapCount; ++level)
-    {
-        const byteLength = blockBytes ? Math.max(4, mipWidth) / 4 * Math.max(4, mipHeight) / 4 * blockBytes
-            : mipWidth * mipHeight * 4;
-
-        const levelBuffer = new Uint8Array(buffer, dataOffset, byteLength);
-
-        levelBuffers.push(levelBuffer);
-
-        dataOffset += byteLength;
-
-        mipWidth = Math.max(mipWidth >> 1, 1);
-        mipHeight = Math.max(mipHeight >> 1, 1);
-    }
+    const levelBuffers = getMipmapLevelBuffers(format, width, height, dataOffset, mipmapCount, arrayBuffer);
 
     const textureOptions: TextureSourceOptions = {
         format,
@@ -185,4 +41,203 @@ export function parseDDS(buffer: ArrayBuffer, supportedFormats: TEXTURE_FORMATS[
     };
 
     return textureOptions;
+}
+
+function getMipmapLevelBuffers(format: TEXTURE_FORMATS, width: number, height: number,
+    dataOffset: any, mipmapCount: number, arrayBuffer: ArrayBuffer)
+{
+    const levelBuffers = [];
+    const blockBytes = TEXTURE_FORMAT_BLOCK_SIZE[format];
+
+    let mipWidth = width;
+    let mipHeight = height;
+    let offset = dataOffset;
+
+    for (let level = 0; level < mipmapCount; ++level)
+    {
+        const byteLength = blockBytes
+            ? Math.max(4, mipWidth) / 4 * Math.max(4, mipHeight) / 4 * blockBytes
+            : mipWidth * mipHeight * 4;
+
+        const levelBuffer = new Uint8Array(arrayBuffer, offset, byteLength);
+
+        levelBuffers.push(levelBuffer);
+
+        offset += byteLength;
+
+        mipWidth = Math.max(mipWidth >> 1, 1);
+        mipHeight = Math.max(mipHeight >> 1, 1);
+    }
+
+    return levelBuffers;
+}
+
+function parseDDSHeader(buffer: ArrayBuffer)
+{
+    const header = new Uint32Array(buffer, 0, DDS.HEADER_SIZE / Uint32Array.BYTES_PER_ELEMENT);
+
+    if (header[DDS.HEADER_FIELDS.MAGIC] !== DDS.MAGIC_VALUE)
+    {
+        throw new Error('Invalid magic number in DDS header');
+    }
+
+    // DDS header fields
+    const height = header[DDS.HEADER_FIELDS.HEIGHT];
+    const width = header[DDS.HEADER_FIELDS.WIDTH];
+    const mipmapCount = Math.max(1, header[DDS.HEADER_FIELDS.MIPMAP_COUNT]);
+    const flags = header[DDS.HEADER_FIELDS.PF_FLAGS];
+    const fourCC = header[DDS.HEADER_FIELDS.FOURCC];
+    const format = getTextureFormat(header, flags, fourCC, buffer);
+
+    const dataOffset = DDS.MAGIC_SIZE + DDS.HEADER_SIZE
+        + ((fourCC === DDS.D3DFMT.DX10) ? DDS.HEADER_DX10_SIZE : 0);
+
+    return {
+        format,
+        fourCC,
+        width,
+        height,
+        dataOffset,
+        mipmapCount
+    };
+}
+
+function getTextureFormat(header: Uint32Array, flags: number, fourCC: number, buffer: ArrayBuffer)
+{
+    if (flags & DDS.PIXEL_FORMAT_FLAGS.FOURCC)
+    {
+        if (fourCC === DDS.D3DFMT.DX10)
+        {
+            const dx10Header = new Uint32Array(
+                buffer,
+                DDS.MAGIC_SIZE + DDS.HEADER_SIZE, // there is a 20-byte DDS_HEADER_DX10 after DDS_HEADER
+                DDS.HEADER_DX10_SIZE / Uint32Array.BYTES_PER_ELEMENT);
+
+            const miscFlag = dx10Header[DDS.HEADER_DX10_FIELDS.MISC_FLAG];
+
+            if (miscFlag === DDS.RESOURCE_MISC_TEXTURECUBE)
+            {
+                throw new Error('DDSParser does not support cubemap textures');
+            }
+
+            const resourceDimension = dx10Header[DDS.HEADER_DX10_FIELDS.RESOURCE_DIMENSION];
+
+            if (resourceDimension === DDS.D3D10_RESOURCE_DIMENSION.DDS_DIMENSION_TEXTURE3D)
+            {
+                throw new Error('DDSParser does not supported 3D texture data');
+            }
+
+            const dxgiFormat = dx10Header[DDS.HEADER_DX10_FIELDS.DXGI_FORMAT];
+
+            if (dxgiFormat in DXGI_TO_TEXTURE_FORMAT)
+            {
+                return DXGI_TO_TEXTURE_FORMAT[dxgiFormat];
+            }
+
+            throw new Error(`DDSParser cannot parse texture data with DXGI format ${dxgiFormat}`);
+        }
+
+        if (fourCC in FOURCC_TO_TEXTURE_FORMAT)
+        {
+            return FOURCC_TO_TEXTURE_FORMAT[fourCC];
+        }
+
+        throw new Error(`DDSParser cannot parse texture data with fourCC format ${fourCC}`);
+    }
+
+    if (flags & DDS.PIXEL_FORMAT_FLAGS.RGB || flags & DDS.PIXEL_FORMAT_FLAGS.RGBA)
+    {
+        return getUncompressedTextureFormat(header);
+    }
+
+    if (flags & DDS.PIXEL_FORMAT_FLAGS.YUV)
+    {
+        throw new Error('DDSParser does not supported YUV uncompressed texture data.');
+    }
+    if (flags & DDS.PIXEL_FORMAT_FLAGS.LUMINANCE || flags & DDS.PIXEL_FORMAT_FLAGS.LUMINANCEA)
+    {
+        throw new Error('DDSParser does not support single-channel (lumninance) texture data!');
+    }
+    if (flags & DDS.PIXEL_FORMAT_FLAGS.ALPHA || flags & DDS.PIXEL_FORMAT_FLAGS.ALPHAPIXELS)
+    {
+        throw new Error('DDSParser does not support single-channel (alpha) texture data!');
+    }
+
+    throw new Error('DDSParser failed to load a texture file due to an unknown reason!');
+}
+
+function getUncompressedTextureFormat(header: Uint32Array)
+{
+    const bitCount = header[DDS.HEADER_FIELDS.RGB_BITCOUNT];
+    const rBitMask = header[DDS.HEADER_FIELDS.R_BIT_MASK];
+    const gBitMask = header[DDS.HEADER_FIELDS.G_BIT_MASK];
+    const bBitMask = header[DDS.HEADER_FIELDS.B_BIT_MASK];
+    const aBitMask = header[DDS.HEADER_FIELDS.A_BIT_MASK];
+
+    // https://learn.microsoft.com/en-us/windows/win32/direct3ddds/dx-graphics-dds-pguide
+    // https://github.com/microsoft/DirectXTex/blob/main/DDSTextureLoader/DDSTextureLoader11.cpp#L892
+    switch (bitCount)
+    {
+        case 32:
+            if (rBitMask === 0x000000ff && gBitMask === 0x0000ff00 && bBitMask === 0x00ff0000 && aBitMask === 0xff000000)
+            {
+                return DXGI_TO_TEXTURE_FORMAT[DDS.DXGI_FORMAT.DXGI_FORMAT_R8G8B8A8_UNORM];
+            }
+            if (rBitMask === 0x00ff0000 && gBitMask === 0x0000ff00 && bBitMask === 0x000000ff && aBitMask === 0xff000000)
+            {
+                return DXGI_TO_TEXTURE_FORMAT[DDS.DXGI_FORMAT.DXGI_FORMAT_B8G8R8A8_UNORM];
+            }
+            if (rBitMask === 0x3ff00000 && gBitMask === 0x000ffc00 && bBitMask === 0x000003ff && aBitMask === 0xc0000000)
+            {
+                return DXGI_TO_TEXTURE_FORMAT[DDS.DXGI_FORMAT.DXGI_FORMAT_R10G10B10A2_UNORM];
+            }
+            if (rBitMask === 0x0000ffff && gBitMask === 0xffff0000 && bBitMask === 0 && aBitMask === 0)
+            {
+                return DXGI_TO_TEXTURE_FORMAT[DDS.DXGI_FORMAT.DXGI_FORMAT_R16G16_UNORM];
+            }
+            if (rBitMask === 0xffffffff && gBitMask === 0 && bBitMask === 0 && aBitMask === 0)
+            {
+                return DXGI_TO_TEXTURE_FORMAT[DDS.DXGI_FORMAT.DXGI_FORMAT_R32_FLOAT];
+            }
+            break;
+        case 24:
+            if (rBitMask === 0xff0000 && gBitMask === 0xff00 && bBitMask === 0xff && aBitMask === 0x8000)
+            {
+                // rgb8unorm not supported?
+                // return DXGI_TO_TEXTURE_FORMAT[DDS.DXGI_FORMAT.DXGI_FORMAT_B5G5R5A1_UNORM];
+            }
+            break;
+        case 16:
+            if (rBitMask === 0x7c00 && gBitMask === 0x03e0 && bBitMask === 0x001f && aBitMask === 0x8000)
+            {
+                return DXGI_TO_TEXTURE_FORMAT[DDS.DXGI_FORMAT.DXGI_FORMAT_B5G5R5A1_UNORM];
+            }
+            if (rBitMask === 0xf800 && gBitMask === 0x07e0 && bBitMask === 0x001f && aBitMask === 0)
+            {
+                return DXGI_TO_TEXTURE_FORMAT[DDS.DXGI_FORMAT.DXGI_FORMAT_B5G6R5_UNORM];
+            }
+            if (rBitMask === 0x0f00 && gBitMask === 0x00f0 && bBitMask === 0x000f && aBitMask === 0xf000)
+            {
+                return DXGI_TO_TEXTURE_FORMAT[DDS.DXGI_FORMAT.DXGI_FORMAT_B4G4R4A4_UNORM];
+            }
+            if (rBitMask === 0x00ff && gBitMask === 0 && bBitMask === 0 && aBitMask === 0xff00)
+            {
+                return DXGI_TO_TEXTURE_FORMAT[DDS.DXGI_FORMAT.DXGI_FORMAT_R8G8_UNORM];
+            }
+            if (rBitMask === 0xffff && gBitMask === 0 && bBitMask === 0 && aBitMask === 0)
+            {
+                return DXGI_TO_TEXTURE_FORMAT[DDS.DXGI_FORMAT.DXGI_FORMAT_R16_UNORM];
+            }
+            break;
+
+        case 8:
+            if (rBitMask === 0xff && gBitMask === 0 && bBitMask === 0 && aBitMask === 0)
+            {
+                return DXGI_TO_TEXTURE_FORMAT[DDS.DXGI_FORMAT.DXGI_FORMAT_R8_UNORM];
+            }
+            break;
+    }
+
+    throw new Error(`DDSParser does not support uncompressed texture with configuration:
+                bitCount = ${bitCount}, rBitMask = ${rBitMask}, gBitMask = ${gBitMask}, aBitMask = ${aBitMask}`);
 }
