@@ -15,6 +15,7 @@ export function mapFormatToGlInternalFormat(
 ): Record<string, number>
 {
     let srgb = {};
+    let bgra8unorm: number = gl.RGBA;
 
     if (gl instanceof WebGL2RenderingContext)
     {
@@ -22,6 +23,8 @@ export function mapFormatToGlInternalFormat(
             'rgba8unorm-srgb': gl.SRGB8_ALPHA8,
             'bgra8unorm-srgb': gl.SRGB8_ALPHA8,
         };
+
+        bgra8unorm = gl.RGBA8;
     }
     else if (extensions.srgb)
     {
@@ -62,7 +65,7 @@ export function mapFormatToGlInternalFormat(
         rgba8snorm: gl.RGBA8_SNORM,
         rgba8uint: gl.RGBA8UI,
         rgba8sint: gl.RGBA8I,
-        bgra8unorm:  gl.RGBA8 ?? gl.RGBA,
+        bgra8unorm,
         rgb9e5ufloat: gl.RGB9_E5,
         rgb10a2unorm: gl.RGB10_A2,
         rg11b10ufloat: gl.R11F_G11F_B10F,

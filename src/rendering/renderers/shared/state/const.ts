@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/indent */
-/** Various blend modes supported by Pixi */
+/**
+ * Various blend modes supported by Pixi
+ * @memberof filters
+ */
 export type BLEND_MODES = 'inherit'
 | 'normal'
 | 'add'
@@ -33,12 +36,20 @@ export type BLEND_MODES = 'inherit'
 | 'hard-mix'
 | 'negation';
 
+/**
+ * The map of blend modes supported by Pixi
+ * @memberof rendering
+ */
 export const BLEND_TO_NPM = {
     normal: 'normal-npm',
     add: 'add-npm',
     screen: 'screen-npm',
 };
 
+/**
+ * The stencil operation to perform when using the stencil buffer
+ * @memberof rendering
+ */
 export enum STENCIL_MODES
 {
     DISABLED = 0,
@@ -48,5 +59,9 @@ export enum STENCIL_MODES
     NONE = 4,
 }
 
+/**
+ * The culling mode to use. It can be either `none`, `front` or `back`.
+ * @memberof rendering
+ */
 export type CULL_MODES = 'none' | 'back' | 'front';
 

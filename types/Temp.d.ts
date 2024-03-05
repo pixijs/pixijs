@@ -1,23 +1,25 @@
 declare module '*.worker.js'
 {
-    class WorkerInstance extends Worker
+    class WebWorkerInstance
     {
+        public worker: Worker;
         constructor();
 
         public static revokeObjectURL(): void;
     }
 
-    export default WorkerInstance;
+    export default WebWorkerInstance;
 }
 
 declare module '*.worker.ts'
 {
-    class WorkerInstance extends Worker
+    class WebWorkerInstance
     {
+        public worker: Worker;
         constructor();
 
         public static revokeObjectURL(): void;
     }
 
-    export default WorkerInstance;
+    export default WebWorkerInstance;
 }

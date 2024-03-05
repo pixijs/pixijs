@@ -6,7 +6,7 @@ import type { MeshGeometry } from './MeshGeometry';
 
 /**
  * A batchable mesh object.
- * @memberof rendering
+ * @ignore
  */
 export class BatchableMesh implements BatchableObject
 {

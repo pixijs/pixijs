@@ -12,8 +12,24 @@ import type { DestroyOptions } from '../container/destroyTypes';
 import type { HTMLTextStyle, HTMLTextStyleOptions } from '../text-html/HtmlTextStyle';
 import type { TextStyle, TextStyleOptions } from './TextStyle';
 
+/**
+ * A string or number that can be used as text.
+ * @memberof text
+ */
 export type TextString = string | number | { toString: () => string };
+/**
+ * A union of all text styles, including HTML, Bitmap and Canvas text styles.
+ * @memberof text
+ * @see text.TextStyle
+ * @see text.HTMLTextStyle
+ */
 export type AnyTextStyle = TextStyle | HTMLTextStyle;
+/**
+ * A union of all text style options, including HTML, Bitmap and Canvas text style options.
+ * @memberof text
+ * @see text.TextStyleOptions
+ * @see text.HTMLTextStyleOptions
+ */
 export type AnyTextStyleOptions = TextStyleOptions | HTMLTextStyleOptions;
 
 /**
@@ -28,7 +44,7 @@ export type AnyTextStyleOptions = TextStyleOptions | HTMLTextStyleOptions;
  *    align: 'center',
  *  }
  * });
- * @memberof scene
+ * @memberof text
  */
 export interface TextOptions<
     TEXT_STYLE extends TextStyle = TextStyle,
@@ -41,7 +57,17 @@ export interface TextOptions<
     text?: TextString;
     /** The resolution of the text. */
     resolution?: number;
-    /** The text style */
+    /**
+     * The text style
+     * @type {
+     * text.TextStyle |
+     * Partial<text.TextStyle> |
+     * text.TextStyleOptions |
+     * text.HTMLTextStyle |
+     * Partial<text.HTMLTextStyle> |
+     * text.HTMLTextStyleOptions
+     * }
+     */
     style?: TEXT_STYLE | TEXT_STYLE_OPTIONS;
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
@@ -49,7 +75,9 @@ export interface TextOptions<
 
 /**
  * An abstract Text class, used by all text type in Pixi. This includes Canvas, HTML, and Bitmap Text.
- * @internal
+ * @see scene.Text
+ * @see scene.BitmapText
+ * @see scene.HTMLText
  * @memberof scene
  */
 export abstract class AbstractText<
@@ -60,11 +88,13 @@ export abstract class AbstractText<
     public abstract readonly renderPipeId: string;
     public batched = true;
     public _anchor: ObservablePoint;
+    /**
+     * The resolution / device pixel ratio of the canvas.
+     * @default 1
+     */
     public resolution: number = null;
 
-    /** @internal */
     public _style: TEXT_STYLE;
-    /** @internal */
     public _didTextUpdate = true;
     public _roundPixels: 0 | 1 = 0;
 
@@ -136,7 +166,10 @@ export abstract class AbstractText<
         typeof value === 'number' ? this._anchor.set(value) : this._anchor.copyFrom(value);
     }
 
-    /** Whether or not to round the x/y position of the sprite. */
+    /**
+     *  Whether or not to round the x/y position of the sprite.
+     * @type {boolean}
+     */
     get roundPixels()
     {
         return !!this._roundPixels;
@@ -147,6 +180,7 @@ export abstract class AbstractText<
         this._roundPixels = value ? 1 : 0;
     }
 
+    /** Set the copy for the text object. To split a line you can use '\n'. */
     set text(value: TextString)
     {
         // check its a string
@@ -168,6 +202,21 @@ export abstract class AbstractText<
         return this._style;
     }
 
+    /**
+     * Set the style of the text.
+     *
+     * Set up an event listener to listen for changes on the style object and mark the text as dirty.
+     *
+     * If setting the `style` can also be partial {@link AnyTextStyleOptions}.
+     * @type {
+     * text.TextStyle |
+     * Partial<text.TextStyle> |
+     * text.TextStyleOptions |
+     * text.HTMLTextStyle |
+     * Partial<text.HTMLTextStyle> |
+     * text.HTMLTextStyleOptions
+     * }
+     */
     set style(style: TEXT_STYLE | Partial<TEXT_STYLE> | TEXT_STYLE_OPTIONS)
     {
         style = style || {};
@@ -187,6 +236,10 @@ export abstract class AbstractText<
         this.onViewUpdate();
     }
 
+    /**
+     * The local bounds of the Text.
+     * @type {rendering.Bounds}
+     */
     get bounds()
     {
         if (this._boundsDirty)
@@ -272,6 +325,10 @@ export abstract class AbstractText<
         }
     }
 
+    /**
+     * Adds the bounds of this text to the bounds object.
+     * @param bounds - The output bounds object.
+     */
     public addBounds(bounds: Bounds)
     {
         const _bounds = this.bounds;
@@ -284,6 +341,10 @@ export abstract class AbstractText<
         );
     }
 
+    /**
+     * Checks if the text contains the given point.
+     * @param point - The point to check
+     */
     public containsPoint(point: PointData)
     {
         const width = this.bounds.maxX;
@@ -302,7 +363,6 @@ export abstract class AbstractText<
         return false;
     }
 
-    /** @internal */
     public onViewUpdate()
     {
         this._didChangeId += 1 << 12;
@@ -319,7 +379,6 @@ export abstract class AbstractText<
         }
     }
 
-    /** @internal */
     public _getKey(): string
     {
         // TODO add a dirty flag...

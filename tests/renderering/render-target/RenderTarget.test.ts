@@ -14,9 +14,9 @@ describe('isRenderingToScreen', () =>
 
     const setup = (opts: Partial<SetupOptions> = {}) =>
     {
-        const width = opts.width || RenderTarget.defaultDescriptor.width;
-        const height = opts.height || RenderTarget.defaultDescriptor.height;
-        const resolution = opts.resolution || RenderTarget.defaultDescriptor.resolution;
+        const width = opts.width || RenderTarget.defaultOptions.width;
+        const height = opts.height || RenderTarget.defaultOptions.height;
+        const resolution = opts.resolution || RenderTarget.defaultOptions.resolution;
         const canvas = DOMAdapter.get().createCanvas(width, height);
         const texture = new Texture({
             source: new CanvasSource({
@@ -74,9 +74,9 @@ describe('isRenderingToScreen', () =>
         expect(renderTarget.colorTexture.source.resource).toBeInstanceOf(HTMLCanvasElement);
         expect(renderTarget.width).toEqual(width);
         expect(renderTarget.height).toEqual(height);
-        expect(renderTarget.resolution).toEqual(RenderTarget.defaultDescriptor.resolution);
-        expect(renderTarget.colorTexture.source.resource.width).toEqual(width * RenderTarget.defaultDescriptor.resolution);
-        expect(renderTarget.colorTexture.source.resource.height).toEqual(height * RenderTarget.defaultDescriptor.resolution);
+        expect(renderTarget.resolution).toEqual(RenderTarget.defaultOptions.resolution);
+        expect(renderTarget.colorTexture.source.resource.width).toEqual(width * RenderTarget.defaultOptions.resolution);
+        expect(renderTarget.colorTexture.source.resource.height).toEqual(height * RenderTarget.defaultOptions.resolution);
     });
 
     it('should create with custom resolution', () =>

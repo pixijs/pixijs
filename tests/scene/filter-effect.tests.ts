@@ -1,3 +1,4 @@
+import { AlphaFilter } from '../../src/filters/defaults/alpha/AlphaFilter';
 import { NoiseFilter } from '../../src/filters/defaults/noise/NoiseFilter';
 import { Container } from '../../src/scene/container/Container';
 
@@ -14,12 +15,17 @@ describe('Filter effect', () =>
         //
 
         const noiseFilter = new NoiseFilter();
+        const alphaFilter = new AlphaFilter();
 
         container.filters = [noiseFilter];
 
         expect(container.effects.length).toBe(1);
 
         expect(container.filters).toEqual([noiseFilter]);
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        expect(() => container.filters.push(alphaFilter)).toThrow();
 
         //
 

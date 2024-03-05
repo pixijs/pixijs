@@ -8,11 +8,11 @@ import type { FillStyleInputs } from '../graphics/shared/GraphicsContext';
 import type { TextStyleOptions } from '../text/TextStyle';
 
 /**
- * Options for HTML text style, extends {@link scene.TextStyle}.
- * @memberof scene
- * @extends scene.TextStyleOptions
+ * Options for HTML text style, extends {@link TextStyle}.
+ * @memberof text
+ * @extends text.TextStyleOptions
  * @property {string[]} [cssOverrides] - CSS style(s) to add.
- * @property {Record<string, scene.HTMLTextStyleOptions>} [tagStyles] - Tag styles.
+ * @property {Record<string, text.HTMLTextStyleOptions>} [tagStyles] - Tag styles.
  */
 export interface HTMLTextStyleOptions extends Omit<TextStyleOptions, 'leading' | 'textBaseline' | 'trim' >
 {

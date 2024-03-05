@@ -3,6 +3,10 @@ import type { PointData } from '../../maths/point/PointData';
 import type { Bounds } from './bounds/Bounds';
 import type { Container } from './Container';
 
+/**
+ * An effect that can be applied to a container. This is used to create effects such as filters/masks etc.
+ * @memberof rendering
+ */
 export interface Effect
 {
     pipe: string

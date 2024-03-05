@@ -32,13 +32,9 @@ export class NineSliceGeometry extends PlaneGeometry
         originalHeight: 100,
     };
 
-    /** @internal */
     public _leftWidth: number;
-    /** @internal */
     public _rightWidth: number;
-    /** @internal */
     public _topHeight: number;
-    /** @internal */
     public _bottomHeight: number;
 
     private _originalWidth: number;
