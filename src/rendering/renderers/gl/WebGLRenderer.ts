@@ -82,13 +82,14 @@ export interface WebGLRenderer<T extends ICanvas = HTMLCanvasElement>
 /* eslint-disable max-len */
 /**
  * The WebGL PixiJS Renderer. This renderer allows you to use the most common graphics API, WebGL (and WebGL2).
- * @example
+ *
  * ```ts
  * // Create a new renderer
  * const renderer = new WebGLRenderer();
+ * await renderer.init();
  *
  * // Add the renderer to the stage
- * document.body.appendChild(renderer.view);
+ * document.body.appendChild(renderer.canvas);
  *
  * // Create a new stage
  * const stage = new Container();
@@ -99,7 +100,8 @@ export interface WebGLRenderer<T extends ICanvas = HTMLCanvasElement>
  *
  * You can use {@link rendering.autoDetectRenderer} to create a renderer that will automatically detect the best
  * renderer for the environment.
- * @example
+ *
+ *
  * ```ts
  * // Create a new renderer
  * const renderer = await rendering.autoDetectRenderer({
@@ -141,6 +143,7 @@ export interface WebGLRenderer<T extends ICanvas = HTMLCanvasElement>
  * @property {rendering.GlStateSystem} state - StateSystem instance.
  * @property {rendering.GlStencilSystem} stencil - StencilSystem instance.
  * @property {rendering.GlColorMaskSystem} colorMask - ColorMaskSystem instance.
+ * @extends rendering.AbstractRenderer
  */
 /* eslint-enable max-len */
 export class WebGLRenderer<T extends ICanvas = HTMLCanvasElement>
