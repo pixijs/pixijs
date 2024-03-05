@@ -10,7 +10,8 @@ const subImports = [
     ['./app', './lib/app'],
     ['./dds', './lib/compressed-textures/dds'],
     ['./ktx', './lib/compressed-textures/ktx'],
-    ['./basis', './lib/compressed-textures/basis'], // to be implemented
+    ['./ktx2', './lib/compressed-textures/ktx2'],
+    ['./basis', './lib/compressed-textures/basis'],
     ['./events', './lib/events'],
     ['./filters', './lib/filters'],
     ['./math-extras', './lib/math-extras'],
@@ -20,7 +21,7 @@ const subImports = [
     ['./text-html', './lib/scene/text-html'],
     ['./graphics', './lib/scene/graphics'],
     ['./mesh', './lib/scene/mesh'],
-    ['./prepare', './lib/prepare'], // to be implemented
+    ['./prepare', './lib/prepare'],
     ['./unsafe-eval', './lib/unsafe-eval'],
     ['./sprite-nine-slice', './lib/scene/sprite-nine-slice'],
 ];
