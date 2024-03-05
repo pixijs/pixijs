@@ -14,6 +14,10 @@ import type { Texture } from '../texture/Texture';
 
 export type GenerateTextureSourceOptions = Omit<TextureSourceOptions, 'resource' | 'width' | 'height' | 'resolution'>;
 
+/**
+ * Options for generating a texture from a container.
+ * @memberof rendering
+ */
 export type GenerateTextureOptions =
 {
     /** The container to generate the texture from */
@@ -23,13 +27,12 @@ export type GenerateTextureOptions =
      * if no region is specified, defaults to the local bounds of the container.
      */
     frame?: Rectangle;
-
+    /** The resolution of the texture being generated. */
     resolution?: number;
-
+    /** The color used to clear the texture. */
     clearColor?: ColorSource;
-
+    /** Whether to enable anti-aliasing. This may affect performance. */
     antialias?: boolean;
-
     /** The options passed to the texture source. */
     textureSourceOptions?: GenerateTextureSourceOptions,
 };

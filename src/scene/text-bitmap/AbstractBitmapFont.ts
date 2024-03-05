@@ -4,36 +4,71 @@ import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { FontMetrics } from '../text/canvas/CanvasTextMetrics';
 
+/** @memberof text */
 export interface CharData
 {
+    /** Unique id of character */
     id: number;
+    /** x-offset to apply when rendering character */
     xOffset: number;
+    /** y-offset to apply when rendering character. */
     yOffset: number;
+    /** Advancement to apply to next character. */
     xAdvance: number;
+    /** The kerning values for this character. */
     kerning: Record<string, number>;
+    /** The texture of the character. */
     texture?: Texture;
 }
 
+/**
+ * The raw data of a character in a bitmap font.
+ * @memberof text
+ */
 export interface RawCharData extends Omit<CharData, 'texture'>
 {
+    /** The page of the font texture that the character is on. */
     page: number;
+    /** The x position of the character in the page. */
     x: number;
+    /** The y position of the character in the page. */
     y: number;
+    /** The width of the character in the page. */
     width: number;
+    /** The height of the character in the page. */
     height: number;
+    /** The letter of the character. */
     letter: string;
 }
 
+/**
+ * The raw data of a bitmap font.
+ * @memberof text
+ */
 export interface BitmapFontData
 {
+    /** The offset of the font face from the baseline. */
     baseLineOffset: number;
+    /** The map of characters by character code. */
     chars: Record<string, RawCharData>;
-    pages: { id: number; file: string }[];
+    /** The map of base page textures (i.e., sheets of glyphs). */
+    pages: {
+        /** Unique id for bitmap texture */
+        id: number;
+        /** File name */
+        file: string
+    }[];
+    /** The line-height of the font face in pixels. */
     lineHeight: number;
+    /** The size of the font face in pixels. */
     fontSize: number;
+    /** The name of the font face. */
     fontFamily: string;
+    /** The range and type of the distance field for this font. */
     distanceField?: {
+        /** Type of distance field */
         type: 'sdf' | 'msdf' | 'none';
+        /** Range of the distance field in pixels */
         range: number;
     };
 }
@@ -54,24 +89,36 @@ export abstract class AbstractBitmapFont<FontType>
     /** The map of characters by character code. */
     public readonly chars: Record<string, CharData> = Object.create(null);
 
-    /** The line-height of the font face in pixels. */
+    /**
+     * The line-height of the font face in pixels.
+     * @type {number}
+     */
     public readonly lineHeight: BitmapFontData['lineHeight'] = 0;
 
-    /** The name of the font face. */
+    /**
+     * The name of the font face
+     * @type {string}
+     */
     public readonly fontFamily: BitmapFontData['fontFamily'] = '';
+    /** The metrics of the font face. */
     public readonly fontMetrics: FontMetrics = { fontSize: 0, ascent: 0, descent: 0 };
+    /**
+     * The offset of the font face from the baseline.
+     * @type {number}
+     */
     public readonly baseLineOffset: BitmapFontData['baseLineOffset'] = 0;
     /** The range and type of the distance field for this font. */
     public readonly distanceField: BitmapFontData['distanceField'] = { type: 'none', range: 0 };
     /** The map of base page textures (i.e., sheets of glyphs). */
     public readonly pages: { texture: Texture }[] = [];
 
+    /** The size of the font face in pixels. */
     public readonly baseMeasurementFontSize: number = 100;
     protected baseRenderedFontSize = 100;
 
     /**
-     * @deprecated since 8.0.0
      * The name of the font face.
+     * @deprecated since 8.0.0 Use `fontFamily` instead.
      */
     public get font(): BitmapFontData['fontFamily']
     {
@@ -82,7 +129,10 @@ export abstract class AbstractBitmapFont<FontType>
         return this.fontFamily;
     }
 
-    /** @deprecated since 8.0.0 */
+    /**
+     * The map of base page textures (i.e., sheets of glyphs).
+     * @deprecated since 8.0.0 Use `pages` instead.
+     */
     public get pageTextures(): AbstractBitmapFont<FontType>['pages']
     {
         // #if _DEBUG
@@ -93,8 +143,8 @@ export abstract class AbstractBitmapFont<FontType>
     }
 
     /**
-     * @deprecated since 8.0.0
      * The size of the font face in pixels.
+     * @deprecated since 8.0.0 Use `fontMetrics.fontSize` instead.
      */
     public get size(): BitmapFontData['fontSize']
     {
@@ -106,8 +156,8 @@ export abstract class AbstractBitmapFont<FontType>
     }
 
     /**
-     * @deprecated since 8.0.0
      * The kind of distance field for this font or "none".
+     * @deprecated since 8.0.0 Use `distanceField.type` instead.
      */
     public get distanceFieldRange(): BitmapFontData['distanceField']['range']
     {
@@ -120,8 +170,8 @@ export abstract class AbstractBitmapFont<FontType>
     }
 
     /**
-     * @deprecated since 8.0.0
      * The range of the distance field in pixels.
+     * @deprecated since 8.0.0 Use `distanceField.range` instead.
      */
     public get distanceFieldType(): BitmapFontData['distanceField']['type']
     {

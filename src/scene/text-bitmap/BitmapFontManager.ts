@@ -51,9 +51,19 @@ export interface BitmapFontInstallOptions
 }
 
 /**
- * The BitmapFontManager is a helper class that exists to install and uninstall fonts
+ * The BitmapFontManager is a helper that exists to install and uninstall fonts
  * into the cache for BitmapText objects.
  * @memberof text
+ * @name BitmapFontManager
+ * @example
+ * import { BitmapFontManager, BitmapText } from 'pixi.js';
+ *
+ * BitmapFontManager.install({
+ *   name: 'TitleFont',
+ *   style: {}
+ * });
+ *
+ * const title = new BitmapText({ text: 'This is the title', style: { fontFamily: 'TitleFont' }});
  */
 class BitmapFontManagerClass
 {
@@ -86,6 +96,7 @@ class BitmapFontManagerClass
      */
     public readonly ASCII = [[' ', '~']];
 
+    /** Default options for installing a new BitmapFont. */
     public defaultOptions: Omit<BitmapFontInstallOptions, 'style'> = {
         chars: this.ALPHANUMERIC,
         resolution: 1,
@@ -93,6 +104,11 @@ class BitmapFontManagerClass
         skipKerning: false,
     };
 
+    /**
+     * Get a font for the specified text and style.
+     * @param text - The text to get the font for
+     * @param style - The style to use
+     */
     public getFont(text: string, style: TextStyle): BitmapFont
     {
         let fontFamilyKey = `${style.fontFamily as string}-bitmap`;
@@ -130,6 +146,11 @@ class BitmapFontManagerClass
         return dynamicFont;
     }
 
+    /**
+     * Get the layout of a text for the specified style.
+     * @param text - The text to get the layout for
+     * @param style - The style to use
+     */
     public getLayout(text: string, style: TextStyle): BitmapTextLayoutData
     {
         const bitmapFont = this.getFont(text, style);
@@ -137,6 +158,11 @@ class BitmapFontManagerClass
         return getBitmapTextLayout(text.split(''), style, bitmapFont);
     }
 
+    /**
+     * Measure the text using the specified style.
+     * @param text - The text to measure
+     * @param style - The style to use
+     */
     public measureText(text: string, style: TextStyle): { width: number; height: number; scale: number; offsetY: number }
     {
         return this.getLayout(text, style);

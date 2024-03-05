@@ -186,7 +186,7 @@ export class Buffer extends EventEmitter<{
         this.shrinkToFit = shrinkToFit ?? true;
     }
 
-    /** @todo */
+    /** the data in the buffer */
     get data()
     {
         return this._data;
@@ -197,6 +197,7 @@ export class Buffer extends EventEmitter<{
         this.setDataWithSize(value, value.length, true);
     }
 
+    /** whether the buffer is static or not */
     get static()
     {
         return !!(this.descriptor.usage & BufferUsage.STATIC);
@@ -276,6 +277,7 @@ export class Buffer extends EventEmitter<{
         this.emit('update', this);
     }
 
+    /** Destroys the buffer */
     public destroy()
     {
         this.emit('destroy', this);

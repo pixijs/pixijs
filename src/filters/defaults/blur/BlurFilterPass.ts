@@ -143,7 +143,7 @@ export class BlurFilterPass extends Filter
 
     /**
      * Sets the quality of the blur by modifying the number of passes. More passes means higher
-     * quality bluring but the lower the performance.
+     * quality blurring but the lower the performance.
      * @default 4
      */
     get quality(): number

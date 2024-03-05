@@ -23,6 +23,7 @@ export interface BitmapFontOptions
  */
 export class BitmapFont extends AbstractBitmapFont<BitmapFont>
 {
+    /** the url of the font */
     public url?: string;
 
     constructor(options: BitmapFontOptions, url?: string)
@@ -86,6 +87,7 @@ export class BitmapFont extends AbstractBitmapFont<BitmapFont>
         this.url = url;
     }
 
+    /** Destroys the BitmapFont object. */
     public override destroy(): void
     {
         super.destroy();

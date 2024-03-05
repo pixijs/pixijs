@@ -23,9 +23,9 @@ export interface Observer<T>
  */
 export class ObservablePoint implements PointLike
 {
-    /** @internal */
+    /** @ignore */
     public _x: number;
-    /** @internal */
+    /** @ignore */
     public _y: number;
 
     /** This object used to call the `onUpdate` callback when the point changes. */

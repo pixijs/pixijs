@@ -47,7 +47,6 @@ export class Graphics extends Container implements View, Instruction
 
     public _roundPixels: 0 | 1 = 0;
 
-    /** @internal */
     public _didGraphicsUpdate: boolean;
 
     private _context: GraphicsContext;

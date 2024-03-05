@@ -21,6 +21,7 @@ export class BatchTextureArray
         this.count = 0;
     }
 
+    /** Clear the textures and their locations. */
     public clear(): void
     {
         for (let i = 0; i < this.count; i++)

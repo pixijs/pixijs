@@ -344,6 +344,12 @@ export class Resolver
      * This adds a bundle of assets in one go so that you can resolve them as a group.
      * For example you could add a bundle for each screen in you pixi app
      * @example
+     * resolver.addBundle('animals', [
+     *  { alias: 'bunny', src: 'bunny.png' },
+     *  { alias: 'chicken', src: 'chicken.png' },
+     *  { alias: 'thumper', src: 'thumper.png' },
+     * ]);
+     * // or
      * resolver.addBundle('animals', {
      *     bunny: 'bunny.png',
      *     chicken: 'chicken.png',
@@ -357,13 +363,28 @@ export class Resolver
     public addBundle(bundleId: string, assets: AssetsBundle['assets']): void
     {
         const assetNames: string[] = [];
+        let convertedAssets: UnresolvedAsset[] = assets as UnresolvedAsset[];
+
+        if (!Array.isArray(assets))
+        {
+            // convert to array...
+            convertedAssets = Object.entries(assets).map(([alias, src]) =>
+            {
+                if (typeof src === 'string' || Array.isArray(src))
+                {
+                    return { alias, src };
+                }
+
+                return { alias, ...src };
+            });
+        }
 
         // when storing keys against a bundle we prepend the bundleId to each asset key
         // and pass it through as an additional alias for the asset
         // this keeps clashing ids separate on a per-bundle basis
         // you can also resolve a file using the bundleId-assetId syntax
 
-        assets.forEach((asset) =>
+        convertedAssets.forEach((asset) =>
         {
             const srcs = asset.src;
             const aliases = asset.alias;

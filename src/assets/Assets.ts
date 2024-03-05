@@ -29,15 +29,30 @@ import type { LoadSVGConfig } from './loader/parsers/textures/loadSVG';
 import type { BundleIdentifierOptions } from './resolver/Resolver';
 import type { ArrayOr, AssetsBundle, AssetsManifest, ResolvedAsset, UnresolvedAsset } from './types';
 
+/**
+ * Callback for when progress on asset loading is made.
+ * The function is passed a single parameter, `progress`, which represents the percentage (0.0 - 1.0)
+ * of the assets loaded.
+ * @memberof assets
+ * @callback ProgressCallback
+ * @param {number} progress - The percentage (0.0 - 1.0) of the assets loaded.
+ * @returns {void}
+ * @example
+ * (progress) => console.log(progress * 100 + '%')
+ */
 export type ProgressCallback = (progress: number) => void;
 
 /**
  * Extensible preferences that can be used, for instance, when configuring loaders.
  * @since 7.2.0
+ * @memberof assets
  */
 export interface AssetsPreferences extends LoadTextureConfig, LoadSVGConfig, PixiMixins.AssetsPreferences {}
 
-/** Initialization options object for the Assets Class. */
+/**
+ * Initialization options object for the Assets Class.
+ * @memberof assets
+ */
 export interface AssetInitOptions
 {
     // basic...
@@ -243,14 +258,12 @@ export interface AssetInitOptions
 /**
  * The global Assets class, it's a singleton so you don't need to instantiate it.
  *
- * <br>
  * **The `Assets` class has four main responsibilities:**
  * 1. Allows users to map URLs to keys and resolve them according to the user's browser capabilities
  * 2. Loads the resources and transforms them into assets that developers understand.
  * 3. Caches the assets and provides a way to access them.
  * 4. Allow developers to unload assets and clear the cache.
  *
- * <br>
  *
  * **It also has a few advanced features:**
  * 1. Allows developers to provide a {@link assets.Manifest} upfront of all assets and help manage
@@ -272,7 +285,7 @@ export class AssetsClass
     public loader: Loader;
     /**
      * The global cache of all assets within PixiJS
-     * @type {Cache}
+     * @type {assets.Cache}
      */
     public cache: typeof Cache;
 
@@ -489,6 +502,12 @@ export class AssetsClass
      * @example
      * import { Assets } from 'pixi.js';
      *
+     * Assets.addBundle('animals', [
+     *  { alias: 'bunny', src: 'bunny.png' },
+     *  { alias: 'chicken', src: 'chicken.png' },
+     *  { alias: 'thumper', src: 'thumper.png' },
+     * ]);
+     * // or
      * Assets.addBundle('animals', {
      *     bunny: 'bunny.png',
      *     chicken: 'chicken.png',

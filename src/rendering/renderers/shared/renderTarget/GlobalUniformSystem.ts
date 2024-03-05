@@ -47,6 +47,10 @@ interface GlobalUniformRenderer
     type: RendererType;
 }
 
+/**
+ * System plugin to the renderer to manage global uniforms for the renderer.
+ * @memberof rendering
+ */
 export class GlobalUniformSystem implements System
 {
     /** @ignore */

@@ -105,10 +105,7 @@ export class Application<R extends Renderer = Renderer>
      */
     public static _plugins: ApplicationPlugin[] = [];
 
-    /**
-     * The root display container that's rendered.
-     * @member {Container}
-     */
+    /** The root display container that's rendered. */
     public stage: Container = new Container();
 
     /**
@@ -160,6 +157,7 @@ export class Application<R extends Renderer = Renderer>
     /**
      * Reference to the renderer's canvas element.
      * @readonly
+     * @member {HTMLCanvasElement}
      */
     get canvas(): R['canvas']
     {
@@ -168,6 +166,7 @@ export class Application<R extends Renderer = Renderer>
 
     /**
      * Reference to the renderer's canvas element.
+     * @member {HTMLCanvasElement}
      * @deprecated since 8.0.0
      */
     get view(): R['canvas']
@@ -181,7 +180,6 @@ export class Application<R extends Renderer = Renderer>
 
     /**
      * Reference to the renderer's screen rectangle. Its safe to use as `filterArea` or `hitArea` for the whole screen.
-     * @member {Rectangle}
      * @readonly
      */
     get screen(): Rectangle

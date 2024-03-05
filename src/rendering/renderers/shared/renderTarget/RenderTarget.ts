@@ -6,7 +6,11 @@ import { Texture } from '../texture/Texture';
 
 import type { BindableTexture } from '../texture/Texture';
 
-export interface RenderTargetDescriptor
+/**
+ * Options for creating a render target.
+ * @memberof rendering
+ */
+export interface RenderTargetOptions
 {
     /** the width of the RenderTarget */
     width?: number;
@@ -35,10 +39,11 @@ export interface RenderTargetDescriptor
  *
  * If you need something more complex than a Texture to render to, you should use this class.
  * Under the hood, all textures you render to have a RenderTarget created on their behalf.
+ * @memberof rendering
  */
 export class RenderTarget
 {
-    public static defaultDescriptor: RenderTargetDescriptor = {
+    public static defaultOptions: RenderTargetOptions = {
         width: 0,
         height: 0,
         resolution: 1,
@@ -68,9 +73,9 @@ export class RenderTarget
 
     private readonly _size = new Float32Array(2);
 
-    constructor(descriptor: RenderTargetDescriptor = {})
+    constructor(descriptor: RenderTargetOptions = {})
     {
-        descriptor = { ...RenderTarget.defaultDescriptor, ...descriptor };
+        descriptor = { ...RenderTarget.defaultOptions, ...descriptor };
 
         this.stencil = descriptor.stencil;
         this.depth = descriptor.depth;
@@ -166,6 +171,7 @@ export class RenderTarget
      * This will ensure a depthStencil texture is created for this render target.
      * Most likely called by the mask system to make sure we have stencil buffer added.
      * @internal
+     * @ignore
      */
     public ensureDepthStencilTexture()
     {
