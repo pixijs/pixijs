@@ -28,6 +28,11 @@ const DEPTH_MASK = 5;
  */
 export class State
 {
+    /**
+     * The data is a unique number based on the states settings.
+     * This lets us quickly compare states with a single number rather than looking
+     * at all the individual settings.
+     */
     public data: number;
     public _blendModeId: number;
     private _blendMode: BLEND_MODES;
@@ -78,6 +83,7 @@ export class State
         }
     }
 
+    /** The culling settings for this state none - No culling back - Back face culling front - Front face culling */
     set cullMode(value: CULL_MODES)
     {
         if (value === 'none')
@@ -214,6 +220,10 @@ export class State
     }
     // #endif
 
+    /**
+     * A quickly getting an instance of a State that is configured for 2d rendering.
+     * @returns a new State with values set for 2d rendering
+     */
     public static for2d(): State
     {
         const state = new State();

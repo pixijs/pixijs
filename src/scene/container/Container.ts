@@ -258,12 +258,6 @@ export interface Container
  * </table>
  * </details>
  *
- * <details id="bounds">
- * <summary>Bounds</summary>
- *
- * TODO
- * </details>
- *
  * <details id="alpha">
  * <summary>Alpha</summary>
  *
