@@ -170,6 +170,7 @@
     "./lib/app/init.*",
     "./lib/compressed-textures/dds/init.*",
     "./lib/compressed-textures/ktx/init.*",
+    "./lib/compressed-textures/ktx2/init.*",
     "./lib/compressed-textures/basis/init.*",
     "./lib/events/init.*",
     "./lib/filters/init.*",
@@ -249,6 +250,14 @@
       },
       "require": {
         "default": "./lib/compressed-textures/ktx/init.js"
+      }
+    },
+    "./ktx2": {
+      "import": {
+        "default": "./lib/compressed-textures/ktx2/init.mjs"
+      },
+      "require": {
+        "default": "./lib/compressed-textures/ktx2/init.js"
       }
     },
     "./basis": {

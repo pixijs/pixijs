@@ -74,13 +74,13 @@ export interface WebGPURenderer<T extends ICanvas = HTMLCanvasElement>
 /* eslint-disable max-len */
 /**
  * The WebGPU PixiJS Renderer. This renderer allows you to use the next-generation graphics API, WebGPU.
- * @example
  * ```ts
  * // Create a new renderer
  * const renderer = new WebGPURenderer();
+ * await renderer.init();
  *
  * // Add the renderer to the stage
- * document.body.appendChild(renderer.view);
+ * document.body.appendChild(renderer.canvas);
  *
  * // Create a new stage
  * const stage = new Container();
@@ -91,7 +91,6 @@ export interface WebGPURenderer<T extends ICanvas = HTMLCanvasElement>
  *
  * You can use {@link rendering.autoDetectRenderer} to create a renderer that will automatically detect the best
  * renderer for the environment.
- * @example
  * ```ts
  * // Create a new renderer
  * const renderer = await rendering.autoDetectRenderer();
@@ -129,11 +128,13 @@ export interface WebGPURenderer<T extends ICanvas = HTMLCanvasElement>
  * @property {rendering.GpuColorMaskSystem} colorMask - ColorMaskSystem instance.
  * @property {rendering.GpuStencilSystem} stencil - StencilSystem instance.
  * @property {rendering.BindGroupSystem} bindGroup - BindGroupSystem instance.
+ * @extends rendering.AbstractRenderer
  */
 export class WebGPURenderer<T extends ICanvas = HTMLCanvasElement>
     extends AbstractRenderer<WebGPUPipes, WebGPUOptions, T>
     implements WebGPUSystems
 {
+    /** The WebGPU Device. */
     public gpu: GPU;
 
     constructor()
