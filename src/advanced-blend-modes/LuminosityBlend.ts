@@ -5,6 +5,16 @@ import { hslgpu } from '../filters/blend-modes/hls/GPUhls';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
+/**
+ * Available as `container.blendMode = 'luminosity'` after importing `pixi.js/advanced-blend-modes`.
+ * @example
+ * import 'pixi.js/advanced-blend-modes';
+ * import { Sprite } from 'pixi.js';
+ *
+ * const sprite = Sprite.from('something.png');
+ * sprite.blendMode = 'luminosity'
+ * @memberof filters
+ */
 export class LuminosityBlend extends BlendModeFilter
 {
     /** @ignore */

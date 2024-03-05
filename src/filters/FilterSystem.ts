@@ -419,7 +419,8 @@ export class FilterSystem implements System
             lastRenderSurface,
             backTexture,
             { x, y },
-            { width, height }
+            { width, height },
+            { x: 0, y: 0 }
         );
 
         return backTexture;

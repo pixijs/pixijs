@@ -1,15 +1,15 @@
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { warn } from '../../../../utils/logging/warn';
-import { CLEAR } from '../../gl/const';
-import { GlRenderTarget } from '../../gl/GlRenderTarget';
 import { CanvasSource } from '../../shared/texture/sources/CanvasSource';
+import { CLEAR } from '../const';
+import { GlRenderTarget } from '../GlRenderTarget';
 
 import type { RgbaArray } from '../../../../color/Color';
-import type { CLEAR_OR_BOOL } from '../../gl/const';
-import type { WebGLRenderer } from '../../gl/WebGLRenderer';
 import type { RenderTarget } from '../../shared/renderTarget/RenderTarget';
 import type { RenderTargetAdaptor, RenderTargetSystem } from '../../shared/renderTarget/RenderTargetSystem';
 import type { Texture } from '../../shared/texture/Texture';
+import type { CLEAR_OR_BOOL } from '../const';
+import type { WebGLRenderer } from '../WebGLRenderer';
 
 /**
  * The WebGL adaptor for the render target system. Allows the Render Target System to be used with the WebGL renderer
@@ -39,8 +39,9 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
     public copyToTexture(
         sourceRenderSurfaceTexture: RenderTarget,
         destinationTexture: Texture,
-        origin: { x: number; y: number; },
-        size: { width: number; height: number; }
+        originSrc: { x: number; y: number; },
+        size: { width: number; height: number; },
+        originDest: { x: number; y: number; },
     )
     {
         const renderTargetSystem = this._renderTargetSystem;
@@ -56,9 +57,9 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         renderer.texture.bind(destinationTexture, 0);
 
         gl.copyTexSubImage2D(gl.TEXTURE_2D, 0,
-            0, 0,
-            origin.x,
-            origin.y,
+            originDest.x, originDest.y,
+            originSrc.x,
+            originSrc.y,
             size.width,
             size.height
         );
