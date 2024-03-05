@@ -1,4 +1,4 @@
-import { KTX } from './const';
+import { KTX } from '../ktx2/const';
 
 import type { TEXTURE_FORMATS } from '../../rendering/renderers/shared/texture/const';
 import type { TextureSourceOptions } from '../../rendering/renderers/shared/texture/sources/TextureSource';
