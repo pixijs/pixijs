@@ -37,7 +37,9 @@ export interface AlphaFilterOptions extends FilterOptions
  */
 export class AlphaFilter extends Filter
 {
+    /** Default filter options */
     public static readonly defaultOptions: AlphaFilterOptions = {
+        /** Amount of alpha from 0 to 1, where 0 is transparent */
         alpha: 1,
     };
 

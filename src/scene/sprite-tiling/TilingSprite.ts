@@ -129,13 +129,9 @@ export class TilingSprite extends Container implements View, Instruction
 
     public _anchor: ObservablePoint;
 
-    /** @internal */
     public _tileTransform: Transform;
-    /** @internal */
     public _texture: Texture;
-    /** @internal */
     public _applyAnchorToTexture: boolean;
-    /** @internal */
     public _didTilingSpriteUpdate: boolean;
 
     public _roundPixels: 0 | 1 = 0;
@@ -403,9 +399,6 @@ export class TilingSprite extends Container implements View, Instruction
         return false;
     }
 
-    /**
-     * @internal
-     */
     public onTilingSpriteUpdate()
     {
         this._boundsDirty = true;
