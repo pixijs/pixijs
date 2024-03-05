@@ -1,9 +1,9 @@
-import { ExtensionType } from '../../../extensions/Extensions';
-import { GlRenderTargetAdaptor } from '../gpu/renderTarget/GlRenderTargetAdaptor';
-import { RenderTargetSystem } from '../shared/renderTarget/RenderTargetSystem';
+import { ExtensionType } from '../../../../extensions/Extensions';
+import { RenderTargetSystem } from '../../shared/renderTarget/RenderTargetSystem';
+import { GlRenderTargetAdaptor } from './GlRenderTargetAdaptor';
 
-import type { GlRenderTarget } from './GlRenderTarget';
-import type { WebGLRenderer } from './WebGLRenderer';
+import type { GlRenderTarget } from '../GlRenderTarget';
+import type { WebGLRenderer } from '../WebGLRenderer';
 
 export class GlRenderTargetSystem extends RenderTargetSystem<GlRenderTarget>
 {

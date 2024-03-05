@@ -53,7 +53,7 @@ export const effectsMixin: Partial<Container> = {
 
         this.effects.sort((a, b) => a.priority - b.priority);
 
-        if (!this.isRenderGroupRoot && this.renderGroup)
+        if (this.renderGroup)
         {
             this.renderGroup.structureDidChange = true;
         }
