@@ -255,6 +255,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
             atc: gl.getExtension('WEBGL_compressed_texture_atc'),
             astc: gl.getExtension('WEBGL_compressed_texture_astc'),
             bptc: gl.getExtension('EXT_texture_compression_bptc'),
+            rgtc: gl.getExtension('EXT_texture_compression_rgtc'),
             loseContext: gl.getExtension('WEBGL_lose_context'),
         };
 
