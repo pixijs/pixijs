@@ -5,6 +5,15 @@ import { hslgpu } from '../filters/blend-modes/hls/GPUhls';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
+/**
+ * Available as `container.blendMode = 'saturation'` after importing `pixi.js/advanced-blend-modes`.
+ * @example
+ * import 'pixi.js/advanced-blend-modes';
+ * import { Sprite } from 'pixi.js';
+ *
+ * const sprite = Sprite.from('something.png');
+ * sprite.blendMode = 'saturation'
+ */
 export class SaturationBlend extends BlendModeFilter
 {
     /** @ignore */

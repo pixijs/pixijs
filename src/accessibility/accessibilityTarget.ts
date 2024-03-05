@@ -63,6 +63,7 @@ export interface AccessibleOptions
      * Specify the pointer-events the accessible div will use
      * Defaults to auto.
      * @default 'auto'
+     * @type {accessibility.PointerEvents}
      */
     accessiblePointerEvents: PointerEvents;
     /**
