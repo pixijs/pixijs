@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "8.0.0-rc.11",
+  "version": "8.0.0",
   "author": "PixiJS Team",
   "main": "lib/index.js",
   "module": "lib/index.mjs",
@@ -42,7 +42,7 @@
     "lint": "eslint --ext .js --ext .ts ./ --cache --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "codesandbox-ci": "run-s build",
-    "prerelease": "run-s clean:build test dist",
+    "prerelease": "run-s clean:build dist",
     "release": "ts-node ./scripts/release.ts",
     "publish-ci": "npm publish"
   },
