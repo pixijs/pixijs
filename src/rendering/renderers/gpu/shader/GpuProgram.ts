@@ -97,10 +97,31 @@ export class GpuProgram
     /** The vertex glsl shader source */
     public readonly vertex?: ProgramSource;
 
-    /** @todo */
+    /**
+     * Mapping of uniform names to group indexes for organizing shader program uniforms.
+     * Automatically generated from shader sources if not provided.
+     * @example
+     * // Assuming a shader with two uniforms, `u_time` and `u_resolution`, grouped respectively:
+     * [
+     *   { "u_time": 0 },
+     *   { "u_resolution": 1 }
+     * ]
+     */
     public readonly layout: ProgramLayout;
 
-    /** @todo */
+    /**
+     * Configuration for the WebGPU bind group layouts, detailing resource organization for the shader.
+     * Generated from shader sources if not explicitly provided.
+     * @example
+     * // Assuming a shader program that requires two bind groups:
+     * [
+     *   // First bind group layout entries
+     *   [{ binding: 0, visibility: GPUShaderStage.VERTEX, type: "uniform-buffer" }],
+     *   // Second bind group layout entries
+     *   [{ binding: 1, visibility: GPUShaderStage.FRAGMENT, type: "sampler" },
+     *    { binding: 2, visibility: GPUShaderStage.FRAGMENT, type: "sampled-texture" }]
+     * ]
+     */
     public readonly gpuLayout: ProgramPipelineLayoutDescription;
 
     /**

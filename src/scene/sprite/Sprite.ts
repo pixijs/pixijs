@@ -154,6 +154,10 @@ export class Sprite extends Container implements View
         return this._bounds;
     }
 
+    /**
+     * The bounds of the sprite, taking the texture's trim into account.
+     * @type {rendering.Bounds}
+     */
     get sourceBounds()
     {
         if (this._sourceBoundsDirty)
