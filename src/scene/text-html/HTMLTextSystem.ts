@@ -5,6 +5,7 @@ import { isSafari } from '../../utils/browser/isSafari';
 import { warn } from '../../utils/logging/warn';
 import { BigPool } from '../../utils/pool/PoolGroup';
 import { getPo2TextureFromSource } from '../text/utils/getPo2TextureFromSource';
+import { HTMLTextStyle } from './HtmlTextStyle';
 import { extractFontFamilies } from './utils/extractFontFamilies';
 import { getFontCss } from './utils/getFontCss';
 import { getSVGUrl } from './utils/getSVGUrl';
@@ -17,7 +18,6 @@ import type { CanvasAndContext } from '../../rendering/renderers/shared/texture/
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { PoolItem } from '../../utils/pool/Pool';
 import type { HTMLTextOptions } from './HTMLText';
-import type { HTMLTextStyle } from './HtmlTextStyle';
 import type { FontCSSStyleOptions } from './utils/loadFontCSS';
 
 const nssvg = 'http://www.w3.org/2000/svg';
@@ -143,7 +143,11 @@ export class HTMLTextSystem implements System
     {
         const htmlTextData = BigPool.get(HTMLTextRenderData);
         const fontFamilies = extractFontFamilies(text, style);
-        const fontCSS = await getFontCss(fontFamilies, style);
+        const fontCSS = await getFontCss(
+            fontFamilies,
+            style,
+            HTMLTextStyle.defaultTextStyle as {fontWeight: string, fontStyle: string}
+        );
         const measured = measureHtmlText(text, style, fontCSS, htmlTextData);
 
         const width = Math.ceil(Math.ceil((Math.max(1, measured.width) + (style.padding * 2))) * resolution);

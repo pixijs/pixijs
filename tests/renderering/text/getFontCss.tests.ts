@@ -19,7 +19,11 @@ describe('getFontCss', () =>
         const style = new HTMLTextStyle({
             fontFamily,
         });
-        const css = await getFontCss(fontFamily, style);
+        const css = await getFontCss(
+            fontFamily,
+            style,
+            HTMLTextStyle.defaultTextStyle as {fontWeight: string, fontStyle: string}
+        );
 
         expect(css).toContain('@font-face');
         expect(css).toContain('font-family: "font-bitmap"');
