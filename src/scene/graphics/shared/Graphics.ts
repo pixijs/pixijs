@@ -287,6 +287,15 @@ export class Graphics extends Container implements View, Instruction
     {
         return this._callContextMethod('roundRect', args);
     }
+    /**
+     * Draws a polygon shape by specifying a sequence of points. This method allows for the creation of complex polygons,
+     * which can be both open and closed. An optional transformation can be applied, enabling the polygon to be scaled,
+     * rotated, or translated as needed.
+     * @param points - An array of numbers representing the x and y coordinates of the polygon's vertices, in sequence.
+     * @param close - A boolean indicating whether to close the polygon path. True by default.
+     * @returns The instance of the current object for chaining further drawing commands.
+     */
+    public poly(points: number[] | PointData[], close?: boolean): this;
     public poly(...args: Parameters<GraphicsContext['poly']>): this
     {
         return this._callContextMethod('poly', args);

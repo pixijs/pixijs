@@ -755,7 +755,7 @@ export class GraphicsContext extends EventEmitter<{
      * @param close - A boolean indicating whether to close the polygon path. True by default.
      * @returns The instance of the current object for chaining further drawing commands.
      */
-    public poly(points: number[], close?: boolean): this
+    public poly(points: number[] | PointData[], close?: boolean): this
     {
         this._tick++;
 

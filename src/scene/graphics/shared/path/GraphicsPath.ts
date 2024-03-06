@@ -5,6 +5,7 @@ import { SVGToGraphicsPath } from '../svg/SVGToGraphicsPath';
 import { ShapePath } from './ShapePath';
 
 import type { Matrix } from '../../../../maths/matrix/Matrix';
+import type { PointData } from '../../../../maths/point/PointData';
 import type { Bounds } from '../../../container/bounds/Bounds';
 import type { RoundedPoint } from './roundShape';
 
@@ -415,8 +416,8 @@ export class GraphicsPath
      * @param transform - An optional `Matrix` object to apply a transformation to the polygon.
      * @returns The instance of the current object for chaining further drawing commands.
      */
-    public poly(points: number[], close?: boolean, transform?: Matrix): this;
-    public poly(...args: [number[], boolean, Matrix?]): this
+    public poly(points: number[] | PointData[], close?: boolean, transform?: Matrix): this;
+    public poly(...args: [number[] | PointData[], boolean, Matrix?]): this
     {
         this.instructions.push({ action: 'poly', data: args });
 

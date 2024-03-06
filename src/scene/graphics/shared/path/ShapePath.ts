@@ -14,6 +14,7 @@ import { buildArcToSvg } from '../buildCommands/buildArcToSvg';
 import { roundedShapeArc, roundedShapeQuadraticCurve } from './roundShape';
 
 import type { Matrix } from '../../../../maths/matrix/Matrix';
+import type { PointData } from '../../../../maths/point/PointData';
 import type { ShapePrimitive } from '../../../../maths/shapes/ShapePrimitive';
 import type { GraphicsPath } from './GraphicsPath';
 import type { RoundedPoint } from './roundShape';
@@ -313,7 +314,7 @@ export class ShapePath
      * @param transform - An optional `Matrix` object to apply a transformation to the polygon.
      * @returns The instance of the current object for chaining.
      */
-    public poly(points: number[], close?: boolean, transform?: Matrix): this
+    public poly(points: number[] | PointData[], close?: boolean, transform?: Matrix): this
     {
         const polygon = new Polygon(points);
 
