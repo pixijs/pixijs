@@ -5,6 +5,7 @@ import { isSafari } from '../../utils/browser/isSafari';
 import { warn } from '../../utils/logging/warn';
 import { BigPool } from '../../utils/pool/PoolGroup';
 import { getPo2TextureFromSource } from '../text/utils/getPo2TextureFromSource';
+import { HTMLTextRenderData } from './HTMLTextRenderData';
 import { HTMLTextStyle } from './HtmlTextStyle';
 import { extractFontFamilies } from './utils/extractFontFamilies';
 import { getFontCss } from './utils/getFontCss';
@@ -14,41 +15,10 @@ import { loadSVGImage } from './utils/loadSVGImage';
 import { measureHtmlText } from './utils/measureHtmlText';
 
 import type { System } from '../../rendering/renderers/shared/system/System';
-import type { CanvasAndContext } from '../../rendering/renderers/shared/texture/CanvasPool';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { PoolItem } from '../../utils/pool/Pool';
 import type { HTMLTextOptions } from './HTMLText';
 import type { FontCSSStyleOptions } from './utils/loadFontCSS';
-
-const nssvg = 'http://www.w3.org/2000/svg';
-const nsxhtml = 'http://www.w3.org/1999/xhtml';
-
-export const FontStylePromiseCache = new Map<string, Promise<string>>();
-
-export class HTMLTextRenderData
-{
-    public svgRoot = document.createElementNS(nssvg, 'svg');
-    public foreignObject = document.createElementNS(nssvg, 'foreignObject');
-    public domElement = document.createElementNS(nsxhtml, 'div');
-    public styleElement = document.createElementNS(nsxhtml, 'style');
-    public image = new Image();
-    public canvasAndContext?: CanvasAndContext;
-
-    constructor()
-    {
-        const { foreignObject, svgRoot, styleElement, domElement } = this;
-        // Arbitrary max size
-
-        foreignObject.setAttribute('width', '10000');
-        foreignObject.setAttribute('height', '10000');
-        foreignObject.style.overflow = 'hidden';
-
-        svgRoot.appendChild(foreignObject);
-
-        foreignObject.appendChild(styleElement);
-        foreignObject.appendChild(domElement);
-    }
-}
 
 interface HTMLTextTexture
 {

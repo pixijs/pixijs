@@ -164,7 +164,7 @@
     "./lib/index.*",
     "./lib/rendering/init.*",
     "./lib/spritesheet/init.*",
-    "./lib/rendering/renderers/shared/texture/sources/resourceToTexture.*",
+    "./lib/rendering/renderers/shared/texture/utils/textureFrom.*",
     "./lib/accessibility/init.*",
     "./lib/advanced-blend-modes/init.*",
     "./lib/app/init.*",

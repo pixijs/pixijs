@@ -1,5 +1,5 @@
 import { CanvasTextMetrics } from '../../text/canvas/CanvasTextMetrics';
-import { HTMLTextRenderData } from '../HTMLTextSystem';
+import { HTMLTextRenderData } from '../HTMLTextRenderData';
 
 import type { Size } from '../../../maths/misc/Size';
 import type { HTMLTextStyle } from '../HtmlTextStyle';

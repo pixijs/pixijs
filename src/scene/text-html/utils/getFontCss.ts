@@ -1,14 +1,15 @@
 import { Cache } from '../../../assets/cache/Cache';
-import { FontStylePromiseCache } from '../HTMLTextSystem';
 import { loadFontCSS } from './loadFontCSS';
 
-import type { HTMLTextStyle } from '../HtmlTextStyle';
+import type { FontCSSStyleOptions } from './loadFontCSS';
+
+export const FontStylePromiseCache = new Map<string, Promise<string>>();
 
 /**
  * takes the font families and returns a css string that can be injected into a style tag
  * It will contain the font families and the font urls encoded as base64
  * @param fontFamilies - The font families to load
- * @param style - The style to load the font with (used for the first font family)
+ * @param style - The FontCSSStyleOptions to load the font with (used for the first font family)
  * @param defaultOptions - The default options to load the font with (used for the rest of the font families)
  * @param defaultOptions.fontWeight - The default font weight
  * @param defaultOptions.fontStyle - The default font style
@@ -16,7 +17,7 @@ import type { HTMLTextStyle } from '../HtmlTextStyle';
  */
 export async function getFontCss(
     fontFamilies: string[],
-    style: HTMLTextStyle,
+    style: FontCSSStyleOptions,
     defaultOptions: {fontWeight: string, fontStyle: string}
 )
 {
