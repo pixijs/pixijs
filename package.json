@@ -63,12 +63,12 @@
     "types"
   ],
   "devDependencies": {
-    "pixi.js": "^8.0.0-X",
+    "pixi.js": "^8.0.0",
     "@pixi/extension-scripts": "^2.4.0",
     "gifuct-js": "^2.1.2",
     "pre-commit": "^1.2.2"
   },
   "peerDependencies": {
-    "pixi.js": ">=8.0.0-0"
+    "pixi.js": "^8.0.0"
   }
 }

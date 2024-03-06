@@ -4,7 +4,7 @@ on:
     branches: [ '**' ]
     tags: [ '**' ]
   release:
-    types: [ 'created' ]
+    types: [ published ]
   pull_request:
     branches: [ '**' ]
 jobs:
