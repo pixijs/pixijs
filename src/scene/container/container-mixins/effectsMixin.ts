@@ -165,6 +165,7 @@ export const effectsMixin: Partial<Container> = {
                 effect.filterArea = null;
                 effect.filters = null;
 
+                this._filters.effect = null;
                 BigPool.return(effect as PoolItem);
             }
         }

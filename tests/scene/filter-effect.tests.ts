@@ -2,6 +2,8 @@ import { AlphaFilter } from '../../src/filters/defaults/alpha/AlphaFilter';
 import { NoiseFilter } from '../../src/filters/defaults/noise/NoiseFilter';
 import { Container } from '../../src/scene/container/Container';
 
+import type { FilterEffect } from '../../src/filters/FilterEffect';
+
 describe('Filter effect', () =>
 {
     it('should set filter effects correctly', async () =>
@@ -95,5 +97,22 @@ describe('Filter effect', () =>
 
         expect(spyAdd).toHaveBeenCalledTimes(2);
         expect(spyRemove).toHaveBeenCalledTimes(1);
+    });
+
+    it('should set filter correctly if filters are swapped', async () =>
+    {
+        const container = new Container();
+        const noiseFilter = new NoiseFilter();
+        const alphaFilter = new AlphaFilter();
+
+        container.filters = [noiseFilter];
+
+        expect(container.effects.length).toBe(1);
+        expect((container.effects[0] as FilterEffect).filters).toEqual([noiseFilter]);
+
+        container.filters = [alphaFilter];
+
+        expect(container.effects.length).toBe(1);
+        expect((container.effects[0] as FilterEffect).filters).toEqual([alphaFilter]);
     });
 });
