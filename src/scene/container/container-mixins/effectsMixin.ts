@@ -1,9 +1,10 @@
-import { getFilterEffect, returnFilterEffect } from '../../../filters/FilterEffect';
+import { FilterEffect } from '../../../filters/FilterEffect';
 import { MaskEffectManager } from '../../../rendering/mask/MaskEffectManager';
+import { BigPool } from '../../../utils/pool/PoolGroup';
 
 import type { Filter } from '../../../filters/Filter';
-import type { FilterEffect } from '../../../filters/FilterEffect';
 import type { Rectangle } from '../../../maths/shapes/Rectangle';
+import type { PoolItem } from '../../../utils/pool/Pool';
 import type { Container } from '../Container';
 import type { Effect } from '../Effect';
 
@@ -150,17 +151,28 @@ export const effectsMixin: Partial<Container> = {
         {
             if (hasFilters)
             {
-                const effect = getFilterEffect(value as Filter[], this.filterArea);
+                const effect = BigPool.get(FilterEffect);
 
                 this._filters.effect = effect;
                 this.addEffect(effect);
             }
             else
             {
-                this.removeEffect(this._filters.effect);
-                returnFilterEffect(this._filters.effect);
-                this._filters.effect = null;
+                const effect = this._filters.effect;
+
+                this.removeEffect(effect);
+
+                effect.filterArea = null;
+                effect.filters = null;
+
+                BigPool.return(effect as PoolItem);
             }
+        }
+
+        if (hasFilters)
+        {
+            this._filters.effect.filters = value as Filter[];
+            this._filters.effect.filterArea = this.filterArea;
         }
     },
 

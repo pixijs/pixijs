@@ -27,22 +27,3 @@ export class FilterEffect implements Effect
         this.filterArea = null;
     }
 }
-
-const filterEffectsPool: FilterEffect[] = [];
-
-export function getFilterEffect(filters: Filter[], filterArea?: Rectangle)
-{
-    const filterEffect = filterEffectsPool.pop() || new FilterEffect();
-
-    filterEffect.filters = filters;
-    filterEffect.filterArea = filterArea;
-
-    return filterEffect;
-}
-
-export function returnFilterEffect(effect: FilterEffect)
-{
-    effect.filters = null;
-
-    filterEffectsPool.push(effect);
-}
