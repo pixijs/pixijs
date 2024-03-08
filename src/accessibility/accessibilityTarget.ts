@@ -46,9 +46,9 @@ export interface AccessibleOptions
      * If accessibleTitle AND accessibleHint has not been this will default to 'container [tabIndex]'
      * @member {string}
      */
-    accessibleTitle: string;
+    accessibleTitle: string | null;
     /** Sets the aria-label attribute of the shadow div */
-    accessibleHint: string;
+    accessibleHint: string | null;
     /**
      * @default 0
      */
@@ -81,7 +81,7 @@ export interface AccessibleOptions
 export interface AccessibleTarget extends AccessibleOptions
 {
     _accessibleActive: boolean;
-    _accessibleDiv: AccessibleHTMLElement;
+    _accessibleDiv: AccessibleHTMLElement | null;
     _renderId: number;
 }
 

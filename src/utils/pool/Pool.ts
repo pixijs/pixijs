@@ -112,6 +112,7 @@ export class Pool<T extends PoolItem>
 export type PoolItem = {
     init?: (data?: any) => void;
     reset?: () => void;
+    [key: string]: any;
 };
 
 /**
