@@ -90,7 +90,7 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
     public multiView: boolean;
 
     /** The canvas element that everything is drawn to. */
-    public canvas: ICanvas;
+    public canvas!: ICanvas;
 
     /** The texture that is used to draw the canvas to the screen. */
     public texture: Texture;

@@ -6,7 +6,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render bitmap text fill correctly',
-    pixelMatch: 250,
     create: async (scene: Container) =>
     {
         await Assets.load('fonts/outfit.woff2');
@@ -14,20 +13,28 @@ export const scene: TestScene = {
             text: 'Im fill 0x0',
             style: {
                 fontFamily: 'Outfit',
-                fontSize: 16,
                 fill: 0x0
             },
         });
 
         scene.addChild(blackBM);
 
+        const nullBm = new BitmapText({
+            text: 'Im fill null',
+            style: {
+                fill: null
+            },
+            y: 30
+        });
+
+        scene.addChild(nullBm);
+
         const undefinedBM = new BitmapText({
             text: 'Im fill undefined',
             style: {
                 fontFamily: 'Outfit',
-                fontSize: 16,
             },
-            y: 30,
+            y: 60,
         });
 
         scene.addChild(undefinedBM);
@@ -36,10 +43,9 @@ export const scene: TestScene = {
             text: 'Im fill red',
             style: {
                 fontFamily: 'Outfit',
-                fontSize: 16,
                 fill: 'red'
             },
-            y: 60,
+            y: 90,
         });
 
         scene.addChild(redBM);

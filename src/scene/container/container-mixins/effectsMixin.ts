@@ -1,9 +1,10 @@
-import { getFilterEffect, returnFilterEffect } from '../../../filters/FilterEffect';
+import { FilterEffect } from '../../../filters/FilterEffect';
 import { MaskEffectManager } from '../../../rendering/mask/MaskEffectManager';
+import { BigPool } from '../../../utils/pool/PoolGroup';
 
 import type { Filter } from '../../../filters/Filter';
-import type { FilterEffect } from '../../../filters/FilterEffect';
 import type { Rectangle } from '../../../maths/shapes/Rectangle';
+import type { PoolItem } from '../../../utils/pool/Pool';
 import type { Container } from '../Container';
 import type { Effect } from '../Effect';
 
@@ -138,29 +139,48 @@ export const effectsMixin: Partial<Container> = {
     {
         if (!Array.isArray(value) && value) value = [value];
 
+        // Ignore the Filter type
+        value = value as Filter[] | null | undefined;
+
         // by reusing the same effect.. rather than adding and removing from the pool!
         this._filters ||= { filters: null, effect: null, filterArea: null };
 
-        const hasFilters = value && (value as Filter[]).length > 0;
+        const hasFilters = value?.length > 0;
         const didChange = (this._filters.effect && !hasFilters) || (!this._filters.effect && hasFilters);
 
-        this._filters.filters = Object.freeze(value as Filter[]);
+        // Clone the filters array so we don't freeze the user-input
+        value = Array.isArray(value) ? value.slice(0) : value;
+
+        // Ensure filters are immutable via filters getter
+        this._filters.filters = Object.freeze(value);
 
         if (didChange)
         {
             if (hasFilters)
             {
-                const effect = getFilterEffect(value as Filter[], this.filterArea);
+                const effect = BigPool.get(FilterEffect);
 
                 this._filters.effect = effect;
                 this.addEffect(effect);
             }
             else
             {
-                this.removeEffect(this._filters.effect);
-                returnFilterEffect(this._filters.effect);
+                const effect = this._filters.effect;
+
+                this.removeEffect(effect);
+
+                effect.filterArea = null;
+                effect.filters = null;
+
                 this._filters.effect = null;
+                BigPool.return(effect as PoolItem);
             }
+        }
+
+        if (hasFilters)
+        {
+            this._filters.effect.filters = value as Filter[];
+            this._filters.effect.filterArea = this.filterArea;
         }
     },
 

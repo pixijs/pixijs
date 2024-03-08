@@ -57,7 +57,7 @@ export interface AccessibilityOptions
  * An instance of this class is automatically created by default, and can be found at `renderer.accessibility`
  * @memberof accessibility
  */
-export class AccessibilitySystem implements System
+export class AccessibilitySystem implements System<AccessibilityOptions>
 {
     /** @ignore */
     public static extension = {
@@ -389,19 +389,19 @@ export class AccessibilitySystem implements System
                     // update button titles and hints if they exist and they've changed
                     if (div.title !== child.accessibleTitle && child.accessibleTitle !== null)
                     {
-                        div.title = child.accessibleTitle;
+                        div.title = child.accessibleTitle || '';
                     }
                     if (div.getAttribute('aria-label') !== child.accessibleHint
                         && child.accessibleHint !== null)
                     {
-                        div.setAttribute('aria-label', child.accessibleHint);
+                        div.setAttribute('aria-label', child.accessibleHint || '');
                     }
                 }
 
                 // the title or index may have changed, if so lets update it!
                 if (child.accessibleTitle !== div.title || child.tabIndex !== div.tabIndex)
                 {
-                    div.title = child.accessibleTitle;
+                    div.title = child.accessibleTitle || '';
                     div.tabIndex = child.tabIndex;
                     if (this.debug)
                     {

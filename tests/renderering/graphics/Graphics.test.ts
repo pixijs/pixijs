@@ -172,7 +172,6 @@ describe('Graphics', () =>
                 .svg('<svg></svg>')
                 .restore()
                 .save()
-                .getTransform()
                 .resetTransform()
                 .rotateTransform(Math.PI / 4)
                 .scaleTransform(1.5)
@@ -225,6 +224,26 @@ describe('Graphics', () =>
 
             // dont throw an error:
             expect(() => rect.destroy()).not.toThrow();
+        });
+
+        it('should  calculate the buffer sizes for large graphics correctly', async () =>
+        {
+            const renderer = await getWebGLRenderer();
+
+            const graphics = new Graphics()
+                .rect(0, 0, 1000, 1000)
+                .rect(1000, 1000, 1000, 1000)
+                .rect(2000, 2000, 1000, 1000)
+                .fill('red');
+
+            graphics.context.batchMode = 'no-batch';
+
+            renderer.render(graphics);
+
+            const graphicsData = renderer.graphicsContext['_graphicsDataContextHash'][graphics.context.uid];
+
+            expect(graphicsData.geometry.indexBuffer.data.length).toEqual(3 * 6);
+            expect(graphicsData.geometry.buffers[0].data.length).toEqual(3 * 4 * 6);
         });
     });
 
