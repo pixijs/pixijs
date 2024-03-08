@@ -172,7 +172,6 @@ describe('Graphics', () =>
                 .svg('<svg></svg>')
                 .restore()
                 .save()
-                .getTransform()
                 .resetTransform()
                 .rotateTransform(Math.PI / 4)
                 .scaleTransform(1.5)

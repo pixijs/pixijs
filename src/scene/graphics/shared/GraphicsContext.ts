@@ -695,7 +695,7 @@ export class GraphicsContext extends EventEmitter<{
      * @param smoothness - Optional parameter to adjust the smoothness of the curve.
      * @returns The instance of the current object for chaining.
      */
-    public quadraticCurveTo(cpx: number, cpy: number, x: number, y: number, smoothness?: number): void
+    public quadraticCurveTo(cpx: number, cpy: number, x: number, y: number, smoothness?: number): this
     {
         this._tick++;
 
@@ -708,6 +708,8 @@ export class GraphicsContext extends EventEmitter<{
             (t.b * x) + (t.d * y) + t.ty,
             smoothness,
         );
+
+        return this;
     }
 
     /**
@@ -886,18 +888,20 @@ export class GraphicsContext extends EventEmitter<{
      * defined in SVG format to be drawn within the graphics context.
      * @param svg - The SVG string to be parsed and rendered.
      */
-    public svg(svg: string): void
+    public svg(svg: string): this
     {
         this._tick++;
 
         SVGParser(svg, this);
+
+        return this;
     }
 
     /**
      * Restores the most recently saved graphics state by popping the top of the graphics state stack.
      * This includes transformations, fill styles, and stroke styles.
      */
-    public restore(): void
+    public restore(): this
     {
         const state = this._stateStack.pop();
 
@@ -907,16 +911,20 @@ export class GraphicsContext extends EventEmitter<{
             this._fillStyle = state.fillStyle;
             this._strokeStyle = state.strokeStyle;
         }
+
+        return this;
     }
 
     /** Saves the current graphics state, including transformations, fill styles, and stroke styles, onto a stack. */
-    public save(): void
+    public save(): this
     {
         this._stateStack.push({
             transform: this._transform.clone(),
             fillStyle: { ...this._fillStyle },
             strokeStyle: { ...this._strokeStyle },
         });
+
+        return this;
     }
 
     /**
