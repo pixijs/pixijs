@@ -11,6 +11,13 @@ import type { PoolItem } from '../../../utils/pool/Pool';
 import type { BatchableGraphics } from './BatchableGraphics';
 import type { GraphicsContext } from './GraphicsContext';
 
+interface GeometryData
+{
+    vertices: number[];
+    uvs: number[];
+    indices: number[];
+}
+
 /**
  * A class that holds batchable graphics data for a GraphicsContext.
  * @memberof rendering
@@ -19,7 +26,13 @@ import type { GraphicsContext } from './GraphicsContext';
 export class GpuGraphicsContext
 {
     public isBatchable: boolean;
-    public batches: BatchableGraphics[];
+    public batches: BatchableGraphics[] = [];
+    public geometryData: GeometryData = {
+        vertices: [],
+        uvs: [],
+        indices: [],
+    };
+    public graphicsData: GraphicsContextRenderData;
 }
 
 /**
@@ -119,37 +132,18 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
                 gpuContext = this._initContext(context);
             }
 
-            const contextBatches = buildContextBatches(context);
-
-            let size = 0;
+            buildContextBatches(context, gpuContext);
 
             const batchMode = context.batchMode;
 
-            let isBatchable = true;
-            // check the size...
-
             if (context.customShader || batchMode === 'no-batch')
             {
-                isBatchable = false;
+                gpuContext.isBatchable = false;
             }
             else if (batchMode === 'auto')
             {
-                for (let i = 0; i < contextBatches.length; i++)
-                {
-                    size += contextBatches[i].vertexSize;
-
-                    if (size > 400)
-                    {
-                        isBatchable = false;
-                        break;
-                    }
-                }
+                gpuContext.isBatchable = (gpuContext.geometryData.vertices.length < 400);
             }
-
-            gpuContext = this._gpuContextHash[context.uid] = {
-                isBatchable,
-                batches: contextBatches,
-            };
 
             context.dirty = false;
         }
@@ -176,17 +170,15 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
     {
         const graphicsData: GraphicsContextRenderData = BigPool.get(GraphicsContextRenderData);// ();
 
-        const batches = this._gpuContextHash[context.uid].batches;
+        const { batches, geometryData } = this._gpuContextHash[context.uid];
 
-        let vertexSize = 0;
-        let indexSize = 0;
+        const vertexSize = geometryData.vertices.length;
+        const indexSize = geometryData.indices.length;
 
-        batches.forEach((batch) =>
+        for (let i = 0; i < batches.length; i++)
         {
-            batch.applyTransform = false;
-            vertexSize += batch.geometryData.vertices.length;
-            indexSize += batch.geometryData.indices.length;
-        });
+            batches[i].applyTransform = false;
+        }
 
         const batcher = BigPool.get(Batcher);
 

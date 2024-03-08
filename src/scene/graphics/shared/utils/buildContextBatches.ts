@@ -14,6 +14,7 @@ import { triangulateWithHoles } from './triangulateWithHoles';
 import type { Polygon } from '../../../../maths/shapes/Polygon';
 import type { ShapeBuildCommand } from '../buildCommands/ShapeBuildCommand';
 import type { ConvertedFillStyle, GraphicsContext, TextureInstruction } from '../GraphicsContext';
+import type { GpuGraphicsContext } from '../GraphicsContextSystem';
 import type { GraphicsPath } from '../path/GraphicsPath';
 import type { ShapePath } from '../path/ShapePath';
 
@@ -28,19 +29,15 @@ const buildMap: Record<string, ShapeBuildCommand> = {
 
 const tempRect = new Rectangle();
 
-export function buildContextBatches(context: GraphicsContext): BatchableGraphics[]
+export function buildContextBatches(context: GraphicsContext, gpuContext: GpuGraphicsContext)
 {
-    const vertices: number[] = [];
-    const uvs: number[] = [];
-    const indices: number[] = [];
+    const { geometryData, batches } = gpuContext;
 
-    const geometryData = {
-        vertices,
-        uvs,
-        indices,
-    };
-
-    const batches: BatchableGraphics[] = [];
+    // reset them..
+    batches.length = 0;
+    geometryData.indices.length = 0;
+    geometryData.vertices.length = 0;
+    geometryData.uvs.length = 0;
 
     for (let i = 0; i < context.instructions.length; i++)
     {
@@ -70,8 +67,6 @@ export function buildContextBatches(context: GraphicsContext): BatchableGraphics
             addShapePathToGeometryData(shapePath, style, hole, isStroke, batches, geometryData);
         }
     }
-
-    return batches;
 }
 
 function addTextureToGeometryData(
