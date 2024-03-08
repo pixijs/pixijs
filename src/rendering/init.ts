@@ -6,7 +6,7 @@ import { BufferImageSource } from './renderers/shared/texture/sources/BufferSour
 import { CanvasSource } from './renderers/shared/texture/sources/CanvasSource';
 import { ImageSource } from './renderers/shared/texture/sources/ImageSource';
 import { VideoSource } from './renderers/shared/texture/sources/VideoSource';
-import './renderers/shared/texture/sources/resourceToTexture';
+import './renderers/shared/texture/utils/textureFrom';
 import './mask/MaskEffectManager';
 
 /**
@@ -19,3 +19,4 @@ import './mask/MaskEffectManager';
  */
 
 extensions.add(AlphaMask, ColorMask, StencilMask, VideoSource, ImageSource, CanvasSource, BufferImageSource);
+
