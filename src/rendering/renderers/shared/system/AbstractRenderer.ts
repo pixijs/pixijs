@@ -175,7 +175,7 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
     public readonly runners: Runners = Object.create(null) as Runners;
     public readonly renderPipes = Object.create(null) as PIPES;
     /** The view system manages the main canvas that is attached to the DOM */
-    public view: ViewSystem;
+    public view!: ViewSystem;
     /** The background system manages the background color and alpha of the main view. */
     public background: BackgroundSystem;
     /** System that manages the generation of textures from the renderer */
