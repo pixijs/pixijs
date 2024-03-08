@@ -159,7 +159,7 @@ export abstract class AbstractBitmapFont<FontType>
      * The kind of distance field for this font or "none".
      * @deprecated since 8.0.0 Use `distanceField.type` instead.
      */
-    public get distanceFieldRange(): BitmapFontData['distanceField']['range']
+    public get distanceFieldRange(): NonNullable<BitmapFontData['distanceField']>['range']
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
@@ -173,7 +173,7 @@ export abstract class AbstractBitmapFont<FontType>
      * The range of the distance field in pixels.
      * @deprecated since 8.0.0 Use `distanceField.range` instead.
      */
-    public get distanceFieldType(): BitmapFontData['distanceField']['type']
+    public get distanceFieldType(): NonNullable<BitmapFontData['distanceField']>['type']
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len

@@ -5,6 +5,7 @@ import { getLocalBounds } from '../../../src/scene/container/bounds/getLocalBoun
 import { Graphics } from '../../../src/scene/graphics/shared/Graphics';
 import { GraphicsContext } from '../../../src/scene/graphics/shared/GraphicsContext';
 
+import type { PointData } from '../../../src/maths/point/PointData';
 import type { FillInstruction } from '../../../src/scene/graphics/shared/GraphicsContext';
 
 describe('Graphics Drawing', () =>
@@ -115,11 +116,11 @@ describe('Graphics Drawing', () =>
 
     describe('drawPolygon', () =>
     {
-        let numbers: number[];
+        let numbers: PointData[];
 
         beforeAll(() =>
         {
-            numbers = [0, 0, 10, 10, 20, 20];
+            numbers = [{ x: 0, y: 0 }, { x: 10, y: 10 }, { x: 20, y: 20 }];
         });
 
         it('should draw a polygon', () =>

@@ -99,6 +99,27 @@ describe('Filter effect', () =>
         expect(spyRemove).toHaveBeenCalledTimes(1);
     });
 
+    it('should copy the filters user input', () =>
+    {
+        const container = new Container();
+        const noiseFilter = new NoiseFilter();
+        const alphaFilter = new AlphaFilter();
+        const origFilters: (NoiseFilter | AlphaFilter)[] = [noiseFilter];
+
+        container.filters = origFilters;
+
+        expect(container.filters).toEqual([noiseFilter]);
+
+        origFilters.push(alphaFilter);
+
+        expect(container.filters).toEqual([noiseFilter]);
+        expect(origFilters).toEqual([noiseFilter, alphaFilter]);
+
+        container.filters = origFilters;
+
+        expect(container.filters).toEqual([noiseFilter, alphaFilter]);
+    });
+
     it('should set filter correctly if filters are swapped', async () =>
     {
         const container = new Container();

@@ -139,13 +139,20 @@ export const effectsMixin: Partial<Container> = {
     {
         if (!Array.isArray(value) && value) value = [value];
 
+        // Ignore the Filter type
+        value = value as Filter[] | null | undefined;
+
         // by reusing the same effect.. rather than adding and removing from the pool!
         this._filters ||= { filters: null, effect: null, filterArea: null };
 
-        const hasFilters = value && (value as Filter[]).length > 0;
+        const hasFilters = value?.length > 0;
         const didChange = (this._filters.effect && !hasFilters) || (!this._filters.effect && hasFilters);
 
-        this._filters.filters = Object.freeze(value as Filter[]);
+        // Clone the filters array so we don't freeze the user-input
+        value = Array.isArray(value) ? value.slice(0) : value;
+
+        // Ensure filters are immutable via filters getter
+        this._filters.filters = Object.freeze(value);
 
         if (didChange)
         {

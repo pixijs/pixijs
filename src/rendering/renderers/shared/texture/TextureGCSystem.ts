@@ -30,7 +30,7 @@ export interface TextureGCSystemOptions
  * ensuring that it does not get clogged up with textures that are no longer being used.
  * @memberof rendering
  */
-export class TextureGCSystem implements System
+export class TextureGCSystem implements System<TextureGCSystemOptions>
 {
     /** @ignore */
     public static extension = {

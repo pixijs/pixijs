@@ -1,11 +1,13 @@
 import { Cache } from '../../../../../assets/cache/Cache';
 import { extensions, ExtensionType } from '../../../../../extensions/Extensions';
+import { TextureSource } from '../sources/TextureSource';
 import { Texture } from '../Texture';
 
 import type { TypedArray } from '../../buffer/Buffer';
-import type { BufferSourceOptions } from './BufferSource';
-import type { ImageResource } from './ImageSource';
-import type { TextureSource, TextureSourceOptions } from './TextureSource';
+import type { BufferSourceOptions } from '../sources/BufferSource';
+import type { ImageResource } from '../sources/ImageSource';
+import type { TextureSourceOptions } from '../sources/TextureSource';
+import type { TextureSourceLike } from '../Texture';
 
 interface TextureSourceConstructor<T extends TextureSource = TextureSource>
 {
@@ -72,3 +74,27 @@ export function resourceToTexture(
 
     return texture;
 }
+
+/**
+ * Helper function that creates a returns Texture based on the source you provide.
+ * The source should be loaded and ready to go. If not its best to grab the asset using Assets.
+ * @param id - String or Source to create texture from
+ * @param skipCache - Skip adding the texture to the cache
+ * @returns The texture based on the Id provided
+ */
+export function textureFrom(id: TextureSourceLike, skipCache = false): Texture
+{
+    if (typeof id === 'string')
+    {
+        return Cache.get(id);
+    }
+    else if (id instanceof TextureSource)
+    {
+        return new Texture({ source: id });
+    }
+
+    // return a auto generated texture from resource
+    return resourceToTexture(id, skipCache);
+}
+
+Texture.from = textureFrom;

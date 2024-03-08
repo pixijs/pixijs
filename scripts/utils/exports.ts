@@ -72,7 +72,7 @@ const sideEffects = [
     './lib/index.*',
     './lib/rendering/init.*',
     './lib/spritesheet/init.*',
-    './lib/rendering/renderers/shared/texture/sources/resourceToTexture.*',
+    './lib/rendering/renderers/shared/texture/utils/textureFrom.*',
 ];
 
 for (const [name, path] of subImports)
