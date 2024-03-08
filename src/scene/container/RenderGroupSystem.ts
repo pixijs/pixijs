@@ -102,7 +102,9 @@ export class RenderGroupSystem implements System
         }
 
         renderer.globalUniforms.start({
-            worldTransformMatrix: transform ? container.renderGroup.localTransform : container.renderGroup.worldTransform
+            worldTransformMatrix: transform ? container.renderGroup.localTransform : container.renderGroup.worldTransform,
+            worldColor: container.renderGroup.worldColorAlpha,
+
         });
 
         executeInstructions(container.renderGroup, renderPipes);

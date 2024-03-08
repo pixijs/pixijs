@@ -476,7 +476,8 @@ export class Graphics extends Container implements View, Instruction
      * Draws a polygon shape by specifying a sequence of points. This method allows for the creation of complex polygons,
      * which can be both open and closed. An optional transformation can be applied, enabling the polygon to be scaled,
      * rotated, or translated as needed.
-     * @param points - An array of numbers representing the x and y coordinates of the polygon's vertices, in sequence.
+     * @param points - An array of numbers, or an array of PointData objects eg [{x,y}, {x,y}, {x,y}]
+     * representing the x and y coordinates, of the polygon's vertices, in sequence.
      * @param close - A boolean indicating whether to close the polygon path. True by default.
      * @returns The instance of the current object for chaining further drawing commands.
      */

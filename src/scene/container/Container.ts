@@ -695,11 +695,11 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
             {
                 this.renderGroup.removeChild(child);
             }
-        }
 
-        child.parent = null;
-        this.emit('childRemoved', child, this, index);
-        child.emit('removed', this);
+            child.parent = null;
+            this.emit('childRemoved', child, this, index);
+            child.emit('removed', this);
+        }
 
         return child;
     }

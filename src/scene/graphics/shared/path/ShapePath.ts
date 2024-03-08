@@ -309,7 +309,8 @@ export class ShapePath
 
     /**
      * Draws a polygon shape. This method allows for the creation of complex polygons by specifying a sequence of points.
-     * @param points - An array of numbers representing the x and y coordinates of the polygon's vertices, in sequence.
+     * @param points - An array of numbers, or or an array of PointData objects eg [{x,y}, {x,y}, {x,y}]
+     * representing the x and y coordinates of the polygon's vertices, in sequence.
      * @param close - A boolean indicating whether to close the polygon path. True by default.
      * @param transform - An optional `Matrix` object to apply a transformation to the polygon.
      * @returns The instance of the current object for chaining.

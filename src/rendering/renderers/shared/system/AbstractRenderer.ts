@@ -2,6 +2,7 @@ import { Color } from '../../../../color/Color';
 import { Container } from '../../../../scene/container/Container';
 import { unsafeEvalSupported } from '../../../../utils/browser/unsafeEvalSupported';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
+import { EventEmitter } from '../../../../utils/utils';
 import { CLEAR } from '../../gl/const';
 import { SystemRunner } from './SystemRunner';
 
@@ -127,7 +128,9 @@ type Runners = {[key in DefaultRunners]: SystemRunner} & {
  * @property {rendering.AccessibilitySystem} accessibility - AccessibilitySystem instance. Requires `import 'pixi.js/accessibility'`.
  */
 /* eslint-enable max-len */
-export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions, CANVAS extends ICanvas = HTMLCanvasElement>
+export class AbstractRenderer<
+    PIPES, OPTIONS extends PixiMixins.RendererOptions, CANVAS extends ICanvas = HTMLCanvasElement
+> extends EventEmitter<{resize: [number, number]}>
 {
     /** The default options for the renderer. */
     public static defaultOptions = {
@@ -175,7 +178,7 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
     public readonly runners: Runners = Object.create(null) as Runners;
     public readonly renderPipes = Object.create(null) as PIPES;
     /** The view system manages the main canvas that is attached to the DOM */
-    public view: ViewSystem;
+    public view!: ViewSystem;
     /** The background system manages the background color and alpha of the main view. */
     public background: BackgroundSystem;
     /** System that manages the generation of textures from the renderer */
@@ -193,6 +196,7 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
      */
     constructor(config: RendererConfig)
     {
+        super();
         this.type = config.type;
         this.name = config.name;
 
@@ -302,6 +306,7 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions,
     public resize(desiredScreenWidth: number, desiredScreenHeight: number, resolution?: number): void
     {
         this.view.resize(desiredScreenWidth, desiredScreenHeight, resolution);
+        this.emit('resize', this.view.screen.width, this.view.screen.height);
     }
 
     public clear(options: ClearOptions = {}): void
