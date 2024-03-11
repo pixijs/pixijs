@@ -33,7 +33,7 @@ export interface BackgroundSystemOptions
  * The background system manages the background color and alpha of the main view.
  * @memberof rendering
  */
-export class BackgroundSystem implements System
+export class BackgroundSystem implements System<BackgroundSystemOptions>
 {
     /** @ignore */
     public static extension = {

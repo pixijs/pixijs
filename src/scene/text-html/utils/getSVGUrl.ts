@@ -1,5 +1,5 @@
+import type { HTMLTextRenderData } from '../HTMLTextRenderData';
 import type { HTMLTextStyle } from '../HtmlTextStyle';
-import type { HTMLTextRenderData } from '../HTMLTextSystem';
 
 /**
  * takes all the data and returns a svg url string can be loaded by an image element

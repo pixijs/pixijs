@@ -1,16 +1,14 @@
 import EventEmitter from 'eventemitter3';
-import { Cache } from '../../../../assets/cache/Cache';
 import { groupD8 } from '../../../../maths/matrix/groupD8';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { uid } from '../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { NOOP } from '../../../../utils/misc/NOOP';
 import { BufferImageSource } from './sources/BufferSource';
-import { resourceToTexture } from './sources/resourceToTexture';
 import { TextureSource } from './sources/TextureSource';
 import { TextureMatrix } from './TextureMatrix';
 
-import type { TextureResourceOrOptions } from './sources/resourceToTexture';
+import type { TextureResourceOrOptions } from './utils/textureFrom';
 
 /**
  * Stores the width of the non-scalable borders, for example when used with {@link scene.NineSlicePlane} texture.
@@ -126,20 +124,7 @@ export class Texture extends EventEmitter<{
      * @param skipCache - Skip adding the texture to the cache
      * @returns The texture based on the Id provided
      */
-    public static from(id: TextureSourceLike, skipCache = false): Texture
-    {
-        if (typeof id === 'string')
-        {
-            return Cache.get(id);
-        }
-        else if (id instanceof TextureSource)
-        {
-            return new Texture({ source: id });
-        }
-
-        // return a auto generated texture from resource
-        return resourceToTexture(id, skipCache);
-    }
+    public static from: (id: TextureSourceLike, skipCache?: boolean) => Texture;
 
     /** label used for debugging */
     public label?: string;

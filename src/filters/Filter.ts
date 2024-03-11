@@ -48,14 +48,13 @@ import type { FilterSystem } from './FilterSystem';
  * - {@link filters.LinearLightBlend} - Blend mode to add linear light to display objects.
  * - {@link filters.NoiseFilter} - Applies random noise to an object.
  * - {@link filters.PinLightBlend} - Blend mode to add pin light to display objects.
- * - {@link filters.ShockwaveFilter} - Applies a shockwave distortion.
  * - {@link filters.SubtractBlend} - Blend mode to subtract display objects.
  *
  * <br/>
  * For more available filters, check out the
- *  {@link https://api.pixijs.io/pixi-filters-monorepo.html|pixi-filters} repository.
+ *  {@link https://pixijs.io/filters/docs/ pixi-filters} repository.
  *
- * You can also check out the awesome {@link https://filters.pixijs.download/dev/demo/index.html|Filter demo} to see
+ * You can also check out the awesome {@link https://pixijs.io/filters/examples/ Filter demo} to see
  * filters in action and combine them!
  * @namespace filters
  */

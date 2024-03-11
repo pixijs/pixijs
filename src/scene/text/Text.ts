@@ -57,7 +57,7 @@ export class Text
         const anchor = this._anchor;
 
         const canvasMeasurement = CanvasTextMetrics.measureText(
-            this.text,
+            this._text,
             this._style
         );
 

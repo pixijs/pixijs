@@ -25,6 +25,17 @@ describe('Text', () =>
             expect(Math.round(text.height)).toEqual(300);
         });
 
+        it('should measure width of text correctly after changing text value', () =>
+        {
+            const text = new Text({ text: '' });
+
+            expect(text.width).toEqual(0);
+
+            text.text = 'hello';
+
+            expect(Math.round(text.width)).toEqual(55);
+        });
+
         it('should set the text resolution to match the resolution provided', () =>
         {
             const text = new Text({ text: 'foo', resolution: 3 });

@@ -27,6 +27,23 @@ describe('Scene', () =>
         expect(container.children).toHaveLength(0);
     });
 
+    it('should not remove a child if it does not belong to the parent container', async () =>
+    {
+        const container = new Container();
+        const actualContainer = new Container();
+
+        const child = new Container();
+
+        actualContainer.addChild(child);
+
+        container.removeChild(child);
+
+        expect(container.children).toHaveLength(0);
+        expect(actualContainer.children).toHaveLength(1);
+
+        expect(child.parent).toEqual(actualContainer);
+    });
+
     it('should re-parent a child', async () =>
     {
         const container = new Container();

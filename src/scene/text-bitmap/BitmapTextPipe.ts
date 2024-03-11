@@ -158,7 +158,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
                 {
                     context.texture(
                         charData.texture,
-                        tint,
+                        tint ? tint : 'black',
                         Math.round(line.charPositions[j] + charData.xOffset),
                         Math.round(currentY + charData.yOffset),
                     );
