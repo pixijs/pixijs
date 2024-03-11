@@ -15,6 +15,7 @@ import type { Loader } from '../../../Loader';
 export function createTexture(source: TextureSource, loader: Loader, url: string)
 {
     source.label = url;
+    source._sourceOrigin = url;
 
     const texture = new Texture({
         source,
@@ -34,7 +35,7 @@ export function createTexture(source: TextureSource, loader: Loader, url: string
     // remove the promise from the loader and the url from the cache when the texture is destroyed
     texture.once('destroy', () =>
     {
-        if (url in loader.promiseCache)
+        if (loader.promiseCache[url])
         {
             // #if _DEBUG
             warn('[Assets] A Texture managed by Assets was destroyed instead of unloaded! '
@@ -49,8 +50,8 @@ export function createTexture(source: TextureSource, loader: Loader, url: string
         if (!source.destroyed)
         {
             // #if _DEBUG
-            warn('[Assets] A Texture managed by Assets was destroyed instead of unloaded! '
-                + 'Use Assets.unload() instead of destroying the Texture.');
+            warn('[Assets] A TextureSource managed by Assets was destroyed instead of unloaded! '
+                + 'Use Assets.unload() instead of destroying the TextureSource.');
             // #endif
 
             unload();

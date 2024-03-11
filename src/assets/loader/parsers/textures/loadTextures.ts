@@ -165,6 +165,8 @@ export const loadTextures = {
 
     unload(texture: Texture): void
     {
+        // set this flag so that the listener for the assets knows that the texture has been destroyed
+        texture.source.destroyed = true;
         texture.destroy(true);
     }
 } as LoaderParser<Texture, TextureSourceOptions, LoadTextureConfig>;

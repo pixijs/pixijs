@@ -365,8 +365,8 @@ export class Texture extends EventEmitter<{
         }
 
         this._textureMatrix = null;
-        this.destroyed = true;
         this.emit('destroy', this);
+        this.destroyed = true;
         this.removeAllListeners();
     }
 
