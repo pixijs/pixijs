@@ -388,8 +388,8 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     /** Destroys this texture source */
     public destroy()
     {
-        this.emit('destroy', this);
         this.destroyed = true;
+        this.emit('destroy', this);
 
         if (this._style)
         {

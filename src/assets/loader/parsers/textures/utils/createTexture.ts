@@ -33,25 +33,26 @@ export function createTexture(source: TextureSource, loader: Loader, url: string
     };
 
     // remove the promise from the loader and the url from the cache when the texture is destroyed
-    texture.once('destroy', () =>
+    texture.source.once('destroy', () =>
     {
         if (loader.promiseCache[url])
         {
             // #if _DEBUG
-            warn('[Assets] A Texture managed by Assets was destroyed instead of unloaded! '
-                + 'Use Assets.unload() instead of destroying the Texture.');
+            warn('[Assets] A TextureSource managed by Assets was destroyed instead of unloaded! '
+           + 'Use Assets.unload() instead of destroying the TextureSource.');
             // #endif
 
             unload();
         }
     });
-    texture.source.once('destroy', () =>
+
+    texture.once('destroy', () =>
     {
         if (!source.destroyed)
         {
             // #if _DEBUG
-            warn('[Assets] A TextureSource managed by Assets was destroyed instead of unloaded! '
-                + 'Use Assets.unload() instead of destroying the TextureSource.');
+            warn('[Assets] A Texture managed by Assets was destroyed instead of unloaded! '
+             + 'Use Assets.unload() instead of destroying the Texture.');
             // #endif
 
             unload();
