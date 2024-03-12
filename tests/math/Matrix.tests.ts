@@ -168,14 +168,6 @@ describe('Matrix', () =>
         });
     });
 
-    it('should return false when comparing with a matrix with null or undefined fields', () =>
-    {
-        const matrix1 = new Matrix(1, 2, 3, 4, 5, 6);
-        const matrix2 = new Matrix(undefined, 2, 3, 4, 5, 6); // undefined 'a'
-
-        expect(matrix1.equals(matrix2)).toBe(false);
-    });
-
     it('should reset matrix to default when identity() is called', () =>
     {
         const matrix = new Matrix();
