@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { Matrix } from '../../../maths';
 import { compileHighShaderGpuProgram } from '../../../rendering/high-shader/compileHighShaderToProgram';
 import { localUniformBit } from '../../../rendering/high-shader/shader-bits/localUniformBit';
 import { roundPixelsBit } from '../../../rendering/high-shader/shader-bits/roundPixelsBit';
@@ -44,6 +45,9 @@ export class GpuMeshAdapter implements MeshAdaptor
             resources: {
                 uTexture: Texture.EMPTY._source,
                 uSampler: Texture.EMPTY._source.style,
+                textureUniforms: {
+                    uTextureMatrix: { type: 'mat3x3<f32>', value: new Matrix() },
+                }
             }
         });
     }
@@ -58,8 +62,9 @@ export class GpuMeshAdapter implements MeshAdaptor
         {
             shader = this._shader;
 
-            shader.groups[2] = (renderer as WebGPURenderer)
-                .texture.getTextureBindGroup(mesh.texture);
+            shader.resources.uTexture = mesh.texture.source;
+            shader.resources.uSampler = mesh.texture.source.style;
+            shader.resources.textureUniforms.uniforms.uTextureMatrix = mesh.texture.textureMatrix.mapCoord;
         }
         else if (!shader.gpuProgram)
         {

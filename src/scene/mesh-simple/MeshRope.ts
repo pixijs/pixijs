@@ -2,7 +2,7 @@ import { definedProps } from '../container/utils/definedProps';
 import { Mesh } from '../mesh/shared/Mesh';
 import { RopeGeometry } from './RopeGeometry';
 
-import type { PointLike } from '../../maths/point/PointLike';
+import type { PointData } from '../../maths';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { MeshOptions } from '../mesh/shared/Mesh';
 
@@ -23,7 +23,7 @@ export interface MeshRopeOptions extends Omit<MeshOptions, 'geometry'>
     /** The texture to use on the rope. */
     texture: Texture;
     /** An array of points that determine the rope. */
-    points: PointLike[];
+    points: PointData[];
     /**
      * Rope texture scale, if zero then the rope texture is stretched.
      * Positive values scale rope texture

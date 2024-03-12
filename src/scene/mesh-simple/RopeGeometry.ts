@@ -1,6 +1,6 @@
 import { MeshGeometry } from '../mesh/shared/MeshGeometry';
 
-import type { PointLike } from '../../maths/point/PointLike';
+import type { PointData } from '../../maths';
 import type { MeshGeometryOptions } from '../mesh/shared/MeshGeometry';
 
 /**
@@ -20,7 +20,7 @@ export interface RopeGeometryOptions
     /** The width (i.e., thickness) of the rope. */
     width?: number;
     /** An array of points that determine the rope. */
-    points?: PointLike[];
+    points?: PointData[];
     /**
      * Rope texture scale, if zero then the rope texture is stretched.
      * By default the rope texture will be stretched to match
@@ -58,7 +58,7 @@ export class RopeGeometry extends MeshGeometry
     };
 
     /** An array of points that determine the rope. */
-    public points: PointLike[];
+    public points: PointData[];
 
     /** Rope texture scale, if zero then the rope texture is stretched. */
     public readonly textureScale: number;

@@ -112,7 +112,7 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<MeshInstructi
             {
                 if (batchableMesh.texture._source !== texture._source)
                 {
-                    return batchableMesh.batcher.checkAndUpdateTexture(batchableMesh, texture);
+                    return !batchableMesh.batcher.checkAndUpdateTexture(batchableMesh, texture);
                 }
             }
         }

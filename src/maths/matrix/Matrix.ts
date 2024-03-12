@@ -499,6 +499,17 @@ export class Matrix
         return this;
     }
 
+    /**
+     * check to see if two matrices are the same
+     * @param matrix - The matrix to compare to.
+     */
+    public equals(matrix: Matrix)
+    {
+        return matrix.a === this.a && matrix.b === this.b
+            && matrix.c === this.c && matrix.d === this.d
+            && matrix.tx === this.tx && matrix.ty === this.ty;
+    }
+
     // #if _DEBUG
     public toString(): string
     {

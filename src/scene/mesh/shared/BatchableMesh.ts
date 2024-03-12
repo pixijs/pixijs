@@ -1,3 +1,5 @@
+import { Matrix } from '../../../maths';
+
 import type { Batch, BatchableObject, Batcher } from '../../../rendering/batcher/shared/Batcher';
 import type { IndexBufferArray } from '../../../rendering/renderers/shared/geometry/Geometry';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
@@ -20,6 +22,9 @@ export class BatchableMesh implements BatchableObject
     public geometry: MeshGeometry;
 
     public roundPixels: 0 | 1 = 0;
+
+    private _transformedUvs: Float32Array;
+    private readonly _uvMatrix = new Matrix();
 
     get blendMode() { return this.mesh.groupBlendMode; }
 
@@ -66,6 +71,25 @@ export class BatchableMesh implements BatchableObject
         const positions = geometry.positions;
         const uvs = geometry.uvs;
 
+        let transformedUvs = uvs;
+        const textureMatrix = this.texture.textureMatrix;
+
+        if (!textureMatrix.isSimple)
+        {
+            transformedUvs = this._transformedUvs;
+
+            if (!transformedUvs || transformedUvs.length < uvs.length)
+            {
+                transformedUvs = this._transformedUvs = new Float32Array(uvs.length);
+            }
+
+            if (!textureMatrix.mapCoord.equals(this._uvMatrix))
+            {
+                this._uvMatrix.copyFrom(textureMatrix.mapCoord);
+                textureMatrix.multiplyUvs(uvs, transformedUvs);
+            }
+        }
+
         const abgr = mesh.groupColorAlpha;
 
         for (let i = 0; i < positions.length; i += 2)
@@ -77,8 +101,8 @@ export class BatchableMesh implements BatchableObject
             float32View[index + 1] = (b * x) + (d * y) + ty;
 
             // TODO implement texture matrix?
-            float32View[index + 2] = uvs[i];
-            float32View[index + 3] = uvs[i + 1];
+            float32View[index + 2] = transformedUvs[i];
+            float32View[index + 3] = transformedUvs[i + 1];
 
             uint32View[index + 4] = abgr;
             uint32View[index + 5] = textureIdAndRound;

@@ -142,6 +142,40 @@ describe('Matrix', () =>
         expect(Matrix.IDENTITY instanceof Matrix).toBe(true);
     });
 
+    it('should return true for two identical matrices', () =>
+    {
+        const matrix1 = new Matrix(1, 2, 3, 4, 5, 6);
+        const matrix2 = new Matrix(1, 2, 3, 4, 5, 6);
+
+        expect(matrix1.equals(matrix2)).toBe(true);
+    });
+
+    it('should return false if any of the corresponding fields differ', () =>
+    {
+        const matrix1 = new Matrix(1, 2, 3, 4, 5, 6);
+        const tests = [
+            new Matrix(0, 2, 3, 4, 5, 6), // different 'a'
+            new Matrix(1, 0, 3, 4, 5, 6), // different 'b'
+            new Matrix(1, 2, 0, 4, 5, 6), // different 'c'
+            new Matrix(1, 2, 3, 0, 5, 6), // different 'd'
+            new Matrix(1, 2, 3, 4, 0, 6), // different 'tx'
+            new Matrix(1, 2, 3, 4, 5, 0), // different 'ty'
+        ];
+
+        tests.forEach((testMatrix) =>
+        {
+            expect(matrix1.equals(testMatrix)).toBe(false);
+        });
+    });
+
+    it('should return false when comparing with a matrix with null or undefined fields', () =>
+    {
+        const matrix1 = new Matrix(1, 2, 3, 4, 5, 6);
+        const matrix2 = new Matrix(undefined, 2, 3, 4, 5, 6); // undefined 'a'
+
+        expect(matrix1.equals(matrix2)).toBe(false);
+    });
+
     it('should reset matrix to default when identity() is called', () =>
     {
         const matrix = new Matrix();

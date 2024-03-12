@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { Matrix } from '../../../maths';
 import { compileHighShaderGlProgram } from '../../../rendering/high-shader/compileHighShaderToProgram';
 import { localUniformBitGl } from '../../../rendering/high-shader/shader-bits/localUniformBit';
 import { roundPixelsBitGl } from '../../../rendering/high-shader/shader-bits/roundPixelsBit';
@@ -41,6 +42,9 @@ export class GlMeshAdaptor implements MeshAdaptor
             glProgram,
             resources: {
                 uTexture: Texture.EMPTY.source,
+                textureUniforms: {
+                    uTextureMatrix: { type: 'mat3x3<f32>', value: new Matrix() },
+                }
             }
         });
     }
@@ -55,10 +59,12 @@ export class GlMeshAdaptor implements MeshAdaptor
         {
             shader = this._shader;
 
-            const source = mesh.texture.source;
+            const texture = mesh.texture;
+            const source = texture.source;
 
             shader.resources.uTexture = source;
             shader.resources.uSampler = source.style;
+            shader.resources.textureUniforms.uniforms.uTextureMatrix = texture.textureMatrix.mapCoord;
         }
         else if (!shader.glProgram)
         {
