@@ -8,7 +8,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render meshes from sprite sheets',
-    only: true,
     create: async (scene: Container) =>
     {
         const spriteSheet = await Assets.load<Spritesheet>(`building1.json`);
