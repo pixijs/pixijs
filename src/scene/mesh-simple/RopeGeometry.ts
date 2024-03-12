@@ -1,6 +1,6 @@
 import { MeshGeometry } from '../mesh/shared/MeshGeometry';
 
-import type { PointData } from '../../maths';
+import type { PointData } from '../../maths/point/PointData';
 import type { MeshGeometryOptions } from '../mesh/shared/MeshGeometry';
 
 /**

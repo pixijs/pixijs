@@ -1,5 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { Matrix } from '../../../maths';
+import { Matrix } from '../../../maths/matrix/Matrix';
 import { compileHighShaderGlProgram } from '../../../rendering/high-shader/compileHighShaderToProgram';
 import { localUniformBitGl } from '../../../rendering/high-shader/shader-bits/localUniformBit';
 import { roundPixelsBitGl } from '../../../rendering/high-shader/shader-bits/roundPixelsBit';

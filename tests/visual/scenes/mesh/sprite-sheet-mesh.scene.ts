@@ -1,5 +1,6 @@
-import { MeshPlane, MeshRope } from '../../../../src';
 import { Assets } from '../../../../src/assets/Assets';
+import { MeshPlane } from '../../../../src/scene/mesh-plane/MeshPlane';
+import { MeshRope } from '../../../../src/scene/mesh-simple/MeshRope';
 
 import type { Container } from '../../../../src/scene/container/Container';
 import type { Spritesheet } from '../../../../src/spritesheet/Spritesheet';

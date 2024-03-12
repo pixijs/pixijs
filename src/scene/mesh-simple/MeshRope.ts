@@ -2,7 +2,7 @@ import { definedProps } from '../container/utils/definedProps';
 import { Mesh } from '../mesh/shared/Mesh';
 import { RopeGeometry } from './RopeGeometry';
 
-import type { PointData } from '../../maths';
+import type { PointData } from '../../maths/point/PointData';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { MeshOptions } from '../mesh/shared/Mesh';
 

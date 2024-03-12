@@ -1,4 +1,4 @@
-import { Matrix } from '../../../maths';
+import { Matrix } from '../../../maths/matrix/Matrix';
 
 import type { Batch, BatchableObject, Batcher } from '../../../rendering/batcher/shared/Batcher';
 import type { IndexBufferArray } from '../../../rendering/renderers/shared/geometry/Geometry';
