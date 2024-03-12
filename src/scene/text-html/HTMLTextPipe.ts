@@ -156,7 +156,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
         gpuText.generatingTexture = false;
 
         gpuText.textureNeedsUploading = true;
-        htmlText._onUpdate();
+        htmlText.onViewUpdate();
 
         const padding = htmlText._style.padding;
 
