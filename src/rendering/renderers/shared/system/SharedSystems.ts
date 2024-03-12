@@ -15,6 +15,8 @@ import { HelloSystem } from '../startup/HelloSystem';
 import { TextureGCSystem } from '../texture/TextureGCSystem';
 import { ViewSystem } from '../view/ViewSystem';
 
+import type { ExtractRendererOptions } from './utils/typeUtils';
+
 export const SharedSystems = [
     BackgroundSystem,
     GlobalUniformSystem,
@@ -36,3 +38,9 @@ export const SharedRenderPipes = [
     ColorMaskPipe,
     CustomRenderPipe
 ];
+
+/**
+ * Options for the shared systems of a renderer.
+ * @memberof rendering
+ */
+export interface SharedRendererOptions extends ExtractRendererOptions<typeof SharedSystems>, PixiMixins.RendererOptions{}
