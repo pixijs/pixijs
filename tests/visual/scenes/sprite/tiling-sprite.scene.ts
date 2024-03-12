@@ -7,7 +7,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render tiling sprite',
-    only: true,
     create: async (scene: Container) =>
     {
         const texture = await Assets.load(`${basePath}textures/bunny.png`);
