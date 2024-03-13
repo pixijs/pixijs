@@ -207,6 +207,12 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     public autoGarbageCollect: boolean;
 
     /**
+     * used internally to know where a texture came from. Usually assigned by the asset loader!
+     * @ignore
+     */
+    public _sourceOrigin: string;
+
+    /**
      * @param options - options for creating a new TextureSource
      */
     constructor(protected readonly options: TextureSourceOptions<T> = {})
