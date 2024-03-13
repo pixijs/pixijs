@@ -91,5 +91,5 @@ export interface LoaderParser<ASSET = any, META_DATA = any, CONFIG = Record<stri
      * @param resolvedAsset - Any custom additional information relevant to the asset being loaded
      * @param loader - The loader instance
      */
-    unload?: (asset: ASSET, resolvedAsset?: ResolvedAsset<META_DATA>, loader?: Loader) => void;
+    unload?: (asset: ASSET, resolvedAsset?: ResolvedAsset<META_DATA>, loader?: Loader) => Promise<void>;
 }

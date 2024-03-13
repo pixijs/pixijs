@@ -202,9 +202,11 @@ export const spritesheetAsset = {
             return spritesheet;
         },
 
-        unload(spritesheet: Spritesheet)
+        async unload(spritesheet: Spritesheet, _resolvedAsset, loader)
         {
-            spritesheet.destroy(true);
+            await loader.unload(spritesheet.textureSource._sourceOrigin);
+
+            spritesheet.destroy(false);
         },
     },
 } as AssetExtension<Spritesheet | SpriteSheetJson>;
