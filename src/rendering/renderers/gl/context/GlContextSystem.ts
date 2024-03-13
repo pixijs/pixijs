@@ -8,30 +8,59 @@ import type { WebGLExtensions } from './WebGLExtensions';
 
 /**
  * Options for the context system.
- * @ignore
+ * @memberof rendering
+ * @property {WebGL2RenderingContext | null} [context=null] - User-provided WebGL rendering context object.
+ * @property {GpuPowerPreference} [powerPreference='default'] - An optional hint indicating what configuration
+ * of GPU is suitable for the WebGL context, can be `'high-performance'` or `'low-power'`. Setting to `'high-performance'`
+ * will prioritize rendering performance over power consumption, while setting to `'low-power'` will prioritize power saving
+ * over rendering performance.
+ * @property {boolean} [premultipliedAlpha=true] - Whether the compositor will assume the drawing buffer contains
+ * colors with premultiplied alpha.
+ * @property {boolean} [preserveDrawingBuffer=false] - Whether to enable drawing buffer preservation.
+ * If enabled, the drawing buffer will preserve
+ * its value until cleared or overwritten. Enable this if you need to call `toDataUrl` on the WebGL context.
+ * @property {boolean} [antialias] - Whether to enable antialiasing.
+ * @property {1 | 2} [preferWebGLVersion=2] - The preferred WebGL version to use.
  */
 export interface ContextSystemOptions
 {
-    /** **WebGL Only.** User-provided WebGL rendering context object. */
+    /**
+     * User-provided WebGL rendering context object.
+     * @default null
+     * @memberof rendering.SharedRendererOptions
+     */
     context: WebGL2RenderingContext | null;
     /**
      * An optional hint indicating what configuration of GPU is suitable for the WebGL context,
      * can be `'high-performance'` or `'low-power'`.
      * Setting to `'high-performance'` will prioritize rendering performance over power consumption,
      * while setting to `'low-power'` will prioritize power saving over rendering performance.
+     * @memberof rendering.SharedRendererOptions
+     * @default undefined
      */
     powerPreference?: GpuPowerPreference;
 
-    /** **WebGL Only.** Whether the compositor will assume the drawing buffer contains colors with premultiplied alpha. */
+    /**
+     * Whether the compositor will assume the drawing buffer contains colors with premultiplied alpha.
+     * @default true
+     * @memberof rendering.SharedRendererOptions
+     */
     premultipliedAlpha: boolean;
     /**
-     * **WebGL Only.** Whether to enable drawing buffer preservation. If enabled, the drawing buffer will preserve
+     * Whether to enable drawing buffer preservation. If enabled, the drawing buffer will preserve
      * its value until cleared or overwritten. Enable this if you need to call `toDataUrl` on the WebGL context.
+     * @default false
+     * @memberof rendering.SharedRendererOptions
      */
     preserveDrawingBuffer: boolean;
 
     antialias?: boolean;
 
+    /**
+     * The preferred WebGL version to use.
+     * @default 2
+     * @memberof rendering.SharedRendererOptions
+     */
     preferWebGLVersion?: 1 | 2;
 }
 
@@ -49,7 +78,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
         name: 'context',
     } as const;
 
-    /** @ignore */
+    /** The default options for the system. */
     public static defaultOptions: ContextSystemOptions = {
         /**
          * {@link WebGLOptions.context}

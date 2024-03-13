@@ -15,6 +15,11 @@ export interface GPU
 
 /**
  * Options for the WebGPU context.
+ * @property {GpuPowerPreference} [powerPreference=default] - An optional hint indicating what configuration of GPU
+ * is suitable for the WebGPU context, can be `'high-performance'` or `'low-power'`.
+ * Setting to `'high-performance'` will prioritize rendering performance over power consumption,
+ * while setting to `'low-power'` will prioritize power saving over rendering performance.
+ * @property {boolean} [forceFallbackAdapter=false] - Force the use of the fallback adapter
  * @memberof rendering
  */
 export interface GpuContextOptions
@@ -24,9 +29,15 @@ export interface GpuContextOptions
      * can be `'high-performance'` or `'low-power'`.
      * Setting to `'high-performance'` will prioritize rendering performance over power consumption,
      * while setting to `'low-power'` will prioritize power saving over rendering performance.
+     * @default undefined
+     * @memberof rendering.WebGPUOptions
      */
     powerPreference?: GpuPowerPreference;
-    /** Force the use of the fallback adapter */
+    /**
+     * Force the use of the fallback adapter
+     * @default false
+     * @memberof rendering.WebGPUOptions
+     */
     forceFallbackAdapter: boolean;
 }
 

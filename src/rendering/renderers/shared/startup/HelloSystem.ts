@@ -7,11 +7,16 @@ import type { System } from '../system/System';
 
 /**
  * Options for the startup system.
- * @ignore
+ * @property {boolean} [hello=false] - Whether to log the version and type information of renderer to console.
+ * @memberof rendering
  */
 export interface HelloSystemOptions
 {
-    /** Whether to log the version and type information of renderer to console. */
+    /**
+     * Whether to log the version and type information of renderer to console.
+     * @memberof rendering.SharedRendererOptions
+     * @default false
+     */
     hello: boolean;
 }
 
@@ -32,7 +37,7 @@ export class HelloSystem implements System<HelloSystemOptions>
         priority: -2,
     } as const;
 
-    /** @ignore */
+    /** The default options for the system. */
     public static defaultOptions: HelloSystemOptions = {
         /** {@link WebGLOptions.hello} */
         hello: false,
