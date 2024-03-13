@@ -1,8 +1,5 @@
-/* eslint-disable max-len */
-import { Assets } from '../../../../src/assets/Assets';
 import { Container } from '../../../../src/scene/container/Container';
 import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
-import { Sprite } from '../../../../src/scene/sprite/Sprite';
 
 import type { TestScene } from '../../types';
 
