@@ -12,6 +12,12 @@ import type { GenerateTextureOptions } from './GenerateTextureSystem';
 
 type Formats = 'png' | 'jpg'; // Add other formats if needed
 
+const imageTypes: Record<Formats, string> = {
+    png: 'image/png',
+    jpg: 'image/jpeg',
+    // webp: 'image/webp',
+};
+
 /**
  * Options for creating an image from a renderer.
  * @memberof rendering
@@ -177,16 +183,16 @@ export class ExtractSystem implements System
                     reader.onload = () => resolve(reader.result as string);
                     reader.onerror = reject;
                     reader.readAsDataURL(blob);
-                }, format, quality);
+                }, imageTypes[format], quality);
             });
         }
         if (canvas.toDataURL !== undefined)
         {
-            return canvas.toDataURL(format, quality);
+            return canvas.toDataURL(imageTypes[format], quality);
         }
         if (canvas.convertToBlob !== undefined)
         {
-            const blob = await canvas.convertToBlob({ type: format, quality });
+            const blob = await canvas.convertToBlob({ type: imageTypes[format], quality });
 
             return new Promise<string>((resolve, reject) =>
             {
