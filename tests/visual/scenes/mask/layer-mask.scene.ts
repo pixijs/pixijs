@@ -8,7 +8,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render masks if they have multiple layers correctly',
-    only: true,
     create: async (scene: Container) =>
     {
         const wrapper = new Container();
