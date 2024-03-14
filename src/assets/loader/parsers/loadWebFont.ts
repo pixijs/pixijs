@@ -114,6 +114,14 @@ function encodeURIWhenNeeded(uri: string)
     return encodeURI(uri);
 }
 
+interface FontAndURL
+{
+    // The URL that the font was loaded from
+    url: string;
+    // the font faces that were loaded
+    fontFaces: FontFace[];
+}
+
 /**
  * A loader plugin for handling web fonts
  * @example
@@ -142,7 +150,7 @@ export const loadWebFont = {
         return checkDataUrl(url, validFontMIMEs) || checkExtension(url, validFontExtensions);
     },
 
-    async load(url: string, options?: ResolvedAsset<LoadFontData>): Promise<FontFace | FontFace[]>
+    async load(url: string, options?: ResolvedAsset<LoadFontData>): Promise<FontAndURL>
     {
         const fonts = DOMAdapter.get().getFontFaceSet();
 
@@ -169,12 +177,14 @@ export const loadWebFont = {
                 fontFaces.push(font);
             }
 
-            Cache.set(name, {
+            const fontNameAndURL = {
                 url,
                 fontFaces,
-            });
+            };
 
-            return fontFaces.length === 1 ? fontFaces[0] : fontFaces;
+            Cache.set(name, fontNameAndURL);
+
+            return fontNameAndURL;
         }
 
         // #if _DEBUG
