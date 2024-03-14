@@ -10,13 +10,13 @@ import type { System } from '../system/System';
 import type { GetPixelsOutput } from '../texture/GenerateCanvas';
 import type { GenerateTextureOptions } from './GenerateTextureSystem';
 
-type Formats = 'png' | 'jpg' | 'webp'; // Add other formats if needed
-
-const imageTypes: Record<Formats, string> = {
+const imageTypes = {
     png: 'image/png',
     jpg: 'image/jpeg',
     webp: 'image/webp',
 };
+
+type Formats = keyof typeof imageTypes;
 
 /**
  * Options for creating an image from a renderer.
