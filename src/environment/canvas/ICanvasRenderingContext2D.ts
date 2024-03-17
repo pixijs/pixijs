@@ -18,7 +18,7 @@ export interface ICanvasRenderingContext2D extends
     CanvasDrawImage,
     CanvasImageData,
     CanvasPathDrawingStyles,
-    CanvasTextDrawingStyles,
+    Omit<CanvasTextDrawingStyles, 'letterSpacing'>,
     CanvasPath
 {
     /** creates a pattern using the specified image and repetition. */
