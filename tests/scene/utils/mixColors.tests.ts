@@ -1,4 +1,4 @@
-import {mixColors, mixStandardAnd32BitColors} from '../../../src/scene/container/utils/mixColors';
+import { mixColors, mixStandardAnd32BitColors } from '../../../src/scene/container/utils/mixColors';
 
 describe('mixColors', () =>
 {
