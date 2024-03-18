@@ -1,13 +1,17 @@
 import type { Batch, BatchableObject, Batcher } from '../../rendering/batcher/shared/Batcher';
-import type { Renderable } from '../../rendering/renderers/shared/Renderable';
+import type { IndexBufferArray } from '../../rendering/renderers/shared/geometry/Geometry';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
-import type { View } from '../../rendering/renderers/shared/view/View';
-import type { SimpleBounds } from '../container/bounds/Bounds';
+import type { BoundsData } from '../container/bounds/Bounds';
+import type { Container } from '../container/Container';
 
+/**
+ * A batchable sprite object.
+ * @ignore
+ */
 export class BatchableSprite implements BatchableObject
 {
     public indexStart: number;
-    public renderable: Renderable<View>;
+    public renderable: Container;
 
     // batch specific..
     public vertexSize = 4;
@@ -18,10 +22,10 @@ export class BatchableSprite implements BatchableObject
     public location = 0; // location in the buffer
     public batcher: Batcher = null;
     public batch: Batch = null;
-    public bounds: SimpleBounds;
+    public bounds: BoundsData;
     public roundPixels: 0 | 1 = 0;
 
-    get blendMode() { return this.renderable.rgBlendMode; }
+    get blendMode() { return this.renderable.groupBlendMode; }
 
     public packAttributes(
         float32View: Float32Array,
@@ -33,7 +37,7 @@ export class BatchableSprite implements BatchableObject
         const sprite = this.renderable;
         const texture = this.texture;
 
-        const wt = sprite.rgTransform;
+        const wt = sprite.groupTransform;
 
         const a = wt.a;
         const b = wt.b;
@@ -44,16 +48,16 @@ export class BatchableSprite implements BatchableObject
 
         const bounds = this.bounds;
 
-        const w0 = bounds.right;
-        const w1 = bounds.left;
-        const h0 = bounds.bottom;
-        const h1 = bounds.top;
+        const w0 = bounds.maxX;
+        const w1 = bounds.minX;
+        const h0 = bounds.maxY;
+        const h1 = bounds.minY;
 
         const uvs = texture.uvs;
 
         // _ _ _ _
         // a b g r
-        const argb = sprite.rgColorAlpha;
+        const argb = sprite.groupColorAlpha;
 
         const textureIdAndRound = (textureId << 16) | (this.roundPixels & 0xFFFF);
 
@@ -97,7 +101,7 @@ export class BatchableSprite implements BatchableObject
         uint32View[index + 23] = textureIdAndRound;
     }
 
-    public packIndex(indexBuffer: Uint32Array, index: number, indicesOffset: number)
+    public packIndex(indexBuffer: IndexBufferArray, index: number, indicesOffset: number)
     {
         indexBuffer[index] = indicesOffset + 0;
         indexBuffer[index + 1] = indicesOffset + 1;

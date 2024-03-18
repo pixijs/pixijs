@@ -18,17 +18,26 @@ import type { TextStyle } from '../text/TextStyle';
 export interface DynamicBitmapFontOptions
 {
     style: TextStyle
-    overrideFill?: boolean
     skipKerning?: boolean
     resolution?: number
     padding?: number
+    overrideFill?: boolean
+    overrideSize?: boolean
 }
 
+/**
+ * A BitmapFont that generates its glyphs dynamically.
+ * @memberof text
+ * @ignore
+ */
 export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
 {
-    // this is a resolution modifier for the font size..
-    // texture resolution will also be used to scale texture according to its font size also
+    /**
+     * this is a resolution modifier for the font size..
+     * texture resolution will also be used to scale texture according to its font size also
+     */
     public resolution = 1;
+    /** The pages of the font. */
     public override readonly pages: {canvasAndContext?: CanvasAndContext, texture: Texture}[] = [];
 
     private readonly _padding: number = 4;
@@ -40,14 +49,15 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
     private readonly _style: TextStyle;
     private readonly _skipKerning: boolean = false;
 
+    /**
+     * @param options - The options for the dynamic bitmap font.
+     */
     constructor(options: DynamicBitmapFontOptions)
     {
         super();
 
         const dynamicOptions = options;
         const style = dynamicOptions.style.clone();
-
-        style.fontSize = this.baseMeasurementFontSize;
 
         if (dynamicOptions.overrideFill)
         {
@@ -58,12 +68,32 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
             style._fill.fill = null;
         }
 
+        const requestedFontSize = style.fontSize;
+
+        // adjust font size to match the base measurement size
+        style.fontSize = this.baseMeasurementFontSize;
+
+        const font = fontStringFromTextStyle(style);
+
+        if (dynamicOptions.overrideSize)
+        {
+            if (style._stroke)
+            {
+                // we want the stroke to fit the size of the requested text, so we need to scale it
+                // accordingly (eg font size 20, with stroke 10 - stroke is 50% of size,
+                // as dynamic font is size 100, the stroke should be adjusted to 50 to make it look right)
+                style._stroke.width *= this.baseRenderedFontSize / requestedFontSize;
+            }
+        }
+        else
+        {
+            style.fontSize = this.baseRenderedFontSize = requestedFontSize;
+        }
+
         this._style = style;
         this._skipKerning = dynamicOptions.skipKerning ?? false;
         this.resolution = dynamicOptions.resolution ?? 1;
         this._padding = dynamicOptions.padding ?? 4;
-
-        const font = fontStringFromTextStyle(style);
 
         (this.fontMetrics as FontMetrics) = CanvasTextMetrics.measureFont(font);
         (this.lineHeight as number) = style.lineHeight || this.fontMetrics.fontSize || style.fontSize;
@@ -212,7 +242,9 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
      */
     public override get pageTextures(): DynamicBitmapFont['pages']
     {
+        // #if _DEBUG
         deprecation(v8_0_0, 'BitmapFont.pageTextures is deprecated, please use BitmapFont.pages instead.');
+        // #endif
 
         return this.pages;
     }

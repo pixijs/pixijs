@@ -6,7 +6,7 @@ import { Sprite } from '../../../src/scene/sprite/Sprite';
 import { loadBitmapFont } from '../../../src/scene/text-bitmap/asset/loadBitmapFont';
 import { BitmapFont } from '../../../src/scene/text-bitmap/BitmapFont';
 import { basePath } from '../../assets/basePath';
-import { getRenderer } from '../../utils/getRenderer';
+import { getWebGLRenderer } from '../../utils/getRenderer';
 
 import type { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
 
@@ -208,9 +208,10 @@ describe('BitmapFontLoader', () =>
 
     // note: expected values are twice the actual size, is scaling being applied?
     // ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=45749982
+    // eslint-disable-next-line jest/no-disabled-tests
     it.skip('should properly register SCALED bitmap font', async () =>
     {
-        const renderer = await getRenderer();
+        const renderer = await getWebGLRenderer();
         const font = await loader.load<BitmapFont>(`${basePath}fonts/font@0.5x.fnt`);
 
         expect(font).toBeObject();
@@ -338,6 +339,7 @@ describe('BitmapFontLoader', () =>
 
     // note: This is giving back 'premultiply-alpha-on-upload'
     // ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=45750176
+    // eslint-disable-next-line jest/no-disabled-tests
     it.skip('should set the texture to NPM on SDF fonts', async () =>
     {
         const sdfFont = await loader.load<BitmapFont>(`${basePath}fonts/sdf.fnt`);

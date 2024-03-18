@@ -5,12 +5,12 @@ export function getGeometry()
 {
     return new Geometry({
         attributes: {
-            aVertexPosition: {
+            aPosition: {
                 buffer: new Buffer({
                     data: new Float32Array([1, 2, 3]),
                     usage: 1,
                 }),
-                shaderLocation: 0,
+                location: 0,
                 format: 'float32x2',
                 stride: 2 * 4,
                 offset: 0,

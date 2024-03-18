@@ -46,13 +46,13 @@ describe('Transform Visibility', () =>
 
         updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(child.rgVisibleRenderable).toEqual(0b01);
+        expect(child.globalDisplayStatus).toEqual(0b101);
 
         container.visible = true;
 
         updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(child.rgVisibleRenderable).toEqual(0b11);
+        expect(child.globalDisplayStatus).toEqual(0b111);
     });
 
     it('should inherit visibility when children swapped around on the scene graph', async () =>
@@ -73,13 +73,13 @@ describe('Transform Visibility', () =>
 
         updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(child.rgVisibleRenderable).toEqual(0b11);
+        expect(child.globalDisplayStatus).toEqual(0b111);
 
         containerHidden.addChild(child);
 
         updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(child.rgVisibleRenderable).toEqual(0b01);
+        expect(child.globalDisplayStatus).toEqual(0b101);
     });
 
     it('should not cause a rebuild if renderable is changed on a layer', async () =>
@@ -109,17 +109,19 @@ describe('Transform Visibility', () =>
 
         container.visible = false;
         container.renderable = false;
+        container.culled = false;
 
         updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(child.rgVisibleRenderable).toEqual(0b00);
+        expect(child.globalDisplayStatus).toEqual(0b000);
 
         container.visible = true;
         container.renderable = true;
+        container.culled = true;
 
         updateRenderGroupTransforms(root.renderGroup, true);
 
-        expect(child.rgVisibleRenderable).toEqual(0b11);
+        expect(child.globalDisplayStatus).toEqual(0b111);
     });
 
     it('should cause a rebuild if visibility is changed on a child before it is added', async () =>

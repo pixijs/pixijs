@@ -24,6 +24,10 @@ import type { GLTextureUploader } from './uploaders/GLTextureUploader';
 
 const BYTES_PER_PIXEL = 4;
 
+/**
+ * The system for managing textures in WebGL.
+ * @memberof rendering
+ */
 export class GlTextureSystem implements System, CanvasGenerator
 {
     /** @ignore */
@@ -39,12 +43,12 @@ export class GlTextureSystem implements System, CanvasGenerator
     private readonly _renderer: WebGLRenderer;
 
     private _glTextures: Record<number, GlTexture> = Object.create(null);
-    private readonly _glSamplers: Record<string, WebGLSampler> = Object.create(null);
+    private _glSamplers: Record<string, WebGLSampler> = Object.create(null);
 
     private _boundTextures: TextureSource[] = [];
     private _activeTextureLocation = -1;
 
-    private readonly _boundSamplers: Record<number, WebGLSampler> = Object.create(null);
+    private _boundSamplers: Record<number, WebGLSampler> = Object.create(null);
 
     private readonly _uploads: Record<string, GLTextureUploader> = {
         image: glUploadImageResource,
@@ -72,12 +76,15 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         if (!this._mapFormatToInternalFormat)
         {
-            const extensions = this._renderer.context.extensions;
+            this._mapFormatToInternalFormat = mapFormatToGlInternalFormat(gl, this._renderer.context.extensions);
 
-            this._mapFormatToInternalFormat = mapFormatToGlInternalFormat(gl, extensions);
             this._mapFormatToType = mapFormatToGlType(gl);
             this._mapFormatToFormat = mapFormatToGlFormat(gl);
         }
+
+        this._glTextures = Object.create(null);
+        this._glSamplers = Object.create(null);
+        this._boundSamplers = Object.create(null);
 
         for (let i = 0; i < 16; i++)
         {
@@ -194,7 +201,7 @@ export class GlTextureSystem implements System, CanvasGenerator
         glTexture.internalFormat = this._mapFormatToInternalFormat[source.format];
         glTexture.format = this._mapFormatToFormat[source.format];
 
-        if (source.autoGenerateMipmaps)
+        if (source.autoGenerateMipmaps && (this._renderer.context.supports.nonPowOf2mipmaps || source.isPowerOfTwo))
         {
             const biggestDimension = Math.max(source.width, source.height);
 
@@ -203,14 +210,17 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         this._glTextures[source.uid] = glTexture;
 
-        source.on('update', this.onSourceUpdate, this);
-        source.on('resize', this.onSourceUpdate, this);
-        source.on('styleChange', this.onStyleChange, this);
-        source.on('destroy', this.onSourceDestroy, this);
-        source.on('unload', this.onSourceUnload, this);
-        source.on('updateMipmaps', this.onUpdateMipmaps, this);
+        if (!this.managedTextures.includes(source))
+        {
+            source.on('update', this.onSourceUpdate, this);
+            source.on('resize', this.onSourceUpdate, this);
+            source.on('styleChange', this.onStyleChange, this);
+            source.on('destroy', this.onSourceDestroy, this);
+            source.on('unload', this.onSourceUnload, this);
+            source.on('updateMipmaps', this.onUpdateMipmaps, this);
 
-        this.managedTextures.push(source);
+            this.managedTextures.push(source);
+        }
 
         this.onSourceUpdate(source);
         this.onStyleChange(source);
@@ -234,7 +244,9 @@ export class GlTextureSystem implements System, CanvasGenerator
             source.mipLevelCount > 1,
             this._renderer.context.extensions.anisotropicFiltering,
             'texParameteri',
-            gl.TEXTURE_2D
+            gl.TEXTURE_2D,
+            // will force a clamp to edge if the texture is not a power of two
+            !this._renderer.context.supports.nonPowOf2wrapping && !source.isPowerOfTwo
         );
     }
 
@@ -262,7 +274,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         if (this._uploads[source.uploadMethodId])
         {
-            this._uploads[source.uploadMethodId].upload(source, glTexture, this._gl);
+            this._uploads[source.uploadMethodId].upload(source, glTexture, gl, this._renderer.context.webGLVersion);
         }
         else
         {
@@ -272,13 +284,13 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         if (source.autoGenerateMipmaps && source.mipLevelCount > 1)
         {
-            this.onUpdateMipmaps(source);
+            this.onUpdateMipmaps(source, false);
         }
     }
 
-    protected onUpdateMipmaps(source: TextureSource): void
+    protected onUpdateMipmaps(source: TextureSource, bind = true): void
     {
-        this.bindSource(source, 0);
+        if (bind) this.bindSource(source, 0);
 
         const glTexture = this.getGlSource(source);
 
@@ -289,6 +301,7 @@ export class GlTextureSystem implements System, CanvasGenerator
     {
         source.off('destroy', this.onSourceDestroy, this);
         source.off('update', this.onSourceUpdate, this);
+        source.off('resize', this.onSourceUpdate, this);
         source.off('unload', this.onSourceUnload, this);
         source.off('styleChange', this.onStyleChange, this);
         source.off('updateMipmaps', this.onUpdateMipmaps, this);
@@ -312,7 +325,8 @@ export class GlTextureSystem implements System, CanvasGenerator
             this._boundTextures[this._activeTextureLocation].mipLevelCount > 1,
             this._renderer.context.extensions.anisotropicFiltering,
             'samplerParameteri',
-            glSampler
+            glSampler,
+            false
         );
 
         return this._glSamplers[style._resourceId];

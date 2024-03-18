@@ -15,13 +15,13 @@ export function getGlobalRenderableBounds(renderables: Renderable[], bounds: Bou
     {
         const renderable = renderables[i];
 
-        if (renderable.rgVisibleRenderable < 0b11)
+        if (renderable.globalDisplayStatus < 0b111)
         {
             continue;
         }
 
         bounds.matrix = renderable.worldTransform;
-        renderable.view.addBounds(bounds);
+        renderable.addBounds(bounds);
     }
 
     bounds.matrix = tempMatrix;

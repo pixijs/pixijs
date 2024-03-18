@@ -12,13 +12,14 @@ import source from './displacement.wgsl';
 
 import type { PointData } from '../../../maths/point/PointData';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
+import type { FilterOptions } from '../../Filter';
 import type { FilterSystem } from '../../FilterSystem';
 
 /**
  * Options for DisplacementFilter
  * @memberof filters
  */
-export interface DisplacementFilterOptions
+export interface DisplacementFilterOptions extends FilterOptions
 {
     /** The texture used for the displacement map. */
     sprite: Sprite,
@@ -37,8 +38,17 @@ export class DisplacementFilter extends Filter
 {
     private readonly _sprite: Sprite;
 
+    /**
+     * **Note:** Our docs parser struggles to properly understand the constructor signature.
+     * This is the correct signature.
+     * ```ts
+     * new DisplacementFilter(options?: DisplacementFilterOptions);
+     * ```
+     * @param options - The options for the filter.
+     * @param options.sprite - The texture used for the displacement map.
+     * @param options.scale - The scale of the displacement.
+     */
     constructor(options: Sprite | DisplacementFilterOptions);
-    /** @deprecated since 8.0.0 */
     constructor(sprite: Sprite, scale?: number | PointData);
     constructor(...args: [Sprite | DisplacementFilterOptions] | [Sprite, (number | PointData)?])
     {
@@ -46,15 +56,19 @@ export class DisplacementFilter extends Filter
 
         if (options instanceof Sprite)
         {
+            // #if _DEBUG
             if (args[1])
             {
                 deprecation(v8_0_0, 'DisplacementFilter now uses options object instead of params. {sprite, scale}');
             }
+            // #endif
 
             options = { sprite: options, scale: args[1] };
         }
 
-        let scale = options.scale ?? 20;
+        const { sprite, scale: scaleOption, ...rest } = options;
+
+        let scale = scaleOption ?? 20;
 
         // check if is a number or a point
         if (typeof scale === 'number')
@@ -63,9 +77,9 @@ export class DisplacementFilter extends Filter
         }
 
         const filterUniforms = new UniformGroup({
-            filterMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
-            scale: { value: scale, type: 'vec2<f32>' },
-            rotation: { value: new Float32Array([0, 0, 0, 0]), type: 'vec4<f32>' },
+            uFilterMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
+            uScale: { value: scale, type: 'vec2<f32>' },
+            uRotation: { value: new Float32Array([0, 0, 0, 0]), type: 'mat2x2<f32>' },
         });
 
         const glProgram = GlProgram.from({
@@ -85,16 +99,17 @@ export class DisplacementFilter extends Filter
             },
         });
 
-        const textureSource = options.sprite.texture.source;
+        const textureSource = sprite.texture.source;
 
         super({
+            ...rest,
             gpuProgram,
             glProgram,
             resources: {
                 filterUniforms,
-                mapTexture: textureSource,
-                mapSampler: textureSource.style,
-            }
+                uMapTexture: textureSource,
+                uMapSampler: textureSource.style,
+            },
         });
 
         this._sprite = options.sprite;
@@ -118,7 +133,7 @@ export class DisplacementFilter extends Filter
         const uniforms = this.resources.filterUniforms.uniforms;
 
         filterManager.calculateSpriteMatrix(
-            uniforms.filterMatrix,
+            uniforms.uFilterMatrix,
             this._sprite
         );
 
@@ -129,13 +144,13 @@ export class DisplacementFilter extends Filter
 
         if (lenX !== 0 && lenY !== 0)
         {
-            uniforms.rotation[0] = wt.a / lenX;
-            uniforms.rotation[1] = wt.b / lenX;
-            uniforms.rotation[2] = wt.c / lenY;
-            uniforms.rotation[3] = wt.d / lenY;
+            uniforms.uRotation[0] = wt.a / lenX;
+            uniforms.uRotation[1] = wt.b / lenX;
+            uniforms.uRotation[2] = wt.c / lenY;
+            uniforms.uRotation[3] = wt.d / lenY;
         }
 
-        this.resources.mapTexture = this._sprite.texture.source;
+        this.resources.uMapTexture = this._sprite.texture.source;
 
         filterManager.applyFilter(this, input, output, clearMode);
     }
@@ -143,6 +158,6 @@ export class DisplacementFilter extends Filter
     /** scaleX, scaleY for displacements */
     get scale(): Point
     {
-        return this.resources.filterUniforms.uniforms.scale as Point;
+        return this.resources.filterUniforms.uniforms.uScale as Point;
     }
 }

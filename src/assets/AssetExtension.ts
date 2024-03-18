@@ -10,25 +10,52 @@ import type { ResolveURLParser } from './resolver/types';
  * @example
  * import { AssetExtension, extensions } from 'pixi.js';
  *
+ * // create the CacheParser
+ * const cache = {
+ *    test(asset: item): boolean {
+ *       // Gets called by the cache when a dev caches an asset
+ *    },
+ *    getCacheableAssets(keys: string[], asset: item): Record<string, any> {
+ *       // If the test passes, this function is called to get the cacheable assets
+ *       // an example may be that a spritesheet object will return all the sub textures it has so they can
+ *       // be cached.
+ *    },
+ * };
+ *
+ * // create the ResolveURLParser
+ * const resolver = {
+ *    test(value: string): boolean {
+ *       // the test to perform on the url to determine if it should be parsed
+ *    },
+ *    parse(value: string): ResolvedAsset {
+ *       // the function that will convert the url into an object
+ *    },
+ * };
+ *
+ * // create the LoaderParser
+ * const loader = {
+ *    name: 'itemLoader',
+ *    extension: {
+ *       type: ExtensionType.LoadParser,
+ *    },
+ *    async testParse(asset: any, options: ResolvedAsset) {
+ *       // This function is used to test if the parse function should be run on the asset
+ *    },
+ *    async parse(asset: any, options: ResolvedAsset, loader: Loader) {
+ *       // Gets called on the asset it testParse passes. Useful to convert a raw asset into something more useful
+ *    },
+ *    unload(item: any) {
+ *       // If an asset is parsed using this parser, the unload function will be called when the user requests an asset
+ *       // to be unloaded. This is useful for things like sounds or textures that can be unloaded from memory
+ *    },
+ * };
+ *
+ * // put it all together and create the AssetExtension
  * extensions.add({
  *     extension: ExtensionType.Asset,
- *     cache: {
- *         test: (asset: item) => {},
- *         getCacheableAssets: (keys: string[], asset: item) => {},
- *     },
- *     resolver: {
- *         test: (value: string): boolean =>{},
- *         parse: (value: string): UnresolvedAsset =>{},
- *     },
- *     loader: {
- *         name: 'itemLoader',
- *         extension: {
- *             type: ExtensionType.LoadParser,
- *         },
- *         async testParse(asset: any, options: ResolvedAsset) {},
- *         async parse(asset: any, options: ResolvedAsset, loader: Loader) {},
- *         unload(item: any){},
- *     },
+ *     cache,
+ *     resolver,
+ *     loader,
  * }
  * @memberof assets
  */

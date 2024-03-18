@@ -4,22 +4,21 @@ export function getGlProgram()
 {
     return new GlProgram({
         vertex: `
-            
-            in vec2 aVertexPosition;
+            in vec2 aPosition;
             
             void main(void)
             {
-                gl_Position = vec4(aVertexPosition, 0.0, 1.0);
+                gl_Position = vec4(aPosition, 0.0, 1.0);
             }
         `,
 
         fragment: `
 
-            out vec4 fragColor;
+            out vec4 finalColor;
 
             void main(void)
             {
-                fragColor = vec4(1.0);
+                finalColor = vec4(1.0);
             }
         `,
     });

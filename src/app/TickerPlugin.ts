@@ -5,7 +5,7 @@ import { Ticker } from '../ticker/Ticker';
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
 /**
- * Application options for ticker plugin.
+ * Application options for the {@link app.TickerPluginOptions}.
  * @memberof app
  * @property {boolean} [autoStart=true] - Automatically starts the rendering after the construction.
  * **Note**: Setting this parameter to `false` does NOT stop the shared ticker even if you set
@@ -35,11 +35,12 @@ export interface TickerPluginOptions
 }
 
 /**
- * Middleware for for Application Ticker.
+ * Middleware for Application's {@link ticker.Ticker} functionality.
  *
- * \- Adds [start]{@link app.Application#start}.
- * <br>- Adds [stop]{@link app.Application#stop}.
- * <br>- Adds [ticker]{@link app.Application#ticker}.
+ * Adds the following methods to {@link app.Application}:
+ * * {@link app.Application#start}
+ * * {@link app.Application#stop}
+ * * {@link app.Application#ticker}
  * @example
  * import { extensions, TickerPlugin } from 'pixi.js';
  *
@@ -124,7 +125,7 @@ export class TickerPlugin
 
         /**
          * Ticker for doing render updates.
-         * @type {Ticker}
+         * @type {ticker.Ticker}
          * @name ticker
          * @memberof app.Application#
          * @default Ticker.shared

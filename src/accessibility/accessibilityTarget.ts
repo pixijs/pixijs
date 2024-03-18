@@ -15,6 +15,7 @@ import type { Container } from '../scene/container/Container';
  * - `all`
  * - `inherit`
  * @memberof accessibility
+ * @see https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events
  */
 export type PointerEvents = 'auto'
 | 'none'
@@ -29,7 +30,7 @@ export type PointerEvents = 'auto'
 | 'inherit';
 
 /**
- * The options for accessible objects.
+ * When `accessible` is enabled on any display object, these properties will affect its accessibility.
  * @memberof accessibility
  */
 export interface AccessibleOptions
@@ -45,9 +46,9 @@ export interface AccessibleOptions
      * If accessibleTitle AND accessibleHint has not been this will default to 'container [tabIndex]'
      * @member {string}
      */
-    accessibleTitle: string;
+    accessibleTitle: string | null;
     /** Sets the aria-label attribute of the shadow div */
-    accessibleHint: string;
+    accessibleHint: string | null;
     /**
      * @default 0
      */
@@ -62,6 +63,7 @@ export interface AccessibleOptions
      * Specify the pointer-events the accessible div will use
      * Defaults to auto.
      * @default 'auto'
+     * @type {accessibility.PointerEvents}
      */
     accessiblePointerEvents: PointerEvents;
     /**
@@ -79,7 +81,7 @@ export interface AccessibleOptions
 export interface AccessibleTarget extends AccessibleOptions
 {
     _accessibleActive: boolean;
-    _accessibleDiv: AccessibleHTMLElement;
+    _accessibleDiv: AccessibleHTMLElement | null;
     _renderId: number;
 }
 

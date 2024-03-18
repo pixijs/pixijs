@@ -3,9 +3,9 @@ export const globalUniformsBit = {
     vertex: {
         header: /* wgsl */`
         struct GlobalUniforms {
-            projectionMatrix:mat3x3<f32>,
-            worldTransformMatrix:mat3x3<f32>,
-            worldColorAlpha: vec4<f32>,
+            uProjectionMatrix:mat3x3<f32>,
+            uWorldTransformMatrix:mat3x3<f32>,
+            uWorldColorAlpha: vec4<f32>,
             uResolution: vec2<f32>,
         }
 
@@ -14,16 +14,29 @@ export const globalUniformsBit = {
     }
 };
 
-export const globalUniformsBitGl = {
-    name: 'global-uniforms-bit',
+export const globalUniformsUBOBitGl = {
+    name: 'global-uniforms-ubo-bit',
     vertex: {
         header: /* glsl */`
           uniform globalUniforms {
-            mat3 projectionMatrix;
-            mat3 worldTransformMatrix;
-            vec4 worldColorAlpha;
+            mat3 uProjectionMatrix;
+            mat3 uWorldTransformMatrix;
+            vec4 uWorldColorAlpha;
             vec2 uResolution;
           };
         `
     }
+};
+
+export const globalUniformsBitGl = {
+    name: 'global-uniforms-bit',
+    vertex: {
+        header: /* glsl */`
+          uniform mat3 uProjectionMatrix;
+          uniform mat3 uWorldTransformMatrix;
+          uniform vec4 uWorldColorAlpha;
+          uniform vec2 uResolution;
+        `
+    }
+
 };

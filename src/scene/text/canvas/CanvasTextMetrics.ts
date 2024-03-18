@@ -26,6 +26,14 @@ interface IIntl
     };
 }
 
+/**
+ * A number, or a string containing a number.
+ * @memberof text
+ * @typedef {object} FontMetrics
+ * @property {number} ascent - Font ascent
+ * @property {number} descent - Font descent
+ * @property {number} fontSize - Font size
+ */
 export interface FontMetrics
 {
     ascent: number;
@@ -53,6 +61,7 @@ const contextSettings: ICanvasRenderingContext2DSettings = {
  *     align: 'center',
  * });
  * const textMetrics = TextMetrics.measureText('Your text', style);
+ * @memberof text
  */
 export class CanvasTextMetrics
 {

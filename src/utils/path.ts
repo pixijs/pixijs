@@ -133,6 +133,11 @@ function normalizeStringPosix(path: string, allowAboveRoot: boolean)
 /**
  * Path utilities for working with URLs and file paths in a cross-platform way.
  * All paths that are passed in will become normalized to have posix separators.
+ * ```js
+ * import { path } from 'pixi.js';
+ *
+ * path.normalize('http://www.example.com/foo/bar/../baz'); // http://www.example.com/foo/baz
+ * ```
  * @memberof utils
  */
 export interface Path
@@ -224,12 +229,18 @@ export interface Path
      */
     parse: (path: string) => { root?: string, dir?: string, base?: string, ext?: string, name?: string };
     sep: string,
-    delimiter: string
+    delimiter: string,
+    joinExtensions: string[],
 }
 
 /**
  * Path utilities for working with URLs and file paths in a cross-platform way.
  * All paths that are passed in will become normalized to have posix separators.
+ * ```js
+ * import { path } from 'pixi.js';
+ *
+ * path.normalize('http://www.example.com/foo/bar/../baz'); // http://www.example.com/foo/baz
+ * ```
  * @see {@link utils.Path}
  * @memberof utils
  */
@@ -397,7 +408,7 @@ export const path: Path = {
                 {
                     const prevArg = segments[i - 1] ?? '';
 
-                    if (this.extname(prevArg))
+                    if (this.joinExtensions.includes(this.extname(prevArg).toLowerCase()))
                     {
                         joined += `/../${arg}`;
                     }
@@ -772,5 +783,6 @@ export const path: Path = {
     },
 
     sep: '/',
-    delimiter: ':'
+    delimiter: ':',
+    joinExtensions: ['.html'],
 } as Path;

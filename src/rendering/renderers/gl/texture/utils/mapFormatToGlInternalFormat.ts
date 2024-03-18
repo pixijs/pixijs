@@ -9,8 +9,31 @@ import type { WebGLExtensions } from '../../context/WebGLExtensions';
  * @param extensions - The WebGL extensions.
  * @returns Lookup table.
  */
-export function mapFormatToGlInternalFormat(gl: GlRenderingContext, extensions: WebGLExtensions): Record<string, number>
+export function mapFormatToGlInternalFormat(
+    gl: GlRenderingContext,
+    extensions: WebGLExtensions,
+): Record<string, number>
 {
+    let srgb = {};
+    let bgra8unorm: number = gl.RGBA;
+
+    if (gl instanceof WebGL2RenderingContext)
+    {
+        srgb = {
+            'rgba8unorm-srgb': gl.SRGB8_ALPHA8,
+            'bgra8unorm-srgb': gl.SRGB8_ALPHA8,
+        };
+
+        bgra8unorm = gl.RGBA8;
+    }
+    else if (extensions.srgb)
+    {
+        srgb = {
+            'rgba8unorm-srgb': extensions.srgb.SRGB8_ALPHA8_EXT,
+            'bgra8unorm-srgb': extensions.srgb.SRGB8_ALPHA8_EXT,
+        };
+    }
+
     return {
         // 8-bit formats
         r8unorm: gl.R8,
@@ -35,14 +58,14 @@ export function mapFormatToGlInternalFormat(gl: GlRenderingContext, extensions: 
         rg16sint: gl.RG16I,
         rg16float: gl.RG16F,
         rgba8unorm: gl.RGBA,
-        'rgba8unorm-srgb': gl.SRGB8_ALPHA8,
+
+        ...srgb,
 
         // Packed 32-bit formats
         rgba8snorm: gl.RGBA8_SNORM,
         rgba8uint: gl.RGBA8UI,
         rgba8sint: gl.RGBA8I,
-        bgra8unorm: gl.RGBA8,
-        'bgra8unorm-srgb': gl.SRGB8_ALPHA8,
+        bgra8unorm,
         rgb9e5ufloat: gl.RGB9_E5,
         rgb10a2unorm: gl.RGB10_A2,
         rg11b10ufloat: gl.R11F_G11F_B10F,
@@ -69,24 +92,25 @@ export function mapFormatToGlInternalFormat(gl: GlRenderingContext, extensions: 
         'depth32float-stencil8': gl.DEPTH32F_STENCIL8,
 
         // Compressed formats
-        // 'bc1-rgba-unorm',
-        // 'bc1-rgba-unorm-srgb',
         ...extensions.s3tc ? {
+            'bc1-rgba-unorm': extensions.s3tc.COMPRESSED_RGBA_S3TC_DXT1_EXT,
             'bc2-rgba-unorm': extensions.s3tc.COMPRESSED_RGBA_S3TC_DXT3_EXT,
             'bc3-rgba-unorm': extensions.s3tc.COMPRESSED_RGBA_S3TC_DXT5_EXT,
         } : {},
         ...extensions.s3tc_sRGB ? {
+            'bc1-rgba-unorm-srgb': extensions.s3tc_sRGB.COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT,
             'bc2-rgba-unorm-srgb': extensions.s3tc_sRGB.COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT,
-
             'bc3-rgba-unorm-srgb': extensions.s3tc_sRGB.COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT,
         } : {},
-        // 'bc4-r-unorm'
-        // 'bc4-r-snorm'
-        // 'bc5-rg-unorm'
-        // 'bc5-rg-snorm'
-        // 'bc6h-rgb-ufloat'
-        // 'bc6h-rgb-float'
+        ...extensions.rgtc ? {
+            'bc4-r-unorm': extensions.rgtc.COMPRESSED_RED_RGTC1_EXT,
+            'bc4-r-snorm': extensions.rgtc.COMPRESSED_SIGNED_RED_RGTC1_EXT,
+            'bc5-rg-unorm': extensions.rgtc.COMPRESSED_RED_GREEN_RGTC2_EXT,
+            'bc5-rg-snorm': extensions.rgtc.COMPRESSED_SIGNED_RED_GREEN_RGTC2_EXT,
+        } : {},
         ...extensions.bptc ? {
+            'bc6h-rgb-float': extensions.bptc.COMPRESSED_RGB_BPTC_SIGNED_FLOAT_EXT,
+            'bc6h-rgb-ufloat': extensions.bptc.COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_EXT,
             'bc7-rgba-unorm': extensions.bptc.COMPRESSED_RGBA_BPTC_UNORM_EXT,
             'bc7-rgba-unorm-srgb': extensions.bptc.COMPRESSED_SRGB_ALPHA_BPTC_UNORM_EXT,
         } : {},
@@ -105,6 +129,8 @@ export function mapFormatToGlInternalFormat(gl: GlRenderingContext, extensions: 
         ...extensions.astc ? {
             'astc-4x4-unorm': extensions.astc.COMPRESSED_RGBA_ASTC_4x4_KHR,
             'astc-4x4-unorm-srgb': extensions.astc.COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR,
+            'astc-5x4-unorm': extensions.astc.COMPRESSED_RGBA_ASTC_5x4_KHR,
+            'astc-5x4-unorm-srgb': extensions.astc.COMPRESSED_SRGB8_ALPHA8_ASTC_5x4_KHR,
             'astc-5x5-unorm': extensions.astc.COMPRESSED_RGBA_ASTC_5x5_KHR,
             'astc-5x5-unorm-srgb': extensions.astc.COMPRESSED_SRGB8_ALPHA8_ASTC_5x5_KHR,
             'astc-6x5-unorm': extensions.astc.COMPRESSED_RGBA_ASTC_6x5_KHR,

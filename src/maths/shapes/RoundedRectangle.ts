@@ -20,8 +20,9 @@ const isCornerWithinStroke = (
 };
 
 /**
- * The Rounded Rectangle object is an area that has nice rounded corners, as indicated by its
- * top-left corner point (x, y) and by its width and its height and its radius.
+ * The `RoundedRectangle` object is an area defined by its position, as indicated by its top-left corner
+ * point (`x`, `y`) and by its `width` and its `height`, including a `radius` property that
+ * defines the radius of the rounded corners.
  * @memberof maths
  */
 export class RoundedRectangle implements ShapePrimitive
@@ -183,6 +184,13 @@ export class RoundedRectangle implements ShapePrimitive
         return false;
     }
 
+    /**
+     * Checks whether the x and y coordinates given are contained within this rectangle including the stroke.
+     * @param pX - The X coordinate of the point to test
+     * @param pY - The Y coordinate of the point to test
+     * @param strokeWidth - The width of the line to check
+     * @returns Whether the x/y coordinates are within this rectangle
+     */
     public strokeContains(pX: number, pY: number, strokeWidth: number): boolean
     {
         const { x, y, width, height, radius } = this;

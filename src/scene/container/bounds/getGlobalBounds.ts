@@ -1,6 +1,7 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
-import { updateLocalTransform } from '../utils/updateLocalTransform';
+import { boundsPool, matrixPool } from './utils/matrixAndBoundsPool';
 
+import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
 import type { Container } from '../Container';
 import type { Bounds } from './Bounds';
 
@@ -9,13 +10,14 @@ export function getGlobalBounds(target: Container, skipUpdateTransform: boolean,
     bounds.clear();
 
     let parentTransform;
+    let pooledMatrix;
 
     if (target.parent)
     {
         if (!skipUpdateTransform)
         {
-            // TODO new Matrix.. EEEWW! pooling..
-            parentTransform = updateTransformBackwards(target, new Matrix());
+            pooledMatrix = matrixPool.get().identity();
+            parentTransform = updateTransformBackwards(target, pooledMatrix);
         }
         else
         {
@@ -30,6 +32,11 @@ export function getGlobalBounds(target: Container, skipUpdateTransform: boolean,
     // then collect them...
 
     _getGlobalBounds(target, bounds, parentTransform, skipUpdateTransform);
+
+    if (pooledMatrix)
+    {
+        matrixPool.return(pooledMatrix);
+    }
 
     if (!bounds.isValid)
     {
@@ -52,12 +59,11 @@ export function _getGlobalBounds(
 
     if (!skipUpdateTransform)
     {
-        if (target.didChange)
-        {
-            updateLocalTransform(target.localTransform, target);
-        }
+        target.updateLocalTransform();
 
-        worldTransform = Matrix.shared.appendFrom(target.localTransform, parentTransform).clone();
+        worldTransform = matrixPool.get();
+
+        worldTransform.appendFrom(target.localTransform, parentTransform);
     }
     else
     {
@@ -69,22 +75,21 @@ export function _getGlobalBounds(
 
     if (preserveBounds)
     {
-        // TODO - cloning bounds is slow, we should have a pool (its on the todo list!)
-        bounds = bounds.clone();
+        bounds = boundsPool.get().clear();
     }
 
     if (target.boundsArea)
     {
-        bounds.setMatrix(worldTransform);
-        bounds.addRect(target.boundsArea);
+        bounds.addRect(target.boundsArea, worldTransform);
     }
     else
     {
-        if (target.view)
+        if ((target as Renderable).addBounds)
         {
-            bounds.setMatrix(worldTransform);
+            // save a copy
+            bounds.matrix = worldTransform;
 
-            target.view.addBounds(bounds);
+            (target as Renderable).addBounds(bounds);
         }
 
         for (let i = 0; i < target.children.length; i++)
@@ -100,8 +105,14 @@ export function _getGlobalBounds(
             target.effects[i].addBounds?.(bounds);
         }
 
-        parentBounds.setMatrix(Matrix.IDENTITY);
-        parentBounds.addBounds(bounds);
+        parentBounds.addBounds(bounds, Matrix.IDENTITY);
+
+        boundsPool.return(bounds);
+    }
+
+    if (!skipUpdateTransform)
+    {
+        matrixPool.return(worldTransform);
     }
 }
 
@@ -113,14 +124,10 @@ export function updateTransformBackwards(target: Container, parentTransform: Mat
     {
         updateTransformBackwards(parent, parentTransform);
 
-        if (parent.didChange)
-        {
-            updateLocalTransform(parent.localTransform, parent);
-        }
+        parent.updateLocalTransform();
 
         parentTransform.append(parent.localTransform);
     }
 
     return parentTransform;
 }
-

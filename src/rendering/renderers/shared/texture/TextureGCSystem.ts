@@ -3,17 +3,41 @@ import { extensions, ExtensionType } from '../../../../extensions/Extensions';
 import type { Renderer } from '../../types';
 import type { System } from '../system/System';
 
+/**
+ * Options for the {@link TextureGCSystem}.
+ * @memberof rendering
+ * @property {boolean} [textureGCActive=true] - If set to true, this will enable the garbage collector on the GPU.
+ * @property {number} [textureGCAMaxIdle=60 * 60] -
+ * The maximum idle frames before a texture is destroyed by garbage collection.
+ * @property {number} [textureGCCheckCountMax=600] - Frames between two garbage collections.
+ */
 export interface TextureGCSystemOptions
 {
+    /**
+     * If set to true, this will enable the garbage collector on the GPU.
+     * @default true
+     * @memberof rendering.SharedRendererOptions
+     */
     textureGCActive: boolean;
+    /**
+     * The maximum idle frames before a texture is destroyed by garbage collection.
+     * @default 60 * 60
+     * @memberof rendering.SharedRendererOptions
+     */
     textureGCAMaxIdle: number;
+    /**
+     * Frames between two garbage collections.
+     * @default 600
+     * @memberof rendering.SharedRendererOptions
+     */
     textureGCCheckCountMax: number;
 }
 /**
  * System plugin to the renderer to manage texture garbage collection on the GPU,
  * ensuring that it does not get clogged up with textures that are no longer being used.
+ * @memberof rendering
  */
-export class TextureGCSystem implements System
+export class TextureGCSystem implements System<TextureGCSystemOptions>
 {
     /** @ignore */
     public static extension = {
@@ -24,9 +48,22 @@ export class TextureGCSystem implements System
         name: 'textureGC',
     } as const;
 
+    /** default options for the TextureGCSystem */
     public static defaultOptions: TextureGCSystemOptions = {
+        /**
+         * If set to true, this will enable the garbage collector on the GPU.
+         * @default true
+         */
         textureGCActive: true,
+        /**
+         * The maximum idle frames before a texture is destroyed by garbage collection.
+         * @default 60 * 60
+         */
         textureGCAMaxIdle: 60 * 60,
+        /**
+         * Frames between two garbage collections.
+         * @default 600
+         */
         textureGCCheckCountMax: 600,
     };
 
@@ -117,7 +154,12 @@ export class TextureGCSystem implements System
             const texture = managedTextures[i];
 
             // Only supports non generated textures at the moment!
-            if (texture.resource && texture._touched > -1 && this.count - texture._touched > this.maxIdle)
+            if (
+                texture.autoGarbageCollect
+                && texture.resource
+                && texture._touched > -1
+                && this.count - texture._touched > this.maxIdle
+            )
             {
                 texture._touched = -1;
                 texture.unload();

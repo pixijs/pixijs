@@ -14,7 +14,7 @@ import type { FilterSystem } from '../../FilterSystem';
  * Options for BlurFilter
  * @memberof filters
  */
-export interface BlurFilterOptions extends Partial<FilterOptions>
+export interface BlurFilterOptions extends FilterOptions
 {
     /**
      * The strength of the blur filter.
@@ -26,8 +26,6 @@ export interface BlurFilterOptions extends Partial<FilterOptions>
      * @default 4
      */
     quality?: number;
-    /** The resolution of the blur filter. */
-    resolution?: number;
     /**
      * The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      * @default 5
@@ -39,6 +37,7 @@ export interface BlurFilterOptions extends Partial<FilterOptions>
  * The BlurFilter applies a Gaussian blur to an object.
  *
  * The strength of the blur can be set for the x-axis and y-axis separately.
+ * @memberof filters
  */
 export class BlurFilter extends Filter
 {
@@ -52,16 +51,15 @@ export class BlurFilter extends Filter
         kernelSize: 5,
     };
 
+    /** The horizontal blur filter */
     public blurXFilter: BlurFilterPass;
+    /** The vertical blur filter */
     public blurYFilter: BlurFilterPass;
 
     private _repeatEdgePixels = false;
 
     /**
-     * @param options - The options of the blur filter.
-     * @param options.strength - The strength of the blur filter.
-     * @param options.quality - The quality of the blur filter.
-     * @param options.kernelSize - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
+     * @param {filters.BlurFilterOptions} options - The options of the blur filter.
      */
     constructor(options?: BlurFilterOptions);
     /** @deprecated since 8.0.0 */
@@ -73,8 +71,10 @@ export class BlurFilter extends Filter
         // if options is a number)
         if (typeof options === 'number')
         {
+            // #if _DEBUG
             // eslint-disable-next-line max-len
             deprecation(v8_0_0, 'BlurFilter constructor params are now options object. See params: { strength, quality, resolution, kernelSize }');
+            // #endif
 
             options = { strength: options };
 
@@ -85,17 +85,19 @@ export class BlurFilter extends Filter
 
         options = { ...BlurFilterPass.defaultOptions, ...options };
 
+        const { strength, quality, ...rest } = options;
+
         super({
-            ...options,
-            compatibleRenderers: RendererType.WEBGL | RendererType.WEBGPU,
+            ...rest,
+            compatibleRenderers: RendererType.BOTH,
             resources: {}
         });
 
         this.blurXFilter = new BlurFilterPass({ horizontal: false, ...options });
         this.blurYFilter = new BlurFilterPass({ horizontal: true, ...options });
 
-        this.quality = options.quality;
-        this.blur = options.strength;
+        this.quality = quality;
+        this.blur = strength;
 
         this.repeatEdgePixels = false;
     }

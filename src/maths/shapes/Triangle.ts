@@ -1,4 +1,3 @@
-// import { SHAPES } from '../const';
 import { squaredDistanceToLineSegment } from '../misc/squaredDistanceToLineSegment';
 import { Rectangle } from './Rectangle';
 
@@ -7,6 +6,14 @@ import type { ShapePrimitive } from './ShapePrimitive';
 
 /**
  * A class to define a shape of a triangle via user defined coordinates.
+ *
+ * Create a `Triangle` object with the `x`, `y`, `x2`, `y2`, `x3`, `y3` properties.
+ *
+ * ```js
+ * import { Triangle } from 'pixi.js';
+ *
+ * const triangle = new Triangle(0, 0, 100, 0, 50, 50);
+ * ```
  * @memberof maths
  */
 export class Triangle implements ShapePrimitive
@@ -85,6 +92,13 @@ export class Triangle implements ShapePrimitive
         return d === 0 || (d < 0) === (s + t <= 0);
     }
 
+    /**
+     * Checks whether the x and y coordinates given are contained within this triangle including the stroke.
+     * @param pointX - The X coordinate of the point to test
+     * @param pointY - The Y coordinate of the point to test
+     * @param strokeWidth - The width of the line to check
+     * @returns Whether the x/y coordinates are within this triangle
+     */
     public strokeContains(pointX: number, pointY: number, strokeWidth: number): boolean
     {
         const halfStrokeWidth = strokeWidth / 2;

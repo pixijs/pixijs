@@ -6,24 +6,36 @@ import type { System } from '../system/System';
 
 /**
  * Options for the background system.
+ * @property {ColorSource} [backgroundColor='black']
+ * The background color used to clear the canvas. See {@link ColorSource} for accepted color values.
+ * @property {ColorSource} [background] - Alias for backgroundColor
+ * @property {number} [backgroundAlpha=1] -
+ * Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
+ * @property {boolean} [clearBeforeRender=true] - Whether to clear the canvas before new render passes.
  * @memberof rendering
  */
 export interface BackgroundSystemOptions
 {
     /**
      * The background color used to clear the canvas. See {@link ColorSource} for accepted color values.
+     * @memberof rendering.SharedRendererOptions
      * @default 'black'
      */
     backgroundColor: ColorSource;
-    /** Alias for backgroundColor */
+    /**
+     * Alias for backgroundColor
+     * @memberof rendering.SharedRendererOptions
+     */
     background?: ColorSource
     /**
      * Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
+     * @memberof rendering.SharedRendererOptions
      * @default 1
      */
     backgroundAlpha: number;
     /**
      * Whether to clear the canvas before new render passes.
+     * @memberof rendering.SharedRendererOptions
      * @default true
      */
     clearBeforeRender: boolean;
@@ -33,7 +45,7 @@ export interface BackgroundSystemOptions
  * The background system manages the background color and alpha of the main view.
  * @memberof rendering
  */
-export class BackgroundSystem implements System
+export class BackgroundSystem implements System<BackgroundSystemOptions>
 {
     /** @ignore */
     public static extension = {
@@ -46,10 +58,7 @@ export class BackgroundSystem implements System
         priority: 0,
     } as const;
 
-    /**
-     * default options used by the system
-     * @ignore
-     */
+    /** default options used by the system */
     public static defaultOptions: BackgroundSystemOptions = {
         /**
          * {@link WebGLOptions.backgroundAlpha}

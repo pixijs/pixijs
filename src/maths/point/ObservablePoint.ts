@@ -11,8 +11,9 @@ export interface ObservablePoint extends PixiMixins.ObservablePoint { }
 export interface Observer<T>
 {
     /** Callback to call when the point has updated. */
-    onUpdate: (point?: T) => void;
+    _onUpdate: (point?: T) => void;
 }
+
 /**
  * The ObservablePoint object represents a location in a two-dimensional coordinate system, where `x` represents
  * the position on the horizontal axis and `y` represents the position on the vertical axis.
@@ -22,9 +23,9 @@ export interface Observer<T>
  */
 export class ObservablePoint implements PointLike
 {
-    /** @internal */
+    /** @ignore */
     public _x: number;
-    /** @internal */
+    /** @ignore */
     public _y: number;
 
     /** This object used to call the `onUpdate` callback when the point changes. */
@@ -67,7 +68,7 @@ export class ObservablePoint implements PointLike
         {
             this._x = x;
             this._y = y;
-            this._observer.onUpdate(this);
+            this._observer._onUpdate(this);
         }
 
         return this;
@@ -84,7 +85,7 @@ export class ObservablePoint implements PointLike
         {
             this._x = p.x;
             this._y = p.y;
-            this._observer.onUpdate(this);
+            this._observer._onUpdate(this);
         }
 
         return this;
@@ -130,7 +131,7 @@ export class ObservablePoint implements PointLike
         if (this._x !== value)
         {
             this._x = value;
-            this._observer.onUpdate(this);
+            this._observer._onUpdate(this);
         }
     }
 
@@ -145,7 +146,7 @@ export class ObservablePoint implements PointLike
         if (this._y !== value)
         {
             this._y = value;
-            this._observer.onUpdate(this);
+            this._observer._onUpdate(this);
         }
     }
 }

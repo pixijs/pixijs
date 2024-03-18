@@ -9,5 +9,5 @@ for (let i = 0; i < MAX_TEXTURES; i++)
 }
 
 export const batchSamplersUniformGroup = new UniformGroup({
-    uSamplers: { value: sampleValues, type: `u32`, size: MAX_TEXTURES }
+    uTextures: { value: sampleValues, type: `i32`, size: MAX_TEXTURES }
 }, { isStatic: true });

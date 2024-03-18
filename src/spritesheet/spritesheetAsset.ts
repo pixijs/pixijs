@@ -21,7 +21,8 @@ export interface SpriteSheetJson extends SpritesheetData
     };
 }
 
-const validImages = ['jpg', 'png', 'jpeg', 'avif', 'webp'];
+const validImages = ['jpg', 'png', 'jpeg', 'avif', 'webp',
+    'basis', 'etc2', 'bc7', 'bc6h', 'bc5', 'bc4', 'bc3', 'bc2', 'bc1', 'eac', 'astc'];
 
 function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack: boolean)
 {
@@ -54,8 +55,6 @@ function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack:
 
 /**
  * Asset extension for loading spritesheets
- *
- * This will be added automatically if `pixi.js/spritesheet` is imported
  * @example
  * import { Assets } from 'pixi.js';
  *
@@ -76,7 +75,7 @@ export const spritesheetAsset = {
         test: (asset: Spritesheet) => asset instanceof Spritesheet,
         getCacheableAssets: (keys: string[], asset: Spritesheet) => getCacheableAssets(keys, asset, false),
     },
-    /** Resolve the the resolution of the asset. */
+    /** Resolve the resolution of the asset. */
     resolver: {
         test: (value: string): boolean =>
         {
@@ -203,9 +202,11 @@ export const spritesheetAsset = {
             return spritesheet;
         },
 
-        unload(spritesheet: Spritesheet)
+        async unload(spritesheet: Spritesheet, _resolvedAsset, loader)
         {
-            spritesheet.destroy(true);
+            await loader.unload(spritesheet.textureSource._sourceOrigin);
+
+            spritesheet.destroy(false);
         },
     },
 } as AssetExtension<Spritesheet | SpriteSheetJson>;

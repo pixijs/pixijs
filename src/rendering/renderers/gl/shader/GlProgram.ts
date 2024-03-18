@@ -1,9 +1,13 @@
-import { ensurePrecision } from './program/ensurePrecision';
+import { createIdFromString } from '../../shared/utils/createIdFromString';
 import { getMaxFragmentPrecision } from './program/getMaxFragmentPrecision';
-import { setProgramName } from './program/setProgramName';
-import { setProgramVersion } from './program/setProgramVersion';
+import { addProgramDefines } from './program/preprocessors/addProgramDefines';
+import { ensurePrecision } from './program/preprocessors/ensurePrecision';
+import { insertVersion } from './program/preprocessors/insertVersion';
+import { setProgramName } from './program/preprocessors/setProgramName';
+import { stripVersion } from './program/preprocessors/stripVersion';
 
 import type { TypedArray } from '../../shared/buffer/Buffer';
+import type { ExtractedAttributeData } from './program/extractAttributesFromGlProgram';
 
 export interface GlAttributeData
 {
@@ -50,9 +54,16 @@ export interface GlProgramOptions
 }
 
 const processes: Record<string, ((source: string, options: any, isFragment?: boolean) => string)> = {
+    // strips any version headers..
+    stripVersion,
+    // adds precision string if not already present
     ensurePrecision,
+    // add some defines if WebGL1 to make it more compatible with WebGL2 shaders
+    addProgramDefines,
+    // add the program name to the shader
     setProgramName,
-    setProgramVersion
+    // add the version string to the shader header
+    insertVersion,
 };
 
 const programCache: Record<string, GlProgram> = Object.create(null);
@@ -104,7 +115,7 @@ export class GlProgram
      * @internal
      * @ignore
      */
-    public _attributeData: Record<string, GlAttributeData>;
+    public _attributeData: Record<string, ExtractedAttributeData>;
     /**
      * uniform data extracted from the program once created this happens when the program is used for the first time
      * @internal
@@ -124,7 +135,7 @@ export class GlProgram
      * @internal
      * @ignore
      */
-    public readonly _key: string;
+    public readonly _key: number;
 
     /**
      * Creates a shiny new GlProgram. Used by WebGL renderer.
@@ -134,7 +145,12 @@ export class GlProgram
     {
         options = { ...GlProgram.defaultOptions, ...options };
 
+        // only need to check one as they both need to be the same or
+        // errors ensue!
+        const isES300 = options.fragment.indexOf('#version 300 es') !== -1;
+
         const preprocessorOptions = {
+            stripVersion: isES300,
             ensurePrecision: {
                 requestedFragmentPrecision: options.preferredFragmentPrecision,
                 requestedVertexPrecision: options.preferredVertexPrecision,
@@ -144,9 +160,8 @@ export class GlProgram
             setProgramName: {
                 name: options.name,
             },
-            setProgramVersion: {
-                version: '300 es',
-            }
+            addProgramDefines: isES300,
+            insertVersion: isES300
         };
 
         let fragment = options.fragment;
@@ -154,7 +169,7 @@ export class GlProgram
 
         Object.keys(processes).forEach((processKey) =>
         {
-            const processOptions = preprocessorOptions[processKey as keyof typeof preprocessorOptions] ?? {};
+            const processOptions = preprocessorOptions[processKey as keyof typeof preprocessorOptions];
 
             fragment = processes[processKey](fragment, processOptions, true);
             vertex = processes[processKey](vertex, processOptions, false);
@@ -163,7 +178,7 @@ export class GlProgram
         this.fragment = fragment;
         this.vertex = vertex;
 
-        this._key = `${this.vertex}:${this.fragment}`;
+        this._key = createIdFromString(`${this.vertex}:${this.fragment}`, 'gl-program');
     }
 
     /** destroys the program */

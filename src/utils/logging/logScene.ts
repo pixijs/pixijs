@@ -39,11 +39,11 @@ export function logScene(container: Container, depth = 0, data: {color?: string}
 
     if (!label && container instanceof Sprite)
     {
-        label = `sprite:${container.view.texture.label}`;
+        label = `sprite:${container.texture.label}`;
     }
 
     // eslint-disable-next-line max-len
-    let output = `%c ${spaces}|- ${label} (worldX:${container.worldTransform.tx}, renderX:${container.rgTransform.tx}, localX:${container.x})`;
+    let output = `%c ${spaces}|- ${label} (worldX:${container.worldTransform.tx}, relativeRenderX:${container.relativeGroupTransform.tx}, renderX:${container.groupTransform.tx}, localX:${container.x})`;
 
     if (container.isRenderGroupRoot)
     {

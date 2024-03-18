@@ -16,15 +16,33 @@ import { toLocalGlobalMixin } from './container-mixins/toLocalGlobalMixin';
 import { RenderGroup } from './RenderGroup';
 import { assignWithIgnore } from './utils/assignWithIgnore';
 
+import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
 import type { Rectangle } from '../../maths/shapes/Rectangle';
-import type { Renderable } from '../../rendering/renderers/shared/Renderable';
 import type { BLEND_MODES } from '../../rendering/renderers/shared/state/const';
-import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Dict } from '../../utils/types';
+import type { Optional } from './container-mixins/measureMixin';
 import type { DestroyOptions } from './destroyTypes';
 
 /**
+ * This is where you'll find all the display objects available in Pixi.
+ *
+ * All display objects inherit from the {@link scene.Container} class. You can use a `Container` for simple grouping of
+ * other display objects. Here's all the available display object classes.
+ *
+ * - {@link scene.Container} is the base class for all display objects that act as a container for other objects.
+ *   - {@link scene.Sprite} is a display object that uses a texture
+ *      - {@link scene.AnimatedSprite} is a sprite that can play animations
+ *   - {@link scene.TilingSprite} a fast way of rendering a tiling image
+ *   - {@link scene.NineSliceSprite} allows you to stretch a texture using 9-slice scaling
+ *   - {@link scene.Graphics} is a graphic object that can be drawn to the screen.
+ *   - {@link scene.Mesh} empowers you to have maximum flexibility to render any kind of visuals you can think of
+ *      - {@link scene.MeshSimple} mimics Mesh, providing easy-to-use constructor arguments
+ *      - {@link scene.MeshPlane} allows you to draw a texture across several points and then manipulate these points
+ *      - {@link scene.MeshRope} allows you to draw a texture across several points and then manipulate these points
+ *   - {@link scene.Text} render text using custom fonts
+ *      - {@link scene.BitmapText} render text using a bitmap font
+ *      - {@link scene.HTMLText} render text using HTML and CSS
  * @namespace scene
  */
 
@@ -40,7 +58,7 @@ export interface ContainerEvents extends PixiMixins.ContainerEvents
     childAdded: [child: Container, container: Container, index: number];
     removed: [container: Container];
     childRemoved: [child: Container, container: Container, index: number];
-    destroyed: [];
+    destroyed: [container: Container];
 }
 
 type AnyEvent = {
@@ -77,16 +95,21 @@ export interface UpdateTransformOptions
 }
 
 /**
- * Constructor options use for Container instances.
+ * Constructor options used for `Container` instances.
+ * ```js
+ * const container = new Container({
+ *    position: new Point(100, 200),
+ *    scale: new Point(2, 2),
+ *    rotation: Math.PI / 2,
+ * });
+ * ```
  * @memberof scene
  * @see scene.Container
  */
-export interface ContainerOptions<T extends View> extends PixiMixins.ContainerOptions
+export interface ContainerOptions extends PixiMixins.ContainerOptions
 {
     /** @see scene.Container#isRenderGroup */
     isRenderGroup?: boolean;
-    /** @see scene.Container#view */
-    view?: T;
 
     /** @see scene.Container#blendMode */
     blendMode?: BLEND_MODES;
@@ -106,15 +129,17 @@ export interface ContainerOptions<T extends View> extends PixiMixins.ContainerOp
     /** @see scene.Container#rotation */
     rotation?: number;
     /** @see scene.Container#scale */
-    scale?: PointData;
+    scale?: PointData | number;
     /** @see scene.Container#pivot */
-    pivot?: PointData;
+    pivot?: PointData | number;
     /** @see scene.Container#position */
     position?: PointData;
     /** @see scene.Container#skew */
     skew?: PointData;
     /** @see scene.Container#visible */
     visible?: boolean;
+    /** @see scene.Container#culled */
+    culled?: boolean;
     /** @see scene.Container#x */
     x?: number;
     /** @see scene.Container#y */
@@ -134,7 +159,9 @@ export interface Container
  * It is the base class of all display objects that act as a container for other objects, including Graphics
  * and Sprite.
  *
- * ## Transforms
+ * <details id="transforms">
+ *
+ * <summary>Transforms</summary>
  *
  * The [transform]{@link scene.Container#transform} of a display object describes the projection from its
  * local coordinate space to its parent's local coordinate space. The following properties are derived
@@ -229,24 +256,24 @@ export interface Container
  *     </tr>
  *   </tbody>
  * </table>
+ * </details>
  *
- * ## Bounds
- *
- * TODO
- *
- * ## Alpha
+ * <details id="alpha">
+ * <summary>Alpha</summary>
  *
  * This alpha sets a display object's **relative opacity** w.r.t its parent. For example, if the alpha of a display
  * object is 0.5 and its parent's alpha is 0.5, then it will be rendered with 25% opacity (assuming alpha is not
  * applied on any ancestor further up the chain).
+ * </details>
  *
- * ## Renderable vs Visible
+ * <details id="visible">
+ * <summary>Renderable vs Visible</summary>
  *
  * The `renderable` and `visible` properties can be used to prevent a display object from being rendered to the
  * screen. However, there is a subtle difference between the two. When using `renderable`, the transforms  of the display
  * object (and its children subtree) will continue to be calculated. When using `visible`, the transforms will not
  * be calculated.
- * @example
+ * ```ts
  * import { BlurFilter, Container, Graphics, Sprite } from 'pixi.js';
  *
  * const container = new Container();
@@ -267,9 +294,12 @@ export interface Container
  *     .beginFill(0xffffff)
  *     .drawCircle(sprite.width / 2, sprite.height / 2, Math.min(sprite.width, sprite.height) / 2)
  *     .endFill();
+ * ```
  *
+ * </details>
  *
- * ## RenderGroup
+ * <details id="renderGroup">
+ * <summary>RenderGroup</summary>
  *
  * In PixiJS v8, containers can be set to operate in 'render group mode',
  * transforming them into entities akin to a stage in traditional rendering paradigms.
@@ -307,12 +337,13 @@ export interface Container
  *
  * This means that Containers have 3 levels of matrix to be mindful of:
  *
- * 1 - localTransform, this is the transform of the container based on its own properties
- * 2 - rgTransform, this it the transform of the container relative to the renderGroup it belongs too
- * 3 - worldTransform, this is the transform of the container relative to the Scene being rendered
+ * 1. localTransform, this is the transform of the container based on its own properties
+ * 2. groupTransform, this it the transform of the container relative to the renderGroup it belongs too
+ * 3. worldTransform, this is the transform of the container relative to the Scene being rendered
+ * </details>
  * @memberof scene
  */
-export class Container<T extends View = View> extends EventEmitter<ContainerEvents & AnyEvent> implements Renderable
+export class Container extends EventEmitter<ContainerEvents & AnyEvent>
 {
     /**
      * Mixes all enumerable properties and methods from a source object to Container.
@@ -367,7 +398,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     /** @private */
     public isSimple = true;
 
-    /// /////////////Transform related props//////////////
+    // / /////////////Transform related props//////////////
 
     // used by the transform system to check if a container needs to be updated that frame
     // if the tick matches the current transform system tick, it is not updated again
@@ -383,11 +414,21 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      */
     public localTransform: Matrix = new Matrix();
     /**
-     * The render group transform is a transform relative to the render group it belongs too. It will include all parent
+     * The relative group transform is a transform relative to the render group it belongs too. It will include all parent
      * transforms and up to the render group (think of it as kind of like a stage - but the stage can be nested).
+     * If this container is is self a render group matrix will be relative to its parent render group
      * @readonly
      */
-    public rgTransform: Matrix = new Matrix();
+    public relativeGroupTransform: Matrix = new Matrix();
+    /**
+     * The group transform is a transform relative to the render group it belongs too.
+     * If this container is render group then this will be an identity matrix. other wise it
+     * will be the same as the relativeGroupTransform.
+     * Use this value when actually rendering things to the screen
+     * @readonly
+     */
+    public groupTransform: Matrix = this.relativeGroupTransform;
+
     // the global transform taking into account the render group and all parents
     private _worldTransform: Matrix;
 
@@ -455,28 +496,24 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      */
     public _sy = 1;
 
-    /** The rotation amount. */
-    private _rotation = 0;
-
-    /// COLOR related props //////////////
-
-    // color stored as ABGR
     /**
+     * The rotation amount.
      * @internal
      * @ignore
      */
+    private _rotation = 0;
+
+    // / COLOR related props //////////////
+
+    // color stored as ABGR
     public localColor = 0xFFFFFF;
     public localAlpha = 1;
 
-    /**
-     * @internal
-     * @ignore
-     */
-    public rgAlpha = 1; // A
-    public rgColor = 0xFFFFFF; // BGR
-    public rgColorAlpha = 0xFFFFFFFF; // ABGR
+    public groupAlpha = 1; // A
+    public groupColor = 0xFFFFFF; // BGR
+    public groupColorAlpha = 0xFFFFFFFF; // ABGR
 
-    /// BLEND related props //////////////
+    // / BLEND related props //////////////
 
     /**
      * @internal
@@ -487,26 +524,29 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      * @internal
      * @ignore
      */
-    public rgBlendMode: BLEND_MODES = 'normal';
+    public groupBlendMode: BLEND_MODES = 'normal';
 
-    /// VISIBILITY related props //////////////
+    // / VISIBILITY related props //////////////
 
     // visibility
     // 0b11
     // first bit is visible, second bit is renderable
     /**
+     * This property holds three bits: culled, visible, renderable
+     * the third bit represents culling (0 = culled, 1 = not culled) 0b100
+     * the second bit represents visibility (0 = not visible, 1 = visible) 0b010
+     * the first bit represents renderable (0 = renderable, 1 = not renderable) 0b001
      * @internal
      * @ignore
      */
-    public localVisibleRenderable = 0b11; // 0b11 | 0b10 | 0b01 | 0b00
+    public localDisplayStatus = 0b111; // 0b11 | 0b10 | 0b01 | 0b00
     /**
      * @internal
      * @ignore
      */
-    public rgVisibleRenderable = 0b11; // 0b11 | 0b10 | 0b01 | 0b00
+    public globalDisplayStatus = 0b111; // 0b11 | 0b10 | 0b01 | 0b00
 
-    /** A view that is used to render this container. */
-    public readonly view: T;
+    public renderPipeId: string;
 
     /**
      * An optional bounds area for this container. Setting this rectangle will stop the renderer
@@ -517,18 +557,25 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      */
     public boundsArea: Rectangle;
 
-    constructor(options: Partial<ContainerOptions<T>> = {})
+    /**
+     * A value that increments each time the container is modified
+     * the first 12 bits represent the container changes (eg transform, alpha, visible etc)
+     * the second 12 bits represent the view changes (eg texture swap, geometry change etc)
+     *
+     *  view          container
+     * [000000000000][00000000000]
+     * @ignore
+     */
+    public _didChangeId = 0;
+    /**
+     * property that tracks if the container transform has changed
+     * @ignore
+     */
+    private _didLocalTransformChangeId = -1;
+
+    constructor(options: ContainerOptions = {})
     {
         super();
-
-        if (options.view)
-        {
-            this.view = options.view;
-            // in the future we could de-couple container and view..
-            // but for now this is just faster!
-            this.view.owner = this;
-            options.view = undefined;
-        }
 
         assignWithIgnore(this, options, {
             children: true,
@@ -550,10 +597,12 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      */
     public addChild<U extends Container[]>(...children: U): U[0]
     {
+        // #if _DEBUG
         if (!this.allowChildren)
         {
             deprecation(v8_0_0, 'addChild: Only Containers will be allowed to add children in v8.0.0');
         }
+        // #endif
 
         if (children.length > 1)
         {
@@ -646,17 +695,17 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
             {
                 this.renderGroup.removeChild(child);
             }
-        }
 
-        child.parent = null;
-        this.emit('childRemoved', child, this, index);
-        child.emit('removed', this);
+            child.parent = null;
+            this.emit('childRemoved', child, this, index);
+            child.emit('removed', this);
+        }
 
         return child;
     }
 
     /** @ignore */
-    public onUpdate(point?: ObservablePoint)
+    public _onUpdate(point?: ObservablePoint)
     {
         if (point)
         {
@@ -667,6 +716,8 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
                 this._updateSkew();
             }
         }
+
+        this._didChangeId++;
 
         if (this.didChange) return;
         this.didChange = true;
@@ -684,18 +735,6 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         else if (this.renderGroup)
         {
             this.renderGroup.onChildUpdate(this);
-        }
-    }
-
-    /** @ignore */
-    public onViewUpdate()
-    {
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
-        if (this.renderGroup)
-        {
-            this.renderGroup.onChildViewUpdate(this);
         }
     }
 
@@ -762,6 +801,10 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         }
 
         this._updateIsSimple();
+
+        // this group matrix will now forever be an identity matrix,
+        // as its own transform will be passed to the GPU
+        this.groupTransform = Matrix.IDENTITY;
     }
 
     /** @ignore */
@@ -786,14 +829,14 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
             }
             else
             {
-                this._worldTransform.appendFrom(this.rgTransform, this.renderGroup.worldTransform);
+                this._worldTransform.appendFrom(this.relativeGroupTransform, this.renderGroup.worldTransform);
             }
         }
 
         return this._worldTransform;
     }
 
-    /// ////// transform related stuff
+    // / ////// transform related stuff
 
     /**
      * The position of the container on the x axis relative to the local coordinates of the parent.
@@ -851,7 +894,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         if (this._rotation !== value)
         {
             this._rotation = value;
-            this.onUpdate(this._skew);
+            this._onUpdate(this._skew);
         }
     }
 
@@ -886,14 +929,14 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         return this._pivot;
     }
 
-    set pivot(value: PointData)
+    set pivot(value: PointData | number)
     {
         if (this._pivot === defaultPivot)
         {
             this._pivot = new ObservablePoint(this, 0, 0);
         }
 
-        this._pivot.copyFrom(value);
+        typeof value === 'number' ? this._pivot.set(value) : this._pivot.copyFrom(value);
     }
 
     /**
@@ -908,6 +951,16 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         }
 
         return this._skew;
+    }
+
+    set skew(value: PointData)
+    {
+        if (this._skew === defaultSkew)
+        {
+            this._skew = new ObservablePoint(this, 0, 0);
+        }
+
+        this._skew.copyFrom(value);
     }
 
     /**
@@ -926,14 +979,103 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         return this._scale;
     }
 
-    set scale(value: PointData)
+    set scale(value: PointData | number)
     {
         if (this._scale === defaultScale)
         {
             this._scale = new ObservablePoint(this, 0, 0);
         }
 
-        this._scale.copyFrom(value);
+        typeof value === 'number' ? this._scale.set(value) : this._scale.copyFrom(value);
+    }
+
+    /**
+     * The width of the Container, setting this will actually modify the scale to achieve the value set.
+     * @memberof scene.Container#
+     */
+    get width(): number
+    {
+        return Math.abs(this.scale.x * this.getLocalBounds().width);
+    }
+
+    set width(value: number)
+    {
+        const localWidth = this.getLocalBounds().width;
+
+        this._setWidth(value, localWidth);
+    }
+
+    /**
+     * The height of the Container, setting this will actually modify the scale to achieve the value set.
+     * @memberof scene.Container#
+     */
+    get height(): number
+    {
+        return Math.abs(this.scale.y * this.getLocalBounds().height);
+    }
+
+    set height(value: number)
+    {
+        const localHeight = this.getLocalBounds().height;
+
+        this._setHeight(value, localHeight);
+    }
+
+    /**
+     * Retrieves the size of the container as a [Size]{@link Size} object.
+     * This is faster than get the width and height separately.
+     * @param out - Optional object to store the size in.
+     * @returns - The size of the container.
+     * @memberof scene.Container#
+     */
+    public getSize(out?: Size): Size
+    {
+        if (!out)
+        {
+            out = {} as Size;
+        }
+
+        const bounds = this.getLocalBounds();
+
+        out.width = Math.abs(this.scale.x * bounds.width);
+        out.height = Math.abs(this.scale.y * bounds.height);
+
+        return out;
+    }
+
+    /**
+     * Sets the size of the container to the specified width and height.
+     * This is faster than setting the width and height separately.
+     * @param value - This can be either a number or a [Size]{@link Size} object.
+     * @param height - The height to set. Defaults to the value of `width` if not provided.
+     * @memberof scene.Container#
+     */
+    public setSize(value: number | Optional<Size, 'height'>, height?: number)
+    {
+        const size = this.getLocalBounds();
+        let convertedWidth: number;
+        let convertedHeight: number;
+
+        if (typeof value !== 'object')
+        {
+            convertedWidth = value;
+            convertedHeight = height ?? value;
+        }
+        else
+        {
+            convertedWidth = value.width;
+            convertedHeight = value.height ?? value.width;
+        }
+
+        if (convertedWidth !== undefined)
+        {
+            this._setWidth(convertedWidth, size.width);
+        }
+
+        if (convertedHeight !== undefined)
+        {
+            this._setHeight(convertedHeight, size.height);
+        }
     }
 
     /** Called when the skew or the rotation changes. */
@@ -984,7 +1126,45 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         return this;
     }
 
-    /// ///// color related stuff
+    /**
+     * Updates the local transform using the given matrix.
+     * @param matrix - The matrix to use for updating the transform.
+     */
+    public setFromMatrix(matrix: Matrix): void
+    {
+        matrix.decompose(this);
+    }
+
+    /** Updates the local transform. */
+    public updateLocalTransform(): void
+    {
+        if ((this._didLocalTransformChangeId & 0b1111) === this._didChangeId) return;
+
+        this._didLocalTransformChangeId = this._didChangeId;
+        //   this.didChange = false;
+
+        const lt = this.localTransform;
+        const scale = this._scale;
+        const pivot = this._pivot;
+        const position = this._position;
+
+        const sx = scale._x;
+        const sy = scale._y;
+
+        const px = pivot._x;
+        const py = pivot._y;
+
+        // get the matrix values of the container based on its this properties..
+        lt.a = this._cx * sx;
+        lt.b = this._sx * sx;
+        lt.c = this._cy * sy;
+        lt.d = this._sy * sy;
+
+        lt.tx = position._x - ((px * lt.a) + (py * lt.c));
+        lt.ty = position._y - ((px * lt.b) + (py * lt.d));
+    }
+
+    // / ///// color related stuff
 
     set alpha(value: number)
     {
@@ -994,7 +1174,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
         this._updateFlags |= UPDATE_COLOR;
 
-        this.onUpdate();
+        this._onUpdate();
     }
 
     /** The opacity of the object. */
@@ -1014,7 +1194,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
         this._updateFlags |= UPDATE_COLOR;
 
-        this.onUpdate();
+        this._onUpdate();
     }
 
     /**
@@ -1031,7 +1211,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         return ((bgr & 0xFF) << 16) + (bgr & 0xFF00) + ((bgr >> 16) & 0xFF);
     }
 
-    /// //////////////// blend related stuff
+    // / //////////////// blend related stuff
 
     set blendMode(value: BLEND_MODES)
     {
@@ -1045,7 +1225,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
         this.localBlendMode = value;
 
-        this.onUpdate();
+        this._onUpdate();
     }
 
     /**
@@ -1057,19 +1237,19 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         return this.localBlendMode;
     }
 
-    /// ///////// VISIBILITY / RENDERABLE /////////////////
+    // / ///////// VISIBILITY / RENDERABLE /////////////////
 
     /** The visibility of the object. If false the object will not be drawn, and the transform will not be updated. */
     get visible()
     {
-        return !!(this.localVisibleRenderable & 0b10);
+        return !!(this.localDisplayStatus & 0b010);
     }
 
     set visible(value: boolean)
     {
         const valueNumber = value ? 1 : 0;
 
-        if ((this.localVisibleRenderable & 0b10) >> 1 === valueNumber) return;
+        if ((this.localDisplayStatus & 0b010) >> 1 === valueNumber) return;
 
         if (this.renderGroup && !this.isRenderGroupRoot)
         {
@@ -1078,39 +1258,62 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
         this._updateFlags |= UPDATE_VISIBLE;
 
-        this.localVisibleRenderable = (this.localVisibleRenderable & 0b01) | (valueNumber << 1);
+        this.localDisplayStatus ^= 0b010;
 
-        this.onUpdate();
+        this._onUpdate();
+    }
+
+    /** @ignore */
+    get culled()
+    {
+        return !(this.localDisplayStatus & 0b100);
+    }
+
+    /** @ignore */
+    set culled(value: boolean)
+    {
+        const valueNumber = value ? 1 : 0;
+
+        if ((this.localDisplayStatus & 0b100) >> 2 === valueNumber) return;
+
+        if (this.renderGroup && !this.isRenderGroupRoot)
+        {
+            this.renderGroup.structureDidChange = true;
+        }
+
+        this._updateFlags |= UPDATE_VISIBLE;
+        this.localDisplayStatus ^= 0b100;
+
+        this._onUpdate();
     }
 
     /** Can this object be rendered, if false the object will not be drawn but the transform will still be updated. */
     get renderable()
     {
-        return !!(this.localVisibleRenderable & 0b01);
+        return !!(this.localDisplayStatus & 0b001);
     }
 
     set renderable(value: boolean)
     {
         const valueNumber = value ? 1 : 0;
 
-        if ((this.localVisibleRenderable & 0b01) === valueNumber) return;
-
-        this.localVisibleRenderable = (this.localVisibleRenderable & 0b10) | valueNumber;
+        if ((this.localDisplayStatus & 0b001) === valueNumber) return;
 
         this._updateFlags |= UPDATE_VISIBLE;
+        this.localDisplayStatus ^= 0b001;
 
         if (this.renderGroup && !this.isRenderGroupRoot)
         {
             this.renderGroup.structureDidChange = true;
         }
 
-        this.onUpdate();
+        this._onUpdate();
     }
 
     /** Whether or not the object should be rendered. */
     get isRenderable(): boolean
     {
-        return (this.localVisibleRenderable === 0b11 && this.rgAlpha > 0);
+        return (this.localDisplayStatus === 0b111 && this.groupAlpha > 0);
     }
 
     /**
@@ -1142,12 +1345,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         this._pivot = null;
         this._skew = null;
 
-        if (this.isRenderGroupRoot)
-        {
-            this.renderGroup.proxyRenderable = null;
-        }
-
-        this.emit('destroyed');
+        this.emit('destroyed', this);
 
         this.removeAllListeners();
 
@@ -1161,12 +1359,6 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
             {
                 oldChildren[i].destroy(options);
             }
-        }
-
-        if (this.view)
-        {
-            this.view.destroy(options);
-            this.view.owner = null;
         }
     }
 }

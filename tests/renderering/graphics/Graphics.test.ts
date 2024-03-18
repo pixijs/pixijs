@@ -4,6 +4,7 @@ import { Graphics } from '../../../src/scene/graphics/shared/Graphics';
 import { GraphicsContext } from '../../../src/scene/graphics/shared/GraphicsContext';
 import { GraphicsPath } from '../../../src/scene/graphics/shared/path/GraphicsPath';
 import { convertFillInputToFillStyle } from '../../../src/scene/graphics/shared/utils/convertFillInputToFillStyle';
+import { getWebGLRenderer } from '../../utils/getRenderer';
 
 describe('Graphics', () =>
 {
@@ -33,7 +34,10 @@ describe('Graphics', () =>
 
         it('should multiply alpha component from a color string value with a passed alpha value', () =>
         {
-            const style = convertFillInputToFillStyle({ color: '#ff000080', alpha: 0.5 }, GraphicsContext.defaultFillStyle);
+            const style = convertFillInputToFillStyle(
+                { color: '#ff000080', alpha: 0.5 },
+                GraphicsContext.defaultFillStyle
+            );
 
             expect(style.alpha).toBe(0.25);
         });
@@ -168,7 +172,6 @@ describe('Graphics', () =>
                 .svg('<svg></svg>')
                 .restore()
                 .save()
-                .getTransform()
                 .resetTransform()
                 .rotateTransform(Math.PI / 4)
                 .scaleTransform(1.5)
@@ -179,6 +182,68 @@ describe('Graphics', () =>
 
             // just to pass test, the chaining above is the real test
             expect(graphics).not.toBeUndefined();
+        });
+
+        it('should destroy correctly if there are no batches', async () =>
+        {
+            const renderer = await getWebGLRenderer();
+
+            const container = new Graphics();
+
+            const rect = new Graphics();
+
+            rect.rect(192, 192, 128, 128);
+
+            container.addChild(rect);
+            renderer.render(container);
+
+            rect.clear();
+            renderer.render(container);
+
+            // dont throw an error:
+            expect(() => rect.destroy()).not.toThrow();
+        });
+
+        it('should destroy the graphics after the renderer has been destroyed', async () =>
+        {
+            const renderer = await getWebGLRenderer();
+
+            const container = new Graphics();
+
+            const rect = new Graphics();
+
+            rect.rect(192, 192, 128, 128);
+
+            container.addChild(rect);
+            renderer.render(container);
+
+            rect.clear();
+            renderer.render(container);
+
+            renderer.destroy();
+
+            // dont throw an error:
+            expect(() => rect.destroy()).not.toThrow();
+        });
+
+        it('should  calculate the buffer sizes for large graphics correctly', async () =>
+        {
+            const renderer = await getWebGLRenderer();
+
+            const graphics = new Graphics()
+                .rect(0, 0, 1000, 1000)
+                .rect(1000, 1000, 1000, 1000)
+                .rect(2000, 2000, 1000, 1000)
+                .fill('red');
+
+            graphics.context.batchMode = 'no-batch';
+
+            renderer.render(graphics);
+
+            const graphicsData = renderer.graphicsContext['_graphicsDataContextHash'][graphics.context.uid];
+
+            expect(graphicsData.geometry.indexBuffer.data.length).toEqual(3 * 6);
+            expect(graphicsData.geometry.buffers[0].data.length).toEqual(3 * 4 * 6);
         });
     });
 

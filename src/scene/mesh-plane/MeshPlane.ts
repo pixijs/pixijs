@@ -7,7 +7,15 @@ import type { DestroyOptions } from '../container/destroyTypes';
 import type { MeshOptions } from '../mesh/shared/Mesh';
 
 /**
- * Options for the {@link scene.MeshPlane} constructor.
+ * Constructor options used for `MeshPlane` instances.
+ * ```js
+ * const meshPlane = new MeshPlane({
+ *    texture: Texture.from('snake.png'),
+ *    verticesX: 20,
+ *    verticesY: 20,
+ * });
+ * ```
+ * @see {@link scene.MeshPlane}
  * @memberof scene
  */
 export interface MeshPlaneOptions extends Omit<MeshOptions, 'geometry'>
@@ -76,16 +84,28 @@ export class MeshPlane extends Mesh
 
     set texture(value: Texture)
     {
-        this.view.texture = value;
-        value.once('update', this.textureUpdated, this);
+        this._texture?.off('update', this.textureUpdated, this);
+
+        super.texture = value;
+
+        value.on('update', this.textureUpdated, this);
+
         this.textureUpdated();
     }
 
+    /** The texture of the MeshPlane */
     get texture(): Texture
     {
-        return this.view.texture;
+        return this._texture;
     }
 
+    /**
+     * Destroys this sprite renderable and optionally its texture.
+     * @param options - Options parameter. A boolean will act as if all options
+     *  have been set to that value
+     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
+     * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
+     */
     public destroy(options?: DestroyOptions): void
     {
         this.texture.off('update', this.textureUpdated, this);

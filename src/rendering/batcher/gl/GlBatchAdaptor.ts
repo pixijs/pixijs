@@ -1,12 +1,10 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { Matrix } from '../../../maths/matrix/Matrix';
 import { compileHighShaderGlProgram } from '../../high-shader/compileHighShaderToProgram';
 import { colorBitGl } from '../../high-shader/shader-bits/colorBit';
 import { generateTextureBatchBitGl } from '../../high-shader/shader-bits/generateTextureBatchBit';
 import { roundPixelsBitGl } from '../../high-shader/shader-bits/roundPixelsBit';
 import { batchSamplersUniformGroup } from '../../renderers/gl/shader/batchSamplersUniformGroup';
 import { Shader } from '../../renderers/shared/shader/Shader';
-import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
 import { State } from '../../renderers/shared/state/State';
 import { MAX_TEXTURES } from '../shared/const';
 
@@ -15,6 +13,11 @@ import type { Geometry } from '../../renderers/shared/geometry/Geometry';
 import type { Batch } from '../shared/Batcher';
 import type { BatcherAdaptor, BatcherPipe } from '../shared/BatcherPipe';
 
+/**
+ * A BatcherAdaptor that uses WebGL to render batches.
+ * @memberof rendering
+ * @ignore
+ */
 export class GlBatchAdaptor implements BatcherAdaptor
 {
     /** @ignore */
@@ -29,13 +32,8 @@ export class GlBatchAdaptor implements BatcherAdaptor
     private _didUpload = false;
     private readonly _tempState = State.for2d();
 
-    public init()
+    public init(batcherPipe: BatcherPipe): void
     {
-        const uniforms = new UniformGroup({
-            tint: { value: new Float32Array([1, 1, 1, 1]), type: 'f32' },
-            translationMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
-        });
-
         const glProgram = compileHighShaderGlProgram({
             name: 'batch',
             bits: [
@@ -48,10 +46,16 @@ export class GlBatchAdaptor implements BatcherAdaptor
         this._shader = new Shader({
             glProgram,
             resources: {
-                uniforms,
                 batchSamplers: batchSamplersUniformGroup,
             }
         });
+
+        batcherPipe.renderer.runners.contextChange.add(this);
+    }
+
+    public contextChange(): void
+    {
+        this._didUpload = false;
     }
 
     public start(batchPipe: BatcherPipe, geometry: Geometry): void
@@ -60,7 +64,7 @@ export class GlBatchAdaptor implements BatcherAdaptor
 
         renderer.shader.bind(this._shader, this._didUpload);
 
-        renderer.shader.bindUniformBlock(renderer.globalUniforms.uniformGroup, 'globalUniforms', 0);
+        renderer.shader.updateUniformGroup(renderer.globalUniforms.uniformGroup);
 
         renderer.geometry.bind(geometry, this._shader.glProgram);
     }

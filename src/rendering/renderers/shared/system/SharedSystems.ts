@@ -1,3 +1,4 @@
+import { CustomRenderPipe } from '../../../../scene/container/CustomRenderPipe';
 import { RenderGroupPipe } from '../../../../scene/container/RenderGroupPipe';
 import { RenderGroupSystem } from '../../../../scene/container/RenderGroupSystem';
 import { SpritePipe } from '../../../../scene/sprite/SpritePipe';
@@ -10,10 +11,11 @@ import { BlendModePipe } from '../blendModes/BlendModePipe';
 import { ExtractSystem } from '../extract/ExtractSystem';
 import { GenerateTextureSystem } from '../extract/GenerateTextureSystem';
 import { GlobalUniformSystem } from '../renderTarget/GlobalUniformSystem';
-import { UniformBufferSystem } from '../shader/UniformBufferSystem';
 import { HelloSystem } from '../startup/HelloSystem';
 import { TextureGCSystem } from '../texture/TextureGCSystem';
 import { ViewSystem } from '../view/ViewSystem';
+
+import type { ExtractRendererOptions } from './utils/typeUtils';
 
 export const SharedSystems = [
     BackgroundSystem,
@@ -21,7 +23,6 @@ export const SharedSystems = [
     HelloSystem,
     ViewSystem,
     RenderGroupSystem,
-    UniformBufferSystem,
     TextureGCSystem,
     GenerateTextureSystem,
     ExtractSystem,
@@ -35,4 +36,11 @@ export const SharedRenderPipes = [
     AlphaMaskPipe,
     StencilMaskPipe,
     ColorMaskPipe,
+    CustomRenderPipe
 ];
+
+/**
+ * Options for the shared systems of a renderer.
+ * @memberof rendering
+ */
+export interface SharedRendererOptions extends ExtractRendererOptions<typeof SharedSystems>, PixiMixins.RendererOptions{}

@@ -6,47 +6,92 @@ import { Texture } from '../texture/Texture';
 
 import type { BindableTexture } from '../texture/Texture';
 
-export interface RenderTargetDescriptor
+/**
+ * Options for creating a render target.
+ * @memberof rendering
+ */
+export interface RenderTargetOptions
 {
+    /** the width of the RenderTarget */
     width?: number;
+    /** the height of the RenderTarget */
     height?: number;
+    /** the resolution of the RenderTarget */
     resolution?: number;
+    /** an array of textures, or a number indicating how many color textures there should be */
     colorTextures?: BindableTexture[] | number;
-
-    // TODO this is actually depth and stencil buffer..
-    depthTexture?: BindableTexture | boolean;
+    /** should this render target have a stencil buffer? */
     stencil?: boolean;
+    /** should this render target have a depth buffer? */
+    depth?: boolean;
+    /** a depth stencil texture that the depth and stencil outputs will be written to */
+    depthStencilTexture?: BindableTexture | boolean;
+    /** should this render target be antialiased? */
     antialias?: boolean;
+    /** is this a root element, true if this is gl context owners render target */
+    isRoot?: boolean;
 }
 
+/**
+ * A class that describes what the renderers are rendering to.
+ * This can be as simple as a Texture, or as complex as a multi-texture, multi-sampled render target.
+ * Support for stencil and depth buffers is also included.
+ *
+ * If you need something more complex than a Texture to render to, you should use this class.
+ * Under the hood, all textures you render to have a RenderTarget created on their behalf.
+ * @memberof rendering
+ */
 export class RenderTarget
 {
-    public static defaultDescriptor: RenderTargetDescriptor = {
+    /** The default options for a render target */
+    public static defaultOptions: RenderTargetOptions = {
+        /** the width of the RenderTarget */
         width: 0,
+        /** the height of the RenderTarget */
         height: 0,
+        /** the resolution of the RenderTarget */
         resolution: 1,
+        /** an array of textures, or a number indicating how many color textures there should be */
         colorTextures: 1,
-        stencil: true,
+        /** should this render target have a stencil buffer? */
+        stencil: false,
+        /** should this render target have a depth buffer? */
+        depth: false,
+        /** should this render target be antialiased? */
         antialias: false, // save on perf by default!
+        /** is this a root element, true if this is gl context owners render target */
+        isRoot: false
     };
 
     public uid = uid('renderTarget');
 
+    /**
+     * An array of textures that can be written to by the GPU - mostly this has one texture in Pixi, but you could
+     * write to multiple if required! (eg deferred lighting)
+     */
     public colorTextures: TextureSource[] = [];
-
-    public depthTexture: TextureSource;
+    /** the stencil and depth buffer will right to this texture in WebGPU */
+    public depthStencilTexture: TextureSource;
+    /** if true, will ensure a stencil buffer is added. For WebGPU, this will automatically create a depthStencilTexture */
     public stencil: boolean;
+    /** if true, will ensure a depth buffer is added. For WebGPU, this will automatically create a depthStencilTexture */
+    public depth: boolean;
 
     public dirtyId = 0;
     public isRoot = false;
 
     private readonly _size = new Float32Array(2);
 
-    constructor(descriptor: RenderTargetDescriptor = {})
+    /**
+     * @param [descriptor] - Options for creating a render target.
+     */
+    constructor(descriptor: RenderTargetOptions = {})
     {
-        descriptor = { ...RenderTarget.defaultDescriptor, ...descriptor };
+        descriptor = { ...RenderTarget.defaultOptions, ...descriptor };
 
         this.stencil = descriptor.stencil;
+        this.depth = descriptor.depth;
+        this.isRoot = descriptor.isRoot;
 
         if (typeof descriptor.colorTextures === 'number')
         {
@@ -75,23 +120,17 @@ export class RenderTarget
 
         // TODO should listen for texture destroyed?
 
-        if (descriptor.depthTexture)
+        if (descriptor.depthStencilTexture || this.stencil)
         {
             // TODO add a test
-            if (descriptor.depthTexture instanceof Texture
-                || descriptor.depthTexture instanceof TextureSource)
+            if (descriptor.depthStencilTexture instanceof Texture
+                || descriptor.depthStencilTexture instanceof TextureSource)
             {
-                this.depthTexture = descriptor.depthTexture.source;
+                this.depthStencilTexture = descriptor.depthStencilTexture.source;
             }
             else
             {
-                this.depthTexture = new TextureSource({
-                    width: this.width,
-                    height: this.height,
-                    resolution: this.resolution,
-                    format: 'stencil8',
-                // sampleCount: handled by the render target system..
-                });
+                this.ensureDepthStencilTexture();
             }
         }
     }
@@ -140,6 +179,29 @@ export class RenderTarget
         this.resize(source.width, source.height, source._resolution, true);
     }
 
+    /**
+     * This will ensure a depthStencil texture is created for this render target.
+     * Most likely called by the mask system to make sure we have stencil buffer added.
+     * @internal
+     * @ignore
+     */
+    public ensureDepthStencilTexture()
+    {
+        if (!this.depthStencilTexture)
+        {
+            this.depthStencilTexture = new TextureSource({
+                width: this.width,
+                height: this.height,
+                resolution: this.resolution,
+                format: 'depth24plus-stencil8',
+                autoGenerateMipmaps: false,
+                antialias: false,
+                mipLevelCount: 1,
+                // sampleCount: handled by the render target system..
+            });
+        }
+    }
+
     public resize(width: number, height: number, resolution = this.resolution, skipColorTexture = false)
     {
         this.dirtyId++;
@@ -151,9 +213,9 @@ export class RenderTarget
             colorTexture.source.resize(width, height, resolution);
         });
 
-        if (this.depthTexture)
+        if (this.depthStencilTexture)
         {
-            this.depthTexture.source.resize(width, height, resolution);
+            this.depthStencilTexture.source.resize(width, height, resolution);
         }
     }
 
@@ -161,10 +223,10 @@ export class RenderTarget
     {
         this.colorTexture.source.off('resize', this.onSourceResize, this);
 
-        if (this.depthTexture)
+        if (this.depthStencilTexture)
         {
-            this.depthTexture.destroy();
-            delete this.depthTexture;
+            this.depthStencilTexture.destroy();
+            delete this.depthStencilTexture;
         }
     }
 }

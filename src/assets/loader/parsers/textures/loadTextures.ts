@@ -4,8 +4,8 @@ import { ImageSource } from '../../../../rendering/renderers/shared/texture/sour
 import { getResolutionOfUrl } from '../../../../utils/network/getResolutionOfUrl';
 import { checkDataUrl } from '../../../utils/checkDataUrl';
 import { checkExtension } from '../../../utils/checkExtension';
+import { WorkerManager } from '../../workers/WorkerManager';
 import { LoaderParserPriority } from '../LoaderParser';
-import { WorkerManager } from '../WorkerManager';
 import { createTexture } from './utils/createTexture';
 
 import type { TextureSourceOptions } from '../../../../rendering/renderers/shared/texture/sources/TextureSource';
@@ -75,26 +75,25 @@ export async function loadImageBitmap(url: string): Promise<ImageBitmap>
 
 /**
  * A simple plugin to load our textures!
- * this makes use of imageBitmaps where available.
- * We load the ImageBitmap on a different thread using the WorkerManager
- * We can then use the ImageBitmap as a source for a Pixi Texture
+ * This makes use of imageBitmaps where available.
+ * We load the `ImageBitmap` on a different thread using workers if possible.
+ * We can then use the `ImageBitmap` as a source for a Pixi texture
  *
  * You can customize the behavior of this loader by setting the `config` property.
  * Which can be found [here]{@link assets.LoadTextureConfig}
  * ```js
  * // Set the config
  * import { loadTextures } from 'pixi.js';
+ *
  * loadTextures.config = {
  *    // If true we will use a worker to load the ImageBitmap
  *    preferWorkers: true,
- *    // If false we will use new Image() instead of createImageBitmap
- *    // If false then this will also disable the use of workers as it requires createImageBitmap
+ *    // If false we will use new Image() instead of createImageBitmap,
+ *    // we'll also disable the use of workers as it requires createImageBitmap
  *    preferCreateImageBitmap: true,
  *    crossOrigin: 'anonymous',
  * };
  * ```
- *
- * This will be added automatically if `pixi.js/assets` is imported
  * @memberof assets
  */
 export const loadTextures = {

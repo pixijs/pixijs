@@ -1,56 +1,56 @@
 import { STENCIL_MODES } from '../../shared/state/const';
 
-export const GpuStencilModesToPixi: GPUDepthStencilState[] = [];
+export interface StencilState
+{
+    stencilWriteMask?: number
+    stencilReadMask?: number;
+    stencilFront?: {
+        compare: 'always' | 'equal';
+        passOp: 'increment-clamp' | 'decrement-clamp' | 'keep';
+    },
+    stencilBack?: {
+        compare: 'always' | 'equal';
+        passOp: 'increment-clamp' | 'decrement-clamp' | 'keep';
+    }
+}
+
+export const GpuStencilModesToPixi: StencilState[] = [];
 
 GpuStencilModesToPixi[STENCIL_MODES.NONE] = undefined;
 
 GpuStencilModesToPixi[STENCIL_MODES.DISABLED] = {
-    format: 'stencil8',
-    depthCompare: 'always',
-    depthWriteEnabled: false,
     stencilWriteMask: 0,
     stencilReadMask: 0,
-    stencilBack: {
-        compare: 'always',
-        passOp: 'keep',
-    },
 };
 
 GpuStencilModesToPixi[STENCIL_MODES.RENDERING_MASK_ADD] = {
-    format: 'stencil8',
-    depthCompare: 'always',
-    depthWriteEnabled: false,
-    stencilBack: {
-        compare: 'always',
+    stencilFront: {
+        compare: 'equal',
         passOp: 'increment-clamp',
     },
-};
-
-GpuStencilModesToPixi[STENCIL_MODES.RENDERING_MASK_ADD] = {
-    format: 'stencil8',
-    depthCompare: 'always',
-    depthWriteEnabled: false,
     stencilBack: {
-        compare: 'always',
+        compare: 'equal',
         passOp: 'increment-clamp',
     },
 };
 
 GpuStencilModesToPixi[STENCIL_MODES.RENDERING_MASK_REMOVE] = {
-    format: 'stencil8',
-    depthCompare: 'always',
-    depthWriteEnabled: false,
+    stencilFront: {
+        compare: 'equal',
+        passOp: 'decrement-clamp',
+    },
     stencilBack: {
-        compare: 'always',
+        compare: 'equal',
         passOp: 'decrement-clamp',
     },
 };
 
 GpuStencilModesToPixi[STENCIL_MODES.MASK_ACTIVE] = {
-    format: 'stencil8',
-    depthCompare: 'always',
-    depthWriteEnabled: false,
     stencilWriteMask: 0,
+    stencilFront: {
+        compare: 'equal',
+        passOp: 'keep',
+    },
     stencilBack: {
         compare: 'equal',
         passOp: 'keep',

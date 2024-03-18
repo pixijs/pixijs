@@ -1,6 +1,10 @@
 import { GL_FORMATS, GL_TARGETS, GL_TYPES } from './const';
 
-/** Internal texture for WebGL context. */
+/**
+ * Internal texture for WebGL context
+ * @memberof rendering
+ * @ignore
+ */
 export class GlTexture
 {
     public target: GL_TARGETS = GL_TARGETS.TEXTURE_2D;
@@ -17,10 +21,10 @@ export class GlTexture
     /** Whether mip levels has to be generated. */
     public mipmap: boolean;
 
-    /** Type copied from baseTexture. */
+    /** Type copied from texture source. */
     public type: number;
 
-    /** Type copied from baseTexture. */
+    /** Type copied from texture source. */
     public internalFormat: number;
 
     /** Type of sampler corresponding to this texture. See {@link SAMPLER_TYPES} */

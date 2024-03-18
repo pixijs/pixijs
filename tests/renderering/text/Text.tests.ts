@@ -2,10 +2,11 @@
 import { Container } from '../../../src/scene/container/Container';
 import { Sprite } from '../../../src/scene/sprite/Sprite';
 import { Text } from '../../../src/scene/text/Text';
-import { getRenderer } from '../../utils/getRenderer';
-import '../../../src/scene/text/init';
-import '../../../src/scene/text-bitmap/init';
+import { BitmapText } from '../../../src/scene/text-bitmap/BitmapText';
+import { getWebGLRenderer } from '../../utils/getRenderer';
 import '../../../src/scene/graphics/init';
+import '../../../src/scene/text-bitmap/init';
+import '../../../src/scene/text/init';
 
 import type { DestroyOptions } from '../../../src/scene/container/destroyTypes';
 
@@ -24,18 +25,29 @@ describe('Text', () =>
             expect(Math.round(text.height)).toEqual(300);
         });
 
+        it('should measure width of text correctly after changing text value', () =>
+        {
+            const text = new Text({ text: '' });
+
+            expect(text.width).toEqual(0);
+
+            text.text = 'hello';
+
+            expect(Math.round(text.width)).toEqual(55);
+        });
+
         it('should set the text resolution to match the resolution provided', () =>
         {
             const text = new Text({ text: 'foo', resolution: 3 });
 
-            expect(text.view.resolution).toEqual(3);
+            expect(text.resolution).toEqual(3);
         });
 
         it('should update the text resolution to match the renderer resolution when being rendered to screen', async () =>
         {
             const text = new Text({ text: 'foo' });
 
-            const renderer = await getRenderer({ resolution: 2 });
+            const renderer = await getWebGLRenderer({ resolution: 2 });
 
             const texture = renderer.renderPipes.text['_getGpuText'](text).texture;
 
@@ -48,11 +60,11 @@ describe('Text', () =>
         {
             const text = new Text({ text: 'foo', resolution: 3 });
 
-            expect(text.view.resolution).toEqual(3);
+            expect(text.resolution).toEqual(3);
 
-            const renderer = await getRenderer({ resolution: 2 });
+            const renderer = await getWebGLRenderer({ resolution: 2 });
 
-            const texture = renderer.canvasText.getTexture(text.text, text.view.resolution, text.style, 'foo');
+            const texture = renderer.canvasText.getTexture(text.text, text.resolution, text.style, 'foo');
 
             expect(texture.source.resolution).toEqual(3);
 
@@ -120,13 +132,13 @@ describe('Text', () =>
 
         it('should destroy canvas text correctly on the pipes and systems', async () =>
         {
-            const renderer = await getRenderer();
+            const renderer = await getWebGLRenderer();
 
             const container = new Container();
 
             const text = new Text({ text: 'foo' });
 
-            const key = text.view._getKey();
+            const key = text._getKey();
 
             container.addChild(text);
 
@@ -142,11 +154,11 @@ describe('Text', () =>
 
         it('should destroy bitmap text correctly on the pipes and systems', async () =>
         {
-            const renderer = await getRenderer();
+            const renderer = await getWebGLRenderer();
 
             const container = new Container();
 
-            const text = new Text({ text: 'foo', renderMode: 'bitmap' });
+            const text = new BitmapText({ text: 'foo' });
 
             container.addChild(text);
 
@@ -197,26 +209,24 @@ describe('Text', () =>
             expect(text.text).toEqual('');
         });
 
-        // note: ticket add Trim
-        // ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=45756485
-        it.skip('should trim an empty string', () =>
-        {
-            // note: why?
-            const text = new Text({
-                text: ' ',
-                style: {
-                    //   trim: true
-                }
-            });
-
-            expect(text.text).toEqual('');
-        });
-
         it('should allow setting \'\' for v5', () =>
         {
             const text = new Text('');
 
             expect(text.text).toEqual('');
+        });
+
+        it('should set width and height on the constructor', () =>
+        {
+            const text = new Text({
+                text: 'food is so tasty',
+                width: 100,
+                height: 100,
+            });
+
+            // answer locally is 99.999999999999 which is acceptable!
+            expect(text.width).toEqual(100);
+            expect(text.height).toEqual(100);
         });
     });
 });

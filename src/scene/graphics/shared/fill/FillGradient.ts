@@ -85,10 +85,8 @@ export class FillGradient implements CanvasGradient
         this.texture = new Texture({
             source: new ImageSource({
                 resource: canvas,
-                style: {
-                    addressModeU: 'clamp-to-edge',
-                    addressModeV: 'repeat',
-                }
+                addressModeU: 'clamp-to-edge',
+                addressModeV: 'repeat',
             }),
         });
 

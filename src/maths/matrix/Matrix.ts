@@ -2,13 +2,19 @@
 import { PI_2 } from '../misc/const';
 import { Point } from '../point/Point';
 
-import type { Transform } from '../../utils/misc/Transform';
 import type { PointData } from '../point/PointData';
 
+interface TransformableObject
+{
+    position: PointData;
+    scale: PointData;
+    pivot: PointData;
+    skew: PointData;
+    rotation: number;
+}
+
 /**
- * The PixiJS Matrix as a class makes it a lot faster.
- *
- * Here is a representation of it:
+ * A fast matrix for 2D transformations.
  * ```js
  * | a | c | tx|
  * | b | d | ty|
@@ -359,7 +365,7 @@ export class Matrix
      * @param transform - The transform to apply the properties to.
      * @returns The transform with the newly applied properties
      */
-    public decompose(transform: Transform): Transform
+    public decompose(transform: TransformableObject): TransformableObject
     {
         // sort out rotation / skew..
         const a = this.a;
@@ -493,6 +499,17 @@ export class Matrix
         return this;
     }
 
+    /**
+     * check to see if two matrices are the same
+     * @param matrix - The matrix to compare to.
+     */
+    public equals(matrix: Matrix)
+    {
+        return matrix.a === this.a && matrix.b === this.b
+            && matrix.c === this.c && matrix.d === this.d
+            && matrix.tx === this.tx && matrix.ty === this.ty;
+    }
+
     // #if _DEBUG
     public toString(): string
     {
@@ -501,7 +518,9 @@ export class Matrix
     // #endif
 
     /**
-     * A default (identity) matrix
+     * A default (identity) matrix.
+     *
+     * This is a shared object, if you want to modify it consider creating a new `Matrix`
      * @readonly
      */
     static get IDENTITY(): Readonly<Matrix>
@@ -512,6 +531,8 @@ export class Matrix
     /**
      * A static Matrix that can be used to avoid creating new objects.
      * Will always ensure the matrix is reset to identity when requested.
+     * Use this object for fast but temporary calculations, as it may be mutated later on.
+     * This is a different object to the `IDENTITY` object and so can be modified without changing `IDENTITY`.
      * @readonly
      */
     static get shared(): Matrix

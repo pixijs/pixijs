@@ -10,43 +10,12 @@ import type { FederatedWheelEvent } from './FederatedWheelEvent';
  * The type of cursor to use when the mouse pointer is hovering over.
  * @see https://developer.mozilla.org/en-US/docs/Web/CSS/cursor
  *
- * can be any valid CSS cursor value
- * - auto
- * - default
- * - none
- * - context-menu
- * - help
- * - pointer
- * - progress
- * - wait
- * - cell
- * - crosshair
- * - text
- * - verticaltext
- * - alias
- * - copy
- * - move
- * - nodrop
- * - notallowed
- * - eresize
- * - nresize
- * - neresize
- * - nwresize
- * - sresize
- * - seresize
- * - swresize
- * - wresize
- * - nsresize
- * - ewresize
- * - neswresize
- * - colresize
- * - nwseresize
- * - rowresize
- * - allscroll
- * - zoomin
- * - zoomout
- * - grab
- * - grabbing
+ * Can be any valid CSS cursor value:
+ * `auto`, `default`, `none`, `context-menu`, `help`, `pointer`, `progress`,
+ * `wait`, `cell`, `crosshair`, `text`, `verticaltext`, `alias`, `copy`, `move`,
+ * `nodrop`, `notallowed`, `eresize`, `nresize`, `neresize`, `nwresize`, `sresize`,
+ *  `seresize`, `swresize`, `wresize`, `nsresize`, `ewresize`, `neswresize`, `colresize`,
+ *  `nwseresize`, `rowresize`, `allscroll`, `zoomin`, `zoomout`, `grab`, `grabbing`
  * @memberof events
  */
 export type Cursor = 'auto'
@@ -86,9 +55,16 @@ export type Cursor = 'auto'
 | 'grab'
 | 'grabbing';
 
-// @ignore - This is documented elsewhere.
+/**
+ * The hit area specifies the area for which pointer events should be captured by this event target.
+ * @memberof events
+ */
 export interface IHitArea
 {
+    /**
+     * Checks if the x and y coordinates given are contained within this hit area.
+     * @returns Whether the x and y coordinates are contained within this hit area.
+     */
     contains(x: number, y: number): boolean;
 }
 
@@ -96,15 +72,15 @@ export interface IHitArea
  * Function type for handlers, e.g., onclick
  * @memberof events
  */
-export type FederatedEventHandler<T= FederatedPointerEvent> = (event: T) => void;
+export type FederatedEventHandler<T = FederatedPointerEvent> = (event: T) => void;
 
 /**
- * The type of interaction a Container can be. For more information on values and their meaning,
- * see {@link Container.eventMode Container's eventMode property}.
+ * The type of interaction a Container can be.
+ * This is the {@link scene.Container#eventMode|Container.eventMode} property of any {@link scene.Container}.
  *
  * Can be one of the following:
  * - `'none'`: Ignores all interaction events, even on its children.
- * - `'passive'`: Does not emit events and ignores all hit testing on itself and non-interactive children.
+ * - `'passive'`: **(default)** Does not emit events and ignores all hit testing on itself and non-interactive children.
  * Interactive children will still emit events.
  * - `'auto'`: Does not emit events but is hit tested if parent is interactive. Same as `interactive = false` in v7
  * - `'static'`: Emit events and is hit tested. Same as `interaction = true` in v7
@@ -120,7 +96,7 @@ export type FederatedEventHandler<T= FederatedPointerEvent> = (event: T) => void
 export type EventMode = 'none' | 'passive' | 'auto' | 'static' | 'dynamic';
 
 /**
- * The options for interactive objects.
+ * The properties available for any interactive object.
  * @memberof events
  */
 export interface FederatedOptions
@@ -204,7 +180,7 @@ export interface FederatedOptions
 }
 
 /**
- * Describes the shape for a {@link FederatedEvent}'s' `eventTarget`.
+ * A simplified shape of an interactive object for the `eventTarget` property of a {@link FederatedEvent}
  * @memberof events
  */
 export interface FederatedEventTarget extends EventEmitter, EventTarget, Required<FederatedOptions>
@@ -368,7 +344,7 @@ export const FederatedContainer: IFederatedContainer = {
      *  //some function here that happens on mouseupoutside
      * }
      */
-    onmouseupoutside:  null,
+    onmouseupoutside: null,
 
     /**
      * Property-based event handler for the `pointercancel` event.
@@ -379,7 +355,7 @@ export const FederatedContainer: IFederatedContainer = {
      *  //some function here that happens on pointercancel
      * }
      */
-    onpointercancel:  null,
+    onpointercancel: null,
 
     /**
      * Property-based event handler for the `pointerdown` event.
@@ -401,7 +377,7 @@ export const FederatedContainer: IFederatedContainer = {
      *  //some function here that happens on pointerenter
      * }
      */
-    onpointerenter:  null,
+    onpointerenter: null,
 
     /**
      * Property-based event handler for the `pointerleave` event.
@@ -640,10 +616,9 @@ export const FederatedContainer: IFederatedContainer = {
     _internalEventMode: undefined,
     /**
      * Enable interaction events for the Container. Touch, pointer and mouse.
-     * This now replaces the `interactive` property.
      * There are 5 types of interaction settings:
      * - `'none'`: Ignores all interaction events, even on its children.
-     * - `'passive'`: Does not emit events and ignores all hit testing on itself and non-interactive children.
+     * - `'passive'`: **(default)** Does not emit events and ignores all hit testing on itself and non-interactive children.
      * Interactive children will still emit events.
      * - `'auto'`: Does not emit events but is hit tested if parent is interactive. Same as `interactive = false` in v7
      * - `'static'`: Emit events and is hit tested. Same as `interaction = true` in v7
@@ -676,6 +651,7 @@ export const FederatedContainer: IFederatedContainer = {
      * @since 7.2.0
      * @example
      * import { Sprite } from 'pixi.js';
+     *
      * const sprite = new Sprite(texture);
      * sprite.eventMode = 'static';
      * sprite.isInteractive(); // true
@@ -757,13 +733,32 @@ export const FederatedContainer: IFederatedContainer = {
     )
     {
         const capture = (typeof options === 'boolean' && options)
-            || (typeof options === 'object' && options.capture);
+        || (typeof options === 'object' && options.capture);
+        const signal = typeof options === 'object' ? options.signal : undefined;
+        const once = typeof options === 'object' ? (options.once === true) : false;
         const context = typeof listener === 'function' ? undefined : listener;
 
         type = capture ? `${type}capture` : type;
-        listener = typeof listener === 'function' ? listener : listener.handleEvent;
+        const listenerFn = typeof listener === 'function' ? listener : listener.handleEvent;
 
-        (this as unknown as EventEmitter).on(type, listener, context);
+        const emitter = (this as unknown as EventEmitter);
+
+        if (signal)
+        {
+            signal.addEventListener('abort', () =>
+            {
+                emitter.off(type, listenerFn, context);
+            });
+        }
+
+        if (once)
+        {
+            emitter.once(type, listenerFn, context);
+        }
+        else
+        {
+            emitter.on(type, listenerFn, context);
+        }
     },
 
     /**

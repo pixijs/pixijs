@@ -194,8 +194,7 @@ export class AnimatedSprite extends Sprite
 
     /**
      * Updates the object transform for rendering.
-     * @param ticker - {Ticker} - current delta time
-     * @param ticker.deltaTime - the delta time since the last tick
+     * @param ticker - the ticker to use to update the object.
      */
     public update(ticker: Ticker): void
     {
@@ -464,7 +463,10 @@ export class AnimatedSprite extends Sprite
     }
 }
 
-/** @memberof scene */
+/**
+ * A reference to a frame in an {@link scene.AnimatedSprite}
+ * @memberof scene
+ */
 export interface FrameObject
 {
     /** The {@link Texture} of the frame. */

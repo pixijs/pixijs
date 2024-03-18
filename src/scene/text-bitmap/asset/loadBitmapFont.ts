@@ -87,8 +87,10 @@ export const loadBitmapFont = {
         return await response.text();
     },
 
-    unload(bitmapFont: BitmapFont): void
+    async unload(bitmapFont: BitmapFont, _resolvedAsset, loader): Promise<void>
     {
+        await Promise.all(bitmapFont.pages.map((page) => loader.unload(page.texture.source._sourceOrigin)));
+
         bitmapFont.destroy();
     }
 } as LoaderParser;

@@ -7,6 +7,10 @@ import type { State } from '../shared/state/State';
 import type { System } from '../shared/system/System';
 import type { WebGLRenderer } from './WebGLRenderer';
 
+/**
+ * The system that handles encoding commands for the WebGL.
+ * @memberof rendering
+ */
 export class GlEncoderSystem implements System
 {
     /** @ignore */
@@ -58,7 +62,7 @@ export class GlEncoderSystem implements System
             renderer.state.set(state);
         }
 
-        renderer.geometry.draw(type, size, start, instanceCount);
+        renderer.geometry.draw(type, size, start, instanceCount ?? geometry.instanceCount);
     }
 
     public destroy()

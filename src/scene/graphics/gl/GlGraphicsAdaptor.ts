@@ -12,10 +12,14 @@ import { UniformGroup } from '../../../rendering/renderers/shared/shader/Uniform
 
 import type { Batch } from '../../../rendering/batcher/shared/Batcher';
 import type { WebGLRenderer } from '../../../rendering/renderers/gl/WebGLRenderer';
-import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
+import type { Graphics } from '../shared/Graphics';
 import type { GraphicsAdaptor, GraphicsPipe } from '../shared/GraphicsPipe';
-import type { GraphicsView } from '../shared/GraphicsView';
 
+/**
+ * A GraphicsAdaptor that uses WebGL to render graphics.
+ * @memberof rendering
+ * @ignore
+ */
 export class GlGraphicsAdaptor implements GraphicsAdaptor
 {
     /** @ignore */
@@ -33,6 +37,7 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
         const uniforms = new UniformGroup({
             uColor: { value: new Float32Array([1, 1, 1, 1]), type: 'vec4<f32>' },
             uTransformMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
+            uRound: { value: 0, type: 'f32' },
         });
 
         const glProgram = compileHighShaderGlProgram({
@@ -54,9 +59,9 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
         });
     }
 
-    public execute(graphicsPipe: GraphicsPipe, renderable: Renderable<GraphicsView>): void
+    public execute(graphicsPipe: GraphicsPipe, renderable: Graphics): void
     {
-        const context = renderable.view.context;
+        const context = renderable.context;
         const shader = context.customShader || this.shader;
         const renderer = graphicsPipe.renderer as WebGLRenderer;
         const contextSystem = renderer.graphicsContext;
@@ -66,11 +71,9 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
         } = contextSystem.getContextRenderData(context);
 
         // WebGL specific..
+        shader.groups[0] = renderer.globalUniforms.bindGroup;
 
         renderer.shader.bind(shader);
-        renderer.shader.bindUniformBlock(renderer.globalUniforms.uniformGroup, 'globalUniforms');
-
-        // renderer.
 
         renderer.geometry.bind(geometry, shader.glProgram);
 

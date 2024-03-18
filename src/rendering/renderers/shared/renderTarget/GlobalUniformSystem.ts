@@ -3,20 +3,20 @@ import { Matrix } from '../../../../maths/matrix/Matrix';
 import { Point } from '../../../../maths/point/Point';
 import { color32BitToUniform } from '../../../../scene/graphics/gpu/colorToUniform';
 import { BindGroup } from '../../gpu/shader/BindGroup';
+import { type Renderer, RendererType } from '../../types';
 import { UniformGroup } from '../shader/UniformGroup';
 
 import type { PointData } from '../../../../maths/point/PointData';
-import type { GlRenderTargetSystem } from '../../gl/GlRenderTargetSystem';
+import type { GlRenderTargetSystem } from '../../gl/renderTarget/GlRenderTargetSystem';
 import type { GpuRenderTargetSystem } from '../../gpu/renderTarget/GpuRenderTargetSystem';
 import type { WebGPURenderer } from '../../gpu/WebGPURenderer';
-import type { Renderer } from '../../types';
-import type { UniformBufferSystem } from '../shader/UniformBufferSystem';
+import type { UboSystem } from '../shader/UboSystem';
 import type { System } from '../system/System';
 
 export type GlobalUniformGroup = UniformGroup<{
-    projectionMatrix: { value: Matrix; type: 'mat3x3<f32>' }
-    worldTransformMatrix: { value: Matrix; type: 'mat3x3<f32>' }
-    worldColorAlpha: { value: Float32Array; type: 'vec4<f32>' }
+    uProjectionMatrix: { value: Matrix; type: 'mat3x3<f32>' }
+    uWorldTransformMatrix: { value: Matrix; type: 'mat3x3<f32>' }
+    uWorldColorAlpha: { value: Float32Array; type: 'vec4<f32>' }
     uResolution: { value: number[]; type: 'vec2<f32>' }
 }>;
 
@@ -43,9 +43,14 @@ interface GlobalUniformRenderer
 {
     renderTarget: GlRenderTargetSystem | GpuRenderTargetSystem
     renderPipes: Renderer['renderPipes'];
-    uniformBuffer: UniformBufferSystem;
+    ubo: UboSystem;
+    type: RendererType;
 }
 
+/**
+ * System plugin to the renderer to manage global uniforms for the renderer.
+ * @memberof rendering
+ */
 export class GlobalUniformSystem implements System
 {
     /** @ignore */
@@ -133,18 +138,18 @@ export class GlobalUniformSystem implements System
 
         const uniforms = uniformGroup.uniforms;
 
-        uniforms.projectionMatrix = globalUniformData.projectionMatrix;
+        uniforms.uProjectionMatrix = globalUniformData.projectionMatrix;
 
         uniforms.uResolution = globalUniformData.resolution;
 
-        uniforms.worldTransformMatrix.copyFrom(globalUniformData.worldTransformMatrix);
+        uniforms.uWorldTransformMatrix.copyFrom(globalUniformData.worldTransformMatrix);
 
-        uniforms.worldTransformMatrix.tx -= globalUniformData.offset.x;
-        uniforms.worldTransformMatrix.ty -= globalUniformData.offset.y;
+        uniforms.uWorldTransformMatrix.tx -= globalUniformData.offset.x;
+        uniforms.uWorldTransformMatrix.ty -= globalUniformData.offset.y;
 
         color32BitToUniform(
             globalUniformData.worldColor,
-            uniforms.worldColorAlpha,
+            uniforms.uWorldColorAlpha,
             0
         );
 
@@ -158,8 +163,6 @@ export class GlobalUniformSystem implements System
         }
         else
         {
-            this._renderer.uniformBuffer.updateUniformGroup(uniformGroup as UniformGroup);
-
             bindGroup = this._bindGroupPool.pop() || new BindGroup();
             this._activeBindGroups.push(bindGroup);
             bindGroup.setResource(uniformGroup, 0);
@@ -180,6 +183,13 @@ export class GlobalUniformSystem implements System
     public pop()
     {
         this._currentGlobalUniformData = this._globalUniformDataStack[--this._stackIndex - 1];
+
+        // for webGL we need to update the uniform group here
+        // as we are not using bind groups
+        if (this._renderer.type === RendererType.WEBGL)
+        {
+            (this._currentGlobalUniformData.bindGroup.resources[0] as UniformGroup).update();
+        }
     }
 
     get bindGroup(): BindGroup
@@ -195,13 +205,12 @@ export class GlobalUniformSystem implements System
     private _createUniforms(): GlobalUniformGroup
     {
         const globalUniforms = new UniformGroup({
-            projectionMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
-            worldTransformMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
+            uProjectionMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
+            uWorldTransformMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
             // TODO - someone smart - set this to be a unorm8x4 rather than a vec4<f32>
-            worldColorAlpha: { value: new Float32Array(4), type: 'vec4<f32>' },
+            uWorldColorAlpha: { value: new Float32Array(4), type: 'vec4<f32>' },
             uResolution: { value: [0, 0], type: 'vec2<f32>' },
         }, {
-            ubo: true,
             isStatic: true,
         });
 

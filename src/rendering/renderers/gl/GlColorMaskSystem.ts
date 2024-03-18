@@ -3,6 +3,10 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import type { System } from '../shared/system/System';
 import type { WebGLRenderer } from './WebGLRenderer';
 
+/**
+ * The system that handles color masking for the WebGL.
+ * @memberof rendering
+ */
 export class GlColorMaskSystem implements System
 {
     /** @ignore */

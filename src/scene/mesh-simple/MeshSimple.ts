@@ -7,6 +7,10 @@ import type { Topology } from '../../rendering/renderers/shared/geometry/const';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { MeshOptions } from '../mesh/shared/Mesh';
 
+/**
+ * Options for the simple mesh.
+ * @memberof scene
+ */
 export interface SimpleMeshOptions extends Omit<MeshOptions, 'geometry'>
 {
     /** The texture to use */
@@ -23,7 +27,7 @@ export interface SimpleMeshOptions extends Omit<MeshOptions, 'geometry'>
 
 /**
  * The Simple Mesh class mimics Mesh in PixiJS, providing easy-to-use constructor arguments.
- * For more robust customization, use {@link PIXI.Mesh}.
+ * For more robust customization, use {@link scene.Mesh}.
  * @memberof scene
  */
 export class MeshSimple extends Mesh

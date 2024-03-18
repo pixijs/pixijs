@@ -112,7 +112,8 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
         if (!BLEND_MODE_FILTERS[blendMode as keyof typeof BLEND_MODE_FILTERS])
         {
             // #if _DEBUG
-            warn(`Unable to assign 'BLEND_MODES.${blendMode}' using the blend mode pipeline`);
+            warn(`Unable to assign BlendMode: '${blendMode}'. `
+            + `You may want to include: import 'pixi.js/advanced-blend-modes'`);
             // #endif
 
             return;
@@ -153,6 +154,7 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
     /**
      * called when the instruction build process is starting this will reset internally to the default blend mode
      * @internal
+     * @ignore
      */
     public buildStart()
     {
@@ -164,6 +166,7 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
      * active, we add the final render instructions added to the instruction set
      * @param instructionSet - The instruction set we are adding to
      * @internal
+     * @ignore
      */
     public buildEnd(instructionSet: InstructionSet)
     {

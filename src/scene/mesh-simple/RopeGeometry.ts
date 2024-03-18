@@ -1,10 +1,18 @@
 import { MeshGeometry } from '../mesh/shared/MeshGeometry';
 
-import type { PointLike } from '../../maths/point/PointLike';
+import type { PointData } from '../../maths/point/PointData';
 import type { MeshGeometryOptions } from '../mesh/shared/MeshGeometry';
 
 /**
- * Options for the {@link PlaneGeometry} constructor.
+ * Constructor options used for `RopeGeometry` instances.
+ * ```js
+ * const ropeGeometry = new RopeGeometry({
+ *    points: [new Point(0, 0), new Point(100, 0)],
+ *    width: 10,
+ *    textureScale: 0,
+ * });
+ * ```
+ * @see {@link scene.RopeGeometry}
  * @memberof scene
  */
 export interface RopeGeometryOptions
@@ -12,7 +20,7 @@ export interface RopeGeometryOptions
     /** The width (i.e., thickness) of the rope. */
     width?: number;
     /** An array of points that determine the rope. */
-    points?: PointLike[];
+    points?: PointData[];
     /**
      * Rope texture scale, if zero then the rope texture is stretched.
      * By default the rope texture will be stretched to match
@@ -39,14 +47,18 @@ export interface RopeGeometryOptions
  */
 export class RopeGeometry extends MeshGeometry
 {
+    /** Default options for RopeGeometry constructor. */
     public static defaultOptions: RopeGeometryOptions & MeshGeometryOptions = {
+        /** The width (i.e., thickness) of the rope. */
         width: 200,
+        /** An array of points that determine the rope. */
         points: [],
+        /** Rope texture scale, if zero then the rope texture is stretched. */
         textureScale: 0,
     };
 
     /** An array of points that determine the rope. */
-    public points: PointLike[];
+    public points: PointData[];
 
     /** Rope texture scale, if zero then the rope texture is stretched. */
     public readonly textureScale: number;
@@ -244,6 +256,7 @@ export class RopeGeometry extends MeshGeometry
         this.buffers[0].update();
     }
 
+    /** Refreshes Rope indices and uvs */
     public update(): void
     {
         if (this.textureScale > 0)

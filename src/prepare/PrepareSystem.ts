@@ -9,10 +9,12 @@ import type { System } from '../rendering/renderers/shared/system/System';
  *
  * Do not instantiate this plugin directly. It is available from the `renderer.prepare` property.
  * @example
+ * import 'pixi.js/prepare';
  * import { Application, Graphics } from 'pixi.js';
  *
  * // Create a new application (prepare will be auto-added to renderer)
  * const app = new Application();
+ * await app.init();
  * document.body.appendChild(app.view);
  *
  * // Don't start rendering right away
@@ -30,6 +32,7 @@ import type { System } from '../rendering/renderers/shared/system/System';
  * app.renderer.prepare.upload(app.stage, () => {
  *     app.start();
  * });
+ * @memberof rendering
  */
 export class PrepareSystem extends PrepareUpload implements System
 {

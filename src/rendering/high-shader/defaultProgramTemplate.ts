@@ -15,26 +15,28 @@ const vertexGPUTemplate = /* wgsl */`
     @vertex
     fn main( {{in}} ) -> VSOutput {
 
-        var worldTransformMatrix = globalUniforms.worldTransformMatrix;
+        var worldTransformMatrix = globalUniforms.uWorldTransformMatrix;
         var modelMatrix = mat3x3<f32>(
             1.0, 0.0, 0.0,
             0.0, 1.0, 0.0,
             0.0, 0.0, 1.0
           );
         var position = aPosition;
+        var uv = aUV;
 
         {{start}}
         
         vColor = vec4<f32>(1., 1., 1., 1.);
-        vUV = aUV;
 
         {{main}}
 
-        var modelViewProjectionMatrix = globalUniforms.projectionMatrix * worldTransformMatrix * modelMatrix;
+        vUV = uv;
+
+        var modelViewProjectionMatrix = globalUniforms.uProjectionMatrix * worldTransformMatrix * modelMatrix;
 
         vPosition =  vec4<f32>((modelViewProjectionMatrix *  vec3<f32>(position, 1.0)).xy, 0.0, 1.0);
        
-        vColor *= globalUniforms.worldColorAlpha;
+        vColor *= globalUniforms.uWorldColorAlpha;
 
         {{end}}
 
@@ -74,26 +76,28 @@ const vertexGlTemplate = /* glsl */`
 
     void main(void){
 
-        mat3 worldTransformMatrix = worldTransformMatrix;
+        mat3 worldTransformMatrix = uWorldTransformMatrix;
         mat3 modelMatrix = mat3(
             1.0, 0.0, 0.0,
             0.0, 1.0, 0.0,
             0.0, 0.0, 1.0
           );
         vec2 position = aPosition;
-
+        vec2 uv = aUV;
+        
         {{start}}
         
         vColor = vec4(1.);
-        vUV = aUV;
-
+        
         {{main}}
-
-        mat3 modelViewProjectionMatrix = projectionMatrix * worldTransformMatrix * modelMatrix;
+        
+        vUV = uv;
+        
+        mat3 modelViewProjectionMatrix = uProjectionMatrix * worldTransformMatrix * modelMatrix;
 
         gl_Position = vec4((modelViewProjectionMatrix * vec3(position, 1.0)).xy, 0.0, 1.0);
 
-        vColor *= worldColorAlpha;
+        vColor *= uWorldColorAlpha;
 
         {{end}}
     }

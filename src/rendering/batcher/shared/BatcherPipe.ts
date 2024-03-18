@@ -12,9 +12,10 @@ import type { Batch, BatchableObject } from './Batcher';
 export interface BatcherAdaptor
 {
     start(batchPipe: BatcherPipe, geometry: Geometry): void
-    init(): void;
+    init(batchPipe: BatcherPipe): void;
     execute(batchPipe: BatcherPipe, batch: Batch): void
     destroy(): void;
+    contextChange?(): void;
 }
 
 // eslint-disable-next-line max-len
@@ -45,7 +46,7 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
         this.renderer = renderer;
         this._adaptor = adaptor;
 
-        this._adaptor.init();
+        this._adaptor.init(this);
     }
 
     public buildStart(instructionSet: InstructionSet)

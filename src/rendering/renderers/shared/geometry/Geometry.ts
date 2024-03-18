@@ -1,9 +1,14 @@
 import EventEmitter from 'eventemitter3';
+import { Bounds } from '../../../../scene/container/bounds/Bounds';
 import { uid } from '../../../../utils/data/uid';
+import { Buffer } from '../buffer/Buffer';
 import { ensureIsBuffer } from './utils/ensureIsBuffer';
+import { getGeometryBounds } from './utils/getGeometryBounds';
 
-import type { Buffer, TypedArray } from '../buffer/Buffer';
+import type { TypedArray } from '../buffer/Buffer';
 import type { Topology, VertexFormat } from './const';
+
+export type IndexBufferArray = Uint16Array | Uint32Array;
 
 /**
  * The attribute data for a geometries attributes
@@ -13,16 +18,16 @@ export interface Attribute
 {
     /** the buffer that this attributes data belongs to */
     buffer: Buffer;
-    /** the stride of the data in the buffer*/
-    stride: number;
-    /** the offset of the attribute from the buffer */
-    offset: number;
     /** the format of the attribute */
-    format: VertexFormat;
+    format?: VertexFormat;
+    /** set where the shader location is for this attribute */
+    location?: number;
+    /** the stride of the data in the buffer*/
+    stride?: number;
+    /** the offset of the attribute from the buffer, defaults to 0 */
+    offset?: number;
     /** is this an instanced buffer? (defaults to false) */
     instance?: boolean;
-    /** set where the shader location is for this attribute */
-    shaderLocation: number; // TODO - auto assign this move this?? introspection??
     /**  The number of elements to be rendered. If not specified, all vertices after the starting vertex will be drawn. */
     size?: number;
     /** the type of attribute  */
@@ -39,7 +44,8 @@ export interface Attribute
  * extends {@link rendering.Attribute} but allows for the buffer to be a typed or number array
  * @memberof rendering
  */
-type AttributesOption = Omit<Attribute, 'buffer'> & { buffer: Buffer | TypedArray | number[]};
+type AttributesOption = Omit<Attribute, 'buffer'> & { buffer: Buffer | TypedArray | number[]}
+| Buffer | TypedArray | number[];
 
 /**
  * the interface that describes the structure of the geometry
@@ -55,6 +61,21 @@ export interface GeometryDescriptor
     indexBuffer?: Buffer | TypedArray | number[];
     /** the topology of the geometry, defaults to 'triangle-list' */
     topology?: Topology;
+
+    instanceCount?: number;
+}
+function ensureIsAttribute(attribute: AttributesOption): Attribute
+{
+    if (attribute instanceof Buffer || Array.isArray(attribute) || (attribute as TypedArray).BYTES_PER_ELEMENT)
+    {
+        attribute = {
+            buffer: attribute as Buffer | TypedArray | number[],
+        };
+    }
+
+    (attribute as Attribute).buffer = ensureIsBuffer(attribute.buffer as Buffer | TypedArray | number[], false);
+
+    return attribute as Attribute;
 }
 
 /**
@@ -73,7 +94,7 @@ export interface GeometryDescriptor
  *
  * const geometry = new Geometry({
  *   attributes: {
- *     aVertexPosition: [ // add some positions
+ *     aPosition: [ // add some positions
  *       0, 0,
  *       0, 100,
  *       100, 100,
@@ -114,10 +135,11 @@ export class Geometry extends EventEmitter<{
      */
     public _layoutKey = 0;
 
-    /** true if the geometry is instanced */
-    public instanced: boolean;
     /** the instance count of the geometry to draw */
-    public instanceCount: number;
+    public instanceCount = 1;
+
+    private readonly _bounds: Bounds = new Bounds();
+    private _boundsDirty = true;
 
     /**
      * Create a new instance of a geometry
@@ -132,11 +154,11 @@ export class Geometry extends EventEmitter<{
         this.attributes = attributes as Record<string, Attribute>;
         this.buffers = [];
 
+        this.instanceCount = options.instanceCount || 1;
+
         for (const i in attributes)
         {
-            const attribute = attributes[i];
-
-            attribute.buffer = ensureIsBuffer(attribute.buffer, false);
+            const attribute = attributes[i] = ensureIsAttribute(attributes[i]);
 
             const bufferIndex = this.buffers.indexOf(attribute.buffer);
 
@@ -144,14 +166,16 @@ export class Geometry extends EventEmitter<{
             {
                 this.buffers.push(attribute.buffer);
 
+                // two events here - one for a resize (new buffer change)
+                // and one for an update (existing buffer change)
                 attribute.buffer.on('update', this.onBufferUpdate, this);
+                attribute.buffer.on('change', this.onBufferUpdate, this);
             }
         }
 
         if (indexBuffer)
         {
             this.indexBuffer = ensureIsBuffer(indexBuffer, true);
-
             this.buffers.push(this.indexBuffer);
         }
 
@@ -160,6 +184,7 @@ export class Geometry extends EventEmitter<{
 
     protected onBufferUpdate(): void
     {
+        this._boundsDirty = true;
         this.emit('update', this);
     }
 
@@ -201,13 +226,23 @@ export class Geometry extends EventEmitter<{
         for (const i in this.attributes)
         {
             const attribute = this.attributes[i];
-            const buffer = this.getBuffer(i);
+            const buffer = attribute.buffer;
 
             // TODO use SIZE again like v7..
             return (buffer.data as any).length / ((attribute.stride / 4) || attribute.size);
         }
 
         return 0;
+    }
+
+    /** Returns the bounds of the geometry. */
+    get bounds(): Bounds
+    {
+        if (!this._boundsDirty) return this._bounds;
+
+        this._boundsDirty = false;
+
+        return getGeometryBounds(this, 'aPosition', this._bounds);
     }
 
     /**
@@ -227,6 +262,8 @@ export class Geometry extends EventEmitter<{
 
         (this.attributes as null) = null;
         (this.buffers as null) = null;
+        (this.indexBuffer as null) = null;
+        (this._bounds as null) = null;
     }
 }
 

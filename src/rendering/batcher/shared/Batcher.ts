@@ -7,12 +7,17 @@ import { BatchTextureArray } from './BatchTextureArray';
 import { MAX_TEXTURES } from './const';
 
 import type { BindGroup } from '../../renderers/gpu/shader/BindGroup';
+import type { IndexBufferArray } from '../../renderers/shared/geometry/Geometry';
 import type { Instruction } from '../../renderers/shared/instructions/Instruction';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { Texture } from '../../renderers/shared/texture/Texture';
 
 export type BatchAction = 'startBatch' | 'renderBatch';
 
+/**
+ * A batch pool is used to store batches when they are not currently in use.
+ * @memberof rendering
+ */
 export class Batch implements Instruction
 {
     public renderPipeId = 'batch';
@@ -65,7 +70,7 @@ export interface BatchableObject
         index: number,
         textureId: number,
     ) => void;
-    packIndex: (indexBuffer: Uint32Array, index: number, indicesOffset: number) => void;
+    packIndex: (indexBuffer: IndexBufferArray, index: number, indicesOffset: number) => void;
 
     texture: Texture;
     blendMode: BLEND_MODES;
@@ -83,12 +88,22 @@ export interface BatchableObject
 
 let BATCH_TICK = 0;
 
+/**
+ * The options for the batcher.
+ * @ignore
+ */
 export interface BatcherOptions
 {
+    /** The size of the vertex buffer. */
     vertexSize?: number;
+    /** The size of the index buffer. */
     indexSize?: number;
 }
 
+/**
+ * A batcher is used to batch together objects with the same texture.
+ * @ignore
+ */
 export class Batcher
 {
     public static defaultOptions: BatcherOptions = {
@@ -98,7 +113,7 @@ export class Batcher
 
     public uid = uid('batcher');
     public attributeBuffer: ViewableBuffer;
-    public indexBuffer: Uint32Array;
+    public indexBuffer: IndexBufferArray;
 
     public attributeSize: number;
     public indexSize: number;
@@ -130,7 +145,7 @@ export class Batcher
 
         this.attributeBuffer = new ViewableBuffer(vertexSize * this._vertexSize * 4);
 
-        this.indexBuffer = new Uint32Array(indexSize);
+        this.indexBuffer = new Uint16Array(indexSize);
     }
 
     public begin()
@@ -374,11 +389,28 @@ export class Batcher
     {
         const indexBuffer = this.indexBuffer;
 
-        const newSize = Math.max(size, indexBuffer.length * 2);
+        let newSize = Math.max(size, indexBuffer.length * 1.5);
 
-        const newIndexBuffer = new Uint32Array(newSize);
+        newSize += newSize % 2;
 
-        fastCopy(indexBuffer.buffer, newIndexBuffer.buffer);
+        // this, is technically not 100% accurate, as really we should
+        // be checking the maximum value in the buffer. This approximation
+        // does the trick though...
+
+        // make sure buffer is always an even number..
+        const newIndexBuffer = (newSize > 65535) ? new Uint32Array(newSize) : new Uint16Array(newSize);
+
+        if (newIndexBuffer.BYTES_PER_ELEMENT !== indexBuffer.BYTES_PER_ELEMENT)
+        {
+            for (let i = 0; i < indexBuffer.length; i++)
+            {
+                newIndexBuffer[i] = indexBuffer[i];
+            }
+        }
+        else
+        {
+            fastCopy(indexBuffer.buffer, newIndexBuffer.buffer);
+        }
 
         this.indexBuffer = newIndexBuffer;
     }

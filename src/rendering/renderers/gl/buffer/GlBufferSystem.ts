@@ -5,8 +5,6 @@ import { GlBuffer } from './GlBuffer';
 
 import type { Buffer } from '../../shared/buffer/Buffer';
 import type { System } from '../../shared/system/System';
-// @ts-expect-error - used for jsdoc typedefs
-import type { Renderer } from '../../types';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
 
@@ -25,6 +23,7 @@ import type { WebGLRenderer } from '../WebGLRenderer';
  * them. With this system, you never need to work directly with GPU buffers, but instead work with
  * the Buffer class.
  * @class
+ * @memberof rendering
  */
 export class GlBufferSystem implements System
 {
@@ -57,7 +56,6 @@ export class GlBufferSystem implements System
      */
     public destroy(): void
     {
-        this.destroyAll(true);
         this._renderer = null;
         this._gl = null;
         this._gpuBuffers = null;
@@ -67,8 +65,7 @@ export class GlBufferSystem implements System
     /** Sets up the renderer context and necessary buffers. */
     protected contextChange(): void
     {
-        this.destroyAll(true);
-
+        this._gpuBuffers = Object.create(null);
         this._gl = this._renderer.gl;
     }
 
@@ -148,42 +145,38 @@ export class GlBufferSystem implements System
 
         gl.bindBuffer(glBuffer.type, glBuffer.buffer);
 
+        const data = buffer.data;
+
         if (glBuffer.byteLength >= buffer.data.byteLength)
         {
             // assuming our buffers are aligned to 4 bits...
             // offset is always zero for now!
-            gl.bufferSubData(glBuffer.type, 0, buffer.data, 0, buffer._updateSize / 4);
+            gl.bufferSubData(glBuffer.type, 0, data, 0, buffer._updateSize / data.BYTES_PER_ELEMENT);
         }
         else
         {
             const drawType = (buffer.descriptor.usage & BufferUsage.STATIC) ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW;
 
-            glBuffer.byteLength = buffer.data.byteLength;
+            glBuffer.byteLength = data.byteLength;
 
             // assuming our buffers are aligned to 4 bits...
-            gl.bufferData(glBuffer.type, buffer.data, drawType);
+            gl.bufferData(glBuffer.type, data, drawType);
         }
 
         return glBuffer;
     }
 
-    /**
-     * dispose all WebGL resources of all managed buffers
-     * @param {boolean} [contextLost=false] - If context was lost, we suppress `gl.delete` calls
-     */
-    public destroyAll(contextLost?: boolean): void
+    /** dispose all WebGL resources of all managed buffers */
+    public destroyAll(): void
     {
         const gl = this._gl;
 
-        if (!contextLost)
+        for (const id in this._gpuBuffers)
         {
-            for (const id in this._gpuBuffers)
-            {
-                gl.deleteBuffer(this._gpuBuffers[id].buffer);
-            }
+            gl.deleteBuffer(this._gpuBuffers[id].buffer);
         }
 
-        this._gpuBuffers = {};
+        this._gpuBuffers = Object.create(null);
     }
 
     /**

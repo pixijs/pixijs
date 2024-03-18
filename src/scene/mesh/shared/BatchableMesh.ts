@@ -1,8 +1,15 @@
-import type { Batch, BatchableObject, Batcher } from '../../../rendering/batcher/shared/Batcher';
-import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
-import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import type { MeshView } from './MeshView';
+import { Matrix } from '../../../maths/matrix/Matrix';
 
+import type { Batch, BatchableObject, Batcher } from '../../../rendering/batcher/shared/Batcher';
+import type { IndexBufferArray } from '../../../rendering/renderers/shared/geometry/Geometry';
+import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
+import type { Container } from '../../container/Container';
+import type { MeshGeometry } from './MeshGeometry';
+
+/**
+ * A batchable mesh object.
+ * @ignore
+ */
 export class BatchableMesh implements BatchableObject
 {
     public indexStart: number;
@@ -11,22 +18,27 @@ export class BatchableMesh implements BatchableObject
     public location: number;
     public batcher: Batcher = null;
     public batch: Batch = null;
-    public renderable: Renderable<MeshView>;
+    public mesh: Container;
+    public geometry: MeshGeometry;
+
     public roundPixels: 0 | 1 = 0;
 
-    get blendMode() { return this.renderable.rgBlendMode; }
+    private _transformedUvs: Float32Array;
+    private readonly _uvMatrix = new Matrix();
+
+    get blendMode() { return this.mesh.groupBlendMode; }
 
     public reset()
     {
-        this.renderable = null;
+        this.mesh = null;
         this.texture = null;
         this.batcher = null;
         this.batch = null;
     }
 
-    public packIndex(indexBuffer: Uint32Array, index: number, indicesOffset: number)
+    public packIndex(indexBuffer: IndexBufferArray, index: number, indicesOffset: number)
     {
-        const indices = this.renderable.view.geometry.indices;
+        const indices = this.geometry.indices;
 
         for (let i = 0; i < indices.length; i++)
         {
@@ -41,12 +53,10 @@ export class BatchableMesh implements BatchableObject
         textureId: number
     )
     {
-        const renderable = this.renderable;
+        const mesh = this.mesh;
 
-        const view = this.renderable.view;
-
-        const geometry = view.geometry;
-        const wt = renderable.rgTransform;
+        const geometry = this.geometry;
+        const wt = mesh.groupTransform;
 
         const textureIdAndRound = (textureId << 16) | (this.roundPixels & 0xFFFF);
 
@@ -61,7 +71,26 @@ export class BatchableMesh implements BatchableObject
         const positions = geometry.positions;
         const uvs = geometry.uvs;
 
-        const abgr = renderable.rgColorAlpha;
+        let transformedUvs = uvs;
+        const textureMatrix = this.texture.textureMatrix;
+
+        if (!textureMatrix.isSimple)
+        {
+            transformedUvs = this._transformedUvs;
+
+            if (!transformedUvs || transformedUvs.length < uvs.length)
+            {
+                transformedUvs = this._transformedUvs = new Float32Array(uvs.length);
+            }
+
+            if (!textureMatrix.mapCoord.equals(this._uvMatrix))
+            {
+                this._uvMatrix.copyFrom(textureMatrix.mapCoord);
+                textureMatrix.multiplyUvs(uvs, transformedUvs);
+            }
+        }
+
+        const abgr = mesh.groupColorAlpha;
 
         for (let i = 0; i < positions.length; i += 2)
         {
@@ -72,8 +101,8 @@ export class BatchableMesh implements BatchableObject
             float32View[index + 1] = (b * x) + (d * y) + ty;
 
             // TODO implement texture matrix?
-            float32View[index + 2] = uvs[i];
-            float32View[index + 3] = uvs[i + 1];
+            float32View[index + 2] = transformedUvs[i];
+            float32View[index + 3] = transformedUvs[i + 1];
 
             uint32View[index + 4] = abgr;
             uint32View[index + 5] = textureIdAndRound;
@@ -84,11 +113,11 @@ export class BatchableMesh implements BatchableObject
 
     get vertexSize()
     {
-        return this.renderable.view.geometry.positions.length / 2;
+        return this.geometry.positions.length / 2;
     }
 
     get indexSize()
     {
-        return this.renderable.view.geometry.indices.length;
+        return this.geometry.indices.length;
     }
 }

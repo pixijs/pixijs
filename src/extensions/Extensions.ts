@@ -1,28 +1,33 @@
 /**
- * extensions is a global object that holds all the extensions registered with PixiJS.
+ * `extensions` is a global object that holds all the extensions registered with PixiJS.
  * PixiJS uses a this extensions architecture a lot to make the library more modular and
  * flexible.
  *
  * For example, if you want to add load a new type of asset, you can register a new
- * load parser with the `extensions` object.
+ * {@link assets.LoaderParser} with the `extensions` object.
  *
  * ```js
  * import { extensions, ExtensionType } from 'pixi.js';
  *
- * const assetLoader = {
+ * // create a custom asset loader
+ * const customAssetLoader = {
  *    extension: {
  *        type: ExtensionType.LoadParser,
- *        name: 'asset-loader',
+ *        name: 'custom-asset-loader',
  *    },
- *    load: (url) =>
- *    {
- *        // load
+ *    test(url) {
+ *       // check if this new loader should be used...
+ *    },
+ *    load(url) {
+ *        // load the asset...
  *    },
  * };
- * extensions.add(assetLoader);
+ *
+ * // add the custom asset loader to pixi
+ * extensions.add(customAssetLoader);
  * ```
  *
- * This would add the `assetLoader` to the list of available loaders that PixiJS can use.
+ * This would add the `customAssetLoader` to the list of available loaders that PixiJS can use.
  *
  * There are many different types of extensions, which are listed in {@link extensions.ExtensionType}.
  * @namespace extensions
@@ -86,6 +91,7 @@ enum ExtensionType
 /**
  * The metadata for an extension.
  * @memberof extensions
+ * @ignore
  */
 interface ExtensionMetadataDetails
 {
@@ -109,7 +115,7 @@ type ExtensionMetadata = ExtensionType | ExtensionMetadataDetails;
  * but you can override name or type by providing an object.
  * @memberof extensions
  */
-interface ExtensionFormatLoose
+interface ExtensionFormat
 {
     /** The extension type, can be multiple types */
     type: ExtensionType | ExtensionType[];
@@ -122,22 +128,23 @@ interface ExtensionFormatLoose
 }
 
 /**
- * Strict extension format that is used internally for registrations.
+ * Extension format that is used internally for registrations.
  * @memberof extensions
+ * @ignore
  */
-interface ExtensionFormat extends ExtensionFormatLoose
+interface StrictExtensionFormat extends ExtensionFormat
 {
     /** The extension type, always expressed as multiple, even if a single */
     type: ExtensionType[];
 }
 
-type ExtensionHandler = (extension: ExtensionFormat) => void;
+type ExtensionHandler = (extension: StrictExtensionFormat) => void;
 
 /**
  * Convert input into extension format data.
  * @ignore
  */
-const normalizeExtension = (ext: ExtensionFormatLoose | any): ExtensionFormat =>
+const normalizeExtension = (ext: ExtensionFormat | any): StrictExtensionFormat =>
 {
     // Class/Object submission, use extension object
     if (typeof ext === 'function' || (typeof ext === 'object' && ext.extension))
@@ -179,11 +186,19 @@ const normalizeExtension = (ext: ExtensionFormatLoose | any): ExtensionFormat =>
  * @returns The priority for the extension.
  * @memberof extensions
  */
-export const normalizeExtensionPriority = (ext: ExtensionFormatLoose | any, defaultPriority: number): number =>
+export const normalizeExtensionPriority = (ext: ExtensionFormat | any, defaultPriority: number): number =>
     normalizeExtension(ext).priority ?? defaultPriority;
 
 /**
  * Global registration of all PixiJS extensions. One-stop-shop for extensibility.
+ *
+ * Import the `extensions` object and use it to register new functionality via the described methods below.
+ * ```js
+ * import { extensions } from 'pixi.js';
+ *
+ * // register a new extension
+ * extensions.add(myExtension);
+ * ```
  * @property {Function} remove - Remove extensions from PixiJS.
  * @property {Function} add - Register new extensions with PixiJS.
  * @property {Function} handle - Internal method to handle extensions by name.
@@ -195,20 +210,20 @@ export const normalizeExtensionPriority = (ext: ExtensionFormatLoose | any, defa
 const extensions = {
 
     /** @ignore */
-    _addHandlers: {} as Record<ExtensionType, ExtensionHandler>,
+    _addHandlers: {} as Partial<Record<ExtensionType, ExtensionHandler>>,
 
     /** @ignore */
-    _removeHandlers: {} as Record<ExtensionType, ExtensionHandler>,
+    _removeHandlers: {} as Partial<Record<ExtensionType, ExtensionHandler>>,
 
     /** @ignore */
-    _queue: {} as Record<ExtensionType, ExtensionFormat[]>,
+    _queue: {} as Partial<Record<ExtensionType, StrictExtensionFormat[]>>,
 
     /**
      * Remove extensions from PixiJS.
      * @param extensions - Extensions to be removed.
      * @returns {extensions} For chaining.
      */
-    remove(...extensions: Array<ExtensionFormatLoose | any>)
+    remove(...extensions: Array<ExtensionFormat | any>)
     {
         extensions.map(normalizeExtension).forEach((ext) =>
         {
@@ -223,7 +238,7 @@ const extensions = {
      * @param extensions - The spread of extensions to add to PixiJS.
      * @returns {extensions} For chaining.
      */
-    add(...extensions: Array<ExtensionFormatLoose | any>)
+    add(...extensions: Array<ExtensionFormat | any>)
     {
         // Handle any extensions either passed as class w/ data or as data
         extensions.map(normalizeExtension).forEach((ext) =>
@@ -236,11 +251,11 @@ const extensions = {
                 if (!handlers[type])
                 {
                     queue[type] = queue[type] || [];
-                    queue[type].push(ext);
+                    queue[type]?.push(ext);
                 }
                 else
                 {
-                    handlers[type](ext);
+                    handlers[type]?.(ext);
                 }
             });
         });
@@ -251,8 +266,8 @@ const extensions = {
     /**
      * Internal method to handle extensions by name.
      * @param type - The extension type.
-     * @param onAdd  - Function for handling when extensions are added/registered passes {@link ExtensionFormat}.
-     * @param onRemove  - Function for handling when extensions are removed/unregistered passes {@link ExtensionFormat}.
+     * @param onAdd  - Function handler when extensions are added/registered {@link StrictExtensionFormat}.
+     * @param onRemove  - Function handler when extensions are removed/unregistered {@link StrictExtensionFormat}.
      * @returns {extensions} For chaining.
      */
     handle(type: ExtensionType, onAdd: ExtensionHandler, onRemove: ExtensionHandler)
@@ -276,7 +291,7 @@ const extensions = {
         // Process any plugins that have been registered before the handler
         if (queue[type])
         {
-            queue[type].forEach((ext) => onAdd(ext));
+            queue[type]?.forEach((ext) => onAdd(ext));
             delete queue[type];
         }
 
@@ -294,11 +309,17 @@ const extensions = {
         return this.handle(type,
             (extension) =>
             {
-                map[extension.name] = extension.ref;
+                if (extension.name)
+                {
+                    map[extension.name] = extension.ref;
+                }
             },
             (extension) =>
             {
-                delete map[extension.name];
+                if (extension.name)
+                {
+                    delete map[extension.name];
+                }
             }
         );
     },
@@ -377,8 +398,8 @@ export {
     ExtensionType,
 };
 export type {
-    ExtensionFormat,
-    ExtensionFormatLoose,
+    StrictExtensionFormat as ExtensionFormat,
+    ExtensionFormat as ExtensionFormatLoose,
     ExtensionHandler,
     ExtensionMetadata,
 };

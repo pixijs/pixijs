@@ -6,9 +6,11 @@ import { Container } from '../../src/scene/container/Container';
 import { Graphics } from '../../src/scene/graphics/shared/Graphics';
 import { Mesh } from '../../src/scene/mesh/shared/Mesh';
 import { Sprite } from '../../src/scene/sprite/Sprite';
-import { QuadGeometry } from '../../src/scene/sprite-tiling/QuadGeometry';
 import { TilingSprite } from '../../src/scene/sprite-tiling/TilingSprite';
+import { QuadGeometry } from '../../src/scene/sprite-tiling/utils/QuadGeometry';
 import { Text } from '../../src/scene/text/Text';
+import { HTMLText } from '../../src/scene/text-html/HTMLText';
+import '../../src/environment-browser/browserAll';
 
 import type { GlGraphicsAdaptor } from '../../src/scene/graphics/gl/GlGraphicsAdaptor';
 
@@ -51,11 +53,11 @@ describe('Round Pixels', () =>
     {
         const sprite = new Sprite();
 
-        expect(sprite.view.roundPixels).toBe(0);
+        expect(sprite._roundPixels).toBe(0);
 
         sprite.roundPixels = true;
 
-        expect(sprite.view.roundPixels).toBe(1);
+        expect(sprite._roundPixels).toBe(1);
     });
 
     it('Round pixels correctly on a mesh', async () =>
@@ -64,33 +66,33 @@ describe('Round Pixels', () =>
             geometry: new QuadGeometry(),
         });
 
-        expect(mesh.view.roundPixels).toBe(0);
+        expect(mesh._roundPixels).toBe(0);
 
         mesh.roundPixels = true;
 
-        expect(mesh.view.roundPixels).toBe(1);
+        expect(mesh._roundPixels).toBe(1);
     });
 
     it('Round pixels correctly on a graphics', async () =>
     {
         const graphics = new Graphics();
 
-        expect(graphics.view.roundPixels).toBe(0);
+        expect(graphics._roundPixels).toBe(0);
 
         graphics.roundPixels = true;
 
-        expect(graphics.view.roundPixels).toBe(1);
+        expect(graphics._roundPixels).toBe(1);
     });
 
     it('Round pixels correctly on a TilingSprite', async () =>
     {
         const tilingSprite = new TilingSprite();
 
-        expect(tilingSprite.view.roundPixels).toBe(0);
+        expect(tilingSprite._roundPixels).toBe(0);
 
         tilingSprite.roundPixels = true;
 
-        expect(tilingSprite.view.roundPixels).toBe(1);
+        expect(tilingSprite._roundPixels).toBe(1);
     });
 
     it('renderer round pixels should override batched items round pixels if false', async () =>
@@ -127,9 +129,9 @@ describe('Round Pixels', () =>
 
         expect(batchableMesh.roundPixels).toBe(1);
 
-        const batchableTilingSprite = renderer.renderPipes.tilingSprite['_getBatchedTilingSprite'](tilingSprite);
+        const batchableTilingSprite = renderer.renderPipes.tilingSprite['_getTilingSpriteData'](tilingSprite).batchableMesh;
 
-        expect(batchableTilingSprite.view.roundPixels).toBe(1);
+        expect(batchableTilingSprite.roundPixels).toBe(1);
     });
 
     it('renderer round pixels should override text items round pixels if false', async () =>
@@ -141,9 +143,8 @@ describe('Round Pixels', () =>
         });
 
         const text = new Text({ text: 'hello world' });
-        const textHTML = new Text({
+        const textHTML = new HTMLText({
             text: 'hello world',
-            renderMode: 'html'
         });
 
         const batchableTextData = renderer.renderPipes.text['_getGpuText'](text);
@@ -186,7 +187,9 @@ describe('Round Pixels', () =>
         // eslint-disable-next-line max-len
         expect((renderer.renderPipes.graphics['_adaptor'] as GlGraphicsAdaptor)['shader'].resources.localUniforms.uniforms.uRound).toBe(1);
 
+        const renderData = renderer.renderPipes.tilingSprite['_getTilingSpriteData'](tilingSprite);
+
         // this test covers mesh and tiling sprite (as mesh is used under the hood)
-        expect(renderer.renderPipes.mesh.localUniforms.uniforms.uRound).toBe(1);
+        expect(renderData.shader.resources.localUniforms.uniforms.uRound).toBe(1);
     });
 });

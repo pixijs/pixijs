@@ -10,5 +10,5 @@ export function isRenderingToScreen(renderTarget: RenderTarget): boolean
 {
     const resource = renderTarget.colorTexture.source.resource;
 
-    return (resource instanceof HTMLCanvasElement && document.body.contains(resource));
+    return ((globalThis.HTMLCanvasElement && resource instanceof HTMLCanvasElement) && document.body.contains(resource));
 }

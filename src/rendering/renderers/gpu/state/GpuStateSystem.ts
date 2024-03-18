@@ -6,7 +6,10 @@ import type { BLEND_MODES } from '../../shared/state/const';
 import type { System } from '../../shared/system/System';
 import type { GPU } from '../GpuDeviceSystem';
 
-/** System plugin to the renderer to manage WebGL state machines. */
+/**
+ * System plugin to the renderer to manage WebGL state machines.
+ * @memberof rendering
+ */
 export class GpuStateSystem implements System
 {
     /** @ignore */
@@ -62,6 +65,10 @@ export class GpuStateSystem implements System
         this.gpu = gpu;
     }
 
+    /**
+     * Gets the blend mode data for the current state
+     * @param state - The state to get the blend mode from
+     */
     public getColorTargets(state: State): GPUColorTargetState[]
     {
         const blend = GpuBlendModesToPixi[state.blendMode] || GpuBlendModesToPixi.normal;

@@ -8,7 +8,10 @@ import type { TextureSourceOptions } from './TextureSource';
 
 export interface CanvasSourceOptions extends TextureSourceOptions<ICanvas>
 {
+    /** should the canvas be resized to preserve its screen width and height regardless of the resolution of the renderer */
     autoDensity?: boolean;
+    /** if true, this canvas will be set up to be transparent where possible */
+    transparent?: boolean;
 }
 
 export class CanvasSource extends TextureSource<ICanvas>
@@ -17,6 +20,7 @@ export class CanvasSource extends TextureSource<ICanvas>
 
     public uploadMethodId = 'image';
     public autoDensity: boolean;
+    public transparent: boolean;
 
     constructor(options: CanvasSourceOptions)
     {
@@ -55,6 +59,8 @@ export class CanvasSource extends TextureSource<ICanvas>
         {
             this.resizeCanvas();
         }
+
+        this.transparent = !!options.transparent;
     }
 
     public resizeCanvas()
@@ -65,15 +71,24 @@ export class CanvasSource extends TextureSource<ICanvas>
             this.resource.style.height = `${this.height}px`;
         }
 
-        this.resource.width = this.pixelWidth;
-        this.resource.height = this.pixelHeight;
+        // only resize if wee need to, as this clears the canvas (even if values are set to the same)
+        if (this.resource.width !== this.pixelWidth || this.resource.height !== this.pixelHeight)
+        {
+            this.resource.width = this.pixelWidth;
+            this.resource.height = this.pixelHeight;
+        }
     }
 
-    public resize(width = this.width, height = this.height, resolution = this._resolution): void
+    public resize(width = this.width, height = this.height, resolution = this._resolution): boolean
     {
-        super.resize(width, height, resolution);
+        const didResize = super.resize(width, height, resolution);
 
-        this.resizeCanvas();
+        if (didResize)
+        {
+            this.resizeCanvas();
+        }
+
+        return didResize;
     }
 
     public static test(resource: any): resource is ICanvas

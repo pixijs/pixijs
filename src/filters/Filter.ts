@@ -1,13 +1,61 @@
+import { GlProgram } from '../rendering/renderers/gl/shader/GlProgram';
+import { GpuProgram } from '../rendering/renderers/gpu/shader/GpuProgram';
 import { Shader } from '../rendering/renderers/shared/shader/Shader';
 import { State } from '../rendering/renderers/shared/state/State';
 
 import type { RenderSurface } from '../rendering/renderers/shared/renderTarget/RenderTargetSystem';
-import type { ShaderWithResourcesDescriptor } from '../rendering/renderers/shared/shader/Shader';
+import type {
+    IShaderWithResources,
+    ShaderFromResources,
+    ShaderWithResources
+} from '../rendering/renderers/shared/shader/Shader';
 import type { BLEND_MODES } from '../rendering/renderers/shared/state/const';
 import type { Texture } from '../rendering/renderers/shared/texture/Texture';
 import type { FilterSystem } from './FilterSystem';
 
 /**
+ * Filters provide additional shading and post-processing effects to any display object and its children
+ * they are attached to.
+ *
+ * You attached filters to a display object using its `filters` array property.
+ *
+ * ```js
+ * import { Sprite, BlurFilter, HardMixBlend } from 'pixi.js';
+ *
+ * const sprite = Sprite.from('myTexture.png');
+ *
+ * // single filter
+ * sprite.filters = new BlurFilter({ strength: 8 });
+ *
+ * // or multiple filters
+ * sprite.filters = [new BlurFilter({ strength: 8 }), new HardMixBlend()];
+ * ```
+ *
+ * Pixi has a number of built-in filters which can be used in your game or application:
+ *
+ * - {@link filters.AlphaFilter} - Applies alpha to the display object and any of its children.
+ * - {@link filters.BlurFilter} - Applies a Gaussian blur to the display object.
+ * - {@link filters.BlurFilterPass} - Applies a blur pass to an object.
+ * - {@link filters.ColorBurnBlend} - Blend mode to add color burn to display objects.
+ * - {@link filters.ColorDodgeBlend} - Blend mode to add color dodge to display objects.
+ * - {@link filters.ColorMatrixFilter} - Transform the color channels by matrix multiplication.
+ * - {@link filters.DarkenBlend} - Blend mode to darken display objects.
+ * - {@link filters.DisplacementFilter} - Applies a displacement map to distort an object.
+ * - {@link filters.DivideBlend} - Blend mode to divide display objects.
+ * - {@link filters.HardMixBlend} - Blend mode to hard mix display objects.
+ * - {@link filters.LinearBurnBlend} - Blend mode to add linear burn to display objects.
+ * - {@link filters.LinearDodgeBlend} - Blend mode to add linear dodge to display objects.
+ * - {@link filters.LinearLightBlend} - Blend mode to add linear light to display objects.
+ * - {@link filters.NoiseFilter} - Applies random noise to an object.
+ * - {@link filters.PinLightBlend} - Blend mode to add pin light to display objects.
+ * - {@link filters.SubtractBlend} - Blend mode to subtract display objects.
+ *
+ * <br/>
+ * For more available filters, check out the
+ *  {@link https://pixijs.io/filters/docs/ pixi-filters} repository.
+ *
+ * You can also check out the awesome {@link https://pixijs.io/filters/examples/ Filter demo} to see
+ * filters in action and combine them!
  * @namespace filters
  */
 
@@ -15,9 +63,9 @@ import type { FilterSystem } from './FilterSystem';
  * The options to use when creating a new filter.
  * @memberof filters
  */
-export interface FilterOptions extends ShaderWithResourcesDescriptor
+export interface FilterOptions
 {
-    /** optional blend mode used by the filter when rendererig (defaults to 'normal') */
+    /** optional blend mode used by the filter when rendering (defaults to 'normal') */
     blendMode?: BLEND_MODES;
     /**
      * the resolution the filter should be rendered at. The lower the resolution, the more performant
@@ -48,6 +96,9 @@ export interface FilterOptions extends ShaderWithResourcesDescriptor
      */
     blendRequired?: boolean;
 }
+
+/** Filter options mixed with shader resources. A filter needs a shader and some resources to work. */
+export type FilterWithShader = FilterOptions & IShaderWithResources;
 
 /**
  * The antialiasing mode of the filter. This can be either:
@@ -93,11 +144,11 @@ export class Filter extends Shader
      * The default filter settings
      * @static
      */
-    public static readonly defaultOptions: Partial<FilterOptions> = {
+    public static readonly defaultOptions: FilterOptions = {
         blendMode: 'normal',
         resolution: 1,
         padding: 0,
-        antialias: 'inherit',
+        antialias: 'off',
         blendRequired: false,
     };
 
@@ -141,11 +192,11 @@ export class Filter extends Shader
     /**
      * @param options - The optional parameters of this filter.
      */
-    constructor(options: FilterOptions)
+    constructor(options: FilterWithShader)
     {
         options = { ...Filter.defaultOptions, ...options };
 
-        super(options);
+        super(options as ShaderWithResources);
 
         this.padding = options.padding;
 
@@ -156,14 +207,13 @@ export class Filter extends Shader
         }
         else
         {
-            this.antialias = options.antialias ?? 'inherit';
+            this.antialias = options.antialias;
         }
 
         this.resolution = options.resolution;
         this.blendRequired = options.blendRequired;
 
-        this.addResource('filterUniforms', 0, 0);
-        this.addResource('uSampler', 0, 1);
+        this.addResource('uTexture', 0, 1);
     }
 
     /**
@@ -196,5 +246,34 @@ export class Filter extends Shader
     set blendMode(value: BLEND_MODES)
     {
         this._state.blendMode = value;
+    }
+
+    /**
+     * A short hand function to create a filter based of a vertex and fragment shader src.
+     * @param options
+     * @returns A shiny new PixiJS filter!
+     */
+    public static from(options: FilterOptions & ShaderFromResources): Filter
+    {
+        const { gpu, gl, ...rest } = options;
+
+        let gpuProgram: GpuProgram;
+        let glProgram: GlProgram;
+
+        if (gpu)
+        {
+            gpuProgram = GpuProgram.from(gpu);
+        }
+
+        if (gl)
+        {
+            glProgram = GlProgram.from(gl);
+        }
+
+        return new Filter({
+            gpuProgram,
+            glProgram,
+            ...rest
+        });
     }
 }

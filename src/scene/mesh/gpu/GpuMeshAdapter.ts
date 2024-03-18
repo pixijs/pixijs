@@ -1,16 +1,22 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { Matrix } from '../../../maths/matrix/Matrix';
 import { compileHighShaderGpuProgram } from '../../../rendering/high-shader/compileHighShaderToProgram';
 import { localUniformBit } from '../../../rendering/high-shader/shader-bits/localUniformBit';
 import { roundPixelsBit } from '../../../rendering/high-shader/shader-bits/roundPixelsBit';
 import { textureBit } from '../../../rendering/high-shader/shader-bits/textureBit';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
+import { warn } from '../../../utils/logging/warn';
 
 import type { WebGPURenderer } from '../../../rendering/renderers/gpu/WebGPURenderer';
-import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
+import type { Mesh } from '../shared/Mesh';
 import type { MeshAdaptor, MeshPipe } from '../shared/MeshPipe';
-import type { MeshView } from '../shared/MeshView';
 
+/**
+ * The WebGL adaptor for the mesh system. Allows the Mesh System to be used with the WebGl renderer
+ * @memberof rendering
+ * @ignore
+ */
 export class GpuMeshAdapter implements MeshAdaptor
 {
     /** @ignore */
@@ -39,37 +45,56 @@ export class GpuMeshAdapter implements MeshAdaptor
             resources: {
                 uTexture: Texture.EMPTY._source,
                 uSampler: Texture.EMPTY._source.style,
+                textureUniforms: {
+                    uTextureMatrix: { type: 'mat3x3<f32>', value: new Matrix() },
+                }
             }
         });
     }
 
-    public execute(meshPipe: MeshPipe, renderable: Renderable<MeshView>)
+    public execute(meshPipe: MeshPipe, mesh: Mesh)
     {
         const renderer = meshPipe.renderer;
-        const view = renderable.view;
 
-        let shader: Shader = view._shader;
+        let shader: Shader = mesh._shader;
 
         if (!shader)
         {
             shader = this._shader;
 
-            shader.groups[2] = (renderer as WebGPURenderer)
-                .texture.getTextureBindGroup(view.texture);
+            shader.resources.uTexture = mesh.texture.source;
+            shader.resources.uSampler = mesh.texture.source.style;
+            shader.resources.textureUniforms.uniforms.uTextureMatrix = mesh.texture.textureMatrix.mapCoord;
+        }
+        else if (!shader.gpuProgram)
+        {
+            // #if _DEBUG
+            warn('Mesh shader has no gpuProgram', mesh.shader);
+            // #endif
+
+            return;
         }
 
+        const gpuProgram = shader.gpuProgram;
         // GPU..
-        shader.groups[0] = renderer.globalUniforms.bindGroup;
 
-        const localUniforms = meshPipe.localUniforms;
+        if (gpuProgram.autoAssignGlobalUniforms)
+        {
+            shader.groups[0] = renderer.globalUniforms.bindGroup;
+        }
 
-        shader.groups[1] = (renderer as WebGPURenderer)
-            .renderPipes.uniformBatch.getUniformBindGroup(localUniforms, true);
+        if (gpuProgram.autoAssignLocalUniforms)
+        {
+            const localUniforms = meshPipe.localUniforms;
+
+            shader.groups[1] = (renderer as WebGPURenderer)
+                .renderPipes.uniformBatch.getUniformBindGroup(localUniforms, true);
+        }
 
         renderer.encoder.draw({
-            geometry: view._geometry,
+            geometry: mesh._geometry,
             shader,
-            state: view.state
+            state: mesh.state
         });
     }
 

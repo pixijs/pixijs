@@ -25,8 +25,13 @@ export type TextStyleTextBaseline = 'alphabetic' | 'top' | 'hanging' | 'middle' 
 export type TextStyleWhiteSpace = 'normal' | 'pre' | 'pre-line';
 
 /**
+ * A collection of text related classes.
+ * @namespace text
+ */
+
+/**
  * A drop shadow effect.
- * @memberof scene
+ * @memberof text
  */
 export type TextDropShadow = {
     /** Set alpha for the drop shadow  */
@@ -42,8 +47,15 @@ export type TextDropShadow = {
 };
 
 /**
- * Generic interface for TextStyle options.
- * @memberof scene
+ * Constructor options used for `TextStyle` instances.
+ * ```js
+ * const textStyle = new TextStyle({
+ *    fontSize: 12,
+ *    fill: 'black',
+ * });
+ * ```
+ * @see {@link text.TextStyle}
+ * @memberof text
  */
 export interface TextStyleOptions
 {
@@ -52,10 +64,10 @@ export interface TextStyleOptions
      * @type {'left'|'center'|'right'|'justify'}
      */
     align?: TextStyleAlign;
-    /** Indicates if lines can be wrapped within words, it needs wordWrap to be set to true */
+    /** Indicates if lines can be wrapped within words, it needs `wordWrap` to be set to `true` */
     breakWords?: boolean;
     /** Set a drop shadow for the text */
-    dropShadow?: boolean | TextDropShadow;
+    dropShadow?: boolean | Partial<TextDropShadow>;
     /**
      * A canvas fillstyle that will be used on the text e.g., 'red', '#00FF00'.
      * Can be an array to create a gradient, e.g., `['#000000','#FFFFFF']`
@@ -100,7 +112,7 @@ export interface TextStyleOptions
      * @type {'alphabetic'|'top'|'hanging'|'middle'|'ideographic'|'bottom'}
      */
     textBaseline?: TextStyleTextBaseline;
-    trim?: false,
+    trim?: boolean,
     /**
      * Determines whether newlines & spaces are collapsed or preserved "normal"
      * (collapse, collapse), "pre" (preserve, preserve) | "pre-line" (preserve,
@@ -118,7 +130,7 @@ export interface TextStyleOptions
  * A TextStyle Object contains information to decorate a Text objects.
  *
  * An instance can be shared between multiple Text objects; then changing the style will update all text objects using it.
- * @memberof scene
+ * @memberof text
  * @example
  * import { TextStyle } from 'pixi.js';
  * const style = new TextStyle({
@@ -130,6 +142,21 @@ export class TextStyle extends EventEmitter<{
     update: TextDropShadow
 }>
 {
+    /** The default drop shadow settings */
+    public static defaultDropShadow: TextDropShadow = {
+        /** Set alpha for the drop shadow */
+        alpha: 1,
+        /** Set a angle of the drop shadow */
+        angle: Math.PI / 6,
+        /** Set a shadow blur radius */
+        blur: 0,
+        /** A fill style to be used on the  e.g., 'red', '#00FF00' */
+        color: 'black',
+        /** Set a distance of the drop shadow */
+        distance: 5,
+    };
+
+    /** The default text style settings */
     public static defaultTextStyle: TextStyleOptions = {
         /**
          * See {@link TextStyle.align}
@@ -139,13 +166,7 @@ export class TextStyle extends EventEmitter<{
         /** See {@link TextStyle.breakWords} */
         breakWords: false,
         /** See {@link TextStyle.dropShadow} */
-        dropShadow:  {
-            alpha: 1,
-            angle: Math.PI / 6,
-            blur: 0,
-            color: 'black',
-            distance: 5,
-        },
+        dropShadow:  null,
         /**
          * See {@link TextStyle.fill}
          * @type {string|string[]|number|number[]|CanvasGradient|CanvasPattern}
@@ -208,11 +229,9 @@ export class TextStyle extends EventEmitter<{
     };
 
     // colors!!
-    /** @internal */
     public _fill: ConvertedFillStyle;
     private _originalFill: FillStyleInputs;
 
-    /** @internal */
     public _stroke: ConvertedStrokeStyle;
     private _originalStroke: FillStyleInputs;
 
@@ -248,44 +267,11 @@ export class TextStyle extends EventEmitter<{
 
         const fullStyle = { ...TextStyle.defaultTextStyle, ...style };
 
-        for (const key in TextStyle.defaultTextStyle)
+        for (const key in fullStyle)
         {
             const thisKey = key as keyof typeof this;
 
             this[thisKey] = fullStyle[key as keyof TextStyleOptions] as any;
-        }
-
-        this.dropShadow = null;
-
-        if (typeof fullStyle.fill === 'string')
-        {
-            // eg '34px' to number
-            this.fontSize = parseInt(fullStyle.fontSize as string, 10);
-        }
-        else
-        {
-            this.fontSize = fullStyle.fontSize as number;
-        }
-
-        if (style.dropShadow)
-        {
-            // is true / false
-            if (style.dropShadow instanceof Boolean)
-            {
-                if (style.dropShadow === true)
-                {
-                    this.dropShadow = {
-                        ...TextStyle.defaultTextStyle.dropShadow as TextDropShadow
-                    };
-                }
-            }
-            else
-            {
-                this.dropShadow = {
-                    ...TextStyle.defaultTextStyle.dropShadow as TextDropShadow,
-                    ...style.dropShadow as TextDropShadow
-                };
-            }
         }
 
         this.update();
@@ -302,13 +288,42 @@ export class TextStyle extends EventEmitter<{
     set breakWords(value: boolean) { this._breakWords = value; this.update(); }
     /** Set a drop shadow for the text. */
     get dropShadow(): TextDropShadow { return this._dropShadow; }
-    set dropShadow(value: TextDropShadow) { this._dropShadow = value; this.update(); }
+    set dropShadow(value: boolean | TextDropShadow)
+    {
+        if (value !== null && typeof value === 'object')
+        {
+            this._dropShadow = {
+                ...TextStyle.defaultDropShadow as TextDropShadow,
+                ...value as TextDropShadow
+            };
+        }
+        else
+        {
+            this._dropShadow = value ? {
+                ...TextStyle.defaultDropShadow as TextDropShadow
+            } : null;
+        }
+
+        this.update();
+    }
     /** The font family, can be a single font name, or a list of names where the first is the preferred font. */
     get fontFamily(): string | string[] { return this._fontFamily; }
     set fontFamily(value: string | string[]) { this._fontFamily = value; this.update(); }
     /** The font size (as a number it converts to px, but as a string, equivalents are '26px','20pt','160%' or '1.6em') */
     get fontSize(): number { return this._fontSize; }
-    set fontSize(value: number) { this._fontSize = value; this.update(); }
+    set fontSize(value: string | number)
+    {
+        if (typeof value === 'string')
+        {
+            // eg '34px' to number
+            this._fontSize = parseInt(value as string, 10);
+        }
+        else
+        {
+            this._fontSize = value as number;
+        }
+        this.update();
+    }
     /**
      * The font style.
      * @member {'normal'|'italic'|'oblique'}
@@ -383,7 +398,10 @@ export class TextStyle extends EventEmitter<{
         if (value === this._originalFill) return;
 
         this._originalFill = value;
-        this._fill = convertFillInputToFillStyle(value, GraphicsContext.defaultFillStyle);
+        this._fill = convertFillInputToFillStyle(
+            value === 0x0 ? 'black' : value,
+            GraphicsContext.defaultFillStyle
+        );
         this.update();
     }
 
@@ -395,10 +413,10 @@ export class TextStyle extends EventEmitter<{
 
     set stroke(value: FillStyleInputs)
     {
-        if (value === this._originalFill) return;
+        if (value === this._originalStroke) return;
 
-        this._originalFill = value;
-        this._stroke = convertFillInputToFillStyle(value, GraphicsContext.defaultStrokeStyle) as ConvertedStrokeStyle;
+        this._originalStroke = value;
+        this._stroke = convertFillInputToFillStyle(value, GraphicsContext.defaultStrokeStyle);
         this.update();
     }
 
@@ -415,6 +433,7 @@ export class TextStyle extends EventEmitter<{
         this.emit('update', this);
     }
 
+    /** Resets all properties to the default values */
     public reset()
     {
         const defaultStyle = TextStyle.defaultTextStyle;
@@ -508,22 +527,24 @@ function convertV7Tov8Style(style: TextStyleOptions)
 {
     const oldStyle = style as any;
 
-    if (typeof oldStyle.dropShadow === 'boolean')
+    if (typeof oldStyle.dropShadow === 'boolean' && oldStyle.dropShadow)
     {
-        deprecation(v8_0_0, 'dropShadow is now an object, not a boolean');
+        const defaults = TextStyle.defaultDropShadow;
 
         style.dropShadow = {
-            alpha: oldStyle.dropShadowAlpha ?? 1,
-            angle: oldStyle.dropShadowAngle,
-            blur: oldStyle.dropShadowBlur ?? 0,
-            color: oldStyle.dropShadowColor,
-            distance:   oldStyle.dropShadowDistance,
+            alpha: oldStyle.dropShadowAlpha ?? defaults.alpha,
+            angle: oldStyle.dropShadowAngle ?? defaults.angle,
+            blur: oldStyle.dropShadowBlur ?? defaults.blur,
+            color: oldStyle.dropShadowColor ?? defaults.color,
+            distance:   oldStyle.dropShadowDistance ?? defaults.distance,
         };
     }
 
     if (oldStyle.strokeThickness)
     {
+        // #if _DEBUG
         deprecation(v8_0_0, 'strokeThickness is now a part of stroke');
+        // #endif
 
         const color = oldStyle.stroke;
 
@@ -535,7 +556,9 @@ function convertV7Tov8Style(style: TextStyleOptions)
 
     if (Array.isArray(oldStyle.fill))
     {
+        // #if _DEBUG
         deprecation(v8_0_0, 'gradient fill is now a fill pattern: `new FillGradient(...)`');
+        // #endif
 
         const gradientFill = new FillGradient(0, 0, 0, (style.fontSize as number) * 1.7);
 

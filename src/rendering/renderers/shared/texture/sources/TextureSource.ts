@@ -1,14 +1,18 @@
 import EventEmitter from 'eventemitter3';
+import { isPow2 } from '../../../../../maths/misc/pow2';
+import { definedProps } from '../../../../../scene/container/utils/definedProps';
 import { uid } from '../../../../../utils/data/uid';
-import { deprecation, v8_0_0 } from '../../../../../utils/logging/deprecation';
 import { TextureStyle } from '../TextureStyle';
 
 import type { BindResource } from '../../../gpu/shader/BindResource';
 import type { ALPHA_MODES, SCALE_MODE, TEXTURE_DIMENSIONS, TEXTURE_FORMATS, WRAP_MODE } from '../const';
 import type { TextureStyleOptions } from '../TextureStyle';
 
-/** options for creating a new TextureSource */
-export interface TextureSourceOptions<T extends Record<string, any> = any>
+/**
+ * options for creating a new TextureSource
+ * @memberof rendering
+ */
+export interface TextureSourceOptions<T extends Record<string, any> = any> extends TextureStyleOptions
 {
     /**
      * the resource that will be upladed to the GPU. This is where we get our pixels from
@@ -49,10 +53,10 @@ export interface TextureSourceOptions<T extends Record<string, any> = any>
     autoGenerateMipmaps?: boolean;
     /** the alpha mode of the texture */
     alphaMode?: ALPHA_MODES;
-    /** the style of the texture */
-    style?: TextureStyleOptions | TextureStyle;
     /** optional label, can be used for debugging */
     label?: string;
+    /** If true, the Garbage Collector will unload this texture if it is not used after a period of time */
+    autoGarbageCollect?: boolean;
 }
 
 /**
@@ -86,13 +90,13 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         autoGenerateMipmaps: false,
         sampleCount: 1,
         antialias: false,
-        style: {} as TextureStyleOptions,
+        autoGarbageCollect: false,
     };
 
     /** unique id for this Texture source */
     public readonly uid = uid('textureSource');
     /** optional label, can be used for debugging */
-    public label = '';
+    public label: string;
 
     /**
      * The resource type used by this TextureSource. This is used by the bind groups to determine
@@ -105,7 +109,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      * i unique resource id, used by the bind group systems.
      * This can change if the texture is resized or its resource changes
      */
-    public _resourceId = uid('textureResource');
+    public _resourceId = uid('resource');
     /**
      * this is how the backends know how to upload this texture to the GPU
      * It changes depending on the resource type. Classes that extend TextureSource
@@ -116,7 +120,6 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     public uploadMethodId = 'unknown';
 
     // dimensions
-    /** @internal */
     public _resolution = 1;
 
     /** the pixel width of this texture source. This is the REAL pure number, not accounting resolution */
@@ -174,8 +177,6 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      * Blit operation will be required to resolve the texture.
      */
     public antialias = false;
-    /** Should we use a depth stencil texture for this texture. This is only used when rendering to a texture. */
-    public depthStencil = true;
 
     /**
      * Has the source been destroyed?
@@ -200,16 +201,29 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      */
     public _textureBindLocation = -1;
 
-    // eslint-disable-next-line @typescript-eslint/no-parameter-properties
+    public isPowerOfTwo: boolean;
+
+    /** If true, the Garbage Collector will unload this texture if it is not used after a period of time */
+    public autoGarbageCollect: boolean;
+
+    /**
+     * used internally to know where a texture came from. Usually assigned by the asset loader!
+     * @ignore
+     */
+    public _sourceOrigin: string;
+
+    /**
+     * @param options - options for creating a new TextureSource
+     */
     constructor(protected readonly options: TextureSourceOptions<T> = {})
     {
         super();
 
         options = { ...TextureSource.defaultOptions, ...options };
 
-        this.label ??= options.label;
+        this.label = options.label ?? '';
         this.resource = options.resource;
-
+        this.autoGarbageCollect = options.autoGarbageCollect;
         this._resolution = options.resolution;
 
         if (options.width)
@@ -241,11 +255,11 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.antialias = options.antialias;
         this.alphaMode = options.alphaMode;
 
-        const style = options.style ?? {};
-
-        this.style = style instanceof TextureStyle ? style : new TextureStyle(style);
+        this.style = new TextureStyle(definedProps(options));
 
         this.destroyed = false;
+
+        this._refreshPOT();
     }
 
     /** returns itself */
@@ -271,6 +285,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this._onStyleChange();
     }
 
+    /** setting this will set wrapModeU,wrapModeV and wrapModeW all at once! */
     get addressMode(): WRAP_MODE
     {
         return this._style.addressMode;
@@ -281,6 +296,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this._style.addressMode = value;
     }
 
+    /** setting this will set wrapModeU,wrapModeV and wrapModeW all at once! */
     get repeatMode(): WRAP_MODE
     {
         return this._style.addressMode;
@@ -291,6 +307,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this._style.addressMode = value;
     }
 
+    /** Specifies the sampling behavior when the sample footprint is smaller than or equal to one texel. */
     get magFilter(): SCALE_MODE
     {
         return this._style.magFilter;
@@ -301,6 +318,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this._style.magFilter = value;
     }
 
+    /** Specifies the sampling behavior when the sample footprint is larger than one texel. */
     get minFilter(): SCALE_MODE
     {
         return this._style.minFilter;
@@ -311,6 +329,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this._style.minFilter = value;
     }
 
+    /** Specifies behavior for sampling between mipmap levels. */
     get mipmapFilter(): SCALE_MODE
     {
         return this._style.mipmapFilter;
@@ -321,6 +340,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this._style.mipmapFilter = value;
     }
 
+    /** Specifies the minimum and maximum levels of detail, respectively, used internally when sampling a texture. */
     get lodMinClamp(): number
     {
         return this._style.lodMinClamp;
@@ -331,6 +351,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this._style.lodMinClamp = value;
     }
 
+    /** Specifies the minimum and maximum levels of detail, respectively, used internally when sampling a texture. */
     get lodMaxClamp(): number
     {
         return this._style.lodMaxClamp;
@@ -349,6 +370,18 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     /** call this if you have modified the texture outside of the constructor */
     public update()
     {
+        // update resource...
+        if (this.resource)
+        {
+            const resolution = this._resolution;
+
+            const didResize = this.resize(this.resourceWidth / resolution, this.resourceHeight / resolution);
+
+            // no ned to dispatch the update we resized as that will
+            // notify the texture systems anyway
+            if (didResize) return;
+        }
+
         this.emit('update', this);
     }
 
@@ -375,7 +408,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      */
     public unload()
     {
-        this._resourceId++;
+        this._resourceId = uid('resource');
         this.emit('change', this);
         this.emit('unload', this);
     }
@@ -423,8 +456,9 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      * @param width - the new width of the texture
      * @param height - the new height of the texture
      * @param resolution - the new resolution of the texture
+     * @returns - if the texture was resized
      */
-    public resize(width?: number, height?: number, resolution?: number)
+    public resize(width?: number, height?: number, resolution?: number): boolean
     {
         resolution = resolution || this._resolution;
         width = width || this.width;
@@ -441,16 +475,20 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
         if (this.pixelWidth === newPixelWidth && this.pixelHeight === newPixelHeight)
         {
-            return;
+            return false;
         }
+
+        this._refreshPOT();
 
         this.pixelWidth = newPixelWidth;
         this.pixelHeight = newPixelHeight;
 
         this.emit('resize', this);
 
-        this._resourceId++;
+        this._resourceId = uid('resource');
         this.emit('change', this);
+
+        return true;
     }
 
     /**
@@ -471,38 +509,34 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         }
     }
 
-    /** @deprecated since 8.0.0 */
     set wrapMode(value: WRAP_MODE)
     {
-        // eslint-disable-next-line max-len
-        deprecation(v8_0_0, 'TextureSource.wrapMode property has been deprecated. Use TextureSource.style.addressMode instead.');
         this._style.wrapMode = value;
     }
 
-    /** @deprecated since 8.0.0 */
     get wrapMode(): WRAP_MODE
     {
-        // eslint-disable-next-line max-len
-        deprecation(v8_0_0, 'TextureSource.wrapMode property has been deprecated. Use TextureSource.style.addressMode instead.');
-
         return this._style.wrapMode;
     }
 
-    /** @deprecated since 8.0.0 */
     set scaleMode(value: SCALE_MODE)
     {
-        // eslint-disable-next-line max-len
-        deprecation(v8_0_0, 'TextureSource.scaleMode property has been deprecated. Use TextureSource.style.scaleMode instead.');
         this._style.scaleMode = value;
     }
 
-    /** @deprecated since 8.0.0 */
+    /** setting this will set magFilter,minFilter and mipmapFilter all at once!  */
     get scaleMode(): SCALE_MODE
     {
-        // eslint-disable-next-line max-len
-        deprecation(v8_0_0, 'TextureSource.scaleMode property has been deprecated. Use TextureSource.style.scaleMode instead.');
-
         return this._style.scaleMode;
+    }
+
+    /**
+     * Refresh check for isPowerOfTwo texture based on size
+     * @private
+     */
+    protected _refreshPOT(): void
+    {
+        this.isPowerOfTwo = isPow2(this.pixelWidth) && isPow2(this.pixelHeight);
     }
 
     public static test(_resource: any): any

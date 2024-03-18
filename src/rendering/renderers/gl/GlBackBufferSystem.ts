@@ -1,4 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { warn } from '../../../utils/logging/warn';
+import { Geometry } from '../shared/geometry/Geometry';
 import { Shader } from '../shared/shader/Shader';
 import { State } from '../shared/state/State';
 import { TextureSource } from '../shared/texture/sources/TextureSource';
@@ -9,41 +11,29 @@ import type { RenderOptions } from '../shared/system/AbstractRenderer';
 import type { System } from '../shared/system/System';
 import type { WebGLRenderer } from './WebGLRenderer';
 
-const bigTriangleProgram = new GlProgram({
-    vertex: `
-        out vec2 vUv;
-
-        void main() {
-            vUv = vec2((gl_VertexID << 1) & 2, (gl_VertexID & 2));
-
-            gl_Position = vec4(vUv * 2.0f + -1.0f, 0.0f, 1.0f);
-
-            // flip dem UVs
-            vUv.y = 1.0f - vUv.y;
-        }`,
-    fragment: `
-        in vec2 vUv;
-        out vec4 fragColor;
-
-        uniform sampler2D uTexture;
-
-        void main() {
-            fragColor = texture(uTexture, vUv);
-        }`,
-    name: 'big-triangle',
-});
-
-const bigTriangleShader = new Shader({
-    glProgram: bigTriangleProgram,
-    resources: {
-        uTexture: Texture.WHITE.source,
+const bigTriangleGeometry = new Geometry({
+    attributes: {
+        aPosition: [
+            -1.0, -1.0, // Bottom left corner
+            3.0, -1.0, // Bottom right corner, extending beyond right edge
+            -1.0, 3.0 // Top left corner, extending beyond top edge
+        ],
     },
 });
 
-/** The options for the back buffer system. */
+/**
+ * The options for the back buffer system.
+ * @memberof rendering
+ * @property {boolean} [useBackBuffer=false] - if true will use the back buffer where required
+ * @property {boolean} [antialias=false] - if true will ensure the texture is antialiased
+ */
 export interface GlBackBufferOptions
 {
-    /** if true will use the back buffer where required */
+    /**
+     * if true will use the back buffer where required
+     * @default false
+     * @memberof rendering.WebGLOptions
+     */
     useBackBuffer?: boolean;
     /** if true will ensure the texture is antialiased */
     antialias?: boolean;
@@ -64,7 +54,7 @@ export interface GlBackBufferOptions
  * to activate is simple, you pass `useBackBuffer:true` to your render options
  * @memberof rendering
  */
-export class GlBackBufferSystem implements System
+export class GlBackBufferSystem implements System<GlBackBufferOptions>
 {
     /** @ignore */
     public static extension = {
@@ -77,6 +67,7 @@ export class GlBackBufferSystem implements System
 
     /** default options for the back buffer system */
     public static defaultOptions: GlBackBufferOptions = {
+        /** if true will use the back buffer where required */
         useBackBuffer: false,
     };
 
@@ -88,6 +79,8 @@ export class GlBackBufferSystem implements System
     private _targetTexture: TextureSource;
     private _useBackBufferThisRender = false;
     private _antialias: boolean;
+    private _state: State;
+    private _bigTriangleShader: Shader;
 
     constructor(renderer: WebGLRenderer)
     {
@@ -99,7 +92,49 @@ export class GlBackBufferSystem implements System
         const { useBackBuffer, antialias } = { ...GlBackBufferSystem.defaultOptions, ...options };
 
         this.useBackBuffer = useBackBuffer;
+
         this._antialias = antialias;
+
+        if (!this._renderer.context.supports.msaa)
+        {
+            warn('antialiasing, is not supported on when using the back buffer');
+
+            this._antialias = false;
+        }
+
+        this._state = State.for2d();
+
+        const bigTriangleProgram = new GlProgram({
+            vertex: `
+                attribute vec2 aPosition;
+                out vec2 vUv;
+
+                void main() {
+                    gl_Position = gl_Position = vec4(aPosition, 0.0, 1.0);
+
+                    vUv = (aPosition + 1.0) / 2.0;
+
+                    // flip dem UVs
+                    vUv.y = 1.0 - vUv.y;
+                }`,
+            fragment: `
+                in vec2 vUv;
+                out vec4 finalColor;
+
+                uniform sampler2D uTexture;
+
+                void main() {
+                    finalColor = texture(uTexture, vUv);
+                }`,
+            name: 'big-triangle',
+        });
+
+        this._bigTriangleShader = new Shader({
+            glProgram: bigTriangleProgram,
+            resources: {
+                uTexture: Texture.WHITE.source,
+            },
+        });
     }
 
     /**
@@ -136,16 +171,15 @@ export class GlBackBufferSystem implements System
 
         if (!this._useBackBufferThisRender) return;
 
-        const gl = renderer.gl;
-
         renderer.renderTarget.bind(this._targetTexture, false);
 
-        bigTriangleShader.resources.uTexture = this._backBufferTexture.source;
+        this._bigTriangleShader.resources.uTexture = this._backBufferTexture.source;
 
-        renderer.shader.bind(bigTriangleShader, false);
-        renderer.state.set(State.for2d());
-
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        renderer.encoder.draw({
+            geometry: bigTriangleGeometry,
+            shader: this._bigTriangleShader,
+            state: this._state,
+        });
     }
 
     private _getBackBufferTexture(targetSourceTexture: TextureSource)

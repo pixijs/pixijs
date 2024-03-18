@@ -4,8 +4,9 @@ import { loadTxt } from '../../../src/assets/loader/parsers/loadTxt';
 import { loadTextures } from '../../../src/assets/loader/parsers/textures/loadTextures';
 import { Text } from '../../../src/scene/text/Text';
 import { loadBitmapFont } from '../../../src/scene/text-bitmap/asset/loadBitmapFont';
+import { BitmapText } from '../../../src/scene/text-bitmap/BitmapText';
 import { basePath } from '../../assets/basePath';
-import { getRenderer } from '../../utils/getRenderer';
+import { getWebGLRenderer } from '../../utils/getRenderer';
 import '../../../src/scene/text/init';
 import '../../../src/scene/text-bitmap/init';
 import '../../../src/scene/graphics/init';
@@ -33,14 +34,13 @@ describe('BitmapText', () =>
 
     it('should render text even if there are unsupported characters', async () =>
     {
-        const renderer = await getRenderer();
+        const renderer = await getWebGLRenderer();
 
-        const text = new Text({
+        const text = new BitmapText({
             text: 'ABCDEFG',
             style: {
                 fontFamily: 'arial',
-            },
-            renderMode: 'bitmap',
+            }
         });
 
         renderer.render(text);
@@ -48,18 +48,90 @@ describe('BitmapText', () =>
         expect(Cache.get('arial-bitmap').pages).toHaveLength(1);
     });
 
-    it.each([
-        'bitmap',
-        'html',
-        'canvas',
-    ])('should support %s font without page reference', async (renderMode) =>
+    it('should default to white fill', async () =>
     {
-        const text = new Text({
+        let text = new BitmapText({
+            text: 'ABCDEFG',
+        });
+
+        expect(text.style.fill).toEqual(0xffffff);
+
+        text = new BitmapText({
+            text: 'ABCDEFG',
+            style: {
+                fill: 0xff0000,
+            }
+        });
+
+        expect(text.style.fill).toEqual(0xff0000);
+
+        text = new BitmapText({
+            text: 'ABCDEFG',
+            style: {
+                dropShadow: true,
+            }
+        });
+
+        expect(text.style.fill).toEqual(0xffffff);
+    });
+
+    it('should apply dropShadow defaults correctly', async () =>
+    {
+        let text = new BitmapText({
+            text: 'ABCDEFG'
+        });
+
+        expect(text.style.dropShadow).toEqual(null);
+
+        text = new BitmapText({
+            text: 'ABCDEFG',
+            style: {
+                dropShadow: {
+                    color: 'blue',
+                }
+            }
+        });
+
+        expect(text.style.dropShadow).toMatchObject({
+            alpha: 1,
+            angle: Math.PI / 6,
+            blur: 0,
+            color: 'blue',
+            distance: 5,
+        });
+
+        text = new BitmapText({
+            text: 'ABCDEFG',
+            style: {
+                dropShadow: true
+            }
+        });
+
+        expect(text.style.dropShadow).toMatchObject({
+            alpha: 1,
+            angle: Math.PI / 6,
+            blur: 0,
+            color: 'black',
+            distance: 5,
+        });
+
+        text = new BitmapText({
+            text: 'ABCDEFG',
+            style: {
+                dropShadow: false
+            }
+        });
+
+        expect(text.style.dropShadow).toEqual(null);
+    });
+
+    it('should support %s font without page reference', async () =>
+    {
+        const text = new BitmapText({
             text: 'A',
             style: {
                 fontFamily: fontNoPage.fontFamily,
             },
-            renderMode: renderMode as any,
         });
         const width = Math.round(text.width);
         const height = Math.round(text.height);
@@ -70,7 +142,7 @@ describe('BitmapText', () =>
 
     it('should break line on space', async () =>
     {
-        const renderer = await getRenderer();
+        const renderer = await getWebGLRenderer();
 
         const bmpText = new Text({
             text: 'A B C D E F G H',
@@ -78,8 +150,7 @@ describe('BitmapText', () =>
                 fontFamily: font.fontFamily,
                 fontSize: 24,
                 wordWrap: true,
-            },
-            renderMode: 'bitmap',
+            }
         });
 
         renderer.render(bmpText);
@@ -96,10 +167,9 @@ describe('BitmapText', () =>
 
     it('letterSpacing should add extra space between characters', async () =>
     {
-        const renderer = await getRenderer();
-        const bmpText = new Text({
+        const renderer = await getWebGLRenderer();
+        const bmpText = new BitmapText({
             text: 'ABCD zz DCBA',
-            renderMode: 'bitmap',
             style: {
                 fontFamily: font.fontFamily,
             }
@@ -118,11 +188,10 @@ describe('BitmapText', () =>
 
     it('should not crash if text is undefined', async () =>
     {
-        const renderer = await getRenderer();
+        const renderer = await getWebGLRenderer();
 
-        const text = new Text({
+        const text = new BitmapText({
             text: undefined,
-            renderMode: 'bitmap',
             style: {
                 fontFamily: font.fontFamily,
             }
@@ -133,15 +202,14 @@ describe('BitmapText', () =>
 
     it('should call update when style changes', async () =>
     {
-        const text = new Text({
+        const text = new BitmapText({
             text: '123ABCabc',
-            renderMode: 'bitmap',
             style: {
                 fontFamily: 'courier',
             }
         });
 
-        const spy = jest.spyOn(text.view, 'onUpdate');
+        const spy = jest.spyOn(text, 'onViewUpdate');
 
         // force style re-assignment otherwise mock won't work (binding is in constructor)
         text.style = {
@@ -155,15 +223,14 @@ describe('BitmapText', () =>
 
     it('should call update when text changes', async () =>
     {
-        const text = new Text({
+        const text = new BitmapText({
             text: '123ABCabc',
-            renderMode: 'bitmap',
             style: {
                 fontFamily: font.fontFamily,
             }
         });
 
-        const spy = jest.spyOn(text.view, 'onUpdate');
+        const spy = jest.spyOn(text, 'onViewUpdate');
 
         text.text = 'foo';
 

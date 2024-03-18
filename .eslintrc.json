@@ -1,6 +1,6 @@
 {
     "extends": ["@pixi/eslint-config"],
-    "plugins": ["import", "jsdoc", "simple-import-sort", "no-mixed-operators"],
+    "plugins": ["import", "jsdoc", "simple-import-sort", "no-mixed-operators", "jest"],
     "ignorePatterns": ["**/*.index.d.ts"],
     "settings": {
         "jsdoc": {
@@ -19,40 +19,8 @@
     },
     "rules": {
         "camelcase": [1, { "allow": ["^v\\d{1,}_\\d{1,}_\\d{1,}$"] }],
-        "no-multi-spaces": [1, { "exceptions": {} }],
-        "object-curly-newline": [1, { "multiline": true, "consistent": true }],
-
-        // Imports and Exports
-        "import/first": 1,
-        "import/newline-after-import": 1,
-        "simple-import-sort/imports": [
-            1,
-            {
-                "groups": [
-                    [
-                        "^\\w", // External
-                        "^\\u0000", // External side effect
-                        "^@pixi/", // @pixi/*
-                        "^\\u0000@pixi/", // @pixi/* side effect
-                        "^\\.", // Relative
-                        "^\\u0000\\.", // Relative side effect
-                        "^" // Others
-                    ],
-                    [
-                        "^\\w.*\\u0000$", // External types
-                        "^@pixi/.*\\u0000$", // @pixi/* types
-                        "^\\..*\\u0000$", // Relative types
-                        "\\u0000$" // Other types
-                    ]
-                ]
-            }
-        ],
-        "simple-import-sort/exports": 1,
-
-        "spaced-comment": [1, "always", { "markers": ["/"] }],
         "@typescript-eslint/triple-slash-reference": [1, { "path": "always" }],
         "@typescript-eslint/consistent-type-imports": [1, { "disallowTypeAnnotations": false }],
-        "@typescript-eslint/no-parameter-properties": 1,
         "@typescript-eslint/type-annotation-spacing": 1,
         "jsdoc/multiline-blocks": [1, { "noMultilineBlocks": true, "minimumLengthForMultiline": 115 }],
         "jsdoc/check-access": 1,
@@ -64,29 +32,8 @@
         "jsdoc/check-values": 1,
         "jsdoc/empty-tags": 1,
         "jsdoc/implements-on-classes": 1,
-        "jsdoc/newline-after-description": [1, "never"],
+        "jsdoc/tag-lines": 1,
         "jsdoc/no-multi-asterisks": [1, { "allowWhitespace": true }],
-        "jsdoc/no-undefined-types": [
-            "warn",
-            {
-                "definedTypes": [
-                    "assets",
-                    "app",
-                    "accessibility",
-                    "scene",
-                    "maths",
-                    "AddEventListenerOptions",
-                    "EventListenerOptions",
-                    "EventListenerOrEventListenerObject",
-                    "WEBGL_draw_buffers",
-                    "WEBGL_depth_texture",
-                    "OES_texture_float",
-                    "WEBGL_lose_context",
-                    "OES_vertex_array_object",
-                    "EXT_texture_filter_anisotropic"
-                ]
-            }
-        ],
         "jsdoc/require-param": 1,
         "jsdoc/require-param-description": 0,
         "jsdoc/require-param-name": 1,
@@ -97,11 +44,10 @@
         "jsdoc/require-property-type": 1,
         "jsdoc/require-returns-description": 1,
         "jsdoc/require-hyphen-before-param-description": 1,
-        "jsdoc/tag-lines": 1,
         "jsdoc/valid-types": 1,
         "no-mixed-operators": "off",
         "no-mixed-operators/no-mixed-operators": 1,
-        "@typescript-eslint/no-unused-expressions": [1, { "allowShortCircuit": true }],
+        "@typescript-eslint/no-unused-expressions": [1, { "allowShortCircuit": true, "allowTernary": true }],
         "@typescript-eslint/no-floating-promises": "error",
         "@typescript-eslint/prefer-readonly": "error",
         "@typescript-eslint/explicit-member-accessibility": [
@@ -126,7 +72,9 @@
                 "format": ["camelCase"],
                 "leadingUnderscore": "require"
             }
-        ]
+        ],
+        "@typescript-eslint/no-unsafe-declaration-merging": 0,
+        "@typescript-eslint/no-duplicate-enum-values": 0
     },
     "overrides": [
         {
@@ -150,7 +98,6 @@
                     }
                 ],
                 "dot-notation": 0,
-                "jest/no-disabled-tests": "off",
                 "jest/no-conditional-expect": "off",
                 "jest/no-standalone-expect": "off",
                 "jest/expect-expect": [

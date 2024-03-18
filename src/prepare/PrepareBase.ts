@@ -6,17 +6,18 @@ import type { TextureSource } from '../rendering/renderers/shared/texture/source
 import type { Texture } from '../rendering/renderers/shared/texture/Texture';
 import type { Renderer } from '../rendering/renderers/types';
 import type { GraphicsContext } from '../scene/graphics/shared/GraphicsContext';
-import type { TextView } from '../scene/text/TextView';
+import type { Text } from '../scene/text/Text';
 
 /** The accepted types to pass to the prepare system */
 export type PrepareSourceItem = Container | TextureSource | Texture | GraphicsContext;
 
 /** The valid types resolved to the queue ready for upload */
-export type PrepareQueueItem = TextureSource | TextView | GraphicsContext;
+export type PrepareQueueItem = TextureSource | Text | GraphicsContext;
 
 /**
  * Part of the prepare system. Responsible for uploading all the items to the GPU.
  * This class provides the base functionality and handles processing the queue asynchronously.
+ * @memberof rendering
  */
 export abstract class PrepareBase
 {

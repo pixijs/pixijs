@@ -1,20 +1,19 @@
 import EventEmitter from 'eventemitter3';
-import { Cache } from '../../../../assets/cache/Cache';
-import { DOMAdapter } from '../../../../environment/adapter';
 import { groupD8 } from '../../../../maths/matrix/groupD8';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { uid } from '../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { NOOP } from '../../../../utils/misc/NOOP';
-import { ImageSource } from './sources/ImageSource';
-import { resourceToTexture } from './sources/resourceToTexture';
+import { BufferImageSource } from './sources/BufferSource';
 import { TextureSource } from './sources/TextureSource';
 import { TextureMatrix } from './TextureMatrix';
 
-import type { BufferSourceOptions } from './sources/BufferSource';
-import type { TextureSourceOptions } from './sources/TextureSource';
+import type { TextureResourceOrOptions } from './utils/textureFrom';
 
-/** Stores the width of the non-scalable borders, for example when used with {@link scene.NineSlicePlane} texture. */
+/**
+ * Stores the width of the non-scalable borders, for example when used with {@link scene.NineSlicePlane} texture.
+ * @memberof rendering
+ */
 export interface TextureBorders
 {
     /** left border in pixels */
@@ -27,6 +26,10 @@ export interface TextureBorders
     bottom: number;
 }
 
+/**
+ * The UVs data structure for a texture.
+ * @memberof rendering
+ */
 export type UVs = {
     x0: number;
     y0: number;
@@ -38,7 +41,10 @@ export type UVs = {
     y3: number;
 };
 
-/** the options that can be passed to a new Texture */
+/**
+ * The options that can be passed to a new Texture
+ * @memberof rendering
+ */
 export interface TextureOptions
 {
     /** the underlying texture data that this texture will use  */
@@ -64,7 +70,7 @@ export interface BindableTexture
     source: TextureSource;
 }
 
-export type TextureSourceLike = TextureSource | TextureSourceOptions | BufferSourceOptions | string;
+export type TextureSourceLike = TextureSource | TextureResourceOrOptions | string;
 
 /**
  * A texture stores the information that represents an image or part of an image.
@@ -103,7 +109,7 @@ export type TextureSourceLike = TextureSource | TextureSourceOptions | BufferSou
  *
  * If you didn't pass the texture frame to constructor, it enables `noFrame` mode:
  * it subscribes on baseTexture events, it automatically resizes at the same time as baseTexture.
- * @namespace core
+ * @memberof rendering
  * @class
  */
 export class Texture extends EventEmitter<{
@@ -118,20 +124,7 @@ export class Texture extends EventEmitter<{
      * @param skipCache - Skip adding the texture to the cache
      * @returns The texture based on the Id provided
      */
-    public static from(id: TextureSourceLike, skipCache = false): Texture
-    {
-        if (typeof id === 'string')
-        {
-            return Cache.get(id);
-        }
-        else if (id instanceof TextureSource)
-        {
-            return new Texture({ source: id });
-        }
-
-        // return a auto generated texture from resource
-        return resourceToTexture(id, skipCache);
-    }
+    public static from: (id: TextureSourceLike, skipCache?: boolean) => Texture;
 
     /** label used for debugging */
     public label?: string;
@@ -143,7 +136,6 @@ export class Texture extends EventEmitter<{
      */
     public destroyed: boolean;
 
-    /** @internal */
     public _source: TextureSource;
 
     /**
@@ -197,6 +189,12 @@ export class Texture extends EventEmitter<{
 
     private _textureMatrix: TextureMatrix;
 
+    /** is it a texture? yes! used for type checking */
+    public readonly isTexture = true;
+
+    /**
+     * @param {TextureOptions} param0 - Options for the texture
+     */
     constructor({
         source,
         label,
@@ -243,12 +241,12 @@ export class Texture extends EventEmitter<{
     {
         if (this._source)
         {
-            this._source.off('resize', this.onUpdate, this);
+            this._source.off('resize', this.update, this);
         }
 
         this._source = value;
 
-        value.on('resize', this.onUpdate, this);
+        value.on('resize', this.update, this);
 
         this.emit('update', this);
     }
@@ -357,10 +355,8 @@ export class Texture extends EventEmitter<{
         this.removeAllListeners();
     }
 
-    /**
-     * @internal
-     */
-    protected onUpdate()
+    /** call this if you have modified the `texture outside` of the constructor */
+    public update(): void
     {
         if (this.noFrame)
         {
@@ -375,7 +371,9 @@ export class Texture extends EventEmitter<{
     /** @deprecated since 8.0.0 */
     get baseTexture(): TextureSource
     {
+        // #if _DEBUG
         deprecation(v8_0_0, 'Texture.baseTexture is now Texture.source');
+        // #endif
 
         return this._source;
     }
@@ -387,40 +385,23 @@ export class Texture extends EventEmitter<{
 }
 
 Texture.EMPTY = new Texture({
-
+    label: 'EMPTY',
+    source: new TextureSource({
+        label: 'EMPTY',
+    })
 });
 
-Texture.EMPTY.label = 'EMPTY';
 Texture.EMPTY.destroy = NOOP;
 
-// create a white canvas
-const canvas = DOMAdapter.get().createCanvas();
-
-const size = 1;
-
-canvas.width = size;
-canvas.height = size;
-
-const ctx = canvas.getContext('2d');
-
-ctx.fillStyle = '#ffffff';
-ctx.fillRect(0, 0, size, size);
-
-// draw red triangle
-ctx.beginPath();
-ctx.moveTo(0, 0);
-ctx.lineTo(size, 0);
-ctx.lineTo(size, size);
-ctx.closePath();
-ctx.fillStyle = '#ffffff';
-ctx.fill();
-
 Texture.WHITE = new Texture({
-    source: new ImageSource({
-        resource: canvas,
-        alphaMode: 'premultiply-alpha-on-upload'
+    source: new BufferImageSource({
+        resource: new Uint8Array([255, 255, 255, 255]),
+        width: 1,
+        height: 1,
+        alphaMode: 'premultiply-alpha-on-upload',
+        label: 'WHITE',
     }),
+    label: 'WHITE',
 });
 
-Texture.WHITE.label = 'WHITE';
 Texture.WHITE.destroy = NOOP;

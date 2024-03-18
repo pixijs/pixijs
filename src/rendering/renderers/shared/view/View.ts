@@ -1,20 +1,21 @@
 import type { Point } from '../../../../maths/point/Point';
-import type { Bounds } from '../../../../scene/container/bounds/Bounds';
-import type { DestroyOptions } from '../../../../scene/container/destroyTypes';
+import type { Bounds, BoundsData } from '../../../../scene/container/bounds/Bounds';
 
 export interface ViewObserver
 {
     onViewUpdate: () => void;
 }
 
-export const emptyViewObserver: ViewObserver = {
-    onViewUpdate: () => { /* empty */ },
-};
-
+/**
+ * A view is something that is able to be rendered by the renderer.
+ * @memberof scene
+ */
 export interface View
 {
+    /** a unique id for this view */
     uid: number;
 
+    /** whether or not this view should be batched */
     batched: boolean;
 
     /**
@@ -23,17 +24,23 @@ export interface View
      */
     renderPipeId: string;
 
-    owner: ViewObserver;
+    /** this is an int because it is packed directly into an attribute in the shader */
+    _roundPixels: 0 | 1;
 
     /**
-     * this is an int because it is packed directly into an attribute in the shader
-     * @internal
+     *  Whether or not to round the x/y position of the object.
+     * @type {boolean}
      */
-    roundPixels?: 0 | 1;
+    get roundPixels(): boolean;
+    /** if true, the view will have its position rounded to the nearest whole number */
+    set roundPixels(value: boolean);
 
+    /** this is the AABB rectangle bounds of the view in local untransformed space. */
+    bounds: BoundsData;
+
+    /** Adds the current bounds of this view to the supplied bounds */
     addBounds: (bounds: Bounds) => void;
+    /** Checks if the point is within the view */
     containsPoint: (point: Point) => boolean;
-
-    destroy(options?: DestroyOptions): void;
 }
 

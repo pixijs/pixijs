@@ -1,15 +1,17 @@
 import { TextureSource } from '../rendering/renderers/shared/texture/sources/TextureSource';
 import { GraphicsContext } from '../scene/graphics/shared/GraphicsContext';
-import { TextView } from '../scene/text/TextView';
+import { Text } from '../scene/text/Text';
+import { BitmapText } from '../scene/text-bitmap/BitmapText';
+import { HTMLText } from '../scene/text-html/HTMLText';
 import { PrepareQueue } from './PrepareQueue';
 
 import type { FillInstruction, TextureInstruction } from '../scene/graphics/shared/GraphicsContext';
-import type { Text } from '../scene/text/Text';
 import type { PrepareQueueItem } from './PrepareBase';
 
 /**
  * Part of the prepare system. Responsible for uploading all the items to the GPU.
  * This class extends the resolver functionality and uploads the given queue items.
+ * @memberof rendering
  */
 export abstract class PrepareUpload extends PrepareQueue
 {
@@ -23,9 +25,17 @@ export abstract class PrepareUpload extends PrepareQueue
         {
             this.uploadTextureSource(item);
         }
-        else if (item instanceof TextView)
+        else if (item instanceof Text)
         {
             this.uploadText(item);
+        }
+        else if (item instanceof HTMLText)
+        {
+            this.uploadHTMLText(item);
+        }
+        else if (item instanceof BitmapText)
+        {
+            this.uploadBitmapText(item);
         }
         else if (item instanceof GraphicsContext)
         {
@@ -38,11 +48,19 @@ export abstract class PrepareUpload extends PrepareQueue
         this.renderer.texture.initSource(textureSource);
     }
 
-    protected uploadText(_text: TextView): void
+    protected uploadText(_text: Text): void
     {
-        const pipeId = _text.renderPipeId as 'text' | 'bitmapText' | 'htmlText';
+        this.renderer.renderPipes.text.initGpuText(_text);
+    }
 
-        this.renderer.renderPipes[pipeId].initGpuText(_text.owner as Text);
+    protected uploadBitmapText(_text: BitmapText): void
+    {
+        this.renderer.renderPipes.bitmapText.initGpuText(_text);
+    }
+
+    protected uploadHTMLText(_text: HTMLText): void
+    {
+        this.renderer.renderPipes.htmlText.initGpuText(_text);
     }
 
     /**

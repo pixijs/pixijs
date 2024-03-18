@@ -17,7 +17,7 @@ export function convertFillInputToFillStyle(
     defaultStyle: ConvertedFillStyle
 ): ConvertedFillStyle
 {
-    if (!value)
+    if (value === undefined || value === null)
     {
         return null;
     }

@@ -37,22 +37,25 @@ export interface ResolvedAsset<T=any>
     format?: string;
     /** An override that will ensure that the asset is loaded with a specific parser */
     loadParser?: LoadParserName;
-    [key: string]: any;
 }
 
 /**
  * A fully resolved src, Glob patterns will not work here, and the src will be resolved to a single file.
  * @memberof assets
+ * @property {string} src - The URL or relative path to the asset
+ * @property {string} format - Format, usually the file extension
+ * @property {string} loadParser - An override that will ensure that the asset is loaded with a specific parser
+ * @property {any} data - Optional data
  */
 // NOTE: Omit does not seem to work here
-export type ResolvedSrc = Pick<ResolvedAsset, 'src' | 'format' | 'loadParser' | 'data'> & {[key: string]: any;};
+export type ResolvedSrc = Pick<ResolvedAsset, 'src' | 'format' | 'loadParser' | 'data'>;
 
 /**
  * A valid asset src. This can be a string, or a [ResolvedSrc]{@link assets.ResolvedSrc},
  * or an array of either.
  * @memberof assets
  */
-export type AssetSrc = ArrayOr<string> | ArrayOr<ResolvedSrc>;
+export type AssetSrc = ArrayOr<string> | ArrayOr<ResolvedSrc> & { [key: string]: any; };
 
 /**
  * An asset that has not been resolved yet.
@@ -69,7 +72,7 @@ export type UnresolvedAsset<T=any> = Pick<ResolvedAsset<T>, 'data' | 'format' | 
 };
 
 /**
- * Structure of a bundle found in a manifest file
+ * Structure of a bundle found in a {@link assets.AssetsManifest Manifest} file
  * @memberof assets
  */
 export interface AssetsBundle
@@ -77,11 +80,11 @@ export interface AssetsBundle
     /** The name of the bundle */
     name: string;
     /** The assets in the bundle */
-    assets: UnresolvedAsset[];
+    assets: UnresolvedAsset[] | Record<string, ArrayOr<string> | UnresolvedAsset>;
 }
 
 /**
- * The expected format of a manifest. This would normally be auto generated or made by the developer
+ * The expected format of a manifest. This could be auto generated or hand made
  * @memberof assets
  */
 export interface AssetsManifest

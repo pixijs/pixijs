@@ -12,8 +12,11 @@ const tempPoints = [new Point(), new Point(), new Point(), new Point()];
 export interface Rectangle extends PixiMixins.Rectangle { }
 
 /**
- * Rectangle object is an area defined by its position, as indicated by its top-left corner
- * point (x, y) and by its width and its height.
+ * The `Rectangle` object is an area defined by its position, as indicated by its top-left corner
+ * point (`x`, `y`) and by its `width` and its `height`.
+ *
+ * It also provides convenience methods to get and set the position and size of the rectangle such as
+ * {@link maths.Rectangle#bottom|bottom}, {@link maths.Rectangle#right|right} and {@link maths.Rectangle#isEmpty|isEmpty}.
  * @memberof maths
  */
 export class Rectangle implements ShapePrimitive
@@ -92,7 +95,7 @@ export class Rectangle implements ShapePrimitive
         return this.left === this.right || this.top === this.bottom;
     }
 
-    /** A constant empty rectangle. */
+    /** A constant empty rectangle. This is a new object every time the property is accessed */
     static get EMPTY(): Rectangle
     {
         return new Rectangle(0, 0, 0, 0);
@@ -173,6 +176,13 @@ export class Rectangle implements ShapePrimitive
         return false;
     }
 
+    /**
+     * Checks whether the x and y coordinates given are contained within this rectangle including the stroke.
+     * @param x - The X coordinate of the point to test
+     * @param y - The Y coordinate of the point to test
+     * @param strokeWidth - The width of the line to check
+     * @returns Whether the x/y coordinates are within this rectangle
+     */
     public strokeContains(x: number, y: number, strokeWidth: number): boolean
     {
         const { width, height } = this;

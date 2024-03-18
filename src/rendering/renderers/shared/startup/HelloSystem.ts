@@ -1,19 +1,29 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { sayHello } from '../../../../utils/sayHello';
+import { type Renderer, RendererType } from '../../types';
 
-import type { Renderer } from '../../types';
+import type { WebGLRenderer } from '../../gl/WebGLRenderer';
 import type { System } from '../system/System';
 
 /**
  * Options for the startup system.
- * @ignore
+ * @property {boolean} [hello=false] - Whether to log the version and type information of renderer to console.
+ * @memberof rendering
  */
 export interface HelloSystemOptions
 {
-    /** Whether to log the version and type information of renderer to console. */
+    /**
+     * Whether to log the version and type information of renderer to console.
+     * @memberof rendering.SharedRendererOptions
+     * @default false
+     */
     hello: boolean;
 }
-/** A simple system responsible for initiating the renderer. */
+
+/**
+ * A simple system responsible for initiating the renderer.
+ * @memberof rendering
+ */
 export class HelloSystem implements System<HelloSystemOptions>
 {
     /** @ignore */
@@ -24,15 +34,12 @@ export class HelloSystem implements System<HelloSystemOptions>
             ExtensionType.CanvasSystem,
         ],
         name: 'hello',
-        priority: 0,
+        priority: -2,
     } as const;
 
-    /** @ignore */
+    /** The default options for the system. */
     public static defaultOptions: HelloSystemOptions = {
-        /**
-         * {@link WebGLOptions.hello}
-         * @default false
-         */
+        /** {@link WebGLOptions.hello} */
         hello: false,
     };
 
@@ -51,8 +58,14 @@ export class HelloSystem implements System<HelloSystemOptions>
     {
         if (options.hello)
         {
-            // eslint-disable-next-line no-console
-            sayHello(this._renderer.name);
+            let name = this._renderer.name;
+
+            if (this._renderer.type === RendererType.WEBGL)
+            {
+                name += ` ${(this._renderer as WebGLRenderer).context.webGLVersion}`;
+            }
+
+            sayHello(name);
         }
     }
 }

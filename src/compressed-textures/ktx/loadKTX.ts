@@ -4,7 +4,7 @@ import { checkExtension } from '../../assets/utils/checkExtension';
 import { ExtensionType } from '../../extensions/Extensions';
 import { CompressedSource } from '../../rendering/renderers/shared/texture/sources/CompressedSource';
 import { getSupportedTextureFormats } from '../../rendering/renderers/shared/texture/utils/getSupportedTextureFormats';
-import { loadKTX2onWorker } from './worker/loadKTXonWorker';
+import { parseKTX } from './parseKTX';
 
 import type { Loader } from '../../assets/loader/Loader';
 import type { LoaderParser } from '../../assets/loader/parsers/LoaderParser';
@@ -23,14 +23,18 @@ export const loadKTX = {
 
     test(url: string): boolean
     {
-        return checkExtension(url, ['.ktx2', '.ktx']);
+        return checkExtension(url, '.ktx');
     },
 
     async load(url: string, _asset: ResolvedAsset, loader: Loader): Promise<Texture | Texture[]>
     {
         const supportedTextures = await getSupportedTextureFormats();
 
-        const textureOptions = await loadKTX2onWorker(url, supportedTextures);
+        const ktxResponse = await fetch(url);
+
+        const ktxArrayBuffer = await ktxResponse.arrayBuffer();
+
+        const textureOptions = parseKTX(ktxArrayBuffer, supportedTextures);
 
         const compressedTextureSource = new CompressedSource(textureOptions);
 

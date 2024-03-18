@@ -1,12 +1,13 @@
 import { AccessibilitySystem } from '../../src/accessibility/AccessibilitySystem';
 import { Container } from '../../src/scene/container/Container';
-import { getRenderer } from '../utils/getRenderer';
+import { getWebGLRenderer } from '../utils/getRenderer';
+import '../../src/accessibility/init';
 
 describe('AccessibilitySystem', () =>
 {
     it('should be plugin for renderer', async () =>
     {
-        const renderer = await getRenderer();
+        const renderer = await getWebGLRenderer();
 
         expect(renderer.accessibility).toBeInstanceOf(AccessibilitySystem);
         renderer.destroy();
@@ -14,7 +15,7 @@ describe('AccessibilitySystem', () =>
 
     it('should remove touch hook when destroyed', async () =>
     {
-        const renderer = await getRenderer();
+        const renderer = await getWebGLRenderer();
         const system = new AccessibilitySystem(renderer, {
             phone: true,
         } as any);
@@ -29,7 +30,7 @@ describe('AccessibilitySystem', () =>
 
     it('should activate when tab is pressed and deactivate when mouse moved', async () =>
     {
-        const renderer = await getRenderer();
+        const renderer = await getWebGLRenderer();
         const system = new AccessibilitySystem(renderer);
 
         system['_onKeyDown'](new KeyboardEvent('keydown', { keyCode: 9, key: 'tab' }));
@@ -47,7 +48,7 @@ describe('AccessibilitySystem', () =>
             render() { /* noop */ }
         }
 
-        const renderer = await getRenderer();
+        const renderer = await getWebGLRenderer();
         const stage = new Container().addChild(new CompleteContainer());
         const system = new AccessibilitySystem(renderer);
 

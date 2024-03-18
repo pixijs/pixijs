@@ -15,6 +15,10 @@ import type { BindGroup } from './shader/BindGroup';
 import type { GpuProgram } from './shader/GpuProgram';
 import type { WebGPURenderer } from './WebGPURenderer';
 
+/**
+ * The system that handles encoding commands for the GPU.
+ * @memberof rendering
+ */
 export class GpuEncoderSystem implements System
 {
     /** @ignore */
@@ -114,7 +118,14 @@ export class GpuEncoderSystem implements System
 
         this._boundIndexBuffer = buffer;
 
-        this.renderPassEncoder.setIndexBuffer(this._renderer.buffer.updateBuffer(buffer), 'uint32');
+        const indexFormat = buffer.data.BYTES_PER_ELEMENT === 2 ? 'uint16' : 'uint32';
+
+        this.renderPassEncoder.setIndexBuffer(this._renderer.buffer.updateBuffer(buffer), indexFormat);
+    }
+
+    public resetBindGroup(index: number)
+    {
+        this._boundBindGroup[index] = null;
     }
 
     public setBindGroup(index: number, bindGroup: BindGroup, program: GpuProgram)
@@ -138,7 +149,7 @@ export class GpuEncoderSystem implements System
         {
             const attribute = geometry.attributes[i];
 
-            this._setVertexBuffer(attribute.shaderLocation, attribute.buffer);
+            this._setVertexBuffer(attribute.location, attribute.buffer);
         }
 
         if (geometry.indexBuffer)
@@ -171,7 +182,7 @@ export class GpuEncoderSystem implements System
 
             if ((resource as UniformGroup).isUniformGroup)
             {
-                this._renderer.uniformBuffer.updateUniformGroup(resource as UniformGroup);
+                this._renderer.ubo.updateUniformGroup(resource as UniformGroup);
             }
         }
     }
@@ -195,11 +206,15 @@ export class GpuEncoderSystem implements System
 
         if (geometry.indexBuffer)
         {
-            this.renderPassEncoder.drawIndexed(size || geometry.indexBuffer.data.length, instanceCount || 1, start || 0);
+            this.renderPassEncoder.drawIndexed(
+                size || geometry.indexBuffer.data.length,
+                instanceCount || geometry.instanceCount,
+                start || 0
+            );
         }
         else
         {
-            this.renderPassEncoder.draw(size || geometry.getSize(), instanceCount || 1, start || 0);
+            this.renderPassEncoder.draw(size || geometry.getSize(), instanceCount || geometry.instanceCount, start || 0);
         }
     }
 
@@ -219,6 +234,8 @@ export class GpuEncoderSystem implements System
         this._gpu.device.queue.submit([this.commandEncoder.finish()]);
 
         this._resolveCommandFinished();
+
+        this.commandEncoder = null;
     }
 
     // restores a render pass if finishRenderPass was called

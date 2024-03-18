@@ -6,7 +6,7 @@ import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture
 import { Container } from '../../../src/scene/container/Container';
 import { Graphics } from '../../../src/scene/graphics/shared/Graphics';
 import { Sprite } from '../../../src/scene/sprite/Sprite';
-import { getRenderer } from '../../utils/getRenderer';
+import { getWebGLRenderer } from '../../utils/getRenderer';
 import { getTexture } from '../../utils/getTexture';
 
 describe('Sprite', () =>
@@ -29,7 +29,7 @@ describe('Sprite', () =>
 
         it('should clean up correctly on the pipe and system when destroyed', async () =>
         {
-            const renderer = await getRenderer();
+            const renderer = await getWebGLRenderer();
 
             const container = new Container();
 
@@ -72,6 +72,16 @@ describe('Sprite', () =>
 
             expect(sprite.scale.x).toEqual(-0.75);
         });
+
+        it('should set width on the constructor', () =>
+        {
+            const sprite = new Sprite({
+                texture: Texture.WHITE,
+                width: 50,
+            });
+
+            expect(sprite.width).toEqual(50);
+        });
     });
 
     describe('height', () =>
@@ -100,6 +110,16 @@ describe('Sprite', () =>
             sprite.height = 75;
 
             expect(sprite.scale.y).toEqual(-0.75);
+        });
+
+        it('should set width on the constructor', () =>
+        {
+            const sprite = new Sprite({
+                texture: Texture.WHITE,
+                height: 50,
+            });
+
+            expect(sprite.height).toEqual(50);
         });
     });
 
@@ -187,28 +207,28 @@ describe('Sprite', () =>
         {
             const point = new Point(10, 10);
 
-            expect(sprite.view.containsPoint(point)).toBe(true);
+            expect(sprite.containsPoint(point)).toBe(true);
         });
 
         it('should return true when point on left edge', () =>
         {
             const point = new Point(0, 15);
 
-            expect(sprite.view.containsPoint(point)).toBe(true);
+            expect(sprite.containsPoint(point)).toBe(true);
         });
 
         it('should return true when point on top edge', () =>
         {
             const point = new Point(10, 0);
 
-            expect(sprite.view.containsPoint(point)).toBe(true);
+            expect(sprite.containsPoint(point)).toBe(true);
         });
 
         it('should return false when point outside', () =>
         {
             const point = new Point(100, 100);
 
-            expect(sprite.view.containsPoint(point)).toBe(false);
+            expect(sprite.containsPoint(point)).toBe(false);
         });
 
         it('should return true when point inside a trimmed sprite', () =>
@@ -242,11 +262,11 @@ describe('Sprite', () =>
 
             const sprite = new Sprite({ texture });
 
-            expect(sprite.view.containsPoint(
+            expect(sprite.containsPoint(
                 new Point(108, 108)
             )).toBe(true);
 
-            expect(sprite.view.containsPoint(
+            expect(sprite.containsPoint(
                 new Point(1, 1)
             )).toBe(true);
         });

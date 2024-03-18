@@ -1,38 +1,18 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { warn } from '../../../utils/logging/warn';
-import { updateLocalTransform } from '../utils/updateLocalTransform';
-import { Bounds } from './Bounds';
+import { boundsPool, matrixPool } from './utils/matrixAndBoundsPool';
 
+import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
 import type { Container } from '../Container';
+import type { Bounds } from './Bounds';
 
 export function getLocalBounds(target: Container, bounds: Bounds, relativeMatrix?: Matrix): Bounds
 {
     bounds.clear();
 
-    // if (!target.visible)// || !target.measurable)
-    // {
-    //     bounds.set(0, 0, 0, 0);
+    relativeMatrix ||= Matrix.IDENTITY;
 
-    //     return bounds;
-    // }
-
-    relativeMatrix ||= new Matrix();
-
-    if (target.boundsArea)
-    {
-        bounds.setMatrix(relativeMatrix);
-        bounds.addRect(target.boundsArea);
-    }
-    else if (target.view)
-    {
-        bounds.setMatrix(relativeMatrix);
-        target.view.addBounds(bounds);
-    }
-
-    for (let i = 0; i < target.children.length; i++)
-    {
-        _getLocalBounds(target.children[i], bounds, relativeMatrix, target);
-    }
+    _getLocalBounds(target, bounds, relativeMatrix, target, true);
 
     if (!bounds.isValid)
     {
@@ -42,46 +22,58 @@ export function getLocalBounds(target: Container, bounds: Bounds, relativeMatrix
     return bounds;
 }
 
-function _getLocalBounds(target: Container, bounds: Bounds, parentTransform: Matrix, rootContainer: Container): void
+function _getLocalBounds(
+    target: Container,
+    bounds: Bounds,
+    parentTransform: Matrix,
+    rootContainer: Container,
+    isRoot: boolean
+): void
 {
-    if (!target.visible || !target.measurable) return;
+    let relativeTransform: Matrix;
 
-    // // make sure localTransform is upto date...
-    if (target.didChange)
+    if (!isRoot)
     {
-        updateLocalTransform(target.localTransform, target);
+        if (!target.visible || !target.measurable) return;
+
+        target.updateLocalTransform();
+
+        const localTransform = target.localTransform;
+
+        relativeTransform = matrixPool.get();
+        relativeTransform.appendFrom(localTransform, parentTransform);
     }
-
-    const localTransform = target.localTransform;
-
-    const relativeTransform = Matrix.shared.appendFrom(localTransform, parentTransform).clone();
+    else
+    {
+        relativeTransform = matrixPool.get();
+        relativeTransform = parentTransform.copyTo(relativeTransform);
+    }
 
     const parentBounds = bounds;
     const preserveBounds = !!target.effects.length;
 
     if (preserveBounds)
     {
-        // TODO - cloning bounds is slow, we should have a pool (its on the todo list!)
-        bounds = new Bounds();
+        bounds = boundsPool.get().clear();
     }
 
     if (target.boundsArea)
     {
-        bounds.setMatrix(relativeTransform);
-        bounds.addRect(target.boundsArea);
+        bounds.addRect(target.boundsArea, relativeTransform);
     }
     else
     {
-        if (target.view)
+        if (target.renderPipeId)
         {
-            bounds.setMatrix(relativeTransform);
-
-            target.view.addBounds(bounds);
+            bounds.matrix = relativeTransform;
+            (target as Renderable).addBounds(bounds);
         }
 
-        for (let i = 0; i < target.children.length; i++)
+        const children = target.children;
+
+        for (let i = 0; i < children.length; i++)
         {
-            _getLocalBounds(target.children[i], bounds, relativeTransform, rootContainer);
+            _getLocalBounds(children[i], bounds, relativeTransform, rootContainer, false);
         }
     }
 
@@ -93,9 +85,12 @@ function _getLocalBounds(target: Container, bounds: Bounds, parentTransform: Mat
         }
 
         // TODO - make a add transformed bounds?
-        parentBounds.setMatrix(Matrix.IDENTITY);
-        parentBounds.addBounds(bounds);
+        parentBounds.addBounds(bounds, Matrix.IDENTITY);
+
+        boundsPool.return(bounds);
     }
+
+    matrixPool.return(relativeTransform);
 }
 
 export function getParent(target: Container, root: Container, matrix: Matrix)
@@ -116,7 +111,7 @@ export function getParent(target: Container, root: Container, matrix: Matrix)
     {
         getParent(parent, root, matrix);
 
-        updateLocalTransform(parent.localTransform, parent);
+        parent.updateLocalTransform();
         matrix.append(parent.localTransform);
     }
 }

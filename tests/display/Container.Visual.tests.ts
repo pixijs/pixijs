@@ -1,12 +1,14 @@
 import { DEG_TO_RAD, RAD_TO_DEG } from '../../src/maths/misc/const';
 import { Container } from '../../src/scene/container/Container';
 import { updateRenderGroupTransforms } from '../../src/scene/container/utils/updateRenderGroupTransforms';
+import { Sprite } from '../../src/scene/sprite/Sprite';
 
 describe('Container Visual', () =>
 {
     describe('mask', () =>
     {
         // todo: ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=44913565
+        // eslint-disable-next-line jest/no-disabled-tests
         it.skip('should set isMask and renderable properties correctly even if the same mask is used by multiple objects',
             () =>
             {
@@ -97,7 +99,7 @@ describe('Container Visual', () =>
 
             updateRenderGroupTransforms(rootContainer.renderGroup, true);
 
-            const alpha = child.rgAlpha;
+            const alpha = child.groupAlpha;
 
             expect(alpha).toBe(0.5);
         });
@@ -114,15 +116,15 @@ describe('Container Visual', () =>
             rootContainer.addChild(parent);
             parent.addChild(child);
 
-            expect(child.rgVisibleRenderable).toBe(0b11);
-            expect(child.localVisibleRenderable).toBe(0b11);
+            expect(child.globalDisplayStatus).toBe(0b111);
+            expect(child.localDisplayStatus).toBe(0b111);
 
             parent.visible = false;
 
             updateRenderGroupTransforms(rootContainer.renderGroup, true);
 
-            expect(child.rgVisibleRenderable).toBe(0b01);
-            expect(child.localVisibleRenderable).toBe(0b11);
+            expect(child.globalDisplayStatus).toBe(0b101);
+            expect(child.localDisplayStatus).toBe(0b111);
         });
     });
 
@@ -159,6 +161,39 @@ describe('Container Visual', () =>
             expect(container.width).toEqual(0);
             expect(container.scale.x).toEqual(1);
         });
+
+        it('should get/set size', () =>
+        {
+            const container = new Sprite();
+
+            container.setSize(5);
+
+            expect(container.getSize().width).toEqual(5);
+            expect(container.width).toEqual(5);
+            expect(container.getSize().height).toEqual(5);
+            expect(container.height).toEqual(5);
+
+            container.setSize(10, 15);
+
+            expect(container.getSize().width).toEqual(10);
+            expect(container.width).toEqual(10);
+            expect(container.getSize().height).toEqual(15);
+            expect(container.height).toEqual(15);
+
+            container.setSize({ width: 20, height: 25 });
+
+            expect(container.getSize().width).toEqual(20);
+            expect(container.width).toEqual(20);
+            expect(container.getSize().height).toEqual(25);
+            expect(container.height).toEqual(25);
+
+            container.setSize({ width: 30 });
+
+            expect(container.getSize().width).toEqual(30);
+            expect(container.width).toEqual(30);
+            expect(container.getSize().height).toEqual(30);
+            expect(container.height).toEqual(30);
+        });
     });
 
     describe('height', () =>
@@ -172,6 +207,32 @@ describe('Container Visual', () =>
 
             expect(container.height).toEqual(0);
             expect(container.scale.y).toEqual(1);
+        });
+    });
+
+    describe('scale', () =>
+    {
+        it('should set scale from a single value', () =>
+        {
+            const container = new Container();
+
+            container.scale.set(2);
+
+            expect(container.scale.x).toEqual(2);
+            expect(container.scale.y).toEqual(2);
+        });
+    });
+
+    describe('pivot', () =>
+    {
+        it('should set pivot from a single value', () =>
+        {
+            const container = new Container();
+
+            container.pivot.set(2);
+
+            expect(container.pivot.x).toEqual(2);
+            expect(container.pivot.y).toEqual(2);
         });
     });
 });

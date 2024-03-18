@@ -9,8 +9,20 @@ type RectangleLike = {x: number, y: number, width: number, height: number};
 
 /**
  * The Culler class is responsible for managing and culling containers.
- * Culling is the process of removing objects that are not currently visible to the user,
- * which can improve performance in large scenes.
+ *
+ *
+ * Culled containers will not be rendered, and their children will not be processed. This can be useful for
+ * performance optimization when dealing with large scenes.
+ * @example
+ * import { Culler, Container } from 'pixi.js';
+ *
+ * const culler = new Culler();
+ * const stage = new Container();
+ *
+ * ... set up stage ...
+ *
+ * culler.cull(stage, { x: 0, y: 0, width: 800, height: 600 });
+ * renderer.render(stage);
  * @memberof scene
  */
 export class Culler
@@ -29,18 +41,25 @@ export class Culler
 
     private _cullRecursive(container: Container, view: RectangleLike, skipUpdateTransform = true)
     {
-        if (container.cullable && container.view)
+        if (container.cullable && container.measurable && container.includeInBuild)
         {
             const bounds = container.cullArea ?? getGlobalBounds(container, skipUpdateTransform, tempBounds);
 
             // check view intersection..
-            container.visible = !(bounds.x >= view.x + view.width
+            container.culled = !(bounds.x >= view.x + view.width
                 || bounds.y >= view.y + view.height
                 || bounds.x + bounds.width <= view.x
                 || bounds.y + bounds.height <= view.y);
         }
 
-        if (!container.cullableChildren) return;
+        // dont process children if not needed
+        if (
+            !container.cullableChildren
+            || container.culled
+            || !container.renderable
+            || !container.measurable
+            || !container.includeInBuild
+        ) return;
 
         for (let i = 0; i < container.children.length; i++)
         {

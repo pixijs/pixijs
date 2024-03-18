@@ -1,6 +1,7 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { warn } from '../../../../utils/logging/warn';
-import { getGlInfoFromFormat } from './utils/getGlInfoFromFormat';
+import { getAttributeInfoFromFormat } from '../../shared/geometry/utils/getAttributeInfoFromFormat';
+import { ensureAttributes } from '../shader/program/ensureAttributes';
+import { getGlTypeFromFormat } from './utils/getGlTypeFromFormat';
 
 import type { Topology } from '../../shared/geometry/const';
 import type { Geometry } from '../../shared/geometry/Geometry';
@@ -8,8 +9,6 @@ import type { System } from '../../shared/system/System';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { GlProgram } from '../shader/GlProgram';
 import type { WebGLRenderer } from '../WebGLRenderer';
-
-const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
 
 const topologyToGlMap = {
     'point-list': 0x0000,
@@ -19,7 +18,10 @@ const topologyToGlMap = {
     'triangle-strip': 0x0005
 };
 
-/** System plugin to the renderer to manage geometry. */
+/**
+ * System plugin to the renderer to manage geometry.
+ * @memberof rendering
+ */
 export class GlGeometrySystem implements System
 {
     /** @ignore */
@@ -42,17 +44,11 @@ export class GlGeometrySystem implements System
      */
     public hasInstance: boolean;
 
-    /**
-     * `true` if support `gl.UNSIGNED_INT` in `gl.drawElements` or `gl.drawElementsInstanced`.
-     * @readonly
-     */
-    public canUseUInt32ElementIndex: boolean;
-
     protected gl: GlRenderingContext;
     protected _activeGeometry: Geometry;
     protected _activeVao: WebGLVertexArrayObject;
 
-    protected _geometryVaoHash: Record<number, Record<string, WebGLVertexArrayObject>> = {};
+    protected _geometryVaoHash: Record<number, Record<string, WebGLVertexArrayObject>> = Object.create(null);
 
     /** Renderer that owns this {@link GeometrySystem}. */
     private _renderer: WebGLRenderer;
@@ -66,13 +62,53 @@ export class GlGeometrySystem implements System
 
         this.hasVao = true;
         this.hasInstance = true;
-        this.canUseUInt32ElementIndex = true;
     }
 
     /** Sets up the renderer context and necessary buffers. */
     protected contextChange(): void
     {
-        this.gl = this._renderer.gl;
+        const gl = this.gl = this._renderer.gl;
+
+        if (!this._renderer.context.supports.vertexArrayObject)
+        {
+            throw new Error('[PixiJS] Vertex Array Objects are not supported on this device');
+        }
+
+        const nativeVaoExtension = this._renderer.context.extensions.vertexArrayObject;
+
+        if (nativeVaoExtension)
+        {
+            gl.createVertexArray = (): WebGLVertexArrayObject =>
+                nativeVaoExtension.createVertexArrayOES();
+
+            gl.bindVertexArray = (vao): void =>
+                nativeVaoExtension.bindVertexArrayOES(vao);
+
+            gl.deleteVertexArray = (vao): void =>
+                nativeVaoExtension.deleteVertexArrayOES(vao);
+        }
+
+        const nativeInstancedExtension = this._renderer.context.extensions.vertexAttribDivisorANGLE;
+
+        if (nativeInstancedExtension)
+        {
+            gl.drawArraysInstanced = (a, b, c, d): void =>
+            {
+                nativeInstancedExtension.drawArraysInstancedANGLE(a, b, c, d);
+            };
+
+            gl.drawElementsInstanced = (a, b, c, d, e): void =>
+            {
+                nativeInstancedExtension.drawElementsInstancedANGLE(a, b, c, d, e);
+            };
+
+            gl.vertexAttribDivisor = (a, b): void =>
+                nativeInstancedExtension.vertexAttribDivisorANGLE(a, b);
+        }
+
+        this._activeGeometry = null;
+        this._activeVao = null;
+        this._geometryVaoHash = Object.create(null);
     }
 
     /**
@@ -209,57 +245,9 @@ export class GlGeometrySystem implements System
             return vao;
         }
 
+        ensureAttributes(geometry, program._attributeData);
+
         const buffers = geometry.buffers;
-        const attributes = geometry.attributes;
-        const tempStride: Record<string, number> = {};
-        const tempStart: Record<string, number> = {};
-
-        for (const j in buffers)
-        {
-            tempStride[j] = 0;
-            tempStart[j] = 0;
-        }
-
-        for (const j in attributes)
-        {
-            if (!attributes[j].size && program._attributeData[j])
-            {
-                attributes[j].size = program._attributeData[j].size;
-            }
-            else if (!attributes[j].size)
-            {
-                // #if _DEBUG
-                warn(`PIXI Geometry attribute '${j}' size cannot be determined (likely the bound shader does not have the attribute)`);  // eslint-disable-line
-                // #endif
-            }
-
-            tempStride[attributes[j].buffer.uid] += attributes[j].size * byteSizeMap[attributes[j].type];
-        }
-
-        for (const j in attributes)
-        {
-            const attribute = attributes[j];
-            const attribSize = attribute.size;
-
-            if (attribute.stride === undefined)
-            {
-                if (tempStride[attribute.buffer.uid] === attribSize * byteSizeMap[attribute.type])
-                {
-                    attribute.stride = 0;
-                }
-                else
-                {
-                    attribute.stride = tempStride[attribute.buffer.uid];
-                }
-            }
-
-            if (attribute.start === undefined)
-            {
-                attribute.start = tempStart[attribute.buffer.uid];
-
-                tempStart[attribute.buffer.uid] += attribSize * byteSizeMap[attribute.type];
-            }
-        }
 
         // @TODO: We don't know if VAO is supported.
         vao = gl.createVertexArray();
@@ -384,18 +372,18 @@ export class GlGeometrySystem implements System
                     lastBuffer = glBuffer;
                 }
 
-                const location = program._attributeData[j].location;
+                const location = attribute.location;
 
                 // TODO introduce state again
                 // we can optimise this for older devices that have no VAOs
                 gl.enableVertexAttribArray(location);
 
-                const glInfo = getGlInfoFromFormat(attribute.format);
+                const attributeInfo = getAttributeInfoFromFormat(attribute.format);
 
                 gl.vertexAttribPointer(location,
-                    glInfo.size,
-                    glInfo.type, // attribute.type || gl.FLOAT,
-                    glInfo.normalised,
+                    attributeInfo.size,
+                    getGlTypeFromFormat(attribute.format),
+                    attributeInfo.normalised,
                     attribute.stride,
                     attribute.offset);
 
@@ -432,15 +420,17 @@ export class GlGeometrySystem implements System
 
         const glTopology = topologyToGlMap[geometry.topology || topology];
 
+        instanceCount ||= geometry.instanceCount;
+
         if (geometry.indexBuffer)
         {
             const byteSize = geometry.indexBuffer.data.BYTES_PER_ELEMENT;
             const glType = byteSize === 2 ? gl.UNSIGNED_SHORT : gl.UNSIGNED_INT;
 
-            if (geometry.instanced)
+            if (instanceCount > 1)
             {
                 /* eslint-disable max-len */
-                gl.drawElementsInstanced(glTopology, size || geometry.indexBuffer.data.length, glType, (start || 0) * byteSize, geometry.instanceCount || 1);
+                gl.drawElementsInstanced(glTopology, size || geometry.indexBuffer.data.length, glType, (start || 0) * byteSize, instanceCount);
                 /* eslint-enable max-len */
             }
             else
@@ -450,14 +440,14 @@ export class GlGeometrySystem implements System
                 /* eslint-enable max-len */
             }
         }
-        else if (geometry.instanced)
+        else if (instanceCount > 1)
         {
             // TODO need a better way to calculate size..
-            gl.drawArraysInstanced(glTopology, start, size || geometry.getSize(), instanceCount || 1);
+            gl.drawArraysInstanced(glTopology, start || 0, size || geometry.getSize(), instanceCount);
         }
         else
         {
-            gl.drawArrays(glTopology, start, size || geometry.getSize());
+            gl.drawArrays(glTopology, start || 0, size || geometry.getSize());
         }
 
         return this;

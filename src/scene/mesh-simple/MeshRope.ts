@@ -2,12 +2,20 @@ import { definedProps } from '../container/utils/definedProps';
 import { Mesh } from '../mesh/shared/Mesh';
 import { RopeGeometry } from './RopeGeometry';
 
-import type { PointLike } from '../../maths/point/PointLike';
+import type { PointData } from '../../maths/point/PointData';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { MeshOptions } from '../mesh/shared/Mesh';
 
 /**
- * Options for the {@link PIXI.MeshRope} constructor.
+ * Constructor options used for `MeshRope` instances.
+ * ```js
+ * const meshRope = new MeshRope({
+ *    texture: Texture.from('snake.png'),
+ *    points: [new Point(0, 0), new Point(100, 0)],
+ *    textureScale: 0,
+ * });
+ * ```
+ * @see {@link scene.MeshRope}
  * @memberof scene
  */
 export interface MeshRopeOptions extends Omit<MeshOptions, 'geometry'>
@@ -15,7 +23,7 @@ export interface MeshRopeOptions extends Omit<MeshOptions, 'geometry'>
     /** The texture to use on the rope. */
     texture: Texture;
     /** An array of points that determine the rope. */
-    points: PointLike[];
+    points: PointData[];
     /**
      * Rope texture scale, if zero then the rope texture is stretched.
      * Positive values scale rope texture

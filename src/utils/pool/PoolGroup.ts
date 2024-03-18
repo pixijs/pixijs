@@ -5,6 +5,7 @@ import type { PoolItem, PoolItemConstructor } from './Pool';
 /**
  * A type alias for a constructor of a Pool.
  * @template T The type of items in the pool. Must extend PoolItem.
+ * @memberof utils
  */
 export type PoolConstructor<T extends PoolItem> = new () => Pool<T>;
 
@@ -18,7 +19,7 @@ export class PoolGroupClass
      * A map to store the pools by their class type.
      * @private
      */
-    private readonly _poolsByClass: Map<PoolItemConstructor<unknown>, Pool<unknown>> = new Map();
+    private readonly _poolsByClass: Map<PoolItemConstructor<PoolItem>, Pool<PoolItem>> = new Map();
 
     /**
      * Prepopulates a specific pool with a given number of items.
@@ -26,7 +27,7 @@ export class PoolGroupClass
      * @param {PoolItemConstructor<T>} Class - The constructor of the items in the pool.
      * @param {number} total - The number of items to add to the pool.
      */
-    public prepopulate<T>(Class: PoolItemConstructor<T>, total: number): void
+    public prepopulate<T extends PoolItem>(Class: PoolItemConstructor<T>, total: number): void
     {
         const classPool = this.getPool(Class);
 
@@ -40,7 +41,7 @@ export class PoolGroupClass
      * @param {unknown} [data] - Optional data to pass to the item's constructor.
      * @returns {T} The item from the pool.
      */
-    public get<T>(Class: PoolItemConstructor<T>, data?: unknown): T
+    public get<T extends PoolItem>(Class: PoolItemConstructor<T>, data?: unknown): T
     {
         const pool = this.getPool(Class);
 
@@ -64,7 +65,7 @@ export class PoolGroupClass
      * @param {PoolItemConstructor<T>} ClassType - The constructor of the items in the pool.
      * @returns {Pool<T>} The pool of the given class type.
      */
-    public getPool<T>(ClassType: PoolItemConstructor<T>): Pool<T>
+    public getPool<T extends PoolItem>(ClassType: PoolItemConstructor<T>): Pool<T>
     {
         if (!this._poolsByClass.has(ClassType))
         {

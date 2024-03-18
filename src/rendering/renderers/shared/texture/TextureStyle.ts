@@ -1,32 +1,53 @@
 import EventEmitter from 'eventemitter3';
-import { deprecation } from '../../../../utils/logging/deprecation';
-import { createIdFromString } from '../utils/createIdFromString';
+import { uid } from '../../../../utils/data/uid';
+import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 
 import type { BindResource } from '../../gpu/shader/BindResource';
 import type { COMPARE_FUNCTION, SCALE_MODE, WRAP_MODE } from './const';
+
+const idHash: Record<string, number> = Object.create(null);
+
+/**
+ * This takes a shader string and maps it to a resource id.
+ * This is a little different than regular resource ids as these ids
+ * are not unique to the resource. But must not overlap with other (non sampler) resources Ids.
+ * @param value - the string to turn into a resource id
+ * @returns a unique resource id
+ */
+function createResourceIdFromString(value: string): number
+{
+    const id = idHash[value];
+
+    if (id === undefined)
+    {
+        idHash[value] = uid('resource');
+    }
+
+    return id;
+}
 
 export interface TextureStyleOptions extends Partial<TextureStyle>
 {
     /** setting this will set wrapModeU,wrapModeV and wrapModeW all at once! */
     addressMode?: WRAP_MODE;
-    /** */
+    /** specifies the {{GPUAddressMode|address modes}} for the texture width, height, and depth coordinates, respectively. */
     addressModeU?: WRAP_MODE;
-    /** */
+    /** specifies the {{GPUAddressMode|address modes}} for the texture width, height, and depth coordinates, respectively. */
     addressModeV?: WRAP_MODE;
     /** Specifies the {{GPUAddressMode|address modes}} for the texture width, height, and depth coordinates, respectively. */
     addressModeW?: WRAP_MODE;
 
     /** setting this will set magFilter,minFilter and mipmapFilter all at once!  */
     scaleMode?: SCALE_MODE;
-    /** Specifies the sampling behavior when the sample footprint is smaller than or equal to one texel. */
 
+    /** specifies the sampling behavior when the sample footprint is smaller than or equal to one texel. */
     magFilter?: SCALE_MODE;
-    /** Specifies the sampling behavior when the sample footprint is larger than one texel. */
+    /** specifies the sampling behavior when the sample footprint is larger than one texel. */
     minFilter?: SCALE_MODE;
-    /** Specifies behavior for sampling between mipmap levels. */
+    /** specifies behavior for sampling between mipmap levels. */
     mipmapFilter?: SCALE_MODE;
 
-    /** */
+    /** specifies the minimum and maximum levels of detail, respectively, used internally when sampling a texture. */
     lodMinClamp?: number;
     /** Specifies the minimum and maximum levels of detail, respectively, used internally when sampling a texture. */
     lodMaxClamp?: number;
@@ -46,9 +67,12 @@ export interface TextureStyleOptions extends Partial<TextureStyle>
      * setting this to anything higher than 1 will set scale modes to 'linear'
      */
     maxAnisotropy?: number;
-
 }
 
+/**
+ * A texture style describes how a texture should be sampled by a shader.
+ * @memberof rendering
+ */
 export class TextureStyle extends EventEmitter<{
     change: TextureStyle,
     destroy: TextureStyle,
@@ -58,7 +82,7 @@ export class TextureStyle extends EventEmitter<{
     public _touched = 0;
     private _sharedResourceId: number;
 
-    // override to set styles globally
+    /** default options for the style */
     public static readonly defaultOptions: TextureStyleOptions = {
         addressMode: 'clamp-to-edge',
         scaleMode: 'linear'
@@ -93,9 +117,13 @@ export class TextureStyle extends EventEmitter<{
      * between 1 and 16, inclusive. The used value of {@link GPUSamplerDescriptor#maxAnisotropy} will
      * be clamped to the maximum value that the platform supports.
      * @internal
+     * @ignore
      */
     public _maxAnisotropy?: number = 1;
 
+    /**
+     * @param options - options for the style
+     */
     constructor(options: TextureStyleOptions = {})
     {
         super();
@@ -129,6 +157,7 @@ export class TextureStyle extends EventEmitter<{
         this.addressModeW = value;
     }
 
+    /** setting this will set wrapModeU,wrapModeV and wrapModeW all at once! */
     get addressMode(): WRAP_MODE
     {
         return this.addressModeU;
@@ -136,7 +165,10 @@ export class TextureStyle extends EventEmitter<{
 
     set wrapMode(value: WRAP_MODE)
     {
-        deprecation('8', 'TextureStyle.wrapMode is now TextureStyle.addressMode');
+        // #if _DEBUG
+        deprecation(v8_0_0, 'TextureStyle.wrapMode is now TextureStyle.addressMode');
+        // #endif
+
         this.addressMode = value;
     }
 
@@ -152,11 +184,13 @@ export class TextureStyle extends EventEmitter<{
         this.mipmapFilter = value;
     }
 
+    /** setting this will set magFilter,minFilter and mipmapFilter all at once!  */
     get scaleMode(): SCALE_MODE
     {
         return this.magFilter;
     }
 
+    /** Specifies the maximum anisotropy value clamp used by the sampler. */
     set maxAnisotropy(value: number)
     {
         this._maxAnisotropy = Math.min(value, 16);
@@ -190,7 +224,7 @@ export class TextureStyle extends EventEmitter<{
         // eslint-disable-next-line max-len
         const bigKey = `${this.addressModeU}-${this.addressModeV}-${this.addressModeW}-${this.magFilter}-${this.minFilter}-${this.mipmapFilter}-${this.lodMinClamp}-${this.lodMaxClamp}-${this.compare}-${this._maxAnisotropy}`;
 
-        this._sharedResourceId = createIdFromString(bigKey, 'sampler');
+        this._sharedResourceId = createResourceIdFromString(bigKey);
 
         return this._resourceId;
     }

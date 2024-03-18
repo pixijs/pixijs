@@ -2,12 +2,13 @@ import { ensureDirSync, existsSync, readFileSync, writeFile } from 'fs-extra';
 import { dirname } from 'path';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
+import { Rectangle } from '../../src/maths/shapes/Rectangle';
 import { autoDetectRenderer } from '../../src/rendering/renderers/autoDetectRenderer';
-import { RenderTexture } from '../../src/rendering/renderers/shared/texture/RenderTexture';
 import { Container } from '../../src/scene/container/Container';
 import { Graphics } from '../../src/scene/graphics/shared/Graphics';
 
 import type { Renderer, RendererOptions } from '../../src/rendering/renderers/types';
+import type { RenderType } from './types';
 
 function toArrayBuffer(buf: Buffer): ArrayBuffer
 {
@@ -22,6 +23,53 @@ function toArrayBuffer(buf: Buffer): ArrayBuffer
     return ab;
 }
 
+const cachedPromise: Record<string, Promise<Renderer>> = {};
+
+const rendererOptions = {
+    width: 128,
+    height: 128,
+    backgroundColor: 0x1099bb,
+};
+
+const renderTypeSettings: Record<RenderType, Partial<RendererOptions>> = {
+    webgpu: {
+        preference: 'webgpu',
+    } as Partial<RendererOptions>,
+    webgl2: {
+        preference: 'webgl',
+        preferWebGLVersion: 2,
+    } as Partial<RendererOptions>,
+    webgl1: {
+        preference: 'webgl',
+        preferWebGLVersion: 1,
+    } as Partial<RendererOptions>,
+};
+
+/**
+ * returns an instance of a renderer to test with. If no options are passed, we always return the same renderer
+ * instance for each type. If options are passed, we create a new renderer instance for each call.
+ * @param type - the type of renderer to create
+ * @param options - any custom options to pass to the renderer
+ */
+async function getRenderer(type: RenderType, options?: Partial<RendererOptions>): Promise<Renderer>
+{
+    if (!options)
+    {
+        cachedPromise[type] ??= autoDetectRenderer({
+            ...rendererOptions,
+            ...renderTypeSettings[type],
+        });
+
+        return cachedPromise[type];
+    }
+
+    return autoDetectRenderer({
+        ...rendererOptions,
+        ...options,
+        ...renderTypeSettings[type],
+    });
+}
+
 /**
  * This special test function will take a snap shot from scene and compare it to
  * a previously generated correct image. It will then return a number which is the threshold
@@ -31,85 +79,96 @@ function toArrayBuffer(buf: Buffer): ArrayBuffer
  * @param createFunction - a function that takes a scene and adds stuff to it for our snapshot
  * @param rendererType
  * @param options
+ * @param pixelMatch
  */
 export async function renderTest(
     id: string,
     createFunction: (scene: Container, renderer: Renderer) => Promise<void>,
-    rendererType: 'webgl' | 'webgpu',
+    rendererType: RenderType,
     options?: Partial<RendererOptions>,
+    pixelMatch = 100,
 ): Promise<number>
 {
-    const sceneOpts = {
-        width: 128,
-        height: 128,
-        backgroundColor: 0x1099bb,
-        ...options
-    };
+    const renderer = await getRenderer(rendererType, options);
 
-    const renderer = await autoDetectRenderer({
-        preference: rendererType,
-        ...sceneOpts,
-    });
     const stage = new Container();
     const scene = new Container();
 
-    stage.addChild(new Graphics().rect(0, 0, sceneOpts.width, sceneOpts.height)).fill(renderer.background.color);
+    const { width, height } = rendererOptions;
+
+    stage.addChild(new Graphics().rect(0, 0, width, height)).fill(renderer.background.color);
     stage.addChild(scene);
 
     await createFunction(scene, renderer);
 
-    document.body.appendChild(renderer.canvas as HTMLCanvasElement);
+    const canvas = renderer.extract.canvas({
+        target: stage,
+        frame: new Rectangle(0, 0, width, height)
+    }) as HTMLCanvasElement;
 
-    renderer.render({
-        container: stage,
-    });
-
-    const imageLocation = `./tests/visual/snapshots/${rendererType}-${id}.png`;
+    const imageLocation = `./tests/visual/snapshots/${id}-${rendererType}.png`;
 
     if (!existsSync(imageLocation))
     {
-        await saveSnapShot(imageLocation, stage, renderer);
+        await saveSnapShot(imageLocation, canvas);
     }
 
     const prevSnapShot = loadSnapShot(imageLocation);
-    const newSnapShot = createSnapShot(stage, renderer);
-    const diff = new PNG({ width: sceneOpts.width, height: sceneOpts.height });
+    const newSnapShot = createSnapShot(canvas);
+    const diff = new PNG({ width, height });
+
+    if (process.env.DEBUG_MODE)
+    {
+        document.body.appendChild(canvas);
+    }
 
     const match: number = pixelmatch(
         prevSnapShot,
         newSnapShot,
         diff.data,
-        sceneOpts.width,
-        sceneOpts.height,
+        width,
+        height,
         { threshold: 0.2 }
     );
 
-    // Write the diff to a file for visual inspection
-    ensureDirSync('.pr_uploads/visual');
-    await writeFile(`.pr_uploads/visual/${rendererType}-${id}-diff.png`, PNG.sync.write(diff));
-    // save output image
-    await saveSnapShot(`.pr_uploads/visual/${rendererType}-${id}.png`, stage, renderer);
+    if (match > pixelMatch)
+    {
+        // Write the diff to a file for visual inspection
+        ensureDirSync('.pr_uploads/visual');
 
-    renderer.destroy();
+        await writeFile(`.pr_uploads/visual/${id}-${rendererType}-diff.png`, PNG.sync.write(diff));
+        // save output image
+        await saveSnapShot(`.pr_uploads/visual/${id}-${rendererType}.png`, canvas);
+    }
+
+    // this means we created a custom renderer.. so lts clean up after ourselves!
+    if (options)
+    {
+        renderer.destroy();
+    }
 
     return match;
 }
 
 /**
  * returns an array of pixels of the current scene.
- * @param stage - pixi container that contains the scene view
- * @param renderer - the pixi renderer that we will extract the snapshot from
+ * @param canvas - then canvas to create the snapshot from
  */
-function createSnapShot(stage: Container, renderer: Renderer)
+function createSnapShot(canvas: HTMLCanvasElement)
 {
-    const rt = RenderTexture.create({ width: renderer.width, height: renderer.height });
+    // write to a  new canvas to be same!
+    const readableCanvas = document.createElement('canvas');
 
-    renderer.render({
-        target: rt,
-        container: stage,
-    });
+    readableCanvas.width = canvas.width;
+    readableCanvas.height = canvas.height;
 
-    return renderer.extract.pixels(rt).pixels;
+    const context = readableCanvas.getContext('2d');
+
+    context.drawImage(canvas, 0, 0);
+
+    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+
+    return new Uint8ClampedArray(imageData.data.buffer);
 }
 
 /**
@@ -124,25 +183,13 @@ function loadSnapShot(input: string): Uint8Array
 /**
  * writes a PNG file of the passed in scene.
  * @param output - the location where to save the image
- * @param stage - pixi container that contains the scene view
- * @param renderer - the pixi renderer that we will extract the snapshot from
+ * @param canvas - the canvas to save
  */
-async function saveSnapShot(output: string, stage: Container, renderer: Renderer): Promise<void>
+async function saveSnapShot(output: string, canvas: HTMLCanvasElement): Promise<void>
 {
     ensureDirSync(dirname(output));
 
-    const rt = RenderTexture.create({ width: renderer.width, height: renderer.height });
-
-    renderer.render({
-        target: rt,
-        container: stage,
-    });
-
-    const base64Image = await renderer.extract.base64({
-        target: rt,
-        format: 'png',
-        resolution: 1,
-    });
+    const base64Image = await canvas.toDataURL('png', 1);
 
     const base64Data = base64Image.replace(/^data:image\/png;base64,/, '');
 

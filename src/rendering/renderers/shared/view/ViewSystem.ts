@@ -2,40 +2,95 @@ import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
+import { RenderTarget } from '../renderTarget/RenderTarget';
 import { getCanvasTexture } from '../texture/utils/getCanvasTexture';
 
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
-import type { DestroyOptions } from '../../../../scene/container/destroyTypes';
+import type { TypeOrBool } from '../../../../scene/container/destroyTypes';
 import type { System } from '../system/System';
-import type { CanvasSourceOptions } from '../texture/sources/CanvasSource';
+import type { CanvasSource, CanvasSourceOptions } from '../texture/sources/CanvasSource';
 import type { Texture } from '../texture/Texture';
 
-/** Options passed to the ViewSystem */
+/**
+ * Options passed to the ViewSystem
+ * @memberof rendering
+ * @property {number} [width=800] - The width of the screen.
+ * @property {number} [height=600] - The height of the screen.
+ * @property {ICanvas} [canvas] - The canvas to use as a view, optional.
+ * @property {boolean} [autoDensity=false] - Resizes renderer view in CSS pixels to allow for resolutions other than 1.
+ * @property {number} [resolution] - The resolution / device pixel ratio of the renderer.
+ * @property {boolean} [antialias=false] - Whether to enable anti-aliasing. This may affect performance.
+ * @property {boolean} [depth] -
+ * Whether to ensure the main view has can make use of the depth buffer. Always true for WebGL renderer.
+ * @property {boolean} [multiView] - TODO: multiView
+ * @property {number} [backgroundAlpha] - The alpha of the background.
+ */
 export interface ViewSystemOptions
 {
-    /** The width of the screen. */
+    /**
+     * The width of the screen.
+     * @default 800
+     * @memberof rendering.SharedRendererOptions
+     */
     width?: number;
-    /** The height of the screen. */
+    /**
+     * The height of the screen.
+     * @default 600
+     * @memberof rendering.SharedRendererOptions
+     */
     height?: number;
-    /** The canvas to use as a view, optional. */
+    /**
+     * The canvas to use as a view, optional.
+     * @memberof rendering.SharedRendererOptions
+     */
     canvas?: ICanvas;
     /** @deprecated */
-    element?: ICanvas;
-    /** Resizes renderer view in CSS pixels to allow for resolutions other than 1. */
+    view?: ICanvas;
+    /**
+     * Resizes renderer view in CSS pixels to allow for resolutions other than 1.
+     * @memberof rendering.SharedRendererOptions
+     */
     autoDensity?: boolean;
-    /** The resolution / device pixel ratio of the renderer. */
+    /**
+     * The resolution / device pixel ratio of the renderer.
+     * @memberof rendering.SharedRendererOptions
+     */
     resolution?: number;
-    /** **WebGL Only.** Whether to enable anti-aliasing. This may affect performance. */
+    /**
+     * Whether to enable anti-aliasing. This may affect performance.
+     * @memberof rendering.SharedRendererOptions
+     */
     antialias?: boolean;
-    /** TODO: multiView */
+    /**
+     * Whether to ensure the main view has can make use of the depth buffer. Always true for WebGL renderer.
+     * @memberof rendering.SharedRendererOptions
+     */
+    depth?: boolean;
+    /**
+     * TODO: multiView
+     * @memberof rendering.SharedRendererOptions
+     */
     multiView?: boolean;
+
+    /**
+     * Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
+     * @default 1
+     */
+    backgroundAlpha?: number;
+}
+
+export interface ViewSystemDestroyOptions
+{
+    /** Whether to remove the view element from the DOM. Defaults to `false`. */
+    removeView?: boolean;
 }
 
 /**
  * The view system manages the main canvas that is attached to the DOM.
  * This main role is to deal with how the holding the view reference and dealing with how it is resized.
+ * @memberof rendering
  */
-export class ViewSystem implements System
+export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSystemDestroyOptions>>
 {
     /** @ignore */
     public static extension = {
@@ -48,7 +103,7 @@ export class ViewSystem implements System
         priority: 0,
     } as const;
 
-    /** @ignore */
+    /** The default options for the view system. */
     public static defaultOptions: ViewSystemOptions = {
         /**
          * {@link WebGLOptions.width}
@@ -75,8 +130,9 @@ export class ViewSystem implements System
     public multiView: boolean;
 
     /** The canvas element that everything is drawn to. */
-    public canvas: ICanvas;
+    public canvas!: ICanvas;
 
+    /** The texture that is used to draw the canvas to the screen. */
     public texture: Texture;
 
     /**
@@ -85,10 +141,19 @@ export class ViewSystem implements System
      */
     public autoDensity: boolean;
 
+    /** Whether to enable anti-aliasing. This may affect performance. */
     public antialias: boolean;
 
+    /**
+     * Measurements of the screen. (0, 0, screenWidth, screenHeight).
+     *
+     * Its safe to use as filterArea or hitArea for the whole stage.
+     */
     public screen: Rectangle;
+    /** The render target that the view is drawn to. */
+    public renderTarget: RenderTarget;
 
+    /** The resolution / device pixel ratio of the renderer. */
     get resolution(): number
     {
         return this.texture.source._resolution;
@@ -114,16 +179,26 @@ export class ViewSystem implements System
             ...options,
         };
 
-        if (options.element)
+        if (options.view)
         {
-            deprecation(v8_0_0, 'ViewSystem.element has been renamed to ViewSystem.canvas');
-            options.canvas = options.element;
+            // #if _DEBUG
+            deprecation(v8_0_0, 'ViewSystem.view has been renamed to ViewSystem.canvas');
+            // #endif
+
+            options.canvas = options.view;
         }
 
         this.screen = new Rectangle(0, 0, options.width, options.height);
         this.canvas = options.canvas || DOMAdapter.get().createCanvas();
         this.antialias = !!options.antialias;
         this.texture = getCanvasTexture(this.canvas, options as CanvasSourceOptions);
+        this.renderTarget = new RenderTarget({
+            colorTextures: [this.texture],
+            depth: !!options.depth,
+            isRoot: true,
+        });
+
+        (this.texture.source as CanvasSource).transparent = options.backgroundAlpha < 1;
         this.multiView = !!options.multiView;
 
         if (this.autoDensity)
@@ -160,7 +235,7 @@ export class ViewSystem implements System
      * @param {options | false} options - The options for destroying the view, or "false".
      * @param options.removeView - Whether to remove the view element from the DOM. Defaults to `false`.
      */
-    public destroy(options: DestroyOptions = false): void
+    public destroy(options: TypeOrBool<ViewSystemDestroyOptions> = false): void
     {
         const removeView = typeof options === 'boolean' ? options : !!options?.removeView;
 

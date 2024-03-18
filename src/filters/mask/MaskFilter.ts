@@ -10,9 +10,10 @@ import source from './mask.wgsl';
 
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { Sprite } from '../../scene/sprite/Sprite';
+import type { FilterOptions } from '../Filter';
 import type { FilterSystem } from '../FilterSystem';
 
-export interface MaskFilterOptions
+export interface MaskFilterOptions extends FilterOptions
 {
     sprite: Sprite,
     scale?: number | { x: number, y: number },
@@ -23,17 +24,19 @@ export class MaskFilter extends Filter
     public sprite: Sprite;
     private readonly _textureMatrix: TextureMatrix;
 
-    constructor({ sprite }: MaskFilterOptions)
+    constructor(options: MaskFilterOptions)
     {
+        const { sprite, ...rest } = options;
+
         const textureMatrix = new TextureMatrix(sprite.texture);
 
         const filterUniforms = new UniformGroup({
-            filterMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
-            maskClamp: { value: textureMatrix.uClampFrame, type: 'vec4<f32>' },
-            alpha: { value: 1, type: 'f32' },
+            uFilterMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
+            uMaskClamp: { value: textureMatrix.uClampFrame, type: 'vec4<f32>' },
+            uAlpha: { value: 1, type: 'f32' },
         });
 
-        const gpuProgram = new GpuProgram({
+        const gpuProgram = GpuProgram.from({
             vertex: {
                 source,
                 entryPoint: 'mainVertex',
@@ -51,12 +54,13 @@ export class MaskFilter extends Filter
         });
 
         super({
+            ...rest,
             gpuProgram,
             glProgram,
             resources: {
                 filterUniforms,
-                mapTexture: sprite.texture.source,
-            }
+                uMaskTexture: sprite.texture.source,
+            },
         });
 
         this.sprite = sprite;
@@ -75,11 +79,11 @@ export class MaskFilter extends Filter
         this._textureMatrix.texture = this.sprite.texture;
 
         filterManager.calculateSpriteMatrix(
-            this.resources.filterUniforms.uniforms.filterMatrix as Matrix,
+            this.resources.filterUniforms.uniforms.uFilterMatrix as Matrix,
             this.sprite
         ).prepend(this._textureMatrix.mapCoord);
 
-        this.resources.mapTexture = this.sprite.texture.source;
+        this.resources.uMaskTexture = this.sprite.texture.source;
 
         filterManager.applyFilter(this, input, output, clearMode);
     }

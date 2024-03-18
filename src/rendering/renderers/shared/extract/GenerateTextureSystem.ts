@@ -14,6 +14,10 @@ import type { Texture } from '../texture/Texture';
 
 export type GenerateTextureSourceOptions = Omit<TextureSourceOptions, 'resource' | 'width' | 'height' | 'resolution'>;
 
+/**
+ * Options for generating a texture from a container.
+ * @memberof rendering
+ */
 export type GenerateTextureOptions =
 {
     /** The container to generate the texture from */
@@ -23,11 +27,12 @@ export type GenerateTextureOptions =
      * if no region is specified, defaults to the local bounds of the container.
      */
     frame?: Rectangle;
-
+    /** The resolution of the texture being generated. */
     resolution?: number;
-
+    /** The color used to clear the texture. */
     clearColor?: ColorSource;
-
+    /** Whether to enable anti-aliasing. This may affect performance. */
+    antialias?: boolean;
     /** The options passed to the texture source. */
     textureSourceOptions?: GenerateTextureSourceOptions,
 };
@@ -36,7 +41,13 @@ const tempRect = new Rectangle();
 const tempBounds = new Bounds();
 const noColor: ColorSource = [0, 0, 0, 0];
 
-/** System that manages the generation of textures from the renderer. */
+/**
+ * System that manages the generation of textures from the renderer
+ *
+ *
+ * Do not instantiate these plugins directly. It is available from the `renderer.textureGenerator` property.
+ * @memberof rendering
+ */
 export class GenerateTextureSystem implements System
 {
     /** @ignore */
@@ -61,6 +72,7 @@ export class GenerateTextureSystem implements System
      * @param {GenerateTextureOptions | Container} options - Generate texture options.
      * @param {Container} [options.container] - If not given, the renderer's resolution is used.
      * @param {Rectangle} options.region - The region of the container, that shall be rendered,
+     * @param {number} [options.resolution] - The resolution of the texture being generated.
      *        if no region is specified, defaults to the local bounds of the container.
      * @param {GenerateTextureSourceOptions} [options.textureSourceOptions] - Texture options for GPU.
      * @returns a shiny new texture of the container passed in
@@ -78,6 +90,7 @@ export class GenerateTextureSystem implements System
         }
 
         const resolution = options.resolution || this._renderer.resolution;
+        const antialias = options.antialias || this._renderer.view.antialias;
 
         const container = options.target;
 
@@ -105,6 +118,7 @@ export class GenerateTextureSystem implements System
             width: region.width,
             height: region.height,
             resolution,
+            antialias,
         });
 
         const transform = Matrix.shared.translate(-region.x, -region.y);

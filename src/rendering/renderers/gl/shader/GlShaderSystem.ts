@@ -1,22 +1,33 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { BufferResource } from '../../shared/buffer/BufferResource';
-import { UniformGroup } from '../../shared/shader/UniformGroup';
-import { TextureSource } from '../../shared/texture/sources/TextureSource';
-import { TextureStyle } from '../../shared/texture/TextureStyle';
+import { generateShaderSyncCode } from './GenerateShaderSyncCode';
 import { generateProgram } from './program/generateProgram';
 
+import type { BufferResource } from '../../shared/buffer/BufferResource';
 import type { Shader } from '../../shared/shader/Shader';
+import type { UniformGroup } from '../../shared/shader/UniformGroup';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
 import type { GlProgram } from './GlProgram';
 import type { GlProgramData } from './GlProgramData';
 
+export interface ShaderSyncData
+{
+    textureCount: number;
+    blockIndex: number;
+}
+
+export type ShaderSyncFunction = (renderer: WebGLRenderer, shader: Shader, syncData: ShaderSyncData) => void;
+
 // default sync data so we don't create a new one each time!
-const defaultSyncData = {
+const defaultSyncData: ShaderSyncData = {
     textureCount: 0,
     blockIndex: 0,
 };
 
+/**
+ * System plugin to the renderer to manage the shaders for WebGL.
+ * @memberof rendering
+ */
 export class GlShaderSystem
 {
     /** @ignore */
@@ -35,11 +46,12 @@ export class GlShaderSystem
 
     private _programDataHash: Record<string, GlProgramData> = Object.create(null);
     private readonly _renderer: WebGLRenderer;
-    private _gl: WebGL2RenderingContext;
+    public _gl: WebGL2RenderingContext;
     private _maxBindings: number;
     private _nextIndex = 0;
     private _boundUniformsIdsToIndexHash: Record<number, number> = Object.create(null);
     private _boundIndexToUniformsHash: Record<number, UniformGroup | BufferResource> = Object.create(null);
+    private _shaderSyncFunctions: Record<string, ShaderSyncFunction> = Object.create(null);
 
     constructor(renderer: WebGLRenderer)
     {
@@ -50,9 +62,20 @@ export class GlShaderSystem
     {
         this._gl = gl;
 
-        this._maxBindings = gl.getParameter(gl.MAX_UNIFORM_BUFFER_BINDINGS);
+        this._maxBindings = gl.MAX_UNIFORM_BUFFER_BINDINGS ? gl.getParameter(gl.MAX_UNIFORM_BUFFER_BINDINGS) : 0;
+
+        this._programDataHash = Object.create(null);
+        this._boundUniformsIdsToIndexHash = Object.create(null);
+        this._boundIndexToUniformsHash = Object.create(null);
+        this._activeProgram = null;
     }
 
+    /**
+     * Changes the current shader to the one given in parameter.
+     * @param shader - the new shader
+     * @param skipSync - false if the shader should automatically sync its uniforms.
+     * @returns the glProgram that belongs to the shader.
+     */
     public bind(shader: Shader, skipSync?: boolean): void
     {
         this._setProgram(shader.glProgram);
@@ -62,75 +85,31 @@ export class GlShaderSystem
         defaultSyncData.textureCount = 0;
         defaultSyncData.blockIndex = 0;
 
-        const gl = this._gl;
+        let syncFunction = this._shaderSyncFunctions[shader.glProgram._key];
 
-        const programData = this._getProgramData(shader.glProgram);
-
-        // loop through the groups and sync everything...
-        for (const i in shader.groups)
+        if (!syncFunction)
         {
-            const bindGroup = shader.groups[i];
-
-            for (const j in bindGroup.resources)
-            {
-                const resource = bindGroup.resources[j];
-
-                if (resource instanceof UniformGroup)
-                {
-                    if (resource.ubo)
-                    {
-                        this.bindUniformBlock(
-                            resource,
-                            shader._uniformBindMap[i as unknown as number][j as unknown as number],
-                            defaultSyncData.blockIndex++
-                        );
-                    }
-                    else
-                    {
-                        this._updateUniformGroup(resource);
-                    }
-                }
-                else if (resource instanceof BufferResource)
-                {
-                    this.bindUniformBlock(
-                        resource,
-                        shader._uniformBindMap[i as unknown as number][j as unknown as number],
-                        defaultSyncData.blockIndex++
-                    );
-                }
-                else if (resource instanceof TextureSource)
-                {
-                    // TODO really we should not be binding the sampler here too
-                    this._renderer.texture.bind(resource, defaultSyncData.textureCount);
-
-                    const uniformName = shader._uniformBindMap[i as unknown as number][j as unknown as number];
-
-                    const uniformData = programData.uniformData[uniformName];
-
-                    if (uniformData)
-                    {
-                        if (uniformData.value !== defaultSyncData.textureCount)
-                        {
-                            gl.uniform1i(uniformData.location, defaultSyncData.textureCount);
-                        }
-
-                        defaultSyncData.textureCount++;
-                    }
-                }
-                else if (resource instanceof TextureStyle)
-                {
-                    // TODO not doing anything here works is assuming that textures are bound with the style they own.
-                    // this.renderer.texture.bindSampler(resource, defaultSyncData.textureCount);
-                }
-            }
+            syncFunction = this._shaderSyncFunctions[shader.glProgram._key] = this._generateShaderSync(shader, this);
         }
+
+        syncFunction(this._renderer, shader, defaultSyncData);
     }
 
-    private _updateUniformGroup(uniformGroup: UniformGroup): void
+    /**
+     * Updates the uniform group.
+     * @param uniformGroup - the uniform group to update
+     */
+    public updateUniformGroup(uniformGroup: UniformGroup): void
     {
         this._renderer.uniformGroup.updateUniformGroup(uniformGroup, this._activeProgram, defaultSyncData);
     }
 
+    /**
+     * Binds a uniform block to the shader.
+     * @param uniformGroup - the uniform group to bind
+     * @param name - the name of the uniform block
+     * @param index - the index of the uniform block
+     */
     public bindUniformBlock(uniformGroup: UniformGroup | BufferResource, name: string, index = 0): void
     {
         const bufferSystem = this._renderer.buffer;
@@ -140,7 +119,7 @@ export class GlShaderSystem
 
         if (isBufferResource)
         {
-            this._renderer.uniformBuffer.updateUniformGroup(uniformGroup as UniformGroup);
+            this._renderer.ubo.updateUniformGroup(uniformGroup as UniformGroup);
         }
 
         bufferSystem.updateBuffer(uniformGroup.buffer);
@@ -225,5 +204,18 @@ export class GlShaderSystem
 
         this._programDataHash = null;
         this._boundUniformsIdsToIndexHash = null;
+    }
+
+    /**
+     * Creates a function that can be executed that will sync the shader as efficiently as possible.
+     * Overridden by the unsafe eval package if you don't want eval used in your project.
+     * @param shader - the shader to generate the sync function for
+     * @param shaderSystem - the shader system to use
+     * @returns - the generated sync function
+     * @ignore
+     */
+    public _generateShaderSync(shader: Shader, shaderSystem: GlShaderSystem): ShaderSyncFunction
+    {
+        return generateShaderSyncCode(shader, shaderSystem);
     }
 }

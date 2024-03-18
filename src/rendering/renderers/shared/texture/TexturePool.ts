@@ -2,7 +2,6 @@ import { nextPow2 } from '../../../../maths/misc/pow2';
 import { TextureSource } from './sources/TextureSource';
 import { Texture } from './Texture';
 
-import type { SCALE_MODE } from './const';
 import type { TextureSourceOptions } from './sources/TextureSource';
 
 let count = 0;
@@ -13,10 +12,13 @@ let count = 0;
  * Stores collection of temporary pow2 or screen-sized renderTextures
  *
  * If you use custom RenderTexturePool for your filters, you can use methods
- * `getFilterTexture` and `returnFilterTexture` same as in
+ * `getFilterTexture` and `returnFilterTexture` same as in default pool
+ * @memberof rendering
+ * @name TexturePool
  */
 export class TexturePoolClass
 {
+    /** The default options for texture pool */
     public textureOptions: TextureSourceOptions;
 
     /**
@@ -56,6 +58,7 @@ export class TexturePoolClass
             height: pixelHeight,
             resolution: 1,
             antialias,
+            autoGarbageCollect: true,
         });
 
         return new Texture({
@@ -113,6 +116,12 @@ export class TexturePoolClass
         return texture;
     }
 
+    /**
+     * Gets extra texture of the same size as input renderTexture
+     * @param texture - The texture to check what size it is.
+     * @param antialias - Whether to use antialias.
+     * @returns A texture that is a power of two
+     */
     public getSameSizeTexture(texture: Texture, antialias = false)
     {
         const source = texture.source;

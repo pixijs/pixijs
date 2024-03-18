@@ -21,6 +21,10 @@ interface CanvasAndContext
     context: ICanvasRenderingContext2D;
 }
 
+/**
+ * System plugin to the renderer to manage canvas text.
+ * @memberof rendering
+ */
 export class CanvasTextSystem implements System
 {
     /** @ignore */

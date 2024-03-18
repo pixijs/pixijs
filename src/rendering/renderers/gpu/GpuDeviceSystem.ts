@@ -4,12 +4,24 @@ import type { System } from '../shared/system/System';
 import type { GpuPowerPreference } from '../types';
 import type { WebGPURenderer } from './WebGPURenderer';
 
+/** The GPU object. */
 export interface GPU
 {
+    /** The GPU adapter */
     adapter: GPUAdapter;
+    /** The GPU device */
     device: GPUDevice;
 }
 
+/**
+ * Options for the WebGPU context.
+ * @property {GpuPowerPreference} [powerPreference=default] - An optional hint indicating what configuration of GPU
+ * is suitable for the WebGPU context, can be `'high-performance'` or `'low-power'`.
+ * Setting to `'high-performance'` will prioritize rendering performance over power consumption,
+ * while setting to `'low-power'` will prioritize power saving over rendering performance.
+ * @property {boolean} [forceFallbackAdapter=false] - Force the use of the fallback adapter
+ * @memberof rendering
+ */
 export interface GpuContextOptions
 {
     /**
@@ -17,15 +29,22 @@ export interface GpuContextOptions
      * can be `'high-performance'` or `'low-power'`.
      * Setting to `'high-performance'` will prioritize rendering performance over power consumption,
      * while setting to `'low-power'` will prioritize power saving over rendering performance.
+     * @default undefined
+     * @memberof rendering.WebGPUOptions
      */
     powerPreference?: GpuPowerPreference;
-    /** Force the use of the fallback adapter */
+    /**
+     * Force the use of the fallback adapter
+     * @default false
+     * @memberof rendering.WebGPUOptions
+     */
     forceFallbackAdapter: boolean;
 }
 
 /**
  * System plugin to the renderer to manage the context.
  * @class
+ * @memberof rendering
  */
 export class GpuDeviceSystem implements System<GpuContextOptions>
 {
@@ -37,6 +56,7 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
         name: 'device',
     } as const;
 
+    /** The default options for the GpuDeviceSystem. */
     public static defaultOptions: GpuContextOptions = {
         /**
          * {@link WebGPUOptions.powerPreference}
@@ -50,6 +70,7 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
         forceFallbackAdapter: false,
     };
 
+    /** The GPU device */
     public gpu: GPU;
 
     private _renderer: WebGPURenderer;

@@ -13,7 +13,10 @@ const DEPTH_TEST = 3;
 const WINDING = 4;
 const DEPTH_MASK = 5;
 
-/** System plugin to the renderer to manage WebGL state machines. */
+/**
+ * System plugin to the renderer to manage WebGL state machines
+ * @memberof rendering
+ */
 export class GlStateSystem implements System
 {
     /** @ignore */
@@ -94,8 +97,7 @@ export class GlStateSystem implements System
 
         this.checks = [];
 
-        this.defaultState = new State();
-        this.defaultState.blend = true;
+        this.defaultState = State.for2d();
     }
 
     protected contextChange(gl: GlRenderingContext): void
@@ -103,8 +105,6 @@ export class GlStateSystem implements System
         this.gl = gl;
 
         this.blendModesMap = mapWebGLBlendModesToPixi(gl);
-
-        this.set(this.defaultState);
 
         this.reset();
     }

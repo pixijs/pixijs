@@ -1,6 +1,9 @@
 import type { TextureSource } from '../../renderers/shared/texture/sources/TextureSource';
 
-/** Used by the batcher to build texture batches. Holds list of textures and their respective locations. */
+/**
+ * Used by the batcher to build texture batches. Holds list of textures and their respective locations.
+ * @memberof rendering
+ */
 export class BatchTextureArray
 {
     /** Inside textures array. */
@@ -18,6 +21,7 @@ export class BatchTextureArray
         this.count = 0;
     }
 
+    /** Clear the textures and their locations. */
     public clear(): void
     {
         for (let i = 0; i < this.count; i++)

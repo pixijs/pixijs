@@ -4,29 +4,20 @@ import { BigPool } from '../../../utils/pool/PoolGroup';
 import { color32BitToUniform } from '../gpu/colorToUniform';
 import { BatchableGraphics } from './BatchableGraphics';
 
-import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
 import type { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
 import type { BatchPipe, RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
-import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import type { PoolItem } from '../../../utils/pool/Pool';
+import type { Graphics } from './Graphics';
 import type { GpuGraphicsContext, GraphicsContextSystem } from './GraphicsContextSystem';
-import type { GraphicsView } from './GraphicsView';
 
 export interface GraphicsAdaptor
 {
     shader: Shader;
     init(): void;
-    execute(graphicsPipe: GraphicsPipe, renderable: Renderable<GraphicsView>): void;
+    execute(graphicsPipe: GraphicsPipe, renderable: Graphics): void;
     destroy(): void;
 }
-
-export interface GraphicsInstruction extends Instruction
-{
-    renderPipeId: 'graphics';
-    renderable: Renderable<GraphicsView>;
-}
-
 export interface GraphicsSystem
 {
     graphicsContext: GraphicsContextSystem;
@@ -36,7 +27,7 @@ export interface GraphicsSystem
     _roundPixels: 0 | 1;
 }
 
-export class GraphicsPipe implements RenderPipe<GraphicsView>
+export class GraphicsPipe implements RenderPipe<Graphics>
 {
     /** @ignore */
     public static extension = {
@@ -52,7 +43,7 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
     public state: State = State.for2d();
 
     // batchable graphics list, used to render batches
-    private _renderableBatchesHash: Record<number, BatchableGraphics[]> = Object.create(null);
+    private _graphicsBatchesHash: Record<number, BatchableGraphics[]> = Object.create(null);
     private _adaptor: GraphicsAdaptor;
 
     constructor(renderer: GraphicsSystem, adaptor: GraphicsAdaptor)
@@ -63,13 +54,13 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
         this._adaptor.init();
     }
 
-    public validateRenderable(renderable: Renderable<GraphicsView>): boolean
+    public validateRenderable(graphics: Graphics): boolean
     {
         // assume context is dirty..
 
-        const context = renderable.view.context;
+        const context = graphics.context;
 
-        const wasBatched = !!this._renderableBatchesHash[renderable.uid];
+        const wasBatched = !!this._graphicsBatchesHash[graphics.uid];
 
         const gpuContext = this.renderer.graphicsContext.updateGpuContext(context);
 
@@ -82,37 +73,34 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
         return false;
     }
 
-    public addRenderable(renderable: Renderable<GraphicsView>, instructionSet: InstructionSet)
+    public addRenderable(graphics: Graphics, instructionSet: InstructionSet)
     {
-        const gpuContext = this.renderer.graphicsContext.updateGpuContext(renderable.view.context);
+        const gpuContext = this.renderer.graphicsContext.updateGpuContext(graphics.context);
 
         // need to get batches here.. as we need to know if we can batch or not..
         // this also overrides the current batches..
 
-        if (renderable.view._didUpdate)
+        if (graphics._didGraphicsUpdate)
         {
-            renderable.view._didUpdate = false;
+            graphics._didGraphicsUpdate = false;
 
-            this._rebuild(renderable);
+            this._rebuild(graphics);
         }
 
         if (gpuContext.isBatchable)
         {
-            this._addToBatcher(renderable, instructionSet);
+            this._addToBatcher(graphics, instructionSet);
         }
         else
         {
             this.renderer.renderPipes.batch.break(instructionSet);
-            instructionSet.add({
-                renderPipeId: 'graphics',
-                renderable
-            } as GraphicsInstruction);
+            instructionSet.add(graphics);
         }
     }
 
-    public updateRenderable(renderable: Renderable<GraphicsView>)
+    public updateRenderable(graphics: Graphics)
     {
-        const batches = this._renderableBatchesHash[renderable.uid];
+        const batches = this._graphicsBatchesHash[graphics.uid];
 
         if (batches)
         {
@@ -125,17 +113,20 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
         }
     }
 
-    public destroyRenderable(renderable: Renderable<GraphicsView>)
+    public destroyRenderable(graphics: Graphics)
     {
-        this._removeBatchForRenderable(renderable.uid);
+        if (this._graphicsBatchesHash[graphics.uid])
+        {
+            this._removeBatchForRenderable(graphics.uid);
+        }
     }
 
-    public execute({ renderable }: GraphicsInstruction)
+    public execute(graphics: Graphics)
     {
-        if (!renderable.isRenderable) return;
+        if (!graphics.isRenderable) return;
 
         const renderer = this.renderer;
-        const context = renderable.view.context;
+        const context = graphics.context;
         const contextSystem = renderer.graphicsContext;
 
         // early out if there is no actual visual stuff...
@@ -144,48 +135,48 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
 
         const shader = context.customShader || this._adaptor.shader;
 
-        this.state.blendMode = renderable.rgBlendMode;
+        this.state.blendMode = graphics.groupBlendMode;
 
         const localUniforms = shader.resources.localUniforms.uniforms;
 
-        localUniforms.uTransformMatrix = renderable.rgTransform;
-        localUniforms.uRound = renderer._roundPixels | renderable.view.roundPixels;
+        localUniforms.uTransformMatrix = graphics.groupTransform;
+        localUniforms.uRound = renderer._roundPixels | graphics._roundPixels;
 
         color32BitToUniform(
-            renderable.rgColorAlpha,
+            graphics.groupColorAlpha,
             localUniforms.uColor,
-            0
+            0,
         );
 
-        this._adaptor.execute(this, renderable);
+        this._adaptor.execute(this, graphics);
     }
 
-    private _rebuild(renderable: Renderable<GraphicsView>)
+    private _rebuild(graphics: Graphics)
     {
-        const wasBatched = !!this._renderableBatchesHash[renderable.uid];
+        const wasBatched = !!this._graphicsBatchesHash[graphics.uid];
 
-        const gpuContext = this.renderer.graphicsContext.updateGpuContext(renderable.view.context);
+        const gpuContext = this.renderer.graphicsContext.updateGpuContext(graphics.context);
 
         // TODO POOL the old batches!
 
         if (wasBatched)
         {
-            this._removeBatchForRenderable(renderable.uid);
+            this._removeBatchForRenderable(graphics.uid);
         }
 
         if (gpuContext.isBatchable)
         {
-            this._initBatchesForRenderable(renderable);
+            this._initBatchesForRenderable(graphics);
         }
 
-        renderable.view.batched = gpuContext.isBatchable;
+        graphics.batched = gpuContext.isBatchable;
     }
 
-    private _addToBatcher(renderable: Renderable<GraphicsView>, instructionSet: InstructionSet)
+    private _addToBatcher(graphics: Graphics, instructionSet: InstructionSet)
     {
         const batchPipe = this.renderer.renderPipes.batch;
 
-        const batches = this._getBatchesForRenderable(renderable);
+        const batches = this._getBatchesForRenderable(graphics);
 
         for (let i = 0; i < batches.length; i++)
         {
@@ -195,18 +186,18 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
         }
     }
 
-    private _getBatchesForRenderable(renderable: Renderable<GraphicsView>): BatchableGraphics[]
+    private _getBatchesForRenderable(graphics: Graphics): BatchableGraphics[]
     {
-        return this._renderableBatchesHash[renderable.uid] || this._initBatchesForRenderable(renderable);
+        return this._graphicsBatchesHash[graphics.uid] || this._initBatchesForRenderable(graphics);
     }
 
-    private _initBatchesForRenderable(renderable: Renderable<GraphicsView>): BatchableGraphics[]
+    private _initBatchesForRenderable(graphics: Graphics): BatchableGraphics[]
     {
-        const context = renderable.view.context;
+        const context = graphics.context;
 
         const gpuContext: GpuGraphicsContext = this.renderer.graphicsContext.getGpuContext(context);
 
-        const roundPixels = (this.renderer._roundPixels | renderable.view.roundPixels) as 0 | 1;
+        const roundPixels = (this.renderer._roundPixels | graphics._roundPixels) as 0 | 1;
 
         const batches = gpuContext.batches.map((batch) =>
         {
@@ -215,32 +206,32 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
 
             batch.copyTo(batchClone);
 
-            batchClone.renderable = renderable;
+            batchClone.renderable = graphics;
 
             batchClone.roundPixels = roundPixels;
 
             return batchClone;
         });
 
-        this._renderableBatchesHash[renderable.uid] = batches;
+        this._graphicsBatchesHash[graphics.uid] = batches;
 
         // TODO perhaps manage this outside this pipe? (a bit like how we update / add)
-        renderable.on('destroyed', () =>
+        graphics.on('destroyed', () =>
         {
-            this.destroyRenderable(renderable);
+            this.destroyRenderable(graphics);
         });
 
         return batches;
     }
 
-    private _removeBatchForRenderable(renderableUid: number)
+    private _removeBatchForRenderable(graphicsUid: number)
     {
-        this._renderableBatchesHash[renderableUid].forEach((batch) =>
+        this._graphicsBatchesHash[graphicsUid].forEach((batch) =>
         {
             BigPool.return(batch as PoolItem);
         });
 
-        this._renderableBatchesHash[renderableUid] = null;
+        this._graphicsBatchesHash[graphicsUid] = null;
     }
 
     public destroy()
@@ -251,11 +242,11 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
         this._adaptor = null;
         this.state = null;
 
-        for (const i in this._renderableBatchesHash)
+        for (const i in this._graphicsBatchesHash)
         {
             this._removeBatchForRenderable(i as unknown as number);
         }
 
-        this._renderableBatchesHash = null;
+        this._graphicsBatchesHash = null;
     }
 }

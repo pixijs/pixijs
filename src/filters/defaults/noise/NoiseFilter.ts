@@ -6,11 +6,13 @@ import vertex from '../defaultFilter.vert';
 import fragment from './noise.frag';
 import source from './noise.wgsl';
 
+import type { FilterOptions } from '../../Filter';
+
 /**
  * Options for NoiseFilter
  * @memberof filters
  */
-export interface NoiseFilterOptions
+export interface NoiseFilterOptions extends FilterOptions
 {
     /** The amount of noise to apply, this value should be in the range (0, 1]. */
     noise?: number;
@@ -27,19 +29,18 @@ export interface NoiseFilterOptions
  */
 export class NoiseFilter extends Filter
 {
+    public static readonly defaultOptions: NoiseFilterOptions = {
+        noise: 0.5,
+    };
+
     /**
      * @param options - The options of the noise filter.
      */
     constructor(options: NoiseFilterOptions = {})
     {
-        options = {
-            ...{
-                noise: 0.5,
-                seed: Math.random(),
-            }, ...options
-        };
+        options = { ...NoiseFilter.defaultOptions, ...options };
 
-        const gpuProgram = new GpuProgram({
+        const gpuProgram = GpuProgram.from({
             vertex: {
                 source,
                 entryPoint: 'mainVertex',
@@ -50,29 +51,28 @@ export class NoiseFilter extends Filter
             },
         });
 
-        const glProgram = new GlProgram({
+        const glProgram = GlProgram.from({
             vertex,
             fragment,
             name: 'noise-filter'
         });
 
+        const { noise, seed, ...rest } = options;
+
         super({
+            ...rest,
             gpuProgram,
             glProgram,
             resources: {
                 noiseUniforms: new UniformGroup({
-                    uNoise: { value: options.noise, type: 'f32' },
-                    uSeed: { value: options.seed ?? Math.random(), type: 'f32' },
+                    uNoise: { value: 1, type: 'f32' },
+                    uSeed: { value: 1, type: 'f32' },
                 })
             },
-            resolution: 1,
         });
 
-        const noise = options.noise ?? 0.5;
-        const seed = options.seed ?? Math.random();
-
         this.noise = noise;
-        this.seed = seed;
+        this.seed = seed ?? Math.random();
     }
 
     /**

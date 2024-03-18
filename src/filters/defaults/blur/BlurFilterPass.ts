@@ -64,7 +64,7 @@ export class BlurFilterPass extends Filter
             gpuProgram,
             resources: {
                 blurUniforms: {
-                    strength: { value: 0, type: 'f32' },
+                    uStrength: { value: 0, type: 'f32' },
                 }
             },
             ...options
@@ -95,7 +95,7 @@ export class BlurFilterPass extends Filter
         clearMode: boolean
     ): void
     {
-        this._uniforms.strength = this.strength / this.passes;
+        this._uniforms.uStrength = this.strength / this.passes;
 
         if (this.passes === 1)
         {
@@ -143,7 +143,7 @@ export class BlurFilterPass extends Filter
 
     /**
      * Sets the quality of the blur by modifying the number of passes. More passes means higher
-     * quality bluring but the lower the performance.
+     * quality blurring but the lower the performance.
      * @default 4
      */
     get quality(): number

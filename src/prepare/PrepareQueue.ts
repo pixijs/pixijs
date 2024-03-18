@@ -17,6 +17,7 @@ import type { PrepareQueueItem, PrepareSourceItem } from './PrepareBase';
 /**
  * Part of the prepare system. Responsible for uploading all the items to the GPU.
  * This class extends the base functionality and resolves given resource items ready for the queue.
+ * @memberof rendering
  */
 export abstract class PrepareQueue extends PrepareBase
 {
@@ -60,7 +61,7 @@ export abstract class PrepareQueue extends PrepareBase
         }
         else if (container instanceof Text)
         {
-            queue.push(container.view);
+            queue.push(container);
         }
         else if (container instanceof Graphics)
         {

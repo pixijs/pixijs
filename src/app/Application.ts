@@ -1,25 +1,28 @@
 import { extensions, ExtensionType } from '../extensions/Extensions';
 import { autoDetectRenderer } from '../rendering/renderers/autoDetectRenderer';
 import { Container } from '../scene/container/Container';
+import { deprecation, v8_0_0 } from '../utils/logging/deprecation';
 
 import type { Rectangle } from '../maths/shapes/Rectangle';
 import type { AutoDetectOptions } from '../rendering/renderers/autoDetectRenderer';
+import type { RendererDestroyOptions } from '../rendering/renderers/shared/system/AbstractRenderer';
 import type { Renderer } from '../rendering/renderers/types';
 import type { DestroyOptions } from '../scene/container/destroyTypes';
 
 /**
  * The app module provides a set of classes to use as a starting point when building applications.
  *
- * This module has a mixin for a TickerPlugin and a ResizePlugin. These will need to be imported
- * if you are managing your own renderer.
- * Usage:
+ * <aside>This module has a mixin for <code>TickerPlugin</code> and <code>ResizePlugin</code>.
+ * These will need to be imported if you are managing your own renderer.</aside>
+ *
  * ```js
- * import 'pixi.js/app';
  * import { Application } from 'pixi.js';
  *
  * const app = new Application();
+ *
  * await app.init();
- * // Add the canvas to the DOM
+ *
+ * // don't forget to add the canvas to the DOM
  * document.body.appendChild(app.canvas);
  * ```
  * @namespace app
@@ -29,24 +32,26 @@ import type { DestroyOptions } from '../scene/container/destroyTypes';
  * Any plugin that's usable for Application should contain these methods.
  * @example
  * import { ApplicationPlugin } from 'pixi.js';
- * class MyPlugin implements ApplicationPlugin
- * {
- *    static init(options)
+ *
+ * const plugin: ApplicationPlugin = {
+ *    init: (options: Partial<ApplicationOptions>) =>
  *    {
- *      // do something with options
- *    }
- *    static destroy()
+ *       // handle init here, use app options if needed
+ *    },
+ *    destroy: () =>
  *    {
- *     // destruction code here
+ *       // handle destruction code here
  *    }
  * }
  * @memberof app
+ * @see {@link app.ApplicationOptions}
+ * @ignore
  */
 export interface ApplicationPlugin
 {
     /**
      * Called when Application is constructed, scoped to Application instance.
-     * Passes in `options` as the only argument, which are Application init options.
+     * Passes in `options` as the only argument, which are Application `init()` options.
      * @param {object} options - Application options.
      */
     init(options: Partial<ApplicationOptions>): void;
@@ -55,13 +60,23 @@ export interface ApplicationPlugin
 }
 
 /**
- * Application options supplied to the applications init method.
+ * Application options supplied to the {@link app.Application#init} method.
  * @memberof app
+ * @example
+ * import { Application } from 'pixi.js';
+ *
+ * const app = new Application();
+ *
+ * await app.init({
+ *    autoStart: false,
+ *    resizeTo: window,
+ *    sharedTicker: true,
+ * });
  */
-export interface ApplicationOptions extends AutoDetectOptions, PixiMixins.ApplicationOptions {}
+export interface ApplicationOptions extends AutoDetectOptions, PixiMixins.ApplicationOptions { }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface Application extends PixiMixins.Application {}
+export interface Application extends PixiMixins.Application { }
 
 /**
  * Convenience class to create a new PixiJS application.
@@ -73,7 +88,7 @@ export interface Application extends PixiMixins.Application {}
  * // Create the application
  * const app = new Application();
  *
- * await app.init();
+ * await app.init({ width: 800, height: 600 });
  *
  * // Add the view to the DOM
  * document.body.appendChild(app.canvas);
@@ -90,10 +105,7 @@ export class Application<R extends Renderer = Renderer>
      */
     public static _plugins: ApplicationPlugin[] = [];
 
-    /**
-     * The root display container that's rendered.
-     * @member {Container}
-     */
+    /** The root display container that's rendered. */
     public stage: Container = new Container();
 
     /**
@@ -102,18 +114,30 @@ export class Application<R extends Renderer = Renderer>
      */
     public renderer: R;
 
+    /** Create new Application instance */
+    constructor();
+
+    /** @deprecated since 8.0.0 */
+    constructor(options?: Partial<ApplicationOptions>);
+
+    /** @ignore */
+    constructor(...args: [Partial<ApplicationOptions>] | [])
+    {
+        // #if _DEBUG
+        if (args[0] !== undefined)
+        {
+            deprecation(v8_0_0, 'Application constructor options are deprecated, please use Application.init() instead.');
+        }
+        // #endif
+    }
+
     /**
      * @param options - The optional application and renderer parameters.
      */
     public async init(options?: Partial<ApplicationOptions>)
     {
         // The default options
-        options = {
-            ...{
-                // forceCanvas: false,
-            },
-            ...options,
-        };
+        options = { ...options };
 
         this.renderer = await autoDetectRenderer(options as ApplicationOptions) as R;
 
@@ -133,6 +157,7 @@ export class Application<R extends Renderer = Renderer>
     /**
      * Reference to the renderer's canvas element.
      * @readonly
+     * @member {HTMLCanvasElement}
      */
     get canvas(): R['canvas']
     {
@@ -140,8 +165,21 @@ export class Application<R extends Renderer = Renderer>
     }
 
     /**
+     * Reference to the renderer's canvas element.
+     * @member {HTMLCanvasElement}
+     * @deprecated since 8.0.0
+     */
+    get view(): R['canvas']
+    {
+        // #if _DEBUG
+        deprecation(v8_0_0, 'Application.view is deprecated, please use Application.canvas instead.');
+        // #endif
+
+        return this.renderer.canvas as R['canvas'];
+    }
+
+    /**
      * Reference to the renderer's screen rectangle. Its safe to use as `filterArea` or `hitArea` for the whole screen.
-     * @member {Rectangle}
      * @readonly
      */
     get screen(): Rectangle
@@ -151,8 +189,9 @@ export class Application<R extends Renderer = Renderer>
 
     /**
      * Destroys the application and all of its resources.
-     * @param {object|boolean} [options=false] - The options for destroying the application.
-     * @param {boolean} [options.removeView=false] - Whether to remove the application's canvas element from the DOM.
+     * @param {object|boolean}[rendererDestroyOptions=false] - The options for destroying the renderer.
+     * @param {boolean}[rendererDestroyOptions.removeView=false] - Removes the Canvas element from the DOM.
+     * @param {object|boolean} [options=false] - The options for destroying the stage.
      * @param {boolean} [options.children=false] - If set to true, all the children will have their destroy method
      * called as well. `options` will be passed on to those calls.
      * @param {boolean} [options.texture=false] - Only used for children with textures e.g. Sprites.
@@ -165,7 +204,7 @@ export class Application<R extends Renderer = Renderer>
      * If options.children is set to true,
      * it should destroy the context of the child graphics.
      */
-    public destroy(options: DestroyOptions = false): void
+    public destroy(rendererDestroyOptions: RendererDestroyOptions = false, options: DestroyOptions = false): void
     {
         // Destroy plugins in the opposite order
         // which they were constructed
@@ -180,7 +219,7 @@ export class Application<R extends Renderer = Renderer>
         this.stage.destroy(options);
         this.stage = null;
 
-        this.renderer.destroy(options);
+        this.renderer.destroy(rendererDestroyOptions);
         this.renderer = null;
     }
 }

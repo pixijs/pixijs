@@ -1,14 +1,10 @@
 import { FederatedEvent } from '../events/FederatedEvent';
-import { extensions, ExtensionType } from '../extensions/Extensions';
+import { ExtensionType } from '../extensions/Extensions';
 import { isMobile } from '../utils/browser/isMobile';
 import { removeItems } from '../utils/data/removeItems';
 import { type AccessibleHTMLElement } from './accessibilityTarget';
 
 import type { Rectangle } from '../maths/shapes/Rectangle';
-// @ts-expect-error - used for jsdoc typedefs
-import type { WebGLRenderer } from '../rendering/renderers/gl/WebGLRenderer';
-// @ts-expect-error - used for jsdoc typedefs
-import type { WebGPURenderer } from '../rendering/renderers/gpu/WebGPURenderer';
 import type { System } from '../rendering/renderers/shared/system/System';
 import type { Renderer } from '../rendering/renderers/types';
 import type { Container } from '../scene/container/Container';
@@ -22,9 +18,12 @@ import type { isMobileResult } from '../utils/browser/isMobile';
  * Usage:
  * ```js
  * import 'pixi.js/accessibility';
- *
- * container.accessible = true; // see AccessibleTarget for more properties
  * ```
+ * To make an object accessible do the following:
+ * ```js
+ * container.accessible = true; // object is now accessible to screen readers!
+ * ```
+ * See {@link accessibility.AccessibleOptions} for more accessibility related properties that can be set.
  * @namespace accessibility
  */
 
@@ -58,7 +57,7 @@ export interface AccessibilityOptions
  * An instance of this class is automatically created by default, and can be found at `renderer.accessibility`
  * @memberof accessibility
  */
-export class AccessibilitySystem implements System
+export class AccessibilitySystem implements System<AccessibilityOptions>
 {
     /** @ignore */
     public static extension = {
@@ -109,7 +108,6 @@ export class AccessibilitySystem implements System
     /**
      * @param {WebGLRenderer|WebGPURenderer} renderer - A reference to the current renderer
      */
-    // eslint-disable-next-line @typescript-eslint/no-parameter-properties
     constructor(renderer: Renderer, private readonly _mobileInfo: isMobileResult = isMobile)
     {
         this._hookDiv = null;
@@ -378,7 +376,7 @@ export class AccessibilitySystem implements System
                 }
                 else
                 {
-                    hitArea = child.getBounds();
+                    hitArea = child.getBounds().rectangle;
 
                     this._capHitArea(hitArea);
 
@@ -391,19 +389,19 @@ export class AccessibilitySystem implements System
                     // update button titles and hints if they exist and they've changed
                     if (div.title !== child.accessibleTitle && child.accessibleTitle !== null)
                     {
-                        div.title = child.accessibleTitle;
+                        div.title = child.accessibleTitle || '';
                     }
                     if (div.getAttribute('aria-label') !== child.accessibleHint
-                       && child.accessibleHint !== null)
+                        && child.accessibleHint !== null)
                     {
-                        div.setAttribute('aria-label', child.accessibleHint);
+                        div.setAttribute('aria-label', child.accessibleHint || '');
                     }
                 }
 
                 // the title or index may have changed, if so lets update it!
                 if (child.accessibleTitle !== div.title || child.tabIndex !== div.tabIndex)
                 {
-                    div.title = child.accessibleTitle;
+                    div.title = child.accessibleTitle || '';
                     div.tabIndex = child.tabIndex;
                     if (this.debug)
                     {
@@ -517,7 +515,7 @@ export class AccessibilitySystem implements System
             div.title = container.accessibleTitle;
         }
         else if (!container.accessibleHint
-                 || container.accessibleHint === null)
+            || container.accessibleHint === null)
         {
             div.title = `container ${container.tabIndex}`;
         }
@@ -642,5 +640,3 @@ export class AccessibilitySystem implements System
         this._renderer = null;
     }
 }
-
-extensions.add(AccessibilitySystem);

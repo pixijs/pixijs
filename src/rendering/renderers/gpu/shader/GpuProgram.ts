@@ -1,9 +1,12 @@
-import { extractStructAndGroups } from './extractStructAndGroups';
-import { generateGpuLayoutGroups } from './generateGpuLayoutGroups';
-import { generateLayoutHash } from './generateLayoutHash';
-import { removeStructAndGroupDuplicates } from './removeStructAndGroupDuplicates';
+import { createIdFromString } from '../../shared/utils/createIdFromString';
+import { extractAttributesFromGpuProgram } from './utils/extractAttributesFromGpuProgram';
+import { extractStructAndGroups } from './utils/extractStructAndGroups';
+import { generateGpuLayoutGroups } from './utils/generateGpuLayoutGroups';
+import { generateLayoutHash } from './utils/generateLayoutHash';
+import { removeStructAndGroupDuplicates } from './utils/removeStructAndGroupDuplicates';
 
-import type { StructsAndGroups } from './extractStructAndGroups';
+import type { ExtractedAttributeData } from '../../gl/shader/program/extractAttributesFromGlProgram';
+import type { StructsAndGroups } from './utils/extractStructAndGroups';
 
 /**
  * a WebGPU descriptions of how the program is layed out
@@ -94,19 +97,38 @@ export class GpuProgram
     /** The vertex glsl shader source */
     public readonly vertex?: ProgramSource;
 
-    /** @todo */
+    /**
+     * Mapping of uniform names to group indexes for organizing shader program uniforms.
+     * Automatically generated from shader sources if not provided.
+     * @example
+     * // Assuming a shader with two uniforms, `u_time` and `u_resolution`, grouped respectively:
+     * [
+     *   { "u_time": 0 },
+     *   { "u_resolution": 1 }
+     * ]
+     */
     public readonly layout: ProgramLayout;
 
-    /** @todo */
+    /**
+     * Configuration for the WebGPU bind group layouts, detailing resource organization for the shader.
+     * Generated from shader sources if not explicitly provided.
+     * @example
+     * // Assuming a shader program that requires two bind groups:
+     * [
+     *   // First bind group layout entries
+     *   [{ binding: 0, visibility: GPUShaderStage.VERTEX, type: "uniform-buffer" }],
+     *   // Second bind group layout entries
+     *   [{ binding: 1, visibility: GPUShaderStage.FRAGMENT, type: "sampler" },
+     *    { binding: 2, visibility: GPUShaderStage.FRAGMENT, type: "sampled-texture" }]
+     * ]
+     */
     public readonly gpuLayout: ProgramPipelineLayoutDescription;
 
-    /** @internal */
+    /**
+     * @internal
+     * @ignore
+     */
     public _layoutKey = 0;
-    /** @internal */
-    public _gpuLayout: {
-        bindGroups: GPUBindGroupLayout[];
-        pipeline: GPUPipelineLayout | 'auto';
-    };
 
     /** the structs and groups extracted from the shader sources */
     public readonly structsAndGroups: StructsAndGroups;
@@ -115,6 +137,12 @@ export class GpuProgram
      * Makes it much easier to debug!
      */
     public readonly name: string;
+    private _attributeData: Record<string, ExtractedAttributeData>;
+
+    /** if true, the program will automatically assign global uniforms to group[0] */
+    public autoAssignGlobalUniforms: boolean;
+    /** if true, the program will automatically assign local uniforms to group[1] */
+    public autoAssignLocalUniforms: boolean;
 
     /**
      * Create a new GpuProgram
@@ -150,12 +178,32 @@ export class GpuProgram
         // struct properties!
 
         this.gpuLayout = gpuLayout ?? generateGpuLayoutGroups(this.structsAndGroups);
+
+        this.autoAssignGlobalUniforms = !!(this.layout[0]?.globalUniforms !== undefined);
+        this.autoAssignLocalUniforms = !!(this.layout[1]?.localUniforms !== undefined);
+
+        this._generateProgramKey();
     }
 
+    // TODO maker this pure
+    private _generateProgramKey()
+    {
+        const { vertex, fragment } = this;
+
+        const bigKey = vertex.source + fragment.source + vertex.entryPoint + fragment.entryPoint;
+
+        this._layoutKey = createIdFromString(bigKey, 'program');
+    }
+
+    get attributeData()
+    {
+        this._attributeData ??= extractAttributesFromGpuProgram(this.vertex);
+
+        return this._attributeData;
+    }
     /** destroys the program */
     public destroy(): void
     {
-        this._gpuLayout = null;
         (this.gpuLayout as null) = null;
         (this.layout as null) = null;
         (this.structsAndGroups as null) = null;

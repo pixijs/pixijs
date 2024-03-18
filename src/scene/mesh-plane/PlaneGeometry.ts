@@ -4,7 +4,16 @@ import { MeshGeometry } from '../mesh/shared/MeshGeometry';
 import type { MeshGeometryOptions } from '../mesh/shared/MeshGeometry';
 
 /**
- * Options for the {@link PlaneGeometry} constructor.
+ * Constructor options used for `PlaneGeometry` instances.
+ * ```js
+ * const planeGeometry = new PlaneGeometry({
+ *    width: 100,
+ *    height: 100,
+ *    verticesX: 10,
+ *    verticesY: 10,
+ * });
+ * ```
+ * @see {@link scene.PlaneGeometry}
  * @memberof scene
  */
 export interface PlaneGeometryOptions
@@ -42,11 +51,7 @@ export class PlaneGeometry extends MeshGeometry
     public height: number;
 
     /**
-     * @param options - Options to be applied to plane geometry
-     * @param options.width - Width of plane
-     * @param options.height - Height of plane
-     * @param options.verticesX - Number of vertices on x-axis
-     * @param options.verticesY - Number of vertices on y-axis
+     * @param {PlaneGeometryOptions} options - Options to be applied to plane geometry
      */
     constructor(options: PlaneGeometryOptions);
     /** @deprecated since 8.0.0 */
@@ -59,8 +64,10 @@ export class PlaneGeometry extends MeshGeometry
 
         if (typeof options === 'number')
         {
+            // #if _DEBUG
             // eslint-disable-next-line max-len
             deprecation(v8_0_0, 'PlaneGeometry constructor changed please use { width, height, verticesX, verticesY } instead');
+            // #endif
 
             options = {
                 width: options,

@@ -6,8 +6,9 @@ import { Geometry } from '../rendering/renderers/shared/geometry/Geometry';
 import { UniformGroup } from '../rendering/renderers/shared/shader/UniformGroup';
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { TexturePool } from '../rendering/renderers/shared/texture/TexturePool';
+import { type Renderer, RendererType } from '../rendering/renderers/types';
 import { Bounds } from '../scene/container/bounds/Bounds';
-import { getGlobalBounds } from '../scene/container/bounds/getGlobalBounds';
+import { getFastGlobalBounds } from '../scene/container/bounds/getFastGlobalBounds';
 import { getGlobalRenderableBounds } from '../scene/container/bounds/getRenderableBounds';
 import { warn } from '../utils/logging/warn';
 
@@ -18,7 +19,6 @@ import type { Renderable } from '../rendering/renderers/shared/Renderable';
 import type { RenderTarget } from '../rendering/renderers/shared/renderTarget/RenderTarget';
 import type { RenderSurface } from '../rendering/renderers/shared/renderTarget/RenderTargetSystem';
 import type { System } from '../rendering/renderers/shared/system/System';
-import type { Renderer } from '../rendering/renderers/types';
 import type { Container } from '../scene/container/Container';
 import type { Sprite } from '../scene/sprite/Sprite';
 import type { Filter } from './Filter';
@@ -31,7 +31,7 @@ const quadGeometry = new Geometry({
     attributes: {
         aPosition: {
             buffer: new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]),
-            shaderLocation: 0,
+            location: 0,
             format: 'float32x2',
             stride: 2 * 4,
             offset: 0,
@@ -73,16 +73,20 @@ export interface FilterInstruction extends Instruction
 export interface FilterData
 {
     skip: boolean;
+    enabledLength?: number;
     inputTexture: Texture
     bounds: Bounds,
     blendRequired: boolean,
     container: Container,
     filterEffect: FilterEffect,
-    previousRenderSurface: RenderTarget,
+    previousRenderSurface: RenderSurface,
     backTexture?: Texture,
 }
 
-// eslint-disable-next-line max-len
+/**
+ * System that manages the filter pipeline
+ * @memberof rendering
+ */
 export class FilterSystem implements System
 {
     /** @ignore */
@@ -100,12 +104,12 @@ export class FilterSystem implements System
     private _filterStack: FilterData[] = [];
 
     private readonly _filterGlobalUniforms = new UniformGroup({
-        inputSize: { value: new Float32Array(4), type: 'vec4<f32>' },
-        inputPixel: { value: new Float32Array(4), type: 'vec4<f32>' },
-        inputClamp: { value: new Float32Array(4), type: 'vec4<f32>' },
-        outputFrame: { value: new Float32Array(4), type: 'vec4<f32>' },
-        globalFrame: { value: new Float32Array(4), type: 'vec4<f32>' },
-        outputTexture: { value: new Float32Array(4), type: 'vec4<f32>' },
+        uInputSize: { value: new Float32Array(4), type: 'vec4<f32>' },
+        uInputPixel: { value: new Float32Array(4), type: 'vec4<f32>' },
+        uInputClamp: { value: new Float32Array(4), type: 'vec4<f32>' },
+        uOutputFrame: { value: new Float32Array(4), type: 'vec4<f32>' },
+        uGlobalFrame: { value: new Float32Array(4), type: 'vec4<f32>' },
+        uOutputTexture: { value: new Float32Array(4), type: 'vec4<f32>' },
     });
 
     private readonly _globalFilterBindGroup: BindGroup = new BindGroup({});
@@ -114,6 +118,15 @@ export class FilterSystem implements System
     constructor(renderer: Renderer)
     {
         this.renderer = renderer;
+    }
+
+    /**
+     * The back texture of the currently active filter. Requires the filter to have `blendRequired` set to true.
+     * @readonly
+     */
+    public get activeBackTexture(): Texture | undefined
+    {
+        return this._activeFilterData?.backTexture;
     }
 
     public push(instruction: FilterInstruction)
@@ -133,6 +146,14 @@ export class FilterSystem implements System
 
         this._filterStackIndex++;
 
+        // if there are no filters, we skip the pass
+        if (filters.length === 0)
+        {
+            filterData.skip = true;
+
+            return;
+        }
+
         const bounds: Bounds = filterData.bounds;
 
         // this path is used by the blend modes mostly!
@@ -145,6 +166,8 @@ export class FilterSystem implements System
         // if a filterArea is provided, we save our selves some measuring and just use that area supplied
         else if (instruction.filterEffect.filterArea)
         {
+            bounds.clear();
+
             // transform the filterArea into global space..
             bounds.addRect(instruction.filterEffect.filterArea);
 
@@ -155,26 +178,20 @@ export class FilterSystem implements System
         // measuring.
         else
         {
-            getGlobalBounds(instruction.container, true, bounds);
+            getFastGlobalBounds(instruction.container, bounds);
         }
         // get GLOBAL bounds of the item we are going to apply the filter to
 
-        // if there are no filters, we skip the pass
-        if (filters.length === 0)
-        {
-            filterData.skip = true;
-
-            return;
-        }
+        const colorTextureSource = renderer.renderTarget.rootRenderTarget.colorTexture.source;
 
         // next we get the settings for the filter
         // we need to find the LOWEST resolution for the filter list
-        let resolution = renderer.renderTarget.rootRenderTarget.colorTexture.source._resolution;
+        let resolution = colorTextureSource._resolution;
 
         // Padding is additive to add padding to our padding
         let padding = 0;
         // if this is true for any filter, it should be true
-        let antialias = renderer.renderTarget.rootRenderTarget.colorTexture.source.antialias;
+        let antialias = colorTextureSource.antialias;
         // true if any filter requires the previous render target
         let blendRequired = false;
         // true if any filter in the list is enabled
@@ -255,7 +272,7 @@ export class FilterSystem implements System
         filterData.container = instruction.container;
         filterData.filterEffect = instruction.filterEffect;
 
-        filterData.previousRenderSurface = renderer.renderTarget.renderTarget;
+        filterData.previousRenderSurface = renderer.renderTarget.renderSurface;
 
         // bind...
         // get a P02 texture from our pool...
@@ -303,7 +320,9 @@ export class FilterSystem implements System
             // if we don't do this, we won't be able to copy pixels for the background
             const previousBounds = this._filterStackIndex > 0 ? this._filterStack[this._filterStackIndex - 1].bounds : null;
 
-            backTexture = this.getBackTexture(filterData.previousRenderSurface, bounds, previousBounds);
+            const renderTarget = renderer.renderTarget.getRenderTarget(filterData.previousRenderSurface);
+
+            backTexture = this.getBackTexture(renderTarget, bounds, previousBounds);
         }
 
         filterData.backTexture = backTexture;
@@ -400,7 +419,8 @@ export class FilterSystem implements System
             lastRenderSurface,
             backTexture,
             { x, y },
-            { width, height }
+            { width, height },
+            { x: 0, y: 0 }
         );
 
         return backTexture;
@@ -417,7 +437,7 @@ export class FilterSystem implements System
         const offset = Point.shared;
         const previousRenderSurface = filterData.previousRenderSurface;
 
-        const isFinalTarget = previousRenderSurface === this.renderer.renderTarget.getRenderTarget(output);
+        const isFinalTarget = previousRenderSurface === output;
 
         let resolution = this.renderer.renderTarget.rootRenderTarget.colorTexture.source._resolution;
 
@@ -438,21 +458,31 @@ export class FilterSystem implements System
         const filterUniforms = this._filterGlobalUniforms;
         const uniforms = filterUniforms.uniforms;
 
-        const outputFrame = uniforms.outputFrame;
-        const inputSize = uniforms.inputSize;
-        const inputPixel = uniforms.inputPixel;
-        const inputClamp = uniforms.inputClamp;
-        const globalFrame = uniforms.globalFrame;
-        const outputTexture = uniforms.outputTexture;
+        const outputFrame = uniforms.uOutputFrame;
+        const inputSize = uniforms.uInputSize;
+        const inputPixel = uniforms.uInputPixel;
+        const inputClamp = uniforms.uInputClamp;
+        const globalFrame = uniforms.uGlobalFrame;
+        const outputTexture = uniforms.uOutputTexture;
 
         // are we rendering back to the original surface?
         if (isFinalTarget)
         {
-            // get previous bounds..
-            if (this._filterStackIndex > 0)
+            let lastIndex = this._filterStackIndex;
+
+            // get previous bounds.. we must take into account skipped filters also..
+            while (lastIndex > 0)
             {
-                offset.x = this._filterStack[this._filterStackIndex - 1].bounds.minX;
-                offset.y = this._filterStack[this._filterStackIndex - 1].bounds.minY;
+                lastIndex--;
+                const filterData = this._filterStack[this._filterStackIndex - 1];
+
+                if (!filterData.skip)
+                {
+                    offset.x = filterData.bounds.minX;
+                    offset.y = filterData.bounds.minY;
+
+                    break;
+                }
             }
 
             outputFrame[0] = bounds.minX - offset.x;
@@ -515,7 +545,7 @@ export class FilterSystem implements System
         if ((renderer as WebGPURenderer).renderPipes.uniformBatch)
         {
             const batchUniforms = (renderer as WebGPURenderer).renderPipes.uniformBatch
-                .getUniformBufferResource(this._filterGlobalUniforms);
+                .getUboResource(filterUniforms);
 
             this._globalFilterBindGroup.setResource(batchUniforms, 0);
         }
@@ -538,6 +568,12 @@ export class FilterSystem implements System
             state: filter._state,
             topology: 'triangle-list'
         });
+
+        // WebGPU blit's automatically, but WebGL does not!
+        if (renderer.type === RendererType.WEBGL)
+        {
+            renderer.renderTarget.finishRenderPass();
+        }
     }
 
     private _getFilterData(): FilterData
