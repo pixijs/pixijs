@@ -150,9 +150,10 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
             // as no point allocating the memory if we don't use it
             renderer.renderTarget.ensureDepthStencil();
 
+            renderer.stencil.setStencilMode(STENCIL_MODES.RENDERING_MASK_ADD, maskStackIndex);
+
             maskStackIndex++;
 
-            renderer.stencil.setStencilMode(STENCIL_MODES.RENDERING_MASK_ADD, maskStackIndex);
             renderer.colorMask.setMask(0);
         }
         else if (instruction.action === 'pushMaskEnd')
@@ -162,8 +163,6 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         }
         else if (instruction.action === 'popMaskBegin')
         {
-            maskStackIndex--;
-
             renderer.colorMask.setMask(0);
 
             if (maskStackIndex !== 0)
@@ -175,6 +174,8 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
                 renderer.renderTarget.clear(null, CLEAR.STENCIL);
                 renderer.stencil.setStencilMode(STENCIL_MODES.DISABLED, maskStackIndex);
             }
+
+            maskStackIndex--;
         }
         else if (instruction.action === 'popMaskEnd')
         {

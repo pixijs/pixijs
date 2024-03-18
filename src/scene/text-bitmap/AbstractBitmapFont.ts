@@ -183,7 +183,7 @@ export abstract class AbstractBitmapFont<FontType>
         return this.distanceField.type;
     }
 
-    public destroy(): void
+    public destroy(destroyTextures = false): void
     {
         this.emit('destroy', this as unknown as FontType);
 
@@ -195,5 +195,11 @@ export abstract class AbstractBitmapFont<FontType>
         }
 
         (this.chars as null) = null;
+
+        if (destroyTextures)
+        {
+            this.pages.forEach((page) => page.texture.destroy(true));
+            (this.pages as any) = null;
+        }
     }
 }

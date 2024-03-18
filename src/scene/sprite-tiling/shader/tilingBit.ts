@@ -15,7 +15,7 @@ export const tilingBit = {
             @group(2) @binding(2) var uSampler: sampler;
         `,
         main: /* wgsl */`
-            vUV = (tilingUniforms.uTextureTransform * vec3(aUV, 1.0)).xy;
+            uv = (tilingUniforms.uTextureTransform * vec3(uv, 1.0)).xy;
 
             position = (position - tilingUniforms.uSizeAnchor.zw) * tilingUniforms.uSizeAnchor.xy;
         `
@@ -64,7 +64,7 @@ export const tilingBitGl = {
         
         `,
         main: /* glsl */`
-            vUV = (uTextureTransform * vec3(aUV, 1.0)).xy;
+            uv = (uTextureTransform * vec3(aUV, 1.0)).xy;
 
             position = (position - uSizeAnchor.zw) * uSizeAnchor.xy;
         `

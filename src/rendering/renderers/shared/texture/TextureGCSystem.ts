@@ -6,22 +6,29 @@ import type { System } from '../system/System';
 /**
  * Options for the {@link TextureGCSystem}.
  * @memberof rendering
+ * @property {boolean} [textureGCActive=true] - If set to true, this will enable the garbage collector on the GPU.
+ * @property {number} [textureGCAMaxIdle=60 * 60] -
+ * The maximum idle frames before a texture is destroyed by garbage collection.
+ * @property {number} [textureGCCheckCountMax=600] - Frames between two garbage collections.
  */
 export interface TextureGCSystemOptions
 {
     /**
      * If set to true, this will enable the garbage collector on the GPU.
      * @default true
+     * @memberof rendering.SharedRendererOptions
      */
     textureGCActive: boolean;
     /**
      * The maximum idle frames before a texture is destroyed by garbage collection.
      * @default 60 * 60
+     * @memberof rendering.SharedRendererOptions
      */
     textureGCAMaxIdle: number;
     /**
      * Frames between two garbage collections.
      * @default 600
+     * @memberof rendering.SharedRendererOptions
      */
     textureGCCheckCountMax: number;
 }
