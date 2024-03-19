@@ -308,15 +308,15 @@ export class BasisParser
             }
 
             extensions = {
-                s3tc: gl.getExtension('WEBGL_compressed_texture_s3tc'),
-                s3tc_sRGB: gl.getExtension('WEBGL_compressed_texture_s3tc_srgb'), /* eslint-disable-line camelcase */
+                bptc: gl.getExtension('EXT_texture_compression_bptc'),
                 astc: gl.getExtension('WEBGL_compressed_texture_astc'),
                 etc: gl.getExtension('WEBGL_compressed_texture_etc'),
-                etc1: gl.getExtension('WEBGL_compressed_texture_etc1'),
+                s3tc: gl.getExtension('WEBGL_compressed_texture_s3tc'),
+                s3tc_sRGB: gl.getExtension('WEBGL_compressed_texture_s3tc_srgb'), /* eslint-disable-line camelcase */
                 pvrtc: gl.getExtension('WEBGL_compressed_texture_pvrtc')
                     || gl.getExtension('WEBKIT_WEBGL_compressed_texture_pvrtc'),
+                etc1: gl.getExtension('WEBGL_compressed_texture_etc1'),
                 atc: gl.getExtension('WEBGL_compressed_texture_atc'),
-                bptc: gl.getExtension('EXT_texture_compression_bptc'),
             };
         }
 
