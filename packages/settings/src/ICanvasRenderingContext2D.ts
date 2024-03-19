@@ -18,7 +18,7 @@ export interface ICanvasRenderingContext2D extends
     CanvasDrawImage,
     CanvasImageData,
     CanvasPathDrawingStyles,
-    CanvasTextDrawingStyles,
+    Omit<CanvasTextDrawingStyles, 'letterSpacing'>,
     CanvasPath
 {
     createPattern(image: CanvasImageSource | ICanvas | VideoFrame, repetition: string | null): CanvasPattern | null;
