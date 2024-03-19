@@ -39,7 +39,7 @@ export interface ICompressedTextureResourceOptions
  * data. PixiJS provides native support for the following texture file formats
  * (via {@link PIXI.loadBasis}, {@link PIXI.loadKTX}, and {@link PIXI.loadDDS}):
  *
- * **.dds** - the DirectDraw Surface file format stores DXTn (DXT-1,3,5) data. See {@link PIXI.parseDDS}
+ * **.dds** - the DirectDraw Surface file format stores DXTn (DXT-1,3,5) data or BCn (BC6H, BC7). See {@link PIXI.parseDDS}
  * **.ktx** - the Khronos Texture Container file format supports storing all the supported WebGL compression formats.
  *  See {@link PIXI.parseKTX}.
  * **.basis** - the BASIS supercompressed file format stores texture data in an internal format that is transcoded

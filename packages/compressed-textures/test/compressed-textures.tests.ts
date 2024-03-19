@@ -106,6 +106,39 @@ describe('Compressed Loader', () =>
         expect(asset).toEqual('my-image.s3tc.ktx');
     });
 
+    it('should resolve asset by name', () =>
+    {
+        const resolver = new Resolver();
+
+        resolver['_parsers'].push(resolveCompressedTextureUrl);
+
+        resolver.prefer({
+            priority: ['format'],
+            params: {
+                format: ['s3tc', 's3tc_sRGB', 'png', 'webp'],
+                resolution: 1
+            }
+        });
+
+        // ktx
+        resolver.add('ktx', ['my-image.png', 'my-image.webp', 'my-image.s3tc_sRGB.ktx', 'my-image.s3tc.ktx']);
+        const assetktx = resolver.resolveUrl('ktx');
+
+        expect(assetktx).toEqual('my-image.s3tc.ktx');
+
+        // dds
+        resolver.add('dds', ['my-image.png', 'my-image.webp', 'my-image.s3tc_sRGB.dds', 'my-image.s3tc.dds']);
+        const assetdds = resolver.resolveUrl('dds');
+
+        expect(assetdds).toEqual('my-image.s3tc.dds');
+
+        // ktx + dds
+        resolver.add('test', ['my-image.png', 'my-image.webp', 'my-image.s3tc_sRGB.ktx', 'my-image.s3tc.dds']);
+        const asset = resolver.resolveUrl('test');
+
+        expect(asset).toEqual('my-image.s3tc.dds');
+    });
+
     it('should add compressed texture formats', async () =>
     {
         await Assets.init();
