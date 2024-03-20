@@ -264,7 +264,7 @@ export class TextureSystem implements ISystem
             {
                 const glTexture = tex._glTextures[CONTEXT_UID];
 
-                if (glTexture.samplerType !== SAMPLER_TYPES.FLOAT)
+                if (!glTexture || glTexture.samplerType !== SAMPLER_TYPES.FLOAT)
                 {
                     this.renderer.texture.unbind(tex);
                 }
