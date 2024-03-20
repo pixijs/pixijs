@@ -27,7 +27,7 @@ export async function getFontCss(
         {
             if (!FontStylePromiseCache.has(fontFamily))
             {
-                const { url } = Cache.get(fontFamily);
+                const { url } = Cache.get(`${fontFamily}-and-url`);
 
                 if (i === 0)
                 {

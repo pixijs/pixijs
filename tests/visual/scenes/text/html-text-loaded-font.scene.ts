@@ -10,15 +10,15 @@ export const scene: TestScene = {
     it: 'should render html-text correctly',
     create: async (scene: Container, renderer: Renderer) =>
     {
-        await Assets.load('fonts/Herborn.ttf');
+        await Assets.load({ alias: 'Crosterian', src: 'fonts/Crosterian.woff2' });
 
         const htmlTexture = await renderer.htmlText.getTexture({
-            text: '<red>Arial</red>\n<blue>Herborn</blue>',
+            text: '<red>Arial</red>\n<blue>load</blue>',
             resolution: 1,
             style: new HTMLTextStyle({
                 fill: 'white',
                 fontSize: 25,
-                fontFamily: 'Herborn',
+                fontFamily: 'Crosterian',
                 tagStyles: {
                     red: {
                         fill: 'red',
