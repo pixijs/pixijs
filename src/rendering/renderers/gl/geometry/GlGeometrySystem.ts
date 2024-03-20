@@ -1,6 +1,7 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { getAttributeInfoFromFormat } from '../../shared/geometry/utils/getAttributeInfoFromFormat';
 import { ensureAttributes } from '../shader/program/ensureAttributes';
+import { GL_TYPES } from '../texture/const';
 import { getGlTypeFromFormat } from './utils/getGlTypeFromFormat';
 
 import type { Topology } from '../../shared/geometry/const';
@@ -380,12 +381,25 @@ export class GlGeometrySystem implements System
 
                 const attributeInfo = getAttributeInfoFromFormat(attribute.format);
 
-                gl.vertexAttribPointer(location,
-                    attributeInfo.size,
-                    getGlTypeFromFormat(attribute.format),
-                    attributeInfo.normalised,
-                    attribute.stride,
-                    attribute.offset);
+                const type = getGlTypeFromFormat(attribute.format);
+
+                if (type === GL_TYPES.FLOAT || type === GL_TYPES.HALF_FLOAT || attributeInfo.normalised)
+                {
+                    gl.vertexAttribPointer(location,
+                        attributeInfo.size,
+                        type,
+                        attributeInfo.normalised,
+                        attribute.stride,
+                        attribute.offset);
+                }
+                else
+                {
+                    gl.vertexAttribIPointer(location,
+                        attributeInfo.size,
+                        type,
+                        attribute.stride,
+                        attribute.offset);
+                }
 
                 if (attribute.instance)
                 {
