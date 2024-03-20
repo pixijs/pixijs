@@ -1,7 +1,6 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { getAttributeInfoFromFormat } from '../../shared/geometry/utils/getAttributeInfoFromFormat';
 import { ensureAttributes } from '../shader/program/ensureAttributes';
-import { GL_TYPES } from '../texture/const';
 import { getGlTypeFromFormat } from './utils/getGlTypeFromFormat';
 
 import type { Topology } from '../../shared/geometry/const';
@@ -363,8 +362,9 @@ export class GlGeometrySystem implements System
             const attribute = attributes[j];
             const buffer = attribute.buffer;
             const glBuffer = bufferSystem.getGlBuffer(buffer);
+            const programAttrib = program._attributeData[j];
 
-            if (program._attributeData[j])
+            if (programAttrib)
             {
                 if (lastBuffer !== glBuffer)
                 {
@@ -383,20 +383,20 @@ export class GlGeometrySystem implements System
 
                 const type = getGlTypeFromFormat(attribute.format);
 
-                if (type === GL_TYPES.FLOAT || type === GL_TYPES.HALF_FLOAT || attributeInfo.normalised)
+                if (programAttrib.format?.substring(1, 4) === 'int')
                 {
-                    gl.vertexAttribPointer(location,
+                    gl.vertexAttribIPointer(location,
                         attributeInfo.size,
                         type,
-                        attributeInfo.normalised,
                         attribute.stride,
                         attribute.offset);
                 }
                 else
                 {
-                    gl.vertexAttribIPointer(location,
+                    gl.vertexAttribPointer(location,
                         attributeInfo.size,
                         type,
+                        attributeInfo.normalised,
                         attribute.stride,
                         attribute.offset);
                 }
