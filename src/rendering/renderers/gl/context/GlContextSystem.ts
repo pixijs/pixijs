@@ -314,6 +314,13 @@ export class GlContextSystem implements System<ContextSystemOptions>
                 ...common,
                 colorBufferFloat: gl.getExtension('EXT_color_buffer_float'),
             };
+
+            const provokeExt = gl.getExtension('WEBGL_provoking_vertex');
+
+            if (provokeExt)
+            {
+                provokeExt.provokingVertexWEBGL(provokeExt.FIRST_VERTEX_CONVENTION_WEBGL);
+            }
         }
     }
 
