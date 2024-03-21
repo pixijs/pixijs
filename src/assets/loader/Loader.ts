@@ -249,7 +249,7 @@ export class Loader
 
                 delete this.promiseCache[url];
 
-                loadPromise.parser?.unload?.(loadedAsset, asset, this);
+                await loadPromise.parser?.unload?.(loadedAsset, asset, this);
             }
         });
 

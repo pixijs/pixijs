@@ -102,6 +102,19 @@ describe('spritesheetAsset', () =>
         expect(spriteSheet.textureSource).toBe(null);
     });
 
+    it('should unload and reload spritesheet', async () =>
+    {
+        const spriteSheet = await loader.load<Spritesheet>(`${basePath}spritesheet/spritesheet.json`);
+
+        await loader.unload(`${basePath}spritesheet/spritesheet.json`);
+
+        const textureSource = spriteSheet.textureSource;
+
+        const spriteSheetReloaded = await loader.load<Spritesheet>(`${basePath}spritesheet/spritesheet.json`);
+
+        expect(spriteSheetReloaded.textureSource).not.toBe(textureSource);
+    });
+
     it('should parse a string sprite sheet correctly', () =>
     {
         [

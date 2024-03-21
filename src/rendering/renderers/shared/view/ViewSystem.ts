@@ -14,28 +14,68 @@ import type { Texture } from '../texture/Texture';
 /**
  * Options passed to the ViewSystem
  * @memberof rendering
+ * @property {number} [width=800] - The width of the screen.
+ * @property {number} [height=600] - The height of the screen.
+ * @property {ICanvas} [canvas] - The canvas to use as a view, optional.
+ * @property {boolean} [autoDensity=false] - Resizes renderer view in CSS pixels to allow for resolutions other than 1.
+ * @property {number} [resolution] - The resolution / device pixel ratio of the renderer.
+ * @property {boolean} [antialias=false] - Whether to enable anti-aliasing. This may affect performance.
+ * @property {boolean} [depth] -
+ * Whether to ensure the main view has can make use of the depth buffer. Always true for WebGL renderer.
+ * @property {boolean} [multiView] - TODO: multiView
+ * @property {number} [backgroundAlpha] - The alpha of the background.
  */
 export interface ViewSystemOptions
 {
-    /** The width of the screen. */
+    /**
+     * The width of the screen.
+     * @default 800
+     * @memberof rendering.SharedRendererOptions
+     */
     width?: number;
-    /** The height of the screen. */
+    /**
+     * The height of the screen.
+     * @default 600
+     * @memberof rendering.SharedRendererOptions
+     */
     height?: number;
-    /** The canvas to use as a view, optional. */
+    /**
+     * The canvas to use as a view, optional.
+     * @memberof rendering.SharedRendererOptions
+     */
     canvas?: ICanvas;
     /** @deprecated */
     view?: ICanvas;
-    /** Resizes renderer view in CSS pixels to allow for resolutions other than 1. */
+    /**
+     * Resizes renderer view in CSS pixels to allow for resolutions other than 1.
+     * @memberof rendering.SharedRendererOptions
+     */
     autoDensity?: boolean;
-    /** The resolution / device pixel ratio of the renderer. */
+    /**
+     * The resolution / device pixel ratio of the renderer.
+     * @memberof rendering.SharedRendererOptions
+     */
     resolution?: number;
-    /** Whether to enable anti-aliasing. This may affect performance. */
+    /**
+     * Whether to enable anti-aliasing. This may affect performance.
+     * @memberof rendering.SharedRendererOptions
+     */
     antialias?: boolean;
-    /** Whether to ensure the main view has can make use of the depth buffer. Always true for WebGL renderer. */
+    /**
+     * Whether to ensure the main view has can make use of the depth buffer. Always true for WebGL renderer.
+     * @memberof rendering.SharedRendererOptions
+     */
     depth?: boolean;
-    /** TODO: multiView */
+    /**
+     * TODO: multiView
+     * @memberof rendering.SharedRendererOptions
+     */
     multiView?: boolean;
 
+    /**
+     * Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
+     * @default 1
+     */
     backgroundAlpha?: number;
 }
 

@@ -22,13 +22,15 @@ const vertexGPUTemplate = /* wgsl */`
             0.0, 0.0, 1.0
           );
         var position = aPosition;
+        var uv = aUV;
 
         {{start}}
         
         vColor = vec4<f32>(1., 1., 1., 1.);
-        vUV = aUV;
 
         {{main}}
+
+        vUV = uv;
 
         var modelViewProjectionMatrix = globalUniforms.uProjectionMatrix * worldTransformMatrix * modelMatrix;
 
@@ -81,14 +83,16 @@ const vertexGlTemplate = /* glsl */`
             0.0, 0.0, 1.0
           );
         vec2 position = aPosition;
-
+        vec2 uv = aUV;
+        
         {{start}}
         
         vColor = vec4(1.);
-        vUV = aUV;
-
+        
         {{main}}
-
+        
+        vUV = uv;
+        
         mat3 modelViewProjectionMatrix = uProjectionMatrix * worldTransformMatrix * modelMatrix;
 
         gl_Position = vec4((modelViewProjectionMatrix * vec3(position, 1.0)).xy, 0.0, 1.0);

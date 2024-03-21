@@ -21,6 +21,7 @@ import { GlTextureSystem } from './texture/GlTextureSystem';
 
 import type { ICanvas } from '../../../environment/canvas/ICanvas';
 import type { PipeConstructor } from '../shared/instructions/RenderPipe';
+import type { SharedRendererOptions } from '../shared/system/SharedSystems';
 import type { SystemConstructor } from '../shared/system/System';
 import type { ExtractRendererOptions, ExtractSystemTypes } from '../shared/system/utils/typeUtils';
 import type { GlRenderingContext } from './context/GlRenderingContext';
@@ -67,8 +68,9 @@ export type WebGLPipes = ExtractSystemTypes<typeof DefaultWebGLPipes> & PixiMixi
  * @memberof rendering
  */
 export interface WebGLOptions
-    extends ExtractRendererOptions<typeof DefaultWebGLSystems>,
-    PixiMixins.RendererOptions,
+    extends
+    SharedRendererOptions,
+    ExtractRendererOptions<typeof DefaultWebGLSystems>,
     PixiMixins.WebGLOptions {}
 
 /**
