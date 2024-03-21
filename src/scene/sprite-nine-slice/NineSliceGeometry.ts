@@ -129,8 +129,6 @@ export class NineSliceGeometry extends PlaneGeometry
     /** Updates the UVs of the vertices. */
     public updateUvs()
     {
-        const textureMatrix = this._textureMatrix;
-
         const uvs = this.uvs;
 
         uvs[0] = uvs[8] = uvs[16] = uvs[24] = 0;
@@ -148,31 +146,7 @@ export class NineSliceGeometry extends PlaneGeometry
         uvs[4] = uvs[12] = uvs[20] = uvs[28] = 1 - (_uvw * this._rightWidth);
         uvs[17] = uvs[19] = uvs[21] = uvs[23] = 1 - (_uvh * this._bottomHeight);
 
-        multiplyUvs(textureMatrix, uvs);
-
         this.getBuffer('aUV').update();
     }
 }
 
-function multiplyUvs(matrix: Matrix, uvs: Float32Array, out?: Float32Array)
-{
-    out ??= uvs;
-
-    const a = matrix.a;
-    const b = matrix.b;
-    const c = matrix.c;
-    const d = matrix.d;
-    const tx = matrix.tx;
-    const ty = matrix.ty;
-
-    for (let i = 0; i < uvs.length; i += 2)
-    {
-        const x = uvs[i];
-        const y = uvs[i + 1];
-
-        out[i] = (x * a) + (y * c) + tx;
-        out[i + 1] = (x * b) + (y * d) + ty;
-    }
-
-    return out;
-}
