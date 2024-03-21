@@ -20,6 +20,51 @@ export interface DisplayObjectEvents extends GlobalMixins.DisplayObjectEvents
     removed: [container: Container];
 }
 
+/**
+ * Constructor options use for DisplayObject instances.
+ * @see PIXI.DisplayObject
+ * @memberof PIXI
+ */
+export interface IDisplayObjectOptions extends GlobalMixins.IDisplayObjectOptions
+{
+    /** @see PIXI.DisplayObject#alpha */
+    alpha: number;
+    /** @see PIXI.DisplayObject#angle */
+    angle?: number;
+    /** @see PIXI.DisplayObject#cullable */
+    cullable: boolean;
+    /** @see PIXI.DisplayObject#cullArea */
+    cullArea: Rectangle;
+    /** @see PIXI.DisplayObject#filters */
+    filters: Filter[] | null;
+    /** @see PIXI.DisplayObject#filterArea */
+    filterArea: Rectangle;
+    /** @see PIXI.DisplayObject#mask */
+    mask?: Container | MaskData | null;
+    /** @see PIXI.DisplayObject#parent */
+    parent: Container;
+    /** @see PIXI.DisplayObject#renderable */
+    renderable: boolean;
+    /** @see PIXI.DisplayObject#rotation */
+    rotation?: number;
+    /** @see PIXI.DisplayObject#scale */
+    scale?: IPointData;
+    /** @see PIXI.DisplayObject#pivot */
+    pivot?: IPointData;
+    /** @see PIXI.DisplayObject#position */
+    position?: IPointData;
+    /** @see PIXI.DisplayObject#skew */
+    skew?: IPointData;
+    /** @see PIXI.DisplayObject#visible */
+    visible: boolean;
+    /** @see PIXI.DisplayObject#x */
+    x?: number;
+    /** @see PIXI.DisplayObject#y */
+    y?: number;
+    /** @see PIXI.DisplayObject#zIndex */
+    zIndex: number;
+}
+
 export interface DisplayObject
     extends Omit<GlobalMixins.DisplayObject, keyof utils.EventEmitter<DisplayObjectEvents>>,
     utils.EventEmitter<DisplayObjectEvents> {}
@@ -332,8 +377,9 @@ export abstract class DisplayObject extends utils.EventEmitter<DisplayObjectEven
     /**
      * Mixes all enumerable properties and methods from a source object to DisplayObject.
      * @param source - The source of properties and methods to mix in.
+     * @param options
      */
-    static mixin(source: utils.Dict<any>): void
+    static mixin(source: utils.Dict<any>, options: Record<string, any>): void
     {
         // in ES8/ES2017, this would be really easy:
         // Object.defineProperties(DisplayObject.prototype, Object.getOwnPropertyDescriptors(source));
@@ -353,9 +399,49 @@ export abstract class DisplayObject extends utils.EventEmitter<DisplayObjectEven
                 Object.getOwnPropertyDescriptor(source, propertyName)
             );
         }
+
+        Object.assign(DisplayObject.defaultDisplayObjectOptions, options);
     }
 
-    constructor()
+    /** Default constructor options */
+    public static defaultDisplayObjectOptions: IDisplayObjectOptions = {
+        /** See {@link PIXI.DisplayObject#alpha} */
+        alpha: 1,
+        /** See {@link PIXI.DisplayObject#cullable} */
+        cullable: false,
+        /**
+         * See {@link PIXI.DisplayObject#cullArea}
+         * @default null
+         */
+        cullArea: null,
+        /**
+         * See {@link PIXI.DisplayObject#filters}
+         * @default null
+         */
+        filters: null,
+        /**
+         * See {@link PIXI.DisplayObject#filterArea}
+         * @default null
+         */
+        filterArea: null,
+        /**
+         * See {@link PIXI.DisplayObject#parent}
+         * @default null
+         */
+        parent: null,
+        /** See {@link PIXI.DisplayObject#renderable} */
+        renderable: true,
+        /** See {@link PIXI.DisplayObject#visible} */
+        visible: true,
+        /** See {@link PIXI.DisplayObject#zIndex} */
+        zIndex: 0,
+    };
+
+    /**
+     * Create a new DisplayObject instance.
+     * @param options - The options for this DisplayObject
+     */
+    constructor(options?: Partial<IDisplayObjectOptions>)
     {
         super();
 
@@ -363,22 +449,12 @@ export abstract class DisplayObject extends utils.EventEmitter<DisplayObjectEven
 
         // TODO: need to create Transform from factory
         this.transform = new Transform();
-        this.alpha = 1;
-        this.visible = true;
-        this.renderable = true;
-        this.cullable = false;
-        this.cullArea = null;
 
-        this.parent = null;
         this.worldAlpha = 1;
-
         this._lastSortedIndex = 0;
         this._zIndex = 0;
 
-        this.filterArea = null;
-        this.filters = null;
         this._enabledFilters = null;
-
         this._bounds = new Bounds();
         this._localBounds = null;
         this._boundsID = 0;
@@ -390,6 +466,8 @@ export abstract class DisplayObject extends utils.EventEmitter<DisplayObjectEven
 
         this.isSprite = false;
         this.isMask = false;
+
+        Object.assign(this, DisplayObject.defaultDisplayObjectOptions, options);
     }
 
     /**

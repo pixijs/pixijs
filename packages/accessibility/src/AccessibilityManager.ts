@@ -1,14 +1,14 @@
 import { extensions, ExtensionType, utils } from '@pixi/core';
 import { DisplayObject } from '@pixi/display';
 import { FederatedEvent } from '@pixi/events';
-import { accessibleTarget } from './accessibleTarget';
+import { accessibleOptions, accessibleTarget } from './accessibleTarget';
 
 import type { ExtensionMetadata, IRenderer, Rectangle } from '@pixi/core';
 import type { Container } from '@pixi/display';
 import type { IAccessibleHTMLElement } from './accessibleTarget';
 
 // add some extra variables to the container..
-DisplayObject.mixin(accessibleTarget);
+DisplayObject.mixin(accessibleTarget, accessibleOptions);
 
 const KEY_CODE_TAB = 9;
 

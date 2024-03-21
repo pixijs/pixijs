@@ -2,14 +2,24 @@ import { BLEND_MODES, Color, ObservablePoint, Point, Rectangle, settings, Textur
 import { Bounds, Container } from '@pixi/display';
 
 import type { ColorSource, IBaseTextureOptions, IPointData, Renderer, TextureSource } from '@pixi/core';
-import type { IDestroyOptions } from '@pixi/display';
+import type { IContainerOptions, IDestroyOptions, IDisplayObjectOptions } from '@pixi/display';
 
 const tempPoint = new Point();
-const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
 
 export type SpriteSource = TextureSource | Texture;
 
 export interface Sprite extends GlobalMixins.Sprite, Container {}
+
+export interface ISpriteOptions
+{
+    texture?: Texture;
+    pluginName: string;
+    blendMode: BLEND_MODES;
+    tint: ColorSource;
+    indices: Uint16Array;
+    roundPixels?: boolean;
+    anchor: IPointData;
+}
 
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
@@ -135,46 +145,56 @@ export class Sprite extends Container
      */
     _tintRGB: number;
 
-    /** @param texture - The texture for this sprite. */
-    constructor(texture?: Texture)
+    static readonly defaultSpriteOptions: ISpriteOptions = {
+        texture: Texture.EMPTY,
+        blendMode: BLEND_MODES.NORMAL,
+        pluginName: 'batch',
+        tint: 0xFFFFFF,
+        anchor: { x: 0, y: 0 },
+        indices: new Uint16Array([0, 1, 2, 0, 2, 3]),
+    };
+
+    /**
+     * @param options - Texture or options
+     */
+    constructor(options?: Texture | Partial<ISpriteOptions & IContainerOptions & IDisplayObjectOptions>)
     {
         super();
+
+        if (options instanceof Texture)
+        {
+            options = { texture: options };
+        }
+
+        const originalTexture = options?.texture;
+
+        options = Object.assign({}, Sprite.defaultSpriteOptions, options);
+
+        const anchor = originalTexture?.defaultAnchor ?? options.anchor;
 
         this._anchor = new ObservablePoint(
             this._onAnchorUpdate,
             this,
-            (texture ? texture.defaultAnchor.x : 0),
-            (texture ? texture.defaultAnchor.y : 0)
+            anchor.x,
+            anchor.y
         );
-
-        this._texture = null;
 
         this._width = 0;
         this._height = 0;
         this._tintColor = new Color(0xFFFFFF);
         this._tintRGB = null;
 
-        this.tint = 0xFFFFFF;
-        this.blendMode = BLEND_MODES.NORMAL;
         this._cachedTint = 0xFFFFFF;
         this.uvs = null;
 
-        // call texture setter
-        this.texture = texture || Texture.EMPTY;
         this.vertexData = new Float32Array(8);
         this.vertexTrimmedData = null;
 
+        this._texture = null;
         this._transformID = -1;
         this._textureID = -1;
-
         this._transformTrimmedID = -1;
         this._textureTrimmedID = -1;
-
-        // Batchable stuff..
-        // TODO could make this a mixin?
-        this.indices = indices;
-
-        this.pluginName = 'batch';
 
         /**
          * Used to fast check if a sprite is.. a sprite!
@@ -182,6 +202,8 @@ export class Sprite extends Container
          */
         this.isSprite = true;
         this._roundPixels = settings.ROUND_PIXELS;
+
+        Object.assign(this, options);
     }
 
     /** When the texture is updated, this event will fire to update the scale and frame. */
