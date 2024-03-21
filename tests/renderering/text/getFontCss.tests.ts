@@ -13,7 +13,7 @@ describe('getFontCss', () =>
         await Assets.load(`${basePath}fonts/outfit.woff2`);
     });
 
-    it.only('should load a font and return css string', async () =>
+    it('should load a font and return css string', async () =>
     {
         const fontFamily = ['Outfit'];
         const style = new HTMLTextStyle({
