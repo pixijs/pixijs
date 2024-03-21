@@ -2,7 +2,6 @@ import { BaseTexture, extensions, ExtensionType, settings, utils } from '@pixi/c
 import { checkDataUrl } from '../../../utils/checkDataUrl';
 import { checkExtension } from '../../../utils/checkExtension';
 import { LoaderParserPriority } from '../LoaderParser';
-import { WorkerManager } from '../WorkerManager';
 import { createTexture } from './utils/createTexture';
 
 import type { IBaseTextureOptions, Texture } from '@pixi/core';
@@ -116,7 +115,19 @@ export const loadTextures = {
 
         if (useImageBitmap)
         {
-            if (this.config.preferWorkers && await WorkerManager.isImageBitmapSupported())
+            let WorkerManager = null;
+
+            if (this.config.preferWorkers)
+            {
+                const { WorkerManager: Manager } = await import('../WorkerManager');
+
+                if (await Manager.isImageBitmapSupported())
+                {
+                    WorkerManager = Manager;
+                }
+            }
+
+            if (WorkerManager)
             {
                 src = await WorkerManager.loadImageBitmap(url);
             }
