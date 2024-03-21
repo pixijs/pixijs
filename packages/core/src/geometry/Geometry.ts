@@ -61,7 +61,7 @@ export class Geometry
      * @type {object}
      */
     glVertexArrayObjects: {[key: number]: {[key: string]: WebGLVertexArrayObject}};
-    disposeRunner: Runner;
+    disposeRunner: Runner<'disposeGeometry', [geometry: Geometry, contextLost?: boolean]>;
 
     /** Count of existing (not destroyed) meshes that reference this geometry. */
     refCount: number;

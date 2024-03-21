@@ -1,16 +1,14 @@
-export type RunnerListenerCallback<ARG extends unknown[] = any[]> = (...args: ARG) => unknown;
+export type RunnerListenerCallback<ARG extends any[]> = (...args: ARG) => any;
 
-type RunnerItemValid<T extends string, ARG extends unknown[] = any[]> =
-    { [K in T]: RunnerListenerCallback<ARG> | unknown };
+type RunnerItemValid<T extends string, ARG extends any[]> = {
+    [K in T]: RunnerListenerCallback<ARG>;
+};
 
-type RunnerItemAny = Record<string, unknown>;
+type RunnerItemAny = Record<string, any>;
 
-type RunnerItemEmpty = Record<string, never>;
-
-export type RunnerItem<T = string, ARG extends unknown[] = any[]> =
-    T extends string ?
-        RunnerItemValid<T, ARG> & RunnerItemAny | RunnerItemEmpty :
-        unknown;
+export type RunnerItem<T extends string, ARG extends any[]> =
+    | RunnerItemValid<T, ARG>
+    | RunnerItemAny;
 
 /**
  * A Runner is a highly performant and simple alternative to signals. Best used in situations
@@ -98,7 +96,7 @@ export type RunnerItem<T = string, ARG extends unknown[] = any[]> =
  * @template ARG - The argument types for the event handler functions.
  * @memberof PIXI
  */
-export class Runner<T = any, ARG extends unknown[] = any[]>
+export class Runner<T extends string, ARG extends any[]>
 {
     public items: any[];
     private _name: T;

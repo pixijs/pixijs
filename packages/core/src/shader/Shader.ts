@@ -20,7 +20,7 @@ export class Shader
      */
     uniformBindCount = 0;
 
-    disposeRunner: Runner;
+    disposeRunner: Runner<'disposeShader', [shader: Shader]>;
 
     /**
      * @param program - The program the shader will use.

@@ -170,7 +170,7 @@ export class BufferSystem implements ISystem
      * @param {PIXI.Buffer} buffer - buffer with data
      * @param {boolean} [contextLost=false] - If context was lost, we suppress deleteVertexArray
      */
-    dispose(buffer: Buffer, contextLost?: boolean): void
+    disposeBuffer(buffer: Buffer, contextLost?: boolean): void
     {
         if (!this.managedBuffers[buffer.id])
         {
@@ -207,7 +207,7 @@ export class BufferSystem implements ISystem
 
         for (let i = 0; i < all.length; i++)
         {
-            this.dispose(this.managedBuffers[all[i]], contextLost);
+            this.disposeBuffer(this.managedBuffers[all[i]], contextLost);
         }
     }
 
