@@ -27,16 +27,35 @@ export interface TextureDestroyOptions
     textureSource?: boolean;
 }
 
+/**
+ * Options when destroying a graphics context.
+ * ```js
+ * // destroy the graphics context and its texture
+ * graphicsContext.destroy({ context: true, texture: true });
+ * ```
+ * @memberof scene
+ */
 export interface ContextDestroyOptions
 {
+    /** Destroy the graphics context as well. */
     context?: boolean;
 }
 
-export type TypeOrBool<T> = T | boolean;
+/**
+ * Options when destroying a text.
+ * ```js
+ * // destroy the text and its style
+ * text.destroy({ style: true });
+ * ```
+ * @memberof scene
+ */
+export interface TextDestroyOptions
+{
+    /** Destroy the text style as well. */
+    style?: boolean
+}
 
-export type AllDestroyOptions = BaseDestroyOptions &
-ContextDestroyOptions &
-TextureDestroyOptions;
+export type TypeOrBool<T> = T | boolean;
 
 /**
  * Options for destroying a container.
@@ -44,6 +63,12 @@ TextureDestroyOptions;
  * @property {boolean} [texture=false] - Destroy the texture of the container's children.
  * @property {boolean} [textureSource=false] - Destroy the texture source of the container's children.
  * @property {boolean} [context=false] - Destroy the context of the container's children.
+ * @property {boolean} [style=false] - Destroy the style of the container's children.
  * @memberof scene
  */
-export type DestroyOptions<EXTRA_OPTIONS = object> = TypeOrBool<AllDestroyOptions & EXTRA_OPTIONS>;
+export type DestroyOptions = TypeOrBool<
+BaseDestroyOptions &
+ContextDestroyOptions &
+TextureDestroyOptions &
+TextDestroyOptions
+>;

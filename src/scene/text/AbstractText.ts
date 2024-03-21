@@ -12,8 +12,6 @@ import type { DestroyOptions } from '../container/destroyTypes';
 import type { HTMLTextStyle, HTMLTextStyleOptions } from '../text-html/HtmlTextStyle';
 import type { TextStyle, TextStyleOptions } from './TextStyle';
 
-export type TextDestroyOptions = DestroyOptions<{destroyStyle?: boolean}>;
-
 /**
  * A string or number that can be used as text.
  * @memberof text
@@ -395,16 +393,17 @@ export abstract class AbstractText<
      *  have been set to that value
      * @param {boolean} [options.texture=false] - Should it destroy the texture of the text style
      * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the text style
+     * @param {boolean} [options.style=false] - Should it destroy the style of the text
      */
-    public destroy(options: TextDestroyOptions = false): void
+    public destroy(options: DestroyOptions = false): void
     {
-        super.destroy(options as DestroyOptions);
+        super.destroy(options);
 
         (this as any).owner = null;
         this._bounds = null;
         this._anchor = null;
 
-        if (typeof options === 'boolean' ? options : options?.destroyStyle)
+        if (typeof options === 'boolean' ? options : options?.style)
         {
             this._style.destroy(options);
         }
