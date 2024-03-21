@@ -34,6 +34,10 @@ export interface ContextDestroyOptions
 
 export type TypeOrBool<T> = T | boolean;
 
+export type AllDestroyOptions = BaseDestroyOptions &
+ContextDestroyOptions &
+TextureDestroyOptions;
+
 /**
  * Options for destroying a container.
  * @property {boolean} [children=false] - Destroy the children of the container as well.
@@ -42,8 +46,4 @@ export type TypeOrBool<T> = T | boolean;
  * @property {boolean} [context=false] - Destroy the context of the container's children.
  * @memberof scene
  */
-export type DestroyOptions = TypeOrBool<
-BaseDestroyOptions &
-ContextDestroyOptions &
-TextureDestroyOptions
->;
+export type DestroyOptions<EXTRA_OPTIONS = object> = TypeOrBool<AllDestroyOptions & EXTRA_OPTIONS>;
