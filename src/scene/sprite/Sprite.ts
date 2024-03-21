@@ -11,6 +11,7 @@ import type { Bounds, BoundsData } from '../container/bounds/Bounds';
 import type { ContainerOptions } from '../container/Container';
 import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
+import type { BatchableSprite } from './BatchableSprite';
 
 /**
  * Options for the {@link scene.Sprite} constructor.
@@ -84,6 +85,8 @@ export class Sprite extends Container implements View
     private _sourceBoundsDirty = true;
 
     public _roundPixels: 0 | 1 = 0;
+
+    public _cache: BatchableSprite = null;
 
     /**
      * @param options - The options for creating the sprite.

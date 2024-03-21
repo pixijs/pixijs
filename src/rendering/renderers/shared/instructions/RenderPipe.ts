@@ -88,7 +88,7 @@ export interface RenderPipe<RENDERABLE = Renderable>
      * @param renderable - the renderable that needs to be rendered
      * @returns
      */
-    destroyRenderable: (renderable: RENDERABLE) => void;
+    destroyRenderable?: (renderable: RENDERABLE) => void;
     /**
      * This function is called when the renderer is determining if it can use the same instruction set again to
      * improve performance. If this function returns false, the renderer will rebuild the whole instruction set
