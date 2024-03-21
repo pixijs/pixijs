@@ -38,7 +38,7 @@ export interface Adapter
     getCanvasRenderingContext2D: () => { prototype: ICanvasRenderingContext2D; };
     /** Returns a WebGL rendering context. */
     getWebGLRenderingContext: () => typeof WebGLRenderingContext;
-    /** Returns a WebGL rendering context. */
+    /** Returns a WebGL2 rendering context. */
     getWebGL2RenderingContext: () => typeof WebGL2RenderingContext;
     /** Returns a partial implementation of the browsers window.navigator */
     getNavigator: () => { userAgent: string, gpu: GPU | null };
