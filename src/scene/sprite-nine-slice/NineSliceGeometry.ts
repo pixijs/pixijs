@@ -1,4 +1,3 @@
-import { Matrix } from '../../maths/matrix/Matrix';
 import { PlaneGeometry } from '../mesh-plane/PlaneGeometry';
 
 /**
@@ -24,8 +23,6 @@ export interface NineSliceGeometryOptions
     rightWidth?: number
     /** The height of the bottom row. */
     bottomHeight?: number
-    /** The texture matrix of the NineSlicePlane. */
-    textureMatrix?: Matrix
 }
 
 /**
@@ -62,7 +59,6 @@ export class NineSliceGeometry extends PlaneGeometry
 
     private _originalWidth: number;
     private _originalHeight: number;
-    private readonly _textureMatrix: Matrix = new Matrix();
 
     constructor(options: NineSliceGeometryOptions = {})
     {
@@ -92,11 +88,6 @@ export class NineSliceGeometry extends PlaneGeometry
         this._rightWidth = options.rightWidth ?? this._rightWidth;
         this._topHeight = options.topHeight ?? this._topHeight;
         this._bottomHeight = options.bottomHeight ?? this._bottomHeight;
-
-        if (options.textureMatrix)
-        {
-            this._textureMatrix.copyFrom(options.textureMatrix);
-        }
 
         this.updateUvs();
         this.updatePositions();

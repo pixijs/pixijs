@@ -252,12 +252,6 @@ export class NineSliceSprite extends Container implements View
         this._roundPixels = value ? 1 : 0;
     }
 
-    /** The texture matrix of the NineSliceSprite. */
-    get textureMatrix()
-    {
-        return this._texture.textureMatrix.mapCoord;
-    }
-
     /** The original width of the texture */
     get originalWidth()
     {
