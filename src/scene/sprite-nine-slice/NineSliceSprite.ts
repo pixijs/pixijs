@@ -103,6 +103,11 @@ export class NineSliceSprite extends Container implements View
     public bounds: BoundsData = { minX: 0, minY: 0, maxX: 0, maxY: 0 };
 
     /**
+     * @internal
+     */
+    public _onViewUpdateBound = this.onViewUpdate.bind(this);
+
+    /**
      * @param {scene.NineSliceSpriteOptions|Texture} options - Options to use
      * @param options.texture - The texture to use on the NineSliceSprite.
      * @param options.leftWidth - Width of the left vertical bar (A)
@@ -231,7 +236,17 @@ export class NineSliceSprite extends Container implements View
 
     set texture(value: Texture)
     {
+        value ||= Texture.EMPTY;
+
         if (value === this._texture) return;
+
+        const currentTexture = this._texture;
+
+        if (currentTexture === value) return;
+
+        if (currentTexture) currentTexture._onUpdateListen.remove(this.uid);
+
+        value._onUpdateListen.add(this.uid, this._onViewUpdateBound);
 
         this._texture = value;
 

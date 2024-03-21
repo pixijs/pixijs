@@ -96,6 +96,11 @@ export class Mesh<
     public _roundPixels: 0 | 1 = 0;
 
     /**
+     * @internal
+     */
+    public _onViewUpdateBound = this.onViewUpdate.bind(this);
+
+    /**
      * @param {scene.MeshOptions} options - options for the mesh instance
      */
     constructor(options: MeshOptions<GEOMETRY, SHADER>);
@@ -210,7 +215,13 @@ export class Mesh<
     /** The texture that the Mesh uses. Null for non-MeshMaterial shaders */
     set texture(value: Texture)
     {
-        if (this._texture === value) return;
+        const currentTexture = this._texture;
+
+        if (currentTexture === value) return;
+
+        if (currentTexture) currentTexture._onUpdateListen.remove(this.uid);
+
+        value._onUpdateListen.add(this.uid, this._onViewUpdateBound);
 
         if (this.shader)
         {

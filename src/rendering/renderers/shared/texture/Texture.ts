@@ -1,6 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import { groupD8 } from '../../../../maths/matrix/groupD8';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
+import { SimpleListen } from '../../../../utils';
 import { uid } from '../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { NOOP } from '../../../../utils/misc/NOOP';
@@ -193,6 +194,16 @@ export class Texture extends EventEmitter<{
     public readonly isTexture = true;
 
     /**
+     * as setting textures is a very frequent thing happening may times a frame
+     * (think of sprites animating through textures) we need a faster way to add
+     * and remove listeners than the event emitter. So we use this instead.
+     *
+     * TODO - further investigate if we could create our own event emitter than can
+     * optimise for add / remove at high frequencies.
+     */
+    public _onUpdateListen = new SimpleListen(this);
+
+    /**
      * @param {TextureOptions} param0 - Options for the texture
      */
     constructor({
@@ -332,6 +343,8 @@ export class Texture extends EventEmitter<{
             uvs.x3 = nX;
             uvs.y3 = nY + nH;
         }
+
+        this._onUpdateListen.emit();
     }
 
     /**
@@ -353,6 +366,7 @@ export class Texture extends EventEmitter<{
         this.destroyed = true;
         this.emit('destroy', this);
         this.removeAllListeners();
+        this._onUpdateListen.destroy();
     }
 
     /** call this if you have modified the `texture outside` of the constructor */

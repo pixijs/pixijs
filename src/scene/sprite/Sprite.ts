@@ -86,6 +86,11 @@ export class Sprite extends Container implements View
     public _roundPixels: 0 | 1 = 0;
 
     /**
+     * @internal
+     */
+    public _onViewUpdateBound = this.onViewUpdate.bind(this);
+
+    /**
      * @param options - The options for creating the sprite.
      */
     constructor(options: SpriteOptions | Texture = Texture.EMPTY)
@@ -113,7 +118,7 @@ export class Sprite extends Container implements View
         );
 
         if (anchor) this.anchor = anchor;
-        this.texture = texture;
+        this.texture = texture || Texture.EMPTY;
         this.allowChildren = false;
         this.roundPixels = roundPixels ?? false;
 
@@ -126,7 +131,13 @@ export class Sprite extends Container implements View
     {
         value ||= Texture.EMPTY;
 
-        if (this._texture === value) return;
+        const currentTexture = this._texture;
+
+        if (currentTexture === value) return;
+
+        if (currentTexture) currentTexture._onUpdateListen.remove(this.uid);
+
+        value._onUpdateListen.add(this.uid, this._onViewUpdateBound);
 
         this._texture = value;
 

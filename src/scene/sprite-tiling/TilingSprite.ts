@@ -149,6 +149,11 @@ export class TilingSprite extends Container implements View, Instruction
     private _height: number;
 
     /**
+     * @internal
+     */
+    public _onViewUpdateBound = this.onViewUpdate.bind(this);
+
+    /**
      * @param {rendering.Texture | scene.TilingSpriteOptions} options - The options for creating the tiling sprite.
      */
     constructor(options?: Texture | TilingSpriteOptions);
@@ -206,7 +211,7 @@ export class TilingSprite extends Container implements View, Instruction
 
         this._tileTransform = new Transform({
             observer: {
-                _onUpdate: () => this._onTilingSpriteUpdate(),
+                _onUpdate: () => this.onViewUpdate(),
             }
         });
 
@@ -331,11 +336,19 @@ export class TilingSprite extends Container implements View, Instruction
 
     set texture(value: Texture)
     {
-        if (this._texture === value) return;
+        value ||= Texture.EMPTY;
+
+        const currentTexture = this._texture;
+
+        if (currentTexture === value) return;
+
+        if (currentTexture) currentTexture._onUpdateListen.remove(this.uid);
+
+        value._onUpdateListen.add(this.uid, this._onViewUpdateBound);
 
         this._texture = value;
 
-        this._onTilingSpriteUpdate();
+        this.onViewUpdate();
     }
 
     /** The texture that the sprite is using. */
@@ -348,7 +361,7 @@ export class TilingSprite extends Container implements View, Instruction
     set width(value: number)
     {
         this._width = value;
-        this._onTilingSpriteUpdate();
+        this.onViewUpdate();
     }
 
     get width()
@@ -359,7 +372,7 @@ export class TilingSprite extends Container implements View, Instruction
     set height(value: number)
     {
         this._height = value;
-        this._onTilingSpriteUpdate();
+        this.onViewUpdate();
     }
 
     /** The height of the tiling area. */
@@ -421,7 +434,7 @@ export class TilingSprite extends Container implements View, Instruction
         return false;
     }
 
-    private _onTilingSpriteUpdate()
+    public onViewUpdate()
     {
         this._boundsDirty = true;
         this._didTilingSpriteUpdate = true;
