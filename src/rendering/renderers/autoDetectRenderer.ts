@@ -32,7 +32,7 @@ const renderPriority = ['webgl', 'webgpu', 'canvas'];
 /**
  * Automatically determines the most appropriate renderer for the current environment.
  *
- * The function will prioritize the WebGL renderer as it is the most tested safe renderer to use.
+ * The function will prioritize the WebGL renderer as it is the most tested safe API to use.
  * In the near future as WebGPU becomes more stable and ubiquitous, it will be prioritized over WebGL.
  *
  * The selected renderer's code is then dynamically imported to optimize
