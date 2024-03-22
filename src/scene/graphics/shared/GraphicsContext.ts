@@ -330,7 +330,8 @@ export class GraphicsContext extends EventEmitter<{
 
         if (!path) return this;
 
-        if (style)
+        // eslint-disable-next-line no-eq-null, eqeqeq
+        if (style != null)
         {
             if (alpha !== undefined && typeof style === 'number')
             {
@@ -390,7 +391,8 @@ export class GraphicsContext extends EventEmitter<{
 
         if (!path) return this;
 
-        if (style)
+        // eslint-disable-next-line no-eq-null, eqeqeq
+        if (style != null)
         {
             this._strokeStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultStrokeStyle);
         }
