@@ -5,7 +5,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should correctly render a black circle',
-    only: true,
     create: async (scene: Container) =>
     {
         const graphics1 = new Graphics()
