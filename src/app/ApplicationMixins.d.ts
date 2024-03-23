@@ -1,23 +1,28 @@
-declare namespace PixiMixins
+import type { ResizePluginOptions } from './ResizePlugin';
+import type { TickerPluginOptions } from './TickerPlugin';
+
+declare global
 {
-    // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface Application
+    namespace PixiMixins
     {
-        resizeTo: Window | HTMLElement;
-        resize(): void;
-        queueResize: () => void;
-        cancelResize: () => void;
+        // eslint-disable-next-line @typescript-eslint/no-empty-interface
+        interface Application
+        {
+            resizeTo: Window | HTMLElement;
+            resize(): void;
+            queueResize: () => void;
+            cancelResize: () => void;
 
-        ticker: import('../ticker/Ticker').Ticker;
-        stop(): void;
-        start(): void;
-    }
+            ticker: import('../ticker/Ticker').Ticker;
+            stop(): void;
+            start(): void;
+        }
 
-    type ResizePluginOptions = import('./ResizePlugin').ResizePluginOptions;
-    type TickerPluginOptions = import('./TickerPlugin').TickerPluginOptions;
-
-    // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface ApplicationOptions extends ResizePluginOptions, TickerPluginOptions
-    {
+        // eslint-disable-next-line @typescript-eslint/no-empty-interface
+        interface ApplicationOptions extends ResizePluginOptions, TickerPluginOptions
+        {
+        }
     }
 }
+
+export {};

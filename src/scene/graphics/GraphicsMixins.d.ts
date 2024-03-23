@@ -1,21 +1,25 @@
-declare namespace PixiMixins
+declare global
 {
-    interface RendererSystems
+    namespace PixiMixins
     {
-        graphicsContext: import('./shared/GraphicsContextSystem').GraphicsContextSystem;
-    }
+        interface RendererSystems
+        {
+            graphicsContext: import('./shared/GraphicsContextSystem').GraphicsContextSystem;
+        }
 
-    interface RendererPipes
-    {
-        graphics: import('./shared/GraphicsPipe').GraphicsPipe;
-    }
+        interface RendererPipes
+        {
+            graphics: import('./shared/GraphicsPipe').GraphicsPipe;
+        }
 
-    interface RendererOptions
-    {
+        interface RendererOptions
+        {
         /**
          * A value from 0 to 1 that controls the smoothness of bezier curves (the higher the smoother)
          * @default 0.5
          */
-        bezierSmoothness: number
+            bezierSmoothness: number
+        }
     }
 }
+export {};

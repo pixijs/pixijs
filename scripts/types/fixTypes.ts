@@ -2,7 +2,6 @@
  * -----------------------------------------------------------------
  * The file is used to fix various issues with the types
  * - Add reference paths to the mixins
- * - Replace the dist triple slash reference with the webgpu types
  * - Copy over the Shaders.d.ts file to the lib folder for
  *   proper frag,vert,wgsl support
  * -----------------------------------------------------------------
@@ -40,32 +39,6 @@ function addMixinReferencePaths()
     fs.writeFileSync(filePath, updatedContents);
 }
 
-/**
- * For whatever reason when we build the types we get /// <reference types="dist" />
- * This is not what we want, we want /// <reference types="@webgpu/types" />
- * So we replace it here
- */
-function replaceWebgpuTypes()
-{
-    const globPath = `${path.join(process.cwd(), './lib')}/**/*.d.ts`;
-    const files = glob.sync(globPath);
-
-    files.forEach((file) =>
-    {
-        const contents = fs.readFileSync(file, 'utf8');
-
-        if (contents.includes('/// <reference types="dist" />'))
-        {
-            const updatedContents = contents.replace(
-                '/// <reference types="dist" />',
-                '/// <reference types="@webgpu/types" />'
-            );
-
-            fs.writeFileSync(file, updatedContents);
-        }
-    });
-}
-
 /** Copy the Shaders.d.ts file to the lib folder This is needed for proper frag,vert,wgsl support in the types */
 function copyShaders()
 {
@@ -86,6 +59,5 @@ function copyShaders()
     }
 }
 
-replaceWebgpuTypes();
 addMixinReferencePaths();
 copyShaders();

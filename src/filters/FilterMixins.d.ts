@@ -1,12 +1,17 @@
-declare namespace PixiMixins
+declare global
 {
-    interface RendererSystems
+    namespace PixiMixins
     {
-        filter: import('./FilterSystem').FilterSystem;
-    }
+        interface RendererSystems
+        {
+            filter: import('./FilterSystem').FilterSystem;
+        }
 
-    interface RendererPipes
-    {
-        filter: import('./FilterPipe').FilterPipe;
+        interface RendererPipes
+        {
+            filter: import('./FilterPipe').FilterPipe;
+        }
     }
 }
+
+export {};

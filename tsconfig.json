@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        "typeRoots": [ "./node_modules/@webgpu/types", "./node_modules/@types"],
         "target": "es2020",
         "lib": ["ESNext", "DOM", "WebWorker"],
         "module": "ESNext",
@@ -17,6 +16,7 @@
         "resolveJsonModule": true,
         "downlevelIteration": true,
         "skipDefaultLibCheck": true,
+        "types": ["node", "css-font-loading-module", "earcut", "@webgpu/types"]
     },
     "exclude": [
         "node_modules",

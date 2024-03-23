@@ -1,7 +1,13 @@
-declare namespace PixiMixins
+declare global
 {
-    // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface AssetsPreferences
+    namespace PixiMixins
     {
+        // eslint-disable-next-line @typescript-eslint/no-empty-interface
+        interface AssetsPreferences
+        {
+        }
     }
+
 }
+
+export {};

@@ -1,7 +1,11 @@
-declare namespace PixiMixins
+declare global
 {
-    interface RendererPipes
+    namespace PixiMixins
     {
-        mesh: import('./shared/MeshPipe').MeshPipe;
+        interface RendererPipes
+        {
+            mesh: import('./shared/MeshPipe').MeshPipe;
+        }
     }
 }
+export {};

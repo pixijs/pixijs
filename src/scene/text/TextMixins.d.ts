@@ -1,12 +1,16 @@
-declare namespace PixiMixins
+declare global
 {
-    interface RendererSystems
+    namespace PixiMixins
     {
-        canvasText: import('./canvas/CanvasTextSystem').CanvasTextSystem;
-    }
+        interface RendererSystems
+        {
+            canvasText: import('./canvas/CanvasTextSystem').CanvasTextSystem;
+        }
 
-    interface RendererPipes
-    {
-        text: import('./canvas/CanvasTextPipe').CanvasTextPipe;
+        interface RendererPipes
+        {
+            text: import('./canvas/CanvasTextPipe').CanvasTextPipe;
+        }
     }
 }
+export {};
