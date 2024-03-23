@@ -98,3 +98,5 @@ export function textureFrom(id: TextureSourceLike, skipCache = false): Texture
 }
 
 Texture.from = textureFrom;
+Texture.sourceFrom = (id: TextureSourceLike, skipCache = false) =>
+    textureFrom(id, skipCache)._source;

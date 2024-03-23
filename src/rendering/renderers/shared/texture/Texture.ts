@@ -125,6 +125,7 @@ export class Texture extends EventEmitter<{
      * @returns The texture based on the Id provided
      */
     public static from: (id: TextureSourceLike, skipCache?: boolean) => Texture;
+    public static sourceFrom: (id: TextureSourceLike, skipCache?: boolean) => TextureSource;
 
     /** label used for debugging */
     public label?: string;
