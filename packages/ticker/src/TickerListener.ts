@@ -1,4 +1,10 @@
-import type { TickerCallback } from './Ticker';
+export type TickerListenerContext = Record<string, any> | null;
+
+export type TickerCallback<
+    T extends TickerListenerContext = TickerListenerContext
+> =
+    | ((deltaTime: number) => void)
+    | (T extends null ? never : (this: T, deltaTime: number) => void);
 
 /**
  * Internal class for handling the priority sorting of ticker handlers.
@@ -6,21 +12,13 @@ import type { TickerCallback } from './Ticker';
  * @class
  * @memberof PIXI
  */
-export class TickerListener<T = any>
+export class TickerListener<T extends TickerListenerContext = TickerListenerContext>
 {
-    /** The current priority. */
-    public priority: number;
     /** The next item in chain. */
-    public next: TickerListener = null;
+    public next: TickerListener | null = null;
     /** The previous item in chain. */
-    public previous: TickerListener = null;
+    public previous: TickerListener | null = null;
 
-    /** The handler function to execute. */
-    private fn: TickerCallback<T>;
-    /** The calling to execute. */
-    private context: T;
-    /** If this should only execute once. */
-    private once: boolean;
     /** `true` if this listener has been destroyed already. */
     private _destroyed = false;
 
@@ -32,12 +30,16 @@ export class TickerListener<T = any>
      * @param priority - The priority for emitting
      * @param once - If the handler should fire once
      */
-    constructor(fn: TickerCallback<T>, context: T = null, priority = 0, once = false)
+    constructor(
+        /** The handler function to execute. */
+        private fn: TickerCallback<T> | null,
+        /** The calling to execute. */
+        private context: T | null = null,
+        /** The current priority. */
+        public priority = 0,
+        /** If this should only execute once. */
+        private once = false)
     {
-        this.fn = fn;
-        this.context = context;
-        this.priority = priority;
-        this.once = once;
     }
 
     /**
@@ -47,7 +49,7 @@ export class TickerListener<T = any>
      * @param context - The listener context
      * @returns `true` if the listener match the arguments
      */
-    match(fn: TickerCallback<T>, context: any = null): boolean
+    match(fn: TickerCallback, context: any = null): boolean
     {
         return this.fn === fn && this.context === context;
     }
@@ -58,17 +60,17 @@ export class TickerListener<T = any>
      * @param deltaTime - time since the last emit.
      * @returns Next ticker
      */
-    emit(deltaTime: number): TickerListener
+    emit(deltaTime: number): TickerListener | null
     {
         if (this.fn)
         {
-            if (this.context)
+            if (this.context !== null)
             {
                 this.fn.call(this.context, deltaTime);
             }
             else
             {
-                (this as TickerListener<any>).fn(deltaTime);
+                this.fn(deltaTime);
             }
         }
 
@@ -112,7 +114,7 @@ export class TickerListener<T = any>
      *        is considered a hard destroy. Soft destroy maintains the next reference.
      * @returns The listener to redirect while emitting or removing.
      */
-    destroy(hard = false): TickerListener
+    destroy(hard = false): TickerListener | null
     {
         this._destroyed = true;
         this.fn = null;

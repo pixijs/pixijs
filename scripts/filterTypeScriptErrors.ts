@@ -61,7 +61,7 @@ const pathPrefixs = [
     // 'packages/text/',
     // 'packages/text-bitmap/',
     'packages/text-html/',
-    // 'packages/ticker/',
+    'packages/ticker/',
     'packages/unsafe-eval/',
     'packages/utils/',
     'scripts/',

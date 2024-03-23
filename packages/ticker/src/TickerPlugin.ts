@@ -36,8 +36,8 @@ export class TickerPlugin
 
     static start: () => void;
     static stop: () => void;
-    static _ticker: Ticker;
-    static ticker: Ticker;
+    static _ticker: Ticker | null;
+    static ticker: Ticker | null;
 
     /**
      * Initialize the plugin with scope of application instance
@@ -82,7 +82,7 @@ export class TickerPlugin
          */
         this.stop = (): void =>
         {
-            this._ticker.stop();
+            this._ticker?.stop();
         };
 
         /**
@@ -93,7 +93,7 @@ export class TickerPlugin
          */
         this.start = (): void =>
         {
-            this._ticker.start();
+            this._ticker?.start();
         };
 
         /**

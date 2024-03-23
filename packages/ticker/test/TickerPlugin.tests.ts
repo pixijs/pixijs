@@ -4,8 +4,8 @@ describe('TickerPlugin', () =>
 {
     interface App
     {
-        _ticker?: Ticker;
-        ticker?: Ticker;
+        _ticker?: Ticker | null;
+        ticker?: Ticker | null;
         render?(): void;
         start?(): void;
     }
@@ -13,16 +13,16 @@ describe('TickerPlugin', () =>
 
     it('should not start application before calling start method if options.autoStart is false', (done) =>
     {
-        const appp = {} as App;
+        const appp: App = {};
 
         TickerPlugin.init.call(appp, { autoStart: false });
 
         expect(appp.ticker).toBeInstanceOf(Ticker);
-        expect(appp.ticker.started).toBe(false);
+        expect(appp.ticker?.started).toBe(false);
 
-        appp.start();
+        appp.start?.();
 
-        appp.ticker.addOnce(() =>
+        appp.ticker?.addOnce(() =>
         {
             TickerPlugin.destroy.call(appp);
             done();
@@ -41,7 +41,7 @@ describe('TickerPlugin', () =>
             };
             TickerPlugin.init.call(app);
             /* remove default listener to prevent uncaught exception */
-            app._ticker.remove(app.render, app);
+            app._ticker?.remove(app.render as () => void, app);
         });
 
         afterAll(() =>
@@ -67,10 +67,10 @@ describe('TickerPlugin', () =>
 
         it('should assign ticker if no ticker', () =>
         {
-            const ticker = { add: jest.fn() };
+            const ticker = { add: jest.fn() } as unknown as Ticker;
 
             app._ticker = null;
-            app.ticker = ticker as unknown as Ticker;
+            app.ticker = ticker;
 
             expect(app._ticker).toEqual(ticker);
             expect(ticker.add).toHaveBeenCalledOnce();
