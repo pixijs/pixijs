@@ -3,7 +3,8 @@ import { Sprite } from '@pixi/sprite';
 import { TextStyle } from '@pixi/text';
 import { HTMLTextStyle } from './HTMLTextStyle';
 
-import type { ImageResource, IRenderer, ISize, Renderer } from '@pixi/core';
+import type { CanvasRenderer } from '@pixi/canvas-renderer';
+import type { ImageResource, ISize, Renderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
 import type { ITextStyle } from '@pixi/text';
 
@@ -312,7 +313,7 @@ export class HTMLText extends Sprite
      * @private
      * @param {PIXI.CanvasRenderer} renderer - The renderer
      */
-    _renderCanvas(renderer: IRenderer)
+    _renderCanvas(renderer: CanvasRenderer)
     {
         if (this._autoResolution && this._resolution !== renderer.resolution)
         {

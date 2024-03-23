@@ -1,8 +1,13 @@
-declare namespace GlobalMixins
+declare global
 {
-    interface Settings
+    namespace GlobalMixins
     {
-        FAIL_IF_MAJOR_PERFORMANCE_CAVEAT: boolean;
-        RETINA_PREFIX: RegExp;
+        interface Settings
+        {
+            FAIL_IF_MAJOR_PERFORMANCE_CAVEAT: boolean;
+            RETINA_PREFIX: RegExp;
+        }
     }
 }
+
+export {};

@@ -1,11 +1,16 @@
-declare namespace GlobalMixins
+declare global
 {
-    interface LoaderResource
+    namespace GlobalMixins
     {
+        interface LoaderResource
+        {
         /** Reference to Spritesheet object created. */
-        spritesheet?: import('@pixi/spritesheet').Spritesheet;
+            spritesheet?: import('@pixi/spritesheet').Spritesheet;
 
-        /** Dictionary of textures from Spritesheet. */
-        textures?: {[name: string]: import('@pixi/core').Texture};
+            /** Dictionary of textures from Spritesheet. */
+            textures?: {[name: string]: import('@pixi/core').Texture};
+        }
     }
 }
+
+export {};

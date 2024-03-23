@@ -1,21 +1,26 @@
-declare namespace GlobalMixins
+declare global
 {
-    interface Application
+    namespace GlobalMixins
     {
-        ticker: import('@pixi/ticker').Ticker;
-        stop(): void;
-        start(): void;
-    }
+        interface Application
+        {
+            ticker: import('@pixi/ticker').Ticker;
+            stop(): void;
+            start(): void;
+        }
 
-    interface IApplicationOptions
-    {
-        autoStart?: boolean;
-        sharedTicker?: boolean;
-    }
+        interface IApplicationOptions
+        {
+            autoStart?: boolean;
+            sharedTicker?: boolean;
+        }
 
-    interface Settings
-    {
+        interface Settings
+        {
         /** @deprecated since 7.1.0 */
-        TARGET_FPMS: number;
+            TARGET_FPMS: number;
+        }
     }
 }
+
+export {};

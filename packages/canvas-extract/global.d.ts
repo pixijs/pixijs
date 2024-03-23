@@ -1,7 +1,12 @@
-declare namespace GlobalMixins
+declare global
 {
-    interface CanvasRenderer
+    namespace GlobalMixins
     {
-        readonly extract: import('@pixi/canvas-extract').CanvasExtract;
+        interface CanvasRenderer
+        {
+            readonly extract: import('@pixi/canvas-extract').CanvasExtract;
+        }
     }
 }
+
+export {};

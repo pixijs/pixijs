@@ -1,14 +1,19 @@
-declare namespace GlobalMixins
+declare global
 {
-    // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface ICanvas
+    namespace GlobalMixins
     {
+        // eslint-disable-next-line @typescript-eslint/no-empty-interface
+        interface ICanvas
+        {
 
-    }
+        }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface Settings
-    {
+        // eslint-disable-next-line @typescript-eslint/no-empty-interface
+        interface Settings
+        {
 
+        }
     }
 }
+
+export {};

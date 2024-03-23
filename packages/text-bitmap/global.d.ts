@@ -1,24 +1,29 @@
-declare namespace GlobalMixins
+declare global
 {
-    interface IBitmapFontResource
+    namespace GlobalMixins
     {
-        bitmapFont: import('@pixi/text-bitmap').BitmapFont;
-    }
+        interface IBitmapFontResource
+        {
+            bitmapFont: import('@pixi/text-bitmap').BitmapFont;
+        }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface LoaderResource extends Partial<IBitmapFontResource>
-    {
+        // eslint-disable-next-line @typescript-eslint/no-empty-interface
+        interface LoaderResource extends Partial<IBitmapFontResource>
+        {
 
-    }
+        }
 
-    interface IBitmapFontResourceMetadata
-    {
-        pageFile: string;
-    }
+        interface IBitmapFontResourceMetadata
+        {
+            pageFile: string;
+        }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface IResourceMetadata extends Partial<IBitmapFontResourceMetadata>
-    {
+        // eslint-disable-next-line @typescript-eslint/no-empty-interface
+        interface IResourceMetadata extends Partial<IBitmapFontResourceMetadata>
+        {
 
+        }
     }
 }
+
+export {};

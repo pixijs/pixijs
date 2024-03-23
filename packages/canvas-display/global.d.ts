@@ -1,12 +1,17 @@
-declare namespace GlobalMixins
+declare global
 {
-    interface DisplayObject
+    namespace GlobalMixins
     {
-        renderCanvas?(renderer: import('@pixi/canvas-renderer').CanvasRenderer): void;
-    }
+        interface DisplayObject
+        {
+            renderCanvas?(renderer: import('@pixi/canvas-renderer').CanvasRenderer): void;
+        }
 
-    interface Container
-    {
-        _renderCanvas(renderer: import('@pixi/canvas-renderer').CanvasRenderer): void;
+        interface Container
+        {
+            _renderCanvas(renderer: import('@pixi/canvas-renderer').CanvasRenderer): void;
+        }
     }
 }
+
+export {};

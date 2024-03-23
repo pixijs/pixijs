@@ -1,8 +1,13 @@
-declare namespace GlobalMixins
+declare global
 {
-    // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface AssetsPreferences
+    namespace GlobalMixins
     {
+        // eslint-disable-next-line @typescript-eslint/no-empty-interface
+        interface AssetsPreferences
+        {
 
+        }
     }
 }
+
+export {};

@@ -1,8 +1,13 @@
-declare namespace GlobalMixins
+declare global
 {
-    interface Sprite
+    namespace GlobalMixins
     {
-        _tintedCanvas: import('@pixi/settings').ICanvas | HTMLImageElement;
-        _renderCanvas(renderer: import('@pixi/canvas-renderer').CanvasRenderer): void;
+        interface Sprite
+        {
+            _tintedCanvas: import('@pixi/settings').ICanvas | HTMLImageElement;
+            _renderCanvas(renderer: import('@pixi/canvas-renderer').CanvasRenderer): void;
+        }
     }
 }
+
+export {};
