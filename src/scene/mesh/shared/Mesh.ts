@@ -210,7 +210,14 @@ export class Mesh<
     /** The texture that the Mesh uses. Null for non-MeshMaterial shaders */
     set texture(value: Texture)
     {
-        if (this._texture === value) return;
+        value ||= Texture.EMPTY;
+
+        const currentTexture = this._texture;
+
+        if (currentTexture === value) return;
+
+        if (currentTexture && currentTexture.dynamic) currentTexture.off('update', this.onViewUpdate, this);
+        if (value.dynamic) value.on('update', this.onViewUpdate, this);
 
         if (this.shader)
         {

@@ -141,7 +141,7 @@ export class NineSliceSprite extends Container implements View
         this.bounds.maxY = this._height = height ?? texture.height ?? NineSliceGeometry.defaultOptions.height;
 
         this.allowChildren = false;
-        this._texture = texture ?? NineSliceSprite.defaultOptions.texture;
+        this.texture = texture ?? NineSliceSprite.defaultOptions.texture;
         this.roundPixels = roundPixels ?? false;
     }
 
@@ -226,7 +226,14 @@ export class NineSliceSprite extends Container implements View
 
     set texture(value: Texture)
     {
-        if (value === this._texture) return;
+        value ||= Texture.EMPTY;
+
+        const currentTexture = this._texture;
+
+        if (currentTexture === value) return;
+
+        if (currentTexture && currentTexture.dynamic) currentTexture.off('update', this.onViewUpdate, this);
+        if (value.dynamic) value.on('update', this.onViewUpdate, this);
 
         this._texture = value;
 
