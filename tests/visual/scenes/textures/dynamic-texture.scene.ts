@@ -10,7 +10,6 @@ import type { TestScene } from '../../types';
 export const scene: TestScene = {
     it: 'should render a dynamic texture',
     pixelMatch: 200,
-    only: true,
     create: async (scene: Container, renderer: Renderer) =>
     {
         const bunnyTexture = await Assets.load<Texture>(`bunny.png`);
