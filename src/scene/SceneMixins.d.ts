@@ -1,7 +1,9 @@
 declare namespace PixiMixins
 {
+    type ContainerChild = import('./container/Container').ContainerChild;
     type LocalGlobal = import('./container/container-mixins/toLocalGlobalMixin').ToLocalGlobalMixin;
-    type ChildrenHelper = import('./container/container-mixins/childrenHelperMixin').ChildrenHelperMixin;
+    type ChildrenHelper<C extends ContainerChild>
+        = import('./container/container-mixins/childrenHelperMixin').ChildrenHelperMixin<C>;
     type OnRenderMixin = import('./container/container-mixins/onRenderMixin').OnRenderMixin;
     type MeasureMixin = import('./container/container-mixins/measureMixin').MeasureMixin;
     type EffectsMixin = import('./container/container-mixins/effectsMixin').EffectsMixin;
@@ -9,9 +11,9 @@ declare namespace PixiMixins
     type SortMixin = import('./container/container-mixins/sortMixin').SortMixin;
 
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface Container
+    interface Container<C extends ContainerChild = ContainerChild>
         extends LocalGlobal,
-        ChildrenHelper,
+        ChildrenHelper<C>,
         OnRenderMixin,
         MeasureMixin,
         EffectsMixin,

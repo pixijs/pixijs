@@ -24,6 +24,8 @@ import type { Dict } from '../../utils/types';
 import type { Optional } from './container-mixins/measureMixin';
 import type { DestroyOptions } from './destroyTypes';
 
+export type ContainerChild = Container;
+
 /**
  * This is where you'll find all the display objects available in Pixi.
  *
@@ -52,12 +54,12 @@ const defaultSkew = new ObservablePoint(null);
 const defaultPivot = new ObservablePoint(null);
 const defaultScale = new ObservablePoint(null, 1, 1);
 
-export interface ContainerEvents extends PixiMixins.ContainerEvents
+export interface ContainerEvents<C extends ContainerChild> extends PixiMixins.ContainerEvents
 {
     added: [container: Container];
-    childAdded: [child: Container, container: Container, index: number];
+    childAdded: [child: C, container: Container, index: number];
     removed: [container: Container];
-    childRemoved: [child: Container, container: Container, index: number];
+    childRemoved: [child: C, container: Container, index: number];
     destroyed: [container: Container];
 }
 
@@ -106,7 +108,7 @@ export interface UpdateTransformOptions
  * @memberof scene
  * @see scene.Container
  */
-export interface ContainerOptions extends PixiMixins.ContainerOptions
+export interface ContainerOptions<C extends ContainerChild = ContainerChild> extends PixiMixins.ContainerOptions
 {
     /** @see scene.Container#isRenderGroup */
     isRenderGroup?: boolean;
@@ -121,7 +123,7 @@ export interface ContainerOptions extends PixiMixins.ContainerOptions
     /** @see scene.Container#angle */
     angle?: number;
     /** @see scene.Container#children */
-    children?: Container[];
+    children?: C[];
     /** @see scene.Container#parent */
     parent?: Container;
     /** @see scene.Container#renderable */
@@ -148,9 +150,9 @@ export interface ContainerOptions extends PixiMixins.ContainerOptions
     boundsArea?: Rectangle;
 }
 
-export interface Container
-    extends Omit<PixiMixins.Container, keyof EventEmitter<ContainerEvents & AnyEvent>>,
-    EventEmitter<ContainerEvents & AnyEvent> { }
+export interface Container<C extends ContainerChild>
+    extends Omit<PixiMixins.Container<C>, keyof EventEmitter<ContainerEvents<C> & AnyEvent>>,
+    EventEmitter<ContainerEvents<C> & AnyEvent> { }
 
 /**
  * Container is a general-purpose display object that holds children. It also adds built-in support for advanced
@@ -343,7 +345,7 @@ export interface Container
  * </details>
  * @memberof scene
  */
-export class Container extends EventEmitter<ContainerEvents & AnyEvent>
+export class Container<C extends ContainerChild = ContainerChild> extends EventEmitter<ContainerEvents<C> & AnyEvent>
 {
     /**
      * Mixes all enumerable properties and methods from a source object to Container.
@@ -385,7 +387,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
      * The array of children of this container.
      * @readonly
      */
-    public children: Container[] = [];
+    public children: C[] = [];
     /** The display object container that contains this display object. */
     public parent: Container = null;
 
@@ -573,7 +575,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
      */
     private _didLocalTransformChangeId = -1;
 
-    constructor(options: ContainerOptions = {})
+    constructor(options: ContainerOptions<C> = {})
     {
         super();
 
@@ -595,7 +597,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
      * @param {...Container} children - The Container(s) to add to the container
      * @returns {Container} - The first child that was added.
      */
-    public addChild<U extends Container[]>(...children: U): U[0]
+    public addChild<U extends C[]>(...children: U): U[0]
     {
         // #if _DEBUG
         if (!this.allowChildren)
@@ -669,7 +671,7 @@ export class Container extends EventEmitter<ContainerEvents & AnyEvent>
      * @param {...Container} children - The Container(s) to remove
      * @returns {Container} The first child that was removed.
      */
-    public removeChild<U extends Container[]>(...children: U): U[0]
+    public removeChild<U extends C[]>(...children: U): U[0]
     {
         // if there is only one argument we can bypass looping through the them
         if (children.length > 1)
