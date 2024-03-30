@@ -37,7 +37,7 @@ export interface Attribute
      *  drawing will start from the first vertex.
      */
     start?: number;
-    /** attribute divisor for  instanced rendering */
+    /** attribute divisor for instanced rendering */
     divisor?: number;
 }
 
