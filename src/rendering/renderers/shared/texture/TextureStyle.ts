@@ -84,7 +84,7 @@ export class TextureStyle extends EventEmitter<{
 
     /** default options for the style */
     public static readonly defaultOptions: TextureStyleOptions = {
-        addressMode: 'repeat',
+        addressMode: 'clamp-to-edge',
         scaleMode: 'linear'
     };
 
