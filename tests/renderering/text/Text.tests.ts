@@ -2,6 +2,7 @@
 import { Container } from '../../../src/scene/container/Container';
 import { Sprite } from '../../../src/scene/sprite/Sprite';
 import { Text } from '../../../src/scene/text/Text';
+import { TextStyle } from '../../../src/scene/text/TextStyle';
 import { BitmapText } from '../../../src/scene/text-bitmap/BitmapText';
 import { getWebGLRenderer } from '../../utils/getRenderer';
 import '../../../src/scene/graphics/init';
@@ -169,6 +170,27 @@ describe('Text', () =>
             text.destroy();
 
             expect(renderer.renderPipes.bitmapText['_gpuBitmapText'][text.uid]).toBeNull();
+        });
+
+        it('should destroy textStyle correctly', () =>
+        {
+            const style = new TextStyle({ fill: 'red' });
+
+            const text = new Text({ text: 'foo', style });
+
+            expect(text.style.fill).toBe('red');
+
+            text.destroy();
+
+            expect(style.fill).toBe('red');
+
+            const text2 = new Text({ text: 'foo', style });
+
+            expect(text2.style.fill).toBe('red');
+
+            text2.destroy(true);
+
+            expect(style.fill).toBe(null);
         });
     });
 

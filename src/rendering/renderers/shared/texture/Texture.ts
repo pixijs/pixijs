@@ -63,6 +63,8 @@ export interface TextureOptions
     defaultBorders?: TextureBorders;
     /** indicates how the texture was rotated by texture packer. See {@link groupD8} */
     rotate?: number;
+    /** set to true if you plan on modifying the uvs of this texture - can affect performance with high numbers of sprites*/
+    dynamic?: boolean;
 }
 
 export interface BindableTexture
@@ -187,6 +189,13 @@ export class Texture extends EventEmitter<{
      */
     public noFrame = false;
 
+    /**
+     * Set to true if you plan on modifying the uvs of this texture.
+     * When this is the case, sprites and other objects using the texture will
+     * make sure to listen for changes to the uvs and update their vertices accordingly.
+     */
+    public dynamic = false;
+
     private _textureMatrix: TextureMatrix;
 
     /** is it a texture? yes! used for type checking */
@@ -203,7 +212,8 @@ export class Texture extends EventEmitter<{
         trim,
         defaultAnchor,
         defaultBorders,
-        rotate
+        rotate,
+        dynamic
     }: TextureOptions = {})
     {
         super();
@@ -233,6 +243,7 @@ export class Texture extends EventEmitter<{
         this.defaultBorders = defaultBorders;
 
         this.destroyed = false;
+        this.dynamic = dynamic || false;
 
         this.updateUvs();
     }

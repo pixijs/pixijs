@@ -1,5 +1,3 @@
-import { Matrix } from '../../../maths/matrix/Matrix';
-
 import type { Batch, BatchableObject, Batcher } from '../../../rendering/batcher/shared/Batcher';
 import type { IndexBufferArray } from '../../../rendering/renderers/shared/geometry/Geometry';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
@@ -24,7 +22,8 @@ export class BatchableMesh implements BatchableObject
     public roundPixels: 0 | 1 = 0;
 
     private _transformedUvs: Float32Array;
-    private readonly _uvMatrix = new Matrix();
+    private _uvUpdateId: number = -1;
+    private _textureMatrixUpdateId: number = -1;
 
     get blendMode() { return this.mesh.groupBlendMode; }
 
@@ -69,7 +68,9 @@ export class BatchableMesh implements BatchableObject
 
         // const trim = texture.trim;
         const positions = geometry.positions;
-        const uvs = geometry.uvs;
+        const uvBuffer = geometry.getBuffer('aUV');
+
+        const uvs = uvBuffer.data;
 
         let transformedUvs = uvs;
         const textureMatrix = this.texture.textureMatrix;
@@ -78,15 +79,17 @@ export class BatchableMesh implements BatchableObject
         {
             transformedUvs = this._transformedUvs;
 
-            if (!transformedUvs || transformedUvs.length < uvs.length)
+            if (this._textureMatrixUpdateId !== textureMatrix._updateID || this._uvUpdateId !== uvBuffer._updateID)
             {
-                transformedUvs = this._transformedUvs = new Float32Array(uvs.length);
-            }
+                if (!transformedUvs || transformedUvs.length < uvs.length)
+                {
+                    transformedUvs = this._transformedUvs = new Float32Array(uvs.length);
+                }
 
-            if (!textureMatrix.mapCoord.equals(this._uvMatrix))
-            {
-                this._uvMatrix.copyFrom(textureMatrix.mapCoord);
-                textureMatrix.multiplyUvs(uvs, transformedUvs);
+                this._textureMatrixUpdateId = textureMatrix._updateID;
+                this._uvUpdateId = uvBuffer._updateID;
+
+                textureMatrix.multiplyUvs(uvs as Float32Array, transformedUvs);
             }
         }
 

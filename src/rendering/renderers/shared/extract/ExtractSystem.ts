@@ -10,7 +10,13 @@ import type { System } from '../system/System';
 import type { GetPixelsOutput } from '../texture/GenerateCanvas';
 import type { GenerateTextureOptions } from './GenerateTextureSystem';
 
-type Formats = 'png' | 'jpg'; // Add other formats if needed
+const imageTypes = {
+    png: 'image/png',
+    jpg: 'image/jpeg',
+    webp: 'image/webp',
+};
+
+type Formats = keyof typeof imageTypes;
 
 /**
  * Options for creating an image from a renderer.
@@ -177,16 +183,16 @@ export class ExtractSystem implements System
                     reader.onload = () => resolve(reader.result as string);
                     reader.onerror = reject;
                     reader.readAsDataURL(blob);
-                }, format, quality);
+                }, imageTypes[format], quality);
             });
         }
         if (canvas.toDataURL !== undefined)
         {
-            return canvas.toDataURL(format, quality);
+            return canvas.toDataURL(imageTypes[format], quality);
         }
         if (canvas.convertToBlob !== undefined)
         {
-            const blob = await canvas.convertToBlob({ type: format, quality });
+            const blob = await canvas.convertToBlob({ type: imageTypes[format], quality });
 
             return new Promise<string>((resolve, reject) =>
             {
