@@ -254,7 +254,7 @@ export class FilterSystem implements System
         // handled by the viewport on the gpu.
         // need to factor in resolutions also..
         bounds.scale(resolution)
-            .fit(0, viewPort.width, 0, viewPort.height)
+            .fitBounds(0, viewPort.width, 0, viewPort.height)
             .scale(1 / resolution)
             .pad(padding)
             .ceil();

@@ -253,7 +253,7 @@ export class Bounds
      * Resizes the bounds object to include the given rectangle.
      * @param rect - The rectangle to be included.
      */
-    public fitRect(rect: Rectangle): this
+    public fit(rect: Rectangle): this
     {
         if (this.minX < rect.left) this.minX = rect.left;
         if (this.maxX > rect.right) this.maxX = rect.right;
@@ -271,7 +271,7 @@ export class Bounds
      * @param top - The top value of the bounds.
      * @param bottom - The bottom value of the bounds.
      */
-    public fit(left: number, right: number, top: number, bottom: number): this
+    public fitBounds(left: number, right: number, top: number, bottom: number): this
     {
         if (this.minX < left) this.minX = left;
         if (this.maxX > right) this.maxX = right;
