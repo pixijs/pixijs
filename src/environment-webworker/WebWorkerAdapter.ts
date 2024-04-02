@@ -8,6 +8,7 @@ import { DOMParser } from '@xmldom/xmldom';
  * @property {Function} createCanvas - Creates a canvas element of the given size using the browser's native OffscreenCanvas.
  * @property {Function} getCanvasRenderingContext2D - Returns a 2D rendering context.
  * @property {Function} getWebGLRenderingContext - Returns a WebGL rendering context.
+ * @property {Function} getWebGL2RenderingContext - Returns a WebGL2 rendering context.
  * @property {Function} getNavigator - Returns browsers window.navigator
  * @property {Function} getBaseUrl - Returns the current base URL of the worker, which is globalThis.location.href
  * @property {Function} getFontFaceSet - Return the font face set if available
@@ -19,7 +20,7 @@ export const WebWorkerAdapter = {
     createCanvas: (width?: number, height?: number) => new OffscreenCanvas(width ?? 0, height ?? 0),
     getCanvasRenderingContext2D: () => OffscreenCanvasRenderingContext2D,
     getWebGLRenderingContext: () => WebGLRenderingContext,
-    getWebGL2RenderingContext: () => WebGL2RenderingContext,
+    getWebGL2RenderingContext: () => (typeof WebGL2RenderingContext !== 'undefined' ? WebGL2RenderingContext : null),
     getNavigator: () => navigator,
     getBaseUrl: () => globalThis.location.href,
     getFontFaceSet: () => (globalThis as unknown as WorkerGlobalScope).fonts,

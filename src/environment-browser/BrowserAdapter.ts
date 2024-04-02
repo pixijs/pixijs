@@ -8,6 +8,7 @@ import { type Adapter } from '../environment/adapter';
  * This canvas is created using the browser's native canvas element.
  * @property {Function} getCanvasRenderingContext2D - Returns a 2D rendering context.
  * @property {Function} getWebGLRenderingContext - Returns a WebGL rendering context.
+ * @property {Function} getWebGL2RenderingContext - Returns a WebGL2 rendering context.
  * @property {Function} getNavigator - Returns browsers window.navigator
  * @property {Function} getBaseUrl - Returns the current base URL for browser environments this is either
  * the document.baseURI or window.location.href
@@ -27,7 +28,7 @@ export const BrowserAdapter = {
     },
     getCanvasRenderingContext2D: () => CanvasRenderingContext2D,
     getWebGLRenderingContext: () => WebGLRenderingContext,
-    getWebGL2RenderingContext: () => WebGL2RenderingContext,
+    getWebGL2RenderingContext: () => (typeof WebGL2RenderingContext !== 'undefined' ? WebGL2RenderingContext : null),
     getNavigator: () => navigator,
     getBaseUrl: () => (document.baseURI ?? window.location.href),
     getFontFaceSet: () => document.fonts,
