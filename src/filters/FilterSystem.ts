@@ -247,10 +247,14 @@ export class FilterSystem implements System
             return;
         }
 
-        // her we constrain the bounds to the viewport we will render too
+        const viewPort = renderer.renderTarget.rootViewPort;
+
+        // here we constrain the bounds to the viewport we will render too
+        // this should not take into account the x, y offset of the viewport - as this is
+        // handled by the viewport on the gpu.
         // need to factor in resolutions also..
         bounds.scale(resolution)
-            .fit(renderer.renderTarget.rootViewPort)
+            .fitBounds(0, viewPort.width, 0, viewPort.height)
             .scale(1 / resolution)
             .pad(padding)
             .ceil();

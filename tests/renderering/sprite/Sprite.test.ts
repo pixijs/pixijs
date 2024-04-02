@@ -4,7 +4,6 @@ import { RenderTexture } from '../../../src/rendering/renderers/shared/texture/R
 import { TextureSource } from '../../../src/rendering/renderers/shared/texture/sources/TextureSource';
 import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
 import { Container } from '../../../src/scene/container/Container';
-import { Graphics } from '../../../src/scene/graphics/shared/Graphics';
 import { Sprite } from '../../../src/scene/sprite/Sprite';
 import { getWebGLRenderer } from '../../utils/getRenderer';
 import { getTexture } from '../../utils/getTexture';
@@ -15,14 +14,14 @@ describe('Sprite', () =>
     {
         it('should not throw when destroyed', () =>
         {
-            const sprite = new Graphics();
+            const sprite = new Sprite();
 
             expect(() => sprite.destroy()).not.toThrow();
         });
 
         it('should not throw when destroying it context', () =>
         {
-            const sprite = new Graphics();
+            const sprite = new Sprite();
 
             expect(() => sprite.destroy(true)).not.toThrow();
         });
