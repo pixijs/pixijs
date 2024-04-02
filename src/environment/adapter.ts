@@ -37,9 +37,7 @@ export interface Adapter
     /** Returns a 2D rendering context. */
     getCanvasRenderingContext2D: () => { prototype: ICanvasRenderingContext2D; };
     /** Returns a WebGL rendering context. */
-    getWebGLRenderingContext: () => typeof WebGLRenderingContext;
-    /** Returns a WebGL2 rendering context. */
-    getWebGL2RenderingContext: () => typeof WebGL2RenderingContext;
+    getWebGL1RenderingContext: () => typeof WebGLRenderingContext;
     /** Returns a partial implementation of the browsers window.navigator */
     getNavigator: () => { userAgent: string, gpu: GPU | null };
     /** Returns the current base URL For browser environments this is either the document.baseURI or window.location.href */
