@@ -390,6 +390,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     {
         this.destroyed = true;
         this.emit('destroy', this);
+        this.emit('change', this);
 
         if (this._style)
         {
