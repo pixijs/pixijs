@@ -26,7 +26,7 @@ export const BrowserAdapter = {
         return canvas;
     },
     getCanvasRenderingContext2D: () => CanvasRenderingContext2D,
-    getWebGL1RenderingContext: () => WebGLRenderingContext,
+    getWebGLRenderingContext: () => WebGLRenderingContext,
     getNavigator: () => navigator,
     getBaseUrl: () => (document.baseURI ?? window.location.href),
     getFontFaceSet: () => document.fonts,

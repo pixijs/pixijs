@@ -27,7 +27,7 @@ export function isWebGLSupported(
 
         try
         {
-            if (!DOMAdapter.get().getWebGL1RenderingContext())
+            if (!DOMAdapter.get().getWebGLRenderingContext())
             {
                 return false;
             }

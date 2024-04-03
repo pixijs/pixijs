@@ -18,7 +18,7 @@ import { DOMParser } from '@xmldom/xmldom';
 export const WebWorkerAdapter = {
     createCanvas: (width?: number, height?: number) => new OffscreenCanvas(width ?? 0, height ?? 0),
     getCanvasRenderingContext2D: () => OffscreenCanvasRenderingContext2D,
-    getWebGL1RenderingContext: () => WebGLRenderingContext,
+    getWebGLRenderingContext: () => WebGLRenderingContext,
     getNavigator: () => navigator,
     getBaseUrl: () => globalThis.location.href,
     getFontFaceSet: () => (globalThis as unknown as WorkerGlobalScope).fonts,

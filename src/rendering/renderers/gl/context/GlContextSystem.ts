@@ -219,7 +219,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
     {
         this.gl = gl;
 
-        this.webGLVersion = gl instanceof DOMAdapter.get().getWebGL1RenderingContext() ? 1 : 2;
+        this.webGLVersion = gl instanceof DOMAdapter.get().getWebGLRenderingContext() ? 1 : 2;
 
         this.getExtensions();
 
