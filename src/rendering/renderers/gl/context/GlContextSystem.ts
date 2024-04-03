@@ -1,3 +1,4 @@
+import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { warn } from '../../../../utils/logging/warn';
 import { type GpuPowerPreference } from '../../types';
@@ -218,7 +219,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
     {
         this.gl = gl;
 
-        this.webGLVersion = gl instanceof WebGL2RenderingContext ? 2 : 1;
+        this.webGLVersion = gl instanceof DOMAdapter.get().getWebGL2RenderingContext() ? 2 : 1;
 
         this.getExtensions();
 

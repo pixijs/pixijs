@@ -169,7 +169,7 @@ export const loadWebFont = {
                 fontFaces.push(font);
             }
 
-            Cache.set(name, {
+            Cache.set(`${name}-and-url`, {
                 url,
                 fontFaces,
             });

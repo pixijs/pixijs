@@ -22,12 +22,12 @@ export async function getFontCss(
 )
 {
     const fontPromises = fontFamilies
-        .filter((fontFamily) => Cache.has(fontFamily))
+        .filter((fontFamily) => Cache.has(`${fontFamily}-and-url`))
         .map((fontFamily, i) =>
         {
             if (!FontStylePromiseCache.has(fontFamily))
             {
-                const { url } = Cache.get(fontFamily);
+                const { url } = Cache.get(`${fontFamily}-and-url`);
 
                 if (i === 0)
                 {

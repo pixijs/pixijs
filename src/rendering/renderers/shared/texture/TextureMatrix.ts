@@ -54,15 +54,16 @@ export class TextureMatrix
 
     /**
      * Tracks Texture frame changes.
-     * @protected
+     * @ignore
      */
-    protected _textureID: number;
+    public _updateID: number;
 
     /**
      * Tracks Texture frame changes.
      * @protected
      */
-    protected _updateID: number;
+    protected _textureID: number;
+
     protected _texture: Texture;
 
     /**

@@ -89,6 +89,11 @@ export class GlStencilSystem implements System
             'increment-wrap': gl.INCR_WRAP,
             'decrement-wrap': gl.DECR_WRAP,
         };
+
+        // reset stencil cache
+        this._stencilCache.enabled = false;
+        this._stencilCache.stencilMode = STENCIL_MODES.NONE;
+        this._stencilCache.stencilReference = 0;
     }
 
     protected onRenderTargetChange(renderTarget: RenderTarget)

@@ -111,28 +111,31 @@ export class GpuBufferSystem implements System
      */
     protected onBufferDestroy(buffer: Buffer): void
     {
+        this._managedBuffers.splice(this._managedBuffers.indexOf(buffer), 1);
+
+        this._destroyBuffer(buffer);
+    }
+
+    public destroy(): void
+    {
+        this._managedBuffers.forEach((buffer) => this._destroyBuffer(buffer));
+
+        (this._managedBuffers as null) = null;
+
+        this._gpuBuffers = null;
+    }
+
+    private _destroyBuffer(buffer: Buffer): void
+    {
         const gpuBuffer = this._gpuBuffers[buffer.uid];
 
         gpuBuffer.destroy();
-
-        this._managedBuffers.splice(this._managedBuffers.indexOf(buffer), 1);
 
         buffer.off('update', this.updateBuffer, this);
         buffer.off('change', this.onBufferChange, this);
         buffer.off('destroy', this.onBufferDestroy, this);
 
         this._gpuBuffers[buffer.uid] = null;
-    }
-
-    public destroy(): void
-    {
-        this._managedBuffers
-            .slice()
-            .forEach((buffer) => this.onBufferDestroy(buffer));
-
-        (this._managedBuffers as null) = null;
-
-        this._gpuBuffers = null;
     }
 }
 

@@ -5,7 +5,7 @@ import { getWebGLRenderer } from '../../utils/getRenderer';
 import { getTexture } from '../../utils/getTexture';
 import '../../../src/scene/mesh/init';
 
-function getMesh()
+function getMesh(batched = true)
 {
     const size = 10;
 
@@ -14,6 +14,8 @@ function getMesh()
         uvs: new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]),
         indices: new Uint32Array([0, 1, 2, 0, 2, 3]), // triangle 1);
     });
+
+    quadGeometry.batchMode = batched ? 'batch' : 'no-batch';
 
     const mesh = new Mesh({
         texture: getTexture(),
@@ -55,6 +57,31 @@ describe('Mesh', () =>
         expect(renderer.renderPipes.mesh['_gpuBatchableMeshHash'][mesh.uid]).toBeNull();
 
         expect(gpuMesh.mesh).toBeNull();
+    });
+
+    it('should clean up correctly when not batching', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+
+        const container = new Container();
+
+        const mesh = getMesh(false);
+
+        container.addChild(mesh);
+
+        renderer.render({ container });
+
+        const gpuMesh = renderer.renderPipes.mesh['_gpuBatchableMeshHash'][mesh.uid];
+
+        expect(gpuMesh).toBeUndefined();
+
+        mesh.destroy();
+
+        expect(mesh.geometry).toBeNull();
+        expect(mesh.texture).toBeNull();
+
+        expect(renderer.renderPipes.mesh['_meshDataHash'][mesh.uid]).toBeNull();
+        expect(renderer.renderPipes.mesh['_gpuBatchableMeshHash'][mesh.uid]).toBeUndefined();
     });
 
     it('should support color tinting', () =>

@@ -393,6 +393,7 @@ export abstract class AbstractText<
      *  have been set to that value
      * @param {boolean} [options.texture=false] - Should it destroy the texture of the text style
      * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the text style
+     * @param {boolean} [options.style=false] - Should it destroy the style of the text
      */
     public destroy(options: DestroyOptions = false): void
     {
@@ -402,7 +403,11 @@ export abstract class AbstractText<
         this._bounds = null;
         this._anchor = null;
 
-        this._style.destroy(options);
+        if (typeof options === 'boolean' ? options : options?.style)
+        {
+            this._style.destroy(options);
+        }
+
         this._style = null;
         this._text = null;
     }
