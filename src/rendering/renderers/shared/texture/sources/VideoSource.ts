@@ -197,7 +197,7 @@ export class VideoSource extends TextureSource<VideoResource>
         }
         else
         {
-            this._videoFrameRequestCallbackHandle = (this.source as any).requestVideoFrameCallback(
+            this._videoFrameRequestCallbackHandle = this.resource.requestVideoFrameCallback(
                 this._videoFrameRequestCallback
             );
         }
@@ -490,7 +490,7 @@ export class VideoSource extends TextureSource<VideoResource>
         if (this._autoUpdate && this._isSourcePlaying())
         {
             // Determine if we should use the browser's native video frame callback (generally for better performance)
-            if (!this._updateFPS && (this.source as any).requestVideoFrameCallback)
+            if (!this._updateFPS && this.resource.requestVideoFrameCallback)
             {
                 // If connected to a custom ticker, remove the update frame function from it
                 if (this._isConnectedToTicker)
@@ -504,7 +504,7 @@ export class VideoSource extends TextureSource<VideoResource>
                 // Check if we haven't already requested a video frame callback, and if not, request one
                 if (this._videoFrameRequestCallbackHandle === null)
                 {
-                    this._videoFrameRequestCallbackHandle = (this.source as any).requestVideoFrameCallback(
+                    this._videoFrameRequestCallbackHandle = this.resource.requestVideoFrameCallback(
                         this._videoFrameRequestCallback
                     );
                 }
@@ -514,7 +514,7 @@ export class VideoSource extends TextureSource<VideoResource>
                 // If a video frame request callback exists, cancel it, as we are switching to manual ticker-based updates
                 if (this._videoFrameRequestCallbackHandle !== null)
                 {
-                    (this.source as any).cancelVideoFrameCallback(this._videoFrameRequestCallbackHandle);
+                    this.resource.cancelVideoFrameCallback(this._videoFrameRequestCallbackHandle);
                     this._videoFrameRequestCallbackHandle = null;
                 }
 
@@ -535,7 +535,7 @@ export class VideoSource extends TextureSource<VideoResource>
             // Cancel any existing video frame callback request
             if (this._videoFrameRequestCallbackHandle !== null)
             {
-                (this.source as any).cancelVideoFrameCallback(this._videoFrameRequestCallbackHandle);
+                this.resource.cancelVideoFrameCallback(this._videoFrameRequestCallbackHandle);
                 this._videoFrameRequestCallbackHandle = null;
             }
 
