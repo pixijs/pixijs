@@ -126,7 +126,12 @@ export class Sprite extends Container implements View
     {
         value ||= Texture.EMPTY;
 
-        if (this._texture === value) return;
+        const currentTexture = this._texture;
+
+        if (currentTexture === value) return;
+
+        if (currentTexture && currentTexture.dynamic) currentTexture.off('update', this.onViewUpdate, this);
+        if (value.dynamic) value.on('update', this.onViewUpdate, this);
 
         this._texture = value;
 

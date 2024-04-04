@@ -165,9 +165,11 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<MeshInstructi
 
         const gpuMesh = this._gpuBatchableMeshHash[mesh.uid];
 
-        BigPool.return(gpuMesh as PoolItem);
-
-        this._gpuBatchableMeshHash[mesh.uid] = null;
+        if (gpuMesh)
+        {
+            BigPool.return(gpuMesh as PoolItem);
+            this._gpuBatchableMeshHash[mesh.uid] = null;
+        }
     }
 
     public execute({ mesh }: MeshInstruction)

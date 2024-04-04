@@ -16,8 +16,8 @@ float rand(vec2 co)
 void main()
 {
     vec4 color = texture(uTexture, vTextureCoord);
-    float randomValue = rand(gl_FragCoord.xy * 0.2);
-    float diff = (randomValue - 0.5) *  0.5;
+    float randomValue = rand(gl_FragCoord.xy * uSeed);
+    float diff = (randomValue - 0.5) *  uNoise;
 
     // Un-premultiply alpha before applying the color matrix. See issue #3539.
     if (color.a > 0.0) {
