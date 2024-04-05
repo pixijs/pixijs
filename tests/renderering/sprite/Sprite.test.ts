@@ -284,4 +284,20 @@ describe('Sprite', () =>
             sprite.destroy();
         });
     });
+
+    describe('init', () =>
+    {
+        it('should use defaultAnchor from Texture if available on the constructor', () =>
+        {
+            const texture = new Texture({
+                source: new TextureSource({ width: 100, height: 100 }),
+                defaultAnchor: { x: 0.5, y: 0.5 },
+            });
+
+            const sprite = new Sprite(texture);
+
+            expect(sprite.anchor.x).toEqual(0.5);
+            expect(sprite.anchor.y).toEqual(0.5);
+        });
+    });
 });
