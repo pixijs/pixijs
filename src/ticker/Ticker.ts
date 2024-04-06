@@ -119,23 +119,23 @@ export class Ticker
     public started = false;
 
     /** The first listener. All new listeners added are chained on this. */
-    private _head: TickerListener;
+    protected _head: TickerListener;
     /** Internal current frame request ID */
-    private _requestId: number = null;
+    protected _requestId: number = null;
     /**
      * Internal value managed by minFPS property setter and getter.
      * This is the maximum allowed milliseconds between updates.
      */
-    private _maxElapsedMS = 100;
+    protected _maxElapsedMS = 100;
     /**
      * Internal value managed by minFPS property setter and getter.
      * This is the minimum allowed milliseconds between updates.
      */
-    private _minElapsedMS = 0;
+    protected _minElapsedMS = 0;
     /** If enabled, deleting is disabled.*/
-    private _protected = false;
+    protected _protected = false;
     /** The last time keyframe was executed. Maintains a relatively fixed interval with the previous value. */
-    private _lastFrame = -1;
+    protected _lastFrame = -1;
     /**
      * Internal tick method bound to ticker instance.
      * This is because in early 2015, Function.bind
@@ -145,7 +145,7 @@ export class Ticker
      * any animation API, just invoke ticker.update(time).
      * @param time - Time since last tick.
      */
-    private readonly _tick: (time: number) => any;
+    protected readonly _tick: (time: number) => any;
 
     constructor()
     {
@@ -174,9 +174,9 @@ export class Ticker
      * Conditionally requests a new animation frame.
      * If a frame has not already been requested, and if the internal
      * emitter has listeners, a new frame is requested.
-     * @private
+     * @protected
      */
-    private _requestIfNeeded(): void
+    protected _requestIfNeeded(): void
     {
         if (this._requestId === null && this._head.next)
         {
@@ -189,9 +189,9 @@ export class Ticker
 
     /**
      * Conditionally cancels a pending animation frame.
-     * @private
+     * @protected
      */
-    private _cancelIfNeeded(): void
+    protected _cancelIfNeeded(): void
     {
         if (this._requestId !== null)
         {
@@ -207,9 +207,9 @@ export class Ticker
      * conditions are met, a new frame is requested. If the ticker has not
      * been started, but autoStart is `true`, then the ticker starts now,
      * and continues with the previous conditions to request a new frame.
-     * @private
+     * @protected
      */
-    private _startIfPossible(): void
+    protected _startIfPossible(): void
     {
         if (this.started)
         {
@@ -250,11 +250,11 @@ export class Ticker
      * Internally adds the event handler so that it can be sorted by priority.
      * Priority allows certain handler (user, AnimatedSprite, Interaction) to be run
      * before the rendering.
-     * @private
+     * @protected
      * @param listener - Current listener being added.
      * @returns This instance of a ticker
      */
-    private _addListener(listener: TickerListener): this
+    protected _addListener(listener: TickerListener): this
     {
         // For attaching to head
         let current = this._head.next;
