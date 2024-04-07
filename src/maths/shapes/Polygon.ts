@@ -130,8 +130,9 @@ export class Polygon implements ShapePrimitive
         const halfStrokeWidth = strokeWidth / 2;
         const halfStrokeWidthSqrd = halfStrokeWidth * halfStrokeWidth;
         const { points } = this;
+        const iterationLength = points.length - (this.closePath ? 0 : 2);
 
-        for (let i = 0; i < points.length; i += 2)
+        for (let i = 0; i < iterationLength; i += 2)
         {
             const x1 = points[i];
             const y1 = points[i + 1];
