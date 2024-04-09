@@ -178,7 +178,7 @@ export class Transform
         if (this._rotation !== value)
         {
             this._rotation = value;
-            this.updateSkew();
+            this._onUpdate(this.skew);
         }
     }
 }
