@@ -44,8 +44,10 @@ export interface Attribute
  * extends {@link rendering.Attribute} but allows for the buffer to be a typed or number array
  * @memberof rendering
  */
-type AttributesOption = Omit<Attribute, 'buffer'> & { buffer: Buffer | TypedArray | number[]}
+type AttributeOption = Omit<Attribute, 'buffer'> & { buffer: Buffer | TypedArray | number[]}
 | Buffer | TypedArray | number[];
+
+export type AttributeOptions = Record<string, AttributeOption>;
 
 /**
  * the interface that describes the structure of the geometry
@@ -56,7 +58,7 @@ export interface GeometryDescriptor
     /** an optional label to easily identify the geometry */
     label?: string;
     /** the attributes that make up the geometry */
-    attributes: Record<string, AttributesOption>;
+    attributes: AttributeOptions;
     /** optional index buffer for this geometry */
     indexBuffer?: Buffer | TypedArray | number[];
     /** the topology of the geometry, defaults to 'triangle-list' */
@@ -64,7 +66,7 @@ export interface GeometryDescriptor
 
     instanceCount?: number;
 }
-function ensureIsAttribute(attribute: AttributesOption): Attribute
+function ensureIsAttribute(attribute: AttributeOption): Attribute
 {
     if (attribute instanceof Buffer || Array.isArray(attribute) || (attribute as TypedArray).BYTES_PER_ELEMENT)
     {
