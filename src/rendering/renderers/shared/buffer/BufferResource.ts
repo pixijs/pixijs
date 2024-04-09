@@ -76,6 +76,12 @@ export class BufferResource extends EventEmitter<{
     public readonly _bufferResource = true;
 
     /**
+     * Has the Buffer resource been destroyed?
+     * @readonly
+     */
+    public destroyed = false;
+
+    /**
      * Create a new Buffer Resource.
      * @param options - The options for the buffer resource
      * @param options.buffer - The underlying buffer that this resource is using
@@ -109,10 +115,14 @@ export class BufferResource extends EventEmitter<{
      */
     public destroy(destroyBuffer = false): void
     {
+        this.destroyed = true;
+
         if (destroyBuffer)
         {
             this.buffer.destroy();
         }
+
+        this.emit('change', this);
 
         this.buffer = null;
     }

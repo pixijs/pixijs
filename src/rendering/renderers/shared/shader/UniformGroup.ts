@@ -129,6 +129,9 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
      */
     public readonly _signature: number;
 
+    // implementing the interface - UniformGroup are not destroyed
+    public readonly destroyed = false;
+
     /**
      * Create a new Uniform group
      * @param uniformStructures - The structures of the uniform group
