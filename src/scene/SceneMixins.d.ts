@@ -1,3 +1,4 @@
+import type { ContainerChild } from './container/Container';
 import type { ChildrenHelperMixin } from './container/container-mixins/childrenHelperMixin';
 import type { EffectsMixin, EffectsMixinConstructor } from './container/container-mixins/effectsMixin';
 import type { FindMixin, FindMixinConstructor } from './container/container-mixins/findMixin';
@@ -11,8 +12,8 @@ declare global
     namespace PixiMixins
     {
         // eslint-disable-next-line @typescript-eslint/no-empty-interface
-        interface Container
-            extends ChildrenHelperMixin,
+        interface Container<C extends ContainerChild = ContainerChild>
+            extends ChildrenHelperMixin<C>,
             ToLocalGlobalMixin,
             OnRenderMixin,
             MeasureMixin,
@@ -30,4 +31,5 @@ declare global
     }
 }
 
-export {};
+export { };
+
