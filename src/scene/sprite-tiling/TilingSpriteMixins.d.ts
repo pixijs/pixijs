@@ -1,7 +1,12 @@
-declare namespace PixiMixins
+declare global
 {
-    interface RendererPipes
+    namespace PixiMixins
     {
-        tilingSprite: import('./TilingSpritePipe').TilingSpritePipe;
+        interface RendererPipes
+        {
+            tilingSprite: import('./TilingSpritePipe').TilingSpritePipe;
+        }
     }
 }
+
+export {};
