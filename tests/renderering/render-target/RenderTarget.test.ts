@@ -1,5 +1,5 @@
-import { GlRenderTarget } from '../../../src';
 import { DOMAdapter } from '../../../src/environment/adapter';
+import { GlRenderTarget } from '../../../src/rendering/renderers/gl/GlRenderTarget';
 import { isRenderingToScreen } from '../../../src/rendering/renderers/shared/renderTarget/isRenderingToScreen';
 import { RenderTarget } from '../../../src/rendering/renderers/shared/renderTarget/RenderTarget';
 import { RenderTexture } from '../../../src/rendering/renderers/shared/texture/RenderTexture';
