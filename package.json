@@ -22,7 +22,7 @@
   },
   "scripts": {
     "start": "xs serve",
-    "lint": "xs lint",
+    "lint": "xs lint --max-warnings=0",
     "types": "xs types",
     "build": "xs build",
     "docs": "xs docs",
@@ -64,7 +64,7 @@
   ],
   "devDependencies": {
     "pixi.js": "^8.0.0",
-    "@pixi/extension-scripts": "^2.4.0",
+    "@pixi/extension-scripts": "^2.4.1",
     "gifuct-js": "^2.1.2",
     "pre-commit": "^1.2.2"
   },

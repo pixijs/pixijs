@@ -506,7 +506,7 @@ class AnimatedGIF extends Sprite
      * you to control playback independent of the original animation.
      * If you want to create a simple copy, and not control independently,
      * then you can simply create a new Sprite, e.g. `const sprite = new Sprite(animation.texture)`.
-     * 
+     *
      * The clone will be flagged as `dirty` to immediatly trigger an update
      */
     clone(): AnimatedGIF
@@ -523,7 +523,9 @@ class AnimatedGIF extends Sprite
             onFrameChange: this.onFrameChange,
             onLoop: this.onLoop,
         });
+
         clone.dirty = true;
+
         return clone;
     }
 }
