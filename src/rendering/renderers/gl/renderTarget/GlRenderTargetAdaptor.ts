@@ -179,6 +179,36 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         return glRenderTarget;
     }
 
+    public destroyGpuRenderTarget(gpuRenderTarget: GlRenderTarget)
+    {
+        const gl = this._renderer.gl;
+
+        if (gpuRenderTarget.framebuffer)
+        {
+            gl.deleteFramebuffer(gpuRenderTarget.framebuffer);
+            gpuRenderTarget.framebuffer = null;
+        }
+
+        if (gpuRenderTarget.resolveTargetFramebuffer)
+        {
+            gl.deleteFramebuffer(gpuRenderTarget.resolveTargetFramebuffer);
+            gpuRenderTarget.resolveTargetFramebuffer = null;
+        }
+
+        if (gpuRenderTarget.depthStencilRenderBuffer)
+        {
+            gl.deleteRenderbuffer(gpuRenderTarget.depthStencilRenderBuffer);
+            gpuRenderTarget.depthStencilRenderBuffer = null;
+        }
+
+        gpuRenderTarget.msaaRenderBuffer.forEach((renderBuffer) =>
+        {
+            gl.deleteRenderbuffer(renderBuffer);
+        });
+
+        gpuRenderTarget.msaaRenderBuffer = null;
+    }
+
     public clear(_renderTarget: RenderTarget, clear: CLEAR_OR_BOOL, clearColor?: RgbaArray)
     {
         if (!clear) return;

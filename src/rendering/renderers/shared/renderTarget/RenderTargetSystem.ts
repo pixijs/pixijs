@@ -109,6 +109,12 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends GlRenderTarget | GpuR
         /** the render target to resize */
         renderTarget: RenderTarget
     ): void
+
+    /** destroys the gpu render target */
+    destroyGpuRenderTarget(
+        /** the render target to destroy */
+        gpuRenderTarget: RENDER_TARGET
+    ): void
 }
 
 /**
@@ -494,9 +500,17 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
             }
 
             // TODO add a test for this
-            renderSurface.on('destroy', () =>
+            renderSurface.once('destroy', () =>
             {
                 renderTarget.destroy();
+
+                const gpuRenderTarget = this._gpuRenderTargetHash[renderTarget.uid];
+
+                if (gpuRenderTarget)
+                {
+                    this._gpuRenderTargetHash[renderTarget.uid] = null;
+                    this.adaptor.destroyGpuRenderTarget(gpuRenderTarget);
+                }
             });
         }
 
