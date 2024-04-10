@@ -3,6 +3,7 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import { nextPow2 } from '../../../maths/misc/pow2';
 import { CanvasPool } from '../../../rendering/renderers/shared/texture/CanvasPool';
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
+import { deprecation } from '../../../utils';
 import { getCanvasBoundingBox } from '../../../utils/canvas/getCanvasBoundingBox';
 import { TextStyle } from '../TextStyle';
 import { getPo2TextureFromSource } from '../utils/getPo2TextureFromSource';
@@ -77,8 +78,22 @@ export class CanvasTextSystem implements System
      * @param options.resolution - the resolution of the texture
      * @returns the newly created texture
      */
-    public getTexture(options: TextOptions): Texture
+    /** @deprecated since 8.0.0 */
+    public getTexture(text: string, resolution: number, style: TextStyle, textKey: string): Texture;
+    public getTexture(options: TextOptions): Texture;
+    public getTexture(options: TextOptions | string, resolution?: number, style?: TextStyle, _textKey?: string): Texture
     {
+        if (typeof options === 'string')
+        {
+            deprecation('8.0.0', 'CanvasTextSystem.getTexture: Use object TextOptions instead of separate arguments');
+
+            options = {
+                text: options,
+                style,
+                resolution,
+            };
+        }
+
         if (!(options.style instanceof TextStyle))
         {
             options.style = new TextStyle(options.style);
