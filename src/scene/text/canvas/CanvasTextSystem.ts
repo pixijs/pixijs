@@ -13,9 +13,9 @@ import { getCanvasFillStyle } from './utils/getCanvasFillStyle';
 
 import type { ICanvas } from '../../../environment/canvas/ICanvas';
 import type { ICanvasRenderingContext2D } from '../../../environment/canvas/ICanvasRenderingContext2D';
-import type { Renderer } from '../../../rendering';
 import type { System } from '../../../rendering/renderers/shared/system/System';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
+import type { Renderer } from '../../../rendering/renderers/types';
 import type { TextOptions } from '../AbstractText';
 import type { Text } from '../Text';
 
