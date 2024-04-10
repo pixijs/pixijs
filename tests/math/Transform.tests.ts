@@ -92,5 +92,21 @@ describe('Transform', () =>
             expect(skew.y).toBeCloseTo(0.175, eps);
             expect(otherTransform.rotation).toEqual(0);
         });
+
+        it('should update when rotation changes', () =>
+        {
+            const observer
+            = {
+                _onUpdate: jest.fn(),
+            };
+
+            const transform = new Transform({
+                observer
+            });
+
+            transform.rotation = Math.PI / 6;
+
+            expect(observer._onUpdate).toHaveBeenCalled();
+        });
     });
 });

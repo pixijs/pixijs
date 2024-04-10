@@ -1,34 +1,35 @@
-declare namespace PixiMixins
+import type { ContainerChild } from './container/Container';
+import type { ChildrenHelperMixin } from './container/container-mixins/childrenHelperMixin';
+import type { EffectsMixin, EffectsMixinConstructor } from './container/container-mixins/effectsMixin';
+import type { FindMixin, FindMixinConstructor } from './container/container-mixins/findMixin';
+import type { MeasureMixin, MeasureMixinConstructor } from './container/container-mixins/measureMixin';
+import type { OnRenderMixin, OnRenderMixinConstructor } from './container/container-mixins/onRenderMixin';
+import type { SortMixin, SortMixinConstructor } from './container/container-mixins/sortMixin';
+import type { ToLocalGlobalMixin } from './container/container-mixins/toLocalGlobalMixin';
+
+declare global
 {
-    type LocalGlobal = import('./container/container-mixins/toLocalGlobalMixin').ToLocalGlobalMixin;
-    type ChildrenHelper = import('./container/container-mixins/childrenHelperMixin').ChildrenHelperMixin;
-    type OnRenderMixin = import('./container/container-mixins/onRenderMixin').OnRenderMixin;
-    type MeasureMixin = import('./container/container-mixins/measureMixin').MeasureMixin;
-    type EffectsMixin = import('./container/container-mixins/effectsMixin').EffectsMixin;
-    type FindMixin = import('./container/container-mixins/findMixin').FindMixin;
-    type SortMixin = import('./container/container-mixins/sortMixin').SortMixin;
+    namespace PixiMixins
+    {
+        // eslint-disable-next-line @typescript-eslint/no-empty-interface
+        interface Container<C extends ContainerChild = ContainerChild>
+            extends ChildrenHelperMixin<C>,
+            ToLocalGlobalMixin,
+            OnRenderMixin,
+            MeasureMixin,
+            EffectsMixin,
+            FindMixin,
+            SortMixin {}
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface Container
-        extends LocalGlobal,
-        ChildrenHelper,
-        OnRenderMixin,
-        MeasureMixin,
-        EffectsMixin,
-        FindMixin,
-        SortMixin {}
-
-    type OnRenderMixinConstructor = import('./container/container-mixins/onRenderMixin').OnRenderMixinConstructor;
-    type MeasureMixinConstructor = import('./container/container-mixins/measureMixin').MeasureMixinConstructor;
-    type EffectsMixinConstructor = import('./container/container-mixins/effectsMixin').EffectsMixinConstructor;
-    type FindMixinConstructor = import('./container/container-mixins/findMixin').FindMixinConstructor;
-    type SortMixinConstructor = import('./container/container-mixins/sortMixin').SortMixinConstructor;
-
-    // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface ContainerOptions
-        extends OnRenderMixinConstructor,
-        MeasureMixinConstructor,
-        EffectsMixinConstructor,
-        FindMixinConstructor,
-        SortMixinConstructor {}
+        // eslint-disable-next-line @typescript-eslint/no-empty-interface
+        interface ContainerOptions
+            extends OnRenderMixinConstructor,
+            MeasureMixinConstructor,
+            EffectsMixinConstructor,
+            FindMixinConstructor,
+            SortMixinConstructor {}
+    }
 }
+
+export { };
+

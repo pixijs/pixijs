@@ -1,12 +1,16 @@
-declare namespace PixiMixins
+declare global
 {
-    interface RendererSystems
+    namespace PixiMixins
     {
-        htmlText: import('./HTMLTextSystem').HTMLTextSystem;
-    }
+        interface RendererSystems
+        {
+            htmlText: import('./HTMLTextSystem').HTMLTextSystem;
+        }
 
-    interface RendererPipes
-    {
-        htmlText: import('./HTMLTextPipe').HTMLTextPipe;
+        interface RendererPipes
+        {
+            htmlText: import('./HTMLTextPipe').HTMLTextPipe;
+        }
     }
 }
+export {};

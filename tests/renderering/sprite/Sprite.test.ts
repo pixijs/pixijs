@@ -4,7 +4,6 @@ import { RenderTexture } from '../../../src/rendering/renderers/shared/texture/R
 import { TextureSource } from '../../../src/rendering/renderers/shared/texture/sources/TextureSource';
 import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
 import { Container } from '../../../src/scene/container/Container';
-import { Graphics } from '../../../src/scene/graphics/shared/Graphics';
 import { Sprite } from '../../../src/scene/sprite/Sprite';
 import { getWebGLRenderer } from '../../utils/getRenderer';
 import { getTexture } from '../../utils/getTexture';
@@ -15,14 +14,14 @@ describe('Sprite', () =>
     {
         it('should not throw when destroyed', () =>
         {
-            const sprite = new Graphics();
+            const sprite = new Sprite();
 
             expect(() => sprite.destroy()).not.toThrow();
         });
 
         it('should not throw when destroying it context', () =>
         {
-            const sprite = new Graphics();
+            const sprite = new Sprite();
 
             expect(() => sprite.destroy(true)).not.toThrow();
         });
@@ -283,6 +282,22 @@ describe('Sprite', () =>
             expect(sprite.tint).toEqual(0xff0000);
 
             sprite.destroy();
+        });
+    });
+
+    describe('init', () =>
+    {
+        it('should use defaultAnchor from Texture if available on the constructor', () =>
+        {
+            const texture = new Texture({
+                source: new TextureSource({ width: 100, height: 100 }),
+                defaultAnchor: { x: 0.5, y: 0.5 },
+            });
+
+            const sprite = new Sprite(texture);
+
+            expect(sprite.anchor.x).toEqual(0.5);
+            expect(sprite.anchor.y).toEqual(0.5);
         });
     });
 });

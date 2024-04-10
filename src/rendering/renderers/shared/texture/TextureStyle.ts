@@ -84,7 +84,7 @@ export class TextureStyle extends EventEmitter<{
 
     /** default options for the style */
     public static readonly defaultOptions: TextureStyleOptions = {
-        addressMode: 'repeat',
+        addressMode: 'clamp-to-edge',
         scaleMode: 'linear'
     };
 
@@ -120,6 +120,12 @@ export class TextureStyle extends EventEmitter<{
      * @ignore
      */
     public _maxAnisotropy?: number = 1;
+
+    /**
+     * Has the style been destroyed?
+     * @readonly
+     */
+    public destroyed = false;
 
     /**
      * @param options - options for the style
@@ -232,7 +238,10 @@ export class TextureStyle extends EventEmitter<{
     /** Destroys the style */
     public destroy()
     {
+        this.destroyed = true;
+
         this.emit('destroy', this);
+        this.emit('change', this);
 
         this.removeAllListeners();
     }

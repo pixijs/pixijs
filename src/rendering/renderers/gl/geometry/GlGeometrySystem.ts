@@ -362,8 +362,9 @@ export class GlGeometrySystem implements System
             const attribute = attributes[j];
             const buffer = attribute.buffer;
             const glBuffer = bufferSystem.getGlBuffer(buffer);
+            const programAttrib = program._attributeData[j];
 
-            if (program._attributeData[j])
+            if (programAttrib)
             {
                 if (lastBuffer !== glBuffer)
                 {
@@ -380,12 +381,25 @@ export class GlGeometrySystem implements System
 
                 const attributeInfo = getAttributeInfoFromFormat(attribute.format);
 
-                gl.vertexAttribPointer(location,
-                    attributeInfo.size,
-                    getGlTypeFromFormat(attribute.format),
-                    attributeInfo.normalised,
-                    attribute.stride,
-                    attribute.offset);
+                const type = getGlTypeFromFormat(attribute.format);
+
+                if (programAttrib.format?.substring(1, 4) === 'int')
+                {
+                    gl.vertexAttribIPointer(location,
+                        attributeInfo.size,
+                        type,
+                        attribute.stride,
+                        attribute.offset);
+                }
+                else
+                {
+                    gl.vertexAttribPointer(location,
+                        attributeInfo.size,
+                        type,
+                        attributeInfo.normalised,
+                        attribute.stride,
+                        attribute.offset);
+                }
 
                 if (attribute.instance)
                 {

@@ -19,7 +19,6 @@ export const WebWorkerAdapter = {
     createCanvas: (width?: number, height?: number) => new OffscreenCanvas(width ?? 0, height ?? 0),
     getCanvasRenderingContext2D: () => OffscreenCanvasRenderingContext2D,
     getWebGLRenderingContext: () => WebGLRenderingContext,
-    getWebGL2RenderingContext: () => WebGL2RenderingContext,
     getNavigator: () => navigator,
     getBaseUrl: () => globalThis.location.href,
     getFontFaceSet: () => (globalThis as unknown as WorkerGlobalScope).fonts,
