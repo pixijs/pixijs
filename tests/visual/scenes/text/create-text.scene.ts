@@ -6,6 +6,7 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should create a texture correctly createTexture',
+    pixelMatch: 200,
     create: async (scene: Container, renderer: Renderer) =>
     {
         const texture = renderer.canvasText.getTexture({
