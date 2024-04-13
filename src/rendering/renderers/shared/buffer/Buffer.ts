@@ -155,6 +155,12 @@ export class Buffer extends EventEmitter<{
     public shrinkToFit = true;
 
     /**
+     * Has the buffer been destroyed?
+     * @readonly
+     */
+    public destroyed = false;
+
+    /**
      * Creates a new Buffer with the given options
      * @param options - the options for the buffer
      */
@@ -280,7 +286,10 @@ export class Buffer extends EventEmitter<{
     /** Destroys the buffer */
     public destroy()
     {
+        this.destroyed = true;
+
         this.emit('destroy', this);
+        this.emit('change', this);
 
         this._data = null;
         (this.descriptor as null) = null;

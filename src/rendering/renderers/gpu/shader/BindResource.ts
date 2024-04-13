@@ -21,6 +21,14 @@ export interface BindResource
     _touched: number;
 
     /**
+     * a boolean that indicates if the resource has been destroyed.
+     * If true, the resource should not be used and any bind groups
+     * that will release any references to this resource.
+     * @ignore
+     */
+    destroyed: boolean;
+
+    /**
      * event dispatch whenever the underlying resource needs to change
      * this could be a texture or buffer that has been resized.
      * This is important as it allows the renderer to know that it needs to rebind the resource

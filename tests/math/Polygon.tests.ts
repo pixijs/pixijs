@@ -130,6 +130,26 @@ describe('Polygon', () =>
             expect(polygon.strokeContains(0, 12, 3)).toBe(false);
         });
 
+        const polygonClosePathTrue: Polygon = new Polygon([0, 0, 10, 0, 10, 10, 0, 10]);
+
+        test('returns true for a point on the polygon closePath edge', () =>
+        {
+            expect(polygonClosePathTrue.strokeContains(0, 3, 1)).toBe(true);
+            expect(polygonClosePathTrue.strokeContains(0, 5, 1)).toBe(true);
+            expect(polygonClosePathTrue.strokeContains(0, 7, 1)).toBe(true);
+        });
+
+        const polygonClosePathFalse: Polygon = new Polygon([0, 0, 10, 0, 10, 10, 0, 10]);
+
+        polygonClosePathFalse.closePath = false;
+
+        test('returns false for a point on the polygon closePath edge', () =>
+        {
+            expect(polygonClosePathFalse.strokeContains(0, 3, 1)).toBe(false);
+            expect(polygonClosePathFalse.strokeContains(0, 5, 1)).toBe(false);
+            expect(polygonClosePathFalse.strokeContains(0, 7, 1)).toBe(false);
+        });
+
         // Add additional tests as necessary
     });
 });

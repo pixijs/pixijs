@@ -3,6 +3,7 @@ import { Buffer } from '../../src/rendering/renderers/shared/buffer/Buffer';
 import { BufferResource } from '../../src/rendering/renderers/shared/buffer/BufferResource';
 import { BufferUsage } from '../../src/rendering/renderers/shared/buffer/const';
 import { UniformGroup } from '../../src/rendering/renderers/shared/shader/UniformGroup';
+import { RenderTexture } from '../../src/rendering/renderers/shared/texture/RenderTexture';
 import { TextureSource } from '../../src/rendering/renderers/shared/texture/sources/TextureSource';
 import { TextureStyle } from '../../src/rendering/renderers/shared/texture/TextureStyle';
 import { resetUids } from '../../src/utils/data/uid';
@@ -140,5 +141,44 @@ describe('BindGroup', () =>
         });
 
         expect(bindGroup3._key).toBe('2');
+    });
+
+    it('should release destroyed resources', () =>
+    {
+        const buffer = new Buffer({
+            data: new Float32Array(100),
+            usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST,
+        });
+
+        const texture = RenderTexture.create({
+            width: 10,
+            height: 10,
+        });
+
+        const style = new TextureStyle();
+
+        const bufferResource = new BufferResource({
+            buffer,
+            offset: 100,
+            size: 200
+        });
+
+        const bindGroup = new BindGroup({
+            0: bufferResource,
+            1: texture.source,
+            2: style,
+        });
+
+        bufferResource.destroy();
+
+        expect(bindGroup.resources[0]).toBeNull();
+
+        texture.source.destroy();
+
+        expect(bindGroup.resources[1]).toBeNull();
+
+        style.destroy();
+
+        expect(bindGroup.resources[2]).toBeNull();
     });
 });

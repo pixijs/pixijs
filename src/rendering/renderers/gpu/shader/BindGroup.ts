@@ -147,9 +147,28 @@ export class BindGroup
         this.resources = null;
     }
 
-    protected onResourceChange()
+    protected onResourceChange(resource: BindResource)
     {
         this._dirty = true;
-        this._updateKey();
+
+        // check if a resource has been destroyed, if it has then we need to destroy this bind group
+        // using this bind group with a destroyed resource will cause the renderer to explode :)
+        if (resource.destroyed)
+        {
+            // free up the resource
+            const resources = this.resources;
+
+            for (const i in resources)
+            {
+                if (resources[i] === resource)
+                {
+                    resources[i] = null;
+                }
+            }
+        }
+        else
+        {
+            this._updateKey();
+        }
     }
 }
