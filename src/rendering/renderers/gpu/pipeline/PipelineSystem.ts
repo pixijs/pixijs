@@ -1,5 +1,5 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { warn } from '../../../../utils';
+import { warn } from '../../../../utils/logging/warn';
 import { ensureAttributes } from '../../gl/shader/program/ensureAttributes';
 import { STENCIL_MODES } from '../../shared/state/const';
 import { createIdFromString } from '../../shared/utils/createIdFromString';
