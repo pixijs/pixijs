@@ -37,7 +37,10 @@ export interface Attribute
      *  drawing will start from the first vertex.
      */
     start?: number;
-    /** attribute divisor for instanced rendering */
+    /**
+     * attribute divisor for instanced rendering. Note: this is a **WebGL-only** feature, the WebGPU renderer will
+     * issue a warning if one of the attributes has divisor set.
+     */
     divisor?: number;
 }
 

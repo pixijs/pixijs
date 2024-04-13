@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { warn } from '../../../../utils';
 import { ensureAttributes } from '../../gl/shader/program/ensureAttributes';
 import { STENCIL_MODES } from '../../shared/state/const';
 import { createIdFromString } from '../../shared/utils/createIdFromString';
@@ -311,6 +312,13 @@ export class PipelineSystem implements System
             for (const i in geometry.attributes)
             {
                 const attribute = geometry.attributes[i];
+
+                if ('divisor' in attribute)
+                {
+                    // TODO: Maybe emulate divisor with storage_buffers/float_textures?
+                    // For now just issue a warning
+                    warn(`Attribute ${i} has 'divisor' field set, which is currently unsupported in WebGPURenderer.`);
+                }
 
                 if (attribute.buffer === buffer)
                 {
