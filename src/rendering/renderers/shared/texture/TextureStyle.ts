@@ -122,6 +122,12 @@ export class TextureStyle extends EventEmitter<{
     public _maxAnisotropy?: number = 1;
 
     /**
+     * Has the style been destroyed?
+     * @readonly
+     */
+    public destroyed = false;
+
+    /**
      * @param options - options for the style
      */
     constructor(options: TextureStyleOptions = {})
@@ -232,7 +238,10 @@ export class TextureStyle extends EventEmitter<{
     /** Destroys the style */
     public destroy()
     {
+        this.destroyed = true;
+
         this.emit('destroy', this);
+        this.emit('change', this);
 
         this.removeAllListeners();
     }

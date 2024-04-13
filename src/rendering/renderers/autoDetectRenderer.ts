@@ -27,13 +27,15 @@ export interface AutoDetectOptions extends WebGLOptions, WebGPUOptions
     webgl?: Partial<WebGLOptions>;
 }
 
-const renderPriority = ['webgpu', 'webgl', 'canvas'];
+const renderPriority = ['webgl', 'webgpu', 'canvas'];
 
 /**
  * Automatically determines the most appropriate renderer for the current environment.
  *
- * The function will prioritize the WebGPU renderer, falling back to WebGL2 if WebGPU
- * is not supported. The selected renderer's code is then dynamically imported to optimize
+ * The function will prioritize the WebGL renderer as it is the most tested safe API to use.
+ * In the near future as WebGPU becomes more stable and ubiquitous, it will be prioritized over WebGL.
+ *
+ * The selected renderer's code is then dynamically imported to optimize
  * performance and minimize the initial bundle size.
  *
  * To maximize the benefits of dynamic imports, it's recommended to use a modern bundler

@@ -145,7 +145,7 @@ export class Texture extends EventEmitter<{
      * set to 2 to compensate for texture packer rotation
      * set to 6 to compensate for spine packer rotation
      * can be used to rotate or mirror sprites
-     * See {@link PIXI.groupD8} for explanation
+     * See {@link maths.groupD8} for explanation
      */
     public readonly rotate: number;
     /** A uvs object based on the given frame and the texture source */
@@ -159,7 +159,7 @@ export class Texture extends EventEmitter<{
     /**
      * Default width of the non-scalable border that is used if 9-slice plane is created with this texture.
      * @since 7.2.0
-     * @see PIXI.NineSlicePlane
+     * @see scene.NineSliceSprite
      */
     public readonly defaultBorders?: TextureBorders;
     /**

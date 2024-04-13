@@ -19,7 +19,7 @@ export function mapFormatToGlInternalFormat(
     let srgb = {};
     let bgra8unorm: number = gl.RGBA;
 
-    if (gl instanceof DOMAdapter.get().getWebGL2RenderingContext())
+    if (!(gl instanceof DOMAdapter.get().getWebGLRenderingContext()))
     {
         srgb = {
             'rgba8unorm-srgb': gl.SRGB8_ALPHA8,
