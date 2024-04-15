@@ -408,7 +408,7 @@ export class GlGeometrySystem implements System
                     {
                         // Can't use truthiness check to determine if divisor is set,
                         // since 0 is a valid value for divisor
-                        const divisor = 'divisor' in attribute ? attribute.divisor : 1;
+                        const divisor = attribute.divisor ?? 1;
 
                         gl.vertexAttribDivisor(location, divisor);
                     }

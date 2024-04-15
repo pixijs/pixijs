@@ -313,11 +313,12 @@ export class PipelineSystem implements System
             {
                 const attribute = geometry.attributes[i];
 
-                if ('divisor' in attribute)
+                if ((attribute.divisor ?? 1) !== 1)
                 {
                     // TODO: Maybe emulate divisor with storage_buffers/float_textures?
                     // For now just issue a warning
-                    warn(`Attribute ${i} has 'divisor' field set, which is currently unsupported in WebGPURenderer.`);
+                    warn(`Attribute ${i} has an invalid divisor value of '${attribute.divisor}'. `
+                        + 'WebGPU only supports a divisor value of 1');
                 }
 
                 if (attribute.buffer === buffer)
