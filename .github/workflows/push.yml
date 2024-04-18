@@ -4,6 +4,10 @@ on:
   push:
     branches: [ '**' ]
 
+concurrency: 
+  group:  ${{github.workflow}} - ${{github.ref}}
+  cancel-in-progress: true
+
 jobs:
   build:
     env:
@@ -16,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
 
     - name: Setup project
       uses: ./.github/actions/setup
@@ -35,7 +39,7 @@ jobs:
     # 2) branch A merged into branch B
     # 3) branch A pushed directly to git
     - name: Deploy Non-Tag Branches
-      uses: jakejarvis/s3-sync-action@master
+      uses: jakejarvis/s3-sync-action@7ed8b112447abb09f1da74f3466e4194fc7a6311 # master
       if: env.AWS_ACCESS_KEY_ID != ''
       with:
         args: --acl public-read --follow-symlinks --delete --cache-control "max-age=60"
