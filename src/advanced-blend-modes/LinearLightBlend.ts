@@ -38,7 +38,7 @@ export class LinearLightBlend extends BlendModeFilter
                 }
 
                 float linearLight(float base, float blend) {
-                    return (blend <= 0.5) ? linearBurn(base,2.0*blend) : linearBurn(base,2.0*(blend-0.5));
+                    return base+2.0*blend-1.0;
                 }
 
                 vec3 blendLinearLight(vec3 base, vec3 blend, float opacity) {
