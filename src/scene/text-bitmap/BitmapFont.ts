@@ -44,11 +44,14 @@ export class BitmapFont extends AbstractBitmapFont<BitmapFont>
         Object.keys(data.chars).forEach((key: string) =>
         {
             const charData = data.chars[key];
-            const textureSource = textures[charData.page].source;
+            const {
+                frame: textureFrame,
+                source: textureSource,
+            } = textures[charData.page];
 
             const frameReal = new Rectangle(
-                charData.x,
-                charData.y,
+                charData.x + textureFrame.x,
+                charData.y + textureFrame.y,
                 charData.width,
                 charData.height,
             );

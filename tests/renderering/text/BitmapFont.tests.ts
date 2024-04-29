@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Cache } from '../../../src/assets/cache/Cache';
+import { Rectangle } from '../../../src/maths/shapes/Rectangle';
+import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
 import { TextStyle } from '../../../src/scene/text/TextStyle';
+import { BitmapFont } from '../../../src/scene/text-bitmap/BitmapFont';
 import { BitmapFontManager } from '../../../src/scene/text-bitmap/BitmapFontManager';
-
-import type { BitmapFont } from '../../../src/scene/text-bitmap/BitmapFont';
 
 describe('BitmapFont', () =>
 {
@@ -102,6 +103,42 @@ describe('BitmapFont', () =>
         it('should throw an error when no characters are passed', () =>
         {
             expect(() => BitmapFontManager.install('foo', {}, { chars: [] })).toThrow();
+        });
+
+        it('should use sub-texture as a font texture', () =>
+        {
+            const frame = new Rectangle(10, 20, 100, 100);
+            const texture = new Texture({
+                frame,
+            });
+            const font = new BitmapFont({
+                textures: [texture],
+                data: {
+                    baseLineOffset: 0,
+                    chars: {
+                        a: {
+                            id: 65,
+                            page: 0,
+                            x: 0,
+                            y: 0,
+                            width: 10,
+                            height: 10,
+                            letter: 'a',
+                            xOffset: 0,
+                            yOffset: 0,
+                            kerning: {},
+                            xAdvance: 0,
+                        },
+                    },
+                    pages: [{ id: 0, file: '' }],
+                    lineHeight: 12,
+                    fontSize: 10,
+                    fontFamily: 'font',
+                }
+            });
+
+            expect(font.chars.a.texture.frame.x).toBe(10);
+            expect(font.chars.a.texture.frame.y).toBe(20);
         });
     });
 });
