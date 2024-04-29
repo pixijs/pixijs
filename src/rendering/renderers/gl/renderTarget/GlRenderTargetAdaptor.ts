@@ -1,6 +1,5 @@
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { warn } from '../../../../utils/logging/warn';
-import { CanvasSource } from '../../shared/texture/sources/CanvasSource';
 import { CLEAR } from '../const';
 import { GlRenderTarget } from '../GlRenderTarget';
 
@@ -162,8 +161,8 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         const glRenderTarget = new GlRenderTarget();
 
-        // we are rendering to a canvas..
-        if (CanvasSource.test(renderTarget.colorTexture.resource))
+        // we are rendering to the main canvas..
+        if (renderTarget.colorTexture.resource === renderer.gl.canvas)
         {
             glRenderTarget.framebuffer = null;
 
