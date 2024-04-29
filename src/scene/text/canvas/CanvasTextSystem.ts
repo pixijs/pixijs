@@ -265,7 +265,7 @@ export class CanvasTextSystem implements System
                     linePositionX += (maxLineWidth - lineWidths[i]) / 2;
                 }
 
-                if (style._stroke)
+                if (style._stroke?.width)
                 {
                     this._drawLetterSpacing(
                         lines[i],
