@@ -130,12 +130,17 @@ export async function autoDetectRenderer(options: Partial<AutoDetectOptions>): P
         {
             finalOptions = { ...options };
 
-            break;
+            throw new Error('CanvasRenderer is not yet implemented');
         }
     }
 
     delete finalOptions.webgpu;
     delete finalOptions.webgl;
+
+    if (!RendererClass)
+    {
+        throw new Error('No available renderer for the current environment');
+    }
 
     const renderer = new RendererClass();
 
