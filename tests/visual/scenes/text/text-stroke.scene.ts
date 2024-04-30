@@ -1,4 +1,4 @@
-import { Graphics } from '../../../../src';
+import { Graphics } from '../../../../src/scene/graphics/Graphics';
 import { Text } from '../../../../src/scene/text/Text';
 import { TextStyle } from '../../../../src/scene/text/TextStyle';
 
