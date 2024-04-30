@@ -65,7 +65,7 @@ describe('Text', () =>
 
             const renderer = await getWebGLRenderer({ resolution: 2 });
 
-            const texture = renderer.canvasText.getTexture(text.text, text.resolution, text.style, 'foo');
+            const texture = renderer.canvasText.getManagedTexture(text);
 
             expect(texture.source.resolution).toEqual(3);
 
