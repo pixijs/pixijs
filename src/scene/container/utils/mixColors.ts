@@ -36,4 +36,3 @@ export function mixStandardAnd32BitColors(localColorRGB: number, localAlpha: num
 
     return sharedBGRColor + (globalAlpha << 24);
 }
-
