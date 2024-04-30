@@ -562,7 +562,9 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     /**
      * A value that increments each time the container is modified
      * the first 12 bits represent the container changes (eg transform, alpha, visible etc)
-     * the second 12 bits represent the view changes (eg texture swap, geometry change etc)
+     * the second 12 bits represent:
+     *      - for view changes (eg texture swap, geometry change etc)
+     *      - containers changes (eg children added, removed etc)
      *
      *  view          container
      * [000000000000][00000000000]
@@ -658,6 +660,8 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         this.emit('childAdded', child, this, this.children.length - 1);
         child.emit('added', this);
 
+        this._didChangeId += 1 << 12;
+
         if (child._zIndex !== 0)
         {
             child.depthOfChildModified();
@@ -691,6 +695,8 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         if (index > -1)
         {
+            this._didChangeId += 1 << 12;
+
             this.children.splice(index, 1);
 
             if (this.renderGroup)
