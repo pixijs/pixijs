@@ -1328,6 +1328,9 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         if (this.destroyed) return;
         this.destroyed = true;
 
+        // remove children is faster than removeChild..
+        const oldChildren = this.removeChildren(0, this.children.length);
+
         this.removeFromParent();
         this.parent = null;
         this._mask = null;
@@ -1343,8 +1346,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         this.removeAllListeners();
 
         const destroyChildren = typeof options === 'boolean' ? options : options?.children;
-
-        const oldChildren = this.removeChildren(0, this.children.length);
 
         if (destroyChildren)
         {
