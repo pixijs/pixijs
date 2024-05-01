@@ -91,6 +91,8 @@ export class RenderGroup implements Instruction
         if (child !== this.root)
         {
             this._children.push(child);
+            child.parentRenderGroupIndex = this._children.length - 1;
+            child.parentRenderGroup = this;
 
             child.updateTick = -1;
 
@@ -98,7 +100,6 @@ export class RenderGroup implements Instruction
             {
                 child.relativeRenderGroupDepth = 1;
             }
-
             else
             {
                 child.relativeRenderGroupDepth = child.parent.relativeRenderGroupDepth + 1;
@@ -112,23 +113,20 @@ export class RenderGroup implements Instruction
 
         if (child.renderGroup)
         {
-            if (child.renderGroup.root === child)
-            {
-                // its already its own render group..
-                this.addRenderGroupChild(child.renderGroup);
+            // its already its own render group..
+            this.addRenderGroupChild(child.renderGroup);
 
-                return;
-            }
+            return;
         }
-        else
-        {
-            child.renderGroup = this;
-            child.didChange = true;
-        }
+
+        // child.parentRenderGroup = this;
+
+        //  child.renderGroup = this;
+        child.didChange = true;
 
         const children = child.children;
 
-        if (!child.isRenderGroupRoot)
+        if (!child.renderGroup)
         {
             this.onChildUpdate(child);
         }
@@ -149,7 +147,7 @@ export class RenderGroup implements Instruction
             this.removeOnRender(child);
         }
 
-        if (child.renderGroup.root !== child)
+        if (!child.renderGroup)
         {
             const children = child.children;
 
@@ -160,16 +158,16 @@ export class RenderGroup implements Instruction
 
             if (child.didChange)
             {
-                child.renderGroup._removeChildFromUpdate(child);
+                child.parentRenderGroup._removeChildFromUpdate(child);
             }
-
-            child.renderGroup = null;
+            //  child.renderGroup = null;
         }
-
         else
         {
             this._removeRenderGroupChild(child.renderGroup);
         }
+
+        child.parentRenderGroup = null;
 
         const index = this._children.indexOf(child);
 
@@ -177,6 +175,70 @@ export class RenderGroup implements Instruction
         {
             this._children.splice(index, 1);
         }
+    }
+
+    public collectChildrenIndexes(children: Container[], indexes: number[], index: number)
+    {
+        for (let i = 0; i < children.length; i++)
+        {
+            const child = children[i];
+
+            indexes[index++] = child.parentRenderGroupIndex;
+
+            if (child.children.length)
+            {
+                index = this.collectChildrenIndexes(child.children, indexes, index);
+            }
+        }
+
+        return index;
+    }
+
+    public removeChildren(children: Container[])
+    {
+        // remove all the children...
+        this.structureDidChange = true;
+
+        const indexes: number[] = [];
+
+        this.collectChildrenIndexes(children, indexes, 0);
+
+        const renderGroupChildren = this._children;
+
+        let shift = 0;
+        const start = indexes[0];
+        let index = 0;
+
+        for (let i = start; i < renderGroupChildren.length; i++)
+        {
+            if (i === indexes[index])
+            {
+                const child = renderGroupChildren[indexes[index]];
+
+                if (child._onRender)
+                {
+                    this.removeOnRender(child);
+                }
+
+                if (child.parentRenderGroup)
+                {
+                    child.parentRenderGroup = null;
+                    child.updateTick = this.updateTick;
+                }
+                else
+                {
+                    this._removeRenderGroupChild(child.renderGroup);
+                }
+
+                index++;
+
+                shift++;
+            }
+
+            renderGroupChildren[i] = renderGroupChildren[i + shift];
+        }
+
+        renderGroupChildren.length = renderGroupChildren.length - shift;
     }
 
     public onChildUpdate(child: Container)

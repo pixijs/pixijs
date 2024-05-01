@@ -77,8 +77,8 @@ describe('Scene', () =>
         expect(container.children).toHaveLength(2);
         expect(container.renderGroup['_children']).toHaveLength(2);
 
-        expect(childPre.renderGroup).toEqual(container.renderGroup);
-        expect(childPost.renderGroup).toEqual(container.renderGroup);
+        expect(childPre.parentRenderGroup).toEqual(container.renderGroup);
+        expect(childPost.parentRenderGroup).toEqual(container.renderGroup);
     });
 
     it('should not enable a render group twice', async () =>
@@ -119,8 +119,8 @@ describe('Scene', () =>
         expect(container.children).toHaveLength(2);
         expect(container.renderGroup['_children']).toHaveLength(4);
 
-        expect(child2.renderGroup).toEqual(container.renderGroup);
-        expect(child3.renderGroup).toEqual(container.renderGroup);
+        expect(child2.parentRenderGroup).toEqual(container.renderGroup);
+        expect(child3.parentRenderGroup).toEqual(container.renderGroup);
 
         expect(container.relativeRenderGroupDepth).toEqual(0);
         expect(container2.relativeRenderGroupDepth).toEqual(1);
@@ -159,10 +159,12 @@ describe('Scene', () =>
 
         expect(container.renderGroup).toEqual(container.renderGroup);
         expect(container2.renderGroup).toEqual(container2.renderGroup);
-        expect(child.renderGroup).toEqual(container.renderGroup);
 
-        expect(child2.renderGroup).toEqual(container2.renderGroup);
-        expect(child3.renderGroup).toEqual(container2.renderGroup);
+        expect(container2.parentRenderGroup).toEqual(container.renderGroup);
+        expect(child.parentRenderGroup).toEqual(container.renderGroup);
+
+        expect(child2.parentRenderGroup).toEqual(container2.renderGroup);
+        expect(child3.parentRenderGroup).toEqual(container2.renderGroup);
 
         expect(container.renderGroup.renderGroupChildren).toHaveLength(1);
         expect(container2.renderGroup.renderGroupChildren).toHaveLength(0);
@@ -206,11 +208,16 @@ describe('Scene', () =>
         expect(container2.renderGroup['_children']).toHaveLength(3);
 
         expect(container.renderGroup).toEqual(container.renderGroup);
-        expect(container2.renderGroup).toEqual(container2.renderGroup);
-        expect(child.renderGroup).toEqual(container2.renderGroup);
+        expect(container2.parentRenderGroup).toEqual(container.renderGroup);
+        // expect(child.renderGroup).toEqual(container2.renderGroup);
 
-        expect(child2.renderGroup).toEqual(container2.renderGroup);
-        expect(child3.renderGroup).toEqual(container2.renderGroup);
+        expect(child2.renderGroup).toBeNull();
+        expect(child3.renderGroup).toBeNull();
+
+        expect(container.parentRenderGroup).toBeNull();
+
+        expect(child2.parentRenderGroup).toEqual(container2.renderGroup);
+        expect(child3.parentRenderGroup).toEqual(container2.renderGroup);
 
         expect(container.renderGroup.renderGroupChildren).toHaveLength(1);
         expect(container2.renderGroup.renderGroupChildren).toHaveLength(0);
@@ -227,11 +234,11 @@ describe('Scene', () =>
         expect(container2.renderGroup['_children']).toHaveLength(2);
 
         expect(container.renderGroup).toEqual(container.renderGroup);
-        expect(container2.renderGroup).toEqual(container2.renderGroup);
-        expect(child.renderGroup).toEqual(container2.renderGroup);
+        expect(container2.parentRenderGroup).toEqual(container.renderGroup);
+        // expect(child.renderGroup).toEqual(container2.renderGroup);
 
-        expect(child2.renderGroup).toEqual(container2.renderGroup);
-        expect(child3.renderGroup).toEqual(container.renderGroup);
+        expect(child2.parentRenderGroup).toEqual(container2.renderGroup);
+        expect(child3.parentRenderGroup).toEqual(container.renderGroup);
 
         expect(container.renderGroup.renderGroupChildren).toHaveLength(1);
         expect(container2.renderGroup.renderGroupChildren).toHaveLength(0);
@@ -272,10 +279,12 @@ describe('Scene', () =>
         //           |- child2
         //           |- child3
         //
-        expect(child.renderGroup).toBe(container.renderGroup);
-        expect(container2.renderGroup).toBe(container2.renderGroup);
-        expect(child2.renderGroup).toBe(container2.renderGroup);
-        expect(child3.renderGroup).toBe(container2.renderGroup);
+        expect(child.parentRenderGroup).toBe(container.renderGroup);
+        expect(container2.parentRenderGroup).toBe(container.renderGroup);
+        expect(container.parentRenderGroup).toBeNull();
+
+        expect(child2.parentRenderGroup).toBe(container2.renderGroup);
+        expect(child3.parentRenderGroup).toBe(container2.renderGroup);
 
         expect(container.renderGroup === container2.renderGroup).toBeFalse();
         expect(container.renderGroup['_children']).toHaveLength(2);

@@ -42,17 +42,18 @@ export const childrenHelperMixin: Partial<Container> = {
                 const child = this.children[i];
 
                 if (!child) continue;
-
-                if (this.renderGroup)
-                {
-                    this.renderGroup.removeChild(child);
-                }
-
                 removed.push(child);
                 child.parent = null;
             }
 
             removeItems(this.children, beginIndex, end);
+
+            const renderGroup = this.renderGroup || this.parentRenderGroup;
+
+            if (renderGroup)
+            {
+                renderGroup.removeChildren(removed);
+            }
 
             for (let i = 0; i < removed.length; ++i)
             {
@@ -191,9 +192,11 @@ export const childrenHelperMixin: Partial<Container> = {
         child.didViewUpdate = false;
         child._updateFlags = 0b1111;
 
-        if (this.renderGroup)
+        const renderGroup = this.renderGroup || this.parentRenderGroup;
+
+        if (renderGroup)
         {
-            this.renderGroup.addChild(child);
+            renderGroup.addChild(child);
         }
 
         if (this.sortableChildren) this.sortDirty = true;

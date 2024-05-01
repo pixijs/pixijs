@@ -79,7 +79,7 @@ describe('Container Tests', () =>
         // wrong!
         expect(child.toGlobal({ x: 0, y: 0 }, null, true)).toEqual({ x: 0, y: 0 });
 
-        updateRenderGroupTransforms(container.renderGroup, true);
+        updateRenderGroupTransforms(container.parentRenderGroup, true);
 
         // right!!
         expect(child.toGlobal({ x: 0, y: 0 }, null, true)).toEqual({ x: 20, y: 20 });
@@ -157,7 +157,7 @@ describe('Container Tests', () =>
         // wrong!
         expect(child.toLocal({ x: 0, y: 0 }, otherContainer, null, true)).toEqual({ x: 0, y: 0 });
 
-        updateRenderGroupTransforms(container.renderGroup, true);
+        updateRenderGroupTransforms(container.parentRenderGroup, true);
 
         // right!
         expect(child.toLocal({ x: 0, y: 0 }, otherContainer, null, true)).toEqual({ x: -20, y: -20 });
