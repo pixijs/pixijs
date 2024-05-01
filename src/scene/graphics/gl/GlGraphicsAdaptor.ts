@@ -73,6 +73,8 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
         // WebGL specific..
         shader.groups[0] = renderer.globalUniforms.bindGroup;
 
+        renderer.state.set(graphicsPipe.state);
+
         renderer.shader.bind(shader);
 
         renderer.geometry.bind(geometry, shader.glProgram);

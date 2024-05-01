@@ -1,8 +1,11 @@
 import { DOMAdapter } from '../../../src/environment/adapter';
+import { GlRenderTarget } from '../../../src/rendering/renderers/gl/GlRenderTarget';
 import { isRenderingToScreen } from '../../../src/rendering/renderers/shared/renderTarget/isRenderingToScreen';
 import { RenderTarget } from '../../../src/rendering/renderers/shared/renderTarget/RenderTarget';
+import { RenderTexture } from '../../../src/rendering/renderers/shared/texture/RenderTexture';
 import { CanvasSource } from '../../../src/rendering/renderers/shared/texture/sources/CanvasSource';
 import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
+import { getWebGLRenderer } from '../../utils/getRenderer';
 
 describe('isRenderingToScreen', () =>
 {
@@ -103,5 +106,41 @@ describe('isRenderingToScreen', () =>
 
         expect(renderTarget.colorTexture.source.resource.width).toEqual(width * 3);
         expect(renderTarget.colorTexture.source.resource.height).toEqual(height * 3);
+    });
+
+    it('should destroy gpu counterpart correctly', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+
+        const renderTexture = RenderTexture.create({ width: 100, height: 100 });
+
+        renderer.renderTarget.bind(renderTexture);
+
+        const renderTarget = renderer.renderTarget.getRenderTarget(renderTexture);
+
+        const glRenderTarget = renderer.renderTarget.getGpuRenderTarget(renderTarget);
+
+        renderTexture.destroy(true);
+
+        expect(glRenderTarget.framebuffer).toBeNull();
+        expect(glRenderTarget.resolveTargetFramebuffer).toBeNull();
+        expect(glRenderTarget.msaaRenderBuffer).toBeNull();
+
+        expect(glRenderTarget).toBeInstanceOf(GlRenderTarget);
+    });
+
+    it('should not destroy the original texture if the  renderTarget is destroyed', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+
+        const renderTexture = RenderTexture.create({ width: 100, height: 100 });
+
+        renderer.renderTarget.bind(renderTexture);
+
+        const renderTarget = renderer.renderTarget.getRenderTarget(renderTexture);
+
+        renderTarget.destroy();
+
+        expect(renderTexture.source.destroyed).toBe(false);
     });
 });

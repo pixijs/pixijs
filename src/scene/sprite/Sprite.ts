@@ -112,8 +112,17 @@ export class Sprite extends Container implements View
             },
         );
 
-        if (anchor) this.anchor = anchor;
+        if (anchor)
+        {
+            this.anchor = anchor;
+        }
+        else if (texture.defaultAnchor)
+        {
+            this.anchor = texture.defaultAnchor;
+        }
+
         this.texture = texture;
+
         this.allowChildren = false;
         this.roundPixels = roundPixels ?? false;
 

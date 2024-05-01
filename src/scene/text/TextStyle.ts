@@ -540,7 +540,7 @@ function convertV7Tov8Style(style: TextStyleOptions)
         };
     }
 
-    if (oldStyle.strokeThickness)
+    if (oldStyle.strokeThickness !== undefined)
     {
         // #if _DEBUG
         deprecation(v8_0_0, 'strokeThickness is now a part of stroke');

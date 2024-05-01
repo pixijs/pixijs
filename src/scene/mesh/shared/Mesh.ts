@@ -1,4 +1,4 @@
-import { Polygon } from '../../../maths/shapes/Polygon';
+import { pointInTriangle } from '../../../maths/point/pointInTriangle';
 import { Geometry } from '../../../rendering/renderers/shared/geometry/Geometry';
 import { State } from '../../../rendering/renderers/shared/state/State';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
@@ -14,8 +14,6 @@ import type { View } from '../../../rendering/renderers/shared/view/View';
 import type { Bounds } from '../../container/bounds/Bounds';
 import type { ContainerOptions } from '../../container/Container';
 import type { DestroyOptions } from '../../container/destroyTypes';
-
-const tempPolygon = new Polygon();
 
 export interface TextureShader extends Shader
 {
@@ -280,27 +278,55 @@ export class Mesh<
 
         const vertices = this.geometry.getBuffer('aPosition').data;
 
-        const points = tempPolygon.points;
-        const indices = this.geometry.getIndex().data;
-        const len = indices.length;
         const step = this.geometry.topology === 'triangle-strip' ? 3 : 1;
 
-        for (let i = 0; i + 2 < len; i += step)
+        if (this.geometry.getIndex())
         {
-            const ind0 = indices[i] * 2;
-            const ind1 = indices[i + 1] * 2;
-            const ind2 = indices[i + 2] * 2;
+            const indices = this.geometry.getIndex().data;
+            const len = indices.length;
 
-            points[0] = vertices[ind0];
-            points[1] = vertices[ind0 + 1];
-            points[2] = vertices[ind1];
-            points[3] = vertices[ind1 + 1];
-            points[4] = vertices[ind2];
-            points[5] = vertices[ind2 + 1];
-
-            if (tempPolygon.contains(x, y))
+            for (let i = 0; i + 2 < len; i += step)
             {
-                return true;
+                const ind0 = indices[i] * 2;
+                const ind1 = indices[i + 1] * 2;
+                const ind2 = indices[i + 2] * 2;
+
+                if (pointInTriangle(
+                    x, y,
+                    vertices[ind0],
+                    vertices[ind0 + 1],
+                    vertices[ind1],
+                    vertices[ind1 + 1],
+                    vertices[ind2],
+                    vertices[ind2 + 1],
+                ))
+                {
+                    return true;
+                }
+            }
+        }
+        else
+        {
+            const len = vertices.length / 2; // Each vertex has 2 coordinates, x and y
+
+            for (let i = 0; i + 2 < len; i += step)
+            {
+                const ind0 = i * 2;
+                const ind1 = (i + 1) * 2;
+                const ind2 = (i + 2) * 2;
+
+                if (pointInTriangle(
+                    x, y,
+                    vertices[ind0],
+                    vertices[ind0 + 1],
+                    vertices[ind1],
+                    vertices[ind1 + 1],
+                    vertices[ind2],
+                    vertices[ind2 + 1],
+                ))
+                {
+                    return true;
+                }
             }
         }
 

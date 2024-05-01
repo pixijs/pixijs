@@ -1,4 +1,4 @@
-import { mixColors } from '../../container/utils/mixColors';
+import { multiplyHexColors } from '../../container/utils/multiplyHexColors';
 
 import type { Batch, BatchableObject, Batcher } from '../../../rendering/batcher/shared/Batcher';
 import type { IndexBufferArray } from '../../../rendering/renderers/shared/geometry/Geometry';
@@ -70,7 +70,7 @@ export class BatchableGraphics implements BatchableObject
 
         if (this.applyTransform)
         {
-            const argb = mixColors(bgr, graphics.groupColor)
+            const argb = multiplyHexColors(bgr, graphics.groupColor)
             + ((this.alpha * graphics.groupAlpha * 255) << 24);
 
             const wt = graphics.groupTransform;

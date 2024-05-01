@@ -104,11 +104,6 @@ export class RenderGroup implements Instruction
             {
                 child.relativeRenderGroupDepth = child.parent.relativeRenderGroupDepth + 1;
             }
-
-            if (child._onRender)
-            {
-                this.addOnRender(child);
-            }
         }
 
         if (child.renderGroup)
@@ -123,6 +118,22 @@ export class RenderGroup implements Instruction
 
         //  child.renderGroup = this;
         child.didChange = true;
+
+        if (child._onRender)
+        {
+            // Add the child to the onRender list under the following conditions:
+            // 1. If the child is not a render group.
+            // 2. If the child is a render group root of this render group
+
+            if (!child.renderGroup)
+            {
+                this.addOnRender(child);
+            }
+            else if (child.renderGroup === this)
+            {
+                this.addOnRender(child);
+            }
+        }
 
         const children = child.children;
 
@@ -144,7 +155,18 @@ export class RenderGroup implements Instruction
 
         if (child._onRender)
         {
-            this.removeOnRender(child);
+            // Remove the child to the onRender list under the following conditions:
+            // 1. If the child is not a render group.
+            // 2. If the child is a render group root of this render group
+
+            if (!child.renderGroup)
+            {
+                this.removeOnRender(child);
+            }
+            else if (child.renderGroup === this)
+            {
+                this.removeOnRender(child);
+            }
         }
 
         if (!child.renderGroup)

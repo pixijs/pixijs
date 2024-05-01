@@ -1,20 +1,20 @@
 import { removeItems } from '../../../utils/data/removeItems';
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 
-import type { Container } from '../Container';
+import type { Container, ContainerChild } from '../Container';
 
-export interface ChildrenHelperMixin
+export interface ChildrenHelperMixin<C = ContainerChild>
 {
     allowChildren: boolean;
-    addChild<U extends Container[]>(...children: U): U[0];
-    removeChild<U extends Container[]>(...children: U): U[0];
-    removeChildren(beginIndex?: number, endIndex?: number): Container[];
-    removeChildAt<U extends Container>(index: number): U;
-    getChildAt<U extends Container>(index: number): U;
-    setChildIndex(child: Container, index: number): void;
-    getChildIndex(child: Container): number;
-    addChildAt<U extends Container>(child: U, index: number): U;
-    swapChildren<U extends Container>(child: U, child2: U): void;
+    addChild<U extends C[]>(...children: U): U[0];
+    removeChild<U extends C[]>(...children: U): U[0];
+    removeChildren(beginIndex?: number, endIndex?: number): C[];
+    removeChildAt<U extends C>(index: number): U;
+    getChildAt<U extends C>(index: number): U;
+    setChildIndex(child: C, index: number): void;
+    getChildIndex(child: C): number;
+    addChildAt<U extends C>(child: U, index: number): U;
+    swapChildren<U extends C>(child: U, child2: U): void;
     removeFromParent(): void;
 }
 
@@ -29,11 +29,11 @@ export const childrenHelperMixin: Partial<Container> = {
      * @returns - List of removed children
      * @memberof scene.Container#
      */
-    removeChildren(beginIndex = 0, endIndex?: number): Container[]
+    removeChildren(beginIndex = 0, endIndex?: number): ContainerChild[]
     {
         const end = endIndex ?? this.children.length;
         const range = end - beginIndex;
-        const removed: Container[] = [];
+        const removed: ContainerChild[] = [];
 
         if (range > 0 && range <= end)
         {
@@ -77,11 +77,11 @@ export const childrenHelperMixin: Partial<Container> = {
      * @returns The child that was removed.
      * @memberof scene.Container#
      */
-    removeChildAt<U extends Container>(index: number): U
+    removeChildAt<U extends ContainerChild>(index: number): U
     {
-        const child = this.getChildAt(index);
+        const child = this.getChildAt<U>(index);
 
-        return this.removeChild(child) as U;
+        return this.removeChild(child);
     },
 
     /**
@@ -90,7 +90,7 @@ export const childrenHelperMixin: Partial<Container> = {
      * @returns - The child at the given index, if any.
      * @memberof scene.Container#
      */
-    getChildAt<U extends Container>(index: number): U
+    getChildAt<U extends ContainerChild>(index: number): U
     {
         if (index < 0 || index >= this.children.length)
         {
@@ -106,7 +106,7 @@ export const childrenHelperMixin: Partial<Container> = {
      * @param index - The resulting index number for the child container
      * @memberof scene.Container#
      */
-    setChildIndex(child: Container, index: number): void
+    setChildIndex(child: ContainerChild, index: number): void
     {
         if (index < 0 || index >= this.children.length)
         {
@@ -123,7 +123,7 @@ export const childrenHelperMixin: Partial<Container> = {
      * @returns - The index position of the child container to identify
      * @memberof scene.Container#
      */
-    getChildIndex(child: Container): number
+    getChildIndex(child: ContainerChild): number
     {
         const index = this.children.indexOf(child);
 
@@ -143,7 +143,7 @@ export const childrenHelperMixin: Partial<Container> = {
      * @returns {Container} The child that was added.
      * @memberof scene.Container#
      */
-    addChildAt<U extends Container>(child: U, index: number): U
+    addChildAt<U extends ContainerChild>(child: U, index: number): U
     {
         // #if _DEBUG
         if (!this.allowChildren)
@@ -211,7 +211,7 @@ export const childrenHelperMixin: Partial<Container> = {
      * @param child - First container to swap
      * @param child2 - Second container to swap
      */
-    swapChildren<U extends Container>(child: U, child2: U): void
+    swapChildren<U extends ContainerChild>(child: U, child2: U): void
     {
         if (child === child2)
         {

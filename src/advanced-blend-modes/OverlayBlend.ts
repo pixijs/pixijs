@@ -27,7 +27,7 @@ export class OverlayBlend extends BlendModeFilter
                 functions: `
                 float overlay(float base, float blend)
                 {
-                    return (blend < 0.5) ? (2.0*base*blend) : (1.0-2.0*(1.0-base)*(1.0-blend));
+                    return (base < 0.5) ? (2.0*base*blend) : (1.0-2.0*(1.0-base)*(1.0-blend));
                 }
 
                 vec3 blendOverlay(vec3 base, vec3 blend, float opacity)

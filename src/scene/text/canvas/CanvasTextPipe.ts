@@ -138,14 +138,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
             this._renderer.canvasText.decreaseReferenceCount(gpuText.currentKey);
         }
 
-        const resolution = text.resolution ?? this._renderer.resolution;
-
-        gpuText.texture = batchableSprite.texture = this._renderer.canvasText.getTexture(
-            text.text,
-            resolution,
-            text._style,
-            text._getKey()
-        );
+        gpuText.texture = batchableSprite.texture = this._renderer.canvasText.getManagedTexture(text);
 
         gpuText.currentKey = text._getKey();
         batchableSprite.texture = gpuText.texture;
