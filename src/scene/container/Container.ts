@@ -796,30 +796,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             parentRenderGroup.addChild(this);
         }
 
-        // find children render groups and move them out..
-        // if (parentRenderGroup)
-        // {
-        //     for (let i = 0; i < parentRenderGroup.renderGroupChildren.length; i++)
-        //     {
-        //         const childRenderGroup = parentRenderGroup.renderGroupChildren[i];
-        //         let parent = childRenderGroup.root;
-
-        //         while (parent)
-        //         {
-        //             if (parent === this)
-        //             {
-        //                 this.renderGroup.addRenderGroupChild(childRenderGroup);
-
-        //                 break;
-        //             }
-        //             parent = parent.parent;
-        //         }
-        //     }
-
-        //     parentRenderGroup.addRenderGroupChild(this.renderGroup);
-        // }
-
-        // parentRenderGroup.removeChild(this);
         this._updateIsSimple();
 
         // this group matrix will now forever be an identity matrix,

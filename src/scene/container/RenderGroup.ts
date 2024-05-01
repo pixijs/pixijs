@@ -182,7 +182,6 @@ export class RenderGroup implements Instruction
             {
                 child.parentRenderGroup._removeChildFromUpdate(child);
             }
-            //  child.renderGroup = null;
         }
         else
         {
