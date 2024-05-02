@@ -11,9 +11,7 @@ export function updateRenderGroupTransforms(renderGroup: RenderGroup, updateChil
 
     const childrenToUpdate = renderGroup.childrenToUpdate;
 
-    const updateTick = renderGroup.updateTick;
-
-    renderGroup.updateTick++;
+    const updateTick = renderGroup.updateTick++;
 
     for (const j in childrenToUpdate)
     {

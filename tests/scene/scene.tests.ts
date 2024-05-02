@@ -1,5 +1,22 @@
 import { Container } from '../../src/scene/container/Container';
 
+import type { RenderGroup } from '../../src';
+
+// now that we don't actually remove the items, but instead ensure that they are skipped
+// in the update loop, this function will return the new list and index removing items that are intended to be skipped
+// when the update function is called.
+//
+function processUpdateList(toUpdateList: {list: Container[], index: number}, renderGroup: RenderGroup)
+{
+    const newP = toUpdateList.list.filter((c) =>
+        c.parentRenderGroup === renderGroup);
+
+    return {
+        list: newP,
+        index: newP.length
+    };
+}
+
 describe('Scene', () =>
 {
     it('should add a child', async () =>
@@ -75,7 +92,7 @@ describe('Scene', () =>
         container.addChild(childPost);
 
         expect(container.children).toHaveLength(2);
-        expect(container.renderGroup['_children']).toHaveLength(2);
+        expect(container.renderGroup.getChildren()).toHaveLength(2);
 
         expect(childPre.parentRenderGroup).toEqual(container.renderGroup);
         expect(childPost.parentRenderGroup).toEqual(container.renderGroup);
@@ -117,7 +134,7 @@ describe('Scene', () =>
         container2.addChild(child3);
 
         expect(container.children).toHaveLength(2);
-        expect(container.renderGroup['_children']).toHaveLength(4);
+        expect(container.renderGroup.getChildren()).toHaveLength(4);
 
         expect(child2.parentRenderGroup).toEqual(container.renderGroup);
         expect(child3.parentRenderGroup).toEqual(container.renderGroup);
@@ -154,8 +171,8 @@ describe('Scene', () =>
         container2.addChild(child3);
 
         expect(container.renderGroup === container2.renderGroup).toBeFalse();
-        expect(container.renderGroup['_children']).toHaveLength(2);
-        expect(container2.renderGroup['_children']).toHaveLength(2);
+        expect(container.renderGroup.getChildren()).toHaveLength(2);
+        expect(container2.renderGroup.getChildren()).toHaveLength(2);
 
         expect(container.renderGroup).toEqual(container.renderGroup);
         expect(container2.renderGroup).toEqual(container2.renderGroup);
@@ -204,8 +221,8 @@ describe('Scene', () =>
         container2.addChild(child);
 
         expect(container.renderGroup === container2.renderGroup).toBeFalse();
-        expect(container.renderGroup['_children']).toHaveLength(1);
-        expect(container2.renderGroup['_children']).toHaveLength(3);
+        expect(container.renderGroup.getChildren()).toHaveLength(1);
+        expect(container2.renderGroup.getChildren()).toHaveLength(3);
 
         expect(container.renderGroup).toEqual(container.renderGroup);
         expect(container2.parentRenderGroup).toEqual(container.renderGroup);
@@ -230,8 +247,8 @@ describe('Scene', () =>
 
         container.addChild(child3);
 
-        expect(container.renderGroup['_children']).toHaveLength(2);
-        expect(container2.renderGroup['_children']).toHaveLength(2);
+        expect(container.renderGroup.getChildren()).toHaveLength(2);
+        expect(container2.renderGroup.getChildren()).toHaveLength(2);
 
         expect(container.renderGroup).toEqual(container.renderGroup);
         expect(container2.parentRenderGroup).toEqual(container.renderGroup);
@@ -287,8 +304,8 @@ describe('Scene', () =>
         expect(child3.parentRenderGroup).toBe(container2.renderGroup);
 
         expect(container.renderGroup === container2.renderGroup).toBeFalse();
-        expect(container.renderGroup['_children']).toHaveLength(2);
-        expect(container2.renderGroup['_children']).toHaveLength(2);
+        expect(container.renderGroup.getChildren()).toHaveLength(2);
+        expect(container2.renderGroup.getChildren()).toHaveLength(2);
 
         expect(container2.parent).toBe(child);
 
@@ -308,8 +325,8 @@ describe('Scene', () =>
         expect(container.renderGroup.renderGroupChildren).toHaveLength(1);
         expect(child.renderGroup.renderGroupChildren).toHaveLength(1);
         expect(container2.renderGroup.renderGroupChildren).toHaveLength(0);
-        expect(child.renderGroup['_children']).toHaveLength(1);
-        expect(container2.renderGroup['_children']).toHaveLength(2);
+        expect(child.renderGroup.getChildren()).toHaveLength(1);
+        expect(container2.renderGroup.getChildren()).toHaveLength(2);
 
         container.addChild(container2);
 
@@ -317,8 +334,8 @@ describe('Scene', () =>
         expect(container.children).toHaveLength(2);
         expect(child.renderGroup.renderGroupChildren).toHaveLength(0);
         expect(container2.renderGroup.renderGroupChildren).toHaveLength(0);
-        expect(child.renderGroup['_children']).toHaveLength(0);
-        expect(container2.renderGroup['_children']).toHaveLength(2);
+        expect(child.renderGroup.getChildren()).toHaveLength(0);
+        expect(container2.renderGroup.getChildren()).toHaveLength(2);
 
         expect(container.relativeRenderGroupDepth).toEqual(0);
         expect(child.relativeRenderGroupDepth).toEqual(1);
@@ -422,7 +439,6 @@ describe('Scene', () =>
         const container2 = new Container();
 
         container2.isRenderGroup = true;
-
         // |- contianer // renderGroup
         //    |- child
         //    |- container2 // render group
@@ -455,12 +471,12 @@ describe('Scene', () =>
         //       |- child3
         child2.addChild(child);
 
-        expect(container.renderGroup.childrenToUpdate[1]).toEqual({
-            list: [container2],
-            index: 1
+        expect(processUpdateList(container.renderGroup.childrenToUpdate[1], container.renderGroup)).toEqual({
+            list: [],
+            index: 0
         });
 
-        expect(container2.renderGroup.childrenToUpdate[2]).toEqual({
+        expect(processUpdateList(container2.renderGroup.childrenToUpdate[2], container2.renderGroup)).toEqual({
             list: [child],
             index: 1
         });
@@ -561,13 +577,12 @@ describe('Scene', () =>
         // child.x = 100;
         child2.x = 100;
 
-        expect(container.renderGroup.childrenToUpdate[2]).toEqual({
+        expect(processUpdateList(container.renderGroup.childrenToUpdate[2], container.renderGroup)).toEqual({
             list: [child2, child3],
             index: 2
         });
 
-        // console.log('---?', container.layerGroup.childrenToUpdate[1])
-        expect(container.renderGroup.childrenToUpdate[1]).toEqual({
+        expect(processUpdateList(container.renderGroup.childrenToUpdate[1], container.renderGroup)).toEqual({
             list: [child, container2],
             index: 2
         });
@@ -580,19 +595,19 @@ describe('Scene', () =>
         //       |- child2
         //       |- child3
 
-        expect(container.renderGroup.childrenToUpdate[2]).toEqual({
+        expect(processUpdateList(container.renderGroup.childrenToUpdate[2], container.renderGroup)).toEqual({
             list: [],
             index: 0
         });
 
-        expect(container.renderGroup.childrenToUpdate[1]).toEqual({
-            list: [child, container2],
-            index: 2
+        expect(processUpdateList(container.renderGroup.childrenToUpdate[1], container.renderGroup)).toEqual({
+            list: [child],
+            index: 1
         });
 
         container.removeChild(container2);
 
-        expect(container.renderGroup.childrenToUpdate[1]).toEqual({
+        expect(processUpdateList(container.renderGroup.childrenToUpdate[1], container.renderGroup)).toEqual({
             list: [child],
             index: 1
         });
