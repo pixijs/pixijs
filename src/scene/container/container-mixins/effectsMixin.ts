@@ -56,7 +56,6 @@ export const effectsMixin: Partial<Container> = {
 
         const renderGroup = this.renderGroup || this.parentRenderGroup;
 
-        // TODO CHECK - does modifying effects change the owners render group too?
         if (renderGroup)
         {
             renderGroup.structureDidChange = true;

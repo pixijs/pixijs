@@ -98,8 +98,6 @@ export function _getGlobalBoundsRecursive(
                 if (!advanced)
                 {
                     advanced = true;
-                    // TODO is this ok??
-                    // localBounds.applyMatrix(target.renderGroup.worldTransform);
                     localBounds.applyMatrix(target.parentRenderGroup.worldTransform);
                 }
 
