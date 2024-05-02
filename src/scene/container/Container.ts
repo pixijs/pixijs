@@ -628,7 +628,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             this.children.splice(this.children.indexOf(child), 1);
             this.children.push(child);
 
-            if (this.parentRenderGroup)// && !this.isRenderGroupRoot)
+            if (this.parentRenderGroup)
             {
                 this.parentRenderGroup.structureDidChange = true;
             }
