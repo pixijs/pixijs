@@ -738,17 +738,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         if (this.didChange) return;
         this.didChange = true;
 
-        if (this.renderGroup)
-        {
-            const renderGroupParent = this.renderGroup.renderGroupParent;
-            // lets update its parent..
-
-            if (renderGroupParent)
-            {
-                renderGroupParent.onChildUpdate(this);
-            }
-        }
-        else if (this.parentRenderGroup)
+        if (this.parentRenderGroup)
         {
             this.parentRenderGroup.onChildUpdate(this);
         }

@@ -68,18 +68,11 @@ export class RenderGroup implements Instruction
 
         renderGroupChild.renderGroupParent = this;
 
-        this.onChildUpdate(renderGroupChild.root);
-
         this.renderGroupChildren.push(renderGroupChild);
     }
 
     private _removeRenderGroupChild(renderGroupChild: RenderGroup)
     {
-        if (renderGroupChild.root.didChange)
-        {
-            this._removeChildFromUpdate(renderGroupChild.root);
-        }
-
         const index = this.renderGroupChildren.indexOf(renderGroupChild);
 
         if (index > -1)
@@ -197,24 +190,6 @@ export class RenderGroup implements Instruction
     public onChildViewUpdate(child: Container)
     {
         this.childrenRenderablesToUpdate.list[this.childrenRenderablesToUpdate.index++] = child;
-    }
-
-    private _removeChildFromUpdate(child: Container)
-    {
-        const childrenToUpdate = this.childrenToUpdate[child.relativeRenderGroupDepth];
-
-        if (!childrenToUpdate)
-        { return; }
-
-        const index = childrenToUpdate.list.indexOf(child);
-
-        // TODO this should be optimized - don't really want to change array size on the fly if we can avoid!
-        if (index > -1)
-        {
-            childrenToUpdate.list.splice(index, 1);
-        }
-
-        childrenToUpdate.index--;
     }
 
     get isRenderable(): boolean
