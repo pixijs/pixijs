@@ -29,7 +29,9 @@ function compareUpdateList(expected: Container[], renderGroup: RenderGroup, inde
 
     if (debug)
     {
+        // eslint-disable-next-line no-console
         console.log(renderGroup.childrenToUpdate[index].list.map((c) => c.label));
+        // eslint-disable-next-line no-console
         console.log(childrenToUpdate.list.map((c) => c.label));
     }
 
