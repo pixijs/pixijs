@@ -654,9 +654,11 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         // TODO - OPtimise this? could check what the parent has set?
         child._updateFlags = 0b1111;
 
-        if (this.parentRenderGroup)
+        const renderGroup = this.renderGroup || this.parentRenderGroup;
+
+        if (renderGroup)
         {
-            this.parentRenderGroup.addChild(child);
+            renderGroup.addChild(child);
         }
 
         this.emit('childAdded', child, this, this.children.length - 1);

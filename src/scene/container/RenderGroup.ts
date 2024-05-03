@@ -107,6 +107,9 @@ export class RenderGroup implements Instruction
             child.relativeRenderGroupDepth = child.parent.relativeRenderGroupDepth + 1;
         }
 
+        child.didChange = true;
+        this.onChildUpdate(child);
+
         if (child.renderGroup)
         {
             this.addRenderGroupChild(child.renderGroup);
@@ -114,16 +117,9 @@ export class RenderGroup implements Instruction
             return;
         }
 
-        child.didChange = true;
-
-        if (child._onRender)
-        {
-            this.addOnRender(child);
-        }
+        if (child._onRender) this.addOnRender(child);
 
         const children = child.children;
-
-        this.onChildUpdate(child);
 
         for (let i = 0; i < children.length; i++)
         {
