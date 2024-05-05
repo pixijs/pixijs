@@ -18,7 +18,7 @@ import type { GpuGraphicsContext } from '../GraphicsContextSystem';
 import type { GraphicsPath } from '../path/GraphicsPath';
 import type { ShapePath } from '../path/ShapePath';
 
-export const shapeBuildCommandMap: Record<string, ShapeBuildCommand> = {
+export const shapeBuilders: Record<string, ShapeBuildCommand> = {
     rectangle: buildRectangle,
     polygon: buildPolygon,
     triangle: buildTriangle,
@@ -86,7 +86,7 @@ function addTextureToGeometryData(
 
     const points: number[] = [];
 
-    const build = shapeBuildCommandMap.rectangle;
+    const build = shapeBuilders.rectangle;
 
     const rect = tempRect;
 
@@ -158,7 +158,7 @@ function addShapePathToGeometryData(
 
         const points: number[] = [];
 
-        const build = shapeBuildCommandMap[shape.type];
+        const build = shapeBuilders[shape.type];
 
         // TODO - this can be cached...
         // TODO - THIS IS DONE TWICE!!!!!!
@@ -261,7 +261,7 @@ function getHoleArrays(shape: ShapePath)
         // TODO - need to transform the points via there transform here..
         const holePoints: number[] = [];
 
-        const holeBuilder = shapeBuildCommandMap[holePrimitive.type] as ShapeBuildCommand;
+        const holeBuilder = shapeBuilders[holePrimitive.type] as ShapeBuildCommand;
 
         holeBuilder.build(holePrimitive, holePoints);
 
