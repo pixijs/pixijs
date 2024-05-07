@@ -1,6 +1,6 @@
 import { Cache } from '../../../src/assets/cache/Cache';
-import { BitmapFontManager } from '../../../src/scene/text-bitmap/BitmapFontManager';
 import { TextStyle } from '../../../src/scene/text/TextStyle';
+import { BitmapFontManager } from '../../../src/scene/text-bitmap/BitmapFontManager';
 
 import type { BitmapFont } from '../../../src/scene/text-bitmap/BitmapFont';
 
@@ -26,7 +26,8 @@ describe('BitmapFontManager', () =>
         expect(Cache.get<BitmapFont>('foo-bitmap')).toBeUndefined();
     });
 
-    it('should return layout for text containing emoji', () => {
+    it('should return layout for text containing emoji', () =>
+    {
         const layout = BitmapFontManager.getLayout('foo👍', new TextStyle());
 
         expect(layout).toBeDefined();
