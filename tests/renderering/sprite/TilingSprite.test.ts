@@ -185,4 +185,21 @@ describe('TilingSprite', () =>
             expect(tilingSprite.texture).toEqual(Texture.EMPTY);
         });
     });
+
+    describe('Anchor', () =>
+    {
+        it('should update anchor', () =>
+        {
+            const texture = new Texture();
+            const sprite = setup({ texture });
+
+            expect(sprite.texture).toEqual(texture);
+
+            const spy = jest.spyOn(sprite, 'onViewUpdate');
+
+            sprite.anchor.x = 0.5;
+
+            expect(spy).toHaveBeenCalledTimes(1);
+        });
+    });
 });
