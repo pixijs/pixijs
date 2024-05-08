@@ -53,11 +53,11 @@ jobs:
                         body: `Beta version released with the last commit 🚀
 
                         \`\`\`
-                        yarn add react-tooltip@${{ env.NEW_VERSION }}
+                        yarn add pixi.js@${{ env.NEW_VERSION }}
                         \`\`\`
                         or
                         \`\`\`
-                        npm install react-tooltip@${{ env.NEW_VERSION }}
+                        npm install pixi.js@${{ env.NEW_VERSION }}
                         \`\`\`
                         `
                       })
