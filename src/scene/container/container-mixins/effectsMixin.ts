@@ -3,6 +3,7 @@ import { MaskEffectManager } from '../../../rendering/mask/MaskEffectManager';
 
 import type { Filter } from '../../../filters/Filter';
 import type { Rectangle } from '../../../maths/shapes/Rectangle';
+import type { MaskEffect } from '../../../rendering/mask/MaskEffectManager';
 import type { Container } from '../Container';
 import type { Effect } from '../Effect';
 
@@ -13,7 +14,7 @@ export interface EffectsMixinConstructor
 }
 export interface EffectsMixin extends Required<EffectsMixinConstructor>
 {
-    _maskEffect?: {mask: unknown} & Effect;
+    _maskEffect?: MaskEffect;
     _filterEffect?: FilterEffect,
 
     filterArea?: Rectangle,
@@ -81,22 +82,22 @@ export const effectsMixin: Partial<Container> = {
 
     set mask(value: number | Container | null)
     {
-        if (this._maskEffect?.mask === value) return;
+        const effect = this._maskEffect;
 
-        if (this._maskEffect)
+        if (effect?.mask === value) return;
+
+        if (effect)
         {
-            this.removeEffect(this._maskEffect);
+            this.removeEffect(effect);
 
-            MaskEffectManager.returnMaskEffect(this._maskEffect);
+            MaskEffectManager.returnMaskEffect(effect);
         }
 
         if (value === null || value === undefined) return;
 
-        const effect = MaskEffectManager.getMaskEffect(value);
+        this._maskEffect = MaskEffectManager.getMaskEffect(value);
 
-        this._maskEffect = effect as {mask: unknown} & Effect;
-
-        this.addEffect(effect);
+        this.addEffect(this._maskEffect);
     },
 
     /**

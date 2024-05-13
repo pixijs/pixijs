@@ -10,6 +10,8 @@ interface MaskConversionTest
     maskClass: new (item: any) => Effect & PoolItem;
 }
 
+export type MaskEffect = {mask: unknown} & Effect;
+
 /**
  * A class that manages the conversion of masks to mask effects.
  * @memberof rendering
@@ -44,7 +46,7 @@ export class MaskEffectManagerClass
         this._tests.push(test);
     }
 
-    public getMaskEffect(item: any): Effect
+    public getMaskEffect(item: any): MaskEffect
     {
         if (!this._initialized) this.init();
 
@@ -54,7 +56,7 @@ export class MaskEffectManagerClass
 
             if (test.test(item))
             {
-                return BigPool.get(test.maskClass as PoolItemConstructor<Effect & PoolItem>, item);
+                return BigPool.get(test.maskClass as PoolItemConstructor<MaskEffect & PoolItem>, item);
             }
         }
 
