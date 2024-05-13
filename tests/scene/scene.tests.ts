@@ -274,7 +274,6 @@ describe('Scene', () =>
 
         expect(container.renderGroup).toEqual(container.renderGroup);
         expect(container2.parentRenderGroup).toEqual(container.renderGroup);
-        // expect(child.renderGroup).toEqual(container2.renderGroup);
 
         expect(child2.parentRenderGroup).toEqual(container2.renderGroup);
         expect(child3.parentRenderGroup).toEqual(container.renderGroup);
@@ -365,6 +364,7 @@ describe('Scene', () =>
         expect(child3.relativeRenderGroupDepth).toEqual(1);
     });
 
+    // eslint-disable-next-line jest/expect-expect
     it('should register update in the update array..', async () =>
     {
         const container = new Container({
@@ -425,8 +425,6 @@ describe('Scene', () =>
         compareUpdateList([child, container2], container.renderGroup, 1);
 
         compareUpdateList([child2, child3], container.renderGroup, 2);
-
-        expect(true).toBeTrue();
     });
 
     it('should appear in update array correctly if it changes layer group', async () =>
@@ -470,10 +468,9 @@ describe('Scene', () =>
         compareUpdateList([], container.renderGroup, 1);
 
         compareUpdateList([child], container2.renderGroup, 2);
-
-        expect(true).toBeTrue();
     });
 
+    // eslint-disable-next-line jest/expect-expect
     it('should appear in update array correctly if it changes layer group parents', async () =>
     {
         const container = new Container({
@@ -532,10 +529,9 @@ describe('Scene', () =>
         compareUpdateList([child], container.renderGroup, 1);
 
         compareUpdateList([child3], container2.renderGroup, 1);
-
-        expect(true).toBeTrue();
     });
 
+    // eslint-disable-next-line jest/expect-expect
     it('should update layers correctly if you attach a render group and it has updated children..', async () =>
     {
         const container = new Container();
@@ -581,8 +577,6 @@ describe('Scene', () =>
         container.removeChild(container2);
 
         compareUpdateList([child], container.renderGroup, 1);
-
-        expect(true).toBeTrue();
 
         // console.log(container2.layerGroup.childrenToUpdate[1])
         // expect(container2.layerGroup.childrenToUpdate[1]).toEqual({
