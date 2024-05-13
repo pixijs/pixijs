@@ -1345,7 +1345,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         this.removeFromParent();
         this.parent = null;
-        this._mask = null;
+        this._maskEffect = null;
         this._filterEffect = null;
         this.effects = null;
         this._position = null;

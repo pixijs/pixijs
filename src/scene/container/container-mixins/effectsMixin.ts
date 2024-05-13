@@ -13,16 +13,18 @@ export interface EffectsMixinConstructor
 }
 export interface EffectsMixin extends Required<EffectsMixinConstructor>
 {
-    _mask?: {mask: unknown, effect: Effect};
+    _maskEffect?: {mask: unknown} & Effect;
     _filterEffect?: FilterEffect,
+
     filterArea?: Rectangle,
     effects?: Effect[];
+
     addEffect(effect: Effect): void;
     removeEffect(effect: Effect): void;
 }
 
 export const effectsMixin: Partial<Container> = {
-    _mask: null,
+    _maskEffect: null,
     _filterEffect: null,
 
     /**
@@ -79,26 +81,20 @@ export const effectsMixin: Partial<Container> = {
 
     set mask(value: number | Container | null)
     {
-        this._mask ||= { mask: null, effect: null };
+        if (this._maskEffect?.mask === value) return;
 
-        if (this._mask.mask === value) return;
-
-        if (this._mask.effect)
+        if (this._maskEffect)
         {
-            this.removeEffect(this._mask.effect);
+            this.removeEffect(this._maskEffect);
 
-            MaskEffectManager.returnMaskEffect(this._mask.effect);
-
-            this._mask.effect = null;
+            MaskEffectManager.returnMaskEffect(this._maskEffect);
         }
-
-        this._mask.mask = value;
 
         if (value === null || value === undefined) return;
 
         const effect = MaskEffectManager.getMaskEffect(value);
 
-        this._mask.effect = effect;
+        this._maskEffect = effect as {mask: unknown} & Effect;
 
         this.addEffect(effect);
     },
@@ -126,7 +122,7 @@ export const effectsMixin: Partial<Container> = {
      */
     get mask(): unknown
     {
-        return this._mask?.mask;
+        return this._maskEffect?.mask;
     },
 
     set filters(value: Filter | Filter[] | null | undefined)
