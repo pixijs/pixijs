@@ -1,10 +1,8 @@
 import { FilterEffect } from '../../../filters/FilterEffect';
 import { MaskEffectManager } from '../../../rendering/mask/MaskEffectManager';
-import { BigPool } from '../../../utils/pool/PoolGroup';
 
 import type { Filter } from '../../../filters/Filter';
 import type { Rectangle } from '../../../maths/shapes/Rectangle';
-import type { PoolItem } from '../../../utils/pool/Pool';
 import type { Container } from '../Container';
 import type { Effect } from '../Effect';
 
@@ -16,11 +14,7 @@ export interface EffectsMixinConstructor
 export interface EffectsMixin extends Required<EffectsMixinConstructor>
 {
     _mask?: {mask: unknown, effect: Effect};
-    _filters?: {
-        filters: readonly Filter[],
-        effect: FilterEffect
-        filterArea?: Rectangle,
-    },
+    _filterEffect?: FilterEffect,
     filterArea?: Rectangle,
     effects?: Effect[];
     addEffect(effect: Effect): void;
@@ -29,7 +23,7 @@ export interface EffectsMixin extends Required<EffectsMixinConstructor>
 
 export const effectsMixin: Partial<Container> = {
     _mask: null,
-    _filters: null,
+    _filterEffect: null,
 
     /**
      * @todo Needs docs.
@@ -139,48 +133,35 @@ export const effectsMixin: Partial<Container> = {
     {
         if (!Array.isArray(value) && value) value = [value];
 
+        const effect = this._filterEffect ||= new FilterEffect();
+
         // Ignore the Filter type
         value = value as Filter[] | null | undefined;
 
-        // by reusing the same effect.. rather than adding and removing from the pool!
-        this._filters ||= { filters: null, effect: null, filterArea: null };
-
         const hasFilters = value?.length > 0;
-        const didChange = (this._filters.effect && !hasFilters) || (!this._filters.effect && hasFilters);
+        const hadFilters = effect.filters?.length > 0;
+
+        const didChange = hasFilters !== hadFilters;
 
         // Clone the filters array so we don't freeze the user-input
         value = Array.isArray(value) ? value.slice(0) : value;
 
         // Ensure filters are immutable via filters getter
-        this._filters.filters = Object.freeze(value);
+        effect.filters = Object.freeze(value);
 
         if (didChange)
         {
             if (hasFilters)
             {
-                const effect = BigPool.get(FilterEffect);
-
-                this._filters.effect = effect;
                 this.addEffect(effect);
             }
             else
             {
-                const effect = this._filters.effect;
-
                 this.removeEffect(effect);
 
-                effect.filterArea = null;
-                effect.filters = null;
-
-                this._filters.effect = null;
-                BigPool.return(effect as PoolItem);
+                // sets the empty array...
+                effect.filters = value ?? null;
             }
-        }
-
-        if (hasFilters)
-        {
-            this._filters.effect.filters = value as Filter[];
-            this._filters.effect.filterArea = this.filterArea;
         }
     },
 
@@ -192,14 +173,14 @@ export const effectsMixin: Partial<Container> = {
      */
     get filters(): readonly Filter[]
     {
-        return this._filters?.filters;
+        return this._filterEffect?.filters;
     },
 
     set filterArea(value: Rectangle)
     {
-        this._filters ||= { filters: null, effect: null, filterArea: null };
+        this._filterEffect ||= new FilterEffect();
 
-        this._filters.filterArea = value;
+        this._filterEffect.filterArea = value;
     },
 
     /**
@@ -211,7 +192,7 @@ export const effectsMixin: Partial<Container> = {
      */
     get filterArea(): Rectangle
     {
-        return this._filters?.filterArea;
+        return this._filterEffect?.filterArea;
     },
 
 } as Container;

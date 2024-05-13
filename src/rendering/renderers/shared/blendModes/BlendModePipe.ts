@@ -119,19 +119,21 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
             return;
         }
 
+        let filterEffect = this._filterHash[blendMode];
+
         // this does need an execute?
-        if (!this._filterHash[blendMode])
+        if (!filterEffect)
         {
-            this._filterHash[blendMode] = new FilterEffect({
-                filters: [new BLEND_MODE_FILTERS[blendMode as keyof typeof BLEND_MODE_FILTERS]()]
-            });
+            filterEffect = this._filterHash[blendMode] = new FilterEffect();
+
+            filterEffect.filters = [new BLEND_MODE_FILTERS[blendMode as keyof typeof BLEND_MODE_FILTERS]()];
         }
 
         const instruction: FilterInstruction = {
             renderPipeId: 'filter',
             action: 'pushFilter',
             renderables: [],
-            filterEffect: this._filterHash[blendMode],
+            filterEffect,
             canBundle: false,
         };
 
