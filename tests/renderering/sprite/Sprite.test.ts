@@ -10,6 +10,29 @@ import { getTexture } from '../../utils/getTexture';
 
 describe('Sprite', () =>
 {
+    describe('constructor', () =>
+    {
+        it('should support no arguments', () =>
+        {
+            const sprite = new Sprite();
+
+            expect(sprite).toBeDefined();
+            expect(sprite.texture).toEqual(Texture.EMPTY);
+
+            sprite.destroy();
+        });
+
+        it('should support options with no texture', () =>
+        {
+            const sprite = new Sprite({});
+
+            expect(sprite).toBeDefined();
+            expect(sprite.texture).toEqual(Texture.EMPTY);
+
+            sprite.destroy();
+        });
+    });
+
     describe('destroy', () =>
     {
         it('should not throw when destroyed', () =>

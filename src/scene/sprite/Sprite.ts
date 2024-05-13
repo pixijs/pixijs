@@ -96,7 +96,7 @@ export class Sprite extends Container implements View
         }
 
         // split out
-        const { texture, anchor, roundPixels, width, height, ...rest } = options;
+        const { texture = Texture.EMPTY, anchor, roundPixels, width, height, ...rest } = options;
 
         super({
             label: 'Sprite',
