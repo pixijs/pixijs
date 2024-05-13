@@ -1,3 +1,4 @@
+import { extensions, ExtensionType } from '../../../../extensions/Extensions';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { buildSimpleUvs, buildUvs } from '../../../../rendering/renderers/shared/geometry/utils/buildUvs';
 import { transformVertices } from '../../../../rendering/renderers/shared/geometry/utils/transformVertices';
@@ -26,6 +27,8 @@ export const shapeBuilders: Record<string, ShapeBuildCommand> = {
     ellipse: buildCircle,
     roundedRectangle: buildCircle,
 };
+
+extensions.handleByMap(ExtensionType.ShapeBuilder, shapeBuilders);
 
 const tempRect = new Rectangle();
 
