@@ -481,7 +481,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
 
         if (CanvasSource.test(renderSurface))
         {
-            renderSurface = getCanvasTexture(renderSurface as ICanvas);
+            renderSurface = getCanvasTexture(renderSurface as ICanvas).source;
         }
 
         if (renderSurface instanceof RenderTarget)
