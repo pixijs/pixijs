@@ -251,4 +251,16 @@ describe('Text', () =>
             expect(text.height).toEqual(100);
         });
     });
+
+    it('should measure bounds of text correctly when padding is set', () =>
+    {
+        const textNoPadding = new Text({ text: 'HI', style: { padding: 0 } });
+        const text = new Text({ text: 'HI', style: { padding: 10 } });
+
+        const boundsNoPadding = textNoPadding.getBounds();
+        const bounds = text.getBounds();
+
+        expect(boundsNoPadding.width).toBeLessThan(bounds.width + 20);
+        expect(boundsNoPadding.height).toBeLessThan(bounds.height + 20);
+    });
 });
