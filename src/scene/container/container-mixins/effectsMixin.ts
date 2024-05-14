@@ -3,6 +3,7 @@ import { MaskEffectManager } from '../../../rendering/mask/MaskEffectManager';
 
 import type { Filter } from '../../../filters/Filter';
 import type { Rectangle } from '../../../maths/shapes/Rectangle';
+import type { MaskEffect } from '../../../rendering/mask/MaskEffectManager';
 import type { Container } from '../Container';
 import type { Effect } from '../Effect';
 
@@ -13,16 +14,18 @@ export interface EffectsMixinConstructor
 }
 export interface EffectsMixin extends Required<EffectsMixinConstructor>
 {
-    _mask?: {mask: unknown, effect: Effect};
+    _maskEffect?: MaskEffect;
     _filterEffect?: FilterEffect,
+
     filterArea?: Rectangle,
     effects?: Effect[];
+
     addEffect(effect: Effect): void;
     removeEffect(effect: Effect): void;
 }
 
 export const effectsMixin: Partial<Container> = {
-    _mask: null,
+    _maskEffect: null,
     _filterEffect: null,
 
     /**
@@ -79,28 +82,22 @@ export const effectsMixin: Partial<Container> = {
 
     set mask(value: number | Container | null)
     {
-        this._mask ||= { mask: null, effect: null };
+        const effect = this._maskEffect;
 
-        if (this._mask.mask === value) return;
+        if (effect?.mask === value) return;
 
-        if (this._mask.effect)
+        if (effect)
         {
-            this.removeEffect(this._mask.effect);
+            this.removeEffect(effect);
 
-            MaskEffectManager.returnMaskEffect(this._mask.effect);
-
-            this._mask.effect = null;
+            MaskEffectManager.returnMaskEffect(effect);
         }
-
-        this._mask.mask = value;
 
         if (value === null || value === undefined) return;
 
-        const effect = MaskEffectManager.getMaskEffect(value);
+        this._maskEffect = MaskEffectManager.getMaskEffect(value);
 
-        this._mask.effect = effect;
-
-        this.addEffect(effect);
+        this.addEffect(this._maskEffect);
     },
 
     /**
@@ -126,7 +123,7 @@ export const effectsMixin: Partial<Container> = {
      */
     get mask(): unknown
     {
-        return this._mask?.mask;
+        return this._maskEffect?.mask;
     },
 
     set filters(value: Filter | Filter[] | null | undefined)

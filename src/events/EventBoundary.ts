@@ -574,7 +574,7 @@ export class EventBoundary
      * Checks whether the container or any of its children cannot pass the hit test at all.
      *
      * {@link EventBoundary}'s implementation uses the {@link Container.hitArea hitArea}
-     * and {@link Container._mask} for pruning.
+     * and {@link Container._maskEffect} for pruning.
      * @param container - The container to prune.
      * @param location - The location to test for overlap.
      */
