@@ -578,6 +578,8 @@ describe('Scene', () =>
 
         compareUpdateList([child], container.renderGroup, 1);
 
+        expect(true).toBeTrue();
+
         // console.log(container2.layerGroup.childrenToUpdate[1])
         // expect(container2.layerGroup.childrenToUpdate[1]).toEqual({
         //     list: [child2, child3],

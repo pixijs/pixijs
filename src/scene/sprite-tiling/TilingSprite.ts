@@ -196,7 +196,14 @@ export class TilingSprite extends Container implements View, Instruction
 
         this.allowChildren = false;
 
-        this._anchor = new ObservablePoint(this);
+        this._anchor = new ObservablePoint(
+            {
+                _onUpdate: () =>
+                {
+                    this.onViewUpdate();
+                }
+            },
+        );
 
         this._applyAnchorToTexture = applyAnchorToTexture;
 

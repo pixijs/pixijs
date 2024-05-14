@@ -58,6 +58,11 @@ export const effectsMixin: Partial<Container> = {
             renderGroup.structureDidChange = true;
         }
 
+        // if (this.renderGroup)
+        // {
+        //     this.renderGroup.structureDidChange = true;
+        // }
+
         this._updateIsSimple();
     },
     /**
