@@ -21,7 +21,7 @@ describe('getGlobalFastBounds', () =>
 
         container.addChild(child);
 
-        updateRenderGroupTransforms(container.renderGroup, true);
+        updateRenderGroupTransforms(container.parentRenderGroup, true);
 
         const bounds = getFastGlobalBounds(root, new Bounds());
 
@@ -42,7 +42,7 @@ describe('getGlobalFastBounds', () =>
 
         container.addChild(child);
 
-        updateRenderGroupTransforms(container.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         const bounds = getFastGlobalBounds(root, new Bounds());
 
@@ -50,7 +50,7 @@ describe('getGlobalFastBounds', () =>
 
         child.x = -100;
 
-        updateRenderGroupTransforms(container.renderGroup, true);
+        updateRenderGroupTransforms(root.renderGroup, true);
 
         const bounds2 = getFastGlobalBounds(root, new Bounds());
 

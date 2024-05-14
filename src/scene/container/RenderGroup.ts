@@ -19,8 +19,6 @@ export class RenderGroup implements Instruction
     public renderGroupParent: RenderGroup = null;
     public renderGroupChildren: RenderGroup[] = [];
 
-    private readonly _children: Container[] = [];
-
     public worldTransform: Matrix = new Matrix();
     public worldColorAlpha = 0xffffffff;
     public worldColor = 0xffffff;
@@ -44,7 +42,16 @@ export class RenderGroup implements Instruction
     {
         this.root = root;
 
-        this.addChild(root);
+        if (root._onRender) this.addOnRender(root);
+
+        root.didChange = true;
+
+        const children = root.children;
+
+        for (let i = 0; i < children.length; i++)
+        {
+            this.addChild(children[i]);
+        }
     }
 
     get localTransform()
@@ -61,18 +68,11 @@ export class RenderGroup implements Instruction
 
         renderGroupChild.renderGroupParent = this;
 
-        this.onChildUpdate(renderGroupChild.root);
-
         this.renderGroupChildren.push(renderGroupChild);
     }
 
     private _removeRenderGroupChild(renderGroupChild: RenderGroup)
     {
-        if (renderGroupChild.root.didChange)
-        {
-            this._removeChildFromUpdate(renderGroupChild.root);
-        }
-
         const index = this.renderGroupChildren.indexOf(renderGroupChild);
 
         if (index > -1)
@@ -87,62 +87,32 @@ export class RenderGroup implements Instruction
     {
         this.structureDidChange = true;
 
-        // TODO this can be optimized..
-        if (child !== this.root)
+        child.parentRenderGroup = this;
+
+        child.updateTick = -1;
+
+        if (child.parent === this.root)
         {
-            this._children.push(child);
-
-            child.updateTick = -1;
-
-            if (child.parent === this.root)
-            {
-                child.relativeRenderGroupDepth = 1;
-            }
-
-            else
-            {
-                child.relativeRenderGroupDepth = child.parent.relativeRenderGroupDepth + 1;
-            }
-        }
-
-        if (child.renderGroup)
-        {
-            if (child.renderGroup.root === child)
-            {
-                // its already its own render group..
-                this.addRenderGroupChild(child.renderGroup);
-
-                return;
-            }
+            child.relativeRenderGroupDepth = 1;
         }
         else
         {
-            child.renderGroup = this;
-            child.didChange = true;
+            child.relativeRenderGroupDepth = child.parent.relativeRenderGroupDepth + 1;
         }
 
-        if (child._onRender)
+        child.didChange = true;
+        this.onChildUpdate(child);
+
+        if (child.renderGroup)
         {
-            // Add the child to the onRender list under the following conditions:
-            // 1. If the child is not a render group.
-            // 2. If the child is a render group root of this render group
+            this.addRenderGroupChild(child.renderGroup);
 
-            if (!child.isRenderGroupRoot)
-            {
-                this.addOnRender(child);
-            }
-            else if (child.renderGroup.root === child)
-            {
-                this.addOnRender(child);
-            }
+            return;
         }
+
+        if (child._onRender) this.addOnRender(child);
 
         const children = child.children;
-
-        if (!child.isRenderGroupRoot)
-        {
-            this.onChildUpdate(child);
-        }
 
         for (let i = 0; i < children.length; i++)
         {
@@ -159,45 +129,35 @@ export class RenderGroup implements Instruction
         {
             // Remove the child to the onRender list under the following conditions:
             // 1. If the child is not a render group.
-            // 2. If the child is a render group root of this render group
-
-            if (!child.isRenderGroupRoot)
-            {
-                this.removeOnRender(child);
-            }
-            else if (child.renderGroup.root === child)
+            // 2. If the child is a render group root of this render group - which it can't be removed from in this case.
+            if (!child.renderGroup)
             {
                 this.removeOnRender(child);
             }
         }
 
-        if (child.renderGroup.root !== child)
-        {
-            const children = child.children;
+        child.parentRenderGroup = null;
 
-            for (let i = 0; i < children.length; i++)
-            {
-                this.removeChild(children[i]);
-            }
-
-            if (child.didChange)
-            {
-                child.renderGroup._removeChildFromUpdate(child);
-            }
-
-            child.renderGroup = null;
-        }
-
-        else
+        if (child.renderGroup)
         {
             this._removeRenderGroupChild(child.renderGroup);
+
+            return;
         }
 
-        const index = this._children.indexOf(child);
+        const children = child.children;
 
-        if (index > -1)
+        for (let i = 0; i < children.length; i++)
         {
-            this._children.splice(index, 1);
+            this.removeChild(children[i]);
+        }
+    }
+
+    public removeChildren(children: Container[])
+    {
+        for (let i = 0; i < children.length; i++)
+        {
+            this.removeChild(children[i]);
         }
     }
 
@@ -232,24 +192,6 @@ export class RenderGroup implements Instruction
         this.childrenRenderablesToUpdate.list[this.childrenRenderablesToUpdate.index++] = child;
     }
 
-    private _removeChildFromUpdate(child: Container)
-    {
-        const childrenToUpdate = this.childrenToUpdate[child.relativeRenderGroupDepth];
-
-        if (!childrenToUpdate)
-        { return; }
-
-        const index = childrenToUpdate.list.indexOf(child);
-
-        // TODO this should be optimized - don't really want to change array size on the fly if we can avoid!
-        if (index > -1)
-        {
-            childrenToUpdate.list.splice(index, 1);
-        }
-
-        childrenToUpdate.index--;
-    }
-
     get isRenderable(): boolean
     {
         return (this.root.localDisplayStatus === 0b111 && this.worldAlpha > 0);
@@ -276,5 +218,33 @@ export class RenderGroup implements Instruction
         {
             this._onRenderContainers[i]._onRender();
         }
+    }
+
+    public getChildren(out: Container[] = []): Container[]
+    {
+        const children = this.root.children;
+
+        for (let i = 0; i < children.length; i++)
+        {
+            this._getChildren(children[i], out);
+        }
+
+        return out;
+    }
+
+    private _getChildren(container: Container, out: Container[] = []): Container[]
+    {
+        out.push(container);
+
+        if (container.renderGroup) return out;
+
+        const children = container.children;
+
+        for (let i = 0; i < children.length; i++)
+        {
+            this._getChildren(children[i], out);
+        }
+
+        return out;
     }
 }
