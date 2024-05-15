@@ -8,7 +8,7 @@ export const glUploadImageResource = {
 
     id: 'image',
 
-    upload(source: ImageSource | CanvasSource, glTexture: GlTexture, gl: GlRenderingContext)
+    upload(source: ImageSource | CanvasSource, glTexture: GlTexture, gl: GlRenderingContext, webGLVersion: number)
     {
         const premultipliedAlpha = source.alphaMode === 'premultiply-alpha-on-upload';
 
@@ -22,6 +22,8 @@ export const glUploadImageResource = {
 
         const resourceWidth = source.resourceWidth;
         const resourceHeight = source.resourceHeight;
+
+        const uploadWithDimensions = source.uploadMethodId === 'buffer' || webGLVersion === 2;
 
         if (resourceWidth < textureWidth || resourceHeight < textureHeight)
         {
@@ -40,17 +42,32 @@ export const glUploadImageResource = {
                 );
             }
 
-            gl.texSubImage2D(
-                gl.TEXTURE_2D,
-                0,
-                0,
-                0,
-                resourceWidth,
-                resourceHeight,
-                glTexture.format,
-                glTexture.type,
-                source.resource as TexImageSource
-            );
+            if (uploadWithDimensions)
+            {
+                gl.texSubImage2D(
+                    gl.TEXTURE_2D,
+                    0,
+                    0,
+                    0,
+                    resourceWidth,
+                    resourceHeight,
+                    glTexture.format,
+                    glTexture.type,
+                    source.resource as TexImageSource
+                );
+            }
+            else
+            {
+                gl.texSubImage2D(
+                    glTexture.target,
+                    0,
+                    0,
+                    0,
+                    glTexture.format,
+                    glTexture.type,
+                    source.resource as TexImageSource
+                );
+            }
         }
         else if (glWidth === textureWidth && glHeight === textureHeight)
         {
@@ -68,17 +85,32 @@ export const glUploadImageResource = {
         }
         else
         {
-            gl.texImage2D(
-                glTexture.target,
-                0,
-                glTexture.internalFormat,
-                textureWidth,
-                textureHeight,
-                0,
-                glTexture.format,
-                glTexture.type,
-                source.resource as TexImageSource
-            );
+            // eslint-disable-next-line no-lonely-if
+            if (uploadWithDimensions)
+            {
+                gl.texImage2D(
+                    glTexture.target,
+                    0,
+                    glTexture.internalFormat,
+                    textureWidth,
+                    textureHeight,
+                    0,
+                    glTexture.format,
+                    glTexture.type,
+                    source.resource as TexImageSource
+                );
+            }
+            else
+            {
+                gl.texImage2D(
+                    glTexture.target,
+                    0,
+                    glTexture.internalFormat,
+                    glTexture.format,
+                    glTexture.type,
+                    source.resource as TexImageSource
+                );
+            }
         }
 
         glTexture.width = textureWidth;
