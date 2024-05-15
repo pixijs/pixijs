@@ -8,7 +8,7 @@ export const glUploadImageResource = {
 
     id: 'image',
 
-    upload(source: ImageSource | CanvasSource, glTexture: GlTexture, gl: GlRenderingContext, webGLVersion: number)
+    upload(source: ImageSource | CanvasSource, glTexture: GlTexture, gl: GlRenderingContext)
     {
         const premultipliedAlpha = source.alphaMode === 'premultiply-alpha-on-upload';
 
@@ -40,54 +40,27 @@ export const glUploadImageResource = {
                 );
             }
 
-            if (webGLVersion === 2)
-            {
-                gl.texSubImage2D(
-                    gl.TEXTURE_2D,
-                    0,
-                    0,
-                    0,
-                    resourceWidth,
-                    resourceHeight,
-                    glTexture.format,
-                    glTexture.type,
-                    source.resource as TexImageSource
-                );
-            }
-            else
-            {
-                gl.texSubImage2D(
-                    gl.TEXTURE_2D,
-                    0,
-                    0,
-                    0,
-                    glTexture.format,
-                    glTexture.type,
-                    source.resource as TexImageSource
-                );
-            }
+            gl.texSubImage2D(
+                gl.TEXTURE_2D,
+                0,
+                0,
+                0,
+                resourceWidth,
+                resourceHeight,
+                glTexture.format,
+                glTexture.type,
+                source.resource as TexImageSource
+            );
         }
-        else if (glWidth === textureWidth || glHeight === textureHeight)
+        else if (glWidth === textureWidth && glHeight === textureHeight)
         {
             gl.texSubImage2D(
                 gl.TEXTURE_2D,
                 0,
                 0,
                 0,
-                glTexture.format,
-                glTexture.type,
-                source.resource as TexImageSource
-            );
-        }
-        else if (webGLVersion === 2)
-        {
-            gl.texImage2D(
-                glTexture.target,
-                0,
-                glTexture.internalFormat,
-                textureWidth,
-                textureHeight,
-                0,
+                source.width,
+                source.height,
                 glTexture.format,
                 glTexture.type,
                 source.resource as TexImageSource
@@ -99,6 +72,9 @@ export const glUploadImageResource = {
                 glTexture.target,
                 0,
                 glTexture.internalFormat,
+                textureWidth,
+                textureHeight,
+                0,
                 glTexture.format,
                 glTexture.type,
                 source.resource as TexImageSource
