@@ -24,4 +24,3 @@ describe('Mask Tests', () =>
     });
 });
 
-// Test to cover
