@@ -98,6 +98,8 @@ export const effectsMixin: Partial<Container> = {
             this.removeEffect(effect);
 
             MaskEffectManager.returnMaskEffect(effect);
+
+            this._maskEffect = null;
         }
 
         if (value === null || value === undefined) return;
