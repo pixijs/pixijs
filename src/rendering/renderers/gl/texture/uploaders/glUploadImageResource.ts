@@ -23,8 +23,6 @@ export const glUploadImageResource = {
         const resourceWidth = source.resourceWidth;
         const resourceHeight = source.resourceHeight;
 
-        const uploadWithDimensions = source.uploadMethodId === 'buffer' || webGLVersion === 2;
-
         if (resourceWidth < textureWidth || resourceHeight < textureHeight)
         {
             if (glWidth !== textureWidth || glHeight !== textureHeight)
@@ -42,7 +40,7 @@ export const glUploadImageResource = {
                 );
             }
 
-            if (uploadWithDimensions)
+            if (webGLVersion === 2)
             {
                 gl.texSubImage2D(
                     gl.TEXTURE_2D,
@@ -86,7 +84,7 @@ export const glUploadImageResource = {
         else
         {
             // eslint-disable-next-line no-lonely-if
-            if (uploadWithDimensions)
+            if (webGLVersion === 2)
             {
                 gl.texImage2D(
                     glTexture.target,
