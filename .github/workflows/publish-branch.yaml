@@ -29,10 +29,10 @@ jobs:
 
             # get the sort SHA and add it into the environment variables
             - name: Setup Branch Release Candidate Version
-              run: echo "NEW_VERSION=$PACKAGE_VERSION-$BRANCH_NAME.${GITHUB_SHA::7}" >> $GITHUB_ENV
+              run: echo "BRANCH_VERSION=$PACKAGE_VERSION-$BRANCH_NAME.${GITHUB_SHA::7}" >> $GITHUB_ENV
 
-            - name: Update Package.json Version with Release Candidate Version
-              run: node ./update-branch-version.js --version $NEW_VERSION
+            - name: Bump version
+              run: npm version $BRANCH_VERSION --no-git-tag-version --force
 
             - name: Publish a new branch release candidate version
               run: npm publish --tag $BRANCH_NAME
