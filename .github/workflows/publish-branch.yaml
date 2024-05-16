@@ -21,7 +21,7 @@ jobs:
               with:
                   node-version: "16.x"
                   registry-url: "https://registry.npmjs.org"
-                  cache: "yarn"
+                  cache: "npm"
 
             - name: Install dev dependencies
               run: yarn install
