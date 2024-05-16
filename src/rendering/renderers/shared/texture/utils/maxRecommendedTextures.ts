@@ -1,7 +1,5 @@
 import { getTestContext } from '../../../gl/shader/program/getTestContext';
 
-let maxTextureUnits = 0;
-
 /**
  * Returns the maximum recommended texture units to use. This uses WebGL1's `MAX_TEXTURE_IMAGE_UNITS`.
  * The response for this is that to get this info via WebGPU, we would need to make a context, which
@@ -11,11 +9,7 @@ let maxTextureUnits = 0;
  */
 export function maxRecommendedTextures(): number
 {
-    if (maxTextureUnits) return maxTextureUnits;
-
     const gl = getTestContext();
 
-    maxTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
-
-    return maxTextureUnits;
+    return gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
 }
