@@ -17,22 +17,12 @@ jobs:
             - uses: actions/checkout@v4
               with:
                   ref: ${{ github.head_ref }}
-            - uses: actions/setup-node@v4
-              with:
-                  node-version: "16.x"
-                  registry-url: "https://registry.npmjs.org"
-                  cache: "npm"
 
-            - name: Install dev dependencies
-              run: yarn install
+            - name: Setup Project
+              uses: ./.github/actions/setup
 
             - name: Setup npm credentials file
               run: echo "//registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN" >> .npmrc
-
-            # - name: Setup git credentials
-            #   run: |
-            #       git config --global user.name 'Auto Release Bot'
-            #       git config --global user.email 'auto-release-bot@users.noreply.github.com'
 
             - name: Get current package.json version
               run: echo "PACKAGE_VERSION=$(npm pkg get version | tr -d '"')" >> $GITHUB_ENV
@@ -40,10 +30,6 @@ jobs:
             # get the sort SHA and add it into the environment variables
             - name: Get short SHA
               run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
-
-            # get the package name so the workflow can be reusable between projects
-            # - name: Get current package.json name
-            #   run: echo "PACKAGE_NAME=$(npm pkg get name | tr -d '"')" >> $GITHUB_ENV
 
             - name: Setup Branch Release Candidate Version
               run: echo "NEW_VERSION=$PACKAGE_VERSION-$BRANCH_NAME.$SHORT_SHA" >> $GITHUB_ENV
@@ -55,23 +41,3 @@ jobs:
               run: npm publish --tag $BRANCH_NAME
               env:
                   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-            # This comment only works for Pull Requests
-            # - uses: actions/github-script@v6
-            #   with:
-            #     script: |
-            #       github.rest.issues.createComment({
-            #         issue_number: context.issue.number,
-            #         owner: context.repo.owner,
-            #         repo: context.repo.repo,
-            #         body: `Release candidate released with the last commit 🚀
-
-            #         \`\`\`
-            #         yarn add ${{ env.PACKAGE_NAME}}@${{ env.NEW_VERSION }}
-            #         \`\`\`
-            #         or
-            #         \`\`\`
-            #         npm install ${{ env.PACKAGE_NAME}}@${{ env.NEW_VERSION }}
-            #         \`\`\`
-            #         `
-            #       })
