@@ -28,11 +28,8 @@ jobs:
               run: echo "PACKAGE_VERSION=$(npm pkg get version | tr -d '"')" >> $GITHUB_ENV
 
             # get the sort SHA and add it into the environment variables
-            - name: Get short SHA
-              run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
-
             - name: Setup Branch Release Candidate Version
-              run: echo "NEW_VERSION=$PACKAGE_VERSION-$BRANCH_NAME.$SHORT_SHA" >> $GITHUB_ENV
+              run: echo "NEW_VERSION=$PACKAGE_VERSION-$BRANCH_NAME.${GITHUB_SHA::7}" >> $GITHUB_ENV
 
             - name: Update Package.json Version with Release Candidate Version
               run: node ./update-branch-version.js --version $NEW_VERSION
