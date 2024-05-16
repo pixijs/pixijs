@@ -36,5 +36,3 @@ jobs:
 
             - name: Publish a new branch release candidate version
               run: npm publish --tag $BRANCH_NAME
-              env:
-                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
