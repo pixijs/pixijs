@@ -1,3 +1,5 @@
+import { MAX_TEXTURES } from '../../batcher/shared/const';
+
 import type { HighShaderBit } from '../compiler/types';
 
 const textureBatchBitGpuCache: Record<number, HighShaderBit> = {};
@@ -87,13 +89,13 @@ export function generateTextureBatchBit(maxTextures: number): HighShaderBit
                 header: `
                 @in @interpolate(flat) vTextureId: u32;
     
-                ${generateBindingSrc(16)}
+                ${generateBindingSrc(MAX_TEXTURES)}
             `,
                 main: `
                 var uvDx = dpdx(vUV);
                 var uvDy = dpdy(vUV);
     
-                ${generateSampleSrc(16)}
+                ${generateSampleSrc(MAX_TEXTURES)}
             `
             }
         };
@@ -164,7 +166,7 @@ export function generateTextureBatchBitGl(maxTextures: number): HighShaderBit
             `,
                 main: `
     
-                ${generateSampleGlSrc(16)}
+                ${generateSampleGlSrc(MAX_TEXTURES)}
             `
             }
         };
