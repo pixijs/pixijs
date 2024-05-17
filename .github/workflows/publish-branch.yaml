@@ -21,9 +21,6 @@ jobs:
             - name: Setup Project
               uses: ./.github/actions/setup
 
-            - name: Setup npm credentials file
-              run: echo "//registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN" >> .npmrc
-
             - name: Get current package.json version
               run: echo "PACKAGE_VERSION=$(npm pkg get version | tr -d '"')" >> $GITHUB_ENV
 
