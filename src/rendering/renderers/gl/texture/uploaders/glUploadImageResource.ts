@@ -57,7 +57,7 @@ export const glUploadImageResource = {
             else
             {
                 gl.texSubImage2D(
-                    gl.TEXTURE_2D,
+                    glTexture.target,
                     0,
                     0,
                     0,
@@ -67,27 +67,15 @@ export const glUploadImageResource = {
                 );
             }
         }
-        else if (glWidth === textureWidth || glHeight === textureHeight)
+        else if (glWidth === textureWidth && glHeight === textureHeight)
         {
             gl.texSubImage2D(
                 gl.TEXTURE_2D,
                 0,
                 0,
                 0,
-                glTexture.format,
-                glTexture.type,
-                source.resource as TexImageSource
-            );
-        }
-        else if (webGLVersion === 2)
-        {
-            gl.texImage2D(
-                glTexture.target,
-                0,
-                glTexture.internalFormat,
-                textureWidth,
-                textureHeight,
-                0,
+                source.width,
+                source.height,
                 glTexture.format,
                 glTexture.type,
                 source.resource as TexImageSource
@@ -95,14 +83,32 @@ export const glUploadImageResource = {
         }
         else
         {
-            gl.texImage2D(
-                glTexture.target,
-                0,
-                glTexture.internalFormat,
-                glTexture.format,
-                glTexture.type,
-                source.resource as TexImageSource
-            );
+            // eslint-disable-next-line no-lonely-if
+            if (webGLVersion === 2)
+            {
+                gl.texImage2D(
+                    glTexture.target,
+                    0,
+                    glTexture.internalFormat,
+                    textureWidth,
+                    textureHeight,
+                    0,
+                    glTexture.format,
+                    glTexture.type,
+                    source.resource as TexImageSource
+                );
+            }
+            else
+            {
+                gl.texImage2D(
+                    glTexture.target,
+                    0,
+                    glTexture.internalFormat,
+                    glTexture.format,
+                    glTexture.type,
+                    source.resource as TexImageSource
+                );
+            }
         }
 
         glTexture.width = textureWidth;

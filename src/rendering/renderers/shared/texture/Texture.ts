@@ -4,7 +4,7 @@ import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { uid } from '../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { NOOP } from '../../../../utils/misc/NOOP';
-import { BufferImageSource } from './sources/BufferSource';
+import { BufferImageSource } from './sources/BufferImageSource';
 import { TextureSource } from './sources/TextureSource';
 import { TextureMatrix } from './TextureMatrix';
 

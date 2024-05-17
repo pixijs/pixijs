@@ -4,7 +4,7 @@ import { TextureSource } from '../sources/TextureSource';
 import { Texture } from '../Texture';
 
 import type { TypedArray } from '../../buffer/Buffer';
-import type { BufferSourceOptions } from '../sources/BufferSource';
+import type { BufferSourceOptions } from '../sources/BufferImageSource';
 import type { ImageResource } from '../sources/ImageSource';
 import type { TextureSourceOptions } from '../sources/TextureSource';
 import type { TextureSourceLike } from '../Texture';
