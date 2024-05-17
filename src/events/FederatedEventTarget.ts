@@ -2,6 +2,7 @@ import { EventSystem } from './EventSystem';
 import { FederatedEvent } from './FederatedEvent';
 
 import type EventEmitter from 'eventemitter3';
+import type { Container } from '../scene/container/Container';
 import type { AllFederatedEventMap } from './FederatedEventMap';
 import type { FederatedPointerEvent } from './FederatedPointerEvent';
 import type { FederatedWheelEvent } from './FederatedWheelEvent';
@@ -179,39 +180,21 @@ export interface FederatedOptions
     onwheel?: FederatedEventHandler<FederatedWheelEvent> | null;
 }
 
-/**
- * A simplified shape of an interactive object for the `eventTarget` property of a {@link FederatedEvent}
- * @memberof events
- */
-export interface FederatedEventTarget extends EventEmitter, EventTarget, Required<FederatedOptions>
+type AddListenerOptions = boolean | AddEventListenerOptions;
+type RemoveListenerOptions = boolean | EventListenerOptions;
+
+export interface IFederatedContainer extends FederatedOptions
 {
     /** The parent of this event target. */
-    readonly parent?: FederatedEventTarget;
+    readonly parent?: Container;
 
     /** The children of this event target. */
-    readonly children?: ReadonlyArray<FederatedEventTarget>;
+    readonly children?: ReadonlyArray<Container>;
 
     _internalEventMode: EventMode;
 
     /** Returns true if the Container has interactive 'static' or 'dynamic' */
     isInteractive: () => boolean;
-
-    // In Angular projects, zone.js is monkey patching the `EventTarget`
-    // by adding its own `removeAllListeners(event?: string): void;` method,
-    // so we have to override this signature when extending both `EventTarget` and `utils.EventEmitter`
-    // to make it compatible with Angular projects
-    // @see https://github.com/pixijs/pixijs/issues/8794
-
-    /** Remove all listeners, or those of the specified event. */
-    removeAllListeners(event?: string | symbol): this;
-}
-
-type AddListenerOptions = boolean | AddEventListenerOptions;
-type RemoveListenerOptions = boolean | EventListenerOptions;
-
-export interface IFederatedContainer
-    extends Omit<FederatedEventTarget, 'parent' | 'children' | keyof EventEmitter | 'cursor'>
-{
     addEventListener<K extends keyof AllFederatedEventMap>(
         type: K,
         listener: (e: AllFederatedEventMap[K]) => any,
@@ -232,6 +215,7 @@ export interface IFederatedContainer
         listener: EventListenerOrEventListenerObject,
         options?: RemoveListenerOptions
     ): void;
+    dispatchEvent(e: FederatedEvent): boolean;
 }
 
 export const FederatedContainer: IFederatedContainer = {
@@ -805,7 +789,7 @@ export const FederatedContainer: IFederatedContainer = {
 
         e.defaultPrevented = false;
         e.path = null;
-        e.target = this as unknown as FederatedEventTarget;
+        e.target = this as Container;
         e.manager.dispatchEvent(e);
 
         return !e.defaultPrevented;
