@@ -3,7 +3,7 @@ name: Pull Request Title Format
 on:
   pull_request:
     branches:
-      - '*'
+      - '**'
     types:
       - opened
       - reopened
