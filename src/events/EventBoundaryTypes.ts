@@ -1,23 +1,23 @@
-import type { FederatedEventTarget } from './FederatedEventTarget';
+import type { Container } from '../scene/container/Container';
 
 /**
  * The tracking data for each pointer held in the state of an {@link EventBoundary}.
  *
  * ```ts
  * pressTargetsByButton: {
- *     [id: number]: FederatedEventTarget[];
+ *     [id: number]: Container[];
  * };
  * clicksByButton: {
  *     [id: number]: {
  *         clickCount: number;
- *         target: FederatedEventTarget;
+ *         target: Container;
  *         timeStamp: number;
  *     };
  * };
- * overTargets: FederatedEventTarget[];
+ * overTargets: Container[];
  * ```
  * @typedef {object} TrackingData
- * @property {Record.<number, FederatedEventTarget>} pressTargetsByButton - The pressed containers'
+ * @property {Record.<number, Container>} pressTargetsByButton - The pressed containers'
  *  propagation paths by each button of the pointer.
  * @property {Record.<number, object>} clicksByButton - Holds clicking data for each button of the pointer.
  * @property {Container[]} overTargets - The Container propagation path over which the pointer is hovering.
@@ -25,16 +25,16 @@ import type { FederatedEventTarget } from './FederatedEventTarget';
  */
 export type TrackingData = {
     pressTargetsByButton: {
-        [id: number]: FederatedEventTarget[];
+        [id: number]: Container[];
     };
     clicksByButton: {
         [id: number]: {
             clickCount: number;
-            target: FederatedEventTarget;
+            target: Container;
             timeStamp: number;
         }
     };
-    overTargets: FederatedEventTarget[];
+    overTargets: Container[];
 };
 
 /**

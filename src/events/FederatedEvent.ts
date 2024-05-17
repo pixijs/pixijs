@@ -1,7 +1,7 @@
 import { Point } from '../maths/point/Point';
 
+import type { Container } from '../scene/container/Container';
 import type { EventBoundary } from './EventBoundary';
-import type { FederatedEventTarget } from './FederatedEventTarget';
 
 /**
  * A PixiJS compatible {@code Touch} event.
@@ -57,7 +57,7 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
     public readonly composed = false;
 
     /** The listeners of the event target that are being notified. */
-    public currentTarget: FederatedEventTarget;
+    public currentTarget: Container;
 
     /** Flags whether the default response of the user agent was prevent through this event. */
     public defaultPrevented = false;
@@ -78,7 +78,7 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
     public srcElement: EventTarget;
 
     /** The event target that this will be dispatched to. */
-    public target: FederatedEventTarget;
+    public target: Container;
 
     /** The timestamp of when the event was created. */
     public timeStamp: number;
@@ -99,7 +99,7 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
     public propagationImmediatelyStopped = false;
 
     /** The composed path of the event's propagation. The {@code target} is at the end. */
-    public path: FederatedEventTarget[];
+    public path: Container[];
 
     /** The {@link EventBoundary} that manages this event. Null for root events. */
     public readonly manager: EventBoundary;
@@ -153,7 +153,7 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
     }
 
     /** The propagation path for this event. Alias for {@link EventBoundary.propagationPath}. */
-    public composedPath(): FederatedEventTarget[]
+    public composedPath(): Container[]
     {
         // Find the propagation path if it isn't cached or if the target has changed since since
         // the last evaluation.
