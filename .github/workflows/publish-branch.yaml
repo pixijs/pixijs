@@ -21,6 +21,9 @@ jobs:
             - name: Setup Project
               uses: ./.github/actions/setup
 
+            - name: Build Project
+              run: npm run build
+
             - name: Get current package.json version
               run: echo "PACKAGE_VERSION=$(npm pkg get version | tr -d '"')" >> $GITHUB_ENV
 
