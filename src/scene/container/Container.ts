@@ -151,8 +151,7 @@ export interface ContainerOptions<C extends ContainerChild = ContainerChild> ext
 }
 
 export interface Container<C extends ContainerChild>
-    extends Omit<PixiMixins.Container<C>, keyof EventEmitter<ContainerEvents<C> & AnyEvent>>,
-    EventEmitter<ContainerEvents<C> & AnyEvent> { }
+    extends PixiMixins.Container<C>, EventEmitter<ContainerEvents<C> & AnyEvent> {}
 
 /**
  * Container is a general-purpose display object that holds children. It also adds built-in support for advanced
