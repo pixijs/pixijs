@@ -272,7 +272,10 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
 
         for (const i in this._gpuContextHash)
         {
-            this.onGraphicsContextDestroy(this._gpuContextHash[i].context);
+            if (this._gpuContextHash[i])
+            {
+                this.onGraphicsContextDestroy(this._gpuContextHash[i].context);
+            }
         }
     }
 }
