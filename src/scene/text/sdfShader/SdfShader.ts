@@ -1,5 +1,4 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
-import { maxRecommendedTextures } from '../../../rendering';
 import {
     compileHighShaderGlProgram,
     compileHighShaderGpuProgram
@@ -13,6 +12,7 @@ import { roundPixelsBit, roundPixelsBitGl } from '../../../rendering/high-shader
 import { getBatchSamplersUniformGroup } from '../../../rendering/renderers/gl/shader/getBatchSamplersUniformGroup';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
+import { maxRecommendedTextures } from '../../../rendering/renderers/shared/texture/utils/maxRecommendedTextures';
 import { localUniformMSDFBit, localUniformMSDFBitGl } from './shader-bits/localUniformMSDFBit';
 import { mSDFBit, mSDFBitGl } from './shader-bits/mSDFBit';
 
