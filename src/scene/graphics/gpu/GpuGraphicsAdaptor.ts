@@ -1,7 +1,7 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/matrix/Matrix';
+import { maxRecommendedTextures } from '../../../rendering';
 import { getTextureBatchBindGroup } from '../../../rendering/batcher/gpu/getTextureBatchBindGroup';
-import { MAX_TEXTURES } from '../../../rendering/batcher/shared/const';
 import { compileHighShaderGpuProgram } from '../../../rendering/high-shader/compileHighShaderToProgram';
 import { colorBit } from '../../../rendering/high-shader/shader-bits/colorBit';
 import { generateTextureBatchBit } from '../../../rendering/high-shader/shader-bits/generateTextureBatchBit';
@@ -45,7 +45,7 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
             name: 'graphics',
             bits: [
                 colorBit,
-                generateTextureBatchBit(MAX_TEXTURES),
+                generateTextureBatchBit(maxRecommendedTextures()),
 
                 localUniformBitGroup2,
                 roundPixelsBit
