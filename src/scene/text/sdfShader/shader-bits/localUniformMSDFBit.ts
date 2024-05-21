@@ -66,7 +66,7 @@ export const localUniformMSDFBitGl = {
             uniform float uDistance;
          `,
         main: /* glsl */` 
-            outColor = vColor * calculateMSDFAlpha(outColor, uDistance);
+            outColor = vec4(1.) * calculateMSDFAlpha(outColor, uDistance);
         `
 
     }
