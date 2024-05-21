@@ -245,6 +245,20 @@ describe('Graphics', () =>
             expect(graphicsData.geometry.indexBuffer.data.length).toEqual(3 * 6);
             expect(graphicsData.geometry.buffers[0].data.length).toEqual(3 * 4 * 6);
         });
+
+        it('should clear a graphics correctly', async () =>
+        {
+            const graphics = new Graphics()
+                .rect(0, 0, 1000, 1000)
+                .rect(1000, 1000, 1000, 1000)
+                .rect(2000, 2000, 1000, 1000);
+
+            graphics.clear();
+
+            expect(graphics.context['_activePath'].instructions.length).toEqual(0);
+            expect(graphics.context.instructions.length).toEqual(0);
+            expect(graphics.context['_transform'].toArray()).toEqual(Matrix.IDENTITY.toArray());
+        });
     });
 
     // todo: all these tests should be moved to GraphicsContext.test.ts, with equivalent changes for api
