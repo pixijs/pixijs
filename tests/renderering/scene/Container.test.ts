@@ -365,6 +365,45 @@ describe('Container', () =>
             expect(container.position).toBeNull();
             expect(child.position).toBeNull();
         });
+
+        it('should destroy render groups', () =>
+        {
+            const container = new Container({ isRenderGroup: true });
+
+            const child = new Container({
+                isRenderGroup: true,
+                children: [new Container()],
+            });
+
+            const renderGroup = container.renderGroup;
+            const renderGroup2 = child.renderGroup;
+
+            const spy = jest.spyOn(renderGroup, 'destroy');
+            const spy2 = jest.spyOn(renderGroup2, 'destroy');
+
+            container.addChild(child);
+            container.destroy({
+                children: true,
+            });
+
+            expect(spy).toHaveBeenCalled();
+            expect(spy2).toHaveBeenCalled();
+
+            expect(container.renderGroup).toBeNull();
+            expect(child.renderGroup).toBeNull();
+
+            expect(renderGroup.renderGroupParent).toBeNull();
+            expect(renderGroup.childrenRenderablesToUpdate).toBeNull();
+            expect(renderGroup.instructionSet).toBeNull();
+            expect(renderGroup.renderGroupChildren).toBeNull();
+            expect(renderGroup['_onRenderContainers']).toBeNull();
+
+            expect(renderGroup2.renderGroupParent).toBeNull();
+            expect(renderGroup2.childrenRenderablesToUpdate).toBeNull();
+            expect(renderGroup2.instructionSet).toBeNull();
+            expect(renderGroup2.renderGroupChildren).toBeNull();
+            expect(renderGroup2['_onRenderContainers']).toBeNull();
+        });
     });
 
     function assertRemovedFromParent(parent: Container, container: Container, child: Container, functionToAssert: () => void)

@@ -1320,7 +1320,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         // remove children is faster than removeChild..
         const oldChildren = this.removeChildren(0, this.children.length);
 
-        this.removeFromParent();
         this.parent = null;
         this._maskEffect = null;
         this._filterEffect = null;
@@ -1342,6 +1341,12 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             {
                 oldChildren[i].destroy(options);
             }
+        }
+
+        if (this.renderGroup)
+        {
+            this.renderGroup.destroy();
+            this.renderGroup = null;
         }
     }
 }
