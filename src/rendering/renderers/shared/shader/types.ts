@@ -24,8 +24,6 @@ export const UNIFORM_TYPES_MAP = UNIFORM_TYPES_VALUES.reduce((acc, type) =>
     return acc;
 }, {} as Record<UNIFORM_TYPES, boolean>);
 
-/* eslint-disable quote-props */
-
 export type UNIFORM_TYPES_SINGLE = typeof UNIFORM_TYPES_VALUES[number];
 
 type OPTIONAL_SPACE = ' ' | '';
