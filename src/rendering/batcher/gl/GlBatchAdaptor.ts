@@ -3,10 +3,10 @@ import { compileHighShaderGlProgram } from '../../high-shader/compileHighShaderT
 import { colorBitGl } from '../../high-shader/shader-bits/colorBit';
 import { generateTextureBatchBitGl } from '../../high-shader/shader-bits/generateTextureBatchBit';
 import { roundPixelsBitGl } from '../../high-shader/shader-bits/roundPixelsBit';
-import { batchSamplersUniformGroup } from '../../renderers/gl/shader/batchSamplersUniformGroup';
+import { getBatchSamplersUniformGroup } from '../../renderers/gl/shader/getBatchSamplersUniformGroup';
 import { Shader } from '../../renderers/shared/shader/Shader';
 import { State } from '../../renderers/shared/state/State';
-import { MAX_TEXTURES } from '../shared/const';
+import { maxRecommendedTextures } from '../../renderers/shared/texture/utils/maxRecommendedTextures';
 
 import type { WebGLRenderer } from '../../renderers/gl/WebGLRenderer';
 import type { Geometry } from '../../renderers/shared/geometry/Geometry';
@@ -34,11 +34,13 @@ export class GlBatchAdaptor implements BatcherAdaptor
 
     public init(batcherPipe: BatcherPipe): void
     {
+        const maxTextures = maxRecommendedTextures();
+
         const glProgram = compileHighShaderGlProgram({
             name: 'batch',
             bits: [
                 colorBitGl,
-                generateTextureBatchBitGl(MAX_TEXTURES),
+                generateTextureBatchBitGl(maxTextures),
                 roundPixelsBitGl,
             ]
         });
@@ -46,7 +48,7 @@ export class GlBatchAdaptor implements BatcherAdaptor
         this._shader = new Shader({
             glProgram,
             resources: {
-                batchSamplers: batchSamplersUniformGroup,
+                batchSamplers: getBatchSamplersUniformGroup(maxTextures),
             }
         });
 

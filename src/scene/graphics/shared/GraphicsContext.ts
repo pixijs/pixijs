@@ -1048,6 +1048,7 @@ export class GraphicsContext extends EventEmitter<{
      */
     public clear(): this
     {
+        this._activePath.clear();
         this.instructions.length = 0;
         this.resetTransform();
 
