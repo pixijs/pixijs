@@ -64,7 +64,7 @@ export const loadBitmapFont = {
         // and we should use force linear filtering and no alpha premultiply
         const textureOptions = (bitmapFontData.distanceField) ? {
             scaleMode: 'linear',
-            alphaMode: 'no-premultiply-alpha',
+            alphaMode: 'premultiply-alpha-on-upload',
             autoGenerateMipmaps: false,
             resolution: 1,
         } : {};
