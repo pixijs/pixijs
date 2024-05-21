@@ -1343,11 +1343,8 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             }
         }
 
-        if (this.renderGroup)
-        {
-            this.renderGroup.destroy();
-            this.renderGroup = null;
-        }
+        this.renderGroup?.destroy();
+        this.renderGroup = null;
     }
 }
 
