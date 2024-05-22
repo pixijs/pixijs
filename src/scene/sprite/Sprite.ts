@@ -153,7 +153,7 @@ export class Sprite extends Container implements View
 
         if (this._height)
         {
-            this._setHeight(this._width, this._texture.orig.width);
+            this._setHeight(this._height, this._texture.orig.height);
         }
 
         this.onViewUpdate();
