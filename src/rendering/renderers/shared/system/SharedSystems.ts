@@ -43,4 +43,12 @@ export const SharedRenderPipes = [
  * Options for the shared systems of a renderer.
  * @memberof rendering
  */
-export interface SharedRendererOptions extends ExtractRendererOptions<typeof SharedSystems>, PixiMixins.RendererOptions{}
+export interface SharedRendererOptions extends ExtractRendererOptions<typeof SharedSystems>, PixiMixins.RendererOptions
+{
+    /**
+     * Whether to manage the dynamic imports of the renderer code. It is true by default, this means
+     * PixiJS will load all the default pixi systems and extensions. If you set this to false, then
+     * you as the dev will need to manually import the systems and extensions you need.
+     */
+    manageImports?: boolean;
+}
