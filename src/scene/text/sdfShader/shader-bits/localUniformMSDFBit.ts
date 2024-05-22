@@ -36,7 +36,7 @@ export const localUniformMSDFBit = {
             @group(2) @binding(0) var<uniform> localUniforms : LocalUniforms;
          `,
         main: /* wgsl */` 
-            outColor = vec4<f32>(1.) * calculateMSDFAlpha(outColor, localUniforms.uDistance);
+            outColor = vec4<f32>(calculateMSDFAlpha(outColor, localUniforms.uColor, localUniforms.uDistance));
         `
 
     }
@@ -66,7 +66,7 @@ export const localUniformMSDFBitGl = {
             uniform float uDistance;
          `,
         main: /* glsl */` 
-            outColor = vec4(1.) * calculateMSDFAlpha(outColor, uDistance);
+            outColor = vec4(calculateMSDFAlpha(outColor, vColor, uDistance));
         `
 
     }
