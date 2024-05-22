@@ -6,9 +6,9 @@ import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { path } from '../utils/path';
 import { Spritesheet } from './Spritesheet';
 
-import type { AssetExtension } from '../assets/AssetExtension';
+import type { AssetExtensionVerbose } from '../assets/AssetExtension';
 import type { Loader } from '../assets/loader/Loader';
-import type { ResolvedAsset, UnresolvedAsset } from '../assets/types';
+import type { ResolvedAsset } from '../assets/types';
 import type { SpritesheetData } from './Spritesheet';
 
 export interface SpriteSheetJson extends SpritesheetData
@@ -77,6 +77,11 @@ export const spritesheetAsset = {
     },
     /** Resolve the resolution of the asset. */
     resolver: {
+        extension: {
+            type: ExtensionType.ResolveParser,
+            priority: LoaderParserPriority.Normal,
+            name: 'resolve-spritesheet',
+        },
         test: (value: string): boolean =>
         {
             const tempURL = value.split('?')[0];
@@ -86,7 +91,7 @@ export const spritesheetAsset = {
 
             return extension === 'json' && validImages.includes(format);
         },
-        parse: (value: string): UnresolvedAsset =>
+        parse: (value: string) =>
         {
             const split = value.split('.');
 
@@ -109,6 +114,7 @@ export const spritesheetAsset = {
         extension: {
             type: ExtensionType.LoadParser,
             priority: LoaderParserPriority.Normal,
+            name: 'spritesheetLoader',
         },
 
         async testParse(asset: SpriteSheetJson, options: ResolvedAsset): Promise<boolean>
@@ -118,8 +124,8 @@ export const spritesheetAsset = {
 
         async parse(
             asset: SpriteSheetJson,
-            options: ResolvedAsset<{texture: Texture, imageFilename: string, ignoreMultiPack: boolean}>,
-            loader: Loader
+            options: ResolvedAsset<{texture?: Texture, imageFilename?: string, ignoreMultiPack?: boolean}>,
+            loader?: Loader
         ): Promise<Spritesheet>
         {
             const {
@@ -208,5 +214,5 @@ export const spritesheetAsset = {
 
             spritesheet.destroy(false);
         },
-    },
-} as AssetExtension<Spritesheet | SpriteSheetJson>;
+    }
+} satisfies AssetExtensionVerbose<SpriteSheetJson, Spritesheet, Spritesheet, Spritesheet>;

@@ -8,7 +8,7 @@ import { bitmapFontTextParser } from './bitmapFontTextParser';
 import { bitmapFontXMLStringParser } from './bitmapFontXMLStringParser';
 
 import type { Loader } from '../../../assets/loader/Loader';
-import type { LoaderParser } from '../../../assets/loader/parsers/LoaderParser';
+import type { LoaderParserVerbose } from '../../../assets/loader/parsers/LoaderParser';
 import type { ResolvedAsset } from '../../../assets/types';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 
@@ -38,6 +38,8 @@ export const loadBitmapFont = {
         type: ExtensionType.LoadParser,
         priority: LoaderParserPriority.Normal,
     },
+
+    name: 'loadBitmapFont',
 
     test(url: string): boolean
     {
@@ -93,4 +95,4 @@ export const loadBitmapFont = {
 
         bitmapFont.destroy();
     }
-} as LoaderParser;
+} satisfies LoaderParserVerbose<string, BitmapFont, BitmapFont>;

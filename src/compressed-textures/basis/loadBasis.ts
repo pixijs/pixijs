@@ -17,6 +17,7 @@ export const loadBasis = {
     extension: {
         type: ExtensionType.LoadParser,
         priority: LoaderParserPriority.High,
+        name: 'loadBasis',
     },
 
     name: 'loadBasis',
@@ -49,5 +50,4 @@ export const loadBasis = {
         }
     }
 
-} as LoaderParser<Texture | Texture[], TextureSourceOptions>;
-
+} satisfies LoaderParser<Texture | Texture[], TextureSourceOptions>;

@@ -37,7 +37,13 @@ export enum LoaderParserPriority
  * Some loaders may only be used for parsing, some only for loading, and some for both!
  * @memberof assets
  */
-export interface LoaderParser<ASSET = any, META_DATA = any, CONFIG = Record<string, any>>
+export interface LoaderParserVerbose<
+    ASSET = any,
+    PARSED_ASSET = ASSET,
+    UNLOAD_ASSET = ASSET,
+    META_DATA = any,
+    CONFIG = Record<string, any>
+>
 {
     /** Should be ExtensionType.LoaderParser */
     extension?: ExtensionMetadata;
@@ -65,7 +71,7 @@ export interface LoaderParser<ASSET = any, META_DATA = any, CONFIG = Record<stri
      * @param resolvedAsset - Any custom additional information relevant to the asset being loaded
      * @param loader - The loader instance
      */
-    load?: <T>(url: string, resolvedAsset?: ResolvedAsset<META_DATA>, loader?: Loader) => Promise<T>;
+    load?: <T>(url: string, resolvedAsset?: ResolvedAsset<META_DATA>, loader?: Loader) => Promise<ASSET | T>;
 
     /**
      * This function is used to test if the parse function should be run on the asset
@@ -82,7 +88,7 @@ export interface LoaderParser<ASSET = any, META_DATA = any, CONFIG = Record<stri
      * @param resolvedAsset - Any custom additional information relevant to the asset being loaded
      * @param loader - The loader instance
      */
-    parse?: <T>(asset: ASSET, resolvedAsset?: ResolvedAsset<META_DATA>, loader?: Loader) => Promise<T>;
+    parse?: <T>(asset: ASSET, resolvedAsset?: ResolvedAsset<META_DATA>, loader?: Loader) => Promise<PARSED_ASSET | T>;
 
     /**
      * If an asset is parsed using this parser, the unload function will be called when the user requests an asset
@@ -91,5 +97,8 @@ export interface LoaderParser<ASSET = any, META_DATA = any, CONFIG = Record<stri
      * @param resolvedAsset - Any custom additional information relevant to the asset being loaded
      * @param loader - The loader instance
      */
-    unload?: (asset: ASSET, resolvedAsset?: ResolvedAsset<META_DATA>, loader?: Loader) => Promise<void>;
+    unload?: (asset: UNLOAD_ASSET, resolvedAsset?: ResolvedAsset<META_DATA>, loader?: Loader) => Promise<void> | void;
 }
+
+export interface LoaderParser<ASSET = any, META_DATA = any, CONFIG = Record<string, any>>
+    extends LoaderParserVerbose<ASSET, ASSET, ASSET, META_DATA, CONFIG> {}

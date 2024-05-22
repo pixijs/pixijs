@@ -184,7 +184,7 @@ export const loadWebFont = {
         return null;
     },
 
-    unload(font: FontFace | FontFace[]): void
+    unload(font: FontFace | FontFace[])
     {
         (Array.isArray(font) ? font : [font])
             .forEach((t) =>
@@ -193,4 +193,4 @@ export const loadWebFont = {
                 DOMAdapter.get().getFontFaceSet().delete(t);
             });
     }
-} as LoaderParser<FontFace | FontFace[]>;
+} satisfies LoaderParser<FontFace | FontFace[]>;
