@@ -27,7 +27,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
     private _renderer: Renderer;
     private _gpuBitmapText: Record<number, Graphics> = {};
-    private _sdfShader: SdfShader;
+    // private _sdfShader: SdfShader;
 
     constructor(renderer: Renderer)
     {
@@ -81,6 +81,15 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
     private _destroyRenderableByUid(renderableUid: number)
     {
+        const context = this._gpuBitmapText[renderableUid].context;
+
+        if (context.customShader)
+        {
+            BigPool.return(context.customShader as PoolItem);
+
+            context.customShader = null;
+        }
+
         BigPool.return(this._gpuBitmapText[renderableUid] as PoolItem);
         this._gpuBitmapText[renderableUid] = null;
     }
@@ -112,12 +121,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
         {
             if (!context.customShader)
             {
-                if (!this._sdfShader)
-                {
-                    this._sdfShader = new SdfShader();
-                }
-
-                context.customShader = this._sdfShader;
+                context.customShader = BigPool.get(SdfShader);
             }
         }
 
@@ -220,9 +224,6 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
         }
 
         this._gpuBitmapText = null;
-
-        this._sdfShader?.destroy(true);
-        this._sdfShader = null;
 
         this._renderer = null;
     }
