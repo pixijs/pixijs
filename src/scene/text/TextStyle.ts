@@ -292,16 +292,11 @@ export class TextStyle extends EventEmitter<{
     {
         if (value !== null && typeof value === 'object')
         {
-            this._dropShadow = {
-                ...TextStyle.defaultDropShadow as TextDropShadow,
-                ...value as TextDropShadow
-            };
+            this._dropShadow = this._createProxy({ ...TextStyle.defaultDropShadow, ...value });
         }
         else
         {
-            this._dropShadow = value ? {
-                ...TextStyle.defaultDropShadow as TextDropShadow
-            } : null;
+            this._dropShadow = value ? this._createProxy({ ...TextStyle.defaultDropShadow }) : null;
         }
 
         this.update();
@@ -458,7 +453,7 @@ export class TextStyle extends EventEmitter<{
         return new TextStyle({
             align: this.align,
             breakWords: this.breakWords,
-            dropShadow: this.dropShadow,
+            dropShadow: this._dropShadow ? { ...this._dropShadow } : null,
             fill: this._fill,
             fontFamily: this.fontFamily,
             fontSize: this.fontSize,
@@ -520,6 +515,20 @@ export class TextStyle extends EventEmitter<{
         this.dropShadow = null;
         this._originalStroke = null;
         this._originalFill = null;
+    }
+
+    private _createProxy<T extends object>(value: T, cb?: (property: string, newValue: any) => void): T
+    {
+        return new Proxy<T>(value, {
+            set: (target, property, newValue) =>
+            {
+                target[property as keyof T] = newValue;
+                cb?.(property as string, newValue);
+                this.update();
+
+                return true;
+            }
+        });
     }
 }
 
