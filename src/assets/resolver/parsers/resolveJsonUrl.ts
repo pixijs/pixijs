@@ -12,6 +12,7 @@ import type { ResolveURLParser } from '../types';
 export const resolveJsonUrl = {
     extension: {
         type: ExtensionType.ResolveParser,
+        priority: -2,
         name: 'resolve-json',
     },
     test: (value: string): boolean =>
