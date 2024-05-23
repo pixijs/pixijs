@@ -1,5 +1,5 @@
 import { Color } from '../../../../color/Color';
-import { autoDetectEnvironment } from '../../../../environment/autoDetectEnvironment';
+import { loadEnvironmentExtensions } from '../../../../environment/autoDetectEnvironment';
 import { Container } from '../../../../scene/container/Container';
 import { unsafeEvalSupported } from '../../../../utils/browser/unsafeEvalSupported';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
@@ -217,9 +217,9 @@ export class AbstractRenderer<
      */
     public async init(options: Partial<OPTIONS> = {})
     {
-        await autoDetectEnvironment(
-            options.manageImports ?? true,
-        );
+        const skip = options.skipExtensionImports === true ? true : options.manageImports === false;
+
+        await loadEnvironmentExtensions(skip);
 
         this._addSystems(this.config.systems);
         this._addPipes(this.config.renderPipes, this.config.renderPipeAdaptors);
