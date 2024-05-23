@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 import { extensions, ExtensionType } from '../extensions/Extensions';
+import { bitmapFontCachePlugin, loadBitmapFont } from '../scene/text-bitmap/asset/loadBitmapFont';
 import { warn } from '../utils/logging/warn';
 import { BackgroundLoader } from './BackgroundLoader';
 import { Cache } from './cache/Cache';
@@ -969,6 +970,9 @@ extensions.add(
     loadSvg,
     loadTextures,
     loadVideoTextures,
+    loadBitmapFont,
+
+    bitmapFontCachePlugin,
 
     resolveTextureUrl,
     resolveJsonUrl
