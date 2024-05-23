@@ -6,7 +6,7 @@ import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { path } from '../utils/path';
 import { Spritesheet } from './Spritesheet';
 
-import type { AssetExtensionVerbose } from '../assets/AssetExtension';
+import type { AssetExtensionAdvanced } from '../assets/AssetExtension';
 import type { Loader } from '../assets/loader/Loader';
 import type { ResolvedAsset } from '../assets/types';
 import type { SpritesheetData } from './Spritesheet';
@@ -79,8 +79,7 @@ export const spritesheetAsset = {
     resolver: {
         extension: {
             type: ExtensionType.ResolveParser,
-            priority: LoaderParserPriority.Normal,
-            name: 'resolve-spritesheet',
+            name: 'resolveSpritesheet',
         },
         test: (value: string): boolean =>
         {
@@ -215,4 +214,4 @@ export const spritesheetAsset = {
             spritesheet.destroy(false);
         },
     }
-} satisfies AssetExtensionVerbose<SpriteSheetJson, Spritesheet, Spritesheet, Spritesheet>;
+} satisfies AssetExtensionAdvanced<SpriteSheetJson, Spritesheet, Spritesheet, Spritesheet>;

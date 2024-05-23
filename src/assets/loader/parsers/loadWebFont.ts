@@ -184,7 +184,7 @@ export const loadWebFont = {
         return null;
     },
 
-    unload(font: FontFace | FontFace[])
+    unload(font: FontFace | FontFace[]): void
     {
         (Array.isArray(font) ? font : [font])
             .forEach((t) =>

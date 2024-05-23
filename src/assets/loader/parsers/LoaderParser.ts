@@ -19,25 +19,8 @@ export enum LoaderParserPriority
     High = 2,
 }
 
-/**
- * The interface to define a loader parser *(all functions are optional)*.
- *
- * When you create a `parser` object, the flow for every asset loaded is:
- *
- * 1. `parser.test()` - Each URL to load will be tested here, if the test is passed the assets are
- * loaded using the load function below. Good place to test for things like file extensions!
- * 2. `parser.load()` - This is the promise that loads the URL provided resolves with a loaded asset
- * if returned by the parser.
- * 3. `parser.testParse()` - This function is used to test if the parse function should be run on the
- *  asset If this returns true then parse is called with the asset
- * 4. `parse.parse()` - Gets called on the asset it testParse passes. Useful to convert a raw asset
- *  into something more useful
- *
- * <br/>
- * Some loaders may only be used for parsing, some only for loading, and some for both!
- * @memberof assets
- */
-export interface LoaderParserVerbose<
+/** A more verbose version of the LoaderParser, allowing you to set the loaded, parsed, and unloaded asset separately */
+export interface LoaderParserAdvanced<
     ASSET = any,
     PARSED_ASSET = ASSET,
     UNLOAD_ASSET = ASSET,
@@ -100,5 +83,23 @@ export interface LoaderParserVerbose<
     unload?: (asset: UNLOAD_ASSET, resolvedAsset?: ResolvedAsset<META_DATA>, loader?: Loader) => Promise<void> | void;
 }
 
+/**
+ * The interface to define a loader parser *(all functions are optional)*.
+ *
+ * When you create a `parser` object, the flow for every asset loaded is:
+ *
+ * 1. `parser.test()` - Each URL to load will be tested here, if the test is passed the assets are
+ * loaded using the load function below. Good place to test for things like file extensions!
+ * 2. `parser.load()` - This is the promise that loads the URL provided resolves with a loaded asset
+ * if returned by the parser.
+ * 3. `parser.testParse()` - This function is used to test if the parse function should be run on the
+ *  asset If this returns true then parse is called with the asset
+ * 4. `parse.parse()` - Gets called on the asset it testParse passes. Useful to convert a raw asset
+ *  into something more useful
+ *
+ * <br/>
+ * Some loaders may only be used for parsing, some only for loading, and some for both!
+ * @memberof assets
+ */
 export interface LoaderParser<ASSET = any, META_DATA = any, CONFIG = Record<string, any>>
-    extends LoaderParserVerbose<ASSET, ASSET, ASSET, META_DATA, CONFIG> {}
+    extends LoaderParserAdvanced<ASSET, ASSET, ASSET, META_DATA, CONFIG> {}

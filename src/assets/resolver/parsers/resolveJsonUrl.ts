@@ -13,7 +13,7 @@ export const resolveJsonUrl = {
     extension: {
         type: ExtensionType.ResolveParser,
         priority: -2,
-        name: 'resolve-json',
+        name: 'resolveJson',
     },
     test: (value: string): boolean =>
         Resolver.RETINA_PREFIX.test(value) && value.endsWith('.json'),

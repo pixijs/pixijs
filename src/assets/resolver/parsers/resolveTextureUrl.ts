@@ -11,7 +11,7 @@ import type { ResolveURLParser } from '../types';
 export const resolveTextureUrl = {
     extension: {
         type: ExtensionType.ResolveParser,
-        name: 'resolve-texture',
+        name: 'resolveTexture',
     },
     test: loadTextures.test,
     parse: (value: string) =>
