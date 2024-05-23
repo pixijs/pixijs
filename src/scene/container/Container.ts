@@ -1343,6 +1343,9 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
                 oldChildren[i].destroy(options);
             }
         }
+
+        this.renderGroup?.destroy();
+        this.renderGroup = null;
     }
 }
 

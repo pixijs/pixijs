@@ -150,6 +150,18 @@ describe('TilingSprite', () =>
             expect(sprite.containsPoint(new Point(-1, -1))).toEqual(false);
         });
 
+        it('should check whether contains point correctly when anchor is set', () =>
+        {
+            const sprite = setup({ width: 200, height: 300, anchor: { x: 0.5, y: 0.5 } });
+
+            // note: containsPoint works in local coords
+            expect(sprite.containsPoint(new Point(0, 0))).toEqual(true);
+            expect(sprite.containsPoint(new Point(100, 150))).toEqual(true);
+            expect(sprite.containsPoint(new Point(200 / 2, 300 / 2))).toEqual(true);
+            expect(sprite.containsPoint(new Point(201 / 2, 301 / 2))).toEqual(false);
+            expect(sprite.containsPoint(new Point(-1, -1))).toEqual(true);
+        });
+
         it('should get and set height & width correctly', () =>
         {
             const sprite = setup({ width: 200, height: 300 });
