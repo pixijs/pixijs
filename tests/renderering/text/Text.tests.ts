@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+import { Point } from '../../../src/maths/point/Point';
 import { Container } from '../../../src/scene/container/Container';
 import { Sprite } from '../../../src/scene/sprite/Sprite';
 import { Text } from '../../../src/scene/text/Text';
@@ -262,5 +263,26 @@ describe('Text', () =>
 
         expect(boundsNoPadding.width).toBeLessThan(bounds.width + 20);
         expect(boundsNoPadding.height).toBeLessThan(bounds.height + 20);
+    });
+
+    describe('containsPoint', () =>
+    {
+        const text = new Text({ text: 'hello', style: { fontSize: 30 } });
+
+        it('should return true when point inside', () =>
+        {
+            const point = new Point(10, 10);
+
+            expect(text.containsPoint(point)).toBe(true);
+        });
+
+        it('should return true when anchor', () =>
+        {
+            text.anchor.set(0.5, 0.5);
+            const point = new Point(-10, 10);
+
+            expect(text.containsPoint(point)).toBe(true);
+            text.anchor.set(0, 0);
+        });
     });
 });

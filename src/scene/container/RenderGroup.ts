@@ -220,6 +220,17 @@ export class RenderGroup implements Instruction
         }
     }
 
+    public destroy()
+    {
+        this.renderGroupParent = null;
+        this.root = null;
+        (this.childrenRenderablesToUpdate as any) = null;
+        (this.childrenToUpdate as any) = null;
+        (this.renderGroupChildren as any) = null;
+        (this._onRenderContainers as any) = null;
+        this.instructionSet = null;
+    }
+
     public getChildren(out: Container[] = []): Container[]
     {
         const children = this.root.children;
