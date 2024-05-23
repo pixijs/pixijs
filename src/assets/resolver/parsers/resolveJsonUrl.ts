@@ -10,7 +10,10 @@ import type { ResolveURLParser } from '../types';
  * @memberof assets
  */
 export const resolveJsonUrl = {
-    extension: ExtensionType.ResolveParser,
+    extension: {
+        type: ExtensionType.ResolveParser,
+        priority: -2,
+    },
     test: (value: string): boolean =>
         Resolver.RETINA_PREFIX.test(value) && value.endsWith('.json'),
     parse: resolveTextureUrl.parse,

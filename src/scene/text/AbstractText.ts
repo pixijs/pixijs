@@ -359,8 +359,8 @@ export abstract class AbstractText<
      */
     public containsPoint(point: PointData)
     {
-        const width = this.bounds.maxX;
-        const height = this.bounds.maxY;
+        const width = this.bounds.width;
+        const height = this.bounds.height;
 
         const x1 = -width * this.anchor.x;
         let y1 = 0;
