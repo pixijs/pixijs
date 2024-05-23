@@ -217,7 +217,7 @@ export class AbstractRenderer<
      */
     public async init(options: Partial<OPTIONS> = {})
     {
-        const skip = options.manualExtensions === true ? true : options.manageImports === false;
+        const skip = options.skipExtensionImports === true ? true : options.manageImports === false;
 
         await loadEnvironmentExtensions(skip);
 

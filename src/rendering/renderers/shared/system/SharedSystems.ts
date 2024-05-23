@@ -67,15 +67,16 @@ export interface SharedRendererOptions extends ExtractRendererOptions<typeof Sha
      * const renderer = await autoDetectRenderer({
      *   width: 800,
      *   height: 600,
-     *   manualExtensions: true,
+     *   skipExtensionImports: true,
      * });
      * ```
      * @default false
      */
-    manualExtensions?: boolean;
+    skipExtensionImports?: boolean;
     /**
      * @default true
-     * @deprecated Use `manualExtensions` instead
+     * @deprecated since 8.1.6
+     * @see `skipExtensionImports`
      */
     manageImports?: boolean;
 }
