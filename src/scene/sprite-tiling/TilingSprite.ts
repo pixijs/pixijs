@@ -420,8 +420,8 @@ export class TilingSprite extends Container implements View, Instruction
      */
     public containsPoint(point: PointData)
     {
-        const width = this.bounds.minX;
-        const height = this.bounds.minY;
+        const width = this._width;
+        const height = this._height;
         const x1 = -width * this._anchor._x;
         let y1 = 0;
 
