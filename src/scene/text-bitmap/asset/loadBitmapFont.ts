@@ -7,6 +7,7 @@ import { BitmapFont } from '../BitmapFont';
 import { bitmapFontTextParser } from './bitmapFontTextParser';
 import { bitmapFontXMLStringParser } from './bitmapFontXMLStringParser';
 
+import type { CacheParser } from '../../../assets/cache/CacheParser';
 import type { Loader } from '../../../assets/loader/Loader';
 import type { LoaderParserAdvanced } from '../../../assets/loader/parsers/LoaderParser';
 import type { ResolvedAsset } from '../../../assets/types';
@@ -16,7 +17,10 @@ const validExtensions = ['.xml', '.fnt'];
 
 /** simple loader plugin for loading in bitmap fonts! */
 export const bitmapFontCachePlugin = {
-    extension: ExtensionType.CacheParser,
+    extension: {
+        type: ExtensionType.CacheParser,
+        name: 'cacheBitmapFont',
+    },
     test: (asset: BitmapFont) => asset instanceof BitmapFont,
     getCacheableAssets(keys: string[], asset: BitmapFont)
     {
@@ -31,7 +35,7 @@ export const bitmapFontCachePlugin = {
 
         return out;
     }
-};
+} satisfies CacheParser<BitmapFont>;
 
 export const loadBitmapFont = {
     extension: {
