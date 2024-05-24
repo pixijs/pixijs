@@ -17,6 +17,7 @@ export const loadDDS = {
     extension: {
         type: ExtensionType.LoadParser,
         priority: LoaderParserPriority.High,
+        name: 'loadDDS',
     },
 
     name: 'loadDDS',
@@ -53,5 +54,5 @@ export const loadDDS = {
         }
     }
 
-} as LoaderParser<Texture | Texture[], TextureSourceOptions>;
+} satisfies LoaderParser<Texture | Texture[], TextureSourceOptions>;
 

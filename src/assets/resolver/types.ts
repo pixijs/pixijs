@@ -26,5 +26,5 @@ export interface ResolveURLParser
     /** the test to perform on the url to determine if it should be parsed */
     test: (url: string) => boolean;
     /** the function that will convert the url into an object */
-    parse: (value: string) => ResolvedAsset;
+    parse: (value: string) => ResolvedAsset & {[key: string]: any};
 }
