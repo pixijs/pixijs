@@ -16,7 +16,8 @@ import { maxRecommendedTextures } from '../../../rendering/renderers/shared/text
 import { localUniformMSDFBit, localUniformMSDFBitGl } from './shader-bits/localUniformMSDFBit';
 import { mSDFBit, mSDFBitGl } from './shader-bits/mSDFBit';
 
-import type { GlProgram, GpuProgram } from '../../../rendering';
+import type { GlProgram } from '../../../rendering/renderers/gl/shader/GlProgram';
+import type { GpuProgram } from '../../../rendering/renderers/gpu/shader/GpuProgram';
 
 let gpuProgram: GpuProgram;
 let glProgram: GlProgram;
