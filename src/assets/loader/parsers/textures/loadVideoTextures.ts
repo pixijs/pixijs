@@ -123,9 +123,8 @@ export const loadVideoTextures = {
 
     extension: {
         type: ExtensionType.LoadParser,
+        name: 'loadVideo',
     },
-
-    config: null,
 
     test(url: string): boolean
     {
@@ -223,4 +222,4 @@ export const loadVideoTextures = {
     {
         texture.destroy(true);
     }
-} as LoaderParser<Texture, VideoSourceOptions, null>;
+} satisfies LoaderParser<Texture, VideoSourceOptions>;

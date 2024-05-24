@@ -48,6 +48,7 @@ export const loadSvg = {
     extension: {
         type: ExtensionType.LoadParser,
         priority: LoaderParserPriority.Low,
+        name: 'loadSVG',
     },
 
     name: 'loadSVG',
@@ -81,7 +82,7 @@ export const loadSvg = {
         asset.destroy(true);
     }
 
-} as LoaderParser<Texture | GraphicsContext, TextureSourceOptions, LoadSVGConfig>;
+} satisfies LoaderParser<Texture | GraphicsContext, TextureSourceOptions & LoadSVGConfig>;
 
 async function loadAsTexture(
     url: string,

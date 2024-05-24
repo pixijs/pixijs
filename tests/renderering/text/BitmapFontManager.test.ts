@@ -17,6 +17,15 @@ describe('BitmapFontManager', () =>
         expect(bitmapFont).toBeDefined();
     });
 
+    it('should uninstall and remove from Cache if char is empty', () =>
+    {
+        BitmapFontManager.install('foo', {}, { chars: ' ' });
+        expect(Cache.get<BitmapFont>('foo-bitmap')).toBeDefined();
+
+        BitmapFontManager.uninstall('foo');
+        expect(Cache.get<BitmapFont>('foo-bitmap')).toBeUndefined();
+    });
+
     it('should uninstall and remove from Cache', () =>
     {
         BitmapFontManager.install('foo', {}, { chars: 'a' });

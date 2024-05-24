@@ -103,6 +103,7 @@ export const loadTextures = {
     extension: {
         type: ExtensionType.LoadParser,
         priority: LoaderParserPriority.High,
+        name: 'loadTextures',
     },
 
     config: {
@@ -167,4 +168,4 @@ export const loadTextures = {
     {
         texture.destroy(true);
     }
-} as LoaderParser<Texture, TextureSourceOptions, LoadTextureConfig>;
+} satisfies LoaderParser<Texture, TextureSourceOptions, LoadTextureConfig>;

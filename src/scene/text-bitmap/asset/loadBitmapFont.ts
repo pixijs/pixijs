@@ -7,8 +7,9 @@ import { BitmapFont } from '../BitmapFont';
 import { bitmapFontTextParser } from './bitmapFontTextParser';
 import { bitmapFontXMLStringParser } from './bitmapFontXMLStringParser';
 
+import type { CacheParser } from '../../../assets/cache/CacheParser';
 import type { Loader } from '../../../assets/loader/Loader';
-import type { LoaderParser } from '../../../assets/loader/parsers/LoaderParser';
+import type { LoaderParserAdvanced } from '../../../assets/loader/parsers/LoaderParser';
 import type { ResolvedAsset } from '../../../assets/types';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 
@@ -16,7 +17,10 @@ const validExtensions = ['.xml', '.fnt'];
 
 /** simple loader plugin for loading in bitmap fonts! */
 export const bitmapFontCachePlugin = {
-    extension: ExtensionType.CacheParser,
+    extension: {
+        type: ExtensionType.CacheParser,
+        name: 'cacheBitmapFont',
+    },
     test: (asset: BitmapFont) => asset instanceof BitmapFont,
     getCacheableAssets(keys: string[], asset: BitmapFont)
     {
@@ -32,13 +36,15 @@ export const bitmapFontCachePlugin = {
 
         return out;
     }
-};
+} satisfies CacheParser<BitmapFont>;
 
 export const loadBitmapFont = {
     extension: {
         type: ExtensionType.LoadParser,
         priority: LoaderParserPriority.Normal,
     },
+
+    name: 'loadBitmapFont',
 
     test(url: string): boolean
     {
@@ -106,4 +112,4 @@ export const loadBitmapFont = {
 
         bitmapFont.destroy();
     }
-} as LoaderParser;
+} satisfies LoaderParserAdvanced<string, BitmapFont, BitmapFont>;

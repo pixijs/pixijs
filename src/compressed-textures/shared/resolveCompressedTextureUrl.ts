@@ -3,7 +3,6 @@ import { checkExtension } from '../../assets/utils/checkExtension';
 import { ExtensionType } from '../../extensions/Extensions';
 
 import type { ResolveURLParser } from '../../assets/resolver/types';
-import type { UnresolvedAsset } from '../../assets/types';
 
 export const validFormats = ['basis', 'bc7', 'bc6h', 'astc', 'etc2', 'bc5', 'bc4', 'bc3', 'bc2', 'bc1', 'eac'];
 
@@ -11,7 +10,7 @@ export const resolveCompressedTextureUrl = {
     extension: ExtensionType.ResolveParser,
     test: (value: string) =>
         checkExtension(value, ['.ktx', '.ktx2', '.dds']),
-    parse: (value: string): UnresolvedAsset =>
+    parse: (value: string) =>
     {
         let format;
 
@@ -37,4 +36,4 @@ export const resolveCompressedTextureUrl = {
             src: value,
         };
     }
-} as ResolveURLParser;
+} satisfies ResolveURLParser;

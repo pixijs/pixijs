@@ -17,6 +17,7 @@ export const loadKTX2 = {
     extension: {
         type: ExtensionType.LoadParser,
         priority: LoaderParserPriority.High,
+        name: 'loadKTX2',
     },
 
     name: 'loadKTX2',
@@ -37,7 +38,7 @@ export const loadKTX2 = {
         return createTexture(compressedTextureSource, loader, url);
     },
 
-    unload(texture: Texture | Texture[]): void
+    async unload(texture: Texture | Texture[]): Promise<void>
     {
         if (Array.isArray(texture))
         {
@@ -49,5 +50,5 @@ export const loadKTX2 = {
         }
     }
 
-} as LoaderParser<Texture | Texture[], TextureSourceOptions>;
+} satisfies LoaderParser<Texture | Texture[], TextureSourceOptions>;
 

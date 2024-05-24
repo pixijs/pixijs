@@ -1,4 +1,5 @@
 import { Color } from '../../../../color/Color';
+import { loadEnvironmentExtensions } from '../../../../environment/autoDetectEnvironment';
 import { Container } from '../../../../scene/container/Container';
 import { unsafeEvalSupported } from '../../../../utils/browser/unsafeEvalSupported';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
@@ -19,6 +20,7 @@ import type { PipeConstructor } from '../instructions/RenderPipe';
 import type { RenderSurface } from '../renderTarget/RenderTargetSystem';
 import type { Texture } from '../texture/Texture';
 import type { ViewSystem, ViewSystemDestroyOptions } from '../view/ViewSystem';
+import type { SharedRendererOptions } from './SharedSystems';
 import type { System, SystemConstructor } from './System';
 
 interface RendererConfig
@@ -129,7 +131,7 @@ type Runners = {[key in DefaultRunners]: SystemRunner} & {
  */
 /* eslint-enable max-len */
 export class AbstractRenderer<
-    PIPES, OPTIONS extends PixiMixins.RendererOptions, CANVAS extends ICanvas = HTMLCanvasElement
+    PIPES, OPTIONS extends SharedRendererOptions, CANVAS extends ICanvas = HTMLCanvasElement
 > extends EventEmitter<{resize: [number, number]}>
 {
     /** The default options for the renderer. */
@@ -185,6 +187,7 @@ export class AbstractRenderer<
     public textureGenerator: GenerateTextureSystem;
 
     protected _initOptions: OPTIONS = {} as OPTIONS;
+    protected config: RendererConfig;
 
     private _systemsHash: Record<string, System> = Object.create(null);
     private _lastObjectRendered: Container;
@@ -199,13 +202,11 @@ export class AbstractRenderer<
         super();
         this.type = config.type;
         this.name = config.name;
+        this.config = config;
 
-        const combinedRunners = [...defaultRunners, ...(config.runners ?? [])];
+        const combinedRunners = [...defaultRunners, ...(this.config.runners ?? [])];
 
         this._addRunners(...combinedRunners);
-        this._addSystems(config.systems);
-        this._addPipes(config.renderPipes, config.renderPipeAdaptors);
-
         // Validation check that this environment support `new Function`
         this._unsafeEvalCheck();
     }
@@ -216,6 +217,13 @@ export class AbstractRenderer<
      */
     public async init(options: Partial<OPTIONS> = {})
     {
+        const skip = options.skipExtensionImports === true ? true : options.manageImports === false;
+
+        await loadEnvironmentExtensions(skip);
+
+        this._addSystems(this.config.systems);
+        this._addPipes(this.config.renderPipes, this.config.renderPipeAdaptors);
+
         // loop through all systems...
         for (const systemName in this._systemsHash)
         {
