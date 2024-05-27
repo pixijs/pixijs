@@ -4,6 +4,10 @@ on:
   release:
     types: [ published ]
 
+concurrency:
+  group: release
+  cancel-in-progress: true
+
 jobs:
   release:
     env:
@@ -16,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
 
     - name: Setup project
       uses: ./.github/actions/setup
@@ -34,14 +38,14 @@ jobs:
     # Append assets to releases
     - name: Upload Assets to Release
       if: github.event_name == 'release'
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v1
       with:
         files: |
           ./dist/**/*
 
     # Release is published and deployed into s3://bucket-name/v5.22/
     - name: Deploy Released Branches
-      uses: jakejarvis/s3-sync-action@master
+      uses: jakejarvis/s3-sync-action@7ed8b112447abb09f1da74f3466e4194fc7a6311 # master
       if: github.event_name == 'release' && env.AWS_ACCESS_KEY_ID != ''
       with:
         args: --acl public-read --follow-symlinks --delete --cache-control "max-age=2592000"
@@ -50,7 +54,7 @@ jobs:
 
     # Same release from previous deployed into s3://bucket-name/release/
     - name: Deploy Latest Release
-      uses: jakejarvis/s3-sync-action@master
+      uses: jakejarvis/s3-sync-action@7ed8b112447abb09f1da74f3466e4194fc7a6311 # master
       if: github.event_name == 'release' && github.event.release.prerelease == false && env.AWS_ACCESS_KEY_ID != ''
       with:
         args: --acl public-read --follow-symlinks --delete --cache-control "max-age=1209600"
