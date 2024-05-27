@@ -29,6 +29,7 @@ export const bitmapFontCachePlugin = {
         keys.forEach((key) =>
         {
             out[key] = asset;
+            out[`${key}-bitmap`] = asset;
         });
 
         out[`${asset.fontFamily}-bitmap`] = asset;
@@ -65,6 +66,15 @@ export const loadBitmapFont = {
         const { pages } = bitmapFontData;
         const textureUrls = [];
 
+        // if we have a distance field - we can assume this is a signed distance field font
+        // and we should use force linear filtering and no alpha premultiply
+        const textureOptions = (bitmapFontData.distanceField) ? {
+            scaleMode: 'linear',
+            alphaMode: 'premultiply-alpha-on-upload',
+            autoGenerateMipmaps: false,
+            resolution: 1,
+        } : {};
+
         for (let i = 0; i < pages.length; ++i)
         {
             const pageFile = pages[i].file;
@@ -72,11 +82,14 @@ export const loadBitmapFont = {
 
             imagePath = copySearchParams(imagePath, src);
 
-            textureUrls.push(imagePath);
+            textureUrls.push({
+                src: imagePath,
+                data: textureOptions
+            });
         }
 
         const loadedTextures = await loader.load<Texture>(textureUrls);
-        const textures = textureUrls.map((url) => loadedTextures[url]);
+        const textures = textureUrls.map((url) => loadedTextures[url.src]);
 
         const bitmapFont = new BitmapFont({
             data: bitmapFontData,

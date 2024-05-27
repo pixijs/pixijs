@@ -16,6 +16,12 @@ import { maxRecommendedTextures } from '../../../rendering/renderers/shared/text
 import { localUniformMSDFBit, localUniformMSDFBitGl } from './shader-bits/localUniformMSDFBit';
 import { mSDFBit, mSDFBitGl } from './shader-bits/mSDFBit';
 
+import type { GlProgram } from '../../../rendering/renderers/gl/shader/GlProgram';
+import type { GpuProgram } from '../../../rendering/renderers/gpu/shader/GpuProgram';
+
+let gpuProgram: GpuProgram;
+let glProgram: GlProgram;
+
 export class SdfShader extends Shader
 {
     constructor()
@@ -29,7 +35,7 @@ export class SdfShader extends Shader
 
         const maxTextures = maxRecommendedTextures();
 
-        const gpuProgram = compileHighShaderGpuProgram({
+        gpuProgram ??= compileHighShaderGpuProgram({
             name: 'sdf-shader',
             bits: [
                 colorBit,
@@ -40,7 +46,7 @@ export class SdfShader extends Shader
             ]
         });
 
-        const glProgram = compileHighShaderGlProgram({
+        glProgram ??= compileHighShaderGlProgram({
             name: 'sdf-shader',
             bits: [
                 colorBitGl,
