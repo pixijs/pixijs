@@ -1,26 +1,29 @@
+import { Color } from '../../../color/Color';
+
 import type { FillGradient } from '../../graphics/shared/fill/FillGradient';
 import type { ConvertedFillStyle, ConvertedStrokeStyle } from '../../graphics/shared/GraphicsContext';
+import type { HTMLTextStyle } from '../../text-html/HtmlTextStyle';
 import type { TextStyle } from '../TextStyle';
 
-const valuesToIterateForKeys = [
-    '_fontFamily',
-    '_fontStyle',
-    '_fontSize',
-    '_fontVariant',
-    '_fontWeight',
-    '_breakWords',
-    '_align',
-    '_leading',
-    '_letterSpacing',
-    '_lineHeight',
-    '_textBaseline',
-    '_whiteSpace',
-    '_wordWrap',
-    '_wordWrapWidth',
-    '_padding',
-    '_cssOverrides',
-    '_trim'
-];
+const valuesToIterateForKeys: Partial<keyof TextStyle | keyof HTMLTextStyle>[] = [
+    'align',
+    'breakWords',
+    'cssOverrides',
+    'fontFamily',
+    'fontSize',
+    'fontStyle',
+    'fontVariant',
+    'fontWeight',
+    'leading',
+    'letterSpacing',
+    'lineHeight',
+    'padding',
+    'textBaseline',
+    'trim',
+    'whiteSpace',
+    'wordWrap',
+    'wordWrapWidth',
+] as const;
 
 /**
  * Generates a unique key for the text style.
@@ -35,15 +38,14 @@ export function generateTextStyleKey(style: TextStyle): string
 
     for (let i = 0; i < valuesToIterateForKeys.length; i++)
     {
-        const prop = valuesToIterateForKeys[i];
+        const prop = `_${valuesToIterateForKeys[i]}`;
 
         key[index++] = style[prop as keyof typeof style];
     }
 
     index = addFillStyleKey(style._fill, key as string[], index);
     index = addStokeStyleKey(style._stroke, key as string[], index);
-
-    // TODO - we need to add some shadow stuff here!
+    index = addDropShadowKey(style.dropShadow, key as string[], index);
 
     return key.join('-');
 }
@@ -70,6 +72,19 @@ function addStokeStyleKey(strokeStyle: ConvertedStrokeStyle, key: (number | stri
     key[index++] = strokeStyle.cap;
     key[index++] = strokeStyle.join;
     key[index++] = strokeStyle.miterLimit;
+
+    return index;
+}
+
+function addDropShadowKey(dropShadow: TextStyle['dropShadow'], key: (number | string)[], index: number)
+{
+    if (!dropShadow) return index;
+
+    key[index++] = dropShadow.alpha;
+    key[index++] = dropShadow.angle;
+    key[index++] = dropShadow.blur;
+    key[index++] = dropShadow.distance;
+    key[index++] = Color.shared.setValue(dropShadow.color).toNumber();
 
     return index;
 }

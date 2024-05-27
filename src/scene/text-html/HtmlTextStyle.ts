@@ -95,7 +95,7 @@ export class HTMLTextStyle extends TextStyle
         return new HTMLTextStyle({
             align: this.align,
             breakWords: this.breakWords,
-            dropShadow: this.dropShadow,
+            dropShadow: this.dropShadow ? { ...this.dropShadow } : null,
             fill: this._fill,
             fontFamily: this.fontFamily,
             fontSize: this.fontSize,
