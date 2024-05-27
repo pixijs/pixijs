@@ -44,7 +44,7 @@ const validSVGMIME = 'image/svg+xml';
  * A simple loader plugin for loading json data
  * @memberof assets
  */
-export const loadSvg = {
+export const loadSvg: LoaderParser<Texture | GraphicsContext, TextureSourceOptions & LoadSVGConfig, LoadSVGConfig> = {
     extension: {
         type: ExtensionType.LoadParser,
         priority: LoaderParserPriority.Low,
@@ -82,7 +82,7 @@ export const loadSvg = {
         asset.destroy(true);
     }
 
-} satisfies LoaderParser<Texture | GraphicsContext, TextureSourceOptions & LoadSVGConfig>;
+};
 
 async function loadAsTexture(
     url: string,

@@ -96,7 +96,7 @@ export async function loadImageBitmap(url: string): Promise<ImageBitmap>
  * ```
  * @memberof assets
  */
-export const loadTextures = {
+export const loadTextures: LoaderParser<Texture, TextureSourceOptions, LoadTextureConfig> = {
 
     name: 'loadTextures',
 
@@ -168,4 +168,4 @@ export const loadTextures = {
     {
         texture.destroy(true);
     }
-} satisfies LoaderParser<Texture, TextureSourceOptions, LoadTextureConfig>;
+};
