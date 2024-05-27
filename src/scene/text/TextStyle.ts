@@ -2,6 +2,7 @@ import EventEmitter from 'eventemitter3';
 import { Color, type ColorSource } from '../../color/Color';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { FillGradient } from '../graphics/shared/fill/FillGradient';
+import { FillPattern } from '../graphics/shared/fill/FillPattern';
 import { GraphicsContext } from '../graphics/shared/GraphicsContext';
 import { convertFillInputToFillStyle } from '../graphics/shared/utils/convertFillInputToFillStyle';
 import { generateTextStyleKey } from './utils/generateTextStyleKey';
@@ -534,7 +535,15 @@ export class TextStyle extends EventEmitter<{
 
 function convertV7Tov8Style(style: TextStyleOptions)
 {
-    const oldStyle = style as any;
+    const oldStyle = style as TextStyleOptions & {
+        dropShadowAlpha?: number;
+        dropShadowAngle?: number;
+        dropShadowBlur?: number;
+        dropShadowColor?: number;
+        dropShadowDistance?: number;
+        fillGradientStops?: number[];
+        strokeThickness?: number;
+    };
 
     if (typeof oldStyle.dropShadow === 'boolean' && oldStyle.dropShadow)
     {
@@ -556,26 +565,65 @@ function convertV7Tov8Style(style: TextStyleOptions)
         // #endif
 
         const color = oldStyle.stroke;
+        let obj: FillStyle = {};
+
+        // handles stroke: 0x0, stroke: { r: 0, g: 0, b: 0, a: 0 } stroke: new Color(0x0)
+        if (Color.isColorLike(color as ColorSource))
+        {
+            obj.color = color as ColorSource;
+        }
+        // handles stroke: new FillGradient()
+        else if (color instanceof FillGradient || color instanceof FillPattern)
+        {
+            obj.fill = color as FillGradient | FillPattern;
+        }
+        // handles stroke: { color: 0x0 } or stroke: { fill: new FillGradient() }
+        else if (Object.hasOwnProperty.call(color, 'color') || Object.hasOwnProperty.call(color, 'fill'))
+        {
+            obj = color as FillStyle;
+        }
+        else
+        {
+            throw new Error('Invalid stroke value.');
+        }
 
         style.stroke = {
-            color,
+            ...obj,
             width: oldStyle.strokeThickness
         };
     }
 
-    if (Array.isArray(oldStyle.fill))
+    if (Array.isArray(oldStyle.fillGradientStops))
     {
         // #if _DEBUG
         deprecation(v8_0_0, 'gradient fill is now a fill pattern: `new FillGradient(...)`');
         // #endif
 
-        const gradientFill = new FillGradient(0, 0, 0, (style.fontSize as number) * 1.7);
+        let fontSize: number;
 
-        const fills: number[] = oldStyle.fill.map((color: ColorSource) => Color.shared.setValue(color).toNumber());
+        // eslint-disable-next-line no-eq-null, eqeqeq
+        if (style.fontSize == null)
+        {
+            style.fontSize = TextStyle.defaultTextStyle.fontSize;
+        }
+        else if (typeof style.fontSize === 'string')
+        {
+            // eg '34px' to number
+            fontSize = parseInt(style.fontSize as string, 10);
+        }
+        else
+        {
+            fontSize = style.fontSize as number;
+        }
+
+        const gradientFill = new FillGradient(0, 0, 0, fontSize * 1.7);
+
+        const fills: number[] = oldStyle.fillGradientStops
+            .map((color: ColorSource) => Color.shared.setValue(color).toNumber());
 
         fills.forEach((number, index) =>
         {
-            const ratio = oldStyle.fillGradientStops[index] ?? index / fills.length;
+            const ratio = index / (fills.length - 1);
 
             gradientFill.addColorStop(ratio, number);
         });
@@ -585,3 +633,4 @@ function convertV7Tov8Style(style: TextStyleOptions)
         };
     }
 }
+
