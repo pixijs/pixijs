@@ -16,7 +16,8 @@ import type {
     ConvertedStrokeStyle,
     FillInput,
     FillStyle,
-    StrokeInput
+    StrokeInput,
+    StrokeStyle
 } from '../graphics/shared/FillTypes';
 
 export type TextStyleAlign = 'left' | 'center' | 'right' | 'justify';
@@ -404,7 +405,7 @@ export class TextStyle extends EventEmitter<{
             this._originalFill = this._createProxy({ ...GraphicsContext.defaultFillStyle, ...value }, () =>
             {
                 this._fill = convertFillInputToFillStyle(
-                    { ...value },
+                    { ...this._originalFill as FillStyle },
                     GraphicsContext.defaultFillStyle
                 );
             });
@@ -435,7 +436,7 @@ export class TextStyle extends EventEmitter<{
             this._originalStroke = this._createProxy({ ...GraphicsContext.defaultStrokeStyle, ...value }, () =>
             {
                 this._stroke = convertStrokeInputToStrokeStyle(
-                    { ...value },
+                    { ...this._originalStroke as StrokeStyle },
                     GraphicsContext.defaultStrokeStyle
                 );
             });
