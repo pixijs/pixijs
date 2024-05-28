@@ -102,7 +102,7 @@ export type ConvertedFillStyle = Omit<Required<FillStyle>, 'color'> & { color: n
 export type ConvertedStrokeStyle = ConvertedFillStyle & Required<StrokeAttributes>;
 
 /**
- * @deprecated since v8.2.0
+ * @deprecated since v8.1.6
  * @see scene.FillInput
  */
 // eslint-disable-next-line max-len

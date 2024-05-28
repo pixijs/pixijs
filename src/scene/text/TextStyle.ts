@@ -5,8 +5,8 @@ import { FillGradient } from '../graphics/shared/fill/FillGradient';
 import { FillPattern } from '../graphics/shared/fill/FillPattern';
 import { GraphicsContext } from '../graphics/shared/GraphicsContext';
 import {
-    convertFillInputToFillStyle,
-    convertStrokeInputToStrokeStyle
+    toFillStyle,
+    toStrokeStyle
 } from '../graphics/shared/utils/convertFillInputToFillStyle';
 import { generateTextStyleKey } from './utils/generateTextStyleKey';
 
@@ -398,7 +398,7 @@ export class TextStyle extends EventEmitter<{
         if (value === this._originalFill) return;
 
         this._originalFill = value;
-        this._fill = convertFillInputToFillStyle(
+        this._fill = toFillStyle(
             value === 0x0 ? 'black' : value,
             GraphicsContext.defaultFillStyle
         );
@@ -416,7 +416,7 @@ export class TextStyle extends EventEmitter<{
         if (value === this._originalStroke) return;
 
         this._originalStroke = value;
-        this._stroke = convertStrokeInputToStrokeStyle(value, GraphicsContext.defaultStrokeStyle);
+        this._stroke = toStrokeStyle(value, GraphicsContext.defaultStrokeStyle);
         this.update();
     }
 
