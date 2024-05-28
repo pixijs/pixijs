@@ -430,7 +430,6 @@ export class TextStyle extends EventEmitter<{
 
         this._originalStroke = value;
 
-        // eslint-disable-next-line no-eq-null, eqeqeq
         if (this._isFillStyle(value))
         {
             this._originalStroke = this._createProxy({ ...GraphicsContext.defaultStrokeStyle, ...value }, () =>
