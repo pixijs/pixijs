@@ -1,6 +1,5 @@
 import { Color } from '../../../color/Color';
 
-import type { FillGradient } from '../../graphics/shared/fill/FillGradient';
 import type { ConvertedFillStyle, ConvertedStrokeStyle } from '../../graphics/shared/GraphicsContext';
 import type { HTMLTextStyle } from '../../text-html/HtmlTextStyle';
 import type { TextStyle } from '../TextStyle';
@@ -56,7 +55,7 @@ function addFillStyleKey(fillStyle: ConvertedFillStyle, key: (number | string)[]
 
     key[index++] = fillStyle.color;
     key[index++] = fillStyle.alpha;
-    key[index++] = (fillStyle.fill as FillGradient)?.uid;
+    key[index++] = fillStyle.fill?.styleKey;
 
     return index;
 }
