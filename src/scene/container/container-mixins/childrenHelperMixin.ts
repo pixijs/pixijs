@@ -16,6 +16,7 @@ export interface ChildrenHelperMixin<C = ContainerChild>
     addChildAt<U extends C>(child: U, index: number): U;
     swapChildren<U extends C>(child: U, child2: U): void;
     removeFromParent(): void;
+    reparent(newParent: Container): void;
 }
 
 export const childrenHelperMixin: Partial<Container> = {
@@ -231,5 +232,26 @@ export const childrenHelperMixin: Partial<Container> = {
     removeFromParent()
     {
         this.parent?.removeChild(this);
+    },
+
+    /**
+     * Reparent the Container to a new parent Container, keeping the same worldTransform.
+     * @param newParent - The new parent Container to add this Container to.
+     * @param index - The index to add the child to. If not provided, the child will be added to the end of the list.
+     * @memberof scene.Container#
+     */
+    reparent(newParent: Container, index?: number)
+    {
+        const mat = this.worldTransform.clone();
+
+        this.parent.removeChild(this);
+        newParent.addChildAt(this, index ?? newParent.children.length);
+
+        const newMatrix = newParent.worldTransform.clone();
+
+        newMatrix.invert();
+        mat.prepend(newMatrix);
+
+        this.setFromMatrix(mat);
     }
 } as Container;

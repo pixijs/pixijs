@@ -1,4 +1,5 @@
 import { Container } from '../../src/scene/container/Container';
+import { getWebGLRenderer } from '../utils/getRenderer';
 
 function assertRemovedFromParent(parent: Container, container: Container, child: Container, functionToAssert: () => void)
 {
@@ -334,6 +335,34 @@ describe('Container Hierarchy', () =>
                 .toThrow('removeChildren: numeric values are outside the acceptable range.');
             expect(() => container.removeChildren(-1, 1))
                 .toThrow('removeChildren: numeric values are outside the acceptable range.');
+        });
+    });
+
+    describe('reparent', () =>
+    {
+        it('should remove from current parent', async () =>
+        {
+            const renderer = await getWebGLRenderer();
+            const stage = new Container();
+            const parent = new Container();
+            const newParent = new Container();
+            const child = new Container();
+
+            newParent.position.x = 100;
+            child.position.x = -100;
+
+            parent.addChild(child);
+            stage.addChild(parent, newParent);
+
+            // render scene
+            renderer.render(stage);
+
+            child.reparent(newParent);
+
+            // render scene
+            renderer.render(stage);
+
+            expect(child.worldTransform.tx).toEqual(-100);
         });
     });
 });
