@@ -1,7 +1,7 @@
 import { Color } from '../../../color/Color';
 
 import type { FillGradient } from '../../graphics/shared/fill/FillGradient';
-import type { ConvertedFillStyle, ConvertedStrokeStyle } from '../../graphics/shared/GraphicsContext';
+import type { ConvertedFillStyle, ConvertedStrokeStyle } from '../../graphics/shared/FillTypes';
 import type { HTMLTextStyle } from '../../text-html/HtmlTextStyle';
 import type { TextStyle } from '../TextStyle';
 

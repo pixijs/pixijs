@@ -1,6 +1,6 @@
 import { Color } from '../../../color/Color';
 
-import type { StrokeStyle } from '../../graphics/shared/GraphicsContext';
+import type { ConvertedStrokeStyle } from '../../graphics/shared/FillTypes';
 import type { TextStyle } from '../../text/TextStyle';
 import type { HTMLTextStyle, HTMLTextStyleOptions } from '../HtmlTextStyle';
 
@@ -58,7 +58,7 @@ function dropShadowToCSS(dropShadowStyle: TextStyle['dropShadow']): string
     return `text-shadow: ${position} ${color}`;
 }
 
-function strokeToCSS(stroke: StrokeStyle): string
+function strokeToCSS(stroke: ConvertedStrokeStyle): string
 {
     return [
         `-webkit-text-stroke-width: ${stroke.width}px`,

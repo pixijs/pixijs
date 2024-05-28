@@ -6,7 +6,7 @@ import { FillGradient } from '../../../graphics/shared/fill/FillGradient';
 import { FillPattern } from '../../../graphics/shared/fill/FillPattern';
 
 import type { ICanvasRenderingContext2D } from '../../../../environment/canvas/ICanvasRenderingContext2D';
-import type { ConvertedFillStyle } from '../../../graphics/shared/GraphicsContext';
+import type { ConvertedFillStyle } from '../../../graphics/shared/FillTypes';
 
 export function getCanvasFillStyle(
     fillStyle: ConvertedFillStyle,
@@ -32,7 +32,7 @@ export function getCanvasFillStyle(
     }
     else if (fillStyle.fill instanceof FillPattern)
     {
-        const fillPattern = fillStyle.fill as FillPattern;
+        const fillPattern = fillStyle.fill;
 
         const pattern = context.createPattern(fillPattern.texture.source.resource, 'repeat');
 
@@ -49,7 +49,7 @@ export function getCanvasFillStyle(
     }
     else if (fillStyle.fill instanceof FillGradient)
     {
-        const fillGradient = fillStyle.fill as FillGradient;
+        const fillGradient = fillStyle.fill;
 
         if (fillGradient.type === 'linear')
         {
