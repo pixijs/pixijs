@@ -101,6 +101,9 @@ export type ConvertedFillStyle = Omit<Required<FillStyle>, 'color'> & { color: n
 // used internally and is a complete stroke style
 export type ConvertedStrokeStyle = ConvertedFillStyle & Required<StrokeAttributes>;
 
-/** @deprecated */
+/**
+ * @deprecated since v8.1.6
+ * @see scene.FillInput
+ */
 // eslint-disable-next-line max-len
 export type FillStyleInputs = ColorSource | FillGradient | FillPattern | FillStyle | ConvertedFillStyle | StrokeStyle | ConvertedStrokeStyle;

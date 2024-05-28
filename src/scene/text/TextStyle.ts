@@ -5,8 +5,8 @@ import { FillGradient } from '../graphics/shared/fill/FillGradient';
 import { FillPattern } from '../graphics/shared/fill/FillPattern';
 import { GraphicsContext } from '../graphics/shared/GraphicsContext';
 import {
-    convertFillInputToFillStyle,
-    convertStrokeInputToStrokeStyle
+    toFillStyle,
+    toStrokeStyle
 } from '../graphics/shared/utils/convertFillInputToFillStyle';
 import { generateTextStyleKey } from './utils/generateTextStyleKey';
 
@@ -404,14 +404,14 @@ export class TextStyle extends EventEmitter<{
         {
             this._originalFill = this._createProxy({ ...GraphicsContext.defaultFillStyle, ...value }, () =>
             {
-                this._fill = convertFillInputToFillStyle(
+                this._fill = toFillStyle(
                     { ...this._originalFill as FillStyle },
                     GraphicsContext.defaultFillStyle
                 );
             });
         }
 
-        this._fill = convertFillInputToFillStyle(
+        this._fill = toFillStyle(
             value === 0x0 ? 'black' : value,
             GraphicsContext.defaultFillStyle
         );
@@ -434,14 +434,14 @@ export class TextStyle extends EventEmitter<{
         {
             this._originalStroke = this._createProxy({ ...GraphicsContext.defaultStrokeStyle, ...value }, () =>
             {
-                this._stroke = convertStrokeInputToStrokeStyle(
+                this._stroke = toStrokeStyle(
                     { ...this._originalStroke as StrokeStyle },
                     GraphicsContext.defaultStrokeStyle
                 );
             });
         }
 
-        this._stroke = convertStrokeInputToStrokeStyle(value, GraphicsContext.defaultStrokeStyle);
+        this._stroke = toStrokeStyle(value, GraphicsContext.defaultStrokeStyle);
         this.update();
     }
 

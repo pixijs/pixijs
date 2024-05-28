@@ -9,7 +9,7 @@ import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import { Bounds } from '../../container/bounds/Bounds';
 import { GraphicsPath } from './path/GraphicsPath';
 import { SVGParser } from './svg/SVGParser';
-import { convertFillInputToFillStyle, convertStrokeInputToStrokeStyle } from './utils/convertFillInputToFillStyle';
+import { toFillStyle, toStrokeStyle } from './utils/convertFillInputToFillStyle';
 
 import type { PointData } from '../../../maths/point/PointData';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
@@ -156,7 +156,7 @@ export class GraphicsContext extends EventEmitter<{
 
     set fillStyle(value: FillInput)
     {
-        this._fillStyle = convertFillInputToFillStyle(value, GraphicsContext.defaultFillStyle);
+        this._fillStyle = toFillStyle(value, GraphicsContext.defaultFillStyle);
     }
 
     /**
@@ -169,7 +169,7 @@ export class GraphicsContext extends EventEmitter<{
 
     set strokeStyle(value: FillInput)
     {
-        this._strokeStyle = convertStrokeInputToStrokeStyle(value, GraphicsContext.defaultStrokeStyle);
+        this._strokeStyle = toStrokeStyle(value, GraphicsContext.defaultStrokeStyle);
     }
 
     /**
@@ -181,7 +181,7 @@ export class GraphicsContext extends EventEmitter<{
      */
     public setFillStyle(style: FillInput): this
     {
-        this._fillStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultFillStyle);
+        this._fillStyle = toFillStyle(style, GraphicsContext.defaultFillStyle);
 
         return this;
     }
@@ -195,7 +195,7 @@ export class GraphicsContext extends EventEmitter<{
      */
     public setStrokeStyle(style: StrokeInput): this
     {
-        this._strokeStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultStrokeStyle) as ConvertedStrokeStyle;
+        this._strokeStyle = toFillStyle(style, GraphicsContext.defaultStrokeStyle) as ConvertedStrokeStyle;
 
         return this;
     }
@@ -289,7 +289,7 @@ export class GraphicsContext extends EventEmitter<{
 
                 style = { color: style, alpha };
             }
-            this._fillStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultFillStyle);
+            this._fillStyle = toFillStyle(style, GraphicsContext.defaultFillStyle);
         }
 
         // TODO not a fan of the clone!!
@@ -342,7 +342,7 @@ export class GraphicsContext extends EventEmitter<{
         // eslint-disable-next-line no-eq-null, eqeqeq
         if (style != null)
         {
-            this._strokeStyle = convertStrokeInputToStrokeStyle(style, GraphicsContext.defaultStrokeStyle);
+            this._strokeStyle = toStrokeStyle(style, GraphicsContext.defaultStrokeStyle);
         }
 
         // TODO not a fan of the clone!!

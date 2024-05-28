@@ -2,7 +2,7 @@ import { Color } from '../../src/color/Color';
 import { Texture } from '../../src/rendering/renderers/shared/texture/Texture';
 import { FillGradient } from '../../src/scene/graphics/shared/fill/FillGradient';
 import { FillPattern } from '../../src/scene/graphics/shared/fill/FillPattern';
-import { convertStrokeInputToStrokeStyle } from '../../src/scene/graphics/shared/utils/convertFillInputToFillStyle';
+import { toStrokeStyle } from '../../src/scene/graphics/shared/utils/convertFillInputToFillStyle';
 
 import type { ConvertedStrokeStyle } from '../../src/scene/graphics/shared/FillTypes';
 
@@ -23,14 +23,14 @@ describe('convertStrokeInputToStrokeStyle', () =>
 
     it('should return null when value is undefined', () =>
     {
-        const result = convertStrokeInputToStrokeStyle(undefined, getDefaultValue());
+        const result = toStrokeStyle(undefined, getDefaultValue());
 
         expect(result).toBeNull();
     });
 
     it('should return null when value is null', () =>
     {
-        const result = convertStrokeInputToStrokeStyle(null, getDefaultValue());
+        const result = toStrokeStyle(null, getDefaultValue());
 
         expect(result).toBeNull();
     });
@@ -41,7 +41,7 @@ describe('convertStrokeInputToStrokeStyle', () =>
         const color = new Color(0xff0000);
 
         color.setAlpha(0.5);
-        const result = convertStrokeInputToStrokeStyle(color, defaultStyle);
+        const result = toStrokeStyle(color, defaultStyle);
 
         expect(result).toEqual({
             ...defaultStyle,
@@ -53,7 +53,7 @@ describe('convertStrokeInputToStrokeStyle', () =>
     it('should convert color object to stroke style', () =>
     {
         const defaultStyle = getDefaultValue();
-        const result = convertStrokeInputToStrokeStyle({ r: 255, g: 0, b: 0 }, defaultStyle);
+        const result = toStrokeStyle({ r: 255, g: 0, b: 0 }, defaultStyle);
 
         expect(result).toEqual({
             ...defaultStyle,
@@ -65,7 +65,7 @@ describe('convertStrokeInputToStrokeStyle', () =>
     {
         const defaultStyle = getDefaultValue();
         const pattern = new FillPattern(Texture.WHITE);
-        const result = convertStrokeInputToStrokeStyle(pattern, defaultStyle);
+        const result = toStrokeStyle(pattern, defaultStyle);
 
         expect(result).toEqual({
             ...defaultStyle,
@@ -81,7 +81,7 @@ describe('convertStrokeInputToStrokeStyle', () =>
     {
         const defaultStyle = getDefaultValue();
         const gradient = new FillGradient(0, 0, 200, 0);
-        const result = convertStrokeInputToStrokeStyle(gradient, defaultStyle);
+        const result = toStrokeStyle(gradient, defaultStyle);
 
         expect(result).toEqual({
             ...defaultStyle,
@@ -96,7 +96,7 @@ describe('convertStrokeInputToStrokeStyle', () =>
     it('should convert stroke object to stroke style', () =>
     {
         const defaultStyle = getDefaultValue();
-        const result = convertStrokeInputToStrokeStyle({ color: 0xff0000, alpha: 0.5, width: 4 }, defaultStyle);
+        const result = toStrokeStyle({ color: 0xff0000, alpha: 0.5, width: 4 }, defaultStyle);
 
         expect(result).toEqual({
             ...defaultStyle,
@@ -112,7 +112,7 @@ describe('convertStrokeInputToStrokeStyle', () =>
         const color = new Color(0xff0000);
 
         color.setAlpha(0.5);
-        const result = convertStrokeInputToStrokeStyle({ color, alpha: 0.5 }, defaultStyle);
+        const result = toStrokeStyle({ color, alpha: 0.5 }, defaultStyle);
 
         expect(result).toEqual({
             ...defaultStyle,
@@ -125,7 +125,7 @@ describe('convertStrokeInputToStrokeStyle', () =>
     {
         const defaultStyle = getDefaultValue();
         const pattern = new FillPattern(Texture.WHITE);
-        const result = convertStrokeInputToStrokeStyle({ fill: pattern, alpha: 0.5 }, defaultStyle);
+        const result = toStrokeStyle({ fill: pattern, alpha: 0.5 }, defaultStyle);
 
         expect(result).toEqual({
             ...defaultStyle,
@@ -141,7 +141,7 @@ describe('convertStrokeInputToStrokeStyle', () =>
     {
         const defaultStyle = getDefaultValue();
         const gradient = new FillGradient(0, 0, 200, 0);
-        const result = convertStrokeInputToStrokeStyle({ fill: gradient, alpha: 0.5 }, defaultStyle);
+        const result = toStrokeStyle({ fill: gradient, alpha: 0.5 }, defaultStyle);
 
         expect(result).toEqual({
             ...defaultStyle,
