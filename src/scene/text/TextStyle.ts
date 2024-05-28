@@ -398,6 +398,18 @@ export class TextStyle extends EventEmitter<{
         if (value === this._originalFill) return;
 
         this._originalFill = value;
+
+        if (this._isFillStyle(value))
+        {
+            this._originalFill = this._createProxy({ ...GraphicsContext.defaultFillStyle, ...value }, () =>
+            {
+                this._fill = convertFillInputToFillStyle(
+                    { ...value },
+                    GraphicsContext.defaultFillStyle
+                );
+            });
+        }
+
         this._fill = convertFillInputToFillStyle(
             value === 0x0 ? 'black' : value,
             GraphicsContext.defaultFillStyle
@@ -416,6 +428,19 @@ export class TextStyle extends EventEmitter<{
         if (value === this._originalStroke) return;
 
         this._originalStroke = value;
+
+        // eslint-disable-next-line no-eq-null, eqeqeq
+        if (this._isFillStyle(value))
+        {
+            this._originalStroke = this._createProxy({ ...GraphicsContext.defaultStrokeStyle, ...value }, () =>
+            {
+                this._stroke = convertStrokeInputToStrokeStyle(
+                    { ...value },
+                    GraphicsContext.defaultStrokeStyle
+                );
+            });
+        }
+
         this._stroke = convertStrokeInputToStrokeStyle(value, GraphicsContext.defaultStrokeStyle);
         this.update();
     }
@@ -534,6 +559,13 @@ export class TextStyle extends EventEmitter<{
                 return true;
             }
         });
+    }
+
+    private _isFillStyle(value: FillInput): value is FillStyle
+    {
+        // eslint-disable-next-line no-eq-null, eqeqeq
+        return (value != null
+            && !(Color.isColorLike(value) || value instanceof FillGradient || value instanceof FillPattern));
     }
 }
 
