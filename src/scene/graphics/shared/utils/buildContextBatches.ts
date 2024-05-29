@@ -215,7 +215,7 @@ function addShapePathToGeometryData(
         {
             const textureMatrix = style.matrix;
 
-            if (matrix)
+            if (matrix && textureMatrix)
             {
                 // todo can prolly do this before calculating uvs..
                 textureMatrix.append(matrix.clone().invert());
