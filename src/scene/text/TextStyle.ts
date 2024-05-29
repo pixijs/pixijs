@@ -563,8 +563,7 @@ export class TextStyle extends EventEmitter<{
 
     private _isFillStyle(value: FillInput): value is FillStyle
     {
-        // eslint-disable-next-line no-eq-null, eqeqeq
-        return (value != null
+        return ((value ?? null) !== null
             && !(Color.isColorLike(value) || value instanceof FillGradient || value instanceof FillPattern));
     }
 }
