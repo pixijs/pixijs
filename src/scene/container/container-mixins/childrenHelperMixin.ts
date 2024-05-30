@@ -16,7 +16,7 @@ export interface ChildrenHelperMixin<C = ContainerChild>
     addChildAt<U extends C>(child: U, index: number): U;
     swapChildren<U extends C>(child: U, child2: U): void;
     removeFromParent(): void;
-    reparent(newParent: Container): void;
+    reparent(newParent: Container, index?: number): void;
 }
 
 export const childrenHelperMixin: Partial<Container> = {
@@ -244,7 +244,7 @@ export const childrenHelperMixin: Partial<Container> = {
     {
         const mat = this.worldTransform.clone();
 
-        this.parent.removeChild(this);
+        this.removeFromParent();
         newParent.addChildAt(this, index ?? newParent.children.length);
 
         const newMatrix = newParent.worldTransform.clone();

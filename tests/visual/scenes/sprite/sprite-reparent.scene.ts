@@ -14,6 +14,10 @@ export const scene: TestScene = {
         const newParent = new Container();
         const child = Sprite.from(`bunny.png`);
         const child2 = Sprite.from(`bunny.png`);
+        const child3 = Sprite.from(`bunny.png`);
+
+        child3.y = 50;
+        child3.scale = 1.5;
 
         newParent.position.x = 100;
         newParent.scale.set(2);
@@ -21,11 +25,12 @@ export const scene: TestScene = {
 
         newParent.addChild(child2);
         parent.addChild(child);
-        scene.addChild(parent, newParent);
+        scene.addChild(parent, newParent, child3);
 
         // render scene
         renderer.render(scene);
 
         child.reparent(newParent);
+        child3.reparent(newParent, 0);
     },
 };
