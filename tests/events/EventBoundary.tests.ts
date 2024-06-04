@@ -411,24 +411,24 @@ describe('EventBoundary', () =>
         const stage = new Container();
         const boundary = new EventBoundary(stage);
         const container = stage.addChild(new Container());
-        const target1 = container.addChild(graphicsWithRect(0, 0, 100, 100));
+        const child1 = container.addChild(graphicsWithRect(0, 0, 100, 100));
 
         stage.eventMode = 'static';
-        target1.eventMode = 'static';
+        child1.eventMode = 'static';
 
         const eventSpy1 = jest.fn();
         const eventSpy2 = jest.fn();
         const eventSpy3 = jest.fn();
         const eventSpy4 = jest.fn();
 
-        target1.once('click', eventSpy1);
-        target1.on('click', eventSpy2);
-        target1.addEventListener('click', eventSpy3);
-        target1.onclick = eventSpy4;
+        stage.once('click', eventSpy1);
+        stage.on('click', eventSpy2);
+        stage.addEventListener('click', eventSpy3);
+        stage.onclick = eventSpy4;
 
         const event1 = new FederatedPointerEvent(boundary);
 
-        event1.target = target1;
+        event1.target = stage;
         event1.global.set(50, 50);
         event1.type = 'click';
 
@@ -445,23 +445,23 @@ describe('EventBoundary', () =>
         const stage = new Container();
         const boundary = new EventBoundary(stage);
         const container = stage.addChild(new Container());
-        const target1 = container.addChild(graphicsWithRect(0, 0, 100, 100));
+        const child1 = container.addChild(graphicsWithRect(0, 0, 100, 100));
 
-        target1.eventMode = 'static';
+        child1.eventMode = 'static';
 
         const eventSpy1 = jest.fn();
         const eventSpy2 = jest.fn();
         const eventSpy3 = jest.fn();
         const eventSpy4 = jest.fn();
 
-        target1.once('click', eventSpy1);
-        target1.on('click', eventSpy2);
-        target1.addEventListener('click', eventSpy3);
-        target1.onclick = eventSpy4;
+        stage.once('click', eventSpy1);
+        stage.on('click', eventSpy2);
+        stage.addEventListener('click', eventSpy3);
+        stage.onclick = eventSpy4;
 
         const event1 = new FederatedPointerEvent(boundary);
 
-        event1.target = target1;
+        event1.target = stage;
         event1.global.set(50, 50);
         event1.type = 'click';
 
