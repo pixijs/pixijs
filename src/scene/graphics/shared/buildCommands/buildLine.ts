@@ -2,7 +2,7 @@ import { Point } from '../../../../maths/point/Point';
 import { closePointEps, curveEps } from '../const';
 import { getOrientationOfPoints } from '../utils/getOrientationOfPoints';
 
-import type { StrokeStyle } from '../GraphicsContext';
+import type { StrokeAttributes } from '../FillTypes';
 
 /**
  * Buffers vertices to draw a square cap.
@@ -164,7 +164,7 @@ function round(
  */
 export function buildLine(
     points: number[],
-    lineStyle: StrokeStyle,
+    lineStyle: StrokeAttributes,
     flipAlignment: boolean,
     closed: boolean,
     // alignment:number,
