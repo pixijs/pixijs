@@ -69,7 +69,8 @@ export const loadSvg: LoaderParser<Texture | GraphicsContext, TextureSourceOptio
         loader: Loader
     ): Promise<Texture | GraphicsContext>
     {
-        if (asset.data.parseAsGraphicsContext ?? this.config.parseAsGraphicsContext)
+        asset.data = asset.data ?? this.config;
+        if (asset.data.parseAsGraphicsContext)
         {
             return loadAsGraphics(url);
         }
