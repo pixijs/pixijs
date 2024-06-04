@@ -16,9 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Check PR Title
-        uses: clowdhaus/actions/pr-title@v0.1.0
+        uses: clowdhaus/actions/pr-title@v0.5.0
         with:
           on-fail-message: "Your PR title doesn't match the required format. The title should be in this format: \n\n```\nchore: update Text docs\nfix: text not rendering\nfeat: add new feature to Text\nbreaking: remove Text#resolution \n```"
           title-regex: '^(chore|feat|fix|breaking)?(!)?\:\s.*$'

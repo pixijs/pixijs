@@ -13,7 +13,8 @@ import { triangulateWithHoles } from './triangulateWithHoles';
 
 import type { Polygon } from '../../../../maths/shapes/Polygon';
 import type { ShapeBuildCommand } from '../buildCommands/ShapeBuildCommand';
-import type { ConvertedFillStyle, GraphicsContext, TextureInstruction } from '../GraphicsContext';
+import type { ConvertedFillStyle, ConvertedStrokeStyle } from '../FillTypes';
+import type { GraphicsContext, TextureInstruction } from '../GraphicsContext';
 import type { GpuGraphicsContext } from '../GraphicsContextSystem';
 import type { GraphicsPath } from '../path/GraphicsPath';
 import type { ShapePath } from '../path/ShapePath';
@@ -137,7 +138,7 @@ function addTextureToGeometryData(
 
 function addShapePathToGeometryData(
     shapePath: ShapePath,
-    style: ConvertedFillStyle,
+    style: ConvertedFillStyle | ConvertedStrokeStyle,
     hole: GraphicsPath,
     isStroke: boolean,
     batches: BatchableGraphics[],
@@ -202,7 +203,7 @@ function addShapePathToGeometryData(
         else
         {
             const close = (shape as Polygon).closePath ?? true;
-            const lineStyle = style;
+            const lineStyle = style as ConvertedStrokeStyle;
 
             buildLine(points, lineStyle, false, close, vertices, 2, vertOffset, indices, indexOffset);
         }
@@ -215,7 +216,7 @@ function addShapePathToGeometryData(
         {
             const textureMatrix = style.matrix;
 
-            if (matrix)
+            if (matrix && textureMatrix)
             {
                 // todo can prolly do this before calculating uvs..
                 textureMatrix.append(matrix.clone().invert());
