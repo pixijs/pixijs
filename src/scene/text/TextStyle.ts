@@ -16,7 +16,8 @@ import type {
     ConvertedStrokeStyle,
     FillInput,
     FillStyle,
-    StrokeInput
+    StrokeInput,
+    StrokeStyle
 } from '../graphics/shared/FillTypes';
 
 export type TextStyleAlign = 'left' | 'center' | 'right' | 'justify';
@@ -398,6 +399,18 @@ export class TextStyle extends EventEmitter<{
         if (value === this._originalFill) return;
 
         this._originalFill = value;
+
+        if (this._isFillStyle(value))
+        {
+            this._originalFill = this._createProxy({ ...GraphicsContext.defaultFillStyle, ...value }, () =>
+            {
+                this._fill = toFillStyle(
+                    { ...this._originalFill as FillStyle },
+                    GraphicsContext.defaultFillStyle
+                );
+            });
+        }
+
         this._fill = toFillStyle(
             value === 0x0 ? 'black' : value,
             GraphicsContext.defaultFillStyle
@@ -416,6 +429,18 @@ export class TextStyle extends EventEmitter<{
         if (value === this._originalStroke) return;
 
         this._originalStroke = value;
+
+        if (this._isFillStyle(value))
+        {
+            this._originalStroke = this._createProxy({ ...GraphicsContext.defaultStrokeStyle, ...value }, () =>
+            {
+                this._stroke = toStrokeStyle(
+                    { ...this._originalStroke as StrokeStyle },
+                    GraphicsContext.defaultStrokeStyle
+                );
+            });
+        }
+
         this._stroke = toStrokeStyle(value, GraphicsContext.defaultStrokeStyle);
         this.update();
     }
@@ -534,6 +559,12 @@ export class TextStyle extends EventEmitter<{
                 return true;
             }
         });
+    }
+
+    private _isFillStyle(value: FillInput): value is FillStyle
+    {
+        return ((value ?? null) !== null
+            && !(Color.isColorLike(value) || value instanceof FillGradient || value instanceof FillPattern));
     }
 }
 
