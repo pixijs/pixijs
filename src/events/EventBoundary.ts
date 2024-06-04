@@ -652,11 +652,12 @@ export class EventBoundary
 
         type = type ?? e.type;
 
-        const key = e.eventPhase === e.CAPTURING_PHASE || e.eventPhase === e.AT_TARGET ? `${type}capture` : type;
         // call the `on${type}` for the current target if it exists
-        const handlerKey = `on${key}` as keyof Container;
+        const handlerKey = `on${type}` as keyof Container;
 
         (e.currentTarget[handlerKey] as FederatedEventHandler<FederatedEvent>)?.(e);
+
+        const key = e.eventPhase === e.CAPTURING_PHASE || e.eventPhase === e.AT_TARGET ? `${type}capture` : type;
 
         this._notifyListeners(e, key);
 

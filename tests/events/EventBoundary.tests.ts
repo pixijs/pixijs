@@ -406,7 +406,7 @@ describe('EventBoundary', () =>
         expect(eventSpy4).toHaveBeenCalledTimes(2);
     });
 
-    it('should be able to call all kinds of event listeners if container is interactive', () =>
+    it('should be able to call all kinds of event listeners if root is interactive', () =>
     {
         const stage = new Container();
         const boundary = new EventBoundary(stage);
@@ -440,7 +440,7 @@ describe('EventBoundary', () =>
         expect(eventSpy4).toHaveBeenCalledOnce();
     });
 
-    it('should not call any event listeners if container is not interactive', () =>
+    it('should not call any event listeners if root is not interactive', () =>
     {
         const stage = new Container();
         const boundary = new EventBoundary(stage);
