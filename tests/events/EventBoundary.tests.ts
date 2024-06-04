@@ -405,4 +405,71 @@ describe('EventBoundary', () =>
         expect(eventSpy3).toHaveBeenCalledTimes(2);
         expect(eventSpy4).toHaveBeenCalledTimes(2);
     });
+
+    it('should be able to call all kinds of event listeners if container is interactive', () =>
+    {
+        const stage = new Container();
+        const boundary = new EventBoundary(stage);
+        const container = stage.addChild(new Container());
+        const target1 = container.addChild(graphicsWithRect(0, 0, 100, 100));
+
+        stage.eventMode = 'static';
+        target1.eventMode = 'static';
+
+        const eventSpy1 = jest.fn();
+        const eventSpy2 = jest.fn();
+        const eventSpy3 = jest.fn();
+        const eventSpy4 = jest.fn();
+
+        target1.once('click', eventSpy1);
+        target1.on('click', eventSpy2);
+        target1.addEventListener('click', eventSpy3);
+        target1.onclick = eventSpy4;
+
+        const event1 = new FederatedPointerEvent(boundary);
+
+        event1.target = target1;
+        event1.global.set(50, 50);
+        event1.type = 'click';
+
+        boundary.dispatchEvent(event1);
+
+        expect(eventSpy1).toHaveBeenCalledOnce();
+        expect(eventSpy2).toHaveBeenCalledOnce();
+        expect(eventSpy3).toHaveBeenCalledOnce();
+        expect(eventSpy4).toHaveBeenCalledOnce();
+    });
+
+    it('should not call any event listeners if container is not interactive', () =>
+    {
+        const stage = new Container();
+        const boundary = new EventBoundary(stage);
+        const container = stage.addChild(new Container());
+        const target1 = container.addChild(graphicsWithRect(0, 0, 100, 100));
+
+        target1.eventMode = 'static';
+
+        const eventSpy1 = jest.fn();
+        const eventSpy2 = jest.fn();
+        const eventSpy3 = jest.fn();
+        const eventSpy4 = jest.fn();
+
+        target1.once('click', eventSpy1);
+        target1.on('click', eventSpy2);
+        target1.addEventListener('click', eventSpy3);
+        target1.onclick = eventSpy4;
+
+        const event1 = new FederatedPointerEvent(boundary);
+
+        event1.target = target1;
+        event1.global.set(50, 50);
+        event1.type = 'click';
+
+        boundary.dispatchEvent(event1);
+
+        expect(eventSpy1).not.toHaveBeenCalled();
+        expect(eventSpy2).not.toHaveBeenCalled();
+        expect(eventSpy3).not.toHaveBeenCalled();
+        expect(eventSpy4).not.toHaveBeenCalled();
+    });
 });
