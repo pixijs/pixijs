@@ -117,7 +117,7 @@
     "ts-jest": "^26.0.0",
     "ts-node": "^9.0.0",
     "tsconfig-paths": "^3.10.1",
-    "typescript": "~5.3.3",
+    "typescript": "^5.0.4",
     "yargs-parser": "^21.0.1"
   },
   "bundles": [
