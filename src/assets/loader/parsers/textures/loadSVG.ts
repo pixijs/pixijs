@@ -69,8 +69,9 @@ export const loadSvg: LoaderParser<Texture | GraphicsContext, TextureSourceOptio
         loader: Loader
     ): Promise<Texture | GraphicsContext>
     {
-        asset.data = asset.data ?? this.config;
-        if (asset.data.parseAsGraphicsContext)
+        const data = asset.data ?? this.config;
+
+        if (data.parseAsGraphicsContext)
         {
             return loadAsGraphics(url);
         }
@@ -120,8 +121,9 @@ async function loadAsTexture(
 
     context.drawImage(image, 0, 0, width * resolution, height * resolution);
 
+    const data = asset.data ?? loadSvg.config;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { parseAsGraphicsContext: _p, ...rest } = asset.data;
+    const { parseAsGraphicsContext: _p, ...rest } = data;
     const base = new ImageSource({
         resource: canvas,
         alphaMode: 'premultiply-alpha-on-upload',
