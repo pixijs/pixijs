@@ -188,4 +188,26 @@ describe('spritesheetAsset', () =>
 
         expect(spritesheet.textureSource).toEqual(texture.source);
     });
+
+    it('should load a spritesheet', async () =>
+    {
+        const spriteSheet = await loader.load<Spritesheet>(`${basePath}spritesheet/svgSpritesheet.json`);
+
+        const t1 = spriteSheet.textures['pic1'];
+        const t2 = spriteSheet.textures['pic2'];
+        const t3 = spriteSheet.textures['pic3'];
+
+        expect(t1).toBeInstanceOf(Texture);
+        expect(t2).toBeInstanceOf(Texture);
+        expect(t3).toBeInstanceOf(Texture);
+
+        expect(t1.width).toBe(150);
+        expect(t1.height).toBe(150);
+
+        expect(t2.width).toBe(200);
+        expect(t2.height).toBe(200);
+
+        expect(t3.width).toBe(210);
+        expect(t3.height).toBe(210);
+    });
 });
