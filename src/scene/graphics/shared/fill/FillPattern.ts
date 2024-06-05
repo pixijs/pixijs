@@ -31,6 +31,8 @@ export class FillPattern implements CanvasPattern
     public texture: Texture;
     public transform = new Matrix();
 
+    private _styleKey: string | null = null;
+
     constructor(texture: Texture, repetition?: PatternRepetition)
     {
         this.texture = texture;
@@ -58,5 +60,16 @@ export class FillPattern implements CanvasPattern
             1 / texture.frame.width,
             1 / texture.frame.height
         );
+
+        this._styleKey = null;
+    }
+
+    public get styleKey(): string
+    {
+        if (this._styleKey) return this._styleKey;
+
+        this._styleKey = `fill-pattern-${this.uid}-${this.texture.uid}-${this.transform.toArray().join('-')}`;
+
+        return this._styleKey;
     }
 }
