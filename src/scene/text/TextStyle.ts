@@ -4,16 +4,21 @@ import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { FillGradient } from '../graphics/shared/fill/FillGradient';
 import { FillPattern } from '../graphics/shared/fill/FillPattern';
 import { GraphicsContext } from '../graphics/shared/GraphicsContext';
-import { convertFillInputToFillStyle } from '../graphics/shared/utils/convertFillInputToFillStyle';
+import {
+    toFillStyle,
+    toStrokeStyle
+} from '../graphics/shared/utils/convertFillInputToFillStyle';
 import { generateTextStyleKey } from './utils/generateTextStyleKey';
 
 import type { TextureDestroyOptions, TypeOrBool } from '../container/destroyTypes';
 import type {
     ConvertedFillStyle,
     ConvertedStrokeStyle,
+    FillInput,
     FillStyle,
-    FillStyleInputs
-} from '../graphics/shared/GraphicsContext';
+    StrokeInput,
+    StrokeStyle
+} from '../graphics/shared/FillTypes';
 
 export type TextStyleAlign = 'left' | 'center' | 'right' | 'justify';
 export type TextStyleFill = string | string[] | number | number[] | CanvasGradient | CanvasPattern;
@@ -75,7 +80,7 @@ export interface TextStyleOptions
      * {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle|MDN}
      * @type {string|string[]|number|number[]|CanvasGradient|CanvasPattern}
      */
-    fill?: FillStyleInputs;
+    fill?: FillInput;
     /** The font family, can be a single font name, or a list of names where the first is the preferred font. */
     fontFamily?: string | string[];
     /** The font size (as a number it converts to px, but as a string, equivalents are '26px','20pt','160%' or '1.6em') */
@@ -107,7 +112,7 @@ export interface TextStyleOptions
      */
     padding?: number;
     /** A canvas fillstyle that will be used on the text stroke, e.g., 'blue', '#FCFF00' */
-    stroke?: FillStyleInputs;
+    stroke?: StrokeInput;
     /**
      * The baseline of the text that is rendered.
      * @type {'alphabetic'|'top'|'hanging'|'middle'|'ideographic'|'bottom'}
@@ -231,10 +236,10 @@ export class TextStyle extends EventEmitter<{
 
     // colors!!
     public _fill: ConvertedFillStyle;
-    private _originalFill: FillStyleInputs;
+    private _originalFill: FillInput;
 
     public _stroke: ConvertedStrokeStyle;
-    private _originalStroke: FillStyleInputs;
+    private _originalStroke: StrokeInput;
 
     private _dropShadow: TextDropShadow;
 
@@ -384,17 +389,29 @@ export class TextStyle extends EventEmitter<{
     set wordWrapWidth(value: number) { this._wordWrapWidth = value; this.update(); }
 
     /** A fillstyle that will be used on the text e.g., 'red', '#00FF00'. */
-    get fill(): FillStyleInputs
+    get fill(): FillInput
     {
         return this._originalFill;
     }
 
-    set fill(value: FillStyleInputs)
+    set fill(value: FillInput)
     {
         if (value === this._originalFill) return;
 
         this._originalFill = value;
-        this._fill = convertFillInputToFillStyle(
+
+        if (this._isFillStyle(value))
+        {
+            this._originalFill = this._createProxy({ ...GraphicsContext.defaultFillStyle, ...value }, () =>
+            {
+                this._fill = toFillStyle(
+                    { ...this._originalFill as FillStyle },
+                    GraphicsContext.defaultFillStyle
+                );
+            });
+        }
+
+        this._fill = toFillStyle(
             value === 0x0 ? 'black' : value,
             GraphicsContext.defaultFillStyle
         );
@@ -402,17 +419,29 @@ export class TextStyle extends EventEmitter<{
     }
 
     /** A fillstyle that will be used on the text stroke, e.g., 'blue', '#FCFF00'. */
-    get stroke(): FillStyleInputs
+    get stroke(): StrokeInput
     {
         return this._originalStroke;
     }
 
-    set stroke(value: FillStyleInputs)
+    set stroke(value: StrokeInput)
     {
         if (value === this._originalStroke) return;
 
         this._originalStroke = value;
-        this._stroke = convertFillInputToFillStyle(value, GraphicsContext.defaultStrokeStyle);
+
+        if (this._isFillStyle(value))
+        {
+            this._originalStroke = this._createProxy({ ...GraphicsContext.defaultStrokeStyle, ...value }, () =>
+            {
+                this._stroke = toStrokeStyle(
+                    { ...this._originalStroke as StrokeStyle },
+                    GraphicsContext.defaultStrokeStyle
+                );
+            });
+        }
+
+        this._stroke = toStrokeStyle(value, GraphicsContext.defaultStrokeStyle);
         this.update();
     }
 
@@ -530,6 +559,12 @@ export class TextStyle extends EventEmitter<{
                 return true;
             }
         });
+    }
+
+    private _isFillStyle(value: FillInput): value is FillStyle
+    {
+        return ((value ?? null) !== null
+            && !(Color.isColorLike(value) || value instanceof FillGradient || value instanceof FillPattern));
     }
 }
 

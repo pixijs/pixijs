@@ -40,6 +40,8 @@ export class FillGradient implements CanvasGradient
     public transform: Matrix;
     public gradientStops: Array<{ offset: number, color: string }> = [];
 
+    private _styleKey: string | null = null;
+
     constructor(x0: number, y0: number, x1: number, y1: number)
     {
         this.x0 = x0;
@@ -52,6 +54,7 @@ export class FillGradient implements CanvasGradient
     public addColorStop(offset: number, color: ColorSource): this
     {
         this.gradientStops.push({ offset, color: Color.shared.setValue(color).toHex() });
+        this._styleKey = null;
 
         return this;
     }
@@ -110,5 +113,20 @@ export class FillGradient implements CanvasGradient
         m.scale(256 / dist, 1);
 
         this.transform = m;
+        this._styleKey = null;
+    }
+
+    public get styleKey(): string
+    {
+        if (this._styleKey)
+        {
+            return this._styleKey;
+        }
+
+        const stops = this.gradientStops.map((stop) => `${stop.offset}-${stop.color}`).join('-');
+        const texture = this.texture.uid;
+        const transform = this.transform.toArray().join('-');
+
+        return `fill-gradient-${this.uid}-${stops}-${texture}-${transform}-${this.x0}-${this.y0}-${this.x1}-${this.y1}`;
     }
 }

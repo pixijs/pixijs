@@ -9,69 +9,17 @@ import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import { Bounds } from '../../container/bounds/Bounds';
 import { GraphicsPath } from './path/GraphicsPath';
 import { SVGParser } from './svg/SVGParser';
-import { convertFillInputToFillStyle } from './utils/convertFillInputToFillStyle';
+import { toFillStyle, toStrokeStyle } from './utils/convertFillInputToFillStyle';
 
 import type { PointData } from '../../../maths/point/PointData';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import type { TextureDestroyOptions, TypeOrBool } from '../../container/destroyTypes';
-import type { LineCap, LineJoin } from './const';
-import type { FillGradient } from './fill/FillGradient';
-import type { FillPattern } from './fill/FillPattern';
+import type { ConvertedFillStyle, ConvertedStrokeStyle, FillInput, StrokeInput } from './FillTypes';
 import type { RoundedPoint } from './path/roundShape';
-
-/**
- * A fill style object.
- * @memberof scene
- */
-export interface FillStyle
-{
-    /** The color to use for the fill. */
-    color?: ColorSource;
-    /** The alpha value to use for the fill. */
-    alpha?: number;
-    /** The texture to use for the fill. */
-    texture?: Texture | null;
-    /** The matrix to apply. */
-    matrix?: Matrix | null;
-    /** The fill pattern to use. */
-    fill?: FillPattern | FillGradient | null;
-}
-
-export type ConvertedFillStyle = Omit<Required<FillStyle>, 'color'> & { color: number };
-
-export interface PatternFillStyle
-{
-    fill?: FillPattern | FillGradient;
-    color?: number;
-    alpha?: number;
-}
-
-/**
- * A stroke style object.
- * @memberof scene
- */
-export interface StrokeStyle extends FillStyle
-{
-    /** The width of the stroke. */
-    width?: number;
-    /** The alignment of the stroke. */
-    alignment?: number;
-    // native?: boolean;
-    /** The line cap style to use. */
-    cap?: LineCap;
-    /** The line join style to use. */
-    join?: LineJoin;
-    /** The miter limit to use. */
-    miterLimit?: number;
-}
-
-export type ConvertedStrokeStyle = Omit<StrokeStyle, 'color'> & ConvertedFillStyle;
 
 const tmpPoint = new Point();
 
 export type BatchMode = 'auto' | 'batch' | 'no-batch';
-
-export type FillStyleInputs = ColorSource | FillGradient | CanvasPattern | PatternFillStyle | FillStyle | ConvertedFillStyle | StrokeStyle | ConvertedStrokeStyle;
 
 export interface FillInstruction
 {
@@ -206,9 +154,9 @@ export class GraphicsContext extends EventEmitter<{
         return this._fillStyle;
     }
 
-    set fillStyle(value: FillStyleInputs)
+    set fillStyle(value: FillInput)
     {
-        this._fillStyle = convertFillInputToFillStyle(value, GraphicsContext.defaultFillStyle);
+        this._fillStyle = toFillStyle(value, GraphicsContext.defaultFillStyle);
     }
 
     /**
@@ -219,9 +167,9 @@ export class GraphicsContext extends EventEmitter<{
         return this._strokeStyle;
     }
 
-    set strokeStyle(value: FillStyleInputs)
+    set strokeStyle(value: FillInput)
     {
-        this._strokeStyle = convertFillInputToFillStyle(value, GraphicsContext.defaultStrokeStyle) as ConvertedStrokeStyle;
+        this._strokeStyle = toStrokeStyle(value, GraphicsContext.defaultStrokeStyle);
     }
 
     /**
@@ -231,9 +179,9 @@ export class GraphicsContext extends EventEmitter<{
      *                or a FillStyle or ConvertedFillStyle object.
      * @returns The instance of the current GraphicsContext for method chaining.
      */
-    public setFillStyle(style: FillStyleInputs): this
+    public setFillStyle(style: FillInput): this
     {
-        this._fillStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultFillStyle);
+        this._fillStyle = toFillStyle(style, GraphicsContext.defaultFillStyle);
 
         return this;
     }
@@ -245,9 +193,9 @@ export class GraphicsContext extends EventEmitter<{
      *                or a StrokeStyle or ConvertedStrokeStyle object.
      * @returns The instance of the current GraphicsContext for method chaining.
      */
-    public setStrokeStyle(style: FillStyleInputs): this
+    public setStrokeStyle(style: StrokeInput): this
     {
-        this._strokeStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultStrokeStyle) as ConvertedStrokeStyle;
+        this._strokeStyle = toFillStyle(style, GraphicsContext.defaultStrokeStyle) as ConvertedStrokeStyle;
 
         return this;
     }
@@ -306,14 +254,14 @@ export class GraphicsContext extends EventEmitter<{
 
     /**
      * Fills the current or given path with the current fill style. This method can optionally take
-     * a color and alpha for a simple fill, or a more complex FillStyleInputs object for advanced fills.
+     * a color and alpha for a simple fill, or a more complex FillInput object for advanced fills.
      * @param style - (Optional) The style to fill the path with. Can be a color, gradient, pattern, or a complex style object. If omitted, uses the current fill style.
      * @returns The instance of the current GraphicsContext for method chaining.
      */
-    public fill(style?: FillStyleInputs): this;
+    public fill(style?: FillInput): this;
     /** @deprecated 8.0.0 */
     public fill(color: ColorSource, alpha: number): this;
-    public fill(style?: FillStyleInputs, alpha?: number): this
+    public fill(style?: FillInput, alpha?: number): this
     {
         let path: GraphicsPath;
 
@@ -341,7 +289,7 @@ export class GraphicsContext extends EventEmitter<{
 
                 style = { color: style, alpha };
             }
-            this._fillStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultFillStyle);
+            this._fillStyle = toFillStyle(style, GraphicsContext.defaultFillStyle);
         }
 
         // TODO not a fan of the clone!!
@@ -370,11 +318,11 @@ export class GraphicsContext extends EventEmitter<{
 
     /**
      * Strokes the current path with the current stroke style. This method can take an optional
-     * FillStyleInputs parameter to define the stroke's appearance, including its color, width, and other properties.
+     * FillInput parameter to define the stroke's appearance, including its color, width, and other properties.
      * @param style - (Optional) The stroke style to apply. Can be defined as a simple color or a more complex style object. If omitted, uses the current stroke style.
      * @returns The instance of the current GraphicsContext for method chaining.
      */
-    public stroke(style?: FillStyleInputs): this
+    public stroke(style?: StrokeInput): this
     {
         let path: GraphicsPath;
 
@@ -394,7 +342,7 @@ export class GraphicsContext extends EventEmitter<{
         // eslint-disable-next-line no-eq-null, eqeqeq
         if (style != null)
         {
-            this._strokeStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultStrokeStyle);
+            this._strokeStyle = toStrokeStyle(style, GraphicsContext.defaultStrokeStyle);
         }
 
         // TODO not a fan of the clone!!
