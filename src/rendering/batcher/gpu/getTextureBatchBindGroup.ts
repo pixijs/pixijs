@@ -1,6 +1,6 @@
 import { BindGroup } from '../../renderers/gpu/shader/BindGroup';
 import { Texture } from '../../renderers/shared/texture/Texture';
-import { maxRecommendedTextures } from '../../renderers/shared/texture/utils/maxRecommendedTextures';
+import { getMaxTexturesPerBatch } from '../gl/utils/maxRecommendedTextures';
 
 import type { TextureSource } from '../../renderers/shared/texture/sources/TextureSource';
 
@@ -26,7 +26,7 @@ function generateTextureBatchBindGroup(textures: TextureSource[], key: number): 
 
     let bindIndex = 0;
 
-    if (!maxTextures)maxTextures = maxRecommendedTextures();
+    if (!maxTextures)maxTextures = getMaxTexturesPerBatch();
 
     for (let i = 0; i < maxTextures; i++)
     {
