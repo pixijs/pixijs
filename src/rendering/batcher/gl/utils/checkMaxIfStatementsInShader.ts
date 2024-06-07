@@ -1,4 +1,4 @@
-import type { GlRenderingContext } from '../../../../bundle.browser';
+import type { GlRenderingContext } from '../../../renderers/gl/context/GlRenderingContext';
 
 const fragTemplate = [
     'precision mediump float;',
