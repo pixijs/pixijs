@@ -38,7 +38,7 @@ export class RenderGroup implements Instruction
 
     private readonly _onRenderContainers: Container[] = [];
 
-    constructor(root: Container)
+    public init(root: Container)
     {
         this.root = root;
 
@@ -52,6 +52,29 @@ export class RenderGroup implements Instruction
         {
             this.addChild(children[i]);
         }
+    }
+
+    public reset()
+    {
+        this.renderGroupChildren.length = 0;
+
+        for (const i in this.childrenToUpdate)
+        {
+            const childrenAtDepth = this.childrenToUpdate[i];
+
+            childrenAtDepth.list.fill(null);
+            childrenAtDepth.index = 0;
+        }
+
+        this.childrenRenderablesToUpdate.index = 0;
+        this.childrenRenderablesToUpdate.list.fill(null);
+
+        this.root = null;
+        this.updateTick = 0;
+        this.structureDidChange = true;
+
+        this._onRenderContainers.length = 0;
+        this.renderGroupParent = null;
     }
 
     get localTransform()
