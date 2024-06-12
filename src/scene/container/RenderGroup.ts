@@ -5,8 +5,9 @@ import type { Instruction } from '../../rendering/renderers/shared/instructions/
 import type { Container } from './Container';
 
 /**
- * The render group is the base class for all render groups
- * It is used to render a group of containers together
+ * A RenderGroup is a class that is responsible for I generating a set of instructions that are used to render the
+ * root container and its children. It als watches for any changes in that container or its children,
+ * these changes are analysed and either the instruction set is rebuild or the instructions data is updated.
  * @memberof rendering
  */
 export class RenderGroup implements Instruction

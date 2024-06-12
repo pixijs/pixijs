@@ -748,29 +748,14 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     {
         if (!!this.renderGroup === value) return;
 
-        const parentRenderGroup = this.parentRenderGroup;
-
-        parentRenderGroup?.removeChild(this);
-
-        if (this.renderGroup && value === false)
+        if (value)
         {
-            BigPool.return(this.renderGroup);
-
-            this.renderGroup = null;
-            this.groupTransform = this.relativeGroupTransform;
+            this.enableRenderGroup();
         }
-        else if (value)
+        else
         {
-            this.renderGroup = BigPool.get(RenderGroup, this);
-
-            // this group matrix will now be an identity matrix,
-            // as its own transform will be passed to the GPU
-            this.groupTransform = Matrix.IDENTITY;
+            this.disableRenderGroup();
         }
-
-        parentRenderGroup?.addChild(this);
-
-        this._updateIsSimple();
     }
 
     /**
@@ -780,6 +765,49 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     get isRenderGroup(): boolean
     {
         return !!this.renderGroup;
+    }
+
+    /**
+     * Calling this enables a render group for this container.
+     * This means it will be rendered as a separate set of instructions.
+     * The transform of the container will also be handled on the GPU rather than the CPU.
+     */
+    public enableRenderGroup(): void
+    {
+        if (this.renderGroup) return;
+
+        const parentRenderGroup = this.parentRenderGroup;
+
+        parentRenderGroup?.removeChild(this);
+
+        this.renderGroup = BigPool.get(RenderGroup, this);
+
+        // this group matrix will now be an identity matrix,
+        // as its own transform will be passed to the GPU
+        this.groupTransform = Matrix.IDENTITY;
+
+        parentRenderGroup?.addChild(this);
+
+        this._updateIsSimple();
+    }
+
+    /** This will disable the render group for this container. */
+    public disableRenderGroup(): void
+    {
+        if (!this.renderGroup) return;
+
+        const parentRenderGroup = this.parentRenderGroup;
+
+        parentRenderGroup?.removeChild(this);
+
+        BigPool.return(this.renderGroup);
+
+        this.renderGroup = null;
+        this.groupTransform = this.relativeGroupTransform;
+
+        parentRenderGroup?.addChild(this);
+
+        this._updateIsSimple();
     }
 
     /** @ignore */
