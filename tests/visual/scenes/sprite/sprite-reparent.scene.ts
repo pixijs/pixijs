@@ -30,7 +30,7 @@ export const scene: TestScene = {
         // render scene
         renderer.render(scene);
 
-        child.reparent(newParent);
-        child3.reparent(newParent, 0);
+        newParent.reparentChild(child);
+        newParent.reparentChildAt(child3, 0);
     },
 };

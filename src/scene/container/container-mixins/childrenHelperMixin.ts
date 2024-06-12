@@ -16,7 +16,9 @@ export interface ChildrenHelperMixin<C = ContainerChild>
     addChildAt<U extends C>(child: U, index: number): U;
     swapChildren<U extends C>(child: U, child2: U): void;
     removeFromParent(): void;
-    reparent(newParent: Container, index?: number): void;
+
+    reparentChild<U extends C[]>(...child: U): U[0];
+    reparentChildAt<U extends C>(child: U, index: number): U;
 }
 
 export const childrenHelperMixin: Partial<Container> = {
@@ -235,23 +237,50 @@ export const childrenHelperMixin: Partial<Container> = {
     },
 
     /**
-     * Reparent the Container to a new parent Container, keeping the same worldTransform.
-     * @param newParent - The new parent Container to add this Container to.
-     * @param index - The index to add the child to. If not provided, the child will be added to the end of the list.
+     * Reparent the child to this container, keeping the same worldTransform.
+     * @param child - The child to reparent
+     * @returns The first child that was reparented.
      * @memberof scene.Container#
      */
-    reparent(newParent: Container, index?: number)
+    reparentChild<U extends ContainerChild[]>(...child: U): U[0]
     {
-        const mat = this.worldTransform.clone();
+        if (child.length === 1)
+        {
+            return this.reparentChildAt(child[0], this.children.length);
+        }
 
-        this.removeFromParent();
-        newParent.addChildAt(this, index ?? newParent.children.length);
+        child.forEach((c) => this.reparentChildAt(c, this.children.length));
 
-        const newMatrix = newParent.worldTransform.clone();
+        return child[0];
+    },
+
+    /**
+     * Reparent the child to this container at the specified index, keeping the same worldTransform.
+     * @param child - The child to reparent
+     * @param index - The index to reparent the child to
+     * @memberof scene.Container#
+     */
+    reparentChildAt<U extends ContainerChild>(child: U, index: number): U
+    {
+        if (child.parent === this)
+        {
+            this.setChildIndex(child, index);
+
+            return child;
+        }
+
+        const childMat = child.worldTransform.clone();
+
+        child.removeFromParent();
+        this.addChildAt(child, index);
+
+        const newMatrix = this.worldTransform.clone();
 
         newMatrix.invert();
-        mat.prepend(newMatrix);
+        childMat.prepend(newMatrix);
 
-        this.setFromMatrix(mat);
+        child.setFromMatrix(childMat);
+
+        return child;
     }
 } as Container;

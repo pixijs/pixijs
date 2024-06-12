@@ -357,7 +357,7 @@ describe('Container Hierarchy', () =>
             // render scene
             renderer.render(stage);
 
-            child.reparent(newParent);
+            newParent.reparentChild(child);
 
             // render scene
             renderer.render(stage);
@@ -383,7 +383,7 @@ describe('Container Hierarchy', () =>
         // render scene
         renderer.render(stage);
 
-        child.reparent(newParent);
+        newParent.reparentChild(child);
 
         // render scene
         renderer.render(stage);
