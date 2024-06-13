@@ -97,9 +97,6 @@ export class CanvasPoolClass
         const canvas = canvasAndContext.canvas;
         const { width, height } = canvas;
 
-        // clear context..
-        canvas.width = width;
-
         const key = (width << 17) + (height << 1);
 
         this._canvasPool[key].push(canvasAndContext);

@@ -429,6 +429,10 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         {
             const { canvasAndContext, texture } = this.pages[i];
 
+            // clear context.. this is the fastest way apparently!
+            // eslint-disable-next-line no-self-assign
+            canvasAndContext.canvas.width = canvasAndContext.canvas.width;
+
             CanvasPool.returnCanvasAndContext(canvasAndContext);
             texture.destroy(true);
         }
