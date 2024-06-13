@@ -3,7 +3,7 @@ import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture
 import { Graphics } from '../../../src/scene/graphics/shared/Graphics';
 import { GraphicsContext } from '../../../src/scene/graphics/shared/GraphicsContext';
 import { GraphicsPath } from '../../../src/scene/graphics/shared/path/GraphicsPath';
-import { convertFillInputToFillStyle } from '../../../src/scene/graphics/shared/utils/convertFillInputToFillStyle';
+import { toFillStyle } from '../../../src/scene/graphics/shared/utils/convertFillInputToFillStyle';
 import { getWebGLRenderer } from '../../utils/getRenderer';
 
 describe('Graphics', () =>
@@ -27,14 +27,14 @@ describe('Graphics', () =>
     {
         it('should parse the alpha component from a color string value', () =>
         {
-            const style = convertFillInputToFillStyle({ color: '#ff000080' }, GraphicsContext.defaultFillStyle);
+            const style = toFillStyle({ color: '#ff000080' }, GraphicsContext.defaultFillStyle);
 
             expect(style.alpha).toBe(0.5);
         });
 
         it('should multiply alpha component from a color string value with a passed alpha value', () =>
         {
-            const style = convertFillInputToFillStyle(
+            const style = toFillStyle(
                 { color: '#ff000080', alpha: 0.5 },
                 GraphicsContext.defaultFillStyle
             );
@@ -122,7 +122,7 @@ describe('Graphics', () =>
 
             matrix.scale(2, 3);
 
-            const style = convertFillInputToFillStyle({ texture, matrix }, GraphicsContext.defaultFillStyle);
+            const style = toFillStyle({ texture, matrix }, GraphicsContext.defaultFillStyle);
 
             expect(style.matrix.a).toBe(1 / 2);
             expect(style.matrix.d).toBe(1 / 3);
@@ -244,6 +244,20 @@ describe('Graphics', () =>
 
             expect(graphicsData.geometry.indexBuffer.data.length).toEqual(3 * 6);
             expect(graphicsData.geometry.buffers[0].data.length).toEqual(3 * 4 * 6);
+        });
+
+        it('should clear a graphics correctly', async () =>
+        {
+            const graphics = new Graphics()
+                .rect(0, 0, 1000, 1000)
+                .rect(1000, 1000, 1000, 1000)
+                .rect(2000, 2000, 1000, 1000);
+
+            graphics.clear();
+
+            expect(graphics.context['_activePath'].instructions.length).toEqual(0);
+            expect(graphics.context.instructions.length).toEqual(0);
+            expect(graphics.context['_transform'].toArray()).toEqual(Matrix.IDENTITY.toArray());
         });
     });
 

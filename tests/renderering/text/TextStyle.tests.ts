@@ -1,6 +1,13 @@
 /* eslint-disable jest/no-commented-out-tests */
+import { Color } from '../../../src/color/Color';
+import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
+import { FillGradient } from '../../../src/scene/graphics/shared/fill/FillGradient';
+import { FillPattern } from '../../../src/scene/graphics/shared/fill/FillPattern';
+import { GraphicsContext } from '../../../src/scene/graphics/shared/GraphicsContext';
 import { TextStyle } from '../../../src/scene/text/TextStyle';
 import { HTMLTextStyle } from '../../../src/scene/text-html/HtmlTextStyle';
+
+import type { TextStyleOptions } from '../../../src/scene/text/TextStyle';
 
 describe('TextStyle', () =>
 {
@@ -93,5 +100,147 @@ describe('TextStyle', () =>
 
             expect(result).toBeNull();
         }
+    });
+
+    it('should convert dropShadow properties', () =>
+    {
+        const style = {
+            dropShadow: true,
+            dropShadowAlpha: 0.5,
+            dropShadowAngle: 45,
+            dropShadowBlur: 10,
+            dropShadowColor: 0x000000,
+            dropShadowDistance: 5,
+        };
+
+        const textstyle = new TextStyle(style);
+
+        expect(textstyle.dropShadow).toEqual({
+            alpha: 0.5,
+            angle: 45,
+            blur: 10,
+            color: 0x000000,
+            distance: 5,
+        });
+
+        const style2 = {
+            dropShadow: false,
+            dropShadowAlpha: 0.5,
+        };
+
+        const textstyle2 = new TextStyle(style2);
+
+        expect(textstyle2.dropShadow).toBeNull();
+    });
+
+    it('should convert strokeThickness property for colors', () =>
+    {
+        const style = {
+            stroke: 0xff0000,
+            strokeThickness: 5,
+        };
+
+        expect(new TextStyle(style)._stroke).toEqual({
+            ...GraphicsContext.defaultStrokeStyle,
+            color: 0xff0000,
+            width: 5,
+        });
+
+        const style2 = {
+            stroke: new Color(0xff0000),
+            strokeThickness: 5,
+        };
+
+        expect(new TextStyle(style2)._stroke).toEqual({
+            ...GraphicsContext.defaultStrokeStyle,
+            color: 0xff0000,
+            width: 5,
+        });
+
+        const style3 = {
+            stroke: {
+                color: 0xff0000,
+            },
+            strokeThickness: 5,
+        };
+
+        expect(new TextStyle(style3)._stroke).toEqual({
+            ...GraphicsContext.defaultStrokeStyle,
+            color: 0xff0000,
+            width: 5,
+        });
+
+        const style4 = {
+            stroke: {
+                color: new Color(0xff0000),
+            },
+            strokeThickness: 5,
+        };
+
+        expect(new TextStyle(style4)._stroke).toEqual({
+            ...GraphicsContext.defaultStrokeStyle,
+            color: 0xff0000,
+            width: 5,
+        });
+    });
+
+    it('should keep other stroke properties', () =>
+    {
+        const style: TextStyleOptions & {strokeThickness: number} = {
+            stroke: {
+                color: 0xff0000,
+                alignment: 0.5,
+                cap: 'round',
+                join: 'round',
+                miterLimit: 15,
+            },
+            strokeThickness: 5,
+        };
+
+        expect(new TextStyle(style)._stroke).toEqual({
+            ...GraphicsContext.defaultStrokeStyle,
+            color: 0xff0000,
+            width: 5,
+            alignment: 0.5,
+            cap: 'round',
+            join: 'round',
+            miterLimit: 15,
+        });
+    });
+
+    it('should convert fill object to FillPattern', () =>
+    {
+        const pattern = new FillPattern(Texture.WHITE);
+        const style = {
+            stroke: pattern,
+            strokeThickness: 5,
+        };
+
+        const textStyle = new TextStyle(style);
+
+        expect(textStyle._stroke.fill).toBeInstanceOf(FillPattern);
+        expect(textStyle._stroke).toEqual({
+            ...GraphicsContext.defaultStrokeStyle,
+            fill: pattern,
+            width: 5,
+            texture: pattern.texture,
+            matrix: pattern.transform,
+        });
+    });
+
+    it('should convert fillGradientStops array to FillGradient', () =>
+    {
+        const style = {
+            fillGradientStops: [0x000000, 0xff0000, 0xFFFFFF],
+        };
+
+        const textStyle = new TextStyle(style as TextStyleOptions);
+
+        expect(textStyle._fill.fill).toBeInstanceOf(FillGradient);
+        expect((textStyle._fill.fill as FillGradient).gradientStops).toEqual([
+            { offset: 0, color: '#000000' },
+            { offset: 0.5, color: '#ff0000' },
+            { offset: 1, color: '#ffffff' },
+        ]);
     });
 });

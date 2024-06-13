@@ -1,14 +1,14 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/matrix/Matrix';
-import { MAX_TEXTURES } from '../../../rendering/batcher/shared/const';
 import { compileHighShaderGlProgram } from '../../../rendering/high-shader/compileHighShaderToProgram';
 import { colorBitGl } from '../../../rendering/high-shader/shader-bits/colorBit';
 import { generateTextureBatchBitGl } from '../../../rendering/high-shader/shader-bits/generateTextureBatchBit';
 import { localUniformBitGl } from '../../../rendering/high-shader/shader-bits/localUniformBit';
 import { roundPixelsBitGl } from '../../../rendering/high-shader/shader-bits/roundPixelsBit';
-import { batchSamplersUniformGroup } from '../../../rendering/renderers/gl/shader/batchSamplersUniformGroup';
+import { getBatchSamplersUniformGroup } from '../../../rendering/renderers/gl/shader/getBatchSamplersUniformGroup';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
+import { maxRecommendedTextures } from '../../../rendering/renderers/shared/texture/utils/maxRecommendedTextures';
 
 import type { Batch } from '../../../rendering/batcher/shared/Batcher';
 import type { WebGLRenderer } from '../../../rendering/renderers/gl/WebGLRenderer';
@@ -40,11 +40,13 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
             uRound: { value: 0, type: 'f32' },
         });
 
+        const maxTextures = maxRecommendedTextures();
+
         const glProgram = compileHighShaderGlProgram({
             name: 'graphics',
             bits: [
                 colorBitGl,
-                generateTextureBatchBitGl(MAX_TEXTURES),
+                generateTextureBatchBitGl(maxTextures),
                 localUniformBitGl,
                 roundPixelsBitGl,
             ]
@@ -54,7 +56,7 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
             glProgram,
             resources: {
                 localUniforms: uniforms,
-                batchSamplers: batchSamplersUniformGroup,
+                batchSamplers: getBatchSamplersUniformGroup(maxTextures),
             }
         });
     }

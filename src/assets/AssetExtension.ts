@@ -1,8 +1,33 @@
 import type { ExtensionType } from '../extensions/Extensions';
 import type { CacheParser } from './cache/CacheParser';
 import type { FormatDetectionParser } from './detections/types';
-import type { LoaderParser } from './loader/parsers/LoaderParser';
+import type { LoaderParserAdvanced } from './loader/parsers/LoaderParser';
 import type { ResolveURLParser } from './resolver/types';
+
+/**
+ * A more verbose version of the AssetExtension,
+ * allowing you to set the cached, loaded, parsed, and unloaded asset separately
+ * @memberof assets
+ */
+interface AssetExtensionAdvanced<
+    ASSET = any,
+    PARSED_ASSET = ASSET,
+    UNLOAD_ASSET = ASSET,
+    CACHE_ASSET = ASSET,
+    META_DATA = any
+>
+{
+    /** The type of extension */
+    extension: ExtensionType.Asset,
+    /** the asset loader */
+    loader?: LoaderParserAdvanced<ASSET, PARSED_ASSET, UNLOAD_ASSET, META_DATA>,
+    /** the asset resolve parser */
+    resolver?: Partial<ResolveURLParser>,
+    /** the asset cache parser */
+    cache?: Partial<CacheParser<CACHE_ASSET>>,
+    /** the asset format detection parser */
+    detection?: Partial<FormatDetectionParser>,
+}
 
 /**
  * This developer convenience object allows developers to group
@@ -59,18 +84,6 @@ import type { ResolveURLParser } from './resolver/types';
  * }
  * @memberof assets
  */
-interface AssetExtension<ASSET = any, META_DATA = any>
-{
-    /** The type of extension */
-    extension: ExtensionType.Asset,
-    /** the asset loader */
-    loader?: LoaderParser<ASSET, META_DATA>,
-    /** the asset resolve parser */
-    resolver?: Partial<ResolveURLParser>,
-    /** the asset cache parser */
-    cache?: Partial<CacheParser<ASSET>>,
-    /** the asset format detection parser */
-    detection?: Partial<FormatDetectionParser>,
-}
+interface AssetExtension<ASSET = any, META_DATA = any> extends AssetExtensionAdvanced<ASSET, META_DATA>{}
 
-export type { AssetExtension };
+export type { AssetExtension, AssetExtensionAdvanced };
