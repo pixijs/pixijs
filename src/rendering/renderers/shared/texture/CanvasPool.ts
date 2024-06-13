@@ -94,7 +94,11 @@ export class CanvasPoolClass
      */
     public returnCanvasAndContext(canvasAndContext: CanvasAndContext): void
     {
-        const { width, height } = canvasAndContext.canvas;
+        const canvas = canvasAndContext.canvas;
+        const { width, height } = canvas;
+
+        // clear context..
+        canvas.width = width;
 
         const key = (width << 17) + (height << 1);
 

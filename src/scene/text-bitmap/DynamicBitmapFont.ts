@@ -7,13 +7,13 @@ import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { CanvasTextMetrics } from '../text/canvas/CanvasTextMetrics';
 import { fontStringFromTextStyle } from '../text/canvas/utils/fontStringFromTextStyle';
 import { getCanvasFillStyle } from '../text/canvas/utils/getCanvasFillStyle';
+import { TextStyle } from '../text/TextStyle';
 import { AbstractBitmapFont } from './AbstractBitmapFont';
 import { resolveCharacters } from './utils/resolveCharacters';
 
 import type { ICanvasRenderingContext2D } from '../../environment/canvas/ICanvasRenderingContext2D';
 import type { CanvasAndContext } from '../../rendering/renderers/shared/texture/CanvasPool';
 import type { FontMetrics } from '../text/canvas/CanvasTextMetrics';
-import type { TextStyle } from '../text/TextStyle';
 
 export interface DynamicBitmapFontOptions
 {
@@ -23,6 +23,7 @@ export interface DynamicBitmapFontOptions
     padding?: number
     overrideFill?: boolean
     overrideSize?: boolean
+    textureSize?: number
 }
 
 /**
@@ -32,6 +33,10 @@ export interface DynamicBitmapFontOptions
  */
 export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
 {
+    public static defaultOptions: DynamicBitmapFontOptions = {
+        textureSize: 512,
+        style: new TextStyle(),
+    };
     /**
      * this is a resolution modifier for the font size..
      * texture resolution will also be used to scale texture according to its font size also
@@ -48,6 +53,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
     private _currentPageIndex = -1;
     private readonly _style: TextStyle;
     private readonly _skipKerning: boolean = false;
+    private readonly _textureSize: number;
 
     /**
      * @param options - The options for the dynamic bitmap font.
@@ -56,7 +62,10 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
     {
         super();
 
-        const dynamicOptions = options;
+        const dynamicOptions = { ...DynamicBitmapFont.defaultOptions, ...options };
+
+        this._textureSize = dynamicOptions.textureSize;
+
         const style = dynamicOptions.style.clone();
 
         if (dynamicOptions.overrideFill)
@@ -67,6 +76,8 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
             style._fill.texture = Texture.WHITE;
             style._fill.fill = null;
         }
+
+        this.applyFillAsTint = dynamicOptions.overrideFill;
 
         const requestedFontSize = style.fontSize;
 
@@ -160,7 +171,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
                 maxCharHeight = Math.ceil(Math.max(paddedHeight, maxCharHeight));// / 1.5;
             }
 
-            if (currentX + paddedWidth > 512)
+            if (currentX + paddedWidth > this._textureSize)
             {
                 currentY += maxCharHeight;
 
@@ -168,7 +179,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
                 maxCharHeight = paddedHeight;
                 currentX = 0;
 
-                if (currentY + maxCharHeight > 512)
+                if (currentY + maxCharHeight > this._textureSize)
                 {
                     textureSource.update();
 
@@ -295,7 +306,11 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         this._currentPageIndex++;
 
         const textureResolution = this.resolution;
-        const canvasAndContext = CanvasPool.getOptimalCanvasAndContext(512, 512, textureResolution);
+        const canvasAndContext = CanvasPool.getOptimalCanvasAndContext(
+            this._textureSize,
+            this._textureSize,
+            textureResolution
+        );
 
         this._setupContext(canvasAndContext.context, this._style, textureResolution);
 

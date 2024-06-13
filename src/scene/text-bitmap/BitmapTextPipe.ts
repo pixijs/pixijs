@@ -146,7 +146,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
                 (-bitmapText._anchor._y * (bitmapTextLayout.height + bitmapTextLayout.offsetY)) - padding)
             .scale(scale, scale);
 
-        const tint = style._fill.color;
+        const tint = bitmapFont.applyFillAsTint ? style._fill.color : 0xFFFFFF;
 
         for (let i = 0; i < bitmapTextLayout.lines.length; i++)
         {

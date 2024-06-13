@@ -1,4 +1,5 @@
 import { Cache } from '../../assets/cache/Cache';
+import { warn } from '../../utils';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { TextStyle } from '../text/TextStyle';
 import { DynamicBitmapFont } from './DynamicBitmapFont';
@@ -8,6 +9,8 @@ import { resolveCharacters } from './utils/resolveCharacters';
 import type { TextStyleOptions } from '../text/TextStyle';
 import type { BitmapFont } from './BitmapFont';
 import type { BitmapTextLayoutData } from './utils/getBitmapTextLayout';
+
+let fontCount = 0;
 
 /**
  *
@@ -115,9 +118,21 @@ class BitmapFontManagerClass
         let overrideFill = true;
 
         // assuming there is no texture we can use a tint!
-        if (style._fill.fill)
+        if (style._fill.fill && !style._stroke)
         {
-            fontFamilyKey += style._fill.fill.uid;
+            fontFamilyKey += style._fill.fill.styleKey;
+            overrideFill = false;
+        }
+        else if (style._stroke)
+        {
+            // if there is a stoke, we need to use the style key as this the font generated cannot be tinted
+            // due to the fact the font has at least two colors.
+            let key = style.styleKey;
+
+            // remove the font size..
+            key = key.substring(0, key.lastIndexOf('-'));
+
+            fontFamilyKey = `${key}-bitmap`;
             overrideFill = false;
         }
 
@@ -131,7 +146,20 @@ class BitmapFontManagerClass
                 ...this.defaultOptions,
             });
 
-            fnt.once('destroy', () => Cache.remove(fontFamilyKey));
+            fontCount++;
+
+            // warn users if they have created too many dynamic fonts
+            if (fontCount > 50)
+            {
+                // eslint-disable-next-line max-len
+                warn('BitmapText', `You have dynamically created ${fontCount} bitmap fonts, this can be inefficient. Try pre installing your font styles using \`BitmapFont.install({name:"style1", style})\``);
+            }
+
+            fnt.once('destroy', () =>
+            {
+                fontCount--;
+                Cache.remove(fontFamilyKey);
+            });
 
             Cache.set(
                 fontFamilyKey as string,
