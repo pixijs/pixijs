@@ -8,7 +8,10 @@ import type { CacheParser } from '../CacheParser';
  * @memberof assets
  */
 export const cacheTextureArray: CacheParser<Texture[]> = {
-    extension: ExtensionType.CacheParser,
+    extension: {
+        type: ExtensionType.CacheParser,
+        name: 'cacheTextureArray',
+    },
 
     test: (asset: any[]) => Array.isArray(asset) && asset.every((t) => t instanceof Texture),
 

@@ -5,7 +5,7 @@ import type { GLTextureUploader } from './GLTextureUploader';
 
 export const glUploadBufferImageResource = {
 
-    id: 'image',
+    id: 'buffer',
 
     upload(source: TextureSource, glTexture: GlTexture, gl: GlRenderingContext)
     {
@@ -16,6 +16,8 @@ export const glUploadBufferImageResource = {
                 0,
                 0,
                 0,
+                source.width,
+                source.height,
                 glTexture.format,
                 glTexture.type,
                 source.resource

@@ -17,6 +17,7 @@ export const loadKTX = {
     extension: {
         type: ExtensionType.LoadParser,
         priority: LoaderParserPriority.High,
+        name: 'loadKTX',
     },
 
     name: 'loadKTX',
@@ -53,5 +54,5 @@ export const loadKTX = {
         }
     }
 
-} as LoaderParser<Texture | Texture[], TextureSourceOptions>;
+} satisfies LoaderParser<Texture | Texture[], TextureSourceOptions>;
 

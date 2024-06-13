@@ -69,9 +69,11 @@ export class DummyView extends Container implements View
         if (this.didViewUpdate) return;
         this.didViewUpdate = true;
 
-        if (this.renderGroup)
+        const renderGroup = this.renderGroup || this.parentRenderGroup;
+
+        if (renderGroup)
         {
-            this.renderGroup.onChildViewUpdate(this);
+            renderGroup.onChildViewUpdate(this);
         }
     }
 

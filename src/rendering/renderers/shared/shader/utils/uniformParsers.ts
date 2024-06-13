@@ -22,7 +22,7 @@ import type { PointLike } from '../../../../../maths/point/PointLike';
 import type { Rectangle } from '../../../../../maths/shapes/Rectangle';
 import type { UNIFORM_TYPES, UniformData } from '../types';
 
-interface UniformParserDefinition
+export interface UniformParserDefinition
 {
     type: UNIFORM_TYPES;
     test(data: UniformData): boolean;
@@ -54,7 +54,7 @@ export const uniformParsers: UniformParserDefinition[] = [
             data[offset + 9] = matrix[7];
             data[offset + 10] = matrix[8];
         `,
-        uniform: ` 
+        uniform: `
             gl.uniformMatrix3fv(ud[name].location, false, uv[name].toArray(true));
         `
     },

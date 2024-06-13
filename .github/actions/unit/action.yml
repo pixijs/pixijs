@@ -24,7 +24,7 @@ runs:
 
     - name: Upload Visual Test Images
       if: ${{ success() || failure() }}
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: pr_uploads
         path: .pr_uploads/

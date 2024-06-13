@@ -1,6 +1,5 @@
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { warn } from '../../../../utils/logging/warn';
-import { CanvasSource } from '../../shared/texture/sources/CanvasSource';
 import { CLEAR } from '../const';
 import { GlRenderTarget } from '../GlRenderTarget';
 
@@ -162,8 +161,8 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         const glRenderTarget = new GlRenderTarget();
 
-        // we are rendering to a canvas..
-        if (CanvasSource.test(renderTarget.colorTexture.resource))
+        // we are rendering to the main canvas..
+        if (renderTarget.colorTexture.resource === renderer.gl.canvas)
         {
             glRenderTarget.framebuffer = null;
 
@@ -177,6 +176,36 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
         return glRenderTarget;
+    }
+
+    public destroyGpuRenderTarget(gpuRenderTarget: GlRenderTarget)
+    {
+        const gl = this._renderer.gl;
+
+        if (gpuRenderTarget.framebuffer)
+        {
+            gl.deleteFramebuffer(gpuRenderTarget.framebuffer);
+            gpuRenderTarget.framebuffer = null;
+        }
+
+        if (gpuRenderTarget.resolveTargetFramebuffer)
+        {
+            gl.deleteFramebuffer(gpuRenderTarget.resolveTargetFramebuffer);
+            gpuRenderTarget.resolveTargetFramebuffer = null;
+        }
+
+        if (gpuRenderTarget.depthStencilRenderBuffer)
+        {
+            gl.deleteRenderbuffer(gpuRenderTarget.depthStencilRenderBuffer);
+            gpuRenderTarget.depthStencilRenderBuffer = null;
+        }
+
+        gpuRenderTarget.msaaRenderBuffer.forEach((renderBuffer) =>
+        {
+            gl.deleteRenderbuffer(renderBuffer);
+        });
+
+        gpuRenderTarget.msaaRenderBuffer = null;
     }
 
     public clear(_renderTarget: RenderTarget, clear: CLEAR_OR_BOOL, clearColor?: RgbaArray)

@@ -75,7 +75,7 @@ function collectAllRenderablesSimple(
         rp[container.renderPipeId].addRenderable(container as Renderable, instructionSet);
     }
 
-    if (!container.isRenderGroupRoot)
+    if (!container.renderGroup)
     {
         const children = container.children;
         const length = children.length;
@@ -94,7 +94,7 @@ function collectAllRenderablesAdvanced(
     isRoot: boolean
 ): void
 {
-    if (!isRoot && container.isRenderGroupRoot)
+    if (!isRoot && container.renderGroup)
     {
         renderPipes.renderGroup.addRenderGroup(container.renderGroup, instructionSet);
     }

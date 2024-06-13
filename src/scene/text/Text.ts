@@ -64,8 +64,8 @@ export class Text
         const { width, height } = canvasMeasurement;
 
         bounds.minX = (-anchor._x * width) - padding;
-        bounds.maxX = bounds.minX + width;
+        bounds.maxX = bounds.minX + width + (padding * 2);
         bounds.minY = (-anchor._y * height) - padding;
-        bounds.maxY = bounds.minY + height;
+        bounds.maxY = bounds.minY + height + (padding * 2);
     }
 }

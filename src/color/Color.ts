@@ -710,7 +710,7 @@ export class Color
      * Color.isColorLike(0xffffff); // returns true
      * Color.isColorLike([1, 1, 1]); // returns true
      */
-    public static isColorLike(value: ColorSource): value is ColorSource
+    public static isColorLike(value: unknown): value is ColorSource
     {
         return (
             typeof value === 'number'

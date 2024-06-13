@@ -27,11 +27,11 @@ class AlphaMaskEffect extends FilterEffect implements PoolItem
 {
     constructor()
     {
-        super({
-            filters: [new MaskFilter({
-                sprite: new Sprite(Texture.EMPTY)
-            })]
-        });
+        super();
+
+        this.filters = [new MaskFilter({
+            sprite: new Sprite(Texture.EMPTY)
+        })];
     }
 
     get sprite(): Sprite

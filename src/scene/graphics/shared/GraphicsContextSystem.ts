@@ -26,6 +26,7 @@ interface GeometryData
 export class GpuGraphicsContext
 {
     public isBatchable: boolean;
+    public context: GraphicsContext;
     public batches: BatchableGraphics[] = [];
     public geometryData: GeometryData = {
         vertices: [],
@@ -92,7 +93,6 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
     private _gpuContextHash: Record<number, GpuGraphicsContext> = {};
     // used for non-batchable graphics
     private _graphicsDataContextHash: Record<number, GraphicsContextRenderData> = Object.create(null);
-    private readonly _needsContextNeedsRebuild: GraphicsContext[] = [];
 
     /**
      * Runner init called, update the default options
@@ -224,24 +224,19 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
     {
         const gpuContext = new GpuGraphicsContext();
 
+        gpuContext.context = context;
+
         this._gpuContextHash[context.uid] = gpuContext;
 
-        context.on('update', this.onGraphicsContextUpdate, this);
         context.on('destroy', this.onGraphicsContextDestroy, this);
 
         return this._gpuContextHash[context.uid];
-    }
-
-    protected onGraphicsContextUpdate(context: GraphicsContext)
-    {
-        this._needsContextNeedsRebuild.push(context);
     }
 
     protected onGraphicsContextDestroy(context: GraphicsContext)
     {
         this._cleanGraphicsContextData(context);
 
-        context.off('update', this.onGraphicsContextUpdate, this);
         context.off('destroy', this.onGraphicsContextDestroy, this);
 
         this._gpuContextHash[context.uid] = null;
@@ -274,15 +269,13 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
     public destroy()
     {
         // Clean up all graphics contexts
-        for (const context of this._needsContextNeedsRebuild)
+
+        for (const i in this._gpuContextHash)
         {
-            // only clean if it exists
-            if (this._gpuContextHash[context.uid])
+            if (this._gpuContextHash[i])
             {
-                this.onGraphicsContextDestroy(context);
+                this.onGraphicsContextDestroy(this._gpuContextHash[i].context);
             }
         }
-
-        this._needsContextNeedsRebuild.length = 0;
     }
 }

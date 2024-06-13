@@ -12,8 +12,6 @@ import type { EmitterListeners, TrackingData } from './EventBoundaryTypes';
 import type { FederatedEvent } from './FederatedEvent';
 import type {
     Cursor, EventMode, FederatedEventHandler,
-    FederatedEventTarget,
-    IFederatedContainer
 } from './FederatedEventTarget';
 
 // The maximum iterations used in propagation. This prevent infinite loops.
@@ -139,9 +137,9 @@ export class EventBoundary
     protected eventPool: Map<typeof FederatedEvent, FederatedEvent[]> = new Map();
 
     /** Every interactive element gathered from the scene. Only used in `pointermove` */
-    private readonly _allInteractiveElements: FederatedEventTarget[] = [];
+    private readonly _allInteractiveElements: Container[] = [];
     /** Every element that passed the hit test. Only used in `pointermove` */
-    private _hitElements: FederatedEventTarget[] = [];
+    private _hitElements: Container[] = [];
     /** Whether or not to collect all the interactive elements from the scene. Enabled in `pointermove` */
     private _isPointerMoveEvent = false;
 
@@ -350,7 +348,7 @@ export class EventBoundary
      * {@code target}. The last element in the path is {@code target}.
      * @param target - The target to find the propagation path to.
      */
-    public propagationPath(target: FederatedEventTarget): FederatedEventTarget[]
+    public propagationPath(target: Container): Container[]
     {
         const propagationPath = [target];
 
@@ -550,7 +548,7 @@ export class EventBoundary
     private _interactivePrune(container: Container): boolean
     {
         // If container is a mask, invisible, or not renderable then it cannot be hit directly.
-        if (!container || !container.visible || !container.renderable)
+        if (!container || !container.visible || !container.renderable || !container.includeInBuild || !container.measurable)
         {
             return true;
         }
@@ -574,7 +572,7 @@ export class EventBoundary
      * Checks whether the container or any of its children cannot pass the hit test at all.
      *
      * {@link EventBoundary}'s implementation uses the {@link Container.hitArea hitArea}
-     * and {@link Container._mask} for pruning.
+     * and {@link Container._maskEffect} for pruning.
      * @param container - The container to prune.
      * @param location - The location to test for overlap.
      */
@@ -650,7 +648,7 @@ export class EventBoundary
         type = type ?? e.type;
 
         // call the `on${type}` for the current target if it exists
-        const handlerKey = `on${type}` as keyof IFederatedContainer;
+        const handlerKey = `on${type}` as keyof Container;
 
         (e.currentTarget[handlerKey] as FederatedEventHandler<FederatedEvent>)?.(e);
 
@@ -1157,7 +1155,7 @@ export class EventBoundary
      * @param propagationPath - The propagation path was valid in the past.
      * @returns - The most specific event-target still mounted at the same location in the scene graph.
      */
-    protected findMountedTarget(propagationPath: FederatedEventTarget[]): FederatedEventTarget
+    protected findMountedTarget(propagationPath: Container[]): Container
     {
         if (!propagationPath)
         {
@@ -1194,7 +1192,7 @@ export class EventBoundary
     protected createPointerEvent(
         from: FederatedPointerEvent,
         type?: string,
-        target?: FederatedEventTarget
+        target?: Container
     ): FederatedPointerEvent
     {
         const event = this.allocateEvent(FederatedPointerEvent);
@@ -1206,7 +1204,7 @@ export class EventBoundary
         event.nativeEvent = from.nativeEvent;
         event.originalEvent = from;
         event.target = target
-            ?? this.hitTest(event.global.x, event.global.y) as FederatedEventTarget
+            ?? this.hitTest(event.global.x, event.global.y) as Container
             ?? this._hitElements[0];
 
         if (typeof type === 'string')

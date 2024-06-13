@@ -169,7 +169,7 @@ export interface SpritesheetData
  * const sheetTexture = await Assets.load('images/spritesheet.png');
  * Assets.add({
  *     alias: 'atlas',
- *     src: 'images/spritesheet.json'
+ *     src: 'images/spritesheet.json',
  *     data: {texture: sheetTexture} // using of preloaded texture
  * });
  * const sheet = await Assets.load('atlas')
@@ -182,7 +182,7 @@ export interface SpritesheetData
  *
  * Assets.add({
  *     alias: 'atlas',
- *     src: 'images/spritesheet.json'
+ *     src: 'images/spritesheet.json',
  *     data: {imageFilename: 'my-spritesheet.2x.avif'} // using of custom filename located in "images/my-spritesheet.2x.avif"
  * });
  * const sheet = await Assets.load('atlas')

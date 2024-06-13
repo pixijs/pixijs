@@ -1,12 +1,12 @@
 import type { FederatedEventEmitterTypes } from './FederatedEventMap';
-import type { FederatedEventTarget, FederatedOptions, IFederatedContainer } from './FederatedEventTarget';
+import type { FederatedOptions, IFederatedContainer } from './FederatedEventTarget';
 
 declare global
 {
     namespace PixiMixins
     {
         // eslint-disable-next-line @typescript-eslint/no-empty-interface
-        interface Container extends Omit<FederatedEventTarget, keyof IFederatedContainer>, IFederatedContainer {}
+        interface Container extends IFederatedContainer {}
         // eslint-disable-next-line @typescript-eslint/no-empty-interface
         interface ContainerOptions extends FederatedOptions {}
 
@@ -15,10 +15,10 @@ declare global
 
         interface RendererOptions
         {
-        /**
-         * The default event mode for all display objects.
-         * @since 7.2.0
-         */
+            /**
+             * The default event mode for all display objects.
+             * @since 7.2.0
+             */
             eventMode?: import('./FederatedEventTarget').EventMode;
             /**
              * The event features that are enabled by the EventSystem.

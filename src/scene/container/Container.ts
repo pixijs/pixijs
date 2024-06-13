@@ -151,8 +151,7 @@ export interface ContainerOptions<C extends ContainerChild = ContainerChild> ext
 }
 
 export interface Container<C extends ContainerChild>
-    extends Omit<PixiMixins.Container<C>, keyof EventEmitter<ContainerEvents<C> & AnyEvent>>,
-    EventEmitter<ContainerEvents<C> & AnyEvent> { }
+    extends PixiMixins.Container<C>, EventEmitter<ContainerEvents<C> & AnyEvent> {}
 
 /**
  * Container is a general-purpose display object that holds children. It also adds built-in support for advanced
@@ -362,13 +361,15 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     /** @private */
     public _updateFlags = 0b1111;
 
-    // is this container the root of a renderGroup?
-    // TODO implement this in a few more places
-    /** @private */
-    public isRenderGroupRoot = false;
-    // the render group this container belongs to OR owns
+    // the render group this container owns
     /** @private */
     public renderGroup: RenderGroup = null;
+    // the render group this container belongs to
+    /** @private */
+    public parentRenderGroup: RenderGroup = null;
+    // the index of the container in the render group
+    /** @private */
+    public parentRenderGroupIndex: number = 0;
 
     // set to true if the container has changed. It is reset once the changes have been applied
     // by the transform system
@@ -562,7 +563,9 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     /**
      * A value that increments each time the container is modified
      * the first 12 bits represent the container changes (eg transform, alpha, visible etc)
-     * the second 12 bits represent the view changes (eg texture swap, geometry change etc)
+     * the second 12 bits represent:
+     *      - for view changes (eg texture swap, geometry change etc)
+     *      - containers changes (eg children added, removed etc)
      *
      *  view          container
      * [000000000000][00000000000]
@@ -624,9 +627,9 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             this.children.splice(this.children.indexOf(child), 1);
             this.children.push(child);
 
-            if (this.renderGroup && !this.isRenderGroupRoot)
+            if (this.parentRenderGroup)
             {
-                this.renderGroup.structureDidChange = true;
+                this.parentRenderGroup.structureDidChange = true;
             }
 
             return child;
@@ -650,13 +653,17 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         // TODO - OPtimise this? could check what the parent has set?
         child._updateFlags = 0b1111;
 
-        if (this.renderGroup)
+        const renderGroup = this.renderGroup || this.parentRenderGroup;
+
+        if (renderGroup)
         {
-            this.renderGroup.addChild(child);
+            renderGroup.addChild(child);
         }
 
         this.emit('childAdded', child, this, this.children.length - 1);
         child.emit('added', this);
+
+        this._didChangeId += 1 << 12;
 
         if (child._zIndex !== 0)
         {
@@ -691,11 +698,17 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         if (index > -1)
         {
+            this._didChangeId += 1 << 12;
+
             this.children.splice(index, 1);
 
             if (this.renderGroup)
             {
                 this.renderGroup.removeChild(child);
+            }
+            else if (this.parentRenderGroup)
+            {
+                this.parentRenderGroup.removeChild(child);
             }
 
             child.parent = null;
@@ -724,25 +737,15 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         if (this.didChange) return;
         this.didChange = true;
 
-        if (this.isRenderGroupRoot)
+        if (this.parentRenderGroup)
         {
-            const renderGroupParent = this.renderGroup.renderGroupParent;
-            // lets update its parent..
-
-            if (renderGroupParent)
-            {
-                renderGroupParent.onChildUpdate(this);
-            }
-        }
-        else if (this.renderGroup)
-        {
-            this.renderGroup.onChildUpdate(this);
+            this.parentRenderGroup.onChildUpdate(this);
         }
     }
 
     set isRenderGroup(value: boolean)
     {
-        if (this.isRenderGroupRoot && value === false)
+        if (this.renderGroup && value === false)
         {
             throw new Error('[Pixi] cannot undo a render group just yet');
         }
@@ -759,18 +762,16 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      */
     get isRenderGroup(): boolean
     {
-        return this.isRenderGroupRoot;
+        return !!this.renderGroup;
     }
 
     /** This enables the container to be rendered as a render group. */
     public enableRenderGroup()
     {
         // does it OWN the render group..
-        if (this.renderGroup && this.renderGroup.root === this) return;
+        if (this.renderGroup) return;
 
-        this.isRenderGroupRoot = true;
-
-        const parentRenderGroup = this.renderGroup;
+        const parentRenderGroup = this.parentRenderGroup;
 
         if (parentRenderGroup)
         {
@@ -779,27 +780,9 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         this.renderGroup = new RenderGroup(this);
 
-        // find children render groups and move them out..
         if (parentRenderGroup)
         {
-            for (let i = 0; i < parentRenderGroup.renderGroupChildren.length; i++)
-            {
-                const childRenderGroup = parentRenderGroup.renderGroupChildren[i];
-                let parent = childRenderGroup.root;
-
-                while (parent)
-                {
-                    if (parent === this)
-                    {
-                        this.renderGroup.addRenderGroupChild(childRenderGroup);
-
-                        break;
-                    }
-                    parent = parent.parent;
-                }
-            }
-
-            parentRenderGroup.addRenderGroupChild(this.renderGroup);
+            parentRenderGroup.addChild(this);
         }
 
         this._updateIsSimple();
@@ -812,7 +795,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     /** @ignore */
     public _updateIsSimple()
     {
-        this.isSimple = !(this.isRenderGroupRoot) && (this.effects.length === 0);
+        this.isSimple = !(this.renderGroup) && (this.effects.length === 0);
     }
 
     /**
@@ -825,14 +808,11 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         if (this.renderGroup)
         {
-            if (this.isRenderGroupRoot)
-            {
-                this._worldTransform.copyFrom(this.renderGroup.worldTransform);
-            }
-            else
-            {
-                this._worldTransform.appendFrom(this.relativeGroupTransform, this.renderGroup.worldTransform);
-            }
+            this._worldTransform.copyFrom(this.renderGroup.worldTransform);
+        }
+        else if (this.parentRenderGroup)
+        {
+            this._worldTransform.appendFrom(this.relativeGroupTransform, this.parentRenderGroup.worldTransform);
         }
 
         return this._worldTransform;
@@ -1218,9 +1198,9 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     set blendMode(value: BLEND_MODES)
     {
         if (this.localBlendMode === value) return;
-        if (this.renderGroup && !this.isRenderGroupRoot)
+        if (this.parentRenderGroup)
         {
-            this.renderGroup.structureDidChange = true;
+            this.parentRenderGroup.structureDidChange = true;
         }
 
         this._updateFlags |= UPDATE_BLEND;
@@ -1253,9 +1233,9 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         if ((this.localDisplayStatus & 0b010) >> 1 === valueNumber) return;
 
-        if (this.renderGroup && !this.isRenderGroupRoot)
+        if (this.parentRenderGroup)
         {
-            this.renderGroup.structureDidChange = true;
+            this.parentRenderGroup.structureDidChange = true;
         }
 
         this._updateFlags |= UPDATE_VISIBLE;
@@ -1278,9 +1258,9 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         if ((this.localDisplayStatus & 0b100) >> 2 === valueNumber) return;
 
-        if (this.renderGroup && !this.isRenderGroupRoot)
+        if (this.parentRenderGroup)
         {
-            this.renderGroup.structureDidChange = true;
+            this.parentRenderGroup.structureDidChange = true;
         }
 
         this._updateFlags |= UPDATE_VISIBLE;
@@ -1304,9 +1284,9 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         this._updateFlags |= UPDATE_VISIBLE;
         this.localDisplayStatus ^= 0b001;
 
-        if (this.renderGroup && !this.isRenderGroupRoot)
+        if (this.parentRenderGroup)
         {
-            this.renderGroup.structureDidChange = true;
+            this.parentRenderGroup.structureDidChange = true;
         }
 
         this._onUpdate();
@@ -1337,10 +1317,13 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         if (this.destroyed) return;
         this.destroyed = true;
 
+        // remove children is faster than removeChild..
+        const oldChildren = this.removeChildren(0, this.children.length);
+
         this.removeFromParent();
         this.parent = null;
-        this._mask = null;
-        this._filters = null;
+        this._maskEffect = null;
+        this._filterEffect = null;
         this.effects = null;
         this._position = null;
         this._scale = null;
@@ -1353,8 +1336,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         const destroyChildren = typeof options === 'boolean' ? options : options?.children;
 
-        const oldChildren = this.removeChildren(0, this.children.length);
-
         if (destroyChildren)
         {
             for (let i = 0; i < oldChildren.length; ++i)
@@ -1362,6 +1343,9 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
                 oldChildren[i].destroy(options);
             }
         }
+
+        this.renderGroup?.destroy();
+        this.renderGroup = null;
     }
 }
 

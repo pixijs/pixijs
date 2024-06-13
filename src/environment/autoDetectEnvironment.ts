@@ -6,12 +6,11 @@ extensions.handleByNamedList(ExtensionType.Environment, environments);
 
 /**
  * Automatically detects the environment and loads the appropriate extensions.
- * @param manageImports - whether to add the default imports to the bundle
- * @memberof environment
+ * @param skip - whether to skip loading the default extensions
  */
-export async function autoDetectEnvironment(manageImports: boolean): Promise<void>
+export async function loadEnvironmentExtensions(skip: boolean): Promise<void>
 {
-    if (!manageImports) return;
+    if (skip) return;
 
     for (let i = 0; i < environments.length; i++)
     {
@@ -24,4 +23,13 @@ export async function autoDetectEnvironment(manageImports: boolean): Promise<voi
             return;
         }
     }
+}
+
+/**
+ * @param add - whether to add the default imports to the bundle
+ * @deprecated since 8.1.6. Use `loadEnvironmentExtensions` instead
+ */
+export async function autoDetectEnvironment(add: boolean): Promise<void>
+{
+    return loadEnvironmentExtensions(!add);
 }

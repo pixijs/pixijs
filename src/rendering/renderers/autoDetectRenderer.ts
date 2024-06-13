@@ -1,26 +1,19 @@
-import { autoDetectEnvironment } from '../../environment/autoDetectEnvironment';
 import { isWebGLSupported } from '../../utils/browser/isWebGLSupported';
 import { isWebGPUSupported } from '../../utils/browser/isWebGPUSupported';
 import { AbstractRenderer } from './shared/system/AbstractRenderer';
 
 import type { WebGLOptions } from './gl/WebGLRenderer';
 import type { WebGPUOptions } from './gpu/WebGPURenderer';
-import type { Renderer } from './types';
+import type { Renderer, RendererOptions } from './types';
 
 /**
  * Options for {@link rendering.autoDetectRenderer}.
  * @memberof rendering
  */
-export interface AutoDetectOptions extends WebGLOptions, WebGPUOptions
+export interface AutoDetectOptions extends RendererOptions
 {
     /** The preferred renderer type. WebGPU is recommended as its generally faster than WebGL. */
     preference?: 'webgl' | 'webgpu'// | 'canvas';
-    /**
-     * Whether to manage the dynamic imports of the renderer code. It is true by default, this means
-     * PixiJS will load all the default pixi systems and extensions. If you set this to false, then
-     * you as the dev will need to manually import the systems and extensions you need.
-     */
-    manageImports?: boolean;
     /** Optional WebGPUOptions to pass only to WebGPU renderer. */
     webgpu?: Partial<WebGPUOptions>;
     /** Optional WebGLOptions to pass only to the WebGL renderer */
@@ -89,11 +82,6 @@ export async function autoDetectRenderer(options: Partial<AutoDetectOptions>): P
     }
 
     let RendererClass: new () => Renderer;
-
-    await autoDetectEnvironment(
-        options.manageImports ?? true,
-    );
-
     let finalOptions: Partial<AutoDetectOptions> = {};
 
     for (let i = 0; i < preferredOrder.length; i++)
@@ -130,12 +118,17 @@ export async function autoDetectRenderer(options: Partial<AutoDetectOptions>): P
         {
             finalOptions = { ...options };
 
-            break;
+            throw new Error('CanvasRenderer is not yet implemented');
         }
     }
 
     delete finalOptions.webgpu;
     delete finalOptions.webgl;
+
+    if (!RendererClass)
+    {
+        throw new Error('No available renderer for the current environment');
+    }
 
     const renderer = new RendererClass();
 

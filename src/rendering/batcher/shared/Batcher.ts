@@ -3,8 +3,8 @@ import { ViewableBuffer } from '../../../utils/data/ViewableBuffer';
 import { fastCopy } from '../../renderers/shared/buffer/utils/fastCopy';
 import { type BLEND_MODES } from '../../renderers/shared/state/const';
 import { getAdjustedBlendModeBlend } from '../../renderers/shared/state/getAdjustedBlendModeBlend';
+import { maxRecommendedTextures } from '../../renderers/shared/texture/utils/maxRecommendedTextures';
 import { BatchTextureArray } from './BatchTextureArray';
-import { MAX_TEXTURES } from './const';
 
 import type { BindGroup } from '../../renderers/gpu/shader/BindGroup';
 import type { IndexBufferArray } from '../../renderers/shared/geometry/Geometry';
@@ -136,6 +136,7 @@ export class Batcher
     private _textureBatchPoolIndex = 0;
     private _batchIndexStart: number;
     private _batchIndexSize: number;
+    private readonly _maxTextures: number;
 
     constructor(options: BatcherOptions = {})
     {
@@ -146,6 +147,8 @@ export class Batcher
         this.attributeBuffer = new ViewableBuffer(vertexSize * this._vertexSize * 4);
 
         this.indexBuffer = new Uint16Array(indexSize);
+
+        this._maxTextures = maxRecommendedTextures();
     }
 
     public begin()
@@ -239,6 +242,8 @@ export class Batcher
         let action: BatchAction = 'startBatch';
         let batch = this._batchPool[this._batchPoolIndex++] || new Batch();
 
+        const maxTextures = this._maxTextures;
+
         for (let i = this.elementStart; i < this.elementSize; ++i)
         {
             const element = elements[i];
@@ -267,7 +272,7 @@ export class Batcher
 
             source._batchTick = BATCH_TICK;
 
-            if (textureBatch.count >= MAX_TEXTURES || blendModeChange)
+            if (textureBatch.count >= maxTextures || blendModeChange)
             {
                 this._finishBatch(
                     batch,

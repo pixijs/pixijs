@@ -7,8 +7,9 @@ import { BitmapFont } from '../BitmapFont';
 import { bitmapFontTextParser } from './bitmapFontTextParser';
 import { bitmapFontXMLStringParser } from './bitmapFontXMLStringParser';
 
+import type { CacheParser } from '../../../assets/cache/CacheParser';
 import type { Loader } from '../../../assets/loader/Loader';
-import type { LoaderParser } from '../../../assets/loader/parsers/LoaderParser';
+import type { LoaderParserAdvanced } from '../../../assets/loader/parsers/LoaderParser';
 import type { ResolvedAsset } from '../../../assets/types';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 
@@ -16,7 +17,10 @@ const validExtensions = ['.xml', '.fnt'];
 
 /** simple loader plugin for loading in bitmap fonts! */
 export const bitmapFontCachePlugin = {
-    extension: ExtensionType.CacheParser,
+    extension: {
+        type: ExtensionType.CacheParser,
+        name: 'cacheBitmapFont',
+    },
     test: (asset: BitmapFont) => asset instanceof BitmapFont,
     getCacheableAssets(keys: string[], asset: BitmapFont)
     {
@@ -25,19 +29,22 @@ export const bitmapFontCachePlugin = {
         keys.forEach((key) =>
         {
             out[key] = asset;
+            out[`${key}-bitmap`] = asset;
         });
 
         out[`${asset.fontFamily}-bitmap`] = asset;
 
         return out;
     }
-};
+} satisfies CacheParser<BitmapFont>;
 
 export const loadBitmapFont = {
     extension: {
         type: ExtensionType.LoadParser,
         priority: LoaderParserPriority.Normal,
     },
+
+    name: 'loadBitmapFont',
 
     test(url: string): boolean
     {
@@ -59,6 +66,15 @@ export const loadBitmapFont = {
         const { pages } = bitmapFontData;
         const textureUrls = [];
 
+        // if we have a distance field - we can assume this is a signed distance field font
+        // and we should use force linear filtering and no alpha premultiply
+        const textureOptions = (bitmapFontData.distanceField) ? {
+            scaleMode: 'linear',
+            alphaMode: 'premultiply-alpha-on-upload',
+            autoGenerateMipmaps: false,
+            resolution: 1,
+        } : {};
+
         for (let i = 0; i < pages.length; ++i)
         {
             const pageFile = pages[i].file;
@@ -66,11 +82,14 @@ export const loadBitmapFont = {
 
             imagePath = copySearchParams(imagePath, src);
 
-            textureUrls.push(imagePath);
+            textureUrls.push({
+                src: imagePath,
+                data: textureOptions
+            });
         }
 
         const loadedTextures = await loader.load<Texture>(textureUrls);
-        const textures = textureUrls.map((url) => loadedTextures[url]);
+        const textures = textureUrls.map((url) => loadedTextures[url.src]);
 
         const bitmapFont = new BitmapFont({
             data: bitmapFontData,
@@ -93,4 +112,4 @@ export const loadBitmapFont = {
 
         bitmapFont.destroy();
     }
-} as LoaderParser;
+} satisfies LoaderParserAdvanced<string, BitmapFont, BitmapFont>;
