@@ -16,6 +16,7 @@ If you want to keep up to date with the latest PixiJS news then feel free to fol
 and we will keep you posted! You can also check back on [our site](https://pixijs.com)
 as any breakthroughs will be posted up there too!
 
+
 **We are now a part of the [Open Collective](https://opencollective.com/pixijs) and with your support you can help us make PixiJS even better. To make a donation, simply click the button below and we'll love you forever!**
 
 <div align="center">
@@ -59,7 +60,7 @@ PixiJS supports [WebGPU](https://en.wikipedia.org/wiki/WebGPU) with fallback sup
   - [UI](https://github.com/pixijs/ui)
   - [Layout](https://github.com/pixijs/layout)
   - [GIF](https://github.com/pixijs/gif)
-  - And more! 
+  - And more!
 
 ### Setup ###
 
@@ -147,7 +148,7 @@ app.ticker.add(() => {
 
 - [Filters Demo](https://pixijs.io/filters/examples)
 - [Bunny Demo](http://www.goodboydigital.com/pixijs/bunnymark)
-- [Masking Demo](https://pixijs.com/examples/masks/graphics) 
+- [Masking Demo](https://pixijs.com/examples/masks/graphics)
 - [Interaction Demo](https://pixijs.com/examples/events/interactivity)
 - [More examples](https://pixijs.com/examples)
 
