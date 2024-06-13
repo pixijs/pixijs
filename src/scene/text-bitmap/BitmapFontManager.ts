@@ -1,6 +1,6 @@
 import { Cache } from '../../assets/cache/Cache';
-import { warn } from '../../utils';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
+import { warn } from '../../utils/logging/warn';
 import { TextStyle } from '../text/TextStyle';
 import { DynamicBitmapFont } from './DynamicBitmapFont';
 import { getBitmapTextLayout } from './utils/getBitmapTextLayout';
