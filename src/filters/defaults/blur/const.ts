@@ -1,4 +1,4 @@
-interface IGAUSSIAN_VALUES
+export interface IGAUSSIAN_VALUES
 {
     [x: number]: number[];
 }

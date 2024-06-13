@@ -23,7 +23,7 @@ import type { ViewSystem, ViewSystemDestroyOptions } from '../view/ViewSystem';
 import type { SharedRendererOptions } from './SharedSystems';
 import type { System, SystemConstructor } from './System';
 
-interface RendererConfig
+export interface RendererConfig
 {
     type: number;
     name: string;
