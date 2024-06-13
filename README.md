@@ -16,7 +16,6 @@ If you want to keep up to date with the latest PixiJS news then feel free to fol
 and we will keep you posted! You can also check back on [our site](https://pixijs.com)
 as any breakthroughs will be posted up there too!
 
-
 **We are now a part of the [Open Collective](https://opencollective.com/pixijs) and with your support you can help us make PixiJS even better. To make a donation, simply click the button below and we'll love you forever!**
 
 <div align="center">
