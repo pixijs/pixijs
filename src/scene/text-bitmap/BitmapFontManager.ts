@@ -123,7 +123,7 @@ class BitmapFontManagerClass
             fontFamilyKey += style._fill.fill.styleKey;
             overrideFill = false;
         }
-        else if (style._stroke)
+        else if (style._stroke || style.dropShadow)
         {
             // if there is a stoke, we need to use the style key as this the font generated cannot be tinted
             // due to the fact the font has at least two colors.

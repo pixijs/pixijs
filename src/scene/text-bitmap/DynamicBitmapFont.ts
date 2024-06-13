@@ -24,6 +24,7 @@ export interface DynamicBitmapFontOptions
     overrideFill?: boolean
     overrideSize?: boolean
     textureSize?: number
+    mipmap?: boolean
 }
 
 /**
@@ -36,6 +37,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
     public static defaultOptions: DynamicBitmapFontOptions = {
         textureSize: 512,
         style: new TextStyle(),
+        mipmap: true,
     };
     /**
      * this is a resolution modifier for the font size..
@@ -45,7 +47,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
     /** The pages of the font. */
     public override readonly pages: {canvasAndContext?: CanvasAndContext, texture: Texture}[] = [];
 
-    private readonly _padding: number = 4;
+    private readonly _padding: number = 0;
     private readonly _measureCache: Record<string, number> = Object.create(null);
     private _currentChars: string[] = [];
     private _currentX = 0;
@@ -54,6 +56,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
     private readonly _style: TextStyle;
     private readonly _skipKerning: boolean = false;
     private readonly _textureSize: number;
+    private readonly _mipmap: boolean;
 
     /**
      * @param options - The options for the dynamic bitmap font.
@@ -65,6 +68,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         const dynamicOptions = { ...DynamicBitmapFont.defaultOptions, ...options };
 
         this._textureSize = dynamicOptions.textureSize;
+        this._mipmap = dynamicOptions.mipmap;
 
         const style = dynamicOptions.style.clone();
 
@@ -319,7 +323,8 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
             source: new ImageSource({
                 resource: canvasAndContext.canvas,
                 resolution,
-                alphaMode: 'premultiply-alpha-on-upload'
+                alphaMode: 'premultiply-alpha-on-upload',
+                autoGenerateMipmaps: this._mipmap,
             }),
 
         });
