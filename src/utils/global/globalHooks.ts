@@ -3,16 +3,18 @@ import type { Renderer } from '../../rendering/renderers/types';
 
 declare global
 {
-    var __PIXI_APP_INIT__:undefined | ((arg: Application | Renderer) => void);
+    /* eslint-disable no-var */
+    var __PIXI_APP_INIT__: undefined | ((arg: Application | Renderer) => void);
     var __PIXI_RENDERER_INIT__: undefined | ((arg: Application | Renderer) => void);
+    /* eslint-enable no-var */
 }
 
-export function pixiRendererCreated(renderer: Renderer)
+export function rendererCreatedHook(renderer: Renderer)
 {
     globalThis.__PIXI_RENDERER_INIT__?.(renderer);
 }
 
-export function pixiAppCreated(app: Application)
+export function appCreatedHook(app: Application)
 {
     globalThis.__PIXI_APP_INIT__?.(app);
 }

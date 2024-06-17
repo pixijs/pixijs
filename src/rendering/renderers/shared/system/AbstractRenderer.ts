@@ -2,7 +2,7 @@ import { Color } from '../../../../color/Color';
 import { loadEnvironmentExtensions } from '../../../../environment/autoDetectEnvironment';
 import { Container } from '../../../../scene/container/Container';
 import { unsafeEvalSupported } from '../../../../utils/browser/unsafeEvalSupported';
-import { pixiRendererCreated } from '../../../../utils/global/globalHooks';
+import { rendererCreatedHook } from '../../../../utils/global/globalHooks';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { EventEmitter } from '../../../../utils/utils';
 import { CLEAR } from '../../gl/const';
@@ -247,7 +247,7 @@ export class AbstractRenderer<
         // store options
         this._initOptions = options as OPTIONS;
 
-        pixiRendererCreated(this as unknown as Renderer);
+        rendererCreatedHook(this as unknown as Renderer);
     }
 
     /**
