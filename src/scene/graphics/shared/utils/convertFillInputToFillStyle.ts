@@ -131,6 +131,7 @@ function handleFillObject(value: FillStyle, defaultStyle: ConvertedFillStyle): C
         if (sourceStyle.addressMode === 'clamp-to-edge')
         {
             sourceStyle.addressMode = 'repeat';
+            sourceStyle.update();
         }
     }
 
