@@ -213,13 +213,16 @@ export class GraphicsPipe implements RenderPipe<Graphics>
             return batchClone;
         });
 
-        this._graphicsBatchesHash[graphics.uid] = batches;
-
-        // TODO perhaps manage this outside this pipe? (a bit like how we update / add)
-        graphics.on('destroyed', () =>
+        if (this._graphicsBatchesHash[graphics.uid] === undefined)
         {
-            this.destroyRenderable(graphics);
-        });
+            // TODO perhaps manage this outside this pipe? (a bit like how we update / add)
+            graphics.on('destroyed', () =>
+            {
+                this.destroyRenderable(graphics);
+            });
+        }
+
+        this._graphicsBatchesHash[graphics.uid] = batches;
 
         return batches;
     }

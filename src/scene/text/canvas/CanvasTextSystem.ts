@@ -4,6 +4,8 @@ import { nextPow2 } from '../../../maths/misc/pow2';
 import { CanvasPool } from '../../../rendering/renderers/shared/texture/CanvasPool';
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
 import { getCanvasBoundingBox } from '../../../utils/canvas/getCanvasBoundingBox';
+import { deprecation } from '../../../utils/logging/deprecation';
+import { TextStyle } from '../TextStyle';
 import { getPo2TextureFromSource } from '../utils/getPo2TextureFromSource';
 import { CanvasTextMetrics } from './CanvasTextMetrics';
 import { fontStringFromTextStyle } from './utils/fontStringFromTextStyle';
@@ -13,7 +15,9 @@ import type { ICanvas } from '../../../environment/canvas/ICanvas';
 import type { ICanvasRenderingContext2D } from '../../../environment/canvas/ICanvasRenderingContext2D';
 import type { System } from '../../../rendering/renderers/shared/system/System';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import type { TextStyle } from '../TextStyle';
+import type { Renderer } from '../../../rendering/renderers/types';
+import type { TextOptions } from '../AbstractText';
+import type { Text } from '../Text';
 
 interface CanvasAndContext
 {
@@ -43,6 +47,13 @@ export class CanvasTextSystem implements System
         usageCount: number,
     }> = {};
 
+    private readonly _renderer: Renderer;
+
+    constructor(_renderer: Renderer)
+    {
+        this._renderer = _renderer;
+    }
+
     public getTextureSize(text: string, resolution: number, style: TextStyle): { width: number, height: number }
     {
         const measured = CanvasTextMetrics.measureText(text || ' ', style);
@@ -58,14 +69,52 @@ export class CanvasTextSystem implements System
         return { width, height };
     }
 
-    public getTexture(text: string, resolution: number, style: TextStyle, textKey: string)
+    /**
+     * This is a function that will create a texture from a text string, style and resolution.
+     * Useful if you want to make a texture of your text and use if for various other pixi things!
+     * @param options - The options of the text that will be used to generate the texture.
+     * @param options.text - the text to render
+     * @param options.style - the style of the text
+     * @param options.resolution - the resolution of the texture
+     * @returns the newly created texture
+     */
+    /** @deprecated since 8.0.0 */
+    public getTexture(text: string, resolution: number, style: TextStyle, textKey: string): Texture;
+    public getTexture(options: TextOptions): Texture;
+    public getTexture(options: TextOptions | string, resolution?: number, style?: TextStyle, _textKey?: string): Texture
     {
-        if (this._activeTextures[textKey])
+        if (typeof options === 'string')
         {
-            this._increaseReferenceCount(textKey);
+            deprecation('8.0.0', 'CanvasTextSystem.getTexture: Use object TextOptions instead of separate arguments');
 
-            return this._activeTextures[textKey].texture;
+            options = {
+                text: options,
+                style,
+                resolution,
+            };
         }
+
+        if (!(options.style instanceof TextStyle))
+        {
+            options.style = new TextStyle(options.style);
+        }
+
+        const { texture, canvasAndContext } = this.createTextureAndCanvas(
+            options as {text: string, style: TextStyle, resolution?: number}
+        );
+
+        this._renderer.texture.initSource(texture._source);
+
+        CanvasPool.returnCanvasAndContext(canvasAndContext);
+
+        return texture;
+    }
+
+    public createTextureAndCanvas(options: {text: string, style: TextStyle, resolution?: number})
+    {
+        const { text, style } = options;
+
+        const resolution = options.resolution ?? this._renderer.resolution;
 
         // create a canvas with the word hello on it
         const measured = CanvasTextMetrics.measureText(text || ' ', style);
@@ -90,6 +139,22 @@ export class CanvasTextSystem implements System
 
             texture.updateUvs();
         }
+
+        return { texture, canvasAndContext };
+    }
+
+    public getManagedTexture(text: Text)
+    {
+        const textKey = text._getKey();
+
+        if (this._activeTextures[textKey])
+        {
+            this._increaseReferenceCount(textKey);
+
+            return this._activeTextures[textKey].texture;
+        }
+
+        const { texture, canvasAndContext } = this.createTextureAndCanvas(text);
 
         this._activeTextures[textKey] = {
             canvasAndContext,
@@ -161,7 +226,9 @@ export class CanvasTextSystem implements System
 
         context.scale(resolution, resolution);
 
-        context.clearRect(0, 0, measured.width + 4, measured.height + 4);
+        const padding = style.padding * 2;
+
+        context.clearRect(0, 0, measured.width + 4 + padding, measured.height + 4 + padding);
 
         // set stroke styles..
 
@@ -265,7 +332,7 @@ export class CanvasTextSystem implements System
                     linePositionX += (maxLineWidth - lineWidths[i]) / 2;
                 }
 
-                if (style._stroke)
+                if (style._stroke?.width)
                 {
                     this._drawLetterSpacing(
                         lines[i],

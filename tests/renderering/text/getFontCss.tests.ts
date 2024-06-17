@@ -10,12 +10,12 @@ describe('getFontCss', () =>
     {
         await getApp();
 
-        await Assets.load(`${basePath}fonts/font.fnt`);
+        await Assets.load(`${basePath}fonts/outfit.woff2`);
     });
 
     it('should load a font and return css string', async () =>
     {
-        const fontFamily = ['font-bitmap'];
+        const fontFamily = ['Outfit'];
         const style = new HTMLTextStyle({
             fontFamily,
         });
@@ -26,7 +26,7 @@ describe('getFontCss', () =>
         );
 
         expect(css).toContain('@font-face');
-        expect(css).toContain('font-family: "font-bitmap"');
+        expect(css).toContain('font-family: "Outfit"');
         expect(css).toContain(`url('data:`);
         expect(css).toContain('font-weight: normal');
         expect(css).toContain('font-style: normal');

@@ -1,3 +1,5 @@
+import { DOMAdapter } from '../../../../../environment/adapter';
+
 import type { GlRenderingContext } from '../../context/GlRenderingContext';
 import type { WebGLExtensions } from '../../context/WebGLExtensions';
 
@@ -17,7 +19,7 @@ export function mapFormatToGlInternalFormat(
     let srgb = {};
     let bgra8unorm: number = gl.RGBA;
 
-    if (gl instanceof WebGL2RenderingContext)
+    if (!(gl instanceof DOMAdapter.get().getWebGLRenderingContext()))
     {
         srgb = {
             'rgba8unorm-srgb': gl.SRGB8_ALPHA8,

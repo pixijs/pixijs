@@ -21,10 +21,19 @@ const bigTriangleGeometry = new Geometry({
     },
 });
 
-/** The options for the back buffer system. */
+/**
+ * The options for the back buffer system.
+ * @memberof rendering
+ * @property {boolean} [useBackBuffer=false] - if true will use the back buffer where required
+ * @property {boolean} [antialias=false] - if true will ensure the texture is antialiased
+ */
 export interface GlBackBufferOptions
 {
-    /** if true will use the back buffer where required */
+    /**
+     * if true will use the back buffer where required
+     * @default false
+     * @memberof rendering.WebGLOptions
+     */
     useBackBuffer?: boolean;
     /** if true will ensure the texture is antialiased */
     antialias?: boolean;
@@ -58,6 +67,7 @@ export class GlBackBufferSystem implements System<GlBackBufferOptions>
 
     /** default options for the back buffer system */
     public static defaultOptions: GlBackBufferOptions = {
+        /** if true will use the back buffer where required */
         useBackBuffer: false,
     };
 
@@ -100,7 +110,7 @@ export class GlBackBufferSystem implements System<GlBackBufferOptions>
                 out vec2 vUv;
 
                 void main() {
-                    gl_Position = gl_Position = vec4(aPosition, 0.0, 1.0);
+                    gl_Position = vec4(aPosition, 0.0, 1.0);
 
                     vUv = (aPosition + 1.0) / 2.0;
 

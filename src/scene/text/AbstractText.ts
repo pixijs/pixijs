@@ -88,11 +88,8 @@ export abstract class AbstractText<
     public abstract readonly renderPipeId: string;
     public batched = true;
     public _anchor: ObservablePoint;
-    /**
-     * The resolution / device pixel ratio of the canvas.
-     * @default 1
-     */
-    public resolution: number = null;
+
+    public _resolution: number = null;
 
     public _style: TEXT_STYLE;
     public _didTextUpdate = true;
@@ -195,6 +192,21 @@ export abstract class AbstractText<
     get text(): string
     {
         return this._text;
+    }
+
+    /**
+     * The resolution / device pixel ratio of the canvas.
+     * @default 1
+     */
+    set resolution(value: number)
+    {
+        this._resolution = value;
+        this.onViewUpdate();
+    }
+
+    get resolution(): number
+    {
+        return this._resolution;
     }
 
     get style(): TEXT_STYLE
@@ -347,8 +359,8 @@ export abstract class AbstractText<
      */
     public containsPoint(point: PointData)
     {
-        const width = this.bounds.maxX;
-        const height = this.bounds.maxY;
+        const width = this.bounds.width;
+        const height = this.bounds.height;
 
         const x1 = -width * this.anchor.x;
         let y1 = 0;
@@ -373,16 +385,18 @@ export abstract class AbstractText<
 
         this._didTextUpdate = true;
 
-        if (this.renderGroup)
+        const renderGroup = this.renderGroup || this.parentRenderGroup;
+
+        if (renderGroup)
         {
-            this.renderGroup.onChildViewUpdate(this);
+            renderGroup.onChildViewUpdate(this);
         }
     }
 
     public _getKey(): string
     {
         // TODO add a dirty flag...
-        return `${this.text}:${this._style.styleKey}`;
+        return `${this.text}:${this._style.styleKey}-${this.resolution}`;
     }
 
     protected abstract _updateBounds(): void;
@@ -393,6 +407,7 @@ export abstract class AbstractText<
      *  have been set to that value
      * @param {boolean} [options.texture=false] - Should it destroy the texture of the text style
      * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the text style
+     * @param {boolean} [options.style=false] - Should it destroy the style of the text
      */
     public destroy(options: DestroyOptions = false): void
     {
@@ -402,7 +417,11 @@ export abstract class AbstractText<
         this._bounds = null;
         this._anchor = null;
 
-        this._style.destroy(options);
+        if (typeof options === 'boolean' ? options : options?.style)
+        {
+            this._style.destroy(options);
+        }
+
         this._style = null;
         this._text = null;
     }

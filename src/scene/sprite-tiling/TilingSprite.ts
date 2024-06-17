@@ -196,7 +196,14 @@ export class TilingSprite extends Container implements View, Instruction
 
         this.allowChildren = false;
 
-        this._anchor = new ObservablePoint(this);
+        this._anchor = new ObservablePoint(
+            {
+                _onUpdate: () =>
+                {
+                    this.onViewUpdate();
+                }
+            },
+        );
 
         this._applyAnchorToTexture = applyAnchorToTexture;
 
@@ -206,7 +213,7 @@ export class TilingSprite extends Container implements View, Instruction
 
         this._tileTransform = new Transform({
             observer: {
-                _onUpdate: () => this._onTilingSpriteUpdate(),
+                _onUpdate: () => this.onViewUpdate(),
             }
         });
 
@@ -331,11 +338,18 @@ export class TilingSprite extends Container implements View, Instruction
 
     set texture(value: Texture)
     {
-        if (this._texture === value) return;
+        value ||= Texture.EMPTY;
+
+        const currentTexture = this._texture;
+
+        if (currentTexture === value) return;
+
+        if (currentTexture && currentTexture.dynamic) currentTexture.off('update', this.onViewUpdate, this);
+        if (value.dynamic) value.on('update', this.onViewUpdate, this);
 
         this._texture = value;
 
-        this._onTilingSpriteUpdate();
+        this.onViewUpdate();
     }
 
     /** The texture that the sprite is using. */
@@ -348,7 +362,7 @@ export class TilingSprite extends Container implements View, Instruction
     set width(value: number)
     {
         this._width = value;
-        this._onTilingSpriteUpdate();
+        this.onViewUpdate();
     }
 
     get width()
@@ -359,7 +373,7 @@ export class TilingSprite extends Container implements View, Instruction
     set height(value: number)
     {
         this._height = value;
-        this._onTilingSpriteUpdate();
+        this.onViewUpdate();
     }
 
     /** The height of the tiling area. */
@@ -406,8 +420,8 @@ export class TilingSprite extends Container implements View, Instruction
      */
     public containsPoint(point: PointData)
     {
-        const width = this.bounds.minX;
-        const height = this.bounds.minY;
+        const width = this._width;
+        const height = this._height;
         const x1 = -width * this._anchor._x;
         let y1 = 0;
 
@@ -421,7 +435,7 @@ export class TilingSprite extends Container implements View, Instruction
         return false;
     }
 
-    private _onTilingSpriteUpdate()
+    public onViewUpdate()
     {
         this._boundsDirty = true;
         this._didTilingSpriteUpdate = true;
@@ -431,9 +445,11 @@ export class TilingSprite extends Container implements View, Instruction
         if (this.didViewUpdate) return;
         this.didViewUpdate = true;
 
-        if (this.renderGroup)
+        const renderGroup = this.renderGroup || this.parentRenderGroup;
+
+        if (renderGroup)
         {
-            this.renderGroup.onChildViewUpdate(this);
+            renderGroup.onChildViewUpdate(this);
         }
     }
 

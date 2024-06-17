@@ -1,6 +1,7 @@
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { Container } from '../container/Container';
+import { NineSliceGeometry } from './NineSliceGeometry';
 
 import type { Point } from '../../maths/point/Point';
 import type { View } from '../../rendering/renderers/shared/view/View';
@@ -75,14 +76,6 @@ export class NineSliceSprite extends Container implements View
     public static defaultOptions: NineSliceSpriteOptions = {
         /** @default Texture.EMPTY */
         texture: Texture.EMPTY,
-        /** @default 10 */
-        leftWidth: 10,
-        /** @default 10 */
-        topHeight: 10,
-        /** @default 10 */
-        rightWidth: 10,
-        /** @default 10 */
-        bottomHeight: 10,
     };
 
     public _roundPixels: 0 | 1 = 0;
@@ -138,15 +131,17 @@ export class NineSliceSprite extends Container implements View
             ...rest
         });
 
-        this._leftWidth = leftWidth;
-        this._topHeight = topHeight;
-        this._rightWidth = rightWidth;
-        this._bottomHeight = bottomHeight;
-        this.bounds.maxX = this._width = width ?? texture.width;
-        this.bounds.maxY = this._height = height ?? texture.height;
+        this._leftWidth = leftWidth ?? texture?.defaultBorders?.left ?? NineSliceGeometry.defaultOptions.leftWidth;
+        this._topHeight = topHeight ?? texture?.defaultBorders?.top ?? NineSliceGeometry.defaultOptions.topHeight;
+        this._rightWidth = rightWidth ?? texture?.defaultBorders?.right ?? NineSliceGeometry.defaultOptions.rightWidth;
+        this._bottomHeight = bottomHeight
+                            ?? texture?.defaultBorders?.bottom
+                            ?? NineSliceGeometry.defaultOptions.bottomHeight;
+        this.bounds.maxX = this._width = width ?? texture.width ?? NineSliceGeometry.defaultOptions.width;
+        this.bounds.maxY = this._height = height ?? texture.height ?? NineSliceGeometry.defaultOptions.height;
 
         this.allowChildren = false;
-        this._texture = texture;
+        this.texture = texture ?? NineSliceSprite.defaultOptions.texture;
         this.roundPixels = roundPixels ?? false;
     }
 
@@ -231,7 +226,14 @@ export class NineSliceSprite extends Container implements View
 
     set texture(value: Texture)
     {
-        if (value === this._texture) return;
+        value ||= Texture.EMPTY;
+
+        const currentTexture = this._texture;
+
+        if (currentTexture === value) return;
+
+        if (currentTexture && currentTexture.dynamic) currentTexture.off('update', this.onViewUpdate, this);
+        if (value.dynamic) value.on('update', this.onViewUpdate, this);
 
         this._texture = value;
 
@@ -250,12 +252,6 @@ export class NineSliceSprite extends Container implements View
     set roundPixels(value: boolean)
     {
         this._roundPixels = value ? 1 : 0;
-    }
-
-    /** The texture matrix of the NineSliceSprite. */
-    get textureMatrix()
-    {
-        return this._texture.textureMatrix.mapCoord;
     }
 
     /** The original width of the texture */
@@ -279,9 +275,11 @@ export class NineSliceSprite extends Container implements View
         if (this.didViewUpdate) return;
         this.didViewUpdate = true;
 
-        if (this.renderGroup)
+        const renderGroup = this.renderGroup || this.parentRenderGroup;
+
+        if (renderGroup)
         {
-            this.renderGroup.onChildViewUpdate(this);
+            renderGroup.onChildViewUpdate(this);
         }
     }
 

@@ -25,22 +25,22 @@ GpuStencilModesToPixi[STENCIL_MODES.DISABLED] = {
 
 GpuStencilModesToPixi[STENCIL_MODES.RENDERING_MASK_ADD] = {
     stencilFront: {
-        compare: 'always',
+        compare: 'equal',
         passOp: 'increment-clamp',
     },
     stencilBack: {
-        compare: 'always',
+        compare: 'equal',
         passOp: 'increment-clamp',
     },
 };
 
 GpuStencilModesToPixi[STENCIL_MODES.RENDERING_MASK_REMOVE] = {
     stencilFront: {
-        compare: 'always',
+        compare: 'equal',
         passOp: 'decrement-clamp',
     },
     stencilBack: {
-        compare: 'always',
+        compare: 'equal',
         passOp: 'decrement-clamp',
     },
 };

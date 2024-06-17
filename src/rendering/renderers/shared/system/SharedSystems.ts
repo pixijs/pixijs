@@ -15,6 +15,8 @@ import { HelloSystem } from '../startup/HelloSystem';
 import { TextureGCSystem } from '../texture/TextureGCSystem';
 import { ViewSystem } from '../view/ViewSystem';
 
+import type { ExtractRendererOptions } from './utils/typeUtils';
+
 export const SharedSystems = [
     BackgroundSystem,
     GlobalUniformSystem,
@@ -36,3 +38,45 @@ export const SharedRenderPipes = [
     ColorMaskPipe,
     CustomRenderPipe
 ];
+
+/**
+ * Options for the shared systems of a renderer.
+ * @memberof rendering
+ */
+export interface SharedRendererOptions extends ExtractRendererOptions<typeof SharedSystems>, PixiMixins.RendererOptions
+{
+    /**
+     * Whether to stop PixiJS from dynamically importing default extensions for the renderer.
+     * It is false by default, and means PixiJS will load all the default extensions, based
+     * on the environment e.g browser/webworker.
+     * If you set this to true, then you will need to manually import the systems and extensions you need.
+     *
+     * e.g.
+     * ```js
+     * import 'accessibility';
+     * import 'app';
+     * import 'events';
+     * import 'spritesheet';
+     * import 'graphics';
+     * import 'mesh';
+     * import 'text';
+     * import 'text-bitmap';
+     * import 'text-html';
+     * import { autoDetectRenderer } from 'pixi.js';
+     *
+     * const renderer = await autoDetectRenderer({
+     *   width: 800,
+     *   height: 600,
+     *   skipExtensionImports: true,
+     * });
+     * ```
+     * @default false
+     */
+    skipExtensionImports?: boolean;
+    /**
+     * @default true
+     * @deprecated since 8.1.6
+     * @see `skipExtensionImports`
+     */
+    manageImports?: boolean;
+}

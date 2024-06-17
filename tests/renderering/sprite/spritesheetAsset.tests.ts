@@ -102,6 +102,19 @@ describe('spritesheetAsset', () =>
         expect(spriteSheet.textureSource).toBe(null);
     });
 
+    it('should unload and reload spritesheet', async () =>
+    {
+        const spriteSheet = await loader.load<Spritesheet>(`${basePath}spritesheet/spritesheet.json`);
+
+        await loader.unload(`${basePath}spritesheet/spritesheet.json`);
+
+        const textureSource = spriteSheet.textureSource;
+
+        const spriteSheetReloaded = await loader.load<Spritesheet>(`${basePath}spritesheet/spritesheet.json`);
+
+        expect(spriteSheetReloaded.textureSource).not.toBe(textureSource);
+    });
+
     it('should parse a string sprite sheet correctly', () =>
     {
         [
@@ -149,7 +162,7 @@ describe('spritesheetAsset', () =>
         const spritesheetJsonUrl = `${basePath}spritesheet/spritesheet.json`;
         const preloadedTexture = new Texture();
         const json = await loadJson.load<SpriteSheetJson>(spritesheetJsonUrl);
-        const spritesheet = await spritesheetAsset.loader.parse<Spritesheet>(
+        const spritesheet = await spritesheetAsset.loader.parse(
             json,
             {
                 src: spritesheetJsonUrl,
@@ -164,7 +177,7 @@ describe('spritesheetAsset', () =>
         const spritesheetJsonUrl = `${basePath}spritesheet/spritesheet.json`;
         const customImageFilename = 'multi-pack-1.png';
         const json = await loadJson.load<SpriteSheetJson>(spritesheetJsonUrl);
-        const spritesheet = await spritesheetAsset.loader.parse<Spritesheet>(
+        const spritesheet = await spritesheetAsset.loader.parse(
             json,
             {
                 src: spritesheetJsonUrl,

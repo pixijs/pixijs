@@ -112,7 +112,7 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<MeshInstructi
             {
                 if (batchableMesh.texture._source !== texture._source)
                 {
-                    return batchableMesh.batcher.checkAndUpdateTexture(batchableMesh, texture);
+                    return !batchableMesh.batcher.checkAndUpdateTexture(batchableMesh, texture);
                 }
             }
         }
@@ -165,9 +165,11 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<MeshInstructi
 
         const gpuMesh = this._gpuBatchableMeshHash[mesh.uid];
 
-        BigPool.return(gpuMesh as PoolItem);
-
-        this._gpuBatchableMeshHash[mesh.uid] = null;
+        if (gpuMesh)
+        {
+            BigPool.return(gpuMesh as PoolItem);
+            this._gpuBatchableMeshHash[mesh.uid] = null;
+        }
     }
 
     public execute({ mesh }: MeshInstruction)

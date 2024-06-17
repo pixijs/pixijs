@@ -1,10 +1,10 @@
 import { uid } from '../../../../utils/data/uid';
 import { createIdFromString } from '../utils/createIdFromString';
+import { UNIFORM_TYPES_MAP, UNIFORM_TYPES_VALUES, type UniformData } from './types';
 import { getDefaultUniformValue } from './utils/getDefaultUniformValue';
 
 import type { BindResource } from '../../gpu/shader/BindResource';
 import type { Buffer } from '../buffer/Buffer';
-import type { UniformData } from './types';
 
 type FLOPS<T = UniformData> = T extends { value: infer V } ? V : never;
 
@@ -129,6 +129,9 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
      */
     public readonly _signature: number;
 
+    // implementing the interface - UniformGroup are not destroyed
+    public readonly destroyed = false;
+
     /**
      * Create a new Uniform group
      * @param uniformStructures - The structures of the uniform group
@@ -148,6 +151,13 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
 
             uniformData.name = i;
             uniformData.size = uniformData.size ?? 1;
+
+            if (!UNIFORM_TYPES_MAP[uniformData.type])
+            {
+                // eslint-disable-next-line max-len
+                throw new Error(`Uniform type ${uniformData.type} is not supported. Supported uniform types are: ${UNIFORM_TYPES_VALUES.join(', ')}`);
+            }
+
             uniformData.value ??= getDefaultUniformValue(uniformData.type, uniformData.size);
 
             uniforms[i] = uniformData.value as ExtractUniformObject<UNIFORMS>[keyof UNIFORMS];

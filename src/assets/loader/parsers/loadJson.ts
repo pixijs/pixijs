@@ -34,4 +34,4 @@ export const loadJson = {
 
         return json as T;
     },
-} as LoaderParser;
+} satisfies LoaderParser<string>;

@@ -1,7 +1,9 @@
 import { Assets } from '../../src/assets/Assets';
+import { resolveJsonUrl } from '../../src/assets/resolver/parsers/resolveJsonUrl';
 import { resolveTextureUrl } from '../../src/assets/resolver/parsers/resolveTextureUrl';
 import { getUrlExtension, Resolver } from '../../src/assets/resolver/Resolver';
 import { extensions, ExtensionType } from '../../src/extensions/Extensions';
+import { spritesheetAsset } from '../../src/spritesheet/spritesheetAsset';
 import { manifest } from './sampleManifest';
 
 import type { FormatDetectionParser } from '../../src/assets/detections/types';
@@ -44,6 +46,25 @@ describe('Resolver', () =>
         const resolvedAsset = Assets.resolver.resolve('test');
 
         expect(resolvedAsset.src).toBe('src.best');
+    });
+
+    it('should parse using the spritesheet parser', async () =>
+    {
+        extensions.add(spritesheetAsset, resolveJsonUrl);
+
+        await Assets.init();
+
+        Assets.resolver.add({
+            alias: 'test',
+            src: [
+                'src@2x.webp.json',
+                'src@2x.png.json',
+            ]
+        });
+
+        const resolvedAsset = Assets.resolver.resolve('test');
+
+        expect(resolvedAsset.src).toBe('src@2x.webp.json');
     });
 
     it('should resolve asset', () =>

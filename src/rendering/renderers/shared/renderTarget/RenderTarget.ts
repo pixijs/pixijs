@@ -81,6 +81,8 @@ export class RenderTarget
     public isRoot = false;
 
     private readonly _size = new Float32Array(2);
+    /** if true, then when the render target is destroyed, it will destroy all the textures that were created for it. */
+    private readonly _managedColorTextures: boolean = false;
 
     /**
      * @param [descriptor] - Options for creating a render target.
@@ -95,6 +97,8 @@ export class RenderTarget
 
         if (typeof descriptor.colorTextures === 'number')
         {
+            this._managedColorTextures = true;
+
             for (let i = 0; i < descriptor.colorTextures; i++)
             {
                 this.colorTextures.push(new TextureSource({
@@ -222,6 +226,14 @@ export class RenderTarget
     public destroy()
     {
         this.colorTexture.source.off('resize', this.onSourceResize, this);
+
+        if (this._managedColorTextures)
+        {
+            this.colorTextures.forEach((texture) =>
+            {
+                texture.destroy();
+            });
+        }
 
         if (this.depthStencilTexture)
         {

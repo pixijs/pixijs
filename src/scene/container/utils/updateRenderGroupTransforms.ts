@@ -11,9 +11,7 @@ export function updateRenderGroupTransforms(renderGroup: RenderGroup, updateChil
 
     const childrenToUpdate = renderGroup.childrenToUpdate;
 
-    const updateTick = renderGroup.updateTick;
-
-    renderGroup.updateTick++;
+    const updateTick = renderGroup.updateTick++;
 
     for (const j in childrenToUpdate)
     {
@@ -24,7 +22,12 @@ export function updateRenderGroupTransforms(renderGroup: RenderGroup, updateChil
 
         for (let i = 0; i < index; i++)
         {
-            updateTransformAndChildren(list[i], updateTick, 0);
+            const child = list[i];
+
+            if (child.parentRenderGroup === renderGroup)
+            {
+                updateTransformAndChildren(child, updateTick, 0);
+            }
         }
 
         childrenAtDepth.index = 0;
@@ -89,7 +92,7 @@ export function updateTransformAndChildren(container: Container, updateTick: num
 
     const parent = container.parent;
 
-    if ((parent && !parent.isRenderGroupRoot))
+    if ((parent && !parent.renderGroup))
     {
         updateFlags = updateFlags | container._updateFlags;
 
@@ -116,7 +119,7 @@ export function updateTransformAndChildren(container: Container, updateTick: num
     }
 
     // don't update children if its a layer..
-    if (!container.isRenderGroupRoot)
+    if (!container.renderGroup)
     {
         const children = container.children;
         const length = children.length;
@@ -126,7 +129,7 @@ export function updateTransformAndChildren(container: Container, updateTick: num
             updateTransformAndChildren(children[i], updateTick, updateFlags);
         }
 
-        const renderGroup = container.renderGroup;
+        const renderGroup = container.parentRenderGroup;
 
         if (container.renderPipeId && !renderGroup.structureDidChange)
         {

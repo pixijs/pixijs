@@ -20,6 +20,7 @@ export const loadTxt = {
     extension: {
         type: ExtensionType.LoadParser,
         priority: LoaderParserPriority.Low,
+        name: 'loadTxt',
     },
 
     test(url: string): boolean
@@ -35,4 +36,4 @@ export const loadTxt = {
 
         return txt;
     },
-} as LoaderParser;
+} satisfies LoaderParser<string>;

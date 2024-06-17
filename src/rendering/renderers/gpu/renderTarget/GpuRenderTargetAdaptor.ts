@@ -301,6 +301,22 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         return gpuRenderTarget;
     }
 
+    public destroyGpuRenderTarget(gpuRenderTarget: GpuRenderTarget)
+    {
+        gpuRenderTarget.contexts.forEach((context) =>
+        {
+            context.unconfigure();
+        });
+
+        gpuRenderTarget.msaaTextures.forEach((texture) =>
+        {
+            texture.destroy();
+        });
+
+        gpuRenderTarget.msaaTextures.length = 0;
+        gpuRenderTarget.contexts.length = 0;
+    }
+
     public ensureDepthStencilTexture(renderTarget: RenderTarget)
     {
         // TODO This function will be more useful once we cache the descriptors

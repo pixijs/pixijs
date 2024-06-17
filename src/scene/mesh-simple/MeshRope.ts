@@ -2,7 +2,7 @@ import { definedProps } from '../container/utils/definedProps';
 import { Mesh } from '../mesh/shared/Mesh';
 import { RopeGeometry } from './RopeGeometry';
 
-import type { PointLike } from '../../maths/point/PointLike';
+import type { PointData } from '../../maths/point/PointData';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { MeshOptions } from '../mesh/shared/Mesh';
 
@@ -23,7 +23,7 @@ export interface MeshRopeOptions extends Omit<MeshOptions, 'geometry'>
     /** The texture to use on the rope. */
     texture: Texture;
     /** An array of points that determine the rope. */
-    points: PointLike[];
+    points: PointData[];
     /**
      * Rope texture scale, if zero then the rope texture is stretched.
      * Positive values scale rope texture
@@ -57,7 +57,7 @@ export class MeshRope extends Mesh
      * Note: The wrap mode of the texture is set to REPEAT if `textureScale` is positive.
      * @param options
      * @param options.texture - The texture to use on the rope.
-     * @param options.points - An array of {@link PIXI.Point} objects to construct this rope.
+     * @param options.points - An array of {@link math.Point} objects to construct this rope.
      * @param {number} options.textureScale - Optional. Positive values scale rope texture
      * keeping its aspect ratio. You can reduce alpha channel artifacts by providing a larger texture
      * and downsampling here. If set to zero, texture will be stretched instead.

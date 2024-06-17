@@ -155,7 +155,7 @@ class BitmapFontManagerClass
     {
         const bitmapFont = this.getFont(text, style);
 
-        return getBitmapTextLayout(text.split(''), style, bitmapFont);
+        return getBitmapTextLayout([...text], style, bitmapFont);
     }
 
     /**

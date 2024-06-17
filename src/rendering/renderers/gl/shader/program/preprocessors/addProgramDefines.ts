@@ -8,7 +8,7 @@ export function addProgramDefines(src: string, isES300: boolean, isFragment?: bo
 
         return `
         
-        #ifdef GL_ES // This checks if it's WebGL1
+        #ifdef GL_ES // This checks if it is WebGL1
         #define in varying
         #define finalColor gl_FragColor
         #define texture texture2D
@@ -19,7 +19,7 @@ export function addProgramDefines(src: string, isES300: boolean, isFragment?: bo
 
     return `
         
-        #ifdef GL_ES // This checks if it's WebGL1
+        #ifdef GL_ES // This checks if it is WebGL1
         #define in attribute
         #define out varying
         #endif
