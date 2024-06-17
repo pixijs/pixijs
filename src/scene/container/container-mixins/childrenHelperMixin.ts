@@ -223,6 +223,15 @@ export const childrenHelperMixin: Partial<Container> = {
 
         this.children[index1] = child2;
         this.children[index2] = child;
+
+        const renderGroup = this.renderGroup || this.parentRenderGroup;
+
+        if (renderGroup)
+        {
+            renderGroup.structureDidChange = true;
+        }
+
+        this._didChangeId++;
     },
     /**
      * Remove the Container from its parent Container. If the Container has no parent, do nothing.

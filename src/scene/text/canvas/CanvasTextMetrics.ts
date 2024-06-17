@@ -281,9 +281,9 @@ export class CanvasTextMetrics
             width += style.dropShadow.distance;
         }
 
-        const lineHeight = style.lineHeight || fontProperties.fontSize + strokeWidth;
+        const lineHeight = style.lineHeight || fontProperties.fontSize;
 
-        let height = Math.max(lineHeight, fontProperties.fontSize + (strokeWidth * 2))
+        let height = Math.max(lineHeight, fontProperties.fontSize + (strokeWidth))
             + ((lines.length - 1) * (lineHeight + style.leading));
 
         if (style.dropShadow)
