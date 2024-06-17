@@ -70,9 +70,9 @@ export const sortMixin: Partial<Container> = {
             this.parent.sortDirty = true;
         }
 
-        if (this.renderGroup && !this.isRenderGroupRoot)
+        if (this.parentRenderGroup)
         {
-            this.renderGroup.structureDidChange = true;
+            this.parentRenderGroup.structureDidChange = true;
         }
     },
 

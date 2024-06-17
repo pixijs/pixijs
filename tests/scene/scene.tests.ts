@@ -1,5 +1,44 @@
 import { Container } from '../../src/scene/container/Container';
 
+import type { RenderGroup } from '../../src/scene/container/RenderGroup';
+
+// now that we don't actually remove the items, but instead ensure that they are skipped
+// in the update loop, this function will return the new list and index removing items that are intended to be skipped
+// when the update function is called.
+//
+function _processUpdateList(toUpdateList: {list: Container[], index: number}, renderGroup: RenderGroup)
+{
+    const newP = toUpdateList.list.filter((c) =>
+    {
+        if (c.renderGroup) return false;
+
+        const r = c.parentRenderGroup;
+
+        return (r === renderGroup);
+    });
+
+    return {
+        list: newP,
+        index: newP.length
+    };
+}
+
+function compareUpdateList(expected: Container[], renderGroup: RenderGroup, index: number, debug = false)
+{
+    const childrenToUpdate = _processUpdateList(renderGroup.childrenToUpdate[index], renderGroup);
+
+    if (debug)
+    {
+        // eslint-disable-next-line no-console
+        console.log(renderGroup.childrenToUpdate[index].list.map((c) => c.label));
+        // eslint-disable-next-line no-console
+        console.log(childrenToUpdate.list.map((c) => c.label));
+    }
+
+    expect(childrenToUpdate.list).toEqual(expected);
+    expect(childrenToUpdate.index).toEqual(expected.length);
+}
+
 describe('Scene', () =>
 {
     it('should add a child', async () =>
@@ -75,10 +114,10 @@ describe('Scene', () =>
         container.addChild(childPost);
 
         expect(container.children).toHaveLength(2);
-        expect(container.renderGroup['_children']).toHaveLength(2);
+        expect(container.renderGroup.getChildren()).toHaveLength(2);
 
-        expect(childPre.renderGroup).toEqual(container.renderGroup);
-        expect(childPost.renderGroup).toEqual(container.renderGroup);
+        expect(childPre.parentRenderGroup).toEqual(container.renderGroup);
+        expect(childPost.parentRenderGroup).toEqual(container.renderGroup);
     });
 
     it('should not enable a render group twice', async () =>
@@ -117,10 +156,10 @@ describe('Scene', () =>
         container2.addChild(child3);
 
         expect(container.children).toHaveLength(2);
-        expect(container.renderGroup['_children']).toHaveLength(4);
+        expect(container.renderGroup.getChildren()).toHaveLength(4);
 
-        expect(child2.renderGroup).toEqual(container.renderGroup);
-        expect(child3.renderGroup).toEqual(container.renderGroup);
+        expect(child2.parentRenderGroup).toEqual(container.renderGroup);
+        expect(child3.parentRenderGroup).toEqual(container.renderGroup);
 
         expect(container.relativeRenderGroupDepth).toEqual(0);
         expect(container2.relativeRenderGroupDepth).toEqual(1);
@@ -154,15 +193,17 @@ describe('Scene', () =>
         container2.addChild(child3);
 
         expect(container.renderGroup === container2.renderGroup).toBeFalse();
-        expect(container.renderGroup['_children']).toHaveLength(2);
-        expect(container2.renderGroup['_children']).toHaveLength(2);
+        expect(container.renderGroup.getChildren()).toHaveLength(2);
+        expect(container2.renderGroup.getChildren()).toHaveLength(2);
 
         expect(container.renderGroup).toEqual(container.renderGroup);
         expect(container2.renderGroup).toEqual(container2.renderGroup);
-        expect(child.renderGroup).toEqual(container.renderGroup);
 
-        expect(child2.renderGroup).toEqual(container2.renderGroup);
-        expect(child3.renderGroup).toEqual(container2.renderGroup);
+        expect(container2.parentRenderGroup).toEqual(container.renderGroup);
+        expect(child.parentRenderGroup).toEqual(container.renderGroup);
+
+        expect(child2.parentRenderGroup).toEqual(container2.renderGroup);
+        expect(child3.parentRenderGroup).toEqual(container2.renderGroup);
 
         expect(container.renderGroup.renderGroupChildren).toHaveLength(1);
         expect(container2.renderGroup.renderGroupChildren).toHaveLength(0);
@@ -202,15 +243,20 @@ describe('Scene', () =>
         container2.addChild(child);
 
         expect(container.renderGroup === container2.renderGroup).toBeFalse();
-        expect(container.renderGroup['_children']).toHaveLength(1);
-        expect(container2.renderGroup['_children']).toHaveLength(3);
+        expect(container.renderGroup.getChildren()).toHaveLength(1);
+        expect(container2.renderGroup.getChildren()).toHaveLength(3);
 
         expect(container.renderGroup).toEqual(container.renderGroup);
-        expect(container2.renderGroup).toEqual(container2.renderGroup);
-        expect(child.renderGroup).toEqual(container2.renderGroup);
+        expect(container2.parentRenderGroup).toEqual(container.renderGroup);
+        // expect(child.renderGroup).toEqual(container2.renderGroup);
 
-        expect(child2.renderGroup).toEqual(container2.renderGroup);
-        expect(child3.renderGroup).toEqual(container2.renderGroup);
+        expect(child2.renderGroup).toBeNull();
+        expect(child3.renderGroup).toBeNull();
+
+        expect(container.parentRenderGroup).toBeNull();
+
+        expect(child2.parentRenderGroup).toEqual(container2.renderGroup);
+        expect(child3.parentRenderGroup).toEqual(container2.renderGroup);
 
         expect(container.renderGroup.renderGroupChildren).toHaveLength(1);
         expect(container2.renderGroup.renderGroupChildren).toHaveLength(0);
@@ -223,15 +269,14 @@ describe('Scene', () =>
 
         container.addChild(child3);
 
-        expect(container.renderGroup['_children']).toHaveLength(2);
-        expect(container2.renderGroup['_children']).toHaveLength(2);
+        expect(container.renderGroup.getChildren()).toHaveLength(2);
+        expect(container2.renderGroup.getChildren()).toHaveLength(2);
 
         expect(container.renderGroup).toEqual(container.renderGroup);
-        expect(container2.renderGroup).toEqual(container2.renderGroup);
-        expect(child.renderGroup).toEqual(container2.renderGroup);
+        expect(container2.parentRenderGroup).toEqual(container.renderGroup);
 
-        expect(child2.renderGroup).toEqual(container2.renderGroup);
-        expect(child3.renderGroup).toEqual(container.renderGroup);
+        expect(child2.parentRenderGroup).toEqual(container2.renderGroup);
+        expect(child3.parentRenderGroup).toEqual(container.renderGroup);
 
         expect(container.renderGroup.renderGroupChildren).toHaveLength(1);
         expect(container2.renderGroup.renderGroupChildren).toHaveLength(0);
@@ -272,14 +317,16 @@ describe('Scene', () =>
         //           |- child2
         //           |- child3
         //
-        expect(child.renderGroup).toBe(container.renderGroup);
-        expect(container2.renderGroup).toBe(container2.renderGroup);
-        expect(child2.renderGroup).toBe(container2.renderGroup);
-        expect(child3.renderGroup).toBe(container2.renderGroup);
+        expect(child.parentRenderGroup).toBe(container.renderGroup);
+        expect(container2.parentRenderGroup).toBe(container.renderGroup);
+        expect(container.parentRenderGroup).toBeNull();
+
+        expect(child2.parentRenderGroup).toBe(container2.renderGroup);
+        expect(child3.parentRenderGroup).toBe(container2.renderGroup);
 
         expect(container.renderGroup === container2.renderGroup).toBeFalse();
-        expect(container.renderGroup['_children']).toHaveLength(2);
-        expect(container2.renderGroup['_children']).toHaveLength(2);
+        expect(container.renderGroup.getChildren()).toHaveLength(2);
+        expect(container2.renderGroup.getChildren()).toHaveLength(2);
 
         expect(container2.parent).toBe(child);
 
@@ -299,8 +346,8 @@ describe('Scene', () =>
         expect(container.renderGroup.renderGroupChildren).toHaveLength(1);
         expect(child.renderGroup.renderGroupChildren).toHaveLength(1);
         expect(container2.renderGroup.renderGroupChildren).toHaveLength(0);
-        expect(child.renderGroup['_children']).toHaveLength(1);
-        expect(container2.renderGroup['_children']).toHaveLength(2);
+        expect(child.renderGroup.getChildren()).toHaveLength(1);
+        expect(container2.renderGroup.getChildren()).toHaveLength(2);
 
         container.addChild(container2);
 
@@ -308,8 +355,8 @@ describe('Scene', () =>
         expect(container.children).toHaveLength(2);
         expect(child.renderGroup.renderGroupChildren).toHaveLength(0);
         expect(container2.renderGroup.renderGroupChildren).toHaveLength(0);
-        expect(child.renderGroup['_children']).toHaveLength(0);
-        expect(container2.renderGroup['_children']).toHaveLength(2);
+        expect(child.renderGroup.getChildren()).toHaveLength(0);
+        expect(container2.renderGroup.getChildren()).toHaveLength(2);
 
         expect(container.relativeRenderGroupDepth).toEqual(0);
         expect(child.relativeRenderGroupDepth).toEqual(1);
@@ -317,47 +364,45 @@ describe('Scene', () =>
         expect(child3.relativeRenderGroupDepth).toEqual(1);
     });
 
+    // eslint-disable-next-line jest/expect-expect
     it('should register update in the update array..', async () =>
     {
-        const container = new Container();
+        const container = new Container({
+            label: 'container'
+        });
 
         container.isRenderGroup = true;
 
-        const container2 = new Container();
+        const container2 = new Container({
+            label: 'container2'
+        });
 
-        // container2.layer = true;
-
-        const child = new Container();
-        const child2 = new Container();
-        const child3 = new Container();
+        const child = new Container({
+            label: 'child'
+        });
+        const child2 = new Container({
+            label: 'child2'
+        });
+        const child3 = new Container({
+            label: 'child3'
+        });
 
         container.addChild(child);
 
-        expect(container.renderGroup.childrenToUpdate[1]).toEqual({
-            list: [child],
-            index: 1
-        });
+        compareUpdateList([child], container.renderGroup, 1);
 
         container.addChild(container2);
 
-        expect(container.renderGroup.childrenToUpdate[1]).toEqual({
-            list: [child, container2],
-            index: 2
-        });
+        compareUpdateList([child, container2], container.renderGroup, 1);
 
         container2.addChild(child2);
         container2.addChild(child3);
 
-        expect(container.renderGroup.childrenToUpdate[1]).toEqual({
-            list: [child, container2],
-            index: 2
-        });
+        compareUpdateList([child, container2], container.renderGroup, 1);
 
-        expect(container.renderGroup.childrenToUpdate[2]).toEqual({
-            list: [child2, child3],
-            index: 2
-        });
+        compareUpdateList([child2, child3], container.renderGroup, 2);
 
+        //  return;
         // |- contianer // renderGroup
         //    |- child
         //    |- container2
@@ -367,41 +412,19 @@ describe('Scene', () =>
 
         container.x = 100;
 
-        // expect(container.layerGroup.childrenToUpdate[0]).toEqual({
-
-        // });
-
         child.x = 100;
 
-        expect(container.renderGroup.childrenToUpdate[1]).toEqual({
-            list: [child, container2],
-            index: 2
-        });
+        compareUpdateList([child, container2], container.renderGroup, 1);
 
         child.x = 110;
 
-        expect(container.renderGroup.childrenToUpdate[1]).toEqual({
-            list: [child, container2],
-            index: 2
-        });
+        compareUpdateList([child, container2], container.renderGroup, 1);
 
         child3.x = 30;
 
-        expect(container.renderGroup.childrenToUpdate[1]).toEqual({
-            list: [child, container2],
-            index: 2
-        });
+        compareUpdateList([child, container2], container.renderGroup, 1);
 
-        expect(container.renderGroup.childrenToUpdate[2]).toEqual({
-            list: [child2, child3],
-            index: 2
-        });
-
-        // child2.x = 50;
-
-        // expect(container.layerGroup.childrenToUpdate[2]).toEqual({
-        //     list: [child3, child2],
-        //     index: 2
+        compareUpdateList([child2, child3], container.renderGroup, 2);
     });
 
     it('should appear in update array correctly if it changes layer group', async () =>
@@ -413,7 +436,6 @@ describe('Scene', () =>
         const container2 = new Container();
 
         container2.isRenderGroup = true;
-
         // |- contianer // renderGroup
         //    |- child
         //    |- container2 // render group
@@ -432,10 +454,7 @@ describe('Scene', () =>
 
         child.x = 100;
 
-        expect(container.renderGroup.childrenToUpdate[1]).toEqual({
-            list: [child, container2],
-            index: 2
-        });
+        compareUpdateList([child], container.renderGroup, 1);
 
         expect(container.renderGroup.structureDidChange).toBeTrue();
 
@@ -446,24 +465,23 @@ describe('Scene', () =>
         //       |- child3
         child2.addChild(child);
 
-        expect(container.renderGroup.childrenToUpdate[1]).toEqual({
-            list: [container2],
-            index: 1
-        });
+        compareUpdateList([], container.renderGroup, 1);
 
-        expect(container2.renderGroup.childrenToUpdate[2]).toEqual({
-            list: [child],
-            index: 1
-        });
+        compareUpdateList([child], container2.renderGroup, 2);
     });
 
+    // eslint-disable-next-line jest/expect-expect
     it('should appear in update array correctly if it changes layer group parents', async () =>
     {
-        const container = new Container();
+        const container = new Container({
+            label: 'container'
+        });
 
         container.isRenderGroup = true;
 
-        const container2 = new Container();
+        const container2 = new Container({
+            label: 'container2'
+        });
 
         container2.isRenderGroup = true;
 
@@ -474,25 +492,25 @@ describe('Scene', () =>
         //       |- child3
         //
 
-        const child = new Container();
-        const child2 = new Container();
+        const child = new Container({
+            label: 'child'
+        });
+        const child2 = new Container({
+            label: 'child2'
+        });
 
         child2.isRenderGroup = true;
 
-        const child3 = new Container();
+        const child3 = new Container({
+            label: 'child3'
+        });
 
         container.addChild(child);
         container.addChild(container2);
         container2.addChild(child2);
         container2.addChild(child3);
 
-        // child.x = 100;
         child2.x = 100;
-
-        // expect(container.layerGroup.childrenToUpdate[1]).toEqual({
-        //     list: [child],
-        //     index: 1
-        // });
 
         // |- contianer // renderGroup
         //    |- child
@@ -502,29 +520,18 @@ describe('Scene', () =>
         //
         container.addChild(child2);
 
-        expect(container.renderGroup.childrenToUpdate[1]).toEqual({
-            list: [child, container2, child2],
-            index: 3
-        });
+        compareUpdateList([child], container.renderGroup, 1);
 
-        expect(container2.renderGroup.childrenToUpdate[1]).toEqual({
-            list: [child3],
-            index: 1
-        });
+        compareUpdateList([child3], container2.renderGroup, 1);
 
         child2.x = 110;
 
-        expect(container.renderGroup.childrenToUpdate[1]).toEqual({
-            list: [child, container2, child2],
-            index: 3
-        });
+        compareUpdateList([child], container.renderGroup, 1);
 
-        expect(container2.renderGroup.childrenToUpdate[1]).toEqual({
-            list: [child3],
-            index: 1
-        });
+        compareUpdateList([child3], container2.renderGroup, 1);
     });
 
+    // eslint-disable-next-line jest/expect-expect
     it('should update layers correctly if you attach a render group and it has updated children..', async () =>
     {
         const container = new Container();
@@ -549,19 +556,11 @@ describe('Scene', () =>
         container2.addChild(child2);
         container2.addChild(child3);
 
-        // child.x = 100;
         child2.x = 100;
 
-        expect(container.renderGroup.childrenToUpdate[2]).toEqual({
-            list: [child2, child3],
-            index: 2
-        });
+        compareUpdateList([child2, child3], container.renderGroup, 2);
 
-        // console.log('---?', container.layerGroup.childrenToUpdate[1])
-        expect(container.renderGroup.childrenToUpdate[1]).toEqual({
-            list: [child, container2],
-            index: 2
-        });
+        compareUpdateList([child, container2], container.renderGroup, 1);
 
         container2.isRenderGroup = true;
 
@@ -571,22 +570,15 @@ describe('Scene', () =>
         //       |- child2
         //       |- child3
 
-        expect(container.renderGroup.childrenToUpdate[2]).toEqual({
-            list: [],
-            index: 0
-        });
+        compareUpdateList([], container.renderGroup, 2);
 
-        expect(container.renderGroup.childrenToUpdate[1]).toEqual({
-            list: [child, container2],
-            index: 2
-        });
+        compareUpdateList([child], container.renderGroup, 1);
 
         container.removeChild(container2);
 
-        expect(container.renderGroup.childrenToUpdate[1]).toEqual({
-            list: [child],
-            index: 1
-        });
+        compareUpdateList([child], container.renderGroup, 1);
+
+        expect(true).toBeTrue();
 
         // console.log(container2.layerGroup.childrenToUpdate[1])
         // expect(container2.layerGroup.childrenToUpdate[1]).toEqual({

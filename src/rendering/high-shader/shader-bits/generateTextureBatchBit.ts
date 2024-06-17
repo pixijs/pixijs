@@ -1,3 +1,5 @@
+import { maxRecommendedTextures } from '../../renderers/shared/texture/utils/maxRecommendedTextures';
+
 import type { HighShaderBit } from '../compiler/types';
 
 const textureBatchBitGpuCache: Record<number, HighShaderBit> = {};
@@ -87,13 +89,13 @@ export function generateTextureBatchBit(maxTextures: number): HighShaderBit
                 header: `
                 @in @interpolate(flat) vTextureId: u32;
     
-                ${generateBindingSrc(16)}
+                ${generateBindingSrc(maxRecommendedTextures())}
             `,
                 main: `
                 var uvDx = dpdx(vUV);
                 var uvDy = dpdy(vUV);
     
-                ${generateSampleSrc(16)}
+                ${generateSampleSrc(maxRecommendedTextures())}
             `
             }
         };
@@ -164,7 +166,7 @@ export function generateTextureBatchBitGl(maxTextures: number): HighShaderBit
             `,
                 main: `
     
-                ${generateSampleGlSrc(16)}
+                ${generateSampleGlSrc(maxRecommendedTextures())}
             `
             }
         };

@@ -196,7 +196,14 @@ export class TilingSprite extends Container implements View, Instruction
 
         this.allowChildren = false;
 
-        this._anchor = new ObservablePoint(this);
+        this._anchor = new ObservablePoint(
+            {
+                _onUpdate: () =>
+                {
+                    this.onViewUpdate();
+                }
+            },
+        );
 
         this._applyAnchorToTexture = applyAnchorToTexture;
 
@@ -413,8 +420,8 @@ export class TilingSprite extends Container implements View, Instruction
      */
     public containsPoint(point: PointData)
     {
-        const width = this.bounds.minX;
-        const height = this.bounds.minY;
+        const width = this._width;
+        const height = this._height;
         const x1 = -width * this._anchor._x;
         let y1 = 0;
 
@@ -438,9 +445,11 @@ export class TilingSprite extends Container implements View, Instruction
         if (this.didViewUpdate) return;
         this.didViewUpdate = true;
 
-        if (this.renderGroup)
+        const renderGroup = this.renderGroup || this.parentRenderGroup;
+
+        if (renderGroup)
         {
-            this.renderGroup.onChildViewUpdate(this);
+            renderGroup.onChildViewUpdate(this);
         }
     }
 

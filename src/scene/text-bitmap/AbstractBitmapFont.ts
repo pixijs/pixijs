@@ -191,7 +191,8 @@ export abstract class AbstractBitmapFont<FontType>
 
         for (const i in this.chars)
         {
-            this.chars[i].texture.destroy();
+            // texture may not exist if the char is " ", \n, \r, or \t.
+            this.chars[i].texture?.destroy();
         }
 
         (this.chars as null) = null;

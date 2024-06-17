@@ -193,4 +193,4 @@ export const loadWebFont = {
                 DOMAdapter.get().getFontFaceSet().delete(t);
             });
     }
-} as LoaderParser<FontFace | FontFace[]>;
+} satisfies LoaderParser<FontFace | FontFace[]>;

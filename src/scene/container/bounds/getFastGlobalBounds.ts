@@ -29,9 +29,9 @@ export function getFastGlobalBounds(target: Container, bounds: Bounds): Bounds
         bounds.set(0, 0, 0, 0);
     }
 
-    if (!target.isRenderGroupRoot)
+    if (!target.renderGroup)
     {
-        bounds.applyMatrix(target.renderGroup.worldTransform);
+        bounds.applyMatrix(target.parentRenderGroup.worldTransform);
     }
     else
     {
@@ -55,7 +55,7 @@ export function _getGlobalBoundsRecursive(
 
     let localBounds = bounds;
 
-    if (target.isRenderGroupRoot || manageEffects)
+    if (target.renderGroup || manageEffects)
     {
         localBounds = boundsPool.get().clear();
     }
@@ -98,7 +98,7 @@ export function _getGlobalBoundsRecursive(
                 if (!advanced)
                 {
                     advanced = true;
-                    localBounds.applyMatrix(target.renderGroup.worldTransform);
+                    localBounds.applyMatrix(target.parentRenderGroup.worldTransform);
                 }
 
                 target.effects[i].addBounds(localBounds, true);
@@ -107,14 +107,14 @@ export function _getGlobalBoundsRecursive(
 
         if (advanced)
         {
-            localBounds.applyMatrix(target.renderGroup.worldTransform.copyTo(tempMatrix).invert());
+            localBounds.applyMatrix(target.parentRenderGroup.worldTransform.copyTo(tempMatrix).invert());
             bounds.addBounds(localBounds, target.relativeGroupTransform);
         }
 
         bounds.addBounds(localBounds);
         boundsPool.return(localBounds);
     }
-    else if (target.isRenderGroupRoot)
+    else if (target.renderGroup)
     {
         bounds.addBounds(localBounds, target.relativeGroupTransform);
         boundsPool.return(localBounds);

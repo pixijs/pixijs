@@ -39,7 +39,7 @@ export interface GlobalUniformData
     bindGroup: BindGroup
 }
 
-interface GlobalUniformRenderer
+export interface GlobalUniformRenderer
 {
     renderTarget: GlRenderTargetSystem | GpuRenderTargetSystem
     renderPipes: Renderer['renderPipes'];

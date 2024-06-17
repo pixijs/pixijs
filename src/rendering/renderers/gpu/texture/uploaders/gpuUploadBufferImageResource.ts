@@ -1,4 +1,4 @@
-import type { BufferImageSource } from '../../../shared/texture/sources/BufferSource';
+import type { BufferImageSource } from '../../../shared/texture/sources/BufferImageSource';
 import type { GPU } from '../../GpuDeviceSystem';
 import type { GpuTextureUploader } from './GpuTextureUploader';
 
