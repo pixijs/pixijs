@@ -5,7 +5,7 @@ import { generateTextureBatchBit } from '../../high-shader/shader-bits/generateT
 import { roundPixelsBit } from '../../high-shader/shader-bits/roundPixelsBit';
 import { Shader } from '../../renderers/shared/shader/Shader';
 import { State } from '../../renderers/shared/state/State';
-import { maxRecommendedTextures } from '../../renderers/shared/texture/utils/maxRecommendedTextures';
+import { getMaxTexturesPerBatch } from '../gl/utils/maxRecommendedTextures';
 import { getTextureBatchBindGroup } from './getTextureBatchBindGroup';
 
 import type { GpuEncoderSystem } from '../../renderers/gpu/GpuEncoderSystem';
@@ -40,7 +40,7 @@ export class GpuBatchAdaptor implements BatcherAdaptor
             name: 'batch',
             bits: [
                 colorBit,
-                generateTextureBatchBit(maxRecommendedTextures()),
+                generateTextureBatchBit(getMaxTexturesPerBatch()),
                 roundPixelsBit,
             ]
         });
