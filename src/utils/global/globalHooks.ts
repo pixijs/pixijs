@@ -24,6 +24,10 @@ export class ApplicationInitHook
     {
         globalThis.__PIXI_APP_INIT__?.(this as unknown as Application);
     }
+    public static destroy(): void
+    {
+        // nothing to do
+    }
 }
 
 /**
