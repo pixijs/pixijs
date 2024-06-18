@@ -28,10 +28,20 @@ export type TextureResourceOrOptions =
   | CanvasSourceOptions;
 
 /**
+ * @param options
+ * @deprecated since v8.2.0
+ * @see TextureSource.from
+ */
+export function autoDetectSource(options: TextureResourceOrOptions = {}): TextureSource
+{
+    return textureSourceFrom(options);
+}
+
+/**
  * Creates a texture source from the options provided
  * @param options - The options to create the texture source from. This can be
  */
-export function autoDetectSource(options: TextureResourceOrOptions = {}): TextureSource
+function textureSourceFrom(options: TextureResourceOrOptions = {}): TextureSource
 {
     const hasResource = options && (options as TextureSourceOptions).resource;
     const res = hasResource ? (options as TextureSourceOptions).resource : options;
@@ -64,7 +74,7 @@ export function resourceToTexture(
         return Cache.get(resource);
     }
 
-    const texture = new Texture({ source: autoDetectSource(opts) });
+    const texture = new Texture({ source: textureSourceFrom(opts) });
 
     texture.on('destroy', () =>
     {
@@ -105,4 +115,4 @@ export function textureFrom(id: TextureSourceLike, skipCache = false): Texture
 }
 
 Texture.from = textureFrom;
-TextureSource.from = autoDetectSource;
+TextureSource.from = textureSourceFrom;
