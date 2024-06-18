@@ -194,4 +194,4 @@ before submitting changes.
 
 ### License ###
 
-This content is released under the (http://opensource.org/licenses/MIT) MIT License.
+This content is released under the [MIT License](http://opensource.org/licenses/MIT).
