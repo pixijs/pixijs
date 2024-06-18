@@ -3,7 +3,7 @@ import { ViewableBuffer } from '../../../utils/data/ViewableBuffer';
 import { fastCopy } from '../../renderers/shared/buffer/utils/fastCopy';
 import { type BLEND_MODES } from '../../renderers/shared/state/const';
 import { getAdjustedBlendModeBlend } from '../../renderers/shared/state/getAdjustedBlendModeBlend';
-import { maxRecommendedTextures } from '../../renderers/shared/texture/utils/maxRecommendedTextures';
+import { getMaxTexturesPerBatch } from '../gl/utils/maxRecommendedTextures';
 import { BatchTextureArray } from './BatchTextureArray';
 
 import type { BindGroup } from '../../renderers/gpu/shader/BindGroup';
@@ -148,7 +148,7 @@ export class Batcher
 
         this.indexBuffer = new Uint16Array(indexSize);
 
-        this._maxTextures = maxRecommendedTextures();
+        this._maxTextures = getMaxTexturesPerBatch();
     }
 
     public begin()

@@ -62,9 +62,10 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
             const { batchableMesh } = tilingSpriteData;
 
             // we are batching.. check a texture change!
-            if (batchableMesh.texture._source !== renderable.texture._source)
-
-            { return !batchableMesh.batcher.checkAndUpdateTexture(batchableMesh, renderable.texture); }
+            if (batchableMesh && batchableMesh.texture._source !== renderable.texture._source)
+            {
+                return !batchableMesh.batcher.checkAndUpdateTexture(batchableMesh, renderable.texture);
+            }
         }
 
         return (couldBatch !== canBatch);

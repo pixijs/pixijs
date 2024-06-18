@@ -28,15 +28,20 @@ export interface Attribute
     offset?: number;
     /** is this an instanced buffer? (defaults to false) */
     instance?: boolean;
-    /**  The number of elements to be rendered. If not specified, all vertices after the starting vertex will be drawn. */
+    /** the number of elements to be rendered. If not specified, all vertices after the starting vertex will be drawn. */
     size?: number;
     /** the type of attribute  */
     type?: number;
     /**
-     * The starting vertex in the geometry to start drawing from. If not specified,
+     * the starting vertex in the geometry to start drawing from. If not specified,
      *  drawing will start from the first vertex.
      */
     start?: number;
+    /**
+     * attribute divisor for instanced rendering. Note: this is a **WebGL-only** feature, the WebGPU renderer will
+     * issue a warning if one of the attributes has divisor set.
+     */
+    divisor?: number;
 }
 
 /**
@@ -268,4 +273,3 @@ export class Geometry extends EventEmitter<{
         (this._bounds as null) = null;
     }
 }
-
