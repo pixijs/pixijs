@@ -1,4 +1,7 @@
+import { type ExtensionMetadata, ExtensionType } from '../../extensions/Extensions';
+
 import type { Application } from '../../app/Application';
+import type { System } from '../../rendering/renderers/shared/system/System';
 import type { Renderer } from '../../rendering/renderers/types';
 
 declare global
@@ -9,12 +12,48 @@ declare global
     /* eslint-enable no-var */
 }
 
-export function rendererCreatedHook(renderer: Renderer)
+/**
+ * Calls global __PIXI_APP_INIT__ hook with the application instance, after the application is initialized.
+ * @memberof app
+ */
+export class ApplicationInitHook
 {
-    globalThis.__PIXI_RENDERER_INIT__?.(renderer);
+    /** @ignore */
+    public static extension: ExtensionMetadata = ExtensionType.Application;
+    public static init(): void
+    {
+        globalThis.__PIXI_APP_INIT__?.(this as unknown as Application);
+    }
 }
 
-export function appCreatedHook(app: Application)
+/**
+ * Calls global __PIXI_RENDERER_INIT__ hook with the renderer instance, after the renderer is initialized.
+ * @memberof rendering
+ */
+export class RendererInitHook implements System
 {
-    globalThis.__PIXI_APP_INIT__?.(app);
+    /** @ignore */
+    public static extension = {
+        type: [
+            ExtensionType.WebGLSystem,
+            ExtensionType.WebGPUSystem,
+        ],
+        name: 'initHook',
+        priority: -10,
+    } as const;
+
+    private _renderer: Renderer;
+
+    constructor(renderer: Renderer)
+    {
+        this._renderer = renderer;
+    }
+    public init(): void
+    {
+        globalThis.__PIXI_RENDERER_INIT__?.(this._renderer);
+    }
+    public destroy(): void
+    {
+        this._renderer = null;
+    }
 }

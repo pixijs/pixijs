@@ -1,7 +1,7 @@
 import { extensions, ExtensionType } from '../extensions/Extensions';
 import { autoDetectRenderer } from '../rendering/renderers/autoDetectRenderer';
 import { Container } from '../scene/container/Container';
-import { appCreatedHook } from '../utils/global/globalHooks';
+import { ApplicationInitHook } from '../utils/global/globalHooks';
 import { deprecation, v8_0_0 } from '../utils/logging/deprecation';
 
 import type { Rectangle } from '../maths/shapes/Rectangle';
@@ -147,8 +147,6 @@ export class Application<R extends Renderer = Renderer>
         {
             plugin.init.call(this, options);
         });
-
-        appCreatedHook(this);
     }
 
     /** Render the current stage. */
@@ -228,3 +226,4 @@ export class Application<R extends Renderer = Renderer>
 }
 
 extensions.handleByList(ExtensionType.Application, Application._plugins);
+extensions.add(ApplicationInitHook);
