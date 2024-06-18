@@ -1,4 +1,5 @@
 import { Container } from '../../src/scene/container/Container';
+import { getWebGLRenderer } from '../utils/getRenderer';
 
 function assertRemovedFromParent(parent: Container, container: Container, child: Container, functionToAssert: () => void)
 {
@@ -335,5 +336,61 @@ describe('Container Hierarchy', () =>
             expect(() => container.removeChildren(-1, 1))
                 .toThrow('removeChildren: numeric values are outside the acceptable range.');
         });
+    });
+
+    describe('reparent', () =>
+    {
+        it('should remove from current parent', async () =>
+        {
+            const renderer = await getWebGLRenderer();
+            const stage = new Container();
+            const parent = new Container();
+            const newParent = new Container();
+            const child = new Container();
+
+            newParent.position.x = 100;
+            child.position.x = -100;
+
+            parent.addChild(child);
+            stage.addChild(parent, newParent);
+
+            // render scene
+            renderer.render(stage);
+
+            newParent.reparentChild(child);
+
+            // render scene
+            renderer.render(stage);
+
+            expect(child.worldTransform.tx).toEqual(-100);
+        });
+    });
+
+    it('should reparent if container does not have a parent', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const stage = new Container();
+        const newParent = new Container();
+        const child = new Container();
+
+        newParent.position.x = 100;
+        newParent.scale.set(4);
+        child.position.x = -100;
+        child.scale.set(2);
+
+        stage.addChild(child, newParent);
+
+        // render scene
+        renderer.render(stage);
+
+        newParent.reparentChild(child);
+
+        // render scene
+        renderer.render(stage);
+
+        expect(child.worldTransform.tx).toEqual(-100);
+        expect(child.worldTransform.ty).toEqual(0);
+        expect(child.worldTransform.a).toEqual(2);
+        expect(child.worldTransform.d).toEqual(2);
     });
 });
