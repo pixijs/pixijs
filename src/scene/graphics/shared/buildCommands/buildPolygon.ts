@@ -14,8 +14,10 @@ const emptyArray: number[] = [];
  * @private
  */
 export const buildPolygon: ShapeBuildCommand<Polygon> = {
-    type: ExtensionType.ShapeBuilder,
-    name: 'polygon',
+    extension: {
+        type: ExtensionType.ShapeBuilder,
+        name: 'polygon',
+    },
 
     build(shape: Polygon, points: number[]): number[]
     {

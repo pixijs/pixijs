@@ -5,7 +5,7 @@ import { transformVertices } from '../../../../rendering/renderers/shared/geomet
 import { Texture } from '../../../../rendering/renderers/shared/texture/Texture';
 import { BigPool } from '../../../../utils/pool/PoolGroup';
 import { BatchableGraphics } from '../BatchableGraphics';
-import { buildCircle } from '../buildCommands/buildCircle';
+import { buildCircle, buildEllipse, buildRoundedRectangle } from '../buildCommands/buildCircle';
 import { buildLine } from '../buildCommands/buildLine';
 import { buildPolygon } from '../buildCommands/buildPolygon';
 import { buildRectangle } from '../buildCommands/buildRectangle';
@@ -20,16 +20,10 @@ import type { GpuGraphicsContext } from '../GraphicsContextSystem';
 import type { GraphicsPath } from '../path/GraphicsPath';
 import type { ShapePath } from '../path/ShapePath';
 
-export const shapeBuilders: Record<string, ShapeBuildCommand> = {
-    rectangle: buildRectangle,
-    polygon: buildPolygon,
-    triangle: buildTriangle,
-    circle: buildCircle,
-    ellipse: buildCircle,
-    roundedRectangle: buildCircle,
-};
+export const shapeBuilders: Record<string, ShapeBuildCommand> = {};
 
 extensions.handleByMap(ExtensionType.ShapeBuilder, shapeBuilders);
+extensions.add(buildRectangle, buildPolygon, buildTriangle, buildCircle, buildEllipse, buildRoundedRectangle);
 
 const tempRect = new Rectangle();
 

@@ -1,10 +1,9 @@
-import type { ExtensionType } from '../../../../extensions/Extensions';
+import type { ExtensionMetadataDetails } from '../../../../extensions/Extensions';
 import type { ShapePrimitive } from '../../../../maths/shapes/ShapePrimitive';
 
 export interface ShapeBuildCommand<T extends ShapePrimitive = ShapePrimitive>
 {
-    type: ExtensionType.ShapeBuilder;
-    name: string;
+    extension: ExtensionMetadataDetails
     build(shape: T, points: number[]): void;
     triangulate(
         points: number[],

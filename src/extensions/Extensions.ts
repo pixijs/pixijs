@@ -405,4 +405,5 @@ export type {
     ExtensionFormat as ExtensionFormatLoose,
     ExtensionHandler,
     ExtensionMetadata,
+    ExtensionMetadataDetails
 };

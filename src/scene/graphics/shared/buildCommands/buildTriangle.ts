@@ -11,8 +11,10 @@ import type { ShapeBuildCommand } from './ShapeBuildCommand';
  * @private
  */
 export const buildTriangle: ShapeBuildCommand<Triangle> = {
-    type: ExtensionType.ShapeBuilder,
-    name: 'triangle',
+    extension: {
+        type: ExtensionType.ShapeBuilder,
+        name: 'triangle',
+    },
 
     build(shape: Triangle, points: number[]): number[]
     {
