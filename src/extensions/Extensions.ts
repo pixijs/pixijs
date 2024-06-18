@@ -86,6 +86,9 @@ enum ExtensionType
 
     /** A type of extension that will be used to auto detect an environment */
     Environment = 'environment',
+
+    /** A type of extension for building and triangulating custom shapes used in graphics. */
+    ShapeBuilder = 'shape-builder',
 }
 
 /**
@@ -402,4 +405,5 @@ export type {
     ExtensionFormat as ExtensionFormatLoose,
     ExtensionHandler,
     ExtensionMetadata,
+    ExtensionMetadataDetails
 };

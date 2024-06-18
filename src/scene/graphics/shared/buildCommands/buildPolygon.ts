@@ -1,3 +1,4 @@
+import { ExtensionType } from '../../../../extensions/Extensions';
 import { triangulateWithHoles } from '../utils/triangulateWithHoles';
 
 import type { Polygon } from '../../../../maths/shapes/Polygon';
@@ -13,6 +14,10 @@ const emptyArray: number[] = [];
  * @private
  */
 export const buildPolygon: ShapeBuildCommand<Polygon> = {
+    extension: {
+        type: ExtensionType.ShapeBuilder,
+        name: 'polygon',
+    },
 
     build(shape: Polygon, points: number[]): number[]
     {

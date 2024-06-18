@@ -1,10 +1,11 @@
+import { extensions, ExtensionType } from '../../../../extensions/Extensions';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { buildSimpleUvs, buildUvs } from '../../../../rendering/renderers/shared/geometry/utils/buildUvs';
 import { transformVertices } from '../../../../rendering/renderers/shared/geometry/utils/transformVertices';
 import { Texture } from '../../../../rendering/renderers/shared/texture/Texture';
 import { BigPool } from '../../../../utils/pool/PoolGroup';
 import { BatchableGraphics } from '../BatchableGraphics';
-import { buildCircle } from '../buildCommands/buildCircle';
+import { buildCircle, buildEllipse, buildRoundedRectangle } from '../buildCommands/buildCircle';
 import { buildLine } from '../buildCommands/buildLine';
 import { buildPolygon } from '../buildCommands/buildPolygon';
 import { buildRectangle } from '../buildCommands/buildRectangle';
@@ -19,14 +20,10 @@ import type { GpuGraphicsContext } from '../GraphicsContextSystem';
 import type { GraphicsPath } from '../path/GraphicsPath';
 import type { ShapePath } from '../path/ShapePath';
 
-const buildMap: Record<string, ShapeBuildCommand> = {
-    rectangle: buildRectangle,
-    polygon: buildPolygon,
-    triangle: buildTriangle,
-    circle: buildCircle,
-    ellipse: buildCircle,
-    roundedRectangle: buildCircle,
-};
+export const shapeBuilders: Record<string, ShapeBuildCommand> = {};
+
+extensions.handleByMap(ExtensionType.ShapeBuilder, shapeBuilders);
+extensions.add(buildRectangle, buildPolygon, buildTriangle, buildCircle, buildEllipse, buildRoundedRectangle);
 
 const tempRect = new Rectangle();
 
@@ -87,7 +84,7 @@ function addTextureToGeometryData(
 
     const points: number[] = [];
 
-    const build = buildMap.rectangle;
+    const build = shapeBuilders.rectangle;
 
     const rect = tempRect;
 
@@ -159,7 +156,7 @@ function addShapePathToGeometryData(
 
         const points: number[] = [];
 
-        const build = buildMap[shape.type];
+        const build = shapeBuilders[shape.type];
 
         // TODO - this can be cached...
         // TODO - THIS IS DONE TWICE!!!!!!
@@ -262,7 +259,7 @@ function getHoleArrays(shape: ShapePath)
         // TODO - need to transform the points via there transform here..
         const holePoints: number[] = [];
 
-        const holeBuilder = buildMap[holePrimitive.type] as ShapeBuildCommand;
+        const holeBuilder = shapeBuilders[holePrimitive.type] as ShapeBuildCommand;
 
         holeBuilder.build(holePrimitive, holePoints);
 
