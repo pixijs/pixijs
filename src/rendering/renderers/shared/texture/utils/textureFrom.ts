@@ -3,8 +3,10 @@ import { extensions, ExtensionType } from '../../../../../extensions/Extensions'
 import { TextureSource } from '../sources/TextureSource';
 import { Texture } from '../Texture';
 
+import type { ICanvas } from '../../../../../environment/canvas/ICanvas';
 import type { TypedArray } from '../../buffer/Buffer';
 import type { BufferSourceOptions } from '../sources/BufferImageSource';
+import type { CanvasSourceOptions } from '../sources/CanvasSource';
 import type { ImageResource } from '../sources/ImageSource';
 import type { TextureSourceOptions } from '../sources/TextureSource';
 import type { TextureSourceLike } from '../Texture';
@@ -12,7 +14,7 @@ import type { TextureSourceLike } from '../Texture';
 interface TextureSourceConstructor<T extends TextureSource = TextureSource>
 {
     new (options: TextureSourceOptions): T;
-    test(options: ImageResource | TypedArray | ArrayBuffer): boolean;
+    test(options: ImageResource | TypedArray | ArrayBuffer | ICanvas): boolean;
 }
 
 const sources: TextureSourceConstructor[] = [];
@@ -22,8 +24,13 @@ extensions.handleByList(ExtensionType.TextureSource, sources);
 export type TextureResourceOrOptions =
   ImageResource
   | TextureSourceOptions<ImageResource>
-  | BufferSourceOptions;
+  | BufferSourceOptions
+  | CanvasSourceOptions;
 
+/**
+ * Creates a texture source from the options provided
+ * @param options - The options to create the texture source from. This can be
+ */
 export function autoDetectSource(options: TextureResourceOrOptions = {}): TextureSource
 {
     const hasResource = options && (options as TextureSourceOptions).resource;
@@ -98,5 +105,4 @@ export function textureFrom(id: TextureSourceLike, skipCache = false): Texture
 }
 
 Texture.from = textureFrom;
-Texture.sourceFrom = (id: TextureSourceLike, skipCache = false) =>
-    textureFrom(id, skipCache)._source;
+TextureSource.from = autoDetectSource;
