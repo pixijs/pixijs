@@ -6,6 +6,7 @@ import { DEG_TO_RAD, RAD_TO_DEG } from '../../maths/misc/const';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { uid } from '../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
+import { BigPool } from '../../utils/pool/PoolGroup';
 import { childrenHelperMixin } from './container-mixins/childrenHelperMixin';
 import { effectsMixin } from './container-mixins/effectsMixin';
 import { findMixin } from './container-mixins/findMixin';
@@ -745,14 +746,15 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
     set isRenderGroup(value: boolean)
     {
-        if (this.renderGroup && value === false)
-        {
-            throw new Error('[Pixi] cannot undo a render group just yet');
-        }
+        if (!!this.renderGroup === value) return;
 
         if (value)
         {
             this.enableRenderGroup();
+        }
+        else
+        {
+            this.disableRenderGroup();
         }
     }
 
@@ -765,31 +767,47 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         return !!this.renderGroup;
     }
 
-    /** This enables the container to be rendered as a render group. */
-    public enableRenderGroup()
+    /**
+     * Calling this enables a render group for this container.
+     * This means it will be rendered as a separate set of instructions.
+     * The transform of the container will also be handled on the GPU rather than the CPU.
+     */
+    public enableRenderGroup(): void
     {
-        // does it OWN the render group..
         if (this.renderGroup) return;
 
         const parentRenderGroup = this.parentRenderGroup;
 
-        if (parentRenderGroup)
-        {
-            parentRenderGroup.removeChild(this);
-        }
+        parentRenderGroup?.removeChild(this);
 
-        this.renderGroup = new RenderGroup(this);
+        this.renderGroup = BigPool.get(RenderGroup, this);
 
-        if (parentRenderGroup)
-        {
-            parentRenderGroup.addChild(this);
-        }
-
-        this._updateIsSimple();
-
-        // this group matrix will now forever be an identity matrix,
+        // this group matrix will now be an identity matrix,
         // as its own transform will be passed to the GPU
         this.groupTransform = Matrix.IDENTITY;
+
+        parentRenderGroup?.addChild(this);
+
+        this._updateIsSimple();
+    }
+
+    /** This will disable the render group for this container. */
+    public disableRenderGroup(): void
+    {
+        if (!this.renderGroup) return;
+
+        const parentRenderGroup = this.parentRenderGroup;
+
+        parentRenderGroup?.removeChild(this);
+
+        BigPool.return(this.renderGroup);
+
+        this.renderGroup = null;
+        this.groupTransform = this.relativeGroupTransform;
+
+        parentRenderGroup?.addChild(this);
+
+        this._updateIsSimple();
     }
 
     /** @ignore */
