@@ -67,6 +67,7 @@ export class GlShaderSystem
         this._programDataHash = Object.create(null);
         this._boundUniformsIdsToIndexHash = Object.create(null);
         this._boundIndexToUniformsHash = Object.create(null);
+        this._shaderSyncFunctions = Object.create(null);
         this._activeProgram = null;
     }
 
