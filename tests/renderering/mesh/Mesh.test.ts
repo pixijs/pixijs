@@ -95,7 +95,7 @@ describe('Mesh', () =>
         mesh.destroy();
     });
 
-    it.only('should have correct blendMode based on textures alpha status when not batching', async () =>
+    it('should have correct blendMode based on textures alpha status when not batching', async () =>
     {
         const renderer = await getWebGLRenderer();
 
