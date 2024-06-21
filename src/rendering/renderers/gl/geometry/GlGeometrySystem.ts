@@ -406,7 +406,11 @@ export class GlGeometrySystem implements System
                     // TODO calculate instance count based of this...
                     if (this.hasInstance)
                     {
-                        gl.vertexAttribDivisor(location, 1);// attribute.divisor);
+                        // Can't use truthiness check to determine if divisor is set,
+                        // since 0 is a valid value for divisor
+                        const divisor = attribute.divisor ?? 1;
+
+                        gl.vertexAttribDivisor(location, divisor);
                     }
                     else
                     {

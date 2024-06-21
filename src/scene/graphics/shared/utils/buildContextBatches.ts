@@ -1,10 +1,11 @@
+import { extensions, ExtensionType } from '../../../../extensions/Extensions';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { buildSimpleUvs, buildUvs } from '../../../../rendering/renderers/shared/geometry/utils/buildUvs';
 import { transformVertices } from '../../../../rendering/renderers/shared/geometry/utils/transformVertices';
 import { Texture } from '../../../../rendering/renderers/shared/texture/Texture';
 import { BigPool } from '../../../../utils/pool/PoolGroup';
 import { BatchableGraphics } from '../BatchableGraphics';
-import { buildCircle } from '../buildCommands/buildCircle';
+import { buildCircle, buildEllipse, buildRoundedRectangle } from '../buildCommands/buildCircle';
 import { buildLine } from '../buildCommands/buildLine';
 import { buildPolygon } from '../buildCommands/buildPolygon';
 import { buildRectangle } from '../buildCommands/buildRectangle';
@@ -13,19 +14,16 @@ import { triangulateWithHoles } from './triangulateWithHoles';
 
 import type { Polygon } from '../../../../maths/shapes/Polygon';
 import type { ShapeBuildCommand } from '../buildCommands/ShapeBuildCommand';
-import type { ConvertedFillStyle, GraphicsContext, TextureInstruction } from '../GraphicsContext';
+import type { ConvertedFillStyle, ConvertedStrokeStyle } from '../FillTypes';
+import type { GraphicsContext, TextureInstruction } from '../GraphicsContext';
 import type { GpuGraphicsContext } from '../GraphicsContextSystem';
 import type { GraphicsPath } from '../path/GraphicsPath';
 import type { ShapePath } from '../path/ShapePath';
 
-const buildMap: Record<string, ShapeBuildCommand> = {
-    rectangle: buildRectangle,
-    polygon: buildPolygon,
-    triangle: buildTriangle,
-    circle: buildCircle,
-    ellipse: buildCircle,
-    roundedRectangle: buildCircle,
-};
+export const shapeBuilders: Record<string, ShapeBuildCommand> = {};
+
+extensions.handleByMap(ExtensionType.ShapeBuilder, shapeBuilders);
+extensions.add(buildRectangle, buildPolygon, buildTriangle, buildCircle, buildEllipse, buildRoundedRectangle);
 
 const tempRect = new Rectangle();
 
@@ -86,7 +84,7 @@ function addTextureToGeometryData(
 
     const points: number[] = [];
 
-    const build = buildMap.rectangle;
+    const build = shapeBuilders.rectangle;
 
     const rect = tempRect;
 
@@ -137,7 +135,7 @@ function addTextureToGeometryData(
 
 function addShapePathToGeometryData(
     shapePath: ShapePath,
-    style: ConvertedFillStyle,
+    style: ConvertedFillStyle | ConvertedStrokeStyle,
     hole: GraphicsPath,
     isStroke: boolean,
     batches: BatchableGraphics[],
@@ -158,7 +156,7 @@ function addShapePathToGeometryData(
 
         const points: number[] = [];
 
-        const build = buildMap[shape.type];
+        const build = shapeBuilders[shape.type];
 
         // TODO - this can be cached...
         // TODO - THIS IS DONE TWICE!!!!!!
@@ -202,7 +200,7 @@ function addShapePathToGeometryData(
         else
         {
             const close = (shape as Polygon).closePath ?? true;
-            const lineStyle = style;
+            const lineStyle = style as ConvertedStrokeStyle;
 
             buildLine(points, lineStyle, false, close, vertices, 2, vertOffset, indices, indexOffset);
         }
@@ -215,13 +213,16 @@ function addShapePathToGeometryData(
         {
             const textureMatrix = style.matrix;
 
-            if (matrix)
+            if (textureMatrix)
             {
                 // todo can prolly do this before calculating uvs..
-                textureMatrix.append(matrix.clone().invert());
-            }
+                if (matrix)
+                {
+                    textureMatrix.append(matrix.clone().invert());
+                }
 
-            buildUvs(vertices, 2, vertOffset, uvs, uvsOffset, 2, (vertices.length / 2) - vertOffset, textureMatrix);
+                buildUvs(vertices, 2, vertOffset, uvs, uvsOffset, 2, (vertices.length / 2) - vertOffset, textureMatrix);
+            }
         }
         else
         {
@@ -261,7 +262,7 @@ function getHoleArrays(shape: ShapePath)
         // TODO - need to transform the points via there transform here..
         const holePoints: number[] = [];
 
-        const holeBuilder = buildMap[holePrimitive.type] as ShapeBuildCommand;
+        const holeBuilder = shapeBuilders[holePrimitive.type] as ShapeBuildCommand;
 
         holeBuilder.build(holePrimitive, holePoints);
 

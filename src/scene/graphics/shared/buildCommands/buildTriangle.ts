@@ -1,3 +1,5 @@
+import { ExtensionType } from '../../../../extensions/Extensions';
+
 import type { Triangle } from '../../../../maths/shapes/Triangle';
 import type { ShapeBuildCommand } from './ShapeBuildCommand';
 
@@ -9,6 +11,10 @@ import type { ShapeBuildCommand } from './ShapeBuildCommand';
  * @private
  */
 export const buildTriangle: ShapeBuildCommand<Triangle> = {
+    extension: {
+        type: ExtensionType.ShapeBuilder,
+        name: 'triangle',
+    },
 
     build(shape: Triangle, points: number[]): number[]
     {

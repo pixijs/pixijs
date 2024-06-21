@@ -11,7 +11,7 @@ import type { View } from '../../../rendering/renderers/shared/view/View';
 import type { Bounds } from '../../container/bounds/Bounds';
 import type { ContainerOptions } from '../../container/Container';
 import type { ContextDestroyOptions, DestroyOptions } from '../../container/destroyTypes';
-import type { FillStyle, FillStyleInputs, StrokeStyle } from './GraphicsContext';
+import type { FillInput, FillStyle, StrokeStyle } from './FillTypes';
 import type { GraphicsPath } from './path/GraphicsPath';
 import type { RoundedPoint } from './path/roundShape';
 
@@ -206,7 +206,7 @@ export class Graphics extends Container implements View, Instruction
     /**
      * Sets the current fill style of the graphics context. The fill style can be a color, gradient,
      * pattern, or a more complex style defined by a FillStyle object.
-     * @param {FillStyleInputs} args - The fill style to apply. This can be a simple color, a gradient or
+     * @param {FillInput} args - The fill style to apply. This can be a simple color, a gradient or
      * pattern object, or a FillStyle or ConvertedFillStyle object.
      * @returns The instance of the current GraphicsContext for method chaining.
      */
@@ -218,7 +218,7 @@ export class Graphics extends Container implements View, Instruction
     /**
      * Sets the current stroke style of the graphics context. Similar to fill styles, stroke styles can
      * encompass colors, gradients, patterns, or more detailed configurations via a StrokeStyle object.
-     * @param {FillStyleInputs} args - The stroke style to apply. Can be defined as a color, a gradient or pattern,
+     * @param {StrokeInput} args - The stroke style to apply. Can be defined as a color, a gradient or pattern,
      * or a StrokeStyle or ConvertedStrokeStyle object.
      * @returns The instance of the current GraphicsContext for method chaining.
      */
@@ -229,22 +229,22 @@ export class Graphics extends Container implements View, Instruction
 
     /**
      * Fills the current or given path with the current fill style. This method can optionally take
-     * a color and alpha for a simple fill, or a more complex FillStyleInputs object for advanced fills.
-     * @param {FillStyleInputs} style - (Optional) The style to fill the path with. Can be a color, gradient, pattern, or a
+     * a color and alpha for a simple fill, or a more complex FillStyle object for advanced fills.
+     * @param {FillInput} style - (Optional) The style to fill the path with. Can be a color, gradient, pattern, or a
      * complex style object. If omitted, uses the current fill style.
      * @returns The instance of the current GraphicsContext for method chaining.
      */
-    public fill(style?: FillStyleInputs): this;
+    public fill(style?: FillInput): this;
     /** @deprecated 8.0.0 */
-    public fill(color: ColorSource, alpha: number): this;
-    public fill(...args: [FillStyleInputs, ColorSource?]): this
+    public fill(color: ColorSource, alpha?: number): this;
+    public fill(...args: [FillStyle | ColorSource, number?]): this
     {
         return this._callContextMethod('fill', args);
     }
     /**
      * Strokes the current path with the current stroke style. This method can take an optional
-     * FillStyleInputs parameter to define the stroke's appearance, including its color, width, and other properties.
-     * @param {FillStyleInputs} args - (Optional) The stroke style to apply. Can be defined as a simple color or a more
+     * FillStyle parameter to define the stroke's appearance, including its color, width, and other properties.
+     * @param {FillStyle} args - (Optional) The stroke style to apply. Can be defined as a simple color or a more
      * complex style object. If omitted, uses the current stroke style.
      * @returns The instance of the current GraphicsContext for method chaining.
      */
@@ -714,7 +714,7 @@ export class Graphics extends Container implements View, Instruction
     {
         return this._context.fillStyle;
     }
-    set fillStyle(value: FillStyleInputs)
+    set fillStyle(value: FillInput)
     {
         this._context.fillStyle = value;
     }
@@ -726,7 +726,7 @@ export class Graphics extends Container implements View, Instruction
     {
         return this._context.strokeStyle;
     }
-    set strokeStyle(value: FillStyleInputs)
+    set strokeStyle(value: StrokeStyle)
     {
         this._context.strokeStyle = value;
     }

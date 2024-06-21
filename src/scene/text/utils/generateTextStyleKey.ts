@@ -1,7 +1,6 @@
 import { Color } from '../../../color/Color';
 
-import type { FillGradient } from '../../graphics/shared/fill/FillGradient';
-import type { ConvertedFillStyle, ConvertedStrokeStyle } from '../../graphics/shared/GraphicsContext';
+import type { ConvertedFillStyle, ConvertedStrokeStyle } from '../../graphics/shared/FillTypes';
 import type { HTMLTextStyle } from '../../text-html/HtmlTextStyle';
 import type { TextStyle } from '../TextStyle';
 
@@ -9,9 +8,6 @@ const valuesToIterateForKeys: Partial<keyof TextStyle | keyof HTMLTextStyle>[] =
     'align',
     'breakWords',
     'cssOverrides',
-    'fontFamily',
-    'fontSize',
-    'fontStyle',
     'fontVariant',
     'fontWeight',
     'leading',
@@ -23,6 +19,9 @@ const valuesToIterateForKeys: Partial<keyof TextStyle | keyof HTMLTextStyle>[] =
     'whiteSpace',
     'wordWrap',
     'wordWrapWidth',
+    'fontFamily',
+    'fontStyle',
+    'fontSize',
 ] as const;
 
 /**
@@ -56,7 +55,7 @@ function addFillStyleKey(fillStyle: ConvertedFillStyle, key: (number | string)[]
 
     key[index++] = fillStyle.color;
     key[index++] = fillStyle.alpha;
-    key[index++] = (fillStyle.fill as FillGradient)?.uid;
+    key[index++] = fillStyle.fill?.styleKey;
 
     return index;
 }

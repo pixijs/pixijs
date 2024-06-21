@@ -1,12 +1,9 @@
 import { Color } from '../../../../color/Color';
 import { GraphicsPath } from '../path/GraphicsPath';
 
+import type { ConvertedFillStyle, ConvertedStrokeStyle, FillStyle, StrokeStyle } from '../FillTypes';
 import type {
-    ConvertedFillStyle,
-    ConvertedStrokeStyle,
-    FillStyle,
     GraphicsContext,
-    StrokeStyle,
 } from '../GraphicsContext';
 
 interface Session

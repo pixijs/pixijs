@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { warn } from '../../../../utils/logging/warn';
 import { ensureAttributes } from '../../gl/shader/program/ensureAttributes';
 import { STENCIL_MODES } from '../../shared/state/const';
 import { createIdFromString } from '../../shared/utils/createIdFromString';
@@ -311,6 +312,14 @@ export class PipelineSystem implements System
             for (const i in geometry.attributes)
             {
                 const attribute = geometry.attributes[i];
+
+                if ((attribute.divisor ?? 1) !== 1)
+                {
+                    // TODO: Maybe emulate divisor with storage_buffers/float_textures?
+                    // For now just issue a warning
+                    warn(`Attribute ${i} has an invalid divisor value of '${attribute.divisor}'. `
+                        + 'WebGPU only supports a divisor value of 1');
+                }
 
                 if (attribute.buffer === buffer)
                 {

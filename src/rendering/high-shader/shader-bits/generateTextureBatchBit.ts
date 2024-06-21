@@ -1,4 +1,4 @@
-import { maxRecommendedTextures } from '../../renderers/shared/texture/utils/maxRecommendedTextures';
+import { getMaxTexturesPerBatch } from '../../batcher/gl/utils/maxRecommendedTextures';
 
 import type { HighShaderBit } from '../compiler/types';
 
@@ -89,13 +89,13 @@ export function generateTextureBatchBit(maxTextures: number): HighShaderBit
                 header: `
                 @in @interpolate(flat) vTextureId: u32;
     
-                ${generateBindingSrc(maxRecommendedTextures())}
+                ${generateBindingSrc(getMaxTexturesPerBatch())}
             `,
                 main: `
                 var uvDx = dpdx(vUV);
                 var uvDy = dpdy(vUV);
     
-                ${generateSampleSrc(maxRecommendedTextures())}
+                ${generateSampleSrc(getMaxTexturesPerBatch())}
             `
             }
         };
@@ -166,7 +166,7 @@ export function generateTextureBatchBitGl(maxTextures: number): HighShaderBit
             `,
                 main: `
     
-                ${generateSampleGlSrc(maxRecommendedTextures())}
+                ${generateSampleGlSrc(getMaxTexturesPerBatch())}
             `
             }
         };

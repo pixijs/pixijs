@@ -4,7 +4,7 @@ import { TextStyle } from '../text/TextStyle';
 import { generateTextStyleKey } from '../text/utils/generateTextStyleKey';
 import { textStyleToCSS } from './utils/textStyleToCSS';
 
-import type { FillStyleInputs } from '../graphics/shared/GraphicsContext';
+import type { FillInput, StrokeInput } from '../graphics/shared/FillTypes';
 import type { TextStyleOptions } from '../text/TextStyle';
 
 /**
@@ -160,7 +160,7 @@ export class HTMLTextStyle extends TextStyle
         }
     }
 
-    override set fill(value: FillStyleInputs)
+    override set fill(value: FillInput)
     {
         // if its not a string or a number, then its a texture!
         if (typeof value !== 'string' && typeof value !== 'number')
@@ -173,7 +173,7 @@ export class HTMLTextStyle extends TextStyle
         super.fill = value;
     }
 
-    override set stroke(value: FillStyleInputs)
+    override set stroke(value: StrokeInput)
     {
         // if its not a string or a number, then its a texture!
         if (value && typeof value !== 'string' && typeof value !== 'number')
