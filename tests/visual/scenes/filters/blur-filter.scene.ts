@@ -16,7 +16,7 @@ export const scene: TestScene = {
 
         graphics.position.set((128 - 75) / 2);
 
-        graphics.filters = [new BlurFilter({ strength: 15, quality: 8 })];
+        graphics.filters = [new BlurFilter({ strength: 15, quality: 3 })];
 
         scene.addChild(graphics);
     },
