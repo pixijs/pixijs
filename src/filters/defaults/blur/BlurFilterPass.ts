@@ -95,7 +95,14 @@ export class BlurFilterPass extends Filter
         clearMode: boolean
     ): void
     {
-        this._uniforms.uStrength = this.strength / this.passes;
+        let totalSq = 1;
+
+        for (let i = 1; i < this.passes; i++)
+        {
+            totalSq += Math.pow(0.5, i);
+        }
+
+        this._uniforms.uStrength = this.strength / Math.sqrt(totalSq);
 
         if (this.passes === 1)
         {
@@ -118,6 +125,8 @@ export class BlurFilterPass extends Filter
 
                 flop = flip;
                 flip = temp;
+
+                this._uniforms.uStrength *= 0.5;
             }
 
             this._state.blend = true;
