@@ -95,14 +95,7 @@ export class BlurFilterPass extends Filter
         clearMode: boolean
     ): void
     {
-        let totalSq = 1;
-
-        for (let i = 1; i < this.passes; i++)
-        {
-            totalSq += Math.pow(0.5, i);
-        }
-
-        this._uniforms.uStrength = this.strength / Math.sqrt(totalSq);
+        this._uniforms.uStrength = this._calculateInitialStrength();
 
         if (this.passes === 1)
         {
@@ -133,6 +126,25 @@ export class BlurFilterPass extends Filter
             filterManager.applyFilter(this, flip, output, clearMode);
             TexturePool.returnTexture(tempTexture);
         }
+    }
+
+    /**
+     * Calculates the strength for the initial blur pass, so that the total blur amount of all passes will match the filter's
+     * strength.
+     * @returns The strength for the initial blur pass.
+     */
+    private _calculateInitialStrength(): number
+    {
+        let total = 1;
+        let current = 0.5;
+
+        for (let i = 1; i < this.passes; i++)
+        {
+            total += current;
+            current *= 0.5;
+        }
+
+        return this.strength / Math.sqrt(total);
     }
 
     /**
