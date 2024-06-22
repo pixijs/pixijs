@@ -67,6 +67,11 @@ export class GlShaderSystem
         this._programDataHash = Object.create(null);
         this._boundUniformsIdsToIndexHash = Object.create(null);
         this._boundIndexToUniformsHash = Object.create(null);
+        /**
+         * these need to also be cleared as internally some uniforms are set as an optimisation as the sync
+         * function is generated. Specifically the texture ints.
+         */
+        this._shaderSyncFunctions = Object.create(null);
         this._activeProgram = null;
     }
 

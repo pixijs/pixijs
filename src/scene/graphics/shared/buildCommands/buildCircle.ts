@@ -1,3 +1,5 @@
+import { ExtensionType } from '../../../../extensions/Extensions';
+
 import type { Circle } from '../../../../maths/shapes/Circle';
 import type { Ellipse } from '../../../../maths/shapes/Ellipse';
 import type { RoundedRectangle } from '../../../../maths/shapes/RoundedRectangle';
@@ -13,6 +15,10 @@ type RoundedShape = Circle | Ellipse | RoundedRectangle;
  * @private
  */
 export const buildCircle: ShapeBuildCommand<RoundedShape> = {
+    extension: {
+        type: ExtensionType.ShapeBuilder,
+        name: 'circle',
+    },
 
     build(shape: RoundedShape, points: number[])
     {
@@ -198,3 +204,6 @@ export const buildCircle: ShapeBuildCommand<RoundedShape> = {
     }
 
 };
+
+export const buildEllipse = { ...buildCircle, extension: { ...buildCircle.extension, name: 'ellipse' } };
+export const buildRoundedRectangle = { ...buildCircle, extension: { ...buildCircle.extension, name: 'roundedRectangle' } };

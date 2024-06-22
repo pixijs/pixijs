@@ -6,7 +6,7 @@ import { roundPixelsBitGl } from '../../high-shader/shader-bits/roundPixelsBit';
 import { getBatchSamplersUniformGroup } from '../../renderers/gl/shader/getBatchSamplersUniformGroup';
 import { Shader } from '../../renderers/shared/shader/Shader';
 import { State } from '../../renderers/shared/state/State';
-import { maxRecommendedTextures } from '../../renderers/shared/texture/utils/maxRecommendedTextures';
+import { getMaxTexturesPerBatch } from './utils/maxRecommendedTextures';
 
 import type { WebGLRenderer } from '../../renderers/gl/WebGLRenderer';
 import type { Geometry } from '../../renderers/shared/geometry/Geometry';
@@ -34,7 +34,7 @@ export class GlBatchAdaptor implements BatcherAdaptor
 
     public init(batcherPipe: BatcherPipe): void
     {
-        const maxTextures = maxRecommendedTextures();
+        const maxTextures = getMaxTexturesPerBatch();
 
         const glProgram = compileHighShaderGlProgram({
             name: 'batch',

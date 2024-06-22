@@ -16,6 +16,16 @@ export const scene: TestScene = {
             height: 50,
         });
 
+        const spriteBlend = new TilingSprite({
+            texture,
+            width: 100,
+            height: 50,
+            blendMode: 'screen'
+        });
+
+        spriteBlend.y = 50;
+
         scene.addChild(sprite);
+        scene.addChild(spriteBlend);
     },
 };

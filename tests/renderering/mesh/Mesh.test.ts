@@ -94,4 +94,25 @@ describe('Mesh', () =>
 
         mesh.destroy();
     });
+
+    it('should have correct blendMode based on textures alpha status when not batching', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+
+        const container = new Container();
+
+        const mesh = getMesh();
+
+        mesh.geometry.batchMode = 'no-batch';
+        mesh.texture.source.alphaMode = 'no-premultiply-alpha';
+
+        container.addChild(mesh);
+
+        // will assign the state...
+        renderer.render({ container });
+
+        expect(mesh.state.blendMode).toBe('normal-npm');
+
+        mesh.destroy();
+    });
 });

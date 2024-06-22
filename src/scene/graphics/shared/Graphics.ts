@@ -230,11 +230,11 @@ export class Graphics extends Container implements View, Instruction
     /**
      * Fills the current or given path with the current fill style. This method can optionally take
      * a color and alpha for a simple fill, or a more complex FillStyle object for advanced fills.
-     * @param {FillStyle} style - (Optional) The style to fill the path with. Can be a color, gradient, pattern, or a
+     * @param {FillInput} style - (Optional) The style to fill the path with. Can be a color, gradient, pattern, or a
      * complex style object. If omitted, uses the current fill style.
      * @returns The instance of the current GraphicsContext for method chaining.
      */
-    public fill(style?: FillStyle): this;
+    public fill(style?: FillInput): this;
     /** @deprecated 8.0.0 */
     public fill(color: ColorSource, alpha?: number): this;
     public fill(...args: [FillStyle | ColorSource, number?]): this
