@@ -189,7 +189,7 @@ describe('spritesheetAsset', () =>
         expect(spritesheet.textureSource).toEqual(texture.source);
     });
 
-    it('should load a spritesheet', async () =>
+    it('should load a spritesheet where the json file points to an svg', async () =>
     {
         const spriteSheet = await loader.load<Spritesheet>(`${basePath}spritesheet/svgSpritesheet.json`);
 

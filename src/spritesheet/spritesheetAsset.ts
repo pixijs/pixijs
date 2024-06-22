@@ -1,3 +1,4 @@
+import { Assets } from '../assets/Assets';
 import { LoaderParserPriority } from '../assets/loader/parsers/LoaderParser';
 import { Resolver } from '../assets/resolver/Resolver';
 import { copySearchParams } from '../assets/utils/copySearchParams';
@@ -149,7 +150,7 @@ export const spritesheetAsset = {
             {
                 const imagePath = copySearchParams(basePath + (imageFilename ?? asset.meta.image), options.src);
 
-                const assets = await loader.load<Texture>([imagePath]);
+                const assets = await Assets.load(imagePath);
 
                 texture = assets[imagePath];
             }
