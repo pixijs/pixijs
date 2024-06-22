@@ -120,6 +120,123 @@ describe('TilingSprite', () =>
         });
     });
 
+    describe('ClampMargin', () =>
+    {
+        it('should clamp margin correctly', () =>
+        {
+            const sprite = setup({ width: 200, height: 300 });
+
+            sprite.clampMargin = 10;
+
+            expect(sprite.clampMargin).toEqual(10);
+        });
+
+        it('should get and set tilerotation correctly', () =>
+        {
+            const sprite = setup({ width: 200, height: 300 });
+
+            expect(sprite.tileRotation).toEqual(0);
+
+            sprite.tileRotation = 1;
+
+            expect(sprite.tileRotation).toEqual(1);
+        });
+
+        it('should return the tiletransform position', () =>
+        {
+            const sprite = setup({ width: 200, height: 300 });
+
+            sprite.tileTransform.position.set(10, 20);
+
+            expect(sprite.tileTransform.position.x).toEqual(10);
+            expect(sprite.tileTransform.position.y).toEqual(20);
+        });
+
+        it('should get and set roundPixels correctly', () =>
+        {
+            const sprite = setup({ width: 200, height: 300 });
+
+            expect(sprite.roundPixels).toEqual(false);
+
+            sprite.roundPixels = true;
+
+            expect(sprite.roundPixels).toEqual(true);
+        });
+
+        describe('Constructor', () =>
+        {
+            it('should set width and height correctly when more than one argument is provided', () => {
+                const texture = new Texture();
+                const sprite = new TilingSprite(texture, 100, 200);
+
+                expect(sprite.width).toBe(100);
+                expect(sprite.height).toBe(200);
+            });
+
+            it('should set default width and height when only one argument is provided', () =>
+            {
+                const texture = new Texture();
+                const sprite = setup({ texture });
+
+                expect(sprite.width).toEqual(256);
+                expect(sprite.height).toEqual(256);
+            });
+
+            it('should apply the provided options when creating a new TilingSprite', () =>
+            {
+                const texture = new Texture();
+                const options = { width: 100, height: 200 };
+                const sprite = TilingSprite.from(texture, options);
+
+                expect(sprite.width).toBe(options.width);
+                expect(sprite.height).toBe(options.height);
+            });
+
+            it('should create a new TilingSprite from a Texture', () =>
+            {
+                const texture = new Texture();
+                const sprite = TilingSprite.from(texture);
+
+                expect(sprite.texture).toBe(texture);
+            });
+        });
+
+        describe('Destroy', () =>
+        {
+            it('should destroy the texture when destroyTexture is true', () =>
+            {
+                const texture = new Texture();
+                const destroySpy = jest.spyOn(texture, 'destroy');
+                const sprite = new TilingSprite(texture);
+
+                sprite.destroy(true);
+
+                expect(destroySpy).toHaveBeenCalledWith(true);
+            });
+
+            it('should not destroy the texture when destroyTexture is false', () =>
+            {
+                const texture = new Texture();
+                const destroySpy = jest.spyOn(texture, 'destroy');
+                const sprite = new TilingSprite(texture);
+
+                sprite.destroy(false);
+
+                expect(destroySpy).not.toHaveBeenCalled();
+            });
+
+            it('should destroy the texture with textureSource option when provided', () =>
+            {
+                const texture = new Texture();
+                const sprite = new TilingSprite(texture);
+
+                sprite.destroy({ textureSource: true });
+
+                expect(sprite.texture).toBeNull();
+            });
+        }); 
+    });
+
     describe('Geometry', () =>
     {
         it('should calculate correct bounds when transformed', () =>
