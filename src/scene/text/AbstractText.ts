@@ -396,14 +396,7 @@ export abstract class AbstractText<
 
     public _getKey(): string
     {
-        if (!this.resolution)
-        {
-            // add rendererResolution to the key to make sure the text is re-rendered when the resolution changes
-            return `${this.text}:${this._style.styleKey}-${this._rendererResolution}`;
-        }
-
-        // TODO add a dirty flag...
-        return `${this.text}:${this._style.styleKey}-${this.resolution}`;
+        return `${this.text}:${this._style.styleKey}-${this.resolution ?? this._rendererResolution}`;
     }
 
     protected abstract _updateBounds(): void;
