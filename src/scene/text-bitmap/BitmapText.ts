@@ -129,8 +129,16 @@ export class BitmapText extends AbstractText<TextStyle, TextStyleOptions> implem
         const scale = bitmapMeasurement.scale;
         const offset = bitmapMeasurement.offsetY * scale;
 
-        const width = bitmapMeasurement.width * scale;
-        const height = bitmapMeasurement.height * scale;
+        let width = bitmapMeasurement.width * scale;
+        let height = bitmapMeasurement.height * scale;
+
+        const stroke = this._style._stroke;
+
+        if (stroke)
+        {
+            width += stroke.width;
+            height += stroke.width;
+        }
 
         bounds.minX = (-anchor._x * width) - padding;
         bounds.maxX = bounds.minX + width;
