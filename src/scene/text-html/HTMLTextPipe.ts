@@ -34,6 +34,19 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        this._renderer.runners.resolutionChange.add(this);
+    }
+
+    public resolutionChange()
+    {
+        for (const i in this._gpuText)
+        {
+            const gpuText = this._gpuText[i];
+            const text = gpuText.batchableSprite.renderable as HTMLText;
+
+            text._rendererResolution = this._renderer.resolution;
+            text.onViewUpdate();
+        }
     }
 
     public validateRenderable(htmlText: HTMLText): boolean

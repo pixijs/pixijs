@@ -32,6 +32,19 @@ export class CanvasTextPipe implements RenderPipe<Text>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        this._renderer.runners.resolutionChange.add(this);
+    }
+
+    public resolutionChange()
+    {
+        for (const i in this._gpuText)
+        {
+            const gpuText = this._gpuText[i];
+            const text = gpuText.batchableSprite.renderable as Text;
+
+            text._rendererResolution = this._renderer.resolution;
+            text.onViewUpdate();
+        }
     }
 
     public validateRenderable(text: Text): boolean
@@ -43,7 +56,6 @@ export class CanvasTextPipe implements RenderPipe<Text>
         if (gpuText.currentKey !== newKey)
         {
             const resolution = text.resolution ?? this._renderer.resolution;
-
             const { width, height } = this._renderer.canvasText.getTextureSize(
                 text.text,
                 resolution,
@@ -139,7 +151,6 @@ export class CanvasTextPipe implements RenderPipe<Text>
         }
 
         gpuText.texture = batchableSprite.texture = this._renderer.canvasText.getManagedTexture(text);
-
         gpuText.currentKey = text._getKey();
         batchableSprite.texture = gpuText.texture;
     }

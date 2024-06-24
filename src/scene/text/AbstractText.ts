@@ -90,6 +90,7 @@ export abstract class AbstractText<
     public _anchor: ObservablePoint;
 
     public _resolution: number = null;
+    public _rendererResolution: number = null;
 
     public _style: TEXT_STYLE;
     public _didTextUpdate = true;
@@ -395,6 +396,12 @@ export abstract class AbstractText<
 
     public _getKey(): string
     {
+        if (!this.resolution)
+        {
+            // add rendererResolution to the key to make sure the text is re-rendered when the resolution changes
+            return `${this.text}:${this._style.styleKey}-${this._rendererResolution}`;
+        }
+
         // TODO add a dirty flag...
         return `${this.text}:${this._style.styleKey}-${this.resolution}`;
     }

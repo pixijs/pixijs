@@ -113,9 +113,9 @@ export async function renderTest(
         await saveSnapShot(imageLocation, canvas);
     }
 
-    const prevSnapShot = loadSnapShot(imageLocation);
+    const { data: prevSnapShot, width: imgWidth, height: imgHeight } = loadSnapShot(imageLocation);
     const newSnapShot = createSnapShot(canvas);
-    const diff = new PNG({ width, height });
+    const diff = new PNG({ width: imgWidth, height: imgHeight });
 
     if (process.env.DEBUG_MODE)
     {
@@ -126,8 +126,8 @@ export async function renderTest(
         prevSnapShot,
         newSnapShot,
         diff.data,
-        width,
-        height,
+        imgWidth,
+        imgHeight,
         { threshold: 0.2 }
     );
 
@@ -175,9 +175,15 @@ function createSnapShot(canvas: HTMLCanvasElement)
  * returns an array of pixels of a saved image
  * @param input - the location of the saved image
  */
-function loadSnapShot(input: string): Uint8Array
+function loadSnapShot(input: string): { data: Uint8Array, width: number, height: number }
 {
-    return new Uint8Array(toArrayBuffer(PNG.sync.read(readFileSync(input)).data));
+    const pngData = PNG.sync.read(readFileSync(input));
+
+    return {
+        data: new Uint8Array(toArrayBuffer(pngData.data)),
+        width: pngData.width,
+        height: pngData.height,
+    };
 }
 
 /**
