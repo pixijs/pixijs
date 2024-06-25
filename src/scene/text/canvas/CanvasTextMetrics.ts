@@ -549,7 +549,7 @@ export class CanvasTextMetrics
     }
 
     /**
-     * Convienience function for logging each line added during the wordWrap method.
+     * Convenience function for logging each line added during the wordWrap method.
      * @param line    - The line of text to add
      * @param newLine - Add new line character to end
      * @returns A formatted line
