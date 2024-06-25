@@ -42,7 +42,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
             const gpuText = this._gpuText[i];
             const text = gpuText.batchableSprite.renderable as Text;
 
-            text._rendererResolution = this._renderer.resolution;
+            text._resolution = text._autoResolution ? this._renderer.resolution : text.resolution;
             text.onViewUpdate();
         }
     }
@@ -55,10 +55,9 @@ export class CanvasTextPipe implements RenderPipe<Text>
 
         if (gpuText.currentKey !== newKey)
         {
-            const resolution = text.resolution ?? this._renderer.resolution;
             const { width, height } = this._renderer.canvasText.getTextureSize(
                 text.text,
-                resolution,
+                text.resolution,
                 text._style,
             );
 
@@ -174,6 +173,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
 
         this._gpuText[text.uid] = gpuTextData;
 
+        text._resolution = text._autoResolution ? this._renderer.resolution : text.resolution;
         this._updateText(text);
 
         // TODO perhaps manage this outside this pipe? (a bit like how we update / add)
