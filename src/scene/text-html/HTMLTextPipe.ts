@@ -44,8 +44,11 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
             const gpuText = this._gpuText[i];
             const text = gpuText.batchableSprite.renderable as HTMLText;
 
-            text._resolution = text._autoResolution ? this._renderer.resolution : text.resolution;
-            text.onViewUpdate();
+            if (text._autoResolution)
+            {
+                text._resolution = this._renderer.resolution;
+                text.onViewUpdate();
+            }
         }
     }
 
