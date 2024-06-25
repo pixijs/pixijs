@@ -15,6 +15,8 @@ export function updateRenderGroupTransforms(renderGroup: RenderGroup, updateChil
 
     for (const j in childrenToUpdate)
     {
+        const renderGroupDepth = Number(j);
+
         const childrenAtDepth = childrenToUpdate[j];
 
         const list = childrenAtDepth.list;
@@ -24,7 +26,11 @@ export function updateRenderGroupTransforms(renderGroup: RenderGroup, updateChil
         {
             const child = list[i];
 
-            if (child.parentRenderGroup === renderGroup)
+            // check that these things match our layer and depth - if the renderGroup does not match,
+            // the child has been re-parented into another rendergroup since it asked to be updated so we can ignore it here
+            // secondly if the relativeRenderGroupDepth has changed, then the it means it will have been nested at a
+            // different different level in the render group - so we can wait for the update that does in fact match
+            if (child.parentRenderGroup === renderGroup && child.relativeRenderGroupDepth === renderGroupDepth)
             {
                 updateTransformAndChildren(child, updateTick, 0);
             }
