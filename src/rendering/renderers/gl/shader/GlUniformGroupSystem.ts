@@ -70,7 +70,7 @@ export class GlUniformGroupSystem implements System
     }
 
     /**
-     * Overrideable by the pixi.js/unsafe-eval package to use static syncUniforms instead.
+     * Overridable by the pixi.js/unsafe-eval package to use static syncUniforms instead.
      * @param group
      * @param program
      */

@@ -43,7 +43,7 @@ export interface GeometryPathOptions
  * const mesh = new Mesh({geometry});
  *
  * ```
- * You can also pass in a Matrix to transform the uvs as by defualt you may want to control how they are set up.
+ * You can also pass in a Matrix to transform the uvs as by default you may want to control how they are set up.
  * @param options - either a `GraphicsPath` or `GeometryPathOptions`
  * @returns a new `MeshGeometry` instance build from the path
  */

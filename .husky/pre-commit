@@ -6,7 +6,7 @@ staged_files=$(git diff --cached --name-only --diff-filter=ACM -- '*.ts' | grep 
 # Run npm lint on the staged files
 if [ -n "$staged_files" ]; then
   #log files
-  echo 'linting the following commited files:' $staged_files
+  echo 'linting the following committed files:' $staged_files
   npx eslint --ext .ts --max-warnings 0 $staged_files
   npm run test:types
 fi

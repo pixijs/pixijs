@@ -276,7 +276,7 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
 
                 for (const i in resources)
                 {
-                    // Yes i know this is a little strange, but wil line up the shaders neatly
+                    // Yes i know this is a little strange, but will line up the shaders neatly
                     // basically we want to be driven by how webGPU does things.
                     // so making a fake group will work and not affect gpu as it means no gpu shader was provided..
                     nameHash[i] = { group: 99, binding: bindTick, name: i };

@@ -9,7 +9,7 @@ import type { ExtractedAttributeData } from '../../gl/shader/program/extractAttr
 import type { StructsAndGroups } from './utils/extractStructAndGroups';
 
 /**
- * a WebGPU descriptions of how the program is layed out
+ * a WebGPU descriptions of how the program is laid out
  * @see https://gpuweb.github.io/gpuweb/#gpupipelinelayout
  * @memberof rendering
  */

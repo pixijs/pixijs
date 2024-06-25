@@ -173,7 +173,7 @@ describe('Graphics Drawing', () =>
         });
     });
 
-    describe('Elipse', () =>
+    describe('Ellipse', () =>
     {
         it('should measure an ellipse correctly', async () =>
         {

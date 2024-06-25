@@ -687,7 +687,7 @@ var BASIS = (function ()
                 else { this.toWireType = genericPointerToWireType; }
             } function replacePublicSymbol(name, value, numArguments)
             {
-                if (!Module.hasOwnProperty(name)) { throwInternalError('Replacing nonexistant public symbol'); } if (undefined !== Module[name].overloadTable && undefined !== numArguments) { Module[name].overloadTable[numArguments] = value; }
+                if (!Module.hasOwnProperty(name)) { throwInternalError('Replacing nonexistent public symbol'); } if (undefined !== Module[name].overloadTable && undefined !== numArguments) { Module[name].overloadTable[numArguments] = value; }
                 else { Module[name] = value; Module[name].argCount = numArguments; }
             } function embind__requireFunction(signature, rawFunction)
             {

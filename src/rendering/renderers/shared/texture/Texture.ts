@@ -89,7 +89,7 @@ export type TextureSourceLike = TextureSource | TextureResourceOrOptions | strin
  *
  * // once Assets has loaded the image it will be available via the from method
  * const sameTexture = Texture.from('assets/image.png');
- * // another way to acces the texture once loaded
+ * // another way to access the texture once loaded
  * const sameAgainTexture = Asset.get('assets/image.png');
  *
  * const sprite1 = new Sprite(texture);

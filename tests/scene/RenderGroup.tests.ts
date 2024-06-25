@@ -86,7 +86,7 @@ describe('RenderGroup', () =>
         const child2 = new Container();
         const child3 = new Container();
 
-        // |- contianer
+        // |- container
         //    |- child
         //    |- container2
         //       |- child2
@@ -123,7 +123,7 @@ describe('RenderGroup', () =>
         const child2 = new Container();
         const child3 = new Container();
 
-        // |- contianer // renderGroup
+        // |- container // renderGroup
         //    |- child
         //    |- container2 // renderGroup
         //       |- child2
@@ -165,7 +165,7 @@ describe('RenderGroup', () =>
         const child2 = new Container();
         const child3 = new Container();
 
-        // |- contianer // renderGroup
+        // |- container // renderGroup
         //    |- child
         //    |- container2 // renderGroup
         //       |- child2
@@ -176,7 +176,7 @@ describe('RenderGroup', () =>
         container2.addChild(child2);
         container2.addChild(child3);
 
-        // |- contianer // renderGroup
+        // |- container // renderGroup
         //    |- container2 // renderGroup
         //       |- child2
         //       |- child3
@@ -203,7 +203,7 @@ describe('RenderGroup', () =>
         expect(container.renderGroup.renderGroupChildren).toHaveLength(1);
         expect(container2.renderGroup.renderGroupChildren).toHaveLength(0);
 
-        // |- contianer // renderGroup
+        // |- container // renderGroup
         //    |- container2 // renderGroup
         //       |- child2
         //       |- child
@@ -244,7 +244,7 @@ describe('RenderGroup', () =>
         container2.addChild(child2);
         container2.addChild(child3);
 
-        // |- contianer // renderGroup
+        // |- container // renderGroup
         //    |- child
         //    |- container2 // renderGroup
         //       |- child2
@@ -253,7 +253,7 @@ describe('RenderGroup', () =>
 
         child.addChild(container2);
 
-        // |- contianer // renderGroup
+        // |- container // renderGroup
         //    |- child
         //       |- container2 // renderGroup
         //           |- child2
@@ -279,7 +279,7 @@ describe('RenderGroup', () =>
 
         child.isRenderGroup = true;
 
-        // |- contianer // renderGroup depth: 0
+        // |- container // renderGroup depth: 0
         //    |- child // renderGroup
         //       |- container2 // renderGroup
         //           |- child2
@@ -345,7 +345,7 @@ describe('RenderGroup', () =>
         compareUpdateList([child2, child3], container.renderGroup, 2);
 
         //  return;
-        // |- contianer // renderGroup
+        // |- container // renderGroup
         //    |- child
         //    |- container2
         //       |- child2
@@ -378,7 +378,7 @@ describe('RenderGroup', () =>
         const container2 = new Container();
 
         container2.isRenderGroup = true;
-        // |- contianer // renderGroup
+        // |- container // renderGroup
         //    |- child
         //    |- container2 // render group
         //       |- child2
@@ -400,7 +400,7 @@ describe('RenderGroup', () =>
 
         expect(container.renderGroup.structureDidChange).toBeTrue();
 
-        // |- contianer // renderGroup
+        // |- container // renderGroup
         //    |- container2 // render group
         //       |- child2
         //          |- child
@@ -427,7 +427,7 @@ describe('RenderGroup', () =>
 
         container2.isRenderGroup = true;
 
-        // |- contianer // renderGroup
+        // |- container // renderGroup
         //    |- child
         //    |- container2 // render group
         //       |- child2 // render group
@@ -454,7 +454,7 @@ describe('RenderGroup', () =>
 
         child2.x = 100;
 
-        // |- contianer // renderGroup
+        // |- container // renderGroup
         //    |- child
         //    |- child2 // render group
         //    |- container2 // render group
@@ -482,7 +482,7 @@ describe('RenderGroup', () =>
 
         const container2 = new Container({ label: 'container2' });
 
-        // |- contianer // renderGroup
+        // |- container // renderGroup
         //    |- child
         //    |- container2
         //       |- child2
@@ -506,7 +506,7 @@ describe('RenderGroup', () =>
 
         container2.isRenderGroup = true;
 
-        // |- contianer // renderGroup
+        // |- container // renderGroup
         //    |- child
         //    |- container2 // renderGroup
         //       |- child2
@@ -545,7 +545,7 @@ describe('RenderGroup', () =>
 
         const container2 = new Container({ label: 'container2' });
 
-        // |- contianer // renderGroup
+        // |- container // renderGroup
         //    |- child
         //    |- container2
         //       |- child2
@@ -567,7 +567,7 @@ describe('RenderGroup', () =>
 
         container2.isRenderGroup = true;
 
-        // |- contianer // renderGroup
+        // |- container // renderGroup
         //    |- child
         //    |- container2 // renderGroup
         //       |- child2
@@ -577,7 +577,7 @@ describe('RenderGroup', () =>
 
         container2.isRenderGroup = false;
 
-        // |- contianer // renderGroup
+        // |- container // renderGroup
         //    |- child
         //    |- container2
         //       |- child2

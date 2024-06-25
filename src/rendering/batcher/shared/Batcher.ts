@@ -216,7 +216,7 @@ export class Batcher
 
         textureBatch.clear();
 
-        // length 0??!! (we broke without ading anything)
+        // length 0??!! (we broke without adding anything)
         if (!elements[this.elementStart]) return;
 
         const firstElement = elements[this.elementStart];

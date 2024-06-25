@@ -26,7 +26,7 @@ pariatur?';
 const spaceNewLineText = ' Should have\u0009space\u2003at the\u2000beginning of the line.\n   And 3 more here. But after that there should be no\u3000more ridiculous spaces at the beginning of lines. And none at the end. And all this text is just to check the wrapping abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz. I \u2665 text. 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2     ';
 const breakingWordText = 'Pixi.js - The HTML5 Creation Engine. Create beautiful digital content with the supercalifragilisticexpialidociously fastest, most flexible 2D WebGL renderer.';
 const fillText = '. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ';
-const intergityText = '012345678901234567890123456789';
+const integrityText = '012345678901234567890123456789';
 const nonBreakingSpaces = ['\u00A0', '\u2007', '\u202F'];
 
 const breakingSpaces = [
@@ -201,11 +201,11 @@ describe('CanvasTextMetrics', () =>
         {
             const style = Object.assign({}, defaultStyle, { breakWords: true });
 
-            const metrics = CanvasTextMetrics.measureText(intergityText, new TextStyle(style));
+            const metrics = CanvasTextMetrics.measureText(integrityText, new TextStyle(style));
 
             const lines = metrics.lines.reduce((accumulator, line) => accumulator + line);
 
-            expect(lines).toEqual(intergityText);
+            expect(lines).toEqual(integrityText);
         });
 
         // ticket: https://github.com/orgs/pixijs/projects/2/views/4?pane=issue&itemId=46583734

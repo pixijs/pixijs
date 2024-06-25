@@ -197,7 +197,7 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
     /** For multi-packed spritesheets, this contains a reference to all the other spritesheets it depends on. */
     public linkedSheets: Spritesheet<S>[] = [];
 
-    /** Reference to ths source texture. */
+    /** Reference to the source texture. */
     public textureSource: TextureSource;
 
     /**

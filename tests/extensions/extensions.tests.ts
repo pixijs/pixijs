@@ -132,7 +132,7 @@ describe('extensions', () =>
             expect(list).toHaveLength(0);
         });
 
-        it('should immedately register extension before handle', () =>
+        it('should immediately register extension before handle', () =>
         {
             const list: any[] = [];
 
@@ -144,7 +144,7 @@ describe('extensions', () =>
             expect(list).toHaveLength(0);
         });
 
-        it('should immedately register extension after handle', () =>
+        it('should immediately register extension after handle', () =>
         {
             const list: any[] = [];
 

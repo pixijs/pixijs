@@ -521,7 +521,7 @@ export class AbstractRenderer<
     }
 
     /**
-     * Overrideable function by `pixi.js/unsafe-eval` to silence
+     * Overridable function by `pixi.js/unsafe-eval` to silence
      * throwing an error if platform doesn't support unsafe-evals.
      * @private
      * @ignore
