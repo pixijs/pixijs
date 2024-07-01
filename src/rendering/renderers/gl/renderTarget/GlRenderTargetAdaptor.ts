@@ -256,7 +256,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         this._resizeColor(renderTarget, glRenderTarget);
 
-        if (renderTarget.stencil)
+        if (renderTarget.stencil || renderTarget.depth)
         {
             this._resizeStencil(glRenderTarget);
         }
