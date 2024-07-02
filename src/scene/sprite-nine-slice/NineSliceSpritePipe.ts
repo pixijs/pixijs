@@ -67,6 +67,7 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
         const batchableSprite = this._gpuSpriteHash[sprite.uid];
 
         // this will call reset!
+        BigPool.return(batchableSprite.geometry as PoolItem);
         BigPool.return(batchableSprite as PoolItem);
 
         this._gpuSpriteHash[sprite.uid] = null;
@@ -91,12 +92,10 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
 
     private _initGPUSprite(sprite: NineSliceSprite): BatchableMesh
     {
-        const batchableMesh = new BatchableMesh();
+        const batchableMesh = BigPool.get(BatchableMesh);
 
-        batchableMesh.geometry = new NineSliceGeometry();
-
+        batchableMesh.geometry = BigPool.get(NineSliceGeometry);
         batchableMesh.mesh = sprite;
-
         batchableMesh.texture = sprite._texture;
         batchableMesh.roundPixels = (this._renderer._roundPixels | sprite._roundPixels) as 0 | 1;
 
