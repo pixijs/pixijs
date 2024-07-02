@@ -7,6 +7,7 @@ import type { InstructionSet } from '../../../rendering/renderers/shared/instruc
 import type { RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { Renderer } from '../../../rendering/renderers/types';
+import type { Container } from '../../container/Container';
 import type { Text } from '../Text';
 
 export class CanvasTextPipe implements RenderPipe<Text>
@@ -28,6 +29,8 @@ export class CanvasTextPipe implements RenderPipe<Text>
         currentKey: string,
         batchableSprite: BatchableSprite,
     }> = Object.create(null);
+
+    private readonly _destroyRenderableBound = this.destroyRenderable.bind(this) as (renderable: Container) => void;
 
     constructor(renderer: Renderer)
     {
@@ -96,6 +99,8 @@ export class CanvasTextPipe implements RenderPipe<Text>
 
     public destroyRenderable(text: Text)
     {
+        text.off('destroyed', this._destroyRenderableBound);
+
         this._destroyRenderableById(text.uid);
     }
 
@@ -166,10 +171,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
         this._updateText(text);
 
         // TODO perhaps manage this outside this pipe? (a bit like how we update / add)
-        text.on('destroyed', () =>
-        {
-            this.destroyRenderable(text);
-        });
+        text.on('destroyed', this._destroyRenderableBound);
 
         return gpuTextData;
     }

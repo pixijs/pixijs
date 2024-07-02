@@ -380,6 +380,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     // same as above, but for the renderable
     /** @private */
     public didViewUpdate = false;
+
     // how deep is the container relative to its render group..
     // unless the element is the root render group - it will be relative to its parent
     /** @private */

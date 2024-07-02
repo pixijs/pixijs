@@ -8,6 +8,7 @@ import type { InstructionSet } from '../../../rendering/renderers/shared/instruc
 import type { BatchPipe, RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import type { PoolItem } from '../../../utils/pool/Pool';
+import type { Container } from '../../container/Container';
 import type { Graphics } from './Graphics';
 import type { GpuGraphicsContext, GraphicsContextSystem } from './GraphicsContextSystem';
 
@@ -45,6 +46,7 @@ export class GraphicsPipe implements RenderPipe<Graphics>
     // batchable graphics list, used to render batches
     private _graphicsBatchesHash: Record<number, BatchableGraphics[]> = Object.create(null);
     private _adaptor: GraphicsAdaptor;
+    private readonly _destroyRenderableBound = this.destroyRenderable.bind(this) as (renderable: Container) => void;
 
     constructor(renderer: GraphicsSystem, adaptor: GraphicsAdaptor)
     {
@@ -119,6 +121,8 @@ export class GraphicsPipe implements RenderPipe<Graphics>
         {
             this._removeBatchForRenderable(graphics.uid);
         }
+
+        graphics.off('destroyed', this._destroyRenderableBound);
     }
 
     public execute(graphics: Graphics)
@@ -216,10 +220,7 @@ export class GraphicsPipe implements RenderPipe<Graphics>
         if (this._graphicsBatchesHash[graphics.uid] === undefined)
         {
             // TODO perhaps manage this outside this pipe? (a bit like how we update / add)
-            graphics.on('destroyed', () =>
-            {
-                this.destroyRenderable(graphics);
-            });
+            graphics.on('destroyed', this._destroyRenderableBound);
         }
 
         this._graphicsBatchesHash[graphics.uid] = batches;

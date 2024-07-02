@@ -11,6 +11,7 @@ import type { RenderPipe } from '../../rendering/renderers/shared/instructions/R
 import type { Renderable } from '../../rendering/renderers/shared/Renderable';
 import type { Renderer } from '../../rendering/renderers/types';
 import type { PoolItem } from '../../utils/pool/Pool';
+import type { Container } from '../container/Container';
 import type { BitmapText } from './BitmapText';
 
 export class BitmapTextPipe implements RenderPipe<BitmapText>
@@ -27,7 +28,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
     private _renderer: Renderer;
     private _gpuBitmapText: Record<number, Graphics> = {};
-    // private _sdfShader: SdfShader;
+    private readonly _destroyRenderableBound = this.destroyRenderable.bind(this) as (renderable: Container) => void;
 
     constructor(renderer: Renderer)
     {
@@ -76,6 +77,8 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
     public destroyRenderable(bitmapText: BitmapText)
     {
+        bitmapText.off('destroyed', this._destroyRenderableBound);
+
         this._destroyRenderableByUid(bitmapText.uid);
     }
 
@@ -185,10 +188,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
         this._updateContext(bitmapText, proxyRenderable);
 
-        bitmapText.on('destroyed', () =>
-        {
-            this.destroyRenderable(bitmapText);
-        });
+        bitmapText.on('destroyed', this._destroyRenderableBound);
 
         return this._gpuBitmapText[bitmapText.uid];
     }
