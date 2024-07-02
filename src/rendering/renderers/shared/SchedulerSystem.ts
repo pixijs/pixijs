@@ -1,5 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { Ticker } from '../../../ticker';
+import { Ticker } from '../../../ticker/Ticker';
 
 import type { System } from './system/System';
 
