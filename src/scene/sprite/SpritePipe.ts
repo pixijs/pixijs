@@ -70,6 +70,8 @@ export class SpritePipe implements RenderPipe<Sprite>
         BigPool.return(batchableSprite as PoolItem);
 
         this._gpuSpriteHash[sprite.uid] = null;
+
+        sprite.off('destroyed', this._destroyRenderableBound);
     }
 
     private _updateBatchableSprite(sprite: Sprite, batchableSprite: BatchableSprite)
