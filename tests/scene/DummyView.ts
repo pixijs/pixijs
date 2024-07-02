@@ -29,6 +29,9 @@ export class DummyView extends Container implements View
     public renderPipeId = 'dummy';
     public renderableUpdateRequested: boolean;
     public _roundPixels: 1 | 0 = 0;
+    public _lastUsed = 0;
+    public _lastInstructionTick = -1;
+
     public _onUpdate: () => void;
     public get bounds(): BoundsData
     {

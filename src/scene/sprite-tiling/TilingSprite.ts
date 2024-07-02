@@ -143,6 +143,9 @@ export class TilingSprite extends Container implements View, Instruction
 
     public _roundPixels: 0 | 1 = 0;
 
+    public _lastUsed = 0;
+    public _lastInstructionTick = -1;
+
     private _bounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
     private _boundsDirty = true;
     private _width: number;

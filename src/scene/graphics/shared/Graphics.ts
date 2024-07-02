@@ -51,6 +51,9 @@ export class Graphics extends Container implements View, Instruction
 
     public _didGraphicsUpdate: boolean;
 
+    public _lastUsed = 0;
+    public _lastInstructionTick = -1;
+
     private _context: GraphicsContext;
     private readonly _ownedContext: GraphicsContext;
 

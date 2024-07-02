@@ -91,6 +91,9 @@ export class NineSliceSprite extends Container implements View
     private _width: number;
     private _height: number;
 
+    public _lastUsed = 0;
+    public _lastInstructionTick = -1;
+
     public _didSpriteUpdate = true;
 
     public bounds: BoundsData = { minX: 0, minY: 0, maxX: 0, maxY: 0 };

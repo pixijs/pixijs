@@ -27,6 +27,11 @@ export interface View
     /** this is an int because it is packed directly into an attribute in the shader */
     _roundPixels: 0 | 1;
 
+    /** @private */
+    _lastUsed: number;
+    /** @private */
+    _lastInstructionTick: number
+
     /**
      *  Whether or not to round the x/y position of the object.
      * @type {boolean}

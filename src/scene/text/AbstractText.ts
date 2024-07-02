@@ -96,6 +96,9 @@ export abstract class AbstractText<
     public _didTextUpdate = true;
     public _roundPixels: 0 | 1 = 0;
 
+    public _lastUsed = 0;
+    public _lastInstructionTick = -1;
+
     protected _bounds: Bounds = new Bounds();
     protected _boundsDirty = true;
     protected _text: string;
