@@ -34,19 +34,19 @@ interface ShaderBase
     compatibleRenderers?: number
 }
 
-interface GlShaderWith extends ShaderBase
+export interface GlShaderWith extends ShaderBase
 {
     /** The WebGL program used by the WebGL renderer. */
     glProgram: GlProgram
 }
 
-interface GpuShaderWith extends ShaderBase
+export interface GpuShaderWith extends ShaderBase
 {
     /** The WebGPU program used by the WebGPU renderer. */
     gpuProgram: GpuProgram
 }
 
-interface ShaderWithGroupsDescriptor
+export interface ShaderWithGroupsDescriptor
 {
     /** A record of {@link BindGroup}'s used by the shader. */
     groups: ShaderGroups;

@@ -90,6 +90,7 @@ export abstract class AbstractText<
     public _anchor: ObservablePoint;
 
     public _resolution: number = null;
+    public _autoResolution: boolean = true;
 
     public _style: TEXT_STYLE;
     public _didTextUpdate = true;
@@ -203,6 +204,7 @@ export abstract class AbstractText<
      */
     set resolution(value: number)
     {
+        this._autoResolution = value === null;
         this._resolution = value;
         this.onViewUpdate();
     }
@@ -398,8 +400,7 @@ export abstract class AbstractText<
 
     public _getKey(): string
     {
-        // TODO add a dirty flag...
-        return `${this.text}:${this._style.styleKey}-${this.resolution}`;
+        return `${this.text}:${this._style.styleKey}:${this._resolution}`;
     }
 
     protected abstract _updateBounds(): void;

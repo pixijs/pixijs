@@ -140,11 +140,10 @@ describe('Text', () =>
 
             const text = new Text({ text: 'foo' });
 
-            const key = text._getKey();
-
             container.addChild(text);
-
             renderer.render({ container });
+
+            const key = text._getKey();
 
             expect(renderer.canvasText['_activeTextures'][key].usageCount).toBe(1);
 
