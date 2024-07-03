@@ -138,24 +138,60 @@ export class InputEvent
 
     /** The coordinates of the mouse event relative to the canvas. */
     public client: Point = new Point();
+    /** @readonly */
+    public get clientX(): number { return this.client.x; }
+    /** @readonly */
+    public get clientY(): number { return this.client.y; }
+    /**
+     * Alias for {@link FederatedMouseEvent.clientX this.clientX}.
+     * @readonly
+     */
+    get x(): number { return this.clientX; }
+    /**
+     * Alias for {@link FederatedMouseEvent.clientY this.clientY}.
+     * @readonly
+     */
+    get y(): number { return this.clientY; }
 
     /** The movement in this pointer relative to the last `pointermove` event. */
     public movement: Point = new Point();
+    /** @readonly */
+    get movementX(): number { return this.movement.x; }
+    /** @readonly */
+    get movementY(): number { return this.movement.y; }
 
     /** The coordinates of the event relative to the DOM document. This is a non-standard property. */
     public page: Point = new Point();
 
     /** The offset of the pointer coordinates w.r.t. target Container in world space. This is not supported at the moment. */
     public offset: Point = new Point();
+    /** @readonly */
+    get offsetX(): number { return this.offset.x; }
+    /** @readonly */
+    get offsetY(): number { return this.offset.y; }
 
     /** The pointer coordinates in world space. */
     public global: Point = new Point();
+    /** @readonly */
+    get globalX(): number { return this.global.x; }
+    /** @readonly */
+    get globalY(): number { return this.global.y; }
 
     /**
      * The pointer coordinates in the renderer's {@link Renderer.screen screen}. This has slightly
      * different semantics than native PointerEvent screenX/screenY.
      */
     public screen: Point = new Point();
+    /**
+     * The pointer coordinates in the renderer's screen. Alias for {@code screen.x}.
+     * @readonly
+     */
+    get screenX(): number { return this.screen.x; }
+    /**
+     * The pointer coordinates in the renderer's screen. Alias for {@code screen.y}.
+     * @readonly
+     */
+    get screenY(): number { return this.screen.y; }
 
     /** Flags whether the default response of the user agent was prevent through this event. */
     public defaultPrevented = false;

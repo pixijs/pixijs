@@ -17,8 +17,7 @@ export class Input extends EventEmitter<{
     public interactiveChildren = true;
     public _globalMove = false;
     public cursor = 'default';
-    public _isButton = false;
-    public hitArea: any = null;
+    public _isPointer = false;
     protected container: Container = null;
     protected _enable = false;
 
@@ -30,14 +29,14 @@ export class Input extends EventEmitter<{
         this.container.on('destroyed', this.destroy, this);
     }
 
-    get isButton(): boolean
+    get isPointer(): boolean
     {
-        return this._isButton;
+        return this._isPointer;
     }
 
-    set isButton(val)
+    set isPointer(val)
     {
-        this._isButton = val;
+        this._isPointer = val;
         this.cursor = val ? 'pointer' : 'default';
     }
 
