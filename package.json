@@ -176,6 +176,7 @@
     "./lib/compressed-textures/basis/init.*",
     "./lib/events/init.*",
     "./lib/filters/init.*",
+    "./lib/input/init.*",
     "./lib/math-extras/init.*",
     "./lib/scene/sprite-tiling/init.*",
     "./lib/scene/text/init.*",
@@ -284,6 +285,14 @@
       },
       "require": {
         "default": "./lib/filters/init.js"
+      }
+    },
+    "./input": {
+      "import": {
+        "default": "./lib/input/init.mjs"
+      },
+      "require": {
+        "default": "./lib/input/init.js"
       }
     },
     "./math-extras": {

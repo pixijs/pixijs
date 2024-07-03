@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../extensions/Extensions';
 import { Matrix } from '../../maths/matrix/Matrix';
-import { buildInstructions } from './utils/buildInstructions';
+import { buildInstructions, renderableUidCount } from './utils/buildInstructions';
 import { collectRenderGroups } from './utils/collectRenderGroups';
 import { executeInstructions } from './utils/executeInstructions';
 import { updateRenderGroupTransforms } from './utils/updateRenderGroupTransforms';
@@ -33,9 +33,19 @@ export class RenderGroupSystem implements System
 
     private readonly _renderer: Renderer;
 
+    public hasRenderablesChanged = false;
+    public hasRenderableCountChanged = false;
+
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+    }
+
+    protected prerender(): void
+    {
+        this.hasRenderablesChanged = false;
+        this.hasRenderableCountChanged = false;
+        renderableUidCount.previousUid = renderableUidCount.uidCount;
     }
 
     protected render({ container, transform }: {container: Container, transform: Matrix}): void
@@ -87,6 +97,8 @@ export class RenderGroupSystem implements System
 
                 // build the renderables
                 buildInstructions(renderGroup, renderPipes);
+                this.hasRenderablesChanged = true;
+                this.hasRenderableCountChanged = renderableUidCount.uidCount !== renderableUidCount.previousUid;
             }
             else
             {

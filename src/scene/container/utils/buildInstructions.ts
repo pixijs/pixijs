@@ -5,8 +5,16 @@ import type { RenderPipes } from '../../../rendering/renderers/types';
 import type { Container } from '../Container';
 import type { RenderGroup } from '../RenderGroup';
 
+export const renderableUidCount = {
+    uidCount: 0,
+    previousUid: 0,
+};
+let collect = false;
+
 export function buildInstructions(renderGroup: RenderGroup, renderPipes: RenderPipes)
 {
+    renderableUidCount.uidCount = 0;
+    collect = true;
     const root = renderGroup.root;
     const instructionSet = renderGroup.instructionSet;
 
@@ -22,14 +30,15 @@ export function buildInstructions(renderGroup: RenderGroup, renderPipes: RenderP
         root.sortChildren();
     }
 
+    renderableUidCount.uidCount += root.uid;
+
     collectAllRenderablesAdvanced(root, instructionSet, renderPipes, true);
 
-    // instructionSet.log();
     // TODO add some events / runners for build end
     renderPipes.batch.buildEnd(instructionSet);
     renderPipes.blendMode.buildEnd(instructionSet);
 
-    // instructionSet.log();
+    collect = false;
 }
 
 export function collectAllRenderables(
@@ -46,6 +55,8 @@ export function collectAllRenderables(
     {
         container.sortChildren();
     }
+
+    if (collect) renderableUidCount.uidCount += container.uid;
 
     if (container.isSimple)
     {
@@ -105,7 +116,11 @@ function collectAllRenderablesAdvanced(
             const effect = container.effects[i];
             const pipe = renderPipes[effect.pipe as keyof RenderPipes]as InstructionPipe<any>;
 
+            const previousCollect = collect;
+
+            collect = false;
             pipe.push(effect, container, instructionSet);
+            collect = previousCollect;
         }
 
         const renderPipeId = container.renderPipeId;

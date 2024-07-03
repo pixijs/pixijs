@@ -14,6 +14,7 @@ const subImports = [
     ['./basis', './lib/compressed-textures/basis'],
     ['./events', './lib/events'],
     ['./filters', './lib/filters'],
+    ['./input', './lib/input'],
     ['./math-extras', './lib/math-extras'],
     ['./sprite-tiling', './lib/scene/sprite-tiling'],
     ['./text', './lib/scene/text'],
