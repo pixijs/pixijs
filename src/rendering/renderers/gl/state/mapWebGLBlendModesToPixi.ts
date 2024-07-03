@@ -24,6 +24,25 @@ export function mapWebGLBlendModesToPixi(gl: GlRenderingContext): Record<BLEND_M
     blendMap['screen-npm'] = [gl.SRC_ALPHA, gl.ONE_MINUS_SRC_COLOR, gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
 
     blendMap.erase = [gl.ZERO, gl.ONE_MINUS_SRC_ALPHA];
+
+    const isWebGl2 = 'WebGL2RenderingContext' in globalThis && gl instanceof globalThis.WebGL2RenderingContext;
+
+    if (isWebGl2)
+    {
+        blendMap.min = [gl.ONE, gl.ONE, gl.ONE, gl.ONE, gl.MIN, gl.MIN];
+        blendMap.max = [gl.ONE, gl.ONE, gl.ONE, gl.ONE, gl.MAX, gl.MAX];
+    }
+    else
+    {
+        const ext = gl.getExtension('EXT_blend_minmax');
+
+        if (ext)
+        {
+            blendMap.min = [gl.ONE, gl.ONE, gl.ONE, gl.ONE, ext.MIN_EXT, ext.MIN_EXT];
+            blendMap.max = [gl.ONE, gl.ONE, gl.ONE, gl.ONE, ext.MAX_EXT, ext.MAX_EXT];
+        }
+    }
+
     // TODO - implement if requested!
     // composite operations
     // array[BLEND_MODES.SRC_IN] = [gl.DST_ALPHA, gl.ZERO];
