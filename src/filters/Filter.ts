@@ -104,8 +104,8 @@ export type FilterWithShader = FilterOptions & IShaderWithResources;
 /**
  * The antialiasing mode of the filter. This can be either:
  * - `on` - the filter is always antialiased regardless of the render target settings
- * - `off` - the filter is never antialiased regardless of the render target settings
- * - `inherit` - (default) the filter uses the antialias settings of the render target
+ * - `off` - (default) the filter is never antialiased regardless of the render target settings
+ * - `inherit` - the filter uses the antialias settings of the render target
  * @memberof filters
  */
 export type FilterAntialias = 'on' | 'off' | 'inherit';
