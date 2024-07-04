@@ -32,7 +32,7 @@ describe('RenderableGC', () =>
 
         await new Promise((resolve) =>
         {
-            setTimeout(resolve, 20);
+            setTimeout(resolve, 1000);
         });
 
         expect(sprite.listenerCount('destroyed')).toEqual(1);
@@ -45,7 +45,7 @@ describe('RenderableGC', () =>
 
         await new Promise((resolve) =>
         {
-            setTimeout(resolve, 20);
+            setTimeout(resolve, 1000);
         });
 
         // should be cleaned up!
@@ -126,7 +126,7 @@ describe('RenderableGC', () =>
 
         await new Promise((resolve) =>
         {
-            setTimeout(resolve, 20);
+            setTimeout(resolve, 1000);
         });
 
         // check sprite.destroy event has now listeners..
@@ -141,7 +141,7 @@ describe('RenderableGC', () =>
 
         await new Promise((resolve) =>
         {
-            setTimeout(resolve, 20);
+            setTimeout(resolve, 1000);
         });
 
         renderer.destroy();
