@@ -189,8 +189,8 @@ export class FilterSystem implements System
         let resolution = Infinity;
         // Padding is additive to add padding to our padding
         let padding = 0;
-        // if this is true for any filter, it should be true
-        let antialias = false;
+        // if this is true for all filter, it should be true, and otherwise false
+        let antialias = true;
         // true if any filter requires the previous render target
         let blendRequired = false;
         // true if any filter in the list is enabled
@@ -200,16 +200,17 @@ export class FilterSystem implements System
         {
             const filter = filters[i];
 
-            resolution = Math.min(resolution, filter.resolution ?? colorTextureSource._resolution);
+            resolution = Math.min(resolution, filter.resolution === 'inherit'
+                ? colorTextureSource._resolution : filter.resolution);
             padding += filter.padding;
 
-            if (filter.antialias === 'on')
+            if (filter.antialias === 'off')
             {
-                antialias = true;
+                antialias = false;
             }
             else if (filter.antialias === 'inherit')
             {
-                antialias ||= colorTextureSource.antialias;
+                antialias &&= colorTextureSource.antialias;
             }
 
             const isCompatible = !!(filter.compatibleRenderers & renderer.type);

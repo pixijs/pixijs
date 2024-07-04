@@ -32,7 +32,7 @@ class AlphaMaskEffect extends FilterEffect implements PoolItem
 
         this.filters = [new MaskFilter({
             sprite: new Sprite(Texture.EMPTY),
-            resolution: null,
+            resolution: 'inherit',
             antialias: 'inherit'
         })];
     }

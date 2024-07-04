@@ -70,10 +70,10 @@ export interface FilterOptions
     /**
      * the resolution the filter should be rendered at. The lower the resolution, the more performant
      * the filter will be, but the lower the quality of the output. (default 1)
-     * If `null` the resolution of the render target is used.
+     * If 'inherit', the resolution of the render target is used.
      * Consider lowering this for things like blurs filters
      */
-    resolution?: number | null;
+    resolution?: number | 'inherit';
     /**
      * the amount of pixels to pad the container with when applying the filter. For example a blur extends the
      * container out as it blurs, so padding is applied to ensure that extra detail is rendered as well
@@ -182,7 +182,7 @@ export class Filter extends Shader
      * increase the performance of the filter.
      * @default 1
      */
-    public resolution: number | null;
+    public resolution: number | 'inherit';
 
     /**
      * Whether or not this filter requires the previous render texture for blending.
