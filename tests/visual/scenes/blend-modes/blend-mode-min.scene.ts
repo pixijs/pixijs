@@ -8,10 +8,10 @@ export const scene: TestScene = {
     create: async (scene: Container) =>
     {
         const yellow = new Graphics().rect(0, 0, 100, 100).fill(0xffff00);
-        const magenta = new Graphics().rect(0, 0, 100, 100).fill(0x00ffff);
+        const cyan = new Graphics().rect(0, 0, 100, 100).fill(0x00ffff);
 
-        magenta.blendMode = 'min';
+        cyan.blendMode = 'min';
 
-        scene.addChild(yellow, magenta);
+        scene.addChild(yellow, cyan);
     },
 };
