@@ -74,11 +74,11 @@ function collectAllRenderablesSimple(
 
         container.didViewUpdate = false;
 
-        renderableGC.addRenderable(container as Renderable, instructionSet);
-
         const rp = renderPipes as unknown as Record<string, RenderPipe>;
 
         rp[container.renderPipeId].addRenderable(container as Renderable, instructionSet);
+
+        renderableGC.addRenderable(container as Renderable, instructionSet);
     }
 
     if (!container.renderGroup)
@@ -126,9 +126,9 @@ function collectAllRenderablesAdvanced(
 
             const pipe = renderPipes[renderPipeId as keyof RenderPipes]as RenderPipe<any>;
 
-            renderableGC.addRenderable(container as Renderable, instructionSet);
-
             pipe.addRenderable(container, instructionSet);
+
+            renderableGC.addRenderable(container as Renderable, instructionSet);
         }
 
         const children = container.children;

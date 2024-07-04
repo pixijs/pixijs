@@ -64,11 +64,11 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
 
     public destroyRenderable(sprite: NineSliceSprite)
     {
-        const batchableSprite = this._gpuSpriteHash[sprite.uid];
+        const batchableMesh = this._gpuSpriteHash[sprite.uid];
 
         // this will call reset!
-        BigPool.return(batchableSprite.geometry as PoolItem);
-        BigPool.return(batchableSprite as PoolItem);
+        BigPool.return(batchableMesh.geometry as PoolItem);
+        BigPool.return(batchableMesh as PoolItem);
 
         this._gpuSpriteHash[sprite.uid] = null;
 
@@ -98,6 +98,8 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
         batchableMesh.mesh = sprite;
         batchableMesh.texture = sprite._texture;
         batchableMesh.roundPixels = (this._renderer._roundPixels | sprite._roundPixels) as 0 | 1;
+
+        sprite._didSpriteUpdate = true;
 
         this._gpuSpriteHash[sprite.uid] = batchableMesh;
 

@@ -69,7 +69,7 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
          * Frames between two garbage collections.
          * @default 600
          */
-        renderableGCFrequency: 60000,
+        renderableGCFrequency: 30000,
     };
 
     /**
@@ -156,10 +156,10 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
         {
             const renderable = managedRenderables[i];
 
-            const currentIndex = renderable.parentRenderGroup?.instructionSet?.tick ?? -1;
-            const isInUse = currentIndex === renderable._lastInstructionTick;
+            const renderGroup = renderable.renderGroup ?? renderable.parentRenderGroup;
+            const currentIndex = renderGroup?.instructionSet?.tick ?? -1;
 
-            if (!isInUse && now - renderable._lastUsed > this.maxUnusedTime)
+            if (renderable._lastInstructionTick !== currentIndex && now - renderable._lastUsed > this.maxUnusedTime)
             {
                 if (!renderable.destroyed)
                 {
@@ -168,8 +168,8 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
                     rp[renderable.renderPipeId].destroyRenderable(renderable);
                 }
 
+                // remove from the array as this has been destroyed..
                 renderable._lastInstructionTick = -1;
-
                 offset++;
             }
             else
