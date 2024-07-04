@@ -43,7 +43,7 @@ export interface GlBackBufferOptions
  * For blend modes you need to know what pixels you are actually drawing to. For this to be possible in WebGL
  * we need to render to a texture and then present that texture to the screen. This system manages that process.
  *
- * As the main scene is rendered to a texture, it means we can sample it anc copy its pixels,
+ * As the main scene is rendered to a texture, it means we can sample it and copy its pixels,
  * something not possible on the main canvas.
  *
  * If antialiasing is set to to true and useBackBuffer is set to true, then the back buffer will be antialiased.
