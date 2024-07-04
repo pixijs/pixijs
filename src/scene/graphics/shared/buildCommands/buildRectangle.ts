@@ -1,3 +1,5 @@
+import { ExtensionType } from '../../../../extensions/Extensions';
+
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
 import type { ShapeBuildCommand } from './ShapeBuildCommand';
 
@@ -9,6 +11,10 @@ import type { ShapeBuildCommand } from './ShapeBuildCommand';
  * @private
  */
 export const buildRectangle: ShapeBuildCommand<Rectangle> = {
+    extension: {
+        type: ExtensionType.ShapeBuilder,
+        name: 'rectangle',
+    },
 
     build(shape: Rectangle, points: number[]): number[]
     {

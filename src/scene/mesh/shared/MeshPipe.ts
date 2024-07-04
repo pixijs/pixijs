@@ -2,6 +2,7 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { BindGroup } from '../../../rendering/renderers/gpu/shader/BindGroup';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
+import { getAdjustedBlendModeBlend } from '../../../rendering/renderers/shared/state/getAdjustedBlendModeBlend';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { color32BitToUniform } from '../../graphics/gpu/colorToUniform';
 import { BatchableMesh } from './BatchableMesh';
@@ -176,7 +177,7 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<MeshInstructi
     {
         if (!mesh.isRenderable) return;
 
-        mesh.state.blendMode = mesh.groupBlendMode;
+        mesh.state.blendMode = getAdjustedBlendModeBlend(mesh.groupBlendMode, mesh.texture._source);
 
         const localUniforms = this.localUniforms;
 

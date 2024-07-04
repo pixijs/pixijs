@@ -130,6 +130,8 @@ export class GenerateTextureSystem implements System
             clearColor,
         });
 
+        target.source.updateMipmaps();
+
         return target;
     }
 

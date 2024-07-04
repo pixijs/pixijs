@@ -111,6 +111,8 @@ export abstract class AbstractBitmapFont<FontType>
     public readonly distanceField: BitmapFontData['distanceField'] = { type: 'none', range: 0 };
     /** The map of base page textures (i.e., sheets of glyphs). */
     public readonly pages: { texture: Texture }[] = [];
+    /** should the fill for this font be applied as a tint to the text. */
+    public applyFillAsTint = true;
 
     /** The size of the font face in pixels. */
     public readonly baseMeasurementFontSize: number = 100;

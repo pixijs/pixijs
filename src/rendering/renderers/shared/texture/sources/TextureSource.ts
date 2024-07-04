@@ -7,6 +7,7 @@ import { TextureStyle } from '../TextureStyle';
 import type { BindResource } from '../../../gpu/shader/BindResource';
 import type { ALPHA_MODES, SCALE_MODE, TEXTURE_DIMENSIONS, TEXTURE_FORMATS, WRAP_MODE } from '../const';
 import type { TextureStyleOptions } from '../TextureStyle';
+import type { TextureResourceOrOptions } from '../utils/textureFrom';
 
 /**
  * options for creating a new TextureSource
@@ -545,4 +546,10 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         // this should be overridden by other sources..
         throw new Error('Unimplemented');
     }
+
+    /**
+     * A helper function that creates a new TextureSource based on the resource you provide.
+     * @param resource - The resource to create the texture source from.
+     */
+    public static from: (resource: TextureResourceOrOptions) => TextureSource;
 }

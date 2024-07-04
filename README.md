@@ -59,7 +59,7 @@ PixiJS supports [WebGPU](https://en.wikipedia.org/wiki/WebGPU) with fallback sup
   - [UI](https://github.com/pixijs/ui)
   - [Layout](https://github.com/pixijs/layout)
   - [GIF](https://github.com/pixijs/gif)
-  - And more! 
+  - And more!
 
 ### Setup ###
 
@@ -147,7 +147,7 @@ app.ticker.add(() => {
 
 - [Filters Demo](https://pixijs.io/filters/examples)
 - [Bunny Demo](http://www.goodboydigital.com/pixijs/bunnymark)
-- [Masking Demo](https://pixijs.com/examples/masks/graphics) 
+- [Masking Demo](https://pixijs.com/examples/masks/graphics)
 - [Interaction Demo](https://pixijs.com/examples/events/interactivity)
 - [More examples](https://pixijs.com/examples)
 
@@ -194,4 +194,4 @@ before submitting changes.
 
 ### License ###
 
-This content is released under the (http://opensource.org/licenses/MIT) MIT License.
+This content is released under the [MIT License](http://opensource.org/licenses/MIT).

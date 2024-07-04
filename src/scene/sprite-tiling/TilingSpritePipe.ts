@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { ExtensionType } from '../../extensions/Extensions';
+import { getAdjustedBlendModeBlend } from '../../rendering/renderers/shared/state/getAdjustedBlendModeBlend';
 import { State } from '../../rendering/renderers/shared/state/State';
 import { type Renderer, RendererType } from '../../rendering/renderers/types';
 import { color32BitToUniform } from '../graphics/gpu/colorToUniform';
@@ -39,7 +40,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
     } as const;
 
     private _renderer: Renderer;
-
+    private readonly _state: State = State.default2d;
     private readonly _tilingSpriteDataHash: Record<number, RenderableData> = Object.create(null);
 
     constructor(renderer: Renderer)
@@ -62,9 +63,10 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
             const { batchableMesh } = tilingSpriteData;
 
             // we are batching.. check a texture change!
-            if (batchableMesh.texture._source !== renderable.texture._source)
-
-            { return !batchableMesh.batcher.checkAndUpdateTexture(batchableMesh, renderable.texture); }
+            if (batchableMesh && batchableMesh.texture._source !== renderable.texture._source)
+            {
+                return !batchableMesh.batcher.checkAndUpdateTexture(batchableMesh, renderable.texture);
+            }
         }
 
         return (couldBatch !== canBatch);
@@ -137,10 +139,12 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
             0
         );
 
+        this._state.blendMode = getAdjustedBlendModeBlend(tilingSprite.groupBlendMode, tilingSprite.texture._source);
+
         this._renderer.encoder.draw({
             geometry: sharedQuad,
             shader,
-            state: State.default2d,
+            state: this._state,
         });
     }
 

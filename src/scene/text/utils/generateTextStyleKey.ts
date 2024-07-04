@@ -8,9 +8,6 @@ const valuesToIterateForKeys: Partial<keyof TextStyle | keyof HTMLTextStyle>[] =
     'align',
     'breakWords',
     'cssOverrides',
-    'fontFamily',
-    'fontSize',
-    'fontStyle',
     'fontVariant',
     'fontWeight',
     'leading',
@@ -22,6 +19,9 @@ const valuesToIterateForKeys: Partial<keyof TextStyle | keyof HTMLTextStyle>[] =
     'whiteSpace',
     'wordWrap',
     'wordWrapWidth',
+    'fontFamily',
+    'fontStyle',
+    'fontSize',
 ] as const;
 
 /**
