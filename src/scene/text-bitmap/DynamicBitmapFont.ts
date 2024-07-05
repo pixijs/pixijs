@@ -157,7 +157,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
 
             const metrics = CanvasTextMetrics.measureText(char, style, canvas, false);
 
-            // override the line height.. we want this to be the glyps heigh
+            // override the line height.. we want this to be the glyps height
             // not the user specified one.
             metrics.lineHeight = metrics.height;
 

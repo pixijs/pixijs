@@ -31,7 +31,11 @@ export async function getFontCss(
 
                 if (i === 0)
                 {
-                    FontStylePromiseCache.set(fontFamily, loadFontCSS(style, url));
+                    FontStylePromiseCache.set(fontFamily, loadFontCSS({
+                        fontWeight: style.fontWeight,
+                        fontStyle: style.fontStyle,
+                        fontFamily,
+                    }, url));
                 }
 
                 else
