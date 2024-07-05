@@ -1,6 +1,7 @@
 import { Cache } from '../../../src/assets/cache/Cache';
 import { Loader } from '../../../src/assets/loader/Loader';
 import { loadJson } from '../../../src/assets/loader/parsers/loadJson';
+import { loadSvg } from '../../../src/assets/loader/parsers/textures/loadSVG';
 import { loadTextures } from '../../../src/assets/loader/parsers/textures/loadTextures';
 import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
 import { Spritesheet } from '../../../src/spritesheet/Spritesheet';
@@ -23,7 +24,7 @@ describe('spritesheetAsset', () =>
     beforeAll(() =>
     {
         loader = new Loader();
-        loader['_parsers'].push(loadJson, loadTextures, spritesheetAsset.loader);
+        loader['_parsers'].push(loadJson, loadTextures, spritesheetAsset.loader, loadSvg);
     });
 
     it('should load a spritesheet', async () =>
@@ -187,5 +188,27 @@ describe('spritesheetAsset', () =>
         const texture = await loader.load({ src: `${basePath}spritesheet/${customImageFilename}` });
 
         expect(spritesheet.textureSource).toEqual(texture.source);
+    });
+
+    it('should load a spritesheet where the json file points to an svg', async () =>
+    {
+        const spriteSheet = await loader.load<Spritesheet>(`${basePath}spritesheet/svgSpritesheet.json`);
+
+        const t1 = spriteSheet.textures['pic1'];
+        const t2 = spriteSheet.textures['pic2'];
+        const t3 = spriteSheet.textures['pic3'];
+
+        expect(t1).toBeInstanceOf(Texture);
+        expect(t2).toBeInstanceOf(Texture);
+        expect(t3).toBeInstanceOf(Texture);
+
+        expect(t1.width).toBe(150);
+        expect(t1.height).toBe(150);
+
+        expect(t2.width).toBe(200);
+        expect(t2.height).toBe(200);
+
+        expect(t3.width).toBe(210);
+        expect(t3.height).toBe(210);
     });
 });
