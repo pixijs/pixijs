@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "8.2.1",
+  "version": "8.2.2",
   "author": "PixiJS Team",
   "main": "lib/index.js",
   "module": "lib/index.mjs",
