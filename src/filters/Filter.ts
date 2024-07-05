@@ -89,7 +89,7 @@ export interface FilterOptions
      */
     antialias?: FilterAntialias | boolean;
     /**
-     * If this is set to true, the filter system will grab a snap shot oif the are being rendered
+     * If this is set to true, the filter system will grab a snap shot of the area being rendered
      * to and pass this into the shader. This is useful for blend modes that need to be aware of the pixels
      * they are rendering to. Only use if you need that data, otherwise its an extra gpu copy you don't need!
      * (default false)

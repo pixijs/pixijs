@@ -258,7 +258,7 @@ describe('Rectangle', () =>
         expect(e.intersects(c, new Matrix())).toEqual(true);
         expect(e.intersects(d, new Matrix())).toEqual(true);
 
-        // works the other way arround
+        // works the other way around
         expect(a.intersects(e)).toEqual(true);
         expect(b.intersects(e)).toEqual(true);
         expect(c.intersects(e)).toEqual(true);

@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "8.2.1",
+  "version": "8.2.2",
   "author": "PixiJS Team",
   "main": "lib/index.js",
   "module": "lib/index.mjs",
@@ -47,13 +47,8 @@
     "release": "ts-node ./scripts/release.ts",
     "publish-ci": "npm publish"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "lint-staged": {
-    "*.{ts,js,mjs}": "npm run lint --"
+    "*.{ts,js,mjs}": "npm run lint:fix --"
   },
   "dependencies": {
     "@pixi/colord": "^2.9.6",
@@ -99,7 +94,7 @@
     "jest": "^26.0.0",
     "jest-extended": "^1.2.1",
     "jest-raw-loader": "^1.0.1",
-    "lint-staged": "^13.3.0",
+    "lint-staged": "^15.2.7",
     "nodemon": "^3.0.2",
     "npm-run-all": "^4.1.5",
     "pixelmatch": "^5.3.0",

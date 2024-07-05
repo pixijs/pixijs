@@ -538,7 +538,7 @@ export class Color
     }
 
     /**
-     * Convert to a hexidecimal string.
+     * Convert to a hexadecimal string.
      * @example
      * import { Color } from 'pixi.js';
      * new Color('white').toHex(); // returns "#ffffff"
@@ -551,7 +551,7 @@ export class Color
     }
 
     /**
-     * Convert to a hexidecimal string with alpha.
+     * Convert to a hexadecimal string with alpha.
      * @example
      * import { Color } from 'pixi.js';
      * new Color('white').toHexa(); // returns "#ffffffff"
@@ -586,7 +586,7 @@ export class Color
         let b: number | undefined;
         let a: number | undefined;
 
-        // Number is a primative so typeof works fine, but in the case
+        // Number is a primitive so typeof works fine, but in the case
         // that someone creates a class that extends Number, we also
         // need to check for instanceof Number
         if (
