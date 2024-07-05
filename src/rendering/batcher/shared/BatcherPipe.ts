@@ -65,7 +65,7 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
         this._activeBatch.begin();
     }
 
-    public addToBatch(batchableObject: BatchableObject)
+    public addToBatch(batchableObject: BatchableObject, _instructionSet: InstructionSet)
     {
         this._activeBatch.add(batchableObject);
     }

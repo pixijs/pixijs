@@ -107,7 +107,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
 
             batchableMesh.roundPixels = (this._renderer._roundPixels | tilingSprite._roundPixels) as 0 | 1;
 
-            batcher.addToBatch(batchableMesh);
+            batcher.addToBatch(batchableMesh, instructionSet);
         }
         else
         {
