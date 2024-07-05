@@ -4,7 +4,7 @@ import { updateQuadBounds } from '../../utils/data/updateQuadBounds';
 import { BigPool } from '../../utils/pool/PoolGroup';
 import { BatchableSprite } from '../sprite/BatchableSprite';
 
-import type { InstructionSet } from '../../rendering';
+import type { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../../rendering/renderers/types';
 import type { HTMLText } from './HTMLText';
