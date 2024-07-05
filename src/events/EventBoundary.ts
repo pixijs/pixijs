@@ -645,6 +645,11 @@ export class EventBoundary
      */
     protected notifyTarget(e: FederatedEvent, type?: string): void
     {
+        if (!e.currentTarget.isInteractive())
+        {
+            return;
+        }
+
         type = type ?? e.type;
 
         // call the `on${type}` for the current target if it exists
@@ -1457,7 +1462,6 @@ export class EventBoundary
         const listeners = ((e.currentTarget as any)._events as EmitterListeners)[type];
 
         if (!listeners) return;
-        if (!e.currentTarget.isInteractive()) return;
 
         if ('fn' in listeners)
         {

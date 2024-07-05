@@ -74,7 +74,7 @@ export interface AssetInitOptions
      * or you might set the resolution to 2 if the user is on a retina display
      */
     texturePreference?: {
-        /** the resolution order you prefer, can be an array (priority order - first is prefered) or a single resolutions  */
+        /** the resolution order you prefer, can be an array (priority order - first is preferred) or a single resolutions  */
         resolution?: number | number[];
         /**
          * the formats you prefer, by default this will be:
@@ -624,7 +624,7 @@ export class AssetsClass
      * Initiate a background load of some assets. It will passively begin to load these assets in the background.
      * So when you actually come to loading them you will get a promise that resolves to the loaded assets immediately
      *
-     * An example of this might be that you would background load game assets after your inital load.
+     * An example of this might be that you would background load game assets after your initial load.
      * then when you got to actually load your game screen assets when a player goes to the game - the loading
      * would already have stared or may even be complete, saving you having to show an interim load bar.
      * @example

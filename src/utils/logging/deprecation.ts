@@ -23,7 +23,7 @@ export const v8_0_0 = '8.0.0';
  */
 export function deprecation(version: string, message: string, ignoreDepth = 3): void
 {
-    // Ignore duplicat
+    // Ignore duplicate
     if (warnings[message])
     {
         return;

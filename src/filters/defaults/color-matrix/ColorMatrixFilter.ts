@@ -163,7 +163,7 @@ export class ColorMatrixFilter extends Filter
 
     /**
      * Adjusts brightness
-     * @param b - value of the brigthness (0-1, where 0 is black)
+     * @param b - value of the brightness (0-1, where 0 is black)
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
@@ -543,7 +543,7 @@ export class ColorMatrixFilter extends Filter
     /**
      * Predator effect
      *
-     * Erase the current matrix by setting a new indepent one
+     * Erase the current matrix by setting a new independent one
      * @param amount - how much the predator feels his future victim
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix

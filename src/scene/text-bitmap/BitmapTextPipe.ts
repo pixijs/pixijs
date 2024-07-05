@@ -188,7 +188,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
     public initGpuText(bitmapText: BitmapText)
     {
-        // TODO we could keep a bunch of contexts around and reuse one that hav the same style!
+        // TODO we could keep a bunch of contexts around and reuse one that has the same style!
         const proxyRenderable = BigPool.get(Graphics);
 
         this._gpuBitmapText[bitmapText.uid] = proxyRenderable;

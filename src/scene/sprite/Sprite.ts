@@ -132,8 +132,8 @@ export class Sprite extends Container implements View
         this.roundPixels = roundPixels ?? false;
 
         // needs to be set after the container has initiated
-        if (width) this.width = width;
-        if (height) this.height = height;
+        if (width !== undefined) this.width = width;
+        if (height !== undefined) this.height = height;
     }
 
     set texture(value: Texture)

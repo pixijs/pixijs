@@ -112,7 +112,7 @@ export class RenderContainer extends Container implements View, Instruction
     }
 
     /**
-     * An overrideable function that can be used to render the object using the current renderer.
+     * An overridable function that can be used to render the object using the current renderer.
      * @param _renderer - The current renderer
      */
     public render(_renderer: Renderer): void
