@@ -1,7 +1,7 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { BatchGeometry } from '../../../rendering/batcher/gpu/BatchGeometry';
 import { getTextureBatchBindGroup } from '../../../rendering/batcher/gpu/getTextureBatchBindGroup';
 import { Batcher } from '../../../rendering/batcher/shared/Batcher';
+import { BatchGeometry } from '../../../rendering/batcher/shared/BatchGeometry';
 import { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { buildContextBatches } from './utils/buildContextBatches';
