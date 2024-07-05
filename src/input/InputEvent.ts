@@ -3,6 +3,10 @@ import { Point } from '../maths/point/Point';
 import type { PointData } from '../maths/point/PointData';
 import type { Container } from '../scene/container/Container';
 
+/**
+ * An synthetic PointerEvent implementation that contains the original native PointerEvent.
+ * @memberof input
+ */
 export class InputEvent
 {
     /** The native event that caused the foremost original event. */
@@ -243,9 +247,8 @@ export class InputEvent
     }
 
     /**
-     * The data of the event.
+     * Fallback for the deprecated @code{InteractionEvent.data}.
      * @deprecated since 7.0.0
-     * @see {@link InputEvent}
      */
     get data(): InputEvent
     {
