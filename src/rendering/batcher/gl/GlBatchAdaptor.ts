@@ -18,7 +18,7 @@ import type { BatcherAdaptor, BatcherPipe } from '../shared/BatcherPipe';
  * @memberof rendering
  * @ignore
  */
-export class GlBatchAdaptor implements BatcherAdaptor
+export class GlBatchAdaptor implements BatcherAdaptor<BatcherPipe>
 {
     /** @ignore */
     public static extension = {

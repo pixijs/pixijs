@@ -21,7 +21,7 @@ const tempState = State.for2d();
  * @memberof rendering
  * @ignore
  */
-export class GpuBatchAdaptor implements BatcherAdaptor
+export class GpuBatchAdaptor implements BatcherAdaptor<BatcherPipe>
 {
     /** @ignore */
     public static extension = {
