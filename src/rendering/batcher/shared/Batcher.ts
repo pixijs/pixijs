@@ -98,6 +98,8 @@ export interface BatcherOptions
     vertexSize?: number;
     /** The size of the index buffer. */
     indexSize?: number;
+    /** The number of reserved texture units. */
+    reservedTextures?: number;
 }
 
 /**
@@ -109,6 +111,7 @@ export class Batcher
     public static defaultOptions: BatcherOptions = {
         vertexSize: 4,
         indexSize: 6,
+        reservedTextures: 0,
     };
 
     public uid = uid('batcher');
@@ -142,13 +145,19 @@ export class Batcher
     {
         options = { ...Batcher.defaultOptions, ...options };
 
-        const { vertexSize, indexSize } = options;
+        const { vertexSize, indexSize, reservedTextures } = options;
 
         this.attributeBuffer = new ViewableBuffer(vertexSize * this._vertexSize * 4);
 
         this.indexBuffer = new Uint16Array(indexSize);
 
-        this._maxTextures = getMaxTexturesPerBatch();
+        this._maxTextures = getMaxTexturesPerBatch() - reservedTextures;
+
+        if (this._maxTextures <= 0)
+        {
+            throw new Error(`Attempted to reserve ${reservedTextures} texture units`
+                + `but the maximum number that can be reserved on this device in ${getMaxTexturesPerBatch() - 1}`);
+        }
     }
 
     public begin()
