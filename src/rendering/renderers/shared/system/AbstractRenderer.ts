@@ -12,11 +12,13 @@ import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { Matrix } from '../../../../maths/matrix/Matrix';
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
 import type { TypeOrBool } from '../../../../scene/container/destroyTypes';
+import type { BatchableObject } from '../../../batcher/shared/Batcher';
 import type { CLEAR_OR_BOOL } from '../../gl/const';
 import type { Renderer } from '../../types';
 import type { BackgroundSystem } from '../background/BackgroundSystem';
 import type { GenerateTextureOptions, GenerateTextureSystem } from '../extract/GenerateTextureSystem';
-import type { PipeConstructor } from '../instructions/RenderPipe';
+import type { InstructionSet } from '../instructions/InstructionSet';
+import type { BatchPipe, PipeConstructor } from '../instructions/RenderPipe';
 import type { RenderSurface } from '../renderTarget/RenderTargetSystem';
 import type { Texture } from '../texture/Texture';
 import type { ViewSystem, ViewSystemDestroyOptions } from '../view/ViewSystem';
@@ -192,6 +194,8 @@ export class AbstractRenderer<
     private _systemsHash: Record<string, System> = Object.create(null);
     private _lastObjectRendered: Container;
 
+    private _activeBatchPipe: BatchPipe = undefined;
+
     /**
      * Set up a system with a collection of SystemClasses and runners.
      * Systems are attached dynamically to this class when added.
@@ -303,6 +307,7 @@ export class AbstractRenderer<
         this.runners.render.emit(options);
         this.runners.renderEnd.emit(options);
         this.runners.postrender.emit(options);
+        this._activeBatchPipe = undefined;
     }
 
     /**
@@ -331,6 +336,34 @@ export class AbstractRenderer<
         Color.shared.setValue(clearColor ?? this.background.colorRgba);
 
         renderer.renderTarget.clear(target, clear, Color.shared.toArray() as RgbaArray);
+    }
+
+    /**
+     * Add a batchable object to the batch.
+     * @param renderable - a batchable object that can be added to the batch
+     * @param instructionSet - the instruction set currently being built
+     */
+    public addToBatch(renderable: BatchableObject, instructionSet: InstructionSet)
+    {
+        const batchPipe = (this.renderPipes as Record<string, BatchPipe>)[renderable.batchPipeId];
+
+        if (this._activeBatchPipe !== batchPipe)
+        {
+            this._activeBatchPipe?.break(instructionSet);
+            this._activeBatchPipe = batchPipe;
+        }
+
+        batchPipe.addToBatch(renderable);
+    }
+
+    /**
+     * Forces the batch to break. This can happen if for example you need to render everything and then
+     * change the render target.
+     * @param instructionSet - the instruction set currently being built
+     */
+    public breakBatch(instructionSet: InstructionSet)
+    {
+        this._activeBatchPipe?.break(instructionSet);
     }
 
     /** The resolution / device pixel ratio of the renderer. */

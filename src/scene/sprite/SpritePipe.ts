@@ -28,14 +28,14 @@ export class SpritePipe implements RenderPipe<Sprite>
         this._renderer = renderer;
     }
 
-    public addRenderable(sprite: Sprite, _instructionSet: InstructionSet)
+    public addRenderable(sprite: Sprite, instructionSet: InstructionSet)
     {
         const gpuSprite = this._getGpuSprite(sprite);
 
         if (sprite._didSpriteUpdate) this._updateBatchableSprite(sprite, gpuSprite);
 
         // TODO visibility
-        this._renderer.renderPipes.batch.addToBatch(gpuSprite);
+        this._renderer.addToBatch(gpuSprite, instructionSet);
     }
 
     public updateRenderable(sprite: Sprite)

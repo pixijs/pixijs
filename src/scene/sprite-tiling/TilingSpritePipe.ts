@@ -79,8 +79,6 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
 
     public addRenderable(tilingSprite: TilingSprite, instructionSet: InstructionSet)
     {
-        const batcher = this._renderer.renderPipes.batch;
-
         // init
         this._updateCanBatch(tilingSprite);
 
@@ -107,11 +105,11 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
 
             batchableMesh.roundPixels = (this._renderer._roundPixels | tilingSprite._roundPixels) as 0 | 1;
 
-            batcher.addToBatch(batchableMesh);
+            this._renderer.addToBatch(batchableMesh, instructionSet);
         }
         else
         {
-            batcher.break(instructionSet);
+            this._renderer.breakBatch(instructionSet);
 
             tilingSpriteData.shader ||= new TilingSpriteShader();
 

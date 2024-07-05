@@ -98,7 +98,10 @@ export class RenderGroupSystem implements System
             renderGroup.childrenRenderablesToUpdate.index = 0;
 
             // upload all the things!
-            renderer.renderPipes.batch.upload(renderGroup.instructionSet);
+            for (const id in renderPipes)
+            {
+                (renderPipes as any)[id].upload?.(renderGroup.instructionSet);
+            }
         }
 
         renderer.globalUniforms.start({

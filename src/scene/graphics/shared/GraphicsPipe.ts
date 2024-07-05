@@ -4,8 +4,9 @@ import { BigPool } from '../../../utils/pool/PoolGroup';
 import { color32BitToUniform } from '../gpu/colorToUniform';
 import { BatchableGraphics } from './BatchableGraphics';
 
+import type { BatchableObject } from '../../../rendering/batcher/shared/Batcher';
 import type { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
-import type { BatchPipe, RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
+import type { RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import type { PoolItem } from '../../../utils/pool/Pool';
 import type { Graphics } from './Graphics';
@@ -21,9 +22,8 @@ export interface GraphicsAdaptor
 export interface GraphicsSystem
 {
     graphicsContext: GraphicsContextSystem;
-    renderPipes: {
-        batch: BatchPipe
-    }
+    addToBatch: (renderable: BatchableObject, instructionSet: InstructionSet) => void;
+    breakBatch: (instructionSet: InstructionSet) => void;
     _roundPixels: 0 | 1;
 }
 
@@ -89,11 +89,11 @@ export class GraphicsPipe implements RenderPipe<Graphics>
 
         if (gpuContext.isBatchable)
         {
-            this._addToBatcher(graphics);
+            this._addToBatcher(graphics, instructionSet);
         }
         else
         {
-            this.renderer.renderPipes.batch.break(instructionSet);
+            this.renderer.breakBatch(instructionSet);
             instructionSet.add(graphics);
         }
     }
@@ -172,17 +172,15 @@ export class GraphicsPipe implements RenderPipe<Graphics>
         graphics.batched = gpuContext.isBatchable;
     }
 
-    private _addToBatcher(graphics: Graphics)
+    private _addToBatcher(graphics: Graphics, instructionSet: InstructionSet)
     {
-        const batchPipe = this.renderer.renderPipes.batch;
-
         const batches = this._getBatchesForRenderable(graphics);
 
         for (let i = 0; i < batches.length; i++)
         {
             const batch = batches[i];
 
-            batchPipe.addToBatch(batch);
+            this.renderer.addToBatch(batch, instructionSet);
         }
     }
 

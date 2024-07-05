@@ -26,7 +26,7 @@ export class RenderGroupPipe implements InstructionPipe<RenderGroup>
 
     public addRenderGroup(renderGroup: RenderGroup, instructionSet: InstructionSet): void
     {
-        this._renderer.renderPipes.batch.break(instructionSet);
+        this._renderer.breakBatch(instructionSet);
 
         instructionSet.add(renderGroup);
     }

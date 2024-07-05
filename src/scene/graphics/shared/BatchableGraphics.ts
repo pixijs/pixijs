@@ -15,6 +15,7 @@ export class BatchableGraphics implements BatchableObject
     public textureId: number;
     public texture: Texture;
     public location: number;
+    public readonly batchPipeId = 'batch';
     public batcher: Batcher = null;
     public batch: Batch = null;
     public renderable: Graphics;

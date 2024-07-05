@@ -80,6 +80,7 @@ export interface BatchableObject
     // stored for efficient updating..
     textureId: number;
     location: number; // location in the buffer
+    readonly batchPipeId: string; // the id of the batch pipe that handles this object
     batcher: Batcher;
     batch: Batch;
 
