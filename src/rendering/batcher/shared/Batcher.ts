@@ -98,8 +98,8 @@ export interface BatcherOptions
     vertexSize?: number;
     /** The size of the index buffer. */
     indexSize?: number;
-    /** The number of reserved texture units. */
-    reservedTextures?: number;
+    /** The maximum number of textures per batch. */
+    maxTextures?: number;
 }
 
 /**
@@ -111,7 +111,7 @@ export class Batcher
     public static defaultOptions: BatcherOptions = {
         vertexSize: 4,
         indexSize: 6,
-        reservedTextures: 0,
+        maxTextures: getMaxTexturesPerBatch(),
     };
 
     public uid = uid('batcher');
@@ -139,25 +139,21 @@ export class Batcher
     private _textureBatchPoolIndex = 0;
     private _batchIndexStart: number;
     private _batchIndexSize: number;
-    private readonly _maxTextures: number;
+
+    /** The maximum number of textures per batch. */
+    public readonly maxTextures: number;
 
     constructor(options: BatcherOptions = {})
     {
         options = { ...Batcher.defaultOptions, ...options };
 
-        const { vertexSize, indexSize, reservedTextures } = options;
+        const { vertexSize, indexSize, maxTextures } = options;
 
         this.attributeBuffer = new ViewableBuffer(vertexSize * this._vertexSize * 4);
 
         this.indexBuffer = new Uint16Array(indexSize);
 
-        this._maxTextures = getMaxTexturesPerBatch() - reservedTextures;
-
-        if (this._maxTextures <= 0)
-        {
-            throw new Error(`Attempted to reserve ${reservedTextures} texture units`
-                + `but the maximum number that can be reserved on this device in ${getMaxTexturesPerBatch() - 1}`);
-        }
+        this.maxTextures = maxTextures;
     }
 
     public begin()
@@ -251,7 +247,7 @@ export class Batcher
         let action: BatchAction = 'startBatch';
         let batch = this._batchPool[this._batchPoolIndex++] || new Batch();
 
-        const maxTextures = this._maxTextures;
+        const maxTextures = this.maxTextures;
 
         for (let i = this.elementStart; i < this.elementSize; ++i)
         {
