@@ -122,9 +122,6 @@ export class Batcher
 
     public dirty = true;
 
-    public batchIndex = 0;
-    public batches: Batch[] = [];
-
     // specifics.
     private readonly _vertexSize: number = 6;
 
@@ -153,7 +150,6 @@ export class Batcher
 
     public begin()
     {
-        this.batchIndex = 0;
         this.elementSize = 0;
         this.elementStart = 0;
         this.indexSize = 0;
@@ -423,13 +419,6 @@ export class Batcher
 
     public destroy()
     {
-        for (let i = 0; i < this.batches.length; i++)
-        {
-            this.batches[i].destroy();
-        }
-
-        this.batches = null;
-
         for (let i = 0; i < this._elements.length; i++)
         {
             this._elements[i].batch = null;
