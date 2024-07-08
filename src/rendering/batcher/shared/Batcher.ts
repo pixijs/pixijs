@@ -122,18 +122,11 @@ export class Batcher
 
     public dirty = true;
 
-    public batchIndex = 0;
-    public batches: Batch[] = [];
-
     // specifics.
     private readonly _vertexSize: number = 6;
 
     private _elements: BatchableObject[] = [];
 
-    private readonly _batchPool: Batch[] = [];
-    private _batchPoolIndex = 0;
-    private readonly _textureBatchPool: BatchTextureArray[] = [];
-    private _textureBatchPoolIndex = 0;
     private _batchIndexStart: number;
     private _batchIndexSize: number;
     private readonly _maxTextures: number;
@@ -153,13 +146,10 @@ export class Batcher
 
     public begin()
     {
-        this.batchIndex = 0;
         this.elementSize = 0;
         this.elementStart = 0;
         this.indexSize = 0;
         this.attributeSize = 0;
-        this._batchPoolIndex = 0;
-        this._textureBatchPoolIndex = 0;
         this._batchIndexStart = 0;
         this._batchIndexSize = 0;
 
@@ -212,9 +202,7 @@ export class Batcher
         // ++BATCH_TICK;
         const elements = this._elements;
 
-        let textureBatch = this._textureBatchPool[this._textureBatchPoolIndex++] || new BatchTextureArray();
-
-        textureBatch.clear();
+        let textureBatch = new BatchTextureArray();
 
         // length 0??!! (we broke without adding anything)
         if (!elements[this.elementStart]) return;
@@ -240,7 +228,7 @@ export class Batcher
         let start = this._batchIndexStart;
 
         let action: BatchAction = 'startBatch';
-        let batch = this._batchPool[this._batchPoolIndex++] || new Batch();
+        let batch = new Batch();
 
         const maxTextures = this._maxTextures;
 
@@ -289,10 +277,9 @@ export class Batcher
                 // create a batch...
                 blendMode = adjustedBlendMode;
 
-                textureBatch = this._textureBatchPool[this._textureBatchPoolIndex++] || new BatchTextureArray();
-                textureBatch.clear();
+                textureBatch = new BatchTextureArray();
 
-                batch = this._batchPool[this._batchPoolIndex++] || new Batch();
+                batch = new Batch();
                 ++BATCH_TICK;
             }
 
@@ -422,13 +409,6 @@ export class Batcher
 
     public destroy()
     {
-        for (let i = 0; i < this.batches.length; i++)
-        {
-            this.batches[i].destroy();
-        }
-
-        this.batches = null;
-
         for (let i = 0; i < this._elements.length; i++)
         {
             this._elements[i].batch = null;

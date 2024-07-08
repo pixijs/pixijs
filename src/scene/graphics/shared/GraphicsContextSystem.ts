@@ -6,6 +6,7 @@ import { InstructionSet } from '../../../rendering/renderers/shared/instructions
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { buildContextBatches } from './utils/buildContextBatches';
 
+import type { Batch } from '../../../rendering/batcher/shared/Batcher';
 import type { System } from '../../../rendering/renderers/shared/system/System';
 import type { PoolItem } from '../../../utils/pool/Pool';
 import type { BatchableGraphics } from './BatchableGraphics';
@@ -206,9 +207,9 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
         geometry.indexBuffer.setDataWithSize(batcher.indexBuffer, batcher.indexSize, true);
         geometry.buffers[0].setDataWithSize(batcher.attributeBuffer.float32View, batcher.attributeSize, true);
 
-        const drawBatches = batcher.batches;
+        const drawBatches = graphicsData.instructions.instructions as Batch[];
 
-        for (let i = 0; i < drawBatches.length; i++)
+        for (let i = 0; i < graphicsData.instructions.instructionSize; i++)
         {
             const batch = drawBatches[i];
 
