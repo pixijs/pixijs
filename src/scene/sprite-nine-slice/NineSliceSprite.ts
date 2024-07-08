@@ -269,7 +269,7 @@ export class NineSliceSprite extends Container implements View
     public onViewUpdate()
     {
         // increment from the 12th bit!
-        this._didChangeId += 1 << 12;
+        this._didChangeId = (this._didChangeId + (1 << 12)) & 0xFFFFFF;
         this._didSpriteUpdate = true;
 
         if (this.didViewUpdate) return;

@@ -379,7 +379,7 @@ export abstract class AbstractText<
 
     public onViewUpdate()
     {
-        this._didChangeId += 1 << 12;
+        this._didChangeId = (this._didChangeId + (1 << 12)) & 0xFFFFFF;
         this._boundsDirty = true;
 
         if (this.didViewUpdate) return;

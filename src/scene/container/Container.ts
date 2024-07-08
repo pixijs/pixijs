@@ -664,7 +664,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         this.emit('childAdded', child, this, this.children.length - 1);
         child.emit('added', this);
 
-        this._didChangeId += 1 << 12;
+        this._didChangeId = (this._didChangeId + (1 << 12)) & 0xFFFFFF;
 
         if (child._zIndex !== 0)
         {
@@ -699,7 +699,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         if (index > -1)
         {
-            this._didChangeId += 1 << 12;
+            this._didChangeId = (this._didChangeId + (1 << 12)) & 0xFFFFFF;
 
             this.children.splice(index, 1);
 
@@ -733,7 +733,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             }
         }
 
-        this._didChangeId++;
+        this._didChangeId = (this._didChangeId & 0xFFF000) | ((this._didChangeId + 1) & 0xFFF);
 
         if (this.didChange) return;
         this.didChange = true;

@@ -440,7 +440,7 @@ export class TilingSprite extends Container implements View, Instruction
         this._boundsDirty = true;
         this._didTilingSpriteUpdate = true;
 
-        this._didChangeId += 1 << 12;
+        this._didChangeId = (this._didChangeId + (1 << 12)) & 0xFFFFFF;
 
         if (this.didViewUpdate) return;
         this.didViewUpdate = true;
