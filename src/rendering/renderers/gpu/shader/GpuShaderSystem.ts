@@ -1,6 +1,7 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { getMaxTexturesPerBatch } from '../../../batcher/gl/utils/maxRecommendedTextures';
 
-import type { System } from '../../shared/system/System';
+import type { ShaderSystem } from '../../shared/shader/ShaderSystem';
 import type { GPU } from '../GpuDeviceSystem';
 import type { GpuProgram } from './GpuProgram';
 
@@ -14,7 +15,7 @@ export interface GPUProgramData
  * A system that manages the rendering of GpuPrograms.
  * @memberof rendering
  */
-export class GpuShaderSystem implements System
+export class GpuShaderSystem implements ShaderSystem
 {
     /** @ignore */
     public static extension = {
@@ -24,6 +25,8 @@ export class GpuShaderSystem implements System
         name: 'shader',
     } as const;
 
+    public maxTextures: number;
+
     private _gpu: GPU;
 
     private readonly _gpuProgramData: Record<number, GPUProgramData> = Object.create(null);
@@ -31,6 +34,8 @@ export class GpuShaderSystem implements System
     protected contextChange(gpu: GPU): void
     {
         this._gpu = gpu;
+
+        this.maxTextures = getMaxTexturesPerBatch();
     }
 
     public getProgramData(program: GpuProgram)
