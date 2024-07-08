@@ -79,9 +79,8 @@ export interface RenderPipe<RENDERABLE = Renderable>
      * This is only called in the render loop if the instructions set is being reused
      * from the last frame. Otherwise addRenderable is called.
      * @param renderable - the renderable that needs to be rendered
-     * @param instructionSet - the instruction set currently being built
      */
-    updateRenderable: (renderable: RENDERABLE, instructionSet?: InstructionSet) => void;
+    updateRenderable: (renderable: RENDERABLE) => void;
     /**
      * Called whenever a renderable is destroyed, often the pipes keep a webGL / webGPU specific representation
      * of the renderable that needs to be tidied up when the renderable is destroyed.
