@@ -77,7 +77,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
         return false;
     }
 
-    public addRenderable(htmlText: HTMLText, instructionSet: InstructionSet)
+    public addRenderable(htmlText: HTMLText, _instructionSet: InstructionSet)
     {
         const gpuText = this._getGpuText(htmlText);
 
@@ -88,7 +88,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
             this._updateText(htmlText);
         }
 
-        this._renderer.renderPipes.batch.addToBatch(batchableSprite, instructionSet);
+        this._renderer.renderPipes.batch.addToBatch(batchableSprite);
     }
 
     public updateRenderable(htmlText: HTMLText)

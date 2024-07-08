@@ -89,7 +89,7 @@ export class GraphicsPipe implements RenderPipe<Graphics>
 
         if (gpuContext.isBatchable)
         {
-            this._addToBatcher(graphics, instructionSet);
+            this._addToBatcher(graphics);
         }
         else
         {
@@ -172,7 +172,7 @@ export class GraphicsPipe implements RenderPipe<Graphics>
         graphics.batched = gpuContext.isBatchable;
     }
 
-    private _addToBatcher(graphics: Graphics, instructionSet: InstructionSet)
+    private _addToBatcher(graphics: Graphics)
     {
         const batchPipe = this.renderer.renderPipes.batch;
 
@@ -182,7 +182,7 @@ export class GraphicsPipe implements RenderPipe<Graphics>
         {
             const batch = batches[i];
 
-            batchPipe.addToBatch(batch, instructionSet);
+            batchPipe.addToBatch(batch);
         }
     }
 

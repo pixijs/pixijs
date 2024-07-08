@@ -29,13 +29,13 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
         this._renderer = renderer;
     }
 
-    public addRenderable(sprite: NineSliceSprite, instructionSet: InstructionSet)
+    public addRenderable(sprite: NineSliceSprite, _instructionSet: InstructionSet)
     {
         const gpuSprite = this._getGpuSprite(sprite);
 
         if (sprite._didSpriteUpdate) this._updateBatchableSprite(sprite, gpuSprite);
 
-        this._renderer.renderPipes.batch.addToBatch(gpuSprite, instructionSet);
+        this._renderer.renderPipes.batch.addToBatch(gpuSprite);
     }
 
     public updateRenderable(sprite: NineSliceSprite)
