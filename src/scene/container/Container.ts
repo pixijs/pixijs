@@ -445,7 +445,8 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * @internal
      * @ignore
      */
-    public _position: ObservablePoint = new ObservablePoint(this, 0, 0);
+    public _position: ObservablePoint = new ObservablePoint(
+        { _onUpdate: (point: ObservablePoint) => this.#onUpdate(point) }, 0, 0);
 
     /**
      * The scale factor of the object.
@@ -721,7 +722,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     }
 
     /** @ignore */
-    public _onUpdate(point?: ObservablePoint)
+    #onUpdate(point?: ObservablePoint)
     {
         if (point)
         {
@@ -894,7 +895,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         if (this._rotation !== value)
         {
             this._rotation = value;
-            this._onUpdate(this._skew);
+            this.#onUpdate(this._skew);
         }
     }
 
@@ -923,7 +924,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     {
         if (this._pivot === defaultPivot)
         {
-            this._pivot = new ObservablePoint(this, 0, 0);
+            this._pivot = new ObservablePoint((this._position as any)._observer, 0, 0);
         }
 
         return this._pivot;
@@ -933,7 +934,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     {
         if (this._pivot === defaultPivot)
         {
-            this._pivot = new ObservablePoint(this, 0, 0);
+            this._pivot = new ObservablePoint((this._position as any)._observer, 0, 0);
         }
 
         typeof value === 'number' ? this._pivot.set(value) : this._pivot.copyFrom(value);
@@ -947,7 +948,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     {
         if (this._skew === defaultSkew)
         {
-            this._skew = new ObservablePoint(this, 0, 0);
+            this._skew = new ObservablePoint((this._position as any)._observer, 0, 0);
         }
 
         return this._skew;
@@ -957,7 +958,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     {
         if (this._skew === defaultSkew)
         {
-            this._skew = new ObservablePoint(this, 0, 0);
+            this._skew = new ObservablePoint((this._position as any)._observer, 0, 0);
         }
 
         this._skew.copyFrom(value);
@@ -973,7 +974,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     {
         if (this._scale === defaultScale)
         {
-            this._scale = new ObservablePoint(this, 1, 1);
+            this._scale = new ObservablePoint((this._position as any)._observer, 1, 1);
         }
 
         return this._scale;
@@ -983,7 +984,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     {
         if (this._scale === defaultScale)
         {
-            this._scale = new ObservablePoint(this, 0, 0);
+            this._scale = new ObservablePoint((this._position as any)._observer, 0, 0);
         }
 
         typeof value === 'number' ? this._scale.set(value) : this._scale.copyFrom(value);
@@ -1174,7 +1175,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         this._updateFlags |= UPDATE_COLOR;
 
-        this._onUpdate();
+        this.#onUpdate();
     }
 
     /** The opacity of the object. */
@@ -1194,7 +1195,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         this._updateFlags |= UPDATE_COLOR;
 
-        this._onUpdate();
+        this.#onUpdate();
     }
 
     /**
@@ -1225,7 +1226,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         this.localBlendMode = value;
 
-        this._onUpdate();
+        this.#onUpdate();
     }
 
     /**
@@ -1260,7 +1261,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         this.localDisplayStatus ^= 0b010;
 
-        this._onUpdate();
+        this.#onUpdate();
     }
 
     /** @ignore */
@@ -1284,7 +1285,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         this._updateFlags |= UPDATE_VISIBLE;
         this.localDisplayStatus ^= 0b100;
 
-        this._onUpdate();
+        this.#onUpdate();
     }
 
     /** Can this object be rendered, if false the object will not be drawn but the transform will still be updated. */
@@ -1307,7 +1308,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             this.parentRenderGroup.structureDidChange = true;
         }
 
-        this._onUpdate();
+        this.#onUpdate();
     }
 
     /** Whether or not the object should be rendered. */
