@@ -1138,9 +1138,11 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     /** Updates the local transform. */
     public updateLocalTransform(): void
     {
-        if ((this._didLocalTransformChangeId & 0b1111) === this._didChangeId) return;
+        const localTransformChangeId = this._didChangeId & 0xFFF;
 
-        this._didLocalTransformChangeId = this._didChangeId;
+        if (this._didLocalTransformChangeId === localTransformChangeId) return;
+
+        this._didLocalTransformChangeId = localTransformChangeId;
         //   this.didChange = false;
 
         const lt = this.localTransform;
