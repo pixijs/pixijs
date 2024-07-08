@@ -212,7 +212,12 @@ export class Batcher
         // ++BATCH_TICK;
         const elements = this._elements;
 
-        let textureBatch = this._textureBatchPool[this._textureBatchPoolIndex++] || new BatchTextureArray();
+        let textureBatch = this._textureBatchPool[this._textureBatchPoolIndex++];
+
+        if (!textureBatch)
+        {
+            textureBatch = this._textureBatchPool[this._textureBatchPoolIndex - 1] = new BatchTextureArray();
+        }
 
         textureBatch.clear();
 
@@ -240,7 +245,12 @@ export class Batcher
         let start = this._batchIndexStart;
 
         let action: BatchAction = 'startBatch';
-        let batch = this._batchPool[this._batchPoolIndex++] || new Batch();
+        let batch = this._batchPool[this._batchPoolIndex++];
+
+        if (!batch)
+        {
+            batch = this._batchPool[this._batchPoolIndex - 1] = new Batch();
+        }
 
         const maxTextures = this._maxTextures;
 
