@@ -289,10 +289,10 @@ export class Batcher
                 // create a batch...
                 blendMode = adjustedBlendMode;
 
-                textureBatch = this._textureBatchPool[this._textureBatchPoolIndex++] || new BatchTextureArray();
+                textureBatch = this._textureBatchPool[this._textureBatchPoolIndex++] ||= new BatchTextureArray();
                 textureBatch.clear();
 
-                batch = this._batchPool[this._batchPoolIndex++] || new Batch();
+                batch = this._batchPool[this._batchPoolIndex++] ||= new Batch();
                 ++BATCH_TICK;
             }
 
@@ -338,6 +338,7 @@ export class Batcher
     )
     {
         batch.gpuBindGroup = null;
+        batch.bindGroup = null;
         batch.action = action;
 
         batch.batcher = this;
