@@ -1,7 +1,7 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { State } from '../../renderers/shared/state/State';
-import { BatchGeometry } from '../gpu/BatchGeometry';
 import { Batcher } from './Batcher';
+import { BatchGeometry } from './BatchGeometry';
 
 import type { Geometry } from '../../renderers/shared/geometry/Geometry';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
