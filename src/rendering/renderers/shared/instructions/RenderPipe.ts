@@ -85,7 +85,6 @@ export interface RenderPipe<RENDERABLE = Renderable>
      * Called whenever a renderable is destroyed, often the pipes keep a webGL / webGPU specific representation
      * of the renderable that needs to be tidied up when the renderable is destroyed.
      * @param renderable - the renderable that needs to be rendered
-     * @returns
      */
     destroyRenderable: (renderable: RENDERABLE) => void;
     /**
@@ -93,9 +92,9 @@ export interface RenderPipe<RENDERABLE = Renderable>
      * improve performance. If this function returns false, the renderer will rebuild the whole instruction set
      * for the scene. This is only called if the scene has not its changed its structure .
      * @param renderable
-     * @returns
+     * @returns {boolean}
      */
-    validateRenderable?: (renderable: RENDERABLE) => boolean;
+    validateRenderable: (renderable: RENDERABLE) => boolean;
 }
 
 /**
