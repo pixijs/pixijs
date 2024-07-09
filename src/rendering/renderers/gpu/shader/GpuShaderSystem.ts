@@ -1,5 +1,4 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { getMaxTexturesPerBatch } from '../../../batcher/gl/utils/maxRecommendedTextures';
 
 import type { ShaderSystem } from '../../shared/shader/ShaderSystem';
 import type { GPU } from '../GpuDeviceSystem';
@@ -35,7 +34,7 @@ export class GpuShaderSystem implements ShaderSystem
     {
         this._gpu = gpu;
 
-        this.maxTextures = getMaxTexturesPerBatch();
+        this.maxTextures = gpu.device.limits.maxSampledTexturesPerShaderStage;
     }
 
     public getProgramData(program: GpuProgram)
