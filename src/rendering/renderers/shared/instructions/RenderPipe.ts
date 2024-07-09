@@ -108,9 +108,8 @@ export interface BatchPipe
     /**
      * Add a add a batchable object to the batch.
      * @param renderable - a batchable object that can be added to the batch
-     * @param instructionSet - the instruction set currently being built
      */
-    addToBatch: (renderable: BatchableObject, instructionSet: InstructionSet) => void;
+    addToBatch: (renderable: BatchableObject) => void;
     /**
      * Forces the batch to break. This can happen if for example you need to render everything and then
      * change the render target.
