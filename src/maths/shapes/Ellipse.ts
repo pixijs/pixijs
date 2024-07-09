@@ -125,11 +125,19 @@ export class Ellipse implements ShapePrimitive
 
     /**
      * Returns the framing rectangle of the ellipse as a Rectangle object
+     * @param out
      * @returns The framing rectangle
      */
-    public getBounds(): Rectangle
+    public getBounds(out?: Rectangle): Rectangle
     {
-        return new Rectangle(this.x - this.halfWidth, this.y - this.halfHeight, this.halfWidth * 2, this.halfHeight * 2);
+        out = out || new Rectangle();
+
+        out.x = this.x - this.halfWidth;
+        out.y = this.y - this.halfHeight;
+        out.width = this.halfWidth * 2;
+        out.height = this.halfHeight * 2;
+
+        return out;
     }
 
     /**

@@ -121,7 +121,8 @@ function handleFillObject(value: FillStyle, defaultStyle: ConvertedFillStyle): C
         {
             const m = style.matrix?.invert() || new Matrix();
 
-            m.scale(1 / style.texture.frame.width, 1 / style.texture.frame.height);
+            m.translate(style.texture.frame.x, style.texture.frame.y);
+            m.scale(1 / style.texture.source.width, 1 / style.texture.source.height);
 
             style.matrix = m;
         }

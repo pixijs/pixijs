@@ -236,4 +236,16 @@ describe('BitmapText', () =>
 
         expect(spy).toHaveBeenCalled();
     });
+
+    it('should measure bounds of Bitmap text correctly when padding is set', () =>
+    {
+        const textNoPadding = new BitmapText({ text: 'HI', style: { padding: 0 } });
+        const text = new BitmapText({ text: 'HI', style: { padding: 10 } });
+
+        const boundsNoPadding = textNoPadding.getBounds();
+        const bounds = text.getBounds();
+
+        expect(boundsNoPadding.width).toBe(bounds.width);
+        expect(boundsNoPadding.height).toBe(bounds.height);
+    });
 });

@@ -260,8 +260,8 @@ describe('Text', () =>
         const boundsNoPadding = textNoPadding.getBounds();
         const bounds = text.getBounds();
 
-        expect(boundsNoPadding.width).toBeLessThan(bounds.width + 20);
-        expect(boundsNoPadding.height).toBeLessThan(bounds.height + 20);
+        expect(boundsNoPadding.width).toBe(bounds.width);
+        expect(boundsNoPadding.height).toBe(bounds.height);
     });
 
     describe('containsPoint', () =>
