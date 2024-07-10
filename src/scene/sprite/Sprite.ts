@@ -227,20 +227,10 @@ export class Sprite extends Container implements View
 
     public onViewUpdate()
     {
-        // increment from the 12th bit!
-        this._didChangeId += 1 << 12;
         this._didSpriteUpdate = true;
         this._sourceBoundsDirty = this._boundsDirty = true;
 
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.onChildViewUpdate(this);
-        }
+        super.onViewUpdate();
     }
 
     private _updateBounds()

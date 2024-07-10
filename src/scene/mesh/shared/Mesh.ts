@@ -333,23 +333,6 @@ export class Mesh<
         return false;
     }
 
-    /** @ignore */
-    public onViewUpdate()
-    {
-        // increment from the 12th bit!
-        this._didChangeId += 1 << 12;
-
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.onChildViewUpdate(this);
-        }
-    }
-
     /**
      * Destroys this sprite renderable and optionally its texture.
      * @param options - Options parameter. A boolean will act as if all options

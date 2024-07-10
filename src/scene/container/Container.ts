@@ -744,6 +744,21 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         }
     }
 
+    public onViewUpdate()
+    {
+        this._didChangeId += 1 << 12;
+
+        if (this.didViewUpdate) return;
+        this.didViewUpdate = true;
+
+        const renderGroup = this.renderGroup || this.parentRenderGroup;
+
+        if (renderGroup)
+        {
+            renderGroup.onChildViewUpdate(this);
+        }
+    }
+
     set isRenderGroup(value: boolean)
     {
         if (!!this.renderGroup === value) return;
