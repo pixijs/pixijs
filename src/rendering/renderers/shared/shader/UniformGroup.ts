@@ -96,7 +96,7 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
     public _touched = 0;
 
     /** a unique id for this uniform group used through the renderer */
-    public readonly uid = uid('uniform');
+    public readonly uid: number = uid('uniform');
     /** a resource type, used to identify how to handle it when its in a bind group / shader resource */
     public _resourceType = 'uniformGroup';
     /** the resource id used internally by the renderer to build bind group keys */
