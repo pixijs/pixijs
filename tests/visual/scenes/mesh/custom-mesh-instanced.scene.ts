@@ -48,27 +48,27 @@ export const scene: TestScene = {
                 in vec2 aPosition;
                 in vec2 aUV;
                 in vec2 aPositionOffset;
-                
+
                 out vec2 vUV;
-        
+
                 uniform mat3 uProjectionMatrix;
                 uniform mat3 uWorldTransformMatrix;
                 uniform mat3 uTransformMatrix;
-                
-                
+
+
                 void main() {
-        
+
                     mat3 mvp = uProjectionMatrix * uWorldTransformMatrix * uTransformMatrix;
                     gl_Position = vec4((mvp * vec3(aPosition + aPositionOffset, 1.0)).xy, 0.0, 1.0);
-        
+
                     vUV = aUV;
                 }
             `,
-            fragment: ` 
+            fragment: `
                 in vec2 vUV;
                 uniform sampler2D uTexture;
                 uniform float time;
-        
+
                 void main() {
                     gl_FragColor = texture(uTexture, vUV + sin( (time + (vUV.x) * 14.) ) * 0.1 );
                 }
@@ -85,39 +85,39 @@ export const scene: TestScene = {
                         uWorldColorAlpha: vec4<f32>,
                         uResolution: vec2<f32>,
                     }
-            
+
                     struct LocalUniforms {
                         uTransformMatrix:mat3x3<f32>,
                         uColor:vec4<f32>,
                         uRound:f32,
                     }
-        
-        
+
+
                     @group(0) @binding(0) var<uniform> globalUniforms : GlobalUniforms;
                     @group(1) @binding(0) var<uniform> localUniforms : LocalUniforms;
-                    
+
                     struct VertexOutput {
                         @builtin(position) position: vec4<f32>,
                         @location(0) vUV: vec2<f32>,
                     };
-                    
-        
+
+
                     @vertex
                     fn main(
                         @location(0) aPosition : vec2<f32>,
                         @location(1) aUV : vec2<f32>,
                         @location(2) aPositionOffset : vec2<f32>,
-                    ) -> VertexOutput {     
-                        var mvp = globalUniforms.uProjectionMatrix 
-                            * globalUniforms.uWorldTransformMatrix 
+                    ) -> VertexOutput {
+                        var mvp = globalUniforms.uProjectionMatrix
+                            * globalUniforms.uWorldTransformMatrix
                             * localUniforms.uTransformMatrix;
-                        
+
                         var output: VertexOutput;
-        
+
                         output.position = vec4<f32>(mvp * vec3<f32>(aPosition+aPositionOffset, 1.0), 1.0);
                         output.vUV = aUV;
-        
-                        return output; 
+
+                        return output;
                     };
                 `
             },
@@ -127,11 +127,11 @@ export const scene: TestScene = {
                     struct WaveUniforms {
                         time:f32,
                     }
-        
-                    @group(2) @binding(1) var uTexture : texture_2d<f32>;
-                    @group(2) @binding(2) var uSampler : sampler;
-                    @group(2) @binding(3) var<uniform> waveUniforms : WaveUniforms;
-        
+
+                    @group(2) @binding(0) var uTexture : texture_2d<f32>;
+                    @group(2) @binding(1) var uSampler : sampler;
+                    @group(3) @binding(0) var<uniform> waveUniforms : WaveUniforms;
+
                     @fragment
                     fn main(
                         @location(0) vUV: vec2<f32>,
@@ -146,8 +146,6 @@ export const scene: TestScene = {
             gl,
             gpu,
             resources: {
-                uTexture: spinnyBG.source,
-                uSampler: spinnyBG.source.style,
                 waveUniforms: {
                     time: { value: 1, type: 'f32' },
                 }
@@ -157,6 +155,7 @@ export const scene: TestScene = {
         const triangle = new Mesh({
             geometry,
             shader,
+            texture: spinnyBG,
         });
 
         triangle.position.set(128 / 2, 128 / 2);
