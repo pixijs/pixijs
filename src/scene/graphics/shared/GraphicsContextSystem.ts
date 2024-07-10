@@ -1,8 +1,9 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { getTextureBatchBindGroup } from '../../../rendering/batcher/gpu/getTextureBatchBindGroup';
-import { Batcher } from '../../../rendering/batcher/shared/Batcher';
+import { Batch, Batcher } from '../../../rendering/batcher/shared/Batcher';
 import { BatchGeometry } from '../../../rendering/batcher/shared/BatchGeometry';
 import { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
+import { Pool } from '../../../utils/pool/Pool';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { buildContextBatches } from './utils/buildContextBatches';
 
@@ -46,10 +47,20 @@ export class GraphicsContextRenderData
     public geometry = new BatchGeometry();
     public instructions = new InstructionSet();
 
-    public init()
+    public reset()
     {
-        this.instructions.reset();
+        const sz = this.instructions.instructionSize;
+        const arr = this.instructions.instructions;
+
+        for (let i = 0; i < sz; i++)
+        {
+            GraphicsContextRenderData.batchPool.return(arr[i] as Batch);
+            arr[i] = null;
+        }
+        this.instructions.instructionSize = 0;
     }
+
+    public static batchPool = new Pool(Batch);
 }
 
 /**
@@ -196,7 +207,7 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
             batcher.add(batch);
         }
 
-        batcher.finish(graphicsData.instructions);
+        batcher.finish(graphicsData.instructions, GraphicsContextRenderData.batchPool);
 
         const geometry = graphicsData.geometry;
 
@@ -259,10 +270,11 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
 
         if (gpuContext.batches)
         {
-            gpuContext.batches.forEach((batch) =>
+            for (const batch of gpuContext.batches)
             {
                 BigPool.return(batch as PoolItem);
-            });
+            }
+            gpuContext.batches.length = 0;
         }
     }
 
