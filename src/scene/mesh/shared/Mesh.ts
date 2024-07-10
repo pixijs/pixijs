@@ -15,11 +15,6 @@ import type { Bounds } from '../../container/bounds/Bounds';
 import type { ContainerOptions } from '../../container/Container';
 import type { DestroyOptions } from '../../container/destroyTypes';
 
-export interface TextureShader extends Shader
-{
-    texture: Texture;
-}
-
 /**
  * Constructor options used for `Mesh` instances. Extends {@link scene.MeshViewOptions}
  * ```js
@@ -39,7 +34,7 @@ export interface TextureShader extends Shader
  */
 export interface MeshOptions<
     GEOMETRY extends Geometry = MeshGeometry,
-    SHADER extends Shader = TextureShader
+    SHADER extends Shader = Shader
 > extends ContainerOptions
 {
     /**
@@ -77,7 +72,7 @@ export interface MeshOptions<
  */
 export class Mesh<
     GEOMETRY extends Geometry = MeshGeometry,
-    SHADER extends Shader = TextureShader
+    SHADER extends Shader = Shader
 > extends Container implements View, Instruction
 {
     public readonly renderPipeId = 'mesh';
@@ -134,7 +129,7 @@ export class Mesh<
         this.allowChildren = false;
 
         this.shader = shader;
-        this.texture = texture ?? (shader as unknown as TextureShader)?.texture ?? Texture.WHITE;
+        this.texture = texture ?? Texture.WHITE;
         this.state = state ?? State.for2d();
 
         this._geometry = geometry;
@@ -216,11 +211,6 @@ export class Mesh<
 
         if (currentTexture && currentTexture.dynamic) currentTexture.off('update', this.onViewUpdate, this);
         if (value.dynamic) value.on('update', this.onViewUpdate, this);
-
-        if (this.shader)
-        {
-            (this.shader as unknown as TextureShader).texture = value;
-        }
 
         this._texture = value;
         this.onViewUpdate();

@@ -1,11 +1,9 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { Matrix } from '../../../maths/matrix/Matrix';
 import { compileHighShaderGpuProgram } from '../../../rendering/high-shader/compileHighShaderToProgram';
 import { localUniformBit } from '../../../rendering/high-shader/shader-bits/localUniformBit';
 import { roundPixelsBit } from '../../../rendering/high-shader/shader-bits/roundPixelsBit';
 import { textureBit } from '../../../rendering/high-shader/shader-bits/textureBit';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
-import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { warn } from '../../../utils/logging/warn';
 
 import type { WebGPURenderer } from '../../../rendering/renderers/gpu/WebGPURenderer';
@@ -40,16 +38,7 @@ export class GpuMeshAdapter implements MeshAdaptor
             ]
         });
 
-        this._shader = new Shader({
-            gpuProgram,
-            resources: {
-                uTexture: Texture.EMPTY._source,
-                uSampler: Texture.EMPTY._source.style,
-                textureUniforms: {
-                    uTextureMatrix: { type: 'mat3x3<f32>', value: new Matrix() },
-                }
-            }
-        });
+        this._shader = new Shader({ gpuProgram });
     }
 
     public execute(meshPipe: MeshPipe, mesh: Mesh)
@@ -61,10 +50,6 @@ export class GpuMeshAdapter implements MeshAdaptor
         if (!shader)
         {
             shader = this._shader;
-
-            shader.resources.uTexture = mesh.texture.source;
-            shader.resources.uSampler = mesh.texture.source.style;
-            shader.resources.textureUniforms.uniforms.uTextureMatrix = mesh.texture.textureMatrix.mapCoord;
         }
         else if (!shader.gpuProgram)
         {
@@ -89,6 +74,27 @@ export class GpuMeshAdapter implements MeshAdaptor
 
             shader.groups[1] = (renderer as WebGPURenderer)
                 .renderPipes.uniformBatch.getUniformBindGroup(localUniforms, true);
+        }
+
+        if (gpuProgram.layout[2]?.textureUniforms !== undefined)
+        {
+            const textureUniforms = meshPipe.textureUniforms;
+            const uniforms = textureUniforms.uniforms;
+            const texture = mesh.texture;
+            const textureMatrix = texture.textureMatrix;
+
+            uniforms.uTextureMatrix = textureMatrix.mapCoord;
+            uniforms.uClampFrame = textureMatrix.uClampFrame;
+            uniforms.uClampOffset = textureMatrix.uClampOffset;
+
+            const source = texture._source;
+            const bindGroup = meshPipe.textureUniformsBindGroup;
+
+            bindGroup.setResource(source, 0);
+            bindGroup.setResource(source.style, 1);
+            bindGroup.setResource((renderer as WebGPURenderer).renderPipes.uniformBatch.getUboResource(textureUniforms), 2);
+
+            shader.groups[2] = bindGroup;
         }
 
         renderer.encoder.draw({

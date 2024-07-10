@@ -3,6 +3,7 @@ import { Matrix } from '../../../maths/matrix/Matrix';
 import { BindGroup } from '../../../rendering/renderers/gpu/shader/BindGroup';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
 import { getAdjustedBlendModeBlend } from '../../../rendering/renderers/shared/state/getAdjustedBlendModeBlend';
+import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { color32BitToUniform } from '../../graphics/gpu/colorToUniform';
 import { BatchableMesh } from './BatchableMesh';
@@ -62,6 +63,20 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<MeshInstructi
     public localUniformsBindGroup = new BindGroup({
         0: this.localUniforms,
     });
+
+    public textureUniforms = new UniformGroup({
+        uTextureMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
+        uClampFrame: { value: new Float32Array([0, 0, 1, 1]), type: 'vec4<f32>' },
+        uClampOffset: { value: new Float32Array([0, 0]), type: 'vec2<f32>' },
+    });
+
+    public textureUniformsBindGroup = new BindGroup({
+        0: Texture.EMPTY._source,
+        1: Texture.EMPTY._source.style,
+        2: this.textureUniforms,
+    });
+
+    public textureUniformsBindMap = { 0: 'uTexture', 1: 'uSampler' };
 
     public renderer: Renderer;
 
