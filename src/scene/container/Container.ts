@@ -141,8 +141,6 @@ export interface ContainerOptions<C extends ContainerChild = ContainerChild> ext
     skew?: PointData;
     /** @see scene.Container#visible */
     visible?: boolean;
-    /** @see scene.Container#culled */
-    culled?: boolean;
     /** @see scene.Container#x */
     x?: number;
     /** @see scene.Container#y */
@@ -539,7 +537,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * This property holds three bits: culled, visible, renderable
      * the third bit represents culling (0 = culled, 1 = not culled) 0b100
      * the second bit represents visibility (0 = not visible, 1 = visible) 0b010
-     * the first bit represents renderable (0 = renderable, 1 = not renderable) 0b001
+     * the first bit represents renderable (0 = not renderable, 1 = renderable) 0b001
      * @internal
      * @ignore
      */
@@ -1249,9 +1247,9 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
     set visible(value: boolean)
     {
-        const valueNumber = value ? 1 : 0;
+        const valueNumber = value ? 0b010 : 0;
 
-        if ((this.localDisplayStatus & 0b010) >> 1 === valueNumber) return;
+        if ((this.localDisplayStatus & 0b010) === valueNumber) return;
 
         if (this.parentRenderGroup)
         {
@@ -1274,9 +1272,9 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     /** @ignore */
     set culled(value: boolean)
     {
-        const valueNumber = value ? 1 : 0;
+        const valueNumber = value ? 0 : 0b100;
 
-        if ((this.localDisplayStatus & 0b100) >> 2 === valueNumber) return;
+        if ((this.localDisplayStatus & 0b100) === valueNumber) return;
 
         if (this.parentRenderGroup)
         {
@@ -1297,7 +1295,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
     set renderable(value: boolean)
     {
-        const valueNumber = value ? 1 : 0;
+        const valueNumber = value ? 0b001 : 0;
 
         if ((this.localDisplayStatus & 0b001) === valueNumber) return;
 
