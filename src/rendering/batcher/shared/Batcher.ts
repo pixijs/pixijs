@@ -440,7 +440,7 @@ export class Batcher
     {
         for (let i = 0; i < this.batches.length; i++)
         {
-            this.batches[i].destroy();
+            returnBatchToPool(this.batches[i]);
         }
 
         this.batches = null;
