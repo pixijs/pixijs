@@ -3,6 +3,11 @@ import type { WebGLOptions, WebGLPipes, WebGLRenderer } from './gl/WebGLRenderer
 import type { WebGPUOptions, WebGPUPipes, WebGPURenderer } from './gpu/WebGPURenderer';
 
 /** A generic renderer. */
+/**
+ * @memberof rendering
+ * @extends rendering.WebGLRenderer
+ * @extends rendering.WebGPURenderer
+ */
 export type Renderer<T extends ICanvas = HTMLCanvasElement> = WebGLRenderer<T> | WebGPURenderer<T>;
 export type RenderPipes = WebGLPipes | WebGPUPipes;
 /**
