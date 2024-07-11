@@ -5,6 +5,10 @@ import type { WebGPUOptions, WebGPUPipes, WebGPURenderer } from './gpu/WebGPURen
 /** A generic renderer. */
 export type Renderer<T extends ICanvas = HTMLCanvasElement> = WebGLRenderer<T> | WebGPURenderer<T>;
 export type RenderPipes = WebGLPipes | WebGPUPipes;
+/**
+ * @extends rendering.WebGLOptions
+ * @extends rendering.WebGPUOptions
+ */
 export interface RendererOptions extends WebGLOptions, WebGPUOptions {}
 
 /* eslint-disable @typescript-eslint/indent */
