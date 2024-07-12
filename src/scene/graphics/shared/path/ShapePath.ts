@@ -650,7 +650,7 @@ export class ShapePath
                 let lx = lastShape.shape.x;
                 let ly = lastShape.shape.y;
 
-                if (!lastShape.transform.isIdentity())
+                if (lastShape.transform && !lastShape.transform.isIdentity())
                 {
                     const t = lastShape.transform;
 
