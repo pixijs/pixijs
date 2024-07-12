@@ -54,7 +54,7 @@ export class FillGradient implements CanvasGradient
 
     public addColorStop(offset: number, color: ColorSource): this
     {
-        this.gradientStops.push({ offset, color: Color.shared.setValue(color).toHex() });
+        this.gradientStops.push({ offset, color: Color.shared.setValue(color).toHexa() });
         this._styleKey = null;
 
         return this;
