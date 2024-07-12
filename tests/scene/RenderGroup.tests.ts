@@ -1,9 +1,9 @@
 import { Texture } from '../../src/rendering/renderers/shared/texture/Texture';
 import { Container } from '../../src/scene/container/Container';
+import { RenderGroup } from '../../src/scene/container/RenderGroup';
 import { Sprite } from '../../src/scene/sprite/Sprite';
+import { BigPool } from '../../src/utils/pool/PoolGroup';
 import { getWebGLRenderer } from '../utils/getRenderer';
-
-import type { RenderGroup } from '../../src/scene/container/RenderGroup';
 
 // now that we don't actually remove the items, but instead ensure that they are skipped
 // in the update loop, this function will return the new list and index removing items that are intended to be skipped
@@ -601,7 +601,10 @@ describe('RenderGroup', () =>
     {
         const renderer = await getWebGLRenderer();
 
-        const container = new Container();
+        BigPool.getPool(RenderGroup).clear();
+
+        const container = new Container({ isRenderGroup: true });
+
         const sprite = new Sprite(Texture.WHITE);
 
         container.addChild(sprite);
