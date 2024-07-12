@@ -83,7 +83,7 @@ export class GlBatchAdaptor implements BatcherAdaptor
 
         const textures = batch.textures.textures;
 
-        for (let i = 0; i < textures.length; i++)
+        for (let i = 0; i < batch.textures.count; i++)
         {
             renderer.texture.bind(textures[i], i);
         }

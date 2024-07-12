@@ -212,7 +212,7 @@ export class Batcher
         // ++BATCH_TICK;
         const elements = this._elements;
 
-        let textureBatch = this._textureBatchPool[this._textureBatchPoolIndex++] || new BatchTextureArray();
+        let textureBatch = this._textureBatchPool[this._textureBatchPoolIndex++] ||= new BatchTextureArray();
 
         textureBatch.clear();
 
@@ -240,7 +240,7 @@ export class Batcher
         let start = this._batchIndexStart;
 
         let action: BatchAction = 'startBatch';
-        let batch = this._batchPool[this._batchPoolIndex++] || new Batch();
+        let batch = this._batchPool[this._batchPoolIndex++] ||= new Batch();
 
         const maxTextures = this._maxTextures;
 
@@ -289,10 +289,10 @@ export class Batcher
                 // create a batch...
                 blendMode = adjustedBlendMode;
 
-                textureBatch = this._textureBatchPool[this._textureBatchPoolIndex++] || new BatchTextureArray();
+                textureBatch = this._textureBatchPool[this._textureBatchPoolIndex++] ||= new BatchTextureArray();
                 textureBatch.clear();
 
-                batch = this._batchPool[this._batchPoolIndex++] || new Batch();
+                batch = this._batchPool[this._batchPoolIndex++] ||= new Batch();
                 ++BATCH_TICK;
             }
 
@@ -338,6 +338,7 @@ export class Batcher
     )
     {
         batch.gpuBindGroup = null;
+        batch.bindGroup = null;
         batch.action = action;
 
         batch.batcher = this;
