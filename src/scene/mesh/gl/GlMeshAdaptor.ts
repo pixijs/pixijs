@@ -1,11 +1,9 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { Matrix } from '../../../maths/matrix/Matrix';
 import { compileHighShaderGlProgram } from '../../../rendering/high-shader/compileHighShaderToProgram';
 import { localUniformBitGl } from '../../../rendering/high-shader/shader-bits/localUniformBit';
 import { roundPixelsBitGl } from '../../../rendering/high-shader/shader-bits/roundPixelsBit';
 import { textureBitGl } from '../../../rendering/high-shader/shader-bits/textureBit';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
-import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { warn } from '../../../utils/logging/warn';
 
 import type { Mesh } from '../shared/Mesh';
@@ -38,15 +36,7 @@ export class GlMeshAdaptor implements MeshAdaptor
             ]
         });
 
-        this._shader = new Shader({
-            glProgram,
-            resources: {
-                uTexture: Texture.EMPTY.source,
-                textureUniforms: {
-                    uTextureMatrix: { type: 'mat3x3<f32>', value: new Matrix() },
-                }
-            }
-        });
+        this._shader = new Shader({ glProgram });
     }
 
     public execute(meshPipe: MeshPipe, mesh: Mesh): void
@@ -58,13 +48,6 @@ export class GlMeshAdaptor implements MeshAdaptor
         if (!shader)
         {
             shader = this._shader;
-
-            const texture = mesh.texture;
-            const source = texture.source;
-
-            shader.resources.uTexture = source;
-            shader.resources.uSampler = source.style;
-            shader.resources.textureUniforms.uniforms.uTextureMatrix = texture.textureMatrix.mapCoord;
         }
         else if (!shader.glProgram)
         {
@@ -75,10 +58,25 @@ export class GlMeshAdaptor implements MeshAdaptor
             return;
         }
 
+        const texture = mesh.texture;
+        const source = texture._source;
+
+        meshPipe.textureUniformsBindGroup.setResource(source, 0);
+        meshPipe.textureUniformsBindGroup.setResource(source.style, 1);
+
+        const textureMatrix = texture.textureMatrix;
+        const textureUniforms = meshPipe.textureUniforms.uniforms;
+
+        textureUniforms.uTextureMatrix = textureMatrix.mapCoord;
+        textureUniforms.uClampFrame = textureMatrix.uClampFrame;
+        textureUniforms.uClampOffset = textureMatrix.uClampOffset;
+
         // setting the groups to be high to be compatible and not
         // overlap any other groups
         shader.groups[100] = renderer.globalUniforms.bindGroup;
         shader.groups[101] = meshPipe.localUniformsBindGroup;
+        shader.groups[102] = meshPipe.textureUniformsBindGroup;
+        shader._uniformBindMap[102] = meshPipe.textureUniformsBindMap;
 
         renderer.encoder.draw({
             geometry: mesh._geometry,
