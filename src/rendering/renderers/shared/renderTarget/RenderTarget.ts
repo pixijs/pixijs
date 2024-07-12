@@ -63,7 +63,8 @@ export class RenderTarget
         isRoot: false
     };
 
-    public uid = uid('renderTarget');
+    /** unique id for this render target */
+    public readonly uid: number = uid('renderTarget');
 
     /**
      * An array of textures that can be written to by the GPU - mostly this has one texture in Pixi, but you could

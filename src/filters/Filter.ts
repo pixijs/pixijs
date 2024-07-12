@@ -69,10 +69,11 @@ export interface FilterOptions
     blendMode?: BLEND_MODES;
     /**
      * the resolution the filter should be rendered at. The lower the resolution, the more performant
-     * the filter will be, but the lower the quality of the output. (defaults to the renderers resolution)
+     * the filter will be, but the lower the quality of the output. (default 1)
+     * If 'inherit', the resolution of the render target is used.
      * Consider lowering this for things like blurs filters
      */
-    resolution?: number;
+    resolution?: number | 'inherit';
     /**
      * the amount of pixels to pad the container with when applying the filter. For example a blur extends the
      * container out as it blurs, so padding is applied to ensure that extra detail is rendered as well
@@ -81,9 +82,9 @@ export interface FilterOptions
     padding?: number;
     /**
      * If true the filter will make use of antialiasing. Although it looks better this can have a performance impact.
-     * By default, the filter will detect the antialiasing of the renderer and change this automatically.
-     * Definitely don't set this to true if the renderer has antialiasing set to false. As it will antialias,
-     * but you won't see the difference.
+     * If set to 'inherit', the filter will detect the antialiasing of the render target and change this automatically.
+     * Definitely don't set this to true if the render target has antialiasing set to false. As it will antialias,
+     * but you won't see the difference. (default 'off')
      *
      * This can be a boolean or [FilterAntialias]{@link filters.FilterAntialias} string.
      */
@@ -102,9 +103,9 @@ export type FilterWithShader = FilterOptions & IShaderWithResources;
 
 /**
  * The antialiasing mode of the filter. This can be either:
- * - `on` - the filter is always antialiased regardless of the renderer settings
- * - `off` - the filter is never antialiased regardless of the renderer settings
- * - `inherit` - (default) the filter uses the antialias settings of the renderer
+ * - `on` - the filter is always antialiased regardless of the render target settings
+ * - `off` - (default) the filter is never antialiased regardless of the render target settings
+ * - `inherit` - the filter uses the antialias settings of the render target
  * @memberof filters
  */
 export type FilterAntialias = 'on' | 'off' | 'inherit';
@@ -181,7 +182,7 @@ export class Filter extends Shader
      * increase the performance of the filter.
      * @default 1
      */
-    public resolution: number;
+    public resolution: number | 'inherit';
 
     /**
      * Whether or not this filter requires the previous render texture for blending.
