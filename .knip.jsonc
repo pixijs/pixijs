@@ -33,9 +33,6 @@
         "http-server",
         // Used internaly as dependences like "node:*" or "worker:*"
         "node",
-        "worker",
-        // Dependencies provided by @pixi/eslint-config
-        "eslint-plugin-import",
-        "eslint-plugin-simple-import-sort"
+        "worker"
     ]
 }
