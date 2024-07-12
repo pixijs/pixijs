@@ -124,7 +124,8 @@ export class Batcher
         indexSize: 6,
     };
 
-    public uid = uid('batcher');
+    /** unique id for this batcher */
+    public readonly uid: number = uid('batcher');
     public attributeBuffer: ViewableBuffer;
     public indexBuffer: IndexBufferArray;
 
