@@ -37,7 +37,7 @@ export abstract class PrepareBase
     protected timeout?: number;
 
     /**
-     * @param {Renderer} renderer - A reference to the current renderer
+     * @param {rendering.Renderer} renderer - A reference to the current renderer
      */
     constructor(renderer: Renderer)
     {
