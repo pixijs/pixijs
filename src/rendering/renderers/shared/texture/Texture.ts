@@ -131,7 +131,7 @@ export class Texture extends EventEmitter<{
     /** label used for debugging */
     public label?: string;
     /** unique id for this texture */
-    public uid = uid('texture');
+    public readonly uid: number = uid('texture');
     /**
      * Has the texture been destroyed?
      * @readonly

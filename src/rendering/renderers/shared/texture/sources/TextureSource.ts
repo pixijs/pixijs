@@ -95,7 +95,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     };
 
     /** unique id for this Texture source */
-    public readonly uid = uid('textureSource');
+    public readonly uid: number = uid('textureSource');
     /** optional label, can be used for debugging */
     public label: string;
 

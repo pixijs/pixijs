@@ -27,6 +27,7 @@ export class GpuGraphicsContext
 {
     public isBatchable: boolean;
     public context: GraphicsContext;
+    public batcher: Batcher = new Batcher();
     public batches: BatchableGraphics[] = [];
     public geometryData: GeometryData = {
         vertices: [],
@@ -89,7 +90,6 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
 
     // the root context batches, used to either make a batch or geometry
     // all graphics use this as a base
-    private readonly _activeBatchers: Batcher[] = [];
     private _gpuContextHash: Record<number, GpuGraphicsContext> = {};
     // used for non-batchable graphics
     private _graphicsDataContextHash: Record<number, GraphicsContextRenderData> = Object.create(null);
@@ -102,11 +102,6 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
     {
         GraphicsContextSystem.defaultOptions.bezierSmoothness = options?.bezierSmoothness
             ?? GraphicsContextSystem.defaultOptions.bezierSmoothness;
-    }
-
-    protected prerender()
-    {
-        this._returnActiveBatchers();
     }
 
     public getContextRenderData(context: GraphicsContext): GraphicsContextRenderData
@@ -156,21 +151,11 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
         return this._gpuContextHash[context.uid] || this._initContext(context);
     }
 
-    private _returnActiveBatchers()
-    {
-        for (let i = 0; i < this._activeBatchers.length; i++)
-        {
-            BigPool.return(this._activeBatchers[i] as PoolItem);
-        }
-
-        this._activeBatchers.length = 0;
-    }
-
     private _initContextRenderData(context: GraphicsContext): GraphicsContextRenderData
     {
         const graphicsData: GraphicsContextRenderData = BigPool.get(GraphicsContextRenderData);// ();
 
-        const { batches, geometryData } = this._gpuContextHash[context.uid];
+        const { batches, geometryData, batcher } = this._gpuContextHash[context.uid];
 
         const vertexSize = geometryData.vertices.length;
         const indexSize = geometryData.indices.length;
@@ -180,10 +165,7 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
             batches[i].applyTransform = false;
         }
 
-        const batcher = BigPool.get(Batcher);
-
-        this._activeBatchers.push(batcher);
-
+        // TODO we can pool buffers here eventually..
         batcher.ensureAttributeBuffer(vertexSize);
         batcher.ensureIndexBuffer(indexSize);
 
