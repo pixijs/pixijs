@@ -62,7 +62,7 @@ export class BlurFilter extends Filter
      */
     constructor(options?: BlurFilterOptions);
     /** @deprecated since 8.0.0 */
-    constructor(strength?: number, quality?: number, resolution?: number, kernelSize?: number);
+    constructor(strength?: number, quality?: number, resolution?: number | null, kernelSize?: number);
     constructor(...args: [BlurFilterOptions?] | [number?, number?, number?, number?])
     {
         let options = args[0] ?? {};
@@ -77,9 +77,9 @@ export class BlurFilter extends Filter
 
             options = { strength: options };
 
-            if (args[1])options.quality = args[1];
-            if (args[2])options.resolution = args[2];
-            if (args[3])options.kernelSize = args[3];
+            if (args[1] !== undefined)options.quality = args[1];
+            if (args[2] !== undefined)options.resolution = args[2] || 'inherit';
+            if (args[3] !== undefined)options.kernelSize = args[3];
         }
 
         options = { ...BlurFilterPass.defaultOptions, ...options };
