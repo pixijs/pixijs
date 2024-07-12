@@ -218,6 +218,10 @@ export class Mesh<
     {
         if (this._shader) return false;
 
+        // The state must be compatible with the batcher pipe.
+        // It isn't compatible if depth test or culling is enabled.
+        if ((this.state.data & 0b001100) !== 0) return false;
+
         if (this._geometry instanceof MeshGeometry)
         {
             if (this._geometry.batchMode === 'auto')
