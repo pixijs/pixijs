@@ -1,3 +1,5 @@
+import { DOMAdapter } from '../../../../environment/adapter';
+
 import type { BLEND_MODES } from '../../shared/state/const';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 
@@ -25,7 +27,7 @@ export function mapWebGLBlendModesToPixi(gl: GlRenderingContext): Record<BLEND_M
 
     blendMap.erase = [gl.ZERO, gl.ONE_MINUS_SRC_ALPHA];
 
-    const isWebGl2 = 'WebGL2RenderingContext' in globalThis && gl instanceof globalThis.WebGL2RenderingContext;
+    const isWebGl2 = !(gl instanceof DOMAdapter.get().getWebGLRenderingContext());
 
     if (isWebGl2)
     {
