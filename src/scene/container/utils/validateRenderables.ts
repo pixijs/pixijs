@@ -1,5 +1,3 @@
-import { clearList } from './clearList';
-
 import type { RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
 import type { RenderPipes } from '../../../rendering/renderers/types';
 import type { RenderGroup } from '../RenderGroup';
@@ -10,14 +8,9 @@ export function validateRenderables(renderGroup: RenderGroup, renderPipes: Rende
 
     let rebuildRequired = false;
 
-    let i = 0;
-
-    for (i; i < index; i++)
+    for (let i = 0; i < index; i++)
     {
         const container = list[i];
-
-        // empty the slot
-        list[i] = null;
 
         // note to self: there is no need to check if container.parentRenderGroup || !container.renderGroup
         // exist here, as this function is only called if the structure did NOT change
@@ -33,8 +26,6 @@ export function validateRenderables(renderGroup: RenderGroup, renderPipes: Rende
             break;
         }
     }
-
-    clearList(list, i);
 
     renderGroup.structureDidChange = rebuildRequired;
 

@@ -148,5 +148,7 @@ function updateRenderables(renderGroup: RenderGroup)
             renderGroup.updateRenderable(container);
         }
     }
+
+    clearList(list, index);
 }
 
