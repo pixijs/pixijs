@@ -1,6 +1,7 @@
 import { ExtensionType } from '../../extensions/Extensions';
 import { Matrix } from '../../maths/matrix/Matrix';
 import { buildInstructions } from './utils/buildInstructions';
+import { clearList } from './utils/clearList';
 import { collectRenderGroups } from './utils/collectRenderGroups';
 import { executeInstructions } from './utils/executeInstructions';
 import { updateRenderGroupTransforms } from './utils/updateRenderGroupTransforms';
@@ -76,6 +77,10 @@ export class RenderGroupSystem implements System
                 // phase 1 - validate all the renderables
                 validateRenderables(renderGroup, renderPipes);
             }
+            else
+            {
+                clearList(renderGroup.childrenRenderablesToUpdate.list, 0);
+            }
 
             // phase 2 - update all the transforms
             // including updating the renderables..
@@ -93,9 +98,6 @@ export class RenderGroupSystem implements System
                 // update remaining renderables
                 updateRenderables(renderGroup);
             }
-
-            // reset the renderables to update
-            renderGroup.childrenRenderablesToUpdate.index = 0;
 
             // upload all the things!
             renderer.renderPipes.batch.upload(renderGroup.instructionSet);
