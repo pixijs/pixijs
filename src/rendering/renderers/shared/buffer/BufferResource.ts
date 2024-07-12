@@ -34,12 +34,8 @@ export class BufferResource extends EventEmitter<{
      * @event change
      */
 
-    /**
-     * a unique id for this uniform group used through the renderer
-     * @internal
-     * @ignore
-     */
-    public readonly uid = uid('buffer');
+    /** a unique id for this uniform group used through the renderer */
+    public readonly uid: number = uid('buffer');
 
     /**
      * a resource type, used to identify how to handle it when its in a bind group / shader resource

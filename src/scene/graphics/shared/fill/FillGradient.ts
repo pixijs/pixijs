@@ -28,7 +28,8 @@ export class FillGradient implements CanvasGradient
 {
     public static defaultTextureSize = 256;
 
-    public readonly uid = uid('fillGradient');
+    /** unique id for this fill gradient */
+    public readonly uid: number = uid('fillGradient');
     public readonly type: GradientType = 'linear';
 
     public x0: number;

@@ -354,8 +354,8 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         Object.defineProperties(Container.prototype, Object.getOwnPropertyDescriptors(source));
     }
 
-    /** @private */
-    public uid: number = uid('renderable');
+    /** unique id for this container */
+    public readonly uid: number = uid('renderable');
 
     /** @private */
     public _updateFlags = 0b1111;
