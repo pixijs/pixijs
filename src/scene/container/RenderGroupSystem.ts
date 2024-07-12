@@ -99,6 +99,9 @@ export class RenderGroupSystem implements System
                 updateRenderables(renderGroup);
             }
 
+            // reset the renderables to update
+            renderGroup.childrenRenderablesToUpdate.index = 0;
+
             // upload all the things!
             renderer.renderPipes.batch.upload(renderGroup.instructionSet);
         }
