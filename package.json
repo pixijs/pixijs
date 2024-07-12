@@ -45,7 +45,10 @@
     "codesandbox-ci": "run-s build",
     "prerelease": "run-s clean:build test dist",
     "release": "ts-node ./scripts/release.ts",
-    "publish-ci": "npm publish"
+    "publish-ci": "npm publish",
+    "preprune": "run-s build:index",
+    "prune": "knip --exclude enumMembers --no-gitignore",
+    "ci:lint": "run-s lint test:types prune"
   },
   "lint-staged": {
     "*.{ts,js,mjs}": "npm run lint:fix --"
@@ -94,12 +97,13 @@
     "jest": "^26.0.0",
     "jest-extended": "^1.2.1",
     "jest-raw-loader": "^1.0.1",
+    "knip": "^5.25.2",
     "lint-staged": "^15.2.7",
+    "mkdirp": "^3.0.1",
     "nodemon": "^3.0.2",
     "npm-run-all": "^4.1.5",
     "pixelmatch": "^5.3.0",
     "pngjs": "^7.0.0",
-    "pre-commit": "^1.2.2",
     "rimraf": "^5.0.0",
     "rollup": "^3.0.0",
     "rollup-plugin-esbuild": "^6.0.0",
@@ -111,9 +115,7 @@
     "tree-kill": "^1.2.2",
     "ts-jest": "^26.0.0",
     "ts-node": "^9.0.0",
-    "tsconfig-paths": "^3.10.1",
-    "typescript": "^5.0.4",
-    "yargs-parser": "^21.0.1"
+    "typescript": "^5.0.4"
   },
   "bundles": [
     {
