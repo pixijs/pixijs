@@ -109,7 +109,7 @@ describe('Transform Visibility', () =>
 
         container.visible = false;
         container.renderable = false;
-        container.culled = false;
+        container.culled = true;
 
         updateRenderGroupTransforms(root.renderGroup, true);
 
@@ -117,7 +117,7 @@ describe('Transform Visibility', () =>
 
         container.visible = true;
         container.renderable = true;
-        container.culled = true;
+        container.culled = false;
 
         updateRenderGroupTransforms(root.renderGroup, true);
 
