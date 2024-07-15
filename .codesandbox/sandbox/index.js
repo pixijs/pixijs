@@ -27,13 +27,17 @@ document.body.appendChild(statsInstance.dom);
 
 // add a toggle button to show/hide stats
 const toggleButton = document.createElement("button");
-toggleButton.textContent = `Toggle Mode (${state.mode === "fast" ? "reuse" : "rebuild"})`;
+toggleButton.textContent = `Toggle Mode (${
+    state.mode === "fast" ? "reuse" : "rebuild"
+})`;
 toggleButton.style.position = "fixed";
 toggleButton.style.top = "0";
 toggleButton.style.right = "0";
 toggleButton.onclick = () => {
     state.mode = state.mode === "fast" ? "slow" : "fast";
-    toggleButton.textContent = `Toggle Mode (${state.mode})`;
+    toggleButton.textContent = `Toggle Mode (${
+        state.mode === "fast" ? "reuse" : "rebuild"
+    })`;
 };
 document.body.appendChild(toggleButton);
 
@@ -49,7 +53,7 @@ stopButton.onclick = () => {
 };
 document.body.appendChild(stopButton);
 
-const style = document.createElement('style');
+const style = document.createElement("style");
 style.textContent = `
     html, body {
         margin: 0;
@@ -73,12 +77,12 @@ class BunnyApp {
             background: "0x1099bb",
             resizeTo: window,
             preference: "webgl",
-            eventFeatures:  {
+            eventFeatures: {
                 move: false,
                 globalMove: false,
                 click: false,
                 wheel: false,
-            }
+            },
         });
         document.body.appendChild(this.app.view);
         await this.loadAssets();
