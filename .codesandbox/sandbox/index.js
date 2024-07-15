@@ -28,24 +28,26 @@ document.body.appendChild(statsInstance.dom);
 // add a toggle button to show/hide stats
 const toggleButton = document.createElement("button");
 toggleButton.textContent = `Toggle Mode (${state.mode})`;
-toggleButton.style.position = "absolute";
+toggleButton.style.position = "fixed";
 toggleButton.style.top = "0";
 toggleButton.style.right = "0";
 toggleButton.onclick = () => {
     state.mode = state.mode === "fast" ? "slow" : "fast";
     toggleButton.textContent = `Toggle Mode (${state.mode})`;
 };
+document.body.appendChild(toggleButton);
 
 // add stop toggle button
 const stopButton = document.createElement("button");
 stopButton.textContent = "Stop";
-stopButton.style.position = "absolute";
+stopButton.style.position = "fixed";
 stopButton.style.top = "0";
 stopButton.style.right = "100px";
 stopButton.onclick = () => {
     state.paused = !state.paused;
     stopButton.textContent = state.paused ? "Start" : "Stop";
 };
+document.body.appendChild(stopButton);
 
 class BunnyApp {
     constructor() {
