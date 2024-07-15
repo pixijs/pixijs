@@ -548,7 +548,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      */
     public globalDisplayStatus = 0b111; // 0b11 | 0b10 | 0b01 | 0b00
 
-    public renderPipeId: string;
+    public readonly renderPipeId: string;
 
     /**
      * An optional bounds area for this container. Setting this rectangle will stop the renderer

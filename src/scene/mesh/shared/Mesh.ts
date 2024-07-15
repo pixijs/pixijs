@@ -80,7 +80,7 @@ export class Mesh<
     SHADER extends Shader = TextureShader
 > extends Container implements View, Instruction
 {
-    public readonly renderPipeId = 'mesh';
+    public readonly renderPipeId: string = 'mesh';
     public readonly canBundle = true;
     public state: State;
 

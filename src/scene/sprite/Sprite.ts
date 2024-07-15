@@ -71,7 +71,7 @@ export class Sprite extends Container implements View
         return new Sprite(Texture.from(source, skipCache));
     }
 
-    public readonly renderPipeId = 'sprite';
+    public readonly renderPipeId: string = 'sprite';
 
     public batched = true;
     public readonly _anchor: ObservablePoint;
