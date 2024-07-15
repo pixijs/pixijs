@@ -18,7 +18,7 @@ let _tick = 0;
 export class InstructionSet
 {
     /** a unique id for this instruction set used through the renderer */
-    public readonly uid = uid('instructionSet');
+    public readonly uid: number = uid('instructionSet');
     /** the array of instructions */
     public readonly instructions: Instruction[] = [];
     /** the actual size of the array (any instructions passed this should be ignored) */

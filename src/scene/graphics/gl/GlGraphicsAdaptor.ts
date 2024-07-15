@@ -89,7 +89,7 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
 
             if (batch.size)
             {
-                for (let j = 0; j < batch.textures.textures.length; j++)
+                for (let j = 0; j < batch.textures.count; j++)
                 {
                     renderer.texture.bind(batch.textures.textures[j], j);
                 }

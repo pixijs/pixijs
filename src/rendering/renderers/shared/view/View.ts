@@ -13,7 +13,7 @@ export interface ViewObserver
 export interface View
 {
     /** a unique id for this view */
-    uid: number;
+    readonly uid: number;
 
     /** whether or not this view should be batched */
     batched: boolean;
