@@ -30,7 +30,8 @@ export class GraphicsPath
 {
     public instructions: PathInstruction[] = [];
 
-    public uid = uid('graphicsPath');
+    /** unique id for this graphics path */
+    public readonly uid: number = uid('graphicsPath');
 
     private _dirty = true;
     // needed for hit testing and bounds calculations

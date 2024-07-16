@@ -15,12 +15,12 @@ export function getTextureBatchBindGroup(textures: TextureSource[], size: number
         uid = ((uid * 31) + textures[i].uid) >>> 0;
     }
 
-    return cachedGroups[uid] || generateTextureBatchBindGroup(textures, uid);
+    return cachedGroups[uid] || generateTextureBatchBindGroup(textures, size, uid);
 }
 
 let maxTextures = 0;
 
-function generateTextureBatchBindGroup(textures: TextureSource[], key: number): BindGroup
+function generateTextureBatchBindGroup(textures: TextureSource[], size: number, key: number): BindGroup
 {
     const bindGroupResources: Record<string, any> = {};
 
@@ -30,7 +30,7 @@ function generateTextureBatchBindGroup(textures: TextureSource[], key: number): 
 
     for (let i = 0; i < maxTextures; i++)
     {
-        const texture = i < textures.length ? textures[i] : Texture.EMPTY.source;
+        const texture = i < size ? textures[i] : Texture.EMPTY.source;
 
         bindGroupResources[bindIndex++] = texture.source;
         bindGroupResources[bindIndex++] = texture.style;
