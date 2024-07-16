@@ -14,6 +14,7 @@ import { setUvs } from './utils/setUvs';
 import type { WebGLRenderer } from '../../rendering/renderers/gl/WebGLRenderer';
 import type { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
+import type { Container } from '../container/Container';
 import type { TilingSprite } from './TilingSprite';
 
 interface RenderableData
@@ -42,6 +43,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
     private _renderer: Renderer;
     private readonly _state: State = State.default2d;
     private readonly _tilingSpriteDataHash: Record<number, RenderableData> = Object.create(null);
+    private readonly _destroyRenderableBound = this.destroyRenderable.bind(this) as (renderable: Container) => void;
 
     constructor(renderer: Renderer)
     {
@@ -187,6 +189,8 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
         tilingSpriteData.shader?.destroy();
 
         this._tilingSpriteDataHash[tilingSprite.uid] = null;
+
+        tilingSprite.off('destroyed', this._destroyRenderableBound);
     }
 
     private _getTilingSpriteData(renderable: TilingSprite): RenderableData
@@ -208,10 +212,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
             geometry,
         };
 
-        tilingSprite.on('destroyed', () =>
-        {
-            this.destroyRenderable(tilingSprite);
-        });
+        tilingSprite.on('destroyed', this._destroyRenderableBound);
 
         return this._tilingSpriteDataHash[tilingSprite.uid];
     }

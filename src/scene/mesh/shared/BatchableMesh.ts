@@ -34,6 +34,9 @@ export class BatchableMesh implements BatchableObject
         this.texture = null;
         this.batcher = null;
         this.batch = null;
+        this.geometry = null;
+        this._uvUpdateId = -1;
+        this._textureMatrixUpdateId = -1;
     }
 
     public packIndex(indexBuffer: IndexBufferArray, index: number, indicesOffset: number)

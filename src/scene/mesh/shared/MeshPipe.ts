@@ -14,6 +14,7 @@ import type {
 } from '../../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../../../rendering/renderers/types';
 import type { PoolItem } from '../../../utils/pool/Pool';
+import type { Container } from '../../container/Container';
 import type { Mesh } from './Mesh';
 
 // TODO Record mode is a P2, will get back to this as it's not a priority
@@ -61,6 +62,7 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
     private _meshDataHash: Record<number, MeshData> = Object.create(null);
     private _gpuBatchableMeshHash: Record<number, BatchableMesh> = Object.create(null);
     private _adaptor: MeshAdaptor;
+    private readonly _destroyRenderableBound = this.destroyRenderable.bind(this) as (renderable: Container) => void;
 
     constructor(renderer: Renderer, adaptor: MeshAdaptor)
     {
@@ -159,6 +161,8 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
             BigPool.return(gpuMesh as PoolItem);
             this._gpuBatchableMeshHash[mesh.uid] = null;
         }
+
+        mesh.off('destroyed', this._destroyRenderableBound);
     }
 
     public execute(mesh: Mesh)
@@ -195,10 +199,7 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
             vertexSize: mesh._geometry.positions?.length,
         };
 
-        mesh.on('destroyed', () =>
-        {
-            this.destroyRenderable(mesh);
-        });
+        mesh.on('destroyed', this._destroyRenderableBound);
 
         return this._meshDataHash[mesh.uid];
     }

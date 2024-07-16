@@ -87,6 +87,9 @@ export class Sprite extends Container implements View
 
     public _roundPixels: 0 | 1 = 0;
 
+    public _lastUsed = 0;
+    public _lastInstructionTick = -1;
+
     /**
      * @param options - The options for creating the sprite.
      */

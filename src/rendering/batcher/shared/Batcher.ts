@@ -112,6 +112,8 @@ export interface BatcherOptions
     vertexSize?: number;
     /** The size of the index buffer. */
     indexSize?: number;
+    /** The maximum number of textures per batch. */
+    maxTextures?: number;
 }
 
 /**
@@ -123,6 +125,7 @@ export class Batcher
     public static defaultOptions: BatcherOptions = {
         vertexSize: 4,
         indexSize: 6,
+        maxTextures: getMaxTexturesPerBatch(),
     };
 
     /** unique id for this batcher */
@@ -147,19 +150,21 @@ export class Batcher
 
     private _batchIndexStart: number;
     private _batchIndexSize: number;
-    private readonly _maxTextures: number;
+
+    /** The maximum number of textures per batch. */
+    public readonly maxTextures: number;
 
     constructor(options: BatcherOptions = {})
     {
         options = { ...Batcher.defaultOptions, ...options };
 
-        const { vertexSize, indexSize } = options;
+        const { vertexSize, indexSize, maxTextures } = options;
 
         this.attributeBuffer = new ViewableBuffer(vertexSize * this._vertexSize * 4);
 
         this.indexBuffer = new Uint16Array(indexSize);
 
-        this._maxTextures = getMaxTexturesPerBatch();
+        this.maxTextures = maxTextures;
     }
 
     public begin()
@@ -257,7 +262,7 @@ export class Batcher
 
         let action: BatchAction = 'startBatch';
 
-        const maxTextures = this._maxTextures;
+        const maxTextures = this.maxTextures;
 
         for (let i = this.elementStart; i < this.elementSize; ++i)
         {

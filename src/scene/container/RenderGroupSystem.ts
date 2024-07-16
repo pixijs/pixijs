@@ -91,7 +91,7 @@ export class RenderGroupSystem implements System
                 renderGroup.structureDidChange = false;
 
                 // build the renderables
-                buildInstructions(renderGroup, renderPipes);
+                buildInstructions(renderGroup, renderer);
             }
             else
             {
