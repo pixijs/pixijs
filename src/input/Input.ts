@@ -96,24 +96,14 @@ export class Input extends EventEmitter<{
     {
         super();
         this.container = options.target;
-        this.interactive = options.interactive ?? false;
-        this.globalMove = options.globalMove ?? false;
-        this.cursor = options.cursor ?? 'default';
-        this.isPointer = options.isPointer ?? false;
-        this.interactiveChildren = options.interactiveChildren ?? true;
-
-        this.onpointermove ??= options.onpointermove;
-        this.onglobalpointermove ??= options.onglobalpointermove;
-        this.onpointerover ??= options.onpointerover;
-        this.onpointerout ??= options.onpointerout;
-        this.onpointerup ??= options.onpointerup;
-        this.onpointerupoutside ??= options.onpointerupoutside;
-        this.onpointerdown ??= options.onpointerdown;
-        this.onpointertap ??= options.onpointertap;
-
-        this.globalWheel = options.globalWheel ?? false;
-        this.onwheel ??= options.onwheel;
-        this.onglobalwheel ??= options.onglobalwheel;
+        Object.assign(this, {
+            interactive: false,
+            globalMove: false,
+            cursor: 'default',
+            isPointer: false,
+            interactiveChildren: true,
+            globalWheel: false,
+        }, options);
 
         this.container.on('destroyed', this.destroy, this);
     }
