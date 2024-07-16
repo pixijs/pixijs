@@ -1,11 +1,7 @@
-import type { InputEvent } from '../InputEvent';
+import type { InputEvent } from '../events/InputEvent';
+import type { WheelInputEvent } from '../events/WheelInputEvent';
 
-/**
- * Copies data from {@code from} into {@code to}.
- * @param from - The event to copy data from.
- * @param to - The event to copy data into.
- */
-export function copyData(from: InputEvent, to: InputEvent): void
+function copyPointerData(from: InputEvent, to: InputEvent): void
 {
     to.pointerId = from.pointerId;
     to.width = from.width;
@@ -17,6 +13,10 @@ export function copyData(from: InputEvent, to: InputEvent): void
     to.tiltX = from.tiltX;
     to.tiltY = from.tiltY;
     to.twist = from.twist;
+}
+
+function copyMouseEventData(from: InputEvent | WheelInputEvent, to: InputEvent | WheelInputEvent): void
+{
     to.altKey = from.altKey;
     to.button = from.button;
     to.buttons = from.buttons;
@@ -33,4 +33,29 @@ export function copyData(from: InputEvent, to: InputEvent): void
     to.type = from.type;
     to.detail = from.detail;
     to.page.copyFrom(from.page);
+}
+
+/**
+ * Copies data from {@code from} into {@code to}.
+ * @param from - The event to copy data from.
+ * @param to - The event to copy data into.
+ */
+export function copyPointerEvent(from: InputEvent, to: InputEvent): void
+{
+    copyPointerData(from, to);
+    copyMouseEventData(from, to);
+}
+
+/**
+ * Copies data from {@code from} into {@code to}.
+ * @param from - The event to copy data from.
+ * @param to - The event to copy data into.
+ */
+export function copyWheelEvent(from: WheelInputEvent, to: WheelInputEvent): void
+{
+    copyMouseEventData(from, to);
+    to.deltaMode = from.deltaMode;
+    to.deltaX = from.deltaX;
+    to.deltaY = from.deltaY;
+    to.deltaZ = from.deltaZ;
 }

@@ -1,7 +1,7 @@
-import { Point } from '../maths/point/Point';
+import { Point } from '../../maths/point/Point';
 
-import type { PointData } from '../maths/point/PointData';
-import type { Container } from '../scene/container/Container';
+import type { PointData } from '../../maths/point/PointData';
+import type { Container } from '../../scene/container/Container';
 
 /**
  * An synthetic PointerEvent implementation that contains the original native PointerEvent.
@@ -27,7 +27,8 @@ export class InputEvent
     /** The composed path of the event's propagation. The {@code target} is at the start. */
     public path: Container[];
 
-    public get composedPath(): Container[]
+    /** The propagation path for this event. */
+    public composedPath(): Container[]
     {
         if (!this.path)
         {

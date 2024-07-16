@@ -245,29 +245,13 @@ export function applyInputEventsCompatibility()
     };
 
     const overrides: Partial<Container> = {
-        get interactive()
-        {
-            return this.input.enable;
-        },
-        set interactive(val: boolean)
-        {
-            this.input.enable = val;
-        },
-        get interactiveChildren()
-        {
-            return this.input.interactiveChildren;
-        },
-        set interactiveChildren(val: boolean)
-        {
-            this.input.interactiveChildren = val;
-        },
         isInteractive(): boolean
         {
-            return this.input.enable;
+            return !this.input.interactive;
         },
         get eventMode()
         {
-            return this.input.enable
+            return !this.input.interactive
                 ? ('dynamic' as EventMode)
                 : ('passive' as EventMode);
         },
@@ -275,11 +259,11 @@ export function applyInputEventsCompatibility()
         {
             if (val === 'dynamic' || val === 'static')
             {
-                this.input.enable = true;
+                this.input.interactive = true;
             }
             else
             {
-                this.input.enable = false;
+                this.input.interactive = false;
             }
         },
         get cursor()

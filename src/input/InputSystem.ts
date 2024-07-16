@@ -3,8 +3,11 @@ import { ExtensionType } from '../extensions/Extensions';
 import { Point } from '../maths/point/Point';
 import { warn } from '../utils/logging/warn';
 import { applyInputEventsCompatibility } from './compatibilityLayer';
-import { InputEvent } from './InputEvent';
-import { copyData } from './utils/copy';
+import { InputEvent } from './events/InputEvent';
+import { WheelInputEvent } from './events/WheelInputEvent';
+import { bootstrapPointerEvent, bootstrapWheelEvent } from './utils/bootstrap';
+import { copyPointerEvent } from './utils/copy';
+import { inSceneGraph } from './utils/inScene';
 import { hitTestFn, isRenderable, prune } from './utils/prune';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
@@ -14,6 +17,8 @@ import type { Renderer } from '../rendering/renderers/types';
 import type { Container } from '../scene/container/Container';
 import type { Input } from './Input';
 
+const tempPoint = new Point();
+
 /** The system for handling UI input. */
 export class InputSystem implements System
 {
@@ -22,6 +27,25 @@ export class InputSystem implements System
         name: 'input',
         type: [ExtensionType.WebGLSystem, ExtensionType.CanvasSystem, ExtensionType.WebGPUSystem],
         priority: -2,
+    };
+
+    /** Default options for the {@link InputSystem}. */
+    public static defaultOptions = {
+        /**
+         * Whether to ignore the hit test cache.
+         * If the same X/Y position is hit tested in the same frame, the cache will be use
+         * to avoid redundant hit tests. This is useful for performance, but can cause issues
+         * if the scene changes between hit tests.
+         * @default false
+         */
+        ignoreHitTestCache: false,
+        /**
+         * Whether to ignore dynamic events.
+         * If true, the system will not dispatch pointermove events. This is useful for performance
+         * when the application does not need to listen to pointer over/out events when the cursor does not move.
+         * @default true
+         */
+        ignoreDynamicEvents: true,
     };
 
     /**
@@ -55,11 +79,23 @@ export class InputSystem implements System
     /** The renderer managing this {@link EventSystem}. */
     public renderer: Renderer;
 
+    /**
+     * Whether to ignore the hit test cache.
+     * If the same X/Y position is hit tested in the same frame, the cache will be use
+     * to avoid redundant hit tests. This is useful for performance, but can cause issues
+     * if the scene changes between hit tests.
+     */
     public ignoreHitTestCache = false;
+    /**
+     * Whether to ignore dynamic events.
+     * If true, the system will not dispatch pointermove events. This is useful for performance
+     * when the application does not need to listen to pointer over/out events when the cursor does not move.
+     */
     public ignoreDynamicEvents = true;
 
     protected _eventsAdded = false;
     protected _rootPointerEvent: InputEvent = new InputEvent();
+    protected _rootWheelEvent: WheelInputEvent = new WheelInputEvent();
     protected _currentCursor: string | object = null;
     protected _preferredCursor: string | object = null;
 
@@ -73,18 +109,12 @@ export class InputSystem implements System
         pressTargetsByButton: {
             [id: number]: Container[];
         };
-        clicksByButton: {
-            [id: number]: {
-                clickCount: number;
-                target: Container;
-                timeStamp: number;
-            };
-        };
         overTargets: Container[] | null;
     }
     > = {};
 
-    protected _globallyInteractiveContainers: Container[] = [];
+    protected _globalMoveContainers: Container[] = [];
+    protected _globalWheelContainers: Container[] = [];
 
     /** The global pointer event. Useful for getting the pointer position without listening to events. */
     public get pointer(): Readonly<InputEvent>
@@ -99,6 +129,7 @@ export class InputSystem implements System
         this._onPointerMove = this._onPointerMove.bind(this);
         this._onPointerUp = this._onPointerUp.bind(this);
         this._onPointerOverOut = this._onPointerOverOut.bind(this);
+        this._onWheel = this._onWheel.bind(this);
 
         // @ts-expect-error - We override the EventsTicker update method to dispatch pointermove events directly
         EventsTicker._update = () =>
@@ -113,6 +144,9 @@ export class InputSystem implements System
                 })
             );
         };
+
+        this.ignoreDynamicEvents = InputSystem.defaultOptions.ignoreDynamicEvents;
+        this.ignoreHitTestCache = InputSystem.defaultOptions.ignoreHitTestCache;
     }
 
     /**
@@ -213,7 +247,7 @@ export class InputSystem implements System
      * @param x - the x coord of the position to map
      * @param y - the y coord of the position to map
      */
-    public mapPositionToPoint(point: PointData, x: number, y: number): void
+    public mapPositionToPoint(point: PointData, x: number, y: number)
     {
         const rect = this.domElement.isConnected
             ? this.domElement.getBoundingClientRect()
@@ -230,6 +264,8 @@ export class InputSystem implements System
 
         point.x = (x - rect.left) * ((this.domElement as any).width / rect.width) * resolutionMultiplier;
         point.y = (y - rect.top) * ((this.domElement as any).height / rect.height) * resolutionMultiplier;
+
+        return point;
     }
 
     protected prerender(): void
@@ -270,15 +306,17 @@ export class InputSystem implements System
         if (InputSystem.interactionDirty)
         {
             this._interactiveCount = 0;
-            this._globallyInteractiveContainers = [];
+            this._globalMoveContainers = [];
+            this._globalWheelContainers = [];
             this._cachedHitTests = {};
             for (let i = 0; i < InputSystem._interactiveContainers.length; i++)
             {
                 const ic = InputSystem._interactiveContainers[i];
 
-                if (this._inSceneGraph(ic) && isRenderable(ic))
+                if (inSceneGraph(ic, this.renderer.lastObjectRendered) && isRenderable(ic))
                 {
-                    if (ic._input._globalMove) this._globallyInteractiveContainers.push(ic);
+                    if (ic._input._globalMove) this._globalMoveContainers.push(ic);
+                    if (ic._input._globalWheel) this._globalWheelContainers.push(ic);
                     this._interactiveCount++;
                     if (!firstInteractive) firstInteractive = ic;
                 }
@@ -297,7 +335,7 @@ export class InputSystem implements System
         if (
             this._interactiveCount === 1
             && !prune(firstInteractive, new Point(x, y), this._interactiveCount, 0, hitTestFn)
-            && this._inSceneGraph(firstInteractive)
+            && inSceneGraph(firstInteractive, this.renderer.lastObjectRendered)
         )
         {
             const hit = hitTestFn(firstInteractive, new Point(x, y)) ? firstInteractive : null;
@@ -354,7 +392,7 @@ export class InputSystem implements System
                     // Only add the current hit-test target to the hit-test chain if the chain
                     // has already started (i.e. the event target has been found) or if the current
                     // target is interactive (i.e. it becomes the event target).
-                    const isInteractive = currentTarget._input?.enable;
+                    const isInteractive = currentTarget._input?.interactive;
 
                     if (hit.length > 0 || isInteractive) hit.push(currentTarget);
 
@@ -363,7 +401,7 @@ export class InputSystem implements System
             }
         }
 
-        const isInteractive = currentTarget._input?.enable;
+        const isInteractive = currentTarget._input?.interactive;
 
         if (isInteractive)
         {
@@ -411,10 +449,10 @@ export class InputSystem implements System
         // // globalThis.addEventListener('pointercancel', this.onPointerCancel, true);
         globalThis.addEventListener('pointerup', this._onPointerUp, true);
 
-        // this.domElement.addEventListener('wheel', this.onWheel, {
-        //     passive: true,
-        //     capture: true,
-        // });
+        this.domElement.addEventListener('wheel', this._onWheel, {
+            passive: true,
+            capture: true,
+        });
 
         this._eventsAdded = true;
     }
@@ -447,8 +485,9 @@ export class InputSystem implements System
         this.domElement.removeEventListener('pointerdown', this._onPointerDown, true);
         this.domElement.removeEventListener('pointerleave', this._onPointerOverOut, true);
         this.domElement.removeEventListener('pointerover', this._onPointerOverOut, true);
-        // globalThis.removeEventListener('pointercancel', this.onPointerCancel, true);
         globalThis.removeEventListener('pointerup', this._onPointerUp, true);
+
+        this.domElement.removeEventListener('wheel', this._onWheel, true);
 
         this.domElement = null;
         this._eventsAdded = false;
@@ -458,7 +497,7 @@ export class InputSystem implements System
     {
         const newEvent = new InputEvent();
 
-        copyData(federatedEvent, newEvent);
+        copyPointerEvent(federatedEvent, newEvent);
 
         newEvent.nativeEvent = federatedEvent.nativeEvent;
         newEvent.originalEvent = federatedEvent;
@@ -486,8 +525,9 @@ export class InputSystem implements System
             }
 
             event.currentTarget = target;
-            if (target._input?.enable)
+            if (target._input?.interactive)
             {
+                target._input[`on${type}`]?.(event);
                 target._input.emit(type, event);
             }
         }
@@ -529,31 +569,72 @@ export class InputSystem implements System
         return currentTarget;
     }
 
+    protected _onWheel(event: WheelEvent): void
+    {
+        const federatedEvent = bootstrapWheelEvent(
+            this._rootWheelEvent,
+            event,
+            this.mapPositionToPoint(tempPoint, event.clientX, event.clientY)
+        );
+        const newEvent = this._createEvent(federatedEvent);
+
+        this._dispatchEvent(newEvent, 'wheel');
+
+        const emit = (container: Container) =>
+        {
+            newEvent.currentTarget = container;
+            if (container._input?.interactive)
+            {
+                container._input?.onglobalwheel?.(newEvent);
+                container._input.emit('globalwheel', newEvent);
+            }
+        };
+
+        for (let i = 0; i < this._globalWheelContainers.length; i++)
+        {
+            const c = this._globalWheelContainers[i];
+
+            emit(c);
+        }
+    }
+
     /**
-     * Event handler for pointer down events on {@link EventSystem#domElement this.domElement}.
+     * Event handler for pointer down events on {@link InputSystem#domElement this.domElement}.
      * @param nativeEvent - The native pointer event.
      */
     private _onPointerDown(nativeEvent: PointerEvent): void
     {
-        const federatedEvent = this._bootstrapEvent(this._rootPointerEvent, nativeEvent);
+        const federatedEvent = bootstrapPointerEvent(
+            this._rootPointerEvent,
+            nativeEvent,
+            this.mapPositionToPoint(tempPoint, nativeEvent.clientX, nativeEvent.clientY)
+        );
         const newEvent = this._createEvent(federatedEvent);
 
         this._dispatchEvent(newEvent, 'pointerdown');
         // TODO: may need to bail out if this._dispatchEvent returns false
         this._trackingData(federatedEvent.pointerId).pressTargetsByButton[federatedEvent.button]
-            = newEvent.composedPath;
+            = newEvent.composedPath();
     }
 
+    /**
+     * Event handler for pointer up events on {@link InputSystem#domElement this.domElement}.
+     * @param nativeEvent - The native pointer event.
+     */
     private _onPointerUp(nativeEvent: PointerEvent): void
     {
-        const federatedEvent = this._bootstrapEvent(this._rootPointerEvent, nativeEvent);
+        const federatedEvent = bootstrapPointerEvent(
+            this._rootPointerEvent,
+            nativeEvent,
+            this.mapPositionToPoint(tempPoint, nativeEvent.clientX, nativeEvent.clientY)
+        );
         const newEvent = this._createEvent(federatedEvent);
 
         this._dispatchEvent(newEvent, 'pointerup');
         const trackingData = this._trackingData(federatedEvent.pointerId);
         const pressedTargets = trackingData.pressTargetsByButton[federatedEvent.button];
         const activePressTarget = this._findMountedTarget(pressedTargets);
-        const composedPath = newEvent.composedPath;
+        const composedPath = newEvent.composedPath();
 
         // fire the click event if the press target is still in the composed path
         // else fire the upoutside event
@@ -561,7 +642,7 @@ export class InputSystem implements System
         {
             const upoutsideEvent = new InputEvent();
 
-            copyData(newEvent, upoutsideEvent);
+            copyPointerEvent(newEvent, upoutsideEvent);
             upoutsideEvent.type = 'pointerupoutside';
             // we need to filter out press targets that are in the path
             const index = pressedTargets.indexOf(activePressTarget);
@@ -577,7 +658,7 @@ export class InputSystem implements System
         {
             const clickEvent = new InputEvent();
 
-            copyData(newEvent, clickEvent);
+            copyPointerEvent(newEvent, clickEvent);
             clickEvent.type = 'pointertap';
             clickEvent.target = newEvent.target;
             clickEvent.path = pressedTargets.slice(0, composedPath.indexOf(activePressTarget) + 1).reverse();
@@ -585,9 +666,17 @@ export class InputSystem implements System
         }
     }
 
+    /**
+     * Event handler for pointer move events on {@link InputSystem#domElement this.domElement}.
+     * @param nativeEvent - The native pointer event.
+     */
     private _onPointerMove(nativeEvent: PointerEvent): void
     {
-        const federatedEvent = this._bootstrapEvent(this._rootPointerEvent, nativeEvent);
+        const federatedEvent = bootstrapPointerEvent(
+            this._rootPointerEvent,
+            nativeEvent,
+            this.mapPositionToPoint(tempPoint, nativeEvent.clientX, nativeEvent.clientY)
+        );
         const newEvent = this._createEvent(federatedEvent);
 
         const trackingData = this._trackingData(federatedEvent.pointerId);
@@ -598,7 +687,7 @@ export class InputSystem implements System
             // pointerout always occurs on the overTarget when the pointer hovers over another element.
             const outEvent = new InputEvent();
 
-            copyData(newEvent, outEvent);
+            copyPointerEvent(newEvent, outEvent);
             outEvent.type = 'pointerout';
             outEvent.path = [outTarget];
             outEvent.target = outTarget;
@@ -611,7 +700,7 @@ export class InputSystem implements System
         {
             const overEvent = new InputEvent();
 
-            copyData(newEvent, overEvent);
+            copyPointerEvent(newEvent, overEvent);
             overEvent.type = 'pointerover';
             overEvent.path = newEvent.path.slice();
             overEvent.target = overEvent.path[0];
@@ -619,7 +708,7 @@ export class InputSystem implements System
             this._dispatchEvent(overEvent, 'pointerover');
         }
 
-        trackingData.overTargets = newEvent.composedPath;
+        trackingData.overTargets = newEvent.composedPath();
 
         this._dispatchEvent(newEvent, 'pointermove');
         this._globalPointerMove(newEvent);
@@ -637,23 +726,32 @@ export class InputSystem implements System
         const emit = (container: Container) =>
         {
             moveEvent.currentTarget = container;
-            if (container._input?.enable)
+            if (container._input?.interactive)
             {
+                container._input?.onglobalpointermove?.(moveEvent);
                 container._input.emit('globalpointermove', moveEvent);
             }
         };
 
-        for (let i = 0; i < this._globallyInteractiveContainers.length; i++)
+        for (let i = 0; i < this._globalMoveContainers.length; i++)
         {
-            const c = this._globallyInteractiveContainers[i];
+            const c = this._globalMoveContainers[i];
 
             emit(c);
         }
     }
 
+    /**
+     * Event handler for pointer over/out events on {@link InputSystem#domElement this.domElement}.
+     * @param nativeEvent - The native pointer event.
+     */
     private _onPointerOverOut(nativeEvent: PointerEvent)
     {
-        const federatedEvent = this._bootstrapEvent(this._rootPointerEvent, nativeEvent);
+        const federatedEvent = bootstrapPointerEvent(
+            this._rootPointerEvent,
+            nativeEvent,
+            this.mapPositionToPoint(tempPoint, nativeEvent.clientX, nativeEvent.clientY)
+        );
         const trackingData = this._trackingData(federatedEvent.pointerId);
 
         if (federatedEvent.type === 'pointerover')
@@ -661,7 +759,7 @@ export class InputSystem implements System
             const newEvent = this._createEvent(federatedEvent);
 
             this._dispatchEvent(newEvent, 'pointerover');
-            trackingData.overTargets = newEvent.composedPath;
+            trackingData.overTargets = newEvent.composedPath();
             if (newEvent.pointerType === 'mouse') this._preferredCursor = newEvent.target?.cursor;
         }
         else if (trackingData.overTargets && trackingData.overTargets.length > 0)
@@ -669,7 +767,7 @@ export class InputSystem implements System
             const outTarget = this._findMountedTarget(trackingData.overTargets);
             const overEvent = new InputEvent();
 
-            copyData(federatedEvent, overEvent);
+            copyPointerEvent(federatedEvent, overEvent);
             overEvent.type = 'pointerout';
             overEvent.path = [outTarget];
             overEvent.target = outTarget;
@@ -683,91 +781,17 @@ export class InputSystem implements System
         this.setCursor(this._preferredCursor);
     }
 
-    private _inSceneGraph(container: Container): boolean
-    {
-        let current = container;
-
-        while (current)
-        {
-            if (!current.parentRenderGroup)
-            {
-                return current.renderGroup === this.renderer.lastObjectRendered.renderGroup;
-            }
-
-            if (current.parentRenderGroup === this.renderer.lastObjectRendered.renderGroup)
-            {
-                return true;
-            }
-            current = current.parentRenderGroup.root;
-        }
-
-        return false;
-    }
-
     private _trackingData(pointerId: number): InputSystem['_trackedData'][0]
     {
         if (!this._trackedData[pointerId])
         {
             this._trackedData[pointerId] = {
                 pressTargetsByButton: {},
-                clicksByButton: {},
                 overTargets: null,
             };
         }
 
         return this._trackedData[pointerId];
-    }
-
-    /**
-     * Normalizes the `nativeEvent` into a federateed {@link InputEvent}.
-     * @param event -
-     * @param nativeEvent -
-     */
-    private _bootstrapEvent(event: InputEvent, nativeEvent: PointerEvent): InputEvent
-    {
-        event.originalEvent = null;
-        event.nativeEvent = nativeEvent;
-
-        event.pointerId = nativeEvent.pointerId;
-        event.width = nativeEvent.width;
-        event.height = nativeEvent.height;
-        event.isPrimary = nativeEvent.isPrimary;
-        event.pointerType = nativeEvent.pointerType;
-        event.pressure = nativeEvent.pressure;
-        event.tangentialPressure = nativeEvent.tangentialPressure;
-        event.tiltX = nativeEvent.tiltX;
-        event.tiltY = nativeEvent.tiltY;
-        event.twist = nativeEvent.twist;
-        event.isTrusted = nativeEvent.isTrusted;
-        event.srcElement = nativeEvent.srcElement;
-        event.timeStamp = performance.now();
-        event.type = nativeEvent.type;
-
-        event.altKey = nativeEvent.altKey;
-        event.button = nativeEvent.button;
-        event.buttons = nativeEvent.buttons;
-        event.client.x = nativeEvent.clientX;
-        event.client.y = nativeEvent.clientY;
-        event.ctrlKey = nativeEvent.ctrlKey;
-        event.metaKey = nativeEvent.metaKey;
-        event.movement.x = nativeEvent.movementX;
-        event.movement.y = nativeEvent.movementY;
-        event.page.x = nativeEvent.pageX;
-        event.page.y = nativeEvent.pageY;
-        event.relatedTarget = null;
-        event.shiftKey = nativeEvent.shiftKey;
-
-        this.mapPositionToPoint(event.screen, nativeEvent.clientX, nativeEvent.clientY);
-        event.global.copyFrom(event.screen); // global = screen for top-level
-        event.offset.copyFrom(event.screen); // EventBoundary recalculates using its rootTarget
-
-        event.isTrusted = nativeEvent.isTrusted;
-        if (event.type === 'pointerleave')
-        {
-            event.type = 'pointerout';
-        }
-
-        return event;
     }
 
     protected static _interactiveContainers: Container[] = [];
