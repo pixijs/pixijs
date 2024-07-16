@@ -1,9 +1,11 @@
 import { Container, UPDATE_BLEND, UPDATE_COLOR, UPDATE_VISIBLE } from '../Container';
+import { clearList } from './clearList';
 import { mixColors } from './mixColors';
 
 import type { RenderGroup } from '../RenderGroup';
 
 const tempContainer = new Container();
+const UPDATE_BLEND_COLOR_VISIBLE = UPDATE_VISIBLE | UPDATE_COLOR | UPDATE_BLEND;
 
 export function updateRenderGroupTransforms(renderGroup: RenderGroup, updateChildRenderGroups = false)
 {
@@ -35,6 +37,8 @@ export function updateRenderGroupTransforms(renderGroup: RenderGroup, updateChil
                 updateTransformAndChildren(child, updateTick, 0);
             }
         }
+
+        clearList(list, index);
 
         childrenAtDepth.index = 0;
     }
@@ -107,7 +111,7 @@ export function updateTransformAndChildren(container: Container, updateTick: num
             parent.relativeGroupTransform,
         );
 
-        if (updateFlags)
+        if (updateFlags & UPDATE_BLEND_COLOR_VISIBLE)
         {
             updateColorBlendVisibility(container, parent, updateFlags);
         }
@@ -118,7 +122,7 @@ export function updateTransformAndChildren(container: Container, updateTick: num
 
         container.relativeGroupTransform.copyFrom(localTransform);
 
-        if (updateFlags)
+        if (updateFlags & UPDATE_BLEND_COLOR_VISIBLE)
         {
             updateColorBlendVisibility(container, tempContainer, updateFlags);
         }
