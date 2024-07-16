@@ -12,3 +12,4 @@
 /// <reference path="../src/scene/text-html/TextHTMLMixins.d.ts" />
 /// <reference path="../src/math-extras/MathExtraMixins.d.ts" />
 /// <reference path="../src/filters/FilterMixins.d.ts" />
+/// <reference path="../src/input/InputMixins.d.ts" />
