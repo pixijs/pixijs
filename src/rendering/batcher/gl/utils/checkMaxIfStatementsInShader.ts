@@ -38,22 +38,29 @@ export function checkMaxIfStatementsInShader(maxIfs: number, gl: GlRenderingCont
 
     const shader = gl.createShader(gl.FRAGMENT_SHADER);
 
-    while (true) // eslint-disable-line no-constant-condition
+    try
     {
-        const fragmentSrc = fragTemplate.replace(/%forloop%/gi, generateIfTestSrc(maxIfs));
-
-        gl.shaderSource(shader, fragmentSrc);
-        gl.compileShader(shader);
-
-        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
+        while (true) // eslint-disable-line no-constant-condition
         {
-            maxIfs = (maxIfs / 2) | 0;
+            const fragmentSrc = fragTemplate.replace(/%forloop%/gi, generateIfTestSrc(maxIfs));
+
+            gl.shaderSource(shader, fragmentSrc);
+            gl.compileShader(shader);
+
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
+            {
+                maxIfs = (maxIfs / 2) | 0;
+            }
+            else
+            {
+                // valid!
+                break;
+            }
         }
-        else
-        {
-            // valid!
-            break;
-        }
+    }
+    finally
+    {
+        gl.deleteShader(shader);
     }
 
     return maxIfs;
