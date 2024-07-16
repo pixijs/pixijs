@@ -7,7 +7,6 @@ import { BigPool } from '../../../utils/pool/PoolGroup';
 import { color32BitToUniform } from '../../graphics/gpu/colorToUniform';
 import { BatchableMesh } from './BatchableMesh';
 
-import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
 import type { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
 import type {
     InstructionPipe,
@@ -35,14 +34,8 @@ export interface MeshAdaptor
     destroy(): void;
 }
 
-export interface MeshInstruction extends Instruction
-{
-    renderPipeId: 'mesh';
-    mesh: Mesh;
-}
-
 // eslint-disable-next-line max-len
-export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<MeshInstruction>
+export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
 {
     /** @ignore */
     public static extension = {
@@ -142,10 +135,7 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<MeshInstructi
         {
             batcher.break(instructionSet);
 
-            instructionSet.add({
-                renderPipeId: 'mesh',
-                mesh
-            } as MeshInstruction);
+            instructionSet.add(mesh);
         }
     }
 
@@ -177,7 +167,7 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<MeshInstructi
         mesh.off('destroyed', this._destroyRenderableBound);
     }
 
-    public execute({ mesh }: MeshInstruction)
+    public execute(mesh: Mesh)
     {
         if (!mesh.isRenderable) return;
 

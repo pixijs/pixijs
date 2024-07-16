@@ -52,7 +52,7 @@ export interface MeshOptions<
      * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
      * Can be shared between multiple Mesh objects.
      */
-    shader?: SHADER;
+    shader?: SHADER | null;
     /** The state of WebGL required to render the mesh. */
     state?: State;
     /** The texture that the Mesh uses. Null for non-MeshMaterial shaders */

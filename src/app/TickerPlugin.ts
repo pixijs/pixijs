@@ -5,7 +5,7 @@ import { Ticker } from '../ticker/Ticker';
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
 /**
- * Application options for the {@link app.TickerPluginOptions}.
+ * Application options for the {@link app.TickerPlugin}.
  * @memberof app
  * @property {boolean} [autoStart=true] - Automatically starts the rendering after the construction.
  * **Note**: Setting this parameter to `false` does NOT stop the shared ticker even if you set
