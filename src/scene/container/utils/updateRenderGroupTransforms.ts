@@ -1,4 +1,5 @@
 import { Container, UPDATE_BLEND, UPDATE_COLOR, UPDATE_VISIBLE } from '../Container';
+import { clearList } from './clearList';
 import { mixColors } from './mixColors';
 
 import type { RenderGroup } from '../RenderGroup';
@@ -36,6 +37,8 @@ export function updateRenderGroupTransforms(renderGroup: RenderGroup, updateChil
                 updateTransformAndChildren(child, updateTick, 0);
             }
         }
+
+        clearList(list, index);
 
         childrenAtDepth.index = 0;
     }
