@@ -226,6 +226,15 @@ export function applyInputEventsCompatibility()
                 return this;
             }
 
+            if (eventType === 'wheel')
+            {
+                this.input._globalWheel = true;
+            }
+            else if (eventType === 'globalmousemove' || eventType === 'globaltouchmove' || eventType === 'globalpointermove')
+            {
+                this.input._globalMove = true;
+            }
+
             return this.input.on(eventMapping[eventType].event as any, fn, context) as any;
         }
 
