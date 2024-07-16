@@ -73,16 +73,15 @@ export class HTMLText extends AbstractText<HTMLTextStyle, HTMLTextStyleOptions> 
     protected _updateBounds()
     {
         const bounds = this._bounds;
-        const padding = this._style.padding;
         const anchor = this._anchor;
 
         const htmlMeasurement = measureHtmlText(this.text, this._style as HTMLTextStyle);
 
         const { width, height } = htmlMeasurement;
 
-        bounds.minX = (-anchor._x * width) - padding;
+        bounds.minX = (-anchor._x * width);
         bounds.maxX = bounds.minX + width;
-        bounds.minY = (-anchor._y * height) - padding;
+        bounds.minY = (-anchor._y * height);
         bounds.maxY = bounds.minY + height;
     }
 }

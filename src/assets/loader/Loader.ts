@@ -176,6 +176,7 @@ export class Loader
         const assetsToLoad = convertToList<ResolvedAsset>(assetsToLoadIn, (item) => ({
             alias: [item],
             src: item,
+            data: {}
         }));
 
         const total = assetsToLoad.length;

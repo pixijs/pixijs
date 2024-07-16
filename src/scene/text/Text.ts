@@ -53,7 +53,6 @@ export class Text
     protected _updateBounds()
     {
         const bounds = this._bounds;
-        const padding = this._style.padding;
         const anchor = this._anchor;
 
         const canvasMeasurement = CanvasTextMetrics.measureText(
@@ -63,9 +62,9 @@ export class Text
 
         const { width, height } = canvasMeasurement;
 
-        bounds.minX = (-anchor._x * width) - padding;
-        bounds.maxX = bounds.minX + width + (padding * 2);
-        bounds.minY = (-anchor._y * height) - padding;
-        bounds.maxY = bounds.minY + height + (padding * 2);
+        bounds.minX = (-anchor._x * width);
+        bounds.maxX = bounds.minX + width;
+        bounds.minY = (-anchor._y * height);
+        bounds.maxY = bounds.minY + height;
     }
 }

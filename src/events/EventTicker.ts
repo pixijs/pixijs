@@ -110,6 +110,8 @@ class EventsTickerClass
         globalThis.document.dispatchEvent(new PointerEvent('pointermove', {
             clientX: rootPointerEvent.clientX,
             clientY: rootPointerEvent.clientY,
+            pointerType: rootPointerEvent.pointerType,
+            pointerId: rootPointerEvent.pointerId,
         }));
     }
 

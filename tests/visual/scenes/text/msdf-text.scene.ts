@@ -8,18 +8,21 @@ export const scene: TestScene = {
     it: 'should render msdf-text correctly',
     create: async (scene: Container) =>
     {
-        await Assets.load('fonts/msdf/comicmsdf.fnt');
+        await Assets.load('fonts/msdf/Roboto-Regular.fnt');
 
         const text = new BitmapText({
-            text: 'M',
+            text: 'MXA',
             style: {
-                fontFamily: 'comicmsdf',
-                fontSize: 150,
+                fontFamily: 'Roboto-Regular',
+                fontSize: 70,
                 fill: 'white',
-            }
+            },
+            rotation: Math.PI / 4,
+            anchor: 0.5,
+            x: 128 / 2,
+            y: 128 / 2,
         });
 
-        text.position.set(-3, -50);
         scene.addChild(text);
     },
 };

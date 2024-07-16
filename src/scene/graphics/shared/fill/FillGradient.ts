@@ -28,7 +28,8 @@ export class FillGradient implements CanvasGradient
 {
     public static defaultTextureSize = 256;
 
-    public readonly uid = uid('fillGradient');
+    /** unique id for this fill gradient */
+    public readonly uid: number = uid('fillGradient');
     public readonly type: GradientType = 'linear';
 
     public x0: number;
@@ -53,7 +54,7 @@ export class FillGradient implements CanvasGradient
 
     public addColorStop(offset: number, color: ColorSource): this
     {
-        this.gradientStops.push({ offset, color: Color.shared.setValue(color).toHex() });
+        this.gradientStops.push({ offset, color: Color.shared.setValue(color).toHexa() });
         this._styleKey = null;
 
         return this;
