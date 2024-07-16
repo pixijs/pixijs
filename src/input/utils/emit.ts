@@ -1,18 +1,23 @@
 import type { Container } from '../../scene/container/Container';
 import type { InputEvent } from '../events/InputEvent';
+import type { WheelInputEvent } from '../events/WheelInputEvent';
 import type { Input } from '../Input';
 
-function emit(container: Container, newEvent: InputEvent, type: Parameters<Input['emit']>[0]): void
+function emit(container: Container, newEvent: InputEvent | WheelInputEvent, type: Parameters<Input['emit']>[0]): void
 {
     newEvent.currentTarget = container;
     if (container._input?.interactive)
     {
-        container._input[`on${type}`]?.(newEvent);
+        container._input[`on${type}`]?.(newEvent as InputEvent);
         container._input.emit(type, newEvent);
     }
 }
 
-export function manuallyEmit(containers: Container[], newEvent: InputEvent, type: Parameters<Input['emit']>[0]): void
+export function manuallyEmit(
+    containers: Container[],
+    newEvent: InputEvent | WheelInputEvent,
+    type: Parameters<Input['emit']>[0]
+): void
 {
     for (let i = 0; i < containers.length; i++)
     {
@@ -20,7 +25,7 @@ export function manuallyEmit(containers: Container[], newEvent: InputEvent, type
     }
 }
 
-export function dispatchEvent(event: InputEvent, type: Parameters<Input['emit']>[0])
+export function dispatchEvent(event: InputEvent | WheelInputEvent, type: Parameters<Input['emit']>[0])
 {
     if (!event.path)
     {
@@ -40,7 +45,7 @@ export function dispatchEvent(event: InputEvent, type: Parameters<Input['emit']>
         event.currentTarget = target;
         if (target._input?.interactive)
         {
-            target._input[`on${type}`]?.(event);
+            target._input[`on${type}`]?.(event as InputEvent);
             target._input.emit(type, event);
         }
     }

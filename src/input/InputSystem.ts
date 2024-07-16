@@ -6,7 +6,7 @@ import { applyInputEventsCompatibility } from './compatibilityLayer';
 import { InputEvent } from './events/InputEvent';
 import { WheelInputEvent } from './events/WheelInputEvent';
 import { bootstrapPointerEvent, bootstrapWheelEvent } from './utils/bootstrap';
-import { copyPointerEvent } from './utils/copy';
+import { copyPointerEvent, copyWheelEvent } from './utils/copy';
 import { dispatchEvent, manuallyEmit } from './utils/emit';
 import { inSceneGraph } from './utils/inScene';
 import { hitTestFn, isRenderable, prune } from './utils/prune';
@@ -548,7 +548,13 @@ export class InputSystem implements System
             event,
             this.mapPositionToPoint(tempPoint, event.clientX, event.clientY)
         );
-        const newEvent = this._createEvent(federatedEvent);
+        const newEvent = new WheelInputEvent();
+
+        copyWheelEvent(federatedEvent, newEvent);
+        newEvent.nativeEvent = federatedEvent.nativeEvent;
+        newEvent.originalEvent = federatedEvent;
+        newEvent.path = this.hitTest(newEvent.global.x, newEvent.global.y, true);
+        newEvent.target = newEvent.path ? newEvent.path[0] : null;
 
         dispatchEvent(newEvent, 'wheel');
         manuallyEmit(this._globalWheelContainers, newEvent, 'globalwheel');

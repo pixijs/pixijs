@@ -28,7 +28,7 @@ export class WheelInputEvent
     public nativeEvent: WheelEvent;
 
     /** The original event that caused this event, if any. */
-    public originalEvent: InputEvent;
+    public originalEvent: WheelInputEvent;
 
     /** Event-specific detail */
     public detail: number;
