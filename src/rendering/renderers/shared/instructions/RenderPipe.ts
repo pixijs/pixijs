@@ -89,7 +89,7 @@ export interface RenderPipe<RENDERABLE = Renderable>
     destroyRenderable: (renderable: RENDERABLE) => void;
     /**
      * This function is called when the renderer is determining if it can use the same instruction set again to
-     * improve performance. If this function returns false, the renderer will rebuild the whole instruction set
+     * improve performance. If this function returns true, the renderer will rebuild the whole instruction set
      * for the scene. This is only called if the scene has not its changed its structure .
      * @param renderable
      * @returns {boolean}

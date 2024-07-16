@@ -1,6 +1,9 @@
+import { Texture } from '../../src/rendering/renderers/shared/texture/Texture';
 import { Container } from '../../src/scene/container/Container';
-
-import type { RenderGroup } from '../../src/scene/container/RenderGroup';
+import { RenderGroup } from '../../src/scene/container/RenderGroup';
+import { Sprite } from '../../src/scene/sprite/Sprite';
+import { BigPool } from '../../src/utils/pool/PoolGroup';
+import { getWebGLRenderer } from '../utils/getRenderer';
 
 // now that we don't actually remove the items, but instead ensure that they are skipped
 // in the update loop, this function will return the new list and index removing items that are intended to be skipped
@@ -592,6 +595,38 @@ describe('RenderGroup', () =>
         // not really an issue as the loop will skip the container2 updates after the first.
         // this is faster to do this than splice the update instances every time something is added or removed
         compareUpdateList([child, container2, container2, container2], container.renderGroup, 1, true);
+    });
+
+    it('should remove references to items in the update children list if no longer used', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+
+        BigPool.getPool(RenderGroup).clear();
+
+        const container = new Container({ isRenderGroup: true });
+
+        const sprite = new Sprite(Texture.WHITE);
+
+        container.addChild(sprite);
+
+        renderer.render(container);
+
+        sprite.texture = Texture.EMPTY;
+
+        expect(container.renderGroup.childrenToUpdate[1].list[0]).toBe(sprite);
+        expect(container.renderGroup.childrenRenderablesToUpdate.list[0]).toBe(sprite);
+
+        container.removeChild(sprite);
+
+        renderer.render(container);
+
+        expect(container.renderGroup.childrenToUpdate[1].list.length).toBe(1);
+        expect(container.renderGroup.childrenToUpdate[1].list[0]).toBe(null);
+
+        expect(container.renderGroup.childrenRenderablesToUpdate.list.length).toBe(1);
+        expect(container.renderGroup.childrenRenderablesToUpdate.list[0]).toBe(null);
+
+        renderer.destroy();
     });
 });
 

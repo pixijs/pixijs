@@ -1,6 +1,7 @@
 import { ExtensionType } from '../../extensions/Extensions';
 import { Matrix } from '../../maths/matrix/Matrix';
 import { buildInstructions, renderableUidCount } from './utils/buildInstructions';
+import { clearList } from './utils/clearList';
 import { collectRenderGroups } from './utils/collectRenderGroups';
 import { executeInstructions } from './utils/executeInstructions';
 import { updateRenderGroupTransforms } from './utils/updateRenderGroupTransforms';
@@ -86,6 +87,10 @@ export class RenderGroupSystem implements System
                 // phase 1 - validate all the renderables
                 validateRenderables(renderGroup, renderPipes);
             }
+            else
+            {
+                clearList(renderGroup.childrenRenderablesToUpdate.list, 0);
+            }
 
             // phase 2 - update all the transforms
             // including updating the renderables..
@@ -96,7 +101,7 @@ export class RenderGroupSystem implements System
                 renderGroup.structureDidChange = false;
 
                 // build the renderables
-                buildInstructions(renderGroup, renderPipes);
+                buildInstructions(renderGroup, renderer);
                 this.hasRenderablesChanged = true;
                 this.hasRenderableCountChanged = renderableUidCount.uidCount !== renderableUidCount.previousUid;
             }
@@ -155,5 +160,7 @@ function updateRenderables(renderGroup: RenderGroup)
             renderGroup.updateRenderable(container);
         }
     }
+
+    clearList(list, index);
 }
 
