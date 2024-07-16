@@ -1,4 +1,4 @@
-import { extensions, ExtensionType } from '../../../../extensions/Extensions';
+import { ExtensionType } from '../../../../extensions/Extensions';
 
 import type { Renderer } from '../../types';
 import type { InstructionSet } from '../instructions/InstructionSet';
@@ -188,5 +188,3 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
         this._managedRenderables.length = 0;
     }
 }
-
-extensions.add(RenderableGCSystem);
