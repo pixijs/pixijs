@@ -39,6 +39,7 @@ function copyMouseEventData(from: InputEvent | WheelInputEvent, to: InputEvent |
  * Copies data from {@code from} into {@code to}.
  * @param from - The event to copy data from.
  * @param to - The event to copy data into.
+ * @ignore
  */
 export function copyPointerEvent(from: InputEvent, to: InputEvent): void
 {
@@ -50,6 +51,7 @@ export function copyPointerEvent(from: InputEvent, to: InputEvent): void
  * Copies data from {@code from} into {@code to}.
  * @param from - The event to copy data from.
  * @param to - The event to copy data into.
+ * @ignore
  */
 export function copyWheelEvent(from: WheelInputEvent, to: WheelInputEvent): void
 {

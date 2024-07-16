@@ -40,6 +40,7 @@ function bootstrapEvent(
  * @param event - The event to bootstrap.
  * @param nativeEvent - The native event to bootstrap from.
  * @param mappedPosition - globally mapped position.
+ * @ignore
  */
 export function bootstrapPointerEvent(event: InputEvent, nativeEvent: PointerEvent, mappedPosition: PointData): InputEvent
 {
@@ -69,6 +70,7 @@ export function bootstrapPointerEvent(event: InputEvent, nativeEvent: PointerEve
  * @param event - The event to bootstrap.
  * @param nativeEvent - The native event to bootstrap from.
  * @param mappedPosition - globally mapped position.
+ * @ignore
  */
 export function bootstrapWheelEvent(
     event: WheelInputEvent,

@@ -13,6 +13,13 @@ function emit(container: Container, newEvent: InputEvent | WheelInputEvent, type
     }
 }
 
+/**
+ * Manually emits an event to the given containers.
+ * @param containers - The containers to emit the event to.
+ * @param newEvent - The event to emit.
+ * @param type - The type of event to emit.
+ * @ignore
+ */
 export function manuallyEmit(
     containers: Container[],
     newEvent: InputEvent | WheelInputEvent,
@@ -25,6 +32,13 @@ export function manuallyEmit(
     }
 }
 
+/**
+ * Dispatches the event to the path of the event.
+ * @param event - The event to dispatch.
+ * @param type - The type of event to dispatch.
+ * @returns `true` if the event was not stopped, `false` otherwise.
+ * @ignore
+ */
 export function dispatchEvent(event: InputEvent | WheelInputEvent, type: Parameters<Input['emit']>[0])
 {
     if (!event.path)

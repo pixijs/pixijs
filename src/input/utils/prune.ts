@@ -7,11 +7,26 @@ import type { Container } from '../../scene/container/Container';
 
 const tempLocalMapping = { x: 0, y: 0 };
 
+/**
+ * Checks if the container is renderable.
+ * @param container - The container to check.
+ * @returns `true` if the container is renderable, `false` otherwise.
+ */
 export function isRenderable(container: Container): boolean
 {
     return !!container || container.visible || container.renderable || container.includeInBuild || container.measurable;
 }
 
+/**
+ * Prunes the container from the hit testing.
+ * @param container - The container to prune.
+ * @param location - The location to test.
+ * @param interactiveListCount - The number of interactive objects.
+ * @param seenCount - The number of objects seen.
+ * @param hitTestFn - The hit test function.
+ * @returns `true` if the container is pruned, `false` otherwise.
+ * @ignore
+ */
 export function prune(
     container: Container,
     location: PointData,

@@ -7,6 +7,10 @@ import type { InputOptions } from './Input';
 
 const mixin: Partial<Container> = {
     _input: null,
+    /**
+     * Input class for the container. To be used with the `pixijs/input` system
+     * @memberof scene.Container#
+     */
     get input(): Input
     {
         if (!this._input)
@@ -32,6 +36,7 @@ const mixin: Partial<Container> = {
 
         this._input = new Input({ target: this as Container, ...value });
     },
+    /** Whether this event target should fire UI events. */
     get interactive()
     {
         return this.input.interactive;
@@ -40,6 +45,7 @@ const mixin: Partial<Container> = {
     {
         this.input.interactive = val;
     },
+    /** Whether this event target has any children that need UI events. This can be used optimize event propagation. */
     get interactiveChildren()
     {
         return this.input.interactiveChildren;

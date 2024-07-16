@@ -5,9 +5,14 @@ import type { Cursor } from '../events/FederatedEventTarget';
 import type { Container } from '../scene/container/Container';
 import type { InputEvent } from './events/InputEvent';
 
+export interface InputConstructor
+{
+    input?: InputOptions;
+}
+
 export interface InputOptions
 {
-    target: Container;
+    target?: any;
     interactive?: boolean;
     interactiveChildren?: boolean;
     globalMove?: boolean;

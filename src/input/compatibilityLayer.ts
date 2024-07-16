@@ -187,6 +187,10 @@ const eventMapping: Record<string, { event: string | null, message: (() => void)
 
 let applied = false;
 
+/**
+ * Applies the compatibility layer for input events that allows for the use of
+ * InputSystem events with the old event names.
+ */
 export function applyInputEventsCompatibility()
 {
     if (applied)
