@@ -52,7 +52,7 @@ export interface MeshOptions<
      * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
      * Can be shared between multiple Mesh objects.
      */
-    shader?: SHADER;
+    shader?: SHADER | null;
     /** The state of WebGL required to render the mesh. */
     state?: State;
     /** The texture that the Mesh uses. Null for non-MeshMaterial shaders */
@@ -89,7 +89,7 @@ export class Mesh<
     /** @ignore */
     public _geometry: GEOMETRY;
     /** @ignore */
-    public _shader?: SHADER;
+    public _shader: SHADER | null = null;
 
     public _roundPixels: 0 | 1 = 0;
 
@@ -133,7 +133,7 @@ export class Mesh<
 
         this.allowChildren = false;
 
-        this.shader = shader;
+        this.shader = shader ?? null;
         this.texture = texture ?? (shader as unknown as TextureShader)?.texture ?? Texture.WHITE;
         this.state = state ?? State.for2d();
 
@@ -171,7 +171,7 @@ export class Mesh<
      * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
      * Can be shared between multiple Mesh objects.
      */
-    set shader(value: SHADER)
+    set shader(value: SHADER | null)
     {
         if (this._shader === value) return;
 
@@ -179,7 +179,7 @@ export class Mesh<
         this.onViewUpdate();
     }
 
-    get shader()
+    get shader(): SHADER | null
     {
         return this._shader;
     }
