@@ -7,6 +7,7 @@ import { InputEvent } from './events/InputEvent';
 import { WheelInputEvent } from './events/WheelInputEvent';
 import { bootstrapPointerEvent, bootstrapWheelEvent } from './utils/bootstrap';
 import { copyPointerEvent } from './utils/copy';
+import { dispatchEvent, manuallyEmit } from './utils/emit';
 import { inSceneGraph } from './utils/inScene';
 import { hitTestFn, isRenderable, prune } from './utils/prune';
 
@@ -15,7 +16,6 @@ import type { PointData } from '../maths/point/PointData';
 import type { System } from '../rendering/renderers/shared/system/System';
 import type { Renderer } from '../rendering/renderers/types';
 import type { Container } from '../scene/container/Container';
-import type { Input } from './Input';
 
 const tempPoint = new Point();
 
@@ -507,34 +507,6 @@ export class InputSystem implements System
         return newEvent;
     }
 
-    private _dispatchEvent(event: InputEvent, type: Parameters<Input['emit']>[0])
-    {
-        if (!event.path)
-        {
-            return false;
-        }
-
-        // loop through the path an emit the event
-        for (let i = 0; i < event.path.length; i++)
-        {
-            const target = event.path[i];
-
-            if (event.propagationStopped)
-            {
-                break;
-            }
-
-            event.currentTarget = target;
-            if (target._input?.interactive)
-            {
-                target._input[`on${type}`]?.(event);
-                target._input.emit(type, event);
-            }
-        }
-
-        return !event.propagationStopped;
-    }
-
     /**
      * Finds the most specific event-target in the given propagation path that is still mounted in the scene graph.
      *
@@ -578,24 +550,8 @@ export class InputSystem implements System
         );
         const newEvent = this._createEvent(federatedEvent);
 
-        this._dispatchEvent(newEvent, 'wheel');
-
-        const emit = (container: Container) =>
-        {
-            newEvent.currentTarget = container;
-            if (container._input?.interactive)
-            {
-                container._input?.onglobalwheel?.(newEvent);
-                container._input.emit('globalwheel', newEvent);
-            }
-        };
-
-        for (let i = 0; i < this._globalWheelContainers.length; i++)
-        {
-            const c = this._globalWheelContainers[i];
-
-            emit(c);
-        }
+        dispatchEvent(newEvent, 'wheel');
+        manuallyEmit(this._globalWheelContainers, newEvent, 'globalwheel');
     }
 
     /**
@@ -611,8 +567,8 @@ export class InputSystem implements System
         );
         const newEvent = this._createEvent(federatedEvent);
 
-        this._dispatchEvent(newEvent, 'pointerdown');
-        // TODO: may need to bail out if this._dispatchEvent returns false
+        dispatchEvent(newEvent, 'pointerdown');
+        // TODO: may need to bail out if dispatchEvent returns false
         this._trackingData(federatedEvent.pointerId).pressTargetsByButton[federatedEvent.button]
             = newEvent.composedPath();
     }
@@ -630,7 +586,7 @@ export class InputSystem implements System
         );
         const newEvent = this._createEvent(federatedEvent);
 
-        this._dispatchEvent(newEvent, 'pointerup');
+        dispatchEvent(newEvent, 'pointerup');
         const trackingData = this._trackingData(federatedEvent.pointerId);
         const pressedTargets = trackingData.pressTargetsByButton[federatedEvent.button];
         const activePressTarget = this._findMountedTarget(pressedTargets);
@@ -651,7 +607,7 @@ export class InputSystem implements System
             const filteredPath = path.filter((target) => !composedPath.includes(target));
 
             upoutsideEvent.path = filteredPath;
-            this._dispatchEvent(upoutsideEvent, 'pointerupoutside');
+            dispatchEvent(upoutsideEvent, 'pointerupoutside');
         }
 
         if (activePressTarget && composedPath.includes(activePressTarget))
@@ -662,7 +618,7 @@ export class InputSystem implements System
             clickEvent.type = 'pointertap';
             clickEvent.target = newEvent.target;
             clickEvent.path = pressedTargets.slice(0, composedPath.indexOf(activePressTarget) + 1).reverse();
-            this._dispatchEvent(clickEvent, 'pointertap');
+            dispatchEvent(clickEvent, 'pointertap');
         }
     }
 
@@ -692,7 +648,7 @@ export class InputSystem implements System
             outEvent.path = [outTarget];
             outEvent.target = outTarget;
 
-            this._dispatchEvent(outEvent, 'pointerout');
+            dispatchEvent(outEvent, 'pointerout');
         }
 
         // Then pointerover
@@ -705,13 +661,13 @@ export class InputSystem implements System
             overEvent.path = newEvent.path.slice();
             overEvent.target = overEvent.path[0];
 
-            this._dispatchEvent(overEvent, 'pointerover');
+            dispatchEvent(overEvent, 'pointerover');
         }
 
         trackingData.overTargets = newEvent.composedPath();
 
-        this._dispatchEvent(newEvent, 'pointermove');
-        this._globalPointerMove(newEvent);
+        dispatchEvent(newEvent, 'pointermove');
+        manuallyEmit(this._globalMoveContainers, newEvent, 'pointermove');
 
         if (newEvent.pointerType === 'mouse')
         {
@@ -719,26 +675,6 @@ export class InputSystem implements System
         }
 
         this.setCursor(this._preferredCursor);
-    }
-
-    private _globalPointerMove(moveEvent: InputEvent): void
-    {
-        const emit = (container: Container) =>
-        {
-            moveEvent.currentTarget = container;
-            if (container._input?.interactive)
-            {
-                container._input?.onglobalpointermove?.(moveEvent);
-                container._input.emit('globalpointermove', moveEvent);
-            }
-        };
-
-        for (let i = 0; i < this._globalMoveContainers.length; i++)
-        {
-            const c = this._globalMoveContainers[i];
-
-            emit(c);
-        }
     }
 
     /**
@@ -758,7 +694,7 @@ export class InputSystem implements System
         {
             const newEvent = this._createEvent(federatedEvent);
 
-            this._dispatchEvent(newEvent, 'pointerover');
+            dispatchEvent(newEvent, 'pointerover');
             trackingData.overTargets = newEvent.composedPath();
             if (newEvent.pointerType === 'mouse') this._preferredCursor = newEvent.target?.cursor;
         }
@@ -772,7 +708,7 @@ export class InputSystem implements System
             overEvent.path = [outTarget];
             overEvent.target = outTarget;
 
-            this._dispatchEvent(overEvent, 'pointerout');
+            dispatchEvent(overEvent, 'pointerout');
 
             trackingData.overTargets = null;
             if (federatedEvent.pointerType === 'mouse') this._preferredCursor = federatedEvent.target?.cursor;
