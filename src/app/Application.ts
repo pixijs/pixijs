@@ -111,7 +111,7 @@ export class Application<R extends Renderer = Renderer>
 
     /**
      * WebGL renderer if available, otherwise CanvasRenderer.
-     * @member {Renderer}
+     * @member {rendering.Renderer}
      */
     public renderer: R;
 

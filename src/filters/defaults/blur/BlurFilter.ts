@@ -5,7 +5,6 @@ import { Filter } from '../../Filter';
 import { BlurFilterPass } from './BlurFilterPass';
 
 import type { RenderSurface } from '../../../rendering/renderers/shared/renderTarget/RenderTargetSystem';
-import type { BLEND_MODES } from '../../../rendering/renderers/shared/state/const';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { FilterOptions } from '../../Filter';
 import type { FilterSystem } from '../../FilterSystem';
@@ -63,7 +62,7 @@ export class BlurFilter extends Filter
      */
     constructor(options?: BlurFilterOptions);
     /** @deprecated since 8.0.0 */
-    constructor(strength?: number, quality?: number, resolution?: number, kernelSize?: number);
+    constructor(strength?: number, quality?: number, resolution?: number | null, kernelSize?: number);
     constructor(...args: [BlurFilterOptions?] | [number?, number?, number?, number?])
     {
         let options = args[0] ?? {};
@@ -78,9 +77,9 @@ export class BlurFilter extends Filter
 
             options = { strength: options };
 
-            if (args[1])options.quality = args[1];
-            if (args[2])options.resolution = args[2];
-            if (args[3])options.kernelSize = args[3];
+            if (args[1] !== undefined)options.quality = args[1];
+            if (args[2] !== undefined)options.resolution = args[2] || 'inherit';
+            if (args[3] !== undefined)options.kernelSize = args[3];
         }
 
         options = { ...BlurFilterPass.defaultOptions, ...options };
@@ -123,17 +122,21 @@ export class BlurFilter extends Filter
         {
             const tempTexture = TexturePool.getSameSizeTexture(input);
 
+            this.blurXFilter.blendMode = 'normal';
             this.blurXFilter.apply(filterManager, input, tempTexture, true);
+            this.blurYFilter.blendMode = this.blendMode;
             this.blurYFilter.apply(filterManager, tempTexture, output, clearMode);
 
             TexturePool.returnTexture(tempTexture);
         }
         else if (yStrength)
         {
+            this.blurYFilter.blendMode = this.blendMode;
             this.blurYFilter.apply(filterManager, input, output, clearMode);
         }
         else
         {
+            this.blurXFilter.blendMode = this.blendMode;
             this.blurXFilter.apply(filterManager, input, output, clearMode);
         }
     }
@@ -207,20 +210,6 @@ export class BlurFilter extends Filter
     {
         this.blurYFilter.blur = value;
         this.updatePadding();
-    }
-
-    /**
-     * Sets the blendmode of the filter
-     * @default "normal"
-     */
-    get blendMode(): BLEND_MODES
-    {
-        return this.blurYFilter.blendMode;
-    }
-
-    set blendMode(value: BLEND_MODES)
-    {
-        this.blurYFilter.blendMode = value;
     }
 
     /**

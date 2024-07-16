@@ -62,6 +62,30 @@ describe('Culler', () =>
         expect(child.culled).toBe(false);
     });
 
+    it('should set culled to false if object becomes non-cullable', () =>
+    {
+        const child = new Sprite(texture);
+
+        child.x = 100;
+        child.y = 100;
+        child.width = 10;
+        child.height = 10;
+        child.cullable = true;
+        container.addChild(child);
+
+        Culler.shared.cull(container, view, false);
+
+        expect(child.culled).toBe(true);
+
+        child.x = 0;
+        child.y = 0;
+        child.cullable = false;
+
+        Culler.shared.cull(container, view, false);
+
+        expect(child.culled).toBe(false);
+    });
+
     it('noncullable container should always be rendered even if bounds do not intersect the frame', () =>
     {
         const graphics = container.addChild(new Graphics().rect(0, 0, 10, 10).fill());
