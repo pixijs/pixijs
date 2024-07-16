@@ -93,6 +93,9 @@ export class Mesh<
 
     public _roundPixels: 0 | 1 = 0;
 
+    public _lastUsed = 0;
+    public _lastInstructionTick = -1;
+
     /**
      * @param {scene.MeshOptions} options - options for the mesh instance
      */

@@ -83,7 +83,7 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         collectAllRenderables(
             maskContainer,
             instructionSet,
-            renderer.renderPipes,
+            renderer,
         );
 
         maskContainer.includeInBuild = false;
