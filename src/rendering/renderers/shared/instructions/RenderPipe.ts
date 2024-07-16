@@ -79,24 +79,22 @@ export interface RenderPipe<RENDERABLE = Renderable>
      * This is only called in the render loop if the instructions set is being reused
      * from the last frame. Otherwise addRenderable is called.
      * @param renderable - the renderable that needs to be rendered
-     * @param instructionSet - the instruction set currently being built
      */
-    updateRenderable: (renderable: RENDERABLE, instructionSet?: InstructionSet) => void;
+    updateRenderable: (renderable: RENDERABLE) => void;
     /**
      * Called whenever a renderable is destroyed, often the pipes keep a webGL / webGPU specific representation
      * of the renderable that needs to be tidied up when the renderable is destroyed.
      * @param renderable - the renderable that needs to be rendered
-     * @returns
      */
     destroyRenderable: (renderable: RENDERABLE) => void;
     /**
      * This function is called when the renderer is determining if it can use the same instruction set again to
-     * improve performance. If this function returns false, the renderer will rebuild the whole instruction set
+     * improve performance. If this function returns true, the renderer will rebuild the whole instruction set
      * for the scene. This is only called if the scene has not its changed its structure .
      * @param renderable
-     * @returns
+     * @returns {boolean}
      */
-    validateRenderable?: (renderable: RENDERABLE) => boolean;
+    validateRenderable: (renderable: RENDERABLE) => boolean;
 }
 
 /**
@@ -108,9 +106,8 @@ export interface BatchPipe
     /**
      * Add a add a batchable object to the batch.
      * @param renderable - a batchable object that can be added to the batch
-     * @param instructionSet - the instruction set currently being built
      */
-    addToBatch: (renderable: BatchableObject, instructionSet: InstructionSet) => void;
+    addToBatch: (renderable: BatchableObject) => void;
     /**
      * Forces the batch to break. This can happen if for example you need to render everything and then
      * change the render target.

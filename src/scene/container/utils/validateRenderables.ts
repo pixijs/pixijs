@@ -12,6 +12,10 @@ export function validateRenderables(renderGroup: RenderGroup, renderPipes: Rende
     {
         const container = list[i];
 
+        // note to self: there is no need to check if container.parentRenderGroup || !container.renderGroup
+        // exist here, as this function is only called if the structure did NOT change
+        // which means they have to be valid if this function is called
+
         const renderable = container;
         const pipe = renderPipes[renderable.renderPipeId as keyof RenderPipes] as RenderPipe<any>;
 

@@ -106,7 +106,8 @@ export class GraphicsContext extends EventEmitter<{
         fill: null,
     };
 
-    public uid = uid('graphicsContext');
+    /** unique id for this graphics context */
+    public readonly uid: number = uid('graphicsContext');
     public dirty = true;
     public batchMode: BatchMode = 'auto';
     public instructions: GraphicsInstructions[] = [];
