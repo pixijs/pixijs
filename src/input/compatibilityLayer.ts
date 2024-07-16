@@ -173,7 +173,7 @@ const eventMapping: Record<string, { event: string | null, message: (() => void)
         event: 'pointerdown',
         message: warnRemoved.bind(null, 'touchstart', 'pointerdown'),
     },
-    wheel: { event: null, message: '"wheel" is not supported' },
+    wheel: { event: 'globalwheel', message: warnDeprecated.bind(null, 'wheel', 'globalwheel') },
 
     pointermove: { event: 'pointermove', message: null },
     globalpointermove: { event: 'globalpointermove', message: null },

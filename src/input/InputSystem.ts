@@ -49,15 +49,6 @@ export class InputSystem implements System
     };
 
     /**
-     * Should default browser actions automatically be prevented.
-     * Does not apply to pointer events for backwards compatibility
-     * preventDefault on pointer events stops mouse events from firing
-     * Thus, for every pointer event, there will always be either a mouse of touch event alongside it.
-     * @default true
-     */
-    public autoPreventDefault = true;
-
-    /**
      * Dictionary of how different cursor modes are handled. Strings are handled as CSS cursor
      * values, objects are handled as dictionaries of CSS values for {@code domElement},
      * Default CSS cursor values are provided for 'default' and 'pointer' modes.
