@@ -107,6 +107,10 @@ let BATCH_TICK = 0;
  */
 export interface BatcherOptions
 {
+    /** The id of the render pipe. */
+    renderPipeId?: string;
+    /** The number of floats (32-bit) per vertex. */
+    floatsPerVertex?: number;
     /** The size of the vertex buffer. */
     vertexSize?: number;
     /** The size of the index buffer. */
@@ -122,6 +126,8 @@ export interface BatcherOptions
 export class Batcher
 {
     public static defaultOptions: BatcherOptions = {
+        renderPipeId: 'batch',
+        floatsPerVertex: 6,
         vertexSize: 4,
         indexSize: 6,
         maxTextures: getMaxTexturesPerBatch(),
@@ -142,8 +148,8 @@ export class Batcher
     public batchIndex = 0;
     public batches: Batch[] = [];
 
-    // specifics.
-    private readonly _vertexSize: number = 6;
+    private readonly _renderPipeId: string;
+    private readonly _vertexSize: number;
 
     private _elements: BatchableObject[] = [];
 
@@ -157,7 +163,10 @@ export class Batcher
     {
         options = { ...Batcher.defaultOptions, ...options };
 
-        const { vertexSize, indexSize, maxTextures } = options;
+        const { renderPipeId, floatsPerVertex, vertexSize, indexSize, maxTextures } = options;
+
+        this._renderPipeId = renderPipeId;
+        this._vertexSize = floatsPerVertex;
 
         this.attributeBuffer = new ViewableBuffer(vertexSize * this._vertexSize * 4);
 
@@ -358,6 +367,7 @@ export class Batcher
     {
         batch.gpuBindGroup = null;
         batch.bindGroup = null;
+        batch.renderPipeId = this._renderPipeId;
         batch.action = action;
 
         batch.batcher = this;
