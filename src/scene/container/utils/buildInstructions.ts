@@ -1,16 +1,18 @@
 import type { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
 import type { InstructionPipe, RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
-import type { RenderPipes } from '../../../rendering/renderers/types';
+import type { Renderer, RenderPipes } from '../../../rendering/renderers/types';
 import type { Container } from '../Container';
 import type { RenderGroup } from '../RenderGroup';
 
-export function buildInstructions(renderGroup: RenderGroup, renderPipes: RenderPipes)
+export function buildInstructions(renderGroup: RenderGroup, renderer: Renderer)
 {
     const root = renderGroup.root;
     const instructionSet = renderGroup.instructionSet;
 
     instructionSet.reset();
+
+    const renderPipes = renderer.renderPipes as RenderPipes;
 
     // TODO add some events / runners for build start
     renderPipes.batch.buildStart(instructionSet);
@@ -22,7 +24,7 @@ export function buildInstructions(renderGroup: RenderGroup, renderPipes: RenderP
         root.sortChildren();
     }
 
-    collectAllRenderablesAdvanced(root, instructionSet, renderPipes, true);
+    collectAllRenderablesAdvanced(root, instructionSet, renderer, true);
 
     // instructionSet.log();
     // TODO add some events / runners for build end
@@ -35,7 +37,7 @@ export function buildInstructions(renderGroup: RenderGroup, renderPipes: RenderP
 export function collectAllRenderables(
     container: Container,
     instructionSet: InstructionSet,
-    rendererPipes: RenderPipes
+    renderer: Renderer
 ): void
 {
     // if there is 0b01 or 0b10 the return value
@@ -49,22 +51,24 @@ export function collectAllRenderables(
 
     if (container.isSimple)
     {
-        collectAllRenderablesSimple(container, instructionSet, rendererPipes);
+        collectAllRenderablesSimple(container, instructionSet, renderer);
     }
     else
     {
-        collectAllRenderablesAdvanced(container, instructionSet, rendererPipes, false);
+        collectAllRenderablesAdvanced(container, instructionSet, renderer, false);
     }
 }
 
 function collectAllRenderablesSimple(
     container: Container,
     instructionSet: InstructionSet,
-    renderPipes: RenderPipes
+    renderer: Renderer,
 ): void
 {
     if (container.renderPipeId)
     {
+        const { renderPipes, renderableGC } = renderer;
+
         // TODO add blends in
         renderPipes.blendMode.setBlendMode(container as Renderable, container.groupBlendMode, instructionSet);
 
@@ -73,6 +77,8 @@ function collectAllRenderablesSimple(
         const rp = renderPipes as unknown as Record<string, RenderPipe>;
 
         rp[container.renderPipeId].addRenderable(container as Renderable, instructionSet);
+
+        renderableGC.addRenderable(container as Renderable, instructionSet);
     }
 
     if (!container.renderGroup)
@@ -82,7 +88,7 @@ function collectAllRenderablesSimple(
 
         for (let i = 0; i < length; i++)
         {
-            collectAllRenderables(children[i], instructionSet, renderPipes);
+            collectAllRenderables(children[i], instructionSet, renderer);
         }
     }
 }
@@ -90,10 +96,12 @@ function collectAllRenderablesSimple(
 function collectAllRenderablesAdvanced(
     container: Container,
     instructionSet: InstructionSet,
-    renderPipes: RenderPipes,
+    renderer: Renderer,
     isRoot: boolean
 ): void
 {
+    const { renderPipes, renderableGC } = renderer;
+
     if (!isRoot && container.renderGroup)
     {
         renderPipes.renderGroup.addRenderGroup(container.renderGroup, instructionSet);
@@ -119,6 +127,8 @@ function collectAllRenderablesAdvanced(
             const pipe = renderPipes[renderPipeId as keyof RenderPipes]as RenderPipe<any>;
 
             pipe.addRenderable(container, instructionSet);
+
+            renderableGC.addRenderable(container as Renderable, instructionSet);
         }
 
         const children = container.children;
@@ -127,7 +137,7 @@ function collectAllRenderablesAdvanced(
         {
             for (let i = 0; i < children.length; i++)
             {
-                collectAllRenderables(children[i], instructionSet, renderPipes);
+                collectAllRenderables(children[i], instructionSet, renderer);
             }
         }
 

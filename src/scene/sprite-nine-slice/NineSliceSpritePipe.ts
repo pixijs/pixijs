@@ -7,6 +7,7 @@ import type { InstructionSet } from '../../rendering/renderers/shared/instructio
 import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../../rendering/renderers/types';
 import type { PoolItem } from '../../utils/pool/Pool';
+import type { Container } from '../container/Container';
 import type { NineSliceSprite } from './NineSliceSprite';
 
 export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
@@ -23,6 +24,7 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
 
     private readonly _renderer: Renderer;
     private readonly _gpuSpriteHash: Record<number, BatchableMesh> = Object.create(null);
+    private readonly _destroyRenderableBound = this.destroyRenderable.bind(this) as (renderable: Container) => void;
 
     constructor(renderer: Renderer)
     {
@@ -62,12 +64,15 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
 
     public destroyRenderable(sprite: NineSliceSprite)
     {
-        const batchableSprite = this._gpuSpriteHash[sprite.uid];
+        const batchableMesh = this._gpuSpriteHash[sprite.uid];
 
         // this will call reset!
-        BigPool.return(batchableSprite as PoolItem);
+        BigPool.return(batchableMesh.geometry as PoolItem);
+        BigPool.return(batchableMesh as PoolItem);
 
         this._gpuSpriteHash[sprite.uid] = null;
+
+        sprite.off('destroyed', this._destroyRenderableBound);
     }
 
     private _updateBatchableSprite(sprite: NineSliceSprite, batchableSprite: BatchableMesh)
@@ -87,22 +92,19 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
 
     private _initGPUSprite(sprite: NineSliceSprite): BatchableMesh
     {
-        const batchableMesh = new BatchableMesh();
+        const batchableMesh = BigPool.get(BatchableMesh);
 
-        batchableMesh.geometry = new NineSliceGeometry();
-
+        batchableMesh.geometry = BigPool.get(NineSliceGeometry);
         batchableMesh.mesh = sprite;
-
         batchableMesh.texture = sprite._texture;
         batchableMesh.roundPixels = (this._renderer._roundPixels | sprite._roundPixels) as 0 | 1;
+
+        sprite._didSpriteUpdate = true;
 
         this._gpuSpriteHash[sprite.uid] = batchableMesh;
 
         // TODO perhaps manage this outside this pipe? (a bit like how we update / add)
-        sprite.on('destroyed', () =>
-        {
-            this.destroyRenderable(sprite);
-        });
+        sprite.on('destroyed', this._destroyRenderableBound);
 
         return batchableMesh;
     }
