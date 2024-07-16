@@ -8,6 +8,7 @@ import { Sprite } from '../../../scene/sprite/Sprite';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { Texture } from '../../renderers/shared/texture/Texture';
 import { TexturePool } from '../../renderers/shared/texture/TexturePool';
+import { RendererType } from '../../renderers/types';
 
 import type { Container } from '../../../scene/container/Container';
 import type { Effect } from '../../../scene/container/Effect';
@@ -30,7 +31,9 @@ class AlphaMaskEffect extends FilterEffect implements PoolItem
         super();
 
         this.filters = [new MaskFilter({
-            sprite: new Sprite(Texture.EMPTY)
+            sprite: new Sprite(Texture.EMPTY),
+            resolution: 'inherit',
+            antialias: 'inherit'
         })];
     }
 
@@ -157,11 +160,12 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
 
                 bounds.ceil();
 
+                const colorTextureSource = renderer.renderTarget.renderTarget.colorTexture.source;
                 const filterTexture = TexturePool.getOptimalTexture(
                     bounds.width,
                     bounds.height,
-                    1,
-                    false
+                    colorTextureSource._resolution,
+                    colorTextureSource.antialias
                 );
 
                 renderer.renderTarget.push(filterTexture, true);
@@ -200,6 +204,12 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
 
             if (renderMask)
             {
+                // WebGPU blit's automatically, but WebGL does not!
+                if (renderer.type === RendererType.WEBGL)
+                {
+                    renderer.renderTarget.finishRenderPass();
+                }
+
                 renderer.renderTarget.pop();
                 renderer.globalUniforms.pop();
             }
