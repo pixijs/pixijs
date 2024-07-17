@@ -195,7 +195,7 @@ export class GlBufferSystem implements System
             gl.deleteBuffer(glBuffer.buffer);
         }
 
-        this._gpuBuffers[buffer.uid] = null;
+        delete this._gpuBuffers[buffer.uid];
     }
 
     /**

@@ -221,7 +221,7 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
 
         context.off('destroy', this.onGraphicsContextDestroy, this);
 
-        this._gpuContextHash[context.uid] = null;
+        delete this._gpuContextHash[context.uid];
     }
 
     private _cleanGraphicsContextData(context: GraphicsContext)
@@ -235,7 +235,7 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
                 BigPool.return(this.getContextRenderData(context) as PoolItem);
 
                 // we will rebuild this...
-                this._graphicsDataContextHash[context.uid] = null;
+                delete this._graphicsDataContextHash[context.uid];
             }
         }
 

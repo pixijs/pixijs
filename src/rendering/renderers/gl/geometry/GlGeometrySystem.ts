@@ -303,7 +303,7 @@ export class GlGeometrySystem implements System
                 }
             }
 
-            this._geometryVaoHash[geometry.uid] = null;
+            delete this._geometryVaoHash[geometry.uid];
         }
     }
 

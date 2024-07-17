@@ -138,7 +138,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
         if (gpuTexture)
         {
-            this._gpuSources[source.uid] = null;
+            delete this._gpuSources[source.uid];
 
             gpuTexture.destroy();
         }
@@ -179,8 +179,8 @@ export class GpuTextureSystem implements System, CanvasGenerator
         }
         else if (gpuTexture.width !== source.pixelWidth || gpuTexture.height !== source.pixelHeight)
         {
-            this._textureViewHash[source.uid] = null;
-            this._bindGroupHash[source.uid] = null;
+            delete this._textureViewHash[source.uid];
+            delete this._bindGroupHash[source.uid];
 
             this.onSourceUnload(source);
             this.initSource(source);

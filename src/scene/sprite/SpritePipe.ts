@@ -69,7 +69,7 @@ export class SpritePipe implements RenderPipe<Sprite>
         // this will call reset!
         BigPool.return(batchableSprite as PoolItem);
 
-        this._gpuSpriteHash[sprite.uid] = null;
+        delete this._gpuSpriteHash[sprite.uid];
 
         sprite.off('destroyed', this._destroyRenderableBound);
     }

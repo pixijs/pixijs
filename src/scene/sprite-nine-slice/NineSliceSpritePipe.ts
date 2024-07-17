@@ -70,7 +70,7 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
         BigPool.return(batchableMesh.geometry as PoolItem);
         BigPool.return(batchableMesh as PoolItem);
 
-        this._gpuSpriteHash[sprite.uid] = null;
+        delete this._gpuSpriteHash[sprite.uid];
 
         sprite.off('destroyed', this._destroyRenderableBound);
     }

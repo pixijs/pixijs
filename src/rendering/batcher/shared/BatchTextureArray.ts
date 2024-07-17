@@ -29,7 +29,7 @@ export class BatchTextureArray
             const t = this.textures[i];
 
             this.textures[i] = null;
-            this.ids[t.uid] = null;
+            delete this.ids[t.uid];
         }
 
         this.count = 0;

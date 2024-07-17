@@ -135,7 +135,7 @@ export class GpuBufferSystem implements System
         buffer.off('change', this.onBufferChange, this);
         buffer.off('destroy', this.onBufferDestroy, this);
 
-        this._gpuBuffers[buffer.uid] = null;
+        delete this._gpuBuffers[buffer.uid];
     }
 }
 

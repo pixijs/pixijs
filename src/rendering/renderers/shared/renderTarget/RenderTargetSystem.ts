@@ -508,7 +508,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
 
                 if (gpuRenderTarget)
                 {
-                    this._gpuRenderTargetHash[renderTarget.uid] = null;
+                    delete this._gpuRenderTargetHash[renderTarget.uid];
                     this.adaptor.destroyGpuRenderTarget(gpuRenderTarget);
                 }
             });

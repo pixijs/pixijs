@@ -263,7 +263,7 @@ export class GlTextureSystem implements System, CanvasGenerator
         if (!glTexture) return;
 
         this.unbind(source);
-        this._glTextures[source.uid] = null;
+        delete this._glTextures[source.uid];
 
         this._gl.deleteTexture(glTexture.texture);
     }
