@@ -235,7 +235,7 @@ export class GraphicsPipe implements RenderPipe<Graphics>
             BigPool.return(batch as PoolItem);
         });
 
-        this._graphicsBatchesHash[graphicsUid] = null;
+        delete this._graphicsBatchesHash[graphicsUid];
     }
 
     public destroy()

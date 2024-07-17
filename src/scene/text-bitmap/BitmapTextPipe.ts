@@ -94,7 +94,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
         }
 
         BigPool.return(this._gpuBitmapText[renderableUid] as PoolItem);
-        this._gpuBitmapText[renderableUid] = null;
+        delete this._gpuBitmapText[renderableUid];
     }
 
     public updateRenderable(bitmapText: BitmapText)

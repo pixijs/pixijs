@@ -126,7 +126,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
 
         BigPool.return(gpuText.batchableSprite);
 
-        this._gpuText[textUid] = null;
+        delete this._gpuText[textUid];
     }
 
     private _updateText(text: Text)

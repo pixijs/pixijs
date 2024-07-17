@@ -121,7 +121,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
 
         BigPool.return(gpuText.batchableSprite);
 
-        this._gpuText[htmlTextUid] = null;
+        delete this._gpuText[htmlTextUid];
     }
 
     private _updateText(htmlText: HTMLText)
