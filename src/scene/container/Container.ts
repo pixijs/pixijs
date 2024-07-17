@@ -586,7 +586,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
     get _didChangeId(): number
     {
-        return (this._didContainerChangeTick % 0xFFF) | ((this._didViewChangeTick % 0xFFF) << 12);
+        return ((this._didContainerChangeTick % 0xFFF) & 0xfff) | (((this._didViewChangeTick % 0xFFF) & 0xfff) << 12);
     }
 
     /**

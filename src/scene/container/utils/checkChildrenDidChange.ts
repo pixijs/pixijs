@@ -1,3 +1,5 @@
+import { getChangeId } from './getChangeId';
+
 import type { Container } from '../Container';
 
 /**
@@ -29,9 +31,7 @@ export function checkChildrenDidChange(
     {
         const child = children[i];
 
-        const changeId = ((child.uid & 255) << 24)
-            | ((child._didViewChangeTick % 0xfff) << 12)
-            | (child._didContainerChangeTick % 0xfff);
+        const changeId = getChangeId(child);
 
         if (previousData.data[previousData.index] !== changeId)
         {

@@ -1,8 +1,23 @@
+import { getChangeId } from '../../src';
 import { Container } from '../../src/scene/container/Container';
 import { checkChildrenDidChange } from '../../src/scene/container/utils/checkChildrenDidChange';
 
 describe('checkChildrenDidChange', () =>
 {
+    it('should register a change past 4096', async () =>
+    {
+        const container = new Container();
+        const changeId = getChangeId(container);
+
+        expect(changeId).toEqual(16777216);
+
+        container._didContainerChangeTick = 4096;
+
+        const newChangeId = getChangeId(container);
+
+        expect(newChangeId).toEqual(16777217);
+    });
+
     it('should correctly manage ids', async () =>
     {
         const container = new Container();
@@ -19,9 +34,7 @@ describe('checkChildrenDidChange', () =>
 
         checkChildrenDidChange(container, previousData);
 
-        let childChange = ((child.uid & 255) << 24)
-            | ((child._didViewChangeTick % 0xfff) << 12)
-            | (child._didContainerChangeTick % 0xfff);
+        let childChange = getChangeId(child);
 
         expect(previousData).toEqual({
             data: [childChange],
@@ -47,9 +60,7 @@ describe('checkChildrenDidChange', () =>
 
         checkChildrenDidChange(container, previousData);
 
-        childChange = ((child.uid & 255) << 24)
-        | ((child._didViewChangeTick % 0xfff) << 12)
-        | (child._didContainerChangeTick % 0xfff);
+        childChange = getChangeId(child);
 
         expect(previousData).toEqual({
             data: [childChange],
