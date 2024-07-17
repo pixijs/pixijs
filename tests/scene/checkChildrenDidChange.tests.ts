@@ -9,13 +9,13 @@ describe('checkChildrenDidChange', () =>
         const container = new Container();
         const changeId = getChangeId(container);
 
-        expect(changeId).toEqual(16777216);
+        expect(changeId).toEqual(0);
 
         container._didContainerChangeTick = 4096;
 
         const newChangeId = getChangeId(container);
 
-        expect(newChangeId).toEqual(0);
+        expect(newChangeId).toEqual(1);
     });
 
     it('should correctly manage ids', async () =>
