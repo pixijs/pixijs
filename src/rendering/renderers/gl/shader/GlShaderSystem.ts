@@ -210,7 +210,7 @@ export class GlShaderSystem implements ShaderSystem
             const programData = this._programDataHash[key];
 
             programData.destroy();
-            this._programDataHash[key] = null;
+            delete this._programDataHash[key];
         }
 
         this._programDataHash = null;

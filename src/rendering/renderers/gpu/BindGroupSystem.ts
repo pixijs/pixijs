@@ -134,7 +134,7 @@ export class BindGroupSystem implements System
     {
         for (const key of Object.keys(this._hash))
         {
-            this._hash[key] = null;
+            delete this._hash[key];
         }
 
         this._hash = null;

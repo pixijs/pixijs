@@ -150,7 +150,7 @@ describe('Text', () =>
             text.destroy();
 
             expect(text.uid in renderer.renderPipes.text['_gpuText']).toBeFalse();
-            expect(renderer.canvasText['_activeTextures'][key]).toBeNull();
+            expect(key in renderer.canvasText['_activeTextures']).toBeFalse();
         });
 
         it('should destroy bitmap text correctly on the pipes and systems', async () =>

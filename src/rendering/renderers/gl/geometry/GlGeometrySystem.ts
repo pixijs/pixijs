@@ -332,7 +332,7 @@ export class GlGeometrySystem implements System
                 }
             }
 
-            this._geometryVaoHash[i] = null;
+            delete this._geometryVaoHash[i];
         }
     }
 

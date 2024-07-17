@@ -64,7 +64,7 @@ export class GpuUniformBatchPipe
     {
         for (const i in this._bindGroupHash)
         {
-            this._bindGroupHash[i] = null;
+            delete this._bindGroupHash[i];
         }
 
         this._batchBuffer.clear();

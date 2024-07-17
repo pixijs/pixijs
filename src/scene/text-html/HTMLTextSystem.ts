@@ -195,7 +195,7 @@ export class HTMLTextSystem implements System
                 });
             }
 
-            this._activeTextures[textKey] = null;
+            delete this._activeTextures[textKey];
         }
     }
 

@@ -188,7 +188,7 @@ export class CanvasTextSystem implements System
             source.uploadMethodId = 'unknown';
             source.alphaMode = 'no-premultiply-alpha';
 
-            this._activeTextures[textKey] = null;
+            delete this._activeTextures[textKey];
         }
     }
 

@@ -112,7 +112,7 @@ class WorkerManagerClass
             this._resolveHash[data.uuid].resolve(data.data);
         }
 
-        this._resolveHash[data.uuid] = null;
+        delete this._resolveHash[data.uuid];
     }
 
     private async _run(id: string, args: any[]): Promise<any>
