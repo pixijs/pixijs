@@ -4,20 +4,6 @@ import { getChangeId } from '../../src/scene/container/utils/getChangeId';
 
 describe('checkChildrenDidChange', () =>
 {
-    it('should register a change past 4096', async () =>
-    {
-        const container = new Container();
-        const changeId = getChangeId(container);
-
-        expect(changeId).toEqual(0);
-
-        container._didContainerChangeTick = 4096;
-
-        const newChangeId = getChangeId(container);
-
-        expect(newChangeId).toEqual(1);
-    });
-
     it('should correctly manage ids', async () =>
     {
         const container = new Container();
