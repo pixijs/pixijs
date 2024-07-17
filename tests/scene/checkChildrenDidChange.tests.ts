@@ -20,7 +20,8 @@ describe('checkChildrenDidChange', () =>
         checkChildrenDidChange(container, previousData);
 
         let childChange = ((child.uid & 255) << 24)
-            | (child._didChangeId & 16777215);
+            | ((child._didViewChangeTick % 0xfff) << 12)
+            | (child._didContainerChangeTick % 0xfff);
 
         expect(previousData).toEqual({
             data: [childChange],
@@ -47,7 +48,8 @@ describe('checkChildrenDidChange', () =>
         checkChildrenDidChange(container, previousData);
 
         childChange = ((child.uid & 255) << 24)
-        | (child._didChangeId & 16777215);
+        | ((child._didViewChangeTick % 0xfff) << 12)
+        | (child._didContainerChangeTick % 0xfff);
 
         expect(previousData).toEqual({
             data: [childChange],

@@ -30,7 +30,8 @@ export function checkChildrenDidChange(
         const child = children[i];
 
         const changeId = ((child.uid & 255) << 24)
-            | (child._didChangeId & 16777215);
+            | ((child._didViewChangeTick % 0xfff) << 12)
+            | (child._didContainerChangeTick % 0xfff);
 
         if (previousData.data[previousData.index] !== changeId)
         {

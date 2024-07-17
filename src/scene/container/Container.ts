@@ -561,17 +561,34 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     public boundsArea: Rectangle;
 
     /**
-     * A value that increments each time the container is modified
-     * the first 12 bits represent the container changes (eg transform, alpha, visible etc)
-     * the second 12 bits represent:
-     *      - for view changes (eg texture swap, geometry change etc)
-     *      - containers changes (eg children added, removed etc)
-     *
-     *  view          container
-     * [000000000000][00000000000]
+     * A value that increments each time the containe is modified
+     * eg children added, removed etc
      * @ignore
      */
-    public _didChangeId = 0;
+    public _didContainerChangeTick = 0;
+    /**
+     * A value that increments each time the container view is modified
+     * eg texture swap, geometry change etc
+     * @ignore
+     */
+    public _didViewChangeTick = 0;
+
+    /**
+     * We now use the _didContainerChangeTick and _didViewChangeTick to track changes
+     * @deprecated since 8.2.1
+     * @ignore
+     */
+    set _didChangeId(value: number)
+    {
+        this._didViewChangeTick = (value >> 12) & 0xFFF; // Extract the upper 12 bits
+        this._didContainerChangeTick = value & 0xFFF; // Extract the lower 12 bits
+    }
+
+    get _didChangeId(): number
+    {
+        return (this._didContainerChangeTick % 0xFFF) | ((this._didViewChangeTick % 0xFFF) << 12);
+    }
+
     /**
      * property that tracks if the container transform has changed
      * @ignore
@@ -663,7 +680,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         this.emit('childAdded', child, this, this.children.length - 1);
         child.emit('added', this);
 
-        this._didChangeId += 1 << 12;
+        this._didViewChangeTick++;
 
         if (child._zIndex !== 0)
         {
@@ -698,7 +715,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         if (index > -1)
         {
-            this._didChangeId += 1 << 12;
+            this._didViewChangeTick++;
 
             this.children.splice(index, 1);
 
@@ -732,7 +749,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             }
         }
 
-        this._didChangeId++;
+        this._didContainerChangeTick++;
 
         if (this.didChange) return;
         this.didChange = true;
@@ -1137,7 +1154,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     /** Updates the local transform. */
     public updateLocalTransform(): void
     {
-        const localTransformChangeId = this._didChangeId & 0xFFF;
+        const localTransformChangeId = this._didContainerChangeTick;
 
         if (this._didLocalTransformChangeId === localTransformChangeId) return;
 
