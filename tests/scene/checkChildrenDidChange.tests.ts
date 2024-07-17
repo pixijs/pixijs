@@ -1,6 +1,6 @@
-import { getChangeId } from '../../src';
 import { Container } from '../../src/scene/container/Container';
 import { checkChildrenDidChange } from '../../src/scene/container/utils/checkChildrenDidChange';
+import { getChangeId } from '../../src/scene/container/utils/getChangeId';
 
 describe('checkChildrenDidChange', () =>
 {
