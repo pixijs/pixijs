@@ -41,7 +41,7 @@ describe('Geometry', () =>
 
         geometry.destroy();
 
-        expect(renderer.geometry['_geometryVaoHash'][geometry.uid]).toBeNull();
+        expect(geometry.uid in renderer.geometry['_geometryVaoHash']).toBeFalse();
         expect(buffer.data).not.toBeNull();
     });
 
@@ -59,7 +59,7 @@ describe('Geometry', () =>
 
         geometry.destroy(true);
 
-        expect(renderer.geometry['_geometryVaoHash'][geometry.uid]).toBeNull();
+        expect(geometry.uid in renderer.geometry['_geometryVaoHash']).toBeFalse();
         expect(buffer.data).toBeNull();
     });
 
@@ -85,7 +85,7 @@ describe('Geometry', () =>
 
         renderer.geometry.destroyAll();
 
-        expect(renderer.geometry['_geometryVaoHash'][geometry.uid]).toBeNull();
+        expect(geometry.uid in renderer.geometry['_geometryVaoHash']).toBeFalse();
     });
 
     it('should return bounds of a geometry correctly', () =>

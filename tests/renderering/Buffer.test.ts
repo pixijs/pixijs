@@ -32,7 +32,7 @@ describe('Buffer', () =>
 
         buffer.destroy();
 
-        expect((renderer).buffer['_gpuBuffers'][buffer.uid]).toBeNull();
+        expect(buffer.uid in renderer.buffer['_gpuBuffers']).toBeFalse();
     });
 
     it('should set a cast data correctly', () =>

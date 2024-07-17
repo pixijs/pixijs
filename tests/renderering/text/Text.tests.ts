@@ -149,7 +149,7 @@ describe('Text', () =>
 
             text.destroy();
 
-            expect(renderer.renderPipes.text['_gpuText'][text.uid]).toBeNull();
+            expect(text.uid in renderer.renderPipes.text['_gpuText']).toBeFalse();
             expect(renderer.canvasText['_activeTextures'][key]).toBeNull();
         });
 
@@ -165,11 +165,11 @@ describe('Text', () =>
 
             renderer.render({ container });
 
-            expect(renderer.renderPipes.bitmapText['_gpuBitmapText'][text.uid]).not.toBeNull();
+            expect(text.uid in renderer.renderPipes.bitmapText['_gpuBitmapText']).toBeTrue();
 
             text.destroy();
 
-            expect(renderer.renderPipes.bitmapText['_gpuBitmapText'][text.uid]).toBeNull();
+            expect(text.uid in renderer.renderPipes.bitmapText['_gpuBitmapText']).toBeFalse();
         });
 
         it('should destroy textStyle correctly', () =>

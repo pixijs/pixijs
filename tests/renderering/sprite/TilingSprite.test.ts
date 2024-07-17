@@ -100,7 +100,7 @@ describe('TilingSprite', () =>
 
             sprite.destroy();
 
-            expect(renderer.renderPipes.tilingSprite['_tilingSpriteDataHash'][sprite.uid]).toBeNull();
+            expect(sprite.uid in renderer.renderPipes.tilingSprite['_tilingSpriteDataHash']).toBeFalse();
 
             expect(sprite.texture).toBeNull();
         });

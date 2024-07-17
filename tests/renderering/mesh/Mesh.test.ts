@@ -53,8 +53,8 @@ describe('Mesh', () =>
         expect(mesh.geometry).toBeNull();
         expect(mesh.texture).toBeNull();
 
-        expect(renderer.renderPipes.mesh['_meshDataHash'][mesh.uid]).toBeNull();
-        expect(renderer.renderPipes.mesh['_gpuBatchableMeshHash'][mesh.uid]).toBeNull();
+        expect(mesh.uid in renderer.renderPipes.mesh['_meshDataHash']).toBeFalse();
+        expect(mesh.uid in renderer.renderPipes.mesh['_gpuBatchableMeshHash']).toBeFalse();
 
         expect(gpuMesh.mesh).toBeNull();
     });
@@ -80,8 +80,8 @@ describe('Mesh', () =>
         expect(mesh.geometry).toBeNull();
         expect(mesh.texture).toBeNull();
 
-        expect(renderer.renderPipes.mesh['_meshDataHash'][mesh.uid]).toBeNull();
-        expect(renderer.renderPipes.mesh['_gpuBatchableMeshHash'][mesh.uid]).toBeUndefined();
+        expect(mesh.uid in renderer.renderPipes.mesh['_meshDataHash']).toBeFalse();
+        expect(mesh.uid in renderer.renderPipes.mesh['_gpuBatchableMeshHash']).toBeFalse();
     });
 
     it('should support color tinting', () =>
