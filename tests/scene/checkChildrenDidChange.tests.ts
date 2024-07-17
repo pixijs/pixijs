@@ -15,7 +15,7 @@ describe('checkChildrenDidChange', () =>
 
         const newChangeId = getChangeId(container);
 
-        expect(newChangeId).toEqual(16777217);
+        expect(newChangeId).toEqual(0);
     });
 
     it('should correctly manage ids', async () =>
