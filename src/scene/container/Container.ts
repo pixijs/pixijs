@@ -575,7 +575,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
     /**
      * We now use the _didContainerChangeTick and _didViewChangeTick to track changes
-     * @deprecated since 8.2.1
+     * @deprecated since 8.2.6
      * @ignore
      */
     set _didChangeId(value: number)
