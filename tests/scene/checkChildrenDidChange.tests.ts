@@ -1,6 +1,5 @@
 import { Container } from '../../src/scene/container/Container';
 import { checkChildrenDidChange } from '../../src/scene/container/utils/checkChildrenDidChange';
-import { getChangeId } from '../../src/scene/container/utils/getChangeId';
 
 describe('checkChildrenDidChange', () =>
 {
@@ -20,11 +19,11 @@ describe('checkChildrenDidChange', () =>
 
         checkChildrenDidChange(container, previousData);
 
-        let childChange = getChangeId(child);
+        let childChange = ((child._didViewChangeTick & 0xffff) << 16) | (child._didContainerChangeTick & 0xffff);
 
         expect(previousData).toEqual({
-            data: [childChange],
-            index: 1,
+            data: [child.uid, childChange],
+            index: 2,
             didChange: true,
         });
 
@@ -34,8 +33,8 @@ describe('checkChildrenDidChange', () =>
         checkChildrenDidChange(container, previousData);
 
         expect(previousData).toEqual({
-            data: [childChange],
-            index: 1,
+            data: [child.uid, childChange],
+            index: 2,
             didChange: false,
         });
 
@@ -46,11 +45,11 @@ describe('checkChildrenDidChange', () =>
 
         checkChildrenDidChange(container, previousData);
 
-        childChange = getChangeId(child);
+        childChange = ((child._didViewChangeTick & 0xffff) << 16) | (child._didContainerChangeTick & 0xffff);
 
         expect(previousData).toEqual({
-            data: [childChange],
-            index: 1,
+            data: [child.uid, childChange],
+            index: 2,
             didChange: true,
         });
     });
