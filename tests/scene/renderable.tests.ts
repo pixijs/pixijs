@@ -1,5 +1,5 @@
-import { Sprite } from '../../src';
 import { Container } from '../../src/scene/container/Container';
+import { Sprite } from '../../src/scene/sprite/Sprite';
 import { getWebGLRenderer } from '../utils/getRenderer';
 
 describe('Renderable Containers', () =>
