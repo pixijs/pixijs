@@ -1,3 +1,4 @@
+import { Color } from '../color/Color';
 import { ExtensionType } from '../extensions/Extensions';
 import { Matrix } from '../maths/matrix/Matrix';
 import { Point } from '../maths/point/Point';
@@ -12,6 +13,7 @@ import { getFastGlobalBounds } from '../scene/container/bounds/getFastGlobalBoun
 import { getGlobalRenderableBounds } from '../scene/container/bounds/getRenderableBounds';
 import { warn } from '../utils/logging/warn';
 
+import type { RgbaArray } from '../color/Color';
 import type { WebGLRenderer } from '../rendering/renderers/gl/WebGLRenderer';
 import type { WebGPURenderer } from '../rendering/renderers/gpu/WebGPURenderer';
 import type { Instruction } from '../rendering/renderers/shared/instructions/Instruction';
@@ -23,7 +25,6 @@ import type { Container } from '../scene/container/Container';
 import type { Sprite } from '../scene/sprite/Sprite';
 import type { Filter } from './Filter';
 import type { FilterEffect } from './FilterEffect';
-import { Color, RgbaArray } from '../color';
 
 type FilterAction = 'pushFilter' | 'popFilter';
 
