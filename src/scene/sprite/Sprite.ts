@@ -1,6 +1,7 @@
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { updateQuadBounds } from '../../utils/data/updateQuadBounds';
+import { deprecation } from '../../utils/logging/deprecation';
 import { Container } from '../container/Container';
 
 import type { Size } from '../../maths/misc/Size';
@@ -81,9 +82,9 @@ export class Sprite extends Container implements View
     public _didSpriteUpdate = false;
 
     private readonly _bounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
-    private readonly _sourceBounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
+    private readonly _trimmedBounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
     private _boundsDirty = true;
-    private _sourceBoundsDirty = true;
+    private _trimmedBoundsDirty = true;
 
     public _roundPixels: 0 | 1 = 0;
 
@@ -183,16 +184,30 @@ export class Sprite extends Container implements View
     /**
      * The bounds of the sprite, taking the texture's trim into account.
      * @type {rendering.Bounds}
+     * @deprecated since 8.3.0
      */
     get sourceBounds()
     {
-        if (this._sourceBoundsDirty)
+        // #if _DEBUG
+        deprecation('8.3.0', 'Sprite#sourceBounds is deprecated. Use Sprite#bounds instead.');
+        // #endif
+
+        return this.bounds;
+    }
+
+    /**
+     * The bounds of the sprite, taking the texture's trim into account.
+     * @type {rendering.Bounds}
+     */
+    get trimmedBounds()
+    {
+        if (this._trimmedBoundsDirty)
         {
-            this._updateSourceBounds();
-            this._sourceBoundsDirty = false;
+            this._updateTrimmedBounds();
+            this._trimmedBoundsDirty = false;
         }
 
-        return this._sourceBounds;
+        return this._trimmedBounds;
     }
 
     /**
@@ -201,7 +216,7 @@ export class Sprite extends Container implements View
      */
     public containsPoint(point: PointData)
     {
-        const bounds = this.sourceBounds;
+        const bounds = this.bounds;
 
         if (point.x >= bounds.maxX && point.x <= bounds.minX)
         {
@@ -220,7 +235,7 @@ export class Sprite extends Container implements View
      */
     public addBounds(bounds: Bounds)
     {
-        const _bounds = this._texture.trim ? this.sourceBounds : this.bounds;
+        const _bounds = this.bounds;
 
         bounds.addFrame(_bounds.minX, _bounds.minY, _bounds.maxX, _bounds.maxY);
     }
@@ -230,7 +245,7 @@ export class Sprite extends Container implements View
         // increment from the 12th bit!
         this._didChangeId += 1 << 12;
         this._didSpriteUpdate = true;
-        this._sourceBoundsDirty = this._boundsDirty = true;
+        this._boundsDirty = this._trimmedBoundsDirty = true;
 
         if (this.didViewUpdate) return;
         this.didViewUpdate = true;
@@ -243,25 +258,25 @@ export class Sprite extends Container implements View
         }
     }
 
-    private _updateBounds()
+    private _updateTrimmedBounds()
     {
-        updateQuadBounds(this._bounds, this._anchor, this._texture, 0);
+        updateQuadBounds(this._trimmedBounds, this._anchor, this._texture, 0);
     }
 
-    private _updateSourceBounds()
+    private _updateBounds()
     {
         const anchor = this._anchor;
         const texture = this._texture;
 
-        const sourceBounds = this._sourceBounds;
+        const bounds = this._bounds;
 
         const { width, height } = texture.orig;
 
-        sourceBounds.maxX = -anchor._x * width;
-        sourceBounds.minX = sourceBounds.maxX + width;
+        bounds.maxX = -anchor._x * width;
+        bounds.minX = bounds.maxX + width;
 
-        sourceBounds.maxY = -anchor._y * height;
-        sourceBounds.minY = sourceBounds.maxY + height;
+        bounds.maxY = -anchor._y * height;
+        bounds.minY = bounds.maxY + height;
     }
 
     /**
@@ -286,7 +301,7 @@ export class Sprite extends Container implements View
 
         this._texture = null;
         (this._bounds as null) = null;
-        (this._sourceBounds as null) = null;
+        (this._trimmedBounds as null) = null;
         (this._anchor as null) = null;
     }
 
