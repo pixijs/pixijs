@@ -83,22 +83,6 @@ export class ViewContainer extends Container implements View
         }
     }
 
-    /**
-     * Adds the bounds of this object to the bounds object.
-     * @param bounds - The output bounds object.
-     */
-    public addBounds(bounds: Bounds)
-    {
-        const _bounds = this.bounds;
-
-        bounds.addFrame(
-            _bounds.minX,
-            _bounds.minY,
-            _bounds.maxX,
-            _bounds.maxY,
-        );
-    }
-
     protected updateBounds()
     {
         // override me!
