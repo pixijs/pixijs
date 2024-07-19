@@ -1,7 +1,6 @@
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
-import { Bounds } from '../container/bounds/Bounds';
-import { Container } from '../container/Container';
+import { ViewContainer } from '../container/ViewContainer';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
@@ -83,24 +82,16 @@ export interface TextOptions<
 export abstract class AbstractText<
     TEXT_STYLE extends TextStyle = TextStyle,
     TEXT_STYLE_OPTIONS extends TextStyleOptions = TextStyleOptions,
-> extends Container implements View
+> extends ViewContainer implements View
 {
     public abstract readonly renderPipeId: string;
-    public batched = true;
     public _anchor: ObservablePoint;
 
     public _resolution: number = null;
     public _autoResolution: boolean = true;
 
     public _style: TEXT_STYLE;
-    public _didTextUpdate = true;
-    public _roundPixels: 0 | 1 = 0;
 
-    public _lastUsed = 0;
-    public _lastInstructionTick = -1;
-
-    protected _bounds: Bounds = new Bounds();
-    protected _boundsDirty = true;
     protected _text: string;
     private readonly _styleClass: new (options: TEXT_STYLE_OPTIONS) => TEXT_STYLE;
 
@@ -122,8 +113,6 @@ export abstract class AbstractText<
         this.style = style;
 
         this.resolution = resolution ?? null;
-
-        this.allowChildren = false;
 
         this._anchor = new ObservablePoint(
             {
@@ -165,20 +154,6 @@ export abstract class AbstractText<
     set anchor(value: PointData | number)
     {
         typeof value === 'number' ? this._anchor.set(value) : this._anchor.copyFrom(value);
-    }
-
-    /**
-     *  Whether or not to round the x/y position of the text.
-     * @type {boolean}
-     */
-    get roundPixels()
-    {
-        return !!this._roundPixels;
-    }
-
-    set roundPixels(value: boolean)
-    {
-        this._roundPixels = value ? 1 : 0;
     }
 
     /** Set the copy for the text object. To split a line you can use '\n'. */
@@ -251,21 +226,6 @@ export abstract class AbstractText<
 
         this._style.on('update', this.onViewUpdate, this);
         this.onViewUpdate();
-    }
-
-    /**
-     * The local bounds of the Text.
-     * @type {rendering.Bounds}
-     */
-    get bounds()
-    {
-        if (this._boundsDirty)
-        {
-            this._updateBounds();
-            this._boundsDirty = false;
-        }
-
-        return this._bounds;
     }
 
     /** The width of the sprite, setting this will actually modify the scale to achieve the value set. */
@@ -342,68 +302,10 @@ export abstract class AbstractText<
         }
     }
 
-    /**
-     * Adds the bounds of this text to the bounds object.
-     * @param bounds - The output bounds object.
-     */
-    public addBounds(bounds: Bounds)
-    {
-        const _bounds = this.bounds;
-
-        bounds.addFrame(
-            _bounds.minX,
-            _bounds.minY,
-            _bounds.maxX,
-            _bounds.maxY,
-        );
-    }
-
-    /**
-     * Checks if the text contains the given point.
-     * @param point - The point to check
-     */
-    public containsPoint(point: PointData)
-    {
-        const width = this.bounds.width;
-        const height = this.bounds.height;
-
-        const x1 = -width * this.anchor.x;
-        let y1 = 0;
-
-        if (point.x >= x1 && point.x <= x1 + width)
-        {
-            y1 = -height * this.anchor.y;
-
-            if (point.y >= y1 && point.y <= y1 + height) return true;
-        }
-
-        return false;
-    }
-
-    public onViewUpdate()
-    {
-        this._didChangeId += 1 << 12;
-        this._boundsDirty = true;
-
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
-        this._didTextUpdate = true;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.onChildViewUpdate(this);
-        }
-    }
-
     public _getKey(): string
     {
         return `${this.text}:${this._style.styleKey}:${this._resolution}`;
     }
-
-    protected abstract _updateBounds(): void;
 
     /**
      * Destroys this text renderable and optionally its style texture.

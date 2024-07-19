@@ -1,5 +1,6 @@
+import { Sprite } from '../../src';
 import { Container } from '../../src/scene/container/Container';
-import { DummyView } from './DummyView';
+import { getWebGLRenderer } from '../utils/getRenderer';
 
 describe('Renderable Containers', () =>
 {
@@ -9,9 +10,22 @@ describe('Renderable Containers', () =>
             isRenderGroup: true,
         });
 
-        const child = new DummyView();
+        const child = new Sprite();
 
         container.addChild(child);
+
+        child.onViewUpdate();
+
+        // the update should not be handled here.. as have had a structure rebuild..
+        // and it will be handled inthe instruction generation loop
+        expect(container.renderGroup.childrenRenderablesToUpdate).toEqual({
+            list: [],
+            index: 0,
+        });
+
+        const renderer = await getWebGLRenderer();
+
+        renderer.render(container);
 
         child.onViewUpdate();
 
@@ -19,6 +33,8 @@ describe('Renderable Containers', () =>
             list: [child],
             index: 1,
         });
+
+        renderer.destroy();
     });
 
     it('should register a renderable update only once on the render group', async () =>
@@ -27,11 +43,13 @@ describe('Renderable Containers', () =>
             isRenderGroup: true,
         });
 
-        const child = new DummyView();
+        const child = new Sprite();
 
         container.addChild(child);
 
-        // updateLayerGroupTransforms(container.layerGroup);
+        const renderer = await getWebGLRenderer();
+
+        renderer.render(container);
 
         child.onViewUpdate();
 

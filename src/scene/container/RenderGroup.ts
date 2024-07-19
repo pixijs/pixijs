@@ -200,17 +200,6 @@ export class RenderGroup implements Instruction
         childrenToUpdate.list[childrenToUpdate.index++] = child;
     }
 
-    // SHOULD THIS BE HERE?
-    public updateRenderable(container: Container)
-    {
-        // only update if its visible!
-        if (container.globalDisplayStatus < 0b111) return;
-
-        container.didViewUpdate = false;
-        // actually updates the renderable..
-        this.instructionSet.renderPipes[container.renderPipeId].updateRenderable(container);
-    }
-
     public onChildViewUpdate(child: Container)
     {
         this.childrenRenderablesToUpdate.list[this.childrenRenderablesToUpdate.index++] = child;

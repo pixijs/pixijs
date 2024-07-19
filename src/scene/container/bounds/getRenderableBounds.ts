@@ -21,7 +21,7 @@ export function getGlobalRenderableBounds(renderables: Renderable[], bounds: Bou
         }
 
         bounds.matrix = renderable.worldTransform;
-        renderable.addBounds(bounds);
+        bounds.addBounds(renderable.bounds);
     }
 
     bounds.matrix = tempMatrix;

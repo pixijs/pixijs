@@ -3,12 +3,10 @@ import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { Transform } from '../../utils/misc/Transform';
-import { Container } from '../container/Container';
+import { ViewContainer } from '../container/ViewContainer';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
-import type { View } from '../../rendering/renderers/shared/view/View';
-import type { Bounds, BoundsData } from '../container/bounds/Bounds';
 import type { ContainerOptions } from '../container/Container';
 import type { DestroyOptions } from '../container/destroyTypes';
 
@@ -90,7 +88,7 @@ export interface TilingSpriteOptions extends ContainerOptions
  * @memberof scene
  * @extends scene.Container
  */
-export class TilingSprite extends Container implements View, Instruction
+export class TilingSprite extends ViewContainer implements Instruction
 {
     /**
      * Creates a new tiling sprite.
@@ -131,23 +129,13 @@ export class TilingSprite extends Container implements View, Instruction
     };
 
     public readonly renderPipeId = 'tilingSprite';
-    public readonly canBundle = true;
-    public readonly batched = true;
 
     public _anchor: ObservablePoint;
 
     public _tileTransform: Transform;
     public _texture: Texture;
     public _applyAnchorToTexture: boolean;
-    public _didTilingSpriteUpdate: boolean;
 
-    public _roundPixels: 0 | 1 = 0;
-
-    public _lastUsed = 0;
-    public _lastInstructionTick = -1;
-
-    private _bounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
-    private _boundsDirty = true;
     private _width: number;
     private _height: number;
 
@@ -196,8 +184,6 @@ export class TilingSprite extends Container implements View, Instruction
             label: 'TilingSprite',
             ...rest
         });
-
-        this.allowChildren = false;
 
         this._anchor = new ObservablePoint(
             {
@@ -310,35 +296,6 @@ export class TilingSprite extends Container implements View, Instruction
         return this._tileTransform;
     }
 
-    /**
-     *  Whether or not to round the x/y position of the sprite.
-     * @type {boolean}
-     */
-    get roundPixels()
-    {
-        return !!this._roundPixels;
-    }
-
-    set roundPixels(value: boolean)
-    {
-        this._roundPixels = value ? 1 : 0;
-    }
-
-    /**
-     * The local bounds of the sprite.
-     * @type {rendering.Bounds}
-     */
-    get bounds()
-    {
-        if (this._boundsDirty)
-        {
-            this._updateBounds();
-            this._boundsDirty = false;
-        }
-
-        return this._bounds;
-    }
-
     set texture(value: Texture)
     {
         value ||= Texture.EMPTY;
@@ -385,7 +342,7 @@ export class TilingSprite extends Container implements View, Instruction
         return this._height;
     }
 
-    private _updateBounds()
+    protected updateBounds()
     {
         const bounds = this._bounds;
 
@@ -394,66 +351,11 @@ export class TilingSprite extends Container implements View, Instruction
         const width = this._width;
         const height = this._height;
 
-        bounds.maxX = -anchor._x * width;
-        bounds.minX = bounds.maxX + width;
+        bounds.minX = -anchor._x * width;
+        bounds.maxX = bounds.minX + width;
 
-        bounds.maxY = -anchor._y * height;
-        bounds.minY = bounds.maxY + height;
-    }
-
-    /**
-     * Adds the bounds of this object to the bounds object.
-     * @param bounds - The output bounds object.
-     */
-    public addBounds(bounds: Bounds)
-    {
-        const _bounds = this.bounds;
-
-        bounds.addFrame(
-            _bounds.minX,
-            _bounds.minY,
-            _bounds.maxX,
-            _bounds.maxY,
-        );
-    }
-
-    /**
-     * Checks if the object contains the given point.
-     * @param point - The point to check
-     */
-    public containsPoint(point: PointData)
-    {
-        const width = this._width;
-        const height = this._height;
-        const x1 = -width * this._anchor._x;
-        let y1 = 0;
-
-        if (point.x >= x1 && point.x <= x1 + width)
-        {
-            y1 = -height * this._anchor._y;
-
-            if (point.y >= y1 && point.y <= y1 + height) return true;
-        }
-
-        return false;
-    }
-
-    public onViewUpdate()
-    {
-        this._boundsDirty = true;
-        this._didTilingSpriteUpdate = true;
-
-        this._didChangeId += 1 << 12;
-
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.onChildViewUpdate(this);
-        }
+        bounds.minY = -anchor._y * height;
+        bounds.maxY = bounds.minY + height;
     }
 
     /**

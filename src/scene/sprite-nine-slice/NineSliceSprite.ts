@@ -1,11 +1,8 @@
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
-import { Container } from '../container/Container';
+import { ViewContainer } from '../container/ViewContainer';
 import { NineSliceGeometry } from './NineSliceGeometry';
 
-import type { Point } from '../../maths/point/Point';
-import type { View } from '../../rendering/renderers/shared/view/View';
-import type { Bounds, BoundsData } from '../container/bounds/Bounds';
 import type { ContainerOptions } from '../container/Container';
 import type { DestroyOptions } from '../container/destroyTypes';
 
@@ -70,7 +67,7 @@ export interface NineSliceSpriteOptions extends ContainerOptions
  * const plane9 = new NineSliceSprite(Texture.from('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
  * @memberof scene
  */
-export class NineSliceSprite extends Container implements View
+export class NineSliceSprite extends ViewContainer
 {
     /** The default options, used to override the initial values of any options passed in the constructor. */
     public static defaultOptions: NineSliceSpriteOptions = {
@@ -78,11 +75,8 @@ export class NineSliceSprite extends Container implements View
         texture: Texture.EMPTY,
     };
 
-    public _roundPixels: 0 | 1 = 0;
     public readonly renderPipeId = 'nineSliceSprite';
     public _texture: Texture;
-
-    public batched = true;
 
     private _leftWidth: number;
     private _topHeight: number;
@@ -90,13 +84,6 @@ export class NineSliceSprite extends Container implements View
     private _bottomHeight: number;
     private _width: number;
     private _height: number;
-
-    public _lastUsed = 0;
-    public _lastInstructionTick = -1;
-
-    public _didSpriteUpdate = true;
-
-    public bounds: BoundsData = { minX: 0, minY: 0, maxX: 0, maxY: 0 };
 
     /**
      * @param {scene.NineSliceSpriteOptions|Texture} options - Options to use
@@ -143,7 +130,6 @@ export class NineSliceSprite extends Container implements View
         this.bounds.maxX = this._width = width ?? texture.width ?? NineSliceGeometry.defaultOptions.width;
         this.bounds.maxY = this._height = height ?? texture.height ?? NineSliceGeometry.defaultOptions.height;
 
-        this.allowChildren = false;
         this.texture = texture ?? NineSliceSprite.defaultOptions.texture;
         this.roundPixels = roundPixels ?? false;
     }
@@ -243,20 +229,6 @@ export class NineSliceSprite extends Container implements View
         this.onViewUpdate();
     }
 
-    /**
-     *  Whether or not to round the x/y position of the sprite.
-     * @type {boolean}
-     */
-    get roundPixels()
-    {
-        return !!this._roundPixels;
-    }
-
-    set roundPixels(value: boolean)
-    {
-        this._roundPixels = value ? 1 : 0;
-    }
-
     /** The original width of the texture */
     get originalWidth()
     {
@@ -267,53 +239,6 @@ export class NineSliceSprite extends Container implements View
     get originalHeight()
     {
         return this._texture.height;
-    }
-
-    public onViewUpdate()
-    {
-        // increment from the 12th bit!
-        this._didChangeId += 1 << 12;
-        this._didSpriteUpdate = true;
-
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.onChildViewUpdate(this);
-        }
-    }
-
-    /**
-     * Adds the bounds of this object to the bounds object.
-     * @param bounds - The output bounds object.
-     */
-    public addBounds(bounds: Bounds)
-    {
-        const _bounds = this.bounds;
-
-        bounds.addFrame(_bounds.minX, _bounds.minY, _bounds.maxX, _bounds.maxY);
-    }
-
-    /**
-     * Checks if the object contains the given point.
-     * @param point - The point to check
-     */
-    public containsPoint(point: Point)
-    {
-        const bounds = this.bounds;
-
-        if (point.x >= bounds.minX && point.x <= bounds.maxX)
-        {
-            if (point.y >= bounds.minY && point.y <= bounds.maxY)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**

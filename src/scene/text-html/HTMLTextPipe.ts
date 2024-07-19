@@ -86,7 +86,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
 
         const batchableSprite = gpuText.batchableSprite;
 
-        if (htmlText._didTextUpdate)
+        if (htmlText.didViewUpdate)
         {
             this._updateText(htmlText);
         }
@@ -99,7 +99,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
         const gpuText = this._getGpuText(htmlText);
         const batchableSprite = gpuText.batchableSprite;
 
-        if (htmlText._didTextUpdate)
+        if (htmlText.didViewUpdate)
         {
             this._updateText(htmlText);
         }
@@ -138,8 +138,6 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
             });
         }
 
-        htmlText._didTextUpdate = false;
-
         const padding = htmlText._style.padding;
 
         updateQuadBounds(batchableSprite.bounds, htmlText._anchor, batchableSprite.texture, padding);
@@ -147,8 +145,6 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
 
     private async _updateGpuText(htmlText: HTMLText)
     {
-        htmlText._didTextUpdate = false;
-
         const gpuText = this._getGpuText(htmlText);
 
         if (gpuText.generatingTexture) return;
