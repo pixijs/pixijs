@@ -23,6 +23,7 @@ import type { Container } from '../scene/container/Container';
 import type { Sprite } from '../scene/sprite/Sprite';
 import type { Filter } from './Filter';
 import type { FilterEffect } from './FilterEffect';
+import { Color, RgbaArray } from '../color';
 
 type FilterAction = 'pushFilter' | 'popFilter';
 
@@ -284,7 +285,11 @@ export class FilterSystem implements System
             antialias,
         );
 
-        renderer.renderTarget.bind(filterData.inputTexture, true);
+        let clearColor = filterData.filterEffect.filterClearColor;
+
+        if (clearColor !== undefined) clearColor = Color.shared.setValue(clearColor).toArray();
+
+        renderer.renderTarget.bind(filterData.inputTexture, true, clearColor as RgbaArray);
         // set the global uniforms to take into account the bounds offset required
 
         renderer.globalUniforms.push({

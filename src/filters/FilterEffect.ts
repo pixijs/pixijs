@@ -1,3 +1,4 @@
+import type { ColorSource } from '../color/Color';
 import type { Rectangle } from '../maths/shapes/Rectangle';
 import type { Effect } from '../scene/container/Effect';
 import type { Filter } from './Filter';
@@ -16,6 +17,8 @@ export class FilterEffect implements Effect
      * applied to it
      */
     public filterArea?: Rectangle;
+    /** The color the filter input texture is cleared with. */
+    public filterClearColor?: ColorSource;
 
     /** the pipe that knows how to handle this effect */
     public pipe = 'filter';

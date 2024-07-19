@@ -1,6 +1,7 @@
 import { FilterEffect } from '../../../filters/FilterEffect';
 import { MaskEffectManager } from '../../../rendering/mask/MaskEffectManager';
 
+import type { ColorSource } from '../../../color/Color';
 import type { Filter } from '../../../filters/Filter';
 import type { Rectangle } from '../../../maths/shapes/Rectangle';
 import type { MaskEffect } from '../../../rendering/mask/MaskEffectManager';
@@ -18,6 +19,7 @@ export interface EffectsMixin extends Required<EffectsMixinConstructor>
     _filterEffect?: FilterEffect,
 
     filterArea?: Rectangle,
+    filterClearColor?: ColorSource,
     effects?: Effect[];
 
     addEffect(effect: Effect): void;
@@ -199,6 +201,22 @@ export const effectsMixin: Partial<Container> = {
     get filterArea(): Rectangle
     {
         return this._filterEffect?.filterArea;
+    },
+
+    set filterClearColor(value: ColorSource)
+    {
+        this._filterEffect ||= new FilterEffect();
+
+        this._filterEffect.filterClearColor = value;
+    },
+
+    /**
+     * The color the filter input texture is cleared with.
+     * @memberof scene.Container#
+     */
+    get filterClearColor(): ColorSource
+    {
+        return this._filterEffect?.filterClearColor;
     },
 
 } as Container;
