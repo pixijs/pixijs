@@ -72,13 +72,13 @@ function collectAllRenderablesSimple(
         // TODO add blends in
         renderPipes.blendMode.setBlendMode(container as Renderable, container.groupBlendMode, instructionSet);
 
-        container.didViewUpdate = false;
-
         const rp = renderPipes as unknown as Record<string, RenderPipe>;
 
         rp[container.renderPipeId].addRenderable(container as Renderable, instructionSet);
 
         renderableGC.addRenderable(container as Renderable, instructionSet);
+
+        container.didViewUpdate = false;
     }
 
     if (!container.renderGroup)
@@ -122,13 +122,14 @@ function collectAllRenderablesAdvanced(
         {
             // TODO add blends in
             renderPipes.blendMode.setBlendMode(container as Renderable, container.groupBlendMode, instructionSet);
-            container.didViewUpdate = false;
 
             const pipe = renderPipes[renderPipeId as keyof RenderPipes]as RenderPipe<any>;
 
             pipe.addRenderable(container, instructionSet);
 
             renderableGC.addRenderable(container as Renderable, instructionSet);
+
+            container.didViewUpdate = false;
         }
 
         const children = container.children;

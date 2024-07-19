@@ -3,15 +3,13 @@ import { Geometry } from '../../../rendering/renderers/shared/geometry/Geometry'
 import { State } from '../../../rendering/renderers/shared/state/State';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
-import { Container } from '../../container/Container';
+import { ViewContainer } from '../../container/ViewContainer';
 import { MeshGeometry } from './MeshGeometry';
 
 import type { PointData } from '../../../maths/point/PointData';
 import type { Topology } from '../../../rendering/renderers/shared/geometry/const';
 import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
-import type { View } from '../../../rendering/renderers/shared/view/View';
-import type { Bounds } from '../../container/bounds/Bounds';
 import type { ContainerOptions } from '../../container/Container';
 import type { DestroyOptions } from '../../container/destroyTypes';
 
@@ -78,7 +76,7 @@ export interface MeshOptions<
 export class Mesh<
     GEOMETRY extends Geometry = MeshGeometry,
     SHADER extends Shader = TextureShader
-> extends Container implements View, Instruction
+> extends ViewContainer implements Instruction
 {
     public readonly renderPipeId = 'mesh';
     public readonly canBundle = true;
@@ -134,8 +132,6 @@ export class Mesh<
             ...rest
         });
 
-        this.allowChildren = false;
-
         this.shader = shader ?? null;
         this.texture = texture ?? (shader as unknown as TextureShader)?.texture ?? Texture.WHITE;
         this.state = state ?? State.for2d();
@@ -144,20 +140,6 @@ export class Mesh<
         this._geometry.on('update', this.onViewUpdate, this);
 
         this.roundPixels = roundPixels ?? false;
-    }
-
-    /**
-     *  Whether or not to round the x/y position of the mesh.
-     * @type {boolean}
-     */
-    get roundPixels()
-    {
-        return !!this._roundPixels;
-    }
-
-    set roundPixels(value: boolean)
-    {
-        this._roundPixels = value ? 1 : 0;
     }
 
     /** Alias for {@link scene.Mesh#shader}. */
@@ -252,21 +234,12 @@ export class Mesh<
     }
 
     /**
-     * The local bounds of the mesh.
+     * Update local bounds of the mesh.
      * @type {rendering.Bounds}
      */
-    get bounds()
+    public updateBounds()
     {
-        return this._geometry.bounds;
-    }
-
-    /**
-     * Adds the bounds of this object to the bounds object.
-     * @param bounds - The output bounds object.
-     */
-    public addBounds(bounds: Bounds)
-    {
-        bounds.addBounds(this.geometry.bounds);
+        this._bounds = this._geometry.bounds;
     }
 
     /**
@@ -336,23 +309,6 @@ export class Mesh<
         return false;
     }
 
-    /** @ignore */
-    public onViewUpdate()
-    {
-        // increment from the 12th bit!
-        this._didChangeId += 1 << 12;
-
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.onChildViewUpdate(this);
-        }
-    }
-
     /**
      * Destroys this sprite renderable and optionally its texture.
      * @param options - Options parameter. A boolean will act as if all options
@@ -380,3 +336,4 @@ export class Mesh<
         this._shader = null;
     }
 }
+

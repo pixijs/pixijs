@@ -3,7 +3,7 @@ import { Container } from '../../src/scene/container/Container';
 
 import type { Point } from '../../src/maths/point/Point';
 import type { View, ViewObserver } from '../../src/rendering/renderers/shared/view/View';
-import type { Bounds, BoundsData } from '../../src/scene/container/bounds/Bounds';
+import type { BoundsData } from '../../src/scene/container/bounds/Bounds';
 import type { ContainerOptions } from '../../src/scene/container/Container';
 
 export interface DummyViewOptions extends ContainerOptions
@@ -42,17 +42,7 @@ export class DummyView extends Container implements View
             maxY: this.size.y + this.size.height,
         };
     }
-    public addBounds = (bounds: Bounds) =>
-    {
-        const dummyBounds = this.bounds;
 
-        bounds.addFrame(
-            dummyBounds.minX,
-            dummyBounds.minY,
-            dummyBounds.maxX,
-            dummyBounds.maxY,
-        );
-    };
     public containsPoint: (point: Point) => boolean;
     public destroy: () => void;
     public size: Rectangle;

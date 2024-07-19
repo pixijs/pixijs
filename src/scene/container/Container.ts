@@ -377,7 +377,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     public didChange = false;
     // same as above, but for the renderable
     /** @private */
-    public didViewUpdate = false;
+    public didViewUpdate = true;
 
     // how deep is the container relative to its render group..
     // unless the element is the root render group - it will be relative to its parent
@@ -648,7 +648,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         child.parent = this;
 
         child.didChange = true;
-        child.didViewUpdate = false;
 
         // TODO - OPtimise this? could check what the parent has set?
         child._updateFlags = 0b1111;

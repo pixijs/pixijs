@@ -141,9 +141,11 @@ export function updateTransformAndChildren(container: Container, updateTick: num
 
         const renderGroup = container.parentRenderGroup;
 
-        if (container.renderPipeId && !renderGroup.structureDidChange)
+        if (container.renderPipeId && !renderGroup.structureDidChange && container.globalDisplayStatus === 0b111)
         {
-            renderGroup.updateRenderable(container);
+            renderGroup.instructionSet.renderPipes[container.renderPipeId].updateRenderable(container);
+
+            container.didViewUpdate = false;
         }
     }
 }

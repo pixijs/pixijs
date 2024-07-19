@@ -50,7 +50,7 @@ export class Text
         super(options, TextStyle);
     }
 
-    protected _updateBounds()
+    protected updateBounds()
     {
         const bounds = this._bounds;
         const anchor = this._anchor;

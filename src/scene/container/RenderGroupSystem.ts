@@ -143,9 +143,11 @@ function updateRenderables(renderGroup: RenderGroup)
     {
         const container = list[i];
 
-        if (container.didViewUpdate)
+        // the item may be visible false, we can skip the up date in that case!
+        if (container.didViewUpdate && container.globalDisplayStatus === 0b111)
         {
-            renderGroup.updateRenderable(container);
+            renderGroup.instructionSet.renderPipes[container.renderPipeId].updateRenderable(container);
+            container.didViewUpdate = false;
         }
     }
 

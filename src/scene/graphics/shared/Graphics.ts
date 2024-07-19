@@ -1,5 +1,5 @@
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
-import { Container } from '../../container/Container';
+import { ViewContainer } from '../../container/ViewContainer';
 import { GraphicsContext } from './GraphicsContext';
 
 import type { ColorSource } from '../../../color/Color';
@@ -7,7 +7,6 @@ import type { Matrix } from '../../../maths/matrix/Matrix';
 import type { PointData } from '../../../maths/point/PointData';
 import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import type { View } from '../../../rendering/renderers/shared/view/View';
 import type { Bounds } from '../../container/bounds/Bounds';
 import type { ContainerOptions } from '../../container/Container';
 import type { ContextDestroyOptions, DestroyOptions } from '../../container/destroyTypes';
@@ -41,18 +40,9 @@ export interface GraphicsOptions extends ContainerOptions
  * @memberof scene
  * @extends scene.Container
  */
-export class Graphics extends Container implements View, Instruction
+export class Graphics extends ViewContainer implements Instruction
 {
-    public readonly canBundle = true;
     public readonly renderPipeId = 'graphics';
-    public batched: boolean;
-
-    public _roundPixels: 0 | 1 = 0;
-
-    public _didGraphicsUpdate: boolean;
-
-    public _lastUsed = 0;
-    public _lastInstructionTick = -1;
 
     private _context: GraphicsContext;
     private readonly _ownedContext: GraphicsContext;
@@ -85,7 +75,6 @@ export class Graphics extends Container implements View, Instruction
 
         this._context.on('update', this.onViewUpdate, this);
 
-        this.allowChildren = false;
         this.roundPixels = roundPixels ?? false;
     }
 
@@ -118,52 +107,12 @@ export class Graphics extends Container implements View, Instruction
     }
 
     /**
-     * Adds the bounds of this object to the bounds object.
-     * @param bounds - The output bounds object.
-     */
-    public addBounds(bounds: Bounds)
-    {
-        bounds.addBounds(this._context.bounds);
-    }
-
-    /**
      * Checks if the object contains the given point.
      * @param point - The point to check
      */
     public containsPoint(point: PointData)
     {
         return this._context.containsPoint(point);
-    }
-
-    /**
-     *  Whether or not to round the x/y position of the graphic.
-     * @type {boolean}
-     */
-    get roundPixels()
-    {
-        return !!this._roundPixels;
-    }
-
-    set roundPixels(value: boolean)
-    {
-        this._roundPixels = value ? 1 : 0;
-    }
-
-    protected onViewUpdate()
-    {
-        // increment from the 12th bit!
-        this._didChangeId += 1 << 12;
-        this._didGraphicsUpdate = true;
-
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.onChildViewUpdate(this);
-        }
     }
 
     /**
