@@ -138,14 +138,15 @@ export class GlobalUniformSystem implements System
 
         const uniforms = uniformGroup.uniforms;
 
-        uniforms.uProjectionMatrix = globalUniformData.projectionMatrix;
+        uniforms.uProjectionMatrix.copyFrom(globalUniformData.projectionMatrix);
+
+        // c and b of the projection matrix are 0
+        uniforms.uProjectionMatrix.tx -= globalUniformData.projectionMatrix.a * globalUniformData.offset.x;
+        uniforms.uProjectionMatrix.ty -= globalUniformData.projectionMatrix.d * globalUniformData.offset.y;
 
         uniforms.uResolution = globalUniformData.resolution;
 
-        uniforms.uWorldTransformMatrix.copyFrom(globalUniformData.worldTransformMatrix);
-
-        uniforms.uWorldTransformMatrix.tx -= globalUniformData.offset.x;
-        uniforms.uWorldTransformMatrix.ty -= globalUniformData.offset.y;
+        uniforms.uWorldTransformMatrix = globalUniformData.worldTransformMatrix;
 
         color32BitToUniform(
             globalUniformData.worldColor,
