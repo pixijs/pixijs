@@ -1,8 +1,8 @@
 import { Bounds } from './bounds/Bounds';
 import { Container } from './Container';
 
-import type { PointData } from '../../maths';
-import type { View } from '../../rendering';
+import type { PointData } from '../../maths/point/PointData';
+import type { View } from '../../rendering/renderers/shared/view/View';
 
 export class ViewContainer extends Container implements View
 {
