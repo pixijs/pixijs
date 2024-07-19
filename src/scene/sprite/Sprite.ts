@@ -218,9 +218,9 @@ export class Sprite extends Container implements View
     {
         const bounds = this.bounds;
 
-        if (point.x >= bounds.maxX && point.x <= bounds.minX)
+        if (point.x >= bounds.minX && point.x <= bounds.maxX)
         {
-            if (point.y >= bounds.maxY && point.y <= bounds.minY)
+            if (point.y >= bounds.minY && point.y <= bounds.maxY)
             {
                 return true;
             }
