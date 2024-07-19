@@ -18,19 +18,19 @@ export function updateQuadBounds(
         const sourceHeight = trim.height;
 
         bounds.minX = (trim.x) - (anchor._x * width) - padding;
-        bounds.maxX = bounds.minX + sourceWidth;
+        bounds.maxX = bounds.minX + sourceWidth + (2 * padding);
 
         bounds.minY = (trim.y) - (anchor._y * height) - padding;
-        bounds.maxY = bounds.minY + sourceHeight;
+        bounds.maxY = bounds.minY + sourceHeight + (2 * padding);
     }
 
     else
     {
         bounds.minX = (-anchor._x * width) - padding;
-        bounds.maxX = bounds.minX + width;
+        bounds.maxX = bounds.minX + width + (2 * padding);
 
         bounds.minY = (-anchor._y * height) - padding;
-        bounds.maxY = bounds.minY + height;
+        bounds.maxY = bounds.minY + height + (2 * padding);
     }
 
     return;
