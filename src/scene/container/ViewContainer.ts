@@ -13,8 +13,6 @@ export class ViewContainer extends Container implements View
     public _roundPixels: 0 | 1 = 0;
     public _lastUsed = 0;
     public _lastInstructionTick = -1;
-    public _didUpdateTickCompare = -1;
-    public _didViewUpdate = false;
 
     protected _bounds: Bounds = new Bounds();
     protected _boundsDirty = true;
