@@ -192,7 +192,6 @@ export const childrenHelperMixin: Partial<Container> = {
 
         child.parent = this;
         child.didChange = true;
-        child.didViewUpdate = false;
         child._updateFlags = 0b1111;
 
         const renderGroup = this.renderGroup || this.parentRenderGroup;
