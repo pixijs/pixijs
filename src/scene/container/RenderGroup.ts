@@ -1,6 +1,7 @@
 import { Matrix } from '../../maths/matrix/Matrix';
 import { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 
+import type { Renderable } from '../../rendering';
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
 import type { Container } from './Container';
 
@@ -30,7 +31,7 @@ export class RenderGroup implements Instruction
     public updateTick = 0;
 
     // these update are renderable changes..
-    public readonly childrenRenderablesToUpdate: { list: Container[]; index: number; } = { list: [], index: 0 };
+    public readonly childrenRenderablesToUpdate: { list: Renderable[]; index: number; } = { list: [], index: 0 };
 
     // other
     public structureDidChange = true;
@@ -200,7 +201,7 @@ export class RenderGroup implements Instruction
         childrenToUpdate.list[childrenToUpdate.index++] = child;
     }
 
-    public onChildViewUpdate(child: Container)
+    public onChildViewUpdate(child: Renderable)
     {
         this.childrenRenderablesToUpdate.list[this.childrenRenderablesToUpdate.index++] = child;
     }

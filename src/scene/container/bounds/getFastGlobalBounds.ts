@@ -66,7 +66,7 @@ export function _getGlobalBoundsRecursive(
     }
     else
     {
-        if (target.renderPipeId)
+        if ((target as Renderable).renderPipeId)
         {
             const viewBounds = (target as Renderable).bounds;
 

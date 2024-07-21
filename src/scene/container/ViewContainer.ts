@@ -14,6 +14,9 @@ export class ViewContainer extends Container implements View
     public _lastUsed = 0;
     public _lastInstructionTick = -1;
 
+    /** @private */
+    public didViewUpdate = true;
+
     protected _bounds: Bounds = new Bounds();
     protected _boundsDirty = true;
 
