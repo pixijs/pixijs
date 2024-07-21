@@ -1,9 +1,9 @@
 import { Rectangle } from '../../src/maths/shapes/Rectangle';
-import { Container } from '../../src/scene/container/Container';
+import { ViewContainer } from '../../src/scene/container/ViewContainer';
 
 import type { Point } from '../../src/maths/point/Point';
 import type { View, ViewObserver } from '../../src/rendering/renderers/shared/view/View';
-import type { BoundsData } from '../../src/scene/container/bounds/Bounds';
+import type { Bounds } from '../../src/scene/container/bounds/Bounds';
 import type { ContainerOptions } from '../../src/scene/container/Container';
 
 export interface DummyViewOptions extends ContainerOptions
@@ -21,7 +21,7 @@ const defaultOptions: DummyViewOptions = {
     height: 100,
 };
 
-export class DummyView extends Container implements View
+export class DummyView extends ViewContainer implements View
 {
     public owner: ViewObserver;
     public uid: number;
@@ -33,14 +33,14 @@ export class DummyView extends Container implements View
     public _lastInstructionTick = -1;
 
     public _onUpdate: () => void;
-    public get bounds(): BoundsData
+    public get bounds(): Bounds
     {
         return {
             minX: this.size.x,
             minY: this.size.y,
             maxX: this.size.x + this.size.width,
             maxY: this.size.y + this.size.height,
-        };
+        } as Bounds;
     }
 
     public containsPoint: (point: Point) => boolean;

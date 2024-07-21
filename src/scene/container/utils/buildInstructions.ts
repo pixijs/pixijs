@@ -65,20 +65,21 @@ function collectAllRenderablesSimple(
     renderer: Renderer,
 ): void
 {
-    if (container.renderPipeId)
+    if ((container as Renderable).renderPipeId)
     {
+        const renderable = container as Renderable;
         const { renderPipes, renderableGC } = renderer;
 
         // TODO add blends in
-        renderPipes.blendMode.setBlendMode(container as Renderable, container.groupBlendMode, instructionSet);
+        renderPipes.blendMode.setBlendMode(renderable, container.groupBlendMode, instructionSet);
 
         const rp = renderPipes as unknown as Record<string, RenderPipe>;
 
-        rp[container.renderPipeId].addRenderable(container as Renderable, instructionSet);
+        rp[renderable.renderPipeId].addRenderable(renderable, instructionSet);
 
-        renderableGC.addRenderable(container as Renderable, instructionSet);
+        renderableGC.addRenderable(renderable, instructionSet);
 
-        container.didViewUpdate = false;
+        renderable.didViewUpdate = false;
     }
 
     if (!container.renderGroup)
@@ -116,20 +117,21 @@ function collectAllRenderablesAdvanced(
             pipe.push(effect, container, instructionSet);
         }
 
-        const renderPipeId = container.renderPipeId;
+        const renderable = container as Renderable;
+        const renderPipeId = renderable.renderPipeId;
 
         if (renderPipeId)
         {
             // TODO add blends in
-            renderPipes.blendMode.setBlendMode(container as Renderable, container.groupBlendMode, instructionSet);
+            renderPipes.blendMode.setBlendMode(renderable, renderable.groupBlendMode, instructionSet);
 
             const pipe = renderPipes[renderPipeId as keyof RenderPipes]as RenderPipe<any>;
 
-            pipe.addRenderable(container, instructionSet);
+            pipe.addRenderable(renderable, instructionSet);
 
-            renderableGC.addRenderable(container as Renderable, instructionSet);
+            renderableGC.addRenderable(renderable, instructionSet);
 
-            container.didViewUpdate = false;
+            renderable.didViewUpdate = false;
         }
 
         const children = container.children;

@@ -376,8 +376,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     /** @private */
     public didChange = false;
     // same as above, but for the renderable
-    /** @private */
-    public didViewUpdate = true;
 
     // how deep is the container relative to its render group..
     // unless the element is the root render group - it will be relative to its parent
@@ -548,8 +546,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * @ignore
      */
     public globalDisplayStatus = 0b111; // 0b11 | 0b10 | 0b01 | 0b00
-
-    public renderPipeId: string;
 
     /**
      * An optional bounds area for this container. Setting this rectangle will stop the renderer

@@ -2,6 +2,7 @@ import { Container, UPDATE_BLEND, UPDATE_COLOR, UPDATE_VISIBLE } from '../Contai
 import { clearList } from './clearList';
 import { mixColors } from './mixColors';
 
+import type { Renderable } from '../../../rendering';
 import type { RenderGroup } from '../RenderGroup';
 
 const tempContainer = new Container();
@@ -141,11 +142,14 @@ export function updateTransformAndChildren(container: Container, updateTick: num
 
         const renderGroup = container.parentRenderGroup;
 
-        if (container.renderPipeId && !renderGroup.structureDidChange && container.globalDisplayStatus === 0b111)
-        {
-            renderGroup.instructionSet.renderPipes[container.renderPipeId].updateRenderable(container);
+        const renderable = container as Renderable;
 
-            container.didViewUpdate = false;
+        if (renderable.renderPipeId
+        && !renderGroup.structureDidChange && container.globalDisplayStatus === 0b111)
+        {
+            renderGroup.instructionSet.renderPipes[renderable.renderPipeId].updateRenderable(container);
+
+            renderable.didViewUpdate = false;
         }
     }
 }

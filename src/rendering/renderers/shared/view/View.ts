@@ -21,6 +21,8 @@ export interface View
      */
     renderPipeId: string;
 
+    didViewUpdate: boolean;
+
     /** this is an int because it is packed directly into an attribute in the shader */
     _roundPixels: 0 | 1;
 
