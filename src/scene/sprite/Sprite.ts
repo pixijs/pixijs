@@ -3,10 +3,10 @@ import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { updateQuadBounds } from '../../utils/data/updateQuadBounds';
 import { ViewContainer } from '../container/ViewContainer';
 
-import type { BoundsData } from '../../bundle.browser';
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
 import type { TextureSourceLike } from '../../rendering/renderers/shared/texture/Texture';
+import type { BoundsData } from '../container/bounds/Bounds';
 import type { ContainerOptions } from '../container/Container';
 import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
@@ -49,6 +49,7 @@ export interface SpriteOptions extends ContainerOptions
  * @memberof scene
  * @extends scene.Container
  */
+
 export class Sprite extends ViewContainer
 {
     private _width: number;
