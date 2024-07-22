@@ -7,12 +7,13 @@ export function updateQuadBounds(
     anchor: ObservablePoint,
     texture: Texture,
     padding: number,
+    withTrim: boolean
 )
 {
     const { width, height } = texture.orig;
     const trim = texture.trim;
 
-    if (trim)
+    if (trim && withTrim)
     {
         const sourceWidth = trim.width;
         const sourceHeight = trim.height;

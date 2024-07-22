@@ -1,8 +1,8 @@
 import { Matrix } from '../../maths/matrix/Matrix';
 import { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 
-import type { Renderable } from '../../rendering';
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
+import type { Renderable } from '../../rendering/renderers/shared/Renderable';
 import type { Container } from './Container';
 
 /**

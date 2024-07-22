@@ -78,7 +78,7 @@ export class SpritePipe implements RenderPipe<Sprite>
 
     private _updateBatchableSprite(sprite: Sprite, batchableSprite: BatchableSprite)
     {
-        batchableSprite.bounds = sprite.bounds;
+        batchableSprite.bounds = sprite.renderBounds;
         batchableSprite.texture = sprite._texture;
     }
 
