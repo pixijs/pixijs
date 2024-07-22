@@ -2,7 +2,7 @@ import { Container, UPDATE_BLEND, UPDATE_COLOR, UPDATE_VISIBLE } from '../Contai
 import { clearList } from './clearList';
 import { mixColors } from './mixColors';
 
-import type { Renderable } from '../../../rendering';
+import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
 import type { RenderGroup } from '../RenderGroup';
 
 const tempContainer = new Container();
