@@ -140,7 +140,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
 
         const padding = htmlText._style.padding;
 
-        updateQuadBounds(batchableSprite.bounds, htmlText._anchor, batchableSprite.texture, padding);
+        updateQuadBounds(batchableSprite.bounds, htmlText._anchor, batchableSprite.texture, padding, true);
     }
 
     private async _updateGpuText(htmlText: HTMLText)
@@ -177,7 +177,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
 
         const padding = htmlText._style.padding;
 
-        updateQuadBounds(batchableSprite.bounds, htmlText._anchor, batchableSprite.texture, padding);
+        updateQuadBounds(batchableSprite.bounds, htmlText._anchor, batchableSprite.texture, padding, true);
     }
 
     private _getGpuText(htmlText: HTMLText)

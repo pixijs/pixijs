@@ -56,16 +56,12 @@ export class ViewContainer extends Container implements View
     public containsPoint(point: PointData)
     {
         const bounds = this.bounds;
+        const { x, y } = point;
 
-        if (point.x >= bounds.minX && point.x <= bounds.maxX)
-        {
-            if (point.y >= bounds.minY && point.y <= bounds.maxY)
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return (x >= bounds.minX
+            && x <= bounds.maxX
+            && y >= bounds.minY
+            && y <= bounds.maxY);
     }
 
     public onViewUpdate()

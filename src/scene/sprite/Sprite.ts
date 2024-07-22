@@ -3,6 +3,7 @@ import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { updateQuadBounds } from '../../utils/data/updateQuadBounds';
 import { ViewContainer } from '../container/ViewContainer';
 
+import type { BoundsData } from '../../bundle.browser';
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
 import type { TextureSourceLike } from '../../rendering/renderers/shared/texture/Texture';
@@ -76,6 +77,8 @@ export class Sprite extends ViewContainer
     // sprite specific..
     public _texture: Texture;
 
+    public readonly _renderBounds: BoundsData = { maxX: 0, maxY: 0, minX: 0, minY: 0 };
+    private _renderBoundsDirty = true;
     /**
      * @param options - The options for creating the sprite.
      */
@@ -121,6 +124,17 @@ export class Sprite extends ViewContainer
         if (height !== undefined) this.height = height;
     }
 
+    get renderBounds(): BoundsData
+    {
+        if (!this._renderBoundsDirty) return this._renderBounds;
+
+        this._renderBoundsDirty = false;
+
+        updateQuadBounds(this._renderBounds, this._anchor, this._texture, 0, true);
+
+        return this._renderBounds;
+    }
+
     set texture(value: Texture)
     {
         value ||= Texture.EMPTY;
@@ -159,8 +173,22 @@ export class Sprite extends ViewContainer
      */
     public updateBounds()
     {
-        updateQuadBounds(this._bounds, this._anchor, this._texture, 0);
+        updateQuadBounds(this._bounds, this._anchor, this._texture, 0, false);
     }
+
+    // public containsPoint(point: PointData): boolean
+    // {
+    //     const sourceBounds = this.sourceBounds ;
+
+    //     updateQuadBounds(this.sourceBounds, this._anchor, this._texture, 0, false);
+
+    //     const { x, y } = point;
+
+    //     return (x >= sourceBounds.minX
+    //         && x <= sourceBounds.maxX
+    //         && y >= sourceBounds.minY
+    //         && y <= sourceBounds.maxY);
+    // }
 
     /**
      * Destroys this sprite renderable and optionally its texture.
@@ -288,5 +316,11 @@ export class Sprite extends ViewContainer
         {
             this._setHeight(convertedHeight, this._texture.orig.height);
         }
+    }
+
+    public override onViewUpdate()
+    {
+        this._renderBoundsDirty = true;
+        super.onViewUpdate();
     }
 }
