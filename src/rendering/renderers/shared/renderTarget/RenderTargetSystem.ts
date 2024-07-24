@@ -1,6 +1,5 @@
 import { Matrix } from '../../../../maths/matrix/Matrix';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
-import { scheduleCleanHash } from '../../..';
 import { CLEAR } from '../../gl/const';
 import { calculateProjection } from '../../gpu/renderTarget/calculateProjection';
 import { SystemRunner } from '../system/SystemRunner';
@@ -8,6 +7,7 @@ import { CanvasSource } from '../texture/sources/CanvasSource';
 import { TextureSource } from '../texture/sources/TextureSource';
 import { Texture } from '../texture/Texture';
 import { getCanvasTexture } from '../texture/utils/getCanvasTexture';
+import { scheduleCleanHash } from '../utils/cleanHash';
 import { isRenderingToScreen } from './isRenderingToScreen';
 import { RenderTarget } from './RenderTarget';
 

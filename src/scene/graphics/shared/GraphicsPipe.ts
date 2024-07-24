@@ -1,14 +1,14 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { scheduleCleanHash } from '../../../rendering';
 import { State } from '../../../rendering/renderers/shared/state/State';
+import { scheduleCleanHash } from '../../../rendering/renderers/shared/utils/cleanHash';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { color32BitToUniform } from '../gpu/colorToUniform';
 import { BatchableGraphics } from './BatchableGraphics';
 
-import type { Renderer } from '../../../rendering';
 import type { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
 import type { BatchPipe, RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
+import type { Renderer } from '../../../rendering/renderers/types';
 import type { PoolItem } from '../../../utils/pool/Pool';
 import type { Container } from '../../container/Container';
 import type { Graphics } from './Graphics';

@@ -1,7 +1,7 @@
 import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { scheduleCleanHash } from '../../..';
 import { CanvasPool } from '../../shared/texture/CanvasPool';
+import { scheduleCleanHash } from '../../shared/utils/cleanHash';
 import { BindGroup } from '../shader/BindGroup';
 import { gpuUploadBufferImageResource } from './uploaders/gpuUploadBufferImageResource';
 import { blockDataMap, gpuUploadCompressedTextureResource } from './uploaders/gpuUploadCompressedTextureResource';

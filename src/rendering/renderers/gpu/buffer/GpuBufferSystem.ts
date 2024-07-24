@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { scheduleCleanHash } from '../../..';
 import { fastCopy } from '../../shared/buffer/utils/fastCopy';
+import { scheduleCleanHash } from '../../shared/utils/cleanHash';
 
 import type { Buffer } from '../../shared/buffer/Buffer';
 import type { System } from '../../shared/system/System';

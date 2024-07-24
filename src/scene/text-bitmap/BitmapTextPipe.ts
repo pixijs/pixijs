@@ -1,6 +1,6 @@
 import { Cache } from '../../assets/cache/Cache';
 import { ExtensionType } from '../../extensions/Extensions';
-import { scheduleCleanHash } from '../../rendering';
+import { scheduleCleanHash } from '../../rendering/renderers/shared/utils/cleanHash';
 import { BigPool } from '../../utils/pool/PoolGroup';
 import { Graphics } from '../graphics/shared/Graphics';
 import { SdfShader } from '../text/sdfShader/SdfShader';

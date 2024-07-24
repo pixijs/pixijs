@@ -1,5 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { scheduleCleanHash } from '../../../rendering';
+import { scheduleCleanHash } from '../../../rendering/renderers/shared/utils/cleanHash';
 import { updateQuadBounds } from '../../../utils/data/updateQuadBounds';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { BatchableSprite } from '../../sprite/BatchableSprite';

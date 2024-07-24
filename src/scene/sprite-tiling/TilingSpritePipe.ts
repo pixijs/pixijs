@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { ExtensionType } from '../../extensions/Extensions';
-import { scheduleCleanHash } from '../../rendering';
 import { getAdjustedBlendModeBlend } from '../../rendering/renderers/shared/state/getAdjustedBlendModeBlend';
 import { State } from '../../rendering/renderers/shared/state/State';
+import { scheduleCleanHash } from '../../rendering/renderers/shared/utils/cleanHash';
 import { type Renderer, RendererType } from '../../rendering/renderers/types';
 import { color32BitToUniform } from '../graphics/gpu/colorToUniform';
 import { BatchableMesh } from '../mesh/shared/BatchableMesh';
