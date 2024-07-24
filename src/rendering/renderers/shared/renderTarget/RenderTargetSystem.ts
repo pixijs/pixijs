@@ -1,5 +1,6 @@
 import { Matrix } from '../../../../maths/matrix/Matrix';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
+import { scheduleCleanHash } from '../../..';
 import { CLEAR } from '../../gl/const';
 import { calculateProjection } from '../../gpu/renderTarget/calculateProjection';
 import { SystemRunner } from '../system/SystemRunner';
@@ -187,6 +188,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        scheduleCleanHash(renderer, this, '_gpuRenderTargetHash');
     }
 
     /** called when dev wants to finish a render pass */

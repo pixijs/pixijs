@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { scheduleCleanHash } from '../../../rendering';
 import { updateQuadBounds } from '../../../utils/data/updateQuadBounds';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { BatchableSprite } from '../../sprite/BatchableSprite';
@@ -36,6 +37,8 @@ export class CanvasTextPipe implements RenderPipe<Text>
     {
         this._renderer = renderer;
         this._renderer.runners.resolutionChange.add(this);
+
+        scheduleCleanHash(renderer, this, '_gpuText');
     }
 
     public resolutionChange()

@@ -1,5 +1,6 @@
 import { Cache } from '../../assets/cache/Cache';
 import { ExtensionType } from '../../extensions/Extensions';
+import { scheduleCleanHash } from '../../rendering';
 import { BigPool } from '../../utils/pool/PoolGroup';
 import { Graphics } from '../graphics/shared/Graphics';
 import { SdfShader } from '../text/sdfShader/SdfShader';
@@ -33,6 +34,8 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+
+        scheduleCleanHash(renderer, this, '_gpuBitmapText');
     }
 
     public validateRenderable(bitmapText: BitmapText): boolean

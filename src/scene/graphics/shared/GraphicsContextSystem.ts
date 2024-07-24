@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { scheduleCleanHash } from '../../../rendering';
 import { getTextureBatchBindGroup } from '../../../rendering/batcher/gpu/getTextureBatchBindGroup';
 import { Batcher } from '../../../rendering/batcher/shared/Batcher';
 import { BatchGeometry } from '../../../rendering/batcher/shared/BatchGeometry';
@@ -6,6 +7,7 @@ import { InstructionSet } from '../../../rendering/renderers/shared/instructions
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { buildContextBatches } from './utils/buildContextBatches';
 
+import type { Renderer } from '../../../rendering';
 import type { System } from '../../../rendering/renderers/shared/system/System';
 import type { PoolItem } from '../../../utils/pool/Pool';
 import type { BatchableGraphics } from './BatchableGraphics';
@@ -93,6 +95,12 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
     private _gpuContextHash: Record<number, GpuGraphicsContext> = {};
     // used for non-batchable graphics
     private _graphicsDataContextHash: Record<number, GraphicsContextRenderData> = Object.create(null);
+
+    constructor(renderer: Renderer)
+    {
+        scheduleCleanHash(renderer, this, '_gpuContextHash');
+        scheduleCleanHash(renderer, this, '_graphicsDataContextHash');
+    }
 
     /**
      * Runner init called, update the default options
