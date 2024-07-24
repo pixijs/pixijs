@@ -1,5 +1,6 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { getAttributeInfoFromFormat } from '../../shared/geometry/utils/getAttributeInfoFromFormat';
+import { scheduleCleanHash } from '../../shared/utils/cleanHash';
 import { ensureAttributes } from '../shader/program/ensureAttributes';
 import { getGlTypeFromFormat } from './utils/getGlTypeFromFormat';
 
@@ -62,6 +63,8 @@ export class GlGeometrySystem implements System
 
         this.hasVao = true;
         this.hasInstance = true;
+
+        scheduleCleanHash(renderer, this, '_geometryVaoHash');
     }
 
     /** Sets up the renderer context and necessary buffers. */

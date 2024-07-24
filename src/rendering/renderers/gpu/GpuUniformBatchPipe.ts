@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { scheduleCleanHash } from '../..';
 import { Buffer } from '../shared/buffer/Buffer';
 import { BufferResource } from '../shared/buffer/BufferResource';
 import { BufferUsage } from '../shared/buffer/const';
@@ -52,6 +53,8 @@ export class GpuUniformBatchPipe
                 usage
             }));
         }
+
+        scheduleCleanHash(renderer, this, '_bindGroupHash');
     }
 
     public renderEnd()

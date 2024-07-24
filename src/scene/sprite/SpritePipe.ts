@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../extensions/Extensions';
+import { scheduleCleanHash } from '../../rendering';
 import { BigPool } from '../../utils/pool/PoolGroup';
 import { BatchableSprite } from './BatchableSprite';
 
@@ -28,6 +29,8 @@ export class SpritePipe implements RenderPipe<Sprite>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+
+        scheduleCleanHash(renderer, this, '_gpuSpriteHash');
     }
 
     public addRenderable(sprite: Sprite, _instructionSet: InstructionSet)

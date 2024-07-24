@@ -26,11 +26,15 @@ export class SchedulerSystem implements System<null>
     private readonly _tasks: {
         func: (elapsed: number) => void;
         duration: number;
+        offset: number
         start: number;
         last: number;
         repeat: boolean;
         id: number;
     }[] = [];
+
+    /** a small off set to apply to the repeat schedules. This is just to make sure they run at slightly different times */
+    private _offset = 0;
 
     /** Initializes the scheduler system and starts the ticker. */
     public init(): void
@@ -42,16 +46,26 @@ export class SchedulerSystem implements System<null>
      * Schedules a repeating task.
      * @param func - The function to execute.
      * @param duration - The interval duration in milliseconds.
+     * @param useOffset - this will spread out tasks so that they do not all run at the same time
      * @returns The unique identifier for the scheduled task.
      */
-    public repeat(func: (elapsed: number) => void, duration: number): number
+    public repeat(func: (elapsed: number) => void, duration: number, useOffset = true): number
     {
         const id = uid++;
+
+        let offset = 0;
+
+        if (useOffset)
+        {
+            this._offset += 1000;
+            offset = this._offset;
+        }
 
         this._tasks.push({
             func,
             duration,
             start: performance.now(),
+            offset,
             last: performance.now(),
             repeat: true,
             id
@@ -89,7 +103,7 @@ export class SchedulerSystem implements System<null>
         {
             const task = this._tasks[i];
 
-            if (now - task.last >= task.duration)
+            if ((now - task.offset) - task.last >= task.duration)
             {
                 const elapsed = now - task.start;
 

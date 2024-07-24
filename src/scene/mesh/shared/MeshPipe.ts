@@ -1,5 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/matrix/Matrix';
+import { scheduleCleanHash } from '../../../rendering';
 import { BindGroup } from '../../../rendering/renderers/gpu/shader/BindGroup';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
 import { getAdjustedBlendModeBlend } from '../../../rendering/renderers/shared/state/getAdjustedBlendModeBlend';
@@ -67,6 +68,10 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
     constructor(renderer: Renderer, adaptor: MeshAdaptor)
     {
         this.renderer = renderer;
+
+        scheduleCleanHash(renderer, this, '_gpuBatchableMeshHash');
+        scheduleCleanHash(renderer, this, '_meshDataHash');
+
         this._adaptor = adaptor;
 
         this._adaptor.init();

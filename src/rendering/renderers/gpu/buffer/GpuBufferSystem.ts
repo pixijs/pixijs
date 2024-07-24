@@ -1,9 +1,11 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { scheduleCleanHash } from '../../..';
 import { fastCopy } from '../../shared/buffer/utils/fastCopy';
 
 import type { Buffer } from '../../shared/buffer/Buffer';
 import type { System } from '../../shared/system/System';
 import type { GPU } from '../GpuDeviceSystem';
+import type { WebGPURenderer } from '../WebGPURenderer';
 
 /**
  * System plugin to the renderer to manage buffers.
@@ -24,6 +26,11 @@ export class GpuBufferSystem implements System
     private readonly _managedBuffers: Buffer[] = [];
 
     private _gpu: GPU;
+
+    constructor(renderer: WebGPURenderer)
+    {
+        scheduleCleanHash(renderer, this, '_gpuBuffers');
+    }
 
     protected contextChange(gpu: GPU): void
     {

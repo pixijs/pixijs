@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../extensions/Extensions';
+import { scheduleCleanHash } from '../../rendering';
 import { BigPool } from '../../utils/pool/PoolGroup';
 import { BatchableMesh } from '../mesh/shared/BatchableMesh';
 import { NineSliceGeometry } from './NineSliceGeometry';
@@ -29,6 +30,8 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+
+        scheduleCleanHash(renderer, this, '_gpuSpriteHash');
     }
 
     public addRenderable(sprite: NineSliceSprite, _instructionSet: InstructionSet)

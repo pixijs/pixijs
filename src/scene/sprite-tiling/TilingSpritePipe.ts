@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { ExtensionType } from '../../extensions/Extensions';
+import { scheduleCleanHash } from '../../rendering';
 import { getAdjustedBlendModeBlend } from '../../rendering/renderers/shared/state/getAdjustedBlendModeBlend';
 import { State } from '../../rendering/renderers/shared/state/State';
 import { type Renderer, RendererType } from '../../rendering/renderers/types';
@@ -48,6 +49,8 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+
+        scheduleCleanHash(renderer, this, '_tilingSpriteDataHash');
     }
 
     public validateRenderable(renderable: TilingSprite): boolean
