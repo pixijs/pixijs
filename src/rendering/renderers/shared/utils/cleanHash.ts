@@ -1,4 +1,4 @@
-import type { Renderer } from '../../..';
+import type { Renderer } from '../../types';
 
 /**
  * Takes a hash and removes all the falsy values from it.

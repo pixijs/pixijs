@@ -1,14 +1,14 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { scheduleCleanHash } from '../../../rendering';
 import { getTextureBatchBindGroup } from '../../../rendering/batcher/gpu/getTextureBatchBindGroup';
 import { Batcher } from '../../../rendering/batcher/shared/Batcher';
 import { BatchGeometry } from '../../../rendering/batcher/shared/BatchGeometry';
 import { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
+import { scheduleCleanHash } from '../../../rendering/renderers/shared/utils/cleanHash';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { buildContextBatches } from './utils/buildContextBatches';
 
-import type { Renderer } from '../../../rendering';
 import type { System } from '../../../rendering/renderers/shared/system/System';
+import type { Renderer } from '../../../rendering/renderers/types';
 import type { PoolItem } from '../../../utils/pool/Pool';
 import type { BatchableGraphics } from './BatchableGraphics';
 import type { GraphicsContext } from './GraphicsContext';
