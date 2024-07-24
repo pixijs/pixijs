@@ -114,7 +114,8 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
         {
             this._handler = this._renderer.scheduler.repeat(
                 () => this.run(),
-                this._frequency
+                this._frequency,
+                false
             );
         }
         else
