@@ -81,7 +81,7 @@ export class ViewContainer extends Container implements View
         }
     }
 
-    public updateBounds()
+    protected updateBounds()
     {
         // override me!
     }

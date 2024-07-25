@@ -46,12 +46,6 @@ export interface View
     containsPoint: (point: Point) => boolean;
 
     /**
-     * used to update the bounds to reflect the size of the View. This is called when bounds are invalidated
-     * which happens when onViewUpdate is called
-     */
-    updateBounds: () => void;
-
-    /**
      * @deprecated since 8.2.5. this is no longer used, instead please use updateBounds
      */
     addBounds?: (bounds: BoundsData) => void;
