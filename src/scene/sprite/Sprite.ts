@@ -312,10 +312,10 @@ export class Sprite extends ViewContainer
     }
 
     /**
-     * @deprecated since 8.2.5 (Use `renderBounds` instead)
+     * @deprecated since 8.2.5 (Use `bounds` instead)
      */
     get sourceBounds()
     {
-        return this.renderBounds;
+        return this.bounds;
     }
 }
