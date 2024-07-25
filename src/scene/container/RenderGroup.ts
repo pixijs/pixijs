@@ -4,6 +4,7 @@ import { InstructionSet } from '../../rendering/renderers/shared/instructions/In
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
 import type { Renderable } from '../../rendering/renderers/shared/Renderable';
 import type { Container } from './Container';
+import type { ViewContainer } from './ViewContainer';
 
 /**
  * A RenderGroup is a class that is responsible for I generating a set of instructions that are used to render the
@@ -255,6 +256,21 @@ export class RenderGroup implements Instruction
         }
 
         return out;
+    }
+
+    /**
+     * @ignore
+     * @param viewContainer
+     * @deprecated - this method is not used and will be removed in the future
+     */
+    public updateRenderable(viewContainer: ViewContainer)
+    {
+        // only update if its visible!
+        if (viewContainer.globalDisplayStatus < 0b111) return;
+
+        viewContainer.didViewUpdate = false;
+        // actually updates the renderable..
+        this.instructionSet.renderPipes[viewContainer.renderPipeId].updateRenderable(viewContainer);
     }
 
     private _getChildren(container: Container, out: Container[] = []): Container[]

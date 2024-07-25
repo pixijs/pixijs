@@ -177,20 +177,6 @@ export class Sprite extends ViewContainer
         updateQuadBounds(this._bounds, this._anchor, this._texture, 0, false);
     }
 
-    // public containsPoint(point: PointData): boolean
-    // {
-    //     const sourceBounds = this.sourceBounds ;
-
-    //     updateQuadBounds(this.sourceBounds, this._anchor, this._texture, 0, false);
-
-    //     const { x, y } = point;
-
-    //     return (x >= sourceBounds.minX
-    //         && x <= sourceBounds.maxX
-    //         && y >= sourceBounds.minY
-    //         && y <= sourceBounds.maxY);
-    // }
-
     /**
      * Destroys this sprite renderable and optionally its texture.
      * @param options - Options parameter. A boolean will act as if all options
@@ -323,5 +309,13 @@ export class Sprite extends ViewContainer
     {
         this._renderBoundsDirty = true;
         super.onViewUpdate();
+    }
+
+    /**
+     * @deprecated since 8.2.5 (Use `renderBounds` instead)
+     */
+    get sourceBounds()
+    {
+        return this.renderBounds;
     }
 }

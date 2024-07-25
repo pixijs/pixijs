@@ -34,8 +34,6 @@ export class SpritePipe implements RenderPipe<Sprite>
     {
         const gpuSprite = this._getGpuSprite(sprite);
 
-        // console.log(sprite.didViewUpdate);
-
         if (sprite.didViewUpdate) this._updateBatchableSprite(sprite, gpuSprite);
 
         // TODO visibility
