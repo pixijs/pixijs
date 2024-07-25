@@ -1,4 +1,4 @@
-import { deprecation } from '../../utils';
+import { deprecation } from '../../utils/logging/deprecation';
 import { type BoundsData } from './bounds/Bounds';
 import { ViewContainer } from './ViewContainer';
 
