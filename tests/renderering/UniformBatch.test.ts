@@ -1,5 +1,5 @@
-import { SchedulerSystem } from '../../src/rendering';
 import { GpuUniformBatchPipe } from '../../src/rendering/renderers/gpu/GpuUniformBatchPipe';
+import { SchedulerSystem } from '../../src/rendering/renderers/shared/SchedulerSystem';
 
 import type { WebGPURenderer } from '../../src/rendering/renderers/gpu/WebGPURenderer';
 
