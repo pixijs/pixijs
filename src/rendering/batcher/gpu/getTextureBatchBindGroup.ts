@@ -8,14 +8,14 @@ const cachedGroups: Record<string, BindGroup> = {};
 
 export function getTextureBatchBindGroup(textures: TextureSource[], size: number)
 {
-    const ids: number[] = [];
+    let uid = 2166136261; // FNV-1a 32-bit offset basis
 
     for (let i = 0; i < size; i++)
     {
-        ids[i] = textures[i].uid;
+        uid ^= textures[i].uid;
+        uid = Math.imul(uid, 16777619);
+        uid >>>= 0;
     }
-
-    const uid = ids.join('|');
 
     return cachedGroups[uid] || generateTextureBatchBindGroup(textures, size, uid);
 }
