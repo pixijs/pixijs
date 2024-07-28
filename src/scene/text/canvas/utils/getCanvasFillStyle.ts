@@ -14,7 +14,9 @@ export function getCanvasFillStyle(
 {
     if (fillStyle.texture === Texture.WHITE && !fillStyle.fill)
     {
-        return Color.shared.setValue(fillStyle.color).toHex();
+        const fill = Color.shared.setValue(fillStyle.color);
+
+        return fill.alpha === 1 ? fill.toHex() : fill.toHexa();
     }
     else if (!fillStyle.fill)
     {
