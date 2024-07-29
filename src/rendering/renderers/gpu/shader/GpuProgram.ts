@@ -130,6 +130,12 @@ export class GpuProgram
      */
     public _layoutKey = 0;
 
+    /**
+     * @internal
+     * @ignore
+     */
+    public _attributeLocationsKey = 0;
+
     /** the structs and groups extracted from the shader sources */
     public readonly structsAndGroups: StructsAndGroups;
     /**

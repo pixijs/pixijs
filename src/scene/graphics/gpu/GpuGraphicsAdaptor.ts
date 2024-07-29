@@ -83,7 +83,7 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
             graphicsPipe.state
         );
 
-        encoder.setGeometry(geometry);
+        encoder.setGeometry(geometry, shader.gpuProgram);
 
         const globalUniformsBindGroup = renderer.globalUniforms.bindGroup;
 
