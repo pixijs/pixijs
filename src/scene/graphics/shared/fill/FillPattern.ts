@@ -27,7 +27,8 @@ const repetitionMap = {
 
 export class FillPattern implements CanvasPattern
 {
-    public readonly uid = uid('fillPattern');
+    /** unique id for this fill pattern */
+    public readonly uid: number = uid('fillPattern');
     public texture: Texture;
     public transform = new Matrix();
 

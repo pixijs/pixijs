@@ -1,6 +1,9 @@
 import { uid } from '../../../../utils/data/uid';
 
+import type { Renderable } from '../Renderable';
 import type { Instruction } from './Instruction';
+
+let _tick = 0;
 
 /**
  * A set of instructions that can be executed by the renderer.
@@ -15,7 +18,7 @@ import type { Instruction } from './Instruction';
 export class InstructionSet
 {
     /** a unique id for this instruction set used through the renderer */
-    public readonly uid = uid('instructionSet');
+    public readonly uid: number = uid('instructionSet');
     /** the array of instructions */
     public readonly instructions: Instruction[] = [];
     /** the actual size of the array (any instructions passed this should be ignored) */
@@ -23,10 +26,14 @@ export class InstructionSet
     /** allows for access to the render pipes of the renderer */
     public renderPipes: any;
 
+    public renderables: Renderable[] = [];
+    public tick = 0;
+
     /** reset the instruction set so it can be reused set size back to 0 */
     public reset()
     {
         this.instructionSize = 0;
+        this.tick = _tick++;
     }
 
     /**

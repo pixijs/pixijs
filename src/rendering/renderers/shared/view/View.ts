@@ -13,7 +13,7 @@ export interface ViewObserver
 export interface View
 {
     /** a unique id for this view */
-    uid: number;
+    readonly uid: number;
 
     /** whether or not this view should be batched */
     batched: boolean;
@@ -26,6 +26,11 @@ export interface View
 
     /** this is an int because it is packed directly into an attribute in the shader */
     _roundPixels: 0 | 1;
+
+    /** @private */
+    _lastUsed: number;
+    /** @private */
+    _lastInstructionTick: number
 
     /**
      *  Whether or not to round the x/y position of the object.

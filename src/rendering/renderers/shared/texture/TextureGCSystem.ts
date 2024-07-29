@@ -1,4 +1,4 @@
-import { extensions, ExtensionType } from '../../../../extensions/Extensions';
+import { ExtensionType } from '../../../../extensions/Extensions';
 
 import type { Renderer } from '../../types';
 import type { System } from '../system/System';
@@ -172,5 +172,3 @@ export class TextureGCSystem implements System<TextureGCSystemOptions>
         this._renderer = null as any as Renderer;
     }
 }
-
-extensions.add(TextureGCSystem);

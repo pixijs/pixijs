@@ -354,8 +354,8 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         Object.defineProperties(Container.prototype, Object.getOwnPropertyDescriptors(source));
     }
 
-    /** @private */
-    public uid: number = uid('renderable');
+    /** unique id for this container */
+    public readonly uid: number = uid('renderable');
 
     /** @private */
     public _updateFlags = 0b1111;
@@ -378,6 +378,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     // same as above, but for the renderable
     /** @private */
     public didViewUpdate = false;
+
     // how deep is the container relative to its render group..
     // unless the element is the root render group - it will be relative to its parent
     /** @private */
