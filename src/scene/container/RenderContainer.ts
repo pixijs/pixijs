@@ -86,7 +86,7 @@ export class RenderContainer extends Container implements View, Instruction
     public addBounds: (bounds: Bounds) => void;
 
     public canBundle = false;
-    public renderPipeId = 'customRender';
+    public readonly renderPipeId: string = 'customRender';
 
     /**
      * @param options - The options for the container.

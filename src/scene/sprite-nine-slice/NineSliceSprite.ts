@@ -79,7 +79,7 @@ export class NineSliceSprite extends Container implements View
     };
 
     public _roundPixels: 0 | 1 = 0;
-    public readonly renderPipeId = 'nineSliceSprite';
+    public readonly renderPipeId: string = 'nineSliceSprite';
     public _texture: Texture;
 
     public batched = true;
@@ -271,8 +271,8 @@ export class NineSliceSprite extends Container implements View
 
     public onViewUpdate()
     {
-        // increment from the 12th bit!
-        this._didChangeId += 1 << 12;
+        this._didViewChangeTick++;
+
         this._didSpriteUpdate = true;
 
         if (this.didViewUpdate) return;
