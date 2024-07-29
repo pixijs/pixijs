@@ -3,6 +3,7 @@ import { Container } from './Container';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';
+import type { BoundsData } from './bounds/Bounds';
 
 export class ViewContainer extends Container implements View
 {
@@ -81,6 +82,15 @@ export class ViewContainer extends Container implements View
     }
 
     protected updateBounds()
+    {
+        // override me!
+    }
+
+    /**
+     * @param _boundsData - the bounds to add this object bounds to
+     * @deprecated since 8.2.5, please use updateBounds instead to ensure bounds are correctly updated
+     */
+    public addBounds(_boundsData: BoundsData)
     {
         // override me!
     }

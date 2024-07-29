@@ -183,7 +183,6 @@ export class CanvasTextPipe implements RenderPipe<Text>
         this._gpuText[text.uid] = gpuTextData;
 
         text._resolution = text._autoResolution ? this._renderer.resolution : text.resolution;
-        // this._updateText(text);
 
         // TODO perhaps manage this outside this pipe? (a bit like how we update / add)
         text.on('destroyed', this._destroyRenderableBound);

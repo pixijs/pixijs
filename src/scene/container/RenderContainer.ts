@@ -1,3 +1,4 @@
+import { deprecation } from '../../utils/logging/deprecation';
 import { type BoundsData } from './bounds/Bounds';
 import { ViewContainer } from './ViewContainer';
 
@@ -18,8 +19,21 @@ export interface RenderContainerOptions extends ContainerOptions
     render?: RenderFunction;
     /** how to know if the custom render logic contains a point or not, used for interaction */
     containsPoint?: (point: Point) => boolean;
-    /** how to add the bounds of this object when measuring */
+    /** @deprecated how to add the bounds of this object when measuring */
     addBounds?: (bounds: BoundsData) => void;
+    /**
+     * How to update the bounds to reflect any changes in size.
+     * Rather than adding bounds, this function will only need to reflect changes in its own bounds object
+     * eg:
+     * ```js
+     * updateBounds()
+     * {
+     *   this._bounds.clear();
+     *   this._bounds.addQuad(0, 0, 100, 100);
+     * }
+     * ```
+     */
+    updateBounds?: (bounds: BoundsData) => void;
 }
 
 /**
@@ -77,6 +91,23 @@ export class RenderContainer extends ViewContainer implements Instruction
         });
 
         if (render) this.render = render;
+
+        if (options.containsPoint)
+        {
+            this.containsPoint = options.containsPoint;
+        }
+
+        if (options.addBounds)
+        {
+            this.addBounds = options.addBounds;
+
+            deprecation('8.2.5', 'RenderContainer#addBounds no longer used, use RenderContainer#updateBounds instead');
+            this.updateBounds = () =>
+            {
+                this._bounds.clear();
+                this.addBounds(this._bounds);
+            };
+        }
     }
 
     /**

@@ -44,5 +44,10 @@ export interface View
 
     /** Checks if the point is within the view */
     containsPoint: (point: Point) => boolean;
+
+    /**
+     * @deprecated since 8.2.5. this is no longer used, instead please use updateBounds
+     */
+    addBounds?: (bounds: BoundsData) => void;
 }
 
