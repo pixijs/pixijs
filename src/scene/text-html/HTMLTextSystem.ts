@@ -125,8 +125,11 @@ export class HTMLTextSystem implements System
 
         const image = htmlTextData.image;
 
-        image.width = width | 0;
-        image.height = height | 0;
+        // this off set will ensure we don't get any UV bleeding!
+        const uvSafeOffset = 2;
+
+        image.width = (width | 0) + uvSafeOffset;
+        image.height = (height | 0) + uvSafeOffset;
 
         const svgURL = getSVGUrl(text, style, resolution, fontCSS, htmlTextData);
 
@@ -140,7 +143,11 @@ export class HTMLTextSystem implements System
             resource = getTemporaryCanvasFromImage(image, resolution);
         }
 
-        const texture = getPo2TextureFromSource(resource, image.width, image.height, resolution);
+        const texture = getPo2TextureFromSource(resource,
+            image.width - uvSafeOffset,
+            image.height - uvSafeOffset,
+            resolution
+        );
 
         if (this._createCanvas)
         {
