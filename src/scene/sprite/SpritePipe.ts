@@ -6,6 +6,7 @@ import type { InstructionSet } from '../../rendering/renderers/shared/instructio
 import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../../rendering/renderers/types';
 import type { PoolItem } from '../../utils/pool/Pool';
+import type { Container } from '../container/Container';
 import type { Sprite } from './Sprite';
 
 export class SpritePipe implements RenderPipe<Sprite>
@@ -22,6 +23,7 @@ export class SpritePipe implements RenderPipe<Sprite>
 
     private _renderer: Renderer;
     private _gpuSpriteHash: Record<number, BatchableSprite> = Object.create(null);
+    private readonly _destroyRenderableBound = this.destroyRenderable.bind(this) as (renderable: Container) => void;
 
     constructor(renderer: Renderer)
     {
@@ -68,6 +70,8 @@ export class SpritePipe implements RenderPipe<Sprite>
         BigPool.return(batchableSprite as PoolItem);
 
         this._gpuSpriteHash[sprite.uid] = null;
+
+        sprite.off('destroyed', this._destroyRenderableBound);
     }
 
     private _updateBatchableSprite(sprite: Sprite, batchableSprite: BatchableSprite)
@@ -97,10 +101,7 @@ export class SpritePipe implements RenderPipe<Sprite>
         sprite._didSpriteUpdate = false;
 
         // TODO perhaps manage this outside this pipe? (a bit like how we update / add)
-        sprite.on('destroyed', () =>
-        {
-            this.destroyRenderable(sprite);
-        });
+        sprite.on('destroyed', this._destroyRenderableBound);
 
         return batchableSprite;
     }

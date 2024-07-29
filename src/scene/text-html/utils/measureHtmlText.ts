@@ -26,7 +26,7 @@ export function measureHtmlText(
 
     const { domElement, styleElement, svgRoot } = htmlTextRenderData;
 
-    domElement.innerHTML = `<style>${style.cssStyle}</style><div>${text}</div>`;
+    domElement.innerHTML = `<style>${style.cssStyle};</style><div style='padding:0'>${text}</div>`;
 
     domElement.setAttribute('style', 'transform-origin: top left; display: inline-block');
 
@@ -44,8 +44,11 @@ export function measureHtmlText(
 
     const descenderPadding = CanvasTextMetrics.measureFont(style.fontStyle).descent;
 
+    // padding is included in the CSS calculation, so we need to remove it here
+    const doublePadding = style.padding * 2;
+
     return {
-        width: contentBounds.width,
-        height: contentBounds.height + descenderPadding,
+        width: contentBounds.width - doublePadding,
+        height: contentBounds.height + descenderPadding - doublePadding,
     };
 }
