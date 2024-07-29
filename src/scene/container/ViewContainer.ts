@@ -8,7 +8,7 @@ import type { BoundsData } from './bounds/Bounds';
 export class ViewContainer extends Container implements View
 {
     public readonly canBundle = true;
-    public renderPipeId: string;
+    public readonly renderPipeId: string;
     public allowChildren = false;
 
     public _roundPixels: 0 | 1 = 0;
@@ -67,7 +67,7 @@ export class ViewContainer extends Container implements View
 
     public onViewUpdate()
     {
-        this._didChangeId += 1 << 12;
+        this._didViewChangeTick++;
         this._boundsDirty = true;
 
         if (this.didViewUpdate) return;
