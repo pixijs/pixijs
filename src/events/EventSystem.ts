@@ -53,7 +53,7 @@ export interface EventSystemOptions
  * @since 7.2.0
  * @memberof events
  */
-interface EventSystemFeatures
+export interface EventSystemFeatures
 {
     /**
      * Enables pointer events associated with pointer movement:
