@@ -44,7 +44,7 @@ export interface GraphicsOptions extends ContainerOptions
 export class Graphics extends Container implements View, Instruction
 {
     public readonly canBundle = true;
-    public readonly renderPipeId = 'graphics';
+    public readonly renderPipeId: string = 'graphics';
     public batched: boolean;
 
     public _roundPixels: 0 | 1 = 0;

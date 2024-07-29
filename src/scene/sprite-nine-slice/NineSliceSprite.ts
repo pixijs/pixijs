@@ -79,7 +79,7 @@ export class NineSliceSprite extends Container implements View
     };
 
     public _roundPixels: 0 | 1 = 0;
-    public readonly renderPipeId = 'nineSliceSprite';
+    public readonly renderPipeId: string = 'nineSliceSprite';
     public _texture: Texture;
 
     public batched = true;
