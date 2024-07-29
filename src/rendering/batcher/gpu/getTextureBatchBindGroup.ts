@@ -4,7 +4,7 @@ import { getMaxTexturesPerBatch } from '../gl/utils/maxRecommendedTextures';
 
 import type { TextureSource } from '../../renderers/shared/texture/sources/TextureSource';
 
-const cachedGroups: Record<string, BindGroup> = {};
+const cachedGroups: Record<number, BindGroup> = {};
 
 export function getTextureBatchBindGroup(textures: TextureSource[], size: number)
 {
@@ -22,7 +22,7 @@ export function getTextureBatchBindGroup(textures: TextureSource[], size: number
 
 let maxTextures = 0;
 
-function generateTextureBatchBindGroup(textures: TextureSource[], size: number, key: string): BindGroup
+function generateTextureBatchBindGroup(textures: TextureSource[], size: number, key: number): BindGroup
 {
     const bindGroupResources: Record<string, any> = {};
 
