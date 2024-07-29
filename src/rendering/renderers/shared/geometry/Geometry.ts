@@ -20,8 +20,6 @@ export interface Attribute
     buffer: Buffer;
     /** the format of the attribute */
     format?: VertexFormat;
-    /** set where the shader location is for this attribute */
-    location?: number;
     /** the stride of the data in the buffer*/
     stride?: number;
     /** the offset of the attribute from the buffer, defaults to 0 */

@@ -61,7 +61,7 @@ export class GpuBatchAdaptor implements BatcherAdaptor
 
         this._geometry = geometry;
 
-        encoder.setGeometry(geometry);
+        encoder.setGeometry(geometry, program);
 
         tempState.blendMode = 'normal';
 

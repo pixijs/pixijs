@@ -44,7 +44,7 @@ export interface GraphicsOptions extends ContainerOptions
 export class Graphics extends Container implements View, Instruction
 {
     public readonly canBundle = true;
-    public readonly renderPipeId = 'graphics';
+    public readonly renderPipeId: string = 'graphics';
     public batched: boolean;
 
     public _roundPixels: 0 | 1 = 0;
@@ -151,8 +151,8 @@ export class Graphics extends Container implements View, Instruction
 
     protected onViewUpdate()
     {
-        // increment from the 12th bit!
-        this._didChangeId += 1 << 12;
+        this._didViewChangeTick++;
+
         this._didGraphicsUpdate = true;
 
         if (this.didViewUpdate) return;

@@ -51,8 +51,8 @@ describe('glEnsureAttributes', () =>
 
         ensureAttributes(geometry, program._attributeData);
 
+        expect(program._attributeData.a.location).toBe(0);
         expect(geometry.attributes.a).toMatchObject({
-            location: 0,
             format: 'float32x4',
             stride: 16,
             offset: 0,
@@ -108,8 +108,8 @@ describe('glEnsureAttributes', () =>
 
         ensureAttributes(geometry, program._attributeData);
 
+        expect(program._attributeData.a.location).toBe(0);
         expect(geometry.attributes.a).toMatchObject({
-            location: 0,
             format: 'float32x4',
             stride: 16 + 8,
             offset: 0,
@@ -117,8 +117,8 @@ describe('glEnsureAttributes', () =>
             start: 0,
         });
 
+        expect(program._attributeData.b.location).toBe(1);
         expect(geometry.attributes.b).toMatchObject({
-            location: 1,
             format: 'float32x2',
             stride: 16 + 8,
             offset: 0,
