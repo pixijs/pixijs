@@ -379,20 +379,10 @@ export abstract class AbstractText<
 
     public onViewUpdate()
     {
-        this._didChangeId += 1 << 12;
         this._boundsDirty = true;
-
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
         this._didTextUpdate = true;
 
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.onChildViewUpdate(this);
-        }
+        super.onViewUpdate();
     }
 
     public _getKey(): string
