@@ -10,7 +10,6 @@ export function getGeometry()
                     data: new Float32Array([1, 2, 3]),
                     usage: 1,
                 }),
-                location: 0,
                 format: 'float32x2',
                 stride: 2 * 4,
                 offset: 0,

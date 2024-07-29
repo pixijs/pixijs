@@ -19,12 +19,11 @@ describe('checkChildrenDidChange', () =>
 
         checkChildrenDidChange(container, previousData);
 
-        let childChange = ((child.uid & 255) << 24)
-            | (child._didChangeId & 16777215);
+        let childChange = ((child._didViewChangeTick & 0xffff) << 16) | (child._didContainerChangeTick & 0xffff);
 
         expect(previousData).toEqual({
-            data: [childChange],
-            index: 1,
+            data: [child.uid, childChange],
+            index: 2,
             didChange: true,
         });
 
@@ -34,8 +33,8 @@ describe('checkChildrenDidChange', () =>
         checkChildrenDidChange(container, previousData);
 
         expect(previousData).toEqual({
-            data: [childChange],
-            index: 1,
+            data: [child.uid, childChange],
+            index: 2,
             didChange: false,
         });
 
@@ -46,12 +45,11 @@ describe('checkChildrenDidChange', () =>
 
         checkChildrenDidChange(container, previousData);
 
-        childChange = ((child.uid & 255) << 24)
-        | (child._didChangeId & 16777215);
+        childChange = ((child._didViewChangeTick & 0xffff) << 16) | (child._didContainerChangeTick & 0xffff);
 
         expect(previousData).toEqual({
-            data: [childChange],
-            index: 1,
+            data: [child.uid, childChange],
+            index: 2,
             didChange: true,
         });
     });

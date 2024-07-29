@@ -143,13 +143,11 @@ export class GpuEncoderSystem implements System
         this.renderPassEncoder.setBindGroup(index, gpuBindGroup);
     }
 
-    public setGeometry(geometry: Geometry)
+    public setGeometry(geometry: Geometry, program: GpuProgram)
     {
-        for (const i in geometry.attributes)
+        for (const i in program.attributeData)
         {
-            const attribute = geometry.attributes[i];
-
-            this._setVertexBuffer(attribute.location, attribute.buffer);
+            this._setVertexBuffer(program.attributeData[i].location, geometry.attributes[i].buffer);
         }
 
         if (geometry.indexBuffer)
@@ -201,7 +199,7 @@ export class GpuEncoderSystem implements System
         const { geometry, shader, state, topology, size, start, instanceCount, skipSync } = options;
 
         this.setPipelineFromGeometryProgramAndState(geometry, shader.gpuProgram, state, topology);
-        this.setGeometry(geometry);
+        this.setGeometry(geometry, shader.gpuProgram);
         this._setShaderBindGroups(shader, skipSync);
 
         if (geometry.indexBuffer)

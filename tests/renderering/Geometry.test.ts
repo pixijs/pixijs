@@ -97,7 +97,6 @@ describe('Geometry', () =>
                         data: [-5, -5, 5, -5, 5, 5, -5, 5],
                         usage: 1,
                     }),
-                    location: 0,
                     format: 'float32x2',
                     stride: 2 * 4,
                     offset: 0,
