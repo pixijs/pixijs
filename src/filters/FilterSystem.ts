@@ -31,7 +31,6 @@ const quadGeometry = new Geometry({
     attributes: {
         aPosition: {
             buffer: new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]),
-            location: 0,
             format: 'float32x2',
             stride: 2 * 4,
             offset: 0,

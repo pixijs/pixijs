@@ -71,7 +71,7 @@ export class Sprite extends Container implements View
         return new Sprite(Texture.from(source, skipCache));
     }
 
-    public readonly renderPipeId = 'sprite';
+    public readonly renderPipeId: string = 'sprite';
 
     public batched = true;
     public readonly _anchor: ObservablePoint;
@@ -230,8 +230,8 @@ export class Sprite extends Container implements View
 
     public onViewUpdate()
     {
-        // increment from the 12th bit!
-        this._didChangeId += 1 << 12;
+        this._didViewChangeTick++;
+
         this._didSpriteUpdate = true;
         this._sourceBoundsDirty = this._boundsDirty = true;
 

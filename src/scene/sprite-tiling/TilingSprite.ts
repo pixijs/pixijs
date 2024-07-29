@@ -130,7 +130,7 @@ export class TilingSprite extends Container implements View, Instruction
         applyAnchorToTexture: false,
     };
 
-    public readonly renderPipeId = 'tilingSprite';
+    public readonly renderPipeId: string = 'tilingSprite';
     public readonly canBundle = true;
     public readonly batched = true;
 
@@ -443,7 +443,7 @@ export class TilingSprite extends Container implements View, Instruction
         this._boundsDirty = true;
         this._didTilingSpriteUpdate = true;
 
-        this._didChangeId += 1 << 12;
+        this._didViewChangeTick++;
 
         if (this.didViewUpdate) return;
         this.didViewUpdate = true;

@@ -373,7 +373,7 @@ export class GlGeometrySystem implements System
                     lastBuffer = glBuffer;
                 }
 
-                const location = attribute.location;
+                const location = programAttrib.location;
 
                 // TODO introduce state again
                 // we can optimise this for older devices that have no VAOs
