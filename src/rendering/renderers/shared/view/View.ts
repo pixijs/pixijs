@@ -21,6 +21,7 @@ export interface View
      */
     renderPipeId: string;
 
+    /** @private */
     didViewUpdate: boolean;
 
     /** this is an int because it is packed directly into an attribute in the shader */
