@@ -12,4 +12,20 @@ describe('HTMLText', () =>
 
         text.destroy();
     });
+
+    it('should measure an HTMLText and not include padding in its bounds', () =>
+    {
+        const text = new HTMLText({
+            text: 'Hello World',
+            style: {
+                padding: 100
+            }
+        });
+
+        // using less than as im sure we will encounter variance on different computers!
+        expect(text.width).toBeLessThan(135);
+        expect(text.height).toBeLessThan(35);
+
+        text.destroy();
+    });
 });
