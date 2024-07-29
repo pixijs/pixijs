@@ -3,6 +3,7 @@ import { Matrix } from '../../../maths/matrix/Matrix';
 import { BindGroup } from '../../../rendering/renderers/gpu/shader/BindGroup';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
 import { getAdjustedBlendModeBlend } from '../../../rendering/renderers/shared/state/getAdjustedBlendModeBlend';
+import { scheduleCleanHash } from '../../../rendering/renderers/shared/utils/cleanHash';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { color32BitToUniform } from '../../graphics/gpu/colorToUniform';
 import { BatchableMesh } from './BatchableMesh';
@@ -67,6 +68,10 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
     constructor(renderer: Renderer, adaptor: MeshAdaptor)
     {
         this.renderer = renderer;
+
+        scheduleCleanHash(renderer, this, '_gpuBatchableMeshHash');
+        scheduleCleanHash(renderer, this, '_meshDataHash');
+
         this._adaptor = adaptor;
 
         this._adaptor.init();

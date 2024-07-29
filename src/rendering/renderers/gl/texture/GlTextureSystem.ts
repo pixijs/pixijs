@@ -1,6 +1,7 @@
 import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Texture } from '../../shared/texture/Texture';
+import { scheduleCleanHash } from '../../shared/utils/cleanHash';
 import { GlTexture } from './GlTexture';
 import { glUploadBufferImageResource } from './uploaders/glUploadBufferImageResource';
 import { glUploadCompressedTextureResource } from './uploaders/glUploadCompressedTextureResource';
@@ -68,6 +69,9 @@ export class GlTextureSystem implements System, CanvasGenerator
     constructor(renderer: WebGLRenderer)
     {
         this._renderer = renderer;
+
+        scheduleCleanHash(renderer, this, '_glTextures');
+        scheduleCleanHash(renderer, this, '_glSamplers');
     }
 
     protected contextChange(gl: GlRenderingContext): void

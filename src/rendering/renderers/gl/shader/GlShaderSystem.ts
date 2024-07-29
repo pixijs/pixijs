@@ -1,5 +1,6 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { getMaxTexturesPerBatch } from '../../../batcher/gl/utils/maxRecommendedTextures';
+import { scheduleCleanHash } from '../../shared/utils/cleanHash';
 import { generateShaderSyncCode } from './GenerateShaderSyncCode';
 import { generateProgram } from './program/generateProgram';
 
@@ -60,6 +61,8 @@ export class GlShaderSystem implements ShaderSystem
     constructor(renderer: WebGLRenderer)
     {
         this._renderer = renderer;
+
+        scheduleCleanHash(renderer, this, '_programDataHash');
     }
 
     protected contextChange(gl: GlRenderingContext): void

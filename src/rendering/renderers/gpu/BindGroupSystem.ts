@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { scheduleCleanHash } from '../shared/utils/cleanHash';
 
 import type { Buffer } from '../shared/buffer/Buffer';
 import type { BufferResource } from '../shared/buffer/BufferResource';
@@ -34,6 +35,7 @@ export class BindGroupSystem implements System
     constructor(renderer: WebGPURenderer)
     {
         this._renderer = renderer;
+        scheduleCleanHash(renderer, this, '_hash');
     }
 
     protected contextChange(gpu: GPU): void

@@ -1,5 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { State } from '../../../rendering/renderers/shared/state/State';
+import { scheduleCleanHash } from '../../../rendering/renderers/shared/utils/cleanHash';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { color32BitToUniform } from '../gpu/colorToUniform';
 import { BatchableGraphics } from './BatchableGraphics';
@@ -7,6 +8,7 @@ import { BatchableGraphics } from './BatchableGraphics';
 import type { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
 import type { BatchPipe, RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
+import type { Renderer } from '../../../rendering/renderers/types';
 import type { PoolItem } from '../../../utils/pool/Pool';
 import type { Container } from '../../container/Container';
 import type { Graphics } from './Graphics';
@@ -40,7 +42,7 @@ export class GraphicsPipe implements RenderPipe<Graphics>
         name: 'graphics',
     } as const;
 
-    public renderer: GraphicsSystem;
+    public renderer: Renderer;
     public state: State = State.for2d();
 
     // batchable graphics list, used to render batches
@@ -48,9 +50,11 @@ export class GraphicsPipe implements RenderPipe<Graphics>
     private _adaptor: GraphicsAdaptor;
     private readonly _destroyRenderableBound = this.destroyRenderable.bind(this) as (renderable: Container) => void;
 
-    constructor(renderer: GraphicsSystem, adaptor: GraphicsAdaptor)
+    constructor(renderer: Renderer, adaptor: GraphicsAdaptor)
     {
         this.renderer = renderer;
+
+        scheduleCleanHash(renderer, this, '_graphicsBatchesHash');
 
         this._adaptor = adaptor;
         this._adaptor.init();

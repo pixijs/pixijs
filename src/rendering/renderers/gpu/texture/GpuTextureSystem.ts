@@ -2,6 +2,7 @@ import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { UniformGroup } from '../../shared/shader/UniformGroup';
 import { CanvasPool } from '../../shared/texture/CanvasPool';
+import { scheduleCleanHash } from '../../shared/utils/cleanHash';
 import { BindGroup } from '../shader/BindGroup';
 import { gpuUploadBufferImageResource } from './uploaders/gpuUploadBufferImageResource';
 import { blockDataMap, gpuUploadCompressedTextureResource } from './uploaders/gpuUploadCompressedTextureResource';
@@ -56,6 +57,11 @@ export class GpuTextureSystem implements System, CanvasGenerator
     constructor(renderer: WebGPURenderer)
     {
         this._renderer = renderer;
+
+        scheduleCleanHash(renderer, this, '_gpuSources');
+        scheduleCleanHash(renderer, this, '_gpuSamplers');
+        scheduleCleanHash(renderer, this, '_bindGroupHash');
+        scheduleCleanHash(renderer, this, '_textureViewHash');
     }
 
     protected contextChange(gpu: GPU): void

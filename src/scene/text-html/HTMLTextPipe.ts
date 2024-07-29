@@ -1,5 +1,6 @@
 import { ExtensionType } from '../../extensions/Extensions';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
+import { scheduleCleanHash } from '../../rendering/renderers/shared/utils/cleanHash';
 import { updateQuadBounds } from '../../utils/data/updateQuadBounds';
 import { BigPool } from '../../utils/pool/PoolGroup';
 import { BatchableSprite } from '../sprite/BatchableSprite';
@@ -39,6 +40,8 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
     {
         this._renderer = renderer;
         this._renderer.runners.resolutionChange.add(this);
+
+        scheduleCleanHash(renderer, this, '_gpuText');
     }
 
     public resolutionChange()

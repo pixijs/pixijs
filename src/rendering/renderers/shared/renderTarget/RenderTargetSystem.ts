@@ -7,6 +7,7 @@ import { CanvasSource } from '../texture/sources/CanvasSource';
 import { TextureSource } from '../texture/sources/TextureSource';
 import { Texture } from '../texture/Texture';
 import { getCanvasTexture } from '../texture/utils/getCanvasTexture';
+import { scheduleCleanHash } from '../utils/cleanHash';
 import { isRenderingToScreen } from './isRenderingToScreen';
 import { RenderTarget } from './RenderTarget';
 
@@ -187,6 +188,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        scheduleCleanHash(renderer, this, '_gpuRenderTargetHash');
     }
 
     /** called when dev wants to finish a render pass */

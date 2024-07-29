@@ -2,6 +2,7 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import { Buffer } from '../shared/buffer/Buffer';
 import { BufferResource } from '../shared/buffer/BufferResource';
 import { BufferUsage } from '../shared/buffer/const';
+import { scheduleCleanHash } from '../shared/utils/cleanHash';
 import { UboBatch } from './buffer/UboBatch';
 import { BindGroup } from './shader/BindGroup';
 
@@ -52,6 +53,8 @@ export class GpuUniformBatchPipe
                 usage
             }));
         }
+
+        scheduleCleanHash(renderer, this, '_bindGroupHash');
     }
 
     public renderEnd()

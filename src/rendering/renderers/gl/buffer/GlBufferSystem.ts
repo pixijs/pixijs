@@ -1,5 +1,6 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { BufferUsage } from '../../shared/buffer/const';
+import { scheduleCleanHash } from '../../shared/utils/cleanHash';
 import { BUFFER_TYPE } from './const';
 import { GlBuffer } from './GlBuffer';
 
@@ -49,6 +50,8 @@ export class GlBufferSystem implements System
     constructor(renderer: WebGLRenderer)
     {
         this._renderer = renderer;
+
+        scheduleCleanHash(renderer, this, '_gpuBuffers');
     }
 
     /**

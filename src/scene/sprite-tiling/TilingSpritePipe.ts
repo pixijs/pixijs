@@ -2,6 +2,7 @@
 import { ExtensionType } from '../../extensions/Extensions';
 import { getAdjustedBlendModeBlend } from '../../rendering/renderers/shared/state/getAdjustedBlendModeBlend';
 import { State } from '../../rendering/renderers/shared/state/State';
+import { scheduleCleanHash } from '../../rendering/renderers/shared/utils/cleanHash';
 import { type Renderer, RendererType } from '../../rendering/renderers/types';
 import { color32BitToUniform } from '../graphics/gpu/colorToUniform';
 import { BatchableMesh } from '../mesh/shared/BatchableMesh';
@@ -48,6 +49,8 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+
+        scheduleCleanHash(renderer, this, '_tilingSpriteDataHash');
     }
 
     public validateRenderable(renderable: TilingSprite): boolean
