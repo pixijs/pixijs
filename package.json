@@ -1,7 +1,14 @@
 {
   "name": "pixi.js",
-  "version": "8.2.5",
+  "version": "8.2.6",
   "author": "PixiJS Team",
+  "homepage": "http://pixijs.com/",
+  "bugs": "https://github.com/pixijs/pixijs/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixijs/pixijs.git"
+  },
   "main": "lib/index.js",
   "module": "lib/index.mjs",
   "types": "lib/index.d.ts",
