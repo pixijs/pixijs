@@ -443,7 +443,7 @@ export class TilingSprite extends Container implements View, Instruction
         this._boundsDirty = true;
         this._didTilingSpriteUpdate = true;
 
-        this._didChangeId += 1 << 12;
+        this._didViewChangeTick++;
 
         if (this.didViewUpdate) return;
         this.didViewUpdate = true;

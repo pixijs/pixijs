@@ -339,8 +339,7 @@ export class Mesh<
     /** @ignore */
     public onViewUpdate()
     {
-        // increment from the 12th bit!
-        this._didChangeId += 1 << 12;
+        this._didViewChangeTick++;
 
         if (this.didViewUpdate) return;
         this.didViewUpdate = true;

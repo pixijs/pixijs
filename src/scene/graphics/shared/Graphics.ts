@@ -151,8 +151,8 @@ export class Graphics extends Container implements View, Instruction
 
     protected onViewUpdate()
     {
-        // increment from the 12th bit!
-        this._didChangeId += 1 << 12;
+        this._didViewChangeTick++;
+
         this._didGraphicsUpdate = true;
 
         if (this.didViewUpdate) return;
