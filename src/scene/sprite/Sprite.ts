@@ -71,7 +71,7 @@ export class Sprite extends ViewContainer
         return new Sprite(Texture.from(source, skipCache));
     }
 
-    public readonly renderPipeId = 'sprite';
+    public readonly renderPipeId: string = 'sprite';
 
     public readonly _anchor: ObservablePoint;
 

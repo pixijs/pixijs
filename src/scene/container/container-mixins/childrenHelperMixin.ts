@@ -233,7 +233,7 @@ export const childrenHelperMixin: Partial<Container> = {
             renderGroup.structureDidChange = true;
         }
 
-        this._didChangeId++;
+        this._didContainerChangeTick++;
     },
     /**
      * Remove the Container from its parent Container. If the Container has no parent, do nothing.
