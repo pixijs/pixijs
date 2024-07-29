@@ -21,6 +21,16 @@ export interface BlurFilterOptions extends FilterOptions
      */
     strength?: number;
     /**
+     * The horizontal strength of the blur.
+     * @default 8
+     */
+    strengthX?: number;
+    /**
+     * The vertical strength of the blur.
+     * @default 8
+     */
+    strengthY?: number;
+    /**
      * The quality of the blur filter.
      * @default 4
      */
@@ -84,7 +94,7 @@ export class BlurFilter extends Filter
 
         options = { ...BlurFilterPass.defaultOptions, ...options };
 
-        const { strength, quality, ...rest } = options;
+        const { strength, strengthX, strengthY, quality, ...rest } = options;
 
         super({
             ...rest,
@@ -96,8 +106,8 @@ export class BlurFilter extends Filter
         this.blurYFilter = new BlurFilterPass({ horizontal: true, ...options });
 
         this.quality = quality;
-        this.blur = strength;
-
+        this.strengthX = strengthX ?? strength;
+        this.strengthY = strengthY ?? strength;
         this.repeatEdgePixels = false;
     }
 
@@ -155,14 +165,19 @@ export class BlurFilter extends Filter
 
     /**
      * Sets the strength of both the blurX and blurY properties simultaneously
-     * @default 2
+     * @default 8
      */
-    get blur(): number
+    get strength(): number
     {
-        return this.blurXFilter.blur;
+        if (this.strengthX !== this.strengthY)
+        {
+            throw new Error('BlurFilter\'s strengthX and strengthY are different');
+        }
+
+        return this.strengthX;
     }
 
-    set blur(value: number)
+    set strength(value: number)
     {
         this.blurXFilter.blur = this.blurYFilter.blur = value;
         this.updatePadding();
@@ -183,33 +198,102 @@ export class BlurFilter extends Filter
     }
 
     /**
-     * Sets the strength of the blurX property
-     * @default 2
+     * Sets the strength of horizontal blur
+     * @default 8
      */
-    get blurX(): number
+    get strengthX(): number
     {
         return this.blurXFilter.blur;
     }
 
-    set blurX(value: number)
+    set strengthX(value: number)
     {
         this.blurXFilter.blur = value;
         this.updatePadding();
     }
 
     /**
-     * Sets the strength of the blurY property
-     * @default 2
+     * Sets the strength of the vertical blur
+     * @default 8
      */
-    get blurY(): number
+    get strengthY(): number
     {
         return this.blurYFilter.blur;
     }
 
-    set blurY(value: number)
+    set strengthY(value: number)
     {
         this.blurYFilter.blur = value;
         this.updatePadding();
+    }
+
+    /**
+     * Sets the strength of both the blurX and blurY properties simultaneously
+     * @default 2
+     * @deprecated since 8.3.0
+     * @see BlurFilter.strength
+     */
+    get blur(): number
+    {
+        // #if _DEBUG
+        deprecation('8.3.0', 'BlurFilter.blur is deprecated, please use BlurFilter.strength instead.');
+        // #endif
+
+        return this.strength;
+    }
+
+    set blur(value: number)
+    {
+        // #if _DEBUG
+        deprecation('8.3.0', 'BlurFilter.blur is deprecated, please use BlurFilter.strength instead.');
+        // #endif
+        this.strength = value;
+    }
+
+    /**
+     * Sets the strength of the blurX property
+     * @default 2
+     * @deprecated since 8.3.0
+     * @see BlurFilter.strengthX
+     */
+    get blurX(): number
+    {
+        // #if _DEBUG
+        deprecation('8.3.0', 'BlurFilter.blurX is deprecated, please use BlurFilter.strengthX instead.');
+        // #endif
+
+        return this.strengthX;
+    }
+
+    set blurX(value: number)
+    {
+        // #if _DEBUG
+        deprecation('8.3.0', 'BlurFilter.blurX is deprecated, please use BlurFilter.strengthX instead.');
+        // #endif
+        this.strengthX = value;
+    }
+
+    /**
+     * Sets the strength of the blurY property
+     * @default 2
+     * @deprecated since 8.3.0
+     * @see BlurFilter.strengthY
+     */
+    get blurY(): number
+    {
+        // #if _DEBUG
+        deprecation('8.3.0', 'BlurFilter.blurY is deprecated, please use BlurFilter.strengthY instead.');
+        // #endif
+
+        return this.strengthY;
+    }
+
+    set blurY(value: number)
+    {
+        // #if _DEBUG
+        deprecation('8.3.0', 'BlurFilter.blurY is deprecated, please use BlurFilter.strengthY instead.');
+        // #endif
+        this.strengthY = value;
     }
 
     /**
