@@ -2,6 +2,13 @@
   "name": "pixi.js",
   "version": "8.2.5",
   "author": "PixiJS Team",
+  "homepage": "http://pixijs.com/",
+  "bugs": "https://github.com/pixijs/pixijs/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixijs/pixijs.git"
+  },
   "main": "lib/index.js",
   "module": "lib/index.mjs",
   "types": "lib/index.d.ts",
@@ -171,6 +178,7 @@
     "./lib/compressed-textures/basis/init.*",
     "./lib/events/init.*",
     "./lib/filters/init.*",
+    "./lib/input/init.*",
     "./lib/math-extras/init.*",
     "./lib/scene/sprite-tiling/init.*",
     "./lib/scene/text/init.*",
@@ -279,6 +287,14 @@
       },
       "require": {
         "default": "./lib/filters/init.js"
+      }
+    },
+    "./input": {
+      "import": {
+        "default": "./lib/input/init.mjs"
+      },
+      "require": {
+        "default": "./lib/input/init.js"
       }
     },
     "./math-extras": {
