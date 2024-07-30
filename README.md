@@ -192,6 +192,10 @@ from the road map above, feel free to get in touch.
 Make sure to read the [Contributing Guide](.github/CONTRIBUTING.md)
 before submitting changes.
 
+### Contributors
+
+<img src="https://markupgo.com/github/pixijs/pixijs/contributors?count=0&circleSize=32&circleRadius=32&center=true" width="100%" /> 
+
 ### License ###
 
 This content is released under the [MIT License](http://opensource.org/licenses/MIT).
