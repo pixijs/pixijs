@@ -4,6 +4,23 @@ import { compute2DProjection } from './utils/compute2DProjections';
 
 import type { Matrix3x3 } from './utils/compute2DProjections';
 
+/**
+ * A PerspectivePlaneGeometry allows you to draw a 2d plane with perspective. Where ever you move the corners
+ * the texture will be projected to look like it is in 3d space. Great for mapping a 2D mesh into a 3D scene.
+ *
+ * IMPORTANT: This is not a full 3D mesh, it is a 2D mesh with a perspective projection applied to it :)
+ *
+ * ```js
+ * const perspectivePlaneGeometry = new PerspectivePlaneGeometry({
+ *  width: 100,
+ *  height: 100,
+ *  verticesX: 10,
+ *  verticesY: 10,
+ * });
+ * ```
+ * @see {@link scene.PerspectivePlaneGeometry}
+ * @memberof scene
+ */
 export class PerspectivePlaneGeometry extends PlaneGeometry
 {
     /** The corner points of the quad you can modify these directly, if you do make sure to call `updateProjection` */
