@@ -46,27 +46,27 @@ export class PerspectivePlaneGeometry extends PlaneGeometry
     /**
      * Will set the corners of the quad to the given coordinates
      * Calculating the perspective so it looks correct!
-     * @param x1 - x coordinate of the first corner
-     * @param y1 - y coordinate of the first corner
-     * @param x2 - x coordinate of the second corner
-     * @param y2 - y coordinate of the second corner
-     * @param x3 - x coordinate of the third corner
-     * @param y3 - y coordinate of the third corner
-     * @param x4 - x coordinate of the fourth corner
-     * @param y4 - y coordinate of the fourth corner
+     * @param x0 - x coordinate of the first corner
+     * @param y0 - y coordinate of the first corner
+     * @param x1 - x coordinate of the second corner
+     * @param y1 - y coordinate of the second corner
+     * @param x2 - x coordinate of the third corner
+     * @param y2 - y coordinate of the third corner
+     * @param x3 - x coordinate of the fourth corner
+     * @param y3 - y coordinate of the fourth corner
      */
-    public setCorners(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number)
+    public setCorners(x0: number, y0: number, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number)
     {
         const corners = this.corners;
 
-        corners[0] = x1;
-        corners[1] = y1;
-        corners[2] = x2;
-        corners[3] = y2;
-        corners[4] = x3;
-        corners[5] = y3;
-        corners[6] = x4;
-        corners[7] = y4;
+        corners[0] = x0;
+        corners[1] = y0;
+        corners[2] = x1;
+        corners[3] = y1;
+        corners[4] = x2;
+        corners[5] = y2;
+        corners[6] = x3;
+        corners[7] = y3;
 
         this.updateProjection();
     }
