@@ -6,7 +6,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render a perspective mesh',
-    only: true,
     create: async (scene: Container) =>
     {
         const texture = await Assets.load(`bg_scene_rotate.jpg`);
