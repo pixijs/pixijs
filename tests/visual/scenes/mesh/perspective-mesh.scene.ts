@@ -14,14 +14,14 @@ export const scene: TestScene = {
             texture,
             verticesX: 10,
             verticesY: 10,
-            x1: 0,
-            y1: 30,
+            x0: 0,
+            y0: 30,
+            x1: 128,
+            y1: 0,
             x2: 128,
-            y2: 0,
-            x3: 128,
-            y3: 128,
-            x4: 0,
-            y4: 128 - 30,
+            y2: 128,
+            x3: 0,
+            y3: 128 - 30,
         });
 
         scene.addChild(mesh);
