@@ -1,9 +1,8 @@
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
-import { Container } from '../container/Container';
+import { ViewContainer } from '../view/View';
 import { NineSliceGeometry } from './NineSliceGeometry';
 
-import type { Point } from '../../maths/point/Point';
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Bounds, BoundsData } from '../container/bounds/Bounds';
 import type { ContainerOptions } from '../container/Container';
@@ -70,7 +69,7 @@ export interface NineSliceSpriteOptions extends ContainerOptions
  * const plane9 = new NineSliceSprite(Texture.from('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
  * @memberof scene
  */
-export class NineSliceSprite extends Container implements View
+export class NineSliceSprite extends ViewContainer implements View
 {
     /** The default options, used to override the initial values of any options passed in the constructor. */
     public static defaultOptions: NineSliceSpriteOptions = {
@@ -78,8 +77,7 @@ export class NineSliceSprite extends Container implements View
         texture: Texture.EMPTY,
     };
 
-    public _roundPixels: 0 | 1 = 0;
-    public readonly renderPipeId: string = 'nineSliceSprite';
+    public override readonly renderPipeId: string = 'nineSliceSprite';
     public _texture: Texture;
 
     public batched = true;
@@ -91,12 +89,7 @@ export class NineSliceSprite extends Container implements View
     private _width: number;
     private _height: number;
 
-    public _lastUsed = 0;
-    public _lastInstructionTick = -1;
-
     public _didSpriteUpdate = true;
-
-    public bounds: BoundsData = { minX: 0, minY: 0, maxX: 0, maxY: 0 };
 
     /**
      * @param {scene.NineSliceSpriteOptions|Texture} options - Options to use
@@ -148,25 +141,31 @@ export class NineSliceSprite extends Container implements View
         this.roundPixels = roundPixels ?? false;
     }
 
+    /** The local bounds of the view. */
+    public get bounds(): BoundsData
+    {
+        return this._bounds;
+    }
+
     /** The width of the NineSliceSprite, setting this will actually modify the vertices and UV's of this plane. */
-    get width(): number
+    override get width(): number
     {
         return this._width;
     }
 
-    set width(value: number)
+    override set width(value: number)
     {
         this.bounds.maxX = this._width = value;
         this.onViewUpdate();
     }
 
     /** The height of the NineSliceSprite, setting this will actually modify the vertices and UV's of this plane. */
-    get height(): number
+    override get height(): number
     {
         return this._height;
     }
 
-    set height(value: number)
+    override set height(value: number)
     {
         this.bounds.maxY = this._height = value;
         this.onViewUpdate();
@@ -243,20 +242,6 @@ export class NineSliceSprite extends Container implements View
         this.onViewUpdate();
     }
 
-    /**
-     *  Whether or not to round the x/y position of the sprite.
-     * @type {boolean}
-     */
-    get roundPixels()
-    {
-        return !!this._roundPixels;
-    }
-
-    set roundPixels(value: boolean)
-    {
-        this._roundPixels = value ? 1 : 0;
-    }
-
     /** The original width of the texture */
     get originalWidth()
     {
@@ -269,7 +254,7 @@ export class NineSliceSprite extends Container implements View
         return this._texture.height;
     }
 
-    public onViewUpdate()
+    protected onViewUpdate()
     {
         this._didViewChangeTick++;
 
@@ -298,32 +283,13 @@ export class NineSliceSprite extends Container implements View
     }
 
     /**
-     * Checks if the object contains the given point.
-     * @param point - The point to check
-     */
-    public containsPoint(point: Point)
-    {
-        const bounds = this.bounds;
-
-        if (point.x >= bounds.minX && point.x <= bounds.maxX)
-        {
-            if (point.y >= bounds.minY && point.y <= bounds.maxY)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Destroys this sprite renderable and optionally its texture.
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
      * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
      * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
      */
-    public destroy(options?: DestroyOptions): void
+    public override destroy(options?: DestroyOptions): void
     {
         super.destroy(options);
 
