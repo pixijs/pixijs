@@ -32,15 +32,15 @@ export interface AnimatedSpriteOptions extends SpriteOptions
  *     'image_sequence_03.png',
  *     'image_sequence_04.png',
  * ];
- * const frames = [];
+ * const textureArray = [];
  *
  * for (let i = 0; i < 4; i++)
  * {
  *     const texture = Texture.from(alienImages[i]);
- *     frames.push(texture);
+ *     textureArray.push(texture);
  * }
  *
- * const animatedSprite = new AnimatedSprite(frames);
+ * const animatedSprite = new AnimatedSprite(textureArray);
  * ```
  *
  * The more efficient and simpler way to create an animated sprite is using a {@link Spritesheet}
