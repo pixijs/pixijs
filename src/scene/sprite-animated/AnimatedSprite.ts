@@ -144,8 +144,8 @@ export class AnimatedSprite extends Sprite
         if (Array.isArray(args[0]))
         {
             options = {
-                textures: args[0] as Texture[] | FrameObject[],
-                autoUpdate: args[1] as boolean ?? true,
+                textures: args[0] as AnimatedSpriteFrames,
+                autoUpdate: args[1] as boolean,
             };
         }
 
@@ -159,7 +159,7 @@ export class AnimatedSprite extends Sprite
 
         this._textures = null;
         this._durations = null;
-        this._autoUpdate = autoUpdate;
+        this._autoUpdate = autoUpdate ?? true;
         this._isConnectedToTicker = false;
 
         this.animationSpeed = 1;
