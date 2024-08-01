@@ -124,7 +124,7 @@ export class Batcher
     public static defaultOptions: BatcherOptions = {
         vertexSize: 4,
         indexSize: 6,
-        maxTextures: getMaxTexturesPerBatch(),
+        maxTextures: null,
     };
 
     /** unique id for this batcher */
@@ -155,6 +155,7 @@ export class Batcher
 
     constructor(options: BatcherOptions = {})
     {
+        Batcher.defaultOptions.maxTextures = Batcher.defaultOptions.maxTextures ?? getMaxTexturesPerBatch();
         options = { ...Batcher.defaultOptions, ...options };
 
         const { vertexSize, indexSize, maxTextures } = options;
