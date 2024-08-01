@@ -178,7 +178,13 @@ export abstract class AbstractText<
 
     set roundPixels(value: boolean)
     {
-        this._roundPixels = value ? 1 : 0;
+        const valueNumber = value ? 1 : 0;
+
+        if (this._roundPixels === valueNumber) return;
+
+        this._roundPixels = valueNumber;
+
+        this.onViewUpdate();
     }
 
     /** Set the copy for the text object. To split a line you can use '\n'. */

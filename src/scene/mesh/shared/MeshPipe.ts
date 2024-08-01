@@ -128,6 +128,7 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
 
             gpuBatchableMesh.texture = mesh._texture;
             gpuBatchableMesh.geometry = mesh._geometry;
+            gpuBatchableMesh.roundPixels = (this.renderer._roundPixels | mesh._roundPixels) as 0 | 1;
 
             batcher.addToBatch(gpuBatchableMesh);
         }
@@ -147,6 +148,7 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
 
             gpuBatchableMesh.texture = mesh._texture;
             gpuBatchableMesh.geometry = mesh._geometry;
+            gpuBatchableMesh.roundPixels = (this.renderer._roundPixels | mesh._roundPixels) as 0 | 1;
 
             gpuBatchableMesh.batcher.updateElement(gpuBatchableMesh);
         }
@@ -216,7 +218,7 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
         // TODO - make this batchable graphics??
         const gpuMesh: BatchableMesh = BigPool.get(BatchableMesh);
 
-        gpuMesh.mesh = mesh;
+        gpuMesh.geometry = mesh._geometry;
         gpuMesh.texture = mesh._texture;
         gpuMesh.roundPixels = (this.renderer._roundPixels | mesh._roundPixels) as 0 | 1;
 

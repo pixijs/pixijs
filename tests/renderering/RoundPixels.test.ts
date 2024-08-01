@@ -134,6 +134,101 @@ describe('Round Pixels', () =>
         expect(batchableTilingSprite.roundPixels).toBe(1);
     });
 
+    it('batches should have round pixels if the object has round pixels', async () =>
+    {
+        const renderer = new WebGLRenderer();
+
+        await renderer.init({
+            roundPixels: false,
+        });
+
+        const sprite = new Sprite();
+        const tilingSprite = new TilingSprite();
+        const graphics = new Graphics().rect(0, 0, 100, 100).fill('red');
+
+        const mesh = new Mesh({
+            geometry: new QuadGeometry(),
+        });
+
+        sprite.roundPixels = true;
+        tilingSprite.roundPixels = true;
+        graphics.roundPixels = true;
+        mesh.roundPixels = true;
+
+        const container = new Container();
+
+        container.addChild(tilingSprite, graphics, mesh, sprite);
+
+        renderer.render(container);
+
+        const batchableSprite = renderer.renderPipes.sprite['_getGpuSprite'](sprite);
+
+        expect(batchableSprite.roundPixels).toBe(1);
+
+        const batchableGraphics = renderer.renderPipes.graphics['_getBatchesForRenderable'](graphics);
+
+        expect(batchableGraphics[0].roundPixels).toBe(1);
+
+        const batchableMesh = renderer.renderPipes.mesh['_getBatchableMesh'](mesh);
+
+        expect(batchableMesh.roundPixels).toBe(1);
+
+        const batchableTilingSprite = renderer.renderPipes.tilingSprite['_getTilingSpriteData'](tilingSprite).batchableMesh;
+
+        expect(batchableTilingSprite.roundPixels).toBe(1);
+    });
+
+    it('round pixels of batches should update if round pixels of the object is changed', async () =>
+    {
+        const renderer = new WebGLRenderer();
+
+        await renderer.init({
+            roundPixels: false,
+        });
+
+        const sprite = new Sprite();
+        const tilingSprite = new TilingSprite();
+        const graphics = new Graphics().rect(0, 0, 100, 100).fill('red');
+
+        const mesh = new Mesh({
+            geometry: new QuadGeometry(),
+        });
+
+        sprite.roundPixels = true;
+        tilingSprite.roundPixels = true;
+        graphics.roundPixels = true;
+        mesh.roundPixels = true;
+
+        const container = new Container();
+
+        container.addChild(tilingSprite, graphics, mesh, sprite);
+
+        renderer.render(container);
+
+        sprite.roundPixels = false;
+        tilingSprite.roundPixels = false;
+        graphics.roundPixels = false;
+        mesh.roundPixels = false;
+
+        renderer.render(container);
+
+        const batchableSprite = renderer.renderPipes.sprite['_getGpuSprite'](sprite);
+
+        expect(batchableSprite.roundPixels).toBe(0);
+
+        const batchableGraphics = renderer.renderPipes.graphics['_getBatchesForRenderable'](graphics);
+
+        expect(batchableGraphics[0].roundPixels).toBe(0);
+
+        const batchableMesh = renderer.renderPipes.mesh['_getBatchableMesh'](mesh);
+
+        expect(batchableMesh.roundPixels).toBe(0);
+
+        const batchableTilingSprite = renderer.renderPipes.tilingSprite['_getTilingSpriteData'](tilingSprite).batchableMesh;
+
+        expect(batchableTilingSprite.roundPixels).toBe(0);
+    });
+
     it('renderer round pixels should override text items round pixels if false', async () =>
     {
         const renderer = new WebGLRenderer();

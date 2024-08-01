@@ -321,7 +321,13 @@ export class TilingSprite extends Container implements View, Instruction
 
     set roundPixels(value: boolean)
     {
-        this._roundPixels = value ? 1 : 0;
+        const valueNumber = value ? 1 : 0;
+
+        if (this._roundPixels === valueNumber) return;
+
+        this._roundPixels = valueNumber;
+
+        this.onViewUpdate();
     }
 
     /**

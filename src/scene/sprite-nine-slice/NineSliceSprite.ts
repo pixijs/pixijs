@@ -254,7 +254,13 @@ export class NineSliceSprite extends Container implements View
 
     set roundPixels(value: boolean)
     {
-        this._roundPixels = value ? 1 : 0;
+        const valueNumber = value ? 1 : 0;
+
+        if (this._roundPixels === valueNumber) return;
+
+        this._roundPixels = valueNumber;
+
+        this.onViewUpdate();
     }
 
     /** The original width of the texture */
