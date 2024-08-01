@@ -44,7 +44,7 @@ export class SoftLightBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                finalColor = vec4(blendSoftLight(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendSoftLight(back.rgb, front.rgb, front.a), blendedAlpha) * uBlend;
                 `
             },
             gpu: {
@@ -66,7 +66,7 @@ export class SoftLightBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                out = vec4<f32>(blendSoftLight(back.rgb, front.rgb, front.a), blendUniforms.uBlend);
+                out = vec4<f32>(blendSoftLight(back.rgb, front.rgb, front.a), blendedAlpha) * blendUniforms.uBlend;
                 `
             }
         });
