@@ -599,6 +599,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     {
         super();
 
+        this.effects = [];
         assignWithIgnore(this, options, {
             children: true,
             parent: true,
@@ -606,7 +607,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         });
 
         options.children?.forEach((child) => this.addChild(child));
-        this.effects = [];
         options.parent?.addChild(this);
     }
 
