@@ -46,7 +46,7 @@ export class DivideBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                finalColor = vec4(blendDivide(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendDivide(back.rgb, front.rgb,front.a), blendedAlpha) * uBlend;
                 `
             },
             gpu: {
@@ -67,7 +67,7 @@ export class DivideBlend extends BlendModeFilter
                 }
             `,
                 main: `
-                out = vec4<f32>(blendDivide(back.rgb, front.rgb, front.a), blendUniforms.uBlend);
+                out = vec4<f32>(blendDivide(back.rgb, front.rgb, front.a), blendedAlpha) * blendUniforms.uBlend;
             `
             }
         });
