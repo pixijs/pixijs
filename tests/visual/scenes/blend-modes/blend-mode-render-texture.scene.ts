@@ -2,7 +2,7 @@ import { OverlayBlend } from '../../../../src/advanced-blend-modes/OverlayBlend'
 import { Container } from '../../../../src/scene/container/Container';
 import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
 import { Sprite } from '../../../../src/scene/sprite/Sprite';
-import '../../../../src/advanced-blend-modes';
+import '../../../../src/advanced-blend-modes/init';
 
 import type { Renderer } from '../../../../src/rendering/renderers/types';
 import type { TestScene } from '../../types';
