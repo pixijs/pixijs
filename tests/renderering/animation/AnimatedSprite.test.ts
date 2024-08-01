@@ -34,19 +34,19 @@ describe('AnimatedSprite', () =>
 
         it('should be correct with default options', () =>
         {
-            sprite = new AnimatedSprite(textures);
+            sprite = new AnimatedSprite({ frames: textures });
             expect(sprite['_autoUpdate']).toBe(true);
         });
 
         it('should be correct with autoUpdate=false', () =>
         {
-            sprite = new AnimatedSprite(textures, false);
+            sprite = new AnimatedSprite({ frames: textures, autoUpdate: false });
             expect(sprite['_autoUpdate']).toBe(false);
         });
 
         it('should be correct with autoUpdate=true but then turned off via setter', () =>
         {
-            sprite = new AnimatedSprite(textures, true);
+            sprite = new AnimatedSprite({ frames: textures, autoUpdate: true });
             expect(sprite['_autoUpdate']).toBe(true);
             sprite.autoUpdate = false;
             expect(sprite['_autoUpdate']).toBe(false);
@@ -59,7 +59,7 @@ describe('AnimatedSprite', () =>
 
         beforeAll(() =>
         {
-            sprite = new AnimatedSprite([Texture.EMPTY], false);
+            sprite = new AnimatedSprite({ frames: [Texture.EMPTY], autoUpdate: false });
         });
 
         afterAll(() =>
@@ -93,7 +93,7 @@ describe('AnimatedSprite', () =>
 
         beforeAll(() =>
         {
-            sprite = new AnimatedSprite([Texture.EMPTY], false);
+            sprite = new AnimatedSprite({ frames: [Texture.EMPTY], autoUpdate: false });
         });
 
         afterAll(() =>
@@ -127,7 +127,7 @@ describe('AnimatedSprite', () =>
 
         beforeAll(() =>
         {
-            sprite = new AnimatedSprite([new Texture(), new Texture(), Texture.EMPTY]);
+            sprite = new AnimatedSprite({ frames: [new Texture(), new Texture(), Texture.EMPTY] });
             sprite.animationSpeed = 0.5;
             sprite.loop = false;
         });
@@ -172,7 +172,7 @@ describe('AnimatedSprite', () =>
 
         beforeAll(() =>
         {
-            sprite = new AnimatedSprite([Texture.EMPTY, Texture.EMPTY, Texture.EMPTY]);
+            sprite = new AnimatedSprite({ frames: [Texture.EMPTY, Texture.EMPTY, Texture.EMPTY] });
             sprite.animationSpeed = 0.5;
             sprite.loop = false;
         });
@@ -212,7 +212,7 @@ describe('AnimatedSprite', () =>
 
         beforeAll(() =>
         {
-            sprite = new AnimatedSprite([Texture.EMPTY, Texture.EMPTY, Texture.EMPTY]);
+            sprite = new AnimatedSprite({ frames: [Texture.EMPTY, Texture.EMPTY, Texture.EMPTY] });
             sprite.animationSpeed = 0.5;
             sprite.loop = false;
         });
@@ -268,7 +268,7 @@ describe('AnimatedSprite', () =>
 
         beforeEach(() =>
         {
-            sprite = new AnimatedSprite([Texture.EMPTY, Texture.WHITE, Texture.EMPTY]);
+            sprite = new AnimatedSprite({ frames: [Texture.EMPTY, Texture.WHITE, Texture.EMPTY] });
             sprite.animationSpeed = 0.5;
             sprite.loop = false;
         });
@@ -374,7 +374,7 @@ describe('AnimatedSprite', () =>
                 const orig1 = new Texture();
                 const orig2 = new Texture();
                 const orig3 = new Texture();
-                const sprite = new AnimatedSprite([orig1, orig2, orig3]);
+                const sprite = new AnimatedSprite({ frames: [orig1, orig2, orig3] });
 
                 sprite.gotoAndPlay(0);
                 sprite.loop = false;
@@ -403,7 +403,7 @@ describe('AnimatedSprite', () =>
 
         beforeAll(() =>
         {
-            sprite = new AnimatedSprite([Texture.EMPTY, Texture.EMPTY, Texture.EMPTY]);
+            sprite = new AnimatedSprite({ frames: [Texture.EMPTY, Texture.EMPTY, Texture.EMPTY] });
             sprite.animationSpeed = 0.5;
             sprite.loop = false;
         });
@@ -460,7 +460,7 @@ describe('AnimatedSprite', () =>
 
         beforeEach(() =>
         {
-            sprite = new AnimatedSprite([Texture.EMPTY, Texture.WHITE, Texture.EMPTY]);
+            sprite = new AnimatedSprite({ frames: [Texture.EMPTY, Texture.WHITE, Texture.EMPTY] });
             sprite.animationSpeed = 0.5;
             sprite.loop = true;
         });

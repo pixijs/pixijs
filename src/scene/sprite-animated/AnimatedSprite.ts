@@ -1,7 +1,25 @@
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { UPDATE_PRIORITY } from '../../ticker/const';
 import { Ticker } from '../../ticker/Ticker';
+import { deprecation } from '../../utils/logging/deprecation';
 import { Sprite } from '../sprite/Sprite';
+
+import type { SpriteOptions } from '../sprite/Sprite';
+
+export type AnimatedSpriteFrames = Texture[] | FrameObject[];
+
+/**
+ * Constructor options used for `AnimatedSprite` instances.
+ * @see {@link scene.AnimatedSprite}
+ * @memberof scene
+ */
+export interface AnimatedSpriteOptions extends SpriteOptions
+{
+    /** An array of {@link Texture} or frame objects that make up the animation. */
+    frames: AnimatedSpriteFrames;
+    /** Whether to use Ticker.shared to auto update animation time. */
+    autoUpdate?: boolean;
+}
 
 /**
  * An AnimatedSprite is a simple way to display an animation depicted by a list of textures.
@@ -15,15 +33,15 @@ import { Sprite } from '../sprite/Sprite';
  *     'image_sequence_03.png',
  *     'image_sequence_04.png',
  * ];
- * const textureArray = [];
+ * const frames = [];
  *
  * for (let i = 0; i < 4; i++)
  * {
  *     const texture = Texture.from(alienImages[i]);
- *     textureArray.push(texture);
+ *     frames.push(texture);
  * }
  *
- * const animatedSprite = new AnimatedSprite(textureArray);
+ * const animatedSprite = new AnimatedSprite({ frames });
  * ```
  *
  * The more efficient and simpler way to create an animated sprite is using a {@link Spritesheet}
@@ -112,13 +130,34 @@ export class AnimatedSprite extends Sprite
     private _previousFrame: number;
 
     /**
-     * @param textures - An array of {@link Texture} or frame
-     *  objects that make up the animation.
-     * @param {boolean} [autoUpdate=true] - Whether to use Ticker.shared to auto update animation time.
+     * @deprecated since 8.3.0
      */
-    constructor(textures: Texture[] | FrameObject[], autoUpdate = true)
+    constructor(frames: AnimatedSpriteFrames, autoUpdate?: boolean);
+    constructor(options: AnimatedSpriteOptions);
+    /** @ignore */
+    constructor(...args: [AnimatedSpriteOptions?] | [AnimatedSpriteFrames?] | [AnimatedSpriteFrames?, boolean?])
     {
-        super(textures[0] instanceof Texture ? textures[0] : textures[0].texture);
+        let options = args[0] as AnimatedSpriteOptions;
+
+        if (Array.isArray(args[0]))
+        {
+            // #if _DEBUG
+            deprecation('8.3.0', 'AnimatedSprite now uses options instead of arguments');
+            // #endif
+
+            options = {
+                frames: args[0] as Texture[] | FrameObject[],
+                autoUpdate: args[1] as boolean ?? true,
+            };
+        }
+
+        const { frames, autoUpdate, ...rest } = options;
+        const [firstFrame] = frames;
+
+        super({
+            ...rest,
+            texture: firstFrame instanceof Texture ? firstFrame : firstFrame.texture,
+        });
 
         this._textures = null;
         this._durations = null;
@@ -137,7 +176,7 @@ export class AnimatedSprite extends Sprite
         this._playing = false;
         this._previousFrame = null;
 
-        this.textures = textures;
+        this.textures = frames;
     }
 
     /** Stops the AnimatedSprite. */
@@ -325,19 +364,19 @@ export class AnimatedSprite extends Sprite
 
     /**
      * A short hand way of creating an AnimatedSprite from an array of frame ids.
-     * @param frames - The array of frames ids the AnimatedSprite will use as its texture frames.
+     * @param framesIds - The array of frames ids the AnimatedSprite will use as its texture frames.
      * @returns - The new animated sprite with the specified frames.
      */
-    public static fromFrames(frames: string[]): AnimatedSprite
+    public static fromFrames(framesIds: string[]): AnimatedSprite
     {
-        const textures = [];
+        const frames = [];
 
         for (let i = 0; i < frames.length; ++i)
         {
-            textures.push(Texture.from(frames[i]));
+            frames.push(Texture.from(framesIds[i]));
         }
 
-        return new AnimatedSprite(textures);
+        return new AnimatedSprite({ frames });
     }
 
     /**
@@ -347,14 +386,14 @@ export class AnimatedSprite extends Sprite
      */
     public static fromImages(images: string[]): AnimatedSprite
     {
-        const textures = [];
+        const frames = [];
 
         for (let i = 0; i < images.length; ++i)
         {
-            textures.push(Texture.from(images[i]));
+            frames.push(Texture.from(images[i]));
         }
 
-        return new AnimatedSprite(textures);
+        return new AnimatedSprite({ frames });
     }
 
     /**
@@ -369,12 +408,12 @@ export class AnimatedSprite extends Sprite
     }
 
     /** The array of textures used for this AnimatedSprite. */
-    get textures(): Texture[] | FrameObject[]
+    get textures(): AnimatedSpriteFrames
     {
         return this._textures;
     }
 
-    set textures(value: Texture[] | FrameObject[])
+    set textures(value: AnimatedSpriteFrames)
     {
         if (value[0] instanceof Texture)
         {

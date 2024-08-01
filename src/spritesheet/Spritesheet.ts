@@ -216,7 +216,7 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
      * @example
      * import { AnimatedSprite } from 'pixi.js';
      *
-     * new AnimatedSprite(sheet.animations['anim_name']);
+     * new AnimatedSprite({ frames: sheet.animations['anim_name'] });
      */
     public animations: Record<keyof NonNullable<S['animations']>, Texture[]>;
 
