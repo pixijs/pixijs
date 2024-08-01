@@ -1,5 +1,5 @@
 import type { Point } from '../../../../maths/point/Point';
-import type { Bounds, BoundsData } from '../../../../scene/container/bounds/Bounds';
+import type { BoundsData } from '../../../../scene/container/bounds/Bounds';
 
 export interface ViewObserver
 {
@@ -15,14 +15,14 @@ export interface View
     /** a unique id for this view */
     readonly uid: number;
 
-    /** whether or not this view should be batched */
-    batched: boolean;
-
     /**
      * an identifier that is used to identify the type of system that will be used to render this renderable
      * eg, 'sprite' will use the sprite system (based on the systems name
      */
     readonly renderPipeId: string;
+
+    /** @private */
+    didViewUpdate: boolean;
 
     /** this is an int because it is packed directly into an attribute in the shader */
     _roundPixels: 0 | 1;
@@ -43,9 +43,12 @@ export interface View
     /** this is the AABB rectangle bounds of the view in local untransformed space. */
     bounds: BoundsData;
 
-    /** Adds the current bounds of this view to the supplied bounds */
-    addBounds: (bounds: Bounds) => void;
     /** Checks if the point is within the view */
     containsPoint: (point: Point) => boolean;
+
+    /**
+     * @deprecated since 8.2.5. this is no longer used, instead please use updateBounds
+     */
+    addBounds?: (bounds: BoundsData) => void;
 }
 

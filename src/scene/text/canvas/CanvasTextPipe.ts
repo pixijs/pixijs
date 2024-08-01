@@ -90,7 +90,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
 
         const batchableSprite = gpuText.batchableSprite;
 
-        if (text._didTextUpdate)
+        if (text.didViewUpdate)
         {
             this._updateText(text);
         }
@@ -103,7 +103,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
         const gpuText = this._getGpuText(text);
         const batchableSprite = gpuText.batchableSprite;
 
-        if (text._didTextUpdate)
+        if (text.didViewUpdate)
         {
             this._updateText(text);
         }
@@ -140,11 +140,9 @@ export class CanvasTextPipe implements RenderPipe<Text>
             this._updateGpuText(text);
         }
 
-        text._didTextUpdate = false;
-
         const padding = text._style.padding;
 
-        updateQuadBounds(batchableSprite.bounds, text._anchor, batchableSprite.texture, padding);
+        updateQuadBounds(batchableSprite.bounds, text._anchor, batchableSprite.texture, padding, true);
     }
 
     private _updateGpuText(text: Text)
@@ -182,7 +180,6 @@ export class CanvasTextPipe implements RenderPipe<Text>
         this._gpuText[text.uid] = gpuTextData;
 
         text._resolution = text._autoResolution ? this._renderer.resolution : text.resolution;
-        this._updateText(text);
 
         // TODO perhaps manage this outside this pipe? (a bit like how we update / add)
         text.on('destroyed', this._destroyRenderableBound);

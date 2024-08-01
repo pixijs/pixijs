@@ -82,12 +82,7 @@ export class GraphicsPipe implements RenderPipe<Graphics>
         // need to get batches here.. as we need to know if we can batch or not..
         // this also overrides the current batches..
 
-        if (graphics._didGraphicsUpdate)
-        {
-            graphics._didGraphicsUpdate = false;
-
-            this._rebuild(graphics);
-        }
+        if (graphics.didViewUpdate) this._rebuild(graphics);
 
         if (gpuContext.isBatchable)
         {
@@ -172,8 +167,6 @@ export class GraphicsPipe implements RenderPipe<Graphics>
         {
             this._initBatchesForRenderable(graphics);
         }
-
-        graphics.batched = gpuContext.isBatchable;
     }
 
     private _addToBatcher(graphics: Graphics)

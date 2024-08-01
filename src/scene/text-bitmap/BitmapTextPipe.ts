@@ -39,10 +39,8 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
     {
         const graphicsRenderable = this._getGpuBitmapText(bitmapText);
 
-        if (bitmapText._didTextUpdate)
+        if (bitmapText.didViewUpdate)
         {
-            bitmapText._didTextUpdate = false;
-
             this._updateContext(bitmapText, graphicsRenderable);
         }
 
@@ -60,10 +58,8 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
         // sync..
         syncWithProxy(bitmapText, graphicsRenderable);
 
-        if (bitmapText._didTextUpdate)
+        if (bitmapText.didViewUpdate)
         {
-            bitmapText._didTextUpdate = false;
-
             this._updateContext(bitmapText, graphicsRenderable);
         }
 

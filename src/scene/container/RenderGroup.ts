@@ -2,7 +2,9 @@ import { Matrix } from '../../maths/matrix/Matrix';
 import { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
+import type { Renderable } from '../../rendering/renderers/shared/Renderable';
 import type { Container } from './Container';
+import type { ViewContainer } from './ViewContainer';
 
 /**
  * A RenderGroup is a class that is responsible for I generating a set of instructions that are used to render the
@@ -30,7 +32,7 @@ export class RenderGroup implements Instruction
     public updateTick = 0;
 
     // these update are renderable changes..
-    public readonly childrenRenderablesToUpdate: { list: Container[]; index: number; } = { list: [], index: 0 };
+    public readonly childrenRenderablesToUpdate: { list: Renderable[]; index: number; } = { list: [], index: 0 };
 
     // other
     public structureDidChange = true;
@@ -200,18 +202,7 @@ export class RenderGroup implements Instruction
         childrenToUpdate.list[childrenToUpdate.index++] = child;
     }
 
-    // SHOULD THIS BE HERE?
-    public updateRenderable(container: Container)
-    {
-        // only update if its visible!
-        if (container.globalDisplayStatus < 0b111) return;
-
-        container.didViewUpdate = false;
-        // actually updates the renderable..
-        this.instructionSet.renderPipes[container.renderPipeId].updateRenderable(container);
-    }
-
-    public onChildViewUpdate(child: Container)
+    public onChildViewUpdate(child: Renderable)
     {
         this.childrenRenderablesToUpdate.list[this.childrenRenderablesToUpdate.index++] = child;
     }
@@ -265,6 +256,21 @@ export class RenderGroup implements Instruction
         }
 
         return out;
+    }
+
+    /**
+     * @ignore
+     * @param viewContainer
+     * @deprecated - this method is not used and will be removed in the future
+     */
+    public updateRenderable(viewContainer: ViewContainer)
+    {
+        // only update if its visible!
+        if (viewContainer.globalDisplayStatus < 0b111) return;
+
+        viewContainer.didViewUpdate = false;
+        // actually updates the renderable..
+        this.instructionSet.renderPipes[viewContainer.renderPipeId].updateRenderable(viewContainer);
     }
 
     private _getChildren(container: Container, out: Container[] = []): Container[]

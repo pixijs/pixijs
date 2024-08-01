@@ -1,9 +1,9 @@
-import { Bounds, type BoundsData } from './bounds/Bounds';
-import { Container } from './Container';
+import { deprecation } from '../../utils/logging/deprecation';
+import { type BoundsData } from './bounds/Bounds';
+import { ViewContainer } from './ViewContainer';
 
 import type { Point } from '../../maths/point/Point';
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
-import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Renderer } from '../../rendering/renderers/types';
 import type { ContainerOptions } from './Container';
 
@@ -19,8 +19,21 @@ export interface RenderContainerOptions extends ContainerOptions
     render?: RenderFunction;
     /** how to know if the custom render logic contains a point or not, used for interaction */
     containsPoint?: (point: Point) => boolean;
-    /** how to add the bounds of this object when measuring */
+    /** @deprecated how to add the bounds of this object when measuring */
     addBounds?: (bounds: BoundsData) => void;
+    /**
+     * How to update the bounds to reflect any changes in size.
+     * Rather than adding bounds, this function will only need to reflect changes in its own bounds object
+     * eg:
+     * ```js
+     * updateBounds()
+     * {
+     *   this._bounds.clear();
+     *   this._bounds.addQuad(0, 0, 100, 100);
+     * }
+     * ```
+     */
+    updateBounds?: (bounds: BoundsData) => void;
 }
 
 /**
@@ -56,37 +69,9 @@ export interface RenderContainerOptions extends ContainerOptions
  * @memberof scene
  * @extends scene.Container
  */
-export class RenderContainer extends Container implements View, Instruction
+export class RenderContainer extends ViewContainer implements Instruction
 {
-    public batched = false;
-    /**
-     *  Whether or not to round the x/y position of the sprite.
-     * @type {boolean}
-     */
-    public roundPixels: boolean;
-    public _roundPixels: 0 | 1;
-
-    public _lastUsed = 0;
-    public _lastInstructionTick = -1;
-
-    /**
-     * The local bounds of the sprite.
-     * @type {rendering.Bounds}
-     */
-    public bounds = new Bounds();
-    /**
-     * Checks if the object contains the given point.
-     * @param point - The point to check
-     */
-    public containsPoint: (point: Point) => boolean;
-    /**
-     * Adds the bounds of this text to the bounds object.
-     * @param bounds - The output bounds object.
-     */
-    public addBounds: (bounds: Bounds) => void;
-
-    public canBundle = false;
-    public readonly renderPipeId: string = 'customRender';
+    public renderPipeId = 'customRender';
 
     /**
      * @param options - The options for the container.
@@ -107,8 +92,22 @@ export class RenderContainer extends Container implements View, Instruction
 
         if (render) this.render = render;
 
-        this.containsPoint = options.containsPoint ?? (() => false);
-        this.addBounds = options.addBounds ?? (() => false);
+        if (options.containsPoint)
+        {
+            this.containsPoint = options.containsPoint;
+        }
+
+        if (options.addBounds)
+        {
+            this.addBounds = options.addBounds;
+
+            deprecation('8.2.5', 'RenderContainer#addBounds no longer used, use RenderContainer#updateBounds instead');
+            this.updateBounds = () =>
+            {
+                this._bounds.clear();
+                this.addBounds(this._bounds);
+            };
+        }
     }
 
     /**

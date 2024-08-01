@@ -51,6 +51,8 @@ describe('Text', () =>
 
             const renderer = await getWebGLRenderer({ resolution: 2 });
 
+            renderer.render({ container: text });
+
             const texture = renderer.renderPipes.text['_getGpuText'](text).texture;
 
             expect(texture.source.resolution).toEqual(2); // <-- getting null
