@@ -15,7 +15,7 @@ export type AnimatedSpriteFrames = Texture[] | FrameObject[];
 export interface AnimatedSpriteOptions extends SpriteOptions
 {
     /** An array of {@link Texture} or frame objects that make up the animation. */
-    frames: AnimatedSpriteFrames;
+    textures: AnimatedSpriteFrames;
     /** Whether to use Ticker.shared to auto update animation time. */
     autoUpdate?: boolean;
 }
@@ -144,13 +144,13 @@ export class AnimatedSprite extends Sprite
         if (Array.isArray(args[0]))
         {
             options = {
-                frames: args[0] as Texture[] | FrameObject[],
+                textures: args[0] as Texture[] | FrameObject[],
                 autoUpdate: args[1] as boolean ?? true,
             };
         }
 
-        const { frames, autoUpdate, ...rest } = options;
-        const [firstFrame] = frames;
+        const { textures, autoUpdate, ...rest } = options;
+        const [firstFrame] = textures;
 
         super({
             ...rest,
@@ -174,7 +174,7 @@ export class AnimatedSprite extends Sprite
         this._playing = false;
         this._previousFrame = null;
 
-        this.textures = frames;
+        this.textures = textures;
     }
 
     /** Stops the AnimatedSprite. */
