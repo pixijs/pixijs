@@ -20,11 +20,17 @@ export interface TextureGCSystemOptions
      */
     textureGCActive: boolean;
     /**
+     * @deprecated since 8.3.0
+     * @see {@link TextureGCSystem.textureGCMaxIdle}
+     * @memberof rendering.SharedRendererOptions
+     */
+    textureGCAMaxIdle: number;
+    /**
      * The maximum idle frames before a texture is destroyed by garbage collection.
      * @default 60 * 60
      * @memberof rendering.SharedRendererOptions
      */
-    textureGCAMaxIdle: number;
+    textureGCMaxIdle: number;
     /**
      * Frames between two garbage collections.
      * @default 600
@@ -56,10 +62,15 @@ export class TextureGCSystem implements System<TextureGCSystemOptions>
          */
         textureGCActive: true,
         /**
+         * @deprecated since 8.3.0
+         * @see {@link TextureGCSystem.textureGCMaxIdle}
+         */
+        textureGCAMaxIdle: null,
+        /**
          * The maximum idle frames before a texture is destroyed by garbage collection.
          * @default 60 * 60
          */
-        textureGCAMaxIdle: 60 * 60,
+        textureGCMaxIdle: 60 * 60,
         /**
          * Frames between two garbage collections.
          * @default 600
@@ -112,7 +123,7 @@ export class TextureGCSystem implements System<TextureGCSystemOptions>
         options = { ...TextureGCSystem.defaultOptions, ...options };
 
         this.checkCountMax = options.textureGCCheckCountMax;
-        this.maxIdle = options.textureGCAMaxIdle;
+        this.maxIdle = options.textureGCAMaxIdle ?? options.textureGCMaxIdle;
         this.active = options.textureGCActive;
     }
 

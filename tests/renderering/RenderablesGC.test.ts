@@ -16,7 +16,7 @@ describe('RenderableGC', () =>
     it('should gc correctly', async () =>
     {
         const renderer = await getWebGLRenderer({
-            renderablesGCMaxUnusedTime: 5,
+            renderableGCMaxUnusedTime: 5,
             renderableGCFrequency: 10,
         });
 
@@ -60,7 +60,7 @@ describe('RenderableGC', () =>
     it('should call destroy on all renderables that are gc', async () =>
     {
         const renderer = await getWebGLRenderer({
-            renderablesGCMaxUnusedTime: 5,
+            renderableGCMaxUnusedTime: 5,
             renderableGCFrequency: 10,
         });
 
