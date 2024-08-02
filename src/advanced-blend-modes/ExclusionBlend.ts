@@ -37,7 +37,7 @@ export class ExclusionBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                finalColor = vec4(blendExclusion(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendExclusion(back.rgb, front.rgb,front.a), blendedAlpha) * uBlend;
                 `
             },
             gpu: {
@@ -53,7 +53,7 @@ export class ExclusionBlend extends BlendModeFilter
                 }
             `,
                 main: `
-                out = vec4<f32>(blendExclusion(back.rgb, front.rgb, front.a), blendUniforms.uBlend);
+                out = vec4<f32>(blendExclusion(back.rgb, front.rgb, front.a), blendedAlpha) * blendUniforms.uBlend;
             `
             }
         });

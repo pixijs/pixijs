@@ -1,6 +1,9 @@
 import CheckImageBitmapWorker from 'worker:./checkImageBitmap.worker.ts';
 import LoadImageBitmapWorker from 'worker:./loadImageBitmap.worker.ts';
 
+import type { TextureSourceOptions } from '../../../rendering/renderers/shared/texture/sources/TextureSource';
+import type { ResolvedAsset } from '../../types';
+
 let UUID = 0;
 let MAX_WORKERS: number;
 
@@ -58,9 +61,9 @@ class WorkerManagerClass
         return this._isImageBitmapSupported;
     }
 
-    public loadImageBitmap(src: string): Promise<ImageBitmap>
+    public loadImageBitmap(src: string, asset?: ResolvedAsset<TextureSourceOptions<any>>): Promise<ImageBitmap>
     {
-        return this._run('loadImageBitmap', [src]) as Promise<ImageBitmap>;
+        return this._run('loadImageBitmap', [src, asset?.data?.alphaMode]) as Promise<ImageBitmap>;
     }
 
     private async _initWorkers()
