@@ -1,5 +1,7 @@
-export type Matrix3x3 = [number, number, number, number, number, number, number, number, number];
-export type Vector3 = [number, number, number];
+import type { ArrayFixed } from '../../../utils/types';
+
+type Matrix3x3 = ArrayFixed<number, 9>;
+type Vector3 = ArrayFixed<number, 3>;
 
 function computeAdjugate(out: Matrix3x3, matrix: Matrix3x3): Matrix3x3
 {
@@ -26,7 +28,7 @@ function computeAdjugate(out: Matrix3x3, matrix: Matrix3x3): Matrix3x3
     return out;
 }
 
-export function multiplyMatrix3x3(out: Matrix3x3, a: Matrix3x3, b: Matrix3x3)
+function multiplyMatrix3x3(out: Matrix3x3, a: Matrix3x3, b: Matrix3x3)
 {
     const a00 = a[0];
     const a01 = a[1];
@@ -131,10 +133,31 @@ function generateBasisToPointsMatrix(
     return multiplyMatrix3x3(out, diagonalMatrix, m);
 }
 
-/// ////
 const tempSourceMatrix: Matrix3x3 = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 const tempDestinationMatrix: Matrix3x3 = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 
+/**
+ * Compute a 2D projection matrix
+ * @param out - The matrix to store the result in
+ * @param x1s - The x coordinate of the first source point
+ * @param y1s - The y coordinate of the first source point
+ * @param x1d - The x coordinate of the first destination point
+ * @param y1d - The y coordinate of the first destination point
+ * @param x2s - The x coordinate of the second source point
+ * @param y2s - The y coordinate of the second source point
+ * @param x2d - The x coordinate of the second destination point
+ * @param y2d - The y coordinate of the second destination point
+ * @param x3s - The x coordinate of the third source point
+ * @param y3s - The y coordinate of the third source point
+ * @param x3d - The x coordinate of the third destination point
+ * @param y3d - The y coordinate of the third destination point
+ * @param x4s - The x coordinate of the fourth source point
+ * @param y4s - The y coordinate of the fourth source point
+ * @param x4d - The x coordinate of the fourth destination point
+ * @param y4d - The y coordinate of the fourth destination point
+ * @returns - The computed 2D projection matrix
+ * @private
+ */
 // eslint-disable-next-line max-params
 export function compute2DProjection(
     out: Matrix3x3,

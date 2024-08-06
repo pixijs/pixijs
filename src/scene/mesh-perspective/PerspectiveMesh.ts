@@ -73,6 +73,7 @@ export interface PerspectivePlaneOptions extends MeshPlaneOptions
  */
 export class PerspectiveMesh extends Mesh<PerspectivePlaneGeometry>
 {
+    /** default options for the mesh */
     public static defaultOptions: PerspectivePlaneOptions = {
         texture: Texture.WHITE,
         verticesX: 10,
@@ -86,6 +87,7 @@ export class PerspectiveMesh extends Mesh<PerspectivePlaneGeometry>
         x3: 0,
         y3: 100
     };
+
     /**
      * @param options - Options to be applied to PerspectiveMesh
      */
@@ -113,7 +115,8 @@ export class PerspectiveMesh extends Mesh<PerspectivePlaneGeometry>
         );
     }
 
-    public textureUpdated(): void
+    /** Update the geometry when the texture is updated */
+    protected textureUpdated(): void
     {
         const geometry: PerspectivePlaneGeometry = this.geometry as any;
 
@@ -138,6 +141,7 @@ export class PerspectiveMesh extends Mesh<PerspectivePlaneGeometry>
         this.textureUpdated();
     }
 
+    /** The texture that the mesh uses */
     get texture(): Texture
     {
         return this._texture;

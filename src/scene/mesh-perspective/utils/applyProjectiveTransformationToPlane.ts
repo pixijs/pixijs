@@ -2,8 +2,13 @@ import { type Matrix3x3 } from './compute2DProjections';
 
 import type { PlaneGeometry } from '../../mesh-plane/PlaneGeometry';
 
-// Function to apply projective transformation to mesh vertices
-
+/**
+ * Apply a projective transformation to a plane geometry
+ * @param width - The width of the plane
+ * @param height - The height of the plane
+ * @param geometry - The plane geometry to apply the transformation to
+ * @param transformationMatrix - The transformation matrix to apply
+ */
 export function applyProjectiveTransformationToPlane(
     width: number,
     height: number,

@@ -2,7 +2,20 @@ import { PlaneGeometry } from '../mesh-plane/PlaneGeometry';
 import { applyProjectiveTransformationToPlane } from './utils/applyProjectiveTransformationToPlane';
 import { compute2DProjection } from './utils/compute2DProjections';
 
-import type { Matrix3x3 } from './utils/compute2DProjections';
+import type { ArrayFixed } from '../../utils/types';
+import type { PlaneGeometryOptions } from '../mesh-plane/PlaneGeometry';
+
+/**
+ * Constructor options used for `PerspectivePlaneGeometry` instances.
+ * @memberof scene
+ */
+export interface PerspectivePlaneGeometryOptions extends PlaneGeometryOptions
+{
+    /** The width of the plane */
+    width: number;
+    /** The height of the plane */
+    height: number;
+}
 
 /**
  * A PerspectivePlaneGeometry allows you to draw a 2d plane with perspective. Where ever you move the corners
@@ -25,16 +38,16 @@ export class PerspectivePlaneGeometry extends PlaneGeometry
 {
     /** The corner points of the quad you can modify these directly, if you do make sure to call `updateProjection` */
     public corners: [number, number, number, number, number, number, number, number];
-    private readonly _projectionMatrix: Matrix3x3 = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    private readonly _projectionMatrix: ArrayFixed<number, 9> = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 
     /**
      * @param options - Options to be applied to MeshPlane
-     * @param options.width
-     * @param options.height
-     * @param options.verticesX
-     * @param options.verticesY
+     * @param options.width - The width of the plane
+     * @param options.height - The height of the plane
+     * @param options.verticesX - The amount of vertices on the x axis
+     * @param options.verticesY - The amount of vertices on the y axis
      */
-    constructor(options: {width: number, height: number, verticesX?: number, verticesY?: number})
+    constructor(options: PerspectivePlaneGeometryOptions)
     {
         super(options);
 
@@ -71,6 +84,7 @@ export class PerspectivePlaneGeometry extends PlaneGeometry
         this.updateProjection();
     }
 
+    /** Update the projection matrix based on the corners */
     public updateProjection()
     {
         const { width, height } = this;
