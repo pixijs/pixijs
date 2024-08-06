@@ -37,7 +37,7 @@ export class LuminosityBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                finalColor = vec4(blendLuminosity(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendLuminosity(back.rgb, front.rgb,front.a), blendedAlpha) * uBlend;
                 `
             },
             gpu: {
@@ -51,7 +51,7 @@ export class LuminosityBlend extends BlendModeFilter
                 }
             `,
                 main: `
-                out = vec4<f32>(blendLuminosity(back.rgb, front.rgb, front.a), blendUniforms.uBlend);
+                out = vec4<f32>(blendLuminosity(back.rgb, front.rgb, front.a), blendedAlpha) * blendUniforms.uBlend;
             `
             }
         });

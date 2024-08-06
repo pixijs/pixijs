@@ -52,7 +52,7 @@ export class LinearLightBlend extends BlendModeFilter
                 }
             `,
                 main: `
-                finalColor = vec4(blendLinearLight(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendLinearLight(back.rgb, front.rgb,front.a), blendedAlpha) * uBlend;
                 `
             },
             gpu: {
@@ -84,7 +84,7 @@ export class LinearLightBlend extends BlendModeFilter
                 }
             `,
                 main: `
-                out = vec4<f32>(blendLinearLightOpacity(back.rgb, front.rgb, front.a), blendUniforms.uBlend);
+                out = vec4<f32>(blendLinearLightOpacity(back.rgb, front.rgb, front.a), blendedAlpha) * blendUniforms.uBlend;
             `
             }
         });

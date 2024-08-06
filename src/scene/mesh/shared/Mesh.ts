@@ -3,7 +3,7 @@ import { Geometry } from '../../../rendering/renderers/shared/geometry/Geometry'
 import { State } from '../../../rendering/renderers/shared/state/State';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
-import { Container } from '../../container/Container';
+import { ViewContainer } from '../../view/View';
 import { MeshGeometry } from './MeshGeometry';
 
 import type { PointData } from '../../../maths/point/PointData';
@@ -78,10 +78,9 @@ export interface MeshOptions<
 export class Mesh<
     GEOMETRY extends Geometry = MeshGeometry,
     SHADER extends Shader = TextureShader
-> extends Container implements View, Instruction
+> extends ViewContainer implements View, Instruction
 {
-    public readonly renderPipeId: string = 'mesh';
-    public readonly canBundle = true;
+    public override readonly renderPipeId: string = 'mesh';
     public state: State;
 
     /** @ignore */
@@ -90,11 +89,6 @@ export class Mesh<
     public _geometry: GEOMETRY;
     /** @ignore */
     public _shader: SHADER | null = null;
-
-    public _roundPixels: 0 | 1 = 0;
-
-    public _lastUsed = 0;
-    public _lastInstructionTick = -1;
 
     /**
      * @param {scene.MeshOptions} options - options for the mesh instance
@@ -144,20 +138,6 @@ export class Mesh<
         this._geometry.on('update', this.onViewUpdate, this);
 
         this.roundPixels = roundPixels ?? false;
-    }
-
-    /**
-     *  Whether or not to round the x/y position of the mesh.
-     * @type {boolean}
-     */
-    get roundPixels()
-    {
-        return !!this._roundPixels;
-    }
-
-    set roundPixels(value: boolean)
-    {
-        this._roundPixels = value ? 1 : 0;
     }
 
     /** Alias for {@link scene.Mesh#shader}. */
@@ -255,7 +235,7 @@ export class Mesh<
      * The local bounds of the mesh.
      * @type {rendering.Bounds}
      */
-    get bounds()
+    override get bounds()
     {
         return this._geometry.bounds;
     }
@@ -273,7 +253,7 @@ export class Mesh<
      * Checks if the object contains the given point.
      * @param point - The point to check
      */
-    public containsPoint(point: PointData)
+    public override containsPoint(point: PointData)
     {
         const { x, y } = point;
 
@@ -359,7 +339,7 @@ export class Mesh<
      * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
      * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
      */
-    public destroy(options?: DestroyOptions): void
+    public override destroy(options?: DestroyOptions): void
     {
         super.destroy(options);
 
