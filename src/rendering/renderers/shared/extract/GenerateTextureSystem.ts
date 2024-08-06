@@ -10,7 +10,6 @@ import { RenderTexture } from '../texture/RenderTexture';
 import type { Renderer } from '../../types';
 import type { System } from '../system/System';
 import type { TextureSourceOptions } from '../texture/sources/TextureSource';
-import type { Texture } from '../texture/Texture';
 
 export type GenerateTextureSourceOptions = Omit<TextureSourceOptions, 'resource' | 'width' | 'height' | 'resolution'>;
 
@@ -77,7 +76,7 @@ export class GenerateTextureSystem implements System
      * @param {GenerateTextureSourceOptions} [options.textureSourceOptions] - Texture options for GPU.
      * @returns a shiny new texture of the container passed in
      */
-    public generateTexture(options: GenerateTextureOptions | Container): Texture
+    public generateTexture(options: GenerateTextureOptions | Container): RenderTexture
     {
         if (options instanceof Container)
         {
