@@ -162,7 +162,6 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
         {
             BigPool.return(gpuMesh as PoolItem);
             this._gpuBatchableMeshHash[mesh.uid] = null;
-            this.renderer.renderableGC.removeRenderable(mesh);
         }
 
         mesh.off('destroyed', this._destroyRenderableBound);

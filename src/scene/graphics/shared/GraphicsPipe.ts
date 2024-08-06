@@ -113,7 +113,6 @@ export class GraphicsPipe implements RenderPipe<Graphics>
         if (this._graphicsBatchesHash[graphics.uid])
         {
             this._removeBatchForRenderable(graphics.uid);
-            this.renderer.renderableGC.removeRenderable(graphics);
         }
 
         graphics.off('destroyed', this._destroyRenderableBound);

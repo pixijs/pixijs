@@ -111,7 +111,6 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
     {
         htmlText.off('destroyed', this._destroyRenderableBound);
         this._destroyRenderableById(htmlText.uid);
-        this._renderer.renderableGC.removeRenderable(htmlText);
     }
 
     private _destroyRenderableById(htmlTextUid: number)

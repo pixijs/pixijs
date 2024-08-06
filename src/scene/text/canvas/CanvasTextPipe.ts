@@ -116,7 +116,6 @@ export class CanvasTextPipe implements RenderPipe<Text>
         text.off('destroyed', this._destroyRenderableBound);
 
         this._destroyRenderableById(text.uid);
-        this._renderer.renderableGC.removeRenderable(text);
     }
 
     private _destroyRenderableById(textUid: number)

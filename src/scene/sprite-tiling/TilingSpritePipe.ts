@@ -190,7 +190,6 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
         tilingSpriteData.shader?.destroy();
 
         this._tilingSpriteDataHash[tilingSprite.uid] = null;
-        this._renderer.renderableGC.removeRenderable(tilingSprite);
 
         tilingSprite.off('destroyed', this._destroyRenderableBound);
     }

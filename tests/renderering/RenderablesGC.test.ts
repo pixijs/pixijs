@@ -35,7 +35,7 @@ describe('RenderableGC', () =>
             setTimeout(resolve, 1000);
         });
 
-        expect(sprite.listenerCount('destroyed')).toEqual(1);
+        expect(sprite.listenerCount('destroyed')).toEqual(2);
 
         container.removeChild(sprite);
 
@@ -104,14 +104,14 @@ describe('RenderableGC', () =>
 
         renderer.render(container);
 
-        expect(sprite.listenerCount('destroyed')).toEqual(1);
-        expect(tilingSprite.listenerCount('destroyed')).toEqual(1);
-        expect(graphics.listenerCount('destroyed')).toEqual(1);
-        expect(mesh.listenerCount('destroyed')).toEqual(1);
-        expect(nineSliceSprite.listenerCount('destroyed')).toEqual(1);
-        expect(text.listenerCount('destroyed')).toEqual(1);
-        expect(htmlText.listenerCount('destroyed')).toEqual(1);
-        expect(bitmapText.listenerCount('destroyed')).toEqual(1);
+        expect(sprite.listenerCount('destroyed')).toEqual(2);
+        expect(tilingSprite.listenerCount('destroyed')).toEqual(2);
+        expect(graphics.listenerCount('destroyed')).toEqual(2);
+        expect(mesh.listenerCount('destroyed')).toEqual(2);
+        expect(nineSliceSprite.listenerCount('destroyed')).toEqual(2);
+        expect(text.listenerCount('destroyed')).toEqual(2);
+        expect(htmlText.listenerCount('destroyed')).toEqual(2);
+        expect(bitmapText.listenerCount('destroyed')).toEqual(2);
 
         container.removeChild(sprite);
         container.removeChild(tilingSprite);
