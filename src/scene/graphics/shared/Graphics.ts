@@ -1,5 +1,5 @@
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
-import { Container } from '../../container/Container';
+import { ViewContainer } from '../../view/View';
 import { GraphicsContext } from './GraphicsContext';
 
 import type { ColorSource } from '../../../color/Color';
@@ -7,7 +7,6 @@ import type { Matrix } from '../../../maths/matrix/Matrix';
 import type { PointData } from '../../../maths/point/PointData';
 import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import type { View } from '../../../rendering/renderers/shared/view/View';
 import type { Bounds } from '../../container/bounds/Bounds';
 import type { ContainerOptions } from '../../container/Container';
 import type { ContextDestroyOptions, DestroyOptions } from '../../container/destroyTypes';
@@ -41,18 +40,12 @@ export interface GraphicsOptions extends ContainerOptions
  * @memberof scene
  * @extends scene.Container
  */
-export class Graphics extends Container implements View, Instruction
+export class Graphics extends ViewContainer implements Instruction
 {
-    public readonly canBundle = true;
-    public readonly renderPipeId: string = 'graphics';
+    public override readonly renderPipeId: string = 'graphics';
     public batched: boolean;
 
-    public _roundPixels: 0 | 1 = 0;
-
     public _didGraphicsUpdate: boolean;
-
-    public _lastUsed = 0;
-    public _lastInstructionTick = -1;
 
     private _context: GraphicsContext;
     private readonly _ownedContext: GraphicsContext;
@@ -112,7 +105,7 @@ export class Graphics extends Container implements View, Instruction
      * The local bounds of the graphic.
      * @type {rendering.Bounds}
      */
-    get bounds(): Bounds
+    override get bounds(): Bounds
     {
         return this._context.bounds;
     }
@@ -130,26 +123,12 @@ export class Graphics extends Container implements View, Instruction
      * Checks if the object contains the given point.
      * @param point - The point to check
      */
-    public containsPoint(point: PointData)
+    public override containsPoint(point: PointData)
     {
         return this._context.containsPoint(point);
     }
 
-    /**
-     *  Whether or not to round the x/y position of the graphic.
-     * @type {boolean}
-     */
-    get roundPixels()
-    {
-        return !!this._roundPixels;
-    }
-
-    set roundPixels(value: boolean)
-    {
-        this._roundPixels = value ? 1 : 0;
-    }
-
-    protected onViewUpdate()
+    protected override onViewUpdate()
     {
         this._didViewChangeTick++;
 
@@ -181,7 +160,7 @@ export class Graphics extends Container implements View, Instruction
      * @param {boolean} [options.textureSource=false] - Should destroy the texture source of the graphics context
      * @param {boolean} [options.context=false] - Should destroy the context
      */
-    public destroy(options?: DestroyOptions): void
+    public override destroy(options?: DestroyOptions): void
     {
         if (this._ownedContext && !options)
         {
