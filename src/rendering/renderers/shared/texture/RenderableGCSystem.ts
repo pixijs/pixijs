@@ -21,13 +21,13 @@ export interface RenderableGCSystemOptions
      * @default true
      * @memberof rendering.SharedRendererOptions
      */
-    renderablesGCActive: boolean;
+    renderableGCActive: boolean;
     /**
      * The maximum idle frames before a texture is destroyed by garbage collection.
      * @default 60 * 60
      * @memberof rendering.SharedRendererOptions
      */
-    renderablesGCMaxUnusedTime: number;
+    renderableGCMaxUnusedTime: number;
     /**
      * Frames between two garbage collections.
      * @default 600
@@ -59,12 +59,12 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
          * If set to true, this will enable the garbage collector on the GPU.
          * @default true
          */
-        renderablesGCActive: true,
+        renderableGCActive: true,
         /**
          * The maximum idle frames before a texture is destroyed by garbage collection.
          * @default 60 * 60
          */
-        renderablesGCMaxUnusedTime: 60000,
+        renderableGCMaxUnusedTime: 60000,
         /**
          * Frames between two garbage collections.
          * @default 600
@@ -95,10 +95,10 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
     {
         options = { ...RenderableGCSystem.defaultOptions, ...options };
 
-        this.maxUnusedTime = options.renderablesGCMaxUnusedTime;
+        this.maxUnusedTime = options.renderableGCMaxUnusedTime;
         this._frequency = options.renderableGCFrequency;
 
-        this.enabled = options.renderablesGCActive;
+        this.enabled = options.renderableGCActive;
     }
 
     get enabled(): boolean
