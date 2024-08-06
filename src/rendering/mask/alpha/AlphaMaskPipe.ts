@@ -91,7 +91,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
     {
         const renderer = this._renderer;
 
-        renderer.renderPipes.batch.break(instructionSet);
+        renderer.breakBatch(instructionSet);
 
         instructionSet.add({
             renderPipeId: 'alphaMask',
@@ -116,7 +116,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
             maskContainer.includeInBuild = false;
         }
 
-        renderer.renderPipes.batch.break(instructionSet);
+        renderer.breakBatch(instructionSet);
 
         instructionSet.add({
             renderPipeId: 'alphaMask',
@@ -131,7 +131,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
     {
         const renderer = this._renderer;
 
-        renderer.renderPipes.batch.break(instructionSet);
+        renderer.breakBatch(instructionSet);
 
         instructionSet.add({
             renderPipeId: 'alphaMask',

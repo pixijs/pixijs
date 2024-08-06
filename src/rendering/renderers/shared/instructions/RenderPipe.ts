@@ -104,7 +104,7 @@ export interface RenderPipe<RENDERABLE = Renderable>
 export interface BatchPipe
 {
     /**
-     * Add a add a batchable object to the batch.
+     * Add a batchable object to the batch.
      * @param renderable - a batchable object that can be added to the batch
      */
     addToBatch: (renderable: BatchableObject) => void;

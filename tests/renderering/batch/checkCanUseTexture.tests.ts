@@ -23,6 +23,7 @@ class DummyBatchableObject implements BatchableObject
     indexSize = 4;
     textureId: number;
     location: number;
+    batchPipeId = 'batch';
     batcher: Batcher = null;
     batch: Batch = null;
     roundPixels: 0 | 1 = 0;

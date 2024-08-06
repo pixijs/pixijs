@@ -38,7 +38,7 @@ export class CustomRenderPipe implements InstructionPipe<RenderContainer>
 
     public addRenderable(container: RenderContainer, instructionSet: InstructionSet): void
     {
-        this._renderer.renderPipes.batch.break(instructionSet);
+        this._renderer.breakBatch(instructionSet);
 
         instructionSet.add(container);
     }

@@ -118,8 +118,6 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
 
     public addRenderable(mesh: Mesh, instructionSet: InstructionSet)
     {
-        const batcher = this.renderer.renderPipes.batch;
-
         const { batched } = this._getMeshData(mesh);
 
         if (batched)
@@ -129,11 +127,11 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
             gpuBatchableMesh.texture = mesh._texture;
             gpuBatchableMesh.geometry = mesh._geometry;
 
-            batcher.addToBatch(gpuBatchableMesh);
+            this.renderer.addToBatch(gpuBatchableMesh, instructionSet);
         }
         else
         {
-            batcher.break(instructionSet);
+            this.renderer.breakBatch(instructionSet);
 
             instructionSet.add(mesh);
         }

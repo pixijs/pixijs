@@ -28,9 +28,7 @@ export class FilterPipe implements InstructionPipe<FilterInstruction>
 
     public push(filterEffect: Effect, container: Container, instructionSet: InstructionSet): void
     {
-        const renderPipes = this._renderer.renderPipes;
-
-        renderPipes.batch.break(instructionSet);
+        this._renderer.breakBatch(instructionSet);
 
         instructionSet.add({
             renderPipeId: 'filter',
@@ -43,7 +41,7 @@ export class FilterPipe implements InstructionPipe<FilterInstruction>
 
     public pop(_filterEffect: Effect, _container: Container, instructionSet: InstructionSet): void
     {
-        this._renderer.renderPipes.batch.break(instructionSet);
+        this._renderer.breakBatch(instructionSet);
 
         instructionSet.add({
             renderPipeId: 'filter',

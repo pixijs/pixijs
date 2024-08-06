@@ -47,7 +47,7 @@ export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
     {
         const renderer = this._renderer;
 
-        renderer.renderPipes.batch.break(instructionSet);
+        renderer.breakBatch(instructionSet);
 
         const colorStack = this._colorStack;
 
@@ -72,7 +72,7 @@ export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
     {
         const renderer = this._renderer;
 
-        renderer.renderPipes.batch.break(instructionSet);
+        renderer.breakBatch(instructionSet);
 
         const colorStack = this._colorStack;
 

@@ -105,7 +105,7 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
 
     private _beginAdvancedBlendMode(instructionSet: InstructionSet)
     {
-        this._renderer.renderPipes.batch.break(instructionSet);
+        this._renderer.breakBatch(instructionSet);
 
         const blendMode = this._activeBlendMode;
 
@@ -144,7 +144,7 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
     private _endAdvancedBlendMode(instructionSet: InstructionSet)
     {
         this._renderableList = null;
-        this._renderer.renderPipes.batch.break(instructionSet);
+        this._renderer.breakBatch(instructionSet);
 
         instructionSet.add({
             renderPipeId: 'filter',

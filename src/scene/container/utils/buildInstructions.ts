@@ -15,9 +15,10 @@ export function buildInstructions(renderGroup: RenderGroup, renderer: Renderer)
     const renderPipes = renderer.renderPipes as RenderPipes;
 
     // TODO add some events / runners for build start
-    renderPipes.batch.buildStart(instructionSet);
-    renderPipes.blendMode.buildStart();
-    renderPipes.colorMask.buildStart();
+    for (const id in renderPipes)
+    {
+        (renderPipes as any)[id].buildStart?.(instructionSet);
+    }
 
     if (root.sortableChildren)
     {
@@ -28,8 +29,10 @@ export function buildInstructions(renderGroup: RenderGroup, renderer: Renderer)
 
     // instructionSet.log();
     // TODO add some events / runners for build end
-    renderPipes.batch.buildEnd(instructionSet);
-    renderPipes.blendMode.buildEnd(instructionSet);
+    for (const id in renderPipes)
+    {
+        (renderPipes as any)[id].buildEnd?.(instructionSet);
+    }
 
     // instructionSet.log();
 }

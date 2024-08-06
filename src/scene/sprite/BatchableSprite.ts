@@ -20,6 +20,7 @@ export class BatchableSprite implements BatchableObject
 
     public textureId: number;
     public location = 0; // location in the buffer
+    public readonly batchPipeId = 'batch';
     public batcher: Batcher = null;
     public batch: Batch = null;
     public bounds: BoundsData;
