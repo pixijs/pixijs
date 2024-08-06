@@ -38,6 +38,14 @@ describe('AnimatedSprite', () =>
             expect(sprite['_autoUpdate']).toBe(true);
         });
 
+        it('should support other sprite options', () =>
+        {
+            sprite = new AnimatedSprite({ textures, x: 10, y: 20, alpha: 0.5 });
+            expect(sprite.x).toBe(10);
+            expect(sprite.y).toBe(20);
+            expect(sprite.alpha).toBe(0.5);
+        });
+
         it('should be correct with autoUpdate=false', () =>
         {
             sprite = new AnimatedSprite(textures, false);

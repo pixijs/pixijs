@@ -3,6 +3,23 @@ import { UPDATE_PRIORITY } from '../../ticker/const';
 import { Ticker } from '../../ticker/Ticker';
 import { Sprite } from '../sprite/Sprite';
 
+import type { SpriteOptions } from '../sprite/Sprite';
+
+export type AnimatedSpriteFrames = Texture[] | FrameObject[];
+
+/**
+ * Constructor options used for `AnimatedSprite` instances.
+ * @see {@link scene.AnimatedSprite}
+ * @memberof scene
+ */
+export interface AnimatedSpriteOptions extends SpriteOptions
+{
+    /** An array of {@link Texture} or frame objects that make up the animation. */
+    textures: AnimatedSpriteFrames;
+    /** Whether to use Ticker.shared to auto update animation time. */
+    autoUpdate?: boolean;
+}
+
 /**
  * An AnimatedSprite is a simple way to display an animation depicted by a list of textures.
  *
@@ -110,19 +127,39 @@ export class AnimatedSprite extends Sprite
 
     /** The texture index that was displayed last time. */
     private _previousFrame: number;
-
     /**
-     * @param textures - An array of {@link Texture} or frame
-     *  objects that make up the animation.
-     * @param {boolean} [autoUpdate=true] - Whether to use Ticker.shared to auto update animation time.
+     * @param frames - Collection of textures or frames to use.
+     * @param autoUpdate - Whether to use Ticker.shared to auto update animation time.
      */
-    constructor(textures: Texture[] | FrameObject[], autoUpdate = true)
+    constructor(frames: AnimatedSpriteFrames, autoUpdate?: boolean);
+    /**
+     * @param options - The options for the AnimatedSprite.
+     */
+    constructor(options: AnimatedSpriteOptions);
+    /** @ignore */
+    constructor(...args: [AnimatedSpriteOptions?] | [AnimatedSpriteFrames?] | [AnimatedSpriteFrames?, boolean?])
     {
-        super(textures[0] instanceof Texture ? textures[0] : textures[0].texture);
+        let options = args[0] as AnimatedSpriteOptions;
+
+        if (Array.isArray(args[0]))
+        {
+            options = {
+                textures: args[0] as AnimatedSpriteFrames,
+                autoUpdate: args[1] as boolean,
+            };
+        }
+
+        const { textures, autoUpdate, ...rest } = options;
+        const [firstFrame] = textures;
+
+        super({
+            ...rest,
+            texture: firstFrame instanceof Texture ? firstFrame : firstFrame.texture,
+        });
 
         this._textures = null;
         this._durations = null;
-        this._autoUpdate = autoUpdate;
+        this._autoUpdate = autoUpdate ?? true;
         this._isConnectedToTicker = false;
 
         this.animationSpeed = 1;
@@ -369,12 +406,12 @@ export class AnimatedSprite extends Sprite
     }
 
     /** The array of textures used for this AnimatedSprite. */
-    get textures(): Texture[] | FrameObject[]
+    get textures(): AnimatedSpriteFrames
     {
         return this._textures;
     }
 
-    set textures(value: Texture[] | FrameObject[])
+    set textures(value: AnimatedSpriteFrames)
     {
         if (value[0] instanceof Texture)
         {
