@@ -57,6 +57,31 @@ describe('RenderableGC', () =>
         renderer.destroy();
     });
 
+    it('should gc correctly when object is destroyed manually', async () =>
+    {
+        const renderer = await getWebGLRenderer({
+            renderableGCMaxUnusedTime: 5,
+            renderableGCFrequency: 10,
+        });
+
+        const container = new Container();
+        const sprite = new Sprite(Texture.WHITE);
+
+        container.addChild(sprite);
+        renderer.render(container);
+
+        expect(renderer.renderableGC['_managedRenderables'].length).toEqual(1);
+
+        container.destroy({ children: true });
+
+        expect(renderer.renderableGC['_managedRenderables'].length).toEqual(0);
+
+        // check sprite.destroy event has now listeners..
+        expect(sprite.listenerCount('destroyed')).toEqual(0);
+
+        renderer.destroy();
+    });
+
     it('should call destroy on all renderables that are gc', async () =>
     {
         const renderer = await getWebGLRenderer({
