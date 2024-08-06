@@ -24,7 +24,7 @@ export async function isWebGPUSupported(options: GPURequestAdapterOptions = {}):
 
         try
         {
-            const adapter = await navigator.gpu.requestAdapter(options) as GPUAdapter;
+            const adapter = await gpu.requestAdapter(options) as GPUAdapter;
 
             // TODO and one of these!
             await adapter.requestDevice();
