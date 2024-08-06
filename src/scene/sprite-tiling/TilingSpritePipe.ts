@@ -187,6 +187,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
         const tilingSpriteData = this._getTilingSpriteData(tilingSprite);
 
         tilingSpriteData.batchableMesh = null;
+
         tilingSpriteData.shader?.destroy();
 
         this._tilingSpriteDataHash[tilingSprite.uid] = null;
