@@ -5,13 +5,12 @@ import { color32BitToUniform } from '../gpu/colorToUniform';
 import { BatchableGraphics } from './BatchableGraphics';
 
 import type { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
-import type { RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
+import type { BatchPipe, RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
-import type { Renderer } from '../../../rendering/renderers/types';
 import type { PoolItem } from '../../../utils/pool/Pool';
 import type { Container } from '../../container/Container';
 import type { Graphics } from './Graphics';
-import type { GpuGraphicsContext } from './GraphicsContextSystem';
+import type { GpuGraphicsContext, GraphicsContextSystem } from './GraphicsContextSystem';
 
 export interface GraphicsAdaptor
 {
@@ -19,6 +18,14 @@ export interface GraphicsAdaptor
     init(): void;
     execute(graphicsPipe: GraphicsPipe, renderable: Graphics): void;
     destroy(): void;
+}
+export interface GraphicsSystem
+{
+    graphicsContext: GraphicsContextSystem;
+    renderPipes: {
+        batch: BatchPipe
+    }
+    _roundPixels: 0 | 1;
 }
 
 export class GraphicsPipe implements RenderPipe<Graphics>
@@ -33,7 +40,7 @@ export class GraphicsPipe implements RenderPipe<Graphics>
         name: 'graphics',
     } as const;
 
-    public renderer: Renderer;
+    public renderer: GraphicsSystem;
     public state: State = State.for2d();
 
     // batchable graphics list, used to render batches
@@ -41,7 +48,7 @@ export class GraphicsPipe implements RenderPipe<Graphics>
     private _adaptor: GraphicsAdaptor;
     private readonly _destroyRenderableBound = this.destroyRenderable.bind(this) as (renderable: Container) => void;
 
-    constructor(renderer: Renderer, adaptor: GraphicsAdaptor)
+    constructor(renderer: GraphicsSystem, adaptor: GraphicsAdaptor)
     {
         this.renderer = renderer;
 
