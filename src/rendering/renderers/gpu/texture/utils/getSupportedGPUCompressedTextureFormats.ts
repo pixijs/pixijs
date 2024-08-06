@@ -1,3 +1,5 @@
+import { DOMAdapter } from '../../../../../environment/adapter';
+
 import type { TEXTURE_FORMATS } from '../../../shared/texture/const';
 
 let supportedGPUCompressedTextureFormats: TEXTURE_FORMATS[];
@@ -6,7 +8,7 @@ export async function getSupportedGPUCompressedTextureFormats(): Promise<TEXTURE
 {
     if (supportedGPUCompressedTextureFormats) return supportedGPUCompressedTextureFormats;
 
-    const adapter = await navigator.gpu.requestAdapter();
+    const adapter = await DOMAdapter.get().getNavigator().gpu.requestAdapter();
 
     supportedGPUCompressedTextureFormats = [
         ...adapter.features.has('texture-compression-bc') ? [
