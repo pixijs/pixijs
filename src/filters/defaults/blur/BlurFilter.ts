@@ -102,8 +102,8 @@ export class BlurFilter extends Filter
             resources: {}
         });
 
-        this.blurXFilter = new BlurFilterPass({ horizontal: false, ...options });
-        this.blurYFilter = new BlurFilterPass({ horizontal: true, ...options });
+        this.blurXFilter = new BlurFilterPass({ horizontal: true, ...options });
+        this.blurYFilter = new BlurFilterPass({ horizontal: false, ...options });
 
         this.quality = quality;
         this.strengthX = strengthX ?? strength;
