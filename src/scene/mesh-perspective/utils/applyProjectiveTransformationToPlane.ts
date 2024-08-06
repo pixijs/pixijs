@@ -1,5 +1,4 @@
-import { type Matrix3x3 } from './compute2DProjections';
-
+import type { ArrayFixed } from '../../../utils/types';
 import type { PlaneGeometry } from '../../mesh-plane/PlaneGeometry';
 
 /**
@@ -13,7 +12,7 @@ export function applyProjectiveTransformationToPlane(
     width: number,
     height: number,
     geometry: PlaneGeometry,
-    transformationMatrix: Matrix3x3
+    transformationMatrix: ArrayFixed<number, 9>
 )
 {
     const buffer = geometry.buffers[0];
