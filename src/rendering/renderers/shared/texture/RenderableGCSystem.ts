@@ -81,9 +81,12 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
     private _renderer: Renderer;
 
     private readonly _managedRenderables: Renderable[] = [];
+    private _managedRenderablesIndexes: Record< number, number | null > = {};
     private _handler: number;
     private _frequency: number;
     private _now: number;
+
+    private _removing: boolean = false;
 
     /** @param renderer - The renderer this System works for. */
     constructor(renderer: Renderer)
@@ -134,16 +137,29 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
 
         if (renderable._lastInstructionTick === -1)
         {
-            // TODO manage index...
             this._managedRenderables.push(renderable);
+            this._managedRenderablesIndexes[renderable.uid] = this._managedRenderables.length - 1;
         }
 
         renderable._lastInstructionTick = instructionSet.tick;
     }
 
+    public removeRenderable(renderable: Renderable): void
+    {
+        if (this._removing) return;
+        const index = this._managedRenderablesIndexes[renderable.uid];
+
+        if (index !== null)
+        {
+            this._managedRenderables.splice(index, 1);
+            this._managedRenderablesIndexes[renderable.uid] = null;
+        }
+    }
+
     /** Runs the scheduled garbage collection */
     public run(): void
     {
+        this._removing = true;
         const now = performance.now();
 
         const managedRenderables = this._managedRenderables;
@@ -171,6 +187,7 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
                 // remove from the array as this has been destroyed..
                 renderable._lastInstructionTick = -1;
                 offset++;
+                this._managedRenderablesIndexes[renderable.uid] = null;
             }
             else
             {
@@ -179,6 +196,7 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
         }
 
         managedRenderables.length = managedRenderables.length - offset;
+        this._removing = false;
     }
 
     public destroy(): void
@@ -186,5 +204,6 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
         this.enabled = false;
         this._renderer = null as any as Renderer;
         this._managedRenderables.length = 0;
+        this._managedRenderablesIndexes = {};
     }
 }

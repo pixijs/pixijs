@@ -80,6 +80,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
         bitmapText.off('destroyed', this._destroyRenderableBound);
 
         this._destroyRenderableByUid(bitmapText.uid);
+        this._renderer.renderableGC.removeRenderable(bitmapText);
     }
 
     private _destroyRenderableByUid(renderableUid: number)

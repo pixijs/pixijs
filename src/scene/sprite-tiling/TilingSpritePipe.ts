@@ -187,10 +187,10 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
         const tilingSpriteData = this._getTilingSpriteData(tilingSprite);
 
         tilingSpriteData.batchableMesh = null;
-
         tilingSpriteData.shader?.destroy();
 
         this._tilingSpriteDataHash[tilingSprite.uid] = null;
+        this._renderer.renderableGC.removeRenderable(tilingSprite);
 
         tilingSprite.off('destroyed', this._destroyRenderableBound);
     }
