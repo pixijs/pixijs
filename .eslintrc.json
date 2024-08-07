@@ -1,6 +1,6 @@
 {
     "extends": ["@pixi/eslint-config"],
-    "plugins": ["import", "jsdoc", "simple-import-sort", "no-mixed-operators", "jest"],
+    "plugins": ["jsdoc", "no-mixed-operators", "jest"],
     "ignorePatterns": ["**/*.index.d.ts"],
     "settings": {
         "jsdoc": {
