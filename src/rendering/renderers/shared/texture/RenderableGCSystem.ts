@@ -136,7 +136,7 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
         if (renderable._lastInstructionTick === -1)
         {
             this._managedRenderables.push(renderable);
-            renderable.on('destroyed', this._removeRenderable, this);
+            renderable.once('destroyed', this._removeRenderable, this);
         }
 
         renderable._lastInstructionTick = instructionSet.tick;
@@ -202,6 +202,7 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
 
         if (index >= 0)
         {
+            renderable.off('destroyed', this._removeRenderable, this);
             this._managedRenderables[index] = null;
         }
     }
