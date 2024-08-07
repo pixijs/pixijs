@@ -43,6 +43,11 @@ export class GlBufferSystem implements System
 
     private _renderer: WebGLRenderer;
 
+    private _minBaseLocation = 0;
+    private _maxBindings: number;
+    private _nextBindBaseIndex = this._minBaseLocation;
+    private _bindCallId = 0;
+
     /**
      * @param {Renderer} renderer - The renderer this System works for.
      */
@@ -65,8 +70,10 @@ export class GlBufferSystem implements System
     /** Sets up the renderer context and necessary buffers. */
     protected contextChange(): void
     {
+        const gl = this._gl = this._renderer.gl;
+
         this._gpuBuffers = Object.create(null);
-        this._gl = this._renderer.gl;
+        this._maxBindings = gl.MAX_UNIFORM_BUFFER_BINDINGS ? gl.getParameter(gl.MAX_UNIFORM_BUFFER_BINDINGS) : 0;
     }
 
     public getGlBuffer(buffer: Buffer): GlBuffer
@@ -103,9 +110,85 @@ export class GlBufferSystem implements System
             const glBuffer = this.getGlBuffer(buffer);
 
             this._boundBufferBases[index] = buffer;
+            buffer._lastBindBaseLocation = index;
 
             gl.bindBufferBase(gl.UNIFORM_BUFFER, index, glBuffer.buffer);
         }
+    }
+
+    public nextBindBase(hasTransformFeedback: boolean)
+    {
+        this._bindCallId++;
+        this._minBaseLocation = 0;
+        if (hasTransformFeedback)
+        {
+            this._boundBufferBases[0] = null;
+            this._minBaseLocation = 1;
+            if (this._nextBindBaseIndex < 1)
+            {
+                this._nextBindBaseIndex = 1;
+            }
+        }
+    }
+
+    public freeLocationForBufferBase(buffer: Buffer): number
+    {
+        let freeIndex = this.getLastBindBaseLocation(buffer);
+
+        // check if it is already bound..
+        if (freeIndex >= this._minBaseLocation)
+        {
+            buffer._lastBindCallId = this._bindCallId;
+
+            return freeIndex;
+        }
+
+        let loop = 0;
+        let nextIndex = this._nextBindBaseIndex;
+
+        while (loop < 2)
+        {
+            if (nextIndex >= this._maxBindings)
+            {
+                nextIndex = this._minBaseLocation;
+                loop++;
+            }
+
+            const curBuf = this._boundBufferBases[nextIndex];
+
+            if (curBuf && curBuf._lastBindCallId === this._bindCallId)
+            {
+                nextIndex++;
+                continue;
+            }
+            break;
+        }
+
+        freeIndex = nextIndex;
+        this._nextBindBaseIndex = nextIndex + 1;
+
+        if (loop >= 2)
+        {
+            // TODO: error
+            return -1;
+        }
+
+        buffer._lastBindCallId = this._bindCallId;
+        this._boundBufferBases[freeIndex] = null;
+
+        return freeIndex;
+    }
+
+    public getLastBindBaseLocation(buffer: Buffer): number
+    {
+        const index = buffer._lastBindBaseLocation;
+
+        if (this._boundBufferBases[index] === buffer)
+        {
+            return index;
+        }
+
+        return -1;
     }
 
     /**
@@ -114,16 +197,20 @@ export class GlBufferSystem implements System
      * @param buffer - the buffer to bind
      * @param index - the base index to bind at, defaults to 0
      * @param offset - the offset to bind at (this is blocks of 256). 0 = 0, 1 = 256, 2 = 512 etc
+     * @param size - the size to bind at (this is blocks of 256).
      */
-    public bindBufferRange(buffer: Buffer, index?: number, offset?: number): void
+    public bindBufferRange(buffer: Buffer, index?: number, offset?: number, size?: number): void
     {
         const { _gl: gl } = this;
 
         offset = offset || 0;
+        index = index || 0;
+
+        this._boundBufferBases[index] = null;
 
         const glBuffer = this.getGlBuffer(buffer);
 
-        gl.bindBufferRange(gl.UNIFORM_BUFFER, index || 0, glBuffer.buffer, offset * 256, 256);
+        gl.bindBufferRange(gl.UNIFORM_BUFFER, index || 0, glBuffer.buffer, offset * 256, size || 256);
     }
 
     /**
@@ -147,7 +234,7 @@ export class GlBufferSystem implements System
 
         const data = buffer.data;
 
-        if (glBuffer.byteLength >= buffer.data.byteLength)
+        if (data && glBuffer.byteLength >= data.byteLength)
         {
             // assuming our buffers are aligned to 4 bits...
             // offset is always zero for now!
@@ -157,10 +244,17 @@ export class GlBufferSystem implements System
         {
             const drawType = (buffer.descriptor.usage & BufferUsage.STATIC) ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW;
 
-            glBuffer.byteLength = data.byteLength;
-
-            // assuming our buffers are aligned to 4 bits...
-            gl.bufferData(glBuffer.type, data, drawType);
+            if (data)
+            {
+                glBuffer.byteLength = data.byteLength;
+                // assuming our buffers are aligned to 4 bits...
+                gl.bufferData(glBuffer.type, data, drawType);
+            }
+            else
+            {
+                glBuffer.byteLength = buffer.descriptor.size;
+                gl.bufferData(glBuffer.type, glBuffer.byteLength, drawType);
+            }
         }
 
         return glBuffer;

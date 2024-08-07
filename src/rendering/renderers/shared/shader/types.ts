@@ -1,32 +1,29 @@
-// TODO add more types as required
-export const UNIFORM_TYPES_VALUES = [
-    'f32',
-    'i32',
-    'vec2<f32>',
-    'vec3<f32>',
-    'vec4<f32>',
-    'mat2x2<f32>',
-    'mat3x3<f32>',
-    'mat4x4<f32>',
-    'mat3x2<f32>',
-    'mat4x2<f32>',
-    'mat2x3<f32>',
-    'mat4x3<f32>',
-    'mat2x4<f32>',
-    'mat3x4<f32>'
-] as const;
+/* eslint-disable quote-props */
+export type UNIFORM_TYPES_SINGLE =
+    'f32' |
+    'i32' |
+    'vec2<f32>' |
+    'vec3<f32>' |
+    'vec4<f32>' |
 
-/** useful for checking if a type is supported - a map of supported types with a true value. */
-export const UNIFORM_TYPES_MAP = UNIFORM_TYPES_VALUES.reduce((acc, type) =>
-{
-    acc[type] = true;
+    'mat2x2<f32>' |
+    'mat3x3<f32>' |
+    'mat4x4<f32>' |
 
-    return acc;
-}, {} as Record<UNIFORM_TYPES, boolean>);
+    'mat3x2<f32>' |
+    'mat4x2<f32>' |
 
-export type UNIFORM_TYPES_SINGLE = typeof UNIFORM_TYPES_VALUES[number];
+    'mat2x3<f32>' |
+    'mat4x3<f32>' |
 
-type OPTIONAL_SPACE = ' ' | '';
+    'mat2x4<f32>' |
+    'mat3x4<f32>' |
+    'vec2<i32>' |
+    'vec3<i32>' |
+    'vec4<i32>';
+    // TODO add more types as required
+
+    type OPTIONAL_SPACE = ' ' | '';
 
 export type UNIFORM_TYPES_ARRAY = `array<${UNIFORM_TYPES_SINGLE},${OPTIONAL_SPACE}${number}>`;
 
@@ -58,3 +55,17 @@ export interface UboLayout
 
 /* eslint-disable quote-props */
 export type UniformsSyncCallback = (...args: any[]) => void;
+
+export const UNIFORM_TYPES_ALIAS = {
+    vec4f: 'vec4<f32>' as UNIFORM_TYPES_SINGLE,
+    vec3f: 'vec3<f32>' as UNIFORM_TYPES_SINGLE,
+    vec2f: 'vec2<f32>' as UNIFORM_TYPES_SINGLE,
+    vec4i: 'vec4<i32>' as UNIFORM_TYPES_SINGLE,
+    vec3i: 'vec3<i32>' as UNIFORM_TYPES_SINGLE,
+    vec2i: 'vec2<i32>' as UNIFORM_TYPES_SINGLE,
+    mat4x4f: 'mat4x4<f32>' as UNIFORM_TYPES_SINGLE,
+    mat3x3f: 'mat3x3<f32>' as UNIFORM_TYPES_SINGLE,
+    mat2x2f: 'mat2x2<f32>' as UNIFORM_TYPES_SINGLE,
+    float: 'f32' as UNIFORM_TYPES_SINGLE,
+    int: 'i32' as UNIFORM_TYPES_SINGLE,
+};

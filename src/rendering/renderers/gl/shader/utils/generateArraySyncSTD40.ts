@@ -16,6 +16,7 @@ export function generateArraySyncSTD40(uboElement: UboElement, offsetToAdd: numb
 
     const remainder = (4 - (elementSize % 4)) % 4;
 
+    // TODO: take care about ints
     return `
         v = uv.${uboElement.data.name};
         offset += ${offsetToAdd};

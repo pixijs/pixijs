@@ -2,9 +2,14 @@ import type { UboElement, UboLayout, UniformData } from '../../../shared/shader/
 
 export const WGSL_TO_STD40_SIZE: Record<string, number> = {
     f32: 4,
+    i32: 4,
     'vec2<f32>': 8,
     'vec3<f32>': 12,
     'vec4<f32>': 16,
+
+    'vec2<i32>': 8,
+    'vec3<i32>': 12,
+    'vec4<i32>': 16,
 
     'mat2x2<f32>': 16 * 2,
     'mat3x3<f32>': 16 * 3,
@@ -40,8 +45,9 @@ export function createUboElementsSTD40(uniformData: UniformData[]): UboLayout
             size: 0,
         }));
 
+    const chunkSize = 16;
+
     let size = 0;
-    let chunkSize = 0;
     let offset = 0;
 
     for (let i = 0; i < uboElements.length; i++)
@@ -57,35 +63,26 @@ export function createUboElementsSTD40(uniformData: UniformData[]): UboLayout
 
         if (uboElement.data.size > 1)
         {
-            size = Math.max(size, 16) * uboElement.data.size;
+            size = Math.max(size, chunkSize) * uboElement.data.size;
         }
+
+        const boundary = size === 12 ? 16 : size;
 
         uboElement.size = size;
 
-        // add some size offset..
-        // must align to the nearest 16 bytes or internally nearest round size
-        if (chunkSize % size !== 0 && chunkSize < 16)
-        {
-            // diff required to line up..
-            const lineUpValue = (chunkSize % size) % 16;
+        const curOffset = offset % chunkSize;
 
-            chunkSize += lineUpValue;
-            offset += lineUpValue;
-        }
-
-        if ((chunkSize + size) > 16)
+        if (curOffset > 0 && chunkSize - curOffset < boundary)
         {
-            offset = Math.ceil(offset / 16) * 16;
-            uboElement.offset = offset;
-            offset += size;
-            chunkSize = size;
+            offset += (chunkSize - curOffset) % 16;
         }
         else
         {
-            uboElement.offset = offset;
-            chunkSize += size;
-            offset += size;
+            offset += (size - (curOffset % size)) % size;
         }
+
+        uboElement.offset = offset;
+        offset += size;
     }
 
     offset = Math.ceil(offset / 16) * 16;

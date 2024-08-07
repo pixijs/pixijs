@@ -51,6 +51,8 @@ export interface GlProgramOptions
     preferredVertexPrecision?: string;
     /** the preferred fragment precision for the shader, this may not be used if the device does not support it  */
     preferredFragmentPrecision?: string;
+
+    transformFeedbackVaryings?: {names: string[], bufferMode: 'separate' | 'interleaved'};
 }
 
 const processes: Record<string, ((source: string, options: any, isFragment?: boolean) => string)> = {
@@ -177,6 +179,8 @@ export class GlProgram
 
         this.fragment = fragment;
         this.vertex = vertex;
+
+        this.transformFeedbackVaryings = options.transformFeedbackVaryings;
 
         this._key = createIdFromString(`${this.vertex}:${this.fragment}`, 'gl-program');
     }
