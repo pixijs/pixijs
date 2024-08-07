@@ -5,14 +5,25 @@ import type { Renderer, RenderPipes } from '../../../rendering/renderers/types';
 import type { Container } from '../Container';
 import type { RenderGroup } from '../RenderGroup';
 
-export function buildInstructions(renderGroup: RenderGroup, renderer: Renderer)
+/**
+ * @param renderGroup
+ * @param renderPipes
+ * @deprecated since 8.3.0
+ */
+export function buildInstructions(renderGroup: RenderGroup, renderPipes: RenderPipes): void;
+export function buildInstructions(renderGroup: RenderGroup, renderer: Renderer): void;
+export function buildInstructions(renderGroup: RenderGroup, rendererOrPipes: RenderPipes | Renderer): void
 {
     const root = renderGroup.root;
     const instructionSet = renderGroup.instructionSet;
 
     instructionSet.reset();
 
-    const renderPipes = renderer.renderPipes as RenderPipes;
+    // deprecate the use of renderPipes by finding the renderer attached to the batch pipe as this is always there
+    const renderer = (rendererOrPipes as Renderer).renderPipes
+        ? (rendererOrPipes as Renderer)
+        : (rendererOrPipes as RenderPipes).batch.renderer;
+    const renderPipes = renderer.renderPipes;
 
     // TODO add some events / runners for build start
     renderPipes.batch.buildStart(instructionSet);
@@ -26,22 +37,29 @@ export function buildInstructions(renderGroup: RenderGroup, renderer: Renderer)
 
     collectAllRenderablesAdvanced(root, instructionSet, renderer, true);
 
-    // instructionSet.log();
     // TODO add some events / runners for build end
     renderPipes.batch.buildEnd(instructionSet);
     renderPipes.blendMode.buildEnd(instructionSet);
-
-    // instructionSet.log();
 }
 
+/**
+ * @param container
+ * @param instructionSet
+ * @param renderer
+ * @deprecated since 8.3.0
+ */
+export function collectAllRenderables(container: Container, instructionSet: InstructionSet, renderer: RenderPipes): void;
+export function collectAllRenderables(container: Container, instructionSet: InstructionSet, renderer: Renderer): void;
 export function collectAllRenderables(
-    container: Container,
-    instructionSet: InstructionSet,
-    renderer: Renderer
+    container: Container, instructionSet: InstructionSet, rendererOrPipes: Renderer | RenderPipes
 ): void
 {
-    // if there is 0b01 or 0b10 the return value
+    // deprecate the use of renderPipes by finding the renderer attached to the batch pipe as this is always there
+    const renderer = (rendererOrPipes as Renderer).renderPipes
+        ? (rendererOrPipes as Renderer)
+        : (rendererOrPipes as RenderPipes).batch.renderer;
 
+    // if there is 0b01 or 0b10 the return value
     if (container.globalDisplayStatus < 0b111 || !container.includeInBuild) return;
 
     if (container.sortableChildren)
