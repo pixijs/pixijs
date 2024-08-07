@@ -25,17 +25,17 @@ const vertexGPUTemplate = /* wgsl */`
         var uv = aUV;
 
         {{start}}
-        
+
         vColor = vec4<f32>(1., 1., 1., 1.);
 
         {{main}}
 
         vUV = uv;
 
-        var modelViewProjectionMatrix = globalUniforms.uProjectionMatrix * worldTransformMatrix * modelMatrix;
+        var worldPosition = worldTransformMatrix * modelMatrix * vec3<f32>(position, 1.0);
 
-        vPosition =  vec4<f32>((modelViewProjectionMatrix *  vec3<f32>(position, 1.0)).xy, 0.0, 1.0);
-       
+        vPosition = vec4<f32>((globalUniforms.uProjectionMatrix * worldPosition).xy, 0.0, 1.0);
+
         vColor *= globalUniforms.uWorldColorAlpha;
 
         {{end}}
@@ -47,20 +47,20 @@ const vertexGPUTemplate = /* wgsl */`
 const fragmentGPUTemplate = /* wgsl */`
     @in vUV : vec2<f32>;
     @in vColor : vec4<f32>;
-   
+
     {{header}}
 
     @fragment
     fn main(
         {{in}}
       ) -> @location(0) vec4<f32> {
-        
+
         {{start}}
 
         var outColor:vec4<f32>;
-      
+
         {{main}}
-        
+
         return outColor * vColor;
       };
 `;
@@ -84,18 +84,18 @@ const vertexGlTemplate = /* glsl */`
           );
         vec2 position = aPosition;
         vec2 uv = aUV;
-        
-        {{start}}
-        
-        vColor = vec4(1.);
-        
-        {{main}}
-        
-        vUV = uv;
-        
-        mat3 modelViewProjectionMatrix = uProjectionMatrix * worldTransformMatrix * modelMatrix;
 
-        gl_Position = vec4((modelViewProjectionMatrix * vec3(position, 1.0)).xy, 0.0, 1.0);
+        {{start}}
+
+        vColor = vec4(1.);
+
+        {{main}}
+
+        vUV = uv;
+
+        vec3 worldPosition = worldTransformMatrix * modelMatrix * vec3(position, 1.0);
+
+        gl_Position = vec4((uProjectionMatrix * worldPosition).xy, 0.0, 1.0);
 
         vColor *= uWorldColorAlpha;
 
@@ -104,7 +104,7 @@ const vertexGlTemplate = /* glsl */`
 `;
 
 const fragmentGlTemplate = /* glsl */`
-   
+
     in vec4 vColor;
     in vec2 vUV;
 
@@ -113,13 +113,13 @@ const fragmentGlTemplate = /* glsl */`
     {{header}}
 
     void main(void) {
-        
+
         {{start}}
 
         vec4 outColor;
-      
+
         {{main}}
-        
+
         finalColor = outColor * vColor;
     }
 `;
