@@ -5,12 +5,12 @@ import { generateTextureBatchBit } from '../../high-shader/shader-bits/generateT
 import { roundPixelsBit } from '../../high-shader/shader-bits/roundPixelsBit';
 import { Shader } from '../../renderers/shared/shader/Shader';
 import { State } from '../../renderers/shared/state/State';
-import { getMaxTexturesPerBatch } from '../gl/utils/maxRecommendedTextures';
 import { getTextureBatchBindGroup } from './getTextureBatchBindGroup';
 
 import type { GpuEncoderSystem } from '../../renderers/gpu/GpuEncoderSystem';
 import type { WebGPURenderer } from '../../renderers/gpu/WebGPURenderer';
 import type { Geometry } from '../../renderers/shared/geometry/Geometry';
+import type { Renderer } from '../../renderers/types';
 import type { Batch } from '../shared/Batcher';
 import type { BatcherAdaptor, BatcherPipe } from '../shared/BatcherPipe';
 
@@ -31,16 +31,33 @@ export class GpuBatchAdaptor implements BatcherAdaptor
         name: 'batch',
     } as const;
 
+    private _renderer: Renderer;
+    private _maxTextures: number;
     private _shader: Shader;
     private _geometry: Geometry;
 
-    public init()
+    public init(batcherPipe: BatcherPipe): void
     {
+        this._renderer = batcherPipe.renderer;
+
+        batcherPipe.renderer.runners.contextChange.add(this);
+    }
+
+    public contextChange(): void
+    {
+        const maxTextures = this._renderer.shader.maxTextures;
+
+        if (this._maxTextures === maxTextures) return;
+
+        this._maxTextures = maxTextures;
+
+        if (this._shader) this._shader.destroy(true);
+
         const gpuProgram = compileHighShaderGpuProgram({
             name: 'batch',
             bits: [
                 colorBit,
-                generateTextureBatchBit(getMaxTexturesPerBatch()),
+                generateTextureBatchBit(maxTextures),
                 roundPixelsBit,
             ]
         });
@@ -121,5 +138,7 @@ export class GpuBatchAdaptor implements BatcherAdaptor
     {
         this._shader.destroy(true);
         this._shader = null;
+
+        this._renderer = null;
     }
 }
