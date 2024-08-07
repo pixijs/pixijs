@@ -139,7 +139,14 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
      * Whether CSS dimensions of canvas view should be resized to screen dimensions automatically.
      * @member {boolean}
      */
-    public autoDensity: boolean;
+    public get autoDensity(): boolean
+    {
+        return (this.texture.source as CanvasSource).autoDensity;
+    }
+    public set autoDensity(value: boolean)
+    {
+        (this.texture.source as CanvasSource).autoDensity = value;
+    }
 
     /** Whether to enable anti-aliasing. This may affect performance. */
     public antialias: boolean;
@@ -200,13 +207,6 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
 
         (this.texture.source as CanvasSource).transparent = options.backgroundAlpha < 1;
         this.multiView = !!options.multiView;
-
-        if (this.autoDensity)
-        {
-            this.canvas.style.width = `${this.texture.width}px`;
-            this.canvas.style.height = `${this.texture.height}px`;
-        }
-
         this.resolution = options.resolution;
     }
 
@@ -222,12 +222,6 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
 
         this.screen.width = this.texture.frame.width;
         this.screen.height = this.texture.frame.height;
-
-        if (this.autoDensity)
-        {
-            this.canvas.style.width = `${desiredScreenWidth}px`;
-            this.canvas.style.height = `${desiredScreenHeight}px`;
-        }
     }
 
     /**
