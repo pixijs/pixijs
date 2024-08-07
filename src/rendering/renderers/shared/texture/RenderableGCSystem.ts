@@ -131,6 +131,8 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
 
     public addRenderable(renderable: Renderable, instructionSet: InstructionSet): void
     {
+        if (!this.enabled) return;
+
         renderable._lastUsed = this._now;
 
         if (renderable._lastInstructionTick === -1)
