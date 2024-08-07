@@ -1,3 +1,4 @@
+import { setTimeout } from 'timers/promises';
 import { EventSystem } from '../../src/events/EventSystem';
 import { Rectangle } from '../../src/maths/shapes/Rectangle';
 import { Container } from '../../src/scene/container/Container';
@@ -732,23 +733,22 @@ describe('EventSystem', () =>
             newSpy();
         });
 
-        setTimeout(() =>
-        {
-            renderer.events['_onPointerDown'](
-                new PointerEvent('pointerdown', { clientX: 25, clientY: 25 })
-            );
-            const e = new PointerEvent('pointerup', { clientX: 30, clientY: 20 });
+        await setTimeout(800);
 
-            // so it isn't a pointerupoutside
-            Object.defineProperty(e, 'target', {
-                writable: false,
-                value: renderer.canvas
-            });
-            renderer.events['_onPointerUp'](e);
+        renderer.events['_onPointerDown'](
+            new PointerEvent('pointerdown', { clientX: 25, clientY: 25 })
+        );
+        const e = new PointerEvent('pointerup', { clientX: 30, clientY: 20 });
 
-            expect(newSpy).toHaveBeenCalledOnce();
-            done();
-        }, 800);
+        // so it isn't a pointerupoutside
+        Object.defineProperty(e, 'target', {
+            writable: false,
+            value: renderer.canvas
+        });
+        renderer.events['_onPointerUp'](e);
+
+        expect(newSpy).toHaveBeenCalledOnce();
+        done();
     });
 
     it('should inherit resolution changes', async () =>
