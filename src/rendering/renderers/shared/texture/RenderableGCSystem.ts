@@ -82,7 +82,6 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
     private _renderer: Renderer;
 
     private readonly _managedRenderables: Renderable[] = [];
-    private _managedRenderablesIndexes: Record< number, number | null > = {};
     private _handler: number;
     private _frequency: number;
     private _now: number;
@@ -137,7 +136,6 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
         if (renderable._lastInstructionTick === -1)
         {
             this._managedRenderables.push(renderable);
-            this._managedRenderablesIndexes[renderable.uid] = this._managedRenderables.length - 1;
             renderable.on('destroyed', this._removeRenderable, this);
         }
 
@@ -159,6 +157,12 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
         {
             const renderable = managedRenderables[i];
 
+            if (renderable === null)
+            {
+                offset++;
+                continue;
+            }
+
             const renderGroup = renderable.renderGroup ?? renderable.parentRenderGroup;
             const currentIndex = renderGroup?.instructionSet?.tick ?? -1;
 
@@ -175,7 +179,6 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
                 renderable._lastInstructionTick = -1;
                 offset++;
                 renderable.off('destroyed', this._removeRenderable, this);
-                this._managedRenderablesIndexes[renderable.uid] = null;
             }
             else
             {
@@ -191,17 +194,15 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
         this.enabled = false;
         this._renderer = null as any as Renderer;
         this._managedRenderables.length = 0;
-        this._managedRenderablesIndexes = {};
     }
 
     private _removeRenderable(renderable: Container): void
     {
-        const index = this._managedRenderablesIndexes[renderable.uid];
+        const index = this._managedRenderables.indexOf(renderable as Renderable);
 
-        if (index !== null)
+        if (index >= 0)
         {
-            this._managedRenderables.splice(index, 1);
-            this._managedRenderablesIndexes[renderable.uid] = null;
+            this._managedRenderables[index] = null;
         }
     }
 }

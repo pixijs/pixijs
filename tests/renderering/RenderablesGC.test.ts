@@ -74,6 +74,13 @@ describe('RenderableGC', () =>
 
         container.destroy({ children: true });
 
+        expect(renderer.renderableGC['_managedRenderables'][0]).toEqual(null);
+
+        await new Promise((resolve) =>
+        {
+            setTimeout(resolve, 1000);
+        });
+
         expect(renderer.renderableGC['_managedRenderables'].length).toEqual(0);
 
         // check sprite.destroy event has now listeners..
