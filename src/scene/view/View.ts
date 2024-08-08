@@ -27,7 +27,7 @@ export abstract class ViewContainer extends Container implements View
     /** @private */
     public _lastInstructionTick = -1;
 
-    protected _bounds: Bounds = new Bounds();
+    protected _bounds: Bounds = new Bounds(0, 1, 0, 0);
     protected _boundsDirty = true;
 
     /**
