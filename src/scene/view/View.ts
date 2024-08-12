@@ -4,6 +4,7 @@ import { Container } from '../container/Container';
 import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { BoundsData } from '../container/bounds/Bounds';
+import type { DestroyOptions } from '../container/destroyTypes';
 
 /**
  * A ViewContainer is a type of container that represents a view.
@@ -34,8 +35,8 @@ export abstract class ViewContainer extends Container implements View
      * The local bounds of the view.
      * @type {rendering.Bounds}
      */
-    public abstract get bounds(): BoundsData;
     /** @private */
+    public abstract get bounds(): BoundsData;
     public abstract addBounds(bounds: Bounds): void;
     /** @private */
     protected _updateBounds(): void
@@ -77,4 +78,11 @@ export abstract class ViewContainer extends Container implements View
 
     /** @private */
     protected abstract onViewUpdate(): void;
+
+    public override destroy(options?: DestroyOptions): void
+    {
+        super.destroy(options);
+
+        this._bounds = null;
+    }
 }
