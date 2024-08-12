@@ -35,8 +35,8 @@ export abstract class ViewContainer extends Container implements View
      * The local bounds of the view.
      * @type {rendering.Bounds}
      */
-    /** @private */
     public abstract get bounds(): BoundsData;
+    /** @private */
     public abstract addBounds(bounds: Bounds): void;
     /** @private */
     protected _updateBounds(): void
