@@ -7,7 +7,7 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render wrapped text correctly',
-    pixelMatch: 350,
+    pixelMatch: 200,
     create: async (scene: Container, renderer) =>
     {
         const text = new Text({
