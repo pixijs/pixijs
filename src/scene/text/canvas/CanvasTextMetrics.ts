@@ -504,6 +504,13 @@ export class CanvasTextMetrics
                     }
 
                     const isLastToken = i === tokens.length - 1;
+                    const wasPreviousTokenNewline = i > 0 && CanvasTextMetrics._isNewline(tokens[i - 1]);
+
+                    if (wasPreviousTokenNewline)
+                    {
+                        // remove the last new line and add this one
+                        lines = lines.slice(0, -1);
+                    }
 
                     // give it its own line if it's not the end
                     lines += CanvasTextMetrics._addLine(token, !isLastToken);
