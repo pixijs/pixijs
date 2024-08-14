@@ -345,11 +345,7 @@ export class Sprite extends ViewContainer
      */
     public override getSize(out?: Size): Size
     {
-        if (!out)
-        {
-            out = {} as Size;
-        }
-
+        out ||= {} as Size;
         out.width = Math.abs(this.scale.x) * this._texture.orig.width;
         out.height = Math.abs(this.scale.y) * this._texture.orig.height;
 

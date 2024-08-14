@@ -277,11 +277,7 @@ export abstract class AbstractText<
      */
     public override getSize(out?: Size): Size
     {
-        if (!out)
-        {
-            out = {} as Size;
-        }
-
+        out ||= {} as Size;
         out.width = Math.abs(this.scale.x) * this.bounds.width;
         out.height = Math.abs(this.scale.y) * this.bounds.height;
 
