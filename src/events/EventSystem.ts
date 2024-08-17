@@ -237,6 +237,8 @@ export class EventSystem implements System<EventSystemOptions>
         this._onPointerUp = this._onPointerUp.bind(this);
         this._onPointerOverOut = this._onPointerOverOut.bind(this);
         this.onWheel = this.onWheel.bind(this);
+
+        renderer.runners.resolutionChange.add(this);
     }
 
     /**

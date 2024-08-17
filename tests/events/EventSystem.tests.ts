@@ -1148,6 +1148,21 @@ describe('EventSystem', () =>
         expect(eventSpy).toHaveBeenCalledOnce();
     });
 
+    it('should inherit the resolution from renderer', async () =>
+    {
+        const renderer = await createRenderer(undefined, undefined, {
+            resolution: 0.5,
+        });
+
+        expect(renderer.resolution).toEqual(0.5);
+        expect(renderer.events.resolution).toEqual(0.5);
+
+        renderer.resolution = 2;
+
+        expect(renderer.resolution).toEqual(2);
+        expect(renderer.events.resolution).toEqual(2);
+    });
+
     it('should respect AbortController signals', async () =>
     {
         const renderer = await createRenderer();
