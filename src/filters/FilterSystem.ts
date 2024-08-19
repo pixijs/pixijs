@@ -249,10 +249,12 @@ export class FilterSystem implements System
         // this should not take into account the x, y offset of the viewport - as this is
         // handled by the viewport on the gpu.
         // need to factor in resolutions also..
-        bounds.scale(resolution)
+        bounds
+            .scale(resolution)
             .fitBounds(0, viewPort.width, 0, viewPort.height)
+            .ceil()
             .scale(1 / resolution)
-            .pad(padding);
+            .pad(padding | 0);
 
         // skip if the bounds are negative or zero as this means they are
         // not visible on the screen
@@ -276,8 +278,8 @@ export class FilterSystem implements System
         // bind...
         // get a P02 texture from our pool...
         filterData.inputTexture = TexturePool.getOptimalTexture(
-            Math.ceil(bounds.width),
-            Math.ceil(bounds.height),
+            bounds.width,
+            bounds.height,
             resolution,
             antialias,
         );
