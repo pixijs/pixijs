@@ -251,7 +251,6 @@ export class FilterSystem implements System
         // need to factor in resolutions also..
         bounds.scale(resolution)
             .fitBounds(0, viewPort.width, 0, viewPort.height)
-            .ceil()
             .scale(1 / resolution)
             .pad(padding);
 
@@ -277,8 +276,8 @@ export class FilterSystem implements System
         // bind...
         // get a P02 texture from our pool...
         filterData.inputTexture = TexturePool.getOptimalTexture(
-            bounds.width,
-            bounds.height,
+            Math.ceil(bounds.width),
+            Math.ceil(bounds.height),
             resolution,
             antialias,
         );
