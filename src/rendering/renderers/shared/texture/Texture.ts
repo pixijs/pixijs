@@ -114,7 +114,7 @@ export type TextureSourceLike = TextureSource | TextureResourceOrOptions | strin
  * @memberof rendering
  * @class
  */
-export class Texture extends EventEmitter<{
+export class Texture<TextureSourceType extends TextureSource = TextureSource> extends EventEmitter<{
     update: Texture
     destroy: Texture
 }> implements BindableTexture
@@ -138,7 +138,7 @@ export class Texture extends EventEmitter<{
      */
     public destroyed: boolean;
 
-    public _source: TextureSource;
+    public _source: TextureSourceType;
 
     /**
      * Indicates whether the texture is rotated inside the atlas
@@ -219,7 +219,7 @@ export class Texture extends EventEmitter<{
         super();
 
         this.label = label;
-        this.source = source?.source ?? new TextureSource();
+        this.source = (source?.source ?? new TextureSource()) as TextureSourceType;
 
         this.noFrame = !frame;
 
@@ -248,7 +248,7 @@ export class Texture extends EventEmitter<{
         this.updateUvs();
     }
 
-    set source(value: TextureSource)
+    set source(value: TextureSourceType)
     {
         if (this._source)
         {
@@ -263,7 +263,7 @@ export class Texture extends EventEmitter<{
     }
 
     /** the underlying source of the texture (equivalent of baseTexture in v7) */
-    get source(): TextureSource
+    get source(): TextureSourceType
     {
         return this._source;
     }

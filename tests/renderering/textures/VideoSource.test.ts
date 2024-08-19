@@ -12,11 +12,11 @@ describe('VideoSource', () =>
 {
     const setup = async (options?: VideoSourceOptions, forceUrl?: string) =>
     {
-        const texture = await Assets.load<Texture>({
+        const texture = await Assets.load<Texture<VideoSource>>({
             src: forceUrl ?? url,
             data: options
         });
-        const source = texture.source as VideoSource;
+        const source = texture.source;
         const sourceElement = source.resource.firstElementChild as HTMLSourceElement;
 
         return { source, sourceElement };
