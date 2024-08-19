@@ -251,9 +251,9 @@ export class FilterSystem implements System
         // need to factor in resolutions also..
         bounds.scale(resolution)
             .fitBounds(0, viewPort.width, 0, viewPort.height)
+            .ceil()
             .scale(1 / resolution)
-            .pad(padding)
-            .ceil();
+            .pad(padding);
 
         // skip if the bounds are negative or zero as this means they are
         // not visible on the screen
