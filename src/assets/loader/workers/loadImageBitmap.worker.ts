@@ -5,7 +5,7 @@ interface MessageData
     id: string;
 }
 
-async function loadImageBitmap(url: string)
+async function loadImageBitmap(url: string, alphaMode?: string)
 {
     const response = await fetch(url);
 
@@ -15,15 +15,16 @@ async function loadImageBitmap(url: string)
     }
 
     const imageBlob = await response.blob();
-    const imageBitmap = await createImageBitmap(imageBlob);
 
-    return imageBitmap;
+    return alphaMode === 'premultiplied-alpha'
+        ? createImageBitmap(imageBlob, { premultiplyAlpha: 'none' })
+        : createImageBitmap(imageBlob);
 }
 self.onmessage = async (event: MessageEvent<MessageData>) =>
 {
     try
     {
-        const imageBitmap = await loadImageBitmap(event.data.data[0]);
+        const imageBitmap = await loadImageBitmap(event.data.data[0], event.data.data[1]);
 
         self.postMessage({
             data: imageBitmap,

@@ -18,7 +18,6 @@
 
 var BASIS = (function ()
 {
-    console.log("BASIS - called", BASIS)
     let _scriptDir = typeof document !== 'undefined' && document.currentScript ? document.currentScript.src : undefined;
 
     if (typeof __filename !== 'undefined') _scriptDir = _scriptDir || __filename;
@@ -26,9 +25,8 @@ var BASIS = (function ()
     return (
         function (BASIS)
         {
-           
+
             BASIS = BASIS || {};
-            console.log("BASIS - called 2", BASIS)
             const Module = typeof BASIS !== 'undefined' ? BASIS : {}; let moduleOverrides = {}; let key;
 
             for (key in Module) { if (Module.hasOwnProperty(key)) { moduleOverrides[key] = Module[key]; } } let arguments_ = []; let thisProgram = './this.program'; let quit_ = function (status, toThrow) { throw toThrow; }; let ENVIRONMENT_IS_WEB = false; let ENVIRONMENT_IS_WORKER = false; let ENVIRONMENT_IS_NODE = false; let ENVIRONMENT_IS_SHELL = false;
@@ -77,7 +75,7 @@ var BASIS = (function ()
                 else if (document.currentScript) { scriptDirectory = document.currentScript.src; } if (_scriptDir) { scriptDirectory = _scriptDir; } if (scriptDirectory.indexOf('blob:') !== 0) { scriptDirectory = scriptDirectory.substr(0, scriptDirectory.lastIndexOf('/') + 1); }
                 else { scriptDirectory = ''; } { read_ = function shell_read(url)
                 {
-                  
+
                     const xhr = new XMLHttpRequest();
 
                     xhr.open('GET', url, false); xhr.send(null);
@@ -85,7 +83,6 @@ var BASIS = (function ()
                     return xhr.responseText;
                 }; if (ENVIRONMENT_IS_WORKER)
                 {
-                    console.log("importing script - ")
                     readBinary = function readBinary(url)
                     {
                         const xhr = new XMLHttpRequest();
@@ -1256,7 +1253,7 @@ var BASIS = (function ()
         }
     );
 
-   
+
 })();
 
 if (typeof exports === 'object' && typeof module === 'object')
@@ -1265,6 +1262,3 @@ else if (typeof define === 'function' && define.amd)
 { define([], function () { return BASIS; }); }
 else if (typeof exports === 'object')
 { exports.BASIS = BASIS; }
-
-
-console.log("I AM EXPORTED!", BASIS)

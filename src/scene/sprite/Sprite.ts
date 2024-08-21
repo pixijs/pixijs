@@ -1,12 +1,11 @@
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { updateQuadBounds } from '../../utils/data/updateQuadBounds';
-import { Container } from '../container/Container';
+import { ViewContainer } from '../view/View';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
 import type { TextureSourceLike } from '../../rendering/renderers/shared/texture/Texture';
-import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Bounds, BoundsData } from '../container/bounds/Bounds';
 import type { ContainerOptions } from '../container/Container';
 import type { Optional } from '../container/container-mixins/measureMixin';
@@ -50,10 +49,8 @@ export interface SpriteOptions extends ContainerOptions
  * @memberof scene
  * @extends scene.Container
  */
-export class Sprite extends Container implements View
+export class Sprite extends ViewContainer
 {
-    private _width: number;
-    private _height: number;
     /**
      * Helper function that creates a new sprite based on the source you provide.
      * The source can be - frame id, image, video, canvas element, video element, texture
@@ -71,7 +68,7 @@ export class Sprite extends Container implements View
         return new Sprite(Texture.from(source, skipCache));
     }
 
-    public readonly renderPipeId: string = 'sprite';
+    public override readonly renderPipeId: string = 'sprite';
 
     public batched = true;
     public readonly _anchor: ObservablePoint;
@@ -80,15 +77,11 @@ export class Sprite extends Container implements View
     public _texture: Texture;
     public _didSpriteUpdate = false;
 
-    private readonly _bounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
     private readonly _sourceBounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
-    private _boundsDirty = true;
     private _sourceBoundsDirty = true;
 
-    public _roundPixels: 0 | 1 = 0;
-
-    public _lastUsed = 0;
-    public _lastInstructionTick = -1;
+    private _width: number;
+    private _height: number;
 
     /**
      * @param options - The options for creating the sprite.
@@ -202,7 +195,7 @@ export class Sprite extends Container implements View
      * Checks if the object contains the given point.
      * @param point - The point to check
      */
-    public containsPoint(point: PointData)
+    public override containsPoint(point: PointData)
     {
         const bounds = this.sourceBounds;
 
@@ -228,7 +221,7 @@ export class Sprite extends Container implements View
         bounds.addFrame(_bounds.minX, _bounds.minY, _bounds.maxX, _bounds.maxY);
     }
 
-    public onViewUpdate()
+    public override onViewUpdate()
     {
         this._didViewChangeTick++;
 
@@ -246,7 +239,7 @@ export class Sprite extends Container implements View
         }
     }
 
-    private _updateBounds()
+    protected override _updateBounds()
     {
         updateQuadBounds(this._bounds, this._anchor, this._texture, 0);
     }
@@ -274,7 +267,7 @@ export class Sprite extends Container implements View
      * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
      * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
      */
-    public destroy(options: DestroyOptions = false)
+    public override destroy(options: DestroyOptions = false)
     {
         super.destroy(options);
 
@@ -318,20 +311,6 @@ export class Sprite extends Container implements View
     set anchor(value: PointData | number)
     {
         typeof value === 'number' ? this._anchor.set(value) : this._anchor.copyFrom(value);
-    }
-
-    /**
-     *  Whether or not to round the x/y position of the sprite.
-     * @type {boolean}
-     */
-    get roundPixels()
-    {
-        return !!this._roundPixels;
-    }
-
-    set roundPixels(value: boolean)
-    {
-        this._roundPixels = value ? 1 : 0;
     }
 
     /** The width of the sprite, setting this will actually modify the scale to achieve the value set. */

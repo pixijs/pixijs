@@ -33,7 +33,7 @@ export class DarkenBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                finalColor = vec4(blendDarken(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendDarken(back.rgb, front.rgb,front.a), blendedAlpha) * uBlend;
                 `
             },
             gpu: {
@@ -44,7 +44,7 @@ export class DarkenBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                out = vec4<f32>(blendDarken(back.rgb, front.rgb, front.a), blendUniforms.uBlend);
+                out = vec4<f32>(blendDarken(back.rgb, front.rgb, front.a), blendedAlpha) * blendUniforms.uBlend;
                 `
             }
         });

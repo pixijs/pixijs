@@ -1,3 +1,4 @@
+import { setTimeout } from 'timers/promises';
 import { Assets } from '../../src/assets/Assets';
 import { Texture } from '../../src/rendering/renderers/shared/texture/Texture';
 import { Spritesheet } from '../../src/spritesheet/Spritesheet';
@@ -5,13 +6,6 @@ import { getApp } from '../utils/getApp';
 import { basePath } from './basePath';
 
 import type { BundleIdentifierOptions } from '../../src/assets/resolver/Resolver';
-
-function wait(value = 500)
-{
-    // wait a bit...
-    return new Promise<void>((resolve) =>
-        setTimeout(() => resolve(), value));
-}
 
 describe('Assets bundles', () =>
 {
@@ -118,8 +112,7 @@ describe('Assets bundles', () =>
 
         await Assets.backgroundLoadBundle('default');
 
-        // wait a bit...
-        await wait();
+        await setTimeout(500);
 
         const expectTypes = {
             'json/asset-manifest-2.json': Object,

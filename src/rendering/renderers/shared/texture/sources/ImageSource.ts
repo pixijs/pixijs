@@ -44,6 +44,7 @@ export class ImageSource extends TextureSource<ImageResource>
     public static test(resource: any): resource is ImageResource
     {
         return (globalThis.HTMLImageElement && resource instanceof HTMLImageElement)
-        || (typeof ImageBitmap !== 'undefined' && resource instanceof ImageBitmap);
+        || (typeof ImageBitmap !== 'undefined' && resource instanceof ImageBitmap)
+        || (globalThis.VideoFrame && resource instanceof VideoFrame);
     }
 }

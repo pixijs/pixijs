@@ -1,3 +1,4 @@
+import { setTimeout } from 'timers/promises';
 import { UPDATE_PRIORITY } from '../../src/ticker/const';
 import { Ticker } from '../../src/ticker/Ticker';
 
@@ -415,15 +416,13 @@ describe('Ticker', () =>
         {
             const ticker = new Ticker();
             const listener2 = jest.fn();
-            const listener = jest.fn(() =>
+            const listener = jest.fn(async () =>
             {
                 ticker.destroy();
-                setTimeout(() =>
-                {
-                    expect(listener2).not.toHaveBeenCalled();
-                    expect(listener).toHaveBeenCalledTimes(1);
-                    done();
-                }, 0);
+                await setTimeout(0);
+                expect(listener2).not.toHaveBeenCalled();
+                expect(listener).toHaveBeenCalledTimes(1);
+                done();
             });
 
             ticker.add(listener);

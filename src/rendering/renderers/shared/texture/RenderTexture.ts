@@ -10,9 +10,9 @@ import type { TextureSourceOptions } from './sources/TextureSource';
  */
 export class RenderTexture extends Texture
 {
-    public static create(options: TextureSourceOptions): Texture
+    public static create(options: TextureSourceOptions): RenderTexture
     {
-        return new Texture({
+        return new RenderTexture({
             source: new TextureSource(options)
         });
     }
