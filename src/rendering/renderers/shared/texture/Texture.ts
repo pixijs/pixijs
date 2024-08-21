@@ -45,10 +45,10 @@ export type UVs = {
  * The options that can be passed to a new Texture
  * @memberof rendering
  */
-export interface TextureOptions
+export interface TextureOptions<TextureSourceType extends TextureSource = TextureSource>
 {
     /** the underlying texture data that this texture will use  */
-    source?: TextureSource;
+    source?: TextureSourceType;
     /** optional label, for debugging */
     label?: string;
     /** The rectangle frame of the texture to show */
@@ -214,7 +214,7 @@ export class Texture<TextureSourceType extends TextureSource = TextureSource> ex
         defaultBorders,
         rotate,
         dynamic
-    }: TextureOptions = {})
+    }: TextureOptions<TextureSourceType> = {})
     {
         super();
 
@@ -392,7 +392,7 @@ export class Texture<TextureSourceType extends TextureSource = TextureSource> ex
     /** an Empty Texture used internally by the engine */
     public static EMPTY: Texture;
     /** a White texture used internally by the engine */
-    public static WHITE: Texture;
+    public static WHITE: Texture<BufferImageSource>;
 }
 
 Texture.EMPTY = new Texture({

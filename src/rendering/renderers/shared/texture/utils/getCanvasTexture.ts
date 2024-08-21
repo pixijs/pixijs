@@ -10,7 +10,7 @@ export function getCanvasTexture(canvas: ICanvas, options?: CanvasSourceOptions)
 {
     if (!canvasCache.has(canvas))
     {
-        const texture = new Texture<CanvasSource>({
+        const texture = new Texture({
             source: new CanvasSource({
                 resource: canvas,
                 ...options,
