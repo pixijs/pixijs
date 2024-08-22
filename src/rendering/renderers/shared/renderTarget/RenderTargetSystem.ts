@@ -504,6 +504,8 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
             {
                 renderTarget.destroy();
 
+                this._renderSurfaceToRenderTargetHash.delete(renderSurface);
+
                 const gpuRenderTarget = this._gpuRenderTargetHash[renderTarget.uid];
 
                 if (gpuRenderTarget)

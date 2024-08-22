@@ -563,7 +563,6 @@ export class VideoSource extends TextureSource<VideoResource>
 
     public static test(resource: any): resource is VideoResource
     {
-        return (globalThis.HTMLVideoElement && resource instanceof HTMLVideoElement)
-            || (globalThis.VideoFrame && resource instanceof VideoFrame);
+        return (globalThis.HTMLVideoElement && resource instanceof HTMLVideoElement);
     }
 }

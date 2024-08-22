@@ -1,15 +1,9 @@
+import { setTimeout } from 'timers/promises';
 import { Assets } from '../../src/assets/Assets';
 import { loadTextures } from '../../src/assets/loader/parsers/textures/loadTextures';
 import { Texture } from '../../src/rendering/renderers/shared/texture/Texture';
 import { basePath } from './basePath';
 import '../../src/spritesheet/init';
-
-function wait(value = 500)
-{
-    // wait a bit...
-    return new Promise<void>((resolve) =>
-        setTimeout(() => resolve(), value));
-}
 
 describe('Assets', () =>
 {
@@ -219,8 +213,7 @@ describe('Assets', () =>
 
         void Assets.backgroundLoad(['textures/bunny.png']);
 
-        // wait a bit...
-        await wait();
+        await setTimeout(500);
 
         const asset = await Assets.loader.promiseCache[`${basePath}textures/bunny.png`].promise;
 
