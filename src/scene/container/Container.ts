@@ -1069,29 +1069,19 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     public setSize(value: number | Optional<Size, 'height'>, height?: number)
     {
         const size = this.getLocalBounds();
-        let convertedWidth: number;
-        let convertedHeight: number;
 
-        if (typeof value !== 'object')
+        if (typeof value === 'object')
         {
-            convertedWidth = value;
-            convertedHeight = height ?? value;
+            height = value.height ?? value.width;
+            value = value.width;
         }
         else
         {
-            convertedWidth = value.width;
-            convertedHeight = value.height ?? value.width;
+            height ??= value;
         }
 
-        if (convertedWidth !== undefined)
-        {
-            this._setWidth(convertedWidth, size.width);
-        }
-
-        if (convertedHeight !== undefined)
-        {
-            this._setHeight(convertedHeight, size.height);
-        }
+        value !== undefined && this._setWidth(value, size.width);
+        height !== undefined && this._setHeight(height, size.height);
     }
 
     /** Called when the skew or the rotation changes. */

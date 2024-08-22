@@ -5,11 +5,13 @@ import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { Transform } from '../../utils/misc/Transform';
 import { ViewContainer } from '../view/View';
 
+import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Bounds } from '../container/bounds/Bounds';
 import type { ContainerOptions } from '../container/Container';
+import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
 
 /**
@@ -361,6 +363,41 @@ export class TilingSprite extends ViewContainer implements View, Instruction
     override get height()
     {
         return this._height;
+    }
+
+    /**
+     * Sets the size of the TilingSprite to the specified width and height.
+     * This is faster than setting the width and height separately.
+     * @param value - This can be either a number or a [Size]{@link Size} object.
+     * @param height - The height to set. Defaults to the value of `width` if not provided.
+     */
+    public override setSize(value: number | Optional<Size, 'height'>, height?: number): void
+    {
+        if (typeof value === 'object')
+        {
+            height = value.height ?? value.width;
+            value = value.width;
+        }
+
+        this._width = value;
+        this._height = height ?? value;
+
+        this.onViewUpdate();
+    }
+
+    /**
+     * Retrieves the size of the TilingSprite as a [Size]{@link Size} object.
+     * This is faster than get the width and height separately.
+     * @param out - Optional object to store the size in.
+     * @returns - The size of the TilingSprite.
+     */
+    public override getSize(out?: Size): Size
+    {
+        out ||= {} as Size;
+        out.width = this._width;
+        out.height = this._height;
+
+        return out;
     }
 
     protected override _updateBounds()

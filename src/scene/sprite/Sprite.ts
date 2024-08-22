@@ -345,11 +345,7 @@ export class Sprite extends ViewContainer
      */
     public override getSize(out?: Size): Size
     {
-        if (!out)
-        {
-            out = {} as Size;
-        }
-
+        out ||= {} as Size;
         out.width = Math.abs(this.scale.x) * this._texture.orig.width;
         out.height = Math.abs(this.scale.y) * this._texture.orig.height;
 
@@ -364,28 +360,17 @@ export class Sprite extends ViewContainer
      */
     public override setSize(value: number | Optional<Size, 'height'>, height?: number)
     {
-        let convertedWidth: number;
-        let convertedHeight: number;
-
-        if (typeof value !== 'object')
+        if (typeof value === 'object')
         {
-            convertedWidth = value;
-            convertedHeight = height ?? value;
+            height = value.height ?? value.width;
+            value = value.width;
         }
         else
         {
-            convertedWidth = value.width;
-            convertedHeight = value.height ?? value.width;
+            height ??= value;
         }
 
-        if (convertedWidth !== undefined)
-        {
-            this._setWidth(convertedWidth, this._texture.orig.width);
-        }
-
-        if (convertedHeight !== undefined)
-        {
-            this._setHeight(convertedHeight, this._texture.orig.height);
-        }
+        value !== undefined && this._setWidth(value, this._texture.orig.width);
+        height !== undefined && this._setHeight(height, this._texture.orig.height);
     }
 }
