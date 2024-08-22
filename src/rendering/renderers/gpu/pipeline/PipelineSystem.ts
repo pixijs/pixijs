@@ -92,7 +92,7 @@ export class PipelineSystem implements System
 
     private _moduleCache: Record<string, GPUShaderModule> = Object.create(null);
     private _bufferLayoutsCache: Record<number, GPUVertexBufferLayout[]> = Object.create(null);
-    private readonly _bindingNamesCache: Record<string, string> = Object.create(null);
+    private readonly _bindingNamesCache: Record<string, Record<string, string>> = Object.create(null);
 
     private _pipeCache: PipeHash = Object.create(null);
     private readonly _pipeStateCaches: Record<number, PipeHash> = Object.create(null);
