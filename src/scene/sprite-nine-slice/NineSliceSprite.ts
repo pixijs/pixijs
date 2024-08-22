@@ -303,7 +303,6 @@ export class NineSliceSprite extends ViewContainer implements View
         }
 
         this._texture = null;
-        (this.bounds as null) = null;
     }
 }
 
