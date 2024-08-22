@@ -5,6 +5,7 @@ import { TextureSource } from '../../../src/rendering/renderers/shared/texture/s
 import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
 import { Container } from '../../../src/scene/container/Container';
 import { Sprite } from '../../../src/scene/sprite/Sprite';
+import { NineSliceSprite } from '../../../src/scene/sprite-nine-slice/NineSliceSprite';
 import { getWebGLRenderer } from '../../utils/getRenderer';
 import { getTexture } from '../../utils/getTexture';
 
@@ -45,6 +46,20 @@ describe('Sprite', () =>
         it('should not throw when destroying it context', () =>
         {
             const sprite = new Sprite();
+
+            expect(() => sprite.destroy(true)).not.toThrow();
+        });
+
+        it('should not throw when destroyed (nineslice)', () =>
+        {
+            const sprite = new NineSliceSprite({ texture: Texture.WHITE });
+
+            expect(() => sprite.destroy()).not.toThrow();
+        });
+
+        it('should not throw when destroying it context (nineslice)', () =>
+        {
+            const sprite = new NineSliceSprite({ texture: Texture.WHITE });
 
             expect(() => sprite.destroy(true)).not.toThrow();
         });
