@@ -314,11 +314,11 @@ export class PipelineSystem implements System
     }
 
     /**
-     * returns a hash of buffer names mapped to bind locations.
+     * Returns a hash of buffer names mapped to bind locations.
      * This is used to bind the correct buffer to the correct location in the shader.
-     * @param geometry - The geometry to get the buffer names for
-     * @param program - The program to get the buffer names for
-     * @returns a object of buffer names mapped to the bind location
+     * @param geometry - The geometry where to get the buffer names
+     * @param program - The program where to get the buffer names
+     * @returns An object of buffer names mapped to the bind location.
      */
     public getBufferNamesToBind(geometry: Geometry, program: GpuProgram): Record<string, string>
     {
