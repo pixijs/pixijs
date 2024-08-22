@@ -147,7 +147,7 @@ export class GpuEncoderSystem implements System
     {
         // when binding a buffers for geometry, there is no need to bind a buffer more than once if it is interleaved.
         // which is often the case for Pixi. This is a performance optimisation.
-        // Instead of looping through hte attributes, we instead call getBufferNamesToBind
+        // Instead of looping through the attributes, we instead call getBufferNamesToBind
         // which returns a list of buffer names that need to be bound.
         // we can then loop through this list and bind the buffers.
         // essentially only binding a single time for any buffers that are interleaved.
