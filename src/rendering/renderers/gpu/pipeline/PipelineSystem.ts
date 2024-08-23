@@ -92,6 +92,7 @@ export class PipelineSystem implements System
 
     private _moduleCache: Record<string, GPUShaderModule> = Object.create(null);
     private _bufferLayoutsCache: Record<number, GPUVertexBufferLayout[]> = Object.create(null);
+    private readonly _bindingNamesCache: Record<string, Record<string, string>> = Object.create(null);
 
     private _pipeCache: PipeHash = Object.create(null);
     private readonly _pipeStateCaches: Record<number, PipeHash> = Object.create(null);
@@ -310,6 +311,43 @@ export class PipelineSystem implements System
         program._attributeLocationsKey = createIdFromString(stringKey, 'programAttributes');
 
         return program._attributeLocationsKey;
+    }
+
+    /**
+     * Returns a hash of buffer names mapped to bind locations.
+     * This is used to bind the correct buffer to the correct location in the shader.
+     * @param geometry - The geometry where to get the buffer names
+     * @param program - The program where to get the buffer names
+     * @returns An object of buffer names mapped to the bind location.
+     */
+    public getBufferNamesToBind(geometry: Geometry, program: GpuProgram): Record<string, string>
+    {
+        const key = (geometry._layoutKey << 16) | program._attributeLocationsKey;
+
+        if (this._bindingNamesCache[key]) return this._bindingNamesCache[key];
+
+        const data = this._createVertexBufferLayouts(geometry, program);
+
+        // now map the data to the buffers..
+        const bufferNamesToBind: Record<string, string> = Object.create(null);
+
+        const attributeData = program.attributeData;
+
+        for (let i = 0; i < data.length; i++)
+        {
+            for (const j in attributeData)
+            {
+                if (attributeData[j].location === i)
+                {
+                    bufferNamesToBind[i] = j;
+                    break;
+                }
+            }
+        }
+
+        this._bindingNamesCache[key] = bufferNamesToBind;
+
+        return bufferNamesToBind;
     }
 
     private _createVertexBufferLayouts(geometry: Geometry, program: GpuProgram): GPUVertexBufferLayout[]
