@@ -1,28 +1,31 @@
-import { type Batch, type BatchableObject, Batcher } from '../../../src/rendering/batcher/shared/Batcher';
+import { Matrix } from '../../../src/maths/matrix/Matrix';
+import { type Batch, type BatchableMeshElement, Batcher } from '../../../src/rendering/batcher/shared/Batcher';
 import { InstructionSet } from '../../../src/rendering/renderers/shared/instructions/InstructionSet';
 import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
 import '../../../src/rendering/renderers/shared/texture/sources/ImageSource';
 
-import type { IndexBufferArray } from '../../../src/rendering/renderers/shared/geometry/Geometry';
 import type { BLEND_MODES } from '../../../src/rendering/renderers/shared/state/const';
 
-class DummyBatchableObject implements BatchableObject
+class DummyBatchableObject implements BatchableMeshElement
 {
-    indexStart: number;
-    packAttributes = (_float32View: Float32Array, _uint32View: Uint32Array, _index: number, _textureId: number) =>
-    {
-        //
-    };
-    packIndex = (_indexBuffer: IndexBufferArray, _index: number, _indicesOffset: number) =>
-    {
-        //
-    };
+    groupTransform = new Matrix();
+    batcherName: string;
+    uvs = new Float32Array(8);
+    positions = new Float32Array(8);
+    indices = new Uint16Array(6);
+    indexOffset = 0;
+    color = 0xFFFFFFF;
+    attributeOffset = 0;
+    location = 0;
+    packAsQuad = false;
+    indexStart = 0;
+
     texture: Texture;
     blendMode: BLEND_MODES = 'normal';
-    vertexSize = 8;
+    attributeSize = 8;
     indexSize = 4;
     textureId: number;
-    location: number;
+    attributeStart: number;
     batcher: Batcher = null;
     batch: Batch = null;
     roundPixels: 0 | 1 = 0;

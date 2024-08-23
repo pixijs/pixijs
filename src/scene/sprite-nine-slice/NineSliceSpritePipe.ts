@@ -95,7 +95,7 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
         const batchableMesh = BigPool.get(BatchableMesh);
 
         batchableMesh.geometry = BigPool.get(NineSliceGeometry);
-        batchableMesh.mesh = sprite;
+        batchableMesh.renderable = sprite;
         batchableMesh.texture = sprite._texture;
         batchableMesh.roundPixels = (this._renderer._roundPixels | sprite._roundPixels) as 0 | 1;
 

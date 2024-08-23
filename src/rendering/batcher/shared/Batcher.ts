@@ -5,7 +5,10 @@ import { type BLEND_MODES } from '../../renderers/shared/state/const';
 import { getAdjustedBlendModeBlend } from '../../renderers/shared/state/getAdjustedBlendModeBlend';
 import { getMaxTexturesPerBatch } from '../gl/utils/maxRecommendedTextures';
 import { BatchTextureArray } from './BatchTextureArray';
+import { DefaultBatcher } from './DefaultBatcher';
 
+import type { Matrix } from '../../../maths/matrix/Matrix';
+import type { ViewContainer } from '../../../scene/view/View';
 import type { BindGroup } from '../../renderers/gpu/shader/BindGroup';
 import type { IndexBufferArray } from '../../renderers/shared/geometry/Geometry';
 import type { Instruction } from '../../renderers/shared/instructions/Instruction';
@@ -73,30 +76,54 @@ function returnBatchToPool(batch: Batch)
 {
     batchPool[batchPoolIndex++] = batch;
 }
-export interface BatchableObject
-{
-    indexStart: number;
 
-    packAttributes: (
-        float32View: Float32Array,
-        uint32View: Uint32Array,
-        index: number,
-        textureId: number,
-    ) => void;
-    packIndex: (indexBuffer: IndexBufferArray, index: number, indicesOffset: number) => void;
+export interface BatchableElement
+{
+    // what batcher to use, must be registered.
+    batcherName: string;
+
+    color: number;
 
     texture: Texture;
     blendMode: BLEND_MODES;
-    vertexSize: number;
+
     indexSize: number;
+
+    attributeOffset: number;
+    attributeSize: number;
+
+    // used internally by batcher specific..
+    location: number;
+    indexStart: number;
 
     // stored for efficient updating..
     textureId: number;
-    location: number; // location in the buffer
+    roundPixels: 0 | 1;
+    attributeStart: number; // location in the buffer
     batcher: Batcher;
     batch: Batch;
 
-    roundPixels: 0 | 1;
+    // sprite specific optimizations
+    // packing a quad will give better perf!
+    packAsQuad: boolean;
+
+}
+
+export interface BatchableQuadElement extends BatchableElement
+{
+    renderable: ViewContainer; // TODO only used with sprite batch..
+}
+
+export interface BatchableMeshElement extends BatchableElement
+{
+    groupTransform: Matrix;
+
+    // buffer data..
+    uvs: number[] | Float32Array;
+    positions: number[] | Float32Array;
+    indices: number[] | Uint16Array | Uint32Array;
+
+    indexOffset: number;
 }
 
 let BATCH_TICK = 0;
@@ -133,19 +160,19 @@ export class Batcher
     public indexBuffer: IndexBufferArray;
 
     public attributeSize: number;
+    public attributeStart: number;
     public indexSize: number;
     public elementSize: number;
     public elementStart: number;
 
     public dirty = true;
 
+    public activeBatcher = new DefaultBatcher();
+
     public batchIndex = 0;
     public batches: Batch[] = [];
 
-    // specifics.
-    private readonly _vertexSize: number = 6;
-
-    private _elements: BatchableObject[] = [];
+    private _elements: BatchableElement[] = [];
 
     private _batchIndexStart: number;
     private _batchIndexSize: number;
@@ -160,7 +187,7 @@ export class Batcher
 
         const { vertexSize, indexSize, maxTextures } = options;
 
-        this.attributeBuffer = new ViewableBuffer(vertexSize * this._vertexSize * 4);
+        this.attributeBuffer = new ViewableBuffer(vertexSize * 6 * 4);
 
         this.indexBuffer = new Uint16Array(indexSize);
 
@@ -173,6 +200,7 @@ export class Batcher
         this.elementStart = 0;
         this.indexSize = 0;
         this.attributeSize = 0;
+        this.attributeStart = 0;
 
         for (let i = 0; i < this.batchIndex; i++)
         {
@@ -186,19 +214,21 @@ export class Batcher
         this.dirty = true;
     }
 
-    public add(batchableObject: BatchableObject)
+    public add(batchableObject: BatchableElement)
     {
         this._elements[this.elementSize++] = batchableObject;
 
         batchableObject.indexStart = this.indexSize;
-        batchableObject.location = this.attributeSize;
+        batchableObject.attributeStart = this.attributeSize;
         batchableObject.batcher = this;
+        batchableObject.location = this.attributeStart;
 
         this.indexSize += batchableObject.indexSize;
-        this.attributeSize += ((batchableObject.vertexSize) * this._vertexSize);
+        this.attributeStart += batchableObject.attributeSize;
+        this.attributeSize += ((batchableObject.attributeSize) * this.activeBatcher.attributeSize);
     }
 
-    public checkAndUpdateTexture(batchableObject: BatchableObject, texture: Texture): boolean
+    public checkAndUpdateTexture(batchableObject: BatchableElement, texture: Texture): boolean
     {
         const textureId = batchableObject.batch.textures.ids[texture._source.uid];
 
@@ -212,14 +242,26 @@ export class Batcher
         return true;
     }
 
-    public updateElement(batchableObject: BatchableObject)
+    public updateElement(batchableObject: BatchableElement)
     {
         this.dirty = true;
 
-        batchableObject.packAttributes(
-            this.attributeBuffer.float32View,
-            this.attributeBuffer.uint32View,
-            batchableObject.location, batchableObject.textureId);
+        if (batchableObject.packAsQuad)
+        {
+            this.activeBatcher.packQuadAttributes(
+                batchableObject as BatchableQuadElement,
+                this.attributeBuffer.float32View,
+                this.attributeBuffer.uint32View,
+                batchableObject.attributeStart, batchableObject.textureId);
+        }
+        else
+        {
+            this.activeBatcher.packAttributes(
+                batchableObject as BatchableMeshElement,
+                this.attributeBuffer.float32View,
+                this.attributeBuffer.uint32View,
+                batchableObject.attributeStart, batchableObject.textureId);
+        }
     }
 
     /**
@@ -229,7 +271,6 @@ export class Batcher
      */
     public break(instructionSet: InstructionSet)
     {
-        // ++BATCH_TICK;
         const elements = this._elements;
 
         // length 0??!! (we broke without adding anything)
@@ -242,6 +283,7 @@ export class Batcher
 
         const firstElement = elements[this.elementStart];
         let blendMode = getAdjustedBlendModeBlend(firstElement.blendMode, firstElement.texture._source);
+        let batcherName = firstElement.batcherName;
 
         if (this.attributeSize * 4 > this.attributeBuffer.size)
         {
@@ -264,6 +306,8 @@ export class Batcher
 
         const maxTextures = this.maxTextures;
 
+        const activeBatcher = this.activeBatcher;
+
         for (let i = this.elementStart; i < this.elementSize; ++i)
         {
             const element = elements[i];
@@ -275,15 +319,33 @@ export class Batcher
 
             const adjustedBlendMode = getAdjustedBlendModeBlend(element.blendMode, source);
 
-            const blendModeChange = blendMode !== adjustedBlendMode;
+            const breakRequired = blendMode !== adjustedBlendMode || batcherName !== element.batcherName;
 
-            if (source._batchTick === BATCH_TICK && !blendModeChange)
+            if (source._batchTick === BATCH_TICK && !breakRequired)
             {
                 element.textureId = source._textureBindLocation;
 
                 size += element.indexSize;
-                element.packAttributes(f32, u32, element.location, element.textureId);
-                element.packIndex(iBuffer, element.indexStart, element.location / this._vertexSize);
+
+                if (element.packAsQuad)
+                {
+                    activeBatcher.packQuadAttributes(
+                        element as BatchableQuadElement,
+                        f32, u32,
+                        element.attributeStart, element.textureId
+                    );
+                    this.packQuadIndex(iBuffer, element.indexStart, element.location);
+                }
+                else
+                {
+                    activeBatcher.packAttributes(
+                        element as BatchableMeshElement,
+                        f32, u32,
+                        element.attributeStart,
+                        element.textureId
+                    );
+                    this.packIndex(element as BatchableMeshElement, iBuffer, element.indexStart, element.location);
+                }
 
                 element.batch = batch;
 
@@ -292,7 +354,7 @@ export class Batcher
 
             source._batchTick = BATCH_TICK;
 
-            if (textureBatch.count >= maxTextures || blendModeChange)
+            if (textureBatch.count >= maxTextures || breakRequired)
             {
                 this._finishBatch(
                     batch,
@@ -308,6 +370,7 @@ export class Batcher
                 start = size;
                 // create a batch...
                 blendMode = adjustedBlendMode;
+                batcherName = element.batcherName;
 
                 batch = getBatchFromPool();
                 textureBatch = batch.textures;
@@ -322,8 +385,25 @@ export class Batcher
             element.batch = batch;
 
             size += element.indexSize;
-            element.packAttributes(f32, u32, element.location, element.textureId);
-            element.packIndex(iBuffer, element.indexStart, element.location / this._vertexSize);
+
+            if (element.packAsQuad)
+            {
+                activeBatcher.packQuadAttributes(
+                    element as BatchableQuadElement,
+                    f32, u32,
+                    element.attributeStart, element.textureId
+                );
+                this.packQuadIndex(iBuffer, element.indexStart, element.location);
+            }
+            else
+            {
+                activeBatcher.packAttributes(element as BatchableMeshElement,
+                    f32, u32,
+                    element.attributeStart, element.textureId
+                );
+
+                this.packIndex(element as BatchableMeshElement, iBuffer, element.indexStart, element.location);
+            }
         }
 
         if (textureBatch.count > 0)
@@ -441,6 +521,30 @@ export class Batcher
         }
 
         this.indexBuffer = newIndexBuffer;
+    }
+
+    public packQuadIndex(indexBuffer: IndexBufferArray, index: number, indicesOffset: number)
+    {
+        indexBuffer[index] = indicesOffset + 0;
+        indexBuffer[index + 1] = indicesOffset + 1;
+        indexBuffer[index + 2] = indicesOffset + 2;
+
+        indexBuffer[index + 3] = indicesOffset + 0;
+        indexBuffer[index + 4] = indicesOffset + 2;
+        indexBuffer[index + 5] = indicesOffset + 3;
+    }
+
+    public packIndex(element: BatchableMeshElement, indexBuffer: IndexBufferArray, index: number, indicesOffset: number)
+    {
+        const indices = element.indices;
+        const size = element.indexSize;
+        const indexOffset = element.indexOffset;
+        const attributeOffset = element.attributeOffset;
+
+        for (let i = 0; i < size; i++)
+        {
+            indexBuffer[index++] = indicesOffset + indices[i + indexOffset] - attributeOffset;
+        }
     }
 
     public destroy()

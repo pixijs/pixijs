@@ -1,22 +1,29 @@
-import type { Batch, BatchableObject, Batcher } from '../../../rendering/batcher/shared/Batcher';
-import type { IndexBufferArray } from '../../../rendering/renderers/shared/geometry/Geometry';
+import type { Batch, BatchableMeshElement, Batcher } from '../../../rendering/batcher/shared/Batcher';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import type { Container } from '../../container/Container';
+import type { ViewContainer } from '../../view/View';
 import type { MeshGeometry } from './MeshGeometry';
 
 /**
  * A batchable mesh object.
  * @ignore
  */
-export class BatchableMesh implements BatchableObject
+export class BatchableMesh implements BatchableMeshElement
 {
+    public batcherName = 'default';
+    public packAsQuad = false;
+    public location: number;
+
+    public indexOffset = 0;
+
+    public attributeOffset = 0;
+
     public indexStart: number;
     public textureId: number;
     public texture: Texture;
-    public location: number;
+    public attributeStart: number;
     public batcher: Batcher = null;
     public batch: Batch = null;
-    public mesh: Container;
+    public renderable: ViewContainer;
     public geometry: MeshGeometry;
 
     public roundPixels: 0 | 1 = 0;
@@ -25,11 +32,11 @@ export class BatchableMesh implements BatchableObject
     private _uvUpdateId: number = -1;
     private _textureMatrixUpdateId: number = -1;
 
-    get blendMode() { return this.mesh.groupBlendMode; }
+    get blendMode() { return this.renderable.groupBlendMode; }
 
     public reset()
     {
-        this.mesh = null;
+        this.renderable = null;
         this.texture = null;
         this.batcher = null;
         this.batch = null;
@@ -38,39 +45,10 @@ export class BatchableMesh implements BatchableObject
         this._textureMatrixUpdateId = -1;
     }
 
-    public packIndex(indexBuffer: IndexBufferArray, index: number, indicesOffset: number)
+    get uvs()
     {
-        const indices = this.geometry.indices;
-
-        for (let i = 0; i < indices.length; i++)
-        {
-            indexBuffer[index++] = indices[i] + indicesOffset;
-        }
-    }
-
-    public packAttributes(
-        float32View: Float32Array,
-        uint32View: Uint32Array,
-        index: number,
-        textureId: number
-    )
-    {
-        const mesh = this.mesh;
-
         const geometry = this.geometry;
-        const wt = mesh.groupTransform;
 
-        const textureIdAndRound = (textureId << 16) | (this.roundPixels & 0xFFFF);
-
-        const a = wt.a;
-        const b = wt.b;
-        const c = wt.c;
-        const d = wt.d;
-        const tx = wt.tx;
-        const ty = wt.ty;
-
-        // const trim = texture.trim;
-        const positions = geometry.positions;
         const uvBuffer = geometry.getBuffer('aUV');
 
         const uvs = uvBuffer.data;
@@ -96,28 +74,30 @@ export class BatchableMesh implements BatchableObject
             }
         }
 
-        const abgr = mesh.groupColorAlpha;
-
-        for (let i = 0; i < positions.length; i += 2)
-        {
-            const x = positions[i];
-            const y = positions[i + 1];
-
-            float32View[index] = (a * x) + (c * y) + tx;
-            float32View[index + 1] = (b * x) + (d * y) + ty;
-
-            // TODO implement texture matrix?
-            float32View[index + 2] = transformedUvs[i];
-            float32View[index + 3] = transformedUvs[i + 1];
-
-            uint32View[index + 4] = abgr;
-            uint32View[index + 5] = textureIdAndRound;
-
-            index += 6;
-        }
+        return transformedUvs as Float32Array;
     }
 
-    get vertexSize()
+    get positions()
+    {
+        return this.geometry.positions;
+    }
+
+    get indices()
+    {
+        return this.geometry.indices;
+    }
+
+    get color()
+    {
+        return this.renderable.groupColorAlpha;
+    }
+
+    get groupTransform()
+    {
+        return this.renderable.groupTransform;
+    }
+
+    get attributeSize()
     {
         return this.geometry.positions.length / 2;
     }

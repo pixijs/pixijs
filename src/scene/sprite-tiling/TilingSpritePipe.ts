@@ -103,7 +103,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
                 this._updateBatchableMesh(tilingSprite);
 
                 batchableMesh.geometry = geometry;
-                batchableMesh.mesh = tilingSprite;
+                batchableMesh.renderable = tilingSprite;
                 batchableMesh.texture = tilingSprite._texture;
             }
 

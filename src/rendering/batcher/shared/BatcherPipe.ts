@@ -7,7 +7,7 @@ import type { Geometry } from '../../renderers/shared/geometry/Geometry';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { BatchPipe, InstructionPipe } from '../../renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../../renderers/types';
-import type { Batch, BatchableObject } from './Batcher';
+import type { Batch, BatchableElement } from './Batcher';
 
 export interface BatcherAdaptor
 {
@@ -65,7 +65,7 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
         this._activeBatch.begin();
     }
 
-    public addToBatch(batchableObject: BatchableObject)
+    public addToBatch(batchableObject: BatchableElement)
     {
         this._activeBatch.add(batchableObject);
     }

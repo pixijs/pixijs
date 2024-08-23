@@ -216,13 +216,11 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
         // TODO - make this batchable graphics??
         const gpuMesh: BatchableMesh = BigPool.get(BatchableMesh);
 
-        gpuMesh.mesh = mesh;
+        gpuMesh.renderable = mesh;
         gpuMesh.texture = mesh._texture;
         gpuMesh.roundPixels = (this.renderer._roundPixels | mesh._roundPixels) as 0 | 1;
 
         this._gpuBatchableMeshHash[mesh.uid] = gpuMesh;
-
-        gpuMesh.mesh = mesh;
 
         return gpuMesh;
     }
