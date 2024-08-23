@@ -85,10 +85,10 @@ export type TextureSourceLike = TextureSource | TextureResourceOrOptions | strin
  *
  * ```js
  *
- * const texture = await Asset.load('assets/image.png');
+ * const texture = await Assets.load('assets/image.png');
  *
  * // once Assets has loaded the image it will be available via the from method
- * const sameTexture = Texture.from('assets/image.png');
+ * const sameTexture =await Assets.load('assets/image.png');
  * // another way to access the texture once loaded
  * const sameAgainTexture = Asset.get('assets/image.png');
  *
@@ -104,7 +104,7 @@ export type TextureSourceLike = TextureSource | TextureResourceOrOptions | strin
  * ```js
  * import { Sprite, Texture } from 'pixi.js';
  *
- * const texture = await Asset.load('assets/image.png');
+ * const texture = await Assets.load('assets/image.png');
  * const sprite1 = new Sprite(texture);
  * const sprite2 = new Sprite(texture);
  * ```
