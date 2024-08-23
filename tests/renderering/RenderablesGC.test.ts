@@ -35,7 +35,7 @@ describe('RenderableGC', () =>
             setTimeout(resolve, 1000);
         });
 
-        expect(sprite.listenerCount('destroyed')).toEqual(1);
+        expect(sprite.listenerCount('destroyed')).toEqual(2);
 
         container.removeChild(sprite);
 
@@ -49,6 +49,38 @@ describe('RenderableGC', () =>
         });
 
         // should be cleaned up!
+        expect(renderer.renderableGC['_managedRenderables'].length).toEqual(0);
+
+        // check sprite.destroy event has now listeners..
+        expect(sprite.listenerCount('destroyed')).toEqual(0);
+
+        renderer.destroy();
+    });
+
+    it('should gc correctly when object is destroyed manually', async () =>
+    {
+        const renderer = await getWebGLRenderer({
+            renderableGCMaxUnusedTime: 5,
+            renderableGCFrequency: 10,
+        });
+
+        const container = new Container();
+        const sprite = new Sprite(Texture.WHITE);
+
+        container.addChild(sprite);
+        renderer.render(container);
+
+        expect(renderer.renderableGC['_managedRenderables'].length).toEqual(1);
+
+        container.destroy({ children: true });
+
+        expect(renderer.renderableGC['_managedRenderables'][0]).toEqual(null);
+
+        await new Promise((resolve) =>
+        {
+            setTimeout(resolve, 1000);
+        });
+
         expect(renderer.renderableGC['_managedRenderables'].length).toEqual(0);
 
         // check sprite.destroy event has now listeners..
@@ -104,14 +136,14 @@ describe('RenderableGC', () =>
 
         renderer.render(container);
 
-        expect(sprite.listenerCount('destroyed')).toEqual(1);
-        expect(tilingSprite.listenerCount('destroyed')).toEqual(1);
-        expect(graphics.listenerCount('destroyed')).toEqual(1);
-        expect(mesh.listenerCount('destroyed')).toEqual(1);
-        expect(nineSliceSprite.listenerCount('destroyed')).toEqual(1);
-        expect(text.listenerCount('destroyed')).toEqual(1);
-        expect(htmlText.listenerCount('destroyed')).toEqual(1);
-        expect(bitmapText.listenerCount('destroyed')).toEqual(1);
+        expect(sprite.listenerCount('destroyed')).toEqual(2);
+        expect(tilingSprite.listenerCount('destroyed')).toEqual(2);
+        expect(graphics.listenerCount('destroyed')).toEqual(2);
+        expect(mesh.listenerCount('destroyed')).toEqual(2);
+        expect(nineSliceSprite.listenerCount('destroyed')).toEqual(2);
+        expect(text.listenerCount('destroyed')).toEqual(2);
+        expect(htmlText.listenerCount('destroyed')).toEqual(2);
+        expect(bitmapText.listenerCount('destroyed')).toEqual(2);
 
         container.removeChild(sprite);
         container.removeChild(tilingSprite);

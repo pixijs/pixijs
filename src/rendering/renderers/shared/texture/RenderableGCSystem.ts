@@ -1,5 +1,6 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 
+import type { Container } from '../../../../scene/container/Container';
 import type { Renderer } from '../../types';
 import type { InstructionSet } from '../instructions/InstructionSet';
 import type { RenderPipe } from '../instructions/RenderPipe';
@@ -130,12 +131,14 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
 
     public addRenderable(renderable: Renderable, instructionSet: InstructionSet): void
     {
+        if (!this.enabled) return;
+
         renderable._lastUsed = this._now;
 
         if (renderable._lastInstructionTick === -1)
         {
-            // TODO manage index...
             this._managedRenderables.push(renderable);
+            renderable.once('destroyed', this._removeRenderable, this);
         }
 
         renderable._lastInstructionTick = instructionSet.tick;
@@ -156,6 +159,12 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
         {
             const renderable = managedRenderables[i];
 
+            if (renderable === null)
+            {
+                offset++;
+                continue;
+            }
+
             const renderGroup = renderable.renderGroup ?? renderable.parentRenderGroup;
             const currentIndex = renderGroup?.instructionSet?.tick ?? -1;
 
@@ -171,6 +180,7 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
                 // remove from the array as this has been destroyed..
                 renderable._lastInstructionTick = -1;
                 offset++;
+                renderable.off('destroyed', this._removeRenderable, this);
             }
             else
             {
@@ -186,5 +196,16 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
         this.enabled = false;
         this._renderer = null as any as Renderer;
         this._managedRenderables.length = 0;
+    }
+
+    private _removeRenderable(renderable: Container): void
+    {
+        const index = this._managedRenderables.indexOf(renderable as Renderable);
+
+        if (index >= 0)
+        {
+            renderable.off('destroyed', this._removeRenderable, this);
+            this._managedRenderables[index] = null;
+        }
     }
 }
