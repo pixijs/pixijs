@@ -141,9 +141,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                 }
                 else
                 {
-                    view = this._renderer.texture.getGpuSource(texture).createView({
-                        mipLevelCount: 1,
-                    });
+                    view = this._renderer.texture.getTextureView(texture);
                 }
 
                 if (gpuRenderTarget.msaaTextures[i])

@@ -3,10 +3,6 @@ description: "Runs lint and type checks"
 runs:
   using: "composite"
   steps:
-    - name: Lint Tests
+    - name: Run Tests
       shell: bash
-      run: npm run lint
-
-    - name: Type Tests
-      shell: bash
-      run: npm run test:types
+      run: npm run ci:lint

@@ -6,7 +6,7 @@ import type { View, ViewObserver } from '../../src/rendering/renderers/shared/vi
 import type { Bounds, BoundsData } from '../../src/scene/container/bounds/Bounds';
 import type { ContainerOptions } from '../../src/scene/container/Container';
 
-export interface DummyViewOptions extends ContainerOptions
+interface DummyViewOptions extends ContainerOptions
 {
     x?: number;
     y?: number;

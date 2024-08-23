@@ -58,7 +58,7 @@ fn mainVertex(
 
   let filteredCord = filterTextureCoord(aPosition);
 
-  let strength = gfu.uInputSize.w * blurUniforms.uStrength;
+  let pixelStrength = gfu.uInputSize.%dimension% * blurUniforms.uStrength;
 
   return VSOutput(
    filterVertexPosition(aPosition),
