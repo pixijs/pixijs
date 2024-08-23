@@ -1,6 +1,6 @@
+import { readJSON } from 'fs-extra';
 import path from 'path';
 import { bump } from './utils/bump';
-import { readJSON } from './utils/json';
 import { spawn } from './utils/spawn';
 
 /**
@@ -11,7 +11,7 @@ async function main(): Promise<void>
 {
     try
     {
-        const { version } = await readJSON<{version: string}>(
+        const { version } = await readJSON(
             path.join(process.cwd(), 'package.json')
         );
         const nextVersion = await bump(version);

@@ -313,8 +313,14 @@ export class AbstractRenderer<
      */
     public resize(desiredScreenWidth: number, desiredScreenHeight: number, resolution?: number): void
     {
+        const previousResolution = this.view.resolution;
+
         this.view.resize(desiredScreenWidth, desiredScreenHeight, resolution);
         this.emit('resize', this.view.screen.width, this.view.screen.height, this.view.resolution);
+        if (resolution !== undefined && resolution !== previousResolution)
+        {
+            this.runners.resolutionChange.emit(resolution);
+        }
     }
 
     public clear(options: ClearOptions = {}): void
