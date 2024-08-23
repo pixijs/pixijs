@@ -6,10 +6,10 @@ import { roundPixelsBitGl } from '../../high-shader/shader-bits/roundPixelsBit';
 import { getBatchSamplersUniformGroup } from '../../renderers/gl/shader/getBatchSamplersUniformGroup';
 import { Shader } from '../../renderers/shared/shader/Shader';
 import { State } from '../../renderers/shared/state/State';
-import { getMaxTexturesPerBatch } from './utils/maxRecommendedTextures';
 
 import type { WebGLRenderer } from '../../renderers/gl/WebGLRenderer';
 import type { Geometry } from '../../renderers/shared/geometry/Geometry';
+import type { Renderer } from '../../renderers/types';
 import type { Batch } from '../shared/Batcher';
 import type { BatcherAdaptor, BatcherPipe } from '../shared/BatcherPipe';
 
@@ -28,13 +28,30 @@ export class GlBatchAdaptor implements BatcherAdaptor
         name: 'batch',
     } as const;
 
+    private _renderer: Renderer;
+    private _maxTextures: number;
     private _shader: Shader;
     private _didUpload = false;
     private readonly _tempState = State.for2d();
 
     public init(batcherPipe: BatcherPipe): void
     {
-        const maxTextures = getMaxTexturesPerBatch();
+        this._renderer = batcherPipe.renderer;
+
+        batcherPipe.renderer.runners.contextChange.add(this);
+    }
+
+    public contextChange(): void
+    {
+        this._didUpload = false;
+
+        const maxTextures = this._renderer.shader.maxTextures;
+
+        if (this._maxTextures === maxTextures) return;
+
+        this._maxTextures = maxTextures;
+
+        if (this._shader) this._shader.destroy(true);
 
         const glProgram = compileHighShaderGlProgram({
             name: 'batch',
@@ -51,13 +68,6 @@ export class GlBatchAdaptor implements BatcherAdaptor
                 batchSamplers: getBatchSamplersUniformGroup(maxTextures),
             }
         });
-
-        batcherPipe.renderer.runners.contextChange.add(this);
-    }
-
-    public contextChange(): void
-    {
-        this._didUpload = false;
     }
 
     public start(batchPipe: BatcherPipe, geometry: Geometry): void
@@ -95,5 +105,7 @@ export class GlBatchAdaptor implements BatcherAdaptor
     {
         this._shader.destroy(true);
         this._shader = null;
+
+        this._renderer = null;
     }
 }
