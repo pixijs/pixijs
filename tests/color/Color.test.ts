@@ -28,7 +28,7 @@ describe('Color', () =>
         });
     });
 
-    it.concurrent('should not throw error for invalid color values', async () =>
+    it.concurrent('should not throw error for invalid color values and not alter the original one', async () =>
     {
         const invalidColorValues: any[] = [
             [1, 1, -1, 1],
@@ -36,9 +36,13 @@ describe('Color', () =>
             { r: 1, g: 1, b: 1, a: 1.1 },
         ];
 
-        invalidColorValues.forEach((value) =>
+        invalidColorValues.forEach((originalValue) =>
         {
-            expect(() => new Color(value as any)).not.toThrow();
+            const value = structuredClone(originalValue);
+
+            expect(() => new Color(value)).not.toThrow();
+
+            expect(value).toEqual(originalValue);
         });
     });
 

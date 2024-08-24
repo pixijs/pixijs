@@ -229,8 +229,8 @@ export class Color
         }
         else if (this._value === null || !this._isSourceEqual(this._value, value))
         {
-            this._normalize(value);
             this._value = this._cloneSource(value);
+            this._normalize(this._value);
         }
     }
     get value(): Exclude<ColorSource, Color> | null
