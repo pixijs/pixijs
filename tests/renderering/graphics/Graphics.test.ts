@@ -242,8 +242,8 @@ describe('Graphics', () =>
 
             const graphicsData = renderer.graphicsContext['_graphicsDataContextHash'][graphics.context.uid];
 
-            expect(graphicsData.geometry.indexBuffer.data.length).toEqual(3 * 6);
-            expect(graphicsData.geometry.buffers[0].data.length).toEqual(3 * 4 * 6);
+            expect(graphicsData.batcher.geometry.indexBuffer.data.length).toEqual(3 * 6);
+            expect(graphicsData.batcher.geometry.buffers[0].data.length).toEqual(3 * 4 * 6);
         });
 
         it('should clear a graphics correctly', async () =>

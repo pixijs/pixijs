@@ -121,6 +121,8 @@ const fragmentGlTemplate = /* glsl */`
         {{main}}
         
         finalColor = outColor * vColor;
+        
+        {{end}}
     }
 `;
 

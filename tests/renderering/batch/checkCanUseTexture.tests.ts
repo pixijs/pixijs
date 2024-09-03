@@ -1,9 +1,10 @@
 import { Matrix } from '../../../src/maths/matrix/Matrix';
-import { type Batch, type BatchableMeshElement, Batcher } from '../../../src/rendering/batcher/shared/Batcher';
 import { InstructionSet } from '../../../src/rendering/renderers/shared/instructions/InstructionSet';
 import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
+import { TestBatcher } from './TestBatcher';
 import '../../../src/rendering/renderers/shared/texture/sources/ImageSource';
 
+import type { Batch, BatchableMeshElement, Batcher } from '../../../src/rendering/batcher/shared/Batcher';
 import type { BLEND_MODES } from '../../../src/rendering/renderers/shared/state/const';
 
 class DummyBatchableObject implements BatchableMeshElement
@@ -35,7 +36,7 @@ describe('checkCanUseTexture', () =>
 {
     it('should return false if a texture source is not already in a batch', () =>
     {
-        const batcher = new Batcher();
+        const batcher = new TestBatcher();
 
         const batchableObject = new DummyBatchableObject();
 
@@ -50,7 +51,7 @@ describe('checkCanUseTexture', () =>
 
     it('should return true if a texture source is not already in a batch', () =>
     {
-        const batcher = new Batcher();
+        const batcher = new TestBatcher();
 
         const batchableObject = new DummyBatchableObject();
 

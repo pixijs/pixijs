@@ -1,9 +1,76 @@
+import { ExtensionType } from '../../../extensions';
+import { compileHighShaderGlProgram, compileHighShaderGpuProgram } from '../../high-shader/compileHighShaderToProgram';
+import { colorBit, colorBitGl } from '../../high-shader/shader-bits/colorBit';
+import { generateTextureBatchBit, generateTextureBatchBitGl } from '../../high-shader/shader-bits/generateTextureBatchBit';
+import { roundPixelsBit, roundPixelsBitGl } from '../../high-shader/shader-bits/roundPixelsBit';
+import { getBatchSamplersUniformGroup } from '../../renderers/gl/shader/getBatchSamplersUniformGroup';
+import { Shader } from '../../renderers/shared/shader/Shader';
+import { getMaxTexturesPerBatch } from '../gl/utils/maxRecommendedTextures';
+import { Batcher } from './Batcher';
+import { BatchGeometry } from './BatchGeometry';
+
 import type { BatchableMeshElement, BatchableQuadElement } from './Batcher';
 
-export class DefaultBatcher
+let defaultShader: Shader = null;
+
+/** The default batcher is used to batch quads and meshes. */
+export class DefaultBatcher extends Batcher
 {
+    /** @ignore */
+    public static extension = {
+        type: [
+            ExtensionType.Batcher,
+        ],
+        name: 'default',
+    } as const;
+
+    public geometry = new BatchGeometry();
+    public shader: Shader;
+
+    public name = DefaultBatcher.extension.name;
+
     /** The size of one attribute. 1 = 32 bit. x, y, u, v, color, textureIdAndRound -> total = 6 */
-    public readonly attributeSize = 6;
+    public vertexSize = 6;
+
+    constructor()
+    {
+        const maxTextures = getMaxTexturesPerBatch();
+
+        super({
+            maxTextures,
+        });
+
+        if (!defaultShader)
+        {
+            const glProgram = compileHighShaderGlProgram({
+                name: 'batch',
+                bits: [
+                    colorBitGl,
+                    generateTextureBatchBitGl(maxTextures),
+                    roundPixelsBitGl,
+                ]
+            });
+
+            const gpuProgram = compileHighShaderGpuProgram({
+                name: 'batch',
+                bits: [
+                    colorBit,
+                    generateTextureBatchBit(getMaxTexturesPerBatch()),
+                    roundPixelsBit,
+                ]
+            });
+
+            defaultShader = new Shader({
+                glProgram,
+                gpuProgram,
+                resources: {
+                    batchSamplers: getBatchSamplersUniformGroup(maxTextures),
+                }
+            });
+        }
+
+        this.shader = defaultShader;
+    }
 
     public packAttributes(
         element: BatchableMeshElement,
