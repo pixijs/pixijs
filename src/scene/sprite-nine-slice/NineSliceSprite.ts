@@ -3,9 +3,11 @@ import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { ViewContainer } from '../view/View';
 import { NineSliceGeometry } from './NineSliceGeometry';
 
+import type { Size } from '../../maths/misc/Size';
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Bounds, BoundsData } from '../container/bounds/Bounds';
 import type { ContainerOptions } from '../container/Container';
+import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
 
 /**
@@ -171,6 +173,41 @@ export class NineSliceSprite extends ViewContainer implements View
         this.onViewUpdate();
     }
 
+    /**
+     * Sets the size of the NiceSliceSprite to the specified width and height.
+     * setting this will actually modify the vertices and UV's of this plane
+     * This is faster than setting the width and height separately.
+     * @param value - This can be either a number or a [Size]{@link Size} object.
+     * @param height - The height to set. Defaults to the value of `width` if not provided.
+     */
+    public override setSize(value: number | Optional<Size, 'height'>, height?: number): void
+    {
+        if (typeof value === 'object')
+        {
+            height = value.height ?? value.width;
+            value = value.width;
+        }
+
+        this.bounds.maxX = this._width = value;
+        this.bounds.maxY = this._height = height ?? value;
+        this.onViewUpdate();
+    }
+
+    /**
+     * Retrieves the size of the NineSliceSprite as a [Size]{@link Size} object.
+     * This is faster than get the width and height separately.
+     * @param out - Optional object to store the size in.
+     * @returns - The size of the NineSliceSprite.
+     */
+    public override getSize(out?: Size): Size
+    {
+        out ||= {} as Size;
+        out.width = this._width;
+        out.height = this._height;
+
+        return out;
+    }
+
     /** The width of the left column (a) of the NineSliceSprite. */
     get leftWidth(): number
     {
@@ -303,7 +340,6 @@ export class NineSliceSprite extends ViewContainer implements View
         }
 
         this._texture = null;
-        (this.bounds as null) = null;
     }
 }
 

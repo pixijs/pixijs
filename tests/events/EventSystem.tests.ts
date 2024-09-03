@@ -1000,6 +1000,36 @@ describe('EventSystem', () =>
         expect(eventSpy).toHaveBeenCalledTimes(3);
     });
 
+    it('should inherit the resolution from renderer with resolution set', async () =>
+    {
+        const renderer = await createRenderer(undefined, undefined, {
+            resolution: 0.5,
+        });
+
+        expect(renderer.resolution).toEqual(0.5);
+        expect(renderer.events.resolution).toEqual(0.5);
+
+        renderer.resolution = 2;
+
+        expect(renderer.resolution).toEqual(2);
+        expect(renderer.events.resolution).toEqual(2);
+    });
+
+    it('should inherit the resolution from renderer with resize', async () =>
+    {
+        const renderer = await createRenderer(undefined, undefined, {
+            resolution: 0.5,
+        });
+
+        expect(renderer.resolution).toEqual(0.5);
+        expect(renderer.events.resolution).toEqual(0.5);
+
+        renderer.resize(100, 100, 2);
+
+        expect(renderer.resolution).toEqual(2);
+        expect(renderer.events.resolution).toEqual(2);
+    });
+
     it('should dispatch pointer over/out event with a mask and hitArea on its children', async () =>
     {
         const renderer = await createRenderer();

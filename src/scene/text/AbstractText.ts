@@ -277,11 +277,7 @@ export abstract class AbstractText<
      */
     public override getSize(out?: Size): Size
     {
-        if (!out)
-        {
-            out = {} as Size;
-        }
-
+        out ||= {} as Size;
         out.width = Math.abs(this.scale.x) * this.bounds.width;
         out.height = Math.abs(this.scale.y) * this.bounds.height;
 
@@ -296,29 +292,18 @@ export abstract class AbstractText<
      */
     public override setSize(value: number | Optional<Size, 'height'>, height?: number)
     {
-        let convertedWidth: number;
-        let convertedHeight: number;
-
-        if (typeof value !== 'object')
+        if (typeof value === 'object')
         {
-            convertedWidth = value;
-            convertedHeight = height ?? value;
+            height = value.height ?? value.width;
+            value = value.width;
         }
         else
         {
-            convertedWidth = value.width;
-            convertedHeight = value.height ?? value.width;
+            height ??= value;
         }
 
-        if (convertedWidth !== undefined)
-        {
-            this._setWidth(convertedWidth, this.bounds.width);
-        }
-
-        if (convertedHeight !== undefined)
-        {
-            this._setHeight(convertedHeight, this.bounds.height);
-        }
+        value !== undefined && this._setWidth(value, this.bounds.width);
+        height !== undefined && this._setHeight(height, this.bounds.height);
     }
 
     /**
