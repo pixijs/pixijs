@@ -1,4 +1,4 @@
-import { ExtensionType } from '../../../extensions';
+import { ExtensionType } from '../../../extensions/Extensions';
 import { compileHighShaderGlProgram, compileHighShaderGpuProgram } from '../../high-shader/compileHighShaderToProgram';
 import { colorBit, colorBitGl } from '../../high-shader/shader-bits/colorBit';
 import { generateTextureBatchBit, generateTextureBatchBitGl } from '../../high-shader/shader-bits/generateTextureBatchBit';

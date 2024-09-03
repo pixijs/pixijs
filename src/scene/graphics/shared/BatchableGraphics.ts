@@ -1,4 +1,4 @@
-import { Matrix } from '../../../maths';
+import { Matrix } from '../../../maths/matrix/Matrix';
 import { multiplyHexColors } from '../../container/utils/multiplyHexColors';
 
 import type { Batch, BatchableMeshElement, Batcher } from '../../../rendering/batcher/shared/Batcher';
