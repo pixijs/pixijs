@@ -136,7 +136,7 @@ export class DefaultBatcher extends Batcher
         const tx = wt.tx;
         const ty = wt.ty;
 
-        const bounds = sprite.bounds;
+        const bounds = element.bounds;
 
         const w0 = bounds.maxX;
         const w1 = bounds.minX;

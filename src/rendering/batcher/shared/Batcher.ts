@@ -7,6 +7,7 @@ import { getMaxTexturesPerBatch } from '../gl/utils/maxRecommendedTextures';
 import { BatchTextureArray } from './BatchTextureArray';
 
 import type { Matrix } from '../../../maths/matrix/Matrix';
+import type { BoundsData } from '../../../scene/container/bounds/Bounds';
 import type { ViewContainer } from '../../../scene/view/View';
 import type { BindGroup } from '../../renderers/gpu/shader/BindGroup';
 import type { Geometry, IndexBufferArray } from '../../renderers/shared/geometry/Geometry';
@@ -111,6 +112,7 @@ export interface BatchableElement
 export interface BatchableQuadElement extends BatchableElement
 {
     renderable: ViewContainer; // TODO only used with sprite batch..
+    bounds: BoundsData;
 }
 
 export interface BatchableMeshElement extends BatchableElement
