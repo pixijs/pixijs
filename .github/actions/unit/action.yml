@@ -28,3 +28,4 @@ runs:
       with:
         name: pr_uploads
         path: .pr_uploads/
+        include-hidden-files: true
