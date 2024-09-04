@@ -61,7 +61,11 @@ const fragmentGPUTemplate = /* wgsl */`
       
         {{main}}
         
-        return outColor * vColor;
+        var finalColor:vec4<f32> = outColor * vColor;
+
+        {{end}}
+
+        return finalColor;
       };
 `;
 
