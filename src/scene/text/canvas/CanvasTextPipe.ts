@@ -108,7 +108,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
             this._updateText(text);
         }
 
-        batchableSprite.batcher.updateElement(batchableSprite);
+        batchableSprite._batcher.updateElement(batchableSprite);
     }
 
     public destroyRenderable(text: Text)
@@ -176,6 +176,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
         };
 
         gpuTextData.batchableSprite.renderable = text;
+        gpuTextData.batchableSprite.transform = text.groupTransform;
         gpuTextData.batchableSprite.bounds = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
         gpuTextData.batchableSprite.roundPixels = (this._renderer._roundPixels | text._roundPixels) as 0 | 1;
 

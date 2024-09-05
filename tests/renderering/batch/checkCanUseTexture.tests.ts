@@ -18,17 +18,17 @@ class DummyBatchableObject implements BatchableMeshElement
     color = 0xFFFFFFF;
     attributeOffset = 0;
     location = 0;
-    packAsQuad = false;
-    indexStart = 0;
+    readonly packAsQuad = false;
+    _indexStart = 0;
 
     texture: Texture;
     blendMode: BLEND_MODES = 'normal';
     attributeSize = 8;
     indexSize = 4;
-    textureId: number;
-    attributeStart: number;
-    batcher: Batcher = null;
-    batch: Batch = null;
+    _textureId: number;
+    _attributeStart: number;
+    _batcher: Batcher = null;
+    _batch: Batch = null;
     roundPixels: 0 | 1 = 0;
 }
 

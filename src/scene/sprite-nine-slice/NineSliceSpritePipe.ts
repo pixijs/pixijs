@@ -46,7 +46,7 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
 
         if (sprite._didSpriteUpdate) this._updateBatchableSprite(sprite, gpuSprite);
 
-        gpuSprite.batcher.updateElement(gpuSprite);
+        gpuSprite._batcher.updateElement(gpuSprite);
     }
 
     public validateRenderable(sprite: NineSliceSprite): boolean
@@ -56,7 +56,7 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
 
         if (gpuSprite.texture._source !== texture._source)
         {
-            return !gpuSprite.batcher.checkAndUpdateTexture(gpuSprite, texture);
+            return !gpuSprite._batcher.checkAndUpdateTexture(gpuSprite, texture);
         }
 
         return false;
@@ -96,6 +96,7 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
 
         batchableMesh.geometry = BigPool.get(NineSliceGeometry);
         batchableMesh.renderable = sprite;
+        batchableMesh.transform = sprite.groupTransform;
         batchableMesh.texture = sprite._texture;
         batchableMesh.roundPixels = (this._renderer._roundPixels | sprite._roundPixels) as 0 | 1;
 
