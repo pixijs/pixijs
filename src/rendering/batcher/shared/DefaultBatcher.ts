@@ -11,8 +11,13 @@ let defaultShader: Shader = null;
 
 interface DefaultBatchElements
 {
+    /** The color of the element that will be multiplied with the texture color. */
     color: number;
+
+    /** Whether the element should be rounded to the nearest pixel. */
     roundPixels: 0 | 1;
+
+    /** The transform of the element. */
     transform: Matrix;
 }
 
