@@ -17,7 +17,7 @@ interface DefaultBatchElements
 }
 
 export interface DefaultBatchableQuadElement extends BatchableQuadElement, DefaultBatchElements {}
-export interface DefaultBatchableElement extends BatchableMeshElement, DefaultBatchElements {}
+export interface DefaultBatchableMeshElement extends BatchableMeshElement, DefaultBatchElements {}
 
 /** The default batcher is used to batch quads and meshes. */
 export class DefaultBatcher extends Batcher
@@ -39,7 +39,7 @@ export class DefaultBatcher extends Batcher
     public vertexSize = 6;
 
     public packAttributes(
-        element: DefaultBatchableElement,
+        element: DefaultBatchableMeshElement,
         float32View: Float32Array,
         uint32View: Uint32Array,
         index: number,

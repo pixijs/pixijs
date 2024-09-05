@@ -1,6 +1,6 @@
 import type { Matrix } from '../../../maths/matrix/Matrix';
 import type { Batch, Batcher } from '../../../rendering/batcher/shared/Batcher';
-import type { DefaultBatchableElement } from '../../../rendering/batcher/shared/DefaultBatcher';
+import type { DefaultBatchableMeshElement } from '../../../rendering/batcher/shared/DefaultBatcher';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { ViewContainer } from '../../view/View';
 import type { MeshGeometry } from './MeshGeometry';
@@ -9,7 +9,7 @@ import type { MeshGeometry } from './MeshGeometry';
  * A batchable mesh object.
  * @ignore
  */
-export class BatchableMesh implements DefaultBatchableElement
+export class BatchableMesh implements DefaultBatchableMeshElement
 {
     public batcherName = 'default';
     public readonly packAsQuad = false;

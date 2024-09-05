@@ -2,7 +2,7 @@ import { Matrix } from '../../../maths/matrix/Matrix';
 import { multiplyHexColors } from '../../container/utils/multiplyHexColors';
 
 import type { Batch, Batcher } from '../../../rendering/batcher/shared/Batcher';
-import type { DefaultBatchableElement } from '../../../rendering/batcher/shared/DefaultBatcher';
+import type { DefaultBatchableMeshElement } from '../../../rendering/batcher/shared/DefaultBatcher';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { Graphics } from './Graphics';
 
@@ -12,7 +12,7 @@ const identityMatrix = new Matrix();
  * @ignore
  */
 
-export class BatchableGraphics implements DefaultBatchableElement
+export class BatchableGraphics implements DefaultBatchableMeshElement
 {
     public readonly packAsQuad = false;
     public batcherName = 'default';
