@@ -1,4 +1,4 @@
-import type { Matrix } from '../../maths';
+import type { Matrix } from '../../maths/matrix/Matrix';
 import type { Batch, Batcher } from '../../rendering/batcher/shared/Batcher';
 import type { DefaultBatchableQuadElement } from '../../rendering/batcher/shared/DefaultBatcher';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
