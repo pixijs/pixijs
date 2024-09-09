@@ -6,8 +6,8 @@ describe('Batcher', () =>
     it('should ensure attribute size and resize correctly', () =>
     {
         const batcher = new TestBatcher({
-            vertexInitialSize: 2,
-            indexInitialSize: 1,
+            attributesInitialSize: 2,
+            indiciesInitialSize: 1,
         });
 
         expect(batcher.attributeBuffer.float32View).toHaveLength(2 * 6);
@@ -32,8 +32,8 @@ describe('Batcher', () =>
     it('should ensure index size and resize correctly', () =>
     {
         const batcher = new TestBatcher({
-            vertexInitialSize: 2,
-            indexInitialSize: 2,
+            attributesInitialSize: 2,
+            indiciesInitialSize: 2,
         });
 
         expect(batcher.indexBuffer).toHaveLength(2);

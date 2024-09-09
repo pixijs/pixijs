@@ -24,7 +24,13 @@ export interface DefaultBatchElements
 export interface DefaultBatchableQuadElement extends BatchableQuadElement, DefaultBatchElements {}
 export interface DefaultBatchableMeshElement extends BatchableMeshElement, DefaultBatchElements {}
 
-/** The default batcher is used to batch quads and meshes. */
+/**
+ * The default batcher is used to batch quads and meshes. This batcher will batch the following elements:
+ * - tints
+ * - roundPixels
+ * - texture
+ * - transform
+ */
 export class DefaultBatcher extends Batcher
 {
     /** @ignore */
@@ -43,6 +49,14 @@ export class DefaultBatcher extends Batcher
     /** The size of one attribute. 1 = 32 bit. x, y, u, v, color, textureIdAndRound -> total = 6 */
     public vertexSize = 6;
 
+    /**
+     * Packs the attributes of a DefaultBatchableMeshElement into the provided views.
+     * @param element - The DefaultBatchableMeshElement to pack.
+     * @param float32View - The Float32Array view to pack into.
+     * @param uint32View - The Uint32Array view to pack into.
+     * @param index - The starting index in the views.
+     * @param textureId - The texture ID to use.
+     */
     public packAttributes(
         element: DefaultBatchableMeshElement,
         float32View: Float32Array,
@@ -87,6 +101,14 @@ export class DefaultBatcher extends Batcher
         }
     }
 
+    /**
+     * Packs the attributes of a DefaultBatchableQuadElement into the provided views.
+     * @param element - The DefaultBatchableQuadElement to pack.
+     * @param float32View - The Float32Array view to pack into.
+     * @param uint32View - The Uint32Array view to pack into.
+     * @param index - The starting index in the views.
+     * @param textureId - The texture ID to use.
+     */
     public packQuadAttributes(
         element: DefaultBatchableQuadElement,
         float32View: Float32Array,

@@ -238,8 +238,8 @@ export interface BatcherOptions
 {
     /** The maximum number of textures per batch. */
     maxTextures?: number;
-    vertexInitialSize?: number;
-    indexInitialSize?: number;
+    attributesInitialSize?: number;
+    indicesInitialSize?: number;
 }
 
 /**
@@ -251,8 +251,8 @@ export abstract class Batcher
 {
     public static defaultOptions: Partial<BatcherOptions> = {
         maxTextures: null,
-        vertexInitialSize: 4,
-        indexInitialSize: 6,
+        attributesInitialSize: 4,
+        indicesInitialSize: 6,
     };
 
     /** unique id for this batcher */
@@ -281,7 +281,7 @@ export abstract class Batcher
     /** The name of the batcher. Must be implemented by subclasses. */
     public abstract name: string;
     /** The vertex size of the batcher. Must be implemented by subclasses. */
-    public abstract vertexSize: number;
+    protected abstract vertexSize: number;
 
     /** The geometry used by this batcher. Must be implemented by subclasses. */
     public abstract geometry: Geometry;
@@ -331,11 +331,11 @@ export abstract class Batcher
         Batcher.defaultOptions.maxTextures = Batcher.defaultOptions.maxTextures ?? getMaxTexturesPerBatch();
         options = { ...Batcher.defaultOptions, ...options };
 
-        const { maxTextures, vertexInitialSize, indexInitialSize } = options;
+        const { maxTextures, attributesInitialSize, indicesInitialSize } = options;
 
-        this.attributeBuffer = new ViewableBuffer(vertexInitialSize * 6 * 4);
+        this.attributeBuffer = new ViewableBuffer(attributesInitialSize * 4);
 
-        this.indexBuffer = new Uint16Array(indexInitialSize);
+        this.indexBuffer = new Uint16Array(indicesInitialSize);
 
         this.maxTextures = maxTextures;
     }

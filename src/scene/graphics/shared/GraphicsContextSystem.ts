@@ -2,6 +2,7 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import { getTextureBatchBindGroup } from '../../../rendering/batcher/gpu/getTextureBatchBindGroup';
 import { DefaultBatcher } from '../../../rendering/batcher/shared/DefaultBatcher';
 import { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
+import { deprecation, v8_3_4 } from '../../../utils/logging/deprecation';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { buildContextBatches } from './utils/buildContextBatches';
 
@@ -50,6 +51,20 @@ export class GraphicsContextRenderData
     public init()
     {
         this.instructions.reset();
+    }
+
+    /**
+     * @deprecated since version 8.0.0
+     * Use `batcher.geometry` instead.
+     * @see {Batcher#geometry}
+     */
+    get geometry()
+    {
+        // eslint-disable-next-line max-len
+        deprecation(v8_3_4, 'GraphicsContextRenderData#geometry is deprecated, please use batcher.geometry instead.');
+        // #endif
+
+        return this.batcher.geometry;
     }
 }
 
