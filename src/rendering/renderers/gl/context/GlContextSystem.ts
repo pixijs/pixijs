@@ -3,7 +3,7 @@ import { ExtensionType } from '../../../../extensions/Extensions';
 import { warn } from '../../../../utils/logging/warn';
 import { type GpuPowerPreference } from '../../types';
 
-import type { ICanvas } from '../../../../environment';
+import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { System } from '../../shared/system/System';
 import type { WebGLRenderer } from '../WebGLRenderer';
 import type { WebGLExtensions } from './WebGLExtensions';
