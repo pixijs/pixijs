@@ -1,4 +1,6 @@
-import type { Batch, BatchableMeshElement, Batcher } from '../../../rendering/batcher/shared/Batcher';
+import type { Matrix } from '../../../maths/matrix/Matrix';
+import type { Batch, Batcher } from '../../../rendering/batcher/shared/Batcher';
+import type { DefaultBatchableMeshElement } from '../../../rendering/batcher/shared/DefaultBatcher';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { ViewContainer } from '../../view/View';
 import type { MeshGeometry } from './MeshGeometry';
@@ -7,26 +9,27 @@ import type { MeshGeometry } from './MeshGeometry';
  * A batchable mesh object.
  * @ignore
  */
-export class BatchableMesh implements BatchableMeshElement
+export class BatchableMesh implements DefaultBatchableMeshElement
 {
     public batcherName = 'default';
-    public packAsQuad = false;
+    public readonly packAsQuad = false;
     public location: number;
 
-    public indexOffset = 0;
+    public renderable: ViewContainer;
 
+    public indexOffset = 0;
     public attributeOffset = 0;
 
-    public indexStart: number;
-    public textureId: number;
     public texture: Texture;
-    public attributeStart: number;
-    public batcher: Batcher = null;
-    public batch: Batch = null;
-    public renderable: ViewContainer;
     public geometry: MeshGeometry;
-
+    public transform: Matrix;
     public roundPixels: 0 | 1 = 0;
+
+    public _attributeStart: number;
+    public _batcher: Batcher = null;
+    public _batch: Batch = null;
+    public _indexStart: number;
+    public _textureId: number;
 
     private _transformedUvs: Float32Array;
     private _uvUpdateId: number = -1;
@@ -38,8 +41,8 @@ export class BatchableMesh implements BatchableMeshElement
     {
         this.renderable = null;
         this.texture = null;
-        this.batcher = null;
-        this.batch = null;
+        this._batcher = null;
+        this._batch = null;
         this.geometry = null;
         this._uvUpdateId = -1;
         this._textureMatrixUpdateId = -1;

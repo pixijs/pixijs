@@ -1,4 +1,6 @@
-import type { Batch, BatchableQuadElement, Batcher } from '../../rendering/batcher/shared/Batcher';
+import type { Matrix } from '../../maths/matrix/Matrix';
+import type { Batch, Batcher } from '../../rendering/batcher/shared/Batcher';
+import type { DefaultBatchableQuadElement } from '../../rendering/batcher/shared/DefaultBatcher';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { BoundsData } from '../container/bounds/Bounds';
 import type { ViewContainer } from '../view/View';
@@ -7,27 +9,28 @@ import type { ViewContainer } from '../view/View';
  * A batchable sprite object.
  * @ignore
  */
-export class BatchableSprite implements BatchableQuadElement
+export class BatchableSprite implements DefaultBatchableQuadElement
 {
-    public packAsQuad = true;
     public batcherName = 'default';
-    public location: number;
-    public indexStart: number;
-    public renderable: ViewContainer;
-
-    public attributeOffset = 0;
 
     // batch specific..
-    public attributeSize = 4;
-    public indexSize = 6;
-    public texture: Texture;
+    public readonly attributeSize = 4;
+    public readonly indexSize = 6;
+    public readonly packAsQuad = true;
 
-    public textureId: number;
-    public attributeStart = 0; // location in the buffer
-    public batcher: Batcher = null;
-    public batch: Batch = null;
+    public transform: Matrix;
+
+    public renderable: ViewContainer;
+    public texture: Texture;
     public bounds: BoundsData;
+
     public roundPixels: 0 | 1 = 0;
+
+    public _indexStart: number;
+    public _textureId: number;
+    public _attributeStart = 0; // location in the buffer
+    public _batcher: Batcher = null;
+    public _batch: Batch = null;
 
     get blendMode() { return this.renderable.groupBlendMode; }
     get color() { return this.renderable.groupColorAlpha; }
@@ -36,8 +39,8 @@ export class BatchableSprite implements BatchableQuadElement
     {
         this.renderable = null;
         this.texture = null;
-        this.batcher = null;
-        this.batch = null;
+        this._batcher = null;
+        this._batch = null;
         this.bounds = null;
     }
 }

@@ -46,7 +46,7 @@ export class SpritePipe implements RenderPipe<Sprite>
 
         if (sprite._didSpriteUpdate) this._updateBatchableSprite(sprite, gpuSprite);
 
-        gpuSprite.batcher.updateElement(gpuSprite);
+        gpuSprite._batcher.updateElement(gpuSprite);
     }
 
     public validateRenderable(sprite: Sprite): boolean
@@ -56,7 +56,7 @@ export class SpritePipe implements RenderPipe<Sprite>
 
         if (gpuSprite.texture._source !== texture._source)
         {
-            return !gpuSprite.batcher.checkAndUpdateTexture(gpuSprite, texture);
+            return !gpuSprite._batcher.checkAndUpdateTexture(gpuSprite, texture);
         }
 
         return false;
@@ -92,6 +92,7 @@ export class SpritePipe implements RenderPipe<Sprite>
 
         batchableSprite.renderable = sprite;
 
+        batchableSprite.transform = sprite.groupTransform;
         batchableSprite.texture = sprite._texture;
         batchableSprite.bounds = sprite.bounds;
         batchableSprite.roundPixels = (this._renderer._roundPixels | sprite._roundPixels) as 0 | 1;

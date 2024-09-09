@@ -110,7 +110,7 @@ export class GraphicsPipe implements RenderPipe<Graphics>
             {
                 const batch = batches[i];
 
-                batch.batcher.updateElement(batch);
+                batch._batcher.updateElement(batch);
             }
         }
     }

@@ -1,17 +1,28 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { compileHighShaderGlProgram, compileHighShaderGpuProgram } from '../../high-shader/compileHighShaderToProgram';
-import { colorBit, colorBitGl } from '../../high-shader/shader-bits/colorBit';
-import { generateTextureBatchBit, generateTextureBatchBitGl } from '../../high-shader/shader-bits/generateTextureBatchBit';
-import { roundPixelsBit, roundPixelsBitGl } from '../../high-shader/shader-bits/roundPixelsBit';
-import { getBatchSamplersUniformGroup } from '../../renderers/gl/shader/getBatchSamplersUniformGroup';
-import { Shader } from '../../renderers/shared/shader/Shader';
-import { getMaxTexturesPerBatch } from '../gl/utils/maxRecommendedTextures';
 import { Batcher } from './Batcher';
 import { BatchGeometry } from './BatchGeometry';
+import { DefaultShader } from './DefaultShader';
 
+import type { Matrix } from '../../../maths/matrix/Matrix';
+import type { Shader } from '../../renderers/shared/shader/Shader';
 import type { BatchableMeshElement, BatchableQuadElement } from './Batcher';
 
 let defaultShader: Shader = null;
+
+export interface DefaultBatchElements
+{
+    /** The color of the element that will be multiplied with the texture color. */
+    color: number;
+
+    /** Whether the element should be rounded to the nearest pixel. */
+    roundPixels: 0 | 1;
+
+    /** The transform of the element. */
+    transform: Matrix;
+}
+
+export interface DefaultBatchableQuadElement extends BatchableQuadElement, DefaultBatchElements {}
+export interface DefaultBatchableMeshElement extends BatchableMeshElement, DefaultBatchElements {}
 
 /** The default batcher is used to batch quads and meshes. */
 export class DefaultBatcher extends Batcher
@@ -25,55 +36,15 @@ export class DefaultBatcher extends Batcher
     } as const;
 
     public geometry = new BatchGeometry();
-    public shader: Shader;
+    public shader = defaultShader || (defaultShader = new DefaultShader(this.maxTextures));
 
     public name = DefaultBatcher.extension.name;
 
     /** The size of one attribute. 1 = 32 bit. x, y, u, v, color, textureIdAndRound -> total = 6 */
     public vertexSize = 6;
 
-    constructor()
-    {
-        const maxTextures = getMaxTexturesPerBatch();
-
-        super({
-            maxTextures,
-        });
-
-        if (!defaultShader)
-        {
-            const glProgram = compileHighShaderGlProgram({
-                name: 'batch',
-                bits: [
-                    colorBitGl,
-                    generateTextureBatchBitGl(maxTextures),
-                    roundPixelsBitGl,
-                ]
-            });
-
-            const gpuProgram = compileHighShaderGpuProgram({
-                name: 'batch',
-                bits: [
-                    colorBit,
-                    generateTextureBatchBit(getMaxTexturesPerBatch()),
-                    roundPixelsBit,
-                ]
-            });
-
-            defaultShader = new Shader({
-                glProgram,
-                gpuProgram,
-                resources: {
-                    batchSamplers: getBatchSamplersUniformGroup(maxTextures),
-                }
-            });
-        }
-
-        this.shader = defaultShader;
-    }
-
     public packAttributes(
-        element: BatchableMeshElement,
+        element: DefaultBatchableMeshElement,
         float32View: Float32Array,
         uint32View: Uint32Array,
         index: number,
@@ -82,7 +53,7 @@ export class DefaultBatcher extends Batcher
     {
         const textureIdAndRound = (textureId << 16) | (element.roundPixels & 0xFFFF);
 
-        const wt = element.groupTransform;
+        const wt = element.transform;
 
         const a = wt.a;
         const b = wt.b;
@@ -117,17 +88,16 @@ export class DefaultBatcher extends Batcher
     }
 
     public packQuadAttributes(
-        element: BatchableQuadElement,
+        element: DefaultBatchableQuadElement,
         float32View: Float32Array,
         uint32View: Uint32Array,
         index: number,
         textureId: number
     )
     {
-        const sprite = element.renderable;
         const texture = element.texture;
 
-        const wt = sprite.groupTransform;
+        const wt = element.transform;
 
         const a = wt.a;
         const b = wt.b;
@@ -191,3 +161,4 @@ export class DefaultBatcher extends Batcher
         uint32View[index + 23] = textureIdAndRound;
     }
 }
+

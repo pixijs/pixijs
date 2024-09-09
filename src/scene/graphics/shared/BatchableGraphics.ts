@@ -1,7 +1,8 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { multiplyHexColors } from '../../container/utils/multiplyHexColors';
 
-import type { Batch, BatchableMeshElement, Batcher } from '../../../rendering/batcher/shared/Batcher';
+import type { Batch, Batcher } from '../../../rendering/batcher/shared/Batcher';
+import type { DefaultBatchableMeshElement } from '../../../rendering/batcher/shared/DefaultBatcher';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { Graphics } from './Graphics';
 
@@ -11,18 +12,13 @@ const identityMatrix = new Matrix();
  * @ignore
  */
 
-export class BatchableGraphics implements BatchableMeshElement
+export class BatchableGraphics implements DefaultBatchableMeshElement
 {
-    public packAsQuad = false;
-    public location = 0;
+    public readonly packAsQuad = false;
     public batcherName = 'default';
 
-    public indexStart: number;
-    public textureId: number;
     public texture: Texture;
-    public attributeStart: number;
-    public batcher: Batcher = null;
-    public batch: Batch = null;
+
     public renderable: Graphics;
     public indexOffset: number;
     public indexSize: number;
@@ -32,6 +28,12 @@ export class BatchableGraphics implements BatchableMeshElement
     public alpha: number;
     public applyTransform = true;
     public roundPixels: 0 | 1 = 0;
+
+    public _indexStart: number;
+    public _textureId: number;
+    public _attributeStart: number;
+    public _batcher: Batcher = null;
+    public _batch: Batch = null;
 
     public geometryData: { vertices: number[]; uvs: number[]; indices: number[]; };
 
@@ -74,7 +76,7 @@ export class BatchableGraphics implements BatchableMeshElement
         return bgr + ((this.alpha * 255) << 24);
     }
 
-    get groupTransform()
+    get transform()
     {
         return this.renderable?.groupTransform || identityMatrix;
     }
