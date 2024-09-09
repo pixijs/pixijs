@@ -51,7 +51,10 @@ export interface RenderOptions extends ClearOptions
  */
 export interface ClearOptions
 {
-    /** The render target to render. */
+    /**
+     * The render target to render. if this target is a canvas and  you are using the WebGL renderer,
+     * please ensure you have set `multiView` to `true` on renderer.
+     */
     target?: RenderSurface;
     /** The color to clear with. */
     clearColor?: ColorSource;

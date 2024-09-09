@@ -1,5 +1,6 @@
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { warn } from '../../../../utils/logging/warn';
+import { CanvasSource } from '../../shared/texture/sources/CanvasSource';
 import { CLEAR } from '../const';
 import { GlRenderTarget } from '../GlRenderTarget';
 
@@ -162,8 +163,12 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         const glRenderTarget = new GlRenderTarget();
 
         // we are rendering to the main canvas..
-        if (renderTarget.colorTexture.resource === renderer.gl.canvas)
+        const colorTexture = renderTarget.colorTexture;
+
+        if (CanvasSource.test(colorTexture.resource))
         {
+            this._renderer.context.ensureCanvasSize(renderTarget.colorTexture.resource);
+
             glRenderTarget.framebuffer = null;
 
             return glRenderTarget;
@@ -443,6 +448,25 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
                     : gl.DEPTH_STENCIL,
                 glRenderTarget.width,
                 glRenderTarget.height
+            );
+        }
+    }
+
+    public postrender(renderTarget: RenderTarget)
+    {
+        // if multiView is not enabled, we don't need to do anything
+        if (!this._renderer.context.multiView) return;
+
+        // if the render target is a canvas, we need to copy the pixels from the gl canvas
+        // to the canvas target
+        if (CanvasSource.test(renderTarget.colorTexture.resource))
+        {
+            const contextCanvas = this._renderer.context.canvas;
+            const canvasSource = renderTarget.colorTexture as unknown as CanvasSource;
+
+            canvasSource.context2D.drawImage(
+                contextCanvas as CanvasImageSource,
+                0, canvasSource.pixelHeight - contextCanvas.height
             );
         }
     }

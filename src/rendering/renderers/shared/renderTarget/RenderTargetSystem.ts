@@ -95,6 +95,9 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends GlRenderTarget | GpuR
     /** finishes the current render pass */
     finishRenderPass(renderTarget: RenderTarget): void
 
+    /** called after the render pass is finished */
+    postrender?(renderTarget: RenderTarget,): void;
+
     /**
      * initializes a gpu render target. Both renderers use this function to initialize a gpu render target
      * Its different type of object depending on the renderer.
@@ -228,6 +231,11 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
         this.rootViewPort.copyFrom(this.viewport);
         this.rootRenderTarget = this.renderTarget;
         this.renderingToScreen = isRenderingToScreen(this.rootRenderTarget);
+    }
+
+    public postrender()
+    {
+        this.adaptor.postrender?.(this.rootRenderTarget);
     }
 
     /**
