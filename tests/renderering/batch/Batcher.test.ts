@@ -7,7 +7,7 @@ describe('Batcher', () =>
     {
         const batcher = new TestBatcher({
             attributesInitialSize: 2,
-            indiciesInitialSize: 1,
+            indicesInitialSize: 1,
         });
 
         expect(batcher.attributeBuffer.float32View).toHaveLength(2 * 6);
@@ -33,7 +33,7 @@ describe('Batcher', () =>
     {
         const batcher = new TestBatcher({
             attributesInitialSize: 2,
-            indiciesInitialSize: 2,
+            indicesInitialSize: 2,
         });
 
         expect(batcher.indexBuffer).toHaveLength(2);
