@@ -66,11 +66,6 @@ export interface ViewSystemOptions
      * @memberof rendering.SharedRendererOptions
      */
     depth?: boolean;
-    /**
-     * TODO: multiView
-     * @memberof rendering.SharedRendererOptions
-     */
-    multiView?: boolean;
 
     /**
      * Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
@@ -126,8 +121,6 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
          */
         antialias: false,
     };
-
-    public multiView: boolean;
 
     /** The canvas element that everything is drawn to. */
     public canvas!: ICanvas;
@@ -206,7 +199,6 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
         });
 
         (this.texture.source as CanvasSource).transparent = options.backgroundAlpha < 1;
-        this.multiView = !!options.multiView;
         this.resolution = options.resolution;
     }
 
