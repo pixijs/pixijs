@@ -9,7 +9,7 @@ import type { BatchableMeshElement, BatchableQuadElement } from './Batcher';
 
 let defaultShader: Shader = null;
 
-interface DefaultBatchElements
+export interface DefaultBatchElements
 {
     /** The color of the element that will be multiplied with the texture color. */
     color: number;
