@@ -76,49 +76,155 @@ function returnBatchToPool(batch: Batch)
     batchPool[batchPoolIndex++] = batch;
 }
 
+/**
+ * Represents an element that can be batched for rendering.
+ * @interface
+ */
 export interface BatchableElement
 {
-    // what batcher to use, must be registered.
+    /**
+     * The name of the batcher to use. Must be registered.
+     * @type {string}
+     */
     batcherName: string;
 
-    // properties required to batch all batches
+    /**
+     * The texture to be used for rendering.
+     * @type {Texture}
+     */
     texture: Texture;
+
+    /**
+     * The blend mode to be applied.
+     * @type {BLEND_MODES}
+     */
     blendMode: BLEND_MODES;
 
-    // the size of the index and attribute data
+    /**
+     * The size of the index data.
+     * @type {number}
+     */
     indexSize: number;
+
+    /**
+     * The size of the attribute data.
+     * @type {number}
+     */
     attributeSize: number;
 
-    // sprite specific optimizations
-    // packing a quad will give better perf!
+    /**
+     * Whether the element should be packed as a quad for better performance.
+     * @type {boolean}
+     */
     packAsQuad: boolean;
 
-    // stored for efficient updating..
+    /**
+     * The texture ID, stored for efficient updating.
+     * @type {number}
+     * @private
+     */
     _textureId: number;
-    _attributeStart: number; // location in the buffer
+
+    /**
+     * The starting position in the attribute buffer.
+     * @type {number}
+     * @private
+     */
+    _attributeStart: number;
+
+    /**
+     * The starting position in the index buffer.
+     * @type {number}
+     * @private
+     */
     _indexStart: number;
+
+    /**
+     * Reference to the batcher.
+     * @type {Batcher}
+     * @private
+     */
     _batcher: Batcher;
+
+    /**
+     * Reference to the batch.
+     * @type {Batch}
+     * @private
+     */
     _batch: Batch;
 }
 
+/**
+ * Represents a batchable quad element.
+ * @extends BatchableElement
+ */
 export interface BatchableQuadElement extends BatchableElement
 {
+    /**
+     * Indicates that this element should be packed as a quad.
+     * @type {true}
+     */
     packAsQuad: true;
+
+    /**
+     * The size of the attribute data for this quad element.
+     * @type {4}
+     */
     attributeSize: 4;
+
+    /**
+     * The size of the index data for this quad element.
+     * @type {6}
+     */
     indexSize: 6;
+
+    /**
+     * The bounds data for this quad element.
+     * @type {BoundsData}
+     */
     bounds: BoundsData;
 }
 
+/**
+ * Represents a batchable mesh element.
+ * @extends BatchableElement
+ */
 export interface BatchableMeshElement extends BatchableElement
 {
-    // attributes required for all batches..
+    /**
+     * The UV coordinates of the mesh.
+     * @type {number[] | Float32Array}
+     */
     uvs: number[] | Float32Array;
+
+    /**
+     * The vertex positions of the mesh.
+     * @type {number[] | Float32Array}
+     */
     positions: number[] | Float32Array;
+
+    /**
+     * The indices of the mesh.
+     * @type {number[] | Uint16Array | Uint32Array}
+     */
     indices: number[] | Uint16Array | Uint32Array;
 
+    /**
+     * The offset in the index buffer.
+     * @type {number}
+     */
     indexOffset: number;
+
+    /**
+     * The offset in the attribute buffer.
+     * @type {number}
+     */
     attributeOffset: number;
 
+    /**
+     * Indicates that this element should not be packed as a quad.
+     * @type {false}
+     */
     packAsQuad: false;
 }
 
