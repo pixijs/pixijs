@@ -1,4 +1,5 @@
 import { HTMLText } from '../../../src/scene/text-html/HTMLText';
+import { getWebGLRenderer } from '../../utils/getRenderer';
 
 describe('HTMLText', () =>
 {
@@ -27,5 +28,20 @@ describe('HTMLText', () =>
         expect(text.height).toBeLessThan(35);
 
         text.destroy();
+    });
+
+    it('should handle resolution changes after html text destruction', async () =>
+    {
+        const text = new HTMLText({ text: 'foo' });
+
+        const renderer = await getWebGLRenderer();
+
+        renderer.render(text);
+
+        text.destroy();
+
+        expect(() => { renderer.resolution = 3; }).not.toThrow();
+
+        renderer.destroy();
     });
 });
