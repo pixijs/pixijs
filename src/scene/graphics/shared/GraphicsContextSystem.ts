@@ -62,7 +62,6 @@ export class GraphicsContextRenderData
     {
         // eslint-disable-next-line max-len
         deprecation(v8_3_4, 'GraphicsContextRenderData#geometry is deprecated, please use batcher.geometry instead.');
-        // #endif
 
         return this.batcher.geometry;
     }
