@@ -1,4 +1,5 @@
 import { type ExtensionMetadata, ExtensionType } from '../../extensions/Extensions';
+import { VERSION } from '../const';
 
 import type { Application } from '../../app/Application';
 import type { System } from '../../rendering/renderers/shared/system/System';
@@ -7,8 +8,8 @@ import type { Renderer } from '../../rendering/renderers/types';
 declare global
 {
     /* eslint-disable no-var */
-    var __PIXI_APP_INIT__: undefined | ((arg: Application | Renderer) => void);
-    var __PIXI_RENDERER_INIT__: undefined | ((arg: Application | Renderer) => void);
+    var __PIXI_APP_INIT__: undefined | ((arg: Application | Renderer, version: string) => void);
+    var __PIXI_RENDERER_INIT__: undefined | ((arg: Application | Renderer, version: string) => void);
     /* eslint-enable no-var */
 }
 
@@ -22,7 +23,7 @@ export class ApplicationInitHook
     public static extension: ExtensionMetadata = ExtensionType.Application;
     public static init(): void
     {
-        globalThis.__PIXI_APP_INIT__?.(this as unknown as Application);
+        globalThis.__PIXI_APP_INIT__?.(this as unknown as Application, VERSION);
     }
     public static destroy(): void
     {
@@ -54,7 +55,7 @@ export class RendererInitHook implements System
     }
     public init(): void
     {
-        globalThis.__PIXI_RENDERER_INIT__?.(this._renderer);
+        globalThis.__PIXI_RENDERER_INIT__?.(this._renderer, VERSION);
     }
     public destroy(): void
     {
