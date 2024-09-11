@@ -41,4 +41,14 @@ describe('BitmapFontManager', () =>
 
         expect(layout).toBeDefined();
     });
+
+    it('should measure trailing whitespaces when trimEnd is disabled', () =>
+    {
+        const layout = BitmapFontManager.getLayout('foo', new TextStyle());
+        const layoutTrimmed = BitmapFontManager.getLayout('foo    ', new TextStyle());
+        const layoutUntrimmed = BitmapFontManager.getLayout('foo    ', new TextStyle(), false);
+
+        expect(layoutTrimmed.width).toEqual(layout.width);
+        expect(layoutUntrimmed.width).toBeGreaterThan(layout.width);
+    });
 });

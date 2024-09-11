@@ -134,7 +134,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
         let currentY = bitmapFont.baseLineOffset;
 
         // measure our text...
-        const bitmapTextLayout = getBitmapTextLayout(chars, style, bitmapFont);
+        const bitmapTextLayout = getBitmapTextLayout(chars, style, bitmapFont, true);
 
         let index = 0;
 
