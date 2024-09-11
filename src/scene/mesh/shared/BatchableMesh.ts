@@ -1,76 +1,57 @@
-import type { Batch, BatchableObject, Batcher } from '../../../rendering/batcher/shared/Batcher';
-import type { IndexBufferArray } from '../../../rendering/renderers/shared/geometry/Geometry';
+import type { Matrix } from '../../../maths/matrix/Matrix';
+import type { Batch, Batcher } from '../../../rendering/batcher/shared/Batcher';
+import type { DefaultBatchableMeshElement } from '../../../rendering/batcher/shared/DefaultBatcher';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import type { Container } from '../../container/Container';
+import type { ViewContainer } from '../../view/View';
 import type { MeshGeometry } from './MeshGeometry';
 
 /**
  * A batchable mesh object.
  * @ignore
  */
-export class BatchableMesh implements BatchableObject
+export class BatchableMesh implements DefaultBatchableMeshElement
 {
-    public indexStart: number;
-    public textureId: number;
-    public texture: Texture;
+    public batcherName = 'default';
+    public readonly packAsQuad = false;
     public location: number;
-    public batcher: Batcher = null;
-    public batch: Batch = null;
-    public mesh: Container;
-    public geometry: MeshGeometry;
 
+    public renderable: ViewContainer;
+
+    public indexOffset = 0;
+    public attributeOffset = 0;
+
+    public texture: Texture;
+    public geometry: MeshGeometry;
+    public transform: Matrix;
     public roundPixels: 0 | 1 = 0;
+
+    public _attributeStart: number;
+    public _batcher: Batcher = null;
+    public _batch: Batch = null;
+    public _indexStart: number;
+    public _textureId: number;
 
     private _transformedUvs: Float32Array;
     private _uvUpdateId: number = -1;
     private _textureMatrixUpdateId: number = -1;
 
-    get blendMode() { return this.mesh.groupBlendMode; }
+    get blendMode() { return this.renderable.groupBlendMode; }
 
     public reset()
     {
-        this.mesh = null;
+        this.renderable = null;
         this.texture = null;
-        this.batcher = null;
-        this.batch = null;
+        this._batcher = null;
+        this._batch = null;
         this.geometry = null;
         this._uvUpdateId = -1;
         this._textureMatrixUpdateId = -1;
     }
 
-    public packIndex(indexBuffer: IndexBufferArray, index: number, indicesOffset: number)
+    get uvs()
     {
-        const indices = this.geometry.indices;
-
-        for (let i = 0; i < indices.length; i++)
-        {
-            indexBuffer[index++] = indices[i] + indicesOffset;
-        }
-    }
-
-    public packAttributes(
-        float32View: Float32Array,
-        uint32View: Uint32Array,
-        index: number,
-        textureId: number
-    )
-    {
-        const mesh = this.mesh;
-
         const geometry = this.geometry;
-        const wt = mesh.groupTransform;
 
-        const textureIdAndRound = (textureId << 16) | (this.roundPixels & 0xFFFF);
-
-        const a = wt.a;
-        const b = wt.b;
-        const c = wt.c;
-        const d = wt.d;
-        const tx = wt.tx;
-        const ty = wt.ty;
-
-        // const trim = texture.trim;
-        const positions = geometry.positions;
         const uvBuffer = geometry.getBuffer('aUV');
 
         const uvs = uvBuffer.data;
@@ -96,28 +77,30 @@ export class BatchableMesh implements BatchableObject
             }
         }
 
-        const abgr = mesh.groupColorAlpha;
-
-        for (let i = 0; i < positions.length; i += 2)
-        {
-            const x = positions[i];
-            const y = positions[i + 1];
-
-            float32View[index] = (a * x) + (c * y) + tx;
-            float32View[index + 1] = (b * x) + (d * y) + ty;
-
-            // TODO implement texture matrix?
-            float32View[index + 2] = transformedUvs[i];
-            float32View[index + 3] = transformedUvs[i + 1];
-
-            uint32View[index + 4] = abgr;
-            uint32View[index + 5] = textureIdAndRound;
-
-            index += 6;
-        }
+        return transformedUvs as Float32Array;
     }
 
-    get vertexSize()
+    get positions()
+    {
+        return this.geometry.positions;
+    }
+
+    get indices()
+    {
+        return this.geometry.indices;
+    }
+
+    get color()
+    {
+        return this.renderable.groupColorAlpha;
+    }
+
+    get groupTransform()
+    {
+        return this.renderable.groupTransform;
+    }
+
+    get attributeSize()
     {
         return this.geometry.positions.length / 2;
     }

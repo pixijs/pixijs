@@ -1,6 +1,6 @@
 import type { Container } from '../../../../scene/container/Container';
 import type { Effect } from '../../../../scene/container/Effect';
-import type { BatchableObject } from '../../../batcher/shared/Batcher';
+import type { BatchableElement } from '../../../batcher/shared/Batcher';
 import type { Renderer } from '../../types';
 import type { Renderable } from '../Renderable';
 import type { Instruction } from './Instruction';
@@ -106,8 +106,9 @@ export interface BatchPipe
     /**
      * Add a add a batchable object to the batch.
      * @param renderable - a batchable object that can be added to the batch
+     * @param instructionSet - the instruction set currently being built
      */
-    addToBatch: (renderable: BatchableObject) => void;
+    addToBatch: (renderable: BatchableElement, instructionSet: InstructionSet) => void;
     /**
      * Forces the batch to break. This can happen if for example you need to render everything and then
      * change the render target.

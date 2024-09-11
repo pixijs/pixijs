@@ -69,7 +69,7 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
         const contextSystem = renderer.graphicsContext;
 
         const {
-            geometry, instructions,
+            batcher, instructions,
         } = contextSystem.getContextRenderData(context);
 
         // WebGL specific..
@@ -79,7 +79,7 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
 
         renderer.shader.bind(shader);
 
-        renderer.geometry.bind(geometry, shader.glProgram);
+        renderer.geometry.bind(batcher.geometry, shader.glProgram);
 
         const batches = instructions.instructions as Batch[];
 

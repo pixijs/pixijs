@@ -121,10 +121,10 @@ function addTextureToGeometryData(
     graphicsBatch.indexOffset = indexOffset;
     graphicsBatch.indexSize = indices.length - indexOffset;
 
-    graphicsBatch.vertexOffset = vertOffset;
-    graphicsBatch.vertexSize = (vertices.length / 2) - vertOffset;
+    graphicsBatch.attributeOffset = vertOffset;
+    graphicsBatch.attributeSize = (vertices.length / 2) - vertOffset;
 
-    graphicsBatch.color = data.style;
+    graphicsBatch.baseColor = data.style;
     graphicsBatch.alpha = data.alpha;
 
     graphicsBatch.texture = texture;
@@ -234,10 +234,10 @@ function addShapePathToGeometryData(
         graphicsBatch.indexOffset = indexOffset;
         graphicsBatch.indexSize = indices.length - indexOffset;
 
-        graphicsBatch.vertexOffset = vertOffset;
-        graphicsBatch.vertexSize = (vertices.length / 2) - vertOffset;
+        graphicsBatch.attributeOffset = vertOffset;
+        graphicsBatch.attributeSize = (vertices.length / 2) - vertOffset;
 
-        graphicsBatch.color = style.color as number;
+        graphicsBatch.baseColor = style.color;
         graphicsBatch.alpha = style.alpha;
 
         graphicsBatch.texture = texture;

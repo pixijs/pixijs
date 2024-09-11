@@ -89,6 +89,9 @@ enum ExtensionType
 
     /** A type of extension for building and triangulating custom shapes used in graphics. */
     ShapeBuilder = 'shape-builder',
+
+    /** A type of extension for creating custom batchers used in rendering. */
+    Batcher = 'batcher',
 }
 
 /**

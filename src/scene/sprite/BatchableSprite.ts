@@ -1,123 +1,46 @@
-import type { Batch, BatchableObject, Batcher } from '../../rendering/batcher/shared/Batcher';
-import type { IndexBufferArray } from '../../rendering/renderers/shared/geometry/Geometry';
+import type { Matrix } from '../../maths/matrix/Matrix';
+import type { Batch, Batcher } from '../../rendering/batcher/shared/Batcher';
+import type { DefaultBatchableQuadElement } from '../../rendering/batcher/shared/DefaultBatcher';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { BoundsData } from '../container/bounds/Bounds';
-import type { Container } from '../container/Container';
+import type { ViewContainer } from '../view/View';
 
 /**
  * A batchable sprite object.
  * @ignore
  */
-export class BatchableSprite implements BatchableObject
+export class BatchableSprite implements DefaultBatchableQuadElement
 {
-    public indexStart: number;
-    public renderable: Container;
+    public batcherName = 'default';
 
     // batch specific..
-    public vertexSize = 4;
-    public indexSize = 6;
-    public texture: Texture;
+    public readonly attributeSize = 4;
+    public readonly indexSize = 6;
+    public readonly packAsQuad = true;
 
-    public textureId: number;
-    public location = 0; // location in the buffer
-    public batcher: Batcher = null;
-    public batch: Batch = null;
+    public transform: Matrix;
+
+    public renderable: ViewContainer;
+    public texture: Texture;
     public bounds: BoundsData;
+
     public roundPixels: 0 | 1 = 0;
 
+    public _indexStart: number;
+    public _textureId: number;
+    public _attributeStart = 0; // location in the buffer
+    public _batcher: Batcher = null;
+    public _batch: Batch = null;
+
     get blendMode() { return this.renderable.groupBlendMode; }
-
-    public packAttributes(
-        float32View: Float32Array,
-        uint32View: Uint32Array,
-        index: number,
-        textureId: number,
-    )
-    {
-        const sprite = this.renderable;
-        const texture = this.texture;
-
-        const wt = sprite.groupTransform;
-
-        const a = wt.a;
-        const b = wt.b;
-        const c = wt.c;
-        const d = wt.d;
-        const tx = wt.tx;
-        const ty = wt.ty;
-
-        const bounds = this.bounds;
-
-        const w0 = bounds.maxX;
-        const w1 = bounds.minX;
-        const h0 = bounds.maxY;
-        const h1 = bounds.minY;
-
-        const uvs = texture.uvs;
-
-        // _ _ _ _
-        // a b g r
-        const argb = sprite.groupColorAlpha;
-
-        const textureIdAndRound = (textureId << 16) | (this.roundPixels & 0xFFFF);
-
-        float32View[index + 0] = (a * w1) + (c * h1) + tx;
-        float32View[index + 1] = (d * h1) + (b * w1) + ty;
-
-        float32View[index + 2] = uvs.x0;
-        float32View[index + 3] = uvs.y0;
-
-        uint32View[index + 4] = argb;
-        uint32View[index + 5] = textureIdAndRound;
-
-        // xy
-        float32View[index + 6] = (a * w0) + (c * h1) + tx;
-        float32View[index + 7] = (d * h1) + (b * w0) + ty;
-
-        float32View[index + 8] = uvs.x1;
-        float32View[index + 9] = uvs.y1;
-
-        uint32View[index + 10] = argb;
-        uint32View[index + 11] = textureIdAndRound;
-
-        // xy
-        float32View[index + 12] = (a * w0) + (c * h0) + tx;
-        float32View[index + 13] = (d * h0) + (b * w0) + ty;
-
-        float32View[index + 14] = uvs.x2;
-        float32View[index + 15] = uvs.y2;
-
-        uint32View[index + 16] = argb;
-        uint32View[index + 17] = textureIdAndRound;
-
-        // xy
-        float32View[index + 18] = (a * w1) + (c * h0) + tx;
-        float32View[index + 19] = (d * h0) + (b * w1) + ty;
-
-        float32View[index + 20] = uvs.x3;
-        float32View[index + 21] = uvs.y3;
-
-        uint32View[index + 22] = argb;
-        uint32View[index + 23] = textureIdAndRound;
-    }
-
-    public packIndex(indexBuffer: IndexBufferArray, index: number, indicesOffset: number)
-    {
-        indexBuffer[index] = indicesOffset + 0;
-        indexBuffer[index + 1] = indicesOffset + 1;
-        indexBuffer[index + 2] = indicesOffset + 2;
-
-        indexBuffer[index + 3] = indicesOffset + 0;
-        indexBuffer[index + 4] = indicesOffset + 2;
-        indexBuffer[index + 5] = indicesOffset + 3;
-    }
+    get color() { return this.renderable.groupColorAlpha; }
 
     public reset()
     {
         this.renderable = null;
         this.texture = null;
-        this.batcher = null;
-        this.batch = null;
+        this._batcher = null;
+        this._batch = null;
         this.bounds = null;
     }
 }

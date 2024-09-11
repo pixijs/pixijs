@@ -1,16 +1,11 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { compileHighShaderGpuProgram } from '../../high-shader/compileHighShaderToProgram';
-import { colorBit } from '../../high-shader/shader-bits/colorBit';
-import { generateTextureBatchBit } from '../../high-shader/shader-bits/generateTextureBatchBit';
-import { roundPixelsBit } from '../../high-shader/shader-bits/roundPixelsBit';
-import { Shader } from '../../renderers/shared/shader/Shader';
 import { State } from '../../renderers/shared/state/State';
-import { getMaxTexturesPerBatch } from '../gl/utils/maxRecommendedTextures';
 import { getTextureBatchBindGroup } from './getTextureBatchBindGroup';
 
 import type { GpuEncoderSystem } from '../../renderers/gpu/GpuEncoderSystem';
 import type { WebGPURenderer } from '../../renderers/gpu/WebGPURenderer';
 import type { Geometry } from '../../renderers/shared/geometry/Geometry';
+import type { Shader } from '../../renderers/shared/shader/Shader';
 import type { Batch } from '../shared/Batcher';
 import type { BatcherAdaptor, BatcherPipe } from '../shared/BatcherPipe';
 
@@ -34,31 +29,13 @@ export class GpuBatchAdaptor implements BatcherAdaptor
     private _shader: Shader;
     private _geometry: Geometry;
 
-    public init()
-    {
-        const gpuProgram = compileHighShaderGpuProgram({
-            name: 'batch',
-            bits: [
-                colorBit,
-                generateTextureBatchBit(getMaxTexturesPerBatch()),
-                roundPixelsBit,
-            ]
-        });
-
-        this._shader = new Shader({
-            gpuProgram,
-            groups: {
-                // these will be dynamically allocated
-            },
-        });
-    }
-
-    public start(batchPipe: BatcherPipe, geometry: Geometry): void
+    public start(batchPipe: BatcherPipe, geometry: Geometry, shader: Shader): void
     {
         const renderer = batchPipe.renderer as WebGPURenderer;
         const encoder = renderer.encoder as GpuEncoderSystem;
-        const program = this._shader.gpuProgram;
+        const program = shader.gpuProgram;
 
+        this._shader = shader;
         this._geometry = geometry;
 
         encoder.setGeometry(geometry, program);
@@ -115,11 +92,5 @@ export class GpuBatchAdaptor implements BatcherAdaptor
 
         encoder.renderPassEncoder.setBindGroup(1, gpuBindGroup);
         encoder.renderPassEncoder.drawIndexed(batch.size, 1, batch.start);
-    }
-
-    public destroy(): void
-    {
-        this._shader.destroy(true);
-        this._shader = null;
     }
 }

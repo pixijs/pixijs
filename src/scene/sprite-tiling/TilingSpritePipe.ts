@@ -67,7 +67,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
             // we are batching.. check a texture change!
             if (batchableMesh && batchableMesh.texture._source !== renderable.texture._source)
             {
-                return !batchableMesh.batcher.checkAndUpdateTexture(batchableMesh, renderable.texture);
+                return !batchableMesh._batcher.checkAndUpdateTexture(batchableMesh, renderable.texture);
             }
         }
 
@@ -103,13 +103,14 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
                 this._updateBatchableMesh(tilingSprite);
 
                 batchableMesh.geometry = geometry;
-                batchableMesh.mesh = tilingSprite;
+                batchableMesh.renderable = tilingSprite;
+                batchableMesh.transform = tilingSprite.groupTransform;
                 batchableMesh.texture = tilingSprite._texture;
             }
 
             batchableMesh.roundPixels = (this._renderer._roundPixels | tilingSprite._roundPixels) as 0 | 1;
 
-            batcher.addToBatch(batchableMesh);
+            batcher.addToBatch(batchableMesh, instructionSet);
         }
         else
         {
@@ -162,7 +163,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
 
             if (tilingSprite._didTilingSpriteUpdate) this._updateBatchableMesh(tilingSprite);
 
-            batchableMesh.batcher.updateElement(batchableMesh);
+            batchableMesh._batcher.updateElement(batchableMesh);
         }
         else if (tilingSprite._didTilingSpriteUpdate)
         {

@@ -1,13 +1,13 @@
-import { Batcher } from '../../../src/rendering/batcher/shared/Batcher';
+import { TestBatcher } from './TestBatcher';
 import '../../../src/rendering/renderers/shared/texture/sources/ImageSource';
 
 describe('Batcher', () =>
 {
     it('should ensure attribute size and resize correctly', () =>
     {
-        const batcher = new Batcher({
-            vertexSize: 2,
-            indexSize: 1,
+        const batcher = new TestBatcher({
+            attributesInitialSize: 2 * 6,
+            indicesInitialSize: 1,
         });
 
         expect(batcher.attributeBuffer.float32View).toHaveLength(2 * 6);
@@ -31,9 +31,9 @@ describe('Batcher', () =>
 
     it('should ensure index size and resize correctly', () =>
     {
-        const batcher = new Batcher({
-            vertexSize: 2,
-            indexSize: 2,
+        const batcher = new TestBatcher({
+            attributesInitialSize: 2 * 6,
+            indicesInitialSize: 2,
         });
 
         expect(batcher.indexBuffer).toHaveLength(2);

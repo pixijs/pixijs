@@ -69,7 +69,7 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
         const contextSystem = renderer.graphicsContext;
 
         const {
-            geometry, instructions
+            batcher, instructions
         } = contextSystem.getContextRenderData(context);
 
         // WebGPU specific...
@@ -78,12 +78,12 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
         const encoder = renderer.encoder as GpuEncoderSystem;
 
         encoder.setPipelineFromGeometryProgramAndState(
-            geometry,
+            batcher.geometry,
             shader.gpuProgram,
             graphicsPipe.state
         );
 
-        encoder.setGeometry(geometry, shader.gpuProgram);
+        encoder.setGeometry(batcher.geometry, shader.gpuProgram);
 
         const globalUniformsBindGroup = renderer.globalUniforms.bindGroup;
 

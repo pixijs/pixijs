@@ -31,13 +31,13 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
         this._renderer = renderer;
     }
 
-    public addRenderable(sprite: NineSliceSprite, _instructionSet: InstructionSet)
+    public addRenderable(sprite: NineSliceSprite, instructionSet: InstructionSet)
     {
         const gpuSprite = this._getGpuSprite(sprite);
 
         if (sprite._didSpriteUpdate) this._updateBatchableSprite(sprite, gpuSprite);
 
-        this._renderer.renderPipes.batch.addToBatch(gpuSprite);
+        this._renderer.renderPipes.batch.addToBatch(gpuSprite, instructionSet);
     }
 
     public updateRenderable(sprite: NineSliceSprite)
@@ -46,7 +46,7 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
 
         if (sprite._didSpriteUpdate) this._updateBatchableSprite(sprite, gpuSprite);
 
-        gpuSprite.batcher.updateElement(gpuSprite);
+        gpuSprite._batcher.updateElement(gpuSprite);
     }
 
     public validateRenderable(sprite: NineSliceSprite): boolean
@@ -56,7 +56,7 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
 
         if (gpuSprite.texture._source !== texture._source)
         {
-            return !gpuSprite.batcher.checkAndUpdateTexture(gpuSprite, texture);
+            return !gpuSprite._batcher.checkAndUpdateTexture(gpuSprite, texture);
         }
 
         return false;
@@ -95,7 +95,8 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
         const batchableMesh = BigPool.get(BatchableMesh);
 
         batchableMesh.geometry = BigPool.get(NineSliceGeometry);
-        batchableMesh.mesh = sprite;
+        batchableMesh.renderable = sprite;
+        batchableMesh.transform = sprite.groupTransform;
         batchableMesh.texture = sprite._texture;
         batchableMesh.roundPixels = (this._renderer._roundPixels | sprite._roundPixels) as 0 | 1;
 

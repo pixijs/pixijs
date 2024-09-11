@@ -56,7 +56,7 @@ describe('Mesh', () =>
         expect(renderer.renderPipes.mesh['_meshDataHash'][mesh.uid]).toBeNull();
         expect(renderer.renderPipes.mesh['_gpuBatchableMeshHash'][mesh.uid]).toBeNull();
 
-        expect(gpuMesh.mesh).toBeNull();
+        expect(gpuMesh.renderable).toBeNull();
     });
 
     it('should clean up correctly when not batching', async () =>

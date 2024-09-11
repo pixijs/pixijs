@@ -1,11 +1,12 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { getTextureBatchBindGroup } from '../../../rendering/batcher/gpu/getTextureBatchBindGroup';
-import { Batcher } from '../../../rendering/batcher/shared/Batcher';
-import { BatchGeometry } from '../../../rendering/batcher/shared/BatchGeometry';
+import { DefaultBatcher } from '../../../rendering/batcher/shared/DefaultBatcher';
 import { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
+import { deprecation, v8_3_4 } from '../../../utils/logging/deprecation';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { buildContextBatches } from './utils/buildContextBatches';
 
+import type { Batcher } from '../../../rendering/batcher/shared/Batcher';
 import type { System } from '../../../rendering/renderers/shared/system/System';
 import type { PoolItem } from '../../../utils/pool/Pool';
 import type { BatchableGraphics } from './BatchableGraphics';
@@ -27,7 +28,7 @@ export class GpuGraphicsContext
 {
     public isBatchable: boolean;
     public context: GraphicsContext;
-    public batcher: Batcher = new Batcher();
+
     public batches: BatchableGraphics[] = [];
     public geometryData: GeometryData = {
         vertices: [],
@@ -44,12 +45,25 @@ export class GpuGraphicsContext
  */
 export class GraphicsContextRenderData
 {
-    public geometry = new BatchGeometry();
+    public batcher: Batcher = new DefaultBatcher();
     public instructions = new InstructionSet();
 
     public init()
     {
         this.instructions.reset();
+    }
+
+    /**
+     * @deprecated since version 8.0.0
+     * Use `batcher.geometry` instead.
+     * @see {Batcher#geometry}
+     */
+    get geometry()
+    {
+        // eslint-disable-next-line max-len
+        deprecation(v8_3_4, 'GraphicsContextRenderData#geometry is deprecated, please use batcher.geometry instead.');
+
+        return this.batcher.geometry;
     }
 }
 
@@ -155,7 +169,7 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
     {
         const graphicsData: GraphicsContextRenderData = BigPool.get(GraphicsContextRenderData);// ();
 
-        const { batches, geometryData, batcher } = this._gpuContextHash[context.uid];
+        const { batches, geometryData } = this._gpuContextHash[context.uid];
 
         const vertexSize = geometryData.vertices.length;
         const indexSize = geometryData.indices.length;
@@ -164,6 +178,8 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
         {
             batches[i].applyTransform = false;
         }
+
+        const batcher = graphicsData.batcher;
 
         // TODO we can pool buffers here eventually..
         batcher.ensureAttributeBuffer(vertexSize);
@@ -180,7 +196,7 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
 
         batcher.finish(graphicsData.instructions);
 
-        const geometry = graphicsData.geometry;
+        const geometry = batcher.geometry;
 
         // not to self - this works as we are assigning the batchers array buffer
         // once its up loaded - this buffer is then put back in the pool to be reused.

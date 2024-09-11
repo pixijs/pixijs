@@ -1,33 +1,56 @@
+import { Matrix } from '../../../maths/matrix/Matrix';
 import { multiplyHexColors } from '../../container/utils/multiplyHexColors';
 
-import type { Batch, BatchableObject, Batcher } from '../../../rendering/batcher/shared/Batcher';
-import type { IndexBufferArray } from '../../../rendering/renderers/shared/geometry/Geometry';
+import type { Batch, Batcher } from '../../../rendering/batcher/shared/Batcher';
+import type { DefaultBatchableMeshElement } from '../../../rendering/batcher/shared/DefaultBatcher';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { Graphics } from './Graphics';
 
+const identityMatrix = new Matrix();
 /**
  * A batchable graphics object.
  * @ignore
  */
-export class BatchableGraphics implements BatchableObject
+
+export class BatchableGraphics implements DefaultBatchableMeshElement
 {
-    public indexStart: number;
-    public textureId: number;
+    public readonly packAsQuad = false;
+    public batcherName = 'default';
+
     public texture: Texture;
-    public location: number;
-    public batcher: Batcher = null;
-    public batch: Batch = null;
+
     public renderable: Graphics;
     public indexOffset: number;
     public indexSize: number;
-    public vertexOffset: number;
-    public vertexSize: number;
-    public color: number;
+    public attributeOffset: number;
+    public attributeSize: number;
+    public baseColor: number;
     public alpha: number;
     public applyTransform = true;
     public roundPixels: 0 | 1 = 0;
 
+    public _indexStart: number;
+    public _textureId: number;
+    public _attributeStart: number;
+    public _batcher: Batcher = null;
+    public _batch: Batch = null;
+
     public geometryData: { vertices: number[]; uvs: number[]; indices: number[]; };
+
+    get uvs()
+    {
+        return this.geometryData.uvs;
+    }
+
+    get positions()
+    {
+        return this.geometryData.vertices;
+    }
+
+    get indices()
+    {
+        return this.geometryData.indices;
+    }
 
     get blendMode()
     {
@@ -38,92 +61,24 @@ export class BatchableGraphics implements BatchableObject
 
         return 'normal';
     }
-
-    public packIndex(indexBuffer: IndexBufferArray, index: number, indicesOffset: number)
+    get color()
     {
-        const indices = this.geometryData.indices;
-
-        for (let i = 0; i < this.indexSize; i++)
-        {
-            indexBuffer[index++] = indices[i + this.indexOffset] + indicesOffset - this.vertexOffset;
-        }
-    }
-
-    public packAttributes(
-        float32View: Float32Array,
-        uint32View: Uint32Array,
-        index: number,
-        textureId: number
-    )
-    {
-        const geometry = this.geometryData;
-        const graphics = this.renderable;
-
-        const positions = geometry.vertices;
-        const uvs = geometry.uvs;
-
-        const offset = this.vertexOffset * 2;
-        const vertSize = (this.vertexOffset + this.vertexSize) * 2;
-
-        const rgb = this.color;
+        const rgb = this.baseColor;
         const bgr = (rgb >> 16) | (rgb & 0xff00) | ((rgb & 0xff) << 16);
+        const renderable = this.renderable;
 
-        if (this.applyTransform)
+        if (renderable)
         {
-            const argb = multiplyHexColors(bgr, graphics.groupColor)
-            + ((this.alpha * graphics.groupAlpha * 255) << 24);
-
-            const wt = graphics.groupTransform;
-            const textureIdAndRound = (textureId << 16) | (this.roundPixels & 0xFFFF);
-
-            const a = wt.a;
-            const b = wt.b;
-            const c = wt.c;
-            const d = wt.d;
-            const tx = wt.tx;
-            const ty = wt.ty;
-
-            for (let i = offset; i < vertSize; i += 2)
-            {
-                const x = positions[i];
-                const y = positions[i + 1];
-
-                float32View[index] = (a * x) + (c * y) + tx;
-                float32View[index + 1] = (b * x) + (d * y) + ty;
-
-                float32View[index + 2] = uvs[i];
-                float32View[index + 3] = uvs[i + 1];
-
-                uint32View[index + 4] = argb;
-                uint32View[index + 5] = textureIdAndRound;
-
-                index += 6;
-            }
+            return multiplyHexColors(bgr, renderable.groupColor)
+            + ((this.alpha * renderable.groupAlpha * 255) << 24);
         }
-        else
-        {
-            const argb = bgr + ((this.alpha * 255) << 24);
 
-            for (let i = offset; i < vertSize; i += 2)
-            {
-                float32View[index] = positions[i];
-                float32View[index + 1] = positions[i + 1];
-
-                float32View[index + 2] = uvs[i];
-                float32View[index + 3] = uvs[i + 1];
-
-                uint32View[index + 4] = argb;
-                uint32View[index + 5] = textureId << 16;
-
-                index += 6;
-            }
-        }
+        return bgr + ((this.alpha * 255) << 24);
     }
 
-    // TODO rename to vertexSize
-    get vertSize()
+    get transform()
     {
-        return this.vertexSize;
+        return this.renderable?.groupTransform || identityMatrix;
     }
 
     public copyTo(gpuBuffer: BatchableGraphics)
@@ -131,10 +86,10 @@ export class BatchableGraphics implements BatchableObject
         gpuBuffer.indexOffset = this.indexOffset;
         gpuBuffer.indexSize = this.indexSize;
 
-        gpuBuffer.vertexOffset = this.vertexOffset;
-        gpuBuffer.vertexSize = this.vertexSize;
+        gpuBuffer.attributeOffset = this.attributeOffset;
+        gpuBuffer.attributeSize = this.attributeSize;
 
-        gpuBuffer.color = this.color;
+        gpuBuffer.baseColor = this.baseColor;
         gpuBuffer.alpha = this.alpha;
 
         gpuBuffer.texture = this.texture;

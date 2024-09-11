@@ -84,7 +84,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
         return false;
     }
 
-    public addRenderable(text: Text, _instructionSet: InstructionSet)
+    public addRenderable(text: Text, instructionSet: InstructionSet)
     {
         const gpuText = this._getGpuText(text);
 
@@ -95,7 +95,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
             this._updateText(text);
         }
 
-        this._renderer.renderPipes.batch.addToBatch(batchableSprite);
+        this._renderer.renderPipes.batch.addToBatch(batchableSprite, instructionSet);
     }
 
     public updateRenderable(text: Text)
@@ -108,7 +108,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
             this._updateText(text);
         }
 
-        batchableSprite.batcher.updateElement(batchableSprite);
+        batchableSprite._batcher.updateElement(batchableSprite);
     }
 
     public destroyRenderable(text: Text)
@@ -176,6 +176,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
         };
 
         gpuTextData.batchableSprite.renderable = text;
+        gpuTextData.batchableSprite.transform = text.groupTransform;
         gpuTextData.batchableSprite.bounds = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
         gpuTextData.batchableSprite.roundPixels = (this._renderer._roundPixels | text._roundPixels) as 0 | 1;
 
