@@ -72,7 +72,7 @@ export class Ticker
      */
     public deltaTime = 1;
     /**
-     * Scaler time elapsed in milliseconds from last frame to this frame.
+     * Scalar time elapsed in milliseconds from last frame to this frame.
      * This value is capped by setting {@link ticker.Ticker#minFPS|minFPS}
      * and is scaled with {@link ticker.Ticker#speed|speed}.
      * **Note:** The cap may be exceeded by scaling.
