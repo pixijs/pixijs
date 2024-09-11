@@ -1,5 +1,5 @@
 import { type ExtensionMetadata, ExtensionType } from '../../extensions/Extensions';
-import { VERSION } from '../sayHello';
+import { VERSION } from '../const';
 
 import type { Application } from '../../app/Application';
 import type { System } from '../../rendering/renderers/shared/system/System';
