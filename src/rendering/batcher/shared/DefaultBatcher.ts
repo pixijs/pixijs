@@ -9,19 +9,45 @@ import type { BatchableMeshElement, BatchableQuadElement } from './Batcher';
 
 let defaultShader: Shader = null;
 
+/**
+ * Represents the common elements for default batch rendering.
+ * This interface defines the properties that are used by the DefaultBatcher
+ * to render elements efficiently in a batch.
+ * @memberof rendering
+ */
 export interface DefaultBatchElements
 {
-    /** The color of the element that will be multiplied with the texture color. */
+    /**
+     * The color of the element that will be multiplied with the texture color.
+     * This is typically represented as a 32-bit integer in RGBA format.
+     */
     color: number;
 
-    /** Whether the element should be rounded to the nearest pixel. */
+    /**
+     * Determines whether the element should be rounded to the nearest pixel.
+     * - 0: No rounding (default)
+     * - 1: Round to nearest pixel
+     * This can help with visual consistency, especially for pixel art styles.
+     */
     roundPixels: 0 | 1;
 
-    /** The transform of the element. */
+    /**
+     * The transform matrix of the element.
+     * This matrix represents the position, scale, rotation, and skew of the element.
+     */
     transform: Matrix;
 }
 
+/**
+ * Represents a batchable quad element with default batch properties.
+ * @memberof rendering
+ */
 export interface DefaultBatchableQuadElement extends BatchableQuadElement, DefaultBatchElements {}
+
+/**
+ * Represents a batchable mesh element with default batch properties.
+ * @memberof rendering
+ */
 export interface DefaultBatchableMeshElement extends BatchableMeshElement, DefaultBatchElements {}
 
 /**
@@ -30,6 +56,7 @@ export interface DefaultBatchableMeshElement extends BatchableMeshElement, Defau
  * - roundPixels
  * - texture
  * - transform
+ * @memberof rendering
  */
 export class DefaultBatcher extends Batcher
 {

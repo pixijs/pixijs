@@ -79,6 +79,7 @@ function returnBatchToPool(batch: Batch)
 /**
  * Represents an element that can be batched for rendering.
  * @interface
+ * @memberof rendering
  */
 export interface BatchableElement
 {
@@ -157,6 +158,7 @@ export interface BatchableElement
 /**
  * Represents a batchable quad element.
  * @extends BatchableElement
+ * @memberof rendering
  */
 export interface BatchableQuadElement extends BatchableElement
 {
@@ -188,6 +190,7 @@ export interface BatchableQuadElement extends BatchableElement
 /**
  * Represents a batchable mesh element.
  * @extends BatchableElement
+ * @memberof rendering
  */
 export interface BatchableMeshElement extends BatchableElement
 {
@@ -232,7 +235,7 @@ let BATCH_TICK = 0;
 
 /**
  * The options for the batcher.
- * @ignore
+ * @memberof rendering
  */
 export interface BatcherOptions
 {
@@ -245,7 +248,7 @@ export interface BatcherOptions
 /**
  * A batcher is used to batch together objects with the same texture.
  * It is an abstract class that must be extended. see DefaultBatcher for an example.
- * @ignore
+ * @memberof rendering
  */
 export abstract class Batcher
 {
@@ -257,17 +260,32 @@ export abstract class Batcher
 
     /** unique id for this batcher */
     public readonly uid: number = uid('batcher');
+
+    /** The buffer containing attribute data for all elements in the batch. */
     public attributeBuffer: ViewableBuffer;
+
+    /** The buffer containing index data for all elements in the batch. */
     public indexBuffer: IndexBufferArray;
 
+    /** The current size of the attribute data in the batch. */
     public attributeSize: number;
+
+    /** The current size of the index data in the batch. */
     public indexSize: number;
+
+    /** The total number of elements currently in the batch. */
     public elementSize: number;
+
+    /** The starting index of elements in the current batch. */
     public elementStart: number;
 
+    /** Indicates whether the batch data has been modified and needs updating. */
     public dirty = true;
 
+    /** The current index of the batch being processed. */
     public batchIndex = 0;
+
+    /** An array of all batches created during the current rendering process. */
     public batches: Batch[] = [];
 
     private _elements: BatchableElement[] = [];
