@@ -43,6 +43,9 @@ export class CanvasTextPipe implements RenderPipe<Text>
         for (const i in this._gpuText)
         {
             const gpuText = this._gpuText[i];
+
+            if (!gpuText) continue;
+
             const text = gpuText.batchableSprite.renderable as Text;
 
             if (text._autoResolution)

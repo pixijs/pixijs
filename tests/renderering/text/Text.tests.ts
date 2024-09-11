@@ -72,6 +72,21 @@ describe('Text', () =>
 
             renderer.destroy();
         });
+
+        it('should handle resolution changes after text destruction', async () =>
+        {
+            const text = new Text({ text: 'foo' });
+
+            const renderer = await getWebGLRenderer();
+
+            renderer.render(text);
+
+            text.destroy();
+
+            expect(() => { renderer.resolution = 3; }).not.toThrow();
+
+            renderer.destroy();
+        });
     });
 
     describe('destroy', () =>
