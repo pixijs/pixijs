@@ -3,6 +3,7 @@ import { ExtensionType } from '../../../../extensions/Extensions';
 import { warn } from '../../../../utils/logging/warn';
 import { type GpuPowerPreference } from '../../types';
 
+import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { System } from '../../shared/system/System';
 import type { WebGLRenderer } from '../WebGLRenderer';
 import type { WebGLExtensions } from './WebGLExtensions';
@@ -63,6 +64,14 @@ export interface ContextSystemOptions
      * @memberof rendering.SharedRendererOptions
      */
     preferWebGLVersion?: 1 | 2;
+
+    /**
+     * Whether to enable multi-view rendering. Set to true when rendering to multiple
+     * canvases on the dom.
+     * @default false
+     * @memberof rendering.SharedRendererOptions
+     */
+    multiView: boolean;
 }
 
 /**
@@ -106,6 +115,11 @@ export class GlContextSystem implements System<ContextSystemOptions>
          * @default 2
          */
         preferWebGLVersion: 2,
+        /**
+         * {@link WebGLOptions.multiView}
+         * @default false
+         */
+        multiView: false
     };
 
     protected CONTEXT_UID: number;
@@ -148,6 +162,21 @@ export class GlContextSystem implements System<ContextSystemOptions>
 
     public webGLVersion: 1 | 2;
 
+    /**
+     * Whether to enable multi-view rendering. Set to true when rendering to multiple
+     * canvases on the dom.
+     * @default false
+     */
+    public multiView: boolean;
+
+    /**
+     * The canvas that the WebGL Context is rendering to.
+     * This will be the view canvas. But if multiView is enabled, this canvas will not be attached to the DOM.
+     * It will be rendered to and then copied to the target canvas.
+     * @readonly
+     */
+    public canvas: ICanvas;
+
     private _renderer: WebGLRenderer;
     private _contextLossForced: boolean;
 
@@ -186,6 +215,26 @@ export class GlContextSystem implements System<ContextSystemOptions>
     {
         options = { ...GlContextSystem.defaultOptions, ...options };
 
+        // TODO add to options
+        let multiView = this.multiView = options.multiView;
+
+        if (options.context && multiView)
+        {
+            // eslint-disable-next-line max-len
+            warn('Renderer created with both a context and multiview enabled. Disabling multiView as both cannot work together.');
+
+            multiView = false;
+        }
+
+        if (multiView)
+        {
+            this.canvas = DOMAdapter.get()
+                .createCanvas(this._renderer.canvas.width, this._renderer.canvas.height);
+        }
+        else
+        {
+            this.canvas = this._renderer.view.canvas;
+        }
         /*
          * The options passed in to create a new WebGL context.
          */
@@ -207,6 +256,27 @@ export class GlContextSystem implements System<ContextSystemOptions>
                 preserveDrawingBuffer: options.preserveDrawingBuffer,
                 powerPreference: options.powerPreference ?? 'default',
             });
+        }
+    }
+
+    public ensureCanvasSize(targetCanvas: ICanvas): void
+    {
+        if (!this.multiView)
+        {
+            if (targetCanvas !== this.canvas)
+            {
+                warn('multiView is disabled, but targetCanvas is not the main canvas');
+            }
+
+            return;
+        }
+
+        const { canvas } = this;
+
+        if (canvas.width < targetCanvas.width || canvas.height < targetCanvas.height)
+        {
+            canvas.width = Math.max(targetCanvas.width, targetCanvas.width);
+            canvas.height = Math.max(targetCanvas.height, targetCanvas.height);
         }
     }
 
@@ -243,7 +313,8 @@ export class GlContextSystem implements System<ContextSystemOptions>
     protected createContext(preferWebGLVersion: 1 | 2, options: WebGLContextAttributes): void
     {
         let gl: WebGL2RenderingContext | WebGLRenderingContext;
-        const canvas = this._renderer.view.canvas;
+
+        const canvas = this.canvas;
 
         if (preferWebGLVersion === 2)
         {
