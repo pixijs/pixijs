@@ -134,11 +134,11 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
      */
     public get autoDensity(): boolean
     {
-        return (this.texture.source as CanvasSource).autoDensity;
+        return this.texture.source.autoDensity;
     }
     public set autoDensity(value: boolean)
     {
-        (this.texture.source as CanvasSource).autoDensity = value;
+        this.texture.source.autoDensity = value;
     }
 
     /** Whether to enable anti-aliasing. This may affect performance. */
