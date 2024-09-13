@@ -18,6 +18,7 @@ export interface StencilMaskInstruction extends Instruction
 {
     renderPipeId: 'stencilMask',
     action: MaskMode,
+    inverse: boolean,
     mask: StencilMask,
 }
 
@@ -61,6 +62,7 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
             renderPipeId: 'stencilMask',
             action: 'pushMaskBegin',
             mask,
+            inverse: _container.maskInverse,
             canBundle: false,
         } as StencilMaskInstruction);
 
@@ -94,6 +96,7 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
             renderPipeId: 'stencilMask',
             action: 'pushMaskEnd',
             mask,
+            inverse: _container.maskInverse,
             canBundle: false,
         } as StencilMaskInstruction);
 
@@ -119,8 +122,9 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         instructionSet.add({
             renderPipeId: 'stencilMask',
             action: 'popMaskBegin',
+            inverse: _container.maskInverse,
             canBundle: false,
-        });
+        } as StencilMaskInstruction);
 
         const maskData = this._maskHash.get(mask as StencilMask);
 
@@ -158,7 +162,12 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         }
         else if (instruction.action === 'pushMaskEnd')
         {
-            renderer.stencil.setStencilMode(STENCIL_MODES.MASK_ACTIVE, maskStackIndex);
+            if (instruction.inverse) {
+                renderer.stencil.setStencilMode(STENCIL_MODES.INVERSE_MASK_ACTIVE, maskStackIndex);
+            } else {
+                renderer.stencil.setStencilMode(STENCIL_MODES.MASK_ACTIVE, maskStackIndex);
+            }
+
             renderer.colorMask.setMask(0xF);
         }
         else if (instruction.action === 'popMaskBegin')
@@ -179,7 +188,11 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         }
         else if (instruction.action === 'popMaskEnd')
         {
-            renderer.stencil.setStencilMode(STENCIL_MODES.MASK_ACTIVE, maskStackIndex);
+            if (instruction.inverse) {
+                renderer.stencil.setStencilMode(STENCIL_MODES.INVERSE_MASK_ACTIVE, maskStackIndex);
+            } else {
+                renderer.stencil.setStencilMode(STENCIL_MODES.MASK_ACTIVE, maskStackIndex);
+            }
 
             renderer.colorMask.setMask(0xF);
         }

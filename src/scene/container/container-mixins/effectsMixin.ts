@@ -10,11 +10,13 @@ import type { Effect } from '../Effect';
 export interface EffectsMixinConstructor
 {
     mask?: number | Container | null;
+    maskInverse?: boolean;
     filters?: Filter | Filter[];
 }
 export interface EffectsMixin extends Required<EffectsMixinConstructor>
 {
     _maskEffect?: MaskEffect;
+    _maskInverse?: boolean;
     _filterEffect?: FilterEffect,
 
     filterArea?: Rectangle,
@@ -26,6 +28,7 @@ export interface EffectsMixin extends Required<EffectsMixinConstructor>
 
 export const effectsMixin: Partial<Container> = {
     _maskEffect: null,
+    _maskInverse: false,
     _filterEffect: null,
 
     /**
@@ -107,6 +110,16 @@ export const effectsMixin: Partial<Container> = {
         this._maskEffect = MaskEffectManager.getMaskEffect(value);
 
         this.addEffect(this._maskEffect);
+    },
+
+    set maskInverse(value: boolean)
+    {
+        this._maskInverse = value;
+    },
+
+    get maskInverse(): boolean
+    {
+        return this._maskInverse;
     },
 
     /**

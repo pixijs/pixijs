@@ -8,7 +8,7 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render alpha mask',
-    // only: true,
+    only: true,
     create: async (scene: Container) =>
     {
         const rect = new Graphics()
@@ -25,6 +25,7 @@ export const scene: TestScene = {
         masky.position.set(128 / 2);
 
         rect.mask = masky;
+        rect.maskInverse = true;
 
         scene.addChild(rect);
         scene.addChild(masky);
