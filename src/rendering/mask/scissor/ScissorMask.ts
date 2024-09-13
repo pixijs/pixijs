@@ -20,7 +20,7 @@ export class ScissorMask implements Effect
         this.mask.measurable = false;
     }
 
-    public addBounds(bounds: Bounds, skipUpdateTransfpaorm?: boolean): void
+    public addBounds(bounds: Bounds, skipUpdateTransform?: boolean): void
     {
         addMaskBounds(this.mask, bounds, skipUpdateTransform);
     }

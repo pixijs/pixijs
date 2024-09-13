@@ -162,9 +162,12 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         }
         else if (instruction.action === 'pushMaskEnd')
         {
-            if (instruction.inverse) {
+            if (instruction.inverse)
+            {
                 renderer.stencil.setStencilMode(STENCIL_MODES.INVERSE_MASK_ACTIVE, maskStackIndex);
-            } else {
+            }
+            else
+            {
                 renderer.stencil.setStencilMode(STENCIL_MODES.MASK_ACTIVE, maskStackIndex);
             }
 
@@ -188,9 +191,12 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         }
         else if (instruction.action === 'popMaskEnd')
         {
-            if (instruction.inverse) {
+            if (instruction.inverse)
+            {
                 renderer.stencil.setStencilMode(STENCIL_MODES.INVERSE_MASK_ACTIVE, maskStackIndex);
-            } else {
+            }
+            else
+            {
                 renderer.stencil.setStencilMode(STENCIL_MODES.MASK_ACTIVE, maskStackIndex);
             }
 

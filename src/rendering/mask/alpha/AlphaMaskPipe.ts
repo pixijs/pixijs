@@ -164,6 +164,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
         if (instruction.action === 'pushMaskBegin')
         {
             const filterEffect = BigPool.get(AlphaMaskEffect);
+
             filterEffect.inverse = instruction.inverse;
 
             if (renderMask)
