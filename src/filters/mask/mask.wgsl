@@ -76,6 +76,7 @@ fn mainFragment(
 ) -> @location(0) vec4<f32> {
 
     var maskClamp = filterUniforms.uMaskClamp;
+    var uAlpha = filterUniforms.uAlpha;
 
     var clip = step(3.5,
       step(maskClamp.x, filterUv.x) +
@@ -85,14 +86,13 @@ fn mainFragment(
 
     var mask = textureSample(uMaskTexture, uSampler, filterUv);
     var source = textureSample(uTexture, uSampler, uv);
-    var npmAlpha = filterUniforms.uAlpha;
-    var alphaMul = 1.0 - npmAlpha * (1.0 - mask.a);
+    var alphaMul = 1.0 - uAlpha * (1.0 - mask.a);
 
-    var a: f32 = alphaMul * mask.r * npmAlpha;
+    var a: f32 = alphaMul * mask.r * uAlpha * clip;
 
     if (filterUniforms.uInverse == 1.0) {
         a = 1.0 - a;
     }
 
-    return vec4(source.rgb, source.a) * a;
+    return source * a;
 }
