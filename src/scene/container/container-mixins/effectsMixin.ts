@@ -117,6 +117,22 @@ export const effectsMixin: Partial<Container> = {
         this._maskInverse = value;
     },
 
+    /**
+     * Used to control whether the applied mask on a displayObject is inverted.
+     * When set to true, the mask will hide the content inside the masked area, instead of showing it.
+     * @example
+     * import { Graphics, Sprite } from 'pixi.js';
+     *
+     * const graphics = new Graphics();
+     * graphics.beginFill(0xFF3300);
+     * graphics.drawRect(50, 250, 100, 100);
+     * graphics.endFill();
+     *
+     * const sprite = new Sprite(texture);
+     * sprite.mask = graphics;
+     * sprite.maskInverse = true;
+     * @memberof scene.Container#
+     */
     get maskInverse(): boolean
     {
         return this._maskInverse;
