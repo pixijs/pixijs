@@ -114,6 +114,8 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
             maskedContainer
         } as AlphaMaskInstruction);
 
+        (mask as AlphaMask).inverse = maskedContainer.maskInverse;
+
         if ((mask as AlphaMask).renderMaskToTexture)
         {
             const maskContainer = (mask as AlphaMask).mask;

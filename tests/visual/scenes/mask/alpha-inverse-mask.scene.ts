@@ -1,5 +1,5 @@
+import { Assets } from '../../../../src/assets/Assets';
 import { Color } from '../../../../src/color/Color';
-import { Texture } from '../../../../src/rendering/renderers/shared/texture/Texture';
 import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
 import { Sprite } from '../../../../src/scene/sprite/Sprite';
 
@@ -8,25 +8,30 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render inverse alpha mask',
+    only: true,
     create: async (scene: Container) =>
     {
         const rect = new Graphics()
             .rect(0, 0, 100, 100)
             .fill(new Color('red'));
 
-        const masky = new Sprite(Texture.WHITE);
+        rect.width = 100;
+        rect.height = 100;
 
-        masky.width = 50;
-        masky.height = 50;
+        const texture = await Assets.load('blurredCircle.png');
+        const mask = new Sprite(texture);
 
-        masky.anchor.set(0.5);
+        mask.width = 50;
+        mask.height = 50;
 
-        masky.position.set(128 / 2);
+        mask.anchor.set(0.5);
 
-        rect.mask = masky;
+        mask.position.set(128 / 2);
+
+        rect.mask = mask;
         rect.maskInverse = true;
 
         scene.addChild(rect);
-        scene.addChild(masky);
+        scene.addChild(mask);
     },
 };
