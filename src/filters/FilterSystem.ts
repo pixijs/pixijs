@@ -194,6 +194,8 @@ export class FilterSystem implements System
         let blendRequired = false;
         // true if any filter in the list is enabled
         let enabled = false;
+        // false if any filter in the list has false
+        let clipToViewport = true;
 
         for (let i = 0; i < filters.length; i++)
         {
@@ -210,6 +212,11 @@ export class FilterSystem implements System
             else if (filter.antialias === 'inherit')
             {
                 antialias &&= colorTextureSource.antialias;
+            }
+
+            if (!filter.clipToViewport)
+            {
+                clipToViewport = false;
             }
 
             const isCompatible = !!(filter.compatibleRenderers & renderer.type);
@@ -243,16 +250,22 @@ export class FilterSystem implements System
             return;
         }
 
-        const viewPort = renderer.renderTarget.rootViewPort;
-
         // here we constrain the bounds to the viewport we will render too
         // this should not take into account the x, y offset of the viewport - as this is
         // handled by the viewport on the gpu.
         // need to factor in resolutions also..
+        // const viewPort = renderer.renderTarget.rootViewPort;
         bounds
-            .scale(resolution)
-            .fitBounds(0, viewPort.width, 0, viewPort.height)
-            .ceil()
+            .scale(resolution);
+
+        if (clipToViewport)
+        {
+            const viewPort = renderer.renderTarget.rootViewPort;
+
+            bounds.fitBounds(0, viewPort.width, 0, viewPort.height);
+        }
+
+        bounds.ceil()
             .scale(1 / resolution)
             .pad(padding | 0);
 
