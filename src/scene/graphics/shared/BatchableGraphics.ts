@@ -99,8 +99,5 @@ export class BatchableGraphics implements DefaultBatchableMeshElement
     public reset()
     {
         this.applyTransform = true;
-        // this.texture = null;
-        // this.geometryData = null;
-        // this.renderable = null;
     }
 }
