@@ -205,7 +205,6 @@ export class GraphicsPipe implements RenderPipe<Graphics>
 
         const batches = gpuContext.batches.map((batch) =>
         {
-            // TODO pool this!!
             const batchClone = BigPool.get(BatchableGraphics);
 
             batch.copyTo(batchClone);
