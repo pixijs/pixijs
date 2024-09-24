@@ -4,7 +4,7 @@ in vec2 vTextureCoord;
 out vec4 finalColor;
 
 uniform vec4 filterArea;
-uniform sampler2D uSampler;
+uniform sampler2D uTexture;
 uniform vec4 uInputSize;
 
 vec2 center = vec2(0.5);
@@ -44,5 +44,5 @@ void main(void)
     rotatedPoint += centerInPx;
     rotatedPoint = unmapCoord(rotatedPoint);
 
-    finalColor = texture(uSampler, rotatedPoint);
+    finalColor = texture(uTexture, rotatedPoint);
 }
