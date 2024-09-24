@@ -19,14 +19,14 @@ fn mapCoord(coord: vec2<f32> ) -> vec2<f32>
 {
   var mappedCoord: vec2<f32> = coord;
   mappedCoord *= gfu.uInputSize.xy;
-  mappedCoord += gfu.uOutputFrame.xy;
+  mappedCoord += gfu.uInputSize.zw;
   return mappedCoord;
 }
 
 fn unmapCoord(coord: vec2<f32> ) -> vec2<f32>
 {
   var mappedCoord: vec2<f32> = coord;
-  mappedCoord -= gfu.uOutputFrame.xy;
+  mappedCoord -= gfu.uInputSize.zw;
   mappedCoord /= gfu.uInputSize.xy;
   return mappedCoord;
 }
