@@ -12,7 +12,7 @@ export const scene: TestScene = {
     it: 'do not clip to viewport filter texture',
     create: async (scene: Container) =>
     {
-        const texture = await Assets.load('desert.jpg');
+        const texture = await Assets.load('chessboard.webp');
         const sprite = new Sprite({
             texture,
             width: 128,

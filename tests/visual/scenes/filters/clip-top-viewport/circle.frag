@@ -8,7 +8,7 @@ uniform sampler2D uSampler;
 uniform vec4 uInputSize;
 
 vec2 center = vec2(0.5);
-float angleToRotate = 180.0 * (3.14159265 / 180.0);
+float angleToRotate = 45.0 * (3.14159265 / 180.0);
 
 vec2 mapCoord( vec2 coord )
 {

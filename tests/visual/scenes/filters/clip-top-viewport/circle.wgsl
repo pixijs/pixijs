@@ -1,4 +1,3 @@
-
 struct GlobalFilterUniforms {
   uInputSize:vec4<f32>,
   uInputPixel:vec4<f32>,
@@ -13,20 +12,20 @@ struct GlobalFilterUniforms {
 @group(0) @binding(2) var uSampler: sampler;
 
 const center: vec2<f32> = vec2(0.5);
-const angleToRotate: f32 = 180.0 * (3.14159265 / 180.0);
+const angleToRotate: f32 = 45.0 * (3.14159265 / 180.0);
 
 fn mapCoord(coord: vec2<f32> ) -> vec2<f32>
 {
   var mappedCoord: vec2<f32> = coord;
   mappedCoord *= gfu.uInputSize.xy;
-  mappedCoord += gfu.uInputSize.zw;
+  mappedCoord += gfu.uOutputFrame.xy;
   return mappedCoord;
 }
 
 fn unmapCoord(coord: vec2<f32> ) -> vec2<f32>
 {
   var mappedCoord: vec2<f32> = coord;
-  mappedCoord -= gfu.uInputSize.zw;
+  mappedCoord -= gfu.uOutputFrame.xy;
   mappedCoord /= gfu.uInputSize.xy;
   return mappedCoord;
 }
