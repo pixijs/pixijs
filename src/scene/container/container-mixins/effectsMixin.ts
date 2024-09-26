@@ -18,7 +18,6 @@ export type Mask = number | Container | null;
 
 export interface MaskOptions
 {
-    mask: Mask;
     inverse: boolean;
 }
 
@@ -124,8 +123,7 @@ export const effectsMixin: Partial<Container> = {
     },
 
     /**
-     * Used to set mask and advance control mask options.
-     * When set to true, the mask will hide the content inside the masked area, instead of showing it.
+     * Used to set mask and control mask options.
      * @param options
      * @example
      * import { Graphics, Sprite } from 'pixi.js';
@@ -142,7 +140,7 @@ export const effectsMixin: Partial<Container> = {
      * });
      * @memberof scene.Container#
      */
-    setMask(options: Partial<MaskOptions>)
+    setMask(options: Partial<MaskOptions & { mask: Mask }>)
     {
         this._maskOptions = {
             ...this._maskOptions,
