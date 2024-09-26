@@ -109,12 +109,12 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
             renderPipeId: 'alphaMask',
             action: 'pushMaskBegin',
             mask,
-            inverse: maskedContainer.maskInverse,
+            inverse: maskedContainer._maskOptions.inverse,
             canBundle: false,
             maskedContainer
         } as AlphaMaskInstruction);
 
-        (mask as AlphaMask).inverse = maskedContainer.maskInverse;
+        (mask as AlphaMask).inverse = maskedContainer._maskOptions.inverse;
 
         if ((mask as AlphaMask).renderMaskToTexture)
         {
@@ -138,7 +138,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
             action: 'pushMaskEnd',
             mask,
             maskedContainer,
-            inverse: maskedContainer.maskInverse,
+            inverse: maskedContainer._maskOptions.inverse,
             canBundle: false,
         } as AlphaMaskInstruction);
     }
@@ -153,7 +153,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
             renderPipeId: 'alphaMask',
             action: 'popMaskEnd',
             mask,
-            inverse: _maskedContainer.maskInverse,
+            inverse: _maskedContainer._maskOptions.inverse,
             canBundle: false,
         } as AlphaMaskInstruction);
     }

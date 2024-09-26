@@ -20,7 +20,9 @@ export const scene: TestScene = {
         masky.height = 80;
 
         rect.mask = masky;
-        rect.maskInverse = true;
+        rect.setMask({
+            inverse: true,
+        });
 
         scene.addChild(rect);
         scene.addChild(masky);

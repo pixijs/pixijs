@@ -28,7 +28,9 @@ export const scene: TestScene = {
         mask.position.set(128 / 2);
 
         rect.mask = mask;
-        rect.maskInverse = true;
+        rect.setMask({
+            inverse: true,
+        });
 
         scene.addChild(rect);
         scene.addChild(mask);

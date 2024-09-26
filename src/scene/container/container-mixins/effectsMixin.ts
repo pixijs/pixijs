@@ -9,14 +9,23 @@ import type { Effect } from '../Effect';
 
 export interface EffectsMixinConstructor
 {
-    mask?: number | Container | null;
-    maskInverse?: boolean;
+    mask?: Mask;
+    setMask?: (options: Partial<MaskOptions>) => void;
     filters?: Filter | Filter[];
 }
+
+export type Mask = number | Container | null;
+
+export interface MaskOptions
+{
+    mask: Mask;
+    inverse: boolean;
+}
+
 export interface EffectsMixin extends Required<EffectsMixinConstructor>
 {
     _maskEffect?: MaskEffect;
-    _maskInverse?: boolean;
+    _maskOptions?: MaskOptions;
     _filterEffect?: FilterEffect,
 
     filterArea?: Rectangle,
@@ -28,7 +37,9 @@ export interface EffectsMixin extends Required<EffectsMixinConstructor>
 
 export const effectsMixin: Partial<Container> = {
     _maskEffect: null,
-    _maskInverse: false,
+    _maskOptions: {
+        inverse: false,
+    },
     _filterEffect: null,
 
     /**
@@ -90,7 +101,7 @@ export const effectsMixin: Partial<Container> = {
         this._updateIsSimple();
     },
 
-    set mask(value: number | Container | null)
+    set mask(value: Mask)
     {
         const effect = this._maskEffect;
 
@@ -112,14 +123,10 @@ export const effectsMixin: Partial<Container> = {
         this.addEffect(this._maskEffect);
     },
 
-    set maskInverse(value: boolean)
-    {
-        this._maskInverse = value;
-    },
-
     /**
-     * Used to control whether the applied mask on a displayObject is inverted.
+     * Used to set mask and advance control mask options.
      * When set to true, the mask will hide the content inside the masked area, instead of showing it.
+     * @param options
      * @example
      * import { Graphics, Sprite } from 'pixi.js';
      *
@@ -129,13 +136,23 @@ export const effectsMixin: Partial<Container> = {
      * graphics.endFill();
      *
      * const sprite = new Sprite(texture);
-     * sprite.mask = graphics;
-     * sprite.maskInverse = true;
+     * sprite.setMask({
+     *     mask: graphics,
+     *     inverse: true,
+     * });
      * @memberof scene.Container#
      */
-    get maskInverse(): boolean
+    setMask(options: Partial<MaskOptions>)
     {
-        return this._maskInverse;
+        this._maskOptions = {
+            ...this._maskOptions,
+            ...options,
+        };
+
+        if (options.mask)
+        {
+            this.mask = options.mask;
+        }
     },
 
     /**

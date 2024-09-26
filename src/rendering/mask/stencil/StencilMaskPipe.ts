@@ -62,7 +62,7 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
             renderPipeId: 'stencilMask',
             action: 'pushMaskBegin',
             mask,
-            inverse: _container.maskInverse,
+            inverse: _container._maskOptions.inverse,
             canBundle: false,
         } as StencilMaskInstruction);
 
@@ -96,7 +96,7 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
             renderPipeId: 'stencilMask',
             action: 'pushMaskEnd',
             mask,
-            inverse: _container.maskInverse,
+            inverse: _container._maskOptions.inverse,
             canBundle: false,
         } as StencilMaskInstruction);
 
@@ -122,7 +122,7 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         instructionSet.add({
             renderPipeId: 'stencilMask',
             action: 'popMaskBegin',
-            inverse: _container.maskInverse,
+            inverse: _container._maskOptions.inverse,
             canBundle: false,
         } as StencilMaskInstruction);
 
