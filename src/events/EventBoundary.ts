@@ -1420,6 +1420,7 @@ export class EventBoundary
 
         event.eventPhase = event.NONE;
         event.currentTarget = null;
+        event.defaultPrevented = false;
         event.path = null;
         event.target = null;
 
