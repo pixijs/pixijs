@@ -804,6 +804,7 @@ export class EventSystem implements System<EventSystemOptions>
         event.client.x = nativeEvent.clientX;
         event.client.y = nativeEvent.clientY;
         event.ctrlKey = nativeEvent.ctrlKey;
+        event.defaultPrevented = nativeEvent.defaultPrevented;
         event.metaKey = nativeEvent.metaKey;
         event.movement.x = nativeEvent.movementX;
         event.movement.y = nativeEvent.movementY;
