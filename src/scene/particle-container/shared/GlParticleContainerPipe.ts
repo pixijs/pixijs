@@ -2,7 +2,7 @@ import { ExtensionType } from '../../../extensions';
 import { GlParticleContainerAdaptor } from '../gl/GlParticleContainerAdaptor';
 import { ParticleContainerPipe } from './ParticleContainerPipe';
 
-import type { WebGPURenderer } from '../../../rendering/renderers/gpu/WebGPURenderer';
+import type { WebGLRenderer } from '../../../rendering/renderers/gl/WebGLRenderer';
 
 export class GlParticleContainerPipe extends ParticleContainerPipe
 {
@@ -14,7 +14,7 @@ export class GlParticleContainerPipe extends ParticleContainerPipe
         name: 'particle',
     } as const;
 
-    constructor(renderer: WebGPURenderer)
+    constructor(renderer: WebGLRenderer)
     {
         super(renderer, new GlParticleContainerAdaptor());
     }

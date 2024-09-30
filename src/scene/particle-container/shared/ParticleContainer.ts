@@ -28,7 +28,7 @@ const emptyBounds: BoundsData = {
  */
 export interface ParticleProperties
 {
-    vertices?: boolean;
+    vertex?: boolean;
     position?: boolean;
     rotation?: boolean;
     uvs?: boolean;
