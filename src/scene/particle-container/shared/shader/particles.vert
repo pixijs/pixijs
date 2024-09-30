@@ -19,8 +19,10 @@ vec2 roundPixels(vec2 position, vec2 targetSize)
 }
 
 void main(void){
-    float x = (aVertex.x) * cos(aRotation) - (aVertex.y) * sin(aRotation);
-    float y = (aVertex.x) * sin(aRotation) + (aVertex.y) * cos(aRotation);
+    float cosRotation = cos(aRotation);
+    float sinRotation = sin(aRotation);
+    float x = aVertex.x * cosRotation - aVertex.y * sinRotation;
+    float y = aVertex.x * sinRotation + aVertex.y * cosRotation;
 
     vec2 v = vec2(x, y);
     v = v + aPosition;
