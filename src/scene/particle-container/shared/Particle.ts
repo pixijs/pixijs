@@ -1,6 +1,6 @@
-import { Color } from '../../../color';
+import { Color } from '../../../color/Color';
 
-import type { ColorSource } from '../../../color';
+import type { ColorSource } from '../../../color/Color';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 
 /**
