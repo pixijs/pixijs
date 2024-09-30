@@ -1,4 +1,4 @@
-import { ExtensionType } from '../../../extensions';
+import { ExtensionType } from '../../../extensions/Extensions';
 import { GpuParticleContainerAdaptor } from '../gpu/GpuParticleContainerAdaptor';
 import { ParticleContainerPipe } from './ParticleContainerPipe';
 
