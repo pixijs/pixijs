@@ -2,7 +2,7 @@ import { Buffer } from '../../../rendering/renderers/shared/buffer/Buffer';
 import { BufferUsage } from '../../../rendering/renderers/shared/buffer/const';
 import { Geometry } from '../../../rendering/renderers/shared/geometry/Geometry';
 import { getAttributeInfoFromFormat } from '../../../rendering/renderers/shared/geometry/utils/getAttributeInfoFromFormat';
-import { ViewableBuffer } from '../../../utils';
+import { ViewableBuffer } from '../../../utils/data/ViewableBuffer';
 import { createIndicesForQuads } from './utils/createIndicesForQuads';
 import { generateParticleUpdateFunction } from './utils/generateParticleUpdateFunction';
 
