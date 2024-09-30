@@ -1,4 +1,4 @@
-import { warn } from '../../../utils';
+import { warn } from '../../../utils/logging/warn';
 import { ViewContainer } from '../../view/View';
 import { particleData } from './particleData';
 
