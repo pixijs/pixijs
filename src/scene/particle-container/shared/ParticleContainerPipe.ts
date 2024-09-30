@@ -1,4 +1,4 @@
-import { Matrix } from '../../../maths';
+import { Matrix } from '../../../maths/matrix/Matrix';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
 import { getAdjustedBlendModeBlend } from '../../../rendering/renderers/shared/state/getAdjustedBlendModeBlend';
 import { State } from '../../../rendering/renderers/shared/state/State';
