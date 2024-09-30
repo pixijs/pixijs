@@ -1,7 +1,7 @@
 import { Color } from '../../../color/Color';
+import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 
 import type { ColorSource } from '../../../color/Color';
-import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 
 /**
  * Represents a particle with properties for position, scale, rotation, color, and texture.
@@ -27,6 +27,12 @@ export interface IParticle
     color: number;
     texture: Texture;
 }
+
+export type ParticleOptions = Omit<Partial<IParticle>, 'color'> & {
+    texture: Texture
+    tint?: number;
+    alpha?: number;
+};
 
 /**
  * Represents a single particle within a particle container. This class implements the IParticle interface,
@@ -72,9 +78,27 @@ export class Particle implements IParticle
     private _alpha = 1;
     private _tint = 0xffffff;
 
-    constructor(texture: Texture)
+    constructor(options: Texture | ParticleOptions)
     {
-        this.texture = texture;
+        if (options instanceof Texture)
+        {
+            this.texture = options;
+        }
+        else
+        {
+            this.texture = options.texture ?? this.texture;
+            this.anchorX = options.anchorX ?? 0;
+            this.anchorY = options.anchorY ?? 0;
+            this.x = options.x ?? 0;
+            this.y = options.y ?? 0;
+            this.scaleX = options.scaleX ?? 1;
+            this.scaleY = options.scaleY ?? 1;
+            this.rotation = options.rotation ?? 0;
+            this._alpha = options.alpha ?? 1;
+            this._tint = options.tint ?? 0xffffff;
+
+            this._updateColor();
+        }
     }
 
     /** Gets or sets the alpha value of the particle. */
