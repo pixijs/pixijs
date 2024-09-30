@@ -287,7 +287,6 @@ class BitmapFontManagerClass
 
         if (font)
         {
-            Cache.remove(cacheKey);
             font.destroy();
         }
     }
