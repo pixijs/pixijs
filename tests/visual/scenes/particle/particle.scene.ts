@@ -1,0 +1,53 @@
+import { Assets } from '../../../../src/assets/Assets';
+import { Particle } from '../../../../src/scene/particle-container/shared/Particle';
+import { ParticleContainer } from '../../../../src/scene/particle-container/shared/ParticleContainer';
+
+import type { Container } from '../../../../src/scene/container/Container';
+import type { TestScene } from '../../types';
+
+export const scene: TestScene = {
+    it: 'should render particle container',
+    pixelMatch: 200,
+    only: true,
+    create: async (scene: Container) =>
+    {
+        const textures = await Assets.load([
+            `bunny.png`,
+            'profile-abel@2x.jpg',
+        ]);
+
+        const texture = textures[`bunny.png`];
+        const texture2 = textures[`profile-abel@2x.jpg`];
+
+        const particleContainer = new ParticleContainer();
+
+        for (let i = 0; i < 100; i++)
+        {
+            const particle = new Particle(texture);
+
+            particle.x = (i % 10) * 10;
+            particle.y = ((i / 10) | 0) * 10;
+
+            particle.rotation = i * 0.01;
+
+            particleContainer.addChild(particle);
+        }
+
+        scene.addChild(particleContainer);
+
+        const particleContainer2 = new ParticleContainer();
+
+        const particle = new Particle(texture2);
+
+        particle.anchorX = 0.5;
+        particle.anchorY = 0.5;
+        particle.x = 128 / 2;
+        particle.y = 128 / 2;
+        particle.scaleX = 0.6;
+        particle.scaleY = 0.6;
+
+        particleContainer2.addChild(particle);
+
+        scene.addChild(particleContainer2);
+    },
+};
