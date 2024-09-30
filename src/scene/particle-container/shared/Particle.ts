@@ -85,7 +85,7 @@ export class Particle implements IParticle
 
     set alpha(value: number)
     {
-        this._alpha = value;
+        this._alpha = Math.min(Math.max(value, 0), 1);
 
         this._updateColor();
     }
@@ -115,6 +115,6 @@ export class Particle implements IParticle
     private _updateColor()
     {
         // combine alpha and tint
-        this.color = (this._tint & 0xffffff) | (this._tint << 24);
+        this.color = this._tint + (((this._alpha * 255) | 0) << 24);
     }
 }

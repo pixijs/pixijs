@@ -156,11 +156,14 @@ export class Geometry extends EventEmitter<{
 
         this.buffers = [];
 
-        this.attributes = attributes as Record<string, Attribute> ?? {};
+        this.attributes = {};
 
-        for (const i in attributes)
+        if (attributes)
         {
-            this.addAttribute(i, attributes[i]);
+            for (const i in attributes)
+            {
+                this.addAttribute(i, attributes[i]);
+            }
         }
 
         this.instanceCount = options.instanceCount || 1;
