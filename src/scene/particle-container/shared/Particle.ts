@@ -1,7 +1,8 @@
 import { Color } from '../../../color/Color';
+import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
+import { assignWithIgnore } from '../../container/utils/assignWithIgnore';
 
 import type { ColorSource } from '../../../color/Color';
-import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 
 /**
  * Represents a particle with properties for position, scale, rotation, color, and texture.
@@ -14,6 +15,7 @@ import type { Texture } from '../../../rendering/renderers/shared/texture/Textur
  * @property {number} rotation - The rotation of the particle in radians.
  * @property {number} color - The color of the particle as a hexadecimal number.
  * @property {Texture} texture - The texture of the particle.
+ * @memberof scene
  */
 export interface IParticle
 {
@@ -29,6 +31,26 @@ export interface IParticle
 }
 
 /**
+ * Represents the options for creating a new particle.
+ * @property {number} x - The x-coordinate of the particle.
+ * @property {number} y - The y-coordinate of the particle.
+ * @property {number} scaleX - The scale factor in the x-axis.
+ * @property {number} scaleY - The scale factor in the y-axis.
+ * @property {number} anchorX - The x-coordinate of the anchor point.
+ * @property {number} anchorY - The y-coordinate of the anchor point.
+ * @property {number} rotation - The rotation of the particle in radians.
+ * @property {Texture} texture - The texture of the particle.
+ * @property {ColorSource} tint - The tint color of the particle as a hexadecimal number.
+ * @property {number} alpha - The alpha value of the particle.
+ * @memberof scene
+ */
+export type ParticleOptions = Omit<Partial<IParticle>, 'color'> & {
+    texture: Texture
+    tint?: ColorSource;
+    alpha?: number;
+};
+
+/**
  * Represents a single particle within a particle container. This class implements the IParticle interface,
  * providing properties and methods to manage the particle's position, scale, rotation, color, and texture.
  *
@@ -38,43 +60,68 @@ export interface IParticle
  * Here is an example of how to create a new particle:
  *
  * ```javascript
- * const particle = new Particle(texture);
- * particle.x = 100;
- * particle.y = 100;
- * particle.scaleX = 0.5;
- * particle.scaleY = 0.5;
- * particle.rotation = Math.PI / 2;
- * particle.color = 0xff0000;
+ * const particle = new Particle({
+ *   texture,
+ *   x: 100,
+ *   y: 100,
+ *   scaleX: 0.5,
+ *   scaleY: 0.5,
+ *   rotation: Math.PI / 2,
+ *   color: 0xff0000,
+ * });
  * ```
  * @implements {IParticle}
+ * @memberof scene
  */
 export class Particle implements IParticle
 {
+    /** Default options for constructing with options */
+    public static defaultOptions: Partial<ParticleOptions> = {
+        anchorX: 0,
+        anchorY: 0,
+        x: 0,
+        y: 0,
+        scaleX: 1,
+        scaleY: 1,
+        rotation: 0,
+        tint: 0xffffff,
+        alpha: 1,
+    };
     /** The x-coordinate of the anchor point. */
-    public anchorX = 0;
+    public anchorX: number;
     /** The y-coordinate of the anchor point. */
-    public anchorY = 0;
+    public anchorY: number;
     /** The x-coordinate of the particle. */
-    public x = 0;
+    public x: number;
     /** The y-coordinate of the particle. */
-    public y = 0;
+    public y: number;
     /** The scale factor in the x-axis. */
-    public scaleX = 1;
+    public scaleX: number;
     /** The scale factor in the y-axis. */
-    public scaleY = 1;
+    public scaleY: number;
     /** The rotation of the particle in radians. */
-    public rotation = 0;
+    public rotation: number;
     /** The color of the particle as a hexadecimal number. */
-    public color = 0xffffffff;
+    public color: number;
     /** The texture of the particle. */
     public texture: Texture;
 
-    private _alpha = 1;
-    private _tint = 0xffffff;
+    private _alpha: number;
+    private _tint: number;
 
-    constructor(texture: Texture)
+    constructor(options: Texture | ParticleOptions)
     {
-        this.texture = texture;
+        if (options instanceof Texture)
+        {
+            this.texture = options;
+            assignWithIgnore(this, Particle.defaultOptions, {});
+        }
+        else
+        {
+            const combined = { ...Particle.defaultOptions, ...options };
+
+            assignWithIgnore(this, combined, {});
+        }
     }
 
     /** Gets or sets the alpha value of the particle. */

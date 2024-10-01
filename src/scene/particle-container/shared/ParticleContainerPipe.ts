@@ -20,7 +20,7 @@ export interface ParticleContainerAdaptor
 
 /**
  * Renderer for Particles that is designer for speed over feature set.
- * @memberof PIXI
+ * @memberof scene
  */
 export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
 {

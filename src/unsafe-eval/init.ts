@@ -1,4 +1,3 @@
-import { generateParticleUpdatePolyfill } from '../bundle.unsafe-eval';
 import { GlUboSystem } from '../rendering/renderers/gl/GlUboSystem';
 import { GlShaderSystem } from '../rendering/renderers/gl/shader/GlShaderSystem';
 import { GlUniformGroupSystem } from '../rendering/renderers/gl/shader/GlUniformGroupSystem';
@@ -6,6 +5,7 @@ import { GpuUboSystem } from '../rendering/renderers/gpu/GpuUboSystem';
 import { UboSystem } from '../rendering/renderers/shared/shader/UboSystem';
 import { AbstractRenderer } from '../rendering/renderers/shared/system/AbstractRenderer';
 import { ParticleBuffer } from '../scene/particle-container/shared/ParticleBuffer';
+import { generateParticleUpdatePolyfill } from './particle/generateParticleUpdatePolyfill';
 import { generateShaderSyncPolyfill } from './shader/generateShaderSyncPolyfill';
 import {
     generateUboSyncPolyfillSTD40,

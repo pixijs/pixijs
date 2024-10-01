@@ -25,7 +25,7 @@
     "clean:uploads": "rimraf .pr_uploads .s3_uploads --glob",
     "prebuild": "npm run clean",
     "build": "run-s build:index build:pkg build:rollup build:tsc build:dts build:dts-bundle",
-    "build:rollup": "npx rollup -c",
+    "build:rollup": "npx rollup -c --failAfterWarnings",
     "build:dts-bundle": "dts-bundle-generator --config dts.config.js",
     "build:tsc": "tsc -p tsconfig.types.json",
     "build:index": "ts-node --transpile-only ./scripts/index/index.ts",

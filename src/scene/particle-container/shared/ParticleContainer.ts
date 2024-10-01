@@ -6,9 +6,9 @@ import type { Instruction } from '../../../rendering/renderers/shared/instructio
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { Bounds, BoundsData } from '../../container/bounds/Bounds';
-import type { ContainerOptions } from '../../container/Container';
+import type { Container, ContainerChild, ContainerOptions } from '../../container/Container';
 import type { DestroyOptions } from '../../container/destroyTypes';
-import type { IParticle, Particle } from './Particle';
+import type { IParticle } from './Particle';
 import type { ParticleRendererProperty } from './particleData';
 
 const emptyBounds: BoundsData = {
@@ -25,6 +25,7 @@ const emptyBounds: BoundsData = {
  * @property {boolean} [rotation] - Indicates if rotation is dynamic.
  * @property {boolean} [uvs] - Indicates if UVs are dynamic.
  * @property {boolean} [color] - Indicates if color is dynamic.
+ * @memberof scene
  */
 export interface ParticleProperties
 {
@@ -42,8 +43,9 @@ export interface ParticleProperties
  * @property {Shader} shader - The shader to use for rendering.
  * @property {boolean} roundPixels - Indicates if pixels should be rounded.
  * @property {Texture} texture - The texture to use for rendering - if not provided the texture of the first child is used.
+ * @memberof scene
  */
-export interface ParticleContainerOptions extends ContainerOptions
+export interface ParticleContainerOptions extends Omit<ContainerOptions, 'children'>
 {
     dynamicProperties?: Record<string, boolean>;
     shader?: Shader;
@@ -98,16 +100,16 @@ export interface ParticleContainerOptions extends ContainerOptions
  * for (let i = 0; i < 100; ++i)
  * {
  *     let particle = new Particle(texture);
- *     container.addChild(particle);
+ *     container.addParticle(particle);
  * }
- * @memberof PIXI
+ * @memberof scene
  */
 export class ParticleContainer extends ViewContainer implements Instruction
 {
     /**
      * Defines the default options for creating a ParticleContainer.
      * @property {Record<string, boolean>} dynamicProperties - Specifies which properties are dynamic.
-     * @property {boolean} roundPixels - Indicates if pixels should be rounded.
+     * @property {boolean} roundPixels - Indicates if pixels should be  rounded.
      */
     public static defaultOptions: ParticleContainerOptions = {
         dynamicProperties: {
@@ -117,7 +119,7 @@ export class ParticleContainer extends ViewContainer implements Instruction
             uvs: false, // Indicates if UV coordinates are dynamic.
             color: false, // Indicates if particle colors are dynamic.
         },
-        roundPixels: false // Indicates if pixels should be rounded for rendering.
+        roundPixels: false, // Indicates if pixels should be rounded for rendering.
     };
 
     /** The unique identifier for the render pipe of this ParticleContainer. */
@@ -144,6 +146,10 @@ export class ParticleContainer extends ViewContainer implements Instruction
     /** The shader used for rendering particles in this ParticleContainer. */
     public shader: Shader;
 
+    /**
+     * The texture used for rendering particles in this ParticleContainer.
+     * Defaults to the first childs texture if not set
+     */
     public texture: Texture;
 
     /**
@@ -153,20 +159,22 @@ export class ParticleContainer extends ViewContainer implements Instruction
     {
         options = {
             ...ParticleContainer.defaultOptions,
-            ...options, dynamicProperties: {
+            ...options,
+            dynamicProperties: {
                 ...ParticleContainer.defaultOptions.dynamicProperties,
-                ...options?.dynamicProperties
-            }
+                ...options?.dynamicProperties,
+            },
         };
 
         // split out
-        const { dynamicProperties, shader, roundPixels, ...rest } = options;
+        const { dynamicProperties, shader, roundPixels, texture, ...rest } = options;
 
         super({
             label: 'ParticleContainer',
-            ...rest
+            ...rest,
         });
 
+        this.texture = texture || null;
         this.shader = shader;
 
         this._properties = {};
@@ -182,15 +190,22 @@ export class ParticleContainer extends ViewContainer implements Instruction
             };
         }
 
-        this.allowChildren = false;
+        this.allowChildren = true;
         this.roundPixels = roundPixels ?? false;
     }
 
-    public override addChild<IParticle>(...children: IParticle[]): IParticle
+    /**
+     * Adds one or more particles to the container.
+     *
+     * Multiple items can be added like so: `myContainer.addParticle(thingOne, thingTwo, thingThree)`
+     * @param {...IParticle} children - The Particle(s) to add to the container
+     * @returns {IParticle} - The first child that was added.
+     */
+    public addParticle(...children: IParticle[]): IParticle
     {
         for (let i = 0; i < children.length; i++)
         {
-            this.particleChildren.push(children[i] as IParticle);
+            this.particleChildren.push(children[i]);
         }
 
         this.onViewUpdate();
@@ -198,8 +213,12 @@ export class ParticleContainer extends ViewContainer implements Instruction
         return children[0];
     }
 
-    // TODO implement!
-    public override removeChild<IParticle>(...children: IParticle[]): IParticle
+    /**
+     * Removes one or more particles from the container.
+     * @param {...IParticle} children - The Particle(s) to remove
+     * @returns {IParticle} The first child that was removed.
+     */
+    public removeParticle(...children: IParticle[]): IParticle
     {
         let didRemove = false;
 
@@ -244,22 +263,31 @@ export class ParticleContainer extends ViewContainer implements Instruction
 
         if (renderGroup)
         {
-            renderGroup.onChildViewUpdate(this);
+            renderGroup.onChildViewUpdate(this as unknown as Container);
         }
     }
 
+    /** The local bounds of the view. */
     public get bounds(): BoundsData
     {
-        // eslint-disable-next-line max-len
-        console.warn('ParticleContainer does not calculated bounds as it would slow things down, its up to you to set this via the boundsArea property');
+        warn(
+            // eslint-disable-next-line max-len
+            'ParticleContainer does not calculated bounds as it would slow things down, its up to you to set this via the boundsArea property',
+        );
 
         return emptyBounds;
     }
 
+    /**
+     * Adds the bounds of this object to the bounds object.
+     * @param _bounds - The output bounds object.
+     */
     public addBounds(_bounds: Bounds): void
     {
-        // eslint-disable-next-line max-len
-        console.warn('ParticleContainer does not calculated bounds as it would slow things down, its up to you to set this via the boundsArea property');
+        warn(
+            // eslint-disable-next-line max-len
+            'ParticleContainer does not calculated bounds as it would slow things down, its up to you to set this via the boundsArea property',
+        );
     }
 
     /**
@@ -272,11 +300,32 @@ export class ParticleContainer extends ViewContainer implements Instruction
     public override destroy(options: DestroyOptions = false)
     {
         super.destroy(options);
+
+        const destroyTexture = typeof options === 'boolean' ? options : options?.texture;
+
+        if (destroyTexture)
+        {
+            const destroyTextureSource = typeof options === 'boolean' ? options : options?.textureSource;
+
+            const texture = this.texture ?? this.particleChildren[0]?.texture;
+
+            if (texture)
+            {
+                texture.destroy(destroyTextureSource);
+            }
+        }
+
+        this.texture = null;
+        this.shader?.destroy();
     }
 
-    // additional children methods
-
-    public removeChildren(beginIndex?: number, endIndex?: number)
+    /**
+     * Removes all particles from this container that are within the begin and end indexes.
+     * @param beginIndex - The beginning position.
+     * @param endIndex - The ending position. Default value is size of the container.
+     * @returns - List of removed particles
+     */
+    public removeParticles(beginIndex?: number, endIndex?: number)
     {
         const children = this.particleChildren.splice(beginIndex, endIndex);
 
@@ -285,21 +334,41 @@ export class ParticleContainer extends ViewContainer implements Instruction
         return children;
     }
 
-    public removeChildAt(index: number)
+    /**
+     * Removes a particle from the specified index position.
+     * @param index - The index to get the particle from
+     * @returns The particle that was removed.
+     */
+    public removeParticleAt<U extends IParticle>(index: number): U
     {
         const child = this.particleChildren.splice(index, 1);
 
         this.onViewUpdate();
 
-        return child;
+        return child[0] as U;
     }
 
-    public getChildAt(index: number)
+    /**
+     * Returns the particle at the specified index
+     * @param index - The index to get the particle at
+     * @returns - The particle at the given index, if any.
+     */
+    public getParticleAt<U extends IParticle>(index: number): U
     {
-        return this.particleChildren[index];
+        if (index < 0 || index >= this.particleChildren.length)
+        {
+            throw new Error(`getChildAt: Index (${index}) does not exist.`);
+        }
+
+        return this.particleChildren[index] as U;
     }
 
-    public setChildIndex(child: Particle, index: number)
+    /**
+     * Changes the position of an existing particle in the container
+     * @param child - The particle instance for which you want to change the index number
+     * @param index - The resulting index number for the particle
+     */
+    public setParticleIndex(child: IParticle, index: number)
     {
         const _index = this.particleChildren.indexOf(child);
 
@@ -311,12 +380,24 @@ export class ParticleContainer extends ViewContainer implements Instruction
         return child;
     }
 
-    public getChildIndex(child: Particle)
+    /**
+     * Returns the index position of a particle instance
+     * @param child - The particle instance to identify
+     * @returns - The index position of the particle to identify
+     */
+    public getParticleIndex(child: IParticle)
     {
         return this.particleChildren.indexOf(child);
     }
 
-    public addChildAt(child: Particle, index: number)
+    /**
+     * Adds a particle to the container at a specified index. If the index is out of bounds an error will be thrown.
+     * If the particle is already in this container, it will be moved to the specified index.
+     * @param {Container} child - The particle to add.
+     * @param {number} index - The absolute index where the particle will be positioned at the end of the operation.
+     * @returns {Container} The particle that was added.
+     */
+    public addParticleAt<U extends IParticle>(child: U, index: number): U
     {
         this.particleChildren.splice(index, 0, child);
 
@@ -325,7 +406,12 @@ export class ParticleContainer extends ViewContainer implements Instruction
         return child;
     }
 
-    public swapChildren(child: Particle, child2: Particle)
+    /**
+     * Swaps the position of 2 particles within this container.
+     * @param child - First container to swap
+     * @param child2 - Second container to swap
+     */
+    public swapParticles(child: IParticle, child2: IParticle)
     {
         const index = this.particleChildren.indexOf(child);
         const index2 = this.particleChildren.indexOf(child2);
@@ -338,18 +424,148 @@ export class ParticleContainer extends ViewContainer implements Instruction
         return child;
     }
 
-    public reparentChild(child: Particle)
+    /**
+     * This method is not available in ParticleContainer.
+     *
+     * Calling this method will throw an error. Please use `ParticleContainer.addParticle()` instead.
+     * @param {...any} _children
+     * @throws {Error} Always throws an error as this method is not available.
+     */
+    public override addChild<U extends ContainerChild[]>(..._children: U): U[0]
     {
-        warn('ParticleContainer.reparentChild() is not available with the particle container');
-
-        return child;
+        throw new Error(
+            'ParticleContainer.addChild() is not available. Please use ParticleContainer.addParticle()',
+        );
+    }
+    /**
+     * This method is not available in ParticleContainer.
+     * Calling this method will throw an error. Please use `ParticleContainer.removeParticle()` instead.
+     * @param {...any} _children
+     * @throws {Error} Always throws an error as this method is not available.
+     */
+    public override removeChild<U extends ContainerChild[]>(..._children: U): U[0]
+    {
+        throw new Error(
+            'ParticleContainer.removeChild() is not available. Please use ParticleContainer.removeParticle()',
+        );
+    }
+    /**
+     * This method is not available in ParticleContainer.
+     *
+     * Calling this method will throw an error. Please use `ParticleContainer.removeParticles()` instead.
+     * @param {number} [_beginIndex]
+     * @param {number} [_endIndex]
+     * @throws {Error} Always throws an error as this method is not available.
+     */
+    public override removeChildren(_beginIndex?: number, _endIndex?: number): ContainerChild[]
+    {
+        throw new Error(
+            'ParticleContainer.removeChildren() is not available. Please use ParticleContainer.removeParticles()',
+        );
+    }
+    /**
+     * This method is not available in ParticleContainer.
+     *
+     * Calling this method will throw an error. Please use `ParticleContainer.removeParticleAt()` instead.
+     * @param {number} _index
+     * @throws {Error} Always throws an error as this method is not available.
+     */
+    public override removeChildAt<U extends ContainerChild>(_index: number): U
+    {
+        throw new Error(
+            'ParticleContainer.removeChildAt() is not available. Please use ParticleContainer.removeParticleAt()',
+        );
+    }
+    /**
+     * This method is not available in ParticleContainer.
+     *
+     * Calling this method will throw an error. Please use `ParticleContainer.getParticleAt()` instead.
+     * @param {number} _index
+     * @throws {Error} Always throws an error as this method is not available.
+     */
+    public override getChildAt<U extends ContainerChild>(_index: number): U
+    {
+        throw new Error(
+            'ParticleContainer.getChildAt() is not available. Please use ParticleContainer.getParticleAt()',
+        );
+    }
+    /**
+     * This method is not available in ParticleContainer.
+     *
+     * Calling this method will throw an error. Please use `ParticleContainer.setParticleIndex()` instead.
+     * @param {ContainerChild} _child
+     * @param {number} _index
+     * @throws {Error} Always throws an error as this method is not available.
+     */
+    public override setChildIndex(_child: ContainerChild, _index: number): void
+    {
+        throw new Error(
+            'ParticleContainer.setChildIndex() is not available. Please use ParticleContainer.setParticleIndex()',
+        );
+    }
+    /**
+     * This method is not available in ParticleContainer.
+     *
+     * Calling this method will throw an error. Please use `ParticleContainer.getParticleIndex()` instead.
+     * @param {ContainerChild} _child
+     * @throws {Error} Always throws an error as this method is not available.
+     */
+    public override getChildIndex(_child: ContainerChild): number
+    {
+        throw new Error(
+            'ParticleContainer.getChildIndex() is not available. Please use ParticleContainer.getParticleIndex()',
+        );
+    }
+    /**
+     * This method is not available in ParticleContainer.
+     *
+     * Calling this method will throw an error. Please use `ParticleContainer.addParticleAt()` instead.
+     * @param {ContainerChild} _child
+     * @param {number} _index
+     * @throws {Error} Always throws an error as this method is not available.
+     */
+    public override addChildAt<U extends ContainerChild>(_child: U, _index: number): U
+    {
+        throw new Error(
+            'ParticleContainer.addChildAt() is not available. Please use ParticleContainer.addParticleAt()',
+        );
+    }
+    /**
+     * This method is not available in ParticleContainer.
+     *
+     * Calling this method will throw an error. Please use `ParticleContainer.swapParticles()` instead.
+     * @param {ContainerChild} _child
+     * @param {ContainerChild} _child2
+     */
+    public override swapChildren<U extends ContainerChild>(_child: U, _child2: U): void
+    {
+        throw new Error(
+            'ParticleContainer.swapChildren() is not available. Please use ParticleContainer.swapParticles()',
+        );
     }
 
-    public reparentChildAt(child: Particle, _index: number)
+    /**
+     * This method is not available in ParticleContainer.
+     *
+     * Calling this method will throw an error.
+     * @param _child - The child to reparent
+     * @throws {Error} Always throws an error as this method is not available.
+     */
+    public override reparentChild(..._child: ContainerChild[]): any
     {
-        warn('ParticleContainer.reparentChildAt() is not available with the particle container');
+        throw new Error('ParticleContainer.reparentChild() is not available with the particle container');
+    }
 
-        return child;
+    /**
+     * This method is not available in ParticleContainer.
+     *
+     * Calling this method will throw an error.
+     * @param _child - The child to reparent
+     * @param _index - The index to reparent the child to
+     * @throws {Error} Always throws an error as this method is not available.
+     */
+    public override reparentChildAt(_child: ContainerChild, _index: number): any
+    {
+        throw new Error('ParticleContainer.reparentChildAt() is not available with the particle container');
     }
 }
-
