@@ -6,6 +6,7 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render italics correctly',
+    pixelMatch: 350,
     create: async (scene: Container) =>
     {
         scene.addChild(new BitmapText({

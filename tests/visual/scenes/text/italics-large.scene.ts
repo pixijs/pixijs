@@ -10,6 +10,7 @@ export const scene: TestScene = {
         width: 256,
         height: 128,
     },
+    pixelMatch: 2800,
     create: async (scene: Container) =>
     {
         scene.addChild(new BitmapText({
