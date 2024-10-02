@@ -349,48 +349,6 @@ export class ParticleContainer extends ViewContainer implements Instruction
     }
 
     /**
-     * Returns the particle at the specified index
-     * @param index - The index to get the particle at
-     * @returns - The particle at the given index, if any.
-     */
-    public getParticleAt<U extends IParticle>(index: number): U
-    {
-        if (index < 0 || index >= this.particleChildren.length)
-        {
-            throw new Error(`getChildAt: Index (${index}) does not exist.`);
-        }
-
-        return this.particleChildren[index] as U;
-    }
-
-    /**
-     * Changes the position of an existing particle in the container
-     * @param child - The particle instance for which you want to change the index number
-     * @param index - The resulting index number for the particle
-     */
-    public setParticleIndex(child: IParticle, index: number)
-    {
-        const _index = this.particleChildren.indexOf(child);
-
-        this.particleChildren.splice(_index, 1);
-        this.particleChildren.splice(index, 0, child);
-
-        this.onViewUpdate();
-
-        return child;
-    }
-
-    /**
-     * Returns the index position of a particle instance
-     * @param child - The particle instance to identify
-     * @returns - The index position of the particle to identify
-     */
-    public getParticleIndex(child: IParticle)
-    {
-        return this.particleChildren.indexOf(child);
-    }
-
-    /**
      * Adds a particle to the container at a specified index. If the index is out of bounds an error will be thrown.
      * If the particle is already in this container, it will be moved to the specified index.
      * @param {Container} child - The particle to add.
@@ -400,24 +358,6 @@ export class ParticleContainer extends ViewContainer implements Instruction
     public addParticleAt<U extends IParticle>(child: U, index: number): U
     {
         this.particleChildren.splice(index, 0, child);
-
-        this.onViewUpdate();
-
-        return child;
-    }
-
-    /**
-     * Swaps the position of 2 particles within this container.
-     * @param child - First container to swap
-     * @param child2 - Second container to swap
-     */
-    public swapParticles(child: IParticle, child2: IParticle)
-    {
-        const index = this.particleChildren.indexOf(child);
-        const index2 = this.particleChildren.indexOf(child2);
-
-        this.particleChildren[index] = child2;
-        this.particleChildren[index2] = child;
 
         this.onViewUpdate();
 
