@@ -1,3 +1,4 @@
+import { warn } from '../../utils/logging/warn';
 import { AbstractText, ensureOptions } from '../text/AbstractText';
 import { TextStyle } from '../text/TextStyle';
 import { BitmapFontManager } from './BitmapFontManager';
@@ -143,5 +144,22 @@ export class BitmapText extends AbstractText<TextStyle, TextStyleOptions> implem
         bounds.maxX = bounds.minX + width;
         bounds.minY = (-anchor._y * (height + offset));
         bounds.maxY = bounds.minY + height;
+    }
+
+    /**
+     * The resolution / device pixel ratio of the canvas.
+     * @default 1
+     */
+    override set resolution(_value: number)
+    {
+        warn(
+            // eslint-disable-next-line max-len
+            '[BitmapText] dynamically updating the resolution is not supported. Resolution should be managed by the BitmapFont.'
+        );
+    }
+
+    override get resolution(): number
+    {
+        return this._resolution;
     }
 }
