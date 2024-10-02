@@ -152,10 +152,12 @@ export class BitmapText extends AbstractText<TextStyle, TextStyleOptions> implem
      */
     override set resolution(_value: number)
     {
+        // #if _DEBUG
         warn(
             // eslint-disable-next-line max-len
             '[BitmapText] dynamically updating the resolution is not supported. Resolution should be managed by the BitmapFont.'
         );
+        // #endif
     }
 
     override get resolution(): number
