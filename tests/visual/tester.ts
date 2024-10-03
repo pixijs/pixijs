@@ -94,7 +94,7 @@ export async function renderTest(
     const stage = new Container();
     const scene = new Container();
 
-    const { width, height } = rendererOptions;
+    const { width, height } = { ...rendererOptions, ...options };
 
     stage.addChild(new Graphics().rect(0, 0, width, height)).fill(renderer.background.color);
     stage.addChild(scene);
