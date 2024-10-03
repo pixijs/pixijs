@@ -88,6 +88,7 @@ export class ParticleBuffer
 
         this.staticAttributeBuffer = new ViewableBuffer(size * 4 * staticVertexSize);
         this.dynamicAttributeBuffer = new ViewableBuffer(size * 4 * dynamicVertexSize);
+
         this.indexBuffer = createIndicesForQuads(size);
 
         // build geometry..
@@ -175,7 +176,7 @@ export class ParticleBuffer
         {
             uploadStatic = true;
 
-            this._size = Math.max(particles.length, this._size * 1.5);
+            this._size = Math.max(particles.length, (this._size * 1.5) | 0);
 
             this.staticAttributeBuffer = new ViewableBuffer(this._size * this._staticStride * 4 * 4);
             this.dynamicAttributeBuffer = new ViewableBuffer(this._size * this._dynamicStride * 4 * 4);
