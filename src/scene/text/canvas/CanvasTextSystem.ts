@@ -298,7 +298,6 @@ export class CanvasTextSystem implements System
             }
             else
             {
-                context.globalAlpha = style._fill?.alpha ?? 1;
                 context.fillStyle = style._fill ? getCanvasFillStyle(style._fill, context) : null;
 
                 if (style._stroke?.width)

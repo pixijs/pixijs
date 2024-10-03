@@ -330,7 +330,11 @@ export class TextStyle extends EventEmitter<{
      * @member {'normal'|'italic'|'oblique'}
      */
     get fontStyle(): TextStyleFontStyle { return this._fontStyle; }
-    set fontStyle(value: TextStyleFontStyle) { this._fontStyle = value; this.update(); }
+    set fontStyle(value: TextStyleFontStyle)
+    {
+        this._fontStyle = value.toLowerCase() as TextStyleFontStyle;
+        this.update();
+    }
     /**
      * The font variant.
      * @member {'normal'|'small-caps'}
