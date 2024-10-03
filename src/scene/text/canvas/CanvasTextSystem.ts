@@ -227,10 +227,6 @@ export class CanvasTextSystem implements System
 
         context.scale(resolution, resolution);
 
-        const padding = style.padding * 2;
-
-        context.clearRect(0, 0, measured.width + 4 + padding, measured.height + 4 + padding);
-
         // set stroke styles..
 
         if (style._stroke?.width)

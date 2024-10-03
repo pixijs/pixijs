@@ -429,9 +429,6 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         for (let i = 0; i < this.pages.length; i++)
         {
             const { canvasAndContext, texture } = this.pages[i];
-            const { canvas, context } = canvasAndContext;
-
-            context.clearRect(0, 0, canvas.width, canvas.height);
 
             CanvasPool.returnCanvasAndContext(canvasAndContext);
             texture.destroy(true);
