@@ -34,11 +34,11 @@ export const particleData = {
             }
             else
             {
-                w0 = (orig.width) * (1 - ax);
-                w1 = (orig.width) * -ay;
+                w1 = -ax * (orig.width);
+                w0 = w1 + orig.width;
 
-                h0 = orig.height * (1 - ay);
-                h1 = orig.height * -ay;
+                h1 = -ay * (orig.height);
+                h0 = h1 + orig.height;
             }
 
             f32v[offset] = w1 * sx;
