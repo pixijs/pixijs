@@ -29,7 +29,7 @@ export const scene: TestScene = {
 
             particle.rotation = i * 0.01;
 
-            particleContainer.addChild(particle);
+            particleContainer.addParticle(particle);
         }
 
         scene.addChild(particleContainer);
@@ -45,7 +45,7 @@ export const scene: TestScene = {
         particle.scaleX = 0.6;
         particle.scaleY = 0.6;
 
-        particleContainer2.addChild(particle);
+        particleContainer2.addParticle(particle);
 
         scene.addChild(particleContainer2);
     },

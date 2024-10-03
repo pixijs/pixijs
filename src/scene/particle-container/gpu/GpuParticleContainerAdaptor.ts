@@ -10,8 +10,7 @@ export class GpuParticleContainerAdaptor implements ParticleContainerAdaptor
 
         const shader = container.shader || particleContainerPop.defaultShader;
 
-        shader.groups[0] = (renderer as WebGPURenderer)
-            .renderPipes.uniformBatch.getUniformBindGroup(particleContainerPop.localUniforms, true);
+        shader.groups[0] = renderer.renderPipes.uniformBatch.getUniformBindGroup(particleContainerPop.localUniforms, true);
 
         shader.groups[1] = renderer.texture.getTextureBindGroup(container.texture);
 

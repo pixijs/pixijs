@@ -1,5 +1,6 @@
 import { Color } from '../../../color/Color';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
+import { assignWithIgnore } from '../../container/utils/assignWithIgnore';
 
 import type { ColorSource } from '../../../color/Color';
 
@@ -14,6 +15,7 @@ import type { ColorSource } from '../../../color/Color';
  * @property {number} rotation - The rotation of the particle in radians.
  * @property {number} color - The color of the particle as a hexadecimal number.
  * @property {Texture} texture - The texture of the particle.
+ * @memberof scene
  */
 export interface IParticle
 {
@@ -28,9 +30,23 @@ export interface IParticle
     texture: Texture;
 }
 
+/**
+ * Represents the options for creating a new particle.
+ * @property {number} x - The x-coordinate of the particle.
+ * @property {number} y - The y-coordinate of the particle.
+ * @property {number} scaleX - The scale factor in the x-axis.
+ * @property {number} scaleY - The scale factor in the y-axis.
+ * @property {number} anchorX - The x-coordinate of the anchor point.
+ * @property {number} anchorY - The y-coordinate of the anchor point.
+ * @property {number} rotation - The rotation of the particle in radians.
+ * @property {Texture} texture - The texture of the particle.
+ * @property {ColorSource} tint - The tint color of the particle as a hexadecimal number.
+ * @property {number} alpha - The alpha value of the particle.
+ * @memberof scene
+ */
 export type ParticleOptions = Omit<Partial<IParticle>, 'color'> & {
     texture: Texture
-    tint?: number;
+    tint?: ColorSource;
     alpha?: number;
 };
 
@@ -44,60 +60,67 @@ export type ParticleOptions = Omit<Partial<IParticle>, 'color'> & {
  * Here is an example of how to create a new particle:
  *
  * ```javascript
- * const particle = new Particle(texture);
- * particle.x = 100;
- * particle.y = 100;
- * particle.scaleX = 0.5;
- * particle.scaleY = 0.5;
- * particle.rotation = Math.PI / 2;
- * particle.color = 0xff0000;
+ * const particle = new Particle({
+ *   texture,
+ *   x: 100,
+ *   y: 100,
+ *   scaleX: 0.5,
+ *   scaleY: 0.5,
+ *   rotation: Math.PI / 2,
+ *   color: 0xff0000,
+ * });
  * ```
  * @implements {IParticle}
+ * @memberof scene
  */
 export class Particle implements IParticle
 {
+    /** Default options for constructing with options */
+    public static defaultOptions: Partial<ParticleOptions> = {
+        anchorX: 0,
+        anchorY: 0,
+        x: 0,
+        y: 0,
+        scaleX: 1,
+        scaleY: 1,
+        rotation: 0,
+        tint: 0xffffff,
+        alpha: 1,
+    };
     /** The x-coordinate of the anchor point. */
-    public anchorX = 0;
+    public anchorX: number;
     /** The y-coordinate of the anchor point. */
-    public anchorY = 0;
+    public anchorY: number;
     /** The x-coordinate of the particle. */
-    public x = 0;
+    public x: number;
     /** The y-coordinate of the particle. */
-    public y = 0;
+    public y: number;
     /** The scale factor in the x-axis. */
-    public scaleX = 1;
+    public scaleX: number;
     /** The scale factor in the y-axis. */
-    public scaleY = 1;
+    public scaleY: number;
     /** The rotation of the particle in radians. */
-    public rotation = 0;
+    public rotation: number;
     /** The color of the particle as a hexadecimal number. */
-    public color = 0xffffffff;
+    public color: number;
     /** The texture of the particle. */
     public texture: Texture;
 
-    private _alpha = 1;
-    private _tint = 0xffffff;
+    private _alpha: number;
+    private _tint: number;
 
     constructor(options: Texture | ParticleOptions)
     {
         if (options instanceof Texture)
         {
             this.texture = options;
+            assignWithIgnore(this, Particle.defaultOptions, {});
         }
         else
         {
-            this.texture = options.texture ?? this.texture;
-            this.anchorX = options.anchorX ?? 0;
-            this.anchorY = options.anchorY ?? 0;
-            this.x = options.x ?? 0;
-            this.y = options.y ?? 0;
-            this.scaleX = options.scaleX ?? 1;
-            this.scaleY = options.scaleY ?? 1;
-            this.rotation = options.rotation ?? 0;
-            this._alpha = options.alpha ?? 1;
-            this._tint = options.tint ?? 0xffffff;
+            const combined = { ...Particle.defaultOptions, ...options };
 
-            this._updateColor();
+            assignWithIgnore(this, combined, {});
         }
     }
 
