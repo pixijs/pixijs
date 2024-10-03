@@ -101,12 +101,16 @@ export async function renderTest(
 
     await createFunction(scene, renderer);
 
+    const testId = `${id}-${rendererType}`;
+
     const canvas = renderer.extract.canvas({
         target: stage,
         frame: new Rectangle(0, 0, width, height)
     }) as HTMLCanvasElement;
 
-    const imageLocation = `./tests/visual/snapshots/${id}-${rendererType}.png`;
+    canvas.id = testId;
+
+    const imageLocation = `./tests/visual/snapshots/${testId}.png`;
 
     if (!existsSync(imageLocation))
     {

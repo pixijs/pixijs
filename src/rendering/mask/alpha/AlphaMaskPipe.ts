@@ -32,6 +32,7 @@ class AlphaMaskEffect extends FilterEffect implements PoolItem
 
         this.filters = [new MaskFilter({
             sprite: new Sprite(Texture.EMPTY),
+            inverse: false,
             resolution: 'inherit',
             antialias: 'inherit'
         })];
@@ -47,6 +48,16 @@ class AlphaMaskEffect extends FilterEffect implements PoolItem
         (this.filters[0] as MaskFilter).sprite = value;
     }
 
+    get inverse(): boolean
+    {
+        return (this.filters[0] as MaskFilter).inverse;
+    }
+
+    set inverse(value: boolean)
+    {
+        (this.filters[0] as MaskFilter).inverse = value;
+    }
+
     public init: () => void;
 }
 
@@ -55,6 +66,7 @@ export interface AlphaMaskInstruction extends Instruction
     renderPipeId: 'alphaMask',
     action: MaskMode,
     mask: AlphaMask,
+    inverse: boolean;
     maskedContainer: Container,
     renderMask: boolean,
 }
@@ -97,9 +109,12 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
             renderPipeId: 'alphaMask',
             action: 'pushMaskBegin',
             mask,
+            inverse: maskedContainer._maskOptions.inverse,
             canBundle: false,
             maskedContainer
         } as AlphaMaskInstruction);
+
+        (mask as AlphaMask).inverse = maskedContainer._maskOptions.inverse;
 
         if ((mask as AlphaMask).renderMaskToTexture)
         {
@@ -123,6 +138,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
             action: 'pushMaskEnd',
             mask,
             maskedContainer,
+            inverse: maskedContainer._maskOptions.inverse,
             canBundle: false,
         } as AlphaMaskInstruction);
     }
@@ -137,6 +153,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
             renderPipeId: 'alphaMask',
             action: 'popMaskEnd',
             mask,
+            inverse: _maskedContainer._maskOptions.inverse,
             canBundle: false,
         } as AlphaMaskInstruction);
     }
@@ -149,6 +166,8 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
         if (instruction.action === 'pushMaskBegin')
         {
             const filterEffect = BigPool.get(AlphaMaskEffect);
+
+            filterEffect.inverse = instruction.inverse;
 
             if (renderMask)
             {
