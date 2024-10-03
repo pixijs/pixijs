@@ -43,6 +43,7 @@ export interface ParticleProperties
  * @property {Shader} shader - The shader to use for rendering.
  * @property {boolean} roundPixels - Indicates if pixels should be rounded.
  * @property {Texture} texture - The texture to use for rendering - if not provided the texture of the first child is used.
+ * @property {IParticle[]} particles - An array of particles to add to the container.
  * @memberof scene
  */
 export interface ParticleContainerOptions extends Omit<ContainerOptions, 'children'>
@@ -51,7 +52,7 @@ export interface ParticleContainerOptions extends Omit<ContainerOptions, 'childr
     shader?: Shader;
     roundPixels?: boolean;
     texture?: Texture;
-    // TODO bounds //
+    particles?: IParticle[];
 }
 
 /**
@@ -141,7 +142,7 @@ export class ParticleContainer extends ViewContainer implements Instruction
      * it can be modified directly, after which the 'update' method must be called.
      * to ensure the container is rendered correctly.
      */
-    public particleChildren: IParticle[] = [];
+    public particleChildren: IParticle[];
 
     /** The shader used for rendering particles in this ParticleContainer. */
     public shader: Shader;
@@ -167,7 +168,7 @@ export class ParticleContainer extends ViewContainer implements Instruction
         };
 
         // split out
-        const { dynamicProperties, shader, roundPixels, texture, ...rest } = options;
+        const { dynamicProperties, shader, roundPixels, texture, particles, ...rest } = options;
 
         super({
             label: 'ParticleContainer',
@@ -192,6 +193,8 @@ export class ParticleContainer extends ViewContainer implements Instruction
 
         this.allowChildren = true;
         this.roundPixels = roundPixels ?? false;
+
+        this.particleChildren = particles ?? [];
     }
 
     /**
