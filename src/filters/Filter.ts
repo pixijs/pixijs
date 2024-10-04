@@ -96,6 +96,12 @@ export interface FilterOptions
      * (default false)
      */
     blendRequired?: boolean;
+    /**
+     * If this is set to true, the filter system will clip filter texture into viewport
+     * This is useful for filters that applied to whole texture.
+     * (default true)
+     */
+    clipToViewport?: boolean;
 }
 
 /** Filter options mixed with shader resources. A filter needs a shader and some resources to work. */
@@ -151,6 +157,7 @@ export class Filter extends Shader
         padding: 0,
         antialias: 'off',
         blendRequired: false,
+        clipToViewport: true,
     };
 
     /**
@@ -191,6 +198,12 @@ export class Filter extends Shader
     public blendRequired: boolean;
 
     /**
+     * Clip texture into viewport or not
+     * @default true
+     */
+    public clipToViewport: boolean;
+
+    /**
      * @param options - The optional parameters of this filter.
      */
     constructor(options: FilterWithShader)
@@ -214,6 +227,7 @@ export class Filter extends Shader
 
         this.resolution = options.resolution;
         this.blendRequired = options.blendRequired;
+        this.clipToViewport = options.clipToViewport;
 
         this.addResource('uTexture', 0, 1);
     }

@@ -64,23 +64,6 @@ export class CanvasTextPipe implements RenderPipe<Text>
 
         if (gpuText.currentKey !== newKey)
         {
-            const { width, height } = this._renderer.canvasText.getTextureSize(
-                text.text,
-                text.resolution,
-                text._style,
-            );
-
-            if (
-                // is only being used by this text:
-                this._renderer.canvasText.getReferenceCount(gpuText.currentKey) === 1
-                // check the size of the text is the same po2
-                && width === gpuText.texture._source.width
-                && height === gpuText.texture._source.height
-            )
-            {
-                return false;
-            }
-
             return true;
         }
 

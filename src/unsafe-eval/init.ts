@@ -4,6 +4,8 @@ import { GlUniformGroupSystem } from '../rendering/renderers/gl/shader/GlUniform
 import { GpuUboSystem } from '../rendering/renderers/gpu/GpuUboSystem';
 import { UboSystem } from '../rendering/renderers/shared/shader/UboSystem';
 import { AbstractRenderer } from '../rendering/renderers/shared/system/AbstractRenderer';
+import { ParticleBuffer } from '../scene/particle-container/shared/ParticleBuffer';
+import { generateParticleUpdatePolyfill } from './particle/generateParticleUpdatePolyfill';
 import { generateShaderSyncPolyfill } from './shader/generateShaderSyncPolyfill';
 import {
     generateUboSyncPolyfillSTD40,
@@ -47,6 +49,12 @@ function selfInstall()
     Object.assign(GlShaderSystem.prototype, {
         // use polyfill which avoids eval method
         _generateShaderSync: generateShaderSyncPolyfill,
+    });
+
+    Object.assign(ParticleBuffer.prototype, {
+
+        // use polyfill which avoids eval method
+        generateParticleUpdate: generateParticleUpdatePolyfill,
     });
 }
 

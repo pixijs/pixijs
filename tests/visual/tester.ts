@@ -94,19 +94,23 @@ export async function renderTest(
     const stage = new Container();
     const scene = new Container();
 
-    const { width, height } = rendererOptions;
+    const { width, height } = { ...rendererOptions, ...options };
 
     stage.addChild(new Graphics().rect(0, 0, width, height)).fill(renderer.background.color);
     stage.addChild(scene);
 
     await createFunction(scene, renderer);
 
+    const testId = `${id}-${rendererType}`;
+
     const canvas = renderer.extract.canvas({
         target: stage,
         frame: new Rectangle(0, 0, width, height)
     }) as HTMLCanvasElement;
 
-    const imageLocation = `./tests/visual/snapshots/${id}-${rendererType}.png`;
+    canvas.id = testId;
+
+    const imageLocation = `./tests/visual/snapshots/${testId}.png`;
 
     if (!existsSync(imageLocation))
     {

@@ -189,7 +189,8 @@
     "./lib/scene/mesh/init.*",
     "./lib/prepare/init.*",
     "./lib/unsafe-eval/init.*",
-    "./lib/scene/sprite-nine-slice/init.*"
+    "./lib/scene/sprite-nine-slice/init.*",
+    "./lib/scene/particle-container/init.*"
   ],
   "exports": {
     ".": {
@@ -368,6 +369,14 @@
       },
       "require": {
         "default": "./lib/scene/sprite-nine-slice/init.js"
+      }
+    },
+    "./particle-container": {
+      "import": {
+        "default": "./lib/scene/particle-container/init.mjs"
+      },
+      "require": {
+        "default": "./lib/scene/particle-container/init.js"
       }
     }
   }

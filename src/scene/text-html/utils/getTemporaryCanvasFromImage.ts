@@ -24,7 +24,6 @@ export function getTemporaryCanvasFromImage(image: HTMLImageElement, resolution:
     // Clear the context of the canvas, and draw the image onto it.
     const { context } = canvasAndContext;
 
-    context.clearRect(0, 0, image.width, image.height);
     context.drawImage(image, 0, 0);
 
     // Return the canvas and context to the CanvasPool.

@@ -197,6 +197,11 @@ export class GlobalUniformSystem implements System
         return this._currentGlobalUniformData.bindGroup;
     }
 
+    get globalUniformData()
+    {
+        return this._currentGlobalUniformData;
+    }
+
     get uniformGroup()
     {
         return this._currentGlobalUniformData.bindGroup.resources[0] as UniformGroup;

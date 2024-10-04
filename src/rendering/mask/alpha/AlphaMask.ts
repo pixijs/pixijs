@@ -16,6 +16,7 @@ export class AlphaMask implements Effect, PoolItem
 
     public priority = 0;
     public mask: Container;
+    public inverse: boolean = false;
     public pipe = 'alphaMask';
     public renderMaskToTexture: boolean;
 
@@ -49,7 +50,10 @@ export class AlphaMask implements Effect, PoolItem
 
     public addBounds(bounds: Bounds, skipUpdateTransform?: boolean): void
     {
-        addMaskBounds(this.mask, bounds, skipUpdateTransform);
+        if (!this.inverse)
+        {
+            addMaskBounds(this.mask, bounds, skipUpdateTransform);
+        }
     }
 
     public addLocalBounds(bounds: Bounds, localRoot: Container): void

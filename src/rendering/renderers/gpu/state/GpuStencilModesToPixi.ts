@@ -5,12 +5,12 @@ export interface StencilState
     stencilWriteMask?: number
     stencilReadMask?: number;
     stencilFront?: {
-        compare: 'always' | 'equal';
-        passOp: 'increment-clamp' | 'decrement-clamp' | 'keep';
+        compare: 'always' | 'equal' | 'not-equal';
+        passOp: 'increment-clamp' | 'decrement-clamp' | 'keep' | 'replace';
     },
     stencilBack?: {
-        compare: 'always' | 'equal';
-        passOp: 'increment-clamp' | 'decrement-clamp' | 'keep';
+        compare: 'always' | 'equal' | 'not-equal';
+        passOp: 'increment-clamp' | 'decrement-clamp' | 'keep' | 'replace';
     }
 }
 
@@ -54,5 +54,17 @@ GpuStencilModesToPixi[STENCIL_MODES.MASK_ACTIVE] = {
     stencilBack: {
         compare: 'equal',
         passOp: 'keep',
+    },
+};
+
+GpuStencilModesToPixi[STENCIL_MODES.INVERSE_MASK_ACTIVE] = {
+    stencilWriteMask: 0,
+    stencilFront: {
+        compare: 'not-equal',
+        passOp: 'replace',
+    },
+    stencilBack: {
+        compare: 'not-equal',
+        passOp: 'replace',
     },
 };

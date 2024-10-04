@@ -224,12 +224,8 @@ export class CanvasTextSystem implements System
         const height = canvas.height;
 
         context.resetTransform();
-
         context.scale(resolution, resolution);
-
-        const padding = style.padding * 2;
-
-        context.clearRect(0, 0, measured.width + 4 + padding, measured.height + 4 + padding);
+        context.textBaseline = style.textBaseline;
 
         // set stroke styles..
 
@@ -298,7 +294,6 @@ export class CanvasTextSystem implements System
             }
             else
             {
-                context.globalAlpha = style._fill?.alpha ?? 1;
                 context.fillStyle = style._fill ? getCanvasFillStyle(style._fill, context) : null;
 
                 if (style._stroke?.width)

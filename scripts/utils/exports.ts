@@ -24,6 +24,7 @@ const subImports = [
     ['./prepare', './lib/prepare'],
     ['./unsafe-eval', './lib/unsafe-eval'],
     ['./sprite-nine-slice', './lib/scene/sprite-nine-slice'],
+    ['./particle-container', './lib/scene/particle-container'],
 ];
 
 interface ExportField

@@ -10,5 +10,6 @@
 /// <reference path="../src/scene/text/TextMixins.d.ts" />
 /// <reference path="../src/scene/text-bitmap/TextBitmapMixins.d.ts" />
 /// <reference path="../src/scene/text-html/TextHTMLMixins.d.ts" />
+/// <reference path="../src/scene/particle-container/ParticleMixins.d.ts" />
 /// <reference path="../src/math-extras/MathExtraMixins.d.ts" />
 /// <reference path="../src/filters/FilterMixins.d.ts" />
