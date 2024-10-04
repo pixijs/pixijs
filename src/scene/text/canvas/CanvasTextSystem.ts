@@ -224,8 +224,8 @@ export class CanvasTextSystem implements System
         const height = canvas.height;
 
         context.resetTransform();
-
         context.scale(resolution, resolution);
+        context.textBaseline = style.textBaseline;
 
         // set stroke styles..
 
