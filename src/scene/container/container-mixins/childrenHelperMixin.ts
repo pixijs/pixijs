@@ -213,6 +213,7 @@ export const childrenHelperMixin: Partial<Container> = {
      * Swaps the position of 2 Containers within this container.
      * @param child - First container to swap
      * @param child2 - Second container to swap
+     * @memberof scene.Container#
      */
     swapChildren<U extends ContainerChild>(child: U, child2: U): void
     {

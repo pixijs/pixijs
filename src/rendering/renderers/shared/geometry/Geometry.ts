@@ -20,9 +20,9 @@ export interface Attribute
     buffer: Buffer;
     /** the format of the attribute */
     format?: VertexFormat;
-    /** the stride of the data in the buffer*/
+    /** the stride of the data in the buffer - in bytes*/
     stride?: number;
-    /** the offset of the attribute from the buffer, defaults to 0 */
+    /** the offset of the attribute from the buffer, defaults to 0 - in bytes*/
     offset?: number;
     /** is this an instanced buffer? (defaults to false) */
     instance?: boolean;
@@ -156,14 +156,14 @@ export class Geometry extends EventEmitter<{
 
         this.buffers = [];
 
+        this.attributes = {};
+
         if (attributes)
         {
-            this.attributes = attributes as Record<string, Attribute>;
-        }
-
-        for (const i in attributes)
-        {
-            this.addAttribute(i, attributes[i]);
+            for (const i in attributes)
+            {
+                this.addAttribute(i, attributes[i]);
+            }
         }
 
         this.instanceCount = options.instanceCount || 1;
