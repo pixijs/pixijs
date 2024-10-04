@@ -331,21 +331,31 @@ export class CanvasTextMetrics
             }
         }
 
-        let width = context.measureText(text).width;
+        const metrics = context.measureText(text);
+        let metricWidth = metrics.width;
+        const actualBoundingBoxLeft = -metrics.actualBoundingBoxLeft;
+        const actualBoundingBoxRight = metrics.actualBoundingBoxRight;
+        let boundsWidth = actualBoundingBoxRight - actualBoundingBoxLeft;
 
-        if (width > 0)
+        if (metricWidth > 0)
         {
             if (useExperimentalLetterSpacing)
             {
-                width -= letterSpacing;
+                metricWidth -= letterSpacing;
+                boundsWidth -= letterSpacing;
             }
             else
             {
-                width += (CanvasTextMetrics.graphemeSegmenter(text).length - 1) * letterSpacing;
+                const val = (CanvasTextMetrics.graphemeSegmenter(text).length - 1) * letterSpacing;
+
+                metricWidth += val;
+                boundsWidth += val;
             }
         }
 
-        return width;
+        // NOTE: this is a bit of a hack as metrics.width and the bounding box width do not measure the same thing
+        // We can't seem to exclusively use one or the other, so are taking the largest of the two
+        return Math.max(metricWidth, boundsWidth);
     }
 
     /**
