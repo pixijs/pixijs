@@ -56,6 +56,10 @@ export class GpuTextureSystem implements System, CanvasGenerator
     constructor(renderer: WebGPURenderer)
     {
         this._renderer = renderer;
+        renderer.renderableGC.addManagedHash(this, '_gpuSources');
+        renderer.renderableGC.addManagedHash(this, '_gpuSamplers');
+        renderer.renderableGC.addManagedHash(this, '_bindGroupHash');
+        renderer.renderableGC.addManagedHash(this, '_textureViewHash');
     }
 
     protected contextChange(gpu: GPU): void

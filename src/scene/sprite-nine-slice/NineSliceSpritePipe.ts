@@ -29,6 +29,7 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        this._renderer.renderableGC.addManagedHash(this, '_gpuSpriteHash');
     }
 
     public addRenderable(sprite: NineSliceSprite, instructionSet: InstructionSet)

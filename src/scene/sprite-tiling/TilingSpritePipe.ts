@@ -48,6 +48,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        this._renderer.renderableGC.addManagedHash(this, '_tilingSpriteDataHash');
     }
 
     public validateRenderable(renderable: TilingSprite): boolean

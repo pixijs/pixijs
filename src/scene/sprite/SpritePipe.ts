@@ -28,6 +28,7 @@ export class SpritePipe implements RenderPipe<Sprite>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        this._renderer.renderableGC.addManagedHash(this, '_gpuSpriteHash');
     }
 
     public addRenderable(sprite: Sprite, instructionSet: InstructionSet)
