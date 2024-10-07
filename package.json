@@ -123,6 +123,9 @@
     "ts-node": "^9.0.0",
     "typescript": "^5.0.4"
   },
+  "overrides": {
+    "electron": "^32.1.0"
+  },
   "bundles": [
     {
       "src": "src/bundle.browser.ts",
