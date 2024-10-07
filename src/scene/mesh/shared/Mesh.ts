@@ -11,7 +11,6 @@ import type { Topology } from '../../../rendering/renderers/shared/geometry/cons
 import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import type { View } from '../../../rendering/renderers/shared/view/View';
-import type { Bounds } from '../../container/bounds/Bounds';
 import type { ContainerOptions } from '../../container/Container';
 import type { DestroyOptions } from '../../container/destroyTypes';
 
@@ -245,12 +244,12 @@ export class Mesh<
     }
 
     /**
-     * Adds the bounds of this object to the bounds object.
-     * @param bounds - The output bounds object.
+     * Update local bounds of the mesh.
+     * @private
      */
-    public addBounds(bounds: Bounds)
+    public updateBounds()
     {
-        bounds.addBounds(this.geometry.bounds);
+        this._bounds = this._geometry.bounds;
     }
 
     /**

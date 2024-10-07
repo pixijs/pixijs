@@ -35,7 +35,7 @@ export class Text
     extends AbstractText<TextStyle, TextStyleOptions>
     implements View
 {
-    public readonly renderPipeId: string = 'text';
+    public override readonly renderPipeId: string = 'text';
 
     /**
      * @param {text.TextOptions} options - The options of the text.
@@ -50,7 +50,8 @@ export class Text
         super(options, TextStyle);
     }
 
-    protected _updateBounds()
+    /** @private */
+    public updateBounds()
     {
         const bounds = this._bounds;
         const anchor = this._anchor;

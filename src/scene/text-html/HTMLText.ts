@@ -55,7 +55,7 @@ export type HTMLTextOptions = TextOptions<HTMLTextStyle, HTMLTextStyleOptions>;
  */
 export class HTMLText extends AbstractText<HTMLTextStyle, HTMLTextStyleOptions> implements View
 {
-    public readonly renderPipeId: string = 'htmlText';
+    public override readonly renderPipeId: string = 'htmlText';
 
     /**
      * @param {text.HTMLTextOptions} options - The options of the html text.
@@ -70,7 +70,8 @@ export class HTMLText extends AbstractText<HTMLTextStyle, HTMLTextStyleOptions> 
         super(options, HTMLTextStyle);
     }
 
-    protected _updateBounds()
+    /** @private */
+    public updateBounds()
     {
         const bounds = this._bounds;
         const anchor = this._anchor;

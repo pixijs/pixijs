@@ -97,7 +97,7 @@ import type { TextStyleOptions } from '../text/TextStyle';
  */
 export class BitmapText extends AbstractText<TextStyle, TextStyleOptions> implements View
 {
-    public readonly renderPipeId: string = 'bitmapText';
+    public override readonly renderPipeId: string = 'bitmapText';
 
     /**
      * **Note:** Our docs parser struggles to properly understand the constructor signature.
@@ -120,7 +120,8 @@ export class BitmapText extends AbstractText<TextStyle, TextStyleOptions> implem
         super(options, TextStyle);
     }
 
-    protected _updateBounds()
+    /** @private */
+    public updateBounds()
     {
         const bounds = this._bounds;
         const anchor = this._anchor;

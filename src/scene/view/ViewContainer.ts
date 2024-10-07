@@ -3,7 +3,6 @@ import { Container } from '../container/Container';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';
-import type { BoundsData } from '../container/bounds/Bounds';
 import type { DestroyOptions } from '../container/destroyTypes';
 
 /**
@@ -35,14 +34,19 @@ export abstract class ViewContainer extends Container implements View
      * The local bounds of the view.
      * @type {rendering.Bounds}
      */
-    public abstract get bounds(): BoundsData;
-    /** @private */
-    public abstract addBounds(bounds: Bounds): void;
-    /** @private */
-    protected _updateBounds(): void
+    public get bounds()
     {
-        // override this
+        if (!this._boundsDirty) return this._bounds;
+
+        this.updateBounds();
+
+        this._boundsDirty = false;
+
+        return this._bounds;
     }
+
+    /** @private */
+    public abstract updateBounds(): void;
 
     /**
      * Whether or not to round the x/y position of the sprite.

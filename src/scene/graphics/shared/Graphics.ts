@@ -109,13 +109,10 @@ export class Graphics extends ViewContainer implements Instruction
     }
 
     /**
-     * Adds the bounds of this object to the bounds object.
-     * @param bounds - The output bounds object.
+     * Graphics objects do not need to update their bounds as the context handles this.
+     * @private
      */
-    public addBounds(bounds: Bounds)
-    {
-        bounds.addBounds(this._context.bounds);
-    }
+    public updateBounds(): void { /** */ }
 
     /**
      * Checks if the object contains the given point.

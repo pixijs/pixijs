@@ -1,10 +1,9 @@
-import { Bounds, type BoundsData } from './bounds/Bounds';
-import { Container } from './Container';
+import { ViewContainer } from '../view/View';
 
 import type { Point } from '../../maths/point/Point';
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
-import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Renderer } from '../../rendering/renderers/types';
+import type { Bounds, BoundsData } from './bounds/Bounds';
 import type { ContainerOptions } from './Container';
 
 type RenderFunction = (renderer: Renderer) => void;
@@ -56,37 +55,16 @@ export interface RenderContainerOptions extends ContainerOptions
  * @memberof scene
  * @extends scene.Container
  */
-export class RenderContainer extends Container implements View, Instruction
+export class RenderContainer extends ViewContainer implements Instruction
 {
+    public override readonly renderPipeId: string = 'customRender';
     public batched = false;
-    /**
-     *  Whether or not to round the x/y position of the sprite.
-     * @type {boolean}
-     */
-    public roundPixels: boolean;
-    public _roundPixels: 0 | 1;
 
-    public _lastUsed = 0;
-    public _lastInstructionTick = -1;
-
-    /**
-     * The local bounds of the sprite.
-     * @type {rendering.Bounds}
-     */
-    public bounds = new Bounds();
-    /**
-     * Checks if the object contains the given point.
-     * @param point - The point to check
-     */
-    public containsPoint: (point: Point) => boolean;
     /**
      * Adds the bounds of this text to the bounds object.
      * @param bounds - The output bounds object.
      */
     public addBounds: (bounds: Bounds) => void;
-
-    public canBundle = false;
-    public readonly renderPipeId: string = 'customRender';
 
     /**
      * @param options - The options for the container.
@@ -109,6 +87,30 @@ export class RenderContainer extends Container implements View, Instruction
 
         this.containsPoint = options.containsPoint ?? (() => false);
         this.addBounds = options.addBounds ?? (() => false);
+    }
+
+    /** @private */
+    public updateBounds(): void
+    {
+        // NOTE: this is for backwards compatibility with the old bounds system
+        this._bounds.clear();
+        this.addBounds(this._bounds);
+    }
+
+    protected override onViewUpdate()
+    {
+        this._didViewChangeTick++;
+        this._boundsDirty = true;
+
+        if (this.didViewUpdate) return;
+        this.didViewUpdate = true;
+
+        const renderGroup = this.renderGroup || this.parentRenderGroup;
+
+        if (renderGroup)
+        {
+            renderGroup.onChildViewUpdate(this);
+        }
     }
 
     /**

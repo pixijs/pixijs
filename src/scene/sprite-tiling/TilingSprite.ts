@@ -9,7 +9,6 @@ import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
 import type { View } from '../../rendering/renderers/shared/view/View';
-import type { Bounds } from '../container/bounds/Bounds';
 import type { ContainerOptions } from '../container/Container';
 import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
@@ -303,21 +302,6 @@ export class TilingSprite extends ViewContainer implements View, Instruction
         return this._tileTransform;
     }
 
-    /**
-     * The local bounds of the sprite.
-     * @type {rendering.Bounds}
-     */
-    get bounds()
-    {
-        if (this._boundsDirty)
-        {
-            this._updateBounds();
-            this._boundsDirty = false;
-        }
-
-        return this._bounds;
-    }
-
     set texture(value: Texture)
     {
         value ||= Texture.EMPTY;
@@ -399,7 +383,10 @@ export class TilingSprite extends ViewContainer implements View, Instruction
         return out;
     }
 
-    protected override _updateBounds()
+    /**
+     * @private
+     */
+    public override updateBounds()
     {
         const bounds = this._bounds;
 
@@ -413,22 +400,6 @@ export class TilingSprite extends ViewContainer implements View, Instruction
 
         bounds.maxY = -anchor._y * height;
         bounds.minY = bounds.maxY + height;
-    }
-
-    /**
-     * Adds the bounds of this object to the bounds object.
-     * @param bounds - The output bounds object.
-     */
-    public addBounds(bounds: Bounds)
-    {
-        const _bounds = this.bounds;
-
-        bounds.addFrame(
-            _bounds.minX,
-            _bounds.minY,
-            _bounds.maxX,
-            _bounds.maxY,
-        );
     }
 
     /**

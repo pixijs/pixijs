@@ -6,7 +6,7 @@ import { ViewContainer } from '../view/ViewContainer';
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
 import type { TextureSourceLike } from '../../rendering/renderers/shared/texture/Texture';
-import type { Bounds, BoundsData } from '../container/bounds/Bounds';
+import type { BoundsData } from '../container/bounds/Bounds';
 import type { ContainerOptions } from '../container/Container';
 import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
@@ -161,21 +161,6 @@ export class Sprite extends ViewContainer
     }
 
     /**
-     * The local bounds of the sprite.
-     * @type {rendering.Bounds}
-     */
-    get bounds()
-    {
-        if (this._boundsDirty)
-        {
-            this._updateBounds();
-            this._boundsDirty = false;
-        }
-
-        return this._bounds;
-    }
-
-    /**
      * The bounds of the sprite, taking the texture's trim into account.
      * @type {rendering.Bounds}
      */
@@ -209,24 +194,14 @@ export class Sprite extends ViewContainer
         return false;
     }
 
-    /**
-     * Adds the bounds of this object to the bounds object.
-     * @param bounds - The output bounds object.
-     */
-    public addBounds(bounds: Bounds)
-    {
-        const _bounds = this._texture.trim ? this.sourceBounds : this.bounds;
-
-        bounds.addFrame(_bounds.minX, _bounds.minY, _bounds.maxX, _bounds.maxY);
-    }
-
-    protected override onViewUpdate()
+    public override onViewUpdate()
     {
         this._sourceBoundsDirty = this._boundsDirty = true;
         super.onViewUpdate();
     }
 
-    protected override _updateBounds()
+    /** @private */
+    public updateBounds()
     {
         updateQuadBounds(this._bounds, this._anchor, this._texture, 0);
     }
