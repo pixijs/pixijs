@@ -35,7 +35,7 @@ export interface EffectsMixin extends Required<EffectsMixinConstructor>
     filterArea?: Rectangle,
     effects?: Effect[];
 
-    _markStructureDidChange(): void;
+    _markStructureAsChanged(): void;
     addEffect(effect: Effect): void;
     removeEffect(effect: Effect): void;
 }
@@ -54,7 +54,7 @@ export const effectsMixin: Partial<Container> = {
      */
     effects: [],
 
-    _markStructureDidChange()
+    _markStructureAsChanged()
     {
         const renderGroup = this.renderGroup || this.parentRenderGroup;
 
@@ -79,7 +79,7 @@ export const effectsMixin: Partial<Container> = {
 
         this.effects.sort((a, b) => a.priority - b.priority);
 
-        this._markStructureDidChange();
+        this._markStructureAsChanged();
 
         // if (this.renderGroup)
         // {
@@ -102,7 +102,7 @@ export const effectsMixin: Partial<Container> = {
 
         this.effects.splice(index, 1);
 
-        this._markStructureDidChange();
+        this._markStructureAsChanged();
 
         this._updateIsSimple();
     },
@@ -159,7 +159,7 @@ export const effectsMixin: Partial<Container> = {
             this.mask = options.mask;
         }
 
-        this._markStructureDidChange();
+        this._markStructureAsChanged();
     },
 
     /**
