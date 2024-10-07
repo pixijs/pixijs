@@ -141,7 +141,7 @@ export class NineSliceSprite extends ViewContainer implements View
     }
 
     /** @private */
-    public override updateBounds(): void { /* empty */ }
+    protected override updateBounds(): void { /* empty */ }
 
     /** The width of the NineSliceSprite, setting this will actually modify the vertices and UV's of this plane. */
     override get width(): number

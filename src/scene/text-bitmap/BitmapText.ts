@@ -121,7 +121,7 @@ export class BitmapText extends AbstractText<TextStyle, TextStyleOptions> implem
     }
 
     /** @private */
-    public updateBounds()
+    protected updateBounds()
     {
         const bounds = this._bounds;
         const anchor = this._anchor;

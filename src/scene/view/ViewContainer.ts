@@ -46,7 +46,7 @@ export abstract class ViewContainer extends Container implements View
     }
 
     /** @private */
-    public abstract updateBounds(): void;
+    protected abstract updateBounds(): void;
 
     /**
      * Whether or not to round the x/y position of the sprite.

@@ -247,7 +247,7 @@ export class Mesh<
      * Update local bounds of the mesh.
      * @private
      */
-    public updateBounds()
+    protected updateBounds()
     {
         this._bounds = this._geometry.bounds;
     }

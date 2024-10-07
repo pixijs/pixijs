@@ -112,7 +112,7 @@ export class Graphics extends ViewContainer implements Instruction
      * Graphics objects do not need to update their bounds as the context handles this.
      * @private
      */
-    public updateBounds(): void { /** */ }
+    protected updateBounds(): void { /** */ }
 
     /**
      * Checks if the object contains the given point.

@@ -201,7 +201,7 @@ export class Sprite extends ViewContainer
     }
 
     /** @private */
-    public updateBounds()
+    protected updateBounds()
     {
         updateQuadBounds(this._bounds, this._anchor, this._texture, 0);
     }

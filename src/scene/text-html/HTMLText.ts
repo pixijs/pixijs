@@ -71,7 +71,7 @@ export class HTMLText extends AbstractText<HTMLTextStyle, HTMLTextStyleOptions> 
     }
 
     /** @private */
-    public updateBounds()
+    protected updateBounds()
     {
         const bounds = this._bounds;
         const anchor = this._anchor;

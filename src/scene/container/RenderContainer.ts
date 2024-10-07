@@ -1,4 +1,4 @@
-import { ViewContainer } from '../view/View';
+import { ViewContainer } from '../view/ViewContainer';
 
 import type { Point } from '../../maths/point/Point';
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
@@ -90,7 +90,7 @@ export class RenderContainer extends ViewContainer implements Instruction
     }
 
     /** @private */
-    public updateBounds(): void
+    protected updateBounds(): void
     {
         // NOTE: this is for backwards compatibility with the old bounds system
         this._bounds.clear();

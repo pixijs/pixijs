@@ -386,7 +386,7 @@ export class TilingSprite extends ViewContainer implements View, Instruction
     /**
      * @private
      */
-    public override updateBounds()
+    protected override updateBounds()
     {
         const bounds = this._bounds;
 

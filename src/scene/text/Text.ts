@@ -51,7 +51,7 @@ export class Text
     }
 
     /** @private */
-    public updateBounds()
+    protected updateBounds()
     {
         const bounds = this._bounds;
         const anchor = this._anchor;
