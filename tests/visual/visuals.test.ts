@@ -86,7 +86,7 @@ describe('Visual Tests', () =>
                 Assets.reset();
                 setAssetBasePath();
 
-                const pixelMatch = isCI ? scene.data.pixelMatch ?? 100 : scene.data.pixelMatchLocal ?? 100;
+                const pixelMatch = 100;// isCI ? scene.data.pixelMatch ?? 100 : scene.data.pixelMatchLocal ?? 100;
 
                 const res = await renderTest(
                     id,
