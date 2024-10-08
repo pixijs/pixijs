@@ -7,7 +7,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render both canvas and bitmap text with a stroke',
-    pixelMatch: 700,
     create: async (scene: Container) =>
     {
         await Assets.load('fonts/outfit.woff2');
