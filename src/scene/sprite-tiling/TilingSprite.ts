@@ -140,7 +140,6 @@ export class TilingSprite extends ViewContainer implements View, Instruction
     public _tileTransform: Transform;
     public _texture: Texture;
     public _applyAnchorToTexture: boolean;
-    public _didTilingSpriteUpdate: boolean;
 
     private _width: number;
     private _height: number;
@@ -456,7 +455,6 @@ export class TilingSprite extends ViewContainer implements View, Instruction
     protected override onViewUpdate()
     {
         this._boundsDirty = true;
-        this._didTilingSpriteUpdate = true;
         super.onViewUpdate();
     }
 

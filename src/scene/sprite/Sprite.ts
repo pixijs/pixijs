@@ -75,7 +75,6 @@ export class Sprite extends ViewContainer
 
     // sprite specific..
     public _texture: Texture;
-    public _didSpriteUpdate = false;
 
     private readonly _sourceBounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
     private _sourceBoundsDirty = true;
@@ -223,9 +222,7 @@ export class Sprite extends ViewContainer
 
     protected override onViewUpdate()
     {
-        this._didSpriteUpdate = true;
         this._sourceBoundsDirty = this._boundsDirty = true;
-
         super.onViewUpdate();
     }
 

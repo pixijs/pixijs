@@ -91,8 +91,6 @@ export class NineSliceSprite extends ViewContainer implements View
     private _width: number;
     private _height: number;
 
-    public _didSpriteUpdate = true;
-
     /**
      * @param {scene.NineSliceSpriteOptions|Texture} options - Options to use
      * @param options.texture - The texture to use on the NineSliceSprite.
@@ -289,12 +287,6 @@ export class NineSliceSprite extends ViewContainer implements View
     get originalHeight()
     {
         return this._texture.height;
-    }
-
-    protected override onViewUpdate()
-    {
-        this._didSpriteUpdate = true;
-        super.onViewUpdate();
     }
 
     /**

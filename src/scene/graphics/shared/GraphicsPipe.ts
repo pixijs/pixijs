@@ -82,10 +82,8 @@ export class GraphicsPipe implements RenderPipe<Graphics>
         // need to get batches here.. as we need to know if we can batch or not..
         // this also overrides the current batches..
 
-        if (graphics._didGraphicsUpdate)
+        if (graphics.didViewUpdate)
         {
-            graphics._didGraphicsUpdate = false;
-
             this._rebuild(graphics);
         }
 
