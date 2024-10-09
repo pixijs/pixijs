@@ -1,5 +1,5 @@
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
-import { ViewContainer } from '../../view/View';
+import { ViewContainer } from '../../view/ViewContainer';
 import { GraphicsContext } from './GraphicsContext';
 
 import type { ColorSource } from '../../../color/Color';
@@ -130,19 +130,8 @@ export class Graphics extends ViewContainer implements Instruction
 
     protected override onViewUpdate()
     {
-        this._didViewChangeTick++;
-
         this._didGraphicsUpdate = true;
-
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.onChildViewUpdate(this);
-        }
+        super.onViewUpdate();
     }
 
     /**

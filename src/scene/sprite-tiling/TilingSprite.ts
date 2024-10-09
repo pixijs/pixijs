@@ -3,7 +3,7 @@ import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { Transform } from '../../utils/misc/Transform';
-import { ViewContainer } from '../view/View';
+import { ViewContainer } from '../view/ViewContainer';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
@@ -453,22 +453,11 @@ export class TilingSprite extends ViewContainer implements View, Instruction
         return false;
     }
 
-    public onViewUpdate()
+    protected override onViewUpdate()
     {
         this._boundsDirty = true;
         this._didTilingSpriteUpdate = true;
-
-        this._didViewChangeTick++;
-
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.onChildViewUpdate(this);
-        }
+        super.onViewUpdate();
     }
 
     /**
