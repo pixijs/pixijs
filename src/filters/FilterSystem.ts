@@ -1,3 +1,4 @@
+import { Color } from '../color/Color';
 import { ExtensionType } from '../extensions/Extensions';
 import { Matrix } from '../maths/matrix/Matrix';
 import { Point } from '../maths/point/Point';
@@ -12,6 +13,7 @@ import { getFastGlobalBounds } from '../scene/container/bounds/getFastGlobalBoun
 import { getGlobalRenderableBounds } from '../scene/container/bounds/getRenderableBounds';
 import { warn } from '../utils/logging/warn';
 
+import type { RgbaArray } from '../color/Color';
 import type { WebGLRenderer } from '../rendering/renderers/gl/WebGLRenderer';
 import type { WebGPURenderer } from '../rendering/renderers/gpu/WebGPURenderer';
 import type { Instruction } from '../rendering/renderers/shared/instructions/Instruction';
@@ -297,7 +299,11 @@ export class FilterSystem implements System
             antialias,
         );
 
-        renderer.renderTarget.bind(filterData.inputTexture, true);
+        let clearColor = filterData.filterEffect.filterClearColor;
+
+        if (clearColor !== undefined) clearColor = Color.shared.setValue(clearColor).toArray();
+
+        renderer.renderTarget.bind(filterData.inputTexture, true, clearColor as RgbaArray);
         // set the global uniforms to take into account the bounds offset required
 
         renderer.globalUniforms.push({
