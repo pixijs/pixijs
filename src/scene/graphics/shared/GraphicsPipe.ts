@@ -7,6 +7,7 @@ import { BatchableGraphics } from './BatchableGraphics';
 import type { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
 import type { BatchPipe, RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
+import type { RenderableGCSystem } from '../../../rendering/renderers/shared/texture/RenderableGCSystem';
 import type { PoolItem } from '../../../utils/pool/Pool';
 import type { Container } from '../../container/Container';
 import type { Graphics } from './Graphics';
@@ -22,6 +23,7 @@ export interface GraphicsAdaptor
 export interface GraphicsSystem
 {
     graphicsContext: GraphicsContextSystem;
+    renderableGC: RenderableGCSystem;
     renderPipes: {
         batch: BatchPipe
     }
@@ -54,6 +56,8 @@ export class GraphicsPipe implements RenderPipe<Graphics>
 
         this._adaptor = adaptor;
         this._adaptor.init();
+
+        this.renderer.renderableGC.addManagedHash(this, '_graphicsBatchesHash');
     }
 
     public validateRenderable(graphics: Graphics): boolean
