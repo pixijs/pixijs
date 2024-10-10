@@ -99,8 +99,6 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
         batchableMesh.texture = sprite._texture;
         batchableMesh.roundPixels = (this._renderer._roundPixels | sprite._roundPixels) as 0 | 1;
 
-        sprite.didViewUpdate = true;
-
         this._gpuSpriteHash[sprite.uid] = batchableMesh;
 
         // TODO perhaps manage this outside this pipe? (a bit like how we update / add)
