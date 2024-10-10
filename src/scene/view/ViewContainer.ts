@@ -77,7 +77,20 @@ export abstract class ViewContainer extends Container implements View
     public abstract batched: boolean;
 
     /** @private */
-    protected abstract onViewUpdate(): void;
+    protected onViewUpdate()
+    {
+        this._didViewChangeTick++;
+
+        if (this.didViewUpdate) return;
+        this.didViewUpdate = true;
+
+        const renderGroup = this.renderGroup || this.parentRenderGroup;
+
+        if (renderGroup)
+        {
+            renderGroup.onChildViewUpdate(this);
+        }
+    }
 
     public override destroy(options?: DestroyOptions): void
     {

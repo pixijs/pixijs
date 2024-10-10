@@ -1,12 +1,12 @@
 import { warn } from '../../../utils/logging/warn';
-import { ViewContainer } from '../../view/View';
+import { ViewContainer } from '../../view/ViewContainer';
 import { particleData } from './particleData';
 
 import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { Bounds, BoundsData } from '../../container/bounds/Bounds';
-import type { Container, ContainerChild, ContainerOptions } from '../../container/Container';
+import type { ContainerChild, ContainerOptions } from '../../container/Container';
 import type { DestroyOptions } from '../../container/destroyTypes';
 import type { IParticle } from './Particle';
 import type { ParticleRendererProperty } from './particleData';
@@ -251,23 +251,10 @@ export class ParticleContainer extends ViewContainer implements Instruction
         this._childrenDirty = true;
     }
 
-    public override onViewUpdate()
+    protected override onViewUpdate()
     {
-        this._didViewChangeTick++;
-
         this._childrenDirty = true;
-        this._boundsDirty = true;
-
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
-        // TODO remove this! i don't thinks this is needed!
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.onChildViewUpdate(this as unknown as Container);
-        }
+        super.onViewUpdate();
     }
 
     /** The local bounds of the view. */

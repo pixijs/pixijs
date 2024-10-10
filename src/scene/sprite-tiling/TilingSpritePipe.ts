@@ -96,10 +96,8 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
 
             const batchableMesh = tilingSpriteData.batchableMesh;
 
-            if (tilingSprite._didTilingSpriteUpdate)
+            if (tilingSprite.didViewUpdate)
             {
-                tilingSprite._didTilingSpriteUpdate = false;
-
                 this._updateBatchableMesh(tilingSprite);
 
                 batchableMesh.geometry = geometry;
@@ -161,11 +159,11 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
         {
             const { batchableMesh } = tilingSpriteData;
 
-            if (tilingSprite._didTilingSpriteUpdate) this._updateBatchableMesh(tilingSprite);
+            if (tilingSprite.didViewUpdate) this._updateBatchableMesh(tilingSprite);
 
             batchableMesh._batcher.updateElement(batchableMesh);
         }
-        else if (tilingSprite._didTilingSpriteUpdate)
+        else if (tilingSprite.didViewUpdate)
         {
             const { shader } = tilingSpriteData;
             // now update uniforms...
@@ -179,8 +177,6 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
                 tilingSprite.texture,
             );
         }
-
-        tilingSprite._didTilingSpriteUpdate = false;
     }
 
     public destroyRenderable(tilingSprite: TilingSprite)

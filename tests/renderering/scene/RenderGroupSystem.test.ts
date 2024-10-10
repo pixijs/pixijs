@@ -17,8 +17,9 @@ describe('RenderGroupSystem', () =>
 
         expect(container.renderGroup.childrenRenderablesToUpdate.index).toEqual(0);
 
-        text.text = 'hello world 2';
+        renderer.render(container);
 
+        text.text = 'hello world 2';
         expect(container.renderGroup.childrenRenderablesToUpdate.index).toEqual(1);
 
         renderer.render(container);

@@ -3,7 +3,7 @@ import type { Batch, Batcher } from '../../rendering/batcher/shared/Batcher';
 import type { DefaultBatchableQuadElement } from '../../rendering/batcher/shared/DefaultBatcher';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { BoundsData } from '../container/bounds/Bounds';
-import type { ViewContainer } from '../view/View';
+import type { ViewContainer } from '../view/ViewContainer';
 
 /**
  * A batchable sprite object.
