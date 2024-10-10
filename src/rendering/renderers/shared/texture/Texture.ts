@@ -366,7 +366,11 @@ export class Texture<TextureSourceType extends TextureSource = TextureSource> ex
         this.removeAllListeners();
     }
 
-    /** call this if you have modified the `texture outside` of the constructor */
+    /**
+     * Call this if you have modified the `texture outside` of the constructor.
+     *
+     * If you have modified this texture's source, you must separately call `texture.source.update()` to see those changes.
+     */
     public update(): void
     {
         if (this.noFrame)
