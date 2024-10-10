@@ -665,7 +665,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         child.parent = this;
 
         child.didChange = true;
-        child.didViewUpdate = false;
 
         // TODO - OPtimise this? could check what the parent has set?
         child._updateFlags = 0b1111;

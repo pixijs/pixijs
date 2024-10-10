@@ -10,6 +10,7 @@ import { validateRenderables } from './utils/validateRenderables';
 import type { WebGPURenderer } from '../../rendering/renderers/gpu/WebGPURenderer';
 import type { System } from '../../rendering/renderers/shared/system/System';
 import type { Renderer } from '../../rendering/renderers/types';
+import type { ViewContainer } from '../view/ViewContainer';
 import type { Container } from './Container';
 import type { RenderGroup } from './RenderGroup';
 
@@ -145,7 +146,7 @@ function updateRenderables(renderGroup: RenderGroup)
 
         if (container.didViewUpdate)
         {
-            renderGroup.updateRenderable(container);
+            renderGroup.updateRenderable(container as ViewContainer);
         }
     }
 
