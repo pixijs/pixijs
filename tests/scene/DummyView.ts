@@ -3,7 +3,7 @@ import { Container } from '../../src/scene/container/Container';
 
 import type { Point } from '../../src/maths/point/Point';
 import type { View, ViewObserver } from '../../src/rendering/renderers/shared/view/View';
-import type { Bounds, BoundsData } from '../../src/scene/container/bounds/Bounds';
+import type { Bounds } from '../../src/scene/container/bounds/Bounds';
 import type { ContainerOptions } from '../../src/scene/container/Container';
 
 interface DummyViewOptions extends ContainerOptions
@@ -33,26 +33,17 @@ export class DummyView extends Container implements View
     public _lastInstructionTick = -1;
 
     public _onUpdate: () => void;
-    public get bounds(): BoundsData
+    public get bounds()
     {
         return {
             minX: this.size.x,
             minY: this.size.y,
             maxX: this.size.x + this.size.width,
             maxY: this.size.y + this.size.height,
-        };
+        } as Bounds;
     }
-    public addBounds = (bounds: Bounds) =>
-    {
-        const dummyBounds = this.bounds;
+    public updateBounds: () => void;
 
-        bounds.addFrame(
-            dummyBounds.minX,
-            dummyBounds.minY,
-            dummyBounds.maxX,
-            dummyBounds.maxY,
-        );
-    };
     public containsPoint: (point: Point) => boolean;
     public destroy: () => void;
     public size: Rectangle;

@@ -1,22 +1,17 @@
 import { warn } from '../../../utils/logging/warn';
+import { Bounds } from '../../container/bounds/Bounds';
 import { ViewContainer } from '../../view/View';
 import { particleData } from './particleData';
 
 import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import type { Bounds, BoundsData } from '../../container/bounds/Bounds';
 import type { Container, ContainerChild, ContainerOptions } from '../../container/Container';
 import type { DestroyOptions } from '../../container/destroyTypes';
 import type { IParticle } from './Particle';
 import type { ParticleRendererProperty } from './particleData';
 
-const emptyBounds: BoundsData = {
-    minX: 0,
-    minY: 0,
-    maxX: 0,
-    maxY: 0,
-};
+const emptyBounds = new Bounds(0, 0, 0, 0);
 
 /**
  * Represents the properties of a particle that can be dynamically updated.
@@ -271,7 +266,7 @@ export class ParticleContainer extends ViewContainer implements Instruction
     }
 
     /** The local bounds of the view. */
-    public get bounds(): BoundsData
+    public override get bounds(): Bounds
     {
         warn(
             // eslint-disable-next-line max-len
@@ -281,17 +276,8 @@ export class ParticleContainer extends ViewContainer implements Instruction
         return emptyBounds;
     }
 
-    /**
-     * Adds the bounds of this object to the bounds object.
-     * @param _bounds - The output bounds object.
-     */
-    public addBounds(_bounds: Bounds): void
-    {
-        warn(
-            // eslint-disable-next-line max-len
-            'ParticleContainer does not calculated bounds as it would slow things down, its up to you to set this via the boundsArea property',
-        );
-    }
+    /** @private */
+    protected override updateBounds(): void { /* empty */ }
 
     /**
      * Destroys this sprite renderable and optionally its texture.

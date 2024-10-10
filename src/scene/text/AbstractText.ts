@@ -5,7 +5,6 @@ import { ViewContainer } from '../view/View';
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';
-import type { Bounds } from '../container/bounds/Bounds';
 import type { ContainerOptions } from '../container/Container';
 import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
@@ -232,21 +231,6 @@ export abstract class AbstractText<
         this.onViewUpdate();
     }
 
-    /**
-     * The local bounds of the Text.
-     * @type {rendering.Bounds}
-     */
-    get bounds()
-    {
-        if (this._boundsDirty)
-        {
-            this._updateBounds();
-            this._boundsDirty = false;
-        }
-
-        return this._bounds;
-    }
-
     /** The width of the sprite, setting this will actually modify the scale to achieve the value set. */
     override get width(): number
     {
@@ -307,22 +291,6 @@ export abstract class AbstractText<
     }
 
     /**
-     * Adds the bounds of this text to the bounds object.
-     * @param bounds - The output bounds object.
-     */
-    public addBounds(bounds: Bounds)
-    {
-        const _bounds = this.bounds;
-
-        bounds.addFrame(
-            _bounds.minX,
-            _bounds.minY,
-            _bounds.maxX,
-            _bounds.maxY,
-        );
-    }
-
-    /**
      * Checks if the text contains the given point.
      * @param point - The point to check
      */
@@ -367,8 +335,6 @@ export abstract class AbstractText<
     {
         return `${this.text}:${this._style.styleKey}:${this._resolution}`;
     }
-
-    protected abstract _updateBounds(): void;
 
     /**
      * Destroys this text renderable and optionally its style texture.
