@@ -1,4 +1,3 @@
-import { warn } from '../../../utils/logging/warn';
 import { ViewContainer } from '../../view/ViewContainer';
 import { particleData } from './particleData';
 
@@ -257,27 +256,23 @@ export class ParticleContainer extends ViewContainer implements Instruction
         super.onViewUpdate();
     }
 
-    /** The local bounds of the view. */
+    /**
+     * ParticleContainer does not calculated bounds as it would slow things down,
+     * its up to you to set this via the boundsArea property
+     */
     public get bounds(): BoundsData
     {
-        warn(
-            // eslint-disable-next-line max-len
-            'ParticleContainer does not calculated bounds as it would slow things down, its up to you to set this via the boundsArea property',
-        );
-
         return emptyBounds;
     }
 
     /**
-     * Adds the bounds of this object to the bounds object.
+     * ParticleContainer does not calculated bounds as it would slow things down,
+     * its up to you to set this via the boundsArea property
      * @param _bounds - The output bounds object.
      */
     public addBounds(_bounds: Bounds): void
     {
-        warn(
-            // eslint-disable-next-line max-len
-            'ParticleContainer does not calculated bounds as it would slow things down, its up to you to set this via the boundsArea property',
-        );
+        // empty
     }
 
     /**
