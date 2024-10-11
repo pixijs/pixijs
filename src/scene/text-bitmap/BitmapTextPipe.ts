@@ -128,15 +128,12 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
             }
         }
 
-        const chars = Array.from(bitmapText.text);
         const style = bitmapText._style;
 
         let currentY = bitmapFont.baseLineOffset;
 
         // measure our text...
-        const bitmapTextLayout = getBitmapTextLayout(chars, style, bitmapFont, true);
-
-        let index = 0;
+        const bitmapTextLayout = getBitmapTextLayout(bitmapText.text, style, bitmapFont, true);
 
         const padding = style.padding;
         const scale = bitmapTextLayout.scale;
@@ -162,7 +159,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
             for (let j = 0; j < line.charPositions.length; j++)
             {
-                const char = chars[index++];
+                const char = line.chars[j];
 
                 const charData = bitmapFont.chars[char];
 
