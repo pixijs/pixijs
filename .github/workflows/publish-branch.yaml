@@ -8,7 +8,7 @@ on:
 
 jobs:
     release_candidate:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-22.04
         env:
             NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
             NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
