@@ -1,6 +1,6 @@
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
-import { ViewContainer } from '../view/View';
+import { ViewContainer } from '../view/ViewContainer';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
@@ -344,23 +344,11 @@ export abstract class AbstractText<
         return false;
     }
 
-    public onViewUpdate()
+    public override onViewUpdate()
     {
-        this._didViewChangeTick++;
-
         this._boundsDirty = true;
-
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
-        this._didTextUpdate = true;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.onChildViewUpdate(this);
-        }
+        if (!this.didViewUpdate) this._didTextUpdate = true;
+        super.onViewUpdate();
     }
 
     public _getKey(): string

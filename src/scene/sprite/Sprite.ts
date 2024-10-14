@@ -1,7 +1,7 @@
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { updateQuadBounds } from '../../utils/data/updateQuadBounds';
-import { ViewContainer } from '../view/View';
+import { ViewContainer } from '../view/ViewContainer';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
@@ -75,7 +75,6 @@ export class Sprite extends ViewContainer
 
     // sprite specific..
     public _texture: Texture;
-    public _didSpriteUpdate = false;
 
     private readonly _sourceBounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
     private _sourceBoundsDirty = true;
@@ -221,22 +220,10 @@ export class Sprite extends ViewContainer
         bounds.addFrame(_bounds.minX, _bounds.minY, _bounds.maxX, _bounds.maxY);
     }
 
-    public override onViewUpdate()
+    protected override onViewUpdate()
     {
-        this._didViewChangeTick++;
-
-        this._didSpriteUpdate = true;
         this._sourceBoundsDirty = this._boundsDirty = true;
-
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.onChildViewUpdate(this);
-        }
+        super.onViewUpdate();
     }
 
     protected override _updateBounds()

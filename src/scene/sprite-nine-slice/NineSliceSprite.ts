@@ -1,6 +1,6 @@
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
-import { ViewContainer } from '../view/View';
+import { ViewContainer } from '../view/ViewContainer';
 import { NineSliceGeometry } from './NineSliceGeometry';
 
 import type { Size } from '../../maths/misc/Size';
@@ -90,8 +90,6 @@ export class NineSliceSprite extends ViewContainer implements View
     private _bottomHeight: number;
     private _width: number;
     private _height: number;
-
-    public _didSpriteUpdate = true;
 
     /**
      * @param {scene.NineSliceSpriteOptions|Texture} options - Options to use
@@ -289,23 +287,6 @@ export class NineSliceSprite extends ViewContainer implements View
     get originalHeight()
     {
         return this._texture.height;
-    }
-
-    protected onViewUpdate()
-    {
-        this._didViewChangeTick++;
-
-        this._didSpriteUpdate = true;
-
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.onChildViewUpdate(this);
-        }
     }
 
     /**

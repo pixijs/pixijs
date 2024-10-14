@@ -1,5 +1,5 @@
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
-import { ViewContainer } from '../../view/View';
+import { ViewContainer } from '../../view/ViewContainer';
 import { GraphicsContext } from './GraphicsContext';
 
 import type { ColorSource } from '../../../color/Color';
@@ -44,8 +44,6 @@ export class Graphics extends ViewContainer implements Instruction
 {
     public override readonly renderPipeId: string = 'graphics';
     public batched: boolean;
-
-    public _didGraphicsUpdate: boolean;
 
     private _context: GraphicsContext;
     private readonly _ownedContext: GraphicsContext;
@@ -126,23 +124,6 @@ export class Graphics extends ViewContainer implements Instruction
     public override containsPoint(point: PointData)
     {
         return this._context.containsPoint(point);
-    }
-
-    protected override onViewUpdate()
-    {
-        this._didViewChangeTick++;
-
-        this._didGraphicsUpdate = true;
-
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.onChildViewUpdate(this);
-        }
     }
 
     /**

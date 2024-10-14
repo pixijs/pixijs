@@ -8,6 +8,7 @@ import { buildContextBatches } from './utils/buildContextBatches';
 
 import type { Batcher } from '../../../rendering/batcher/shared/Batcher';
 import type { System } from '../../../rendering/renderers/shared/system/System';
+import type { Renderer } from '../../../rendering/renderers/types';
 import type { PoolItem } from '../../../utils/pool/Pool';
 import type { BatchableGraphics } from './BatchableGraphics';
 import type { GraphicsContext } from './GraphicsContext';
@@ -107,6 +108,12 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
     private _gpuContextHash: Record<number, GpuGraphicsContext> = {};
     // used for non-batchable graphics
     private _graphicsDataContextHash: Record<number, GraphicsContextRenderData> = Object.create(null);
+
+    constructor(renderer: Renderer)
+    {
+        renderer.renderableGC.addManagedHash(this, '_gpuContextHash');
+        renderer.renderableGC.addManagedHash(this, '_graphicsDataContextHash');
+    }
 
     /**
      * Runner init called, update the default options

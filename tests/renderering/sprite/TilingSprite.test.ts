@@ -207,7 +207,7 @@ describe('TilingSprite', () =>
 
             expect(sprite.texture).toEqual(texture);
 
-            const spy = jest.spyOn(sprite, 'onViewUpdate');
+            const spy = jest.spyOn((sprite as any), 'onViewUpdate');
 
             sprite.anchor.x = 0.5;
 
