@@ -34,6 +34,7 @@ export class BindGroupSystem implements System
     constructor(renderer: WebGPURenderer)
     {
         this._renderer = renderer;
+        this._renderer.renderableGC.addManagedHash(this, '_hash');
     }
 
     protected contextChange(gpu: GPU): void

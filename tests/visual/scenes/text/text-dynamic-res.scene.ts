@@ -7,7 +7,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render text at new resolution',
-    pixelMatch: 5100,
     create: async (scene: Container, renderer) =>
     {
         const style = new TextStyle({
