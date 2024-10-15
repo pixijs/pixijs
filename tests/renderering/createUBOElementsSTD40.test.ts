@@ -76,8 +76,8 @@ describe('createUBOElements', () =>
                 values: ['vec3<f32>', 'mat3x3<f32>', 'vec2<f32>'],
                 expected: {
                     size: [12, 48, 8],
-                    offset: [0, 32, 80],
-                    totalSize: 96
+                    offset: [0, 16, 64],
+                    totalSize: 80
                 },
             },
 
