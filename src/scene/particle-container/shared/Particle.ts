@@ -153,7 +153,7 @@ export class Particle implements IParticle
         }
         else
         {
-            this._tint = Color.shared.setValue(value).toBgrNumber();
+            this._tint = Color.shared.setValue(value ?? 0xFFFFFF).toBgrNumber();
         }
 
         this._updateColor();
