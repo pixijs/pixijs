@@ -78,6 +78,7 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
 
     private _updateBatchableSprite(sprite: NineSliceSprite, batchableSprite: BatchableMesh)
     {
+        sprite.didViewUpdate = false;
         (batchableSprite.geometry as NineSliceGeometry)
             .update(sprite);
 
@@ -99,6 +100,8 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
         batchableMesh.transform = sprite.groupTransform;
         batchableMesh.texture = sprite._texture;
         batchableMesh.roundPixels = (this._renderer._roundPixels | sprite._roundPixels) as 0 | 1;
+
+        sprite.didViewUpdate = true;
 
         this._gpuSpriteHash[sprite.uid] = batchableMesh;
 
