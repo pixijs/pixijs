@@ -199,7 +199,7 @@ export function toFillStyle<T extends FillInput>(
  */
 export function toStrokeStyle(value: StrokeInput, defaultStyle: ConvertedStrokeStyle): ConvertedStrokeStyle
 {
-    const { width, alignment, miterLimit, cap, join, ...rest } = defaultStyle;
+    const { width, alignment, miterLimit, cap, join, pixelLine, ...rest } = defaultStyle;
     const fill = toFillStyle(value, rest);
 
     if (!fill)
@@ -213,6 +213,7 @@ export function toStrokeStyle(value: StrokeInput, defaultStyle: ConvertedStrokeS
         miterLimit,
         cap,
         join,
+        pixelLine,
         ...fill,
     };
 }
