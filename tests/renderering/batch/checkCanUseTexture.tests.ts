@@ -4,8 +4,8 @@ import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture
 import { TestBatcher } from './TestBatcher';
 import '../../../src/rendering/renderers/shared/texture/sources/ImageSource';
 
-import type { Topology } from '../../../src/rendering';
 import type { Batch, BatchableMeshElement, Batcher } from '../../../src/rendering/batcher/shared/Batcher';
+import type { Topology } from '../../../src/rendering/renderers/shared/geometry/const';
 import type { BLEND_MODES } from '../../../src/rendering/renderers/shared/state/const';
 
 class DummyBatchableObject implements BatchableMeshElement
