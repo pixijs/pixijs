@@ -159,7 +159,7 @@ function addShapePathToGeometryData(
         const points: number[] = [];
 
         const build = shapeBuilders[shape.type];
-        let topology: Topology = 'triangle-strip';
+        let topology: Topology = 'triangle-list';
         // TODO - this can be cached...
         // TODO - THIS IS DONE TWICE!!!!!!
         // ONCE FOR STROKE AND ONCE FOR FILL
@@ -212,7 +212,7 @@ function addShapePathToGeometryData(
             else
             {
                 buildPixelLine(points, close, vertices, indices);
-                topology = 'line-strip';
+                topology = 'line-list';
             }
         }
 
