@@ -1,7 +1,7 @@
 import type { Matrix } from '../../maths/matrix/Matrix';
-import type { Topology } from '../../rendering';
 import type { Batch, Batcher } from '../../rendering/batcher/shared/Batcher';
 import type { DefaultBatchableQuadElement } from '../../rendering/batcher/shared/DefaultBatcher';
+import type { Topology } from '../../rendering/renderers/shared/geometry/const';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { BoundsData } from '../container/bounds/Bounds';
 import type { ViewContainer } from '../view/ViewContainer';
