@@ -1,4 +1,5 @@
 import type { Matrix } from '../../../maths/matrix/Matrix';
+import type { Topology } from '../../../rendering';
 import type { Batch, Batcher } from '../../../rendering/batcher/shared/Batcher';
 import type { DefaultBatchableMeshElement } from '../../../rendering/batcher/shared/DefaultBatcher';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
@@ -12,6 +13,9 @@ import type { MeshGeometry } from './MeshGeometry';
 export class BatchableMesh implements DefaultBatchableMeshElement
 {
     public batcherName = 'default';
+
+    public _topology: Topology;
+
     public readonly packAsQuad = false;
     public location: number;
 
@@ -36,6 +40,9 @@ export class BatchableMesh implements DefaultBatchableMeshElement
     private _textureMatrixUpdateId: number = -1;
 
     get blendMode() { return this.renderable.groupBlendMode; }
+
+    get topology() { return this._topology || this.geometry.topology; }
+    set topology(value: Topology) { this._topology = value; }
 
     public reset()
     {
