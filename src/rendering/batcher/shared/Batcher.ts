@@ -116,6 +116,12 @@ export interface BatchableElement
     attributeSize: number;
 
     /**
+     * The topology to be used for rendering.
+     * @type {Topology}
+     */
+    topology: Topology
+
+    /**
      * Whether the element should be packed as a quad for better performance.
      * @type {boolean}
      */
@@ -156,11 +162,6 @@ export interface BatchableElement
      */
     _batch: Batch;
 
-    /**
-     * The topology to be used for rendering.
-     * @type {Topology}
-     */
-    topology?: Topology
 }
 
 /**

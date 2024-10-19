@@ -4,6 +4,7 @@ import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture
 import { TestBatcher } from './TestBatcher';
 import '../../../src/rendering/renderers/shared/texture/sources/ImageSource';
 
+import type { Topology } from '../../../src/rendering';
 import type { Batch, BatchableMeshElement, Batcher } from '../../../src/rendering/batcher/shared/Batcher';
 import type { BLEND_MODES } from '../../../src/rendering/renderers/shared/state/const';
 
@@ -18,6 +19,7 @@ class DummyBatchableObject implements BatchableMeshElement
     color = 0xFFFFFFF;
     attributeOffset = 0;
     location = 0;
+    topology: Topology = 'triangle-list';
     readonly packAsQuad = false;
     _indexStart = 0;
 

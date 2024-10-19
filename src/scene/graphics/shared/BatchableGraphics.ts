@@ -20,7 +20,7 @@ export class BatchableGraphics implements DefaultBatchableMeshElement
 
     public texture: Texture;
 
-    public topology: Topology;
+    public topology: Topology = 'triangle-list';
     public renderable: Graphics;
     public indexOffset: number;
     public indexSize: number;
@@ -104,5 +104,6 @@ export class BatchableGraphics implements DefaultBatchableMeshElement
     {
         this.applyTransform = true;
         this.renderable = null;
+        this.topology = 'triangle-list';
     }
 }

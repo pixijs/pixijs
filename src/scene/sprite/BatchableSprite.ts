@@ -1,4 +1,5 @@
 import type { Matrix } from '../../maths/matrix/Matrix';
+import type { Topology } from '../../rendering';
 import type { Batch, Batcher } from '../../rendering/batcher/shared/Batcher';
 import type { DefaultBatchableQuadElement } from '../../rendering/batcher/shared/DefaultBatcher';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
@@ -12,6 +13,7 @@ import type { ViewContainer } from '../view/ViewContainer';
 export class BatchableSprite implements DefaultBatchableQuadElement
 {
     public batcherName = 'default';
+    public topology: Topology = 'triangle-list';
 
     // batch specific..
     public readonly attributeSize = 4;
