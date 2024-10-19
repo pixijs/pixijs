@@ -6,7 +6,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render a pixel line correctly',
-    only: true,
     create: async (scene: Container, _renderer: Renderer) =>
     {
         const graphics = new Graphics();
