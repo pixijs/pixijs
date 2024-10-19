@@ -35,6 +35,7 @@ export function buildPixelLine(
     const verts = vertices;
 
     const length = points.length / 2;
+    const indexStart = verts.length / 2;
 
     for (let i = 0; i < length; i++)
     {
@@ -44,12 +45,12 @@ export function buildPixelLine(
 
     for (let i = 0; i < length - 1; i++)
     {
-        indices.push(i, i + 1);
+        indices.push(indexStart + i, indexStart + i + 1);
     }
 
     if (closePath)
     {
-        indices.push(length - 1, 0);
+        indices.push(indexStart + length - 1, indexStart);
     }
 }
 
