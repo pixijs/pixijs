@@ -1343,7 +1343,15 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         this.destroyed = true;
 
         // remove children is faster than removeChild..
-        const oldChildren = this.removeChildren(0, this.children.length);
+
+        let oldChildren: ContainerChild[];
+
+        // we add this check as calling removeChildren on particle container will throw an error
+        // As we know it does cannot have any children, check before calling the function.
+        if (this.children.length)
+        {
+            oldChildren = this.removeChildren(0, this.children.length);
+        }
 
         this.removeFromParent();
         this.parent = null;
@@ -1361,7 +1369,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         const destroyChildren = typeof options === 'boolean' ? options : options?.children;
 
-        if (destroyChildren)
+        if (destroyChildren && oldChildren)
         {
             for (let i = 0; i < oldChildren.length; ++i)
             {
