@@ -102,6 +102,12 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
 
         this._gpuSpriteHash[sprite.uid] = batchableMesh;
 
+        // if the sprite has not been updated by the view, we need to update the batchable mesh now.
+        if (!sprite.didViewUpdate)
+        {
+            this._updateBatchableSprite(sprite, batchableMesh);
+        }
+
         // TODO perhaps manage this outside this pipe? (a bit like how we update / add)
         sprite.on('destroyed', this._destroyRenderableBound);
 
