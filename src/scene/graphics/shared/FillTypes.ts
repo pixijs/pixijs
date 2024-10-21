@@ -39,6 +39,8 @@ export interface StrokeAttributes
     join?: LineJoin;
     /** The miter limit to use. */
     miterLimit?: number;
+    /** If the stroke is a pixel line. */
+    pixelLine?: boolean;
 }
 
 /**

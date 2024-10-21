@@ -104,6 +104,8 @@ export class GraphicsContext extends EventEmitter<{
         matrix: null,
         /** The fill pattern to use. */
         fill: null,
+        /** If the stroke is a pixel line. */
+        pixelLine: false,
     };
 
     /** unique id for this graphics context */

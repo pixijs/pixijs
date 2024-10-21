@@ -83,7 +83,8 @@ export class GpuBatchAdaptor implements BatcherAdaptor
         const pipeline = renderer.pipeline.getPipeline(
             this._geometry,
             program,
-            tempState
+            tempState,
+            batch.topology
         );
 
         batch.bindGroup._touch(renderer.textureGC.count);

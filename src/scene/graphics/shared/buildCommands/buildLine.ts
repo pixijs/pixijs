@@ -157,25 +157,15 @@ function round(
  * @param flipAlignment
  * @param closed
  * @param vertices
- * @param _verticesStride
- * @param _verticesOffset
  * @param indices
- * @param _indicesOffset
  */
 export function buildLine(
     points: number[],
     lineStyle: StrokeAttributes,
     flipAlignment: boolean,
     closed: boolean,
-    // alignment:number,
-
     vertices: number[],
-    _verticesStride: number,
-    _verticesOffset: number,
-
     indices: number[],
-    _indicesOffset: number,
-
 ): void
 {
     // const shape = graphicsData.shape as Polygon;
