@@ -78,7 +78,6 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
 
     private _updateBatchableSprite(sprite: NineSliceSprite, batchableSprite: BatchableMesh)
     {
-        sprite.didViewUpdate = false;
         (batchableSprite.geometry as NineSliceGeometry)
             .update(sprite);
 
