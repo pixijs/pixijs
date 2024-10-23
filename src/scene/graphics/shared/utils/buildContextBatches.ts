@@ -7,12 +7,14 @@ import { BigPool } from '../../../../utils/pool/PoolGroup';
 import { BatchableGraphics } from '../BatchableGraphics';
 import { buildCircle, buildEllipse, buildRoundedRectangle } from '../buildCommands/buildCircle';
 import { buildLine } from '../buildCommands/buildLine';
+import { buildPixelLine } from '../buildCommands/buildPixelLine';
 import { buildPolygon } from '../buildCommands/buildPolygon';
 import { buildRectangle } from '../buildCommands/buildRectangle';
 import { buildTriangle } from '../buildCommands/buildTriangle';
 import { triangulateWithHoles } from './triangulateWithHoles';
 
 import type { Polygon } from '../../../../maths/shapes/Polygon';
+import type { Topology } from '../../../../rendering/renderers/shared/geometry/const';
 import type { ShapeBuildCommand } from '../buildCommands/ShapeBuildCommand';
 import type { ConvertedFillStyle, ConvertedStrokeStyle } from '../FillTypes';
 import type { GraphicsContext, TextureInstruction } from '../GraphicsContext';
@@ -157,11 +159,12 @@ function addShapePathToGeometryData(
         const points: number[] = [];
 
         const build = shapeBuilders[shape.type];
-
+        let topology: Topology = 'triangle-list';
         // TODO - this can be cached...
         // TODO - THIS IS DONE TWICE!!!!!!
         // ONCE FOR STROKE AND ONCE FOR FILL
         // move to the ShapePath2D class itself?
+
         build.build(shape, points);
 
         if (matrix)
@@ -202,7 +205,15 @@ function addShapePathToGeometryData(
             const close = (shape as Polygon).closePath ?? true;
             const lineStyle = style as ConvertedStrokeStyle;
 
-            buildLine(points, lineStyle, false, close, vertices, 2, vertOffset, indices, indexOffset);
+            if (!lineStyle.pixelLine)
+            {
+                buildLine(points, lineStyle, false, close, vertices, indices);
+            }
+            else
+            {
+                buildPixelLine(points, close, vertices, indices);
+                topology = 'line-list';
+            }
         }
 
         const uvsOffset = uvs.length / 2;
@@ -242,6 +253,7 @@ function addShapePathToGeometryData(
 
         graphicsBatch.texture = texture;
         graphicsBatch.geometryData = geometryData;
+        graphicsBatch.topology = topology;
 
         batches.push(graphicsBatch);
     });

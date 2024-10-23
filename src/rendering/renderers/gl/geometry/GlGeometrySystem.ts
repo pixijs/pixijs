@@ -438,7 +438,7 @@ export class GlGeometrySystem implements System
         const { gl } = this._renderer;
         const geometry = this._activeGeometry;
 
-        const glTopology = topologyToGlMap[geometry.topology || topology];
+        const glTopology = topologyToGlMap[topology || geometry.topology];
 
         instanceCount ||= geometry.instanceCount;
 

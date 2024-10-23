@@ -3,6 +3,7 @@ import { multiplyHexColors } from '../../container/utils/multiplyHexColors';
 
 import type { Batch, Batcher } from '../../../rendering/batcher/shared/Batcher';
 import type { DefaultBatchableMeshElement } from '../../../rendering/batcher/shared/DefaultBatcher';
+import type { Topology } from '../../../rendering/renderers/shared/geometry/const';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { Graphics } from './Graphics';
 
@@ -19,6 +20,7 @@ export class BatchableGraphics implements DefaultBatchableMeshElement
 
     public texture: Texture;
 
+    public topology: Topology = 'triangle-list';
     public renderable: Graphics;
     public indexOffset: number;
     public indexSize: number;
@@ -94,11 +96,14 @@ export class BatchableGraphics implements DefaultBatchableMeshElement
 
         gpuBuffer.texture = this.texture;
         gpuBuffer.geometryData = this.geometryData;
+
+        gpuBuffer.topology = this.topology;
     }
 
     public reset()
     {
         this.applyTransform = true;
         this.renderable = null;
+        this.topology = 'triangle-list';
     }
 }
