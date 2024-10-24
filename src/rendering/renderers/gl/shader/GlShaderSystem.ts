@@ -60,6 +60,7 @@ export class GlShaderSystem implements ShaderSystem
     constructor(renderer: WebGLRenderer)
     {
         this._renderer = renderer;
+        this._renderer.renderableGC.addManagedHash(this, '_programDataHash');
     }
 
     protected contextChange(gl: GlRenderingContext): void

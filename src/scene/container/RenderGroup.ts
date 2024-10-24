@@ -2,6 +2,7 @@ import { Matrix } from '../../maths/matrix/Matrix';
 import { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
+import type { ViewContainer } from '../view/ViewContainer';
 import type { Container } from './Container';
 
 /**
@@ -200,15 +201,11 @@ export class RenderGroup implements Instruction
         childrenToUpdate.list[childrenToUpdate.index++] = child;
     }
 
-    // SHOULD THIS BE HERE?
-    public updateRenderable(container: Container)
+    public updateRenderable(renderable: ViewContainer)
     {
-        // only update if its visible!
-        if (container.globalDisplayStatus < 0b111) return;
-
-        container.didViewUpdate = false;
-        // actually updates the renderable..
-        this.instructionSet.renderPipes[container.renderPipeId].updateRenderable(container);
+        if (renderable.globalDisplayStatus < 0b111) return;
+        this.instructionSet.renderPipes[renderable.renderPipeId].updateRenderable(renderable);
+        renderable.didViewUpdate = false;
     }
 
     public onChildViewUpdate(child: Container)
