@@ -8,7 +8,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should update text fill/stroke through proxy',
-    pixelMatch: 1250,
     create: async (scene: Container, renderer) =>
     {
         const text = new Text({

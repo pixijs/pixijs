@@ -190,6 +190,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        renderer.renderableGC.addManagedHash(this, '_gpuRenderTargetHash');
     }
 
     /** called when dev wants to finish a render pass */

@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { cleanArray, cleanHash } from '../../../../utils/data/clean';
 
 import type { Container } from '../../../../scene/container/Container';
 import type { Renderer } from '../../types';
@@ -52,6 +53,7 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
             ExtensionType.WebGPUSystem,
         ],
         name: 'renderableGC',
+        priority: 0
     } as const;
 
     /** default options for the renderableGCSystem */
@@ -86,6 +88,12 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
     private _frequency: number;
     private _now: number;
 
+    private readonly _managedHashes: {context: any, hash: string}[] = [];
+    private _hashHandler: number;
+
+    private readonly _managedArrays: {context: any, hash: string}[] = [];
+    private _arrayHandler: number;
+
     /** @param renderer - The renderer this System works for. */
     constructor(renderer: Renderer)
     {
@@ -115,13 +123,48 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
         {
             this._handler = this._renderer.scheduler.repeat(
                 () => this.run(),
+                this._frequency,
+                false
+            );
+
+            this._hashHandler = this._renderer.scheduler.repeat(
+                () =>
+                {
+                    for (const hash of this._managedHashes)
+                    {
+                        hash.context[hash.hash] = cleanHash(hash.context[hash.hash]);
+                    }
+                },
+                this._frequency
+            );
+
+            this._arrayHandler = this._renderer.scheduler.repeat(
+                () =>
+                {
+                    for (const array of this._managedArrays)
+                    {
+                        cleanArray(array.context[array.hash]);
+                    }
+                },
                 this._frequency
             );
         }
         else
         {
             this._renderer.scheduler.cancel(this._handler);
+            this._renderer.scheduler.cancel(this._hashHandler);
+            this._renderer.scheduler.cancel(this._arrayHandler);
         }
+    }
+
+    public addManagedHash<T>(context: T, hash: string): void
+    {
+        this._managedHashes.push({ context, hash: hash as string });
+    }
+
+    public addManagedArray<T>(context: T, hash: string): void
+    {
+        this._managedArrays.push({ context, hash: hash as string });
     }
 
     public prerender(): void
@@ -196,6 +239,8 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
         this.enabled = false;
         this._renderer = null as any as Renderer;
         this._managedRenderables.length = 0;
+        this._managedHashes.length = 0;
+        this._managedArrays.length = 0;
     }
 
     private _removeRenderable(renderable: Container): void

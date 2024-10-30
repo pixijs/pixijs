@@ -3,7 +3,7 @@ import { Geometry } from '../../../rendering/renderers/shared/geometry/Geometry'
 import { State } from '../../../rendering/renderers/shared/state/State';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
-import { ViewContainer } from '../../view/View';
+import { ViewContainer } from '../../view/ViewContainer';
 import { MeshGeometry } from './MeshGeometry';
 
 import type { PointData } from '../../../maths/point/PointData';
@@ -318,22 +318,6 @@ export class Mesh<
         }
 
         return false;
-    }
-
-    /** @ignore */
-    public onViewUpdate()
-    {
-        this._didViewChangeTick++;
-
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.onChildViewUpdate(this);
-        }
     }
 
     /**

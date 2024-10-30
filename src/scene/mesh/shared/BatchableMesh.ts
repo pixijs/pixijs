@@ -2,7 +2,7 @@ import type { Matrix } from '../../../maths/matrix/Matrix';
 import type { Batch, Batcher } from '../../../rendering/batcher/shared/Batcher';
 import type { DefaultBatchableMeshElement } from '../../../rendering/batcher/shared/DefaultBatcher';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import type { ViewContainer } from '../../view/View';
+import type { ViewContainer } from '../../view/ViewContainer';
 import type { MeshGeometry } from './MeshGeometry';
 
 /**

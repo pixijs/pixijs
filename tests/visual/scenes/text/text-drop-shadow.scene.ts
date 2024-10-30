@@ -6,7 +6,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render text with correct drop shadow',
-    pixelMatch: 200,
     create: async (scene: Container, renderer) =>
     {
         const style = new TextStyle({

@@ -39,6 +39,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
     {
         this._renderer = renderer;
         this._renderer.runners.resolutionChange.add(this);
+        this._renderer.renderableGC.addManagedHash(this, '_gpuText');
     }
 
     public resolutionChange()

@@ -7,7 +7,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should multiple textures on a complex mesh',
-    pixelMatch: 200,
     create: async (scene: Container, renderer: Renderer) =>
     {
         const texture1 = renderer.canvasText.getTexture({
