@@ -70,6 +70,9 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
         this._adaptor = adaptor;
 
         this._adaptor.init();
+
+        renderer.renderableGC.addManagedHash(this, '_gpuBatchableMeshHash');
+        renderer.renderableGC.addManagedHash(this, '_meshDataHash');
     }
 
     public validateRenderable(mesh: Mesh): boolean

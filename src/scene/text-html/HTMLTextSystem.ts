@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../extensions/Extensions';
+import { type CanvasAndContext, CanvasPool } from '../../rendering/renderers/shared/texture/CanvasPool';
 import { TexturePool } from '../../rendering/renderers/shared/texture/TexturePool';
 import { type Renderer, RendererType } from '../../rendering/renderers/types';
 import { isSafari } from '../../utils/browser/isSafari';
@@ -135,15 +136,16 @@ export class HTMLTextSystem implements System
 
         await loadSVGImage(image, svgURL, isSafari() && fontFamilies.length > 0);
 
-        let resource: HTMLImageElement | HTMLCanvasElement = image;
+        const resource: HTMLImageElement | HTMLCanvasElement = image;
+        let canvasAndContext: CanvasAndContext;
 
         if (this._createCanvas)
         {
             // silly webGPU workaround..
-            resource = getTemporaryCanvasFromImage(image, resolution);
+            canvasAndContext = getTemporaryCanvasFromImage(image, resolution);
         }
 
-        const texture = getPo2TextureFromSource(resource,
+        const texture = getPo2TextureFromSource(canvasAndContext ? canvasAndContext.canvas : resource,
             image.width - uvSafeOffset,
             image.height - uvSafeOffset,
             resolution
@@ -152,6 +154,7 @@ export class HTMLTextSystem implements System
         if (this._createCanvas)
         {
             this._renderer.texture.initSource(texture.source);
+            CanvasPool.returnCanvasAndContext(canvasAndContext);
         }
 
         BigPool.return(htmlTextData as PoolItem);

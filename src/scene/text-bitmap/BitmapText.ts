@@ -150,13 +150,16 @@ export class BitmapText extends AbstractText<TextStyle, TextStyleOptions> implem
      * The resolution / device pixel ratio of the canvas.
      * @default 1
      */
-    override set resolution(_value: number)
+    override set resolution(value: number)
     {
         // #if _DEBUG
-        warn(
+        if (value !== null)
+        {
+            warn(
             // eslint-disable-next-line max-len
-            '[BitmapText] dynamically updating the resolution is not supported. Resolution should be managed by the BitmapFont.'
-        );
+                '[BitmapText] dynamically updating the resolution is not supported. Resolution should be managed by the BitmapFont.'
+            );
+        }
         // #endif
     }
 

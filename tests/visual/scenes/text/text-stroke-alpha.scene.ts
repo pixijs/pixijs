@@ -7,7 +7,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render stroke and fill alpha separately',
-    pixelMatch: 320,
     create: async (scene: Container) =>
     {
         const style = new TextStyle({

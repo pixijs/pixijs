@@ -54,6 +54,8 @@ export class GlBufferSystem implements System
     constructor(renderer: WebGLRenderer)
     {
         this._renderer = renderer;
+
+        this._renderer.renderableGC.addManagedHash(this, '_gpuBuffers');
     }
 
     /**

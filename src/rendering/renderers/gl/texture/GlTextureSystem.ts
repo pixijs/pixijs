@@ -68,6 +68,8 @@ export class GlTextureSystem implements System, CanvasGenerator
     constructor(renderer: WebGLRenderer)
     {
         this._renderer = renderer;
+        this._renderer.renderableGC.addManagedHash(this, '_glTextures');
+        this._renderer.renderableGC.addManagedHash(this, '_glSamplers');
     }
 
     protected contextChange(gl: GlRenderingContext): void
