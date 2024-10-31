@@ -73,15 +73,15 @@ export class CanvasSpriteRenderer
         if (texture.trim)
         {
             if (groupD8.isVertical(texture.rotate))
-                {
-                    destWidth = texture.trim.height;
-                    destHeight = texture.trim.width;
-                }
-                else
-                {
-                    destWidth = texture.trim.width;
-                    destHeight = texture.trim.height;
-                }
+            {
+                destWidth = texture.trim.height;
+                destHeight = texture.trim.width;
+            }
+            else
+            {
+                destWidth = texture.trim.width;
+                destHeight = texture.trim.height;
+            }
         }
 
         let wt = sprite.transform.worldTransform;
