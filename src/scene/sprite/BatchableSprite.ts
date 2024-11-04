@@ -3,7 +3,7 @@ import type { Batch, Batcher } from '../../rendering/batcher/shared/Batcher';
 import type { DefaultBatchableQuadElement } from '../../rendering/batcher/shared/DefaultBatcher';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { BoundsData } from '../container/bounds/Bounds';
-import type { ViewContainer } from '../view/ViewContainer';
+import type { Container } from '../container/Container';
 
 /**
  * A batchable sprite object.
@@ -20,7 +20,7 @@ export class BatchableSprite implements DefaultBatchableQuadElement
 
     public transform: Matrix;
 
-    public renderable: ViewContainer;
+    public renderable: Container;
     public texture: Texture;
     public bounds: BoundsData;
 

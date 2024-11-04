@@ -301,11 +301,33 @@ export class AbstractRenderer<
             options.transform = options.container.localTransform;
         }
 
+        // lets ensure this object is a render group so we can render it!
+        // the renderer only likes to render - render groups.
+        options.container.enableRenderGroup();
+
+        // this allow all the systems to prep for the render.
         this.runners.prerender.emit(options);
+
+        // now that the renderer is prepped, we can render the container.
+        // this can be called many times to render lots of things between the prerender
+        // and postrender calls.
+        this.renderContainer(options);
+
+        // this allow all the systems to clean up after the render.
+        this.runners.postrender.emit(options);
+    }
+
+    /**
+     * Render a container. Used internally to render the main container, but also by renderGroupSystem
+     * to render and cached textures.
+     * @param options - The options to render with.
+     * @ignore
+     */
+    public renderContainer(options: RenderOptions): void
+    {
         this.runners.renderStart.emit(options);
         this.runners.render.emit(options);
         this.runners.renderEnd.emit(options);
-        this.runners.postrender.emit(options);
     }
 
     /**
