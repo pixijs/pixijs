@@ -1,9 +1,32 @@
 import { Matrix } from '../../maths/matrix/Matrix';
 import { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
+import { TexturePool } from '../../rendering/renderers/shared/texture/TexturePool';
 
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
+import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
+import type { BatchableSprite } from '../sprite/BatchableSprite';
 import type { ViewContainer } from '../view/ViewContainer';
+import type { Bounds } from './bounds/Bounds';
 import type { Container } from './Container';
+
+/**
+ * Options for caching a container as a texture.
+ * @memberof rendering
+ * @see {@link RenderGroup#textureOptions}
+ */
+export interface CacheAsTextureOptions
+{
+    /**
+     * If true, the texture will be antialiased. This smooths out the edges of the texture.
+     * @default false
+     */
+    antialias?: boolean;
+    /**
+     * The resolution of the texture. A higher resolution means a sharper texture but uses more memory.
+     * By default the resolution is 1 which is the same as the rendererers resolution.
+     */
+    resolution?: number;
+}
 
 /**
  * A RenderGroup is a class that is responsible for I generating a set of instructions that are used to render the
@@ -40,6 +63,43 @@ export class RenderGroup implements Instruction
 
     private readonly _onRenderContainers: Container[] = [];
 
+    /**
+     * Indicates if the cached texture needs to be updated.
+     * @default true
+     */
+    public textureNeedsUpdate = true;
+
+    /**
+     * Indicates if the container should be cached as a texture.
+     * @type {boolean}
+     * @default false
+     */
+    public cacheAsTexture = false;
+
+    /**
+     * The texture used for caching the container.
+     * @type {Texture | undefined}
+     */
+    public texture?: Texture;
+
+    /**
+     * The bounds of the cached texture.
+     * @type {Bounds | undefined}
+     */
+    public textureBounds?: Bounds;
+
+    /**
+     * The options for caching the container as a texture.
+     * @type {CacheAsTextureOptions}
+     */
+    public textureOptions: CacheAsTextureOptions;
+
+    /**
+     *  holds a reference to the batchable render sprite
+     *  @ignore
+     */
+    public _batchableRenderGroup: BatchableSprite;
+
     public init(root: Container)
     {
         this.root = root;
@@ -54,6 +114,27 @@ export class RenderGroup implements Instruction
         {
             this.addChild(children[i]);
         }
+    }
+
+    public enableCacheAsTexture(options: CacheAsTextureOptions = {}): void
+    {
+        this.textureOptions = options;
+        this.cacheAsTexture = true;
+    }
+
+    public disableCacheAsTexture(): void
+    {
+        this.cacheAsTexture = false;
+        if (this.texture)
+        {
+            TexturePool.returnTexture(this.texture);
+            this.texture = null;
+        }
+    }
+
+    public updateCacheTexture(): void
+    {
+        this.textureNeedsUpdate = true;
     }
 
     public reset()
@@ -77,6 +158,8 @@ export class RenderGroup implements Instruction
 
         this._onRenderContainers.length = 0;
         this.renderGroupParent = null;
+
+        this.disableCacheAsTexture();
     }
 
     get localTransform()
@@ -243,6 +326,8 @@ export class RenderGroup implements Instruction
 
     public destroy()
     {
+        this.disableCacheAsTexture();
+
         this.renderGroupParent = null;
         this.root = null;
         (this.childrenRenderablesToUpdate as any) = null;
