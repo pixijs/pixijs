@@ -1,5 +1,5 @@
 import { ExtensionType } from '../../extensions/Extensions';
-import { BigPool } from '../../utils';
+import { BigPool } from '../../utils/pool/PoolGroup';
 import { BatchableSprite } from '../sprite/BatchableSprite';
 import { executeInstructions } from './utils/executeInstructions';
 
