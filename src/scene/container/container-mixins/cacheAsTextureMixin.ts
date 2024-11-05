@@ -1,12 +1,12 @@
 import type { Container } from '../Container';
 import type { CacheAsTextureOptions } from '../RenderGroup';
 
-export interface SortMixinConstructor
+export interface CacheAsTextureMixinConstructor
 {
     cacheAsTexture?: boolean;
 }
 
-export interface CacheAsTextureMixin extends Required<SortMixinConstructor>
+export interface CacheAsTextureMixin extends Required<CacheAsTextureMixinConstructor>
 {
     cacheAsTexture: boolean;
     updateCacheTexture: () => void;
