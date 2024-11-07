@@ -265,49 +265,40 @@ describe('AnimatedSprite', () =>
 
     describe('.gotoAndPlay()', () =>
     {
-        let sprite: AnimatedSprite | null;
+        let sprite!: AnimatedSprite;
 
-        beforeAll(() =>
+        beforeEach(() =>
         {
             sprite = new AnimatedSprite([Texture.EMPTY, Texture.EMPTY, Texture.EMPTY]);
             sprite.animationSpeed = 0.5;
             sprite.loop = false;
         });
 
-        afterAll(() =>
+        afterEach(() =>
         {
             sprite?.destroy();
-            if (sprite !== null)
-            {
-                sprite = null;
-            }
+            sprite = null;
         });
 
         it('should fire frame after start frame during one play and fire onComplete', () =>
             new Promise<void>((done) =>
             {
+                jest.setTimeout(5000);
                 const frameIds = [] as number[];
 
-                expect(sprite).not.toBeNull();
-                if (sprite !== null)
+                sprite.onComplete = () =>
                 {
-                    sprite.onComplete = () =>
-                    {
-                        expect(frameIds).toEqual(expect.arrayContaining([1, 2]));
-                        expect(sprite?.playing).toBe(false);
-                        if (sprite !== null)
-                        {
-                            sprite.onComplete = null;
-                            sprite.onFrameChange = null;
-                        }
-                        done();
-                    };
-                    sprite.onFrameChange = (frame) =>
-                    {
-                        frameIds.push(frame);
-                    };
-                    sprite.gotoAndPlay(1);
-                }
+                    expect(frameIds).toEqual(expect.arrayContaining([1, 2]));
+                    expect(sprite.playing).toBe(false);
+                    sprite.onComplete = null;
+                    sprite.onFrameChange = null;
+                    done();
+                };
+                sprite.onFrameChange = (frame) =>
+                {
+                    frameIds.push(frame);
+                };
+                sprite.gotoAndPlay(1);
                 expect(sprite?.playing).toBe(true);
             }));
     });

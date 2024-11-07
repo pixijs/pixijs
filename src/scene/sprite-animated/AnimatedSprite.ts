@@ -17,7 +17,7 @@ export type AnimatedSpriteFrames = Texture[] | FrameObject[];
 export interface AnimatedSpriteOptions extends SpriteOptions
 {
     /** An array of {@link Texture} or frame objects that make up the animation. */
-    textures: AnimatedSpriteFrames | null;
+    textures: AnimatedSpriteFrames;
     /** Whether to use Ticker.shared to auto update animation time. */
     autoUpdate?: boolean;
 }
@@ -125,7 +125,7 @@ export class AnimatedSprite extends Sprite
         ticker: Ticker) => void) | null | undefined;
 
     private _playing: boolean;
-    private _textures: Texture[] | null;
+    private _textures: Texture[];
     /** An array of durations (in milliseconds), which map to sprite frames at the same index. */
     private _durations: number[] | null;
 
@@ -206,7 +206,10 @@ export class AnimatedSprite extends Sprite
      */
     constructor(options: AnimatedSpriteOptions);
     /** @ignore */
-    constructor(...args: [AnimatedSpriteOptions?] | [SpriteOptions?] | [AnimatedSpriteFrames?, boolean?])
+    constructor(
+        ...args: [AnimatedSpriteOptions?] |
+        [AnimatedSpriteFrames?] |
+        [AnimatedSpriteFrames?, boolean?])
     {
         let options = args[0] as AnimatedSpriteOptions;
 
@@ -218,13 +221,9 @@ export class AnimatedSprite extends Sprite
             };
         }
 
-        let firstFrame!: Texture | FrameObject;
         const { textures, autoUpdate, ...rest } = options;
 
-        if (textures !== null)
-        {
-            [firstFrame] = textures;
-        }
+        const [firstFrame] = textures;
 
         super({
             ...rest,
@@ -250,7 +249,7 @@ export class AnimatedSprite extends Sprite
         this._playing = false;
         this._previousFrame = null;
 
-        this.textures = textures ?? [];
+        this.textures = textures;
     }
 
     /**
@@ -262,9 +261,9 @@ export class AnimatedSprite extends Sprite
     {
         const textures = [];
 
-        for (const item of frames)
+        for (let i = 0; i < frames.length; ++i)
         {
-            textures.push(Texture.from(item));
+            textures.push(Texture.from(frames[i]));
         }
 
         return new AnimatedSprite(textures);
@@ -279,9 +278,9 @@ export class AnimatedSprite extends Sprite
     {
         const textures = [];
 
-        for (const item of images)
+        for (let i = 0; i < images.length; ++i)
         {
-            textures.push(Texture.from(item));
+            textures.push(Texture.from(images[i]));
         }
 
         return new AnimatedSprite(textures);
@@ -647,7 +646,7 @@ export class AnimatedSprite extends Sprite
     }
 
     /** The array of textures used for this AnimatedSprite. */
-    public get textures(): Texture[] | null
+    public get textures(): AnimatedSpriteFrames
     {
         return this._textures;
     }
@@ -664,10 +663,10 @@ export class AnimatedSprite extends Sprite
             this._textures = [];
             this._durations = [];
 
-            for (const animatedSpriteFrame of value)
+            for (let i = 0; i < value.length; i++)
             {
-                this._textures.push((animatedSpriteFrame as FrameObject).texture);
-                this._durations.push((animatedSpriteFrame as FrameObject).time);
+                this._textures.push((value[i] as FrameObject).texture);
+                this._durations.push((value[i] as FrameObject).time);
             }
         }
         this._previousFrame = null;
@@ -773,12 +772,9 @@ export class AnimatedSprite extends Sprite
 
         this._previousFrame = currentFrame;
 
-        if (this.textures !== null)
-        {
-            this.texture = this.textures[currentFrame];
-        }
+        this.texture = this._textures[currentFrame];
 
-        if (this.updateAnchor && this.texture?.defaultAnchor)
+        if (this.updateAnchor)
         {
             this.anchor.copyFrom(this.texture.defaultAnchor);
         }
