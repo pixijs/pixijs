@@ -19,7 +19,7 @@ describe('Graphics Bounds', () =>
             expect(height).toEqual(200);
         });
 
-        it('should give correct bounds with stroke', () =>
+        it('should give correct bounds with stroke, default alignment', () =>
         {
             const graphics = new Graphics();
 
@@ -34,6 +34,40 @@ describe('Graphics Bounds', () =>
             expect(y).toEqual(18); // <- received 20
             expect(width).toEqual(104); // <- received 100
             expect(height).toEqual(204); // <- received 200
+        });
+
+        it('should give correct bounds with stroke, alignment 1', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics
+                .rect(10, 20, 100, 200)
+                .fill(0)
+                .stroke({ width: 4, color: 0xff0000, alignment: 1 });
+
+            const { x, y, width, height } = graphics.context.bounds;
+
+            expect(x).toEqual(10);
+            expect(y).toEqual(20);
+            expect(width).toEqual(100);
+            expect(height).toEqual(200);
+        });
+
+        it('should give correct bounds with stroke, alignment 0', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics
+                .rect(10, 20, 100, 200)
+                .fill(0)
+                .stroke({ width: 4, color: 0xff0000, alignment: 0 });
+
+            const { x, y, width, height } = graphics.context.bounds;
+
+            expect(x).toEqual(6);
+            expect(y).toEqual(16);
+            expect(width).toEqual(108);
+            expect(height).toEqual(208);
         });
 
         it('should be zero for empty Graphics', () =>
