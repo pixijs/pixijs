@@ -143,6 +143,7 @@ export class RenderGroup implements Instruction
     {
         this.textureOptions = options;
         this.cacheAsTexture = true;
+        this.textureNeedsUpdate = true;
     }
 
     public disableCacheAsTexture(): void
