@@ -1,5 +1,5 @@
 import type { Point } from '../../../../maths/point/Point';
-import type { Bounds, BoundsData } from '../../../../scene/container/bounds/Bounds';
+import type { BoundsData } from '../../../../scene/container/bounds/Bounds';
 
 export interface ViewObserver
 {
@@ -43,8 +43,6 @@ export interface View
     /** this is the AABB rectangle bounds of the view in local untransformed space. */
     bounds: BoundsData;
 
-    /** Adds the current bounds of this view to the supplied bounds */
-    addBounds: (bounds: Bounds) => void;
     /** Checks if the point is within the view */
     containsPoint: (point: Point) => boolean;
 }
