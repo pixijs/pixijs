@@ -9,7 +9,6 @@ import { updateRenderGroupTransforms } from './utils/updateRenderGroupTransforms
 import { validateRenderables } from './utils/validateRenderables';
 
 import type { WebGPURenderer } from '../../rendering/renderers/gpu/WebGPURenderer';
-import type { RenderOptions } from '../../rendering/renderers/shared/system/AbstractRenderer';
 import type { System } from '../../rendering/renderers/shared/system/System';
 import type { Renderer } from '../../rendering/renderers/types';
 import type { ViewContainer } from '../view/ViewContainer';
@@ -17,7 +16,6 @@ import type { Container } from './Container';
 import type { RenderGroup } from './RenderGroup';
 
 const tempMatrix = new Matrix();
-const tempMatrix2 = new Matrix();
 
 /**
  * The view system manages the main canvas that is attached to the DOM.
@@ -43,29 +41,19 @@ export class RenderGroupSystem implements System
         this._renderer = renderer;
     }
 
-    public prerender(options: RenderOptions): void
-    {
-        /**
-         * the way cached render textures work is that we need to to do a pass
-         * across all the renderGroups to check if they are should be rerendered if
-         * they are a cached texture.
-         */
-        this._updateCachedRenderTextures(options.container.renderGroup);
-    }
-
     protected render({ container, transform }: {container: Container, transform: Matrix}): void
     {
+        // we need to save the parent and renderGroupParent, so we can restore them later
         const parent = container.parent;
         const renderGroupParent = container.renderGroup.renderGroupParent;
 
+        // we set the transforms and parents to null, so we can render the container without any transforms
         container.parent = null;
         container.renderGroup.renderGroupParent = null;
 
         const renderer = this._renderer;
 
         // collect all the renderGroups in the scene and then render them one by one..
-        const renderGroups = this._collectRenderGroups(container.renderGroup, []);
-
         let originalLocalTransform: Matrix = tempMatrix;
 
         if (transform)
@@ -74,51 +62,12 @@ export class RenderGroupSystem implements System
             container.renderGroup.localTransform.copyFrom(transform);
         }
 
+        //  this._assignTop(container.renderGroup, null);
         const renderPipes = (renderer as WebGPURenderer).renderPipes;
 
-        for (let i = 0; i < renderGroups.length; i++)
-        {
-            const renderGroup = renderGroups[i];
+        this._updateCachedRenderGroups(container.renderGroup, null);
 
-            renderGroup.textureNeedsUpdate = false;
-
-            renderGroup.runOnRender();
-
-            renderGroup.instructionSet.renderPipes = renderPipes;
-
-            if (!renderGroup.structureDidChange)
-            {
-                // phase 1 - validate all the renderables
-                validateRenderables(renderGroup, renderPipes);
-            }
-            else
-            {
-                clearList(renderGroup.childrenRenderablesToUpdate.list, 0);
-            }
-
-            // phase 2 - update all the transforms
-            // including updating the renderables..
-            updateRenderGroupTransforms(renderGroup);
-
-            if (renderGroup.structureDidChange)
-            {
-                renderGroup.structureDidChange = false;
-
-                // build the renderables
-                buildInstructions(renderGroup, renderer);
-            }
-            else
-            {
-                // update remaining renderables
-                updateRenderables(renderGroup);
-            }
-
-            // reset the renderables to update
-            renderGroup.childrenRenderablesToUpdate.index = 0;
-
-            // upload all the things!
-            renderer.renderPipes.batch.upload(renderGroup.instructionSet);
-        }
+        this._updateRenderGroups(container.renderGroup);
 
         renderer.globalUniforms.start({
             worldTransformMatrix: transform ? container.renderGroup.localTransform : container.renderGroup.worldTransform,
@@ -134,6 +83,7 @@ export class RenderGroupSystem implements System
             renderPipes.uniformBatch.renderEnd();
         }
 
+        // now return the transforms back to normal..
         if (transform)
         {
             container.renderGroup.localTransform.copyFrom(originalLocalTransform);
@@ -148,106 +98,141 @@ export class RenderGroupSystem implements System
         (this._renderer as null) = null;
     }
 
-    private _updateCachedRenderTextures(renderGroup: RenderGroup): void
+    private _updateCachedRenderGroups(renderGroup: RenderGroup, closestCacheAsTexture: RenderGroup | null): void
     {
-        const renderer = this._renderer;
-
-        for (let i = 0; i < renderGroup.renderGroupChildren.length; i++)
+        if (renderGroup.cacheAsTexture)
         {
-            const childRenderGroup = renderGroup.renderGroupChildren[i];
+            // early out as nothing further needs to be updated!
+            if (!renderGroup.updateCacheTexture) return;
 
-            this._updateCachedRenderTextures(childRenderGroup);
+            closestCacheAsTexture = renderGroup;
+        }
 
-            if (childRenderGroup.cacheAsTexture)
+        renderGroup._parentCacheAsTextureRenderGroup = closestCacheAsTexture;
+
+        // now check the cacheAsTexture stuff...
+        for (let i = renderGroup.renderGroupChildren.length - 1; i >= 0; i--)
+        {
+            this._updateCachedRenderGroups(renderGroup.renderGroupChildren[i], closestCacheAsTexture);
+        }
+
+        renderGroup.invalidateMatrices();
+
+        if (renderGroup.cacheAsTexture)
+        {
+            if (renderGroup.textureNeedsUpdate)
             {
-                if (childRenderGroup.textureNeedsUpdate)
+                // lets get the texture ready for rendering
+                // but the rendering will not happen until the renderGroup is rendered!
+                // We also want to know now, what the bounds of the texture will be.
+                // as if the texture changes, we need to invalidate the parent render group!
+                const bounds = renderGroup.root.getLocalBounds();
+
+                bounds.ceil();
+
+                const lastTexture = renderGroup.texture;
+
+                if (renderGroup.texture)
                 {
-                    const bounds = childRenderGroup.root.getLocalBounds();
+                    TexturePool.returnTexture(renderGroup.texture);
+                }
 
-                    bounds.ceil();
+                const renderer = this._renderer;
+                const resolution = renderGroup.textureOptions.resolution || renderer.view.resolution;
+                const antialias = renderGroup.textureOptions.antialias ?? renderer.view.antialias;
 
-                    const lastTexture = childRenderGroup.texture;
+                renderGroup.texture = TexturePool.getOptimalTexture(
+                    bounds.width,
+                    bounds.height,
+                    resolution,
+                    antialias
+                );
 
-                    if (childRenderGroup.texture)
+                renderGroup._textureBounds ||= new Bounds();
+                renderGroup._textureBounds.copyFrom(bounds);
+
+                if (lastTexture !== renderGroup.texture)
+                {
+                    if (renderGroup.renderGroupParent)
                     {
-                        TexturePool.returnTexture(childRenderGroup.texture);
+                        renderGroup.renderGroupParent.structureDidChange = true;
                     }
-
-                    const resolution = childRenderGroup.textureOptions.resolution || renderer.view.resolution;
-                    const antialias = childRenderGroup.textureOptions.antialias ?? renderer.view.antialias;
-
-                    childRenderGroup.texture = TexturePool.getOptimalTexture(
-                        bounds.width,
-                        bounds.height,
-                        resolution,
-                        antialias
-                    );
-
-                    childRenderGroup.textureBounds ||= new Bounds();
-
-                    childRenderGroup.textureBounds.copyFrom(bounds);
-
-                    if (lastTexture !== childRenderGroup.texture)
-                    {
-                        if (childRenderGroup.renderGroupParent)
-                        {
-                            childRenderGroup.renderGroupParent.structureDidChange = true;
-                        }
-                    }
-
-                    const transform = tempMatrix2;
-
-                    transform.tx = -bounds.x;
-                    transform.ty = -bounds.y;
-
-                    renderer.renderContainer({
-                        container: childRenderGroup.root,
-                        target: childRenderGroup.texture,
-                        transform,
-                        clear: true
-                    });
                 }
             }
-            else if (childRenderGroup.texture)
-            {
-                TexturePool.returnTexture(childRenderGroup.texture);
-            }
+        }
+        else if (renderGroup.texture)
+        {
+            TexturePool.returnTexture(renderGroup.texture);
+            renderGroup.texture = null;
         }
     }
 
-    private _collectRenderGroups(renderGroup: RenderGroup, out: RenderGroup[] = [])
+    private _updateRenderGroups(renderGroup: RenderGroup): void
     {
-        out.push(renderGroup);
+        const renderer = this._renderer;
+        const renderPipes = renderer.renderPipes;
 
-        if (renderGroup.cacheAsTexture && !renderGroup.textureNeedsUpdate)
+        renderGroup.runOnRender();
+
+        renderGroup.instructionSet.renderPipes = renderPipes;
+
+        if (!renderGroup.structureDidChange)
         {
-            // no need to update anything if it's a texture and it hasn't changed!
-            return out;
+            // phase 1 - validate all the renderables
+            validateRenderables(renderGroup, renderPipes);
         }
+        else
+        {
+            clearList(renderGroup.childrenRenderablesToUpdate.list, 0);
+        }
+
+        // phase 2 - update all the transforms
+        // including updating the renderables..
+        updateRenderGroupTransforms(renderGroup);
+
+        if (renderGroup.structureDidChange)
+        {
+            renderGroup.structureDidChange = false;
+
+            // build the renderables
+            buildInstructions(renderGroup, renderer);
+        }
+        else
+        {
+            // update remaining renderables
+            this._updateRenderables(renderGroup);
+        }
+
+        // reset the renderables to update
+        renderGroup.childrenRenderablesToUpdate.index = 0;
+
+        // upload all the things!
+        renderer.renderPipes.batch.upload(renderGroup.instructionSet);
+
+        // early out if it's a texture and it hasn't changed!
+        if (renderGroup.cacheAsTexture && !renderGroup.textureNeedsUpdate) return;
 
         for (let i = 0; i < renderGroup.renderGroupChildren.length; i++)
         {
-            this._collectRenderGroups(renderGroup.renderGroupChildren[i], out);
+            this._updateRenderGroups(renderGroup.renderGroupChildren[i]);
         }
-
-        return out;
     }
-}
 
-function updateRenderables(renderGroup: RenderGroup)
-{
-    const { list, index } = renderGroup.childrenRenderablesToUpdate;
-
-    for (let i = 0; i < index; i++)
+    private _updateRenderables(renderGroup: RenderGroup)
     {
-        const container = list[i];
+        const { list, index } = renderGroup.childrenRenderablesToUpdate;
 
-        if (container.didViewUpdate)
+        for (let i = 0; i < index; i++)
         {
-            renderGroup.updateRenderable(container as ViewContainer);
-        }
-    }
+            const container = list[i];
 
-    clearList(list, index);
+            if (container.didViewUpdate)
+            {
+                renderGroup.updateRenderable(container as ViewContainer);
+            }
+        }
+
+        clearList(list, index);
+    }
 }
 
