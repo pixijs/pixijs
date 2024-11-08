@@ -639,14 +639,16 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         const child = children[0];
 
+        const renderGroup = this.renderGroup || this.parentRenderGroup;
+
         if (child.parent === this)
         {
             this.children.splice(this.children.indexOf(child), 1);
             this.children.push(child);
 
-            if (this.parentRenderGroup)
+            if (renderGroup)
             {
-                this.parentRenderGroup.structureDidChange = true;
+                renderGroup.structureDidChange = true;
             }
 
             return child;
@@ -668,8 +670,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         // TODO - OPtimise this? could check what the parent has set?
         child._updateFlags = 0b1111;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
 
         if (renderGroup)
         {
