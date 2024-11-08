@@ -66,7 +66,7 @@ function _getLocalBounds(
         if (target.renderPipeId)
         {
             bounds.matrix = relativeTransform;
-            (target as Renderable).addBounds(bounds);
+            bounds.addBounds((target as Renderable).bounds);
         }
 
         const children = target.children;
