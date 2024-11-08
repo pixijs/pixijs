@@ -29,14 +29,9 @@ export function getFastGlobalBounds(target: Container, bounds: Bounds): Bounds
         bounds.set(0, 0, 0, 0);
     }
 
-    if (!target.renderGroup)
-    {
-        bounds.applyMatrix(target.parentRenderGroup.worldTransform);
-    }
-    else
-    {
-        bounds.applyMatrix(target.renderGroup.localTransform);
-    }
+    const renderGroup = target.renderGroup || target.parentRenderGroup;
+
+    bounds.applyMatrix(renderGroup.worldTransform);
 
     return bounds;
 }
