@@ -91,13 +91,6 @@ export class RenderGroup implements Instruction
     public _textureBounds?: Bounds;
 
     /**
-     * The bounds of the cached texture.
-     * @type {Bounds | undefined}
-     * @ignore
-     */
-    public textureBounds?: Bounds;
-
-    /**
      * The options for caching the container as a texture.
      * @type {CacheAsTextureOptions}
      */
