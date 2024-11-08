@@ -178,7 +178,7 @@ describe('AnimatedSprite', () =>
                 expect(sprite?.playing).toBe(true);
             }));
 
-        it('should play the expected sequence of textures, every time, given a set number of ticks at speed', async () =>
+        it('should play the expected sequence of textures, every time, given a set number of ticks at speed', () =>
         {
             let frameChangeSequence: number[] = [];
             const expectedFrameChangeSequence: number[][] = [
@@ -271,6 +271,7 @@ describe('AnimatedSprite', () =>
         {
             sprite = new AnimatedSprite([Texture.EMPTY, Texture.EMPTY, Texture.EMPTY]);
             sprite.animationSpeed = 0.5;
+            sprite.autoUpdate = false;
             sprite.loop = false;
         });
 
@@ -283,13 +284,12 @@ describe('AnimatedSprite', () =>
         it('should fire frame after start frame during one play and fire onComplete', () =>
             new Promise<void>((done) =>
             {
-                jest.setTimeout(5000);
                 const frameIds = [] as number[];
 
                 sprite.onComplete = () =>
                 {
-                    expect(frameIds).toEqual(expect.arrayContaining([1, 2]));
                     expect(sprite.playing).toBe(false);
+                    expect(frameIds).toEqual([1, 2, 0]);
                     sprite.onComplete = null;
                     sprite.onFrameChange = null;
                     done();
@@ -299,7 +299,24 @@ describe('AnimatedSprite', () =>
                     frameIds.push(frame);
                 };
                 sprite.gotoAndPlay(1);
+                expect(sprite.currentFrame).toEqual(1);
+                sprite?.update(ticker1);
+                expect(sprite.currentFrame).toEqual(1);
+
+                sprite?.update(ticker1);
+                expect(sprite.currentFrame).toEqual(2);
+                sprite?.update(ticker1);
+                expect(sprite.currentFrame).toEqual(2);
+
+                sprite?.update(ticker1);
+                expect(sprite.currentFrame).toEqual(0);
+                sprite?.update(ticker1);
+                expect(sprite.currentFrame).toEqual(0);
+
+                sprite?.update(ticker1);
+                expect(sprite.currentFrame).toEqual(1);
                 expect(sprite?.playing).toBe(true);
+                expect(frameIds).toEqual([1, 2, 0]);
             }));
     });
 
@@ -486,7 +503,8 @@ describe('AnimatedSprite', () =>
                     sprite.animationSpeed = -1;
                     sprite.onComplete = () =>
                     {
-                        expect(frameIds).toEqual(expect.arrayContaining([0])); // from 1 to 0, triggers onFrameChange at 0.
+                        // from 1 to 0, triggers onFrameChange at 0.
+                        expect(frameIds).toEqual(expect.arrayContaining([0]));
                         // Again, here we have looped fully, and so the 'currentFrame' should be the initial frame.
                         expect(sprite?.currentFrame).toEqual(1);
                         if (sprite !== null)
