@@ -233,7 +233,7 @@ export class GpuEncoderSystem implements System
         }
     }
 
-    public renderEnd()
+    public postrender()
     {
         this.finishRenderPass();
 
