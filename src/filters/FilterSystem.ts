@@ -180,15 +180,18 @@ export class FilterSystem implements System
             getFastGlobalBounds(instruction.container, bounds);
         }
 
-        // When a container is cached as a texture, its filters need to be applied relative to its
-        // cached parent's coordinate space rather than world space. This transform adjustment ensures
-        // filters are applied in the correct coordinate system.
-        const renderGroup = instruction.container.renderGroup || instruction.container.parentRenderGroup;
-        const filterFrameTransform = renderGroup.cacheToLocalTransform;
-
-        if (filterFrameTransform)
+        if (instruction.container)
         {
-            bounds.applyMatrix(filterFrameTransform);
+            // When a container is cached as a texture, its filters need to be applied relative to its
+            // cached parent's coordinate space rather than world space. This transform adjustment ensures
+            // filters are applied in the correct coordinate system.
+            const renderGroup = instruction.container.renderGroup || instruction.container.parentRenderGroup;
+            const filterFrameTransform = renderGroup.cacheToLocalTransform;
+
+            if (filterFrameTransform)
+            {
+                bounds.applyMatrix(filterFrameTransform);
+            }
         }
 
         // get GLOBAL bounds of the item we are going to apply the filter to
