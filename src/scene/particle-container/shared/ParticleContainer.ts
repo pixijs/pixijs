@@ -1,21 +1,16 @@
+import { Bounds } from '../../container/bounds/Bounds';
 import { ViewContainer } from '../../view/ViewContainer';
 import { particleData } from './particleData';
 
 import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import type { Bounds, BoundsData } from '../../container/bounds/Bounds';
 import type { ContainerChild, ContainerOptions } from '../../container/Container';
 import type { DestroyOptions } from '../../container/destroyTypes';
 import type { IParticle } from './Particle';
 import type { ParticleRendererProperty } from './particleData';
 
-const emptyBounds: BoundsData = {
-    minX: 0,
-    minY: 0,
-    maxX: 0,
-    maxY: 0,
-};
+const emptyBounds = new Bounds(0, 0, 0, 0);
 
 /**
  * Represents the properties of a particle that can be dynamically updated.
@@ -260,20 +255,13 @@ export class ParticleContainer extends ViewContainer implements Instruction
      * ParticleContainer does not calculated bounds as it would slow things down,
      * its up to you to set this via the boundsArea property
      */
-    public get bounds(): BoundsData
+    public get bounds()
     {
         return emptyBounds;
     }
 
-    /**
-     * ParticleContainer does not calculated bounds as it would slow things down,
-     * its up to you to set this via the boundsArea property
-     * @param _bounds - The output bounds object.
-     */
-    public addBounds(_bounds: Bounds): void
-    {
-        // empty
-    }
+    /** @private */
+    protected override updateBounds(): void { /* empty */ }
 
     /**
      * Destroys this sprite renderable and optionally its texture.
