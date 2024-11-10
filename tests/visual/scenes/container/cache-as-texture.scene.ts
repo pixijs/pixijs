@@ -34,7 +34,7 @@ export const scene: TestScene = {
 
             container.addChild(text);
 
-            container.cacheAsTexture = true;
+            container.cacheAsTexture(true);
 
             last.addChild(container);
 
