@@ -71,13 +71,12 @@ export class RenderGroup implements Instruction
 
     /**
      * Indicates if the container should be cached as a texture.
-     * @type {boolean}
      * @default false
      */
-    public cacheAsTexture = false;
+    public isCachedAsTexture = false;
 
     /**
-     * The texture used for caching the container. this is only set if cacheAsTexture is true.
+     * The texture used for caching the container. this is only set if isCachedAsTexture is true.
      * It can only be accessed after a render pass.
      * @type {Texture | undefined}
      */
@@ -103,7 +102,7 @@ export class RenderGroup implements Instruction
     public _batchableRenderGroup: BatchableSprite;
 
     /**
-     * Holds a reference to the closest parent RenderGroup that has cacheAsTexture enabled.
+     * Holds a reference to the closest parent RenderGroup that has isCachedAsTexture enabled.
      * This is used to properly transform coordinates when rendering into cached textures.
      * @type {RenderGroup | null}
      * @ignore
@@ -135,13 +134,13 @@ export class RenderGroup implements Instruction
     public enableCacheAsTexture(options: CacheAsTextureOptions = {}): void
     {
         this.textureOptions = options;
-        this.cacheAsTexture = true;
+        this.isCachedAsTexture = true;
         this.textureNeedsUpdate = true;
     }
 
     public disableCacheAsTexture(): void
     {
-        this.cacheAsTexture = false;
+        this.isCachedAsTexture = false;
         if (this.texture)
         {
             TexturePool.returnTexture(this.texture);

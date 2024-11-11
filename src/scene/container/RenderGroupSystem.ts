@@ -100,7 +100,7 @@ export class RenderGroupSystem implements System
 
     private _updateCachedRenderGroups(renderGroup: RenderGroup, closestCacheAsTexture: RenderGroup | null): void
     {
-        if (renderGroup.cacheAsTexture)
+        if (renderGroup.isCachedAsTexture)
         {
             // early out as nothing further needs to be updated!
             if (!renderGroup.updateCacheTexture) return;
@@ -118,7 +118,7 @@ export class RenderGroupSystem implements System
 
         renderGroup.invalidateMatrices();
 
-        if (renderGroup.cacheAsTexture)
+        if (renderGroup.isCachedAsTexture)
         {
             if (renderGroup.textureNeedsUpdate)
             {
@@ -210,7 +210,7 @@ export class RenderGroupSystem implements System
         renderer.renderPipes.batch.upload(renderGroup.instructionSet);
 
         // early out if it's a texture and it hasn't changed!
-        if (renderGroup.cacheAsTexture && !renderGroup.textureNeedsUpdate) return;
+        if (renderGroup.isCachedAsTexture && !renderGroup.textureNeedsUpdate) return;
 
         for (let i = 0; i < renderGroup.renderGroupChildren.length; i++)
         {

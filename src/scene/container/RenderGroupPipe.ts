@@ -31,7 +31,7 @@ export class RenderGroupPipe implements InstructionPipe<RenderGroup>
 
     public addRenderGroup(renderGroup: RenderGroup, instructionSet: InstructionSet): void
     {
-        if (renderGroup.cacheAsTexture)
+        if (renderGroup.isCachedAsTexture)
         {
             this._addRenderableCacheAsTexture(renderGroup, instructionSet);
         }
@@ -45,7 +45,7 @@ export class RenderGroupPipe implements InstructionPipe<RenderGroup>
     {
         if (!renderGroup.isRenderable) return;
 
-        if (renderGroup.cacheAsTexture)
+        if (renderGroup.isCachedAsTexture)
         {
             this._executeCacheAsTexture(renderGroup);
         }
