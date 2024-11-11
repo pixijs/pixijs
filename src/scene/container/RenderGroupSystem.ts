@@ -62,7 +62,6 @@ export class RenderGroupSystem implements System
             container.renderGroup.localTransform.copyFrom(transform);
         }
 
-        //  this._assignTop(container.renderGroup, null);
         const renderPipes = (renderer as WebGPURenderer).renderPipes;
 
         this._updateCachedRenderGroups(container.renderGroup, null);
