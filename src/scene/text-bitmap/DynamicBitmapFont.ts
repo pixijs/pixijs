@@ -150,6 +150,9 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         let maxCharHeight = 0;
         let skipTexture = false;
 
+        const maxTextureWidth = canvas.width / this.resolution;
+        const maxTextureHeight = canvas.height / this.resolution;
+
         for (let i = 0; i < charList.length; i++)
         {
             const char = charList[i];
@@ -176,7 +179,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
                 maxCharHeight = Math.ceil(Math.max(paddedHeight, maxCharHeight));// / 1.5;
             }
 
-            if (currentX + paddedWidth > this._textureSize)
+            if (currentX + paddedWidth > maxTextureWidth)
             {
                 currentY += maxCharHeight;
 
@@ -184,7 +187,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
                 maxCharHeight = paddedHeight;
                 currentX = 0;
 
-                if (currentY + maxCharHeight > this._textureSize)
+                if (currentY + maxCharHeight > maxTextureHeight)
                 {
                     textureSource.update();
 
