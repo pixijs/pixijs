@@ -19,5 +19,4 @@ describe('multiplyColors', () =>
 
         expect(result).toBe(0x11304a);
     });
-
 });
