@@ -11,9 +11,9 @@ export function multiplyHexColors(color1: number, color2: number): number
     const g2 = (color2 >> 8) & 0xFF;
     const b2 = color2 & 0xFF;
 
-    const r = (r1 * r2) / 255;
-    const g = (g1 * g2) / 255;
-    const b = (b1 * b2) / 255;
+    const r = ((r1 * r2) / 255) | 0;
+    const g = ((g1 * g2) / 255) | 0;
+    const b = ((b1 * b2) / 255) | 0;
 
     return (r << 16) + (g << 8) + b;
 }

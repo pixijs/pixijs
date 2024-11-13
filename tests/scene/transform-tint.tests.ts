@@ -146,12 +146,12 @@ describe('Transform Tints', () =>
         root.addChild(container2);
         container2.addChild(child);
 
-        container2.tint = 0xFF0000;
-        child.tint = 0x00FF00;
+        container2.tint = 0xFFFF00;
+        child.tint = 0x009900;
 
         updateRenderGroupTransforms(root.renderGroup, true);
         // ABGR
-        check32BitColorMatches(child.groupColorAlpha, [255, 0, 127, 128]);
+        check32BitColorMatches(child.groupColorAlpha, [255, 0, 153, 0]);
     });
 
     it('should update  alpha and color with nested layer group correctly', async () =>
