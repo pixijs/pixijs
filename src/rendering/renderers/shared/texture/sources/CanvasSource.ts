@@ -55,12 +55,7 @@ export class CanvasSource extends TextureSource<ICanvas>
 
         this.autoDensity = options.autoDensity;
 
-        const canvas = options.resource;
-
-        if (this.pixelWidth !== canvas.width || this.pixelWidth !== canvas.height)
-        {
-            this.resizeCanvas();
-        }
+        this.resizeCanvas();
 
         this.transparent = !!options.transparent;
     }
