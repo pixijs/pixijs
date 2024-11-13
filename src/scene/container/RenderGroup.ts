@@ -1,9 +1,32 @@
 import { Matrix } from '../../maths/matrix/Matrix';
 import { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
+import { TexturePool } from '../../rendering/renderers/shared/texture/TexturePool';
 
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
+import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
+import type { BatchableSprite } from '../sprite/BatchableSprite';
 import type { ViewContainer } from '../view/ViewContainer';
+import type { Bounds } from './bounds/Bounds';
 import type { Container } from './Container';
+
+/**
+ * Options for caching a container as a texture.
+ * @memberof rendering
+ * @see {@link RenderGroup#textureOptions}
+ */
+export interface CacheAsTextureOptions
+{
+    /**
+     * If true, the texture will be antialiased. This smooths out the edges of the texture.
+     * @default false
+     */
+    antialias?: boolean;
+    /**
+     * The resolution of the texture. A higher resolution means a sharper texture but uses more memory.
+     * By default the resolution is 1 which is the same as the rendererers resolution.
+     */
+    resolution?: number;
+}
 
 /**
  * A RenderGroup is a class that is responsible for I generating a set of instructions that are used to render the
@@ -40,6 +63,58 @@ export class RenderGroup implements Instruction
 
     private readonly _onRenderContainers: Container[] = [];
 
+    /**
+     * Indicates if the cached texture needs to be updated.
+     * @default true
+     */
+    public textureNeedsUpdate = true;
+
+    /**
+     * Indicates if the container should be cached as a texture.
+     * @default false
+     */
+    public isCachedAsTexture = false;
+
+    /**
+     * The texture used for caching the container. this is only set if isCachedAsTexture is true.
+     * It can only be accessed after a render pass.
+     * @type {Texture | undefined}
+     */
+    public texture?: Texture;
+
+    /**
+     * The bounds of the cached texture.
+     * @type {Bounds | undefined}
+     * @ignore
+     */
+    public _textureBounds?: Bounds;
+
+    /**
+     * The options for caching the container as a texture.
+     * @type {CacheAsTextureOptions}
+     */
+    public textureOptions: CacheAsTextureOptions;
+
+    /**
+     *  holds a reference to the batchable render sprite
+     *  @ignore
+     */
+    public _batchableRenderGroup: BatchableSprite;
+
+    /**
+     * Holds a reference to the closest parent RenderGroup that has isCachedAsTexture enabled.
+     * This is used to properly transform coordinates when rendering into cached textures.
+     * @type {RenderGroup | null}
+     * @ignore
+     */
+    public _parentCacheAsTextureRenderGroup: RenderGroup;
+
+    private _inverseWorldTransform: Matrix;
+    private _textureOffsetInverseTransform: Matrix;
+    private _inverseParentTextureTransform: Matrix;
+
+    private _matrixDirty = 0b111;
+
     public init(root: Container)
     {
         this.root = root;
@@ -54,6 +129,28 @@ export class RenderGroup implements Instruction
         {
             this.addChild(children[i]);
         }
+    }
+
+    public enableCacheAsTexture(options: CacheAsTextureOptions = {}): void
+    {
+        this.textureOptions = options;
+        this.isCachedAsTexture = true;
+        this.textureNeedsUpdate = true;
+    }
+
+    public disableCacheAsTexture(): void
+    {
+        this.isCachedAsTexture = false;
+        if (this.texture)
+        {
+            TexturePool.returnTexture(this.texture);
+            this.texture = null;
+        }
+    }
+
+    public updateCacheTexture(): void
+    {
+        this.textureNeedsUpdate = true;
     }
 
     public reset()
@@ -77,6 +174,8 @@ export class RenderGroup implements Instruction
 
         this._onRenderContainers.length = 0;
         this.renderGroupParent = null;
+
+        this.disableCacheAsTexture();
     }
 
     get localTransform()
@@ -243,6 +342,8 @@ export class RenderGroup implements Instruction
 
     public destroy()
     {
+        this.disableCacheAsTexture();
+
         this.renderGroupParent = null;
         this.root = null;
         (this.childrenRenderablesToUpdate as any) = null;
@@ -278,5 +379,93 @@ export class RenderGroup implements Instruction
         }
 
         return out;
+    }
+
+    public invalidateMatrices()
+    {
+        this._matrixDirty = 0b111;
+    }
+
+    /**
+     * Returns the inverse of the world transform matrix.
+     * @returns {Matrix} The inverse of the world transform matrix.
+     */
+    public get inverseWorldTransform()
+    {
+        if ((this._matrixDirty & 0b001) === 0) return this._inverseWorldTransform;
+
+        this._matrixDirty &= ~0b001;
+
+        // TODO - add dirty flag
+        this._inverseWorldTransform ||= new Matrix();
+
+        return this._inverseWorldTransform
+            .copyFrom(this.worldTransform)
+            .invert();
+    }
+
+    /**
+     * Returns the inverse of the texture offset transform matrix.
+     * @returns {Matrix} The inverse of the texture offset transform matrix.
+     */
+    public get textureOffsetInverseTransform()
+    {
+        if ((this._matrixDirty & 0b010) === 0) return this._textureOffsetInverseTransform;
+
+        this._matrixDirty &= ~0b010;
+
+        this._textureOffsetInverseTransform ||= new Matrix();
+
+        // TODO shared.. bad!
+        return this._textureOffsetInverseTransform
+            .copyFrom(this.inverseWorldTransform)
+            .translate(
+                -this._textureBounds.x,
+                -this._textureBounds.y
+            );
+    }
+
+    /**
+     * Returns the inverse of the parent texture transform matrix.
+     * This is used to properly transform coordinates when rendering into cached textures.
+     * @returns {Matrix} The inverse of the parent texture transform matrix.
+     */
+    public get inverseParentTextureTransform()
+    {
+        if ((this._matrixDirty & 0b100) === 0) return this._inverseParentTextureTransform;
+
+        this._matrixDirty &= ~0b100;
+
+        const parentCacheAsTexture = this._parentCacheAsTextureRenderGroup;
+
+        if (parentCacheAsTexture)
+        {
+            this._inverseParentTextureTransform ||= new Matrix();
+
+            // Get relative transform by removing parent's world transform
+            return this._inverseParentTextureTransform
+                .copyFrom(this.worldTransform)
+                .prepend(parentCacheAsTexture.inverseWorldTransform)
+                // Offset by texture bounds
+                .translate(
+                    -parentCacheAsTexture._textureBounds.x,
+                    -parentCacheAsTexture._textureBounds.y
+                );
+        }
+
+        return this.worldTransform;
+    }
+
+    /**
+     * Returns a matrix that transforms coordinates to the correct coordinate space of the texture being rendered to.
+     * This is the texture offset inverse transform of the closest parent RenderGroup that is cached as a texture.
+     * @returns {Matrix | null} The transform matrix for the cached texture coordinate space,
+     * or null if no parent is cached as texture.
+     */
+    public get cacheToLocalTransform()
+    {
+        if (!this._parentCacheAsTextureRenderGroup) return null;
+
+        return this._parentCacheAsTextureRenderGroup.textureOffsetInverseTransform;
     }
 }
