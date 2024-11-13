@@ -301,6 +301,10 @@ export class AbstractRenderer<
             options.transform = options.container.localTransform;
         }
 
+        // lets ensure this object is a render group so we can render it!
+        // the renderer only likes to render - render groups.
+        options.container.enableRenderGroup();
+
         this.runners.prerender.emit(options);
         this.runners.renderStart.emit(options);
         this.runners.render.emit(options);
