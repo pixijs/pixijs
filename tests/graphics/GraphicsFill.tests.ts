@@ -2,7 +2,7 @@ import { Color } from '../../src/color/Color';
 import { Texture } from '../../src/rendering/renderers/shared/texture/Texture';
 import { FillGradient } from '../../src/scene/graphics/shared/fill/FillGradient';
 import { FillPattern } from '../../src/scene/graphics/shared/fill/FillPattern';
-import { toStrokeStyle } from '../../src/scene/graphics/shared/utils/convertFillInputToFillStyle';
+import { toFillStyle, toStrokeStyle } from '../../src/scene/graphics/shared/utils/convertFillInputToFillStyle';
 
 import type { ConvertedStrokeStyle } from '../../src/scene/graphics/shared/FillTypes';
 
@@ -151,5 +151,19 @@ describe('convertStrokeInputToStrokeStyle', () =>
             texture: gradient.texture,
             matrix: gradient.transform
         });
+    });
+
+    it('should only build FillGradient once', () =>
+    {
+        const defaultStyle = getDefaultValue();
+        const gradient = new FillGradient(0, 0, 200, 0);
+
+        toFillStyle(gradient, defaultStyle);
+
+        const texture = gradient.texture;
+
+        toFillStyle(gradient, defaultStyle);
+
+        expect(texture).toBe(gradient.texture);
     });
 });
