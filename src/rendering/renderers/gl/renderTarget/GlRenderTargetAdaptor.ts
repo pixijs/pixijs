@@ -80,6 +80,12 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         const source = renderTarget.colorTexture;
         const gpuRenderTarget = renderTargetSystem.getGpuRenderTarget(renderTarget);
 
+        // if the render target is a canvas, ensure its size matches the source
+        if (this._renderer.context.multiView && CanvasSource.test(source.resource))
+        {
+            this._renderer.context.ensureCanvasSize(source.resource);
+        }
+
         let viewPortY = viewport.y;
 
         if (renderTarget.isRoot)
