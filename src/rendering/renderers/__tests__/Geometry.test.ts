@@ -127,7 +127,10 @@ describe('Geometry', () =>
     {
         const geometry = new Geometry({
             attributes: {
-                aPosition: [0, 1, 2, 3]
+                aPosition: {
+                    buffer: [0, 1, 2, 3],
+                    format: 'float32x2',
+                }
             }
         });
 
@@ -139,7 +142,10 @@ describe('Geometry', () =>
         const float32Array = new Float32Array([0, 1, 2, 3]);
         const geometry = new Geometry({
             attributes: {
-                aPosition: float32Array
+                aPosition: {
+                    buffer: float32Array,
+                    format: 'float32x2',
+                }
             }
         });
 
@@ -155,7 +161,10 @@ describe('Geometry', () =>
 
         const geometry = new Geometry({
             attributes: {
-                aPosition: buffer
+                aPosition: {
+                    buffer,
+                    format: 'float32x2',
+                }
             }
         });
 
@@ -166,7 +175,10 @@ describe('Geometry', () =>
     {
         const geometry = new Geometry({
             attributes: {
-                aPosition: [0, 1, 2, 3]
+                aPosition: {
+                    buffer: [0, 1, 2, 3],
+                    format: 'float32x2',
+                }
             }
         });
 
@@ -177,5 +189,24 @@ describe('Geometry', () =>
         geometry.attributes.aPosition.buffer.data = new Float32Array([0, 1, 2, 3, 4, 5]);
 
         expect(geometry['_boundsDirty']).toEqual(true);
+    });
+
+    it('should not allow format-less Attribute to be added Geometry without prototype', () =>
+    {
+        expect(() =>
+        {
+            // eslint-disable-next-line no-new
+            new Geometry({
+                attributes: {
+                    a: {
+                        buffer: [1, 2, 3, 4],
+                        format: 'float32x4'
+                    },
+                    b: {
+                        buffer: [1, 2, 3, 4],
+                    }
+                }
+            });
+        }).toThrow(new Error(`Geometry: cannot add attribute "b" without vertex format`));
     });
 });

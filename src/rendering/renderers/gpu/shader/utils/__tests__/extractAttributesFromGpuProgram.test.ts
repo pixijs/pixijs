@@ -47,7 +47,6 @@ describe('extractAttributesFromGpuProgram', () =>
                 instance: false,
                 offset: 0,
                 location: 0,
-                start: 0,
                 stride: 8
             },
             aColor: {
@@ -55,7 +54,6 @@ describe('extractAttributesFromGpuProgram', () =>
                 instance: false,
                 offset: 0,
                 location: 1,
-                start: 0,
                 stride: 12
             },
             aUV: {
@@ -63,7 +61,6 @@ describe('extractAttributesFromGpuProgram', () =>
                 instance: false,
                 offset: 0,
                 location: 2,
-                start: 0,
                 stride: 8
             }
         });
