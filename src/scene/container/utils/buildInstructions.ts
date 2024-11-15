@@ -1,7 +1,10 @@
+import { warn } from '../../../utils/logging/warn';
+
 import type { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
 import type { InstructionPipe, RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
 import type { Renderer, RenderPipes } from '../../../rendering/renderers/types';
+import type { RenderLayer } from '../../layers/RenderLayer';
 import type { Container } from '../Container';
 import type { RenderGroup } from '../RenderGroup';
 
@@ -14,6 +17,7 @@ export function buildInstructions(renderGroup: RenderGroup, renderPipes: RenderP
 export function buildInstructions(renderGroup: RenderGroup, renderer: Renderer): void;
 export function buildInstructions(renderGroup: RenderGroup, rendererOrPipes: RenderPipes | Renderer): void
 {
+    // rebuild the scene graph based on layers...
     const root = renderGroup.root;
     const instructionSet = renderGroup.instructionSet;
 
@@ -35,7 +39,7 @@ export function buildInstructions(renderGroup: RenderGroup, rendererOrPipes: Ren
         root.sortChildren();
     }
 
-    collectAllRenderablesAdvanced(root, instructionSet, renderer, true);
+    collectAllRenderablesAdvanced(root, instructionSet, renderer, null, true);
 
     // TODO add some events / runners for build end
     renderPipes.batch.buildEnd(instructionSet);
@@ -46,21 +50,38 @@ export function buildInstructions(renderGroup: RenderGroup, rendererOrPipes: Ren
  * @param container
  * @param instructionSet
  * @param renderer
- * @deprecated since 8.3.0
+ * @param currentLayer
  */
-export function collectAllRenderables(container: Container, instructionSet: InstructionSet, renderer: RenderPipes): void;
-export function collectAllRenderables(container: Container, instructionSet: InstructionSet, renderer: Renderer): void;
 export function collectAllRenderables(
-    container: Container, instructionSet: InstructionSet, rendererOrPipes: Renderer | RenderPipes
+    container: Container, instructionSet: InstructionSet, renderer: Renderer, currentLayer: RenderLayer
 ): void
 {
     // deprecate the use of renderPipes by finding the renderer attached to the batch pipe as this is always there
-    const renderer = (rendererOrPipes as Renderer).renderPipes
-        ? (rendererOrPipes as Renderer)
-        : (rendererOrPipes as RenderPipes).batch.renderer;
+    if (container.isLayer)
+    {
+        const layer = container as RenderLayer;
 
-    // if there is 0b01 or 0b10 the return value
-    if (container.globalDisplayStatus < 0b111 || !container.includeInBuild) return;
+        currentLayer = layer;
+
+        for (let i = 0; i < layer.layerChildren.length; i++)
+        {
+            if (!layer.layerChildren[i].parent)
+            {
+                // eslint-disable-next-line max-len
+                warn('Container must be added to both layer and scene graph. Layers only handle render order - the scene graph is required for transforms (addChild)',
+                    layer.layerChildren[i]);
+            }
+
+            collectAllRenderables(layer.layerChildren[i], instructionSet, renderer, currentLayer);
+        }
+
+        return;
+    }
+
+    // we want to skip any children that are not in the current layer
+    if ((container.parentRenderLayer && container.parentRenderLayer !== currentLayer)
+        // if there is 0b01 or 0b10 the return value
+        || container.globalDisplayStatus < 0b111 || !container.includeInBuild) return;
 
     if (container.sortableChildren)
     {
@@ -69,11 +90,11 @@ export function collectAllRenderables(
 
     if (container.isSimple)
     {
-        collectAllRenderablesSimple(container, instructionSet, renderer);
+        collectAllRenderablesSimple(container, instructionSet, renderer, currentLayer);
     }
     else
     {
-        collectAllRenderablesAdvanced(container, instructionSet, renderer, false);
+        collectAllRenderablesAdvanced(container, instructionSet, renderer, currentLayer, false);
     }
 }
 
@@ -81,6 +102,7 @@ function collectAllRenderablesSimple(
     container: Container,
     instructionSet: InstructionSet,
     renderer: Renderer,
+    currentLayer: RenderLayer,
 ): void
 {
     if (container.renderPipeId)
@@ -107,7 +129,7 @@ function collectAllRenderablesSimple(
 
         for (let i = 0; i < length; i++)
         {
-            collectAllRenderables(children[i], instructionSet, renderer);
+            collectAllRenderables(children[i], instructionSet, renderer, currentLayer);
         }
     }
 }
@@ -116,7 +138,8 @@ function collectAllRenderablesAdvanced(
     container: Container,
     instructionSet: InstructionSet,
     renderer: Renderer,
-    isRoot: boolean
+    currentLayer: RenderLayer,
+    isRoot: boolean,
 ): void
 {
     const { renderPipes, renderableGC } = renderer;
@@ -158,7 +181,7 @@ function collectAllRenderablesAdvanced(
         {
             for (let i = 0; i < children.length; i++)
             {
-                collectAllRenderables(children[i], instructionSet, renderer);
+                collectAllRenderables(children[i], instructionSet, renderer, currentLayer);
             }
         }
 
@@ -172,4 +195,3 @@ function collectAllRenderablesAdvanced(
         }
     }
 }
-
