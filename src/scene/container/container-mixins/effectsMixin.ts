@@ -21,10 +21,10 @@ export interface MaskOptions
     inverse: boolean;
 }
 
-export type MaskOptionsAndMask = MaskOptions &
+export interface MaskOptionsAndMask extends MaskOptions
 {
     mask: Mask;
-};
+}
 
 export interface EffectsMixin extends Required<EffectsMixinConstructor>
 {
