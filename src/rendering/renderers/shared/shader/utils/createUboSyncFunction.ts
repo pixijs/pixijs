@@ -79,6 +79,7 @@ export function createUboSyncFunction(
     return new Function(
         'uv',
         'data',
+        'dataInt32',
         'offset',
         fragmentSrc,
     ) as UniformsSyncCallback;
