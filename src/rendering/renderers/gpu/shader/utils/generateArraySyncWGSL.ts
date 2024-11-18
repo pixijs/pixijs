@@ -15,6 +15,7 @@ export function generateArraySyncWGSL(uboElement: UboElement, offsetToAdd: numbe
     const { size, align } = WGSL_ALIGN_SIZE_DATA[uboElement.data.type];
 
     const remainder = (align - size) / 4;
+    const data = uboElement.data.type.indexOf('i32') >= 0 ? 'dataInt32' : 'data';
 
     return `
          v = uv.${uboElement.data.name};
@@ -28,7 +29,7 @@ export function generateArraySyncWGSL(uboElement: UboElement, offsetToAdd: numbe
          {
              for(var j = 0; j < ${size / 4}; j++)
              {
-                 data[arrayOffset++] = v[t++];
+                 ${data}[arrayOffset++] = v[t++];
              }
              ${remainder !== 0 ? `arrayOffset += ${remainder};` : ''}
          }
