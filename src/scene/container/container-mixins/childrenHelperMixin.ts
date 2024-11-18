@@ -104,7 +104,7 @@ export const childrenHelperMixin: Partial<Container> = {
     },
 
     /**
-     * Changes the position of an existing child in the container container
+     * Changes the position of an existing child in the container
      * @param child - The child Container instance for which you want to change the index number
      * @param index - The resulting index number for the child container
      * @memberof scene.Container#

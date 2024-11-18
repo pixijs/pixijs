@@ -150,19 +150,23 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         let maxCharHeight = 0;
         let skipTexture = false;
 
+        const maxTextureWidth = canvas.width / this.resolution;
+        const maxTextureHeight = canvas.height / this.resolution;
+
         for (let i = 0; i < charList.length; i++)
         {
             const char = charList[i];
 
             const metrics = CanvasTextMetrics.measureText(char, style, canvas, false);
-            // This is ugly - but italics are given more space so they don't overlap
-            const textureGlyphWidth = Math.ceil((style.fontStyle === 'italic' ? 2 : 1) * metrics.width);
 
             // override the line height.. we want this to be the glyps height
             // not the user specified one.
             metrics.lineHeight = metrics.height;
 
             const width = metrics.width * fontScale;
+            // This is ugly - but italics are given more space so they don't overlap
+            const textureGlyphWidth = Math.ceil((style.fontStyle === 'italic' ? 2 : 1) * width);
+
             const height = (metrics.height) * fontScale;
 
             const paddedWidth = textureGlyphWidth + (padding * 2);
@@ -176,7 +180,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
                 maxCharHeight = Math.ceil(Math.max(paddedHeight, maxCharHeight));// / 1.5;
             }
 
-            if (currentX + paddedWidth > this._textureSize)
+            if (currentX + paddedWidth > maxTextureWidth)
             {
                 currentY += maxCharHeight;
 
@@ -184,7 +188,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
                 maxCharHeight = paddedHeight;
                 currentX = 0;
 
-                if (currentY + maxCharHeight > this._textureSize)
+                if (currentY + maxCharHeight > maxTextureHeight)
                 {
                     textureSource.update();
 

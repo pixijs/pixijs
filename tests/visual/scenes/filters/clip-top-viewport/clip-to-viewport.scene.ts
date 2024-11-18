@@ -36,6 +36,8 @@ export const scene: TestScene = {
                 vertex: circleVert,
                 fragment: circleFrag,
             },
+            resolution: 2,
+
         });
 
         sprite.filters = customFilter;

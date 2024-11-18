@@ -628,5 +628,28 @@ describe('RenderGroup', () =>
 
         renderer.destroy();
     });
+
+    it('should flag a render group as dirty if a order is changed', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+
+        BigPool.getPool(RenderGroup).clear();
+
+        const container = new Container({ isRenderGroup: true });
+
+        const a = new Container();
+        const b = new Container();
+
+        container.addChild(a);
+        container.addChild(b);
+
+        renderer.render(container);
+
+        // should now be at the top!
+        container.addChild(a);
+
+        // this should now be true as the order has changed
+        expect(container.renderGroup.structureDidChange).toBeTrue();
+    });
 });
 

@@ -7,6 +7,7 @@ import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { uid } from '../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { BigPool } from '../../utils/pool/PoolGroup';
+import { cacheAsTextureMixin } from './container-mixins/cacheAsTextureMixin';
 import { childrenHelperMixin } from './container-mixins/childrenHelperMixin';
 import { effectsMixin } from './container-mixins/effectsMixin';
 import { findMixin } from './container-mixins/findMixin';
@@ -639,14 +640,16 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         const child = children[0];
 
+        const renderGroup = this.renderGroup || this.parentRenderGroup;
+
         if (child.parent === this)
         {
             this.children.splice(this.children.indexOf(child), 1);
             this.children.push(child);
 
-            if (this.parentRenderGroup)
+            if (renderGroup)
             {
-                this.parentRenderGroup.structureDidChange = true;
+                renderGroup.structureDidChange = true;
             }
 
             return child;
@@ -668,8 +671,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         // TODO - OPtimise this? could check what the parent has set?
         child._updateFlags = 0b1111;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
 
         if (renderGroup)
         {
@@ -1390,3 +1391,4 @@ Container.mixin(effectsMixin);
 Container.mixin(findMixin);
 Container.mixin(sortMixin);
 Container.mixin(cullingMixin);
+Container.mixin(cacheAsTextureMixin);

@@ -21,7 +21,7 @@ export class UboSystem implements System
     /** Cache of uniform buffer layouts and sync functions, so we don't have to re-create them */
     private _syncFunctionHash: Record<string, {
         layout: UboLayout,
-        syncFunction: (uniforms: Record<string, any>, data: Float32Array, offset: number) => void
+        syncFunction: (uniforms: Record<string, any>, data: Float32Array, dataInt32: Int32Array, offset: number) => void
     }> = Object.create(null);
 
     private readonly _adaptor: UboAdaptor;
@@ -102,10 +102,16 @@ export class UboSystem implements System
             usage: BufferUsage.UNIFORM | BufferUsage.COPY_DST,
         });
 
-        data ||= (uniformGroup.buffer.data as Float32Array);
+        let dataInt32: Int32Array = null;
+
+        if (!data)
+        {
+            data = uniformGroup.buffer.data as Float32Array;
+            dataInt32 = uniformGroup.buffer.dataInt32;
+        }
         offset ||= 0;
 
-        uniformGroupData.syncFunction(uniformGroup.uniforms, data, offset);
+        uniformGroupData.syncFunction(uniformGroup.uniforms, data, dataInt32, offset);
 
         return true;
     }

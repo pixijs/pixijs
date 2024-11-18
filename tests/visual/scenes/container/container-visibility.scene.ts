@@ -46,8 +46,8 @@ export const scene: TestScene = {
         notRenderable.renderable = false;
 
         // "should render children"
-        const withChildren = container({ tint: 0x00ffff, x: size, y: size });
-        const child = container({ tint: 0xff0000, x: 0.5, y: 0.5, width: 1, height: 1 });
+        const withChildren = container({ tint: 0x0099ff, x: size, y: size });
+        const child = container({ tint: 0xff9933, x: 0.5, y: 0.5, width: 1, height: 1 });
 
         withChildren.addChild(child);
 
