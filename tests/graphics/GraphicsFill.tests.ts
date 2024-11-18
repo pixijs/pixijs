@@ -19,6 +19,7 @@ describe('convertStrokeInputToStrokeStyle', () =>
         texture: Texture.WHITE,
         matrix: null,
         fill: null,
+        pixelLine: false,
     });
 
     it('should return null when value is undefined', () =>
