@@ -181,9 +181,10 @@ export class Rectangle implements ShapePrimitive
      * @param x - The X coordinate of the point to test
      * @param y - The Y coordinate of the point to test
      * @param strokeWidth - The width of the line to check
+     * @param alignment - The alignment of the stroke, 0.5 by default
      * @returns Whether the x/y coordinates are within this rectangle
      */
-    public strokeContains(x: number, y: number, strokeWidth: number): boolean
+    public strokeContains(x: number, y: number, strokeWidth: number, alignment: number = 0.5): boolean
     {
         const { width, height } = this;
 
@@ -192,17 +193,21 @@ export class Rectangle implements ShapePrimitive
         const _x = this.x;
         const _y = this.y;
 
-        const outerLeft = _x - (strokeWidth / 2);
-        const outerRight = _x + width + (strokeWidth / 2);
-        const outerTop = _y - (strokeWidth / 2);
-        const outerBottom = _y + height + (strokeWidth / 2);
-        const innerLeft = _x + (strokeWidth / 2);
-        const innerRight = _x + width - (strokeWidth / 2);
-        const innerTop = _y + (strokeWidth / 2);
-        const innerBottom = _y + height - (strokeWidth / 2);
+        const strokeWidthOuter = strokeWidth * (1 - alignment);
+        const strokeWidthInner = strokeWidth - strokeWidthOuter;
+
+        const outerLeft = _x - strokeWidthOuter;
+        const outerRight = _x + width + strokeWidthOuter;
+        const outerTop = _y - strokeWidthOuter;
+        const outerBottom = _y + height + strokeWidthOuter;
+
+        const innerLeft = _x + strokeWidthInner;
+        const innerRight = _x + width - strokeWidthInner;
+        const innerTop = _y + strokeWidthInner;
+        const innerBottom = _y + height - strokeWidthInner;
 
         return (x >= outerLeft && x <= outerRight && y >= outerTop && y <= outerBottom)
-        && !(x > innerLeft && x < innerRight && y > innerTop && y < innerBottom);
+            && !(x > innerLeft && x < innerRight && y > innerTop && y < innerBottom);
     }
     /**
      * Determines whether the `other` Rectangle transformed by `transform` intersects with `this` Rectangle object.

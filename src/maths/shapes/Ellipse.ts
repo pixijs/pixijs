@@ -94,10 +94,11 @@ export class Ellipse implements ShapePrimitive
      * Checks whether the x and y coordinates given are contained within this ellipse including stroke
      * @param x - The X coordinate of the point to test
      * @param y - The Y coordinate of the point to test
-     * @param width
+     * @param strokeWidth - The width of the line to check
+     * @param alignment - The alignment of the stroke
      * @returns Whether the x/y coords are within this ellipse
      */
-    public strokeContains(x: number, y: number, width: number): boolean
+    public strokeContains(x: number, y: number, strokeWidth: number, alignment: number = 0.5): boolean
     {
         const { halfWidth, halfHeight } = this;
 
@@ -106,19 +107,23 @@ export class Ellipse implements ShapePrimitive
             return false;
         }
 
-        const halfStrokeWidth = width / 2;
-        const innerA = halfWidth - halfStrokeWidth;
-        const innerB = halfHeight - halfStrokeWidth;
-        const outerA = halfWidth + halfStrokeWidth;
-        const outerB = halfHeight + halfStrokeWidth;
+        const strokeOuterWidth = strokeWidth * (1 - alignment);
+        const strokeInnerWidth = strokeWidth - strokeOuterWidth;
+
+        const innerHorizontal = halfWidth - strokeInnerWidth;
+        const innerVertical = halfHeight - strokeInnerWidth;
+
+        const outerHorizontal = halfWidth + strokeOuterWidth;
+        const outerVertical = halfHeight + strokeOuterWidth;
 
         const normalizedX = x - this.x;
         const normalizedY = y - this.y;
 
-        const innerEllipse = ((normalizedX * normalizedX) / (innerA * innerA))
-                           + ((normalizedY * normalizedY) / (innerB * innerB));
-        const outerEllipse = ((normalizedX * normalizedX) / (outerA * outerA))
-                           + ((normalizedY * normalizedY) / (outerB * outerB));
+        const innerEllipse = ((normalizedX * normalizedX) / (innerHorizontal * innerHorizontal))
+            + ((normalizedY * normalizedY) / (innerVertical * innerVertical));
+
+        const outerEllipse = ((normalizedX * normalizedX) / (outerHorizontal * outerHorizontal))
+            + ((normalizedY * normalizedY) / (outerVertical * outerVertical));
 
         return innerEllipse > 1 && outerEllipse <= 1;
     }

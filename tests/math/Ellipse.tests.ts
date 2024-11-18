@@ -62,15 +62,58 @@ describe('Ellipse', () =>
         expect(ellipse2.contains(10, 10)).toBe(false);
     });
 
-    it('should check if point is within ellipse stroke', () =>
+    describe('strokeContains', () =>
     {
-        const ellipse = new Ellipse(2, 2, 10, 10);
+        it('alignment = 0, outside', () =>
+        {
+            const ellipse = new Ellipse(2, 2, 10, 10); // -8, 12 // for 3 width -8 -7 -6  10 11 12
 
-        expect(ellipse.strokeContains(2, 2, 5)).toBe(false);
-        expect(ellipse.strokeContains(7, 7, 10)).toBe(true);
-        expect(ellipse.strokeContains(8, 8, 5)).toBe(true);
-        expect(ellipse.strokeContains(12, 12, 10)).toBe(true);
-        expect(ellipse.strokeContains(15, 15, 5)).toBe(false);
+            expect(ellipse.strokeContains(-11, 0, 3, 0)).toBe(false);
+            expect(ellipse.strokeContains(-10, 0, 3, 0)).toBe(true);
+            expect(ellipse.strokeContains(-9, 0, 3, 0)).toBe(true);
+            expect(ellipse.strokeContains(-8, 0, 3, 0)).toBe(true);
+            expect(ellipse.strokeContains(-7, 0, 3, 0)).toBe(false);
+
+            expect(ellipse.strokeContains(11, 0, 3, 0)).toBe(false);
+            expect(ellipse.strokeContains(12, 0, 3, 0)).toBe(true);
+            expect(ellipse.strokeContains(13, 0, 3, 0)).toBe(true);
+            expect(ellipse.strokeContains(14, 0, 3, 0)).toBe(true);
+            expect(ellipse.strokeContains(15, 0, 3, 0)).toBe(false);
+        });
+
+        it('alignment = 0.5, center', () =>
+        {
+            const ellipse = new Ellipse(2, 2, 10, 10); // -8, 12 // for 3 width -8 -7 -6  10 11 12
+
+            expect(ellipse.strokeContains(-10, 0, 3, 0.5)).toBe(false);
+            expect(ellipse.strokeContains(-9, 0, 3, 0.5)).toBe(true);
+            expect(ellipse.strokeContains(-8, 0, 3, 0.5)).toBe(true);
+            expect(ellipse.strokeContains(-7, 0, 3, 0.5)).toBe(true);
+            expect(ellipse.strokeContains(-6, 0, 3, 0.5)).toBe(false);
+
+            expect(ellipse.strokeContains(10, 0, 3, 0.5)).toBe(false);
+            expect(ellipse.strokeContains(11, 0, 3, 0.5)).toBe(true);
+            expect(ellipse.strokeContains(12, 0, 3, 0.5)).toBe(true);
+            expect(ellipse.strokeContains(13, 0, 3, 0.5)).toBe(true);
+            expect(ellipse.strokeContains(14, 0, 3, 0.5)).toBe(false);
+        });
+
+        it('alignment = 1, inside', () =>
+        {
+            const ellipse = new Ellipse(2, 2, 10, 10); // -8, 12 // for 3 width -8 -7 -6  10 11 12
+
+            expect(ellipse.strokeContains(-8, 0, 3, 1)).toBe(false);
+            expect(ellipse.strokeContains(-7, 0, 3, 1)).toBe(true);
+            expect(ellipse.strokeContains(-6, 0, 3, 1)).toBe(true);
+            expect(ellipse.strokeContains(-5, 0, 3, 1)).toBe(true);
+            expect(ellipse.strokeContains(-4, 0, 3, 1)).toBe(false);
+
+            expect(ellipse.strokeContains(12, 0, 3, 1)).toBe(false);
+            expect(ellipse.strokeContains(11, 0, 3, 1)).toBe(true);
+            expect(ellipse.strokeContains(10, 0, 3, 1)).toBe(true);
+            expect(ellipse.strokeContains(9, 0, 3, 1)).toBe(true);
+            expect(ellipse.strokeContains(8, 0, 3, 1)).toBe(false);
+        });
     });
 
     it('should return framing rectangle', () =>

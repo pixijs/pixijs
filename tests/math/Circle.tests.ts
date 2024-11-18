@@ -75,6 +75,23 @@ describe('Circle', () =>
 
         expect(circle.strokeContains(20 + 5, 10, 4)).toBe(false);
         expect(circle.strokeContains(10, 20 + 5, 4)).toBe(false);
+
+        // alignment, outer stroke
+        expect(circle.strokeContains(10 + 5 + 0.0, 10, 2, 0)).toBe(false);
+        expect(circle.strokeContains(10 + 5 + 0.1, 10, 2, 0)).toBe(true);
+        expect(circle.strokeContains(10 + 5 + 2.0, 10, 2, 0)).toBe(true);
+
+        // alignment, center stroke
+        expect(circle.strokeContains(10 + 5 - 1.0, 10, 2, 0.5)).toBe(false);
+        expect(circle.strokeContains(10 + 5 - 0.9, 10, 2, 0.5)).toBe(true);
+        expect(circle.strokeContains(10 + 5 + 1.0, 10, 2, 0.5)).toBe(true);
+        expect(circle.strokeContains(10 + 5 + 1.1, 10, 2, 0.5)).toBe(false);
+
+        // alignment, inner stroke
+        expect(circle.strokeContains(10 + 5 - 2.0, 10, 2, 1)).toBe(false);
+        expect(circle.strokeContains(10 + 5 - 1.9, 10, 2, 1)).toBe(true);
+        expect(circle.strokeContains(10 + 5 + 0.0, 10, 2, 1)).toBe(true);
+        expect(circle.strokeContains(10 + 5 + 0.1, 10, 2, 1)).toBe(false);
     });
 
     it('should return framing rectangle', () =>
