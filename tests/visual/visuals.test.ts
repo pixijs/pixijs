@@ -40,7 +40,7 @@ function setAssetBasePath(): void
 
     const basePath = process.env.GITHUB_ACTIONS
         ? `https://raw.githubusercontent.com/pixijs/pixijs/${branchPath}/tests/visual/assets/`
-        : 'http://127.0.0.1:8081/tests/visual/assets/';
+        : 'http://127.0.0.1:8080/tests/visual/assets/';
 
     Assets.init({
         basePath
