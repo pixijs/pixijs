@@ -10,7 +10,7 @@ import type { Effect } from '../Effect';
 export interface EffectsMixinConstructor
 {
     mask?: Mask;
-    setMask?: (options: Partial<MaskOptions>) => void;
+    setMask?: (options: Partial<MaskOptionsAndMask>) => void;
     filters?: Filter | Filter[];
 }
 
@@ -19,6 +19,11 @@ export type Mask = number | Container | null;
 export interface MaskOptions
 {
     inverse: boolean;
+}
+
+export interface MaskOptionsAndMask extends MaskOptions
+{
+    mask: Mask;
 }
 
 export interface EffectsMixin extends Required<EffectsMixinConstructor>
@@ -30,6 +35,7 @@ export interface EffectsMixin extends Required<EffectsMixinConstructor>
     filterArea?: Rectangle,
     effects?: Effect[];
 
+    _markStructureAsChanged(): void;
     addEffect(effect: Effect): void;
     removeEffect(effect: Effect): void;
 }
@@ -48,6 +54,15 @@ export const effectsMixin: Partial<Container> = {
      */
     effects: [],
 
+    _markStructureAsChanged()
+    {
+        const renderGroup = this.renderGroup || this.parentRenderGroup;
+
+        if (renderGroup)
+        {
+            renderGroup.structureDidChange = true;
+        }
+    },
     /**
      * @todo Needs docs.
      * @param effect - The effect to add.
@@ -64,12 +79,7 @@ export const effectsMixin: Partial<Container> = {
 
         this.effects.sort((a, b) => a.priority - b.priority);
 
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.structureDidChange = true;
-        }
+        this._markStructureAsChanged();
 
         // if (this.renderGroup)
         // {
@@ -92,10 +102,7 @@ export const effectsMixin: Partial<Container> = {
 
         this.effects.splice(index, 1);
 
-        if (this.parentRenderGroup)
-        {
-            this.parentRenderGroup.structureDidChange = true;
-        }
+        this._markStructureAsChanged();
 
         this._updateIsSimple();
     },
@@ -140,7 +147,7 @@ export const effectsMixin: Partial<Container> = {
      * });
      * @memberof scene.Container#
      */
-    setMask(options: Partial<MaskOptions & { mask: Mask }>)
+    setMask(options: Partial<MaskOptionsAndMask>)
     {
         this._maskOptions = {
             ...this._maskOptions,
@@ -151,6 +158,8 @@ export const effectsMixin: Partial<Container> = {
         {
             this.mask = options.mask;
         }
+
+        this._markStructureAsChanged();
     },
 
     /**

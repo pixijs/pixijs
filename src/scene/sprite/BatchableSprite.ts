@@ -1,9 +1,10 @@
 import type { Matrix } from '../../maths/matrix/Matrix';
 import type { Batch, Batcher } from '../../rendering/batcher/shared/Batcher';
 import type { DefaultBatchableQuadElement } from '../../rendering/batcher/shared/DefaultBatcher';
+import type { Topology } from '../../rendering/renderers/shared/geometry/const';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { BoundsData } from '../container/bounds/Bounds';
-import type { ViewContainer } from '../view/ViewContainer';
+import type { Container } from '../container/Container';
 
 /**
  * A batchable sprite object.
@@ -12,6 +13,7 @@ import type { ViewContainer } from '../view/ViewContainer';
 export class BatchableSprite implements DefaultBatchableQuadElement
 {
     public batcherName = 'default';
+    public topology: Topology = 'triangle-list';
 
     // batch specific..
     public readonly attributeSize = 4;
@@ -20,7 +22,7 @@ export class BatchableSprite implements DefaultBatchableQuadElement
 
     public transform: Matrix;
 
-    public renderable: ViewContainer;
+    public renderable: Container;
     public texture: Texture;
     public bounds: BoundsData;
 

@@ -1,6 +1,6 @@
 import { Container, UPDATE_BLEND, UPDATE_COLOR, UPDATE_VISIBLE } from '../Container';
 import { clearList } from './clearList';
-import { mixColors } from './mixColors';
+import { multiplyColors } from './multiplyColors';
 
 import type { ViewContainer } from '../../view/ViewContainer';
 import type { RenderGroup } from '../RenderGroup';
@@ -68,7 +68,7 @@ export function updateRenderGroupTransform(renderGroup: RenderGroup)
             renderGroupParent.worldTransform,
         );
 
-        renderGroup.worldColor = mixColors(
+        renderGroup.worldColor = multiplyColors(
             root.groupColor,
             renderGroupParent.worldColor,
         );
@@ -158,7 +158,7 @@ function updateColorBlendVisibility(
 {
     if (updateFlags & UPDATE_COLOR)
     {
-        container.groupColor = mixColors(
+        container.groupColor = multiplyColors(
             container.localColor,
             parent.groupColor
         );

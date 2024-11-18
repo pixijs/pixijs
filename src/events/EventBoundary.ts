@@ -548,7 +548,7 @@ export class EventBoundary
     private _interactivePrune(container: Container): boolean
     {
         // If container is a mask, invisible, or not renderable then it cannot be hit directly.
-        if (!container || !container.visible || !container.renderable || !container.includeInBuild || !container.measurable)
+        if (!container || !container.visible || !container.renderable || !container.measurable)
         {
             return true;
         }

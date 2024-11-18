@@ -478,5 +478,20 @@ export class Bounds
         // eslint-disable-next-line max-len
         return `[pixi.js:Bounds minX=${this.minX} minY=${this.minY} maxX=${this.maxX} maxY=${this.maxY} width=${this.width} height=${this.height}]`;
     }
+
+    /**
+     * Copies the bounds from another bounds object.
+     * @param bounds - The bounds to copy from.
+     * @returns - This bounds object.
+     */
+    public copyFrom(bounds: Bounds): this
+    {
+        this.minX = bounds.minX;
+        this.minY = bounds.minY;
+        this.maxX = bounds.maxX;
+        this.maxY = bounds.maxY;
+
+        return this;
+    }
 }
 

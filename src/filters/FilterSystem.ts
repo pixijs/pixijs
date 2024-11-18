@@ -179,6 +179,21 @@ export class FilterSystem implements System
         {
             getFastGlobalBounds(instruction.container, bounds);
         }
+
+        if (instruction.container)
+        {
+            // When a container is cached as a texture, its filters need to be applied relative to its
+            // cached parent's coordinate space rather than world space. This transform adjustment ensures
+            // filters are applied in the correct coordinate system.
+            const renderGroup = instruction.container.renderGroup || instruction.container.parentRenderGroup;
+            const filterFrameTransform = renderGroup.cacheToLocalTransform;
+
+            if (filterFrameTransform)
+            {
+                bounds.applyMatrix(filterFrameTransform);
+            }
+        }
+
         // get GLOBAL bounds of the item we are going to apply the filter to
 
         const colorTextureSource = renderer.renderTarget.renderTarget.colorTexture.source;
@@ -253,10 +268,6 @@ export class FilterSystem implements System
         // here we constrain the bounds to the viewport we will render too
         // this should not take into account the x, y offset of the viewport - as this is
         // handled by the viewport on the gpu.
-        // need to factor in resolutions also..
-        bounds
-            .scale(resolution);
-
         if (clipToViewport)
         {
             const viewPort = renderer.renderTarget.rootViewPort;
@@ -264,7 +275,9 @@ export class FilterSystem implements System
             bounds.fitBounds(0, viewPort.width, 0, viewPort.height);
         }
 
+        // round the bounds to the nearest pixel
         bounds
+            .scale(resolution)
             .ceil()
             .scale(1 / resolution)
             .pad(padding | 0);
