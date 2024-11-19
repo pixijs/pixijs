@@ -1,4 +1,4 @@
-import { Color } from '../../../../color';
+import { Color } from '../../../../color/Color';
 import { styleAttributes } from './SVGParser';
 import { extractSvgUrlId } from './utils/extractSvgUrlId';
 

@@ -1,4 +1,4 @@
-import { warn } from '../../../../utils';
+import { warn } from '../../../../utils/logging/warn';
 import { GraphicsPath } from '../path/GraphicsPath';
 import { parseSVGDefinitions } from './parseSVGDefinitions';
 import { parseSVGFloatAttribute } from './parseSVGFloatAttribute';

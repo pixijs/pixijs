@@ -1,5 +1,5 @@
 import { Color } from '../../../../color';
-import { warn } from '../../../../utils';
+import { warn } from '../../../../utils/logging/warn';
 import { FillGradient } from '../fill/FillGradient';
 import { parseSVGFloatAttribute } from './parseSVGFloatAttribute';
 
