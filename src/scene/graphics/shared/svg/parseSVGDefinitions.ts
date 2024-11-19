@@ -1,4 +1,4 @@
-import { Color } from '../../../../color';
+import { Color } from '../../../../color/Color';
 import { warn } from '../../../../utils/logging/warn';
 import { FillGradient } from '../fill/FillGradient';
 import { parseSVGFloatAttribute } from './parseSVGFloatAttribute';
