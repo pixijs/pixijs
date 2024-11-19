@@ -5,13 +5,25 @@ import { extractSvgUrlId } from './utils/extractSvgUrlId';
 import type { ConvertedFillStyle, ConvertedStrokeStyle, FillStyle, StrokeStyle } from '../FillTypes';
 import type { Session } from './SVGParser';
 
+/** Represents the result of parsing SVG style attributes */
 export type StyleResult = {
+    /** The stroke style properties */
     strokeStyle: StrokeStyle;
+    /** The fill style properties */
     fillStyle: FillStyle;
+    /** Whether fill should be applied */
     useFill: boolean;
+    /** Whether stroke should be applied */
     useStroke: boolean;
 };
 
+/**
+ * Parses SVG style attributes and inline styles to determine fill and stroke properties.
+ * Handles both direct attributes and CSS-style declarations in the style attribute.
+ * @param svg - The SVG element to parse styles from
+ * @param session - The current SVG parsing session containing definitions
+ * @returns An object containing the parsed fill and stroke styles
+ */
 export function parseSVGStyle(svg: SVGElement, session: Session): StyleResult
 {
     const style = svg.getAttribute('style');
@@ -27,6 +39,7 @@ export function parseSVGStyle(svg: SVGElement, session: Session): StyleResult
         useStroke: false,
     };
 
+    // First parse direct style attributes
     for (const key in styleAttributes)
     {
         const attribute = svg.getAttribute(key);
@@ -37,14 +50,13 @@ export function parseSVGStyle(svg: SVGElement, session: Session): StyleResult
         }
     }
 
-    // override with style!
+    // Then parse inline styles which override direct attributes
     if (style)
     {
         const styleParts = style.split(';');
 
         for (let i = 0; i < styleParts.length; i++)
         {
-            // TODO is trim lame? use regex?
             const stylePart = styleParts[i].trim();
 
             const [key, value] = stylePart.split(':');
@@ -64,6 +76,14 @@ export function parseSVGStyle(svg: SVGElement, session: Session): StyleResult
     };
 }
 
+/**
+ * Parses a single SVG style attribute and updates the style result accordingly.
+ * Handles color values, gradients, opacities and other style properties.
+ * @param session - The current SVG parsing session containing definitions
+ * @param result - The style result object to update
+ * @param id - The attribute name/id to parse
+ * @param value - The attribute value to parse
+ */
 export function parseAttribute(
     session: Session,
     result: StyleResult,
@@ -78,13 +98,14 @@ export function parseAttribute(
             {
                 if (value.startsWith('url('))
                 {
-                    // get id from in url..
+                    // Extract gradient/pattern id from url reference
                     const id = extractSvgUrlId(value);
 
                     result.strokeStyle.fill = session.defs[id];
                 }
                 else
                 {
+                    // Parse as color value
                     result.strokeStyle.color = Color.shared.setValue(value).toNumber();
                 }
 
@@ -100,12 +121,14 @@ export function parseAttribute(
             {
                 if (value.startsWith('url('))
                 {
+                    // Extract gradient/pattern id from url reference
                     const id = extractSvgUrlId(value);
 
                     result.fillStyle.fill = session.defs[id];
                 }
                 else
                 {
+                    // Parse as color value
                     result.fillStyle.color = Color.shared.setValue(value).toNumber();
                 }
 
@@ -119,6 +142,7 @@ export function parseAttribute(
             result.strokeStyle.alpha = Number(value);
             break;
         case 'opacity':
+            // Global opacity affects both fill and stroke
             result.fillStyle.alpha = Number(value);
             result.strokeStyle.alpha = Number(value);
             break;
