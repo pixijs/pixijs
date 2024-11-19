@@ -9,31 +9,6 @@ import type { FillStyle, StrokeStyle } from '../FillTypes';
 import type {
     GraphicsContext,
 } from '../GraphicsContext';
-/**
- * A map of SVG style attributes and their default values.
- * Each attribute has a type and default value used for SVG parsing.
- * - 'paint' type can be a color or gradient
- * - 'number' type is a numeric value
- * - 'string' type is a text value
- */
-export const styleAttributes = {
-    // Fill properties
-    fill: { type: 'paint', default: 0 }, // Fill color/gradient
-    'fill-opacity': { type: 'number', default: 1 }, // Fill transparency
-
-    // Stroke properties
-    stroke: { type: 'paint', default: 0 }, // Stroke color/gradient
-    'stroke-width': { type: 'number', default: 1 }, // Width of stroke
-    'stroke-opacity': { type: 'number', default: 1 }, // Stroke transparency
-    'stroke-linecap': { type: 'string', default: 'butt' }, // End cap style: butt, round, square
-    'stroke-linejoin': { type: 'string', default: 'miter' }, // Join style: miter, round, bevel
-    'stroke-miterlimit': { type: 'number', default: 10 }, // Limit on miter join sharpness
-    'stroke-dasharray': { type: 'string', default: 'none' }, // Dash pattern
-    'stroke-dashoffset': { type: 'number', default: 0 }, // Offset for dash pattern
-
-    // Global properties
-    opacity: { type: 'number', default: 1 }, // Overall opacity
-};
 
 /** Represents a session for SVG parsing. Contains the current state and resources needed during parsing. */
 export interface Session
