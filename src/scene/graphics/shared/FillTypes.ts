@@ -5,6 +5,7 @@ import type { LineCap, LineJoin } from './const';
 import type { FillGradient } from './fill/FillGradient';
 import type { FillPattern } from './fill/FillPattern';
 
+export type TextureSpace = 'local' | 'global';
 /**
  * A fill style object.
  * @memberof scene
@@ -21,6 +22,8 @@ export interface FillStyle
     matrix?: Matrix | null;
     /** The fill pattern to use. */
     fill?: FillPattern | FillGradient | null;
+    /** The fill units to use. */
+    textureSpace?: TextureSpace;
 }
 
 /**

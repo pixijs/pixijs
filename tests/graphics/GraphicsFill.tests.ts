@@ -17,6 +17,7 @@ describe('convertStrokeInputToStrokeStyle', () =>
         cap: 'butt',
         join: 'miter',
         texture: Texture.WHITE,
+        textureSpace: 'global',
         matrix: null,
         fill: null,
     });

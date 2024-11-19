@@ -1,4 +1,5 @@
 import { extensions, ExtensionType } from '../../../../extensions/Extensions';
+import { Matrix } from '../../../../maths/matrix/Matrix';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { buildSimpleUvs, buildUvs } from '../../../../rendering/renderers/shared/geometry/utils/buildUvs';
 import { transformVertices } from '../../../../rendering/renderers/shared/geometry/utils/transformVertices';
@@ -10,6 +11,7 @@ import { buildLine } from '../buildCommands/buildLine';
 import { buildPolygon } from '../buildCommands/buildPolygon';
 import { buildRectangle } from '../buildCommands/buildRectangle';
 import { buildTriangle } from '../buildCommands/buildTriangle';
+import { generateTextureMatrix as generateTextureFillMatrix } from './generateTextureFillMatrix';
 import { triangulateWithHoles } from './triangulateWithHoles';
 
 import type { Polygon } from '../../../../maths/shapes/Polygon';
@@ -26,6 +28,7 @@ extensions.handleByMap(ExtensionType.ShapeBuilder, shapeBuilders);
 extensions.add(buildRectangle, buildPolygon, buildTriangle, buildCircle, buildEllipse, buildRoundedRectangle);
 
 const tempRect = new Rectangle();
+const tempTextureMatrix = new Matrix();
 
 export function buildContextBatches(context: GraphicsContext, gpuContext: GpuGraphicsContext)
 {
@@ -211,18 +214,9 @@ function addShapePathToGeometryData(
 
         if (texture !== Texture.WHITE)
         {
-            const textureMatrix = style.matrix;
+            const textureMatrix = generateTextureFillMatrix(tempTextureMatrix, style, shape, matrix);
 
-            if (textureMatrix)
-            {
-                // todo can prolly do this before calculating uvs..
-                if (matrix)
-                {
-                    textureMatrix.append(matrix.clone().invert());
-                }
-
-                buildUvs(vertices, 2, vertOffset, uvs, uvsOffset, 2, (vertices.length / 2) - vertOffset, textureMatrix);
-            }
+            buildUvs(vertices, 2, vertOffset, uvs, uvsOffset, 2, (vertices.length / 2) - vertOffset, textureMatrix);
         }
         else
         {

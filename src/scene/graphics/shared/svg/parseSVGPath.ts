@@ -11,7 +11,7 @@ interface SubPath
 }
 
 // TODO optimise and cache the paths?
-export function SVGToGraphicsPath(svgPath: string, path: GraphicsPath): GraphicsPath
+export function parseSVGPath(svgPath: string, path: GraphicsPath): GraphicsPath
 {
     const commands = parse(svgPath);
 
