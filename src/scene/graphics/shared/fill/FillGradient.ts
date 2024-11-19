@@ -14,37 +14,90 @@ export type GradientType = 'linear' | 'radial';
 //     string // CSS gradient string: 'linear-gradient(...)'
 //     | IGradientOptions // Gradient options: { x0, y0, x1, y1, ...}
 //     | Gradient; // class Gradient itself
-
+/**
+ * Represents the style options for a linear gradient fill.
+ * @memberof scene
+ */
 export interface LinearGradientFillStyle
 {
+    /** The x coordinate of the starting point */
     x0: number;
+    /** The y coordinate of the starting point */
     y0: number;
+    /** The x coordinate of the end point */
     x1: number;
+    /** The y coordinate of the end point */
     y1: number;
+    /** Array of colors to use in the gradient */
     colors: number[];
+    /** Array of stop positions (0-1) for each color */
     stops: number[];
 }
 
+/**
+ * Class representing a gradient fill that can be used to fill shapes and text.
+ * Supports linear gradients with multiple color stops. Color stops define the colors and their positions (from 0 to 1)
+ * along the gradient line. For example, a stop at 0 sets the color at the start point (x0,y0), while a stop at 1
+ * sets the color at the end point (x1,y1). Multiple stops can be added to create smooth transitions between colors.
+ * @example
+ * ```ts
+ * // Create a vertical red-to-blue gradient
+ * const gradient = new FillGradient(0, 0, 0, 1)
+ *     .addColorStop(0, 0xff0000)    // Red at the top
+ *     .addColorStop(1, 0x0000ff);   // Blue at the bottom
+ *
+ * // Create a horizontal gradient with multiple colors
+ * const rainbow = new FillGradient(0, 0, 1, 0)
+ *     .addColorStop(0, 0xff0000)    // Red
+ *     .addColorStop(0.33, 0x00ff00) // Green
+ *     .addColorStop(0.66, 0x0000ff) // Blue
+ *     .addColorStop(1, 0xff00ff);   // Purple
+ *
+ * // Use gradient in global space (relative to world coordinates)
+ * const globalGradient = new FillGradient(0, 0, 100, 100, 'global');
+ * ```
+ * @memberof scene
+ * @implements {CanvasGradient}
+ */
 export class FillGradient implements CanvasGradient
 {
+    /** Default size of the internal gradient texture */
     public static defaultTextureSize = 256;
 
-    /** unique id for this fill gradient */
+    /** Unique identifier for this gradient instance */
     public readonly uid: number = uid('fillGradient');
+    /** Type of gradient - currently only supports 'linear' */
     public readonly type: GradientType = 'linear';
 
+    /** X coordinate of gradient start point */
     public x0: number;
+    /** Y coordinate of gradient start point */
     public y0: number;
+    /** X coordinate of gradient end point */
     public x1: number;
+    /** Y coordinate of gradient end point */
     public y1: number;
 
+    /** Internal texture used to render the gradient */
     public texture: Texture;
+    /** Transform matrix for positioning the gradient */
     public transform: Matrix;
+    /** Array of color stops defining the gradient */
     public gradientStops: Array<{ offset: number, color: string }> = [];
 
+    /** Internal cache of the style key */
     private _styleKey: string | null = null;
+    /** Whether gradient coordinates are in local or global space */
     public textureSpace: TextureSpace = 'local';
 
+    /**
+     * Creates a new gradient fill
+     * @param x0 - X coordinate of start point (default: 0)
+     * @param y0 - Y coordinate of start point (default: 0)
+     * @param x1 - X coordinate of end point (default: 1)
+     * @param y1 - Y coordinate of end point (default: 0)
+     * @param fillUnits - Whether coordinates are 'global' or 'local' (default: 'local')
+     */
     constructor(
         x0: number = 0,
         y0: number = 0,
@@ -62,6 +115,12 @@ export class FillGradient implements CanvasGradient
         this.textureSpace = fillUnits;
     }
 
+    /**
+     * Adds a color stop to the gradient
+     * @param offset - Position of the stop (0-1)
+     * @param color - Color of the stop
+     * @returns This gradient instance for chaining
+     */
     public addColorStop(offset: number, color: ColorSource): this
     {
         this.gradientStops.push({ offset, color: Color.shared.setValue(color).toHexa() });
@@ -70,7 +129,11 @@ export class FillGradient implements CanvasGradient
         return this;
     }
 
-    // TODO move to the system!
+    /**
+     * Builds the internal texture and transform for the gradient.
+     * Called automatically when the gradient is first used.
+     * @internal
+     */
     public buildLinearGradient(): void
     {
         if (this.texture) return;
@@ -134,6 +197,11 @@ export class FillGradient implements CanvasGradient
         this._styleKey = null;
     }
 
+    /**
+     * Gets a unique key representing the current state of the gradient.
+     * Used internally for caching.
+     * @returns Unique string key
+     */
     public get styleKey(): string
     {
         if (this._styleKey)
