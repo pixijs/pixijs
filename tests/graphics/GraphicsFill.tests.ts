@@ -78,7 +78,7 @@ describe('convertStrokeInputToStrokeStyle', () =>
         });
     });
 
-    it('should convert FillGradient to stroke style', () =>
+    it('should convert FillGradient to stroke style with global space', () =>
     {
         const defaultStyle = getDefaultValue();
         const gradient = new FillGradient(0, 0, 200, 0, 'global');
@@ -86,6 +86,23 @@ describe('convertStrokeInputToStrokeStyle', () =>
 
         expect(result).toEqual({
             ...defaultStyle,
+            fill: gradient,
+            color: 0xffffff,
+            alpha: 1,
+            texture: gradient.texture,
+            matrix: gradient.transform,
+        });
+    });
+
+    it('should convert FillGradient to stroke style with local space', () =>
+    {
+        const defaultStyle = getDefaultValue();
+        const gradient = new FillGradient(0, 0, 200, 0, 'local');
+        const result = toStrokeStyle(gradient, defaultStyle);
+
+        expect(result).toEqual({
+            ...defaultStyle,
+            textureSpace: 'local',
             fill: gradient,
             color: 0xffffff,
             alpha: 1,
