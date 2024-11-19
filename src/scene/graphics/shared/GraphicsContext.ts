@@ -108,6 +108,8 @@ export class GraphicsContext extends EventEmitter<{
         fill: null,
         /** The fill units to use. */
         textureSpace: 'local',
+        /** If the stroke is a pixel line. */
+        pixelLine: false,
     };
 
     /** unique id for this graphics context */

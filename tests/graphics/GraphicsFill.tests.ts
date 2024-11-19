@@ -20,6 +20,7 @@ describe('convertStrokeInputToStrokeStyle', () =>
         textureSpace: 'global',
         matrix: null,
         fill: null,
+        pixelLine: false,
     });
 
     it('should return null when value is undefined', () =>

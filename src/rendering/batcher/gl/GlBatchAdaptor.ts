@@ -64,6 +64,6 @@ export class GlBatchAdaptor implements BatcherAdaptor
             renderer.texture.bind(textures[i], i);
         }
 
-        renderer.geometry.draw('triangle-list', batch.size, batch.start);
+        renderer.geometry.draw(batch.topology, batch.size, batch.start);
     }
 }
