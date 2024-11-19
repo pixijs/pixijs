@@ -81,7 +81,7 @@ export class GraphicsContext extends EventEmitter<{
         /** The fill pattern to use. */
         fill: null,
         /** The fill units to use. */
-        textureSpace: 'local',
+        textureSpace: 'global',
     };
 
     /** The default stroke style to use when none is provided. */

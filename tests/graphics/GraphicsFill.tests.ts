@@ -81,7 +81,7 @@ describe('convertStrokeInputToStrokeStyle', () =>
     it('should convert FillGradient to stroke style', () =>
     {
         const defaultStyle = getDefaultValue();
-        const gradient = new FillGradient(0, 0, 200, 0);
+        const gradient = new FillGradient(0, 0, 200, 0, 'global');
         const result = toStrokeStyle(gradient, defaultStyle);
 
         expect(result).toEqual({
@@ -141,7 +141,7 @@ describe('convertStrokeInputToStrokeStyle', () =>
     it('should convert stroke object with gradient to stroke style', () =>
     {
         const defaultStyle = getDefaultValue();
-        const gradient = new FillGradient(0, 0, 200, 0);
+        const gradient = new FillGradient(0, 0, 200, 0, 'global');
         const result = toStrokeStyle({ fill: gradient, alpha: 0.5 }, defaultStyle);
 
         expect(result).toEqual({
