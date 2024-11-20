@@ -452,6 +452,17 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         }
     }
 
+    public prerender(renderTarget: RenderTarget)
+    {
+        const resource = renderTarget.colorTexture.resource;
+
+        // if the render target is a canvas, ensure its size matches the source
+        if (this._renderer.context.multiView && CanvasSource.test(resource))
+        {
+            this._renderer.context.ensureCanvasSize(resource);
+        }
+    }
+
     public postrender(renderTarget: RenderTarget)
     {
         // if multiView is not enabled, we don't need to do anything
