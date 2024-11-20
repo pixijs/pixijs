@@ -30,7 +30,7 @@ export interface LinearGradientOptions
     colorStops?: { offset: number, color: ColorSource }[];
 
     /** Whether coordinates are 'global' or 'local' */
-    fillUnits?: TextureSpace;
+    textureSpace?: TextureSpace;
 }
 
 /**
@@ -77,7 +77,7 @@ export class FillGradient implements CanvasGradient
         x1: 1,
         y1: 0,
         colorStops: [],
-        fillUnits: 'local',
+        textureSpace: 'local',
     };
 
     /** Unique identifier for this gradient instance */
@@ -112,7 +112,7 @@ export class FillGradient implements CanvasGradient
      * @param {number} [options.y0=0] - Y coordinate of start point
      * @param {number} [options.x1=1] - X coordinate of end point
      * @param {number} [options.y1=0] - Y coordinate of end point
-     * @param {string} [options.fillUnits='local'] - Whether coordinates are 'global' or 'local'
+     * @param {string} [options.textureSpace='local'] - Whether coordinates are 'global' or 'local'
      */
     constructor(options: LinearGradientOptions);
     /** @deprecated since 8.5.2 */
@@ -121,7 +121,7 @@ export class FillGradient implements CanvasGradient
         y0?: number,
         x1?: number,
         y1?: number,
-        fillUnits?: 'global' | 'local'
+        textureSpace?: 'global' | 'local'
     );
     constructor(...args: [LinearGradientOptions] | [number?, number?, number?, number?, TextureSpace?])
     {
@@ -134,7 +134,7 @@ export class FillGradient implements CanvasGradient
         this.x1 = options.x1;
         this.y1 = options.y1;
 
-        this.textureSpace = options.fillUnits;
+        this.textureSpace = options.textureSpace;
 
         options.colorStops.forEach((stop) =>
         {
@@ -251,10 +251,10 @@ export function ensureOptions(
     let options = (args[0] ?? {}) as LinearGradientOptions;
 
     // @deprecated
-    if (typeof options === 'string' || args[1])
+    if (typeof options === 'number' || args[1])
     {
         // #if _DEBUG
-        deprecation('v8.5.2', `use options object instead`);
+        deprecation('8.5.2', `use options object instead`);
         // #endif
 
         options = {
