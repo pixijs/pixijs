@@ -8,13 +8,19 @@ export const scene: TestScene = {
     it: 'should render multiline FillGradient in text and its stroke',
     create: async (scene: Container) =>
     {
-        const strokeGradient = new FillGradient(0, 0, 0, 1)
-            .addColorStop(0, 0xff0000)
-            .addColorStop(1, 0x0000ff);
+        const strokeGradient = new FillGradient({
+            colorStops: [
+                { offset: 0, color: 0xff0000 },
+                { offset: 1, color: 0x0000ff },
+            ],
+        });
 
-        const fillGradient = new FillGradient(0, 0, 0, 1)
-            .addColorStop(0, 0xffffff)
-            .addColorStop(1, 0x000000);
+        const fillGradient = new FillGradient({
+            colorStops: [
+                { offset: 0, color: 0xffffff },
+                { offset: 1, color: 0x000000 },
+            ],
+        });
 
         const textGradient = new Text({
             text: 'Live\nLife\nLove',

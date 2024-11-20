@@ -27,7 +27,7 @@ export interface LinearGradientOptions
     y1?: number;
 
     /** Array of colors stops to use in the gradient */
-    stops?: { offset: number, color: ColorSource }[];
+    colorStops?: { offset: number, color: ColorSource }[];
 
     /** Whether coordinates are 'global' or 'local' */
     fillUnits?: TextureSpace;
@@ -76,6 +76,7 @@ export class FillGradient implements CanvasGradient
         y0: 0,
         x1: 1,
         y1: 0,
+        colorStops: [],
         fillUnits: 'global',
     };
 
@@ -98,7 +99,7 @@ export class FillGradient implements CanvasGradient
     /** Transform matrix for positioning the gradient */
     public transform: Matrix;
     /** Array of color stops defining the gradient */
-    public gradientStops: Array<{ offset: number, color: string }> = [];
+    public colorStops: Array<{ offset: number, color: string }> = [];
 
     /** Internal cache of the style key */
     private _styleKey: string | null = null;
@@ -135,6 +136,11 @@ export class FillGradient implements CanvasGradient
         this.y1 = options.y1;
 
         this.textureSpace = options.fillUnits;
+
+        options.colorStops.forEach((stop) =>
+        {
+            this.addColorStop(stop.offset, stop.color);
+        });
     }
 
     /**
@@ -145,7 +151,7 @@ export class FillGradient implements CanvasGradient
      */
     public addColorStop(offset: number, color: ColorSource): this
     {
-        this.gradientStops.push({ offset, color: Color.shared.setValue(color).toHexa() });
+        this.colorStops.push({ offset, color: Color.shared.setValue(color).toHexa() });
         this._styleKey = null;
 
         return this;
@@ -162,7 +168,7 @@ export class FillGradient implements CanvasGradient
 
         const defaultSize = FillGradient.defaultTextureSize;
 
-        const { gradientStops } = this;
+        const { colorStops: gradientStops } = this;
 
         const canvas = DOMAdapter.get().createCanvas();
 
@@ -231,7 +237,7 @@ export class FillGradient implements CanvasGradient
             return this._styleKey;
         }
 
-        const stops = this.gradientStops.map((stop) => `${stop.offset}-${stop.color}`).join('-');
+        const stops = this.colorStops.map((stop) => `${stop.offset}-${stop.color}`).join('-');
         const texture = this.texture.uid;
         const transform = this.transform.toArray().join('-');
 

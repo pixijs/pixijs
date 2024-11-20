@@ -98,7 +98,7 @@ export function getCanvasFillStyle(
                 {
                     const start = ((i * textMetrics.lineHeight) + (padding / 2)) / height;
 
-                    fillGradient.gradientStops.forEach((stop) =>
+                    fillGradient.colorStops.forEach((stop) =>
                     {
                         // Convert to global space
                         const globalStop = start + (stop.offset * ratio);
@@ -114,7 +114,7 @@ export function getCanvasFillStyle(
             else
             {
                 // Standard global space gradient handling
-                fillGradient.gradientStops.forEach((stop) =>
+                fillGradient.colorStops.forEach((stop) =>
                 {
                     gradient.addColorStop(stop.offset, Color.shared.setValue(stop.color).toHex());
                 });
