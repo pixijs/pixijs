@@ -1,6 +1,7 @@
 
 struct ParticleUniforms {
   uProjectionMatrix:mat3x3<f32>,
+  uColor:vec4<f32>,
   uResolution:vec2<f32>,
   uRoundPixels:f32,
 };
@@ -31,10 +32,12 @@ fn mainVertex(
 
    let position = vec4((uniforms.uProjectionMatrix * vec3(v, 1.0)).xy, 0.0, 1.0);
 
+    let vColor = vec4(aColor.rgb * aColor.a, aColor.a) * uniforms.uColor;
+
   return VSOutput(
    position,
    aUV,
-   aColor,
+   vColor,
   );
 }
 

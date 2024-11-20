@@ -7,6 +7,7 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render particle container',
+    only: true,
     create: async (scene: Container) =>
     {
         const textures = await Assets.load([
@@ -29,6 +30,13 @@ export const scene: TestScene = {
             particle.rotation = i * 0.01;
 
             particleContainer.addParticle(particle);
+
+            particle.alpha = i / 100;
+
+            if (i % 2 === 0)
+            {
+                particle.tint = 'red';
+            }
         }
 
         scene.addChild(particleContainer);
