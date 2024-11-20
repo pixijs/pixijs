@@ -4,34 +4,33 @@ import { Matrix } from '../../../../maths/matrix/Matrix';
 import { ImageSource } from '../../../../rendering/renderers/shared/texture/sources/ImageSource';
 import { Texture } from '../../../../rendering/renderers/shared/texture/Texture';
 import { uid } from '../../../../utils/data/uid';
+import { deprecation } from '../../../../utils/logging/deprecation';
 
 import type { ColorSource } from '../../../../color/Color';
 import type { TextureSpace } from '../FillTypes';
 
 export type GradientType = 'linear' | 'radial';
 
-// export type GradientSource =
-//     string // CSS gradient string: 'linear-gradient(...)'
-//     | IGradientOptions // Gradient options: { x0, y0, x1, y1, ...}
-//     | Gradient; // class Gradient itself
 /**
  * Represents the style options for a linear gradient fill.
  * @memberof scene
  */
-export interface LinearGradientFillStyle
+export interface LinearGradientOptions
 {
     /** The x coordinate of the starting point */
-    x0: number;
+    x0?: number;
     /** The y coordinate of the starting point */
-    y0: number;
+    y0?: number;
     /** The x coordinate of the end point */
-    x1: number;
+    x1?: number;
     /** The y coordinate of the end point */
-    y1: number;
-    /** Array of colors to use in the gradient */
-    colors: number[];
-    /** Array of stop positions (0-1) for each color */
-    stops: number[];
+    y1?: number;
+
+    /** Array of colors stops to use in the gradient */
+    stops?: { offset: number, color: ColorSource }[];
+
+    /** Whether coordinates are 'global' or 'local' */
+    fillUnits?: TextureSpace;
 }
 
 /**
@@ -64,6 +63,22 @@ export class FillGradient implements CanvasGradient
     /** Default size of the internal gradient texture */
     public static defaultTextureSize = 256;
 
+    /**
+     * Default options for creating a gradient fill
+     * @property {number} x0 - X coordinate of start point (default: 0)
+     * @property {number} y0 - Y coordinate of start point (default: 0)
+     * @property {number} x1 - X coordinate of end point (default: 1)
+     * @property {number} y1 - Y coordinate of end point (default: 0)
+     * @property {TextureSpace} fillUnits - Whether coordinates are 'global' or 'local' (default: 'local')
+     */
+    public static readonly defaultOptions: LinearGradientOptions = {
+        x0: 0,
+        y0: 0,
+        x1: 1,
+        y1: 0,
+        fillUnits: 'local',
+    };
+
     /** Unique identifier for this gradient instance */
     public readonly uid: number = uid('fillGradient');
     /** Type of gradient - currently only supports 'linear' */
@@ -89,30 +104,36 @@ export class FillGradient implements CanvasGradient
     private _styleKey: string | null = null;
     /** Whether gradient coordinates are in local or global space */
     public textureSpace: TextureSpace = 'local';
-
     /**
      * Creates a new gradient fill
-     * @param x0 - X coordinate of start point (default: 0)
-     * @param y0 - Y coordinate of start point (default: 0)
-     * @param x1 - X coordinate of end point (default: 1)
-     * @param y1 - Y coordinate of end point (default: 0)
-     * @param fillUnits - Whether coordinates are 'global' or 'local' (default: 'local')
+     * @param options - The options for the gradient
+     * @param {number} [options.x0=0] - X coordinate of start point
+     * @param {number} [options.y0=0] - Y coordinate of start point
+     * @param {number} [options.x1=1] - X coordinate of end point
+     * @param {number} [options.y1=0] - Y coordinate of end point
+     * @param {string} [options.fillUnits='local'] - Whether coordinates are 'global' or 'local'
      */
+    constructor(options: LinearGradientOptions);
+    /** @deprecated since 8.5.2 */
     constructor(
-        x0: number = 0,
-        y0: number = 0,
-        x1: number = 1,
-        y1: number = 0,
-        fillUnits: 'global' | 'local' = 'local'
-    )
+        x0?: number,
+        y0?: number,
+        x1?: number,
+        y1?: number,
+        fillUnits?: 'global' | 'local'
+    );
+    constructor(...args: [LinearGradientOptions] | [number?, number?, number?, number?, TextureSpace?])
     {
-        this.x0 = x0;
-        this.y0 = y0;
+        const options = { ...FillGradient.defaultOptions, ...ensureOptions(args) };
 
-        this.x1 = x1;
-        this.y1 = y1;
+        this.x0 = options.x0;
+        this.x0 = options.x0;
+        this.y0 = options.y0;
 
-        this.textureSpace = fillUnits;
+        this.x1 = options.x1;
+        this.y1 = options.y1;
+
+        this.textureSpace = options.fillUnits;
     }
 
     /**
@@ -215,4 +236,29 @@ export class FillGradient implements CanvasGradient
 
         return `fill-gradient-${this.uid}-${stops}-${texture}-${transform}-${this.x0}-${this.y0}-${this.x1}-${this.y1}`;
     }
+}
+
+export function ensureOptions(
+    args: any[],
+): LinearGradientOptions
+{
+    let options = (args[0] ?? {}) as LinearGradientOptions;
+
+    // @deprecated
+    if (typeof options === 'string' || args[1])
+    {
+        // #if _DEBUG
+        deprecation('v8.5.2', `use options object instead`);
+        // #endif
+
+        options = {
+            x0: args[0],
+            y0: args[1],
+            x1: args[2],
+            y1: args[3],
+            fillUnits: args[4] as 'global' | 'local',
+        };
+    }
+
+    return options;
 }
