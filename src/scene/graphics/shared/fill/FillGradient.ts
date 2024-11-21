@@ -126,7 +126,7 @@ export class FillGradient implements CanvasGradient
     );
     constructor(...args: [LinearGradientOptions] | [number?, number?, number?, number?, TextureSpace?])
     {
-        const options = { ...FillGradient.defaultOptions, ...ensureOptions(args) };
+        const options = { ...FillGradient.defaultOptions, ...ensureGradientOptions(args) };
 
         this.x0 = options.x0;
         this.x0 = options.x0;
@@ -251,7 +251,26 @@ export class FillGradient implements CanvasGradient
     }
 }
 
-export function ensureOptions(
+/**
+ * Helper function to ensure consistent handling of gradient options.
+ * This function handles both the new options object format and the deprecated parameter format.
+ * @example
+ * // New recommended way:
+ * const options = ensureGradientOptions([{
+ *     x0: 0,
+ *     y0: 0,
+ *     x1: 100,
+ *     y1: 100,
+ *     textureSpace: 'local'
+ * }]);
+ *
+ * // Deprecated way (will show warning in debug):
+ * const options = ensureGradientOptions([0, 0, 100, 100, 'local']);
+ * @param args - Arguments passed to gradient constructor
+ * @returns Normalized gradient options object
+ * @internal
+ */
+function ensureGradientOptions(
     args: any[],
 ): LinearGradientOptions
 {
