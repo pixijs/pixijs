@@ -99,7 +99,7 @@ export class Polygon implements ShapePrimitive
             const x2 = points[(i + 2) % length];
             const y2 = points[(i + 3) % length];
 
-            area += (x2 - x1) * (y2 + y1);//
+            area += (x2 - x1) * (y2 + y1);
         }
 
         return area < 0;
