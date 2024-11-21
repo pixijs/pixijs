@@ -69,7 +69,7 @@ export class FillGradient implements CanvasGradient
      * @property {number} y0 - Y coordinate of start point (default: 0)
      * @property {number} x1 - X coordinate of end point (default: 1)
      * @property {number} y1 - Y coordinate of end point (default: 0)
-     * @property {TextureSpace} fillUnits - Whether coordinates are 'global' or 'local' (default: 'local')
+     * @property {TextureSpace} textureSpace - Whether coordinates are 'global' or 'local' (default: 'local')
      */
     public static readonly defaultOptions: LinearGradientOptions = {
         x0: 0,
