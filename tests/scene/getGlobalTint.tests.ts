@@ -1,5 +1,4 @@
 import { Container } from '../../src/scene/container/Container';
-import { getGlobalTint } from '../../src/scene/container/global/getGlobalTint';
 
 describe('getGlobalTint', () =>
 {
@@ -11,7 +10,7 @@ describe('getGlobalTint', () =>
 
             container.tint = 0xFF0000; // Red
 
-            expect(getGlobalTint(container, false)).toBe(0xFF0000);
+            expect(container.getGlobalTint(false)).toBe(0xFF0000);
         });
 
         it('should multiply tint with single parent', () =>
@@ -25,7 +24,7 @@ describe('getGlobalTint', () =>
             container.parent = parent;
 
             // Result should be black (0x000000) as multiplying different colors results in darkness
-            expect(getGlobalTint(container, false)).toBe(0x000000);
+            expect(container.getGlobalTint(false)).toBe(0x000000);
         });
 
         it('should multiply tint through multiple parents', () =>
@@ -42,7 +41,7 @@ describe('getGlobalTint', () =>
             container.parent = parent;
 
             // Result should be darker red due to gray parent
-            expect(getGlobalTint(container, false)).toBe(0x800000);
+            expect(container.getGlobalTint(false)).toBe(0x800000);
         });
 
         it('should return renderGroup worldColor when container has renderGroup', () =>
@@ -52,7 +51,7 @@ describe('getGlobalTint', () =>
                 isRenderGroup: true
             });
 
-            expect(getGlobalTint(container, false)).toBe(0xFF0000);
+            expect(container.getGlobalTint(false)).toBe(0xFF0000);
         });
     });
 
@@ -66,7 +65,7 @@ describe('getGlobalTint', () =>
                 worldColor: 0x0000FF // BGR format
             } as any;
 
-            expect(getGlobalTint(container, true)).toBe(0xFF0000); // RGB format
+            expect(container.getGlobalTint(true)).toBe(0xFF0000); // RGB format
         });
 
         it('should multiply parentRenderGroup worldColor with container localColor', () =>
@@ -78,7 +77,7 @@ describe('getGlobalTint', () =>
                 worldColor: 0xFFFFFF // White in BGR
             } as any;
 
-            expect(getGlobalTint(container, true)).toBe(0xFF0000);
+            expect(container.getGlobalTint(true)).toBe(0xFF0000);
         });
 
         it('should return container tint when no render groups exist', () =>
@@ -87,7 +86,7 @@ describe('getGlobalTint', () =>
 
             container.tint = 0x00FF00; // Green
 
-            expect(getGlobalTint(container, true)).toBe(0x00FF00);
+            expect(container.getGlobalTint(true)).toBe(0x00FF00);
         });
     });
 
@@ -99,7 +98,7 @@ describe('getGlobalTint', () =>
 
             container.tint = 0x000000;
 
-            expect(getGlobalTint(container, false)).toBe(0x000000);
+            expect(container.getGlobalTint(false)).toBe(0x000000);
         });
 
         it('should handle white tint (0xFFFFFF)', () =>
@@ -108,7 +107,7 @@ describe('getGlobalTint', () =>
 
             container.tint = 0xFFFFFF;
 
-            expect(getGlobalTint(container, false)).toBe(0xFFFFFF);
+            expect(container.getGlobalTint(false)).toBe(0xFFFFFF);
         });
 
         it('should handle deeply nested containers', () =>
@@ -129,7 +128,7 @@ describe('getGlobalTint', () =>
             container.tint = 0xFF0000; // Red
             current.addChild(container);
 
-            expect(getGlobalTint(container, false)).toBe(0xFF0000);
+            expect(container.getGlobalTint(false)).toBe(0xFF0000);
         });
     });
 });

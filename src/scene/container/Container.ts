@@ -11,13 +11,11 @@ import { cacheAsTextureMixin } from './container-mixins/cacheAsTextureMixin';
 import { childrenHelperMixin } from './container-mixins/childrenHelperMixin';
 import { effectsMixin } from './container-mixins/effectsMixin';
 import { findMixin } from './container-mixins/findMixin';
+import { bgr2rgb, getGlobalMixin } from './container-mixins/getGlobalMixin';
 import { measureMixin } from './container-mixins/measureMixin';
 import { onRenderMixin } from './container-mixins/onRenderMixin';
 import { sortMixin } from './container-mixins/sortMixin';
 import { toLocalGlobalMixin } from './container-mixins/toLocalGlobalMixin';
-import { getGlobalAlpha } from './global/getGlobalAlpha';
-import { bgr2rgb, getGlobalTint } from './global/getGlobalTint';
-import { getGlobalTransform } from './global/getGlobalTransform';
 import { RenderGroup } from './RenderGroup';
 import { assignWithIgnore } from './utils/assignWithIgnore';
 
@@ -856,65 +854,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     }
 
     /**
-     * Returns the global transform matrix of the container within the scene.
-     * @param matrix - Optional matrix to store the result. If not provided, a new Matrix will be created.
-     * @param skipUpdate - Performance optimization flag:
-     *   - If false (default): Recalculates the entire transform chain for accuracy
-     *   - If true: Uses cached worldTransform from the last render pass for better performance
-     * @returns The resulting transformation matrix (either the input matrix or a new one)
-     * @example
-     * // Accurate but slower - recalculates entire transform chain
-     * const preciseTransform = container.getGlobalTransform();
-     *
-     * // Faster but may be outdated - uses cached transform
-     * const cachedTransform = container.getGlobalTransform(undefined, true);
-     *
-     * // Reuse existing matrix
-     * const existingMatrix = new Matrix();
-     * container.getGlobalTransform(existingMatrix);
-     */
-    public getGlobalTransform(matrix?: Matrix, skipUpdate?: boolean): Matrix
-    {
-        return getGlobalTransform(this, matrix || new Matrix(), skipUpdate);
-    }
-
-    /**
-     * Returns the global (compound) alpha of the container within the scene.
-     * @param skipUpdate - Performance optimization flag:
-     *   - If false (default): Recalculates the entire alpha chain through parents for accuracy
-     *   - If true: Uses cached worldAlpha from the last render pass for better performance
-     * @returns The resulting alpha value (between 0 and 1)
-     * @example
-     * // Accurate but slower - recalculates entire alpha chain
-     * const preciseAlpha = container.getGlobalAlpha();
-     *
-     * // Faster but may be outdated - uses cached alpha
-     * const cachedAlpha = container.getGlobalAlpha(true);
-     */
-    public getGlobalAlpha(skipUpdate?: boolean): number
-    {
-        return getGlobalAlpha(this, skipUpdate);
-    }
-
-    /**
-     * Returns the global (compound) tint color of the container within the scene.
-     * @param skipUpdate - Performance optimization flag:
-     *   - If false (default): Recalculates the entire tint chain through parents for accuracy
-     *   - If true: Uses cached worldColor from the last render pass for better performance
-     * @returns The resulting tint color as a 24-bit RGB number (0xRRGGBB)
-     * @example
-     * // Accurate but slower - recalculates entire tint chain
-     * const preciseTint = container.getGlobalTint();
-     *
-     * // Faster but may be outdated - uses cached tint
-     * const cachedTint = container.getGlobalTint(true);
-     */
-    public getGlobalTint(skipUpdate?: boolean): number
-    {
-        return getGlobalTint(this, skipUpdate);
-    }
-
-    /**
      * The position of the container on the x axis relative to the local coordinates of the parent.
      * An alias to position.x
      */
@@ -1450,3 +1389,4 @@ Container.mixin(findMixin);
 Container.mixin(sortMixin);
 Container.mixin(cullingMixin);
 Container.mixin(cacheAsTextureMixin);
+Container.mixin(getGlobalMixin);

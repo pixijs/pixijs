@@ -1,6 +1,5 @@
 import { Matrix } from '../../src/maths/matrix/Matrix';
 import { Container } from '../../src/scene/container/Container';
-import { getGlobalTransform } from '../../src/scene/container/global/getGlobalTransform';
 
 describe('getGlobalTransform', () =>
 {
@@ -20,7 +19,7 @@ describe('getGlobalTransform', () =>
             container.x = 100;
             container.y = 100;
 
-            const result = getGlobalTransform(container, outputMatrix, false);
+            const result = container.getGlobalTransform(outputMatrix, false);
 
             expect(result).toBe(outputMatrix);
             expect(result.tx).toBe(100);
@@ -37,7 +36,7 @@ describe('getGlobalTransform', () =>
 
             parent.addChild(container);
 
-            const result = getGlobalTransform(container, outputMatrix, false);
+            const result = container.getGlobalTransform(outputMatrix, false);
 
             expect(result.tx).toBe(150); // 100 + 50
         });
@@ -56,7 +55,7 @@ describe('getGlobalTransform', () =>
             grandParent.addChild(parent);
             parent.addChild(container);
 
-            const result = getGlobalTransform(container, outputMatrix, false);
+            const result = container.getGlobalTransform(outputMatrix, false);
 
             expect(result.tx).toBe(300); // 100 + 100 + 100
         });
@@ -71,7 +70,7 @@ describe('getGlobalTransform', () =>
 
             parent.addChild(container);
 
-            const result = getGlobalTransform(container, outputMatrix, false);
+            const result = container.getGlobalTransform(outputMatrix, false);
 
             // After 90-degree rotation
             expect(result.a).toBeCloseTo(0);
@@ -92,7 +91,7 @@ describe('getGlobalTransform', () =>
 
             container.addChild(parent);
 
-            const result = getGlobalTransform(container, outputMatrix, false);
+            const result = container.getGlobalTransform(outputMatrix, false);
 
             expect(result.a).toBe(2);
             expect(result.d).toBe(3);
@@ -109,7 +108,7 @@ describe('getGlobalTransform', () =>
             container.worldTransform.tx = 200;
             container.worldTransform.ty = 300;
 
-            const result = getGlobalTransform(container, outputMatrix, true);
+            const result = container.getGlobalTransform(outputMatrix, true);
 
             expect(result.tx).toBe(200);
             expect(result.ty).toBe(300);
@@ -122,7 +121,7 @@ describe('getGlobalTransform', () =>
 
             container.worldTransform.tx = 100;
 
-            const result = getGlobalTransform(container, outMatrix, true);
+            const result = container.getGlobalTransform(outMatrix, true);
 
             expect(result).toBe(outMatrix);
             expect(result.tx).toBe(100);
@@ -135,7 +134,7 @@ describe('getGlobalTransform', () =>
         {
             const container = new Container();
 
-            const result = getGlobalTransform(container, outputMatrix, false);
+            const result = container.getGlobalTransform(outputMatrix, false);
 
             expect(result.a).toBe(1);
             expect(result.d).toBe(1);
@@ -150,7 +149,7 @@ describe('getGlobalTransform', () =>
             container.scale.x = 0;
             container.scale.y = 0;
 
-            const result = getGlobalTransform(container, outputMatrix, false);
+            const result = container.getGlobalTransform(outputMatrix, false);
 
             expect(result.a).toBe(0);
             expect(result.d).toBe(0);
@@ -171,7 +170,7 @@ describe('getGlobalTransform', () =>
                 current = parent;
             }
 
-            const result = getGlobalTransform(container, outputMatrix, false);
+            const result = container.getGlobalTransform(outputMatrix, false);
 
             expect(result.tx).toBe(100); // 10 * 10
         });

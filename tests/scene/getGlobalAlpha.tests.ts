@@ -1,5 +1,4 @@
 import { Container } from '../../src/scene/container/Container';
-import { getGlobalAlpha } from '../../src/scene/container/global/getGlobalAlpha';
 
 describe('getGlobalAlpha', () =>
 {
@@ -11,7 +10,7 @@ describe('getGlobalAlpha', () =>
 
             container.alpha = 0.5;
 
-            expect(getGlobalAlpha(container, false)).toBe(0.5);
+            expect(container.getGlobalAlpha(false)).toBe(0.5);
         });
 
         it('should multiply alpha with single parent', () =>
@@ -24,7 +23,7 @@ describe('getGlobalAlpha', () =>
             container.alpha = 0.5;
             container.parent = parent;
 
-            expect(getGlobalAlpha(container, false)).toBe(0.25); // 0.5 * 0.5
+            expect(container.getGlobalAlpha(false)).toBe(0.25); // 0.5 * 0.5
         });
 
         it('should multiply alpha through multiple parents', () =>
@@ -40,7 +39,7 @@ describe('getGlobalAlpha', () =>
             parent.parent = grandParent;
             container.parent = parent;
 
-            expect(getGlobalAlpha(container, false)).toBe(0.125); // 0.5 * 0.5 * 0.5
+            expect(container.getGlobalAlpha(false)).toBe(0.125); // 0.5 * 0.5 * 0.5
         });
 
         it('should return renderGroup worldAlpha when container has renderGroup', () =>
@@ -50,7 +49,7 @@ describe('getGlobalAlpha', () =>
                 isRenderGroup: true
             });
 
-            expect(getGlobalAlpha(container, false)).toBe(0.75);
+            expect(container.getGlobalAlpha(false)).toBe(0.75);
         });
     });
 
@@ -68,7 +67,7 @@ describe('getGlobalAlpha', () =>
 
             parent.alpha = 0.5;
 
-            expect(getGlobalAlpha(container, true)).toBe(0.5); // 0.8 * 0.5
+            expect(container.getGlobalAlpha(true)).toBe(0.5); // 0.8 * 0.5
         });
     });
 
@@ -80,7 +79,7 @@ describe('getGlobalAlpha', () =>
 
             container.alpha = 0;
 
-            expect(getGlobalAlpha(container, false)).toBe(0);
+            expect(container.getGlobalAlpha(false)).toBe(0);
         });
 
         it('should handle alpha value of 1', () =>
@@ -89,7 +88,7 @@ describe('getGlobalAlpha', () =>
 
             container.alpha = 1;
 
-            expect(getGlobalAlpha(container, false)).toBe(1);
+            expect(container.getGlobalAlpha(false)).toBe(1);
         });
 
         it('should handle deeply nested containers', () =>
@@ -113,7 +112,7 @@ describe('getGlobalAlpha', () =>
 
             const expectedAlpha = Math.pow(0.9, 11);
 
-            expect(getGlobalAlpha(container, false)).toBeCloseTo(expectedAlpha, 3);
+            expect(container.getGlobalAlpha(false)).toBeCloseTo(expectedAlpha, 3);
         });
     });
 });

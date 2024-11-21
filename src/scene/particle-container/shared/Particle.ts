@@ -1,6 +1,6 @@
 import { Color } from '../../../color/Color';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import { bgr2rgb } from '../../container/global/getGlobalTint';
+import { bgr2rgb } from '../../container/container-mixins/getGlobalMixin';
 import { assignWithIgnore } from '../../container/utils/assignWithIgnore';
 
 import type { ColorSource } from '../../../color/Color';
