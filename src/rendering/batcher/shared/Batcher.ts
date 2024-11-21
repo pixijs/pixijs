@@ -8,6 +8,7 @@ import { BatchTextureArray } from './BatchTextureArray';
 
 import type { BoundsData } from '../../../scene/container/bounds/Bounds';
 import type { BindGroup } from '../../renderers/gpu/shader/BindGroup';
+import type { Topology } from '../../renderers/shared/geometry/const';
 import type { Geometry, IndexBufferArray } from '../../renderers/shared/geometry/Geometry';
 import type { Instruction } from '../../renderers/shared/instructions/Instruction';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
@@ -35,6 +36,7 @@ export class Batch implements Instruction
     public textures: BatchTextureArray = new BatchTextureArray();
 
     public blendMode: BLEND_MODES = 'normal';
+    public topology: Topology = 'triangle-strip';
 
     public canBundle = true;
 
@@ -114,6 +116,12 @@ export interface BatchableElement
     attributeSize: number;
 
     /**
+     * The topology to be used for rendering.
+     * @type {Topology}
+     */
+    topology: Topology
+
+    /**
      * Whether the element should be packed as a quad for better performance.
      * @type {boolean}
      */
@@ -153,6 +161,7 @@ export interface BatchableElement
      * @private
      */
     _batch: Batch;
+
 }
 
 /**
@@ -446,6 +455,7 @@ export abstract class Batcher
 
         const firstElement = elements[this.elementStart];
         let blendMode = getAdjustedBlendModeBlend(firstElement.blendMode, firstElement.texture._source);
+        let topology = firstElement.topology;
 
         if (this.attributeSize * 4 > this.attributeBuffer.size)
         {
@@ -479,7 +489,7 @@ export abstract class Batcher
 
             const adjustedBlendMode = getAdjustedBlendModeBlend(element.blendMode, source);
 
-            const breakRequired = blendMode !== adjustedBlendMode;
+            const breakRequired = blendMode !== adjustedBlendMode || topology !== element.topology;
 
             if (source._batchTick === BATCH_TICK && !breakRequired)
             {
@@ -531,6 +541,7 @@ export abstract class Batcher
                     size - start,
                     textureBatch,
                     blendMode,
+                    topology,
                     instructionSet,
                     action
                 );
@@ -539,6 +550,7 @@ export abstract class Batcher
                 start = size;
                 // create a batch...
                 blendMode = adjustedBlendMode;
+                topology = element.topology;
 
                 batch = getBatchFromPool();
                 textureBatch = batch.textures;
@@ -591,6 +603,7 @@ export abstract class Batcher
                 size - start,
                 textureBatch,
                 blendMode,
+                topology,
                 instructionSet,
                 action
             );
@@ -610,6 +623,7 @@ export abstract class Batcher
         indexSize: number,
         textureBatch: BatchTextureArray,
         blendMode: BLEND_MODES,
+        topology: Topology,
         instructionSet: InstructionSet,
         action: BatchAction
     )
@@ -621,7 +635,7 @@ export abstract class Batcher
         batch.batcher = this;
         batch.textures = textureBatch;
         batch.blendMode = blendMode;
-
+        batch.topology = topology;
         batch.start = indexStart;
         batch.size = indexSize;
 

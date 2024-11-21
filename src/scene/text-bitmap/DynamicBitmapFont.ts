@@ -158,14 +158,15 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
             const char = charList[i];
 
             const metrics = CanvasTextMetrics.measureText(char, style, canvas, false);
-            // This is ugly - but italics are given more space so they don't overlap
-            const textureGlyphWidth = Math.ceil((style.fontStyle === 'italic' ? 2 : 1) * metrics.width);
 
             // override the line height.. we want this to be the glyps height
             // not the user specified one.
             metrics.lineHeight = metrics.height;
 
             const width = metrics.width * fontScale;
+            // This is ugly - but italics are given more space so they don't overlap
+            const textureGlyphWidth = Math.ceil((style.fontStyle === 'italic' ? 2 : 1) * width);
+
             const height = (metrics.height) * fontScale;
 
             const paddedWidth = textureGlyphWidth + (padding * 2);

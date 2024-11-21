@@ -13,7 +13,10 @@ export const UNIFORM_TYPES_VALUES = [
     'mat2x3<f32>',
     'mat4x3<f32>',
     'mat2x4<f32>',
-    'mat3x4<f32>'
+    'mat3x4<f32>',
+    'vec2<i32>',
+    'vec3<i32>',
+    'vec4<i32>',
 ] as const;
 
 /** useful for checking if a type is supported - a map of supported types with a true value. */

@@ -15,6 +15,7 @@ export function generateArraySyncSTD40(uboElement: UboElement, offsetToAdd: numb
     const elementSize = (uboElement.data.value as Array<number>).length / uboElement.data.size;// size / rowSize;
 
     const remainder = (4 - (elementSize % 4)) % 4;
+    const data = uboElement.data.type.indexOf('i32') >= 0 ? 'dataInt32' : 'data';
 
     return `
         v = uv.${uboElement.data.name};
@@ -28,7 +29,7 @@ export function generateArraySyncSTD40(uboElement: UboElement, offsetToAdd: numb
         {
             for(var j = 0; j < ${elementSize}; j++)
             {
-                data[arrayOffset++] = v[t++];
+                ${data}[arrayOffset++] = v[t++];
             }
             ${remainder !== 0 ? `arrayOffset += ${remainder};` : ''}
         }
