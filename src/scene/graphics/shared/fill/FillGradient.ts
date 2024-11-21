@@ -242,6 +242,12 @@ export class FillGradient implements CanvasGradient
 
         return `fill-gradient-${this.uid}-${stops}-${texture}-${transform}-${this.x0}-${this.y0}-${this.x1}-${this.y1}`;
     }
+
+    public destroy(): void
+    {
+        this.texture?.destroy(true);
+        this.texture = null;
+    }
 }
 
 export function ensureOptions(
@@ -262,7 +268,7 @@ export function ensureOptions(
             y0: args[1],
             x1: args[2],
             y1: args[3],
-            fillUnits: args[4] as 'global' | 'local',
+            textureSpace: args[4] as 'global' | 'local',
         };
     }
 
