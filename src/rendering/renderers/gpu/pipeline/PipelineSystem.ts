@@ -335,9 +335,13 @@ export class PipelineSystem implements System
 
         for (let i = 0; i < data.length; i++)
         {
+            const attributes = Object.values(data[i].attributes);
+
+            const shaderLocation = attributes[0].shaderLocation;
+
             for (const j in attributeData)
             {
-                if (attributeData[j].location === i)
+                if (attributeData[j].location === shaderLocation)
                 {
                     bufferNamesToBind[i] = j;
                     break;
