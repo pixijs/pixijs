@@ -35,5 +35,5 @@ void main(void){
     }
 
     vUV = aUV;
-    vColor = aColor * uColor;
+    vColor = vec4(aColor.rgb * aColor.a, aColor.a) * uColor;
 }

@@ -63,6 +63,8 @@ export class FillGradient implements CanvasGradient
     // TODO move to the system!
     public buildLinearGradient(): void
     {
+        if (this.texture) return;
+
         const defaultSize = FillGradient.defaultTextureSize;
 
         const { gradientStops } = this;
