@@ -440,7 +440,7 @@ export class GlGeometrySystem implements System
 
         const glTopology = topologyToGlMap[topology || geometry.topology];
 
-        instanceCount ||= geometry.instanceCount;
+        instanceCount ??= geometry.instanceCount;
 
         if (geometry.indexBuffer)
         {

@@ -166,7 +166,7 @@ export class Geometry extends EventEmitter<{
             }
         }
 
-        this.instanceCount = options.instanceCount || 1;
+        this.instanceCount = options.instanceCount ?? 1;
 
         if (indexBuffer)
         {
