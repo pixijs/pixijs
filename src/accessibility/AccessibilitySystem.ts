@@ -269,7 +269,8 @@ export class AccessibilitySystem implements System<AccessibilityOptions>
             return;
         }
 
-        if (container.accessible && container.isInteractive())
+        // Separate check for accessibility without requiring interactivity
+        if (container.accessible)
         {
             if (!container._accessibleActive)
             {
@@ -402,7 +403,10 @@ export class AccessibilitySystem implements System<AccessibilityOptions>
                 if (child.accessibleTitle !== div.title || child.tabIndex !== div.tabIndex)
                 {
                     div.title = child.accessibleTitle || '';
-                    div.tabIndex = child.tabIndex;
+                    if (child.interactive)
+                    {
+                        div.tabIndex = child.tabIndex;
+                    }
                     if (this.debug)
                     {
                         this._updateDebugHTML(div);
@@ -469,8 +473,32 @@ export class AccessibilitySystem implements System<AccessibilityOptions>
 
         if (!div)
         {
-            div = document.createElement('button');
-
+            if (container.accessibleType === 'button')
+            {
+                div = document.createElement('button');
+            }
+            else
+            {
+                div = document.createElement(container.accessibleType);
+                div.style.cssText = `
+                        color: transparent;
+                        pointer-events: none;
+                        padding: 0;
+                        margin: 0;
+                        border: 0;
+                        outline: 0;
+                        background: transparent;
+                        box-sizing: border-box;
+                        user-select: none;
+                        -webkit-user-select: none;
+                        -moz-user-select: none;
+                        -ms-user-select: none;
+                    `;
+                if (container.accessibleText)
+                {
+                    div.innerText = container.accessibleText;
+                }
+            }
             div.style.width = `${DIV_TOUCH_SIZE}px`;
             div.style.height = `${DIV_TOUCH_SIZE}px`;
             div.style.backgroundColor = this.debug ? 'rgba(255,255,255,0.5)' : 'transparent';
@@ -537,7 +565,10 @@ export class AccessibilitySystem implements System<AccessibilityOptions>
 
         this._children.push(container);
         this._div.appendChild(container._accessibleDiv);
-        container._accessibleDiv.tabIndex = container.tabIndex;
+        if (container.interactive)
+        {
+            container._accessibleDiv.tabIndex = container.tabIndex;
+        }
     }
 
     /**
@@ -622,8 +653,6 @@ export class AccessibilitySystem implements System<AccessibilityOptions>
         {
             return;
         }
-
-        this._deactivate();
     }
 
     /** Destroys the accessibility manager */
@@ -638,5 +667,14 @@ export class AccessibilitySystem implements System<AccessibilityOptions>
         this._pool = null;
         this._children = null;
         this._renderer = null;
+    }
+
+    // Add a public method to explicitly enable/disable
+    public setAccessibilityEnabled(): void
+    {
+        this._activate();
+
+        return;
+        this._deactivate();
     }
 }
