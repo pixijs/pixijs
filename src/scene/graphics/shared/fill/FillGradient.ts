@@ -41,27 +41,49 @@ export interface LinearGradientOptions
  * @example
  * ```ts
  * // Create a vertical red-to-blue gradient
- * const gradient = new FillGradient(0, 0, 0, 1)
- *     .addColorStop(0, 0xff0000)    // Red at the top
- *     .addColorStop(1, 0x0000ff);   // Blue at the bottom
+ * const gradient = new FillGradient({
+ *     x0: 0, y0: 0, x1: 0, y1: 1,
+ *     colorStops: [
+ *         { offset: 0, color: 'red'' },  // Red at the top
+ *         { offset: 1, color: 'blue' }   // Blue at the bottom
+ *     ],
+ *     textureSpace: 'local'
+ * });
  *
  * // Create a horizontal gradient with multiple colors
- * const rainbow = new FillGradient(0, 0, 1, 0)
- *     .addColorStop(0, 0xff0000)    // Red
- *     .addColorStop(0.33, 0x00ff00) // Green
- *     .addColorStop(0.66, 0x0000ff) // Blue
- *     .addColorStop(1, 0xff00ff);   // Purple
+ * const rainbow = new FillGradient({
+ *     x0: 0, y0: 0, x1: 1, y1: 0,
+ *     colorStops: [
+ *         { offset: 0, color: 0xff0000 },    // Red
+ *         { offset: 0.33, color: 0x00ff00 }, // Green
+ *         { offset: 0.66, color: 0x0000ff }, // Blue
+ *         { offset: 1, color: 0xff00ff }     // Purple
+ *     ],
+ *     textureSpace: 'local'
+ * });
  *
  * // Use gradient in global space (relative to world coordinates)
- * const globalGradient = new FillGradient(0, 0, 100, 100, 'global');
+ * const globalGradient = new FillGradient({
+ *     x0: 0, y0: 0, x1: 100, y1: 100,
+ *     textureSpace: 'global'
+ * });
  * ```
+ *
+ * Internally this creates a 256x1 texture of the gradient then applies a
+ * transform to it to give it the correct size and angle.
+ *
+ * This means that its important to destroy a gradient when it is no longer needed
+ * to avoid memory leaks.
+ *
+ * If you want to animate a gradient then its best to modify and update an existing one
+ * rather than creating a whole new one each time. That or use a custom shader
  * @memberof scene
  * @implements {CanvasGradient}
  */
 export class FillGradient implements CanvasGradient
 {
-    /** Default size of the internal gradient texture */
-    public static defaultTextureSize = 256;
+    /** Default width of the internal gradient texture */
+    public static defaultTextureWidth = 256;
 
     /**
      * Default options for creating a gradient fill
@@ -165,7 +187,7 @@ export class FillGradient implements CanvasGradient
     {
         if (this.texture) return;
 
-        const defaultSize = FillGradient.defaultTextureSize;
+        const defaultSize = FillGradient.defaultTextureWidth;
 
         const { colorStops: gradientStops } = this;
 
@@ -176,7 +198,7 @@ export class FillGradient implements CanvasGradient
 
         const ctx = canvas.getContext('2d');
 
-        const gradient = ctx.createLinearGradient(0, 0, FillGradient.defaultTextureSize, 0);
+        const gradient = ctx.createLinearGradient(0, 0, FillGradient.defaultTextureWidth, 0);
 
         for (let i = 0; i < gradientStops.length; i++)
         {
