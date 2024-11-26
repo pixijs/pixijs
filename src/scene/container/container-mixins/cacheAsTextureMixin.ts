@@ -92,7 +92,7 @@ export const cacheAsTextureMixin: Partial<Container> = {
     set cacheAsBitmap(val: boolean)
     {
         // #if _DEBUG
-        deprecation('v7.x.x', 'cacheAsBitmap is deprecated, use cacheAsTexture instead.');
+        deprecation('v8.6.0', 'cacheAsBitmap is deprecated, use cacheAsTexture instead.');
         // #endif
         this.cacheAsTexture(val);
     },
