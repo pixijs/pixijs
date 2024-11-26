@@ -173,11 +173,11 @@ export class FillGradient implements CanvasGradient
         const canvas = DOMAdapter.get().createCanvas();
 
         canvas.width = defaultSize;
-        canvas.height = defaultSize;
+        canvas.height = 1;
 
         const ctx = canvas.getContext('2d');
 
-        const gradient = ctx.createLinearGradient(0, 0, FillGradient.defaultTextureSize, 1);
+        const gradient = ctx.createLinearGradient(0, 0, FillGradient.defaultTextureSize, 0);
 
         for (let i = 0; i < gradientStops.length; i++)
         {
@@ -187,7 +187,7 @@ export class FillGradient implements CanvasGradient
         }
 
         ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, defaultSize, defaultSize);
+        ctx.fillRect(0, 0, defaultSize, 1);
 
         this.texture = new Texture({
             source: new ImageSource({
