@@ -404,7 +404,19 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     /** @private */
     public isSimple = true;
 
+    /**
+     * Used internally to identify if this container is a RenderLayer
+     * @internal
+     * @readonly
+     * @ignore
+     */
     public isRenderLayer = false;
+
+    /**
+     * The RenderLayer this container belongs to, if any.
+     * If it belongs to a RenderLayer, it will be rendered from the RenderLayer's position in the scene.
+     * @readonly
+     */
     public parentRenderLayer: RenderLayer;
 
     // / /////////////Transform related props//////////////
