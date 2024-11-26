@@ -57,22 +57,30 @@ export function collectAllRenderables(
 ): void
 {
     // deprecate the use of renderPipes by finding the renderer attached to the batch pipe as this is always there
-    if (container.isLayer)
+    if (container.isRenderLayer)
     {
         const layer = container as RenderLayer;
 
         currentLayer = layer;
 
-        for (let i = 0; i < layer.layerChildren.length; i++)
+        const layerChildren = layer.renderLayerChildren;
+        const length = layerChildren.length;
+
+        if (layer.sortableChildren)
         {
-            if (!layer.layerChildren[i].parent)
+            layer.sortRenderLayerChildren();
+        }
+
+        for (let i = 0; i < length; i++)
+        {
+            if (!layerChildren[i].parent)
             {
                 // eslint-disable-next-line max-len
                 warn('Container must be added to both layer and scene graph. Layers only handle render order - the scene graph is required for transforms (addChild)',
-                    layer.layerChildren[i]);
+                    layerChildren[i]);
             }
 
-            collectAllRenderables(layer.layerChildren[i], instructionSet, renderer, currentLayer);
+            collectAllRenderables(layerChildren[i], instructionSet, renderer, currentLayer);
         }
 
         return;

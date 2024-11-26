@@ -404,7 +404,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     /** @private */
     public isSimple = true;
 
-    public isLayer = false;
+    public isRenderLayer = false;
     public parentRenderLayer: RenderLayer;
 
     // / /////////////Transform related props//////////////
