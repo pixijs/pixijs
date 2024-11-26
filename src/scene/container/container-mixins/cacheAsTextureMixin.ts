@@ -1,4 +1,4 @@
-import { warn } from '../../../utils/logging/warn';
+import { deprecation } from '../../../utils/logging/deprecation';
 
 import type { Container } from '../Container';
 import type { CacheAsTextureOptions } from '../RenderGroup';
@@ -92,7 +92,7 @@ export const cacheAsTextureMixin: Partial<Container> = {
     set cacheAsBitmap(val: boolean)
     {
         // #if _DEBUG
-        deprecation('cacheAsBitmap is deprecated, use cacheAsTexture instead.');
+        deprecation('v7.x.x', 'cacheAsBitmap is deprecated, use cacheAsTexture instead.');
         // #endif
         this.cacheAsTexture(val);
     },
