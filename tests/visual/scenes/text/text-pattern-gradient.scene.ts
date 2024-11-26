@@ -9,7 +9,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render FillPattern and FillGradient in text stroke',
-    only:  true,
     create: async (scene: Container) =>
     {
         const gradient = new FillGradient({
