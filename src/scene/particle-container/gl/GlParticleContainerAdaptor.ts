@@ -4,18 +4,18 @@ import type { ParticleContainerAdaptor, ParticleContainerPipe } from '../shared/
 
 export class GlParticleContainerAdaptor implements ParticleContainerAdaptor
 {
-    public execute(particleContainerPop: ParticleContainerPipe, container: ParticleContainer)
+    public execute(particleContainerPipe: ParticleContainerPipe, container: ParticleContainer)
     {
-        const state = particleContainerPop.state;
-        const renderer = particleContainerPop.renderer as WebGLRenderer;
-        const shader = container.shader || particleContainerPop.defaultShader;
+        const state = particleContainerPipe.state;
+        const renderer = particleContainerPipe.renderer as WebGLRenderer;
+        const shader = container.shader || particleContainerPipe.defaultShader;
 
         shader.resources.uTexture = container.texture._source;
-        shader.resources.uniforms = particleContainerPop.localUniforms;
+        shader.resources.uniforms = particleContainerPipe.localUniforms;
 
         const gl = renderer.gl;
 
-        const buffer = particleContainerPop.getBuffers(container);
+        const buffer = particleContainerPipe.getBuffers(container);
 
         // now lets upload and render the buffers..
         renderer.shader.bind(shader);

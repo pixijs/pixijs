@@ -214,13 +214,13 @@ export class GpuEncoderSystem implements System
         {
             this.renderPassEncoder.drawIndexed(
                 size || geometry.indexBuffer.data.length,
-                instanceCount || geometry.instanceCount,
+                instanceCount ?? geometry.instanceCount,
                 start || 0
             );
         }
         else
         {
-            this.renderPassEncoder.draw(size || geometry.getSize(), instanceCount || geometry.instanceCount, start || 0);
+            this.renderPassEncoder.draw(size || geometry.getSize(), instanceCount ?? geometry.instanceCount, start || 0);
         }
     }
 
