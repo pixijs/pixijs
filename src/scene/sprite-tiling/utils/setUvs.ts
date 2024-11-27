@@ -13,7 +13,7 @@ export function setUvs(tilingSprite: TilingSprite, uvs: Float32Array)
     let anchorX = 0;
     let anchorY = 0;
 
-    if (tilingSprite._applyAnchorToTexture)
+    if (tilingSprite.applyAnchorToTexture)
     {
         anchorX = tilingSprite.anchor.x;
         anchorY = tilingSprite.anchor.y;
