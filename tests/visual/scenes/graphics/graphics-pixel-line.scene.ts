@@ -20,5 +20,15 @@ export const scene: TestScene = {
             .stroke({ color: 0x0, pixelLine: true, alpha: 0.5 });
 
         scene.addChild(graphics);
+
+        const graphics2 = new Graphics();
+
+        graphics2.context.batchMode = 'no-batch';
+
+        graphics2
+            .circle(128 / 2, 128 / 2, 128 / 3)
+            .stroke({ color: 0x00FF00, pixelLine: true, alpha: 1 });
+
+        scene.addChild(graphics, graphics2);
     },
 };
