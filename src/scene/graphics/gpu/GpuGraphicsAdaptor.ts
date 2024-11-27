@@ -10,10 +10,10 @@ import { roundPixelsBit } from '../../../rendering/high-shader/shader-bits/round
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
 
-import type { Topology } from '../../../rendering';
 import type { Batch } from '../../../rendering/batcher/shared/Batcher';
 import type { GpuEncoderSystem } from '../../../rendering/renderers/gpu/GpuEncoderSystem';
 import type { WebGPURenderer } from '../../../rendering/renderers/gpu/WebGPURenderer';
+import type { Topology } from '../../../rendering/renderers/shared/geometry/const';
 import type { Graphics } from '../shared/Graphics';
 import type { GraphicsAdaptor, GraphicsPipe } from '../shared/GraphicsPipe';
 
