@@ -10,6 +10,7 @@ import { roundPixelsBit } from '../../../rendering/high-shader/shader-bits/round
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
 
+import type { Topology } from '../../../rendering';
 import type { Batch } from '../../../rendering/batcher/shared/Batcher';
 import type { GpuEncoderSystem } from '../../../rendering/renderers/gpu/GpuEncoderSystem';
 import type { WebGPURenderer } from '../../../rendering/renderers/gpu/WebGPURenderer';
