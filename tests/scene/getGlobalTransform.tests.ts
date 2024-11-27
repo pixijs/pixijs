@@ -72,13 +72,15 @@ describe('getGlobalTransform', () =>
 
             const result = container.getGlobalTransform(outputMatrix, false);
 
-            // After 90-degree rotation
+            // After 90-degree rotation:
+            // - The transform matrix should rotate 90 degrees counter-clockwise
+            // - x=100 should become y=100 after 90-degree rotation
             expect(result.a).toBeCloseTo(0);
             expect(result.b).toBeCloseTo(1);
             expect(result.c).toBeCloseTo(-1);
             expect(result.d).toBeCloseTo(0);
-            expect(result.tx).toBeCloseTo(100);
-            expect(result.ty).toBeCloseTo(0);
+            expect(result.tx).toBeCloseTo(0); // Changed from 100
+            expect(result.ty).toBeCloseTo(100); // Changed from 0
         });
 
         it('should handle scale', () =>
