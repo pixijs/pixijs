@@ -57,7 +57,7 @@ describe('AccessibilitySystem', () =>
         const renderer = await getWebGLRenderer();
         const system = new AccessibilitySystem(renderer);
 
-        system.init({});
+        system.init();
 
         system['_onKeyDown'](new KeyboardEvent('keydown', { keyCode: 9, key: 'tab' }));
         expect(system.isActive).toBe(true);
@@ -80,7 +80,7 @@ describe('AccessibilitySystem', () =>
         const stage = new Container().addChild(new CompleteContainer());
         const system = new AccessibilitySystem(renderer);
 
-        system.init({});
+        system.init();
 
         system['_onKeyDown'](new KeyboardEvent('keydown', { keyCode: 9, key: 'tab' }));
 
@@ -93,7 +93,7 @@ describe('AccessibilitySystem', () =>
         const renderer = await getWebGLRenderer();
         const system = new AccessibilitySystem(renderer);
 
-        system.init({});
+        system.init();
 
         system.setAccessibilityEnabled(true);
         expect(system.isActive).toBe(true);

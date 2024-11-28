@@ -428,14 +428,21 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
      * Runner init called, view is available at this point.
      * @ignore
      */
-    public init(options: AccessibilitySystemOptions): void
+    public init(options?: AccessibilitySystemOptions): void
     {
-        options = { ...AccessibilitySystem.defaultOptions, ...options };
+        // Ensure we have the accessibilityOptions object
+        const defaultOpts = AccessibilitySystem.defaultOptions;
+        const mergedOptions = {
+            accessibilityOptions: {
+                ...defaultOpts.accessibilityOptions,
+                ...(options?.accessibilityOptions || {})
+            }
+        };
 
-        this.debug = options.accessibilityOptions.debug;
-        this._activateOnTab = options.accessibilityOptions.activateOnTab;
+        this.debug = mergedOptions.accessibilityOptions.debug;
+        this._activateOnTab = mergedOptions.accessibilityOptions.activateOnTab;
 
-        if (options.accessibilityOptions.enabledByDefault)
+        if (mergedOptions.accessibilityOptions.enabledByDefault)
         {
             this._activate();
         }
@@ -787,7 +794,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
      */
     private _onKeyDown(e: KeyboardEvent): void
     {
-        if (e.keyCode !== KEY_CODE_TAB)
+        if (e.keyCode !== KEY_CODE_TAB || !this._activateOnTab)
         {
             return;
         }
@@ -806,6 +813,8 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         {
             return;
         }
+
+        this._deactivate();
     }
 
     /** Destroys the accessibility system. Removes all elements and listeners. */
