@@ -176,7 +176,7 @@ export class PipelineSystem implements System
             this._generateBufferKey(geometry);
         }
 
-        topology = topology || geometry.topology;
+        topology ||= geometry.topology;
 
         // now we have set the Ids - the key is different...
         // eslint-disable-next-line max-len
