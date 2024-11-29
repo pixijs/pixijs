@@ -254,7 +254,7 @@ export class FilterSystem implements System
             }
 
             enabled = filter.enabled || enabled;
-            blendRequired = blendRequired || filter.blendRequired;
+            blendRequired ||= filter.blendRequired;
         }
 
         // if no filters are enabled lets skip!

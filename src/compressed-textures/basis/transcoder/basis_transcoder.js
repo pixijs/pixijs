@@ -26,7 +26,7 @@ var BASIS = (function ()
         function (BASIS)
         {
 
-            BASIS = BASIS || {};
+            BASIS ||= {};
             const Module = typeof BASIS !== 'undefined' ? BASIS : {}; let moduleOverrides = {}; let key;
 
             for (key in Module) { if (Module.hasOwnProperty(key)) { moduleOverrides[key] = Module[key]; } } let arguments_ = []; let thisProgram = './this.program'; let quit_ = function (status, toThrow) { throw toThrow; }; let ENVIRONMENT_IS_WEB = false; let ENVIRONMENT_IS_WORKER = false; let ENVIRONMENT_IS_NODE = false; let ENVIRONMENT_IS_SHELL = false;
@@ -424,7 +424,7 @@ var BASIS = (function ()
                 }); if (unregisteredTypes.length === 0) { onComplete(typeConverters); }
             } function registerType(rawType, registeredInstance, options)
             {
-                options = options || {}; if (!('argPackAdvance' in registeredInstance)) { throw new TypeError('registerType registeredInstance requires argPackAdvance'); } const name = registeredInstance.name;
+                options ||= {}; if (!('argPackAdvance' in registeredInstance)) { throw new TypeError('registerType registeredInstance requires argPackAdvance'); } const name = registeredInstance.name;
 
                 if (!rawType) { throwBindingError(`type "${name}" must have a positive integer typeid pointer`); } if (registeredTypes.hasOwnProperty(rawType))
                 {
@@ -1245,7 +1245,7 @@ var BASIS = (function ()
                 return Module;
             }; function ExitStatus(status) { this.name = 'ExitStatus'; this.message = `Program terminated with exit(${status})`; this.status = status; }dependenciesFulfilled = function runCaller() { if (!calledRun)run(); if (!calledRun)dependenciesFulfilled = runCaller; }; function run(args)
             {
-                args = args || arguments_; if (runDependencies > 0) { return; }preRun(); if (runDependencies > 0) return; function doRun() { if (calledRun) return; calledRun = true; Module.calledRun = true; if (ABORT) return; initRuntime(); preMain(); if (Module.onRuntimeInitialized)Module.onRuntimeInitialized(); postRun(); } if (Module.setStatus) { Module.setStatus('Running...'); setTimeout(function () { setTimeout(function () { Module.setStatus(''); }, 1); doRun(); }, 1); }
+                args ||= arguments_; if (runDependencies > 0) { return; }preRun(); if (runDependencies > 0) return; function doRun() { if (calledRun) return; calledRun = true; Module.calledRun = true; if (ABORT) return; initRuntime(); preMain(); if (Module.onRuntimeInitialized)Module.onRuntimeInitialized(); postRun(); } if (Module.setStatus) { Module.setStatus('Running...'); setTimeout(function () { setTimeout(function () { Module.setStatus(''); }, 1); doRun(); }, 1); }
                 else { doRun(); }
             }Module.run = run; if (Module.preInit) { if (typeof Module.preInit === 'function')Module.preInit = [Module.preInit]; while (Module.preInit.length > 0) { Module.preInit.pop()(); } }noExitRuntime = true; run();
 

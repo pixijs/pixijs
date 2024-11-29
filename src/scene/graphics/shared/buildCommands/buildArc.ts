@@ -23,7 +23,7 @@ export function buildArc(
 
     // approximate the # of steps using the cube root of the radius
 
-    steps = steps || Math.max(6, Math.floor(6 * Math.pow(radius, 1 / 3) * (dist / (Math.PI))));
+    steps ||= Math.max(6, Math.floor(6 * Math.pow(radius, 1 / 3) * (dist / (Math.PI))));
 
     // ensure we have at least 3 steps..
     steps = Math.max(steps, 3);

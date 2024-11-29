@@ -214,7 +214,7 @@ export abstract class AbstractText<
      */
     set style(style: TEXT_STYLE | Partial<TEXT_STYLE> | TEXT_STYLE_OPTIONS)
     {
-        style = style || {};
+        style ||= {};
 
         this._style?.off('update', this.onViewUpdate, this);
 
