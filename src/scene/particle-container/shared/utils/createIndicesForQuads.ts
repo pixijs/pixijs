@@ -16,11 +16,11 @@ export function createIndicesForQuads(
     // Check if we need to use Uint32Array
     if (totalIndices > 65535)
     {
-        outBuffer = outBuffer || new Uint32Array(totalIndices); // Use Uint32Array if needed
+        outBuffer ||= new Uint32Array(totalIndices); // Use Uint32Array if needed
     }
     else
     {
-        outBuffer = outBuffer || new Uint16Array(totalIndices);
+        outBuffer ||= new Uint16Array(totalIndices);
     }
 
     if (outBuffer.length !== totalIndices)

@@ -130,7 +130,7 @@ export class Ellipse implements ShapePrimitive
      */
     public getBounds(out?: Rectangle): Rectangle
     {
-        out = out || new Rectangle();
+        out ||= new Rectangle();
 
         out.x = this.x - this.halfWidth;
         out.y = this.y - this.halfHeight;

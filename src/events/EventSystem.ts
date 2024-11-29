@@ -277,7 +277,7 @@ export class EventSystem implements System<EventSystemOptions>
      */
     public setCursor(mode: string): void
     {
-        mode = mode || 'default';
+        mode ||= 'default';
         let applyStyles = true;
 
         // offscreen canvas does not support setting styles, but cursor modes can be functions,

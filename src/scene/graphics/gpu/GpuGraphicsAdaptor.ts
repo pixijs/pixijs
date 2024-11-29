@@ -13,6 +13,7 @@ import { UniformGroup } from '../../../rendering/renderers/shared/shader/Uniform
 import type { Batch } from '../../../rendering/batcher/shared/Batcher';
 import type { GpuEncoderSystem } from '../../../rendering/renderers/gpu/GpuEncoderSystem';
 import type { WebGPURenderer } from '../../../rendering/renderers/gpu/WebGPURenderer';
+import type { Topology } from '../../../rendering/renderers/shared/geometry/const';
 import type { Graphics } from '../shared/Graphics';
 import type { GraphicsAdaptor, GraphicsPipe } from '../shared/GraphicsPipe';
 
@@ -77,12 +78,6 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
         // TODO perf test this a bit...
         const encoder = renderer.encoder as GpuEncoderSystem;
 
-        encoder.setPipelineFromGeometryProgramAndState(
-            batcher.geometry,
-            shader.gpuProgram,
-            graphicsPipe.state
-        );
-
         encoder.setGeometry(batcher.geometry, shader.gpuProgram);
 
         const globalUniformsBindGroup = renderer.globalUniforms.bindGroup;
@@ -96,9 +91,23 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
 
         const batches = instructions.instructions as Batch[];
 
+        let topology: Topology = null;
+
         for (let i = 0; i < instructions.instructionSize; i++)
         {
             const batch = batches[i];
+
+            if (batch.topology !== topology)
+            {
+                topology = batch.topology;
+
+                encoder.setPipelineFromGeometryProgramAndState(
+                    batcher.geometry,
+                    shader.gpuProgram,
+                    graphicsPipe.state,
+                    batch.topology
+                );
+            }
 
             shader.groups[1] = batch.bindGroup;
 
