@@ -154,6 +154,12 @@ export class Sprite extends ViewContainer
         this.onViewUpdate();
     }
 
+    public override onViewUpdate()
+    {
+        this._boundsDirty = true;
+        super.onViewUpdate();
+    }
+
     /** The texture that the sprite is using. */
     get texture()
     {
