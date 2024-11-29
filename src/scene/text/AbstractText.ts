@@ -314,7 +314,6 @@ export abstract class AbstractText<
 
     public override onViewUpdate()
     {
-        this._boundsDirty = true;
         if (!this.didViewUpdate) this._didTextUpdate = true;
         super.onViewUpdate();
     }
