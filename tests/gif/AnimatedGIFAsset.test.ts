@@ -1,27 +1,23 @@
-import { Assets } from 'pixi.js';
-import { AnimatedGIF, AnimatedGIFAsset } from '../src';
-import { createServer } from './resources';
+import { Assets } from '../../src/assets/Assets';
+import { extensions } from '../../src/extensions/Extensions';
+import { AnimatedGIF } from '../../src/gif/AnimatedGIF';
+import { AnimatedGIFAsset } from '../../src/gif/AnimatedGIFAsset';
+import { basePath } from '../assets/basePath';
 
 describe('AnimatedGIFLoader', () =>
 {
-    let server: any;
-    let baseUrl: string;
-
-    beforeAll(() =>
+    beforeEach(async () =>
     {
-        server = createServer(54311);
-        baseUrl = 'http://localhost:54311';
-    });
-
-    afterAll(() =>
-    {
-        server.close();
-        server = null;
+        extensions.add(AnimatedGIFAsset);
+        await Assets.init({
+            basePath,
+        });
     });
 
     afterEach(() =>
     {
         Assets.reset();
+        extensions.remove(AnimatedGIFAsset);
     });
 
     it('should have a loader', () =>
@@ -31,12 +27,8 @@ describe('AnimatedGIFLoader', () =>
 
     it('should load a gif file', async () =>
     {
-        const url = `${baseUrl}/example.gif`;
+        const test = await Assets.load<AnimatedGIF>({ alias: 'test', src: 'gif/example.gif' });
 
-        Assets.add({ alias: 'test', src: url });
-        const test = await Assets.load('test');
-
-        expect(test);
         expect(test).toBeInstanceOf(AnimatedGIF);
         expect(test.loop).toBe(true);
         expect(test.currentFrame).toBe(0);
@@ -49,21 +41,16 @@ describe('AnimatedGIFLoader', () =>
         expect(test.onComplete).toBe(null);
         expect(test.onFrameChange).toBe(null);
         expect(test.onLoop).toBe(null);
-        expect(test._frames);
+        expect(test['_frames']).toBeDefined();
         await Assets.unload('test');
-        expect(test._frames).toBe(null);
+        expect(test['_frames']).toBe(null);
     });
 
     it('should load a gif file with options', async () =>
     {
-        const url = `${baseUrl}/example.gif`;
-
         const data = { loop: false, autoUpdate: false, animationSpeed: 2 };
+        const test = await Assets.load<AnimatedGIF>({ alias: 'test1', src: 'gif/example.gif', data });
 
-        Assets.add({ alias: 'test1', src: url, data });
-        const test = await Assets.load('test1');
-
-        expect(test);
         expect(test).toBeInstanceOf(AnimatedGIF);
         expect(test.loop).toBe(false);
         expect(test.animationSpeed).toBe(2);

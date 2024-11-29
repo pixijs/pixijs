@@ -96,6 +96,7 @@
     "eslint-plugin-jsdoc": "^48.0.0",
     "eslint-plugin-no-mixed-operators": "^1.1.1",
     "fs-extra": "^11.2.0",
+    "gifuct-js": "^2.1.2",
     "glob": "^8.1.0",
     "http-server": "^14.1.1",
     "husky": "^8.0.3",
@@ -157,6 +158,20 @@
       ]
     },
     {
+      "src": "src/bundle.gif.ts",
+      "target": "dist/packages/gif.js",
+      "module": "dist/packages/gif.mjs",
+      "plugin": [
+        "/utils/",
+        "/assets/",
+        "/ticker/",
+        "/environment/",
+        "/scene/",
+        "/rendering/",
+        "/extensions/"
+      ]
+    },
+    {
       "src": "src/bundle.webworker.ts",
       "target": "dist/webworker.js",
       "module": "dist/webworker.mjs",
@@ -172,6 +187,7 @@
     "./lib/rendering/renderers/shared/texture/utils/textureFrom.*",
     "./lib/accessibility/init.*",
     "./lib/advanced-blend-modes/init.*",
+    "./lib/gif/init.*",
     "./lib/app/init.*",
     "./lib/compressed-textures/dds/init.*",
     "./lib/compressed-textures/ktx/init.*",
@@ -232,6 +248,14 @@
       },
       "require": {
         "default": "./lib/advanced-blend-modes/init.js"
+      }
+    },
+    "./gif": {
+      "import": {
+        "default": "./lib/gif/init.mjs"
+      },
+      "require": {
+        "default": "./lib/gif/init.js"
       }
     },
     "./app": {

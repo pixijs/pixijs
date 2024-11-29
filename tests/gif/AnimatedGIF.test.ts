@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { AnimatedGIF } from '../src';
+import { AnimatedGIF } from '../../src/gif/AnimatedGIF';
 
 function toArrayBuffer(buffer: Buffer): ArrayBuffer
 {
@@ -18,7 +18,7 @@ function toArrayBuffer(buffer: Buffer): ArrayBuffer
 describe('AnimatedGIF', () =>
 {
     const arrayBuffer = toArrayBuffer(
-        fs.readFileSync(path.join(__dirname, './resources/example.gif'))
+        fs.readFileSync(path.resolve(__dirname, '../assets/assets/gif/example.gif'))
     );
 
     describe('fromBuffer()', () =>
@@ -33,7 +33,9 @@ describe('AnimatedGIF', () =>
 
         it('should throw an error if missing', () =>
         {
+            // eslint-disable-next-line jest/expect-expect
             expect(() => (AnimatedGIF as any).fromBuffer()).toThrow();
+            // eslint-disable-next-line jest/expect-expect
             expect(() => (AnimatedGIF as any).fromBuffer(new ArrayBuffer(0))).toThrow();
         });
 
@@ -58,8 +60,14 @@ describe('AnimatedGIF', () =>
         {
             const animation = AnimatedGIF.fromBuffer(arrayBuffer);
 
-            expect(() => animation.currentFrame = -1).toThrow();
-            expect(() => animation.currentFrame = animation.totalFrames).toThrow();
+            expect(() =>
+            {
+                animation.currentFrame = -1;
+            }).toThrow();
+            expect(() =>
+            {
+                animation.currentFrame = animation.totalFrames;
+            }).toThrow();
             animation.destroy();
         });
 
@@ -143,9 +151,11 @@ describe('AnimatedGIF', () =>
                 loop: false,
                 autoUpdate: false,
                 animationSpeed: 0.5,
+                /* eslint-disable @typescript-eslint/no-empty-function */
                 onComplete: () => {},
                 onLoop: () => {},
                 onFrameChange: () => {},
+                /* eslint-enable @typescript-eslint/no-empty-function */
             };
             const animation = AnimatedGIF.fromBuffer(arrayBuffer, options);
             const clone = animation.clone();

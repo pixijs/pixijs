@@ -1,5 +1,12 @@
-import { decompressFrames, ParsedFrame, parseGIF } from 'gifuct-js';
-import { DOMAdapter, SCALE_MODE, Sprite, Texture, Ticker, UPDATE_PRIORITY } from 'pixi.js';
+import { decompressFrames, type ParsedFrame, parseGIF } from 'gifuct-js';
+import { DOMAdapter } from '../environment/adapter';
+import { TextureSource } from '../rendering/renderers/shared/texture/sources/TextureSource';
+import { Texture } from '../rendering/renderers/shared/texture/Texture';
+import { Sprite } from '../scene/sprite/Sprite';
+import { UPDATE_PRIORITY } from '../ticker/const';
+import { Ticker } from '../ticker/Ticker';
+
+import type { SCALE_MODE } from '../rendering/renderers/shared/texture/const';
 
 /** Represents a single frame of a GIF. Includes image and timing data. */
 interface FrameObject
@@ -93,7 +100,6 @@ class AnimatedGIF extends Sprite
     /**
      * User-assigned function to call when animation finishes playing. This only happens
      * if loop is set to `false`.
-     *
      * @example
      * animation.onComplete = () => {
      *   // finished!
@@ -103,7 +109,6 @@ class AnimatedGIF extends Sprite
 
     /**
      * User-assigned function to call when animation changes which texture is being rendered.
-     *
      * @example
      * animation.onFrameChange = () => {
      *   // updated!
@@ -114,7 +119,6 @@ class AnimatedGIF extends Sprite
     /**
      * User-assigned function to call when `loop` is true, and animation is played and
      * loops around to start again. This only happens if loop is set to `true`.
-     *
      * @example
      * animation.onLoop = () => {
      *   // looped!
@@ -162,9 +166,8 @@ class AnimatedGIF extends Sprite
      * const gif = await Assets.load('file.gif');
      * @param buffer - GIF image arraybuffer from Assets.
      * @param options - Options to use.
-     * @returns
      */
-    static fromBuffer(buffer: ArrayBuffer, options?: Partial<AnimatedGIFOptions>): AnimatedGIF
+    public static fromBuffer(buffer: ArrayBuffer, options?: Partial<AnimatedGIFOptions>): AnimatedGIF
     {
         if (!buffer || buffer.byteLength === 0)
         {
@@ -270,7 +273,7 @@ class AnimatedGIF extends Sprite
         super(Texture.EMPTY);
 
         // Handle rerenders
-        this.onRender = () => this.updateFrame();
+        this.onRender = () => this._updateFrame();
 
         // Get the options, apply defaults
         const { scaleMode, width, height, ...rest } = Object.assign({},
@@ -282,7 +285,7 @@ class AnimatedGIF extends Sprite
         const canvas = DOMAdapter.get().createCanvas(width, height) as HTMLCanvasElement;
         const context = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-        this.texture = Texture.from(canvas);
+        this.texture = new Texture(new TextureSource(canvas));
         this.texture.source.scaleMode = scaleMode;
 
         this.duration = (frames[frames.length - 1] as FrameObject).end;
@@ -357,10 +360,9 @@ class AnimatedGIF extends Sprite
     /**
      * Updates the object transform for rendering. You only need to call this
      * if the `autoUpdate` property is set to `false`.
-     *
-     * @param deltaTime - Time since last tick.
+     * @param ticker - Ticker instance
      */
-    update(ticker: Ticker): void
+    public update(ticker: Ticker): void
     {
         if (!this._playing)
         {
@@ -379,13 +381,13 @@ class AnimatedGIF extends Sprite
             if (this.loop)
             {
                 this._currentTime = localTime;
-                this.updateFrameIndex(localFrame);
+                this._updateFrameIndex(localFrame);
                 this.onLoop?.();
             }
             else
             {
                 this._currentTime = this.duration;
-                this.updateFrameIndex(this._frames.length - 1);
+                this._updateFrameIndex(this._frames.length - 1);
                 this.onComplete?.();
                 this.stop();
             }
@@ -393,14 +395,12 @@ class AnimatedGIF extends Sprite
         else
         {
             this._currentTime = localTime;
-            this.updateFrameIndex(localFrame);
+            this._updateFrameIndex(localFrame);
         }
     }
 
-    /**
-     * Redraw the current frame, is necessary for the animation to work when
-     */
-    private updateFrame(): void
+    /** Redraw the current frame, is necessary for the animation to work when */
+    private _updateFrame(): void
     {
         if (!this.dirty)
         {
@@ -458,12 +458,15 @@ class AnimatedGIF extends Sprite
     }
     set currentFrame(value: number)
     {
-        this.updateFrameIndex(value);
+        this._updateFrameIndex(value);
         this._currentTime = (this._frames[value] as FrameObject).start;
     }
 
-    /** Internally handle updating the frame index */
-    private updateFrameIndex(value: number): void
+    /**
+     * Internally handle updating the frame index
+     * @param value
+     */
+    private _updateFrameIndex(value: number): void
     {
         if (value < 0 || value >= this._frames.length)
         {
@@ -477,16 +480,14 @@ class AnimatedGIF extends Sprite
         }
     }
 
-    /**
-     * Get the total number of frame in the GIF.
-     */
+    /** Get the total number of frame in the GIF. */
     get totalFrames(): number
     {
         return this._frames.length;
     }
 
     /** Destroy and don't use after this. */
-    destroy(): void
+    public destroy(): void
     {
         this.stop();
         super.destroy(true);
@@ -509,7 +510,7 @@ class AnimatedGIF extends Sprite
      *
      * The clone will be flagged as `dirty` to immediatly trigger an update
      */
-    clone(): AnimatedGIF
+    public clone(): AnimatedGIF
     {
         const clone = new AnimatedGIF([...this._frames], {
             autoUpdate: this._autoUpdate,

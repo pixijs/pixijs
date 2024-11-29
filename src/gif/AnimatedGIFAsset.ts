@@ -1,13 +1,15 @@
-import { DOMAdapter, extensions, ExtensionType, path } from 'pixi.js';
-import { AnimatedGIF, AnimatedGIFOptions } from './AnimatedGIF';
+import { DOMAdapter } from '../environment/adapter';
+import { ExtensionType } from '../extensions/Extensions';
+import { path } from '../utils/path';
+import { AnimatedGIF } from './AnimatedGIF';
 
-import type { AssetExtension } from 'pixi.js';
+import type { AssetExtension } from '../assets/AssetExtension';
+import type { AnimatedGIFOptions } from './AnimatedGIF';
 
 /**
  * Handle the loading of GIF images. Registering this loader plugin will
  * load all `.gif` images as an ArrayBuffer and transform into an
  * AnimatedGIF object.
- * @ignore
  */
 const AnimatedGIFAsset = {
     extension: ExtensionType.Asset,
@@ -32,7 +34,5 @@ const AnimatedGIFAsset = {
         },
     }
 } as AssetExtension<AnimatedGIF, AnimatedGIFOptions>;
-
-extensions.add(AnimatedGIFAsset);
 
 export { AnimatedGIFAsset };
