@@ -1,6 +1,0 @@
-node_modules
-/dist
-/lib
-/docs
-.DS_Store
-/example.api.json*
