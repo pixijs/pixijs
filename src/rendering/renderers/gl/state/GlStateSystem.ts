@@ -115,7 +115,7 @@ export class GlStateSystem implements System
      */
     public set(state: State): void
     {
-        state = state || this.defaultState;
+        state ||= this.defaultState;
 
         // TODO maybe to an object check? ( this.state === state )?
         if (this.stateId !== state.data)
@@ -154,7 +154,7 @@ export class GlStateSystem implements System
      */
     public forceState(state: State): void
     {
-        state = state || this.defaultState;
+        state ||= this.defaultState;
         for (let i = 0; i < this.map.length; i++)
         {
             this.map[i].call(this, !!(state.data & (1 << i)));

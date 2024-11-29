@@ -754,8 +754,8 @@ export class Graphics extends ViewContainer implements Instruction
         const fillStyle: Partial<FillStyle> = {};
 
         // avoid undefined assignment
-        color && (fillStyle.color = color);
-        alpha && (fillStyle.alpha = alpha);
+        if (color !== undefined) fillStyle.color = color;
+        if (alpha !== undefined) fillStyle.alpha = alpha;
 
         this.context.fillStyle = fillStyle;
 

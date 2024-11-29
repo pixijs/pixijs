@@ -176,7 +176,7 @@ export class Buffer extends EventEmitter<{
 
         this._data = data as TypedArray;
 
-        size = size ?? (data as TypedArray)?.byteLength;
+        size ??= (data as TypedArray)?.byteLength;
 
         const mappedAtCreation = !!data;
 

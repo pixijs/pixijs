@@ -454,12 +454,6 @@ export class TilingSprite extends ViewContainer implements View, Instruction
         return false;
     }
 
-    protected override onViewUpdate()
-    {
-        this._boundsDirty = true;
-        super.onViewUpdate();
-    }
-
     /**
      * Destroys this sprite renderable and optionally its texture.
      * @param options - Options parameter. A boolean will act as if all options

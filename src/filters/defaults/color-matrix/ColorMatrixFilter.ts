@@ -501,10 +501,10 @@ export class ColorMatrixFilter extends Filter
         multiply: boolean
     ): void
     {
-        desaturation = desaturation || 0.2;
-        toned = toned || 0.15;
-        lightColor = lightColor || 0xFFE580;
-        darkColor = darkColor || 0x338000;
+        desaturation ||= 0.2;
+        toned ||= 0.15;
+        lightColor ||= 0xFFE580;
+        darkColor ||= 0x338000;
 
         const temp = Color.shared;
         const [lR, lG, lB] = temp.setValue(lightColor).toArray();
@@ -528,7 +528,7 @@ export class ColorMatrixFilter extends Filter
      */
     public night(intensity: number, multiply: boolean): void
     {
-        intensity = intensity || 0.1;
+        intensity ||= 0.1;
 
         const matrix: ColorMatrix = [
             intensity * (-2.0), -intensity, 0, 0, 0,

@@ -170,7 +170,7 @@ export class Triangle implements ShapePrimitive
      */
     public getBounds(out?: Rectangle): Rectangle
     {
-        out = out || new Rectangle();
+        out ||= new Rectangle();
 
         const minX = Math.min(this.x, this.x2, this.x3);
         const maxX = Math.max(this.x, this.x2, this.x3);

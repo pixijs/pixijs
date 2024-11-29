@@ -233,6 +233,33 @@ describe('Sprite', () =>
             expect(bounds.width).toEqual(40);
             expect(bounds.height).toEqual(30);
         });
+
+        it('should return correct bounds for trimmed texture', () =>
+        {
+            const texture = new Texture({
+                source: new TextureSource({ width: 300, height: 300 }),
+                frame: new Rectangle(196, 66, 58, 56),
+                trim: new Rectangle(4, 4, 58, 56),
+                orig: new Rectangle(0, 0, 64, 64),
+                rotate: 2,
+            });
+
+            const sprite = new Sprite(texture);
+
+            const visualBounds = sprite.visualBounds;
+            const bounds = sprite.bounds;
+
+            // for some reason jest treats -0 and 0 as different! but -0 === 0
+            expect(bounds.minX || 0).toBe(0);
+            expect(bounds.minY || 0).toBe(0);
+            expect(bounds.maxX).toBe(64);
+            expect(bounds.maxY).toBe(64);
+
+            expect(visualBounds.minX).toBe(4);
+            expect(visualBounds.minY).toBe(4);
+            expect(visualBounds.maxX).toBe(62);
+            expect(visualBounds.maxY).toBe(60);
+        });
     });
 
     describe('containsPoint', () =>

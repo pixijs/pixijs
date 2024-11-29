@@ -462,9 +462,9 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      */
     public resize(width?: number, height?: number, resolution?: number): boolean
     {
-        resolution = resolution || this._resolution;
-        width = width || this.width;
-        height = height || this.height;
+        resolution ||= this._resolution;
+        width ||= this.width;
+        height ||= this.height;
 
         // make sure we work with rounded pixels
         const newPixelWidth = Math.round(width * resolution);
