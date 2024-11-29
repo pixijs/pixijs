@@ -285,8 +285,13 @@ class AnimatedGIF extends Sprite
         const canvas = DOMAdapter.get().createCanvas(width, height) as HTMLCanvasElement;
         const context = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-        this.texture = new Texture(new TextureSource(canvas));
-        this.texture.source.scaleMode = scaleMode;
+        this.texture = new Texture({
+            source: new TextureSource({
+                resource: canvas,
+                scaleMode
+            }),
+            dynamic: true,
+        });
 
         this.duration = (frames[frames.length - 1] as FrameObject).end;
         this._frames = frames;
