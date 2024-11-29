@@ -183,9 +183,7 @@ export class Sprite extends ViewContainer
     get sourceBounds()
     {
         // #if _DEBUG
-        // #if _DEBUG
         deprecation('8.6.1', 'Sprite.sourceBounds is deprecated, use visualBounds instead.');
-        // #endif
         // #endif
 
         return this.visualBounds;
