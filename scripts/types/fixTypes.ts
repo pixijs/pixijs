@@ -24,18 +24,11 @@ function addMixinReferencePaths()
     const srcPath = path.resolve(__dirname, '../../src').replace(/\\/g, '/');
     const globPath = `${srcPath}/**/*.d.ts`;
     const files = glob.sync(globPath);
-
-    // eslint-disable-next-line no-console
-    console.log('Adding reference paths to mixins:', globPath, files);
-
     const lines: string[] = [];
 
     files.forEach((file) =>
     {
         const name = file.split(srcPath)[1];
-
-        // eslint-disable-next-line no-console
-        console.log('Adding reference path:', `/// <reference path=".${name}" />`);
 
         lines.push(`/// <reference path=".${name}" />`);
     });
