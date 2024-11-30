@@ -21,7 +21,7 @@ import * as path from 'node:path';
 function addMixinReferencePaths()
 {
     const srcPath = path.resolve(__dirname, '../../src');
-    const globPath = `${path.posix.normalize(srcPath)}/**/*.d.ts`;
+    const globPath = `${srcPath.replace(/\\/g, '/')}/**/*.d.ts`;
     const files = glob.sync(globPath);
 
     // eslint-disable-next-line no-console
