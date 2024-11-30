@@ -29,6 +29,9 @@ function addMixinReferencePaths()
     {
         const name = file.split(`${process.cwd()}/src`)[1];
 
+        // eslint-disable-next-line no-console
+        console.log('Adding reference path:', `/// <reference path=".${name}" />`);
+
         lines.push(`/// <reference path=".${name}" />`);
     });
 
