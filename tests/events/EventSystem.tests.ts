@@ -1191,7 +1191,7 @@ describe('EventSystem', () =>
         graphics.addEventListener('pointertap', (e) =>
         {
             expect(e.type).toEqual('click');
-            count += count + 1;
+            count += 1;
             if (count >= 2)
             {
                 controller.abort();
