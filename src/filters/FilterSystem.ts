@@ -272,7 +272,9 @@ export class FilterSystem implements System
         {
             const viewPort = renderer.renderTarget.rootViewPort;
 
-            bounds.fitBounds(0, viewPort.width, 0, viewPort.height);
+            const rootResolution = renderer.renderTarget.renderTarget.resolution;
+
+            bounds.fitBounds(0, viewPort.width / rootResolution, 0, viewPort.height / rootResolution);
         }
 
         // round the bounds to the nearest pixel
