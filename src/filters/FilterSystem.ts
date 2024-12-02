@@ -641,7 +641,7 @@ export class FilterSystem implements System
 
         const renderGroup = sprite.renderGroup || sprite.parentRenderGroup;
 
-        if (renderGroup)
+        if (renderGroup && renderGroup.cacheToLocalTransform)
         {
             // get the matrix relative to the render group..
             worldTransform.prepend(renderGroup.cacheToLocalTransform);
