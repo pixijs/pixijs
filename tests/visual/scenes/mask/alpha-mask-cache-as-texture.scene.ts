@@ -1,4 +1,4 @@
-import { Assets } from '../../../../src/assets';
+import { Assets } from '../../../../src/assets/Assets';
 import { Point } from '../../../../src/maths/point/Point';
 import { Container } from '../../../../src/scene/container/Container';
 import { Sprite } from '../../../../src/scene/sprite/Sprite';
