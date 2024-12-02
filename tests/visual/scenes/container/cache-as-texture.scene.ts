@@ -34,7 +34,17 @@ export const scene: TestScene = {
 
             container.addChild(text);
 
-            container.cacheAsTexture(true);
+            if (i === 0)
+            {
+                container.cacheAsTexture({
+                    antialias: true,
+                    resolution: 2
+                });
+            }
+            else
+            {
+                container.cacheAsTexture(true);
+            }
 
             last.addChild(container);
 
