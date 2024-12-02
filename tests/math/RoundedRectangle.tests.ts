@@ -63,4 +63,36 @@ describe('RoundedRectangle', () =>
 
         expect(rrect4.contains(5, 5)).toBe(true);
     });
+
+    describe('strokeContains', () =>
+    {
+        const rectangle = new RoundedRectangle(0, 0, 100, 100, 10);
+
+        it('alignment 0', () =>
+        {
+            expect(rectangle.strokeContains(-9, -9, 20, 0)).toBe(true);
+            expect(rectangle.strokeContains(0, 0, 20, 0)).toBe(true);
+            expect(rectangle.strokeContains(10, 10, 20, 0)).toBe(false);
+            expect(rectangle.strokeContains(12, 12, 20, 0)).toBe(false);
+            expect(rectangle.strokeContains(25, 25, 20, 1)).toBe(false);
+        });
+
+        it('alignment 0.5', () =>
+        {
+            expect(rectangle.strokeContains(-9, -9, 20, 0.5)).toBe(false);
+            expect(rectangle.strokeContains(0, 0, 20, 0.5)).toBe(true);
+            expect(rectangle.strokeContains(10, 10, 20, 0.5)).toBe(true);
+            expect(rectangle.strokeContains(12, 12, 20, 0.5)).toBe(false);
+            expect(rectangle.strokeContains(25, 25, 20, 1)).toBe(false);
+        });
+
+        it('alignment 1', () =>
+        {
+            expect(rectangle.strokeContains(-9, -9, 20, 1)).toBe(false);
+            expect(rectangle.strokeContains(0, 0, 20, 1)).toBe(false);
+            expect(rectangle.strokeContains(10, 10, 20, 1)).toBe(true);
+            expect(rectangle.strokeContains(12, 12, 20, 1)).toBe(true);
+            expect(rectangle.strokeContains(25, 25, 20, 1)).toBe(false);
+        });
+    });
 });
