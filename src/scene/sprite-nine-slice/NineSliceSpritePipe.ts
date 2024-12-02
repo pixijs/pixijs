@@ -52,15 +52,12 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
 
     public validateRenderable(sprite: NineSliceSprite): boolean
     {
-        const texture = sprite._texture;
         const gpuSprite = this._getGpuSprite(sprite);
 
-        if (gpuSprite.texture._source !== texture._source)
-        {
-            return !gpuSprite._batcher.checkAndUpdateTexture(gpuSprite, texture);
-        }
-
-        return false;
+        return !gpuSprite._batcher.checkAndUpdateTexture(
+            gpuSprite,
+            sprite._texture
+        );
     }
 
     public destroyRenderable(sprite: NineSliceSprite)
