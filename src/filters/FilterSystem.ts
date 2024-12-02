@@ -639,6 +639,12 @@ export class FilterSystem implements System
 
         const worldTransform = sprite.worldTransform.copyTo(Matrix.shared);
 
+        if (sprite.parentRenderGroup.isCachedAsTexture)
+        {
+            // get the matrix relative to the render group..
+            worldTransform.prepend(sprite.parentRenderGroup.cacheToLocalTransform);
+        }
+
         worldTransform.invert();
         mappedMatrix.prepend(worldTransform);
         mappedMatrix.scale(
