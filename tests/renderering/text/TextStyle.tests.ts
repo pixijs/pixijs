@@ -238,9 +238,9 @@ describe('TextStyle', () =>
 
         expect(textStyle._fill.fill).toBeInstanceOf(FillGradient);
         expect((textStyle._fill.fill as FillGradient).gradientStops).toEqual([
-            { offset: 0, color: '#000000ff' },
-            { offset: 0.5, color: '#ff0000ff' },
-            { offset: 1, color: '#ffffffff' },
+            { offset: 0, color: 'rgba(0,0,0,1)' },
+            { offset: 0.5, color: 'rgba(255,0,0,1)' },
+            { offset: 1, color: 'rgba(255,255,255,1)' },
         ]);
     });
 });
