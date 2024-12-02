@@ -230,7 +230,7 @@ export class ExtractSystem implements System
 
         const canvas = renderer.texture.generateCanvas(texture);
 
-        texture.destroy();
+        texture.destroy(true);
 
         return canvas;
     }
