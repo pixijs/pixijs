@@ -230,7 +230,7 @@ export class ExtractSystem implements System
 
         const canvas = renderer.texture.generateCanvas(texture);
 
-        texture.destroy();
+        texture.destroy(true);
 
         return canvas;
     }
@@ -257,7 +257,7 @@ export class ExtractSystem implements System
         if (target instanceof Container)
         {
             // destroy generated texture
-            texture.destroy();
+            texture.destroy(true);
         }
 
         return pixelInfo;
