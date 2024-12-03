@@ -1,10 +1,10 @@
-import { Assets } from '../../../../src/assets/Assets';
-import { Sprite } from '../../../../src/scene/sprite/Sprite';
-import { basePath } from '../../../assets/basePath';
+import { Assets } from '@/assets/Assets';
+import { Sprite } from '@/scene/sprite/Sprite';
+import { basePath } from '@test-utils';
 
-import type { Container } from '../../../../src/scene/container/Container';
-import type { Spritesheet } from '../../../../src/spritesheet/Spritesheet';
 import type { TestScene } from '../../types';
+import type { Container } from '@/scene/container/Container';
+import type { Spritesheet } from '@/spritesheet/Spritesheet';
 
 export const scene: TestScene = {
     it: 'should render from sprite sheets',

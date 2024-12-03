@@ -1,10 +1,10 @@
 /* eslint-disable max-len */
-import { Assets } from '../../../../src/assets/Assets';
-import { Sprite } from '../../../../src/scene/sprite/Sprite';
+import { Assets } from '@/assets/Assets';
+import { Sprite } from '@/scene/sprite/Sprite';
 
-import type { Texture } from '../../../../src/rendering/renderers/shared/texture/Texture';
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Texture } from '@/rendering/renderers/shared/texture/Texture';
+import type { Container } from '@/scene/container/Container';
 
 export const scene: TestScene = {
     it: 'should render svg as texture',

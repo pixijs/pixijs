@@ -1,11 +1,11 @@
-import { Assets } from '../../../../src/assets/Assets';
-import { Sprite } from '../../../../src/scene/sprite/Sprite';
-import { TilingSprite } from '../../../../src/scene/sprite-tiling/TilingSprite';
-import { basePath } from '../../../assets/basePath';
+import { Assets } from '@/assets/Assets';
+import { Sprite } from '@/scene/sprite/Sprite';
+import { TilingSprite } from '@/scene/sprite-tiling/TilingSprite';
+import { basePath } from '@test-utils';
 
-import type { Renderer } from '../../../../src/rendering/renderers/types';
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Renderer } from '@/rendering/renderers/types';
+import type { Container } from '@/scene/container/Container';
 
 export const scene: TestScene = {
     it: 'should render tiling sprite with clampOffset correctly',

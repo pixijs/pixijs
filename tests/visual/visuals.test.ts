@@ -1,10 +1,10 @@
 import glob from 'glob';
 import path from 'path';
-import { Assets } from '../../src/assets/Assets';
-import { TexturePool } from '../../src/rendering/renderers/shared/texture/TexturePool';
-import { isCI } from '../assets/basePath';
+import '@/environment-browser/browserAll';
+import { isCI } from '../utils/basePath';
 import { renderTest } from './tester';
-import '../../src/environment-browser/browserAll';
+import { Assets } from '@/assets/Assets';
+import { TexturePool } from '@/rendering/renderers/shared/texture/TexturePool';
 
 import type { RenderType, RenderTypeFlags } from './types';
 
