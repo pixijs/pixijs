@@ -132,7 +132,7 @@ export class GlStateSystem implements System
                     this.map[i].call(this, !!(state.data & (1 << i)));
                 }
 
-                diff = diff >> 1;
+                diff >>= 1;
                 i++;
             }
 

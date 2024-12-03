@@ -364,4 +364,28 @@ describe('Sprite', () =>
             expect(sprite.anchor.y).toEqual(0.5);
         });
     });
+
+    describe('texture', () =>
+    {
+        it('should be updated in the batch', async () =>
+        {
+            const renderer = await getWebGLRenderer();
+
+            const container = new Container();
+
+            const sprite = new Sprite(new Texture({
+                dynamic: true,
+            }));
+
+            container.addChild(sprite);
+
+            renderer.render({ container });
+
+            const texture = getTexture();
+
+            sprite.texture.source = texture.source;
+
+            expect(renderer.renderPipes.sprite.validateRenderable(sprite)).toBe(true);
+        });
+    });
 });
