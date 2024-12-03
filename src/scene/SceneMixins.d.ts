@@ -3,6 +3,7 @@ import type { CacheAsTextureMixin, CacheAsTextureMixinConstructor } from './cont
 import type { ChildrenHelperMixin } from './container/container-mixins/childrenHelperMixin';
 import type { EffectsMixin, EffectsMixinConstructor } from './container/container-mixins/effectsMixin';
 import type { FindMixin, FindMixinConstructor } from './container/container-mixins/findMixin';
+import type { GetGlobalMixin } from './container/container-mixins/getGlobalMixin';
 import type { MeasureMixin, MeasureMixinConstructor } from './container/container-mixins/measureMixin';
 import type { OnRenderMixin, OnRenderMixinConstructor } from './container/container-mixins/onRenderMixin';
 import type { SortMixin, SortMixinConstructor } from './container/container-mixins/sortMixin';
@@ -21,6 +22,7 @@ declare global
             EffectsMixin,
             FindMixin,
             SortMixin,
+            GetGlobalMixin,
             CacheAsTextureMixin {}
 
         // eslint-disable-next-line @typescript-eslint/no-empty-interface

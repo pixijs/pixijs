@@ -650,7 +650,7 @@ export class EventBoundary
             return;
         }
 
-        type = type ?? e.type;
+        type ??= e.type;
 
         // call the `on${type}` for the current target if it exists
         const handlerKey = `on${type}` as keyof Container;

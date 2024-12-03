@@ -385,7 +385,7 @@ export class Rectangle implements ShapePrimitive
      */
     public getBounds(out?: Rectangle): Rectangle
     {
-        out = out || new Rectangle();
+        out ||= new Rectangle();
         out.copyFrom(this);
 
         return out;

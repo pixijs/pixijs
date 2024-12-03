@@ -18,9 +18,9 @@ export function transformVertices(vertices: number[], m: Matrix, offset?: number
     const tx = m.tx;
     const ty = m.ty;
 
-    offset = offset || 0;
-    stride = stride || 2;
-    size = size || (vertices.length / stride) - offset;
+    offset ||= 0;
+    stride ||= 2;
+    size ||= (vertices.length / stride) - offset;
 
     let index = offset * stride;
 

@@ -231,7 +231,7 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
             }
         }
 
-        managedRenderables.length = managedRenderables.length - offset;
+        managedRenderables.length -= offset;
     }
 
     public destroy(): void

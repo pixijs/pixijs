@@ -120,7 +120,7 @@ export class GlGeometrySystem implements System
      */
     public bind(geometry?: Geometry, program?: GlProgram): void
     {
-        // shader = shader || this.renderer.shader.shader;
+        // shader ||= this.renderer.shader.shader;
 
         const gl = this.gl;
 
@@ -440,7 +440,7 @@ export class GlGeometrySystem implements System
 
         const glTopology = topologyToGlMap[topology || geometry.topology];
 
-        instanceCount ||= geometry.instanceCount;
+        instanceCount ??= geometry.instanceCount;
 
         if (geometry.indexBuffer)
         {

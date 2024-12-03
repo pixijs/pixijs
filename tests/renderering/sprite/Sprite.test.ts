@@ -233,6 +233,33 @@ describe('Sprite', () =>
             expect(bounds.width).toEqual(40);
             expect(bounds.height).toEqual(30);
         });
+
+        it('should return correct bounds for trimmed texture', () =>
+        {
+            const texture = new Texture({
+                source: new TextureSource({ width: 300, height: 300 }),
+                frame: new Rectangle(196, 66, 58, 56),
+                trim: new Rectangle(4, 4, 58, 56),
+                orig: new Rectangle(0, 0, 64, 64),
+                rotate: 2,
+            });
+
+            const sprite = new Sprite(texture);
+
+            const visualBounds = sprite.visualBounds;
+            const bounds = sprite.bounds;
+
+            // for some reason jest treats -0 and 0 as different! but -0 === 0
+            expect(bounds.minX || 0).toBe(0);
+            expect(bounds.minY || 0).toBe(0);
+            expect(bounds.maxX).toBe(64);
+            expect(bounds.maxY).toBe(64);
+
+            expect(visualBounds.minX).toBe(4);
+            expect(visualBounds.minY).toBe(4);
+            expect(visualBounds.maxX).toBe(62);
+            expect(visualBounds.maxY).toBe(60);
+        });
     });
 
     describe('containsPoint', () =>
@@ -336,6 +363,30 @@ describe('Sprite', () =>
 
             expect(sprite.anchor.x).toEqual(0.5);
             expect(sprite.anchor.y).toEqual(0.5);
+        });
+    });
+
+    describe('texture', () =>
+    {
+        it('should be updated in the batch', async () =>
+        {
+            const renderer = await getWebGLRenderer();
+
+            const container = new Container();
+
+            const sprite = new Sprite(new Texture({
+                dynamic: true,
+            }));
+
+            container.addChild(sprite);
+
+            renderer.render({ container });
+
+            const texture = getTexture();
+
+            sprite.texture.source = texture.source;
+
+            expect(renderer.renderPipes.sprite.validateRenderable(sprite)).toBe(true);
         });
     });
 });

@@ -1,3 +1,5 @@
+import { deprecation } from '../../../utils/logging/deprecation';
+
 import type { Container } from '../Container';
 import type { CacheAsTextureOptions } from '../RenderGroup';
 
@@ -8,8 +10,35 @@ export interface CacheAsTextureMixinConstructor
 
 export interface CacheAsTextureMixin extends Required<CacheAsTextureMixinConstructor>
 {
+    /**
+     * Caches this container as a texture. This allows the container to be rendered as a single texture,
+     * which can improve performance for complex static containers.
+     * @param val - If true, enables caching with default options. If false, disables caching.
+     * Can also pass options object to configure caching behavior.
+     * @memberof scene.Container#
+     */
     cacheAsTexture: (val: boolean | CacheAsTextureOptions) => void;
+
+    /**
+     * Updates the cached texture of this container. This will flag the container's cached texture
+     * to be redrawn on the next render.
+     * @memberof scene.Container#
+     */
     updateCacheTexture: () => void;
+
+    /**
+     * Legacy property for backwards compatibility with PixiJS v7 and below.
+     * Use `cacheAsTexture` instead.
+     * @deprecated Since PixiJS v8
+     * @memberof scene.Container#
+     */
+    cacheAsBitmap: boolean;
+
+    /**
+     * Whether this container is currently cached as a texture.
+     * @readonly
+     * @memberof scene.Container#
+     */
     readonly isCachedAsTexture: boolean;
 }
 
@@ -25,38 +54,6 @@ export const cacheAsTextureMixin: Partial<Container> = {
         return !!this.renderGroup?.isCachedAsTexture;
     },
 
-    /**
-     * Setting cacheAsTexture to true will render the container to a texture instead of
-     * rendering the container itself.
-     * This can be great for performance if the container is static, as instead of rendering all the children etc.,
-     * it will just render a single texture.
-     *
-     * The process of caching is relatively low cost.
-     * The use of a texture does increase memory usage (for the texture itself).
-     *
-     * For more advanced options use `cacheAsTexture(OPTIONS)` as this allows you to set the texture options.
-     * A cached texture can be updated by calling `updateCacheTexture()`.
-     *
-     * `updateCacheTexture()` is very performant once cacheAsTexture has been set!
-     * @param val - the texture options to be set.
-     * @memberof scene.Container#
-     * @example
-     * ```typescript
-     *
-     * // enable cacheAsTexture
-     * container.cacheAsTexture(true);
-     *
-     * // alternatively enable with options
-     * container.cacheAsTexture({ antialias: true, resolution: 2 });
-     *
-     * // want to update the texture!
-     * container.updateCacheTexture();
-     *
-     * // you're done?
-     * container.cacheAsTexture(false);
-     *
-     * ```
-     */
     cacheAsTexture(val: boolean | CacheAsTextureOptions): void
     {
         if (typeof val === 'boolean' && val === false)
@@ -78,5 +75,25 @@ export const cacheAsTextureMixin: Partial<Container> = {
     updateCacheTexture(): void
     {
         this.renderGroup?.updateCacheTexture();
+    },
+
+    /**
+     * Allows backwards compatibility with pixi.js below version v8. Use `cacheAsTexture` instead.
+     * @deprecated
+     */
+    get cacheAsBitmap(): boolean
+    {
+        return this.isCachedAsTexture;
+    },
+
+    /**
+     * @deprecated
+     */
+    set cacheAsBitmap(val: boolean)
+    {
+        // #if _DEBUG
+        deprecation('v8.6.0', 'cacheAsBitmap is deprecated, use cacheAsTexture instead.');
+        // #endif
+        this.cacheAsTexture(val);
     },
 } as Container;

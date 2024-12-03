@@ -29,6 +29,13 @@ export const scene: TestScene = {
             particle.rotation = i * 0.01;
 
             particleContainer.addParticle(particle);
+
+            particle.alpha = i / 100;
+
+            if (i % 2 === 0)
+            {
+                particle.tint = 'red';
+            }
         }
 
         scene.addChild(particleContainer);
