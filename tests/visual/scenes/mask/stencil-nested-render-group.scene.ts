@@ -7,7 +7,7 @@ import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
-    it: 'should nested masks in render group correctly',
+    it: 'should handle nested masks in render group correctly',
     create: async (scene: Container) =>
     {
         const g = new Graphics();
