@@ -1,3 +1,4 @@
+import '@/environment-browser/browserAll';
 import { Container } from '../container/Container';
 import { Graphics } from '../graphics/shared/Graphics';
 import { Mesh } from '../mesh/shared/Mesh';
@@ -6,7 +7,6 @@ import { TilingSprite } from '../sprite-tiling/TilingSprite';
 import { QuadGeometry } from '../sprite-tiling/utils/QuadGeometry';
 import { Text } from '../text/Text';
 import { HTMLText } from '../text-html/HTMLText';
-import '../../src/environment-browser/browserAll';
 import { Application } from '@/app/Application';
 import { Rectangle } from '@/maths/shapes/Rectangle';
 import { WebGLRenderer } from '@/rendering/renderers/gl/WebGLRenderer';

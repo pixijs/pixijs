@@ -16,6 +16,8 @@ module.exports = {
     },
     moduleNameMapper: {
         '^worker:(.*)$': '$1',
+        '^@/(.*)$': '<rootDir>/src/$1',
+        '^@test-utils$': '<rootDir>/tests/utils/index.ts'
     },
     testMatch: ['**/?(*.)+(spec|tests|test).[tj]s?(x)'],
     snapshotResolver: '<rootDir>/scripts/jest/jest-snapshot-resolver.js',

@@ -2,6 +2,7 @@ import path from 'path';
 import { Spritesheet } from '../Spritesheet';
 import { ImageSource } from '@/rendering/renderers/shared/texture/sources/ImageSource';
 import { Texture } from '@/rendering/renderers/shared/texture/Texture';
+import { getAsset } from '@test-utils';
 
 import type { SpritesheetData, SpritesheetFrameData } from '../Spritesheet';
 
@@ -13,7 +14,7 @@ describe('Spritesheet', () =>
 
     beforeAll(() =>
     {
-        assets = path.join(__dirname, '@/assets/assets/spritesheet');
+        assets = getAsset('spritesheet');
         validate = (spritesheet: Spritesheet, done) =>
         {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -95,11 +96,10 @@ describe('Spritesheet', () =>
     });
 
     it('should create instance with scale resolution', () =>
-        new Promise<void>((done) =>
+        new Promise<void>(async (done) =>
         {
             jest.setTimeout(10000);
-            // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
-            const data = require(path.resolve(assets, 'building1.json'));
+            const data = await fetch(getAsset('spritesheet/building1.json')).then((res) => res.json());
             const image = new Image();
 
             image.src = path.join(assets, data.meta.image);
@@ -118,11 +118,9 @@ describe('Spritesheet', () =>
 
     // resolution is not being parsed, remains 1
     it('should create instance with filename resolution', () =>
-        new Promise<void>((done) =>
+        new Promise<void>(async (done) =>
         {
-            const uri = path.resolve(assets, 'building1@2x.json');
-            // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
-            const data = require(uri);
+            const data = await fetch(getAsset('spritesheet/building1@2x.json')).then((res) => res.json());
             const image = new Image();
 
             image.src = path.join(assets, data.meta.image);

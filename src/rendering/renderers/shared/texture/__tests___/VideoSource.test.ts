@@ -1,12 +1,12 @@
-import path from 'path';
 import '@/environment-browser/browserAll';
 import { VideoSource } from '../sources/VideoSource';
 import { Assets } from '@/assets/Assets';
+import { getAsset } from '@test-utils';
 
 import type { VideoSourceOptions } from '../sources/VideoSource';
 import type { Texture } from '../Texture';
 
-const url = path.resolve(__dirname, '@/assets/__tests__/resources/video', 'park.mp4');
+const url = getAsset('video/park.mp4');
 
 describe('VideoSource', () =>
 {
@@ -33,7 +33,7 @@ describe('VideoSource', () =>
         const { source, sourceElement } = await setup();
 
         expect(source.resource).toBeInstanceOf(HTMLVideoElement);
-        expect(sourceElement.src).toEqual(`file://${url}`);
+        expect(sourceElement.src).toEqual(url);
 
         // expect initial state to have dimensions (loadVideoTextures loader waits for canplay before resolving)
         expect(source.width).toEqual(1920);
