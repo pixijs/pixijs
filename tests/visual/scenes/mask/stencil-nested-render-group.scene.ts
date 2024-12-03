@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
-import { AlphaFilter } from '../../../../src/filters';
+
+import { AlphaFilter } from '../../../../src/filters/defaults/alpha/AlphaFilter';
 import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
 
 import type { Container } from '../../../../src/scene/container/Container';
