@@ -1,8 +1,8 @@
-import '@/spritesheet/init';
+import '~/spritesheet/init';
 import { Assets } from '../Assets';
 import { basePath, getApp } from '@test-utils';
 
-import type { Texture } from '@/rendering/renderers/shared/texture/Texture';
+import type { Texture } from '~/rendering/renderers/shared/texture/Texture';
 
 describe('Assets Unresolved', () =>
 {

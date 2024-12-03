@@ -1,8 +1,8 @@
-import { Assets } from '@/assets/Assets';
-import { PerspectiveMesh } from '@/scene/mesh-perspective/PerspectiveMesh';
+import { Assets } from '~/assets/Assets';
+import { PerspectiveMesh } from '~/scene/mesh-perspective/PerspectiveMesh';
 
 import type { TestScene } from '../../types';
-import type { Container } from '@/scene/container/Container';
+import type { Container } from '~/scene/container/Container';
 
 export const scene: TestScene = {
     it: 'should render a perspective mesh',

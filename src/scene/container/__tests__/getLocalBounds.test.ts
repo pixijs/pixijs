@@ -5,12 +5,12 @@ import { getLocalBounds } from '../bounds/getLocalBounds';
 import { Container } from '../Container';
 import { DummyEffect } from './DummyEffect';
 import { DummyView } from './DummyView';
-import { Rectangle } from '@/maths/shapes/Rectangle';
-import { StencilMask } from '@/rendering/mask/stencil/StencilMask';
-import { addMaskLocalBounds } from '@/rendering/mask/utils/addMaskLocalBounds';
-import { RenderTexture } from '@/rendering/renderers/shared/texture/RenderTexture';
-import { TextureSource } from '@/rendering/renderers/shared/texture/sources/TextureSource';
-import { Texture } from '@/rendering/renderers/shared/texture/Texture';
+import { Rectangle } from '~/maths/shapes/Rectangle';
+import { StencilMask } from '~/rendering/mask/stencil/StencilMask';
+import { addMaskLocalBounds } from '~/rendering/mask/utils/addMaskLocalBounds';
+import { RenderTexture } from '~/rendering/renderers/shared/texture/RenderTexture';
+import { TextureSource } from '~/rendering/renderers/shared/texture/sources/TextureSource';
+import { Texture } from '~/rendering/renderers/shared/texture/Texture';
 
 describe('getLocalBounds', () =>
 {

@@ -1,9 +1,9 @@
 import { ParticleContainer } from '../ParticleContainer';
-import { Rectangle } from '@/maths/shapes/Rectangle';
-import { Texture } from '@/rendering/renderers/shared/texture/Texture';
-import { Container } from '@/scene/container/Container';
-import { Particle } from '@/scene/particle-container/shared/Particle';
 import { getWebGLRenderer } from '@test-utils';
+import { Rectangle } from '~/maths/shapes/Rectangle';
+import { Texture } from '~/rendering/renderers/shared/texture/Texture';
+import { Container } from '~/scene/container/Container';
+import { Particle } from '~/scene/particle-container/shared/Particle';
 
 describe('ParticleContainer', () =>
 {

@@ -1,8 +1,8 @@
 import { Buffer } from '../Buffer';
 import { getWebGLRenderer, getWebGPURenderer, itLocalOnly } from '@test-utils';
 
-import type { WebGLRenderer } from '@/rendering/renderers/gl/WebGLRenderer';
-import type { WebGPURenderer } from '@/rendering/renderers/gpu/WebGPURenderer';
+import type { WebGLRenderer } from '~/rendering/renderers/gl/WebGLRenderer';
+import type { WebGPURenderer } from '~/rendering/renderers/gpu/WebGPURenderer';
 
 describe('Buffer', () =>
 {

@@ -1,8 +1,8 @@
 import { Texture } from '../Texture';
-import { Container } from '@/scene/container/Container';
 import { getWebGLRenderer } from '@test-utils';
+import { Container } from '~/scene/container/Container';
 
-import type { WebGLRenderer } from '@/rendering/renderers/gl/WebGLRenderer';
+import type { WebGLRenderer } from '~/rendering/renderers/gl/WebGLRenderer';
 
 describe('GenerateTexture', () =>
 {

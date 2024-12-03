@@ -1,10 +1,10 @@
-import { Color } from '@/color/Color';
-import { Texture } from '@/rendering/renderers/shared/texture/Texture';
-import { Graphics } from '@/scene/graphics/shared/Graphics';
-import { Sprite } from '@/scene/sprite/Sprite';
+import { Color } from '~/color/Color';
+import { Texture } from '~/rendering/renderers/shared/texture/Texture';
+import { Graphics } from '~/scene/graphics/shared/Graphics';
+import { Sprite } from '~/scene/sprite/Sprite';
 
 import type { TestScene } from '../../types';
-import type { Container } from '@/scene/container/Container';
+import type { Container } from '~/scene/container/Container';
 
 export const scene: TestScene = {
     it: 'should render alpha mask',

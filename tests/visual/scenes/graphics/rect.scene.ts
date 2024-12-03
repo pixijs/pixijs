@@ -1,7 +1,7 @@
-import { Graphics } from '@/scene/graphics/shared/Graphics';
+import { Graphics } from '~/scene/graphics/shared/Graphics';
 
 import type { TestScene } from '../../types';
-import type { Container } from '@/scene/container/Container';
+import type { Container } from '~/scene/container/Container';
 
 export const scene: TestScene = {
     it: 'should render rect',

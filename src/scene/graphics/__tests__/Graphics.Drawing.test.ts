@@ -2,11 +2,11 @@ import { Bounds } from '../../container/bounds/Bounds';
 import { getLocalBounds } from '../../container/bounds/getLocalBounds';
 import { Graphics } from '../shared/Graphics';
 import { GraphicsContext } from '../shared/GraphicsContext';
-import { Matrix } from '@/maths/matrix/Matrix';
-import { Texture } from '@/rendering/renderers/shared/texture/Texture';
+import { Matrix } from '~/maths/matrix/Matrix';
+import { Texture } from '~/rendering/renderers/shared/texture/Texture';
 
 import type { FillInstruction } from '../shared/GraphicsContext';
-import type { PointData } from '@/maths/point/PointData';
+import type { PointData } from '~/maths/point/PointData';
 
 describe('Graphics Drawing', () =>
 {

@@ -4,11 +4,11 @@ import { loadJson } from '../parsers/loadJson';
 import { loadWebFont } from '../parsers/loadWebFont';
 import { loadSvg } from '../parsers/textures/loadSVG';
 import { loadTextures } from '../parsers/textures/loadTextures';
-import { Texture } from '@/rendering/renderers/shared/texture/Texture';
 import { basePath } from '@test-utils';
+import { Texture } from '~/rendering/renderers/shared/texture/Texture';
 
 import type { LoaderParser } from '../parsers/LoaderParser';
-import type { GraphicsContext } from '@/scene/graphics/shared/GraphicsContext';
+import type { GraphicsContext } from '~/scene/graphics/shared/GraphicsContext';
 
 describe('Loader', () =>
 {

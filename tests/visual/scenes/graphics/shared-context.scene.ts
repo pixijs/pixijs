@@ -1,8 +1,8 @@
-import { Graphics } from '@/scene/graphics/shared/Graphics';
-import { GraphicsContext } from '@/scene/graphics/shared/GraphicsContext';
+import { Graphics } from '~/scene/graphics/shared/Graphics';
+import { GraphicsContext } from '~/scene/graphics/shared/GraphicsContext';
 
 import type { TestScene } from '../../types';
-import type { Container } from '@/scene/container/Container';
+import type { Container } from '~/scene/container/Container';
 
 export const scene: TestScene = {
     it: 'should render graphics with shared context',

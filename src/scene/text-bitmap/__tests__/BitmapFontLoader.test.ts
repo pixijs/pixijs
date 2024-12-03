@@ -1,13 +1,13 @@
 import { Sprite } from '../../sprite/Sprite';
 import { loadBitmapFont } from '../asset/loadBitmapFont';
 import { BitmapFont } from '../BitmapFont';
-import { Cache } from '@/assets/cache/Cache';
-import { Loader } from '@/assets/loader/Loader';
-import { loadTxt } from '@/assets/loader/parsers/loadTxt';
-import { loadTextures } from '@/assets/loader/parsers/textures/loadTextures';
 import { basePath, getWebGLRenderer } from '@test-utils';
+import { Cache } from '~/assets/cache/Cache';
+import { Loader } from '~/assets/loader/Loader';
+import { loadTxt } from '~/assets/loader/parsers/loadTxt';
+import { loadTextures } from '~/assets/loader/parsers/textures/loadTextures';
 
-import type { Texture } from '@/rendering/renderers/shared/texture/Texture';
+import type { Texture } from '~/rendering/renderers/shared/texture/Texture';
 
 describe('BitmapFontLoader', () =>
 {

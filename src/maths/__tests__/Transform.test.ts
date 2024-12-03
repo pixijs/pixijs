@@ -1,4 +1,4 @@
-import { Transform } from '@/utils/misc/Transform';
+import { Transform } from '~/utils/misc/Transform';
 
 describe('Transform', () =>
 {

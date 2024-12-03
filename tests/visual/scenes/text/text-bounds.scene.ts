@@ -1,9 +1,9 @@
-import { Assets } from '@/assets/Assets';
-import { Graphics } from '@/scene/graphics/shared/Graphics';
-import { Text } from '@/scene/text/Text';
+import { Assets } from '~/assets/Assets';
+import { Graphics } from '~/scene/graphics/shared/Graphics';
+import { Text } from '~/scene/text/Text';
 
 import type { TestScene } from '../../types';
-import type { Container } from '@/scene/container/Container';
+import type { Container } from '~/scene/container/Container';
 
 export const scene: TestScene = {
     it: 'should render text with the correct bounds',

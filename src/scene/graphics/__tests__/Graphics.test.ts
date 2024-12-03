@@ -2,9 +2,9 @@ import { Graphics } from '../shared/Graphics';
 import { GraphicsContext } from '../shared/GraphicsContext';
 import { GraphicsPath } from '../shared/path/GraphicsPath';
 import { toFillStyle } from '../shared/utils/convertFillInputToFillStyle';
-import { Matrix } from '@/maths/matrix/Matrix';
-import { Texture } from '@/rendering/renderers/shared/texture/Texture';
 import { getWebGLRenderer } from '@test-utils';
+import { Matrix } from '~/maths/matrix/Matrix';
+import { Texture } from '~/rendering/renderers/shared/texture/Texture';
 
 describe('Graphics', () =>
 {

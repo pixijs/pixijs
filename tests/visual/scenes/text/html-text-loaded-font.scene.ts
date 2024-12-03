@@ -1,10 +1,10 @@
-import { Assets } from '@/assets/Assets';
-import { Sprite } from '@/scene/sprite/Sprite';
-import { HTMLTextStyle } from '@/scene/text-html/HTMLTextStyle';
+import { Assets } from '~/assets/Assets';
+import { Sprite } from '~/scene/sprite/Sprite';
+import { HTMLTextStyle } from '~/scene/text-html/HTMLTextStyle';
 
 import type { TestScene } from '../../types';
-import type { Renderer } from '@/rendering/renderers/types';
-import type { Container } from '@/scene/container/Container';
+import type { Renderer } from '~/rendering/renderers/types';
+import type { Container } from '~/scene/container/Container';
 
 export const scene: TestScene = {
     it: 'should render html-text correctly',

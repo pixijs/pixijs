@@ -1,8 +1,8 @@
-import '@/rendering/renderers/shared/texture/Texture';
+import '~/rendering/renderers/shared/texture/Texture';
 import { Container } from '../Container';
 import '../../text/init';
-import { Text } from '@/scene/text/Text';
 import { getWebGLRenderer } from '@test-utils';
+import { Text } from '~/scene/text/Text';
 
 describe('RenderGroupSystem', () =>
 {

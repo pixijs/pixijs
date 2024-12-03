@@ -8,8 +8,8 @@ import { TilingSprite } from '../sprite-tiling/TilingSprite';
 import { Text } from '../text/Text';
 import { BitmapText } from '../text-bitmap/BitmapText';
 import { HTMLText } from '../text-html/HTMLText';
-import { Texture } from '@/rendering/renderers/shared/texture/Texture';
 import { getWebGLRenderer } from '@test-utils';
+import { Texture } from '~/rendering/renderers/shared/texture/Texture';
 
 describe('RenderableGC', () =>
 {

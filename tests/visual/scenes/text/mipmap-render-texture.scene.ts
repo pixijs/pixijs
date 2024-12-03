@@ -1,10 +1,10 @@
-import { RenderTexture } from '@/rendering/renderers/shared/texture/RenderTexture';
-import { Graphics } from '@/scene/graphics/shared/Graphics';
-import { Sprite } from '@/scene/sprite/Sprite';
+import { RenderTexture } from '~/rendering/renderers/shared/texture/RenderTexture';
+import { Graphics } from '~/scene/graphics/shared/Graphics';
+import { Sprite } from '~/scene/sprite/Sprite';
 
 import type { TestScene } from '../../types';
-import type { Renderer } from '@/rendering/renderers/types';
-import type { Container } from '@/scene/container/Container';
+import type { Renderer } from '~/rendering/renderers/types';
+import type { Container } from '~/scene/container/Container';
 
 export const scene: TestScene = {
     it: 'should render renderTextures with mipmaps correctly',

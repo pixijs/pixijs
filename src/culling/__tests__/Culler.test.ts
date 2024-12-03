@@ -1,15 +1,15 @@
 import { Culler } from '../Culler';
-import { Assets } from '@/assets/Assets';
-import { loadTextures } from '@/assets/loader/parsers/textures/loadTextures';
-import { extensions } from '@/extensions/Extensions';
-import { AlphaFilter } from '@/filters/defaults/alpha/AlphaFilter';
-import { Rectangle } from '@/maths/shapes/Rectangle';
-import { Container } from '@/scene/container/Container';
-import { Graphics } from '@/scene/graphics/shared/Graphics';
-import { Sprite } from '@/scene/sprite/Sprite';
 import { basePath } from '@test-utils';
+import { Assets } from '~/assets/Assets';
+import { loadTextures } from '~/assets/loader/parsers/textures/loadTextures';
+import { extensions } from '~/extensions/Extensions';
+import { AlphaFilter } from '~/filters/defaults/alpha/AlphaFilter';
+import { Rectangle } from '~/maths/shapes/Rectangle';
+import { Container } from '~/scene/container/Container';
+import { Graphics } from '~/scene/graphics/shared/Graphics';
+import { Sprite } from '~/scene/sprite/Sprite';
 
-import type { Texture } from '@/rendering/renderers/shared/texture/Texture';
+import type { Texture } from '~/rendering/renderers/shared/texture/Texture';
 
 describe('Culler', () =>
 {

@@ -6,7 +6,7 @@ import { UniformGroup } from '../shared/shader/UniformGroup';
 import { RenderTexture } from '../shared/texture/RenderTexture';
 import { TextureSource } from '../shared/texture/sources/TextureSource';
 import { TextureStyle } from '../shared/texture/TextureStyle';
-import { resetUids } from '@/utils/data/uid';
+import { resetUids } from '~/utils/data/uid';
 
 describe('BindGroup', () =>
 {

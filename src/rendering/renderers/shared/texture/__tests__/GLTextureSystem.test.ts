@@ -1,6 +1,6 @@
 import { getTexture, getWebGLRenderer } from '@test-utils';
 
-import type { WebGLRenderer } from '@/rendering/renderers/gl/WebGLRenderer';
+import type { WebGLRenderer } from '~/rendering/renderers/gl/WebGLRenderer';
 
 describe('GLTextureSystem', () =>
 {

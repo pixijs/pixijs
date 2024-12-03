@@ -1,13 +1,13 @@
 import { setTimeout } from 'timers/promises';
-import '@/scene/graphics/init';
+import '~/scene/graphics/init';
 import { EventSystem } from '../EventSystem';
 import '../init';
-import { Rectangle } from '@/maths/shapes/Rectangle';
-import { Container } from '@/scene/container/Container';
-import { Graphics } from '@/scene/graphics/shared/Graphics';
 import { getApp, getWebGLRenderer } from '@test-utils';
+import { Rectangle } from '~/maths/shapes/Rectangle';
+import { Container } from '~/scene/container/Container';
+import { Graphics } from '~/scene/graphics/shared/Graphics';
 
-import type { RendererOptions } from '@/rendering/renderers/types';
+import type { RendererOptions } from '~/rendering/renderers/types';
 
 async function createRenderer(
     canvas?: HTMLCanvasElement,

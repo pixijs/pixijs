@@ -1,7 +1,7 @@
 import { Container } from '../Container';
 import { updateRenderGroupTransforms } from '../utils/updateRenderGroupTransforms';
 import { DummyView } from './DummyView';
-import { Matrix } from '@/maths/matrix/Matrix';
+import { Matrix } from '~/maths/matrix/Matrix';
 
 describe('Transform updates', () =>
 {

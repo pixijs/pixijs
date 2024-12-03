@@ -1,8 +1,8 @@
-import { Graphics } from '@/scene/graphics/shared/Graphics';
-import { Sprite } from '@/scene/sprite/Sprite';
+import { Graphics } from '~/scene/graphics/shared/Graphics';
+import { Sprite } from '~/scene/sprite/Sprite';
 
 import type { TestScene } from '../../types';
-import type { Container } from '@/scene/container/Container';
+import type { Container } from '~/scene/container/Container';
 
 export const scene: TestScene = {
     it: 'should correctly swap bind groups and render to non batched circles with a sprite in the middle',

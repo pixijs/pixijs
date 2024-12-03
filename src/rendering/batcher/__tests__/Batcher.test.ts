@@ -1,4 +1,4 @@
-import '@/rendering/renderers/shared/texture/sources/ImageSource';
+import '~/rendering/renderers/shared/texture/sources/ImageSource';
 import { TestBatcher } from './TestBatcher';
 
 describe('Batcher', () =>

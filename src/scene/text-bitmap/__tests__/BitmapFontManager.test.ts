@@ -1,6 +1,6 @@
 import { TextStyle } from '../../text/TextStyle';
 import { BitmapFontManager } from '../BitmapFontManager';
-import { Cache } from '@/assets/cache/Cache';
+import { Cache } from '~/assets/cache/Cache';
 
 import type { BitmapFont } from '../BitmapFont';
 

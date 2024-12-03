@@ -1,9 +1,9 @@
 import { Sprite } from '../../sprite/Sprite';
 import { Container } from '../Container';
 import { RenderGroup } from '../RenderGroup';
-import { Texture } from '@/rendering/renderers/shared/texture/Texture';
-import { BigPool } from '@/utils/pool/PoolGroup';
 import { getWebGLRenderer } from '@test-utils';
+import { Texture } from '~/rendering/renderers/shared/texture/Texture';
+import { BigPool } from '~/utils/pool/PoolGroup';
 
 // now that we don't actually remove the items, but instead ensure that they are skipped
 // in the update loop, this function will return the new list and index removing items that are intended to be skipped

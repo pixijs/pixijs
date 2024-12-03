@@ -19,7 +19,7 @@
         "types": ["node", "css-font-loading-module", "earcut", "@webgpu/types"],
         "baseUrl": ".",
         "paths": {
-            "@/*": ["./src/*"],
+            "~/*": ["./src/*"],
             "@test-utils": ["./tests/utils/index.ts"]
         }
     },

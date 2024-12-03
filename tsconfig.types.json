@@ -3,7 +3,8 @@
     "compilerOptions": {
         "declaration": true,
         "emitDeclarationOnly": true,
-        "outDir": "lib"
+        "outDir": "lib",
+        "baseUrl": "./src"
     },
     "include": [
         "./src",
@@ -11,6 +12,7 @@
     ],
     "exclude": [
         "./src/bundle.*",
-        "**/__tests__/**"
+        "**/__tests__",
+        "./tests"
     ]
 }

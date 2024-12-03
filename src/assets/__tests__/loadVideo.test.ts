@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import { Assets } from '../Assets';
-import { Texture } from '@/rendering/renderers/shared/texture/Texture';
 import { basePath, getApp } from '@test-utils';
+import { Texture } from '~/rendering/renderers/shared/texture/Texture';
 
 describe('loadVideo', () =>
 {

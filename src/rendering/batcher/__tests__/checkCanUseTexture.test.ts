@@ -1,12 +1,12 @@
-import '@/rendering/renderers/shared/texture/sources/ImageSource';
+import '~/rendering/renderers/shared/texture/sources/ImageSource';
 import { TestBatcher } from './TestBatcher';
-import { Matrix } from '@/maths/matrix/Matrix';
-import { InstructionSet } from '@/rendering/renderers/shared/instructions/InstructionSet';
-import { Texture } from '@/rendering/renderers/shared/texture/Texture';
+import { Matrix } from '~/maths/matrix/Matrix';
+import { InstructionSet } from '~/rendering/renderers/shared/instructions/InstructionSet';
+import { Texture } from '~/rendering/renderers/shared/texture/Texture';
 
 import type { Batch, BatchableMeshElement, Batcher } from '../shared/Batcher';
-import type { Topology } from '@/rendering/renderers/shared/geometry/const';
-import type { BLEND_MODES } from '@/rendering/renderers/shared/state/const';
+import type { Topology } from '~/rendering/renderers/shared/geometry/const';
+import type { BLEND_MODES } from '~/rendering/renderers/shared/state/const';
 
 class DummyBatchableObject implements BatchableMeshElement
 {

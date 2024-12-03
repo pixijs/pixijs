@@ -1,5 +1,5 @@
-import { Container } from '@/scene/container/Container';
-import { Text } from '@/scene/text/Text';
+import { Container } from '~/scene/container/Container';
+import { Text } from '~/scene/text/Text';
 
 import type { TestScene } from '../../types';
 

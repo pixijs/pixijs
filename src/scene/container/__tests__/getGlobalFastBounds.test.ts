@@ -4,8 +4,8 @@ import { Container } from '../Container';
 import { updateRenderGroupTransforms } from '../utils/updateRenderGroupTransforms';
 import { DummyEffect } from './DummyEffect';
 import { DummyView } from './DummyView';
-import { Rectangle } from '@/maths/shapes/Rectangle';
-import { logScene } from '@/utils/logging/logScene';
+import { Rectangle } from '~/maths/shapes/Rectangle';
+import { logScene } from '~/utils/logging/logScene';
 
 describe('getGlobalFastBounds', () =>
 {

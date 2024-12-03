@@ -5,7 +5,7 @@ import { detectMp4 } from '../detections/parsers/detectMp4';
 import { detectOgv } from '../detections/parsers/detectOgv';
 import { detectWebm } from '../detections/parsers/detectWebm';
 import { detectWebp } from '../detections/parsers/detectWebp';
-import { ExtensionType } from '@/extensions/Extensions';
+import { ExtensionType } from '~/extensions/Extensions';
 
 describe('Assets', () =>
 {

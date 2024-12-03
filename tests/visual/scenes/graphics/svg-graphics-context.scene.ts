@@ -1,10 +1,10 @@
 /* eslint-disable max-len */
-import { Assets } from '@/assets/Assets';
-import { Graphics } from '@/scene/graphics/shared/Graphics';
+import { Assets } from '~/assets/Assets';
+import { Graphics } from '~/scene/graphics/shared/Graphics';
 
 import type { TestScene } from '../../types';
-import type { Container } from '@/scene/container/Container';
-import type { GraphicsContext } from '@/scene/graphics/shared/GraphicsContext';
+import type { Container } from '~/scene/container/Container';
+import type { GraphicsContext } from '~/scene/graphics/shared/GraphicsContext';
 
 export const scene: TestScene = {
     it: 'should render svg a GraphicsContext texture',

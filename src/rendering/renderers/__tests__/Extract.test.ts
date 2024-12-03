@@ -1,14 +1,14 @@
-import '@/scene/graphics/init';
+import '~/scene/graphics/init';
 import { ExtractSystem } from '../shared/extract/ExtractSystem';
 import { RenderTexture } from '../shared/texture/RenderTexture';
 import { ImageSource } from '../shared/texture/sources/ImageSource';
 import { Texture } from '../shared/texture/Texture';
 import '../../init';
-import { Rectangle } from '@/maths/shapes/Rectangle';
-import { Container } from '@/scene/container/Container';
-import { Graphics } from '@/scene/graphics/shared/Graphics';
-import { Sprite } from '@/scene/sprite/Sprite';
 import { getTexture, getWebGLRenderer } from '@test-utils';
+import { Rectangle } from '~/maths/shapes/Rectangle';
+import { Container } from '~/scene/container/Container';
+import { Graphics } from '~/scene/graphics/shared/Graphics';
+import { Sprite } from '~/scene/sprite/Sprite';
 
 import type { WebGLRenderer } from '../gl/WebGLRenderer';
 

@@ -7,8 +7,8 @@ import { TextStyle } from '../TextStyle';
 import '../../graphics/init';
 import '../../text-bitmap/init';
 import '../init';
-import { Point } from '@/maths/point/Point';
 import { getWebGLRenderer } from '@test-utils';
+import { Point } from '~/maths/point/Point';
 
 import type { DestroyOptions } from '../../container/destroyTypes';
 

@@ -1,5 +1,5 @@
 import { segmentIntersection } from '../util';
-import { Point } from '@/maths/point/Point';
+import { Point } from '~/maths/point/Point';
 
 describe('segmentIntersection', () =>
 {

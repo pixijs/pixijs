@@ -1,7 +1,7 @@
 import { CanvasSource } from '../sources/CanvasSource';
 import { TextureSource } from '../sources/TextureSource';
 import { Texture } from '../Texture';
-import { DOMAdapter } from '@/environment/adapter';
+import { DOMAdapter } from '~/environment/adapter';
 
 describe('getCanvasTexture', () =>
 {

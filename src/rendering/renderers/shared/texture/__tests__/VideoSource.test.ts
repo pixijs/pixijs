@@ -1,7 +1,7 @@
-import '@/environment-browser/browserAll';
+import '~/environment-browser/browserAll';
 import { VideoSource } from '../sources/VideoSource';
-import { Assets } from '@/assets/Assets';
 import { getAsset } from '@test-utils';
+import { Assets } from '~/assets/Assets';
 
 import type { VideoSourceOptions } from '../sources/VideoSource';
 import type { Texture } from '../Texture';

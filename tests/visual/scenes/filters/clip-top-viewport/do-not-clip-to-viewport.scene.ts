@@ -1,12 +1,12 @@
 import circleFrag from './circle.frag';
 import circleVert from './circle.vert';
 import circleWgsl from './circle.wgsl';
-import { Assets } from '@/assets/Assets';
-import { Filter } from '@/filters/Filter';
-import { Sprite } from '@/scene/sprite/Sprite';
+import { Assets } from '~/assets/Assets';
+import { Filter } from '~/filters/Filter';
+import { Sprite } from '~/scene/sprite/Sprite';
 
 import type { TestScene } from '../../../types';
-import type { Container } from '@/scene/container/Container';
+import type { Container } from '~/scene/container/Container';
 
 export const scene: TestScene = {
     it: 'do not clip to viewport filter texture',

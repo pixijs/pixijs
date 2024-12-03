@@ -1,14 +1,14 @@
-import '@/scene/text/init';
-import '@/scene/text-bitmap/init';
-import '@/scene/text-html/init';
+import '~/scene/text/init';
+import '~/scene/text-bitmap/init';
+import '~/scene/text-html/init';
 import { PrepareSystem } from '../PrepareSystem';
-import { TextureSource } from '@/rendering/renderers/shared/texture/sources/TextureSource';
-import { Texture } from '@/rendering/renderers/shared/texture/Texture';
-import { Container } from '@/scene/container/Container';
-import { Graphics } from '@/scene/graphics/shared/Graphics';
-import { Sprite } from '@/scene/sprite/Sprite';
-import { Text } from '@/scene/text/Text';
 import { getWebGLRenderer } from '@test-utils';
+import { TextureSource } from '~/rendering/renderers/shared/texture/sources/TextureSource';
+import { Texture } from '~/rendering/renderers/shared/texture/Texture';
+import { Container } from '~/scene/container/Container';
+import { Graphics } from '~/scene/graphics/shared/Graphics';
+import { Sprite } from '~/scene/sprite/Sprite';
+import { Text } from '~/scene/text/Text';
 
 describe('PrepareSystem', () =>
 {

@@ -1,13 +1,13 @@
-import { Assets } from '@/assets/Assets';
-import { DOMAdapter } from '@/environment/adapter';
-import { CanvasSource } from '@/rendering/renderers/shared/texture/sources/CanvasSource';
-import { ImageSource } from '@/rendering/renderers/shared/texture/sources/ImageSource';
-import { Texture } from '@/rendering/renderers/shared/texture/Texture';
-import { Sprite } from '@/scene/sprite/Sprite';
+import { Assets } from '~/assets/Assets';
+import { DOMAdapter } from '~/environment/adapter';
+import { CanvasSource } from '~/rendering/renderers/shared/texture/sources/CanvasSource';
+import { ImageSource } from '~/rendering/renderers/shared/texture/sources/ImageSource';
+import { Texture } from '~/rendering/renderers/shared/texture/Texture';
+import { Sprite } from '~/scene/sprite/Sprite';
 
 import type { TestScene } from '../../types';
-import type { Renderer } from '@/rendering/renderers/types';
-import type { Container } from '@/scene/container/Container';
+import type { Renderer } from '~/rendering/renderers/types';
+import type { Container } from '~/scene/container/Container';
 
 const cellSize = 35;
 

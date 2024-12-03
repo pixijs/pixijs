@@ -1,7 +1,7 @@
 import { State } from '../State';
 import { getWebGLRenderer } from '@test-utils';
 
-import type { GlStateSystem } from '@/rendering/renderers/gl/state/GlStateSystem';
+import type { GlStateSystem } from '~/rendering/renderers/gl/state/GlStateSystem';
 
 describe('State', () =>
 {

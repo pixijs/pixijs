@@ -1,6 +1,6 @@
 import { GlobalUniformSystem } from '../shared/renderTarget/GlobalUniformSystem';
-import { Matrix } from '@/maths/matrix/Matrix';
-import { Point } from '@/maths/point/Point';
+import { Matrix } from '~/maths/matrix/Matrix';
+import { Point } from '~/maths/point/Point';
 
 import type { WebGLRenderer } from '../gl/WebGLRenderer';
 import type { UboSystem } from '../shared/shader/UboSystem';

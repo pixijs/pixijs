@@ -1,9 +1,9 @@
-import { Assets } from '@/assets/Assets';
-import { Particle } from '@/scene/particle-container/shared/Particle';
-import { ParticleContainer } from '@/scene/particle-container/shared/ParticleContainer';
+import { Assets } from '~/assets/Assets';
+import { Particle } from '~/scene/particle-container/shared/Particle';
+import { ParticleContainer } from '~/scene/particle-container/shared/ParticleContainer';
 
 import type { TestScene } from '../../types';
-import type { Container } from '@/scene/container/Container';
+import type { Container } from '~/scene/container/Container';
 
 export const scene: TestScene = {
     it: 'should render particle container',

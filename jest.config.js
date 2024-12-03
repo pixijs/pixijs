@@ -16,7 +16,7 @@ module.exports = {
     },
     moduleNameMapper: {
         '^worker:(.*)$': '$1',
-        '^@/(.*)$': '<rootDir>/src/$1',
+        '^~/(.*)$': '<rootDir>/src/$1',
         '^@test-utils$': '<rootDir>/tests/utils/index.ts'
     },
     testMatch: ['**/?(*.)+(test)\\.ts'],

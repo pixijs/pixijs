@@ -1,8 +1,8 @@
 import { EventBoundary } from '../EventBoundary';
 import { FederatedPointerEvent } from '../FederatedPointerEvent';
-import { Container } from '@/scene/container/Container';
-import { Graphics } from '@/scene/graphics/shared/Graphics';
 import { getApp } from '@test-utils';
+import { Container } from '~/scene/container/Container';
+import { Graphics } from '~/scene/graphics/shared/Graphics';
 
 function graphicsWithRect(x: number, y: number, width: number, height: number)
 {

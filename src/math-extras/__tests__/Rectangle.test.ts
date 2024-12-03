@@ -1,5 +1,5 @@
 import '../init';
-import { Rectangle } from '@/maths/shapes/Rectangle';
+import { Rectangle } from '~/maths/shapes/Rectangle';
 
 describe('Rectangle', () =>
 {
