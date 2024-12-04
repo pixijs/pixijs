@@ -1,4 +1,5 @@
 import { Container } from '../container/Container';
+// TODO make it clear render layer cannot have 'filters'
 
 /** Options for configuring a RenderLayer. */
 export interface RenderLayerOptions

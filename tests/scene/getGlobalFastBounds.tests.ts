@@ -3,6 +3,7 @@ import { Bounds } from '../../src/scene/container/bounds/Bounds';
 import { getFastGlobalBounds } from '../../src/scene/container/bounds/getFastGlobalBounds';
 import { Container } from '../../src/scene/container/Container';
 import { updateRenderGroupTransforms } from '../../src/scene/container/utils/updateRenderGroupTransforms';
+import { RenderLayer } from '../../src/scene/layers/RenderLayer';
 import { logScene } from '../../src/utils/logging/logScene';
 import { DummyEffect } from './DummyEffect';
 import { DummyView } from './DummyView';
@@ -245,5 +246,106 @@ describe('getGlobalFastBounds', () =>
         const bounds = getFastGlobalBounds(container, new Bounds());
 
         expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 500 / 2, maxY: 500 / 2 });
+    });
+
+    // ... existing tests ...
+
+    it('should respect render layers when factorRenderLayers is true', () =>
+    {
+        const root = new Container({ isRenderGroup: true, label: 'root' });
+        const layer1 = new RenderLayer();
+        const layer2 = new RenderLayer();
+
+        const child1 = new DummyView({ label: 'child1' });
+        const child2 = new DummyView({ label: 'child2', x: 200 });
+
+        const container = new Container({ label: 'container' });
+
+        container.addChild(child1, child2);
+
+        root.addChild(container, layer1, layer2);
+
+        updateRenderGroupTransforms(root.renderGroup, true);
+
+        // When factorRenderLayers is false, includes all children
+        const globalBounds = getFastGlobalBounds(container, new Bounds(), false);
+
+        expect(globalBounds).toMatchObject({ minX: 0, minY: 0, maxX: 300, maxY: 100 });
+
+        // When factorRenderLayers is true, only includes children in the current layer
+        const globalVisualBounds = getFastGlobalBounds(container, new Bounds(), true);
+
+        expect(globalVisualBounds).toMatchObject({ minX: 0, minY: 0, maxX: 300, maxY: 100 });
+
+        // now add the children to the layers
+        layer1.add(child1);
+        layer2.add(child2);
+
+        const globalVisualBounds2 = getFastGlobalBounds(container, new Bounds(), true);
+
+        expect(globalVisualBounds2).toMatchObject({ minX: 0, minY: 0, maxX: 0, maxY: 0 });
+    });
+
+    it('should handle nested render layers correctly', () =>
+    {
+        const root = new Container({ isRenderGroup: true, label: 'root' });
+        const outerLayer = new RenderLayer();
+        const innerLayer = new RenderLayer();
+        const innerContainer = new Container({ label: 'innerContainer' });
+
+        root.addChild(innerContainer);
+
+        const child1 = new DummyView({ label: 'child1' });
+        const child2 = new DummyView({ label: 'child2', x: 200 });
+
+        root.addChild(child1, child2);
+        root.addChild(outerLayer);
+
+        innerContainer.addChild(innerLayer);
+
+        innerLayer.add(child1);
+        outerLayer.add(child2);
+
+        updateRenderGroupTransforms(root.renderGroup, true);
+
+        // Check bounds of outer layer
+        const outerBounds = getFastGlobalBounds(root, new Bounds(), true);
+
+        expect(outerBounds).toMatchObject({ minX: 0, minY: 0, maxX: 300, maxY: 100 });
+
+        // // Check bounds of inner layer
+        const innerBounds = getFastGlobalBounds(innerLayer, new Bounds(), true);
+
+        expect(innerBounds).toMatchObject({ minX: 0, minY: 0, maxX: 100, maxY: 100 });
+    });
+
+    it('should handle removing objects from render layers', () =>
+    {
+        const root = new Container({ isRenderGroup: true, label: 'root' });
+        const layer = new RenderLayer();
+        const child = new DummyView({ label: 'child' });
+
+        root.addChild(layer);
+        root.addChild(child);
+        layer.add(child);
+
+        updateRenderGroupTransforms(root.renderGroup, true);
+
+        // Initial bounds with child in layer
+        const initialBounds = getFastGlobalBounds(layer, new Bounds(), true);
+
+        expect(initialBounds).toMatchObject({ minX: 0, minY: 0, maxX: 100, maxY: 100 });
+
+        // // Remove child from layer
+        layer.remove(child);
+
+        const boundsAfterRemoval = getFastGlobalBounds(layer, new Bounds(), true);
+
+        expect(boundsAfterRemoval).toMatchObject({ minX: 0, minY: 0, maxX: 0, maxY: 0 });
+
+        // // Check root bounds still include the child
+        const rootBounds = getFastGlobalBounds(root, new Bounds(), false);
+
+        expect(rootBounds).toMatchObject({ minX: 0, minY: 0, maxX: 100, maxY: 100 });
     });
 });

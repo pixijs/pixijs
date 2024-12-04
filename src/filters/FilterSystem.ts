@@ -177,7 +177,9 @@ export class FilterSystem implements System
         // measuring.
         else
         {
-            getFastGlobalBounds(instruction.container, bounds);
+            // we want to factor render layers to get the real visual bounds of this container.
+            // so the last param is true..
+            getFastGlobalBounds(instruction.container, bounds, true);
         }
 
         if (instruction.container)
