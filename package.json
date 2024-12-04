@@ -56,7 +56,7 @@
     "ci:lint": "run-s lint test:types test:index prune"
   },
   "lint-staged": {
-    "*.{ts,js,mjs}": "npm run lint:fix --"
+    "!(src/**/index).{ts,js,mjs}": "npm run lint:fix --"
   },
   "dependencies": {
     "@pixi/colord": "^2.9.6",
