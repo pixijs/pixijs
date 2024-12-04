@@ -1,10 +1,10 @@
-import { Assets } from '../../../../src/assets/Assets';
-import { Geometry } from '../../../../src/rendering/renderers/shared/geometry/Geometry';
-import { Shader } from '../../../../src/rendering/renderers/shared/shader/Shader';
-import { Mesh } from '../../../../src/scene/mesh/shared/Mesh';
+import { Assets } from '~/assets/Assets';
+import { Geometry } from '~/rendering/renderers/shared/geometry/Geometry';
+import { Shader } from '~/rendering/renderers/shared/shader/Shader';
+import { Mesh } from '~/scene/mesh/shared/Mesh';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene/container/Container';
 
 export const scene: TestScene = {
     it: 'should render a custom mesh correctly',

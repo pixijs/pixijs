@@ -1,11 +1,11 @@
-import { Assets } from '../../../../src/assets/Assets';
-import { Rectangle } from '../../../../src/maths/shapes/Rectangle';
-import { Texture } from '../../../../src/rendering/renderers/shared/texture/Texture';
-import { Sprite } from '../../../../src/scene/sprite/Sprite';
+import { Assets } from '~/assets/Assets';
+import { Rectangle } from '~/maths/shapes/Rectangle';
+import { Texture } from '~/rendering/renderers/shared/texture/Texture';
+import { Sprite } from '~/scene/sprite/Sprite';
 
-import type { Renderer } from '../../../../src/rendering/renderers/types';
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Renderer } from '~/rendering/renderers/types';
+import type { Container } from '~/scene/container/Container';
 
 export const scene: TestScene = {
     it: 'should render a dynamic texture',

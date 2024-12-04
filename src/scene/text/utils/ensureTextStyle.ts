@@ -1,7 +1,7 @@
-import { HTMLTextStyle } from '../../text-html/HtmlTextStyle';
+import { HTMLTextStyle } from '../../text-html/HTMLTextStyle';
 import { TextStyle } from '../TextStyle';
 
-import type { HTMLTextStyleOptions } from '../../text-html/HtmlTextStyle';
+import type { HTMLTextStyleOptions } from '../../text-html/HTMLTextStyle';
 import type { TextStyleOptions } from '../TextStyle';
 
 /**

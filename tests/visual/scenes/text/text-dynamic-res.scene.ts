@@ -1,9 +1,9 @@
-import { Text } from '../../../../src/scene/text/Text';
-import { TextStyle } from '../../../../src/scene/text/TextStyle';
-import { HTMLText } from '../../../../src/scene/text-html/HTMLText';
+import { Text } from '~/scene/text/Text';
+import { TextStyle } from '~/scene/text/TextStyle';
+import { HTMLText } from '~/scene/text-html/HTMLText';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene/container/Container';
 
 export const scene: TestScene = {
     it: 'should render text at new resolution',
