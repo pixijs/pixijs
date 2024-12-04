@@ -20,6 +20,8 @@ directories.forEach((directory) =>
             '**/webworkerAll.ts',
             // these shouldn't be exported as the webworker plugin will handle them
             '**/*.worker.ts',
+            // Tests
+            '**/__tests__/**'
         ],
     });
 

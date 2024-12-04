@@ -1,7 +1,7 @@
 import { HTMLTextRenderData } from '../HTMLTextRenderData';
 
 import type { Size } from '../../../maths/misc/Size';
-import type { HTMLTextStyle } from '../HtmlTextStyle';
+import type { HTMLTextStyle } from '../HTMLTextStyle';
 
 let tempHTMLTextRenderData: HTMLTextRenderData;
 

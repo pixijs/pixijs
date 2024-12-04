@@ -1,8 +1,8 @@
-import { Assets } from '../../../../src/assets/Assets';
-import { Container } from '../../../../src/scene/container/Container';
-import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
-import { TilingSprite } from '../../../../src/scene/sprite-tiling/TilingSprite';
-import { basePath } from '../../../assets/basePath';
+import { basePath } from '@test-utils';
+import { Assets } from '~/assets/Assets';
+import { Container } from '~/scene/container/Container';
+import { Graphics } from '~/scene/graphics/shared/Graphics';
+import { TilingSprite } from '~/scene/sprite-tiling/TilingSprite';
 
 import type { TestScene } from '../../types';
 
