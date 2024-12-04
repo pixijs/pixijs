@@ -1,10 +1,8 @@
-/* eslint-disable max-len */
+import { AlphaFilter } from '~/filters/defaults/alpha/AlphaFilter';
+import { Graphics } from '~/scene/graphics/shared/Graphics';
 
-import { AlphaFilter } from '../../../../src/filters/defaults/alpha/AlphaFilter';
-import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
-
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene/container/Container';
 
 export const scene: TestScene = {
     it: 'should handle nested masks in render group correctly',
