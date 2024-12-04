@@ -1,8 +1,8 @@
-import { Text } from '../../../../src/scene/text/Text';
-import { BitmapText } from '../../../../src/scene/text-bitmap/BitmapText';
+import { Text } from '~/scene/text/Text';
+import { BitmapText } from '~/scene/text-bitmap/BitmapText';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene/container/Container';
 
 export const scene: TestScene = {
     it: 'should render italics correctly',

@@ -79,7 +79,7 @@
     },
     "overrides": [
         {
-            "files": ["*.tests.ts", "*.test.ts"],
+            "files": ["*.test.ts"],
             "plugins": ["jest"],
             "extends": ["plugin:jest/recommended"],
             "globals": {

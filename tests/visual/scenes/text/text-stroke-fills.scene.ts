@@ -1,10 +1,10 @@
-import { Color } from '../../../../src/color/Color';
-import { FillGradient } from '../../../../src/scene/graphics/shared/fill/FillGradient';
-import { Text } from '../../../../src/scene/text/Text';
+import { Color } from '~/color/Color';
+import { FillGradient } from '~/scene/graphics/shared/fill/FillGradient';
+import { Text } from '~/scene/text/Text';
 
-import type { Container } from '../../../../src/scene/container/Container';
-import type { FillStyle, StrokeStyle } from '../../../../src/scene/graphics/shared/FillTypes';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene/container/Container';
+import type { FillStyle, StrokeStyle } from '~/scene/graphics/shared/FillTypes';
 
 export const scene: TestScene = {
     it: 'should update text fill/stroke through proxy',
