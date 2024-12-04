@@ -93,8 +93,6 @@ export interface RenderLayerOptions
  * Known issues:
  *  - Interaction may not work as expected since hit testing does not account for the visual render order created by layers.
  *    For example, if an object is visually moved to the front via a layer, hit testing will still use its original position.
- *  - Filters and masks from an object's logical parent may not be applied
- *    correctly when the object is moved to a different layer.
  *  - RenderLayers and their children must all belong to the same renderGroup to work correctly
  */
 export class RenderLayer extends Container
