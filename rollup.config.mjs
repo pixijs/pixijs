@@ -7,6 +7,7 @@ import { string } from 'rollup-plugin-string';
 import { fileURLToPath } from 'url';
 import webworker from '@pixi/webworker-plugins/rollup-plugin';
 import repo from './package.json' assert { type: 'json' };
+import alias from '@rollup/plugin-alias';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import resolve from '@rollup/plugin-node-resolve';
@@ -62,12 +63,20 @@ async function main()
                 '**/*.wgsl',
             ],
         }),
+        // We need to satisfy our tsconfig alias with rollup
+        // even though we'll be excluding __tests___
+        alias({
+            entries: [
+                { find: /^~\/(.*)$/, replacement: path.join(__dirname, 'src/$1.ts') },
+                { find: '@test-utils', replacement: path.join(__dirname, 'tests/utils/index.ts') }
+            ]
+        })
     ];
 
     const plugins = [
         webworker(),
         jscc({ values: { _VERSION: repo.version, _DEBUG: true } }),
-        esbuild({ target: moduleTarget }),
+        esbuild({ target: moduleTarget, exclude: ['**/__tests__/**'] }),
         ...commonPlugins
     ];
 

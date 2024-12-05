@@ -1,10 +1,10 @@
 import { AbstractText, ensureOptions } from '../text/AbstractText';
-import { HTMLTextStyle } from './HtmlTextStyle';
+import { HTMLTextStyle } from './HTMLTextStyle';
 import { measureHtmlText } from './utils/measureHtmlText';
 
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from '../text/AbstractText';
-import type { HTMLTextStyleOptions } from './HtmlTextStyle';
+import type { HTMLTextStyleOptions } from './HTMLTextStyle';
 
 /**
  * Constructor options used for `HTMLText` instances.

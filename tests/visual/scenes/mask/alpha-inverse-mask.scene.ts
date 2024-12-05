@@ -1,10 +1,10 @@
-import { Assets } from '../../../../src/assets/Assets';
-import { Color } from '../../../../src/color/Color';
-import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
-import { Sprite } from '../../../../src/scene/sprite/Sprite';
+import { Assets } from '~/assets/Assets';
+import { Color } from '~/color/Color';
+import { Graphics } from '~/scene/graphics/shared/Graphics';
+import { Sprite } from '~/scene/sprite/Sprite';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene/container/Container';
 
 export const scene: TestScene = {
     it: 'should render inverse alpha mask',

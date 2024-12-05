@@ -116,6 +116,8 @@ export function _getGlobalBoundsRecursive(
     {
         let advanced = false;
 
+        const renderGroup = target.renderGroup || target.parentRenderGroup;
+
         for (let i = 0; i < target.effects.length; i++)
         {
             if (target.effects[i].addBounds)
@@ -123,7 +125,7 @@ export function _getGlobalBoundsRecursive(
                 if (!advanced)
                 {
                     advanced = true;
-                    localBounds.applyMatrix(target.parentRenderGroup.worldTransform);
+                    localBounds.applyMatrix(renderGroup.worldTransform);
                 }
 
                 target.effects[i].addBounds(localBounds, true);
@@ -132,7 +134,7 @@ export function _getGlobalBoundsRecursive(
 
         if (advanced)
         {
-            localBounds.applyMatrix(target.parentRenderGroup.worldTransform.copyTo(tempMatrix).invert());
+            localBounds.applyMatrix(renderGroup.worldTransform.copyTo(tempMatrix).invert());
             bounds.addBounds(localBounds, target.relativeGroupTransform);
         }
 

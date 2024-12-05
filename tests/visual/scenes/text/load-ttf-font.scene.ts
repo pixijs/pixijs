@@ -1,8 +1,8 @@
-import { Assets } from '../../../../src/assets/Assets';
-import { Text } from '../../../../src/scene/text/Text';
+import { Assets } from '~/assets/Assets';
+import { Text } from '~/scene/text/Text';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene/container/Container';
 
 export const scene: TestScene = {
     it: 'should load and display ttf correctly',

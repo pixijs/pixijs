@@ -87,14 +87,9 @@ export const getGlobalMixin: Partial<Container> = {
 
         this.updateLocalTransform();
 
-        if (!this.parent)
-        {
-            return matrix.copyFrom(this.localTransform);
-        }
-
         const parentTransform = updateTransformBackwards(this, matrixPool.get().identity());
 
-        matrix.appendFrom(parentTransform, this.localTransform);
+        matrix.appendFrom(this.localTransform, parentTransform);
         matrixPool.return(parentTransform);
 
         return matrix;

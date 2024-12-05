@@ -1,8 +1,8 @@
-import { Texture } from '../../../../src/rendering/renderers/shared/texture/Texture';
-import { Sprite } from '../../../../src/scene/sprite/Sprite';
+import { Texture } from '~/rendering/renderers/shared/texture/Texture';
+import { Sprite } from '~/scene/sprite/Sprite';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene/container/Container';
 
 const size = 16;
 

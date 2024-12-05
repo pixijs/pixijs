@@ -2,6 +2,7 @@ import { Cache } from '../../assets/cache/Cache';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
+import { warn } from '../../utils/logging/warn';
 import { Transform } from '../../utils/misc/Transform';
 import { ViewContainer } from '../view/ViewContainer';
 
@@ -127,18 +128,48 @@ export class TilingSprite extends ViewContainer implements View, Instruction
         tileScale: { x: 1, y: 1 },
         /** The rotation of the image that is being tiled. */
         tileRotation: 0,
-        /** TODO */
+        /**
+         * Flags whether the tiling pattern should originate from the origin instead of the top-left corner in
+         * local space.
+         *
+         * This will make the texture coordinates assigned to each vertex dependent on the value of the anchor. Without
+         * this, the top-left corner always gets the (0, 0) texture coordinate.
+         * @default false
+         */
         applyAnchorToTexture: false,
     };
 
     public override readonly renderPipeId: string = 'tilingSprite';
     public readonly batched = true;
 
+    /**
+     * Flags whether the tiling pattern should originate from the origin instead of the top-left corner in
+     * local space.
+     *
+     * This will make the texture coordinates assigned to each vertex dependent on the value of the anchor. Without
+     * this, the top-left corner always gets the (0, 0) texture coordinate.
+     * @default false
+     */
+    public applyAnchorToTexture: boolean;
+    /**
+     * @see {@link scene.TilingSpriteOptions.applyAnchorToTexture}
+     * @deprecated since 8.0.0
+     */
+    public get uvRespectAnchor(): boolean
+    {
+        warn('uvRespectAnchor is deprecated, please use applyAnchorToTexture instead');
+
+        return this.applyAnchorToTexture;
+    }
+    public set uvRespectAnchor(value: boolean)
+    {
+        warn('uvRespectAnchor is deprecated, please use applyAnchorToTexture instead');
+        this.applyAnchorToTexture = value;
+    }
     public _anchor: ObservablePoint;
 
     public _tileTransform: Transform;
     public _texture: Texture;
-    public _applyAnchorToTexture: boolean;
 
     private _width: number;
     private _height: number;
@@ -200,7 +231,7 @@ export class TilingSprite extends ViewContainer implements View, Instruction
             },
         );
 
-        this._applyAnchorToTexture = applyAnchorToTexture;
+        this.applyAnchorToTexture = applyAnchorToTexture;
 
         this.texture = texture;
         this._width = width ?? texture.width;
@@ -421,12 +452,6 @@ export class TilingSprite extends ViewContainer implements View, Instruction
         }
 
         return false;
-    }
-
-    protected override onViewUpdate()
-    {
-        this._boundsDirty = true;
-        super.onViewUpdate();
     }
 
     /**
