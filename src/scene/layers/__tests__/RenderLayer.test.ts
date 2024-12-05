@@ -1,5 +1,5 @@
-import { RenderLayer } from '../../layers/RenderLayer';
-import { Container } from '../Container';
+import { Container } from '../../container/Container';
+import { RenderLayer } from '../RenderLayer';
 
 describe('RenderLayer', () =>
 {
