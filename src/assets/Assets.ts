@@ -397,7 +397,7 @@ export class AssetsClass
      * // passing options to to the object
      * Assets.add({
      *     alias: 'bunnyBooBooSmooth',
-     *     src: 'bunny{png,webp}',
+     *     src: 'bunny.{png,webp}',
      *     data: { scaleMode: SCALE_MODES.NEAREST }, // Base texture options
      * });
      *
@@ -405,7 +405,7 @@ export class AssetsClass
      *
      * // The following all do the same thing:
      *
-     * Assets.add({alias: 'bunnyBooBoo', src: 'bunny{png,webp}'});
+     * Assets.add({alias: 'bunnyBooBoo', src: 'bunny.{png,webp}'});
      *
      * Assets.add({
      *     alias: 'bunnyBooBoo',

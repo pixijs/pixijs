@@ -1,9 +1,9 @@
-import { Assets } from '../../../../src/assets/Assets';
-import { MeshPlane } from '../../../../src/scene/mesh-plane/MeshPlane';
-import { basePath } from '../../../assets/basePath';
+import { basePath } from '@test-utils';
+import { Assets } from '~/assets/Assets';
+import { MeshPlane } from '~/scene/mesh-plane/MeshPlane';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene/container/Container';
 
 export const scene: TestScene = {
     it: 'should render mesh plane',

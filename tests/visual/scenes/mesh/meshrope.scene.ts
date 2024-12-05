@@ -1,7 +1,7 @@
-import { Assets } from '../../../../src/assets/Assets';
-import { Point } from '../../../../src/maths/point/Point';
-import { Container } from '../../../../src/scene/container/Container';
-import { MeshRope } from '../../../../src/scene/mesh-simple/MeshRope';
+import { Assets } from '~/assets/Assets';
+import { Point } from '~/maths/point/Point';
+import { Container } from '~/scene/container/Container';
+import { MeshRope } from '~/scene/mesh-simple/MeshRope';
 
 import type { TestScene } from '../../types';
 

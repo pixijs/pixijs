@@ -2,7 +2,7 @@ import { Color } from '../../../color/Color';
 
 import type { ConvertedStrokeStyle } from '../../graphics/shared/FillTypes';
 import type { TextStyle } from '../../text/TextStyle';
-import type { HTMLTextStyle, HTMLTextStyleOptions } from '../HtmlTextStyle';
+import type { HTMLTextStyle, HTMLTextStyleOptions } from '../HTMLTextStyle';
 
 /**
  * Internally converts all of the style properties into CSS equivalents.

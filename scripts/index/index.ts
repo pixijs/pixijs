@@ -22,6 +22,8 @@ directories.forEach((directory) =>
             '**/*.worker.ts',
             // Ignore circular imports
             '**/index.ts',
+            // Tests
+            '**/__tests__/**'
         ],
     });
 

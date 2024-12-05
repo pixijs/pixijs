@@ -1,7 +1,7 @@
 import { Color } from '../../../color/Color';
 
 import type { ConvertedFillStyle, ConvertedStrokeStyle } from '../../graphics/shared/FillTypes';
-import type { HTMLTextStyle } from '../../text-html/HtmlTextStyle';
+import type { HTMLTextStyle } from '../../text-html/HTMLTextStyle';
 import type { TextStyle } from '../TextStyle';
 
 const valuesToIterateForKeys: Partial<keyof TextStyle | keyof HTMLTextStyle>[] = [

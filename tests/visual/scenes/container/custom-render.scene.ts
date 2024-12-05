@@ -1,10 +1,10 @@
-import { Assets } from '../../../../src/assets/Assets';
-import { RenderContainer } from '../../../../src/scene/container/RenderContainer';
-import { Sprite } from '../../../../src/scene/sprite/Sprite';
+import { Assets } from '~/assets/Assets';
+import { RenderContainer } from '~/scene/container/RenderContainer';
+import { Sprite } from '~/scene/sprite/Sprite';
 
-import type { Renderer } from '../../../../src/rendering/renderers/types';
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Renderer } from '~/rendering/renderers/types';
+import type { Container } from '~/scene/container/Container';
 
 export const scene: TestScene = {
     it: 'should render a custom container GPU code',
