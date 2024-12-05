@@ -3,11 +3,13 @@
     "compilerOptions": {
         "declaration": true,
         "emitDeclarationOnly": true,
-        "outDir": "lib"
+        "outDir": "lib",
+        "allowJs": true,
     },
     "include": [
         "./src",
-        "./types"
+        "./types",
+        "./scripts",
     ],
     "exclude": [
         "./src/bundle.*",

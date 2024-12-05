@@ -335,7 +335,6 @@ describe('Paths', () =>
 
     it('should detect if path is a data url', () =>
     {
-        /* eslint-disable max-len */
         const valid = [
             'data:image/png;base64,abc',
             'data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2',
@@ -364,7 +363,6 @@ describe('Paths', () =>
             'base64',
             'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAD///+l2Z/dA'
         ];
-        /* eslint-enable max-len */
 
         valid.forEach((value) =>
         {

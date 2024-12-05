@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import { Assets } from '../Assets';
 import { basePath, getApp } from '@test-utils';
 import { Texture } from '~/rendering';

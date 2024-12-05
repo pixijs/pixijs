@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import { Graphics } from '~/scene';
 
 import type { TestScene } from '../../types';

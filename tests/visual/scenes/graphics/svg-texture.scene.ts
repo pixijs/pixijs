@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import { Assets } from '~/assets';
 import { Sprite } from '~/scene';
 

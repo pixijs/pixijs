@@ -476,7 +476,6 @@ describe('RenderGroup', () =>
         compareUpdateList([child3], container2.renderGroup, 1);
     });
 
-    // eslint-disable-next-line jest/expect-expect
     it('should update layers correctly if you attach a render group and it has updated children..', async () =>
     {
         const container = new Container();
@@ -539,7 +538,6 @@ describe('RenderGroup', () =>
         expect(container.isSimple).toEqual(true);
     });
 
-    // eslint-disable-next-line jest/expect-expect
     it('should add and then remove the render group correctly', async () =>
     {
         const container = new Container();

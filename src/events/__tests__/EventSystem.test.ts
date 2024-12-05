@@ -1031,7 +1031,7 @@ describe('EventSystem', () =>
     it('should dispatch pointer over/out event with a mask and hitArea on its children', async () =>
     {
         const renderer = await createRenderer();
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
         const [stage, graphics, _a, _b, _c, _d, e] = createScene();
         const eventSpy = jest.fn();
 
