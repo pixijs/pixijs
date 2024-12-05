@@ -1,8 +1,8 @@
 import { FillGradient } from '../../fill/FillGradient';
 import { FillPattern } from '../../fill/FillPattern';
 import { toFillStyle, toStrokeStyle } from '../convertFillInputToFillStyle';
-import { Color } from '~/color/Color';
-import { Texture } from '~/rendering/renderers/shared/texture/Texture';
+import { Color } from '~/color';
+import { Texture } from '~/rendering';
 
 import type { ConvertedStrokeStyle } from '../../FillTypes';
 

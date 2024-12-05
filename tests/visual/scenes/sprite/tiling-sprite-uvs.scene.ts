@@ -1,8 +1,6 @@
 import { basePath } from '@test-utils';
-import { Assets } from '~/assets/Assets';
-import { Container } from '~/scene/container/Container';
-import { Graphics } from '~/scene/graphics/shared/Graphics';
-import { TilingSprite } from '~/scene/sprite-tiling/TilingSprite';
+import { Assets } from '~/assets';
+import { Container, Graphics, TilingSprite } from '~/scene';
 
 import type { TestScene } from '../../types';
 

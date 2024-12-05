@@ -2,11 +2,8 @@ import { Container } from '../../container/Container';
 import { NineSliceSprite } from '../../sprite-nine-slice/NineSliceSprite';
 import { Sprite } from '../Sprite';
 import { getTexture, getWebGLRenderer } from '@test-utils';
-import { Point } from '~/maths/point/Point';
-import { Rectangle } from '~/maths/shapes/Rectangle';
-import { RenderTexture } from '~/rendering/renderers/shared/texture/RenderTexture';
-import { TextureSource } from '~/rendering/renderers/shared/texture/sources/TextureSource';
-import { Texture } from '~/rendering/renderers/shared/texture/Texture';
+import { Point, Rectangle } from '~/maths';
+import { RenderTexture, Texture, TextureSource } from '~/rendering';
 
 describe('Sprite', () =>
 {

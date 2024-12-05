@@ -1,6 +1,6 @@
 import { getGeometryBounds } from '../getGeometryBounds';
 import { getGeometry } from '@test-utils';
-import { Bounds } from '~/scene/container/bounds/Bounds';
+import { Bounds } from '~/scene';
 
 describe('getGeometryBounds', () =>
 {

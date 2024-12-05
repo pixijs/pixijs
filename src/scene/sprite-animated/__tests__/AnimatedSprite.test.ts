@@ -1,7 +1,7 @@
 import { AnimatedSprite } from '../AnimatedSprite';
-import { Texture } from '~/rendering/renderers/shared/texture/Texture';
+import { Texture } from '~/rendering';
 
-import type { Ticker } from '~/ticker/Ticker';
+import type { Ticker } from '~/ticker';
 
 const ticker1 = { deltaTime: 1 } as Ticker;
 const ticker4 = { deltaTime: 4 } as Ticker;

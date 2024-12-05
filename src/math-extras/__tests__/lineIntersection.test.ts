@@ -1,5 +1,5 @@
 import { lineIntersection } from '../util';
-import { Point } from '~/maths/point/Point';
+import { Point } from '~/maths';
 
 describe('lineIntersection', () =>
 {

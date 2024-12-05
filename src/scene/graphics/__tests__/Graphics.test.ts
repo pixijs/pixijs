@@ -3,8 +3,8 @@ import { GraphicsContext } from '../shared/GraphicsContext';
 import { GraphicsPath } from '../shared/path/GraphicsPath';
 import { toFillStyle } from '../shared/utils/convertFillInputToFillStyle';
 import { getWebGLRenderer } from '@test-utils';
-import { Matrix } from '~/maths/matrix/Matrix';
-import { Texture } from '~/rendering/renderers/shared/texture/Texture';
+import { Matrix } from '~/maths';
+import { Texture } from '~/rendering';
 
 describe('Graphics', () =>
 {

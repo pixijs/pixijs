@@ -1,13 +1,11 @@
-import { ColorMatrixFilter } from '~/filters/defaults/color-matrix/ColorMatrixFilter';
-import { Rectangle } from '~/maths/shapes/Rectangle';
-import { TextureSource } from '~/rendering/renderers/shared/texture/sources/TextureSource';
-import { Texture } from '~/rendering/renderers/shared/texture/Texture';
-import { Graphics } from '~/scene/graphics/shared/Graphics';
-import { Sprite } from '~/scene/sprite/Sprite';
+import { ColorMatrixFilter } from '~/filters';
+import { Rectangle } from '~/maths';
+import { Texture, TextureSource } from '~/rendering';
+import { Graphics, Sprite } from '~/scene';
 
 import type { TestScene } from '../../types';
-import type { Renderer } from '~/rendering/renderers/types';
-import type { Container } from '~/scene/container/Container';
+import type { Renderer } from '~/rendering';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'Filter should render correctly when a render texture frame is not  0, 0',

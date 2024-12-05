@@ -1,6 +1,6 @@
 import { UPDATE_PRIORITY } from '../const';
 import { Ticker } from '../Ticker';
-import { TickerPlugin } from '~/app/TickerPlugin';
+import { TickerPlugin } from '~/app';
 
 describe('TickerPlugin', () =>
 {

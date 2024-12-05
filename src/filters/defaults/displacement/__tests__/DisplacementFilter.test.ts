@@ -1,6 +1,6 @@
 import { DisplacementFilter } from '../DisplacementFilter';
-import { Texture } from '~/rendering/renderers/shared/texture/Texture';
-import { Sprite } from '~/scene/sprite/Sprite';
+import { Texture } from '~/rendering';
+import { Sprite } from '~/scene';
 
 describe('DisplacementFilter', () =>
 {

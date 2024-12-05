@@ -1,7 +1,7 @@
 import { AccessibilitySystem } from '../AccessibilitySystem';
 import '../init';
 import { getWebGLRenderer } from '@test-utils';
-import { Container } from '~/scene/container/Container';
+import { Container } from '~/scene';
 
 describe('AccessibilitySystem', () =>
 {

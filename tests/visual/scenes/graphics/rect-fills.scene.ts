@@ -1,12 +1,11 @@
 import { basePath } from '@test-utils';
-import { Assets } from '~/assets/Assets';
-import { Matrix } from '~/maths/matrix/Matrix';
-import { FillGradient } from '~/scene/graphics/shared/fill/FillGradient';
-import { Graphics } from '~/scene/graphics/shared/Graphics';
+import { Assets } from '~/assets';
+import { Matrix } from '~/maths';
+import { FillGradient, Graphics } from '~/scene';
 
 import type { TestScene } from '../../types';
-import type { Texture } from '~/rendering/renderers/shared/texture/Texture';
-import type { Container } from '~/scene/container/Container';
+import type { Texture } from '~/rendering';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render rects with fills, strokes, gradients using textures',

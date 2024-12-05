@@ -1,9 +1,9 @@
-import { Assets } from '~/assets/Assets';
-import { AlphaFilter } from '~/filters/defaults/alpha/AlphaFilter';
-import { Sprite } from '~/scene/sprite/Sprite';
+import { Assets } from '~/assets';
+import { AlphaFilter } from '~/filters';
+import { Sprite } from '~/scene';
 
 import type { TestScene } from '../../types';
-import type { Container } from '~/scene/container/Container';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render sprite',

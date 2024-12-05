@@ -3,8 +3,8 @@ import path from 'path';
 import '~/environment-browser/browserAll';
 import { isCI } from '../utils/basePath';
 import { renderTest } from './tester';
-import { Assets } from '~/assets/Assets';
-import { TexturePool } from '~/rendering/renderers/shared/texture/TexturePool';
+import { Assets } from '~/assets';
+import { TexturePool } from '~/rendering';
 
 import type { RenderType, RenderTypeFlags } from './types';
 

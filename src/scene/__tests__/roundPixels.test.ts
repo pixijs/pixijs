@@ -7,10 +7,9 @@ import { TilingSprite } from '../sprite-tiling/TilingSprite';
 import { QuadGeometry } from '../sprite-tiling/utils/QuadGeometry';
 import { Text } from '../text/Text';
 import { HTMLText } from '../text-html/HTMLText';
-import { Application } from '~/app/Application';
-import { Rectangle } from '~/maths/shapes/Rectangle';
-import { WebGLRenderer } from '~/rendering/renderers/gl/WebGLRenderer';
-import { Texture } from '~/rendering/renderers/shared/texture/Texture';
+import { Application } from '~/app';
+import { Rectangle } from '~/maths';
+import { Texture, WebGLRenderer } from '~/rendering';
 
 import type { GlGraphicsAdaptor } from '../graphics/gl/GlGraphicsAdaptor';
 

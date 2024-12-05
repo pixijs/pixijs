@@ -1,6 +1,6 @@
 import { RenderTexture } from '../shared/texture/RenderTexture';
 import { getWebGLRenderer } from '@test-utils';
-import { Container } from '~/scene/container/Container';
+import { Container } from '~/scene';
 
 import type { WebGLRenderer } from '../gl/WebGLRenderer';
 

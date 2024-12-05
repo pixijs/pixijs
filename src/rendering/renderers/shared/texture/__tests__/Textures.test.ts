@@ -1,6 +1,6 @@
 import '~/rendering/init';
 import { Texture } from '../Texture';
-import { Cache } from '~/assets/cache/Cache';
+import { Cache } from '~/assets';
 
 describe('Texture', () =>
 {

@@ -1,5 +1,5 @@
 import { Container } from '../Container';
-import { Point } from '~/maths/point/Point';
+import { Point } from '~/maths';
 
 describe('toGlobal', () =>
 {
