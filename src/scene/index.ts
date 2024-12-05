@@ -127,7 +127,7 @@ export * from './text-bitmap/utils/resolveCharacters';
 export * from './text-html/HTMLText';
 export * from './text-html/HTMLTextPipe';
 export * from './text-html/HTMLTextRenderData';
-export * from './text-html/HtmlTextStyle';
+export * from './text-html/HTMLTextStyle';
 export * from './text-html/HTMLTextSystem';
 export * from './text-html/utils/extractFontFamilies';
 export * from './text-html/utils/getFontCss';
