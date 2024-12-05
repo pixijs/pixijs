@@ -125,7 +125,8 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
             collectAllRenderables(
                 maskContainer,
                 instructionSet,
-                renderer
+                renderer,
+                null
             );
 
             maskContainer.includeInBuild = false;

@@ -24,6 +24,7 @@ import type { PointData } from '../../maths/point/PointData';
 import type { Rectangle } from '../../maths/shapes/Rectangle';
 import type { BLEND_MODES } from '../../rendering/renderers/shared/state/const';
 import type { Dict } from '../../utils/types';
+import type { RenderLayer } from '../layers/RenderLayer';
 import type { Optional } from './container-mixins/measureMixin';
 import type { DestroyOptions } from './destroyTypes';
 
@@ -403,6 +404,21 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     /** @private */
     public isSimple = true;
 
+    /**
+     * Used internally to identify if this container is a RenderLayer
+     * @internal
+     * @readonly
+     * @ignore
+     */
+    public isRenderLayer = false;
+
+    /**
+     * The RenderLayer this container belongs to, if any.
+     * If it belongs to a RenderLayer, it will be rendered from the RenderLayer's position in the scene.
+     * @readonly
+     */
+    public parentRenderLayer: RenderLayer;
+
     // / /////////////Transform related props//////////////
 
     // used by the transform system to check if a container needs to be updated that frame
@@ -575,6 +591,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      */
     public _didViewChangeTick = 0;
 
+    public layerParentId: string;// = 'default';
     /**
      * We now use the _didContainerChangeTick and _didViewChangeTick to track changes
      * @deprecated since 8.2.6
@@ -727,6 +744,11 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             else if (this.parentRenderGroup)
             {
                 this.parentRenderGroup.removeChild(child);
+            }
+
+            if (child.parentRenderLayer)
+            {
+                child.parentRenderLayer.remove(child);
             }
 
             child.parent = null;
