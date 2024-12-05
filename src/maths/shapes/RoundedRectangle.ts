@@ -86,7 +86,7 @@ export class RoundedRectangle implements ShapePrimitive
      */
     public getBounds(out?: Rectangle): Rectangle
     {
-        out = out || new Rectangle();
+        out ||= new Rectangle();
 
         out.x = this.x;
         out.y = this.y;

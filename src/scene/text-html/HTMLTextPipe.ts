@@ -9,7 +9,7 @@ import type { RenderPipe } from '../../rendering/renderers/shared/instructions/R
 import type { Renderer } from '../../rendering/renderers/types';
 import type { Container } from '../container/Container';
 import type { HTMLText } from './HTMLText';
-import type { HTMLTextStyle } from './HtmlTextStyle';
+import type { HTMLTextStyle } from './HTMLTextStyle';
 
 export class HTMLTextPipe implements RenderPipe<HTMLText>
 {

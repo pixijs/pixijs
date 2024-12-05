@@ -18,6 +18,7 @@
         "project": "./tsconfig.json"
     },
     "rules": {
+        "operator-assignment": [1, "always"],
         "camelcase": [1, { "allow": ["^v\\d{1,}_\\d{1,}_\\d{1,}$"] }],
         "@typescript-eslint/triple-slash-reference": [1, { "path": "always" }],
         "@typescript-eslint/consistent-type-imports": [1, { "disallowTypeAnnotations": false }],
@@ -78,7 +79,7 @@
     },
     "overrides": [
         {
-            "files": ["*.tests.ts", "*.test.ts"],
+            "files": ["*.test.ts"],
             "plugins": ["jest"],
             "extends": ["plugin:jest/recommended"],
             "globals": {

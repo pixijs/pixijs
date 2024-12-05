@@ -27,8 +27,6 @@
     "ignoreDependencies": [
         // Not detected in webdoc.config.js
         "@pixi/webdoc-template",
-        // Used in tests
-        "electron",
         // Not detected in jest setup
         "http-server",
         // Used internaly as dependences like "node:*" or "worker:*"

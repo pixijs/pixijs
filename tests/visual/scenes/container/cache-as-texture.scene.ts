@@ -1,5 +1,5 @@
-import { Container } from '../../../../src/scene/container/Container';
-import { Text } from '../../../../src/scene/text/Text';
+import { Container } from '~/scene/container/Container';
+import { Text } from '~/scene/text/Text';
 
 import type { TestScene } from '../../types';
 
@@ -34,7 +34,17 @@ export const scene: TestScene = {
 
             container.addChild(text);
 
-            container.cacheAsTexture(true);
+            if (i === 0)
+            {
+                container.cacheAsTexture({
+                    antialias: true,
+                    resolution: 2
+                });
+            }
+            else
+            {
+                container.cacheAsTexture(true);
+            }
 
             last.addChild(container);
 

@@ -1,9 +1,9 @@
-import { Assets } from '../../../../src/assets/Assets';
-import { BitmapFont } from '../../../../src/scene/text-bitmap/BitmapFont';
-import { BitmapText } from '../../../../src/scene/text-bitmap/BitmapText';
+import { Assets } from '~/assets/Assets';
+import { BitmapFont } from '~/scene/text-bitmap/BitmapFont';
+import { BitmapText } from '~/scene/text-bitmap/BitmapText';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene/container/Container';
 
 export const scene: TestScene = {
     it: 'should render installed bitmap text correctly',

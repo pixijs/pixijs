@@ -134,7 +134,7 @@ export class GlTextureSystem implements System, CanvasGenerator
             this._boundTextures[location] = source;
             this._activateLocation(location);
 
-            source = source || Texture.EMPTY.source;
+            source ||= Texture.EMPTY.source;
 
             // bind texture and source!
             const glTexture = this.getGlSource(source);

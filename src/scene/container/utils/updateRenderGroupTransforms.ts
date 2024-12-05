@@ -105,7 +105,7 @@ export function updateTransformAndChildren(container: Container, updateTick: num
 
     if ((parent && !parent.renderGroup))
     {
-        updateFlags = updateFlags | container._updateFlags;
+        updateFlags |= container._updateFlags;
 
         container.relativeGroupTransform.appendFrom(
             localTransform,

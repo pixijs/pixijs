@@ -1,7 +1,8 @@
 {
     "$schema": "https://webdoc.nyc3.digitaloceanspaces.com/schemas/v1/webdoc.conf.schema.json",
     "source": {
-        "include": "./src/**/*.ts"
+        "include": "./src/**/*.ts",
+        "excludePattern": ["(node_modules|lib|tests|__tests__)"]
     },
     "plugins": ["@webdoc/plugin-markdown", "@webdoc/plugin-format"],
     "templates": {
