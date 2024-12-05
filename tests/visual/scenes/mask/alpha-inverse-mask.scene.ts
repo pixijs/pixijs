@@ -1,10 +1,9 @@
-import { Assets } from '~/assets/Assets';
-import { Color } from '~/color/Color';
-import { Graphics } from '~/scene/graphics/shared/Graphics';
-import { Sprite } from '~/scene/sprite/Sprite';
+import { Assets } from '~/assets';
+import { Color } from '~/color';
+import { Graphics, Sprite } from '~/scene';
 
 import type { TestScene } from '../../types';
-import type { Container } from '~/scene/container/Container';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render inverse alpha mask',

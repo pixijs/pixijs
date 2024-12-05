@@ -2,7 +2,7 @@ import '~/rendering/renderers/shared/texture/Texture';
 import { Container } from '../Container';
 import '../../text/init';
 import { getWebGLRenderer } from '@test-utils';
-import { Text } from '~/scene/text/Text';
+import { Text } from '~/scene';
 
 describe('RenderGroupSystem', () =>
 {

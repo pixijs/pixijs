@@ -1,9 +1,8 @@
-import { Text } from '~/scene/text/Text';
-import { TextStyle } from '~/scene/text/TextStyle';
+import { Text, TextStyle } from '~/scene';
 
 import type { TestScene } from '../../types';
-import type { Renderer } from '~/rendering/renderers/types';
-import type { Container } from '~/scene/container/Container';
+import type { Renderer } from '~/rendering';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render text correctly if style changes',

@@ -5,7 +5,7 @@ import { RenderTexture } from '../shared/texture/RenderTexture';
 import { CanvasSource } from '../shared/texture/sources/CanvasSource';
 import { Texture } from '../shared/texture/Texture';
 import { getWebGLRenderer } from '@test-utils';
-import { DOMAdapter } from '~/environment/adapter';
+import { DOMAdapter } from '~/environment';
 
 describe('isRenderingToScreen', () =>
 {

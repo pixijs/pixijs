@@ -4,8 +4,8 @@ import { FillPattern } from '../../graphics/shared/fill/FillPattern';
 import { GraphicsContext } from '../../graphics/shared/GraphicsContext';
 import { HTMLTextStyle } from '../../text-html/HTMLTextStyle';
 import { TextStyle } from '../TextStyle';
-import { Color } from '~/color/Color';
-import { Texture } from '~/rendering/renderers/shared/texture/Texture';
+import { Color } from '~/color';
+import { Texture } from '~/rendering';
 
 import type { TextStyleOptions } from '../TextStyle';
 

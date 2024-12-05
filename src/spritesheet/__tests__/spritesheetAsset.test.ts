@@ -1,15 +1,11 @@
 import { Spritesheet } from '../Spritesheet';
 import { spritesheetAsset } from '../spritesheetAsset';
 import { basePath } from '@test-utils';
-import { Cache } from '~/assets/cache/Cache';
-import { Loader } from '~/assets/loader/Loader';
-import { loadJson } from '~/assets/loader/parsers/loadJson';
-import { loadSvg } from '~/assets/loader/parsers/textures/loadSVG';
-import { loadTextures } from '~/assets/loader/parsers/textures/loadTextures';
-import { Texture } from '~/rendering/renderers/shared/texture/Texture';
+import { Cache, Loader, loadJson, loadSvg, loadTextures } from '~/assets';
+import { Texture } from '~/rendering';
 
 import type { SpriteSheetJson } from '../spritesheetAsset';
-import type { CacheParser } from '~/assets/cache/CacheParser';
+import type { CacheParser } from '~/assets';
 
 describe('spritesheetAsset', () =>
 {

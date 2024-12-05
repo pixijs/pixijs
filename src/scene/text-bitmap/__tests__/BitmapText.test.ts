@@ -5,10 +5,7 @@ import '../../text/init';
 import '../init';
 import '../../graphics/init';
 import { basePath, getWebGLRenderer } from '@test-utils';
-import { Cache } from '~/assets/cache/Cache';
-import { Loader } from '~/assets/loader/Loader';
-import { loadTxt } from '~/assets/loader/parsers/loadTxt';
-import { loadTextures } from '~/assets/loader/parsers/textures/loadTextures';
+import { Cache, Loader, loadTextures, loadTxt } from '~/assets';
 
 import type { BitmapFont } from '../BitmapFont';
 

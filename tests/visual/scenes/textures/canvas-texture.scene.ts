@@ -1,8 +1,8 @@
-import { Texture } from '~/rendering/renderers/shared/texture/Texture';
-import { Graphics } from '~/scene/graphics/shared/Graphics';
+import { Texture } from '~/rendering';
+import { Graphics } from '~/scene';
 
 import type { TestScene } from '../../types';
-import type { Container } from '~/scene/container/Container';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should not clear a canvas after it has been resized',

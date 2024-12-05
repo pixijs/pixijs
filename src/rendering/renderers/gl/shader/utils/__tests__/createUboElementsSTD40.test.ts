@@ -1,6 +1,6 @@
 import { createUboElementsSTD40 } from '../createUboElementsSTD40';
 
-import type { UNIFORM_TYPES, UniformData } from '~/rendering/renderers/shared/shader/types';
+import type { UNIFORM_TYPES, UniformData } from '~/rendering';
 
 describe('createUboElementsSTD40', () =>
 {

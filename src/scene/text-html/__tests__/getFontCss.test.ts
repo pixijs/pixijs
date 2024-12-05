@@ -1,7 +1,7 @@
 import { HTMLTextStyle } from '../HTMLTextStyle';
 import { getFontCss } from '../utils/getFontCss';
 import { basePath, getApp } from '@test-utils';
-import { Assets } from '~/assets/Assets';
+import { Assets } from '~/assets';
 
 describe('getFontCss', () =>
 {

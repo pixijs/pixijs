@@ -1,5 +1,5 @@
 import { Container } from '../Container';
-import { Matrix } from '~/maths/matrix/Matrix';
+import { Matrix } from '~/maths';
 
 describe('getGlobalTransform', () =>
 {

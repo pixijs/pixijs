@@ -3,11 +3,10 @@ import '~/scene/graphics/init';
 import { EventSystem } from '../EventSystem';
 import '../init';
 import { getApp, getWebGLRenderer } from '@test-utils';
-import { Rectangle } from '~/maths/shapes/Rectangle';
-import { Container } from '~/scene/container/Container';
-import { Graphics } from '~/scene/graphics/shared/Graphics';
+import { Rectangle } from '~/maths';
+import { Container, Graphics } from '~/scene';
 
-import type { RendererOptions } from '~/rendering/renderers/types';
+import type { RendererOptions } from '~/rendering';
 
 async function createRenderer(
     canvas?: HTMLCanvasElement,
