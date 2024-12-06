@@ -662,7 +662,7 @@ export const path: Path = {
             // We saw a non-dot character immediately before the dot
             || preDotState === 0
             // The (right-most) trimmed path component is exactly '..'
-            // eslint-disable-next-line no-mixed-operators, no-mixed-operators/no-mixed-operators
+            // eslint-disable-next-line no-mixed-operators/no-mixed-operators
             || preDotState === 1 && startDot === end - 1 && startDot === startPart + 1
         )
         {
@@ -751,7 +751,7 @@ export const path: Path = {
             // We saw a non-dot character immediately before the dot
             || preDotState === 0
             // The (right-most) trimmed path component is exactly '..'
-            // eslint-disable-next-line no-mixed-operators, no-mixed-operators/no-mixed-operators
+            // eslint-disable-next-line no-mixed-operators/no-mixed-operators
             || preDotState === 1 && startDot === end - 1 && startDot === startPart + 1
         )
         {

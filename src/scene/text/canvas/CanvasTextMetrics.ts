@@ -842,7 +842,7 @@ export class CanvasTextMetrics
 
                 canvas = DOMAdapter.get().createCanvas();
             }
-            catch (ex)
+            catch (_cx)
             {
                 canvas = DOMAdapter.get().createCanvas();
             }

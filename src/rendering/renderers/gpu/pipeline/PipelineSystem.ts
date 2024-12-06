@@ -179,7 +179,6 @@ export class PipelineSystem implements System
         topology ||= geometry.topology;
 
         // now we have set the Ids - the key is different...
-        // eslint-disable-next-line max-len
         const key = getGraphicsStateKey(
             geometry._layoutKey,
             program._layoutKey,

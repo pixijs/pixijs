@@ -38,7 +38,6 @@
  * @memberof extensions
  */
 enum ExtensionType
-// eslint-disable-next-line @typescript-eslint/indent
 {
     /** extensions that are registered as Application plugins */
     Application = 'application',

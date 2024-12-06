@@ -19,7 +19,7 @@ describe('Graphics Drawing', () =>
             const graphics = new Graphics();
 
             graphics.beginPath();
-            // eslint-disable-next-line prefer-spread
+
             graphics.arc.apply(graphics, data);
             graphics.fill().closePath();
 

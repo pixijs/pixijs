@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import { Container } from '../../container/Container';
 import { Sprite } from '../../sprite/Sprite';
 import { BitmapText } from '../../text-bitmap/BitmapText';

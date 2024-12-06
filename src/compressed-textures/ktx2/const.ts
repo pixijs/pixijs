@@ -1,7 +1,6 @@
 import type { TEXTURE_FORMATS } from '../../rendering/renderers/shared/texture/const';
 
 export enum GL_INTERNAL_FORMAT
-// eslint-disable-next-line @typescript-eslint/indent
 {
     RGBA8_SNORM = 0x8F97,
     RGBA = 0x1908,
@@ -71,7 +70,6 @@ export enum GL_INTERNAL_FORMAT
 }
 
 enum GL_FORMATS
-// eslint-disable-next-line @typescript-eslint/indent
 {
     RGBA = 6408,
     RGB = 6407,
@@ -89,7 +87,6 @@ enum GL_FORMATS
 }
 
 enum GL_TYPES
-// eslint-disable-next-line @typescript-eslint/indent
 {
     UNSIGNED_BYTE = 5121,
     UNSIGNED_SHORT = 5123,

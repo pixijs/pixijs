@@ -118,6 +118,7 @@ const messageHandlers = {
     },
     load: async (data: {url: string}) =>
     {
+        // eslint-disable-next-line no-useless-catch
         try
         {
             const textureOptions = await load(data.url) as TextureSourceOptions<Uint8Array[]>;

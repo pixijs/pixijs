@@ -31,7 +31,7 @@ export async function isWebGPUSupported(options: GPURequestAdapterOptions = {}):
 
             return true;
         }
-        catch (e)
+        catch (_e)
         {
             return false;
         }

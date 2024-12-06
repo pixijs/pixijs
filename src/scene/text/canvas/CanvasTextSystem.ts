@@ -85,7 +85,9 @@ export class CanvasTextSystem implements System
     {
         if (typeof options === 'string')
         {
+            // #if _DEBUG
             deprecation('8.0.0', 'CanvasTextSystem.getTexture: Use object TextOptions instead of separate arguments');
+            // #endif
 
             options = {
                 text: options,

@@ -288,8 +288,6 @@ describe('CanvasTextMetrics', () =>
             if (process.platform === 'win32')
             {
                 return;
-
-                return;
             }
 
             const style = Object.assign({}, defaultStyle, { breakWords: false, whiteSpace: 'normal' });
@@ -353,8 +351,6 @@ describe('CanvasTextMetrics', () =>
         {
             if (process.platform === 'win32')
             {
-                return;
-
                 return;
             }
 

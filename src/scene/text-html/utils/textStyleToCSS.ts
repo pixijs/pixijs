@@ -103,7 +103,6 @@ function tagStyleToCSS(tagStyles: Record<string, HTMLTextStyleOptions>, out: str
         {
             if (transform[j as keyof typeof transform])
             {
-                // eslint-disable-next-line max-len
                 cssTagStyle.push(transform[j as keyof typeof transform](tagStyle[j as keyof HTMLTextStyleOptions] as any));
             }
             else if (templates[j as keyof typeof templates])

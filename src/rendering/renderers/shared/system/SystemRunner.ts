@@ -54,12 +54,12 @@ export class SystemRunner
         this._name = name;
     }
 
-    /* eslint-disable jsdoc/require-param, jsdoc/check-param-names */
+    /* jsdoc/check-param-names */
     /**
      * Dispatch/Broadcast Runner to all listeners added to the queue.
      * @param {...any} params - (optional) parameters to pass to each listener
      */
-    /*  eslint-enable jsdoc/require-param, jsdoc/check-param-names */
+    /* jsdoc/check-param-names */
     public emit(a0?: unknown, a1?: unknown, a2?: unknown, a3?: unknown,
         a4?: unknown, a5?: unknown, a6?: unknown, a7?: unknown): this
     {

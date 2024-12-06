@@ -464,9 +464,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
         if (attributes && !attributes.stencil)
         {
             // #if _DEBUG
-            /* eslint-disable max-len, no-console */
             warn('Provided WebGL context does not have a stencil buffer, masks may not render correctly');
-            /* eslint-enable max-len, no-console */
             // #endif
         }
 
@@ -487,9 +485,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
         if (!supports.uint32Indices)
         {
             // #if _DEBUG
-            /* eslint-disable max-len, no-console */
             warn('Provided WebGL context does not support 32 index buffer, large scenes may not render correctly');
-            /* eslint-enable max-len, no-console */
             // #endif
         }
     }

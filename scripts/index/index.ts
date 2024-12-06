@@ -78,7 +78,6 @@ directories.forEach((directory) =>
     }
     else
     {
-        // eslint-disable-next-line no-console
         console.error(`ERROR: Invalid command. Use '--check' or '--write'.`);
         process.exit(1);
     }

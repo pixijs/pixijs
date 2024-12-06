@@ -1,4 +1,3 @@
-/* eslint-disable quote-props */
 import { uniformParsers } from './uniformParsers';
 
 import type { UboElement, UNIFORM_TYPES_SINGLE, UniformsSyncCallback } from '../types';

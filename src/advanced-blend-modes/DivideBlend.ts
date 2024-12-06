@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-
 import { ExtensionType } from '../extensions/Extensions';
 import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 

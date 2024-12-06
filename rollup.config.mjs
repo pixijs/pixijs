@@ -155,7 +155,7 @@ async function main()
     // this will package all dependencies
     if (bundles && !process.env.LIB_ONLY)
     {
-        bundles.forEach((bundle, i) =>
+        bundles.forEach((bundle) =>
         {
             const file = path.join(process.cwd(), bundle.target);
             const moduleFile = bundle.module ? path.join(process.cwd(), bundle.module) : '';

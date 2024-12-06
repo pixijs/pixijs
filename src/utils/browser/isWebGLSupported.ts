@@ -51,7 +51,7 @@ export function isWebGLSupported(
 
             return success;
         }
-        catch (e)
+        catch (_e)
         {
             return false;
         }

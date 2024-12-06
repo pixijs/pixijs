@@ -34,7 +34,6 @@ export interface MeshAdaptor
     destroy(): void;
 }
 
-// eslint-disable-next-line max-len
 export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
 {
     /** @ignore */

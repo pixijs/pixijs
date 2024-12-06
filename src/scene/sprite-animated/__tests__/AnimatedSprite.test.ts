@@ -146,7 +146,6 @@ describe('AnimatedSprite', () =>
             sprite = null;
         });
 
-        // eslint-disable-next-line func-names
         it('should fire onComplete', () =>
             new Promise<void>((done) =>
             {

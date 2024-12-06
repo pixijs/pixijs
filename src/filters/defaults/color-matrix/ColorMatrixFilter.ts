@@ -343,7 +343,7 @@ export class ColorMatrixFilter extends Filter
     }
 
     /** Desaturate image (remove color) Call the saturate function */
-    public desaturate(): void // eslint-disable-line no-unused-vars
+    public desaturate(): void
     {
         this.saturate(-1);
     }

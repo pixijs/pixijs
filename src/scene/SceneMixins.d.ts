@@ -13,7 +13,7 @@ declare global
 {
     namespace PixiMixins
     {
-        // eslint-disable-next-line @typescript-eslint/no-empty-interface
+
         interface Container<C extends ContainerChild = ContainerChild>
             extends ChildrenHelperMixin<C>,
             ToLocalGlobalMixin,
@@ -25,7 +25,6 @@ declare global
             GetGlobalMixin,
             CacheAsTextureMixin {}
 
-        // eslint-disable-next-line @typescript-eslint/no-empty-interface
         interface ContainerOptions
             extends OnRenderMixinConstructor,
             MeasureMixinConstructor,

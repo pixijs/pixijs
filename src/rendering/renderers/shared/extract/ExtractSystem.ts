@@ -168,7 +168,6 @@ export class ExtractSystem implements System
         {
             return new Promise<string>((resolve, reject) =>
             {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 canvas.toBlob!((blob) =>
                 {
                     if (!blob)

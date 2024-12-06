@@ -13,7 +13,7 @@ const scenes = paths.map((p) =>
 {
     const relativePath = path.relative('visual/', p);
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
+    // eslint-disable-next-line global-require , @typescript-eslint/no-require-imports
     return { path: p, data: require(`./${relativePath}`).scene };
 });
 
@@ -64,7 +64,6 @@ describe('Visual Tests', () =>
             ...scene.data.renderers
         };
 
-        // eslint-disable-next-line no-loop-func
         Object.keys(renderers).forEach((renderer) =>
         {
             if (!renderers[renderer])

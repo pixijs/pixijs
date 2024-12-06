@@ -361,7 +361,6 @@ export class FilterSystem implements System
         // get a BufferResource from the uniformBatch.
         // this will batch the shader uniform data and give us a buffer resource we can
         // set on our globalUniform Bind Group
-        // eslint-disable-next-line max-len
 
         // update the resources on the bind group...
         this._globalFilterBindGroup.setResource(inputTexture.source.style, 2);

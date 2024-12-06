@@ -5,12 +5,14 @@ declare global
 {
     namespace PixiMixins
     {
-        // eslint-disable-next-line @typescript-eslint/no-empty-interface
+
+        // eslint-disable-next-line @typescript-eslint/no-empty-object-type
         interface Container extends IFederatedContainer {}
-        // eslint-disable-next-line @typescript-eslint/no-empty-interface
+
+        // eslint-disable-next-line @typescript-eslint/no-empty-object-type
         interface ContainerOptions extends FederatedOptions {}
 
-        // eslint-disable-next-line @typescript-eslint/no-empty-interface
+        // eslint-disable-next-line @typescript-eslint/no-empty-object-type
         interface ContainerEvents extends FederatedEventEmitterTypes {}
 
         interface RendererOptions

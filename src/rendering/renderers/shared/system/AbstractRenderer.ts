@@ -80,7 +80,6 @@ const defaultRunners = [
 
 type DefaultRunners = typeof defaultRunners[number];
 type Runners = {[key in DefaultRunners]: SystemRunner} & {
-    // eslint-disable-next-line @typescript-eslint/ban-types
     [K: ({} & string) | ({} & symbol)]: SystemRunner;
 };
 
@@ -270,7 +269,6 @@ export class AbstractRenderer<
             if (deprecated)
             {
                 // #if _DEBUG
-                // eslint-disable-next-line max-len
                 deprecation(v8_0_0, 'passing a second argument is deprecated, please use render options instead');
                 // #endif
 
