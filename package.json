@@ -70,7 +70,7 @@
     "parse-svg-path": "^0.1.2"
   },
   "devDependencies": {
-    "@pixi/eslint-config": "github:pixijs/eslint-config#feat/elint-v9",
+    "@pixi/eslint-config": "^6.0.0",
     "@pixi/jest-electron": "^26.1.0",
     "@pixi/webdoc-template": "^2.2.3",
     "@pixi/webworker-plugins": "^0.3.0",
