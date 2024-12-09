@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://pixijs.com" target="_blank" rel="noopener noreferrer">
-    <img width="250" src="https://files.pixijs.download/branding/pixijs-logo-transparent-dark.svg?v=1" alt="PixiJS logo">
+    <img height="150" src="https://files.pixijs.download/branding/pixijs-logo-transparent-dark.svg?v=1" alt="PixiJS logo">
   </a>
 </p>
 <br/>
@@ -10,37 +10,29 @@
   <a href="https://opencollective.com/pixijs/tiers/badge.svg"><img src="https://opencollective.com/pixijs/tiers/badge.svg" alt="Start new PR in StackBlitz Codeflow"></a>
   <a href="https://discord.gg/QrnxmQUPGV"><img src="https://img.shields.io/badge/chat-discord-blue?style=flat&logo=discord" alt="discord chat"></a>
 </p>
-<div align="center">
-  <a href="https://opencollective.com/pixijs" target="_blank">
-    <img src="https://opencollective.com/pixijs/donate/button@2x.png?color=blue" width=200 />
-  </a>
-</div>
-<br/>
-<h1 align="center">PixiJS — The HTML5 Creation Engine</h1>
-
 <p align="center">
- <a href="https://pixijs.download/release/docs/index.html">Documentation</a> | <a href="https://pixijs.com/8.x/guides">Getting Started</a> | <a href="https://pixijs.com/8.x/examples">Examples</a>
+ <a href="https://pixijs.com/8.x/examples">Examples</a> | <a href="https://pixijs.com/8.x/guides">Getting Started</a> | <a href="https://pixijs.download/release/docs/index.html">Documentation</a>  | <a href="https://discord.gg/QrnxmQUPGV">Discord</a>
 </p>
 
-PixiJS is a fast, lightweight 2D library that works
-across all devices allowing you to create rich, interactive graphics and cross-platform applications using WebGL and WebGPU.
+# PixiJS 🖼️
+> The Fastest HTML5 Creation Engine for the Web
 
-### Features
+- 🚀 [WebGL](https://en.wikipedia.org/wiki/WebGL) & [WebGPU](https://en.wikipedia.org/wiki/WebGPU) Renderers
+- ⚡️ Unmatched Performance & Speed
+- 🎨 Easy to use, yet powerful API
+- 📦 Asset Loader
+- ✋ Full Mouse & Multi-touch Support
+- ✍️ Flexible Text Rendering
+- 📐 Versatile Primitive and SVG Drawing
+- 🖼️ Dynamic Textures
+- 🎭 Masking
+- 🪄 Powerful Filters
+- 🌈 Advanced Blend Modes
 
-- [WebGL](https://en.wikipedia.org/wiki/WebGL) & [WebGPU](https://en.wikipedia.org/wiki/WebGPU) renderers
-- Super easy to use API (similar to the flash display list API)
-- Asset loader
-- Full Mouse and Multi-touch Interaction
-- Multiple Text rendering options
-    - Canvas Text
-    - BitmapFont Text
-    - HTML Text
-- Render Textures
-- Primitive Drawing: Lines, Circles, Rectangles, Ellipses, and Polygons
-- Masking
-- Filters
+PixiJS is the fastest, most lightweight 2D library available for the web, working
+across all devices and allowing you to create rich, interactive graphics and cross-platform applications using WebGL and WebGPU.
 
-### Setup ###
+### Setup
 
 It's easy to get started with PixiJS! Just use our [PixiJS Create](pixijs.io/create-pixi/) CLI and get set up in just one command:
 
@@ -48,34 +40,17 @@ It's easy to get started with PixiJS! Just use our [PixiJS Create](pixijs.io/cre
   <img width="500" style="border-radius: 10px; filter: drop-shadow(0px 2px 5px #000);;" alt="Screenshot from terminal" src="https://pixijs.io/create-pixi/img/demo.gif">
 </p>
 
-```sh
+```
 npm create pixi.js@latest
 ```
+or to add it to an existing project:
 
-### Setup For Existing Projects
-#### NPM Install
-
-```sh
+```
 npm install pixi.js
 ```
 
-#### CDN Install
-
-Via jsDelivr:
-
-```html
-<script src="https://cdn.jsdelivr.net/npm/pixi.js@8.x/dist/pixi.min.js"></script>
-```
-
-Or via unpkg:
-
-```html
-<script src="https://unpkg.com/pixi.js@8.x/dist/pixi.min.js"></script>
-```
-
-### Basic Usage Example ###
-
-```js
+### Usage
+```typescript
 import { Application, Assets, Sprite } from 'pixi.js';
 
 (async () =>
@@ -114,8 +89,7 @@ import { Application, Assets, Sprite } from 'pixi.js';
     });
 })();
 ```
-
-### Contribute ###
+### Contribute
 
 Want to be part of the PixiJS project? Great! All are welcome! We will get there quicker
 together :) Whether you find a bug, have a great feature request, or you fancy owning a task
@@ -124,6 +98,17 @@ from the road map above, feel free to get in touch.
 Make sure to read the [Contributing Guide](.github/CONTRIBUTING.md)
 before submitting changes.
 
-### License ###
+### License
 
 This content is released under the [MIT License](http://opensource.org/licenses/MIT).
+
+### Change Log
+[Releases](https://github.com/pixijs/pixijs/releases)
+
+### Support
+We're passionate about making PixiJS the best graphics library possible. Our dedication comes from our love for the project and community. If you'd like to support our efforts, please consider contributing to our open collective.
+<div>
+  <a href="https://opencollective.com/pixijs" target="_blank">
+    <img src="https://opencollective.com/pixijs/donate/button@2x.png?color=blue" width=200 />
+  </a>
+</div>
