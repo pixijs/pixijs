@@ -106,7 +106,7 @@ export class GlStateSystem implements System
 
         this.blendModesMap = mapWebGLBlendModesToPixi(gl);
 
-        this.reset();
+        this.resetState();
     }
 
     /**
@@ -279,7 +279,7 @@ export class GlStateSystem implements System
 
     // used
     /** Resets all the logic and disables the VAOs. */
-    public reset(): void
+    public resetState(): void
     {
         this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, false);
 
