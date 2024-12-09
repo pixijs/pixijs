@@ -12,13 +12,12 @@
 </p>
 <div align="center">
   <a href="https://opencollective.com/pixijs" target="_blank">
-    <img src="https://opencollective.com/pixijs/donate/button@2x.png?color=blue" width=175 />
+    <img src="https://opencollective.com/pixijs/donate/button@2x.png?color=blue" width=200 />
   </a>
 </div>
 <br/>
+<h1 align="center">PixiJS — The HTML5 Creation Engine</h1>
 
-PixiJS — The HTML5 Creation Engine
-=============
 <p align="center">
  <a href="https://pixijs.download/release/docs/index.html">Documentation</a> | <a href="https://pixijs.com/8.x/guides">Getting Started</a> | <a href="https://pixijs.com/8.x/examples">Examples</a>
 </p>
