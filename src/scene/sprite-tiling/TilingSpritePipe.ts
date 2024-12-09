@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
 import { ExtensionType } from '../../extensions/Extensions';
 import { getAdjustedBlendModeBlend } from '../../rendering/renderers/shared/state/getAdjustedBlendModeBlend';
 import { State } from '../../rendering/renderers/shared/state/State';
@@ -65,11 +64,10 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
         {
             const { batchableMesh } = tilingSpriteData;
 
-            // we are batching.. check a texture change!
-            if (batchableMesh && batchableMesh.texture._source !== renderable.texture._source)
-            {
-                return !batchableMesh._batcher.checkAndUpdateTexture(batchableMesh, renderable.texture);
-            }
+            return !batchableMesh._batcher.checkAndUpdateTexture(
+                batchableMesh,
+                renderable.texture
+            );
         }
 
         return (couldBatch !== canBatch);

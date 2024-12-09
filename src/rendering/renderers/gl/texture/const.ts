@@ -18,7 +18,6 @@
  * @property {number} [DEPTH_STENCIL=34041] -
  */
 export enum GL_FORMATS
-// eslint-disable-next-line @typescript-eslint/indent
 {
     RGBA = 6408,
     RGB = 6407,
@@ -51,8 +50,7 @@ export enum GL_FORMATS
  * @property {number} [TEXTURE_CUBE_MAP_NEGATIVE_Z=34074] -
  */
 export enum GL_TARGETS
-    // eslint-disable-next-line @typescript-eslint/indent
- {
+{
     TEXTURE_2D = 3553,
     TEXTURE_CUBE_MAP = 34067,
     TEXTURE_2D_ARRAY = 35866,
@@ -81,15 +79,13 @@ export enum GL_TARGETS
  * @property {number} MIRRORED_REPEAT - The texture uvs tile and repeat with mirroring
  */
 export enum GL_WRAP_MODES
-    // eslint-disable-next-line @typescript-eslint/indent
- {
+{
     CLAMP = 33071,
     REPEAT = 10497,
     MIRRORED_REPEAT = 33648,
 }
 
 export enum GL_TYPES
-// eslint-disable-next-line @typescript-eslint/indent
 {
     /**
      * 8 bits per channel for gl.RGBA

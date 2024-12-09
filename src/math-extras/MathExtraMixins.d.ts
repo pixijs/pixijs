@@ -3,12 +3,13 @@ declare global
 {
     namespace PixiMixins
     {
-        // eslint-disable-next-line @typescript-eslint/no-empty-interface
+
+        // eslint-disable-next-line @typescript-eslint/no-empty-object-type
         interface Point extends Vector2Math
         {
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-empty-interface
+        // eslint-disable-next-line @typescript-eslint/no-empty-object-type
         interface ObservablePoint extends Vector2Math
         {
         }

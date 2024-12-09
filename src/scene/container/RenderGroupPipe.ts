@@ -108,6 +108,8 @@ export class RenderGroupPipe implements InstructionPipe<RenderGroup>
 
             executeInstructions(renderGroup, this._renderer.renderPipes);
 
+            this._renderer.renderTarget.finishRenderPass();
+
             this._renderer.renderTarget.pop();
             this._renderer.globalUniforms.pop();
         }

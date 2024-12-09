@@ -2,7 +2,7 @@ import { Color } from '../../../color/Color';
 
 import type { ConvertedStrokeStyle } from '../../graphics/shared/FillTypes';
 import type { TextStyle } from '../../text/TextStyle';
-import type { HTMLTextStyle, HTMLTextStyleOptions } from '../HtmlTextStyle';
+import type { HTMLTextStyle, HTMLTextStyleOptions } from '../HTMLTextStyle';
 
 /**
  * Internally converts all of the style properties into CSS equivalents.
@@ -103,7 +103,6 @@ function tagStyleToCSS(tagStyles: Record<string, HTMLTextStyleOptions>, out: str
         {
             if (transform[j as keyof typeof transform])
             {
-                // eslint-disable-next-line max-len
                 cssTagStyle.push(transform[j as keyof typeof transform](tagStyle[j as keyof HTMLTextStyleOptions] as any));
             }
             else if (templates[j as keyof typeof templates])

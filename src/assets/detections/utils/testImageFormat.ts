@@ -29,7 +29,7 @@ export async function testImageFormat(imageData: string): Promise<boolean>
 
             await createImageBitmap(blob);
         }
-        catch (e)
+        catch (_e)
         {
             return false;
         }

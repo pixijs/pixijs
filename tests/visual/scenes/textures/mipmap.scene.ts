@@ -1,10 +1,9 @@
-/* eslint-disable max-len */
-import { Assets } from '../../../../src/assets/Assets';
-import { Sprite } from '../../../../src/scene/sprite/Sprite';
+import { Assets } from '~/assets';
+import { Sprite } from '~/scene';
 
-import type { Texture } from '../../../../src/rendering/renderers/shared/texture/Texture';
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Texture } from '~/rendering';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render mipmapped texture',

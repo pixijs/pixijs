@@ -1,9 +1,9 @@
-import { Assets } from '../../../../src/assets/Assets';
-import { TilingSprite } from '../../../../src/scene/sprite-tiling/TilingSprite';
-import { basePath } from '../../../assets/basePath';
+import { basePath } from '@test-utils';
+import { Assets } from '~/assets';
+import { TilingSprite } from '~/scene';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render tiling sprite',

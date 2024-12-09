@@ -1,10 +1,9 @@
-import { Assets } from '../../../../src/assets/Assets';
-import { MeshPlane } from '../../../../src/scene/mesh-plane/MeshPlane';
-import { MeshRope } from '../../../../src/scene/mesh-simple/MeshRope';
+import { Assets } from '~/assets';
+import { MeshPlane, MeshRope } from '~/scene';
 
-import type { Container } from '../../../../src/scene/container/Container';
-import type { Spritesheet } from '../../../../src/spritesheet/Spritesheet';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene';
+import type { Spritesheet } from '~/spritesheet';
 
 export const scene: TestScene = {
     it: 'should render meshes from sprite sheets',

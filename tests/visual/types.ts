@@ -1,5 +1,5 @@
-import type { Renderer, RendererOptions } from '../../src/rendering/renderers/types';
-import type { Container } from '../../src/scene/container/Container';
+import type { Renderer, RendererOptions } from '~/rendering';
+import type { Container } from '~/scene';
 
 export type RenderType = 'webgl1' | 'webgl2' | 'webgpu';
 export type RenderTypeFlags = Record<RenderType, boolean>;
