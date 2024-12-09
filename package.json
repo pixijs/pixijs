@@ -34,7 +34,7 @@
     "prewatch": "npm run build",
     "watch": "nodemon --watch \"./src/*\" --exec \"npm run watch:build\" -e ts,js,vert,frag,wgsl,d.ts --ignore \"index.ts\"",
     "watch:lib": "cross-env LIB_ONLY=1 nodemon --watch \"./src/*\" --exec \"npm run watch:build\" -e ts,js,vert,frag,wgsl,d.ts --ignore \"index.ts\"",
-    "watch:build": "run-s build:rollup build:tsc build:dts postbuild",
+    "watch:build": "run-s build:rollup build:tsc build:dts",
     "test": "run-s test:unit test:scene",
     "test:unit": "npx jest --silent --testPathIgnorePatterns=tests/visual",
     "test:debug": "cross-env DEBUG_MODE=1 npx jest --testPathIgnorePatterns=tests/visual",
