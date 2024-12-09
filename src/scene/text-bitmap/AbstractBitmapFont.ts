@@ -178,7 +178,6 @@ export abstract class AbstractBitmapFont<FontType>
     public get distanceFieldType(): NonNullable<BitmapFontData['distanceField']>['type']
     {
         // #if _DEBUG
-        // eslint-disable-next-line max-len
         deprecation(v8_0_0, 'BitmapFont.distanceFieldType is deprecated, please use BitmapFont.distanceField.type instead.');
         // #endif
 

@@ -2,6 +2,7 @@
 // Jest supports TypeScript snapshot resolver since 27.0.0 (See https://github.com/facebook/jest/pull/8829),
 // but unfortunately our Jest version is locked to 26 due to the limitation of jest-electron.
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { basename, dirname, join } = require('path');
 
 module.exports = {

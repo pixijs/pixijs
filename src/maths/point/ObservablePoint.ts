@@ -1,7 +1,7 @@
 import type { PointData } from './PointData';
 import type { PointLike } from './PointLike';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ObservablePoint extends PixiMixins.ObservablePoint { }
 
 /**

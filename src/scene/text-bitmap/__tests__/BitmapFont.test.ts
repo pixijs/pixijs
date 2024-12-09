@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { TextStyle } from '../../text/TextStyle';
 import { BitmapFont } from '../BitmapFont';
 import { BitmapFontManager } from '../BitmapFontManager';
