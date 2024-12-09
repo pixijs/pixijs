@@ -15,7 +15,7 @@
 </p>
 
 # PixiJS 🖼️
-> The Fastest HTML5 Creation Engine for the Web
+> Next-Generation, Fastest HTML5 Creation Engine for the Web
 
 - 🚀 [WebGL](https://en.wikipedia.org/wiki/WebGL) & [WebGPU](https://en.wikipedia.org/wiki/WebGPU) Renderers
 - ⚡️ Unmatched Performance & Speed
