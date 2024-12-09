@@ -7,7 +7,7 @@ import config from '@pixi/eslint-config';
 export default tseslint.config(
     ...config,
     {
-        ignores: ['/docs/**', '/dist/**', '/lib/**', 'transcoders', 'node_modules', 'src/*/**/index.ts'],
+        ignores: ['.s3_uploads', 'out', 'docs', 'dist', 'lib', 'transcoders', 'node_modules', 'src/*/**/index.ts'],
     },
     {
         files: ['**/*'],
