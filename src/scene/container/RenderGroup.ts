@@ -52,6 +52,7 @@ export class RenderGroup implements Instruction
     // these updates are transform changes..
     public readonly childrenToUpdate: Record<number, { list: Container[]; index: number; }> = Object.create(null);
     public updateTick = 0;
+    public gcTick = 0;
 
     // these update are renderable changes..
     public readonly childrenRenderablesToUpdate: { list: Container[]; index: number; } = { list: [], index: 0 };

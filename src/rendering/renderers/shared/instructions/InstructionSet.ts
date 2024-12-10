@@ -3,8 +3,6 @@ import { uid } from '../../../../utils/data/uid';
 import type { Renderable } from '../Renderable';
 import type { Instruction } from './Instruction';
 
-let _tick = 0;
-
 /**
  * A set of instructions that can be executed by the renderer.
  * Basically wraps an array, but with some extra properties that help the renderer
@@ -27,13 +25,13 @@ export class InstructionSet
     public renderPipes: any;
 
     public renderables: Renderable[] = [];
-    public tick = 0;
+    /** used by the garbage collector to track when the instruction set was last used */
+    public gcTick = 0;
 
     /** reset the instruction set so it can be reused set size back to 0 */
     public reset()
     {
         this.instructionSize = 0;
-        this.tick = _tick++;
     }
 
     /**
