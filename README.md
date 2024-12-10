@@ -14,7 +14,7 @@
  <a href="https://pixijs.com/8.x/examples">Examples</a> | <a href="https://pixijs.com/8.x/guides">Getting Started</a> | <a href="https://pixijs.download/release/docs/index.html">Documentation</a>  | <a href="https://discord.gg/QrnxmQUPGV">Discord</a>
 </p>
 
-# PixiJS 🖼️
+# PixiJS ⚡️
 > Next-Generation, Fastest HTML5 Creation Engine for the Web
 
 - 🚀 [WebGL](https://en.wikipedia.org/wiki/WebGL) & [WebGPU](https://en.wikipedia.org/wiki/WebGPU) Renderers
