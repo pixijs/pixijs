@@ -79,19 +79,20 @@ export class Circle implements ShapePrimitive
      * @param x - The X coordinate of the point to test
      * @param y - The Y coordinate of the point to test
      * @param width - The width of the line to check
+     * @param alignment - The alignment of the stroke, 0.5 by default
      * @returns Whether the x/y coordinates are within this Circle
      */
-    public strokeContains(x: number, y: number, width: number): boolean
+    public strokeContains(x: number, y: number, width: number, alignment: number = 0.5): boolean
     {
         if (this.radius === 0) return false;
 
         const dx = (this.x - x);
         const dy = (this.y - y);
-        const r = this.radius;
-        const w2 = width / 2;
+        const radius = this.radius;
+        const outerWidth = (1 - alignment) * width;
         const distance = Math.sqrt((dx * dx) + (dy * dy));
 
-        return (distance < r + w2 && distance > r - w2);
+        return (distance <= radius + outerWidth && distance > radius - (width - outerWidth));
     }
 
     /**

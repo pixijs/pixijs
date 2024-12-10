@@ -345,7 +345,7 @@ export class ShapePath
 
         for (let i = 0; i < sides; i++)
         {
-            const angle = (i * delta) + startAngle;
+            const angle = startAngle - (i * delta);
 
             polygon.push(
                 x + (radius * Math.cos(angle)),
