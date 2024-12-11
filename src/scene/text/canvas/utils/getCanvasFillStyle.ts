@@ -65,63 +65,69 @@ export function getCanvasFillStyle(
     {
         const fillGradient = fillStyle.fill;
 
-        if (fillGradient.type === 'linear' && textMetrics)
+        const { x0, y0, x1, y1 } = fillGradient;
+        const isLinear = fillGradient.type === 'linear';
+        const isLocal = fillGradient.textureSpace === 'local';
+
+        let width = 1;
+        let height = 1;
+
+        // Use text dimensions if in local space
+        if (isLocal && textMetrics)
         {
-            let width = 1;
-            let height = 1;
+            width = textMetrics.width + padding;
+            height = textMetrics.height + padding;
+        }
 
-            // Use text dimensions if in local space
-            if (fillGradient.textureSpace === 'local')
+        const gradient = isLinear ? context.createLinearGradient(
+            x0 * width,
+            y0 * height,
+            x1 * width,
+            y1 * height
+        ) : context.createRadialGradient(
+            x0 * width,
+            y0 * height,
+            fillGradient.r0 * width,
+            x1 * width,
+            y1 * height,
+            fillGradient.r1 * width
+        );
+
+        // Check if gradient is nearly vertical (10% threshold)
+        const isNearlyVertical = Math.abs(x1 - x0) < Math.abs((y1 - y0) * 0.1);
+
+        // For vertical gradients in local space, repeat gradient per text line
+        if (isLinear && isNearlyVertical && isLocal && textMetrics)
+        {
+            const ratio = (textMetrics.lineHeight) / height;
+
+            for (let i = 0; i < textMetrics.lines.length; i++)
             {
-                width = textMetrics.width + padding;
-                height = textMetrics.height + padding;
-            }
+                const start = ((i * textMetrics.lineHeight) + (padding / 2)) / height;
 
-            const { x0, y0, x1, y1 } = fillGradient;
-
-            const gradient = context.createLinearGradient(
-                x0 * width,
-                y0 * height,
-                x1 * width,
-                y1 * height
-            );
-
-            // Check if gradient is nearly vertical (10% threshold)
-            const isNearlyVertical = Math.abs(x1 - x0) < Math.abs((y1 - y0) * 0.1);
-
-            // For vertical gradients in local space, repeat gradient per text line
-            if (isNearlyVertical && fillGradient.textureSpace === 'local')
-            {
-                const ratio = (textMetrics.lineHeight) / height;
-
-                for (let i = 0; i < textMetrics.lines.length; i++)
-                {
-                    const start = ((i * textMetrics.lineHeight) + (padding / 2)) / height;
-
-                    fillGradient.colorStops.forEach((stop) =>
-                    {
-                        // Convert to global space
-                        const globalStop = start + (stop.offset * ratio);
-
-                        gradient.addColorStop(
-                            // fix to 5 decimal places to avoid floating point precision issues
-                            Math.floor(globalStop * PRECISION) / PRECISION,
-                            Color.shared.setValue(stop.color).toHex()
-                        );
-                    });
-                }
-            }
-            else
-            {
-                // Standard global space gradient handling
                 fillGradient.colorStops.forEach((stop) =>
                 {
-                    gradient.addColorStop(stop.offset, Color.shared.setValue(stop.color).toHex());
+                    // Convert to global space
+                    const globalStop = start + (stop.offset * ratio);
+
+                    gradient.addColorStop(
+                        // fix to 5 decimal places to avoid floating point precision issues
+                        Math.floor(globalStop * PRECISION) / PRECISION,
+                        Color.shared.setValue(stop.color).toHex()
+                    );
                 });
             }
-
-            return gradient;
         }
+        else
+        {
+            // Standard global space gradient handling
+            fillGradient.colorStops.forEach((stop) =>
+            {
+                gradient.addColorStop(stop.offset, Color.shared.setValue(stop.color).toHex());
+            });
+        }
+
+        return gradient;
     }
 
     // #if _DEBUG
