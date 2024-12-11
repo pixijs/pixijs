@@ -1,11 +1,9 @@
-import { OverlayBlend } from '../../../../src/advanced-blend-modes/OverlayBlend';
-import { Container } from '../../../../src/scene/container/Container';
-import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
-import { Sprite } from '../../../../src/scene/sprite/Sprite';
-import '../../../../src/advanced-blend-modes/init';
+import '~/advanced-blend-modes/init';
+import { OverlayBlend } from '~/advanced-blend-modes';
+import { Container, Graphics, Sprite } from '~/scene';
 
-import type { Renderer } from '../../../../src/rendering/renderers/types';
 import type { TestScene } from '../../types';
+import type { Renderer } from '~/rendering';
 
 export const scene: TestScene = {
     it: 'should have correct alpha when blending on a transparent texture',

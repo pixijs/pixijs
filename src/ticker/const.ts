@@ -7,7 +7,6 @@
  * @memberof ticker
  */
 export enum UPDATE_PRIORITY
-// eslint-disable-next-line @typescript-eslint/indent
 {
     /**
      * Highest priority used for interaction events in {@link EventSystem}

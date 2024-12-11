@@ -34,7 +34,6 @@ export interface MeshAdaptor
     destroy(): void;
 }
 
-// eslint-disable-next-line max-len
 export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
 {
     /** @ignore */
@@ -105,15 +104,10 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
 
             const batchableMesh = this._getBatchableMesh(mesh);
 
-            const texture = mesh.texture;
-
-            if (batchableMesh.texture._source !== texture._source)
-            {
-                if (batchableMesh.texture._source !== texture._source)
-                {
-                    return !batchableMesh._batcher.checkAndUpdateTexture(batchableMesh, texture);
-                }
-            }
+            return !batchableMesh._batcher.checkAndUpdateTexture(
+                batchableMesh,
+                mesh.texture
+            );
         }
 
         return false;

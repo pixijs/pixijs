@@ -1,9 +1,7 @@
-import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
-import { Text } from '../../../../src/scene/text/Text';
-import { TextStyle } from '../../../../src/scene/text/TextStyle';
+import { Graphics, Text, TextStyle } from '~/scene';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render text with baseline correctly',

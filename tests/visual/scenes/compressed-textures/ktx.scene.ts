@@ -1,9 +1,9 @@
-import { Assets } from '../../../../src/assets/Assets';
-import { Sprite } from '../../../../src/scene/sprite/Sprite';
-import '../../../../src/compressed-textures/ktx/init';
+import '~/compressed-textures/ktx/init';
+import { Assets } from '~/assets';
+import { Sprite } from '~/scene';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should load a ktx texture',

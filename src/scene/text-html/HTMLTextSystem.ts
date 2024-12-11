@@ -7,7 +7,7 @@ import { warn } from '../../utils/logging/warn';
 import { BigPool } from '../../utils/pool/PoolGroup';
 import { getPo2TextureFromSource } from '../text/utils/getPo2TextureFromSource';
 import { HTMLTextRenderData } from './HTMLTextRenderData';
-import { HTMLTextStyle } from './HtmlTextStyle';
+import { HTMLTextStyle } from './HTMLTextStyle';
 import { extractFontFamilies } from './utils/extractFontFamilies';
 import { getFontCss } from './utils/getFontCss';
 import { getSVGUrl } from './utils/getSVGUrl';

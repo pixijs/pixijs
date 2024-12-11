@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/indent */
 /**
  * Various blend modes supported by Pixi
  * @memberof filters

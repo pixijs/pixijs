@@ -1,7 +1,7 @@
 import { HTMLTextRenderData } from '../HTMLTextRenderData';
 
 import type { Size } from '../../../maths/misc/Size';
-import type { HTMLTextStyle } from '../HtmlTextStyle';
+import type { HTMLTextStyle } from '../HTMLTextStyle';
 
 let tempHTMLTextRenderData: HTMLTextRenderData;
 
@@ -21,7 +21,7 @@ export function measureHtmlText(
     htmlTextRenderData?: HTMLTextRenderData
 ): Size
 {
-    htmlTextRenderData = htmlTextRenderData || tempHTMLTextRenderData || (tempHTMLTextRenderData = new HTMLTextRenderData());
+    htmlTextRenderData ||= tempHTMLTextRenderData || (tempHTMLTextRenderData = new HTMLTextRenderData());
 
     const { domElement, styleElement, svgRoot } = htmlTextRenderData;
 

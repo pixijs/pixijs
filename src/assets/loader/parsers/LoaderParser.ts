@@ -9,7 +9,6 @@ import type { Loader } from '../Loader';
  * @enum {number}
  */
 export enum LoaderParserPriority
-// eslint-disable-next-line @typescript-eslint/indent
 {
     /** Generic parsers: txt, json, webfonts */
     Low = 0,
@@ -101,5 +100,6 @@ export interface LoaderParserAdvanced<
  * Some loaders may only be used for parsing, some only for loading, and some for both!
  * @memberof assets
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface LoaderParser<ASSET = any, META_DATA = any, CONFIG = Record<string, any>>
     extends LoaderParserAdvanced<ASSET, ASSET, ASSET, META_DATA, CONFIG> {}

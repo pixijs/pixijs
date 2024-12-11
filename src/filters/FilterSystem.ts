@@ -254,7 +254,7 @@ export class FilterSystem implements System
             }
 
             enabled = filter.enabled || enabled;
-            blendRequired = blendRequired || filter.blendRequired;
+            blendRequired ||= filter.blendRequired;
         }
 
         // if no filters are enabled lets skip!
@@ -272,7 +272,9 @@ export class FilterSystem implements System
         {
             const viewPort = renderer.renderTarget.rootViewPort;
 
-            bounds.fitBounds(0, viewPort.width, 0, viewPort.height);
+            const rootResolution = renderer.renderTarget.renderTarget.resolution;
+
+            bounds.fitBounds(0, viewPort.width / rootResolution, 0, viewPort.height / rootResolution);
         }
 
         // round the bounds to the nearest pixel
@@ -359,7 +361,6 @@ export class FilterSystem implements System
         // get a BufferResource from the uniformBatch.
         // this will batch the shader uniform data and give us a buffer resource we can
         // set on our globalUniform Bind Group
-        // eslint-disable-next-line max-len
 
         // update the resources on the bind group...
         this._globalFilterBindGroup.setResource(inputTexture.source.style, 2);
@@ -636,6 +637,14 @@ export class FilterSystem implements System
         );
 
         const worldTransform = sprite.worldTransform.copyTo(Matrix.shared);
+
+        const renderGroup = sprite.renderGroup || sprite.parentRenderGroup;
+
+        if (renderGroup && renderGroup.cacheToLocalTransform)
+        {
+            // get the matrix relative to the render group..
+            worldTransform.prepend(renderGroup.cacheToLocalTransform);
+        }
 
         worldTransform.invert();
         mappedMatrix.prepend(worldTransform);

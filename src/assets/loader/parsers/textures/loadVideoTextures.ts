@@ -87,7 +87,7 @@ export function determineCrossOrigin(url: string, loc: Location = globalThis.loc
     }
 
     // default is window.location
-    loc = loc || globalThis.location;
+    loc ||= globalThis.location;
 
     const parsedUrl = new URL(url, document.baseURI);
 

@@ -97,22 +97,6 @@ export class RenderContainer extends ViewContainer implements Instruction
         this.addBounds(this._bounds);
     }
 
-    protected override onViewUpdate()
-    {
-        this._didViewChangeTick++;
-        this._boundsDirty = true;
-
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.onChildViewUpdate(this);
-        }
-    }
-
     /**
      * An overridable function that can be used to render the object using the current renderer.
      * @param _renderer - The current renderer

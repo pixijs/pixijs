@@ -63,7 +63,16 @@ export interface TextureOptions<TextureSourceType extends TextureSource = Textur
     defaultBorders?: TextureBorders;
     /** indicates how the texture was rotated by texture packer. See {@link groupD8} */
     rotate?: number;
-    /** set to true if you plan on modifying the uvs of this texture - can affect performance with high numbers of sprites*/
+    /**
+     * Set to true if you plan on modifying this texture's frame, UVs, or swapping its source at runtime.
+     * This is false by default as it improves performance. Generally, it's recommended to create new
+     * textures and swap those rather than modifying an existing texture's properties unless you are
+     * working with a dynamic frames.
+     * Not setting this to true when modifying the texture can lead to visual artifacts.
+     *
+     * If this is false and you modify the texture, you can manually update the sprite's texture by calling
+     * `sprite.onViewUpdate()`.
+     */
     dynamic?: boolean;
 }
 

@@ -203,8 +203,8 @@ export class GlBufferSystem implements System
     {
         const { _gl: gl } = this;
 
-        offset = offset || 0;
-        index = index || 0;
+        offset ||= 0;
+        index ||= 0;
 
         this._boundBufferBases[index] = null;
 

@@ -101,7 +101,7 @@ export class Circle implements ShapePrimitive
      */
     public getBounds(out?: Rectangle): Rectangle
     {
-        out = out || new Rectangle();
+        out ||= new Rectangle();
 
         out.x = this.x - this.radius;
         out.y = this.y - this.radius;

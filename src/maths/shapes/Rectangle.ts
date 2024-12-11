@@ -8,7 +8,7 @@ import type { ShapePrimitive } from './ShapePrimitive';
 
 const tempPoints = [new Point(), new Point(), new Point(), new Point()];
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface Rectangle extends PixiMixins.Rectangle { }
 
 /**
@@ -385,7 +385,7 @@ export class Rectangle implements ShapePrimitive
      */
     public getBounds(out?: Rectangle): Rectangle
     {
-        out = out || new Rectangle();
+        out ||= new Rectangle();
         out.copyFrom(this);
 
         return out;
