@@ -1,7 +1,7 @@
-import { extensions, ExtensionType } from '../../extensions/Extensions';
-import { Container } from '../../scene/container/Container';
 import { Application } from '../Application';
 import { getApp, nextTick } from '@test-utils';
+import { extensions, ExtensionType } from '~/extensions';
+import { Container } from '~/scene';
 
 import type { ApplicationOptions } from '../Application';
 

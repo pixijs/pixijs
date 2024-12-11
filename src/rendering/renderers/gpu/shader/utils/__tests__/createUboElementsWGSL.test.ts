@@ -1,6 +1,6 @@
 import { createUboElementsWGSL } from '../createUboElementsWGSL';
 
-import type { UniformData } from '~/rendering/renderers/shared/shader/types';
+import type { UniformData } from '~/rendering';
 
 describe('createUboElementsWGSL', () =>
 {

@@ -1,11 +1,11 @@
-import { Assets } from '~/assets/Assets';
-import { Rectangle } from '~/maths/shapes/Rectangle';
-import { Texture } from '~/rendering/renderers/shared/texture/Texture';
-import { Sprite } from '~/scene/sprite/Sprite';
+import { Assets } from '~/assets';
+import { Rectangle } from '~/maths';
+import { Texture } from '~/rendering';
+import { Sprite } from '~/scene';
 
 import type { TestScene } from '../../types';
-import type { Renderer } from '~/rendering/renderers/types';
-import type { Container } from '~/scene/container/Container';
+import type { Renderer } from '~/rendering';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render a dynamic texture',

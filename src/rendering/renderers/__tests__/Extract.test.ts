@@ -5,10 +5,8 @@ import { ImageSource } from '../shared/texture/sources/ImageSource';
 import { Texture } from '../shared/texture/Texture';
 import '../../init';
 import { getTexture, getWebGLRenderer } from '@test-utils';
-import { Rectangle } from '~/maths/shapes/Rectangle';
-import { Container } from '~/scene/container/Container';
-import { Graphics } from '~/scene/graphics/shared/Graphics';
-import { Sprite } from '~/scene/sprite/Sprite';
+import { Rectangle } from '~/maths';
+import { Container, Graphics, Sprite } from '~/scene';
 
 import type { WebGLRenderer } from '../gl/WebGLRenderer';
 

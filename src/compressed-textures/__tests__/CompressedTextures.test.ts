@@ -2,11 +2,9 @@ import { detectBasis } from '../basis/detectBasis';
 import { loadDDS } from '../dds/loadDDS';
 import { detectCompressed } from '../shared/detectCompressed';
 import { resolveCompressedTextureUrl } from '../shared/resolveCompressedTextureUrl';
-import { Assets } from '~/assets/Assets';
-import { Loader } from '~/assets/loader/Loader';
-import { Resolver } from '~/assets/resolver/Resolver';
+import { Assets, Loader, Resolver } from '~/assets';
 
-import type { Texture } from '~/rendering/renderers/shared/texture/Texture';
+import type { Texture } from '~/rendering';
 
 describe('Compressed Loader', () =>
 {

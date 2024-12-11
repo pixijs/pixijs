@@ -1,12 +1,9 @@
 import { detectVideoAlphaMode } from '../browser/detectVideoAlphaMode';
 import { getWebGLRenderer } from '@test-utils';
-import { RenderTexture } from '~/rendering/renderers/shared/texture/RenderTexture';
-import { VideoSource } from '~/rendering/renderers/shared/texture/sources/VideoSource';
-import { Texture } from '~/rendering/renderers/shared/texture/Texture';
-import { Container } from '~/scene/container/Container';
-import { Sprite } from '~/scene/sprite/Sprite';
+import { RenderTexture, Texture, VideoSource } from '~/rendering';
+import { Container, Sprite } from '~/scene';
 
-import type { WebGLRenderer } from '~/rendering/renderers/gl/WebGLRenderer';
+import type { WebGLRenderer } from '~/rendering';
 
 describe('detectVideoAlphaMode', () =>
 {

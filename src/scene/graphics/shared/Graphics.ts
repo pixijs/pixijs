@@ -723,7 +723,6 @@ export class Graphics extends ViewContainer implements Instruction
     public lineStyle(width?: number, color?: ColorSource, alpha?: number): this
     {
         // #if _DEBUG
-        // eslint-disable-next-line max-len
         deprecation(v8_0_0, 'Graphics#lineStyle is no longer needed. Use Graphics#setStrokeStyle to set the stroke style.');
         // #endif
 

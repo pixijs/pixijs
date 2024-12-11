@@ -1,5 +1,5 @@
 import { Matrix } from '../matrix/Matrix';
-import { Transform } from '~/utils/misc/Transform';
+import { Transform } from '~/utils';
 
 describe('Matrix', () =>
 {

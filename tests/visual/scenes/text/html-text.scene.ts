@@ -1,9 +1,8 @@
-import { Sprite } from '~/scene/sprite/Sprite';
-import { HTMLTextStyle } from '~/scene/text-html/HTMLTextStyle';
+import { HTMLTextStyle, Sprite } from '~/scene';
 
 import type { TestScene } from '../../types';
-import type { Renderer } from '~/rendering/renderers/types';
-import type { Container } from '~/scene/container/Container';
+import type { Renderer } from '~/rendering';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render html-text correctly',

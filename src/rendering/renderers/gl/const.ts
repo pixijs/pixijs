@@ -1,5 +1,4 @@
 export enum CLEAR
-// eslint-disable-next-line @typescript-eslint/indent
 {
     NONE = 0,
     COLOR = 16384,

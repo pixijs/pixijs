@@ -1,11 +1,8 @@
-import { GlProgram } from '~/rendering/renderers/gl/shader/GlProgram';
-import { GpuProgram } from '~/rendering/renderers/gpu/shader/GpuProgram';
-import { Geometry } from '~/rendering/renderers/shared/geometry/Geometry';
-import { Shader } from '~/rendering/renderers/shared/shader/Shader';
-import { Mesh } from '~/scene/mesh/shared/Mesh';
+import { Geometry, GlProgram, GpuProgram, Shader } from '~/rendering';
+import { Mesh } from '~/scene';
 
 import type { TestScene } from '../../types';
-import type { Container } from '~/scene/container/Container';
+import type { Container } from '~/scene';
 
 /**
  * NOTE on the result:

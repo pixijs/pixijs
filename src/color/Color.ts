@@ -86,8 +86,7 @@ export type ColorSource =
     | RgbColor
     | RgbaColor
     | Color
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    | Number;
+    | number;
 
 type ColorSourceTypedArray = Float32Array | Uint8Array | Uint8ClampedArray;
 

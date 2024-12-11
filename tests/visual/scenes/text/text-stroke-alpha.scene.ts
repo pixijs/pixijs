@@ -1,9 +1,7 @@
-import { Text } from '~/scene/text/Text';
-import { TextStyle } from '~/scene/text/TextStyle';
-import { BitmapText } from '~/scene/text-bitmap/BitmapText';
+import { BitmapText, Text, TextStyle } from '~/scene';
 
 import type { TestScene } from '../../types';
-import type { Container } from '~/scene/container/Container';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render stroke and fill alpha separately',

@@ -2,7 +2,7 @@ import {
     getCanvasTexture,
     hasCachedCanvasTexture
 } from '../getCanvasTexture';
-import { DOMAdapter } from '~/environment/adapter';
+import { DOMAdapter } from '~/environment';
 
 describe('Get Canvas Texture', () =>
 {

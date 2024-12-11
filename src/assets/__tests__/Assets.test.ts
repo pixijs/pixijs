@@ -2,8 +2,8 @@ import { setTimeout } from 'timers/promises';
 import '~/spritesheet/init';
 import { Assets } from '../Assets';
 import { basePath } from '@test-utils';
-import { loadTextures } from '~/assets/loader/parsers/textures/loadTextures';
-import { Texture } from '~/rendering/renderers/shared/texture/Texture';
+import { loadTextures } from '~/assets';
+import { Texture } from '~/rendering';
 
 describe('Assets', () =>
 {

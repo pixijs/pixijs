@@ -257,7 +257,6 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                 {
                     context.configure({
                         device: this._renderer.gpu.device,
-                        // eslint-disable-next-line max-len
                         usage: GPUTextureUsage.TEXTURE_BINDING
                             | GPUTextureUsage.COPY_DST
                             | GPUTextureUsage.RENDER_ATTACHMENT

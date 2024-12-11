@@ -1,9 +1,8 @@
-import { Geometry } from '~/rendering/renderers/shared/geometry/Geometry';
-import { Shader } from '~/rendering/renderers/shared/shader/Shader';
-import { Mesh } from '~/scene/mesh/shared/Mesh';
+import { Geometry, Shader } from '~/rendering';
+import { Mesh } from '~/scene';
 
 import type { TestScene } from '../../types';
-import type { Container } from '~/scene/container/Container';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render a custom triangle correctly',

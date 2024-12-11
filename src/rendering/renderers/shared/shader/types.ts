@@ -59,5 +59,4 @@ export interface UboLayout
     size: number;
 }
 
-/* eslint-disable quote-props */
 export type UniformsSyncCallback = (...args: any[]) => void;

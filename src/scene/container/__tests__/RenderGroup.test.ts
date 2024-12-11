@@ -2,8 +2,8 @@ import { Sprite } from '../../sprite/Sprite';
 import { Container } from '../Container';
 import { RenderGroup } from '../RenderGroup';
 import { getWebGLRenderer } from '@test-utils';
-import { Texture } from '~/rendering/renderers/shared/texture/Texture';
-import { BigPool } from '~/utils/pool/PoolGroup';
+import { Texture } from '~/rendering';
+import { BigPool } from '~/utils';
 
 // now that we don't actually remove the items, but instead ensure that they are skipped
 // in the update loop, this function will return the new list and index removing items that are intended to be skipped
@@ -476,7 +476,6 @@ describe('RenderGroup', () =>
         compareUpdateList([child3], container2.renderGroup, 1);
     });
 
-    // eslint-disable-next-line jest/expect-expect
     it('should update layers correctly if you attach a render group and it has updated children..', async () =>
     {
         const container = new Container();
@@ -539,7 +538,6 @@ describe('RenderGroup', () =>
         expect(container.isSimple).toEqual(true);
     });
 
-    // eslint-disable-next-line jest/expect-expect
     it('should add and then remove the render group correctly', async () =>
     {
         const container = new Container();

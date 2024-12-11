@@ -39,7 +39,6 @@ describe('Runner', () =>
 
             for (let i = 0; i < arguments.length; i++)
             {
-                // eslint-disable-next-line prefer-rest-params
                 if (arguments[i] !== undefined)
                 {
                     len++;
