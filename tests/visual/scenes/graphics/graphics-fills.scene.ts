@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import { Assets } from '../../../../src/assets/Assets';
 import { Container } from '../../../../src/scene/container/Container';
 import { FillGradient } from '../../../../src/scene/graphics/shared/fill/FillGradient';
