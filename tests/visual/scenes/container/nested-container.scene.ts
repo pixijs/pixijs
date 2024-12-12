@@ -1,10 +1,9 @@
-import { AlphaFilter } from '../../../../src/filters/defaults/alpha/AlphaFilter';
-import { getCanvasTexture } from '../../../../src/rendering/renderers/shared/texture/utils/getCanvasTexture';
-import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
-import { Sprite } from '../../../../src/scene/sprite/Sprite';
+import { AlphaFilter } from '~/filters';
+import { getCanvasTexture } from '~/rendering';
+import { Graphics, Sprite } from '~/scene';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene';
 
 const canvas = document.createElement('canvas');
 

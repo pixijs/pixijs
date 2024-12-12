@@ -62,6 +62,8 @@ export class GlGeometrySystem implements System
 
         this.hasVao = true;
         this.hasInstance = true;
+
+        this._renderer.renderableGC.addManagedHash(this, '_geometryVaoHash');
     }
 
     /** Sets up the renderer context and necessary buffers. */
@@ -118,7 +120,7 @@ export class GlGeometrySystem implements System
      */
     public bind(geometry?: Geometry, program?: GlProgram): void
     {
-        // shader = shader || this.renderer.shader.shader;
+        // shader ||= this.renderer.shader.shader;
 
         const gl = this.gl;
 
@@ -373,7 +375,7 @@ export class GlGeometrySystem implements System
                     lastBuffer = glBuffer;
                 }
 
-                const location = attribute.location;
+                const location = programAttrib.location;
 
                 // TODO introduce state again
                 // we can optimise this for older devices that have no VAOs
@@ -436,9 +438,9 @@ export class GlGeometrySystem implements System
         const { gl } = this._renderer;
         const geometry = this._activeGeometry;
 
-        const glTopology = topologyToGlMap[geometry.topology || topology];
+        const glTopology = topologyToGlMap[topology || geometry.topology];
 
-        instanceCount ||= geometry.instanceCount;
+        instanceCount ??= geometry.instanceCount;
 
         if (geometry.indexBuffer)
         {
@@ -453,9 +455,7 @@ export class GlGeometrySystem implements System
             }
             else
             {
-                /* eslint-disable max-len */
                 gl.drawElements(glTopology, size || geometry.indexBuffer.data.length, glType, (start || 0) * byteSize);
-                /* eslint-enable max-len */
             }
         }
         else if (instanceCount > 1)

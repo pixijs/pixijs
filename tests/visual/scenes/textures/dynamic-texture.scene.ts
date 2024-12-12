@@ -1,15 +1,14 @@
-import { Assets } from '../../../../src/assets/Assets';
-import { Rectangle } from '../../../../src/maths/shapes/Rectangle';
-import { Texture } from '../../../../src/rendering/renderers/shared/texture/Texture';
-import { Sprite } from '../../../../src/scene/sprite/Sprite';
+import { Assets } from '~/assets';
+import { Rectangle } from '~/maths';
+import { Texture } from '~/rendering';
+import { Sprite } from '~/scene';
 
-import type { Renderer } from '../../../../src/rendering/renderers/types';
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Renderer } from '~/rendering';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render a dynamic texture',
-    pixelMatch: 200,
     create: async (scene: Container, renderer: Renderer) =>
     {
         const bunnyTexture = await Assets.load<Texture>(`bunny.png`);

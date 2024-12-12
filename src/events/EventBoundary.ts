@@ -548,7 +548,7 @@ export class EventBoundary
     private _interactivePrune(container: Container): boolean
     {
         // If container is a mask, invisible, or not renderable then it cannot be hit directly.
-        if (!container || !container.visible || !container.renderable || !container.includeInBuild || !container.measurable)
+        if (!container || !container.visible || !container.renderable || !container.measurable)
         {
             return true;
         }
@@ -650,7 +650,7 @@ export class EventBoundary
             return;
         }
 
-        type = type ?? e.type;
+        type ??= e.type;
 
         // call the `on${type}` for the current target if it exists
         const handlerKey = `on${type}` as keyof Container;
@@ -1420,6 +1420,7 @@ export class EventBoundary
 
         event.eventPhase = event.NONE;
         event.currentTarget = null;
+        event.defaultPrevented = false;
         event.path = null;
         event.target = null;
 

@@ -1,16 +1,29 @@
 import type { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
 import type { InstructionPipe, RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
-import type { RenderPipes } from '../../../rendering/renderers/types';
+import type { Renderer, RenderPipes } from '../../../rendering/renderers/types';
 import type { Container } from '../Container';
 import type { RenderGroup } from '../RenderGroup';
 
-export function buildInstructions(renderGroup: RenderGroup, renderPipes: RenderPipes)
+/**
+ * @param renderGroup
+ * @param renderPipes
+ * @deprecated since 8.3.0
+ */
+export function buildInstructions(renderGroup: RenderGroup, renderPipes: RenderPipes): void;
+export function buildInstructions(renderGroup: RenderGroup, renderer: Renderer): void;
+export function buildInstructions(renderGroup: RenderGroup, rendererOrPipes: RenderPipes | Renderer): void
 {
     const root = renderGroup.root;
     const instructionSet = renderGroup.instructionSet;
 
     instructionSet.reset();
+
+    // deprecate the use of renderPipes by finding the renderer attached to the batch pipe as this is always there
+    const renderer = (rendererOrPipes as Renderer).renderPipes
+        ? (rendererOrPipes as Renderer)
+        : (rendererOrPipes as RenderPipes).batch.renderer;
+    const renderPipes = renderer.renderPipes;
 
     // TODO add some events / runners for build start
     renderPipes.batch.buildStart(instructionSet);
@@ -22,24 +35,31 @@ export function buildInstructions(renderGroup: RenderGroup, renderPipes: RenderP
         root.sortChildren();
     }
 
-    collectAllRenderablesAdvanced(root, instructionSet, renderPipes, true);
+    collectAllRenderablesAdvanced(root, instructionSet, renderer, true);
 
-    // instructionSet.log();
     // TODO add some events / runners for build end
     renderPipes.batch.buildEnd(instructionSet);
     renderPipes.blendMode.buildEnd(instructionSet);
-
-    // instructionSet.log();
 }
 
+/**
+ * @param container
+ * @param instructionSet
+ * @param renderer
+ * @deprecated since 8.3.0
+ */
+export function collectAllRenderables(container: Container, instructionSet: InstructionSet, renderer: RenderPipes): void;
+export function collectAllRenderables(container: Container, instructionSet: InstructionSet, renderer: Renderer): void;
 export function collectAllRenderables(
-    container: Container,
-    instructionSet: InstructionSet,
-    rendererPipes: RenderPipes
+    container: Container, instructionSet: InstructionSet, rendererOrPipes: Renderer | RenderPipes
 ): void
 {
-    // if there is 0b01 or 0b10 the return value
+    // deprecate the use of renderPipes by finding the renderer attached to the batch pipe as this is always there
+    const renderer = (rendererOrPipes as Renderer).renderPipes
+        ? (rendererOrPipes as Renderer)
+        : (rendererOrPipes as RenderPipes).batch.renderer;
 
+    // if there is 0b01 or 0b10 the return value
     if (container.globalDisplayStatus < 0b111 || !container.includeInBuild) return;
 
     if (container.sortableChildren)
@@ -49,30 +69,35 @@ export function collectAllRenderables(
 
     if (container.isSimple)
     {
-        collectAllRenderablesSimple(container, instructionSet, rendererPipes);
+        collectAllRenderablesSimple(container, instructionSet, renderer);
     }
     else
     {
-        collectAllRenderablesAdvanced(container, instructionSet, rendererPipes, false);
+        collectAllRenderablesAdvanced(container, instructionSet, renderer, false);
     }
 }
 
 function collectAllRenderablesSimple(
     container: Container,
     instructionSet: InstructionSet,
-    renderPipes: RenderPipes
+    renderer: Renderer,
 ): void
 {
     if (container.renderPipeId)
     {
-        // TODO add blends in
-        renderPipes.blendMode.setBlendMode(container as Renderable, container.groupBlendMode, instructionSet);
+        const renderable = container as Renderable;
+        const { renderPipes, renderableGC } = renderer;
 
-        container.didViewUpdate = false;
+        // TODO add blends in
+        renderPipes.blendMode.setBlendMode(renderable, container.groupBlendMode, instructionSet);
 
         const rp = renderPipes as unknown as Record<string, RenderPipe>;
 
-        rp[container.renderPipeId].addRenderable(container as Renderable, instructionSet);
+        rp[renderable.renderPipeId].addRenderable(renderable, instructionSet);
+
+        renderableGC.addRenderable(renderable, instructionSet);
+
+        renderable.didViewUpdate = false;
     }
 
     if (!container.renderGroup)
@@ -82,7 +107,7 @@ function collectAllRenderablesSimple(
 
         for (let i = 0; i < length; i++)
         {
-            collectAllRenderables(children[i], instructionSet, renderPipes);
+            collectAllRenderables(children[i], instructionSet, renderer);
         }
     }
 }
@@ -90,10 +115,12 @@ function collectAllRenderablesSimple(
 function collectAllRenderablesAdvanced(
     container: Container,
     instructionSet: InstructionSet,
-    renderPipes: RenderPipes,
+    renderer: Renderer,
     isRoot: boolean
 ): void
 {
+    const { renderPipes, renderableGC } = renderer;
+
     if (!isRoot && container.renderGroup)
     {
         renderPipes.renderGroup.addRenderGroup(container.renderGroup, instructionSet);
@@ -108,17 +135,21 @@ function collectAllRenderablesAdvanced(
             pipe.push(effect, container, instructionSet);
         }
 
-        const renderPipeId = container.renderPipeId;
+        const renderable = container as Renderable;
+        const renderPipeId = renderable.renderPipeId;
 
         if (renderPipeId)
         {
             // TODO add blends in
-            renderPipes.blendMode.setBlendMode(container as Renderable, container.groupBlendMode, instructionSet);
-            container.didViewUpdate = false;
+            renderPipes.blendMode.setBlendMode(renderable, renderable.groupBlendMode, instructionSet);
 
             const pipe = renderPipes[renderPipeId as keyof RenderPipes]as RenderPipe<any>;
 
-            pipe.addRenderable(container, instructionSet);
+            pipe.addRenderable(renderable, instructionSet);
+
+            renderableGC.addRenderable(renderable, instructionSet);
+
+            renderable.didViewUpdate = false;
         }
 
         const children = container.children;
@@ -127,7 +158,7 @@ function collectAllRenderablesAdvanced(
         {
             for (let i = 0; i < children.length; i++)
             {
-                collectAllRenderables(children[i], instructionSet, renderPipes);
+                collectAllRenderables(children[i], instructionSet, renderer);
             }
         }
 

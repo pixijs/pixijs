@@ -92,10 +92,10 @@ export const measureMixin: Partial<Container> = {
         localBoundsCacheData.index = 1;
         localBoundsCacheData.didChange = false;
 
-        if (localBoundsCacheData.data[0] !== this._didChangeId >> 12)
+        if (localBoundsCacheData.data[0] !== this._didViewChangeTick)
         {
             localBoundsCacheData.didChange = true;
-            localBoundsCacheData.data[0] = this._didChangeId >> 12;
+            localBoundsCacheData.data[0] = this._didViewChangeTick;
         }
 
         checkChildrenDidChange(this, localBoundsCacheData);

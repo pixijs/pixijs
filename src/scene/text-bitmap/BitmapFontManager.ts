@@ -178,22 +178,28 @@ class BitmapFontManagerClass
      * Get the layout of a text for the specified style.
      * @param text - The text to get the layout for
      * @param style - The style to use
+     * @param trimEnd - Whether to ignore whitespaces at the end of each line
      */
-    public getLayout(text: string, style: TextStyle): BitmapTextLayoutData
+    public getLayout(text: string, style: TextStyle, trimEnd: boolean = true): BitmapTextLayoutData
     {
         const bitmapFont = this.getFont(text, style);
 
-        return getBitmapTextLayout([...text], style, bitmapFont);
+        return getBitmapTextLayout([...text], style, bitmapFont, trimEnd);
     }
 
     /**
      * Measure the text using the specified style.
      * @param text - The text to measure
      * @param style - The style to use
+     * @param trimEnd - Whether to ignore whitespaces at the end of each line
      */
-    public measureText(text: string, style: TextStyle): { width: number; height: number; scale: number; offsetY: number }
+    public measureText(
+        text: string,
+        style: TextStyle,
+        trimEnd: boolean = true
+    ): { width: number; height: number; scale: number; offsetY: number }
     {
-        return this.getLayout(text, style);
+        return this.getLayout(text, style, trimEnd);
     }
 
     /**
@@ -281,7 +287,6 @@ class BitmapFontManagerClass
 
         if (font)
         {
-            Cache.remove(cacheKey);
             font.destroy();
         }
     }

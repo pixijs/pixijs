@@ -110,9 +110,11 @@ export class BlurFilterPass extends Filter
 
             this._state.blend = false;
 
+            const shouldClear = filterManager.renderer.type === RendererType.WEBGPU;
+
             for (let i = 0; i < this.passes - 1; i++)
             {
-                filterManager.applyFilter(this, flip, flop, filterManager.renderer.type === RendererType.WEBGPU);
+                filterManager.applyFilter(this, flip, flop, i === 0 ? true : shouldClear);
 
                 const temp = flop;
 

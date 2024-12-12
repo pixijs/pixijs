@@ -12,7 +12,9 @@ import { BlendModePipe } from '../blendModes/BlendModePipe';
 import { ExtractSystem } from '../extract/ExtractSystem';
 import { GenerateTextureSystem } from '../extract/GenerateTextureSystem';
 import { GlobalUniformSystem } from '../renderTarget/GlobalUniformSystem';
+import { SchedulerSystem } from '../SchedulerSystem';
 import { HelloSystem } from '../startup/HelloSystem';
+import { RenderableGCSystem } from '../texture/RenderableGCSystem';
 import { TextureGCSystem } from '../texture/TextureGCSystem';
 import { ViewSystem } from '../view/ViewSystem';
 
@@ -27,7 +29,9 @@ export const SharedSystems = [
     TextureGCSystem,
     GenerateTextureSystem,
     ExtractSystem,
-    RendererInitHook
+    RendererInitHook,
+    RenderableGCSystem,
+    SchedulerSystem,
 ];
 
 export const SharedRenderPipes = [

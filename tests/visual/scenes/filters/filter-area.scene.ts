@@ -1,9 +1,9 @@
-import { ColorMatrixFilter } from '../../../../src/filters/defaults/color-matrix/ColorMatrixFilter';
-import { Rectangle } from '../../../../src/maths/shapes/Rectangle';
-import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
+import { ColorMatrixFilter } from '~/filters';
+import { Rectangle } from '~/maths';
+import { Graphics } from '~/scene';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'Filter Area should be applied correctly',

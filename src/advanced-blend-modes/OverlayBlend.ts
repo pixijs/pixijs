@@ -37,12 +37,12 @@ export class OverlayBlend extends BlendModeFilter
                         overlay(base.g, blend.g),
                         overlay(base.b, blend.b)
                     );
-
+   
                     return (blended * opacity + base * (1.0 - opacity));
                 }
                 `,
                 main: `
-                finalColor = vec4(blendOverlay(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendOverlay(back.rgb, front.rgb,front.a), blendedAlpha) * uBlend;
                 `,
             },
             gpu: {
@@ -64,7 +64,7 @@ export class OverlayBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                out = vec4<f32>(blendOverlay(back.rgb, front.rgb, front.a), blendUniforms.uBlend);
+                out = vec4<f32>(blendOverlay(back.rgb, front.rgb, front.a), blendedAlpha) * blendUniforms.uBlend;
                 `,
             }
         });

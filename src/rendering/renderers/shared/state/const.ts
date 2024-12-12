@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/indent */
 /**
  * Various blend modes supported by Pixi
  * @memberof filters
@@ -34,7 +33,9 @@ export type BLEND_MODES = 'inherit'
 | 'divide'
 | 'vivid-light'
 | 'hard-mix'
-| 'negation';
+| 'negation'
+| 'min'
+| 'max';
 
 /**
  * The map of blend modes supported by Pixi
@@ -55,8 +56,9 @@ export enum STENCIL_MODES
     DISABLED = 0,
     RENDERING_MASK_ADD = 1,
     MASK_ACTIVE = 2,
-    RENDERING_MASK_REMOVE = 3,
-    NONE = 4,
+    INVERSE_MASK_ACTIVE = 3,
+    RENDERING_MASK_REMOVE = 4,
+    NONE = 5,
 }
 
 /**

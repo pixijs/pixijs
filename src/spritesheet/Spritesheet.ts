@@ -10,6 +10,7 @@ import type { Dict } from '../utils/types';
  * Represents the JSON data for a spritesheet atlas.
  * @memberof assets
  */
+
 export interface SpritesheetFrameData
 {
     /** The frame rectangle of the texture. */
@@ -85,7 +86,6 @@ export interface SpritesheetData
                 };
             }[];
         }[];
-        // eslint-disable-next-line camelcase
         related_multi_packs?: string[];
         version?: string;
     };

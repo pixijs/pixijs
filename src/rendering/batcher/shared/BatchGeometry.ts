@@ -34,28 +34,24 @@ export class BatchGeometry extends Geometry
                     format: 'float32x2',
                     stride,
                     offset: 0,
-                    location: 1,
                 },
                 aUV: {
                     buffer: attributeBuffer,
                     format: 'float32x2',
                     stride,
                     offset: 2 * 4,
-                    location: 3,
                 },
                 aColor: {
                     buffer: attributeBuffer,
                     format: 'unorm8x4',
                     stride,
                     offset: 4 * 4,
-                    location: 0,
                 },
                 aTextureIdAndRound: {
                     buffer: attributeBuffer,
                     format: 'uint16x2',
                     stride,
                     offset: 5 * 4,
-                    location: 2,
                 },
             },
             indexBuffer

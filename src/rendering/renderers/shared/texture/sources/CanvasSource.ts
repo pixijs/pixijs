@@ -22,6 +22,8 @@ export class CanvasSource extends TextureSource<ICanvas>
     public autoDensity: boolean;
     public transparent: boolean;
 
+    private _context2D: CanvasRenderingContext2D;
+
     constructor(options: CanvasSourceOptions)
     {
         if (!options.resource)
@@ -53,12 +55,7 @@ export class CanvasSource extends TextureSource<ICanvas>
 
         this.autoDensity = options.autoDensity;
 
-        const canvas = options.resource;
-
-        if (this.pixelWidth !== canvas.width || this.pixelWidth !== canvas.height)
-        {
-            this.resizeCanvas();
-        }
+        this.resizeCanvas();
 
         this.transparent = !!options.transparent;
     }
@@ -95,5 +92,15 @@ export class CanvasSource extends TextureSource<ICanvas>
     {
         return (globalThis.HTMLCanvasElement && resource instanceof HTMLCanvasElement)
         || (globalThis.OffscreenCanvas && resource instanceof OffscreenCanvas);
+    }
+
+    /**
+     * Returns the 2D rendering context for the canvas.
+     * Caches the context after creating it.
+     * @returns The 2D rendering context of the canvas.
+     */
+    get context2D(): CanvasRenderingContext2D
+    {
+        return this._context2D || (this._context2D = this.resource.getContext('2d') as CanvasRenderingContext2D);
     }
 }

@@ -55,7 +55,7 @@ export class GpuMeshAdapter implements MeshAdaptor
 
     public execute(meshPipe: MeshPipe, mesh: Mesh<Geometry>)
     {
-        const renderer = meshPipe.renderer;
+        const renderer = meshPipe.renderer as WebGPURenderer;
 
         let shader: Shader = mesh._shader;
 
@@ -63,9 +63,7 @@ export class GpuMeshAdapter implements MeshAdaptor
         {
             shader = this._shader;
 
-            shader.resources.uTexture = mesh.texture.source;
-            shader.resources.uSampler = mesh.texture.source.style;
-            shader.resources.textureUniforms.uniforms.uTextureMatrix = mesh.texture.textureMatrix.mapCoord;
+            shader.groups[2] = renderer.texture.getTextureBindGroup(mesh.texture);
         }
         else if (!shader.gpuProgram)
         {

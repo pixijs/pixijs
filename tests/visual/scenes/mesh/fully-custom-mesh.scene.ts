@@ -1,11 +1,8 @@
-import { GlProgram } from '../../../../src/rendering/renderers/gl/shader/GlProgram';
-import { GpuProgram } from '../../../../src/rendering/renderers/gpu/shader/GpuProgram';
-import { Geometry } from '../../../../src/rendering/renderers/shared/geometry/Geometry';
-import { Shader } from '../../../../src/rendering/renderers/shared/shader/Shader';
-import { Mesh } from '../../../../src/scene/mesh/shared/Mesh';
+import { Geometry, GlProgram, GpuProgram, Shader } from '~/rendering';
+import { Mesh } from '~/scene';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene';
 
 /**
  * NOTE on the result:
@@ -26,14 +23,14 @@ export const scene: TestScene = {
 
             @binding(0) @group(0) var<uniform> myUniforms : MyUniforms;
 
-            @vertex 
+            @vertex
             fn vsMain(
                 @location(0) aPosition : vec2<f32>,
             ) -> @builtin(position) vec4f {
             return vec4f(aPosition, 0, 1);
             }
 
-            @fragment 
+            @fragment
             fn fsMain() -> @location(0) vec4<f32> {
                 return myUniforms.uTint;
             }

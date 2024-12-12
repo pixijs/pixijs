@@ -9,23 +9,42 @@ import type { Effect } from '../Effect';
 
 export interface EffectsMixinConstructor
 {
-    mask?: number | Container | null;
+    mask?: Mask;
+    setMask?: (options: Partial<MaskOptionsAndMask>) => void;
     filters?: Filter | Filter[];
 }
+
+export type Mask = number | Container | null;
+
+export interface MaskOptions
+{
+    inverse: boolean;
+}
+
+export interface MaskOptionsAndMask extends MaskOptions
+{
+    mask: Mask;
+}
+
 export interface EffectsMixin extends Required<EffectsMixinConstructor>
 {
     _maskEffect?: MaskEffect;
+    _maskOptions?: MaskOptions;
     _filterEffect?: FilterEffect,
 
     filterArea?: Rectangle,
     effects?: Effect[];
 
+    _markStructureAsChanged(): void;
     addEffect(effect: Effect): void;
     removeEffect(effect: Effect): void;
 }
 
 export const effectsMixin: Partial<Container> = {
     _maskEffect: null,
+    _maskOptions: {
+        inverse: false,
+    },
     _filterEffect: null,
 
     /**
@@ -35,6 +54,15 @@ export const effectsMixin: Partial<Container> = {
      */
     effects: [],
 
+    _markStructureAsChanged()
+    {
+        const renderGroup = this.renderGroup || this.parentRenderGroup;
+
+        if (renderGroup)
+        {
+            renderGroup.structureDidChange = true;
+        }
+    },
     /**
      * @todo Needs docs.
      * @param effect - The effect to add.
@@ -51,12 +79,7 @@ export const effectsMixin: Partial<Container> = {
 
         this.effects.sort((a, b) => a.priority - b.priority);
 
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.structureDidChange = true;
-        }
+        this._markStructureAsChanged();
 
         // if (this.renderGroup)
         // {
@@ -79,15 +102,12 @@ export const effectsMixin: Partial<Container> = {
 
         this.effects.splice(index, 1);
 
-        if (this.parentRenderGroup)
-        {
-            this.parentRenderGroup.structureDidChange = true;
-        }
+        this._markStructureAsChanged();
 
         this._updateIsSimple();
     },
 
-    set mask(value: number | Container | null)
+    set mask(value: Mask)
     {
         const effect = this._maskEffect;
 
@@ -107,6 +127,39 @@ export const effectsMixin: Partial<Container> = {
         this._maskEffect = MaskEffectManager.getMaskEffect(value);
 
         this.addEffect(this._maskEffect);
+    },
+
+    /**
+     * Used to set mask and control mask options.
+     * @param options
+     * @example
+     * import { Graphics, Sprite } from 'pixi.js';
+     *
+     * const graphics = new Graphics();
+     * graphics.beginFill(0xFF3300);
+     * graphics.drawRect(50, 250, 100, 100);
+     * graphics.endFill();
+     *
+     * const sprite = new Sprite(texture);
+     * sprite.setMask({
+     *     mask: graphics,
+     *     inverse: true,
+     * });
+     * @memberof scene.Container#
+     */
+    setMask(options: Partial<MaskOptionsAndMask>)
+    {
+        this._maskOptions = {
+            ...this._maskOptions,
+            ...options,
+        };
+
+        if (options.mask)
+        {
+            this.mask = options.mask;
+        }
+
+        this._markStructureAsChanged();
     },
 
     /**

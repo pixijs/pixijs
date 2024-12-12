@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
 import { ExtensionType } from '../../extensions/Extensions';
 import { getAdjustedBlendModeBlend } from '../../rendering/renderers/shared/state/getAdjustedBlendModeBlend';
 import { State } from '../../rendering/renderers/shared/state/State';
@@ -14,6 +13,7 @@ import { setUvs } from './utils/setUvs';
 import type { WebGLRenderer } from '../../rendering/renderers/gl/WebGLRenderer';
 import type { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
+import type { Container } from '../container/Container';
 import type { TilingSprite } from './TilingSprite';
 
 interface RenderableData
@@ -42,10 +42,12 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
     private _renderer: Renderer;
     private readonly _state: State = State.default2d;
     private readonly _tilingSpriteDataHash: Record<number, RenderableData> = Object.create(null);
+    private readonly _destroyRenderableBound = this.destroyRenderable.bind(this) as (renderable: Container) => void;
 
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        this._renderer.renderableGC.addManagedHash(this, '_tilingSpriteDataHash');
     }
 
     public validateRenderable(renderable: TilingSprite): boolean
@@ -62,11 +64,10 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
         {
             const { batchableMesh } = tilingSpriteData;
 
-            // we are batching.. check a texture change!
-            if (batchableMesh && batchableMesh.texture._source !== renderable.texture._source)
-            {
-                return !batchableMesh.batcher.checkAndUpdateTexture(batchableMesh, renderable.texture);
-            }
+            return !batchableMesh._batcher.checkAndUpdateTexture(
+                batchableMesh,
+                renderable.texture
+            );
         }
 
         return (couldBatch !== canBatch);
@@ -94,20 +95,19 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
 
             const batchableMesh = tilingSpriteData.batchableMesh;
 
-            if (tilingSprite._didTilingSpriteUpdate)
+            if (tilingSprite.didViewUpdate)
             {
-                tilingSprite._didTilingSpriteUpdate = false;
-
                 this._updateBatchableMesh(tilingSprite);
 
                 batchableMesh.geometry = geometry;
-                batchableMesh.mesh = tilingSprite;
+                batchableMesh.renderable = tilingSprite;
+                batchableMesh.transform = tilingSprite.groupTransform;
                 batchableMesh.texture = tilingSprite._texture;
             }
 
             batchableMesh.roundPixels = (this._renderer._roundPixels | tilingSprite._roundPixels) as 0 | 1;
 
-            batcher.addToBatch(batchableMesh);
+            batcher.addToBatch(batchableMesh, instructionSet);
         }
         else
         {
@@ -158,11 +158,11 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
         {
             const { batchableMesh } = tilingSpriteData;
 
-            if (tilingSprite._didTilingSpriteUpdate) this._updateBatchableMesh(tilingSprite);
+            if (tilingSprite.didViewUpdate) this._updateBatchableMesh(tilingSprite);
 
-            batchableMesh.batcher.updateElement(batchableMesh);
+            batchableMesh._batcher.updateElement(batchableMesh);
         }
-        else if (tilingSprite._didTilingSpriteUpdate)
+        else if (tilingSprite.didViewUpdate)
         {
             const { shader } = tilingSpriteData;
             // now update uniforms...
@@ -176,8 +176,6 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
                 tilingSprite.texture,
             );
         }
-
-        tilingSprite._didTilingSpriteUpdate = false;
     }
 
     public destroyRenderable(tilingSprite: TilingSprite)
@@ -189,6 +187,8 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
         tilingSpriteData.shader?.destroy();
 
         this._tilingSpriteDataHash[tilingSprite.uid] = null;
+
+        tilingSprite.off('destroyed', this._destroyRenderableBound);
     }
 
     private _getTilingSpriteData(renderable: TilingSprite): RenderableData
@@ -210,10 +210,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
             geometry,
         };
 
-        tilingSprite.on('destroyed', () =>
-        {
-            this.destroyRenderable(tilingSprite);
-        });
+        tilingSprite.on('destroyed', this._destroyRenderableBound);
 
         return this._tilingSpriteDataHash[tilingSprite.uid];
     }

@@ -1,11 +1,10 @@
-import { Text } from '../../../../src/scene/text/Text';
+import { Text } from '~/scene';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render text correctly if style changes',
-    pixelMatch: 1000,
     create: async (scene: Container) =>
     {
         const text = new Text({

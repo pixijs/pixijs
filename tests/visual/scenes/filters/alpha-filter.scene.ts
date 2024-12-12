@@ -1,6 +1,5 @@
-import { AlphaFilter } from '../../../../src/filters/defaults/alpha/AlphaFilter';
-import { Container } from '../../../../src/scene/container/Container';
-import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
+import { AlphaFilter } from '~/filters';
+import { Container, Graphics } from '~/scene';
 
 import type { TestScene } from '../../types';
 

@@ -1,7 +1,9 @@
 import type { ContainerChild } from './container/Container';
+import type { CacheAsTextureMixin, CacheAsTextureMixinConstructor } from './container/container-mixins/cacheAsTextureMixin';
 import type { ChildrenHelperMixin } from './container/container-mixins/childrenHelperMixin';
 import type { EffectsMixin, EffectsMixinConstructor } from './container/container-mixins/effectsMixin';
 import type { FindMixin, FindMixinConstructor } from './container/container-mixins/findMixin';
+import type { GetGlobalMixin } from './container/container-mixins/getGlobalMixin';
 import type { MeasureMixin, MeasureMixinConstructor } from './container/container-mixins/measureMixin';
 import type { OnRenderMixin, OnRenderMixinConstructor } from './container/container-mixins/onRenderMixin';
 import type { SortMixin, SortMixinConstructor } from './container/container-mixins/sortMixin';
@@ -11,7 +13,7 @@ declare global
 {
     namespace PixiMixins
     {
-        // eslint-disable-next-line @typescript-eslint/no-empty-interface
+
         interface Container<C extends ContainerChild = ContainerChild>
             extends ChildrenHelperMixin<C>,
             ToLocalGlobalMixin,
@@ -19,15 +21,17 @@ declare global
             MeasureMixin,
             EffectsMixin,
             FindMixin,
-            SortMixin {}
+            SortMixin,
+            GetGlobalMixin,
+            CacheAsTextureMixin {}
 
-        // eslint-disable-next-line @typescript-eslint/no-empty-interface
         interface ContainerOptions
             extends OnRenderMixinConstructor,
             MeasureMixinConstructor,
             EffectsMixinConstructor,
             FindMixinConstructor,
-            SortMixinConstructor {}
+            SortMixinConstructor,
+            CacheAsTextureMixinConstructor {}
     }
 }
 

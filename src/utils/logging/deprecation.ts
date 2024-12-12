@@ -8,6 +8,7 @@ const warnings: Dict<boolean> = {};
  * @ignore
  */
 export const v8_0_0 = '8.0.0';
+export const v8_3_4 = '8.3.4';
 
 /**
  * Helper for warning developers about deprecated features & settings.

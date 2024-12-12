@@ -16,6 +16,7 @@ import type {
 } from '../../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../../../rendering/renderers/types';
 import type { PoolItem } from '../../../utils/pool/Pool';
+import type { Container } from '../../container/Container';
 import type { Mesh } from './Mesh';
 
 // TODO Record mode is a P2, will get back to this as it's not a priority
@@ -35,7 +36,6 @@ export interface MeshAdaptor
     destroy(): void;
 }
 
-// eslint-disable-next-line max-len
 export class MeshPipe implements RenderPipe<Mesh<Geometry>>, InstructionPipe<Mesh<Geometry>>
 {
     /** @ignore */
@@ -63,6 +63,7 @@ export class MeshPipe implements RenderPipe<Mesh<Geometry>>, InstructionPipe<Mes
     private _meshDataHash: Record<number, MeshData> = Object.create(null);
     private _gpuBatchableMeshHash: Record<number, BatchableMesh> = Object.create(null);
     private _adaptor: MeshAdaptor;
+    private readonly _destroyRenderableBound = this.destroyRenderable.bind(this) as (renderable: Container) => void;
 
     constructor(renderer: Renderer, adaptor: MeshAdaptor)
     {
@@ -70,6 +71,9 @@ export class MeshPipe implements RenderPipe<Mesh<Geometry>>, InstructionPipe<Mes
         this._adaptor = adaptor;
 
         this._adaptor.init();
+
+        renderer.renderableGC.addManagedHash(this, '_gpuBatchableMeshHash');
+        renderer.renderableGC.addManagedHash(this, '_meshDataHash');
     }
 
     public validateRenderable(mesh: Mesh<Geometry>): boolean
@@ -115,12 +119,10 @@ export class MeshPipe implements RenderPipe<Mesh<Geometry>>, InstructionPipe<Mes
 
             const batchableMesh = this._getBatchableMesh(mesh as Mesh);
 
-            const texture = mesh.texture;
-
-            if (batchableMesh.texture._source !== texture._source)
-            {
-                return !batchableMesh.batcher.checkAndUpdateTexture(batchableMesh, texture);
-            }
+            return !batchableMesh._batcher.checkAndUpdateTexture(
+                batchableMesh,
+                mesh.texture
+            );
         }
 
         return false;
@@ -139,7 +141,7 @@ export class MeshPipe implements RenderPipe<Mesh<Geometry>>, InstructionPipe<Mes
             gpuBatchableMesh.texture = mesh._texture;
             gpuBatchableMesh.geometry = mesh._geometry as MeshGeometry;
 
-            batcher.addToBatch(gpuBatchableMesh);
+            batcher.addToBatch(gpuBatchableMesh, instructionSet);
         }
         else
         {
@@ -158,7 +160,7 @@ export class MeshPipe implements RenderPipe<Mesh<Geometry>>, InstructionPipe<Mes
             gpuBatchableMesh.texture = mesh._texture;
             gpuBatchableMesh.geometry = mesh._geometry as MeshGeometry;
 
-            gpuBatchableMesh.batcher.updateElement(gpuBatchableMesh);
+            gpuBatchableMesh._batcher.updateElement(gpuBatchableMesh);
         }
     }
 
@@ -173,6 +175,8 @@ export class MeshPipe implements RenderPipe<Mesh<Geometry>>, InstructionPipe<Mes
             BigPool.return(gpuMesh as PoolItem);
             this._gpuBatchableMeshHash[mesh.uid] = null;
         }
+
+        mesh.off('destroyed', this._destroyRenderableBound);
     }
 
     public execute(mesh: Mesh<Geometry>)
@@ -215,10 +219,7 @@ export class MeshPipe implements RenderPipe<Mesh<Geometry>>, InstructionPipe<Mes
             meshData.vertexSize = mesh._geometry.positions.length;
         }
 
-        mesh.on('destroyed', () =>
-        {
-            this.destroyRenderable(mesh);
-        });
+        mesh.on('destroyed', this._destroyRenderableBound);
 
         return this._meshDataHash[mesh.uid];
     }
@@ -233,13 +234,12 @@ export class MeshPipe implements RenderPipe<Mesh<Geometry>>, InstructionPipe<Mes
         // TODO - make this batchable graphics??
         const gpuMesh: BatchableMesh = BigPool.get(BatchableMesh);
 
-        gpuMesh.mesh = mesh;
+        gpuMesh.renderable = mesh;
         gpuMesh.texture = mesh._texture;
+        gpuMesh.transform = mesh.groupTransform;
         gpuMesh.roundPixels = (this.renderer._roundPixels | mesh._roundPixels) as 0 | 1;
 
         this._gpuBatchableMeshHash[mesh.uid] = gpuMesh;
-
-        gpuMesh.mesh = mesh;
 
         return gpuMesh;
     }

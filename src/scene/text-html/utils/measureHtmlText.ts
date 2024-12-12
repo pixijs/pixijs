@@ -1,8 +1,7 @@
-import { CanvasTextMetrics } from '../../text/canvas/CanvasTextMetrics';
 import { HTMLTextRenderData } from '../HTMLTextRenderData';
 
 import type { Size } from '../../../maths/misc/Size';
-import type { HTMLTextStyle } from '../HtmlTextStyle';
+import type { HTMLTextStyle } from '../HTMLTextStyle';
 
 let tempHTMLTextRenderData: HTMLTextRenderData;
 
@@ -22,7 +21,7 @@ export function measureHtmlText(
     htmlTextRenderData?: HTMLTextRenderData
 ): Size
 {
-    htmlTextRenderData = htmlTextRenderData || tempHTMLTextRenderData || (tempHTMLTextRenderData = new HTMLTextRenderData());
+    htmlTextRenderData ||= tempHTMLTextRenderData || (tempHTMLTextRenderData = new HTMLTextRenderData());
 
     const { domElement, styleElement, svgRoot } = htmlTextRenderData;
 
@@ -42,13 +41,11 @@ export function measureHtmlText(
 
     svgRoot.remove();
 
-    const descenderPadding = CanvasTextMetrics.measureFont(style.fontStyle).descent;
-
     // padding is included in the CSS calculation, so we need to remove it here
     const doublePadding = style.padding * 2;
 
     return {
         width: contentBounds.width - doublePadding,
-        height: contentBounds.height + descenderPadding - doublePadding,
+        height: contentBounds.height - doublePadding,
     };
 }

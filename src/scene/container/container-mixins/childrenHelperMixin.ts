@@ -104,7 +104,7 @@ export const childrenHelperMixin: Partial<Container> = {
     },
 
     /**
-     * Changes the position of an existing child in the container container
+     * Changes the position of an existing child in the container
      * @param child - The child Container instance for which you want to change the index number
      * @param index - The resulting index number for the child container
      * @memberof scene.Container#
@@ -192,7 +192,6 @@ export const childrenHelperMixin: Partial<Container> = {
 
         child.parent = this;
         child.didChange = true;
-        child.didViewUpdate = false;
         child._updateFlags = 0b1111;
 
         const renderGroup = this.renderGroup || this.parentRenderGroup;
@@ -213,6 +212,7 @@ export const childrenHelperMixin: Partial<Container> = {
      * Swaps the position of 2 Containers within this container.
      * @param child - First container to swap
      * @param child2 - Second container to swap
+     * @memberof scene.Container#
      */
     swapChildren<U extends ContainerChild>(child: U, child2: U): void
     {
@@ -234,7 +234,7 @@ export const childrenHelperMixin: Partial<Container> = {
             renderGroup.structureDidChange = true;
         }
 
-        this._didChangeId++;
+        this._didContainerChangeTick++;
     },
     /**
      * Remove the Container from its parent Container. If the Container has no parent, do nothing.

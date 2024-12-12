@@ -5,7 +5,7 @@ PixiJS — The HTML5 Creation Engine
 
 [![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/QrnxmQUPGV)
 [![npm version](https://badge.fury.io/js/pixi.js.svg)](https://badge.fury.io/js/pixi.js)
-[![Node.js CI](https://github.com/pixijs/pixijs/workflows/Node.js%20CI/badge.svg)](https://github.com/pixijs/pixijs/actions?query=workflow%3A%22Node.js+CI%22)
+[![Publish](https://github.com/pixijs/pixijs/actions/workflows/publish-branch.yaml/badge.svg)](https://github.com/pixijs/pixijs/actions?query=workflow%3A%22publish-branch%22)
 [![Financial Contributors](https://opencollective.com/pixijs/tiers/badge.svg)](https://opencollective.com/pixijs/donate)
 
 This project aims to provide a fast, lightweight 2D library that works
@@ -84,54 +84,55 @@ import * as PIXI from 'pixi.js';
 Via jsDelivr:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/pixi.js@7.x/dist/pixi.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pixi.js@8.x/dist/pixi.min.js"></script>
 ```
 
 Or via unpkg:
 
 ```html
-<script src="https://unpkg.com/pixi.js@7.x/dist/pixi.min.js"></script>
+<script src="https://unpkg.com/pixi.js@8.x/dist/pixi.min.js"></script>
 ```
 
 ### Basic Usage Example ###
 
 ```js
-import { Application, Sprite, Assets } from 'pixi.js';
+import { Application, Assets, Sprite } from 'pixi.js';
 
-// The application will create a renderer using WebGL, if possible,
-// with a fallback to a canvas render. It will also setup the ticker
-// and the root stage PIXI.Container
-const app = new Application();
+(async () =>
+{
+    // Create a new application
+    const app = new Application();
 
-// Wait for the Renderer to be available
-await app.init();
+    // Initialize the application
+    await app.init({ background: '#1099bb', resizeTo: window });
 
-// The application will create a canvas element for you that you
-// can then insert into the DOM
-document.body.appendChild(app.canvas);
+    // Append the application canvas to the document body
+    document.body.appendChild(app.canvas);
 
-// load the texture we need
-const texture = await Assets.load('bunny.png');
+    // Load the bunny texture
+    const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
 
-// This creates a texture from a 'bunny.png' image
-const bunny = new Sprite(texture);
+    // Create a bunny Sprite
+    const bunny = new Sprite(texture);
 
-// Setup the position of the bunny
-bunny.x = app.renderer.width / 2;
-bunny.y = app.renderer.height / 2;
+    // Center the sprite's anchor point
+    bunny.anchor.set(0.5);
 
-// Rotate around the center
-bunny.anchor.x = 0.5;
-bunny.anchor.y = 0.5;
+    // Move the sprite to the center of the screen
+    bunny.x = app.screen.width / 2;
+    bunny.y = app.screen.height / 2;
 
-// Add the bunny to the scene we are building
-app.stage.addChild(bunny);
+    app.stage.addChild(bunny);
 
-// Listen for frame updates
-app.ticker.add(() => {
-    // each frame we spin the bunny around a bit
-    bunny.rotation += 0.01;
-});
+    // Listen for animate update
+    app.ticker.add((time) =>
+    {
+        // Just for fun, let's rotate mr rabbit a little.
+        // * Delta is 1 if running at 100% performance *
+        // * Creates frame-independent transformation *
+        bunny.rotation += 0.1 * time.deltaTime;
+    });
+})();
 ```
 
 ### Learn ###

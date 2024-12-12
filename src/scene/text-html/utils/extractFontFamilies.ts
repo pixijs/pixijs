@@ -1,4 +1,4 @@
-import type { HTMLTextStyle } from '../HtmlTextStyle';
+import type { HTMLTextStyle } from '../HTMLTextStyle';
 
 /**
  * Extracts font families from text. It will extract font families from the style, tagStyles and any font families
