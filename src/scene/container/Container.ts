@@ -7,9 +7,11 @@ import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { uid } from '../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { BigPool } from '../../utils/pool/PoolGroup';
+import { cacheAsTextureMixin } from './container-mixins/cacheAsTextureMixin';
 import { childrenHelperMixin } from './container-mixins/childrenHelperMixin';
 import { effectsMixin } from './container-mixins/effectsMixin';
 import { findMixin } from './container-mixins/findMixin';
+import { bgr2rgb, getGlobalMixin } from './container-mixins/getGlobalMixin';
 import { measureMixin } from './container-mixins/measureMixin';
 import { onRenderMixin } from './container-mixins/onRenderMixin';
 import { sortMixin } from './container-mixins/sortMixin';
@@ -75,7 +77,6 @@ type AnyEvent = {
     //
     // Side note, we disable @typescript-eslint/ban-types since {}&string is the only syntax that works.
     // Nor of the Record/unknown/never alternatives work.
-    // eslint-disable-next-line @typescript-eslint/ban-types
     [K: ({} & string) | ({} & symbol)]: any;
 };
 
@@ -378,6 +379,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     // same as above, but for the renderable
     /** @private */
     public didViewUpdate = false;
+
     // how deep is the container relative to its render group..
     // unless the element is the root render group - it will be relative to its parent
     /** @private */
@@ -548,7 +550,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      */
     public globalDisplayStatus = 0b111; // 0b11 | 0b10 | 0b01 | 0b00
 
-    public renderPipeId: string;
+    public readonly renderPipeId: string;
 
     /**
      * An optional bounds area for this container. Setting this rectangle will stop the renderer
@@ -560,17 +562,34 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     public boundsArea: Rectangle;
 
     /**
-     * A value that increments each time the container is modified
-     * the first 12 bits represent the container changes (eg transform, alpha, visible etc)
-     * the second 12 bits represent:
-     *      - for view changes (eg texture swap, geometry change etc)
-     *      - containers changes (eg children added, removed etc)
-     *
-     *  view          container
-     * [000000000000][00000000000]
+     * A value that increments each time the containe is modified
+     * eg children added, removed etc
      * @ignore
      */
-    public _didChangeId = 0;
+    public _didContainerChangeTick = 0;
+    /**
+     * A value that increments each time the container view is modified
+     * eg texture swap, geometry change etc
+     * @ignore
+     */
+    public _didViewChangeTick = 0;
+
+    /**
+     * We now use the _didContainerChangeTick and _didViewChangeTick to track changes
+     * @deprecated since 8.2.6
+     * @ignore
+     */
+    set _didChangeId(value: number)
+    {
+        this._didViewChangeTick = (value >> 12) & 0xFFF; // Extract the upper 12 bits
+        this._didContainerChangeTick = value & 0xFFF; // Extract the lower 12 bits
+    }
+
+    get _didChangeId(): number
+    {
+        return (this._didContainerChangeTick & 0xfff) | ((this._didViewChangeTick & 0xfff) << 12);
+    }
+
     /**
      * property that tracks if the container transform has changed
      * @ignore
@@ -581,6 +600,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     {
         super();
 
+        this.effects = [];
         assignWithIgnore(this, options, {
             children: true,
             parent: true,
@@ -588,7 +608,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         });
 
         options.children?.forEach((child) => this.addChild(child));
-        this.effects = [];
         options.parent?.addChild(this);
     }
 
@@ -621,14 +640,16 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         const child = children[0];
 
+        const renderGroup = this.renderGroup || this.parentRenderGroup;
+
         if (child.parent === this)
         {
             this.children.splice(this.children.indexOf(child), 1);
             this.children.push(child);
 
-            if (this.parentRenderGroup)
+            if (renderGroup)
             {
-                this.parentRenderGroup.structureDidChange = true;
+                renderGroup.structureDidChange = true;
             }
 
             return child;
@@ -647,12 +668,9 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         child.parent = this;
 
         child.didChange = true;
-        child.didViewUpdate = false;
 
         // TODO - OPtimise this? could check what the parent has set?
         child._updateFlags = 0b1111;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
 
         if (renderGroup)
         {
@@ -662,7 +680,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         this.emit('childAdded', child, this, this.children.length - 1);
         child.emit('added', this);
 
-        this._didChangeId += 1 << 12;
+        this._didViewChangeTick++;
 
         if (child._zIndex !== 0)
         {
@@ -697,7 +715,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         if (index > -1)
         {
-            this._didChangeId += 1 << 12;
+            this._didViewChangeTick++;
 
             this.children.splice(index, 1);
 
@@ -731,7 +749,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             }
         }
 
-        this._didChangeId++;
+        this._didContainerChangeTick++;
 
         if (this.didChange) return;
         this.didChange = true;
@@ -833,8 +851,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         return this._worldTransform;
     }
-
-    // / ////// transform related stuff
 
     /**
      * The position of the container on the x axis relative to the local coordinates of the parent.
@@ -1051,29 +1067,19 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     public setSize(value: number | Optional<Size, 'height'>, height?: number)
     {
         const size = this.getLocalBounds();
-        let convertedWidth: number;
-        let convertedHeight: number;
 
-        if (typeof value !== 'object')
+        if (typeof value === 'object')
         {
-            convertedWidth = value;
-            convertedHeight = height ?? value;
+            height = value.height ?? value.width;
+            value = value.width;
         }
         else
         {
-            convertedWidth = value.width;
-            convertedHeight = value.height ?? value.width;
+            height ??= value;
         }
 
-        if (convertedWidth !== undefined)
-        {
-            this._setWidth(convertedWidth, size.width);
-        }
-
-        if (convertedHeight !== undefined)
-        {
-            this._setHeight(convertedHeight, size.height);
-        }
+        value !== undefined && this._setWidth(value, size.width);
+        height !== undefined && this._setHeight(height, size.height);
     }
 
     /** Called when the skew or the rotation changes. */
@@ -1136,7 +1142,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     /** Updates the local transform. */
     public updateLocalTransform(): void
     {
-        const localTransformChangeId = this._didChangeId & 0xFFF;
+        const localTransformChangeId = this._didContainerChangeTick;
 
         if (this._didLocalTransformChangeId === localTransformChangeId) return;
 
@@ -1205,10 +1211,8 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      */
     get tint(): number
     {
-        const bgr = this.localColor;
         // convert bgr to rgb..
-
-        return ((bgr & 0xFF) << 16) + (bgr & 0xFF00) + ((bgr >> 16) & 0xFF);
+        return bgr2rgb(this.localColor);
     }
 
     // / //////////////// blend related stuff
@@ -1336,7 +1340,15 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         this.destroyed = true;
 
         // remove children is faster than removeChild..
-        const oldChildren = this.removeChildren(0, this.children.length);
+
+        let oldChildren: ContainerChild[];
+
+        // we add this check as calling removeChildren on particle container will throw an error
+        // As we know it does cannot have any children, check before calling the function.
+        if (this.children.length)
+        {
+            oldChildren = this.removeChildren(0, this.children.length);
+        }
 
         this.removeFromParent();
         this.parent = null;
@@ -1354,7 +1366,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         const destroyChildren = typeof options === 'boolean' ? options : options?.children;
 
-        if (destroyChildren)
+        if (destroyChildren && oldChildren)
         {
             for (let i = 0; i < oldChildren.length; ++i)
             {
@@ -1375,3 +1387,5 @@ Container.mixin(effectsMixin);
 Container.mixin(findMixin);
 Container.mixin(sortMixin);
 Container.mixin(cullingMixin);
+Container.mixin(cacheAsTextureMixin);
+Container.mixin(getGlobalMixin);

@@ -4,9 +4,9 @@ import { Texture } from '../Texture';
 import type { ICanvas } from '../../../../../environment/canvas/ICanvas';
 import type { CanvasSourceOptions } from '../sources/CanvasSource';
 
-const canvasCache: Map<ICanvas, Texture> = new Map();
+const canvasCache: Map<ICanvas, Texture<CanvasSource>> = new Map();
 
-export function getCanvasTexture(canvas: ICanvas, options?: CanvasSourceOptions): Texture
+export function getCanvasTexture(canvas: ICanvas, options?: CanvasSourceOptions): Texture<CanvasSource>
 {
     if (!canvasCache.has(canvas))
     {

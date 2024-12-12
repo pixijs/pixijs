@@ -23,5 +23,7 @@ export function getMaxTexturesPerBatch(): number
     maxTexturesPerBatchCache = checkMaxIfStatementsInShader(
         maxTexturesPerBatchCache, gl);
 
+    gl.getExtension('WEBGL_lose_context')?.loseContext();
+
     return maxTexturesPerBatchCache;
 }

@@ -1,8 +1,7 @@
 import { DOMAdapter } from '../environment/adapter';
+import { VERSION } from './const';
 
 let saidHello = false;
-
-export const VERSION = '$_VERSION';
 
 /**
  * Prints out the version and renderer information for this running instance of PixiJS.

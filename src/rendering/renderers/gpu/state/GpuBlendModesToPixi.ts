@@ -133,6 +133,32 @@ GpuBlendModesToPixi.erase = {
     },
 };
 
+GpuBlendModesToPixi.min = {
+    alpha: {
+        srcFactor: 'one',
+        dstFactor: 'one',
+        operation: 'min',
+    },
+    color: {
+        srcFactor: 'one',
+        dstFactor: 'one',
+        operation: 'min',
+    },
+};
+
+GpuBlendModesToPixi.max = {
+    alpha: {
+        srcFactor: 'one',
+        dstFactor: 'one',
+        operation: 'max',
+    },
+    color: {
+        srcFactor: 'one',
+        dstFactor: 'one',
+        operation: 'max',
+    },
+};
+
 // composite operations
 // GpuBlendModesToPixi[BLEND_MODES.SRC_IN] = {
 //     alpha: {

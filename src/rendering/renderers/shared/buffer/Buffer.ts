@@ -140,6 +140,8 @@ export class Buffer extends EventEmitter<{
 
     private _data: TypedArray;
 
+    private _dataInt32: Int32Array = null;
+
     /**
      * should the GPU buffer be shrunk when the data becomes smaller?
      * changing this will cause the buffer to be destroyed and a new one created on the GPU
@@ -174,7 +176,7 @@ export class Buffer extends EventEmitter<{
 
         this._data = data as TypedArray;
 
-        size = size ?? (data as TypedArray)?.byteLength;
+        size ??= (data as TypedArray)?.byteLength;
 
         const mappedAtCreation = !!data;
 
@@ -197,6 +199,16 @@ export class Buffer extends EventEmitter<{
     set data(value: TypedArray)
     {
         this.setDataWithSize(value, value.length, true);
+    }
+
+    get dataInt32()
+    {
+        if (!this._dataInt32)
+        {
+            this._dataInt32 = new Int32Array((this.data as any).buffer);
+        }
+
+        return this._dataInt32;
     }
 
     /** whether the buffer is static or not */
@@ -243,11 +255,12 @@ export class Buffer extends EventEmitter<{
         const oldData = this._data;
 
         this._data = value;
+        this._dataInt32 = null;
 
         // Event handling
-        if (oldData.length !== value.length)
+        if (!oldData || oldData.length !== value.length)
         {
-            if (!this.shrinkToFit && value.byteLength < oldData.byteLength)
+            if (!this.shrinkToFit && oldData && value.byteLength < oldData.byteLength)
             {
                 if (syncGPU) this.emit('update', this);
             }

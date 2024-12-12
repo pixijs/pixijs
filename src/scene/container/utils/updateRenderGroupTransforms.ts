@@ -1,7 +1,8 @@
 import { Container, UPDATE_BLEND, UPDATE_COLOR, UPDATE_VISIBLE } from '../Container';
 import { clearList } from './clearList';
-import { mixColors } from './mixColors';
+import { multiplyColors } from './multiplyColors';
 
+import type { ViewContainer } from '../../view/ViewContainer';
 import type { RenderGroup } from '../RenderGroup';
 
 const tempContainer = new Container();
@@ -67,7 +68,7 @@ export function updateRenderGroupTransform(renderGroup: RenderGroup)
             renderGroupParent.worldTransform,
         );
 
-        renderGroup.worldColor = mixColors(
+        renderGroup.worldColor = multiplyColors(
             root.groupColor,
             renderGroupParent.worldColor,
         );
@@ -104,7 +105,7 @@ export function updateTransformAndChildren(container: Container, updateTick: num
 
     if ((parent && !parent.renderGroup))
     {
-        updateFlags = updateFlags | container._updateFlags;
+        updateFlags |= container._updateFlags;
 
         container.relativeGroupTransform.appendFrom(
             localTransform,
@@ -140,10 +141,11 @@ export function updateTransformAndChildren(container: Container, updateTick: num
         }
 
         const renderGroup = container.parentRenderGroup;
+        const renderable = container as ViewContainer;
 
-        if (container.renderPipeId && !renderGroup.structureDidChange)
+        if (renderable.renderPipeId && !renderGroup.structureDidChange)
         {
-            renderGroup.updateRenderable(container);
+            renderGroup.updateRenderable(renderable);
         }
     }
 }
@@ -156,7 +158,7 @@ function updateColorBlendVisibility(
 {
     if (updateFlags & UPDATE_COLOR)
     {
-        container.groupColor = mixColors(
+        container.groupColor = multiplyColors(
             container.localColor,
             parent.groupColor
         );

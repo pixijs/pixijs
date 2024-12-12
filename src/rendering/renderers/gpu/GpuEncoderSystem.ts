@@ -143,13 +143,19 @@ export class GpuEncoderSystem implements System
         this.renderPassEncoder.setBindGroup(index, gpuBindGroup);
     }
 
-    public setGeometry(geometry: Geometry)
+    public setGeometry(geometry: Geometry, program: GpuProgram)
     {
-        for (const i in geometry.attributes)
-        {
-            const attribute = geometry.attributes[i];
+        // when binding a buffers for geometry, there is no need to bind a buffer more than once if it is interleaved.
+        // which is often the case for Pixi. This is a performance optimisation.
+        // Instead of looping through the attributes, we instead call getBufferNamesToBind
+        // which returns a list of buffer names that need to be bound.
+        // we can then loop through this list and bind the buffers.
+        // essentially only binding a single time for any buffers that are interleaved.
+        const buffersToBind = this._renderer.pipeline.getBufferNamesToBind(geometry, program);
 
-            this._setVertexBuffer(attribute.location, attribute.buffer);
+        for (const i in buffersToBind)
+        {
+            this._setVertexBuffer(i as any as number, geometry.attributes[buffersToBind[i]].buffer);
         }
 
         if (geometry.indexBuffer)
@@ -201,20 +207,20 @@ export class GpuEncoderSystem implements System
         const { geometry, shader, state, topology, size, start, instanceCount, skipSync } = options;
 
         this.setPipelineFromGeometryProgramAndState(geometry, shader.gpuProgram, state, topology);
-        this.setGeometry(geometry);
+        this.setGeometry(geometry, shader.gpuProgram);
         this._setShaderBindGroups(shader, skipSync);
 
         if (geometry.indexBuffer)
         {
             this.renderPassEncoder.drawIndexed(
                 size || geometry.indexBuffer.data.length,
-                instanceCount || geometry.instanceCount,
+                instanceCount ?? geometry.instanceCount,
                 start || 0
             );
         }
         else
         {
-            this.renderPassEncoder.draw(size || geometry.getSize(), instanceCount || geometry.instanceCount, start || 0);
+            this.renderPassEncoder.draw(size || geometry.getSize(), instanceCount ?? geometry.instanceCount, start || 0);
         }
     }
 

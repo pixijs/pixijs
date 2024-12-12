@@ -85,7 +85,9 @@ export class CanvasTextSystem implements System
     {
         if (typeof options === 'string')
         {
+            // #if _DEBUG
             deprecation('8.0.0', 'CanvasTextSystem.getTexture: Use object TextOptions instead of separate arguments');
+            // #endif
 
             options = {
                 text: options,
@@ -224,12 +226,8 @@ export class CanvasTextSystem implements System
         const height = canvas.height;
 
         context.resetTransform();
-
         context.scale(resolution, resolution);
-
-        const padding = style.padding * 2;
-
-        context.clearRect(0, 0, measured.width + 4 + padding, measured.height + 4 + padding);
+        context.textBaseline = style.textBaseline;
 
         // set stroke styles..
 
@@ -298,7 +296,6 @@ export class CanvasTextSystem implements System
             }
             else
             {
-                context.globalAlpha = style._fill?.alpha ?? 1;
                 context.fillStyle = style._fill ? getCanvasFillStyle(style._fill, context) : null;
 
                 if (style._stroke?.width)

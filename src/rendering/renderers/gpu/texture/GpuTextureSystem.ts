@@ -1,5 +1,6 @@
 import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { UniformGroup } from '../../shared/shader/UniformGroup';
 import { CanvasPool } from '../../shared/texture/CanvasPool';
 import { BindGroup } from '../shader/BindGroup';
 import { gpuUploadBufferImageResource } from './uploaders/gpuUploadBufferImageResource';
@@ -55,6 +56,10 @@ export class GpuTextureSystem implements System, CanvasGenerator
     constructor(renderer: WebGPURenderer)
     {
         this._renderer = renderer;
+        renderer.renderableGC.addManagedHash(this, '_gpuSources');
+        renderer.renderableGC.addManagedHash(this, '_gpuSamplers');
+        renderer.renderableGC.addManagedHash(this, '_bindGroupHash');
+        renderer.renderableGC.addManagedHash(this, '_textureViewHash');
     }
 
     protected contextChange(gpu: GPU): void
@@ -204,23 +209,33 @@ export class GpuTextureSystem implements System, CanvasGenerator
         return this._gpuSources[source.uid] || this.initSource(source);
     }
 
+    /**
+     * this returns s bind group for a specific texture, the bind group contains
+     * - the texture source
+     * - the texture style
+     * - the texture matrix
+     * This is cached so the bind group should only be created once per texture
+     * @param texture - the texture you want the bindgroup for
+     * @returns the bind group for the texture
+     */
     public getTextureBindGroup(texture: Texture)
     {
         return this._bindGroupHash[texture.uid] ?? this._createTextureBindGroup(texture);
     }
 
-    private _createTextureBindGroup(texture: BindableTexture)
+    private _createTextureBindGroup(texture: Texture)
     {
         const source = texture.source;
 
-        const bindGroupId = source.uid;
-
-        this._bindGroupHash[bindGroupId] = new BindGroup({
+        this._bindGroupHash[texture.uid] = new BindGroup({
             0: source,
             1: source.style,
+            2: new UniformGroup({
+                uTextureMatrix: { type: 'mat3x3<f32>', value: texture.textureMatrix.mapCoord },
+            })
         });
 
-        return this._bindGroupHash[bindGroupId];
+        return this._bindGroupHash[texture.uid];
     }
 
     public getTextureView(texture: BindableTexture)
@@ -253,9 +268,9 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
         context.configure({
             device: renderer.gpu.device,
-            // eslint-disable-next-line max-len
+
             usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC,
-            format: navigator.gpu.getPreferredCanvasFormat(),
+            format: DOMAdapter.get().getNavigator().gpu.getPreferredCanvasFormat(),
             alphaMode: 'premultiplied',
         });
 

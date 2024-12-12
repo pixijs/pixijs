@@ -104,6 +104,8 @@ export class GraphicsContext extends EventEmitter<{
         matrix: null,
         /** The fill pattern to use. */
         fill: null,
+        /** If the stroke is a pixel line. */
+        pixelLine: false,
     };
 
     /** unique id for this graphics context */
@@ -1046,7 +1048,9 @@ export class GraphicsContext extends EventEmitter<{
             {
                 const data = instruction.data as StrokeInstruction['data'];
 
-                const padding = data.style.width / 2;
+                const alignment = data.style.alignment;
+
+                const padding = (data.style.width * (1 - alignment));
 
                 const _bounds = data.path.bounds;
 

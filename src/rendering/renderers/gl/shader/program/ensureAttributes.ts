@@ -27,7 +27,6 @@ export function ensureAttributes(
 
         if (attributeData)
         {
-            attribute.location ??= attributeData.location;
             attribute.format ??= attributeData.format;
             attribute.offset ??= attributeData.offset;
             attribute.instance ??= attributeData.instance;

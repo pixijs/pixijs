@@ -84,12 +84,11 @@ export function _getGlobalBounds(
     }
     else
     {
-        if ((target as Renderable).addBounds)
+        if ((target as Renderable).bounds)
         {
             // save a copy
             bounds.matrix = worldTransform;
-
-            (target as Renderable).addBounds(bounds);
+            bounds.addBounds((target as Renderable).bounds);
         }
 
         for (let i = 0; i < target.children.length; i++)

@@ -1,3 +1,4 @@
+import { DOMAdapter } from '../../../environment/adapter';
 import { ExtensionType } from '../../../extensions/Extensions';
 
 import type { System } from '../shared/system/System';
@@ -118,7 +119,7 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
     private async _createDeviceAndAdaptor(options: GpuContextOptions): Promise<GPU>
     {
         // TODO we only need one of these..
-        const adapter = await navigator.gpu.requestAdapter({
+        const adapter = await DOMAdapter.get().getNavigator().gpu.requestAdapter({
             powerPreference: options.powerPreference,
             forceFallbackAdapter: options.forceFallbackAdapter,
         });

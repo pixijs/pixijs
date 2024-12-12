@@ -7,8 +7,9 @@ import { BatchableSprite } from '../sprite/BatchableSprite';
 import type { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../../rendering/renderers/types';
+import type { Container } from '../container/Container';
 import type { HTMLText } from './HTMLText';
-import type { HTMLTextStyle } from './HtmlTextStyle';
+import type { HTMLTextStyle } from './HTMLTextStyle';
 
 export class HTMLTextPipe implements RenderPipe<HTMLText>
 {
@@ -32,10 +33,13 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
         batchableSprite: BatchableSprite,
     }> = Object.create(null);
 
+    private readonly _destroyRenderableBound = this.destroyRenderable.bind(this) as (renderable: Container) => void;
+
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
         this._renderer.runners.resolutionChange.add(this);
+        this._renderer.renderableGC.addManagedHash(this, '_gpuText');
     }
 
     public resolutionChange()
@@ -43,6 +47,9 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
         for (const i in this._gpuText)
         {
             const gpuText = this._gpuText[i];
+
+            if (!gpuText) continue;
+
             const text = gpuText.batchableSprite.renderable as HTMLText;
 
             if (text._autoResolution)
@@ -77,7 +84,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
         return false;
     }
 
-    public addRenderable(htmlText: HTMLText, _instructionSet: InstructionSet)
+    public addRenderable(htmlText: HTMLText, instructionSet: InstructionSet)
     {
         const gpuText = this._getGpuText(htmlText);
 
@@ -88,7 +95,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
             this._updateText(htmlText);
         }
 
-        this._renderer.renderPipes.batch.addToBatch(batchableSprite);
+        this._renderer.renderPipes.batch.addToBatch(batchableSprite, instructionSet);
     }
 
     public updateRenderable(htmlText: HTMLText)
@@ -101,11 +108,12 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
             this._updateText(htmlText);
         }
 
-        batchableSprite.batcher.updateElement(batchableSprite);
+        batchableSprite._batcher.updateElement(batchableSprite);
     }
 
     public destroyRenderable(htmlText: HTMLText)
     {
+        htmlText.off('destroyed', this._destroyRenderableBound);
         this._destroyRenderableById(htmlText.uid);
     }
 
@@ -198,6 +206,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
         const batchableSprite = gpuTextData.batchableSprite;
 
         batchableSprite.renderable = htmlText;
+        batchableSprite.transform = htmlText.groupTransform;
         batchableSprite.texture = Texture.EMPTY;
         batchableSprite.bounds = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
         batchableSprite.roundPixels = (this._renderer._roundPixels | htmlText._roundPixels) as 0 | 1;
@@ -205,10 +214,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
         htmlText._resolution = htmlText._autoResolution ? this._renderer.resolution : htmlText.resolution;
         this._gpuText[htmlText.uid] = gpuTextData;
         // TODO perhaps manage this outside this pipe? (a bit like how we update / add)
-        htmlText.on('destroyed', () =>
-        {
-            this.destroyRenderable(htmlText);
-        });
+        htmlText.on('destroyed', this._destroyRenderableBound);
 
         return gpuTextData;
     }

@@ -1,7 +1,6 @@
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
-import { Bounds } from '../container/bounds/Bounds';
-import { Container } from '../container/Container';
+import { ViewContainer } from '../view/ViewContainer';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
@@ -9,7 +8,7 @@ import type { View } from '../../rendering/renderers/shared/view/View';
 import type { ContainerOptions } from '../container/Container';
 import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
-import type { HTMLTextStyle, HTMLTextStyleOptions } from '../text-html/HtmlTextStyle';
+import type { HTMLTextStyle, HTMLTextStyleOptions } from '../text-html/HTMLTextStyle';
 import type { TextStyle, TextStyleOptions } from './TextStyle';
 
 /**
@@ -83,9 +82,8 @@ export interface TextOptions<
 export abstract class AbstractText<
     TEXT_STYLE extends TextStyle = TextStyle,
     TEXT_STYLE_OPTIONS extends TextStyleOptions = TextStyleOptions,
-> extends Container implements View
+> extends ViewContainer implements View
 {
-    public abstract readonly renderPipeId: string;
     public batched = true;
     public _anchor: ObservablePoint;
 
@@ -94,10 +92,7 @@ export abstract class AbstractText<
 
     public _style: TEXT_STYLE;
     public _didTextUpdate = true;
-    public _roundPixels: 0 | 1 = 0;
 
-    protected _bounds: Bounds = new Bounds();
-    protected _boundsDirty = true;
     protected _text: string;
     private readonly _styleClass: new (options: TEXT_STYLE_OPTIONS) => TEXT_STYLE;
 
@@ -164,20 +159,6 @@ export abstract class AbstractText<
         typeof value === 'number' ? this._anchor.set(value) : this._anchor.copyFrom(value);
     }
 
-    /**
-     *  Whether or not to round the x/y position of the text.
-     * @type {boolean}
-     */
-    get roundPixels()
-    {
-        return !!this._roundPixels;
-    }
-
-    set roundPixels(value: boolean)
-    {
-        this._roundPixels = value ? 1 : 0;
-    }
-
     /** Set the copy for the text object. To split a line you can use '\n'. */
     set text(value: TextString)
     {
@@ -233,7 +214,7 @@ export abstract class AbstractText<
      */
     set style(style: TEXT_STYLE | Partial<TEXT_STYLE> | TEXT_STYLE_OPTIONS)
     {
-        style = style || {};
+        style ||= {};
 
         this._style?.off('update', this.onViewUpdate, this);
 
@@ -248,21 +229,6 @@ export abstract class AbstractText<
 
         this._style.on('update', this.onViewUpdate, this);
         this.onViewUpdate();
-    }
-
-    /**
-     * The local bounds of the Text.
-     * @type {rendering.Bounds}
-     */
-    get bounds()
-    {
-        if (this._boundsDirty)
-        {
-            this._updateBounds();
-            this._boundsDirty = false;
-        }
-
-        return this._bounds;
     }
 
     /** The width of the sprite, setting this will actually modify the scale to achieve the value set. */
@@ -295,11 +261,7 @@ export abstract class AbstractText<
      */
     public override getSize(out?: Size): Size
     {
-        if (!out)
-        {
-            out = {} as Size;
-        }
-
+        out ||= {} as Size;
         out.width = Math.abs(this.scale.x) * this.bounds.width;
         out.height = Math.abs(this.scale.y) * this.bounds.height;
 
@@ -314,52 +276,25 @@ export abstract class AbstractText<
      */
     public override setSize(value: number | Optional<Size, 'height'>, height?: number)
     {
-        let convertedWidth: number;
-        let convertedHeight: number;
-
-        if (typeof value !== 'object')
+        if (typeof value === 'object')
         {
-            convertedWidth = value;
-            convertedHeight = height ?? value;
+            height = value.height ?? value.width;
+            value = value.width;
         }
         else
         {
-            convertedWidth = value.width;
-            convertedHeight = value.height ?? value.width;
+            height ??= value;
         }
 
-        if (convertedWidth !== undefined)
-        {
-            this._setWidth(convertedWidth, this.bounds.width);
-        }
-
-        if (convertedHeight !== undefined)
-        {
-            this._setHeight(convertedHeight, this.bounds.height);
-        }
-    }
-
-    /**
-     * Adds the bounds of this text to the bounds object.
-     * @param bounds - The output bounds object.
-     */
-    public addBounds(bounds: Bounds)
-    {
-        const _bounds = this.bounds;
-
-        bounds.addFrame(
-            _bounds.minX,
-            _bounds.minY,
-            _bounds.maxX,
-            _bounds.maxY,
-        );
+        value !== undefined && this._setWidth(value, this.bounds.width);
+        height !== undefined && this._setHeight(height, this.bounds.height);
     }
 
     /**
      * Checks if the text contains the given point.
      * @param point - The point to check
      */
-    public containsPoint(point: PointData)
+    public override containsPoint(point: PointData)
     {
         const width = this.bounds.width;
         const height = this.bounds.height;
@@ -377,30 +312,16 @@ export abstract class AbstractText<
         return false;
     }
 
-    public onViewUpdate()
+    public override onViewUpdate()
     {
-        this._didChangeId += 1 << 12;
-        this._boundsDirty = true;
-
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
-        this._didTextUpdate = true;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.onChildViewUpdate(this);
-        }
+        if (!this.didViewUpdate) this._didTextUpdate = true;
+        super.onViewUpdate();
     }
 
     public _getKey(): string
     {
         return `${this.text}:${this._style.styleKey}:${this._resolution}`;
     }
-
-    protected abstract _updateBounds(): void;
 
     /**
      * Destroys this text renderable and optionally its style texture.
@@ -410,7 +331,7 @@ export abstract class AbstractText<
      * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the text style
      * @param {boolean} [options.style=false] - Should it destroy the style of the text
      */
-    public destroy(options: DestroyOptions = false): void
+    public override destroy(options: DestroyOptions = false): void
     {
         super.destroy(options);
 

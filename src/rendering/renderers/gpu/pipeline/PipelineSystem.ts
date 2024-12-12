@@ -92,6 +92,7 @@ export class PipelineSystem implements System
 
     private _moduleCache: Record<string, GPUShaderModule> = Object.create(null);
     private _bufferLayoutsCache: Record<number, GPUVertexBufferLayout[]> = Object.create(null);
+    private readonly _bindingNamesCache: Record<string, Record<string, string>> = Object.create(null);
 
     private _pipeCache: PipeHash = Object.create(null);
     private readonly _pipeStateCaches: Record<number, PipeHash> = Object.create(null);
@@ -175,10 +176,9 @@ export class PipelineSystem implements System
             this._generateBufferKey(geometry);
         }
 
-        topology = topology || geometry.topology;
+        topology ||= geometry.topology;
 
         // now we have set the Ids - the key is different...
-        // eslint-disable-next-line max-len
         const key = getGraphicsStateKey(
             geometry._layoutKey,
             program._layoutKey,
@@ -198,7 +198,7 @@ export class PipelineSystem implements System
     {
         const device = this._gpu.device;
 
-        const buffers = this._createVertexBufferLayouts(geometry);
+        const buffers = this._createVertexBufferLayouts(geometry, program);
 
         const blendModes = this._renderer.state.getColorTargets(state);
 
@@ -277,24 +277,91 @@ export class PipelineSystem implements System
         {
             const attribute = geometry.attributes[attributeKeys[i]];
 
-            keyGen[index++] = attribute.location;
             keyGen[index++] = attribute.offset;
             keyGen[index++] = attribute.format;
             keyGen[index++] = attribute.stride;
+            keyGen[index++] = attribute.instance;
         }
 
-        const stringKey = keyGen.join('');
+        const stringKey = keyGen.join('|');
 
         geometry._layoutKey = createIdFromString(stringKey, 'geometry');
 
         return geometry._layoutKey;
     }
 
-    private _createVertexBufferLayouts(geometry: Geometry): GPUVertexBufferLayout[]
+    private _generateAttributeLocationsKey(program: GpuProgram): number
     {
-        if (this._bufferLayoutsCache[geometry._layoutKey])
+        const keyGen = [];
+        let index = 0;
+        // generate a key..
+
+        const attributeKeys = Object.keys(program.attributeData).sort();
+
+        for (let i = 0; i < attributeKeys.length; i++)
         {
-            return this._bufferLayoutsCache[geometry._layoutKey];
+            const attribute = program.attributeData[attributeKeys[i]];
+
+            keyGen[index++] = attribute.location;
+        }
+
+        const stringKey = keyGen.join('|');
+
+        program._attributeLocationsKey = createIdFromString(stringKey, 'programAttributes');
+
+        return program._attributeLocationsKey;
+    }
+
+    /**
+     * Returns a hash of buffer names mapped to bind locations.
+     * This is used to bind the correct buffer to the correct location in the shader.
+     * @param geometry - The geometry where to get the buffer names
+     * @param program - The program where to get the buffer names
+     * @returns An object of buffer names mapped to the bind location.
+     */
+    public getBufferNamesToBind(geometry: Geometry, program: GpuProgram): Record<string, string>
+    {
+        const key = (geometry._layoutKey << 16) | program._attributeLocationsKey;
+
+        if (this._bindingNamesCache[key]) return this._bindingNamesCache[key];
+
+        const data = this._createVertexBufferLayouts(geometry, program);
+
+        // now map the data to the buffers..
+        const bufferNamesToBind: Record<string, string> = Object.create(null);
+
+        const attributeData = program.attributeData;
+
+        for (let i = 0; i < data.length; i++)
+        {
+            const attributes = Object.values(data[i].attributes);
+
+            const shaderLocation = attributes[0].shaderLocation;
+
+            for (const j in attributeData)
+            {
+                if (attributeData[j].location === shaderLocation)
+                {
+                    bufferNamesToBind[i] = j;
+                    break;
+                }
+            }
+        }
+
+        this._bindingNamesCache[key] = bufferNamesToBind;
+
+        return bufferNamesToBind;
+    }
+
+    private _createVertexBufferLayouts(geometry: Geometry, program: GpuProgram): GPUVertexBufferLayout[]
+    {
+        if (!program._attributeLocationsKey) this._generateAttributeLocationsKey(program);
+
+        const key = (geometry._layoutKey << 16) | program._attributeLocationsKey;
+
+        if (this._bufferLayoutsCache[key])
+        {
+            return this._bufferLayoutsCache[key];
         }
 
         const vertexBuffersLayout: GPUVertexBufferLayout[] = [];
@@ -309,7 +376,7 @@ export class PipelineSystem implements System
 
             const bufferEntryAttributes = bufferEntry.attributes as GPUVertexAttribute[];
 
-            for (const i in geometry.attributes)
+            for (const i in program.attributeData)
             {
                 const attribute = geometry.attributes[i];
 
@@ -327,7 +394,7 @@ export class PipelineSystem implements System
                     bufferEntry.stepMode = attribute.instance ? 'instance' : 'vertex';
 
                     bufferEntryAttributes.push({
-                        shaderLocation: attribute.location,
+                        shaderLocation: program.attributeData[i].location,
                         offset: attribute.offset,
                         format: attribute.format,
                     });
@@ -340,7 +407,7 @@ export class PipelineSystem implements System
             }
         });
 
-        this._bufferLayoutsCache[geometry._layoutKey] = vertexBuffersLayout;
+        this._bufferLayoutsCache[key] = vertexBuffersLayout;
 
         return vertexBuffersLayout;
     }

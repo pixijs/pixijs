@@ -1,5 +1,5 @@
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
-import { Container } from '../../container/Container';
+import { ViewContainer } from '../../view/ViewContainer';
 import { GraphicsContext } from './GraphicsContext';
 
 import type { ColorSource } from '../../../color/Color';
@@ -7,7 +7,6 @@ import type { Matrix } from '../../../maths/matrix/Matrix';
 import type { PointData } from '../../../maths/point/PointData';
 import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import type { View } from '../../../rendering/renderers/shared/view/View';
 import type { Bounds } from '../../container/bounds/Bounds';
 import type { ContainerOptions } from '../../container/Container';
 import type { ContextDestroyOptions, DestroyOptions } from '../../container/destroyTypes';
@@ -41,15 +40,10 @@ export interface GraphicsOptions extends ContainerOptions
  * @memberof scene
  * @extends scene.Container
  */
-export class Graphics extends Container implements View, Instruction
+export class Graphics extends ViewContainer implements Instruction
 {
-    public readonly canBundle = true;
-    public readonly renderPipeId = 'graphics';
+    public override readonly renderPipeId: string = 'graphics';
     public batched: boolean;
-
-    public _roundPixels: 0 | 1 = 0;
-
-    public _didGraphicsUpdate: boolean;
 
     private _context: GraphicsContext;
     private readonly _ownedContext: GraphicsContext;
@@ -109,58 +103,24 @@ export class Graphics extends Container implements View, Instruction
      * The local bounds of the graphic.
      * @type {rendering.Bounds}
      */
-    get bounds(): Bounds
+    override get bounds(): Bounds
     {
         return this._context.bounds;
     }
 
     /**
-     * Adds the bounds of this object to the bounds object.
-     * @param bounds - The output bounds object.
+     * Graphics objects do not need to update their bounds as the context handles this.
+     * @private
      */
-    public addBounds(bounds: Bounds)
-    {
-        bounds.addBounds(this._context.bounds);
-    }
+    protected updateBounds(): void { /** */ }
 
     /**
      * Checks if the object contains the given point.
      * @param point - The point to check
      */
-    public containsPoint(point: PointData)
+    public override containsPoint(point: PointData)
     {
         return this._context.containsPoint(point);
-    }
-
-    /**
-     *  Whether or not to round the x/y position of the graphic.
-     * @type {boolean}
-     */
-    get roundPixels()
-    {
-        return !!this._roundPixels;
-    }
-
-    set roundPixels(value: boolean)
-    {
-        this._roundPixels = value ? 1 : 0;
-    }
-
-    protected onViewUpdate()
-    {
-        // increment from the 12th bit!
-        this._didChangeId += 1 << 12;
-        this._didGraphicsUpdate = true;
-
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.onChildViewUpdate(this);
-        }
     }
 
     /**
@@ -178,7 +138,7 @@ export class Graphics extends Container implements View, Instruction
      * @param {boolean} [options.textureSource=false] - Should destroy the texture source of the graphics context
      * @param {boolean} [options.context=false] - Should destroy the context
      */
-    public destroy(options?: DestroyOptions): void
+    public override destroy(options?: DestroyOptions): void
     {
         if (this._ownedContext && !options)
         {
@@ -763,7 +723,6 @@ export class Graphics extends Container implements View, Instruction
     public lineStyle(width?: number, color?: ColorSource, alpha?: number): this
     {
         // #if _DEBUG
-        // eslint-disable-next-line max-len
         deprecation(v8_0_0, 'Graphics#lineStyle is no longer needed. Use Graphics#setStrokeStyle to set the stroke style.');
         // #endif
 
@@ -794,8 +753,8 @@ export class Graphics extends Container implements View, Instruction
         const fillStyle: Partial<FillStyle> = {};
 
         // avoid undefined assignment
-        color && (fillStyle.color = color);
-        alpha && (fillStyle.alpha = alpha);
+        if (color !== undefined) fillStyle.color = color;
+        if (alpha !== undefined) fillStyle.alpha = alpha;
 
         this.context.fillStyle = fillStyle;
 

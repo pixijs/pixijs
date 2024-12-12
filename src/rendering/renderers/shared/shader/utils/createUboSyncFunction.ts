@@ -1,4 +1,3 @@
-/* eslint-disable quote-props */
 import { uniformParsers } from './uniformParsers';
 
 import type { UboElement, UNIFORM_TYPES_SINGLE, UniformsSyncCallback } from '../types';
@@ -79,6 +78,7 @@ export function createUboSyncFunction(
     return new Function(
         'uv',
         'data',
+        'dataInt32',
         'offset',
         fragmentSrc,
     ) as UniformsSyncCallback;

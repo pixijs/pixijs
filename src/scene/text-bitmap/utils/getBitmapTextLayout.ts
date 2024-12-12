@@ -17,7 +17,12 @@ export interface BitmapTextLayoutData
     }[];
 }
 
-export function getBitmapTextLayout(chars: string[], style: TextStyle, font: AbstractBitmapFont<any>): BitmapTextLayoutData
+export function getBitmapTextLayout(
+    chars: string[],
+    style: TextStyle,
+    font: AbstractBitmapFont<any>,
+    trimEnd: boolean
+): BitmapTextLayoutData
 {
     const layoutData: BitmapTextLayoutData = {
         width: 0,
@@ -77,12 +82,16 @@ export function getBitmapTextLayout(chars: string[], style: TextStyle, font: Abs
     const nextLine = () =>
     {
         let index = currentLine.chars.length - 1;
-        let lastChar = currentLine.chars[index];
 
-        while (lastChar === ' ')
+        if (trimEnd)
         {
-            currentLine.width -= font.chars[lastChar].xAdvance;
-            lastChar = currentLine.chars[--index];
+            let lastChar = currentLine.chars[index];
+
+            while (lastChar === ' ')
+            {
+                currentLine.width -= font.chars[lastChar].xAdvance;
+                lastChar = currentLine.chars[--index];
+            }
         }
 
         layoutData.width = Math.max(layoutData.width, currentLine.width);

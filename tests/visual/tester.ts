@@ -2,13 +2,12 @@ import { ensureDirSync, existsSync, readFileSync, writeFile } from 'fs-extra';
 import { dirname } from 'path';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
-import { Rectangle } from '../../src/maths/shapes/Rectangle';
-import { autoDetectRenderer } from '../../src/rendering/renderers/autoDetectRenderer';
-import { Container } from '../../src/scene/container/Container';
-import { Graphics } from '../../src/scene/graphics/shared/Graphics';
+import { Rectangle } from '~/maths';
+import { autoDetectRenderer } from '~/rendering';
+import { Container, Graphics } from '~/scene';
 
-import type { Renderer, RendererOptions } from '../../src/rendering/renderers/types';
 import type { RenderType } from './types';
+import type { Renderer, RendererOptions } from '~/rendering';
 
 function toArrayBuffer(buf: Buffer): ArrayBuffer
 {
@@ -94,19 +93,23 @@ export async function renderTest(
     const stage = new Container();
     const scene = new Container();
 
-    const { width, height } = rendererOptions;
+    const { width, height } = { ...rendererOptions, ...options };
 
     stage.addChild(new Graphics().rect(0, 0, width, height)).fill(renderer.background.color);
     stage.addChild(scene);
 
     await createFunction(scene, renderer);
 
+    const testId = `${id}-${rendererType}`;
+
     const canvas = renderer.extract.canvas({
         target: stage,
         frame: new Rectangle(0, 0, width, height)
     }) as HTMLCanvasElement;
 
-    const imageLocation = `./tests/visual/snapshots/${id}-${rendererType}.png`;
+    canvas.id = testId;
+
+    const imageLocation = `./tests/visual/snapshots/${testId}.png`;
 
     if (!existsSync(imageLocation))
     {

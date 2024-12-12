@@ -119,7 +119,7 @@ function handleFillObject(value: FillStyle, defaultStyle: ConvertedFillStyle): C
     {
         if (style.texture !== Texture.WHITE)
         {
-            const m = style.matrix?.invert() || new Matrix();
+            const m = style.matrix?.clone().invert() || new Matrix();
 
             m.translate(style.texture.frame.x, style.texture.frame.y);
             m.scale(1 / style.texture.source.width, 1 / style.texture.source.height);
@@ -199,7 +199,7 @@ export function toFillStyle<T extends FillInput>(
  */
 export function toStrokeStyle(value: StrokeInput, defaultStyle: ConvertedStrokeStyle): ConvertedStrokeStyle
 {
-    const { width, alignment, miterLimit, cap, join, ...rest } = defaultStyle;
+    const { width, alignment, miterLimit, cap, join, pixelLine, ...rest } = defaultStyle;
     const fill = toFillStyle(value, rest);
 
     if (!fill)
@@ -213,6 +213,7 @@ export function toStrokeStyle(value: StrokeInput, defaultStyle: ConvertedStrokeS
         miterLimit,
         cap,
         join,
+        pixelLine,
         ...fill,
     };
 }

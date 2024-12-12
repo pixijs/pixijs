@@ -1,6 +1,5 @@
-import { Matrix } from '../../../maths/matrix/Matrix';
 import { Point } from '../../../maths/point/Point';
-import { updateTransformBackwards } from '../bounds/getGlobalBounds';
+import { matrixPool } from '../bounds/utils/matrixAndBoundsPool';
 
 import type { PointData } from '../../../maths/point/PointData';
 import type { Container } from '../Container';
@@ -46,19 +45,14 @@ export const toLocalGlobalMixin: Partial<Container> = {
      */
     toGlobal<P extends PointData = Point>(position: PointData, point?: P, skipUpdate = false): P
     {
-        if (!skipUpdate)
-        {
-            this.updateLocalTransform();
-
-            const globalMatrix = updateTransformBackwards(this, new Matrix());
-
-            globalMatrix.append(this.localTransform);
-
-            return globalMatrix.apply<P>(position, point);
-        }
+        const globalMatrix = this.getGlobalTransform(matrixPool.get(), skipUpdate);
 
         // simply apply the matrix..
-        return this.worldTransform.apply<P>(position, point);
+        point = globalMatrix.apply(position, point);
+
+        matrixPool.return(globalMatrix);
+
+        return point;
     },
 
     /**
@@ -78,18 +72,13 @@ export const toLocalGlobalMixin: Partial<Container> = {
             position = from.toGlobal(position, point, skipUpdate);
         }
 
-        if (!skipUpdate)
-        {
-            this.updateLocalTransform();
-
-            const globalMatrix = updateTransformBackwards(this, new Matrix());
-
-            globalMatrix.append(this.localTransform);
-
-            return globalMatrix.applyInverse<P>(position, point);
-        }
+        const globalMatrix = this.getGlobalTransform(matrixPool.get(), skipUpdate);
 
         // simply apply the matrix..
-        return this.worldTransform.applyInverse<P>(position, point);
+        point = globalMatrix.applyInverse(position, point);
+
+        matrixPool.return(globalMatrix);
+
+        return point;
     }
 } as Container;

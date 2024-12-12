@@ -2,14 +2,16 @@ import { Cache } from '../../assets/cache/Cache';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
+import { warn } from '../../utils/logging/warn';
 import { Transform } from '../../utils/misc/Transform';
-import { Container } from '../container/Container';
+import { ViewContainer } from '../view/ViewContainer';
 
+import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
 import type { View } from '../../rendering/renderers/shared/view/View';
-import type { Bounds, BoundsData } from '../container/bounds/Bounds';
 import type { ContainerOptions } from '../container/Container';
+import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
 
 /**
@@ -90,7 +92,7 @@ export interface TilingSpriteOptions extends ContainerOptions
  * @memberof scene
  * @extends scene.Container
  */
-export class TilingSprite extends Container implements View, Instruction
+export class TilingSprite extends ViewContainer implements View, Instruction
 {
     /**
      * Creates a new tiling sprite.
@@ -126,25 +128,49 @@ export class TilingSprite extends Container implements View, Instruction
         tileScale: { x: 1, y: 1 },
         /** The rotation of the image that is being tiled. */
         tileRotation: 0,
-        /** TODO */
+        /**
+         * Flags whether the tiling pattern should originate from the origin instead of the top-left corner in
+         * local space.
+         *
+         * This will make the texture coordinates assigned to each vertex dependent on the value of the anchor. Without
+         * this, the top-left corner always gets the (0, 0) texture coordinate.
+         * @default false
+         */
         applyAnchorToTexture: false,
     };
 
-    public readonly renderPipeId = 'tilingSprite';
-    public readonly canBundle = true;
+    public override readonly renderPipeId: string = 'tilingSprite';
     public readonly batched = true;
 
+    /**
+     * Flags whether the tiling pattern should originate from the origin instead of the top-left corner in
+     * local space.
+     *
+     * This will make the texture coordinates assigned to each vertex dependent on the value of the anchor. Without
+     * this, the top-left corner always gets the (0, 0) texture coordinate.
+     * @default false
+     */
+    public applyAnchorToTexture: boolean;
+    /**
+     * @see {@link scene.TilingSpriteOptions.applyAnchorToTexture}
+     * @deprecated since 8.0.0
+     */
+    public get uvRespectAnchor(): boolean
+    {
+        warn('uvRespectAnchor is deprecated, please use applyAnchorToTexture instead');
+
+        return this.applyAnchorToTexture;
+    }
+    public set uvRespectAnchor(value: boolean)
+    {
+        warn('uvRespectAnchor is deprecated, please use applyAnchorToTexture instead');
+        this.applyAnchorToTexture = value;
+    }
     public _anchor: ObservablePoint;
 
     public _tileTransform: Transform;
     public _texture: Texture;
-    public _applyAnchorToTexture: boolean;
-    public _didTilingSpriteUpdate: boolean;
 
-    public _roundPixels: 0 | 1 = 0;
-
-    private _bounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
-    private _boundsDirty = true;
     private _width: number;
     private _height: number;
 
@@ -205,7 +231,7 @@ export class TilingSprite extends Container implements View, Instruction
             },
         );
 
-        this._applyAnchorToTexture = applyAnchorToTexture;
+        this.applyAnchorToTexture = applyAnchorToTexture;
 
         this.texture = texture;
         this._width = width ?? texture.width;
@@ -307,35 +333,6 @@ export class TilingSprite extends Container implements View, Instruction
         return this._tileTransform;
     }
 
-    /**
-     *  Whether or not to round the x/y position of the sprite.
-     * @type {boolean}
-     */
-    get roundPixels()
-    {
-        return !!this._roundPixels;
-    }
-
-    set roundPixels(value: boolean)
-    {
-        this._roundPixels = value ? 1 : 0;
-    }
-
-    /**
-     * The local bounds of the sprite.
-     * @type {rendering.Bounds}
-     */
-    get bounds()
-    {
-        if (this._boundsDirty)
-        {
-            this._updateBounds();
-            this._boundsDirty = false;
-        }
-
-        return this._bounds;
-    }
-
     set texture(value: Texture)
     {
         value ||= Texture.EMPTY;
@@ -359,30 +356,68 @@ export class TilingSprite extends Container implements View, Instruction
     }
 
     /** The width of the tiling area. */
-    set width(value: number)
+    override set width(value: number)
     {
         this._width = value;
         this.onViewUpdate();
     }
 
-    get width()
+    override get width()
     {
         return this._width;
     }
 
-    set height(value: number)
+    override set height(value: number)
     {
         this._height = value;
         this.onViewUpdate();
     }
 
     /** The height of the tiling area. */
-    get height()
+    override get height()
     {
         return this._height;
     }
 
-    private _updateBounds()
+    /**
+     * Sets the size of the TilingSprite to the specified width and height.
+     * This is faster than setting the width and height separately.
+     * @param value - This can be either a number or a [Size]{@link Size} object.
+     * @param height - The height to set. Defaults to the value of `width` if not provided.
+     */
+    public override setSize(value: number | Optional<Size, 'height'>, height?: number): void
+    {
+        if (typeof value === 'object')
+        {
+            height = value.height ?? value.width;
+            value = value.width;
+        }
+
+        this._width = value;
+        this._height = height ?? value;
+
+        this.onViewUpdate();
+    }
+
+    /**
+     * Retrieves the size of the TilingSprite as a [Size]{@link Size} object.
+     * This is faster than get the width and height separately.
+     * @param out - Optional object to store the size in.
+     * @returns - The size of the TilingSprite.
+     */
+    public override getSize(out?: Size): Size
+    {
+        out ||= {} as Size;
+        out.width = this._width;
+        out.height = this._height;
+
+        return out;
+    }
+
+    /**
+     * @private
+     */
+    protected override updateBounds()
     {
         const bounds = this._bounds;
 
@@ -399,26 +434,10 @@ export class TilingSprite extends Container implements View, Instruction
     }
 
     /**
-     * Adds the bounds of this object to the bounds object.
-     * @param bounds - The output bounds object.
-     */
-    public addBounds(bounds: Bounds)
-    {
-        const _bounds = this.bounds;
-
-        bounds.addFrame(
-            _bounds.minX,
-            _bounds.minY,
-            _bounds.maxX,
-            _bounds.maxY,
-        );
-    }
-
-    /**
      * Checks if the object contains the given point.
      * @param point - The point to check
      */
-    public containsPoint(point: PointData)
+    public override containsPoint(point: PointData)
     {
         const width = this._width;
         const height = this._height;
@@ -435,24 +454,6 @@ export class TilingSprite extends Container implements View, Instruction
         return false;
     }
 
-    public onViewUpdate()
-    {
-        this._boundsDirty = true;
-        this._didTilingSpriteUpdate = true;
-
-        this._didChangeId += 1 << 12;
-
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.onChildViewUpdate(this);
-        }
-    }
-
     /**
      * Destroys this sprite renderable and optionally its texture.
      * @param options - Options parameter. A boolean will act as if all options
@@ -460,7 +461,7 @@ export class TilingSprite extends Container implements View, Instruction
      * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
      * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
      */
-    public destroy(options: DestroyOptions = false)
+    public override destroy(options: DestroyOptions = false)
     {
         super.destroy(options);
 

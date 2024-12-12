@@ -51,7 +51,10 @@ export interface RenderOptions extends ClearOptions
  */
 export interface ClearOptions
 {
-    /** The render target to render. */
+    /**
+     * The render target to render. if this target is a canvas and  you are using the WebGL renderer,
+     * please ensure you have set `multiView` to `true` on renderer.
+     */
     target?: RenderSurface;
     /** The color to clear with. */
     clearColor?: ColorSource;
@@ -77,7 +80,6 @@ const defaultRunners = [
 
 type DefaultRunners = typeof defaultRunners[number];
 type Runners = {[key in DefaultRunners]: SystemRunner} & {
-    // eslint-disable-next-line @typescript-eslint/ban-types
     [K: ({} & string) | ({} & symbol)]: SystemRunner;
 };
 
@@ -132,7 +134,7 @@ type Runners = {[key in DefaultRunners]: SystemRunner} & {
 /* eslint-enable max-len */
 export class AbstractRenderer<
     PIPES, OPTIONS extends SharedRendererOptions, CANVAS extends ICanvas = HTMLCanvasElement
-> extends EventEmitter<{resize: [number, number]}>
+> extends EventEmitter<{resize: [screenWidth: number, screenHeight: number, resolution: number]}>
 {
     /** The default options for the renderer. */
     public static defaultOptions = {
@@ -267,7 +269,6 @@ export class AbstractRenderer<
             if (deprecated)
             {
                 // #if _DEBUG
-                // eslint-disable-next-line max-len
                 deprecation(v8_0_0, 'passing a second argument is deprecated, please use render options instead');
                 // #endif
 
@@ -298,6 +299,10 @@ export class AbstractRenderer<
             options.transform = options.container.localTransform;
         }
 
+        // lets ensure this object is a render group so we can render it!
+        // the renderer only likes to render - render groups.
+        options.container.enableRenderGroup();
+
         this.runners.prerender.emit(options);
         this.runners.renderStart.emit(options);
         this.runners.render.emit(options);
@@ -313,8 +318,14 @@ export class AbstractRenderer<
      */
     public resize(desiredScreenWidth: number, desiredScreenHeight: number, resolution?: number): void
     {
+        const previousResolution = this.view.resolution;
+
         this.view.resize(desiredScreenWidth, desiredScreenHeight, resolution);
-        this.emit('resize', this.view.screen.width, this.view.screen.height);
+        this.emit('resize', this.view.screen.width, this.view.screen.height, this.view.resolution);
+        if (resolution !== undefined && resolution !== previousResolution)
+        {
+            this.runners.resolutionChange.emit(resolution);
+        }
     }
 
     public clear(options: ClearOptions = {}): void

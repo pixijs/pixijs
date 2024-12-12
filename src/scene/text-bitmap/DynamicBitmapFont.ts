@@ -147,9 +147,11 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         const fontScale = this.baseRenderedFontSize / this.baseMeasurementFontSize;
         const padding = this._padding * fontScale;
 
-        const widthScale = style.fontStyle === 'italic' ? 2 : 1;
         let maxCharHeight = 0;
         let skipTexture = false;
+
+        const maxTextureWidth = canvas.width / this.resolution;
+        const maxTextureHeight = canvas.height / this.resolution;
 
         for (let i = 0; i < charList.length; i++)
         {
@@ -161,10 +163,13 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
             // not the user specified one.
             metrics.lineHeight = metrics.height;
 
-            const width = (widthScale * metrics.width) * fontScale;
+            const width = metrics.width * fontScale;
+            // This is ugly - but italics are given more space so they don't overlap
+            const textureGlyphWidth = Math.ceil((style.fontStyle === 'italic' ? 2 : 1) * width);
+
             const height = (metrics.height) * fontScale;
 
-            const paddedWidth = width + (padding * 2);
+            const paddedWidth = textureGlyphWidth + (padding * 2);
             const paddedHeight = height + (padding * 2);
 
             skipTexture = false;
@@ -175,7 +180,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
                 maxCharHeight = Math.ceil(Math.max(paddedHeight, maxCharHeight));// / 1.5;
             }
 
-            if (currentX + paddedWidth > this._textureSize)
+            if (currentX + paddedWidth > maxTextureWidth)
             {
                 currentY += maxCharHeight;
 
@@ -183,7 +188,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
                 maxCharHeight = paddedHeight;
                 currentX = 0;
 
-                if (currentY + maxCharHeight > this._textureSize)
+                if (currentY + maxCharHeight > maxTextureHeight)
                 {
                     textureSource.update();
 
@@ -428,10 +433,6 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         for (let i = 0; i < this.pages.length; i++)
         {
             const { canvasAndContext, texture } = this.pages[i];
-
-            // clear context.. this is the fastest way apparently!
-            // eslint-disable-next-line no-self-assign
-            canvasAndContext.canvas.width = canvasAndContext.canvas.width;
 
             CanvasPool.returnCanvasAndContext(canvasAndContext);
             texture.destroy(true);

@@ -38,7 +38,6 @@
  * @memberof extensions
  */
 enum ExtensionType
-// eslint-disable-next-line @typescript-eslint/indent
 {
     /** extensions that are registered as Application plugins */
     Application = 'application',
@@ -89,6 +88,9 @@ enum ExtensionType
 
     /** A type of extension for building and triangulating custom shapes used in graphics. */
     ShapeBuilder = 'shape-builder',
+
+    /** A type of extension for creating custom batchers used in rendering. */
+    Batcher = 'batcher',
 }
 
 /**

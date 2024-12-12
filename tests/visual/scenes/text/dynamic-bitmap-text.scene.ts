@@ -1,12 +1,11 @@
-import { Assets } from '../../../../src/assets/Assets';
-import { BitmapText } from '../../../../src/scene/text-bitmap/BitmapText';
+import { Assets } from '~/assets';
+import { BitmapText } from '~/scene';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render both canvas and bitmap text of the same style',
-    pixelMatch: 250,
     create: async (scene: Container) =>
     {
         await Assets.load('fonts/outfit.woff2');

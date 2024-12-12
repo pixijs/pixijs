@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-
 import { ExtensionType } from '../extensions/Extensions';
 import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 
@@ -54,7 +52,7 @@ export class VividLightBlend extends BlendModeFilter
                 }
             `,
                 main: `
-                finalColor = vec4(blendVividLight(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendVividLight(back.rgb, front.rgb,front.a), blendedAlpha) * uBlend;
             `
             },
             gpu: {
@@ -86,7 +84,7 @@ export class VividLightBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                out = vec4<f32>(blendVividLight(back.rgb, front.rgb, front.a), blendUniforms.uBlend);
+                out = vec4<f32>(blendVividLight(back.rgb, front.rgb, front.a), blendedAlpha) * blendUniforms.uBlend;
                 `
             }
         });

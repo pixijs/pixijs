@@ -1,10 +1,8 @@
-import { AlphaFilter } from '../../../../src/filters/defaults/alpha/AlphaFilter';
-import { BlurFilter } from '../../../../src/filters/defaults/blur/BlurFilter';
-import { ColorMatrixFilter } from '../../../../src/filters/defaults/color-matrix/ColorMatrixFilter';
-import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
+import { AlphaFilter, BlurFilter, ColorMatrixFilter } from '~/filters';
+import { Graphics } from '~/scene';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render filters correctly with antialiasing',

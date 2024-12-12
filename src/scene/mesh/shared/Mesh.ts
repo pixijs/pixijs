@@ -3,7 +3,7 @@ import { Geometry } from '../../../rendering/renderers/shared/geometry/Geometry'
 import { State } from '../../../rendering/renderers/shared/state/State';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
-import { Container } from '../../container/Container';
+import { ViewContainer } from '../../view/ViewContainer';
 import { MeshGeometry } from './MeshGeometry';
 
 import type { PointData } from '../../../maths/point/PointData';
@@ -11,7 +11,6 @@ import type { Topology } from '../../../rendering/renderers/shared/geometry/cons
 import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import type { View } from '../../../rendering/renderers/shared/view/View';
-import type { Bounds } from '../../container/bounds/Bounds';
 import type { ContainerOptions } from '../../container/Container';
 import type { DestroyOptions } from '../../container/destroyTypes';
 
@@ -78,10 +77,9 @@ export interface MeshOptions<
 export class Mesh<
     GEOMETRY extends Geometry = MeshGeometry,
     SHADER extends Shader = TextureShader
-> extends Container implements View, Instruction
+> extends ViewContainer implements View, Instruction
 {
-    public readonly renderPipeId = 'mesh';
-    public readonly canBundle = true;
+    public override readonly renderPipeId: string = 'mesh';
     public state: State;
 
     /** @ignore */
@@ -90,8 +88,6 @@ export class Mesh<
     public _geometry: GEOMETRY;
     /** @ignore */
     public _shader: SHADER | null = null;
-
-    public _roundPixels: 0 | 1 = 0;
 
     /**
      * @param {scene.MeshOptions} options - options for the mesh instance
@@ -141,20 +137,6 @@ export class Mesh<
         this._geometry.on('update', this.onViewUpdate, this);
 
         this.roundPixels = roundPixels ?? false;
-    }
-
-    /**
-     *  Whether or not to round the x/y position of the mesh.
-     * @type {boolean}
-     */
-    get roundPixels()
-    {
-        return !!this._roundPixels;
-    }
-
-    set roundPixels(value: boolean)
-    {
-        this._roundPixels = value ? 1 : 0;
     }
 
     /** Alias for {@link scene.Mesh#shader}. */
@@ -235,6 +217,10 @@ export class Mesh<
     {
         if (this._shader) return false;
 
+        // The state must be compatible with the batcher pipe.
+        // It isn't compatible if depth test or culling is enabled.
+        if ((this.state.data & 0b001100) !== 0) return false;
+
         if (this._geometry instanceof MeshGeometry)
         {
             if (this._geometry.batchMode === 'auto')
@@ -252,25 +238,25 @@ export class Mesh<
      * The local bounds of the mesh.
      * @type {rendering.Bounds}
      */
-    get bounds()
+    override get bounds()
     {
         return this._geometry.bounds;
     }
 
     /**
-     * Adds the bounds of this object to the bounds object.
-     * @param bounds - The output bounds object.
+     * Update local bounds of the mesh.
+     * @private
      */
-    public addBounds(bounds: Bounds)
+    protected updateBounds()
     {
-        bounds.addBounds(this.geometry.bounds);
+        this._bounds = this._geometry.bounds;
     }
 
     /**
      * Checks if the object contains the given point.
      * @param point - The point to check
      */
-    public containsPoint(point: PointData)
+    public override containsPoint(point: PointData)
     {
         const { x, y } = point;
 
@@ -333,23 +319,6 @@ export class Mesh<
         return false;
     }
 
-    /** @ignore */
-    public onViewUpdate()
-    {
-        // increment from the 12th bit!
-        this._didChangeId += 1 << 12;
-
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.onChildViewUpdate(this);
-        }
-    }
-
     /**
      * Destroys this sprite renderable and optionally its texture.
      * @param options - Options parameter. A boolean will act as if all options
@@ -357,7 +326,7 @@ export class Mesh<
      * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
      * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
      */
-    public destroy(options?: DestroyOptions): void
+    public override destroy(options?: DestroyOptions): void
     {
         super.destroy(options);
 

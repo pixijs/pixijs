@@ -1,12 +1,10 @@
-import { Text } from '../../../../src/scene/text/Text';
-import { TextStyle } from '../../../../src/scene/text/TextStyle';
+import { Text, TextStyle } from '~/scene';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render text with correct drop shadow',
-    pixelMatch: 200,
     create: async (scene: Container, renderer) =>
     {
         const style = new TextStyle({

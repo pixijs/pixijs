@@ -1,8 +1,7 @@
-import { Container } from '../../../../src/scene/container/Container';
-import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
+import { Container, Graphics } from '~/scene';
 
-import type { Renderer } from '../../../../src/rendering/renderers/types';
 import type { TestScene } from '../../types';
+import type { Renderer } from '~/rendering';
 
 export const scene: TestScene = {
     it: 'should render odd sized polygon correctly',

@@ -8,7 +8,7 @@ import { getCanvasTexture } from '../texture/utils/getCanvasTexture';
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { TypeOrBool } from '../../../../scene/container/destroyTypes';
 import type { System } from '../system/System';
-import type { CanvasSource, CanvasSourceOptions } from '../texture/sources/CanvasSource';
+import type { CanvasSource } from '../texture/sources/CanvasSource';
 import type { Texture } from '../texture/Texture';
 
 /**
@@ -66,11 +66,6 @@ export interface ViewSystemOptions
      * @memberof rendering.SharedRendererOptions
      */
     depth?: boolean;
-    /**
-     * TODO: multiView
-     * @memberof rendering.SharedRendererOptions
-     */
-    multiView?: boolean;
 
     /**
      * Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
@@ -127,19 +122,24 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
         antialias: false,
     };
 
-    public multiView: boolean;
-
     /** The canvas element that everything is drawn to. */
     public canvas!: ICanvas;
 
     /** The texture that is used to draw the canvas to the screen. */
-    public texture: Texture;
+    public texture: Texture<CanvasSource>;
 
     /**
      * Whether CSS dimensions of canvas view should be resized to screen dimensions automatically.
      * @member {boolean}
      */
-    public autoDensity: boolean;
+    public get autoDensity(): boolean
+    {
+        return this.texture.source.autoDensity;
+    }
+    public set autoDensity(value: boolean)
+    {
+        this.texture.source.autoDensity = value;
+    }
 
     /** Whether to enable anti-aliasing. This may affect performance. */
     public antialias: boolean;
@@ -191,22 +191,14 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
         this.screen = new Rectangle(0, 0, options.width, options.height);
         this.canvas = options.canvas || DOMAdapter.get().createCanvas();
         this.antialias = !!options.antialias;
-        this.texture = getCanvasTexture(this.canvas, options as CanvasSourceOptions);
+        this.texture = getCanvasTexture(this.canvas, options);
         this.renderTarget = new RenderTarget({
             colorTextures: [this.texture],
             depth: !!options.depth,
             isRoot: true,
         });
 
-        (this.texture.source as CanvasSource).transparent = options.backgroundAlpha < 1;
-        this.multiView = !!options.multiView;
-
-        if (this.autoDensity)
-        {
-            this.canvas.style.width = `${this.texture.width}px`;
-            this.canvas.style.height = `${this.texture.height}px`;
-        }
-
+        this.texture.source.transparent = options.backgroundAlpha < 1;
         this.resolution = options.resolution;
     }
 
@@ -222,12 +214,6 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
 
         this.screen.width = this.texture.frame.width;
         this.screen.height = this.texture.frame.height;
-
-        if (this.autoDensity)
-        {
-            this.canvas.style.width = `${desiredScreenWidth}px`;
-            this.canvas.style.height = `${desiredScreenHeight}px`;
-        }
     }
 
     /**

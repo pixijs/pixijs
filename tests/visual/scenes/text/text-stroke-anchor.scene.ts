@@ -1,12 +1,10 @@
-import { TextStyle } from '../../../../src/scene/text/TextStyle';
-import { BitmapText } from '../../../../src/scene/text-bitmap/BitmapText';
+import { BitmapText, TextStyle } from '~/scene';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render text stroke if it has a width greater than one',
-    pixelMatch: 500,
     create: async (scene: Container) =>
     {
         const style = new TextStyle({

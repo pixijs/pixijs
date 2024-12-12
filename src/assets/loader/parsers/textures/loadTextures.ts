@@ -57,7 +57,7 @@ export interface LoadTextureConfig
  * @param url - The image to load an image bitmap for
  * @ignore
  */
-export async function loadImageBitmap(url: string): Promise<ImageBitmap>
+export async function loadImageBitmap(url: string, asset?: ResolvedAsset<TextureSourceOptions<any>>): Promise<ImageBitmap>
 {
     const response = await DOMAdapter.get().fetch(url);
 
@@ -68,9 +68,10 @@ export async function loadImageBitmap(url: string): Promise<ImageBitmap>
     }
 
     const imageBlob = await response.blob();
-    const imageBitmap = await createImageBitmap(imageBlob);
 
-    return imageBitmap;
+    return asset?.data?.alphaMode === 'premultiplied-alpha'
+        ? createImageBitmap(imageBlob, { premultiplyAlpha: 'none' })
+        : createImageBitmap(imageBlob);
 }
 
 /**
@@ -125,11 +126,11 @@ export const loadTextures: LoaderParser<Texture, TextureSourceOptions, LoadTextu
         {
             if (this.config.preferWorkers && await WorkerManager.isImageBitmapSupported())
             {
-                src = await WorkerManager.loadImageBitmap(url);
+                src = await WorkerManager.loadImageBitmap(url, asset);
             }
             else
             {
-                src = await loadImageBitmap(url);
+                src = await loadImageBitmap(url, asset);
             }
         }
         else

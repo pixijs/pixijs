@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import type { BLEND_MODES, CULL_MODES } from './const';
 
 const blendModeIds = {
@@ -11,6 +10,8 @@ const blendModeIds = {
     'normal-npm': 6,
     'add-npm': 7,
     'screen-npm': 8,
+    min: 9,
+    max: 10,
 };
 const BLEND = 0;
 const OFFSET = 1;

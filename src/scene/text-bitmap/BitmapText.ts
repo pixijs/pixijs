@@ -1,3 +1,4 @@
+import { warn } from '../../utils/logging/warn';
 import { AbstractText, ensureOptions } from '../text/AbstractText';
 import { TextStyle } from '../text/TextStyle';
 import { BitmapFontManager } from './BitmapFontManager';
@@ -96,7 +97,7 @@ import type { TextStyleOptions } from '../text/TextStyle';
  */
 export class BitmapText extends AbstractText<TextStyle, TextStyleOptions> implements View
 {
-    public readonly renderPipeId: string = 'bitmapText';
+    public override readonly renderPipeId: string = 'bitmapText';
 
     /**
      * **Note:** Our docs parser struggles to properly understand the constructor signature.
@@ -119,7 +120,8 @@ export class BitmapText extends AbstractText<TextStyle, TextStyleOptions> implem
         super(options, TextStyle);
     }
 
-    protected _updateBounds()
+    /** @private */
+    protected updateBounds()
     {
         const bounds = this._bounds;
         const anchor = this._anchor;
@@ -143,5 +145,27 @@ export class BitmapText extends AbstractText<TextStyle, TextStyleOptions> implem
         bounds.maxX = bounds.minX + width;
         bounds.minY = (-anchor._y * (height + offset));
         bounds.maxY = bounds.minY + height;
+    }
+
+    /**
+     * The resolution / device pixel ratio of the canvas.
+     * @default 1
+     */
+    override set resolution(value: number)
+    {
+        // #if _DEBUG
+        if (value !== null)
+        {
+            warn(
+            // eslint-disable-next-line max-len
+                '[BitmapText] dynamically updating the resolution is not supported. Resolution should be managed by the BitmapFont.'
+            );
+        }
+        // #endif
+    }
+
+    override get resolution(): number
+    {
+        return this._resolution;
     }
 }

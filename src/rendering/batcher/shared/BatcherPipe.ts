@@ -1,24 +1,29 @@
-import { ExtensionType } from '../../../extensions/Extensions';
+import { extensions, ExtensionType } from '../../../extensions/Extensions';
 import { State } from '../../renderers/shared/state/State';
-import { Batcher } from './Batcher';
-import { BatchGeometry } from './BatchGeometry';
+import { DefaultBatcher } from './DefaultBatcher';
 
 import type { Geometry } from '../../renderers/shared/geometry/Geometry';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { BatchPipe, InstructionPipe } from '../../renderers/shared/instructions/RenderPipe';
+import type { Shader } from '../../renderers/shared/shader/Shader';
 import type { Renderer } from '../../renderers/types';
-import type { Batch, BatchableObject } from './Batcher';
+import type { Batch, BatchableElement, Batcher } from './Batcher';
 
 export interface BatcherAdaptor
 {
-    start(batchPipe: BatcherPipe, geometry: Geometry): void
-    init(batchPipe: BatcherPipe): void;
+    start(batchPipe: BatcherPipe, geometry: Geometry, shader: Shader): void
+    init?(batchPipe: BatcherPipe): void;
     execute(batchPipe: BatcherPipe, batch: Batch): void
-    destroy(): void;
     contextChange?(): void;
 }
 
-// eslint-disable-next-line max-len
+/**
+ * A pipe that batches elements into batches and sends them to the renderer.
+ *
+ * You can install new Batchers using ExtensionType.Batcher. Each render group will
+ * have a default batcher and any required ones will be created on demand.
+ * @memberof rendering
+ */
 export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
 {
     /** @ignore */
@@ -34,39 +39,69 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
     public state: State = State.for2d();
     public renderer: Renderer;
 
-    private _batches: Record<number, Batcher> = Object.create(null);
-    private _geometries: Record<number, BatchGeometry> = Object.create(null);
+    private readonly _batchersByInstructionSet: Record<number, Record<string, Batcher>> = Object.create(null);
+
     private _adaptor: BatcherAdaptor;
 
+    /** A record of all active batchers, keyed by their names */
+    private _activeBatches: Record<string, Batcher> = Object.create(null);
+
+    /** The currently active batcher being used to batch elements */
     private _activeBatch: Batcher;
-    private _activeGeometry: Geometry;
+
+    public static _availableBatchers: Record<string, new () => Batcher> = Object.create(null);
+
+    public static getBatcher(name: string): Batcher
+    {
+        return new this._availableBatchers[name as keyof typeof this._availableBatchers]();
+    }
 
     constructor(renderer: Renderer, adaptor: BatcherAdaptor)
     {
         this.renderer = renderer;
         this._adaptor = adaptor;
 
-        this._adaptor.init(this);
+        this._adaptor.init?.(this);
     }
 
     public buildStart(instructionSet: InstructionSet)
     {
-        if (!this._batches[instructionSet.uid])
-        {
-            const batcher = new Batcher();
+        let batchers = this._batchersByInstructionSet[instructionSet.uid];
 
-            this._batches[instructionSet.uid] = batcher;
-            this._geometries[batcher.uid] = new BatchGeometry();
+        if (!batchers)
+        {
+            batchers = this._batchersByInstructionSet[instructionSet.uid] = Object.create(null);
+            batchers.default ||= new DefaultBatcher();
         }
 
-        this._activeBatch = this._batches[instructionSet.uid];
-        this._activeGeometry = this._geometries[this._activeBatch.uid];
+        this._activeBatches = batchers;
 
-        this._activeBatch.begin();
+        this._activeBatch = this._activeBatches.default;
+
+        for (const i in this._activeBatches)
+        {
+            this._activeBatches[i].begin();
+        }
     }
 
-    public addToBatch(batchableObject: BatchableObject)
+    public addToBatch(batchableObject: BatchableElement, instructionSet: InstructionSet)
     {
+        if (this._activeBatch.name !== batchableObject.batcherName)
+        {
+            this._activeBatch.break(instructionSet);
+
+            let batch = this._activeBatches[batchableObject.batcherName];
+
+            if (!batch)
+            {
+                batch = this._activeBatches[batchableObject.batcherName]
+                    = BatcherPipe.getBatcher(batchableObject.batcherName);
+                batch.begin();
+            }
+
+            this._activeBatch = batch;
+        }
+
         this._activeBatch.add(batchableObject);
     }
 
@@ -77,25 +112,36 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
 
     public buildEnd(instructionSet: InstructionSet)
     {
-        const activeBatch = this._activeBatch;
-        const geometry = this._activeGeometry;
+        this._activeBatch.break(instructionSet);
 
-        activeBatch.finish(instructionSet);
+        const batches = this._activeBatches;
 
-        geometry.indexBuffer.setDataWithSize(activeBatch.indexBuffer, activeBatch.indexSize, true);
+        for (const i in batches)
+        {
+            const batch = batches[i as keyof typeof batches];
+            const geometry = batch.geometry;
 
-        geometry.buffers[0].setDataWithSize(activeBatch.attributeBuffer.float32View, activeBatch.attributeSize, false);
+            geometry.indexBuffer.setDataWithSize(batch.indexBuffer, batch.indexSize, true);
+
+            geometry.buffers[0].setDataWithSize(batch.attributeBuffer.float32View, batch.attributeSize, false);
+        }
     }
 
     public upload(instructionSet: InstructionSet)
     {
-        const batcher = this._batches[instructionSet.uid];
-        const geometry = this._geometries[batcher.uid];
+        const batchers = this._batchersByInstructionSet[instructionSet.uid];
 
-        if (batcher.dirty)
+        for (const i in batchers)
         {
-            batcher.dirty = false;
-            geometry.buffers[0].update(batcher.attributeSize * 4);
+            const batcher = batchers[i as keyof typeof batchers];
+            const geometry = batcher.geometry;
+
+            if (batcher.dirty)
+            {
+                batcher.dirty = false;
+
+                geometry.buffers[0].update(batcher.attributeSize * 4);
+            }
         }
     }
 
@@ -104,9 +150,10 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
         if (batch.action === 'startBatch')
         {
             const batcher = batch.batcher;
-            const geometry = this._geometries[batcher.uid];
+            const geometry = batcher.geometry;
+            const shader = batcher.shader;
 
-            this._adaptor.start(this, geometry);
+            this._adaptor.start(this, geometry, shader);
         }
 
         this._adaptor.execute(this, batch);
@@ -117,21 +164,17 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
         this.state = null;
         this.renderer = null;
 
-        this._adaptor.destroy();
         this._adaptor = null;
 
-        for (const i in this._batches)
+        for (const i in this._activeBatches)
         {
-            this._batches[i].destroy();
+            this._activeBatches[i].destroy();
         }
 
-        this._batches = null;
-
-        for (const i in this._geometries)
-        {
-            this._geometries[i].destroy();
-        }
-
-        this._geometries = null;
+        this._activeBatches = null;
     }
 }
+
+extensions.handleByMap(ExtensionType.Batcher, BatcherPipe._availableBatchers);
+
+extensions.add(DefaultBatcher);

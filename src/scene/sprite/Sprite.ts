@@ -1,13 +1,13 @@
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { updateQuadBounds } from '../../utils/data/updateQuadBounds';
-import { Container } from '../container/Container';
+import { deprecation } from '../../utils/logging/deprecation';
+import { ViewContainer } from '../view/ViewContainer';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
 import type { TextureSourceLike } from '../../rendering/renderers/shared/texture/Texture';
-import type { View } from '../../rendering/renderers/shared/view/View';
-import type { Bounds, BoundsData } from '../container/bounds/Bounds';
+import type { BoundsData } from '../container/bounds/Bounds';
 import type { ContainerOptions } from '../container/Container';
 import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
@@ -50,10 +50,8 @@ export interface SpriteOptions extends ContainerOptions
  * @memberof scene
  * @extends scene.Container
  */
-export class Sprite extends Container implements View
+export class Sprite extends ViewContainer
 {
-    private _width: number;
-    private _height: number;
     /**
      * Helper function that creates a new sprite based on the source you provide.
      * The source can be - frame id, image, video, canvas element, video element, texture
@@ -71,21 +69,18 @@ export class Sprite extends Container implements View
         return new Sprite(Texture.from(source, skipCache));
     }
 
-    public readonly renderPipeId = 'sprite';
+    public override readonly renderPipeId: string = 'sprite';
 
     public batched = true;
     public readonly _anchor: ObservablePoint;
 
     // sprite specific..
     public _texture: Texture;
-    public _didSpriteUpdate = false;
 
-    private readonly _bounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
-    private readonly _sourceBounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
-    private _boundsDirty = true;
-    private _sourceBoundsDirty = true;
+    private readonly _visualBounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
 
-    public _roundPixels: 0 | 1 = 0;
+    private _width: number;
+    private _height: number;
 
     /**
      * @param options - The options for creating the sprite.
@@ -166,102 +161,43 @@ export class Sprite extends Container implements View
     }
 
     /**
-     * The local bounds of the sprite.
-     * @type {rendering.Bounds}
-     */
-    get bounds()
-    {
-        if (this._boundsDirty)
-        {
-            this._updateBounds();
-            this._boundsDirty = false;
-        }
-
-        return this._bounds;
-    }
-
-    /**
      * The bounds of the sprite, taking the texture's trim into account.
      * @type {rendering.Bounds}
      */
+    get visualBounds()
+    {
+        updateQuadBounds(this._visualBounds, this._anchor, this._texture, 0);
+
+        return this._visualBounds;
+    }
+
+    /**
+     * @deprecated
+     */
     get sourceBounds()
     {
-        if (this._sourceBoundsDirty)
-        {
-            this._updateSourceBounds();
-            this._sourceBoundsDirty = false;
-        }
+        // #if _DEBUG
+        deprecation('8.6.1', 'Sprite.sourceBounds is deprecated, use visualBounds instead.');
+        // #endif
 
-        return this._sourceBounds;
+        return this.visualBounds;
     }
 
-    /**
-     * Checks if the object contains the given point.
-     * @param point - The point to check
-     */
-    public containsPoint(point: PointData)
-    {
-        const bounds = this.sourceBounds;
-
-        if (point.x >= bounds.maxX && point.x <= bounds.minX)
-        {
-            if (point.y >= bounds.maxY && point.y <= bounds.minY)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Adds the bounds of this object to the bounds object.
-     * @param bounds - The output bounds object.
-     */
-    public addBounds(bounds: Bounds)
-    {
-        const _bounds = this._texture.trim ? this.sourceBounds : this.bounds;
-
-        bounds.addFrame(_bounds.minX, _bounds.minY, _bounds.maxX, _bounds.maxY);
-    }
-
-    public onViewUpdate()
-    {
-        // increment from the 12th bit!
-        this._didChangeId += 1 << 12;
-        this._didSpriteUpdate = true;
-        this._sourceBoundsDirty = this._boundsDirty = true;
-
-        if (this.didViewUpdate) return;
-        this.didViewUpdate = true;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.onChildViewUpdate(this);
-        }
-    }
-
-    private _updateBounds()
-    {
-        updateQuadBounds(this._bounds, this._anchor, this._texture, 0);
-    }
-
-    private _updateSourceBounds()
+    /** @private */
+    protected updateBounds()
     {
         const anchor = this._anchor;
         const texture = this._texture;
 
-        const sourceBounds = this._sourceBounds;
+        const bounds = this._bounds;
 
         const { width, height } = texture.orig;
 
-        sourceBounds.maxX = -anchor._x * width;
-        sourceBounds.minX = sourceBounds.maxX + width;
+        bounds.minX = -anchor._x * width;
+        bounds.maxX = bounds.minX + width;
 
-        sourceBounds.maxY = -anchor._y * height;
-        sourceBounds.minY = sourceBounds.maxY + height;
+        bounds.minY = -anchor._y * height;
+        bounds.maxY = bounds.minY + height;
     }
 
     /**
@@ -271,7 +207,7 @@ export class Sprite extends Container implements View
      * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
      * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
      */
-    public destroy(options: DestroyOptions = false)
+    public override destroy(options: DestroyOptions = false)
     {
         super.destroy(options);
 
@@ -285,8 +221,8 @@ export class Sprite extends Container implements View
         }
 
         this._texture = null;
+        (this._visualBounds as null) = null;
         (this._bounds as null) = null;
-        (this._sourceBounds as null) = null;
         (this._anchor as null) = null;
     }
 
@@ -315,20 +251,6 @@ export class Sprite extends Container implements View
     set anchor(value: PointData | number)
     {
         typeof value === 'number' ? this._anchor.set(value) : this._anchor.copyFrom(value);
-    }
-
-    /**
-     *  Whether or not to round the x/y position of the sprite.
-     * @type {boolean}
-     */
-    get roundPixels()
-    {
-        return !!this._roundPixels;
-    }
-
-    set roundPixels(value: boolean)
-    {
-        this._roundPixels = value ? 1 : 0;
     }
 
     /** The width of the sprite, setting this will actually modify the scale to achieve the value set. */
@@ -363,11 +285,7 @@ export class Sprite extends Container implements View
      */
     public override getSize(out?: Size): Size
     {
-        if (!out)
-        {
-            out = {} as Size;
-        }
-
+        out ||= {} as Size;
         out.width = Math.abs(this.scale.x) * this._texture.orig.width;
         out.height = Math.abs(this.scale.y) * this._texture.orig.height;
 
@@ -382,28 +300,17 @@ export class Sprite extends Container implements View
      */
     public override setSize(value: number | Optional<Size, 'height'>, height?: number)
     {
-        let convertedWidth: number;
-        let convertedHeight: number;
-
-        if (typeof value !== 'object')
+        if (typeof value === 'object')
         {
-            convertedWidth = value;
-            convertedHeight = height ?? value;
+            height = value.height ?? value.width;
+            value = value.width;
         }
         else
         {
-            convertedWidth = value.width;
-            convertedHeight = value.height ?? value.width;
+            height ??= value;
         }
 
-        if (convertedWidth !== undefined)
-        {
-            this._setWidth(convertedWidth, this._texture.orig.width);
-        }
-
-        if (convertedHeight !== undefined)
-        {
-            this._setHeight(convertedHeight, this._texture.orig.height);
-        }
+        value !== undefined && this._setWidth(value, this._texture.orig.width);
+        height !== undefined && this._setHeight(height, this._texture.orig.height);
     }
 }

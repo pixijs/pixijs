@@ -36,7 +36,7 @@ export class ColorBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                finalColor = vec4(blendColor(back.rgb, front.rgb, front.a), uBlend);
+                finalColor = vec4(blendColor(back.rgb, front.rgb,front.a), blendedAlpha) * uBlend;
                 `
             },
             gpu: {
@@ -49,7 +49,7 @@ export class ColorBlend extends BlendModeFilter
                 }
                 `,
                 main: `
-                out = vec4<f32>(blendColorOpacity(back.rgb, front.rgb, front.a), blendUniforms.uBlend);
+                out = vec4<f32>(blendColorOpacity(back.rgb, front.rgb, front.a), blendedAlpha) * blendUniforms.uBlend;
                 `
             }
         });

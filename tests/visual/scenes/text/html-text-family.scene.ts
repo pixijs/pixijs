@@ -1,9 +1,9 @@
-import { Assets } from '../../../../src/assets/Assets';
-import { HTMLText } from '../../../../src/scene/text-html/HTMLText';
+import { Assets } from '~/assets';
+import { HTMLText } from '~/scene';
 
-import type { Renderer } from '../../../../src/rendering/renderers/types';
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Renderer } from '~/rendering';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render html-text correctly with tag styles for family',

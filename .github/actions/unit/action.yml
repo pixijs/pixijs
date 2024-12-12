@@ -11,7 +11,7 @@ runs:
     - name: Visual Tests
       if: ${{ inputs.type == 'Both' || inputs.type == 'Visuals' }}
       shell: bash
-      run: xvfb-run --auto-servernum npm run test:scene -- --maxWorkers=50%
+      run: npm run test:scene -- --maxWorkers=50%
       env:
         NODE_ENV: production
 
@@ -28,3 +28,4 @@ runs:
       with:
         name: pr_uploads
         path: .pr_uploads/
+        include-hidden-files: true
