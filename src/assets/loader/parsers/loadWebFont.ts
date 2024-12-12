@@ -189,7 +189,7 @@ export const loadWebFont = {
         (Array.isArray(font) ? font : [font])
             .forEach((t) =>
             {
-                Cache.remove(t.family);
+                Cache.remove(`${t.family}-and-url`);
                 DOMAdapter.get().getFontFaceSet().delete(t);
             });
     }
