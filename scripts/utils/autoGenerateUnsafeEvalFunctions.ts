@@ -91,7 +91,6 @@ function autoGenerateUboUnsafeEvalFunctions()
 {
     const out: string[] = [header];
 
-    // eslint-disable-next-line max-len
     out.push(`export type UboUploadFunction = (name:string, data:Float32Array, offset:number, uv:any, v:any) => void;`);
 
     function convertToFunction(body: string)

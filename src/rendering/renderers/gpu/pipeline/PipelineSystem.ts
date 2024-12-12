@@ -176,10 +176,9 @@ export class PipelineSystem implements System
             this._generateBufferKey(geometry);
         }
 
-        topology = topology || geometry.topology;
+        topology ||= geometry.topology;
 
         // now we have set the Ids - the key is different...
-        // eslint-disable-next-line max-len
         const key = getGraphicsStateKey(
             geometry._layoutKey,
             program._layoutKey,
@@ -335,9 +334,13 @@ export class PipelineSystem implements System
 
         for (let i = 0; i < data.length; i++)
         {
+            const attributes = Object.values(data[i].attributes);
+
+            const shaderLocation = attributes[0].shaderLocation;
+
             for (const j in attributeData)
             {
-                if (attributeData[j].location === i)
+                if (attributeData[j].location === shaderLocation)
                 {
                     bufferNamesToBind[i] = j;
                     break;

@@ -550,7 +550,7 @@ export class GraphicsPath
     // eslint-disable-next-line max-len
     public star(x: number, y: number, points: number, radius: number, innerRadius?: number, rotation?: number, transform?: Matrix): this
     {
-        innerRadius = innerRadius || radius / 2;
+        innerRadius ||= radius / 2;
 
         const startAngle = (-1 * Math.PI / 2) + rotation;
         const len = points * 2;

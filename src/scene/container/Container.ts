@@ -11,6 +11,7 @@ import { cacheAsTextureMixin } from './container-mixins/cacheAsTextureMixin';
 import { childrenHelperMixin } from './container-mixins/childrenHelperMixin';
 import { effectsMixin } from './container-mixins/effectsMixin';
 import { findMixin } from './container-mixins/findMixin';
+import { bgr2rgb, getGlobalMixin } from './container-mixins/getGlobalMixin';
 import { measureMixin } from './container-mixins/measureMixin';
 import { onRenderMixin } from './container-mixins/onRenderMixin';
 import { sortMixin } from './container-mixins/sortMixin';
@@ -76,7 +77,6 @@ type AnyEvent = {
     //
     // Side note, we disable @typescript-eslint/ban-types since {}&string is the only syntax that works.
     // Nor of the Record/unknown/never alternatives work.
-    // eslint-disable-next-line @typescript-eslint/ban-types
     [K: ({} & string) | ({} & symbol)]: any;
 };
 
@@ -852,8 +852,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         return this._worldTransform;
     }
 
-    // / ////// transform related stuff
-
     /**
      * The position of the container on the x axis relative to the local coordinates of the parent.
      * An alias to position.x
@@ -1213,10 +1211,8 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      */
     get tint(): number
     {
-        const bgr = this.localColor;
         // convert bgr to rgb..
-
-        return ((bgr & 0xFF) << 16) + (bgr & 0xFF00) + ((bgr >> 16) & 0xFF);
+        return bgr2rgb(this.localColor);
     }
 
     // / //////////////// blend related stuff
@@ -1392,3 +1388,4 @@ Container.mixin(findMixin);
 Container.mixin(sortMixin);
 Container.mixin(cullingMixin);
 Container.mixin(cacheAsTextureMixin);
+Container.mixin(getGlobalMixin);

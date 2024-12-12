@@ -85,6 +85,8 @@ export abstract class ViewContainer extends Container implements View
     {
         this._didViewChangeTick++;
 
+        this._boundsDirty = true;
+
         if (this.didViewUpdate) return;
         this.didViewUpdate = true;
 

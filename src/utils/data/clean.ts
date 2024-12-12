@@ -70,7 +70,7 @@ export function cleanArray<T>(arr: T[]): T[]
         }
     }
 
-    arr.length = arr.length - offset;
+    arr.length -= offset;
 
     return arr;
 }

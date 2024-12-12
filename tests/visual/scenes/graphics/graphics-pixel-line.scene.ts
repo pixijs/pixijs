@@ -1,8 +1,8 @@
-import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
+import { Graphics } from '~/scene';
 
-import type { Renderer } from '../../../../src/rendering/renderers/types';
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Renderer } from '~/rendering';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render a pixel line correctly',
@@ -20,5 +20,15 @@ export const scene: TestScene = {
             .stroke({ color: 0x0, pixelLine: true, alpha: 0.5 });
 
         scene.addChild(graphics);
+
+        const graphics2 = new Graphics();
+
+        graphics2.context.batchMode = 'no-batch';
+
+        graphics2
+            .circle(128 / 2, 128 / 2, 128 / 3)
+            .stroke({ color: 0x00FF00, pixelLine: true, alpha: 1 });
+
+        scene.addChild(graphics, graphics2);
     },
 };

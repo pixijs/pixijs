@@ -1,5 +1,6 @@
 import { Color } from '../../../color/Color';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
+import { bgr2rgb } from '../../container/container-mixins/getGlobalMixin';
 import { assignWithIgnore } from '../../container/utils/assignWithIgnore';
 
 import type { ColorSource } from '../../../color/Color';
@@ -140,9 +141,7 @@ export class Particle implements IParticle
     /** Gets or sets the tint color of the particle. */
     get tint(): number
     {
-        const bgr = this._tint;
-
-        return ((bgr & 0xFF) << 16) + (bgr & 0xFF00) + ((bgr >> 16) & 0xFF);
+        return bgr2rgb(this._tint);
     }
 
     set tint(value: ColorSource)

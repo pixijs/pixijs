@@ -1,10 +1,9 @@
-import { Assets } from '../../../../src/assets/Assets';
-import { AlphaFilter } from '../../../../src/filters/defaults/alpha/AlphaFilter';
-import { Text } from '../../../../src/scene/text/Text';
-import { BitmapText } from '../../../../src/scene/text-bitmap/BitmapText';
+import { Assets } from '~/assets';
+import { AlphaFilter } from '~/filters';
+import { BitmapText, Text } from '~/scene';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render both canvas and bitmap text of the same style',

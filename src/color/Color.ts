@@ -86,8 +86,7 @@ export type ColorSource =
     | RgbColor
     | RgbaColor
     | Color
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    | Number;
+    | number;
 
 type ColorSourceTypedArray = Float32Array | Uint8Array | Uint8ClampedArray;
 
@@ -364,7 +363,7 @@ export class Color
             this._arrayRgb = [];
         }
 
-        out = out || this._arrayRgb as T;
+        out ||= this._arrayRgb as T;
 
         out[0] = Math.round(r * 255);
         out[1] = Math.round(g * 255);
@@ -389,7 +388,7 @@ export class Color
             this._arrayRgba = [];
         }
 
-        out = out || this._arrayRgba as T;
+        out ||= this._arrayRgba as T;
         const [r, g, b, a] = this._components;
 
         out[0] = r;
@@ -416,7 +415,7 @@ export class Color
             this._arrayRgb = [];
         }
 
-        out = out || this._arrayRgb as T;
+        out ||= this._arrayRgb as T;
         const [r, g, b] = this._components;
 
         out[0] = r;

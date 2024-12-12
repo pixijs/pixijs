@@ -8,7 +8,7 @@ import type { View } from '../../rendering/renderers/shared/view/View';
 import type { ContainerOptions } from '../container/Container';
 import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
-import type { HTMLTextStyle, HTMLTextStyleOptions } from '../text-html/HtmlTextStyle';
+import type { HTMLTextStyle, HTMLTextStyleOptions } from '../text-html/HTMLTextStyle';
 import type { TextStyle, TextStyleOptions } from './TextStyle';
 
 /**
@@ -214,7 +214,7 @@ export abstract class AbstractText<
      */
     set style(style: TEXT_STYLE | Partial<TEXT_STYLE> | TEXT_STYLE_OPTIONS)
     {
-        style = style || {};
+        style ||= {};
 
         this._style?.off('update', this.onViewUpdate, this);
 
@@ -314,7 +314,6 @@ export abstract class AbstractText<
 
     public override onViewUpdate()
     {
-        this._boundsDirty = true;
         if (!this.didViewUpdate) this._didTextUpdate = true;
         super.onViewUpdate();
     }

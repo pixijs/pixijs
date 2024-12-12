@@ -1,6 +1,0 @@
-/docs/**
-/dist/**
-/lib/**
-transcoders
-node_modules
-/src/*/**/index.ts

@@ -1,8 +1,8 @@
 import fs from 'fs';
 import glob from 'glob';
-import { basename, extname, join } from 'path';
+import path from 'path';
 
-const directoryPath = join(process.cwd(), './src');
+const directoryPath = path.join(process.cwd(), './src');
 
 // find all directories in src
 const directories = glob.sync('*/', { cwd: directoryPath, absolute: true });
@@ -20,11 +20,18 @@ directories.forEach((directory) =>
             '**/webworkerAll.ts',
             // these shouldn't be exported as the webworker plugin will handle them
             '**/*.worker.ts',
+            // Ignore circular imports
+            '**/index.ts',
+            // Tests
+            '**/__tests__/**'
         ],
     });
 
     // Generate export statements for each file
-    const exportStatements = files.map((file) => `export * from './${file.replace(/\.ts$/, '')}';`);
+    const lines = [
+        '// Auto-generated code, do not edit manually',
+        ...files.map((file) => `export * from './${file.replace(/\.ts$/, '')}';`)
+    ];
 
     // now grab all vert/frag shaders
     const shaders = glob.sync('**/*.{vert,frag,glsl,wgsl}', { cwd: directory });
@@ -33,8 +40,8 @@ directories.forEach((directory) =>
     const shaderExportStatements = shaders.map((file) =>
     {
         const replace = file.replace(/\.(vert|frag|glsl|wgsl)$/, '');
-        let shortName = basename(replace).replace(/-([a-z])/g, (_, group1) => group1.toUpperCase());
-        const ext = extname(file).slice(1);
+        let shortName = path.basename(replace).replace(/-([a-z])/g, (_, group1) => group1.toUpperCase());
+        const ext = path.extname(file).slice(1);
 
         shortName += ext.charAt(0).toUpperCase() + ext.slice(1);
 
@@ -42,8 +49,36 @@ directories.forEach((directory) =>
     });
 
     // Combine the export statements into one file
-    exportStatements.push(...shaderExportStatements, '');
+    lines.push(...shaderExportStatements, '');
 
     // Write the export statements to the index.ts file
-    fs.writeFileSync(join(directory, 'index.ts'), exportStatements.join('\n'), { encoding: 'utf-8' });
+    const filePath = path.join(directory, 'index.ts');
+
+    const localFile = path.relative(process.cwd(), filePath);
+    const command = process.argv[2];
+    const output = lines.join('\n');
+    const changed = fs.readFileSync(filePath, 'utf-8') !== output;
+
+    if (command === '--check')
+    {
+        if (changed)
+        {
+            console.error(`ERROR: File ${localFile} is out of date, run 'npm run build:index' to update it.\n`);
+            process.exit(1);
+        }
+    }
+    else if (command === '--write')
+    {
+        if (changed)
+        {
+            // eslint-disable-next-line no-console
+            console.log(`Updating ${localFile}`);
+            fs.writeFileSync(filePath, output, 'utf-8');
+        }
+    }
+    else
+    {
+        console.error(`ERROR: Invalid command. Use '--check' or '--write'.`);
+        process.exit(1);
+    }
 });

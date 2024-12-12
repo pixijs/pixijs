@@ -14,7 +14,7 @@ async function checkImageBitmap()
 
         return imageBitmap.width === 1 && imageBitmap.height === 1;
     }
-    catch (e)
+    catch (_e)
     {
         return false;
     }

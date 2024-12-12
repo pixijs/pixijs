@@ -40,7 +40,7 @@ export function checkMaxIfStatementsInShader(maxIfs: number, gl: GlRenderingCont
 
     try
     {
-        while (true) // eslint-disable-line no-constant-condition
+        while (true)
         {
             const fragmentSrc = fragTemplate.replace(/%forloop%/gi, generateIfTestSrc(maxIfs));
 

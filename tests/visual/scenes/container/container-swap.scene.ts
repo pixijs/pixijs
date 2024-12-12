@@ -1,8 +1,8 @@
-import { Texture } from '../../../../src/rendering/renderers/shared/texture/Texture';
-import { Sprite } from '../../../../src/scene/sprite/Sprite';
+import { Texture } from '~/rendering';
+import { Sprite } from '~/scene';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render swapped children correctly',

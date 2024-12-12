@@ -4,23 +4,23 @@ import type { ParticleContainerAdaptor, ParticleContainerPipe } from '../shared/
 
 export class GpuParticleContainerAdaptor implements ParticleContainerAdaptor
 {
-    public execute(particleContainerPop: ParticleContainerPipe, container: ParticleContainer)
+    public execute(particleContainerPipe: ParticleContainerPipe, container: ParticleContainer)
     {
-        const renderer = particleContainerPop.renderer as WebGPURenderer;
+        const renderer = particleContainerPipe.renderer as WebGPURenderer;
 
-        const shader = container.shader || particleContainerPop.defaultShader;
+        const shader = container.shader || particleContainerPipe.defaultShader;
 
-        shader.groups[0] = renderer.renderPipes.uniformBatch.getUniformBindGroup(particleContainerPop.localUniforms, true);
+        shader.groups[0] = renderer.renderPipes.uniformBatch.getUniformBindGroup(particleContainerPipe.localUniforms, true);
 
         shader.groups[1] = renderer.texture.getTextureBindGroup(container.texture);
 
-        const state = particleContainerPop.state;
+        const state = particleContainerPipe.state;
 
-        const buffer = particleContainerPop.getBuffers(container);
+        const buffer = particleContainerPipe.getBuffers(container);
 
         renderer.encoder.draw({
             geometry: buffer.geometry,
-            shader: container.shader || particleContainerPop.defaultShader,
+            shader: container.shader || particleContainerPipe.defaultShader,
             state,
             size: container.particleChildren.length * 6,
         });

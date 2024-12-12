@@ -94,7 +94,7 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
                     renderer.texture.bind(batch.textures.textures[j], j);
                 }
 
-                renderer.geometry.draw('triangle-list', batch.size, batch.start);
+                renderer.geometry.draw(batch.topology, batch.size, batch.start);
             }
         }
     }

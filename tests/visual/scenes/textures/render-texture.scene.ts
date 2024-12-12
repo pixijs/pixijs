@@ -1,11 +1,10 @@
-import { Assets } from '../../../../src/assets/Assets';
-import { RenderTexture } from '../../../../src/rendering/renderers/shared/texture/RenderTexture';
-import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
-import { Sprite } from '../../../../src/scene/sprite/Sprite';
+import { Assets } from '~/assets';
+import { RenderTexture } from '~/rendering';
+import { Graphics, Sprite } from '~/scene';
 
-import type { Renderer } from '../../../../src/rendering/renderers/types';
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Renderer } from '~/rendering';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render texture correctly',

@@ -157,7 +157,7 @@ export class Polygon implements ShapePrimitive
      */
     public getBounds(out?: Rectangle): Rectangle
     {
-        out = out || new Rectangle();
+        out ||= new Rectangle();
 
         const points = this.points;
 

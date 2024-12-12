@@ -1,11 +1,9 @@
-import { loadTextures } from '../../../../src/assets/loader/parsers/textures/loadTextures';
-import { FillGradient } from '../../../../src/scene/graphics/shared/fill/FillGradient';
-import { FillPattern } from '../../../../src/scene/graphics/shared/fill/FillPattern';
-import { Text } from '../../../../src/scene/text/Text';
+import { loadTextures } from '~/assets';
+import { FillGradient, FillPattern, Text } from '~/scene';
 
-import type { Texture } from '../../../../src/rendering/renderers/shared/texture/Texture';
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Texture } from '~/rendering';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render FillPattern and FillGradient in text stroke',
