@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import type { BLEND_MODES, CULL_MODES } from './const';
 
 const blendModeIds = {

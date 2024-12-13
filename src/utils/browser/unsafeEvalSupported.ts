@@ -22,7 +22,7 @@ export function unsafeEvalSupported(): boolean
 
         unsafeEval = func({ a: 'b' }, 'a', 'b') === true;
     }
-    catch (e)
+    catch (_e)
     {
         unsafeEval = false;
     }

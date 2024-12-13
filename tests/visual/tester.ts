@@ -2,13 +2,12 @@ import { ensureDirSync, existsSync, readFileSync, writeFile } from 'fs-extra';
 import { dirname } from 'path';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
-import { Rectangle } from '~/maths/shapes/Rectangle';
-import { autoDetectRenderer } from '~/rendering/renderers/autoDetectRenderer';
-import { Container } from '~/scene/container/Container';
-import { Graphics } from '~/scene/graphics/shared/Graphics';
+import { Rectangle } from '~/maths';
+import { autoDetectRenderer } from '~/rendering';
+import { Container, Graphics } from '~/scene';
 
 import type { RenderType } from './types';
-import type { Renderer, RendererOptions } from '~/rendering/renderers/types';
+import type { Renderer, RendererOptions } from '~/rendering';
 
 function toArrayBuffer(buf: Buffer): ArrayBuffer
 {

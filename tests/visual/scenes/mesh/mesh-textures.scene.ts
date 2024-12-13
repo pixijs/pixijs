@@ -1,9 +1,9 @@
-import { Point } from '~/maths/point/Point';
-import { MeshRope } from '~/scene/mesh-simple/MeshRope';
+import { Point } from '~/maths';
+import { MeshRope } from '~/scene';
 
 import type { TestScene } from '../../types';
-import type { Renderer } from '~/rendering/renderers/types';
-import type { Container } from '~/scene/container/Container';
+import type { Renderer } from '~/rendering';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should multiple textures on a complex mesh',

@@ -3,8 +3,8 @@ import { resolveJsonUrl } from '../parsers/resolveJsonUrl';
 import { resolveTextureUrl } from '../parsers/resolveTextureUrl';
 import { getUrlExtension, Resolver } from '../Resolver';
 import { manifest } from './sampleManifest';
-import { extensions, ExtensionType } from '~/extensions/Extensions';
-import { spritesheetAsset } from '~/spritesheet/spritesheetAsset';
+import { extensions, ExtensionType } from '~/extensions';
+import { spritesheetAsset } from '~/spritesheet';
 
 import type { FormatDetectionParser } from '../../detections/types';
 

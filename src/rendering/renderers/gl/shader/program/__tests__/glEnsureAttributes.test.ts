@@ -1,10 +1,7 @@
 import { ensureAttributes } from '../ensureAttributes';
 import { generateProgram } from '../generateProgram';
 import { getTestContext } from '../getTestContext';
-import { GlProgram } from '~/rendering/renderers/gl/shader/GlProgram';
-import { Buffer } from '~/rendering/renderers/shared/buffer/Buffer';
-import { BufferUsage } from '~/rendering/renderers/shared/buffer/const';
-import { Geometry } from '~/rendering/renderers/shared/geometry/Geometry';
+import { Buffer, BufferUsage, Geometry, GlProgram } from '~/rendering';
 
 describe('glEnsureAttributes', () =>
 {

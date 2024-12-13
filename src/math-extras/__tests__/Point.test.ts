@@ -1,6 +1,5 @@
 import '../init';
-import { ObservablePoint } from '~/maths/point/ObservablePoint';
-import { Point } from '~/maths/point/Point';
+import { ObservablePoint, Point } from '~/maths';
 
 describe('Point', () =>
 {

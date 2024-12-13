@@ -9,7 +9,7 @@ import { Text } from '../text/Text';
 import { BitmapText } from '../text-bitmap/BitmapText';
 import { HTMLText } from '../text-html/HTMLText';
 import { getWebGLRenderer } from '@test-utils';
-import { Texture } from '~/rendering/renderers/shared/texture/Texture';
+import { Texture } from '~/rendering';
 
 describe('RenderableGC', () =>
 {

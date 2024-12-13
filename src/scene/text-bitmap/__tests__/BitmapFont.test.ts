@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { TextStyle } from '../../text/TextStyle';
 import { BitmapFont } from '../BitmapFont';
 import { BitmapFontManager } from '../BitmapFontManager';
-import { Cache } from '~/assets/cache/Cache';
-import { Rectangle } from '~/maths/shapes/Rectangle';
-import { Texture } from '~/rendering/renderers/shared/texture/Texture';
+import { Cache } from '~/assets';
+import { Rectangle } from '~/maths';
+import { Texture } from '~/rendering';
 
 describe('BitmapFont', () =>
 {

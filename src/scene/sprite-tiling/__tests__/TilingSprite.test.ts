@@ -5,10 +5,10 @@ import { TilingSprite } from '../TilingSprite';
 import '../init';
 import '../../mesh/init';
 import { getTexture, getWebGLRenderer } from '@test-utils';
-import { Point } from '~/maths/point/Point';
-import { Texture } from '~/rendering/renderers/shared/texture/Texture';
+import { Point } from '~/maths';
+import { Texture } from '~/rendering';
 
-import type { TextureSource } from '~/rendering/renderers/shared/texture/sources/TextureSource';
+import type { TextureSource } from '~/rendering';
 
 describe('TilingSprite', () =>
 {

@@ -1,7 +1,7 @@
 import { Container } from '../Container';
 import { updateRenderGroupTransforms } from '../utils/updateRenderGroupTransforms';
-import { DEG_TO_RAD, RAD_TO_DEG } from '~/maths/misc/const';
-import { Sprite } from '~/scene/sprite/Sprite';
+import { DEG_TO_RAD, RAD_TO_DEG } from '~/maths';
+import { Sprite } from '~/scene';
 
 describe('Container Visual', () =>
 {

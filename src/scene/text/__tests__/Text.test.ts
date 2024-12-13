@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import { Container } from '../../container/Container';
 import { Sprite } from '../../sprite/Sprite';
 import { BitmapText } from '../../text-bitmap/BitmapText';
@@ -8,7 +7,7 @@ import '../../graphics/init';
 import '../../text-bitmap/init';
 import '../init';
 import { getWebGLRenderer } from '@test-utils';
-import { Point } from '~/maths/point/Point';
+import { Point } from '~/maths';
 
 import type { DestroyOptions } from '../../container/destroyTypes';
 

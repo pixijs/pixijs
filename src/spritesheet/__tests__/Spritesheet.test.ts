@@ -1,8 +1,7 @@
 import path from 'path';
 import { Spritesheet } from '../Spritesheet';
 import { getAsset } from '@test-utils';
-import { ImageSource } from '~/rendering/renderers/shared/texture/sources/ImageSource';
-import { Texture } from '~/rendering/renderers/shared/texture/Texture';
+import { ImageSource, Texture } from '~/rendering';
 
 import type { SpritesheetData, SpritesheetFrameData } from '../Spritesheet';
 

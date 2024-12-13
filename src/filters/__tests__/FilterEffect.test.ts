@@ -1,6 +1,6 @@
 import { AlphaFilter } from '../defaults/alpha/AlphaFilter';
 import { NoiseFilter } from '../defaults/noise/NoiseFilter';
-import { Container } from '~/scene/container/Container';
+import { Container } from '~/scene';
 
 import type { FilterEffect } from '../FilterEffect';
 

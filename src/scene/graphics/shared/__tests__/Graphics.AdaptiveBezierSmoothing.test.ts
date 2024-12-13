@@ -1,9 +1,9 @@
 import '~/environment-browser/browserAll';
 import { Graphics } from '../Graphics';
 import { GraphicsContextSystem } from '../GraphicsContextSystem';
-import { Application } from '~/app/Application';
+import { Application } from '~/app';
 
-import type { Polygon } from '~/maths/shapes/Polygon';
+import type { Polygon } from '~/maths';
 
 describe('Graphics Adaptive Bezier Smoothing', () =>
 {

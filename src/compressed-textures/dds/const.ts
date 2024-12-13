@@ -41,7 +41,7 @@ const DDS_DX10_FIELDS = {
  * @ignore
  */
 export enum DXGI_FORMAT
-    {
+{
     DXGI_FORMAT_UNKNOWN,
     DXGI_FORMAT_R32G32B32A32_TYPELESS,
     DXGI_FORMAT_R32G32B32A32_FLOAT,
@@ -171,7 +171,7 @@ export enum DXGI_FORMAT
  * @ignore
  */
 export enum D3D10_RESOURCE_DIMENSION
-    {
+{
     DDS_DIMENSION_TEXTURE1D = 2,
     DDS_DIMENSION_TEXTURE2D = 3,
     DDS_DIMENSION_TEXTURE3D = 6
@@ -189,7 +189,7 @@ function fourCCToInt32(value: string)
 // https://learn.microsoft.com/en-us/windows/win32/direct3ddds/dx-graphics-dds-pguide
 // https://learn.microsoft.com/en-us/windows/win32/direct3d9/d3dformat
 export enum D3DFMT
-    {
+{
     UNKNOWN = 0,
     R8G8B8 = 20,
     A8R8G8B8 = 21,

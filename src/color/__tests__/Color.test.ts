@@ -312,7 +312,7 @@ describe('Color', () =>
     {
         class ColorNumber extends Number {}
 
-        const color = new Color(new ColorNumber(0xff0000));
+        const color = new Color(new ColorNumber(0xff0000) as number);
 
         expect(color.toNumber()).toBe(0xff0000);
     });

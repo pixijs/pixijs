@@ -1,7 +1,6 @@
-import { Assets } from '~/assets/Assets';
-import { Point } from '~/maths/point/Point';
-import { Container } from '~/scene/container/Container';
-import { Sprite } from '~/scene/sprite/Sprite';
+import { Assets } from '~/assets';
+import { Point } from '~/maths';
+import { Container, Sprite } from '~/scene';
 
 import type { TestScene } from '../../types';
 

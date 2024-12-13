@@ -1,9 +1,8 @@
-import { Assets } from '~/assets/Assets';
-import { Text } from '~/scene/text/Text';
-import { BitmapText } from '~/scene/text-bitmap/BitmapText';
+import { Assets } from '~/assets';
+import { BitmapText, Text } from '~/scene';
 
 import type { TestScene } from '../../types';
-import type { Container } from '~/scene/container/Container';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render both canvas and bitmap text with a stroke',

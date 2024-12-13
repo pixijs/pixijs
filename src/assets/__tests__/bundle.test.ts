@@ -1,8 +1,8 @@
 import { setTimeout } from 'timers/promises';
 import { Assets } from '../Assets';
 import { basePath, getApp } from '@test-utils';
-import { Texture } from '~/rendering/renderers/shared/texture/Texture';
-import { Spritesheet } from '~/spritesheet/Spritesheet';
+import { Texture } from '~/rendering';
+import { Spritesheet } from '~/spritesheet';
 
 import type { BundleIdentifierOptions } from '../resolver/Resolver';
 

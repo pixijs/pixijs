@@ -455,9 +455,7 @@ export class GlGeometrySystem implements System
             }
             else
             {
-                /* eslint-disable max-len */
                 gl.drawElements(glTopology, size || geometry.indexBuffer.data.length, glType, (start || 0) * byteSize);
-                /* eslint-enable max-len */
             }
         }
         else if (instanceCount > 1)
