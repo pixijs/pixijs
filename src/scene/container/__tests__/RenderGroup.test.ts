@@ -1,6 +1,7 @@
 import { Sprite } from '../../sprite/Sprite';
 import { Container } from '../Container';
 import { RenderGroup } from '../RenderGroup';
+import { updateRenderGroupTransforms } from '../utils/updateRenderGroupTransforms';
 import { getWebGLRenderer } from '@test-utils';
 import { Texture } from '~/rendering';
 import { BigPool } from '~/utils';
@@ -648,6 +649,31 @@ describe('RenderGroup', () =>
 
         // this should now be true as the order has changed
         expect(container.renderGroup.structureDidChange).toBeTrue();
+    });
+
+    it('should update the children on the first pass after conversion to render group', async () =>
+    {
+        const root = new Container({
+            isRenderGroup: true
+        });
+
+        const container = new Container();
+
+        root.addChild(container);
+
+        const child = new Container();
+
+        container.addChild(child);
+
+        expect(child._updateFlags).toEqual(0b1111);
+
+        updateRenderGroupTransforms(root.renderGroup, false);
+
+        expect(child._updateFlags).toEqual(0b0);
+
+        container.enableRenderGroup();
+
+        expect(child._updateFlags).toEqual(0b1111);
     });
 });
 
