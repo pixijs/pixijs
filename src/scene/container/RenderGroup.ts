@@ -127,7 +127,12 @@ export class RenderGroup implements Instruction
 
         for (let i = 0; i < children.length; i++)
         {
-            this.addChild(children[i]);
+            const child = children[i];
+
+            // make sure the children are all updated on the first pass..
+            child._updateFlags = 0b1111;
+
+            this.addChild(child);
         }
     }
 
