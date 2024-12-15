@@ -29,8 +29,6 @@ export interface View
 
     /** @private */
     _lastUsed: number;
-    /** @private */
-    _lastInstructionTick: number
 
     /**
      *  Whether or not to round the x/y position of the object.
