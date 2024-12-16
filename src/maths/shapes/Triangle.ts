@@ -84,8 +84,7 @@ export class Triangle implements ShapePrimitive
         const s = ((this.x - this.x3) * (y - this.y3)) - ((this.y - this.y3) * (x - this.x3));
         const t = ((this.x2 - this.x) * (y - this.y)) - ((this.y2 - this.y) * (x - this.x));
 
-        if ((s < 0) !== (t < 0) && s !== 0 && t !== 0)
-        { return false; }
+        if ((s < 0) !== (t < 0) && s !== 0 && t !== 0) { return false; }
 
         const d = ((this.x3 - this.x2) * (y - this.y2)) - ((this.y3 - this.y2) * (x - this.x2));
 
@@ -97,9 +96,10 @@ export class Triangle implements ShapePrimitive
      * @param pointX - The X coordinate of the point to test
      * @param pointY - The Y coordinate of the point to test
      * @param strokeWidth - The width of the line to check
+     * @param _alignment - The alignment of the stroke
      * @returns Whether the x/y coordinates are within this triangle
      */
-    public strokeContains(pointX: number, pointY: number, strokeWidth: number): boolean
+    public strokeContains(pointX: number, pointY: number, strokeWidth: number, _alignment: number = 0.5): boolean
     {
         const halfStrokeWidth = strokeWidth / 2;
         const halfStrokeWidthSquared = halfStrokeWidth * halfStrokeWidth;

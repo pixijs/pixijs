@@ -125,7 +125,7 @@ function collectAllRenderablesSimple(
 
         rp[renderable.renderPipeId].addRenderable(renderable, instructionSet);
 
-        renderableGC.addRenderable(renderable, instructionSet);
+        renderableGC.addRenderable(renderable);
 
         renderable.didViewUpdate = false;
     }
@@ -178,7 +178,7 @@ function collectAllRenderablesAdvanced(
 
             pipe.addRenderable(renderable, instructionSet);
 
-            renderableGC.addRenderable(renderable, instructionSet);
+            renderableGC.addRenderable(renderable);
 
             renderable.didViewUpdate = false;
         }

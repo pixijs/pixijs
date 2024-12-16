@@ -1,5 +1,5 @@
 module.exports = {
-    testPathIgnorePatterns: ['/node_modules/', '/src/', '/dist/', '/lib/'],
+    testPathIgnorePatterns: ['/node_modules/', '/dist/', '/lib/'],
     preset: 'ts-jest/presets/js-with-ts',
     runner: '@pixi/jest-electron/runner',
     testEnvironment: '@pixi/jest-electron/environment',
