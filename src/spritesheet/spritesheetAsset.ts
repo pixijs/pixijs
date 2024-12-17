@@ -158,16 +158,7 @@ export const spritesheetAsset = {
             {
                 const imagePath = copySearchParams(basePath + (imageFilename ?? asset.meta.image), options.src);
 
-                let assets;
-
-                if (textureOptions)
-                {
-                    assets = await loader.load<Texture>([{ src: imagePath, data: textureOptions }]);
-                }
-                else
-                {
-                    assets = await loader.load<Texture>([imagePath]);
-                }
+                const assets = await loader.load<Texture>([{ src: imagePath, data: textureOptions }]);
 
                 texture = assets[imagePath];
             }
