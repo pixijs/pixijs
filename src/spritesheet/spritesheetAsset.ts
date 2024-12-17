@@ -63,6 +63,9 @@ function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack:
  *     src: 'path/to/spritesheet.json',
  *     data: {
  *         ignoreMultiPack: true,
+ *         textureOptions: {
+ *             scaleMode: "nearest"
+ *         }
  *     }
  * })
  * @type {AssetExtension}
