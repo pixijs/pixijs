@@ -138,7 +138,7 @@ export const spritesheetAsset = {
             const {
                 texture: imageTexture, // if user need to use preloaded texture
                 imageFilename, // if user need to use custom filename (not from jsonFile.meta.image)
-                textureOptions
+                textureOptions // if user need to set texture options on texture
             } = options?.data ?? {};
 
             let basePath = path.dirname(options.src);
