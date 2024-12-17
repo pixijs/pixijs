@@ -5,11 +5,11 @@ import { ExtensionType } from '../extensions/Extensions';
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { path } from '../utils/path';
 import { Spritesheet } from './Spritesheet';
-import { type TextureSourceOptions } from '~/rendering/renderers/shared/texture/sources/TextureSource';
 
 import type { AssetExtensionAdvanced } from '../assets/AssetExtension';
 import type { Loader } from '../assets/loader/Loader';
 import type { ResolvedAsset } from '../assets/types';
+import type { TextureSourceOptions } from '../rendering/renderers/shared/texture/sources/TextureSource';
 import type { SpritesheetData } from './Spritesheet';
 
 export interface SpriteSheetJson extends SpritesheetData
