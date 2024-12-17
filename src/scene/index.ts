@@ -1,6 +1,5 @@
 // Auto-generated code, do not edit manually
 export * from './container/bounds/Bounds';
-export * from './container/bounds/getFastGlobalBounds';
 export * from './container/bounds/getGlobalBounds';
 export * from './container/bounds/getLocalBounds';
 export * from './container/bounds/getRenderableBounds';
@@ -23,7 +22,6 @@ export * from './container/RenderGroup';
 export * from './container/RenderGroupPipe';
 export * from './container/RenderGroupSystem';
 export * from './container/utils/assignWithIgnore';
-export * from './container/utils/buildInstructions';
 export * from './container/utils/checkChildrenDidChange';
 export * from './container/utils/clearList';
 export * from './container/utils/definedProps';

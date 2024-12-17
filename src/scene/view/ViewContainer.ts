@@ -1,5 +1,9 @@
 import { Bounds } from '../container/bounds/Bounds';
 import { Container } from '../container/Container';
+import { type RenderLayer } from '../layers/RenderLayer';
+import { type InstructionSet } from '~/rendering/renderers/shared/instructions/InstructionSet';
+import { type RenderPipe } from '~/rendering/renderers/shared/instructions/RenderPipe';
+import { type Renderer } from '~/rendering/renderers/types';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';
@@ -101,5 +105,25 @@ export abstract class ViewContainer extends Container implements View
         super.destroy(options);
 
         this._bounds = null;
+    }
+
+    public override collectRenderablesSimple(
+        instructionSet: InstructionSet,
+        renderer: Renderer,
+        _currentLayer: RenderLayer,
+    ): void
+    {
+        const { renderPipes, renderableGC } = renderer;
+
+        // TODO add blends in
+        renderPipes.blendMode.setBlendMode(this, this.groupBlendMode, instructionSet);
+
+        const rp = renderPipes as unknown as Record<string, RenderPipe>;
+
+        rp[this.renderPipeId].addRenderable(this, instructionSet);
+
+        renderableGC.addRenderable(this);
+
+        this.didViewUpdate = false;
     }
 }

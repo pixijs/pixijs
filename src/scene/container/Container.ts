@@ -9,6 +9,7 @@ import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { BigPool } from '../../utils/pool/PoolGroup';
 import { cacheAsTextureMixin } from './container-mixins/cacheAsTextureMixin';
 import { childrenHelperMixin } from './container-mixins/childrenHelperMixin';
+import { collectRenderablesMixin } from './container-mixins/collectRenderablesMixin';
 import { effectsMixin } from './container-mixins/effectsMixin';
 import { findMixin } from './container-mixins/findMixin';
 import { bgr2rgb, getGlobalMixin } from './container-mixins/getGlobalMixin';
@@ -402,14 +403,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     public measurable = true;
     /** @private */
     public isSimple = true;
-
-    /**
-     * Used internally to identify if this container is a RenderLayer
-     * @internal
-     * @readonly
-     * @ignore
-     */
-    public isRenderLayer = false;
 
     /**
      * The RenderLayer this container belongs to, if any.
@@ -1411,3 +1404,4 @@ Container.mixin(sortMixin);
 Container.mixin(cullingMixin);
 Container.mixin(cacheAsTextureMixin);
 Container.mixin(getGlobalMixin);
+Container.mixin(collectRenderablesMixin);

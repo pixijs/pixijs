@@ -1,4 +1,8 @@
+import { type Bounds } from '../container/bounds/Bounds';
 import { Container } from '../container/Container';
+import { type InstructionSet } from '~/rendering/renderers/shared/instructions/InstructionSet';
+import { type Renderer } from '~/rendering/renderers/types';
+import { warn } from '~/utils/logging/warn';
 // TODO make it clear render layer cannot have 'filters'
 
 /** Options for configuring a RenderLayer. */
@@ -108,9 +112,6 @@ export class RenderLayer extends Container
         sortFunction: (a, b) => a.zIndex - b.zIndex,
     };
 
-    /** @internal */
-    public isRenderLayer = true;
-
     /** Function used to sort layer children if sortableChildren is true */
     public sortFunction: (a: Container, b: Container) => number;
 
@@ -196,6 +197,30 @@ export class RenderLayer extends Container
         this.renderLayerChildren.length = 0;
     }
 
+    public override collectRenderables(instructionSet: InstructionSet, renderer: Renderer, _currentLayer: RenderLayer
+    ): void
+    {
+        const layerChildren = this.renderLayerChildren;
+        const length = layerChildren.length;
+
+        if (this.sortableChildren)
+        {
+            this.sortRenderLayerChildren();
+        }
+
+        for (let i = 0; i < length; i++)
+        {
+            if (!layerChildren[i].parent)
+            {
+                // eslint-disable-next-line max-len
+                warn('Container must be added to both layer and scene graph. Layers only handle render order - the scene graph is required for transforms (addChild)',
+                    layerChildren[i]);
+            }
+
+            layerChildren[i].collectRenderables(instructionSet, renderer, this);
+        }
+    }
+
     /**
      * Sort the layer's children using the defined sort function.
      * Will be called each render if sortableChildren is true.
@@ -204,5 +229,26 @@ export class RenderLayer extends Container
     public sortRenderLayerChildren()
     {
         this.renderLayerChildren.sort(this.sortFunction);
+    }
+
+    public override _getGlobalBoundsRecursive(
+        target: Container,
+        bounds: Bounds,
+        currentLayer: RenderLayer,
+        factorRenderLayers: boolean
+    ): void
+    {
+        if (!factorRenderLayers) return;
+
+        const layer = target as RenderLayer;
+
+        currentLayer = layer;
+
+        const children = layer.renderLayerChildren;
+
+        for (let i = 0; i < children.length; i++)
+        {
+            this._getGlobalBoundsRecursive(children[i], bounds, currentLayer, factorRenderLayers);
+        }
     }
 }
