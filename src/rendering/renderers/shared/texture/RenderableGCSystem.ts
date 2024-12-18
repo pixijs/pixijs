@@ -309,7 +309,7 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
                 {
                     const rp = renderPipes as unknown as Record<string, RenderPipe>;
 
-                    if (renderGroup)renderGroup.structureDidChange = false;
+                    if (renderGroup)renderGroup.structureDidChange = true;
 
                     rp[renderable.renderPipeId].destroyRenderable(renderable);
                 }
