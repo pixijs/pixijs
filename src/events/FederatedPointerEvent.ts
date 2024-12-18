@@ -20,6 +20,22 @@ export class FederatedPointerEvent extends FederatedMouseEvent implements Pointe
     public width = 0;
 
     /**
+     * The angle in radians of a pointer or stylus measuring the vertical angle between
+     * the device's surface to the pointer or stylus.
+     * A stylus at 0 degrees would be directly parallel whereas at π/2 degrees it would be perpendicular.
+     * @see https://developer.mozilla.org/docs/Web/API/PointerEvent/altitudeAngle)
+     */
+    public altitudeAngle: number;
+
+    /**
+     * The angle in radians of a pointer or stylus measuring an arc from the X axis of the device to
+     * the pointer or stylus projected onto the screen's plane.
+     * A stylus at 0 degrees would be pointing to the "0 o'clock" whereas at π/2 degrees it would be pointing at "6 o'clock".
+     * @see https://developer.mozilla.org/docs/Web/API/PointerEvent/azimuthAngle)
+     */
+    public azimuthAngle: number;
+
+    /**
      * The height of the pointer's contact along the y-axis, measured in CSS pixels.
      * radiusY of TouchEvents will be represented by this value.
      * @see https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/height
