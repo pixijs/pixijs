@@ -34,7 +34,7 @@ across all devices and allowing you to create rich, interactive graphics and cro
 
 ### Setup
 
-It's easy to get started with PixiJS! Just use our [PixiJS Create](pixijs.io/create-pixi/) CLI and get set up in just one command:
+It's easy to get started with PixiJS! Just use our [PixiJS Create](https://pixijs.io/create-pixi/) CLI and get set up in just one command:
 
 <p align="center">
   <img width="500" style="border-radius: 10px; filter: drop-shadow(0px 2px 5px #000);;" alt="Screenshot from terminal" src="https://pixijs.io/create-pixi/img/demo.gif">
