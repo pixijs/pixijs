@@ -139,7 +139,7 @@ export class GlGeometrySystem implements System
     }
 
     /** Reset and unbind any active VAO and geometry. */
-    public reset(): void
+    public resetState(): void
     {
         this.unbind();
     }
