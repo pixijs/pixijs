@@ -9,6 +9,7 @@ import { Spritesheet } from './Spritesheet';
 import type { AssetExtensionAdvanced } from '../assets/AssetExtension';
 import type { Loader } from '../assets/loader/Loader';
 import type { ResolvedAsset } from '../assets/types';
+import type { TextureSourceOptions } from '../rendering/renderers/shared/texture/sources/TextureSource';
 import type { SpritesheetData } from './Spritesheet';
 
 export interface SpriteSheetJson extends SpritesheetData
@@ -62,6 +63,9 @@ function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack:
  *     src: 'path/to/spritesheet.json',
  *     data: {
  *         ignoreMultiPack: true,
+ *         textureOptions: {
+ *             scaleMode: "nearest"
+ *         }
  *     }
  * })
  * @type {AssetExtension}
@@ -122,13 +126,19 @@ export const spritesheetAsset = {
 
         async parse(
             asset: SpriteSheetJson,
-            options: ResolvedAsset<{texture?: Texture, imageFilename?: string, ignoreMultiPack?: boolean}>,
+            options: ResolvedAsset<{
+                texture?: Texture,
+                imageFilename?: string,
+                ignoreMultiPack?: boolean,
+                textureOptions?: TextureSourceOptions
+            }>,
             loader?: Loader
         ): Promise<Spritesheet>
         {
             const {
                 texture: imageTexture, // if user need to use preloaded texture
-                imageFilename // if user need to use custom filename (not from jsonFile.meta.image)
+                imageFilename, // if user need to use custom filename (not from jsonFile.meta.image)
+                textureOptions // if user need to set texture options on texture
             } = options?.data ?? {};
 
             let basePath = path.dirname(options.src);
@@ -148,7 +158,7 @@ export const spritesheetAsset = {
             {
                 const imagePath = copySearchParams(basePath + (imageFilename ?? asset.meta.image), options.src);
 
-                const assets = await loader.load<Texture>([imagePath]);
+                const assets = await loader.load<Texture>([{ src: imagePath, data: textureOptions }]);
 
                 texture = assets[imagePath];
             }
