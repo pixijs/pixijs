@@ -8,7 +8,6 @@ import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { TexturePool } from '../rendering/renderers/shared/texture/TexturePool';
 import { type Renderer, RendererType } from '../rendering/renderers/types';
 import { Bounds } from '../scene/container/bounds/Bounds';
-import { getFastGlobalBounds } from '../scene/container/bounds/getFastGlobalBounds';
 import { getGlobalRenderableBounds } from '../scene/container/bounds/getRenderableBounds';
 import { warn } from '../utils/logging/warn';
 
@@ -177,7 +176,9 @@ export class FilterSystem implements System
         // measuring.
         else
         {
-            getFastGlobalBounds(instruction.container, bounds);
+            // we want to factor render layers to get the real visual bounds of this container.
+            // so the last param is true..
+            instruction.container.getFastGlobalBounds(true, bounds);
         }
 
         if (instruction.container)
