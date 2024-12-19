@@ -24,6 +24,9 @@ export interface RenderLayerOptions
     sortFunction?: (a: Container, b: Container) => number;
 }
 
+// Remove the 'extends' and just define the type directly
+export type IRenderLayer = Omit<RenderLayerClass, keyof Container>;
+
 /**
  * The RenderLayer API provides a way to control the rendering order of objects independently
  * of their logical parent-child relationships in the scene graph.
@@ -99,7 +102,7 @@ export interface RenderLayerOptions
  *    For example, if an object is visually moved to the front via a layer, hit testing will still use its original position.
  *  - RenderLayers and their children must all belong to the same renderGroup to work correctly
  */
-export class RenderLayer extends Container
+export class RenderLayerClass extends Container
 {
     /**
      * Default options for RenderLayer instances
@@ -125,7 +128,7 @@ export class RenderLayer extends Container
      */
     constructor(options: RenderLayerOptions = {})
     {
-        options = { ...RenderLayer.defaultOptions, ...options };
+        options = { ...RenderLayerClass.defaultOptions, ...options };
 
         super();
 
@@ -197,7 +200,7 @@ export class RenderLayer extends Container
         this.renderLayerChildren.length = 0;
     }
 
-    public override collectRenderables(instructionSet: InstructionSet, renderer: Renderer, _currentLayer: RenderLayer
+    public override collectRenderables(instructionSet: InstructionSet, renderer: Renderer, _currentLayer: RenderLayerClass
     ): void
     {
         const layerChildren = this.renderLayerChildren;
@@ -232,23 +235,22 @@ export class RenderLayer extends Container
     }
 
     public override _getGlobalBoundsRecursive(
-        target: Container,
         bounds: Bounds,
-        currentLayer: RenderLayer,
+        currentLayer: RenderLayerClass,
         factorRenderLayers: boolean
     ): void
     {
         if (!factorRenderLayers) return;
 
-        const layer = target as RenderLayer;
-
-        currentLayer = layer;
-
-        const children = layer.renderLayerChildren;
+        const children = this.renderLayerChildren;
 
         for (let i = 0; i < children.length; i++)
         {
-            this._getGlobalBoundsRecursive(children[i], bounds, currentLayer, factorRenderLayers);
+            children[i]._getGlobalBoundsRecursive(bounds, currentLayer, factorRenderLayers);
         }
     }
 }
+
+export const RenderLayer = RenderLayerClass as {
+    new (options?: RenderLayerOptions): IRenderLayer;
+};

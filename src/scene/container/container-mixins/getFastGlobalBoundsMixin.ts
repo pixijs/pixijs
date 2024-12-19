@@ -2,7 +2,7 @@ import { type Bounds } from '../bounds/Bounds';
 import { boundsPool } from '../bounds/utils/matrixAndBoundsPool';
 import { Matrix } from '~/maths/matrix/Matrix';
 import { type Renderable } from '~/rendering/renderers/shared/Renderable';
-import { type RenderLayer } from '~/scene/layers/RenderLayer';
+import { type RenderLayerClass } from '~/scene/layers/RenderLayer';
 
 import type { Container } from '../Container';
 
@@ -12,9 +12,8 @@ export interface GetFastGlobalBoundsMixin
 {
     getFastGlobalBounds(bounds: Bounds, factorRenderLayers?: boolean): Bounds
     _getGlobalBoundsRecursive(
-        target: Container,
         bounds: Bounds,
-        currentLayer: RenderLayer,
+        currentLayer: RenderLayerClass,
         factorRenderLayers: boolean
     ): void;
 }
@@ -24,7 +23,7 @@ export const getFastGlobalBoundsMixin: Partial<Container> = {
     {
         bounds.clear();
 
-        this._getGlobalBoundsRecursive(this, bounds, this.parentRenderLayer, !!factorRenderLayers);
+        this._getGlobalBoundsRecursive(bounds, this.parentRenderLayer, !!factorRenderLayers);
 
         if (!bounds.isValid)
         {
@@ -39,52 +38,51 @@ export const getFastGlobalBoundsMixin: Partial<Container> = {
     },
 
     _getGlobalBoundsRecursive(
-        target: Container,
         bounds: Bounds,
-        currentLayer: RenderLayer,
+        currentLayer: RenderLayerClass,
         factorRenderLayers: boolean
     )
     {
         let localBounds = bounds;
 
-        if (factorRenderLayers && target.parentRenderLayer !== currentLayer) return;
+        if (factorRenderLayers && this.parentRenderLayer !== currentLayer) return;
 
-        if (target.localDisplayStatus !== 0b111 || (!target.measurable))
+        if (this.localDisplayStatus !== 0b111 || (!this.measurable))
         {
             return;
         }
 
-        const manageEffects = !!target.effects.length;
+        const manageEffects = !!this.effects.length;
 
-        if (target.renderGroup || manageEffects)
+        if (this.renderGroup || manageEffects)
         {
             localBounds = boundsPool.get().clear();
         }
 
-        if (target.boundsArea)
+        if (this.boundsArea)
         {
-            bounds.addRect(target.boundsArea, target.worldTransform);
+            bounds.addRect(this.boundsArea, this.worldTransform);
         }
         else
         {
-            if (target.renderPipeId)
+            if (this.renderPipeId)
             {
-                const viewBounds = (target as Renderable).bounds;
+                const viewBounds = (this as Renderable).bounds;
 
                 localBounds.addFrame(
                     viewBounds.minX,
                     viewBounds.minY,
                     viewBounds.maxX,
                     viewBounds.maxY,
-                    target.groupTransform
+                    this.groupTransform
                 );
             }
 
-            const children = target.children;
+            const children = this.children;
 
             for (let i = 0; i < children.length; i++)
             {
-                this._getGlobalBoundsRecursive(children[i], localBounds, currentLayer, factorRenderLayers);
+                children[i]._getGlobalBoundsRecursive(localBounds, currentLayer, factorRenderLayers);
             }
         }
 
@@ -92,11 +90,11 @@ export const getFastGlobalBoundsMixin: Partial<Container> = {
         {
             let advanced = false;
 
-            const renderGroup = target.renderGroup || target.parentRenderGroup;
+            const renderGroup = this.renderGroup || this.parentRenderGroup;
 
-            for (let i = 0; i < target.effects.length; i++)
+            for (let i = 0; i < this.effects.length; i++)
             {
-                if (target.effects[i].addBounds)
+                if (this.effects[i].addBounds)
                 {
                     if (!advanced)
                     {
@@ -104,22 +102,22 @@ export const getFastGlobalBoundsMixin: Partial<Container> = {
                         localBounds.applyMatrix(renderGroup.worldTransform);
                     }
 
-                    target.effects[i].addBounds(localBounds, true);
+                    this.effects[i].addBounds(localBounds, true);
                 }
             }
 
             if (advanced)
             {
                 localBounds.applyMatrix(renderGroup.worldTransform.copyTo(tempMatrix).invert());
-                bounds.addBounds(localBounds, target.relativeGroupTransform);
+                bounds.addBounds(localBounds, this.relativeGroupTransform);
             }
 
             bounds.addBounds(localBounds);
             boundsPool.return(localBounds);
         }
-        else if (target.renderGroup)
+        else if (this.renderGroup)
         {
-            bounds.addBounds(localBounds, target.relativeGroupTransform);
+            bounds.addBounds(localBounds, this.relativeGroupTransform);
             boundsPool.return(localBounds);
         }
     }

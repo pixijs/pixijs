@@ -25,7 +25,6 @@ import type { PointData } from '../../maths/point/PointData';
 import type { Rectangle } from '../../maths/shapes/Rectangle';
 import type { BLEND_MODES } from '../../rendering/renderers/shared/state/const';
 import type { Dict } from '../../utils/types';
-import type { RenderLayer } from '../layers/RenderLayer';
 import type { Optional } from './container-mixins/measureMixin';
 import type { DestroyOptions } from './destroyTypes';
 
