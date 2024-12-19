@@ -26,7 +26,11 @@ export interface RenderLayerOptions
     sortFunction?: (a: Container, b: Container) => number;
 }
 
-// Remove the 'extends' and just define the type directly
+/*
+ * Here we are essentially hiding the Container API even though this class extends a Container.
+ * This is just so it fits into the current architecture. When users use a RenderLayer,
+ * the Container properties will be hidden from them, as they don't do anything in renderLayers.
+ */
 type ContainerKeys = keyof Container;
 type PartialContainerKeys = Exclude<ContainerKeys,
 'parent' | 'didChange' | '_updateFlags' | keyof EventEmitter | 'parentRenderLayer' |
@@ -71,7 +75,7 @@ export type IRenderLayer = Omit<RenderLayerClass, PartialContainerKeys>;
  * ```js
  * const rect = new PIXI.Graphics();
  * container.addChild(rect);    // Add to logical parent
- * layer.add(rect);      // Control render order via the layer
+ * layer.attach(rect);      // Control render order via the layer
  * ```
  *
  * ### 3. Removing Objects from a Layer
@@ -86,7 +90,7 @@ export type IRenderLayer = Omit<RenderLayerClass, PartialContainerKeys>;
  * Developers must explicitly reassign it.
  * ```js
  * container.addChild(rect);    // Logical parent
- * layer.add(rect);      // Explicitly reassign to the layer
+ * layer.attach(rect);      // Explicitly reassign to the layer
  * ```
  *
  * ### 5. Layer Position in Scene Graph
