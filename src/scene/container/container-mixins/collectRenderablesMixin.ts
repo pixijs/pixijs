@@ -1,7 +1,7 @@
 import { type InstructionSet } from '~/rendering/renderers/shared/instructions/InstructionSet';
 import { type InstructionPipe } from '~/rendering/renderers/shared/instructions/RenderPipe';
 import { type Renderer, type RenderPipes } from '~/rendering/renderers/types';
-import { type RenderLayer } from '~/scene/layers/RenderLayer';
+import { type RenderLayerClass } from '~/scene/layers/RenderLayer';
 
 import type { Container } from '../Container';
 
@@ -14,16 +14,16 @@ export interface CollectRenderablesMixin
      * @param {Renderer} renderer - The renderer responsible for rendering the scene.
      * @param {RenderLayer} currentLayer - The current render layer being processed.
      */
-    collectRenderables(instructionSet: InstructionSet, renderer: Renderer, currentLayer: RenderLayer): void;
+    collectRenderables(instructionSet: InstructionSet, renderer: Renderer, currentLayer: RenderLayerClass): void;
 
     /**
      * Collects all renderables from the container and its children using a simple collection method.
      * This method is used when the container is marked as simple.
      * @param {InstructionSet} instructionSet - The set of instructions to which the renderables will be added.
      * @param {Renderer} renderer - The renderer responsible for rendering the scene.
-     * @param {RenderLayer} currentLayer - The current render layer being processed.
+     * @param {RenderLayerClass} currentLayer - The current render layer being processed.
      */
-    collectRenderablesSimple(instructionSet: InstructionSet, renderer: Renderer, currentLayer: RenderLayer): void;
+    collectRenderablesSimple(instructionSet: InstructionSet, renderer: Renderer, currentLayer: RenderLayerClass): void;
 
     /**
      * Collects all renderables from the container and its children using an advanced collection method.
@@ -35,13 +35,13 @@ export interface CollectRenderablesMixin
     collectRenderablesWithEffects(
         instructionSet: InstructionSet,
         renderer: Renderer,
-        currentLayer: RenderLayer,
+        currentLayer: RenderLayerClass,
     ): void;
 }
 
 export const collectRenderablesMixin: Partial<Container> = {
 
-    collectRenderables(instructionSet: InstructionSet, renderer: Renderer, currentLayer: RenderLayer
+    collectRenderables(instructionSet: InstructionSet, renderer: Renderer, currentLayer: RenderLayerClass
     ): void
     {
         // we want to skip any children that are not in the current layer
@@ -71,7 +71,7 @@ export const collectRenderablesMixin: Partial<Container> = {
     collectRenderablesSimple(
         instructionSet: InstructionSet,
         renderer: Renderer,
-        currentLayer: RenderLayer,
+        currentLayer: RenderLayerClass,
     ): void
     {
         const children = this.children;
@@ -86,7 +86,7 @@ export const collectRenderablesMixin: Partial<Container> = {
     collectRenderablesWithEffects(
         instructionSet: InstructionSet,
         renderer: Renderer,
-        currentLayer: RenderLayer,
+        currentLayer: RenderLayerClass,
     ): void
     {
         const { renderPipes } = renderer;
