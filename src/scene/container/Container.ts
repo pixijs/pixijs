@@ -13,6 +13,7 @@ import { childrenHelperMixin } from './container-mixins/childrenHelperMixin';
 import { collectRenderablesMixin } from './container-mixins/collectRenderablesMixin';
 import { effectsMixin } from './container-mixins/effectsMixin';
 import { findMixin } from './container-mixins/findMixin';
+import { getFastGlobalBoundsMixin } from './container-mixins/getFastGlobalBoundsMixin';
 import { bgr2rgb, getGlobalMixin } from './container-mixins/getGlobalMixin';
 import { measureMixin } from './container-mixins/measureMixin';
 import { onRenderMixin } from './container-mixins/onRenderMixin';
@@ -740,7 +741,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
             if (child.parentRenderLayer)
             {
-                child.parentRenderLayer.remove(child);
+                child.parentRenderLayer.detach(child);
             }
 
             child.parent = null;
@@ -1395,6 +1396,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 }
 
 Container.mixin(childrenHelperMixin);
+Container.mixin(getFastGlobalBoundsMixin);
 Container.mixin(toLocalGlobalMixin);
 Container.mixin(onRenderMixin);
 Container.mixin(measureMixin);

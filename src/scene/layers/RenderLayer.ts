@@ -149,13 +149,13 @@ export class RenderLayerClass extends Container
      * If the object already belongs to a layer, it will be removed from the old layer before being added to this one.
      * @param child - The object to add to this layer
      */
-    public add(child: Container)
+    public attach(child: Container)
     {
         if (child.parentRenderLayer)
         {
             if (child.parentRenderLayer === this) return;
 
-            child.parentRenderLayer.remove(child);
+            child.parentRenderLayer.detach(child);
         }
 
         this.renderLayerChildren.push(child);
@@ -175,7 +175,7 @@ export class RenderLayerClass extends Container
      * as part of this layer but maintains its original parent.
      * @param child - The object to remove from this layer
      */
-    public remove(child: Container)
+    public detach(child: Container)
     {
         const index = this.renderLayerChildren.indexOf(child);
 
@@ -195,7 +195,7 @@ export class RenderLayerClass extends Container
     }
 
     /** Remove all objects from this render layer. */
-    public removeAll()
+    public detachAll()
     {
         const layerChildren = this.renderLayerChildren;
 
@@ -242,9 +242,9 @@ export class RenderLayerClass extends Container
     }
 
     public override _getGlobalBoundsRecursive(
+        factorRenderLayers: boolean,
         bounds: Bounds,
-        currentLayer: RenderLayerClass,
-        factorRenderLayers: boolean
+        _currentLayer: RenderLayerClass,
     ): void
     {
         if (!factorRenderLayers) return;
@@ -253,7 +253,7 @@ export class RenderLayerClass extends Container
 
         for (let i = 0; i < children.length; i++)
         {
-            children[i]._getGlobalBoundsRecursive(bounds, currentLayer, factorRenderLayers);
+            children[i]._getGlobalBoundsRecursive(true, bounds, this);
         }
     }
 }

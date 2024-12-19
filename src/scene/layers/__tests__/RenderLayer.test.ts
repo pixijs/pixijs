@@ -40,15 +40,15 @@ describe('RenderLayer', () =>
     {
         it('should add container to renderLayerChildren', () =>
         {
-            layer.add(container1);
+            layer.attach(container1);
             expect(layer.renderLayerChildren).toContain(container1);
             expect(container1.parentRenderLayer).toBe(layer);
         });
 
         it('should not add same container twice', () =>
         {
-            layer.add(container1);
-            layer.add(container1);
+            layer.attach(container1);
+            layer.attach(container1);
             expect(layer.renderLayerChildren).toHaveLength(1);
         });
 
@@ -56,8 +56,8 @@ describe('RenderLayer', () =>
         {
             const layer2 = new RenderLayer();
 
-            layer.add(container1);
-            layer2.add(container1);
+            layer.attach(container1);
+            layer2.attach(container1);
 
             expect(layer.renderLayerChildren).not.toContain(container1);
             expect(layer2.renderLayerChildren).toContain(container1);
@@ -69,8 +69,8 @@ describe('RenderLayer', () =>
     {
         it('should remove container from renderLayerChildren', () =>
         {
-            layer.add(container1);
-            layer.remove(container1);
+            layer.attach(container1);
+            layer.detach(container1);
 
             expect(layer.renderLayerChildren).not.toContain(container1);
             expect(container1.parentRenderLayer).toBeNull();
@@ -78,13 +78,13 @@ describe('RenderLayer', () =>
 
         it('should handle removing non-existent container', () =>
         {
-            layer.remove(container1);
+            layer.detach(container1);
             expect(layer.renderLayerChildren).toHaveLength(0);
         });
 
         it('should remove container from a layer if the child is removed from a parent', () =>
         {
-            layer.add(container2);
+            layer.attach(container2);
             container1.addChild(container2);
 
             expect(layer.renderLayerChildren).toContain(container2);
@@ -99,9 +99,9 @@ describe('RenderLayer', () =>
     {
         it('should remove all containers', () =>
         {
-            layer.add(container1);
-            layer.add(container2);
-            layer.removeAll();
+            layer.attach(container1);
+            layer.attach(container2);
+            layer.detachAll();
 
             expect(layer.renderLayerChildren).toHaveLength(0);
             expect(container1.parentRenderLayer).toBeNull();
@@ -116,8 +116,8 @@ describe('RenderLayer', () =>
             container1.zIndex = 2;
             container2.zIndex = 1;
 
-            layer.add(container1);
-            layer.add(container2);
+            layer.attach(container1);
+            layer.attach(container2);
             layer.sortRenderLayerChildren();
 
             expect(layer.renderLayerChildren[0]).toBe(container2);
@@ -133,8 +133,8 @@ describe('RenderLayer', () =>
             container1.zIndex = 1;
             container2.zIndex = 2;
 
-            customLayer.add(container1);
-            customLayer.add(container2);
+            customLayer.attach(container1);
+            customLayer.attach(container2);
             customLayer.sortRenderLayerChildren();
 
             expect(customLayer.renderLayerChildren[0]).toBe(container2);

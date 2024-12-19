@@ -15,7 +15,7 @@ export const scene: TestScene = {
 
         const layer = new RenderLayer();
 
-        layer.add(graphicsFront);
+        layer.attach(graphicsFront);
 
         scene.addChild(layer);
     },
