@@ -2,19 +2,20 @@ import { removeItems } from '../../../utils/data/removeItems';
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 
 import type { Container, ContainerChild } from '../Container';
+import type { IRenderLayer } from '~/scene/layers/RenderLayer';
 
 export interface ChildrenHelperMixin<C = ContainerChild>
 {
     allowChildren: boolean;
-    addChild<U extends C[]>(...children: U): U[0];
-    removeChild<U extends C[]>(...children: U): U[0];
+    addChild<U extends(C | IRenderLayer)[]>(...children: U): U[0];
+    removeChild<U extends(C | IRenderLayer)[]>(...children: U): U[0];
     removeChildren(beginIndex?: number, endIndex?: number): C[];
-    removeChildAt<U extends C>(index: number): U;
-    getChildAt<U extends C>(index: number): U;
+    removeChildAt<U extends(C | IRenderLayer)>(index: number): U;
+    getChildAt<U extends(C | IRenderLayer)>(index: number): U;
     setChildIndex(child: C, index: number): void;
     getChildIndex(child: C): number;
-    addChildAt<U extends C>(child: U, index: number): U;
-    swapChildren<U extends C>(child: U, child2: U): void;
+    addChildAt<U extends(C | IRenderLayer)>(child: U, index: number): U;
+    swapChildren<U extends(C | IRenderLayer)>(child: U, child2: U): void;
     removeFromParent(): void;
 
     reparentChild<U extends C[]>(...child: U): U[0];

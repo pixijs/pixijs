@@ -3,6 +3,8 @@ import { Container } from '../container/Container';
 import { type InstructionSet } from '~/rendering/renderers/shared/instructions/InstructionSet';
 import { type Renderer } from '~/rendering/renderers/types';
 import { warn } from '~/utils/logging/warn';
+
+import type EventEmitter from 'eventemitter3';
 // TODO make it clear render layer cannot have 'filters'
 
 /** Options for configuring a RenderLayer. */
@@ -25,7 +27,12 @@ export interface RenderLayerOptions
 }
 
 // Remove the 'extends' and just define the type directly
-export type IRenderLayer = Omit<RenderLayerClass, keyof Container>;
+type ContainerKeys = keyof Container;
+type PartialContainerKeys = Exclude<ContainerKeys,
+'parent' | 'didChange' | '_updateFlags' | keyof EventEmitter | 'parentRenderLayer' |
+'destroyed' | 'layerParentId' | 'sortableChildren' | 'getFastGlobalBounds'
+>;
+export type IRenderLayer = Omit<RenderLayerClass, PartialContainerKeys>;
 
 /**
  * The RenderLayer API provides a way to control the rendering order of objects independently

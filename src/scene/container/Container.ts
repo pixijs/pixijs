@@ -7,6 +7,7 @@ import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { uid } from '../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { BigPool } from '../../utils/pool/PoolGroup';
+import { type IRenderLayer } from '../layers/RenderLayer';
 import { cacheAsTextureMixin } from './container-mixins/cacheAsTextureMixin';
 import { childrenHelperMixin } from './container-mixins/childrenHelperMixin';
 import { collectRenderablesMixin } from './container-mixins/collectRenderablesMixin';
@@ -408,7 +409,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * If it belongs to a RenderLayer, it will be rendered from the RenderLayer's position in the scene.
      * @readonly
      */
-    public parentRenderLayer: RenderLayer;
+    public parentRenderLayer: IRenderLayer;
 
     // / /////////////Transform related props//////////////
 
@@ -627,7 +628,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * @param {...Container} children - The Container(s) to add to the container
      * @returns {Container} - The first child that was added.
      */
-    public addChild<U extends C[]>(...children: U): U[0]
+    public addChild<U extends(C | IRenderLayer)[]>(...children: U): U[0]
     {
         // #if _DEBUG
         if (!this.allowChildren)
@@ -647,7 +648,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             return children[0];
         }
 
-        const child = children[0];
+        const child = children[0] as C;
 
         const renderGroup = this.renderGroup || this.parentRenderGroup;
 
@@ -704,7 +705,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * @param {...Container} children - The Container(s) to remove
      * @returns {Container} The first child that was removed.
      */
-    public removeChild<U extends C[]>(...children: U): U[0]
+    public removeChild<U extends(C | IRenderLayer)[]>(...children: U): U[0]
     {
         // if there is only one argument we can bypass looping through the them
         if (children.length > 1)
@@ -718,7 +719,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             return children[0];
         }
 
-        const child = children[0];
+        const child = children[0] as C;
 
         const index = this.children.indexOf(child);
 

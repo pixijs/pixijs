@@ -2,7 +2,7 @@ import { type Bounds } from '../bounds/Bounds';
 import { boundsPool } from '../bounds/utils/matrixAndBoundsPool';
 import { Matrix } from '~/maths/matrix/Matrix';
 import { type Renderable } from '~/rendering/renderers/shared/Renderable';
-import { type RenderLayerClass } from '~/scene/layers/RenderLayer';
+import { type IRenderLayer } from '~/scene/layers/RenderLayer';
 
 import type { Container } from '../Container';
 
@@ -13,7 +13,7 @@ export interface GetFastGlobalBoundsMixin
     getFastGlobalBounds(bounds: Bounds, factorRenderLayers?: boolean): Bounds
     _getGlobalBoundsRecursive(
         bounds: Bounds,
-        currentLayer: RenderLayerClass,
+        currentLayer: IRenderLayer,
         factorRenderLayers: boolean
     ): void;
 }
@@ -39,7 +39,7 @@ export const getFastGlobalBoundsMixin: Partial<Container> = {
 
     _getGlobalBoundsRecursive(
         bounds: Bounds,
-        currentLayer: RenderLayerClass,
+        currentLayer: IRenderLayer,
         factorRenderLayers: boolean
     )
     {

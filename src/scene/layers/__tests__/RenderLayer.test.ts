@@ -1,9 +1,9 @@
 import { Container } from '../../container/Container';
-import { RenderLayer } from '../RenderLayer';
+import { type IRenderLayer, RenderLayer } from '../RenderLayer';
 
 describe('RenderLayer', () =>
 {
-    let layer: RenderLayer;
+    let layer: IRenderLayer;
     let container1: Container;
     let container2: Container;
 

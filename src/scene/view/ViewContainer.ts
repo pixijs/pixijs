@@ -1,6 +1,6 @@
 import { Bounds } from '../container/bounds/Bounds';
 import { Container } from '../container/Container';
-import { type RenderLayerClass } from '../layers/RenderLayer';
+import { type IRenderLayer } from '../layers/RenderLayer';
 import { type InstructionSet } from '~/rendering/renderers/shared/instructions/InstructionSet';
 import { type RenderPipe } from '~/rendering/renderers/shared/instructions/RenderPipe';
 import { type Renderer } from '~/rendering/renderers/types';
@@ -110,7 +110,7 @@ export abstract class ViewContainer extends Container implements View
     public override collectRenderablesSimple(
         instructionSet: InstructionSet,
         renderer: Renderer,
-        _currentLayer: RenderLayerClass,
+        _currentLayer: IRenderLayer,
     ): void
     {
         const { renderPipes, renderableGC } = renderer;
