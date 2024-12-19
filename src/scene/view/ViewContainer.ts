@@ -110,7 +110,7 @@ export abstract class ViewContainer extends Container implements View
     public override collectRenderablesSimple(
         instructionSet: InstructionSet,
         renderer: Renderer,
-        _currentLayer: IRenderLayer,
+        currentLayer: IRenderLayer,
     ): void
     {
         const { renderPipes, renderableGC } = renderer;
@@ -125,5 +125,13 @@ export abstract class ViewContainer extends Container implements View
         renderableGC.addRenderable(this);
 
         this.didViewUpdate = false;
+
+        const children = this.children;
+        const length = children.length;
+
+        for (let i = 0; i < length; i++)
+        {
+            children[i].collectRenderables(instructionSet, renderer, currentLayer);
+        }
     }
 }
