@@ -1,5 +1,5 @@
 module.exports = {
-    testPathIgnorePatterns: ['/node_modules/', '/src/', '/dist/', '/lib/'],
+    testPathIgnorePatterns: ['/node_modules/', '/dist/', '/lib/'],
     preset: 'ts-jest/presets/js-with-ts',
     runner: '@pixi/jest-electron/runner',
     testEnvironment: '@pixi/jest-electron/environment',
@@ -16,8 +16,10 @@ module.exports = {
     },
     moduleNameMapper: {
         '^worker:(.*)$': '$1',
+        '^~/(.*)$': '<rootDir>/src/$1',
+        '^@test-utils$': '<rootDir>/tests/utils/index.ts'
     },
-    testMatch: ['**/?(*.)+(spec|tests|test).[tj]s?(x)'],
+    testMatch: ['**/?(*.)+(test)\\.ts'],
     snapshotResolver: '<rootDir>/scripts/jest/jest-snapshot-resolver.js',
     globals: {
         'ts-jest': {

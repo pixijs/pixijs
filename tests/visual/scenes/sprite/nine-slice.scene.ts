@@ -1,8 +1,8 @@
-import { Assets } from '../../../../src/assets/Assets';
-import { NineSliceSprite } from '../../../../src/scene/sprite-nine-slice/NineSliceSprite';
+import { Assets } from '~/assets';
+import { NineSliceSprite } from '~/scene';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render a nine slice sprite correctly',

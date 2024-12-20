@@ -119,7 +119,6 @@ async function loadAsTexture(
 
     context.drawImage(image, 0, 0, width * resolution, height * resolution);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { parseAsGraphicsContext: _p, ...rest } = asset.data;
     const base = new ImageSource({
         resource: canvas,

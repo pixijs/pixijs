@@ -61,7 +61,6 @@ const GLSL_TO_VERTEX_TYPES: Record<string, VertexFormat> = {
     bvec3: 'uint32x3',
     bvec4: 'uint32x4',
 };
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 
 export function mapType(gl: any, type: number): string
 {

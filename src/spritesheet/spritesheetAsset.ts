@@ -16,7 +16,6 @@ export interface SpriteSheetJson extends SpritesheetData
     meta: {
         image: string;
         scale: string;
-        // eslint-disable-next-line camelcase
         related_multi_packs?: string[];
     };
 }
@@ -163,7 +162,6 @@ export const spritesheetAsset = {
 
             // Check and add the multi atlas
             // Heavily influenced and based on https://github.com/rocket-ua/pixi-tps-loader/blob/master/src/ResourceLoader.js
-            // eslint-disable-next-line camelcase
             const multiPacks = asset?.meta?.related_multi_packs;
 
             if (Array.isArray(multiPacks))

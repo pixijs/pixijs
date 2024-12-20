@@ -1,9 +1,8 @@
-import { Geometry } from '../../../../src/rendering/renderers/shared/geometry/Geometry';
-import { Shader } from '../../../../src/rendering/renderers/shared/shader/Shader';
-import { Mesh } from '../../../../src/scene/mesh/shared/Mesh';
+import { Geometry, Shader } from '~/rendering';
+import { Mesh } from '~/scene';
 
-import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
+import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render a custom triangle correctly',
@@ -18,20 +17,20 @@ export const scene: TestScene = {
         const gl = {
             vertex: `
         in vec2 aPosition;
-        
+
         uniform mat3 uProjectionMatrix;
         uniform mat3 uWorldTransformMatrix;
 
         uniform mat3 uTransformMatrix;
-        
-        
+
+
         void main() {
 
             mat3 mvp = uProjectionMatrix * uWorldTransformMatrix * uTransformMatrix;
             gl_Position = vec4((mvp * vec3(aPosition, 1.0)).xy, 0.0, 1.0);
         }
     `,
-            fragment: ` 
+            fragment: `
         void main() {
             gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
         }
@@ -48,7 +47,7 @@ export const scene: TestScene = {
                 uWorldColorAlpha: vec4<f32>,
                 uResolution: vec2<f32>,
             }
-    
+
             struct LocalUniforms {
                 uTransformMatrix:mat3x3<f32>,
                 uColor:vec4<f32>,
@@ -57,13 +56,13 @@ export const scene: TestScene = {
 
             @group(0) @binding(0) var<uniform> globalUniforms : GlobalUniforms;
             @group(1) @binding(0) var<uniform> localUniforms : LocalUniforms;
-            
+
             @vertex
             fn main(
                 @location(0) aPosition : vec2<f32>,
-            ) -> @builtin(position) vec4<f32> {     
-                var mvp = globalUniforms.uProjectionMatrix 
-                    * globalUniforms.uWorldTransformMatrix 
+            ) -> @builtin(position) vec4<f32> {
+                var mvp = globalUniforms.uProjectionMatrix
+                    * globalUniforms.uWorldTransformMatrix
                     * localUniforms.uTransformMatrix;
                 return vec4<f32>(mvp * vec3<f32>(aPosition, 1.0), 1.0);
             };
