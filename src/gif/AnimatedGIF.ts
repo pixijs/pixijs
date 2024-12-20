@@ -1,10 +1,10 @@
 import { decompressFrames, type ParsedFrame, parseGIF } from 'gifuct-js';
 import { DOMAdapter } from '../environment/adapter';
-import { TextureSource } from '../rendering/renderers/shared/texture/sources/TextureSource';
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { Sprite } from '../scene/sprite/Sprite';
 import { UPDATE_PRIORITY } from '../ticker/const';
 import { Ticker } from '../ticker/Ticker';
+import { CanvasSource } from '~/rendering/renderers/shared/texture/sources/CanvasSource';
 
 import type { SCALE_MODE } from '../rendering/renderers/shared/texture/const';
 
@@ -286,7 +286,7 @@ class AnimatedGIF extends Sprite
         const context = canvas.getContext('2d') as CanvasRenderingContext2D;
 
         this.texture = new Texture({
-            source: new TextureSource({
+            source: new CanvasSource({
                 resource: canvas,
                 scaleMode
             }),

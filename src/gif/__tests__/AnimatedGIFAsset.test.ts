@@ -1,8 +1,8 @@
-import { Assets } from '../../src/assets/Assets';
-import { extensions } from '../../src/extensions/Extensions';
-import { AnimatedGIF } from '../../src/gif/AnimatedGIF';
-import { AnimatedGIFAsset } from '../../src/gif/AnimatedGIFAsset';
-import { basePath } from '../assets/basePath';
+import { AnimatedGIF } from '../AnimatedGIF';
+import { AnimatedGIFAsset } from '../AnimatedGIFAsset';
+import { basePath } from '@test-utils';
+import { Assets } from '~/assets';
+import { extensions } from '~/extensions';
 
 describe('AnimatedGIFLoader', () =>
 {

@@ -1,25 +1,9 @@
-import fs from 'fs';
-import path from 'path';
-import { AnimatedGIF } from '../../src/gif/AnimatedGIF';
-
-function toArrayBuffer(buffer: Buffer): ArrayBuffer
-{
-    const ab = new ArrayBuffer(buffer.length);
-    const view = new Uint8Array(ab);
-
-    for (let i = 0; i < buffer.length; ++i)
-    {
-        view[i] = buffer[i];
-    }
-
-    return ab;
-}
+import { AnimatedGIF } from '../AnimatedGIF';
+import { toArrayBuffer } from '@test-utils';
 
 describe('AnimatedGIF', () =>
 {
-    const arrayBuffer = toArrayBuffer(
-        fs.readFileSync(path.resolve(__dirname, '../assets/assets/gif/example.gif'))
-    );
+    const arrayBuffer = toArrayBuffer('gif/example.gif');
 
     describe('fromBuffer()', () =>
     {
