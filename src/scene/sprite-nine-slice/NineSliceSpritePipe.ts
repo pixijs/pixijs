@@ -80,6 +80,7 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
 
         // = sprite.bounds;
         batchableSprite.texture = sprite._texture;
+        batchableSprite.roundPixels = (this._renderer._roundPixels | sprite._roundPixels) as 0 | 1;
     }
 
     private _getGpuSprite(sprite: NineSliceSprite): BatchableMesh

@@ -57,7 +57,13 @@ export abstract class ViewContainer extends Container implements View
 
     set roundPixels(value: boolean)
     {
-        this._roundPixels = value ? 1 : 0;
+        const valueNumber = value ? 1 : 0;
+
+        if (this._roundPixels === valueNumber) return;
+
+        this._roundPixels = valueNumber;
+
+        this.onViewUpdate();
     }
 
     /**

@@ -147,6 +147,8 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
         const padding = htmlText._style.padding;
 
         updateQuadBounds(batchableSprite.bounds, htmlText._anchor, batchableSprite.texture, padding);
+
+        batchableSprite.roundPixels = (this._renderer._roundPixels | htmlText._roundPixels) as 0 | 1;
     }
 
     private async _updateGpuText(htmlText: HTMLText)
