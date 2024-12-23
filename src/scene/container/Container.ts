@@ -7,10 +7,13 @@ import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { uid } from '../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { BigPool } from '../../utils/pool/PoolGroup';
+import { type IRenderLayer } from '../layers/RenderLayer';
 import { cacheAsTextureMixin } from './container-mixins/cacheAsTextureMixin';
 import { childrenHelperMixin } from './container-mixins/childrenHelperMixin';
+import { collectRenderablesMixin } from './container-mixins/collectRenderablesMixin';
 import { effectsMixin } from './container-mixins/effectsMixin';
 import { findMixin } from './container-mixins/findMixin';
+import { getFastGlobalBoundsMixin } from './container-mixins/getFastGlobalBoundsMixin';
 import { bgr2rgb, getGlobalMixin } from './container-mixins/getGlobalMixin';
 import { measureMixin } from './container-mixins/measureMixin';
 import { onRenderMixin } from './container-mixins/onRenderMixin';
@@ -402,6 +405,13 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     /** @private */
     public isSimple = true;
 
+    /**
+     * The RenderLayer this container belongs to, if any.
+     * If it belongs to a RenderLayer, it will be rendered from the RenderLayer's position in the scene.
+     * @readonly
+     */
+    public parentRenderLayer: IRenderLayer;
+
     // / /////////////Transform related props//////////////
 
     // used by the transform system to check if a container needs to be updated that frame
@@ -574,6 +584,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      */
     public _didViewChangeTick = 0;
 
+    public layerParentId: string;// = 'default';
     /**
      * We now use the _didContainerChangeTick and _didViewChangeTick to track changes
      * @deprecated since 8.2.6
@@ -618,7 +629,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * @param {...Container} children - The Container(s) to add to the container
      * @returns {Container} - The first child that was added.
      */
-    public addChild<U extends C[]>(...children: U): U[0]
+    public addChild<U extends(C | IRenderLayer)[]>(...children: U): U[0]
     {
         // #if _DEBUG
         if (!this.allowChildren)
@@ -638,7 +649,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             return children[0];
         }
 
-        const child = children[0];
+        const child = children[0] as C;
 
         const renderGroup = this.renderGroup || this.parentRenderGroup;
 
@@ -695,7 +706,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * @param {...Container} children - The Container(s) to remove
      * @returns {Container} The first child that was removed.
      */
-    public removeChild<U extends C[]>(...children: U): U[0]
+    public removeChild<U extends(C | IRenderLayer)[]>(...children: U): U[0]
     {
         // if there is only one argument we can bypass looping through the them
         if (children.length > 1)
@@ -709,7 +720,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             return children[0];
         }
 
-        const child = children[0];
+        const child = children[0] as C;
 
         const index = this.children.indexOf(child);
 
@@ -726,6 +737,11 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             else if (this.parentRenderGroup)
             {
                 this.parentRenderGroup.removeChild(child);
+            }
+
+            if (child.parentRenderLayer)
+            {
+                child.parentRenderLayer.detach(child);
             }
 
             child.parent = null;
@@ -1380,6 +1396,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 }
 
 Container.mixin(childrenHelperMixin);
+Container.mixin(getFastGlobalBoundsMixin);
 Container.mixin(toLocalGlobalMixin);
 Container.mixin(onRenderMixin);
 Container.mixin(measureMixin);
@@ -1389,3 +1406,4 @@ Container.mixin(sortMixin);
 Container.mixin(cullingMixin);
 Container.mixin(cacheAsTextureMixin);
 Container.mixin(getGlobalMixin);
+Container.mixin(collectRenderablesMixin);

@@ -89,7 +89,7 @@
     "@xmldom/xmldom": "^0.8.10",
     "copyfiles": "^2.4.1",
     "cross-env": "^7.0.3",
-    "dts-bundle-generator": "^9.3.1",
+    "dts-bundle-generator": "^9.5.1",
     "esbuild": "^0.19.0",
     "eslint": "^9.16.0",
     "eslint-plugin-jest": "^28.9.0",
