@@ -17,7 +17,6 @@ export * from './container/container-mixins/onRenderMixin';
 export * from './container/container-mixins/sortMixin';
 export * from './container/container-mixins/toLocalGlobalMixin';
 export * from './container/Container';
-export * from './container/ContainerBase';
 export * from './container/CustomRenderPipe';
 export * from './container/destroyTypes';
 export * from './container/Effect';

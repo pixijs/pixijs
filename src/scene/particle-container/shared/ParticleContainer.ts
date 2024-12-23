@@ -1,7 +1,7 @@
 import { Bounds } from '../../container/bounds/Bounds';
+import { type IRenderLayer } from '../../layers/RenderLayer';
 import { ViewContainer } from '../../view/ViewContainer';
 import { particleData } from './particleData';
-import { type IRenderLayer } from '~/scene/layers/RenderLayer';
 
 import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';

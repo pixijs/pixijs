@@ -1,4 +1,4 @@
-import { deprecation } from '~/utils/logging/deprecation';
+import { deprecation } from '../../../utils/logging/deprecation';
 
 import type { Container } from '../Container';
 import type { Bounds } from './Bounds';

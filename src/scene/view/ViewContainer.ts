@@ -1,9 +1,9 @@
+import { type InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
+import { type RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
+import { type Renderer } from '../../rendering/renderers/types';
 import { Bounds } from '../container/bounds/Bounds';
 import { Container } from '../container/Container';
 import { type IRenderLayer } from '../layers/RenderLayer';
-import { type InstructionSet } from '~/rendering/renderers/shared/instructions/InstructionSet';
-import { type RenderPipe } from '~/rendering/renderers/shared/instructions/RenderPipe';
-import { type Renderer } from '~/rendering/renderers/types';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';

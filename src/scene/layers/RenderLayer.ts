@@ -1,8 +1,8 @@
+import { type InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
+import { type Renderer } from '../../rendering/renderers/types';
+import { warn } from '../../utils/logging/warn';
 import { type Bounds } from '../container/bounds/Bounds';
 import { Container } from '../container/Container';
-import { type InstructionSet } from '~/rendering/renderers/shared/instructions/InstructionSet';
-import { type Renderer } from '~/rendering/renderers/types';
-import { warn } from '~/utils/logging/warn';
 
 import type EventEmitter from 'eventemitter3';
 // TODO make it clear render layer cannot have 'filters'

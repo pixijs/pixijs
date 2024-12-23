@@ -1,8 +1,8 @@
+import { Matrix } from '../../../maths/matrix/Matrix';
+import { type Renderable } from '../../../rendering/renderers/shared/Renderable';
+import { type IRenderLayer } from '../../layers/RenderLayer';
 import { Bounds } from '../bounds/Bounds';
 import { boundsPool } from '../bounds/utils/matrixAndBoundsPool';
-import { Matrix } from '~/maths/matrix/Matrix';
-import { type Renderable } from '~/rendering/renderers/shared/Renderable';
-import { type IRenderLayer } from '~/scene/layers/RenderLayer';
 
 import type { Container } from '../Container';
 

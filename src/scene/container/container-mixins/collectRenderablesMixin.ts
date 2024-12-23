@@ -1,7 +1,7 @@
-import { type InstructionSet } from '~/rendering/renderers/shared/instructions/InstructionSet';
-import { type InstructionPipe } from '~/rendering/renderers/shared/instructions/RenderPipe';
-import { type Renderer, type RenderPipes } from '~/rendering/renderers/types';
-import { type IRenderLayer } from '~/scene/layers/RenderLayer';
+import { type InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
+import { type InstructionPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
+import { type Renderer, type RenderPipes } from '../../../rendering/renderers/types';
+import { type IRenderLayer } from '../../layers/RenderLayer';
 
 import type { Container } from '../Container';
 
