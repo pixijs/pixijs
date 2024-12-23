@@ -69,7 +69,7 @@ const defaultRunners = [
     'destroy',
     'contextChange',
     'resolutionChange',
-    'reset',
+    'resetState',
     'renderEnd',
     'renderStart',
     'render',
@@ -544,5 +544,30 @@ export class AbstractRenderer<
             throw new Error('Current environment does not allow unsafe-eval, '
                + 'please use pixi.js/unsafe-eval module to enable support.');
         }
+    }
+    /**
+     * Resets the rendering state of the renderer.
+     * This is useful when you want to use the WebGL context directly and need to ensure PixiJS's internal state
+     * stays synchronized. When modifying the WebGL context state externally, calling this method before the next Pixi
+     * render will reset all internal caches and ensure it executes correctly.
+     *
+     * This is particularly useful when combining PixiJS with other rendering engines like Three.js:
+     * ```js
+     * // Reset Three.js state
+     * threeRenderer.resetState();
+     *
+     * // Render a Three.js scene
+     * threeRenderer.render(threeScene, threeCamera);
+     *
+     * // Reset PixiJS state since Three.js modified the WebGL context
+     * pixiRenderer.resetState();
+     *
+     * // Now render Pixi content
+     * pixiRenderer.render(pixiScene);
+     * ```
+     */
+    public resetState(): void
+    {
+        this.runners.resetState.emit();
     }
 }
