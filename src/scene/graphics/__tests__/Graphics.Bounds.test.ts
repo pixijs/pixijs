@@ -30,10 +30,10 @@ describe('Graphics Bounds', () =>
 
             const { x, y, width, height } = graphics.context.bounds;
 
-            expect(x).toEqual(8); // <- received 10
-            expect(y).toEqual(18); // <- received 20
-            expect(width).toEqual(104); // <- received 100
-            expect(height).toEqual(204); // <- received 200
+            expect(x).toEqual(8);
+            expect(y).toEqual(18);
+            expect(width).toEqual(104);
+            expect(height).toEqual(204);
         });
 
         it('should give correct bounds with stroke, alignment 1', () =>

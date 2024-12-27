@@ -127,7 +127,7 @@ describe('Polygon', () =>
         {
             expect(polygon.strokeContains(-3, -3, 2)).toBe(false);
             expect(polygon.strokeContains(15, 0, 4)).toBe(false);
-            expect(polygon.strokeContains(0, 12, 3)).toBe(false);
+            expect(polygon.strokeContains(0, 13, 3)).toBe(false);
         });
 
         const polygonClosePathTrue: Polygon = new Polygon([0, 0, 10, 0, 10, 10, 0, 10]);

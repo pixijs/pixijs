@@ -39,7 +39,7 @@ export class GlBufferSystem implements System
     private _gpuBuffers: {[key: number]: GlBuffer} = Object.create(null);
 
     /** Cache keeping track of the base bound buffer bases */
-    private readonly _boundBufferBases: {[key: number]: GlBuffer} = Object.create(null);
+    private _boundBufferBases: {[key: number]: GlBuffer} = Object.create(null);
 
     private _renderer: WebGLRenderer;
 
@@ -317,5 +317,10 @@ export class GlBufferSystem implements System
         buffer.on('destroy', this.onBufferDestroy, this);
 
         return glBuffer;
+    }
+
+    public resetState(): void
+    {
+        this._boundBufferBases = Object.create(null);
     }
 }
