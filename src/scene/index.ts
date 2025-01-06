@@ -27,6 +27,7 @@ export * from './container/RenderGroupSystem';
 export * from './container/utils/assignWithIgnore';
 export * from './container/utils/checkChildrenDidChange';
 export * from './container/utils/clearList';
+export * from './container/utils/collectAllRenderables';
 export * from './container/utils/definedProps';
 export * from './container/utils/executeInstructions';
 export * from './container/utils/mixHexColors';
