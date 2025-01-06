@@ -23,25 +23,27 @@ import type { SCALE_MODE } from '../rendering/renderers/shared/texture/const';
  */
 interface AnimatedGIFOptions extends Omit<SpriteOptions, 'texture'>
 {
+    /** Source to the GIF frame and animation data */
+    source: AnimatedGIFSource;
     /** Whether to start playing right away */
-    autoPlay: boolean;
+    autoPlay?: boolean;
     /**
      * Scale Mode to use for the texture
      * @type {PIXI.SCALE_MODE}
      */
-    scaleMode: SCALE_MODE;
+    scaleMode?: SCALE_MODE;
     /** To enable looping */
-    loop: boolean;
+    loop?: boolean;
     /** Speed of the animation */
-    animationSpeed: number;
+    animationSpeed?: number;
     /** Set to `false` to manage updates yourself */
-    autoUpdate: boolean;
+    autoUpdate?: boolean;
     /** The completed callback, optional */
-    onComplete: null | (() => void);
+    onComplete?: null | (() => void);
     /** The loop callback, optional */
-    onLoop: null | (() => void);
+    onLoop?: null | (() => void);
     /** The frame callback, optional */
-    onFrameChange: null | ((currentFrame: number) => void);
+    onFrameChange?: null | ((currentFrame: number) => void);
     /** Fallback FPS if GIF contains no time information */
     fps?: number;
 }
@@ -66,7 +68,7 @@ class AnimatedGIF extends Sprite
      * @property {Function} [onFrameChange=null] - The frame callback, optional.
      * @property {number} [fps=30] - Fallback FPS if GIF contains no time information.
      */
-    public static defaultOptions: AnimatedGIFOptions = {
+    public static defaultOptions: Omit<AnimatedGIFOptions, 'source'> = {
         scaleMode: 'linear',
         fps: 30,
         loop: true,
@@ -154,10 +156,10 @@ class AnimatedGIF extends Sprite
     /**
      * @param options - Options for the AnimatedGIF
      */
-    constructor(options: Partial<AnimatedGIFOptions> & { source: AnimatedGIFSource });
+    constructor(options: AnimatedGIFOptions);
 
     /** @ignore */
-    constructor(...args: [AnimatedGIFSource] | [Partial<AnimatedGIFOptions> & { source: AnimatedGIFSource }])
+    constructor(...args: [AnimatedGIFSource] | [AnimatedGIFOptions])
     {
         const options = args[0] instanceof AnimatedGIFSource ? { source: args[0] } : args[0];
 
