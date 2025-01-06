@@ -1,7 +1,7 @@
+import { type InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
+import { type Renderer } from '../../../rendering/renderers/types';
+import { deprecation } from '../../../utils/logging/deprecation';
 import { type Container } from '../Container';
-import { type InstructionSet } from '~/rendering/renderers/shared/instructions/InstructionSet';
-import { type Renderer } from '~/rendering/renderers/types';
-import { deprecation } from '~/utils/logging/deprecation';
 
 /**
  * @param container - The container to collect renderables from.
