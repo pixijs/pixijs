@@ -6,10 +6,41 @@ describe('AnimatedGIF', () =>
 {
     const arrayBuffer = toArrayBuffer('gif/example.gif');
     const createAnimation = (options?: Partial<AnimatedGIFOptions>) =>
-        new AnimatedGIF(
-            AnimatedGIFSource.fromBuffer(arrayBuffer),
-            options,
-        );
+        new AnimatedGIF({
+            source: AnimatedGIFSource.fromBuffer(arrayBuffer),
+            ...options,
+        });
+
+    describe('constructor', () =>
+    {
+        it('should create an instance from only source', () =>
+        {
+            const source = AnimatedGIFSource.fromBuffer(arrayBuffer);
+            const animation = new AnimatedGIF(source);
+
+            expect(animation.duration).toBeGreaterThan(0);
+            animation.destroy(true);
+        });
+
+        it('should create an instance from options source', () =>
+        {
+            const source = AnimatedGIFSource.fromBuffer(arrayBuffer);
+            const animation = new AnimatedGIF({ source });
+
+            expect(animation.duration).toBeGreaterThan(0);
+            animation.destroy(true);
+        });
+
+        it('should support Sprite options', () =>
+        {
+            const source = AnimatedGIFSource.fromBuffer(arrayBuffer);
+            const animation = new AnimatedGIF({ source, x: 100, y: 200 });
+
+            expect(animation.x).toBe(100);
+            expect(animation.y).toBe(200);
+            animation.destroy(true);
+        });
+    });
 
     describe('currentFrame', () =>
     {

@@ -1,8 +1,8 @@
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
-import { Sprite } from '../scene/sprite/Sprite';
+import { Sprite, type SpriteOptions } from '../scene/sprite/Sprite';
 import { UPDATE_PRIORITY } from '../ticker/const';
 import { Ticker } from '../ticker/Ticker';
-import { type AnimatedGIFSource } from './AnimatedGIFSource';
+import { AnimatedGIFSource } from './AnimatedGIFSource';
 
 import type { SCALE_MODE } from '../rendering/renderers/shared/texture/const';
 
@@ -13,7 +13,7 @@ import type { SCALE_MODE } from '../rendering/renderers/shared/texture/const';
  * import { AnimatedGIF } from 'pixi.js/gif';
  *
  * const source = await Assets.load('example.gif');
- * const animation = new AnimatedGIF(source);
+ * const gif = new AnimatedGIF({ source });
  * @namespace gif
  */
 
@@ -21,7 +21,7 @@ import type { SCALE_MODE } from '../rendering/renderers/shared/texture/const';
  * Default options for all AnimatedGIF objects.
  * @memberof gif
  */
-interface AnimatedGIFOptions
+interface AnimatedGIFOptions extends Omit<SpriteOptions, 'texture'>
 {
     /** Whether to start playing right away */
     autoPlay: boolean;
@@ -147,21 +147,42 @@ class AnimatedGIF extends Sprite
     private _currentTime = 0;
 
     /**
-     * @param source - Data of the GIF image.
+     * @param source - Source, default options will be used.
+     */
+    constructor(source: AnimatedGIFSource);
+
+    /**
      * @param options - Options for the AnimatedGIF
      */
-    constructor(source: AnimatedGIFSource, options?: Partial<AnimatedGIFOptions>)
-    {
-        super(Texture.EMPTY);
+    constructor(options: Partial<AnimatedGIFOptions> & { source: AnimatedGIFSource });
 
-        // Handle rerenders
-        this.onRender = () => this._updateFrame();
+    /** @ignore */
+    constructor(...args: [AnimatedGIFSource] | [Partial<AnimatedGIFOptions> & { source: AnimatedGIFSource }])
+    {
+        const options = args[0] instanceof AnimatedGIFSource ? { source: args[0] } : args[0];
 
         // Get the options, apply defaults
-        const { scaleMode, ...rest } = Object.assign({},
+        const {
+            scaleMode,
+            source,
+            fps,
+            loop,
+            animationSpeed,
+            autoPlay,
+            autoUpdate,
+            onComplete,
+            onFrameChange,
+            onLoop,
+            ...rest
+        } = Object.assign({},
             AnimatedGIF.defaultOptions,
             options
         );
+
+        super({ texture: Texture.EMPTY, ...rest });
+
+        // Handle rerenders
+        this.onRender = () => this._updateFrame();
 
         this.texture = source.textures[0];
 
@@ -170,11 +191,20 @@ class AnimatedGIF extends Sprite
         this._playing = false;
         this._currentTime = 0;
         this._isConnectedToTicker = false;
-        Object.assign(this, rest);
+        Object.assign(this, {
+            fps,
+            loop,
+            animationSpeed,
+            autoPlay,
+            autoUpdate,
+            onComplete,
+            onFrameChange,
+            onLoop,
+        });
 
         // Draw the first frame
         this.currentFrame = 0;
-        if (rest.autoPlay)
+        if (autoPlay)
         {
             this.play();
         }
@@ -392,7 +422,8 @@ class AnimatedGIF extends Sprite
      */
     public clone(): AnimatedGIF
     {
-        const clone = new AnimatedGIF(this._source, {
+        const clone = new AnimatedGIF({
+            source: this._source,
             autoUpdate: this._autoUpdate,
             loop: this.loop,
             autoPlay: this.autoPlay,
