@@ -69,7 +69,7 @@ export const loadSvg: LoaderParser<Texture | GraphicsContext, TextureSourceOptio
         loader: Loader
     ): Promise<Texture | GraphicsContext>
     {
-        if (asset.data.parseAsGraphicsContext ?? this.config.parseAsGraphicsContext)
+        if (asset.data?.parseAsGraphicsContext ?? this.config.parseAsGraphicsContext)
         {
             return loadAsGraphics(url);
         }
@@ -119,7 +119,7 @@ async function loadAsTexture(
 
     context.drawImage(image, 0, 0, width * resolution, height * resolution);
 
-    const { parseAsGraphicsContext: _p, ...rest } = asset.data;
+    const { parseAsGraphicsContext: _p, ...rest } = asset.data ?? {};
     const base = new ImageSource({
         resource: canvas,
         alphaMode: 'premultiply-alpha-on-upload',

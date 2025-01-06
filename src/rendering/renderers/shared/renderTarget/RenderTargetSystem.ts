@@ -540,4 +540,10 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
         return this._gpuRenderTargetHash[renderTarget.uid]
         || (this._gpuRenderTargetHash[renderTarget.uid] = this.adaptor.initGpuRenderTarget(renderTarget));
     }
+
+    public resetState(): void
+    {
+        this.renderTarget = null;
+        this.renderSurface = null;
+    }
 }
