@@ -1,15 +1,15 @@
 import { DOMAdapter } from '../environment/adapter';
 import { ExtensionType } from '../extensions/Extensions';
 import { path } from '../utils/path';
-import { AnimatedGIF } from './AnimatedGIF';
+import { type AnimatedGIFBufferOptions, AnimatedGIFSource } from './AnimatedGIFSource';
 
 import type { AssetExtension } from '../assets/AssetExtension';
-import type { AnimatedGIFOptions } from './AnimatedGIF';
 
 /**
  * Handle the loading of GIF images. Registering this loader plugin will
  * load all `.gif` images as an ArrayBuffer and transform into an
- * AnimatedGIF object.
+ * AnimatedGIFSource object.
+ * @memberof gif
  */
 const AnimatedGIFAsset = {
     extension: ExtensionType.Asset,
@@ -26,13 +26,13 @@ const AnimatedGIFAsset = {
             const response = await DOMAdapter.get().fetch(url);
             const buffer = await response.arrayBuffer();
 
-            return AnimatedGIF.fromBuffer(buffer, asset?.data);
+            return AnimatedGIFSource.fromBuffer(buffer, asset?.data);
         },
         unload: async (asset) =>
         {
             asset.destroy();
         },
     }
-} as AssetExtension<AnimatedGIF, AnimatedGIFOptions>;
+} as AssetExtension<AnimatedGIFSource, AnimatedGIFBufferOptions>;
 
 export { AnimatedGIFAsset };

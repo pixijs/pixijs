@@ -1,25 +1,26 @@
-import { decompressFrames, type ParsedFrame, parseGIF } from 'gifuct-js';
-import { DOMAdapter } from '../environment/adapter';
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { Sprite } from '../scene/sprite/Sprite';
 import { UPDATE_PRIORITY } from '../ticker/const';
 import { Ticker } from '../ticker/Ticker';
-import { CanvasSource } from '~/rendering/renderers/shared/texture/sources/CanvasSource';
+import { type AnimatedGIFSource } from './AnimatedGIFSource';
 
 import type { SCALE_MODE } from '../rendering/renderers/shared/texture/const';
 
-/** Represents a single frame of a GIF. Includes image and timing data. */
-interface FrameObject
-{
-    /** Image data for the current frame */
-    imageData: ImageData;
-    /** The start of the current frame, in milliseconds */
-    start: number;
-    /** The end of the current frame, in milliseconds */
-    end: number;
-}
+/**
+ * Optional module to import to decode and play animated GIFs.
+ * @example
+ * import { Assets } from 'pixi.js';
+ * import { AnimatedGIF } from 'pixi.js/gif';
+ *
+ * const source = await Assets.load('example.gif');
+ * const animation = new AnimatedGIF(source);
+ * @namespace gif
+ */
 
-/** Default options for all AnimatedGIF objects. */
+/**
+ * Default options for all AnimatedGIF objects.
+ * @memberof gif
+ */
 interface AnimatedGIFOptions
 {
     /** Whether to start playing right away */
@@ -45,18 +46,10 @@ interface AnimatedGIFOptions
     fps?: number;
 }
 
-/** Options for the AnimatedGIF constructor. */
-interface AnimatedGIFSize
-{
-    /** Width of the GIF image */
-    width: number;
-    /** Height of the GIF image */
-    height: number;
-}
-
 /**
  * Runtime object to play animated GIFs. This object is similar to an AnimatedSprite.
  * It support playback (seek, play, stop) as well as animation speed and looping.
+ * @memberof gif
  * @see Thanks to {@link https://github.com/matt-way/gifuct-js/ gifuct-js}
  */
 class AnimatedGIF extends Sprite
@@ -133,10 +126,7 @@ class AnimatedGIF extends Sprite
     public readonly autoPlay: boolean = true;
 
     /** Collection of frame to render. */
-    private _frames: FrameObject[];
-
-    /** Drawing context reference. */
-    private _context: CanvasRenderingContext2D;
+    private _source: AnimatedGIFSource;
 
     /** Dirty means the image needs to be redrawn. Set to `true` to force redraw. */
     public dirty = false;
@@ -157,118 +147,10 @@ class AnimatedGIF extends Sprite
     private _currentTime = 0;
 
     /**
-     * Create an animated GIF animation from a GIF image's ArrayBuffer. The easiest way to get
-     * the buffer is to use Assets.
-     * @example
-     * import { Assets } from 'pixi.js';
-     * import '@pixi/gif';
-     *
-     * const gif = await Assets.load('file.gif');
-     * @param buffer - GIF image arraybuffer from Assets.
-     * @param options - Options to use.
-     */
-    public static fromBuffer(buffer: ArrayBuffer, options?: Partial<AnimatedGIFOptions>): AnimatedGIF
-    {
-        if (!buffer || buffer.byteLength === 0)
-        {
-            throw new Error('Invalid buffer');
-        }
-
-        // fix https://github.com/matt-way/gifuct-js/issues/30
-        const validateAndFix = (gif: any): void =>
-        {
-            let currentGce = null;
-
-            for (const frame of gif.frames)
-            {
-                currentGce = frame.gce ?? currentGce;
-
-                // fix loosing graphic control extension for same frames
-                if ('image' in frame && !('gce' in frame))
-                {
-                    frame.gce = currentGce;
-                }
-            }
-        };
-
-        const gif = parseGIF(buffer);
-
-        validateAndFix(gif);
-        const gifFrames = decompressFrames(gif, true);
-        const frames: FrameObject[] = [];
-
-        // Temporary canvases required for compositing frames
-        const canvas = DOMAdapter.get().createCanvas(gif.lsd.width, gif.lsd.height) as HTMLCanvasElement;
-        const context = canvas.getContext('2d', {
-            willReadFrequently: true,
-        }) as CanvasRenderingContext2D;
-        const patchCanvas = DOMAdapter.get().createCanvas() as HTMLCanvasElement;
-        const patchContext = patchCanvas.getContext('2d') as CanvasRenderingContext2D;
-
-        let time = 0;
-        let previousFrame: ImageData | null = null;
-
-        // Some GIFs have a non-zero frame delay, so we need to calculate the fallback
-        const { fps } = Object.assign({}, AnimatedGIF.defaultOptions, options);
-        const defaultDelay = 1000 / (fps as number);
-
-        // Precompute each frame and store as ImageData
-        for (let i = 0; i < gifFrames.length; i++)
-        {
-            // Some GIF's omit the disposalType, so let's assume clear if missing
-            const {
-                disposalType = 2,
-                delay = defaultDelay,
-                patch,
-                dims: { width, height, left, top },
-            } = gifFrames[i] as ParsedFrame;
-
-            patchCanvas.width = width;
-            patchCanvas.height = height;
-            patchContext.clearRect(0, 0, width, height);
-            const patchData = patchContext.createImageData(width, height);
-
-            patchData.data.set(patch);
-            patchContext.putImageData(patchData, 0, 0);
-
-            if (disposalType === 3)
-            {
-                previousFrame = context.getImageData(0, 0, canvas.width, canvas.height);
-            }
-
-            context.drawImage(patchCanvas, left, top);
-            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-
-            if (disposalType === 2)
-            {
-                context.clearRect(0, 0, canvas.width, canvas.height);
-            }
-            else if (disposalType === 3)
-            {
-                context.putImageData(previousFrame as ImageData, 0, 0);
-            }
-
-            frames.push({
-                start: time,
-                end: time + delay,
-                imageData,
-            });
-            time += delay;
-        }
-
-        // clear the canvases
-        canvas.width = canvas.height = 0;
-        patchCanvas.width = patchCanvas.height = 0;
-        const { width, height } = gif.lsd;
-
-        return new AnimatedGIF(frames, { width, height, ...options });
-    }
-
-    /**
-     * @param frames - Data of the GIF image.
+     * @param source - Data of the GIF image.
      * @param options - Options for the AnimatedGIF
      */
-    constructor(frames: FrameObject[], options: Partial<AnimatedGIFOptions> & AnimatedGIFSize)
+    constructor(source: AnimatedGIFSource, options?: Partial<AnimatedGIFOptions>)
     {
         super(Texture.EMPTY);
 
@@ -276,26 +158,15 @@ class AnimatedGIF extends Sprite
         this.onRender = () => this._updateFrame();
 
         // Get the options, apply defaults
-        const { scaleMode, width, height, ...rest } = Object.assign({},
+        const { scaleMode, ...rest } = Object.assign({},
             AnimatedGIF.defaultOptions,
             options
         );
 
-        // Create the texture
-        const canvas = DOMAdapter.get().createCanvas(width, height) as HTMLCanvasElement;
-        const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+        this.texture = source.textures[0];
 
-        this.texture = new Texture({
-            source: new CanvasSource({
-                resource: canvas,
-                scaleMode
-            }),
-            dynamic: true,
-        });
-
-        this.duration = (frames[frames.length - 1] as FrameObject).end;
-        this._frames = frames;
-        this._context = context;
+        this.duration = source.frames[source.frames.length - 1].end;
+        this._source = source;
         this._playing = false;
         this._currentTime = 0;
         this._isConnectedToTicker = false;
@@ -341,7 +212,7 @@ class AnimatedGIF extends Sprite
         }
 
         // If were on the last frame and stopped, play should resume from beginning
-        if (!this.loop && this.currentFrame === this._frames.length - 1)
+        if (!this.loop && this.currentFrame === this._source.frames.length - 1)
         {
             this._currentTime = 0;
         }
@@ -378,7 +249,7 @@ class AnimatedGIF extends Sprite
         const currentTime = this._currentTime + elapsed;
         const localTime = currentTime % this.duration;
 
-        const localFrame = this._frames.findIndex((frame) =>
+        const localFrame = this._source.frames.findIndex((frame) =>
             frame.start <= localTime && frame.end > localTime);
 
         if (currentTime >= this.duration)
@@ -392,7 +263,7 @@ class AnimatedGIF extends Sprite
             else
             {
                 this._currentTime = this.duration;
-                this._updateFrameIndex(this._frames.length - 1);
+                this._updateFrameIndex(this.totalFrames - 1);
                 this.onComplete?.();
                 this.stop();
             }
@@ -413,16 +284,7 @@ class AnimatedGIF extends Sprite
         }
 
         // Update the current frame
-        const { imageData } = this._frames[this._currentFrame] as FrameObject;
-
-        this._context.putImageData(imageData, 0, 0);
-
-        // Workaround hack for Safari & iOS
-        // which fails to upload canvas after putImageData
-        // See: https://bugs.webkit.org/show_bug.cgi?id=229986
-        this._context.fillStyle = 'transparent';
-        this._context.fillRect(0, 0, 0, 1);
-        this.texture.source.update();
+        this.texture = this._source.frames[this._currentFrame].texture;
 
         // Mark as clean
         this.dirty = false;
@@ -464,7 +326,13 @@ class AnimatedGIF extends Sprite
     set currentFrame(value: number)
     {
         this._updateFrameIndex(value);
-        this._currentTime = (this._frames[value] as FrameObject).start;
+        this._currentTime = this._source.frames[value].start;
+    }
+
+    /** Instance of the data, contains frame textures */
+    get source(): AnimatedGIFSource
+    {
+        return this._source;
     }
 
     /**
@@ -473,7 +341,7 @@ class AnimatedGIF extends Sprite
      */
     private _updateFrameIndex(value: number): void
     {
-        if (value < 0 || value >= this._frames.length)
+        if (value < 0 || value >= this.totalFrames)
         {
             throw new Error(`Frame index out of range, expecting 0 to ${this.totalFrames}, got ${value}`);
         }
@@ -488,19 +356,26 @@ class AnimatedGIF extends Sprite
     /** Get the total number of frame in the GIF. */
     get totalFrames(): number
     {
-        return this._frames.length;
+        return this._source.totalFrames;
     }
 
-    /** Destroy and don't use after this. */
-    public destroy(): void
+    /**
+     * Destroy and don't use after this.
+     * @param destroyData - Destroy the data, cannot be used again.
+     */
+    public destroy(destroyData: boolean = false): void
     {
         this.stop();
-        super.destroy(true);
+        super.destroy();
+
+        if (destroyData)
+        {
+            this._source.destroy();
+        }
 
         const forceClear = null as any;
 
-        this._context = forceClear;
-        this._frames = forceClear;
+        this._source = forceClear;
         this.onComplete = forceClear;
         this.onFrameChange = forceClear;
         this.onLoop = forceClear;
@@ -517,14 +392,12 @@ class AnimatedGIF extends Sprite
      */
     public clone(): AnimatedGIF
     {
-        const clone = new AnimatedGIF([...this._frames], {
+        const clone = new AnimatedGIF(this._source, {
             autoUpdate: this._autoUpdate,
             loop: this.loop,
             autoPlay: this.autoPlay,
             scaleMode: this.texture.source.scaleMode,
             animationSpeed: this.animationSpeed,
-            width: this._context.canvas.width,
-            height: this._context.canvas.height,
             onComplete: this.onComplete,
             onFrameChange: this.onFrameChange,
             onLoop: this.onLoop,

@@ -1,48 +1,21 @@
-import { AnimatedGIF } from '../AnimatedGIF';
+import { AnimatedGIF, type AnimatedGIFOptions } from '../AnimatedGIF';
+import { AnimatedGIFSource } from '../AnimatedGIFSource';
 import { toArrayBuffer } from '@test-utils';
 
 describe('AnimatedGIF', () =>
 {
     const arrayBuffer = toArrayBuffer('gif/example.gif');
-
-    describe('fromBuffer()', () =>
-    {
-        it('should return an instance of AnimatedGIF', () =>
-        {
-            const animation = AnimatedGIF.fromBuffer(arrayBuffer);
-
-            expect(animation).toBeInstanceOf(AnimatedGIF);
-            animation.destroy();
-        });
-
-        it('should throw an error if missing', () =>
-        {
-            // eslint-disable-next-line jest/expect-expect
-            expect(() => (AnimatedGIF as any).fromBuffer()).toThrow();
-            // eslint-disable-next-line jest/expect-expect
-            expect(() => (AnimatedGIF as any).fromBuffer(new ArrayBuffer(0))).toThrow();
-        });
-
-        it('should handle options', () =>
-        {
-            const animation = AnimatedGIF.fromBuffer(arrayBuffer, {
-                autoPlay: false,
-                loop: false,
-                autoUpdate: false,
-            });
-
-            expect(animation.loop).toBe(false);
-            expect(animation.autoPlay).toBe(false);
-            expect(animation.autoUpdate).toBe(false);
-            animation.destroy();
-        });
-    });
+    const createAnimation = (options?: Partial<AnimatedGIFOptions>) =>
+        new AnimatedGIF(
+            AnimatedGIFSource.fromBuffer(arrayBuffer),
+            options,
+        );
 
     describe('currentFrame', () =>
     {
         it('should throw frames out-of-bounds', () =>
         {
-            const animation = AnimatedGIF.fromBuffer(arrayBuffer);
+            const animation = createAnimation();
 
             expect(() =>
             {
@@ -52,19 +25,45 @@ describe('AnimatedGIF', () =>
             {
                 animation.currentFrame = animation.totalFrames;
             }).toThrow();
-            animation.destroy();
+            animation.destroy(true);
         });
 
         it('should change dirty current frame', () =>
         {
-            const animation = AnimatedGIF.fromBuffer(arrayBuffer, { autoPlay: false });
+            const animation = createAnimation({ autoPlay: false });
 
             animation.dirty = false;
             animation.currentFrame = 0;
             expect(animation.dirty).toBe(false);
             animation.currentFrame = 1;
             expect(animation.dirty).toBe(true);
+            animation.destroy(true);
+        });
+    });
+
+    describe('destroy()', () =>
+    {
+        it('should not destroy the animation source', () =>
+        {
+            const animation = createAnimation();
+            const source = animation.source;
+
             animation.destroy();
+            expect(source.duration).toBeGreaterThan(0);
+            expect(source.totalFrames).toBeGreaterThan(0);
+            source.destroy();
+            expect(source.duration).toBe(0);
+            expect(source.totalFrames).toBe(0);
+        });
+
+        it('should destroy the animation source with parameter', () =>
+        {
+            const animation = createAnimation();
+            const source = animation.source;
+
+            animation.destroy(true);
+            expect(source.duration).toBe(0);
+            expect(source.totalFrames).toBe(0);
         });
     });
 
@@ -72,23 +71,23 @@ describe('AnimatedGIF', () =>
     {
         it('should do nothing when playing twice', () =>
         {
-            const animation = AnimatedGIF.fromBuffer(arrayBuffer);
+            const animation = createAnimation();
 
             expect(animation.playing).toBe(true);
             animation.play();
             animation.play();
             expect(animation.playing).toBe(true);
-            animation.destroy();
+            animation.destroy(true);
         });
 
         it('should change play state', () =>
         {
-            const animation = AnimatedGIF.fromBuffer(arrayBuffer, { autoPlay: false });
+            const animation = createAnimation({ autoPlay: false });
 
             expect(animation.playing).toBe(false);
             animation.play();
             expect(animation.playing).toBe(true);
-            animation.destroy();
+            animation.destroy(true);
         });
     });
 
@@ -96,20 +95,20 @@ describe('AnimatedGIF', () =>
     {
         it('should stop playing', () =>
         {
-            const animation = AnimatedGIF.fromBuffer(arrayBuffer);
+            const animation = createAnimation();
 
             expect(animation.playing).toBe(true);
             animation.stop();
             expect(animation.playing).toBe(false);
-            animation.destroy();
+            animation.destroy(true);
         });
 
         it('should stop playing on destroy', () =>
         {
-            const animation = AnimatedGIF.fromBuffer(arrayBuffer);
+            const animation = createAnimation();
 
             expect(animation.playing).toBe(true);
-            animation.destroy();
+            animation.destroy(true);
             expect(animation.playing).toBe(false);
         });
     });
@@ -118,14 +117,14 @@ describe('AnimatedGIF', () =>
     {
         it('should clone the original', () =>
         {
-            const animation = AnimatedGIF.fromBuffer(arrayBuffer);
+            const animation = createAnimation();
             const clone = animation.clone();
 
             expect(clone).toBeInstanceOf(AnimatedGIF);
             expect(clone.totalFrames).toBe(animation.totalFrames);
             expect(clone.duration).toBe(animation.duration);
             animation.destroy();
-            clone.destroy();
+            clone.destroy(true);
         });
 
         it('should clone the original preserving options', () =>
@@ -141,7 +140,7 @@ describe('AnimatedGIF', () =>
                 onFrameChange: () => {},
                 /* eslint-enable @typescript-eslint/no-empty-function */
             };
-            const animation = AnimatedGIF.fromBuffer(arrayBuffer, options);
+            const animation = createAnimation(options);
             const clone = animation.clone();
 
             expect(clone).toBeInstanceOf(AnimatedGIF);
@@ -154,12 +153,12 @@ describe('AnimatedGIF', () =>
             expect(clone.onLoop).toBe(animation.onLoop);
             expect(clone.onFrameChange).toBe(animation.onFrameChange);
             animation.destroy();
-            clone.destroy();
+            clone.destroy(true);
         });
 
         it('should not preserve play status', () =>
         {
-            const animation = AnimatedGIF.fromBuffer(arrayBuffer);
+            const animation = createAnimation();
 
             animation.stop();
             expect(animation.playing).toBe(false);
@@ -167,7 +166,7 @@ describe('AnimatedGIF', () =>
 
             expect(clone.playing).toBe(true);
             animation.destroy();
-            clone.destroy();
+            clone.destroy(true);
         });
     });
 });

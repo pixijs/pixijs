@@ -1,5 +1,5 @@
-import { AnimatedGIF } from '../AnimatedGIF';
 import { AnimatedGIFAsset } from '../AnimatedGIFAsset';
+import { AnimatedGIFSource } from '../AnimatedGIFSource';
 import { basePath } from '@test-utils';
 import { Assets } from '~/assets';
 import { extensions } from '~/extensions';
@@ -27,34 +27,25 @@ describe('AnimatedGIFLoader', () =>
 
     it('should load a gif file', async () =>
     {
-        const test = await Assets.load<AnimatedGIF>({ alias: 'test', src: 'gif/example.gif' });
+        const test = await Assets.load<AnimatedGIFSource>({ alias: 'test', src: 'gif/example.gif' });
 
-        expect(test).toBeInstanceOf(AnimatedGIF);
-        expect(test.loop).toBe(true);
-        expect(test.currentFrame).toBe(0);
-        expect(test.autoUpdate).toBe(true);
-        expect(test.playing).toBe(true);
+        expect(test).toBeInstanceOf(AnimatedGIFSource);
         expect(test.totalFrames).toBeGreaterThan(0);
-        expect(test.progress).toBe(0);
         expect(test.width).toBeGreaterThan(0);
         expect(test.height).toBeGreaterThan(0);
-        expect(test.onComplete).toBe(null);
-        expect(test.onFrameChange).toBe(null);
-        expect(test.onLoop).toBe(null);
-        expect(test['_frames']).toBeDefined();
+        expect(test.frames).toBeDefined();
+        expect(test.textures).toBeDefined();
         await Assets.unload('test');
-        expect(test['_frames']).toBe(null);
+        expect(test.frames).toBe(null);
+        expect(test.textures).toBe(null);
     });
 
     it('should load a gif file with options', async () =>
     {
-        const data = { loop: false, autoUpdate: false, animationSpeed: 2 };
-        const test = await Assets.load<AnimatedGIF>({ alias: 'test1', src: 'gif/example.gif', data });
+        const data = { fps: 15 };
+        const test = await Assets.load<AnimatedGIFSource>({ alias: 'test1', src: 'gif/example.gif', data });
 
-        expect(test).toBeInstanceOf(AnimatedGIF);
-        expect(test.loop).toBe(false);
-        expect(test.animationSpeed).toBe(2);
-        expect(test.autoUpdate).toBe(false);
+        expect(test).toBeInstanceOf(AnimatedGIFSource);
         await Assets.unload('test1');
     });
 });
