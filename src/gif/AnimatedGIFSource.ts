@@ -53,13 +53,18 @@ class AnimatedGIFSource
     /** Total number of frames in the animation */
     public readonly totalFrames: number;
 
-    constructor(width: number, height: number, frames: AnimatedGIFFrame[])
+    /**
+     * @param frames - Array of AnimatedGIFFrame instances.
+     */
+    constructor(frames: AnimatedGIFFrame[])
     {
         // #if _DEBUG
-        if (!width) throw new Error('Invalid width');
-        if (!height) throw new Error('Invalid height');
         if (!frames || !frames.length) throw new Error('Invalid frames');
         // #endif
+
+        // All frames are the same size, get the first frame's size
+        const [{ texture: { width, height } }] = frames;
+
         this.width = width;
         this.height = height;
         this.frames = frames;
@@ -208,7 +213,7 @@ class AnimatedGIFSource
         canvas.width = canvas.height = 0;
         patchCanvas.width = patchCanvas.height = 0;
 
-        return new AnimatedGIFSource(animWidth, animHeight, frames);
+        return new AnimatedGIFSource(frames);
     }
 }
 
