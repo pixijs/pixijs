@@ -1,5 +1,5 @@
-import { type ObservablePoint } from '../../maths/point/ObservablePoint';
-import { type Texture } from '../../rendering/renderers/shared/texture/Texture';
+import { type ObservablePoint } from '~/maths';
+import { type Texture } from '~/rendering';
 import { updateQuadBounds } from '../data/updateQuadBounds';
 
 describe('updateQuadBounds', () =>
