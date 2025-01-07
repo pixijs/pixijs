@@ -152,6 +152,7 @@ export * from './text/TextStyle';
 export * from './text/utils/ensureTextStyle';
 export * from './text/utils/generateTextStyleKey';
 export * from './text/utils/getPo2TextureFromSource';
+export * from './text/utils/updateTextBounds';
 export * from './view/ViewContainer';
 export { default as particlesFrag } from './particle-container/shared/shader/particles.frag';
 export { default as particlesVert } from './particle-container/shared/shader/particles.vert';
