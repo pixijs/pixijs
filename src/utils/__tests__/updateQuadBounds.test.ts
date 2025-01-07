@@ -12,7 +12,7 @@ describe('updateQuadBounds', () =>
     {
         // Reset bounds before each test
         bounds = { minX: 0, maxX: 0, minY: 0, maxY: 0 };
-        anchor = { x: 0, y: 0 } as ObservablePoint;
+        anchor = { _x: 0, _y: 0 } as ObservablePoint;
         texture = {
             orig: { width: 100, height: 100 },
             trim: null,
