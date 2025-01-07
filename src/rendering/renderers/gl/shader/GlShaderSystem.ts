@@ -216,4 +216,9 @@ export class GlShaderSystem implements ShaderSystem
     {
         return generateShaderSyncCode(shader, shaderSystem);
     }
+
+    public resetState(): void
+    {
+        this._activeProgram = null;
+    }
 }

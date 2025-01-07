@@ -424,5 +424,12 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         (this._renderer as null) = null;
     }
+
+    public resetState(): void
+    {
+        this._activeTextureLocation = -1;
+        this._boundTextures.fill(Texture.EMPTY.source);
+        this._boundSamplers = Object.create(null);
+    }
 }
 

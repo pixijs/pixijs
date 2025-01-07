@@ -123,12 +123,15 @@ export class Polygon implements ShapePrimitive
      * @param x - The X coordinate of the point to test
      * @param y - The Y coordinate of the point to test
      * @param strokeWidth - The width of the line to check
+     * @param alignment - The alignment of the stroke, 0.5 by default
      * @returns Whether the x/y coordinates are within this polygon
      */
-    public strokeContains(x: number, y: number, strokeWidth: number): boolean
+    public strokeContains(x: number, y: number, strokeWidth: number, alignment = 0.5): boolean
     {
-        const halfStrokeWidth = strokeWidth / 2;
-        const halfStrokeWidthSqrd = halfStrokeWidth * halfStrokeWidth;
+        const strokeWidthSquared = strokeWidth * strokeWidth;
+        const rightWidthSquared = strokeWidthSquared * (1 - alignment);
+        const leftWidthSquared = strokeWidthSquared - rightWidthSquared;
+
         const { points } = this;
         const iterationLength = points.length - (this.closePath ? 0 : 2);
 
@@ -139,9 +142,11 @@ export class Polygon implements ShapePrimitive
             const x2 = points[(i + 2) % points.length];
             const y2 = points[(i + 3) % points.length];
 
-            const distanceSqrd = squaredDistanceToLineSegment(x, y, x1, y1, x2, y2);
+            const distanceSquared = squaredDistanceToLineSegment(x, y, x1, y1, x2, y2);
 
-            if (distanceSqrd <= halfStrokeWidthSqrd)
+            const sign = Math.sign(((x2 - x1) * (y - y1)) - ((y2 - y1) * (x - x1)));
+
+            if (distanceSquared <= (sign < 0 ? leftWidthSquared : rightWidthSquared))
             {
                 return true;
             }
