@@ -1,8 +1,8 @@
 import { ExtensionType } from '../../extensions/Extensions';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
-import { updateQuadBounds } from '../../utils/data/updateQuadBounds';
 import { BigPool } from '../../utils/pool/PoolGroup';
 import { BatchableSprite } from '../sprite/BatchableSprite';
+import { updateTextBounds } from '../text/utils/updateTextBounds';
 
 import type { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
@@ -144,9 +144,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
 
         htmlText._didTextUpdate = false;
 
-        const padding = htmlText._style.padding;
-
-        updateQuadBounds(batchableSprite.bounds, htmlText._anchor, batchableSprite.texture, padding);
+        updateTextBounds(batchableSprite, htmlText);
     }
 
     private async _updateGpuText(htmlText: HTMLText)
@@ -183,9 +181,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
         gpuText.textureNeedsUploading = true;
         htmlText.onViewUpdate();
 
-        const padding = htmlText._style.padding;
-
-        updateQuadBounds(batchableSprite.bounds, htmlText._anchor, batchableSprite.texture, padding);
+        updateTextBounds(batchableSprite, htmlText);
     }
 
     private _getGpuText(htmlText: HTMLText)
