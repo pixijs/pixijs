@@ -487,8 +487,7 @@ export class Resolver
             // we dont need to create string variations for the src if it is a ResolvedAsset
             const srcsToUse: (string | ResolvedSrc)[][] = convertToList<AssetSrc>(src).map((src) =>
             {
-                if (typeof src === 'string')
-                { return createStringVariations(src); }
+                if (typeof src === 'string') { return createStringVariations(src); }
 
                 return Array.isArray(src) ? src : [src];
             });
@@ -601,7 +600,7 @@ export class Resolver
      * @returns All the bundles assets or a hash of assets for each bundle specified
      */
     public resolveBundle(bundleIds: ArrayOr<string>):
-    Record<string, ResolvedAsset> | Record<string, Record<string, ResolvedAsset>>
+        Record<string, ResolvedAsset> | Record<string, Record<string, ResolvedAsset>>
     {
         const singleAsset = isSingleItem(bundleIds);
 
@@ -755,7 +754,7 @@ export class Resolver
     {
         for (let i = 0; i < assets.length; i++)
         {
-            const asset = assets[0];
+            const asset = assets[i];
 
             const preferred = this._preferredOrder.find((preference: PreferOrder) =>
                 preference.params.format.includes(asset.format));
