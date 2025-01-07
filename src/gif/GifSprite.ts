@@ -2,7 +2,7 @@ import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { Sprite, type SpriteOptions } from '../scene/sprite/Sprite';
 import { UPDATE_PRIORITY } from '../ticker/const';
 import { Ticker } from '../ticker/Ticker';
-import { AnimatedGIFSource } from './AnimatedGIFSource';
+import { GifSource } from './GifSource';
 
 import type { SCALE_MODE } from '../rendering/renderers/shared/texture/const';
 
@@ -10,21 +10,21 @@ import type { SCALE_MODE } from '../rendering/renderers/shared/texture/const';
  * Optional module to import to decode and play animated GIFs.
  * @example
  * import { Assets } from 'pixi.js';
- * import { AnimatedGIF } from 'pixi.js/gif';
+ * import { GifSprite } from 'pixi.js/gif';
  *
  * const source = await Assets.load('example.gif');
- * const gif = new AnimatedGIF({ source });
+ * const gif = new GifSprite({ source });
  * @namespace gif
  */
 
 /**
- * Default options for all AnimatedGIF objects.
+ * Default options for all GifSprite objects.
  * @memberof gif
  */
-interface AnimatedGIFOptions extends Omit<SpriteOptions, 'texture'>
+interface GifSpriteOptions extends Omit<SpriteOptions, 'texture'>
 {
     /** Source to the GIF frame and animation data */
-    source: AnimatedGIFSource;
+    source: GifSource;
     /** Whether to start playing right away */
     autoPlay?: boolean;
     /**
@@ -54,10 +54,10 @@ interface AnimatedGIFOptions extends Omit<SpriteOptions, 'texture'>
  * @memberof gif
  * @see Thanks to {@link https://github.com/matt-way/gifuct-js/ gifuct-js}
  */
-class AnimatedGIF extends Sprite
+class GifSprite extends Sprite
 {
     /**
-     * Default options for all AnimatedGIF objects.
+     * Default options for all GifSprite objects.
      * @property {PIXI.SCALE_MODE} [scaleMode='linear'] - Scale mode to use for the texture.
      * @property {boolean} [loop=true] - To enable looping.
      * @property {number} [animationSpeed=1] - Speed of the animation.
@@ -68,7 +68,7 @@ class AnimatedGIF extends Sprite
      * @property {Function} [onFrameChange=null] - The frame callback, optional.
      * @property {number} [fps=30] - Fallback FPS if GIF contains no time information.
      */
-    public static defaultOptions: Omit<AnimatedGIFOptions, 'source'> = {
+    public static defaultOptions: Omit<GifSpriteOptions, 'source'> = {
         scaleMode: 'linear',
         fps: 30,
         loop: true,
@@ -128,7 +128,7 @@ class AnimatedGIF extends Sprite
     public readonly autoPlay: boolean = true;
 
     /** Collection of frame to render. */
-    private _source: AnimatedGIFSource;
+    private _source: GifSource;
 
     /** Dirty means the image needs to be redrawn. Set to `true` to force redraw. */
     public dirty = false;
@@ -151,17 +151,17 @@ class AnimatedGIF extends Sprite
     /**
      * @param source - Source, default options will be used.
      */
-    constructor(source: AnimatedGIFSource);
+    constructor(source: GifSource);
 
     /**
-     * @param options - Options for the AnimatedGIF
+     * @param options - Options for the GifSprite
      */
-    constructor(options: AnimatedGIFOptions);
+    constructor(options: GifSpriteOptions);
 
     /** @ignore */
-    constructor(...args: [AnimatedGIFSource] | [AnimatedGIFOptions])
+    constructor(...args: [GifSource] | [GifSpriteOptions])
     {
-        const options = args[0] instanceof AnimatedGIFSource ? { source: args[0] } : args[0];
+        const options = args[0] instanceof GifSource ? { source: args[0] } : args[0];
 
         // Get the options, apply defaults
         const {
@@ -177,7 +177,7 @@ class AnimatedGIF extends Sprite
             onLoop,
             ...rest
         } = Object.assign({},
-            AnimatedGIF.defaultOptions,
+            GifSprite.defaultOptions,
             options
         );
 
@@ -362,7 +362,7 @@ class AnimatedGIF extends Sprite
     }
 
     /** Instance of the data, contains frame textures */
-    get source(): AnimatedGIFSource
+    get source(): GifSource
     {
         return this._source;
     }
@@ -422,9 +422,9 @@ class AnimatedGIF extends Sprite
      *
      * The clone will be flagged as `dirty` to immediatly trigger an update
      */
-    public clone(): AnimatedGIF
+    public clone(): GifSprite
     {
-        const clone = new AnimatedGIF({
+        const clone = new GifSprite({
             source: this._source,
             autoUpdate: this._autoUpdate,
             loop: this.loop,
@@ -442,5 +442,5 @@ class AnimatedGIF extends Sprite
     }
 }
 
-export { AnimatedGIF };
-export type { AnimatedGIFOptions };
+export { GifSprite };
+export type { GifSpriteOptions };

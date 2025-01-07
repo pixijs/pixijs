@@ -7,7 +7,7 @@ import { Texture } from '../rendering/renderers/shared/texture/Texture';
  * Represents a single frame of a GIF. Includes image and timing data.
  * @memberof gif
  */
-interface AnimatedGIFFrame
+interface GifFrame
 {
     /** Image data for the current frame */
     texture: Texture<CanvasSource>;
@@ -21,19 +21,19 @@ interface AnimatedGIFFrame
  * Options when constructing from buffer
  * @memberof gif
  */
-interface AnimatedGIFBufferOptions
+interface GifBufferOptions
 {
     /** FPS to use when the GIF animation doesn't define any delay between frames */
     fps: number;
 }
 
 /**
- * Resource provided to AnimatedGIF instances. This is very similar to using a shared
+ * Resource provided to GifSprite instances. This is very similar to using a shared
  * Texture between Sprites. This source contains all the frames and animation needed
  * to support playback.
  * @memberof gif
  */
-class AnimatedGIFSource
+class GifSource
 {
     /** Width of the animation */
     public readonly width: number;
@@ -45,7 +45,7 @@ class AnimatedGIFSource
     public readonly duration: number;
 
     /** Animation frames */
-    public readonly frames: AnimatedGIFFrame[];
+    public readonly frames: GifFrame[];
 
     /** Textures */
     public readonly textures: Texture<CanvasSource>[];
@@ -54,9 +54,9 @@ class AnimatedGIFSource
     public readonly totalFrames: number;
 
     /**
-     * @param frames - Array of AnimatedGIFFrame instances.
+     * @param frames - Array of GifFrame instances.
      */
-    constructor(frames: AnimatedGIFFrame[])
+    constructor(frames: GifFrame[])
     {
         // #if _DEBUG
         if (!frames || !frames.length) throw new Error('Invalid frames');
@@ -100,15 +100,15 @@ class AnimatedGIFSource
      * Create an animated GIF animation from a GIF image's ArrayBuffer. The easiest way to get
      * the buffer is to use Assets.
      * @example
-     * import { AnimatedGIFSource, AnimatedGIF } from 'pixi.js/gif';
+     * import { GifSource, GifSprite } from 'pixi.js/gif';
      *
      * const buffer = await fetch('./file.gif').then(res => res.arrayBuffer());
-     * const source = AnimatedGIFSource.fromBuffer(buffer);
-     * const sprite = new AnimatedGIF(source);
+     * const source = GifSource.from(buffer);
+     * const sprite = new GifSprite(source);
      * @param buffer - GIF image arraybuffer from Assets.
      * @param options - Optional options to use when building from buffer.
      */
-    public static fromBuffer(buffer: ArrayBuffer, options?: AnimatedGIFBufferOptions): AnimatedGIFSource
+    public static from(buffer: ArrayBuffer, options?: GifBufferOptions): GifSource
     {
         if (!buffer || buffer.byteLength === 0)
         {
@@ -136,7 +136,7 @@ class AnimatedGIFSource
 
         validateAndFix(gif);
         const gifFrames = decompressFrames(gif, true);
-        const frames: AnimatedGIFFrame[] = [];
+        const frames: GifFrame[] = [];
         const animWidth = gif.lsd.width;
         const animHeight = gif.lsd.height;
 
@@ -213,8 +213,8 @@ class AnimatedGIFSource
         canvas.width = canvas.height = 0;
         patchCanvas.width = patchCanvas.height = 0;
 
-        return new AnimatedGIFSource(frames);
+        return new GifSource(frames);
     }
 }
 
-export { AnimatedGIFBufferOptions, AnimatedGIFFrame, AnimatedGIFSource };
+export { GifBufferOptions, GifFrame, GifSource };

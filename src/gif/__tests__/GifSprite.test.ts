@@ -1,13 +1,13 @@
-import { AnimatedGIF, type AnimatedGIFOptions } from '../AnimatedGIF';
-import { AnimatedGIFSource } from '../AnimatedGIFSource';
+import { GifSource } from '../GifSource';
+import { GifSprite, type GifSpriteOptions } from '../GifSprite';
 import { toArrayBuffer } from '@test-utils';
 
-describe('AnimatedGIF', () =>
+describe('GifSprite', () =>
 {
     const arrayBuffer = toArrayBuffer('gif/example.gif');
-    const createAnimation = (options?: Partial<AnimatedGIFOptions>) =>
-        new AnimatedGIF({
-            source: AnimatedGIFSource.fromBuffer(arrayBuffer),
+    const createAnimation = (options?: Partial<GifSpriteOptions>) =>
+        new GifSprite({
+            source: GifSource.from(arrayBuffer),
             ...options,
         });
 
@@ -15,8 +15,8 @@ describe('AnimatedGIF', () =>
     {
         it('should create an instance from only source', () =>
         {
-            const source = AnimatedGIFSource.fromBuffer(arrayBuffer);
-            const animation = new AnimatedGIF(source);
+            const source = GifSource.from(arrayBuffer);
+            const animation = new GifSprite(source);
 
             expect(animation.duration).toBeGreaterThan(0);
             animation.destroy(true);
@@ -24,8 +24,8 @@ describe('AnimatedGIF', () =>
 
         it('should create an instance from options source', () =>
         {
-            const source = AnimatedGIFSource.fromBuffer(arrayBuffer);
-            const animation = new AnimatedGIF({ source });
+            const source = GifSource.from(arrayBuffer);
+            const animation = new GifSprite({ source });
 
             expect(animation.duration).toBeGreaterThan(0);
             animation.destroy(true);
@@ -33,8 +33,8 @@ describe('AnimatedGIF', () =>
 
         it('should support Sprite options', () =>
         {
-            const source = AnimatedGIFSource.fromBuffer(arrayBuffer);
-            const animation = new AnimatedGIF({ source, x: 100, y: 200 });
+            const source = GifSource.from(arrayBuffer);
+            const animation = new GifSprite({ source, x: 100, y: 200 });
 
             expect(animation.x).toBe(100);
             expect(animation.y).toBe(200);
@@ -151,7 +151,7 @@ describe('AnimatedGIF', () =>
             const animation = createAnimation();
             const clone = animation.clone();
 
-            expect(clone).toBeInstanceOf(AnimatedGIF);
+            expect(clone).toBeInstanceOf(GifSprite);
             expect(clone.totalFrames).toBe(animation.totalFrames);
             expect(clone.duration).toBe(animation.duration);
             animation.destroy();
@@ -174,7 +174,7 @@ describe('AnimatedGIF', () =>
             const animation = createAnimation(options);
             const clone = animation.clone();
 
-            expect(clone).toBeInstanceOf(AnimatedGIF);
+            expect(clone).toBeInstanceOf(GifSprite);
             expect(clone.playing).toBe(false);
             expect(clone.loop).toBe(animation.loop);
             expect(clone.autoPlay).toBe(animation.autoPlay);

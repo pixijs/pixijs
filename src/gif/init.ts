@@ -1,5 +1,5 @@
 import { extensions } from '../extensions/Extensions';
-import { AnimatedGIFAsset } from './AnimatedGIFAsset';
+import { GifAsset } from './GifAsset';
 
-extensions.add(AnimatedGIFAsset);
+extensions.add(GifAsset);
 

@@ -1,16 +1,16 @@
-import { AnimatedGIFSource } from '../AnimatedGIFSource';
+import { GifSource } from '../GifSource';
 import { toArrayBuffer } from '@test-utils';
 
-describe('AnimatedGIFSource', () =>
+describe('GifSource', () =>
 {
-    describe('fromBuffer()', () =>
+    describe('from()', () =>
     {
-        it('should return an instance of AnimatedGIF', () =>
+        it('should return an instance of GifSprite', () =>
         {
             const arrayBuffer = toArrayBuffer('gif/example.gif');
-            const data = AnimatedGIFSource.fromBuffer(arrayBuffer);
+            const data = GifSource.from(arrayBuffer);
 
-            expect(data).toBeInstanceOf(AnimatedGIFSource);
+            expect(data).toBeInstanceOf(GifSource);
             expect(data.totalFrames).toBeGreaterThan(0);
             expect(data.width).toBeGreaterThan(0);
             expect(data.height).toBeGreaterThan(0);
@@ -31,9 +31,9 @@ describe('AnimatedGIFSource', () =>
         it('should throw an error if missing', () =>
         {
             // eslint-disable-next-line jest/expect-expect
-            expect(() => (AnimatedGIFSource as any).fromBuffer()).toThrow();
+            expect(() => (GifSource as any).from()).toThrow();
             // eslint-disable-next-line jest/expect-expect
-            expect(() => (AnimatedGIFSource as any).fromBuffer(new ArrayBuffer(0))).toThrow();
+            expect(() => (GifSource as any).from(new ArrayBuffer(0))).toThrow();
         });
     });
 });
