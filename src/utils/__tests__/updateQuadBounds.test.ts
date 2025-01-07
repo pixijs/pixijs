@@ -1,4 +1,4 @@
-import { ObservablePoint } from '../../maths/point/ObservablePoint';
+import { type ObservablePoint } from '../../maths/point/ObservablePoint';
 import { type Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { updateQuadBounds } from '../data/updateQuadBounds';
 
@@ -12,7 +12,7 @@ describe('updateQuadBounds', () =>
     {
         // Reset bounds before each test
         bounds = { minX: 0, maxX: 0, minY: 0, maxY: 0 };
-        anchor = new ObservablePoint(null, 0, 0, 0);
+        anchor = { x: 0, y: 0 } as ObservablePoint;
         texture = {
             orig: { width: 100, height: 100 },
             trim: null,
