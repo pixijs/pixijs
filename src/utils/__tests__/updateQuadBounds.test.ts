@@ -1,6 +1,6 @@
+import { updateQuadBounds } from '../data/updateQuadBounds';
 import { type ObservablePoint } from '~/maths';
 import { type Texture } from '~/rendering';
-import { updateQuadBounds } from '../data/updateQuadBounds';
 
 describe('updateQuadBounds', () =>
 {
