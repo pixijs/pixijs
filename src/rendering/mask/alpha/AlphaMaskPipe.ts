@@ -3,7 +3,6 @@ import { FilterEffect } from '../../../filters/FilterEffect';
 import { MaskFilter } from '../../../filters/mask/MaskFilter';
 import { Bounds } from '../../../scene/container/bounds/Bounds';
 import { getGlobalBounds } from '../../../scene/container/bounds/getGlobalBounds';
-import { collectAllRenderables } from '../../../scene/container/utils/buildInstructions';
 import { Sprite } from '../../../scene/sprite/Sprite';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { Texture } from '../../renderers/shared/texture/Texture';
@@ -122,10 +121,10 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
 
             maskContainer.includeInBuild = true;
 
-            collectAllRenderables(
-                maskContainer,
+            maskContainer.collectRenderables(
                 instructionSet,
-                renderer
+                renderer,
+                null
             );
 
             maskContainer.includeInBuild = false;
