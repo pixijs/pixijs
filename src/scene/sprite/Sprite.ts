@@ -166,7 +166,7 @@ export class Sprite extends ViewContainer
      */
     get visualBounds()
     {
-        updateQuadBounds(this._visualBounds, this._anchor, this._texture, 0);
+        updateQuadBounds(this._visualBounds, this._anchor, this._texture);
 
         return this._visualBounds;
     }
