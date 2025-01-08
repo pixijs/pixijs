@@ -1,4 +1,4 @@
-import { Container } from '../../container/Container';
+import { Container } from '~/scene';
 import { type IRenderLayer, RenderLayer } from '../RenderLayer';
 
 describe('RenderLayer', () =>
