@@ -18,6 +18,7 @@ export interface CollectRenderablesMixin
      * @param {InstructionSet} instructionSet - The set of instructions to which the renderables will be added.
      * @param {Renderer} renderer - The renderer responsible for rendering the scene.
      * @param {IRenderLayer} currentLayer - The current render layer being processed.
+     * @memberof scene.Container#
      */
     collectRenderables(instructionSet: InstructionSet, renderer: Renderer, currentLayer: IRenderLayer): void;
 
@@ -27,6 +28,7 @@ export interface CollectRenderablesMixin
      * @param {InstructionSet} instructionSet - The set of instructions to which the renderables will be added.
      * @param {Renderer} renderer - The renderer responsible for rendering the scene.
      * @param {IRenderLayer} currentLayer - The current render layer being processed.
+     * @memberof scene.Container#
      */
     collectRenderablesSimple(instructionSet: InstructionSet, renderer: Renderer, currentLayer: IRenderLayer): void;
 
@@ -36,6 +38,7 @@ export interface CollectRenderablesMixin
      * @param {InstructionSet} instructionSet - The set of instructions to which the renderables will be added.
      * @param {Renderer} renderer - The renderer responsible for rendering the scene.
      * @param {IRenderLayer} currentLayer - The current render layer being processed.
+     * @memberof scene.Container#
      */
     collectRenderablesWithEffects(
         instructionSet: InstructionSet,
@@ -56,6 +59,7 @@ export const collectRenderablesMixin: Partial<Container> = {
      * @param {InstructionSet} instructionSet - The set of instructions to which the renderables will be added.
      * @param {Renderer} renderer - The renderer responsible for rendering the scene.
      * @param {IRenderLayer} currentLayer - The current render layer being processed.
+     * @memberof scene.Container#
      */
     collectRenderables(instructionSet: InstructionSet, renderer: Renderer, currentLayer: IRenderLayer): void
     {
@@ -90,6 +94,7 @@ export const collectRenderablesMixin: Partial<Container> = {
      * @param {InstructionSet} instructionSet - The set of instructions to which the renderables will be added.
      * @param {Renderer} renderer - The renderer responsible for rendering the scene.
      * @param {IRenderLayer} currentLayer - The current render layer being processed.
+     * @memberof scene.Container#
      */
     collectRenderablesSimple(
         instructionSet: InstructionSet,
@@ -113,6 +118,7 @@ export const collectRenderablesMixin: Partial<Container> = {
      * @param {InstructionSet} instructionSet - The set of instructions to which the renderables will be added.
      * @param {Renderer} renderer - The renderer responsible for rendering the scene.
      * @param {IRenderLayer} currentLayer - The current render layer being processed.
+     * @memberof scene.Container#
      */
     collectRenderablesWithEffects(
         instructionSet: InstructionSet,

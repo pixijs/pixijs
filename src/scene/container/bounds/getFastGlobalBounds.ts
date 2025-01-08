@@ -13,11 +13,14 @@ import type { Bounds } from './Bounds';
  * @param target - The target container to get the bounds from
  * @param bounds - The output bounds object.
  * @returns The bounds.
- * @deprecated
+ * @deprecated since 8.7.0
+ * @see container.getFastGlobalBounds
  */
 export function getFastGlobalBounds(target: Container, bounds: Bounds): Bounds
 {
-    deprecation('getFastGlobalBounds', 'Use container.getFastGlobalBounds() instead');
+    // #if _DEBUG
+    deprecation('8.7.0', 'Use container.getFastGlobalBounds() instead');
+    // #endif
 
     return target.getFastGlobalBounds(true, bounds);
 }

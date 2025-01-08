@@ -7,7 +7,10 @@ import { Container } from '../container/Container';
 import type EventEmitter from 'eventemitter3';
 // TODO make it clear render layer cannot have 'filters'
 
-/** Options for configuring a RenderLayer. */
+/**
+ * Options for configuring a RenderLayer.
+ * @memberof rendering
+ */
 export interface RenderLayerOptions
 {
     /**
@@ -44,23 +47,23 @@ export type IRenderLayer = Omit<RenderLayerClass, PartialContainerKeys>;
  * This allows developers to decouple how objects are transformed
  * (via their logical parent) from how they are rendered on the screen.
  *
- * ## Key Concepts
+ * ### Key Concepts
  *
- * ### RenderLayers Control Rendering Order:
+ * #### RenderLayers Control Rendering Order:
  * - RenderLayers define where in the render stack objects are drawn,
  * but they do not affect an object's transformations (e.g., position, scale, rotation) or logical hierarchy.
  * - RenderLayers can be added anywhere in the scene graph.
  *
- * ### Logical Parenting Remains Unchanged:
+ * #### Logical Parenting Remains Unchanged:
  * - Objects still have a logical parent for transformations via addChild.
  * - Assigning an object to a layer does not reparent it.
  *
- * ### Explicit Control:
+ * #### Explicit Control:
  * - Developers assign objects to layers using renderLayer.add and remove them using renderLayer.remove.
+ * ---
+ * ### API Details
  *
- * ## API Details
- *
- * ### 1. Creating a RenderLayer
+ * #### 1. Creating a RenderLayer
  * A RenderLayer is a lightweight object responsible for controlling render order.
  * It has no children or transformations of its own
  * but can be inserted anywhere in the scene graph to define its render position.
@@ -69,7 +72,7 @@ export type IRenderLayer = Omit<RenderLayerClass, PartialContainerKeys>;
  * app.stage.addChild(layer); // Insert the layer into the scene graph
  * ```
  *
- * ### 2. Adding Objects to a Layer
+ * #### 2. Adding Objects to a Layer
  * Use renderLayer.add to assign an object to a layer.
  * This overrides the object's default render order defined by its logical parent.
  * ```js
@@ -78,14 +81,14 @@ export type IRenderLayer = Omit<RenderLayerClass, PartialContainerKeys>;
  * layer.attach(rect);      // Control render order via the layer
  * ```
  *
- * ### 3. Removing Objects from a Layer
+ * #### 3. Removing Objects from a Layer
  * To stop an object from being rendered in the layer, use remove.
  * ```js
  * layer.remove(rect); // Stop rendering rect via the layer
  * ```
  * When an object is removed from its logical parent (removeChild), it is automatically removed from the layer.
  *
- * ### 4. Re-Adding Objects to Layers
+ * #### 4. Re-Adding Objects to Layers
  * If an object is re-added to a logical parent, it does not automatically reassign itself to the layer.
  * Developers must explicitly reassign it.
  * ```js
@@ -93,7 +96,7 @@ export type IRenderLayer = Omit<RenderLayerClass, PartialContainerKeys>;
  * layer.attach(rect);      // Explicitly reassign to the layer
  * ```
  *
- * ### 5. Layer Position in Scene Graph
+ * #### 5. Layer Position in Scene Graph
  * A layer's position in the scene graph determines its render priority relative to other layers and objects.
  * Layers can be inserted anywhere in the scene graph.
  * ```js
@@ -112,6 +115,9 @@ export type IRenderLayer = Omit<RenderLayerClass, PartialContainerKeys>;
  *  - Interaction may not work as expected since hit testing does not account for the visual render order created by layers.
  *    For example, if an object is visually moved to the front via a layer, hit testing will still use its original position.
  *  - RenderLayers and their children must all belong to the same renderGroup to work correctly
+ * @memberof rendering
+ * @class RenderLayer
+ * @extends null
  */
 export class RenderLayerClass extends Container
 {
@@ -131,6 +137,7 @@ export class RenderLayerClass extends Container
 
     /** List of objects to be rendered by this layer */
     public renderLayerChildren: Container[] = [];
+
     /**
      * Creates a new RenderLayer instance
      * @param options - Configuration options for the RenderLayer

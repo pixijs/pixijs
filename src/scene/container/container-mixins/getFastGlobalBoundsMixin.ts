@@ -24,6 +24,7 @@ export interface GetFastGlobalBoundsMixin
      * @param {boolean} [factorRenderLayers] - A flag indicating whether to consider render layers in the calculation.
      * @param {Bounds} [bounds] - The output bounds object to store the result. If not provided, a new one is created.
      * @returns {Bounds} The computed bounds.
+     * @memberof scene.Container#
      */
     getFastGlobalBounds(factorRenderLayers?: boolean, bounds?: Bounds): Bounds;
 
@@ -33,6 +34,7 @@ export interface GetFastGlobalBoundsMixin
      * @param {boolean} factorRenderLayers - A flag indicating whether to consider render layers in the calculation.
      * @param {Bounds} bounds - The bounds object to update with the calculated values.
      * @param {IRenderLayer} currentLayer - The current render layer being processed.
+     * @memberof scene.Container#
      */
     _getGlobalBoundsRecursive(
         factorRenderLayers: boolean,
@@ -53,6 +55,7 @@ export const getFastGlobalBoundsMixin: Partial<Container> = {
      * @param {boolean} [factorRenderLayers] - Whether to consider render layers in the calculation.
      * @param {Bounds} [bounds] - The bounds object to store the result. If not provided, a new one is created.
      * @returns {Bounds} The computed bounds.
+     * @memberof scene.Container#
      */
     getFastGlobalBounds(factorRenderLayers?: boolean, bounds?: Bounds): Bounds
     {
@@ -85,6 +88,7 @@ export const getFastGlobalBoundsMixin: Partial<Container> = {
      * @param {boolean} factorRenderLayers - Whether to consider render layers in the calculation.
      * @param {Bounds} bounds - The bounds object to update with the calculated values.
      * @param {IRenderLayer} currentLayer - The current render layer being processed.
+     * @memberof scene.Container#
      */
     _getGlobalBoundsRecursive(
         factorRenderLayers: boolean,
