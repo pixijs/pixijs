@@ -111,7 +111,9 @@ class CacheClass
 
         cacheKeys.forEach((key) =>
         {
-            if (this._cache.has(key) && this._cache.get(key) !== value)
+            const val = cacheableAssets ? cacheableAssets[key] : value;
+
+            if (this._cache.has(key) && this._cache.get(key) !== val)
             {
                 if (process.env.DEBUG)
                 {

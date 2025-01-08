@@ -493,6 +493,44 @@ describe('Assets', () =>
         spy.mockRestore();
     });
 
+    it('should not show a cache warning if the same spritesheet asset is loaded twice', async () =>
+    {
+        jest.setTimeout(10000);
+        await Assets.init({
+            basePath,
+        });
+
+        const spy = jest.spyOn(console, 'warn');
+
+        await Promise.all([
+            Assets.load('spritesheet/spritesheet.json'),
+            Assets.load('spritesheet/spritesheet.json'),
+        ]);
+
+        expect(spy).not.toHaveBeenCalled();
+
+        spy.mockRestore();
+    });
+
+    it('should show a cache warning if asset is different', async () =>
+    {
+        jest.setTimeout(10000);
+        await Assets.init({
+            basePath,
+        });
+
+        const spy = jest.spyOn(console, 'warn');
+
+        await Promise.all([
+            Assets.load({ alias: 'test', src: 'textures/bunny.png' }),
+            Assets.load({ alias: 'test', src: 'textures/bunny.1.png' }),
+        ]);
+
+        expect(spy).toHaveBeenCalled();
+
+        spy.mockRestore();
+    });
+
     it('should load font assets with space in URL', async () =>
     {
         await Assets.init({
