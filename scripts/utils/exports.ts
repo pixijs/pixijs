@@ -7,6 +7,7 @@ import { readJSONSync, writeJSONSync } from 'fs-extra';
 const subImports = [
     ['./accessibility', './lib/accessibility'],
     ['./advanced-blend-modes', './lib/advanced-blend-modes'],
+    ['./gif', './lib/gif'],
     ['./app', './lib/app'],
     ['./dds', './lib/compressed-textures/dds'],
     ['./ktx', './lib/compressed-textures/ktx'],
