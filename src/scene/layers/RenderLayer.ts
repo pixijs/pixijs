@@ -9,7 +9,7 @@ import type EventEmitter from 'eventemitter3';
 
 /**
  * Options for configuring a RenderLayer.
- * @memberof rendering
+ * @memberof scene
  */
 export interface RenderLayerOptions
 {
@@ -115,7 +115,7 @@ export type IRenderLayer = Omit<RenderLayerClass, PartialContainerKeys>;
  *  - Interaction may not work as expected since hit testing does not account for the visual render order created by layers.
  *    For example, if an object is visually moved to the front via a layer, hit testing will still use its original position.
  *  - RenderLayers and their children must all belong to the same renderGroup to work correctly
- * @memberof rendering
+ * @memberof scene
  * @class RenderLayer
  * @extends null
  */
