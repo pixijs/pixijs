@@ -155,54 +155,68 @@ export class RenderLayerClass extends Container
     }
 
     /**
-     * Add an object to this render layer. The object will be rendered as part of this layer
+     * Add an Container to this render layer. The Container will be rendered as part of this layer
      * while maintaining its original parent in the scene graph.
-     * If the object already belongs to a layer, it will be removed from the old layer before being added to this one.
-     * @param child - The object to add to this layer
+     * If the Container already belongs to a layer, it will be removed from the old layer before being added to this one.
+     * @param children - The Container(s) to add to this layer
      */
-    public attach(child: Container)
+    public attach<U extends Container[]>(...children: U): U[0]
     {
-        if (child.parentRenderLayer)
+        for (let i = 0; i < children.length; i++)
         {
-            if (child.parentRenderLayer === this) return;
+            const child = children[i];
 
-            child.parentRenderLayer.detach(child);
+            if (child.parentRenderLayer)
+            {
+                if (child.parentRenderLayer === this) continue;
+
+                child.parentRenderLayer.detach(child);
+            }
+
+            this.renderLayerChildren.push(child);
+
+            child.parentRenderLayer = this;
+
+            const renderGroup = this.renderGroup || this.parentRenderGroup;
+
+            if (renderGroup)
+            {
+                renderGroup.structureDidChange = true;
+            }
         }
 
-        this.renderLayerChildren.push(child);
-
-        child.parentRenderLayer = this;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.structureDidChange = true;
-        }
+        return children[0];
     }
 
     /**
-     * Remove an object from this render layer. The object will no longer be rendered
+     * Remove an Container from this render layer. The Container will no longer be rendered
      * as part of this layer but maintains its original parent.
-     * @param child - The object to remove from this layer
+     * @param children - The Container(s) to remove from this layer
      */
-    public detach(child: Container)
+    public detach<U extends Container[]>(...children: U): U[0]
     {
-        const index = this.renderLayerChildren.indexOf(child);
-
-        if (index !== -1)
+        for (let i = 0; i < children.length; i++)
         {
-            this.renderLayerChildren.splice(index, 1);
+            const child = children[i];
+
+            const index = this.renderLayerChildren.indexOf(child);
+
+            if (index !== -1)
+            {
+                this.renderLayerChildren.splice(index, 1);
+            }
+
+            child.parentRenderLayer = null;
+
+            const renderGroup = this.renderGroup || this.parentRenderGroup;
+
+            if (renderGroup)
+            {
+                renderGroup.structureDidChange = true;
+            }
         }
 
-        child.parentRenderLayer = null;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.structureDidChange = true;
-        }
+        return children[0];
     }
 
     /** Remove all objects from this render layer. */

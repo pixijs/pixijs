@@ -99,9 +99,18 @@ describe('RenderLayer', () =>
     {
         it('should remove all containers', () =>
         {
-            layer.attach(container1);
-            layer.attach(container2);
+            layer.attach(container1, container2);
             layer.detachAll();
+
+            expect(layer.renderLayerChildren).toHaveLength(0);
+            expect(container1.parentRenderLayer).toBeNull();
+            expect(container2.parentRenderLayer).toBeNull();
+        });
+
+        it('should remove all containers in an array', () =>
+        {
+            layer.attach(container1, container2);
+            layer.detach(container1, container2);
 
             expect(layer.renderLayerChildren).toHaveLength(0);
             expect(container1.parentRenderLayer).toBeNull();
@@ -116,8 +125,7 @@ describe('RenderLayer', () =>
             container1.zIndex = 2;
             container2.zIndex = 1;
 
-            layer.attach(container1);
-            layer.attach(container2);
+            layer.attach(container1, container2);
             layer.sortRenderLayerChildren();
 
             expect(layer.renderLayerChildren[0]).toBe(container2);
@@ -133,8 +141,7 @@ describe('RenderLayer', () =>
             container1.zIndex = 1;
             container2.zIndex = 2;
 
-            customLayer.attach(container1);
-            customLayer.attach(container2);
+            customLayer.attach(container1, container2);
             customLayer.sortRenderLayerChildren();
 
             expect(customLayer.renderLayerChildren[0]).toBe(container2);
