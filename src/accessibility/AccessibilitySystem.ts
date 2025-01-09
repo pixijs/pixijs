@@ -33,7 +33,8 @@ import type { isMobileResult } from '../utils/browser/isMobile';
  *     accessibilityOptions: {
  *         enabledByDefault: true,    // Create accessibility elements immediately
  *         activateOnTab: false,      // Prevent tab key activation
- *         debug: false               // Show accessibility divs
+ *         debug: false,               // Show accessibility divs
+ *         deactivateOnMouseMove: false, // Prevent accessibility from being deactivated when mouse moves
  *     }
  * });
  * ```
@@ -75,6 +76,8 @@ export interface AccessibilityOptions
     debug?: boolean;
     /** Whether to allow tab key press to activate accessibility features */
     activateOnTab?: boolean;
+    /** Whether to deactivate accessibility when mouse moves */
+    deactivateOnMouseMove?: boolean;
 }
 
 /**
@@ -87,7 +90,8 @@ export interface AccessibilityOptions
  *     accessibilityOptions: {
  *         enabledByDefault: true,    // Enable immediately instead of waiting for tab
  *         activateOnTab: false,      // Disable tab key activation
- *         debug: false               // Show/hide accessibility divs
+ *         debug: false,               // Show/hide accessibility divs
+ *         deactivateOnMouseMove: false, // Prevent accessibility from being deactivated when mouse moves
  *     }
  * });
  * ```
@@ -134,6 +138,11 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
              * @default true
              */
             activateOnTab: true,
+            /**
+             * Whether to deactivate accessibility when mouse moves
+             * @default true
+             */
+            deactivateOnMouseMove: true,
         },
     };
 
@@ -142,6 +151,9 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
 
     /** Whether to activate on tab key press */
     private _activateOnTab = true;
+
+    /** Whether to deactivate accessibility when mouse moves */
+    private _deactivateOnMouseMove = true;
 
     /**
      * The renderer this accessibility manager works for.
@@ -286,15 +298,18 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
             this._div.style.pointerEvents = 'none';
         }
 
-        this._onMouseMove = this._onMouseMove.bind(this);
-
         // Bind event handlers and add listeners when activating
         if (this._activateOnTab)
         {
             this._onKeyDown = this._onKeyDown.bind(this);
             globalThis.addEventListener('keydown', this._onKeyDown, false);
         }
-        globalThis.document.addEventListener('mousemove', this._onMouseMove, true);
+
+        if (this._deactivateOnMouseMove)
+        {
+            this._onMouseMove = this._onMouseMove.bind(this);
+            globalThis.document.addEventListener('mousemove', this._onMouseMove, true);
+        }
 
         // Check if canvas is in DOM
         const canvas = this._renderer.view.canvas;
@@ -441,6 +456,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
 
         this.debug = mergedOptions.accessibilityOptions.debug;
         this._activateOnTab = mergedOptions.accessibilityOptions.activateOnTab;
+        this._deactivateOnMouseMove = mergedOptions.accessibilityOptions.deactivateOnMouseMove;
 
         if (mergedOptions.accessibilityOptions.enabledByDefault)
         {
@@ -530,12 +546,6 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
             div.style.top = `${y}px`;
             div.style.width = `${viewWidth}px`;
             div.style.height = `${viewHeight}px`;
-        }
-
-        // Update accessible objects
-        if (this._renderer.lastObjectRendered)
-        {
-            this._updateAccessibleObjects(this._renderer.lastObjectRendered as Container);
         }
 
         // Update positions of existing divs
