@@ -1,9 +1,9 @@
-import { Color } from '~/color/Color';
-import { Texture } from '~/rendering/renderers/shared/texture/Texture';
 import { FillGradient } from '../../fill/FillGradient';
 import { FillPattern } from '../../fill/FillPattern';
 import { type ConvertedFillStyle, type FillStyle } from '../../FillTypes';
 import { toFillStyle } from '../convertFillInputToFillStyle';
+import { Color } from '~/color/Color';
+import { Texture } from '~/rendering/renderers/shared/texture/Texture';
 
 describe('toFillStyle', () =>
 {
