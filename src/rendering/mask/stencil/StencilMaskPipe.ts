@@ -1,5 +1,4 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { collectAllRenderables } from '../../../scene/container/utils/buildInstructions';
 import { CLEAR } from '../../renderers/gl/const';
 import { STENCIL_MODES } from '../../renderers/shared/state/const';
 
@@ -82,8 +81,7 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
 
         maskData.instructionsStart = instructionSet.instructionSize;
 
-        collectAllRenderables(
-            maskContainer,
+        maskContainer.collectRenderables(
             instructionSet,
             renderer,
             null
