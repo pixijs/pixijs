@@ -70,6 +70,22 @@ export class FederatedPointerEvent extends FederatedMouseEvent implements Pointe
      */
     public twist: number;
 
+    /**
+     * The angle in radians of a pointer or stylus measuring the vertical angle between
+     * the device's surface to the pointer or stylus.
+     * A stylus at 0 degrees would be directly parallel whereas at π/2 degrees it would be perpendicular.
+     * @see https://developer.mozilla.org/docs/Web/API/PointerEvent/altitudeAngle)
+     */
+    public altitudeAngle: number;
+
+    /**
+     * The angle in radians of a pointer or stylus measuring an arc from the X axis of the device to
+     * the pointer or stylus projected onto the screen's plane.
+     * A stylus at 0 degrees would be pointing to the "0 o'clock" whereas at π/2 degrees it would be pointing at "6 o'clock".
+     * @see https://developer.mozilla.org/docs/Web/API/PointerEvent/azimuthAngle)
+     */
+    public azimuthAngle: number;
+
     /** This is the number of clicks that occurs in 200ms/click of each other. */
     public detail: number;
 
