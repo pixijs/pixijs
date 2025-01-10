@@ -2,7 +2,6 @@ import { ExtensionType } from '../../extensions/Extensions';
 import { Matrix } from '../../maths/matrix/Matrix';
 import { TexturePool } from '../../rendering/renderers/shared/texture/TexturePool';
 import { Bounds } from './bounds/Bounds';
-import { buildInstructions } from './utils/buildInstructions';
 import { clearList } from './utils/clearList';
 import { executeInstructions } from './utils/executeInstructions';
 import { updateRenderGroupTransforms } from './utils/updateRenderGroupTransforms';
@@ -10,7 +9,7 @@ import { validateRenderables } from './utils/validateRenderables';
 
 import type { WebGPURenderer } from '../../rendering/renderers/gpu/WebGPURenderer';
 import type { System } from '../../rendering/renderers/shared/system/System';
-import type { Renderer } from '../../rendering/renderers/types';
+import type { Renderer, RenderPipes } from '../../rendering/renderers/types';
 import type { ViewContainer } from '../view/ViewContainer';
 import type { Container } from './Container';
 import type { RenderGroup } from './RenderGroup';
@@ -194,7 +193,7 @@ export class RenderGroupSystem implements System
             renderGroup.structureDidChange = false;
 
             // build the renderables
-            buildInstructions(renderGroup, renderer);
+            this._buildInstructions(renderGroup, renderer);
         }
         else
         {
@@ -232,6 +231,44 @@ export class RenderGroupSystem implements System
         }
 
         clearList(list, index);
+    }
+
+    /**
+     * @param renderGroup
+     * @param renderPipes
+     * @deprecated since 8.3.0
+     */
+    private _buildInstructions(renderGroup: RenderGroup, renderPipes: RenderPipes): void;
+    private _buildInstructions(renderGroup: RenderGroup, renderer: Renderer): void;
+    private _buildInstructions(renderGroup: RenderGroup, rendererOrPipes: RenderPipes | Renderer): void
+    {
+    // rebuild the scene graph based on layers...
+        const root = renderGroup.root;
+        const instructionSet = renderGroup.instructionSet;
+
+        instructionSet.reset();
+
+        // deprecate the use of renderPipes by finding the renderer attached to the batch pipe as this is always there
+        const renderer = (rendererOrPipes as Renderer).renderPipes
+            ? (rendererOrPipes as Renderer)
+            : (rendererOrPipes as RenderPipes).batch.renderer;
+        const renderPipes = renderer.renderPipes;
+
+        // TODO add some events / runners for build start
+        renderPipes.batch.buildStart(instructionSet);
+        renderPipes.blendMode.buildStart();
+        renderPipes.colorMask.buildStart();
+
+        if (root.sortableChildren)
+        {
+            root.sortChildren();
+        }
+
+        root.collectRenderablesWithEffects(instructionSet, renderer, null);
+
+        // TODO add some events / runners for build end
+        renderPipes.batch.buildEnd(instructionSet);
+        renderPipes.blendMode.buildEnd(instructionSet);
     }
 }
 

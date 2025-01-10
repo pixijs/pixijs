@@ -1,7 +1,7 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { type RenderGroup } from '../../../../scene/container/RenderGroup';
 import { cleanArray, cleanHash } from '../../../../utils/data/clean';
 import { type RenderOptions } from '../system/AbstractRenderer';
-import { type RenderGroup } from '~/scene/container/RenderGroup';
 
 import type { Container } from '../../../../scene/container/Container';
 import type { Renderer } from '../../types';
