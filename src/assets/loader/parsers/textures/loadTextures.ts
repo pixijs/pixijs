@@ -147,8 +147,9 @@ export const loadTextures: LoaderParser<Texture, TextureSourceOptions, LoadTextu
                 }
                 else
                 {
-                    src.onload = (): void =>
+                    src.onerror = src.onload = (): void =>
                     {
+                        src.onerror = src.onload = null;
                         resolve(src);
                     };
                 }
