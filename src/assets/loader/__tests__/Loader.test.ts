@@ -263,9 +263,13 @@ describe('Loader', () =>
         const loader = new Loader();
 
         loader['_parsers'].push(loadTextures);
-        loadTextures.config.preferCreateImageBitmap = false;
+        const config = loadTextures.config;
+        const defValue = config.preferCreateImageBitmap;
+
+        config.preferCreateImageBitmap = false;
         await loader.load(`${basePath}textures/bunny_no_img.png`).catch(
             (e) => expect(e).toBeInstanceOf(Error)
         );
+        config.preferCreateImageBitmap = defValue;
     });
 });
