@@ -135,7 +135,7 @@ export const loadTextures: LoaderParser<Texture, TextureSourceOptions, LoadTextu
         }
         else
         {
-            src = await new Promise((resolve) =>
+            src = await new Promise((resolve, reject) =>
             {
                 src = new Image();
                 src.crossOrigin = this.config.crossOrigin;
@@ -147,11 +147,11 @@ export const loadTextures: LoaderParser<Texture, TextureSourceOptions, LoadTextu
                 }
                 else
                 {
-                    src.onerror = src.onload = (): void =>
+                    src.onload = (): void =>
                     {
-                        src.onerror = src.onload = null;
                         resolve(src);
                     };
+                    src.onerror = reject;
                 }
             });
         }
