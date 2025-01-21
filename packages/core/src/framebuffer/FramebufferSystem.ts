@@ -58,6 +58,8 @@ export class FramebufferSystem extends System
      */
     protected contextChange(): void
     {
+        this.disposeAll(true);
+
         const gl = this.gl = this.renderer.gl;
 
         this.CONTEXT_UID = this.renderer.CONTEXT_UID;
@@ -65,8 +67,6 @@ export class FramebufferSystem extends System
         this.viewport = new Rectangle();
         this.hasMRT = true;
         this.writeDepthTexture = true;
-
-        this.disposeAll(true);
 
         // webgl2
         if (this.renderer.context.webGLVersion === 1)
