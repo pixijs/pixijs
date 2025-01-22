@@ -4,6 +4,7 @@ import { BindGroup } from '../../gpu/shader/BindGroup';
 import { GpuProgram } from '../../gpu/shader/GpuProgram';
 import { RendererType } from '../../types';
 import { UniformGroup } from './UniformGroup';
+import { uid } from '~/utils/data/uid';
 
 import type { GlProgramOptions } from '../../gl/shader/GlProgram';
 import type { BindResource } from '../../gpu/shader/BindResource';
@@ -144,6 +145,8 @@ export type ShaderFromResources = (GlShaderFromWith | GpuShaderFromWith)
  */
 export class Shader extends EventEmitter<{'destroy': Shader}>
 {
+    /** A unique identifier for the shader */
+    public readonly uid: number = uid('shader');
     /** An instance of the GPU program used by the WebGPU renderer */
     public gpuProgram: GpuProgram;
     /** An instance of the GL program used by the WebGL renderer */
