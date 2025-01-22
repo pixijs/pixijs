@@ -283,7 +283,9 @@ export class AbstractRenderer<
         {
             // TODO get rid of this
             this._lastObjectRendered = options.container;
-            options.clearColor = this.background.colorRgba;
+
+            options.clearColor ??= this.background.colorRgba;
+            options.clear ??= this.background.clearBeforeRender;
         }
 
         if (options.clearColor)
