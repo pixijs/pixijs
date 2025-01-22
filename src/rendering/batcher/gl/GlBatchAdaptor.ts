@@ -45,10 +45,15 @@ export class GlBatchAdaptor implements BatcherAdaptor
     {
         const renderer = batchPipe.renderer as WebGLRenderer;
 
-        // only want to sync the shade ron its first bind!
-        renderer.shader.bind(shader, this._didUploadHash[shader.uid]);
+        const didUpload = this._didUploadHash[shader.uid];
 
-        this._didUploadHash[shader.uid] = true;
+        // only want to sync the shade ron its first bind!
+        renderer.shader.bind(shader, didUpload);
+
+        if (!didUpload)
+        {
+            this._didUploadHash[shader.uid] = true;
+        }
 
         renderer.shader.updateUniformGroup(renderer.globalUniforms.uniformGroup);
 
