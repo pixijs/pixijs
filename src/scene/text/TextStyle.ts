@@ -655,20 +655,15 @@ function convertV7Tov8Style(style: TextStyleOptions)
             fontSize = style.fontSize as number;
         }
 
-        const gradientFill = new FillGradient(0, 0, 0, fontSize * 1.7);
-
-        const fills: number[] = oldStyle.fillGradientStops
-            .map((color: ColorSource) => Color.shared.setValue(color).toNumber());
-
-        fills.forEach((number, index) =>
-        {
-            const ratio = index / (fills.length - 1);
-
-            gradientFill.addColorStop(ratio, number);
-        });
-
         style.fill = {
-            fill: gradientFill
+            fill: new FillGradient({
+                type: 'linear',
+                start: { x: 0, y: 0 },
+                end: { x: 0, y: fontSize * 1.7 },
+                stops: oldStyle.fillGradientStops.map((color, index, fills) =>
+                    ({ offset: index / (fills.length - 1), color })
+                )
+            })
         };
     }
 }

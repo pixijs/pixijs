@@ -92,6 +92,8 @@ describe('convertStrokeInputToStrokeStyle', () =>
             texture: gradient.texture,
             matrix: gradient.transform,
         });
+
+        gradient.destroy();
     });
 
     it('should convert stroke object to stroke style', () =>
@@ -152,6 +154,8 @@ describe('convertStrokeInputToStrokeStyle', () =>
             texture: gradient.texture,
             matrix: gradient.transform
         });
+
+        gradient.destroy();
     });
 
     it('should only build FillGradient once', () =>
@@ -166,5 +170,7 @@ describe('convertStrokeInputToStrokeStyle', () =>
         toFillStyle(gradient, defaultStyle);
 
         expect(texture).toBe(gradient.texture);
+
+        gradient.destroy();
     });
 });
