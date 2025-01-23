@@ -1,6 +1,7 @@
 import { Matrix } from '../../maths/matrix/Matrix';
 import { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 import { TexturePool } from '../../rendering/renderers/shared/texture/TexturePool';
+import { type Renderer } from '../../rendering/renderers/types';
 
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
@@ -338,11 +339,11 @@ export class RenderGroup implements Instruction
         this._onRenderContainers.splice(this._onRenderContainers.indexOf(container), 1);
     }
 
-    public runOnRender()
+    public runOnRender(renderer: Renderer)
     {
         for (let i = 0; i < this._onRenderContainers.length; i++)
         {
-            this._onRenderContainers[i]._onRender();
+            this._onRenderContainers[i]._onRender(renderer);
         }
     }
 

@@ -1,18 +1,19 @@
+import type { Renderer } from '../../../rendering/renderers/types';
 import type { Container } from '../Container';
 
 export interface OnRenderMixinConstructor
 {
-    onRender?: (() => void | null);
+    onRender?: ((renderer: Renderer) => void | null);
 }
 export interface OnRenderMixin extends Required<OnRenderMixinConstructor>
 {
-    _onRender: (() => void) | null;
+    _onRender: ((renderer: Renderer) => void) | null;
 }
 
 export const onRenderMixin: Partial<Container> = {
     _onRender: null,
 
-    set onRender(func: () => void)
+    set onRender(func: (renderer: Renderer) => void)
     {
         const renderGroup = this.renderGroup || this.parentRenderGroup;
 
@@ -49,7 +50,7 @@ export const onRenderMixin: Partial<Container> = {
      * };
      * @memberof scene.Container#
      */
-    get onRender(): () => void
+    get onRender(): (renderer: Renderer) => void
     {
         return this._onRender;
     }
