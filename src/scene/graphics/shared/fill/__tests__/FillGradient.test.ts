@@ -2,7 +2,7 @@ import { FillGradient, type FillGradientOptions } from '../FillGradient';
 
 describe('FillGradient', () =>
 {
-    const createLinearGradient = (options?: Partial<FillGradientOptions>) => new FillGradient({
+    const createLinearGradient = (options?: Partial<Pick<FillGradientOptions, 'textureSize'>>) => new FillGradient({
         type: 'linear',
         start: { x: 0, y: 0 },
         end: { x: 100, y: 100 },
