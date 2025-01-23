@@ -7,7 +7,6 @@ import { readJSONSync, writeJSONSync } from 'fs-extra';
 const subImports = [
     ['./accessibility', './lib/accessibility'],
     ['./advanced-blend-modes', './lib/advanced-blend-modes'],
-    ['./gif', './lib/gif'],
     ['./app', './lib/app'],
     ['./dds', './lib/compressed-textures/dds'],
     ['./ktx', './lib/compressed-textures/ktx'],
@@ -67,6 +66,16 @@ const exportFields: Record<string, ExportField> = {
             default: './lib/environment-webworker/webworkerAll.js',
         },
     },
+    './gif': {
+        import: {
+            types: './lib/gif/init.d.ts',
+            default: './lib/gif/init.mjs',
+        },
+        require: {
+            types: './lib/gif/init.d.ts',
+            default: './lib/gif/init.js',
+        },
+    },
 };
 const sideEffects = [
     './lib/environment-browser/browserAll.*',
@@ -75,6 +84,7 @@ const sideEffects = [
     './lib/rendering/init.*',
     './lib/spritesheet/init.*',
     './lib/rendering/renderers/shared/texture/utils/textureFrom.*',
+    './lib/gif/init.*',
 ];
 
 for (const [name, path] of subImports)

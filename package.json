@@ -187,9 +187,9 @@
     "./lib/rendering/init.*",
     "./lib/spritesheet/init.*",
     "./lib/rendering/renderers/shared/texture/utils/textureFrom.*",
+    "./lib/gif/init.*",
     "./lib/accessibility/init.*",
     "./lib/advanced-blend-modes/init.*",
-    "./lib/gif/init.*",
     "./lib/app/init.*",
     "./lib/compressed-textures/dds/init.*",
     "./lib/compressed-textures/ktx/init.*",
@@ -236,6 +236,16 @@
         "default": "./lib/environment-webworker/webworkerAll.js"
       }
     },
+    "./gif": {
+      "import": {
+        "types": "./lib/gif/init.d.ts",
+        "default": "./lib/gif/init.mjs"
+      },
+      "require": {
+        "types": "./lib/gif/init.d.ts",
+        "default": "./lib/gif/init.js"
+      }
+    },
     "./accessibility": {
       "import": {
         "default": "./lib/accessibility/init.mjs"
@@ -250,14 +260,6 @@
       },
       "require": {
         "default": "./lib/advanced-blend-modes/init.js"
-      }
-    },
-    "./gif": {
-      "import": {
-        "default": "./lib/gif/init.mjs"
-      },
-      "require": {
-        "default": "./lib/gif/init.js"
       }
     },
     "./app": {
