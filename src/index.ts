@@ -17,6 +17,7 @@ export * from './environment-webworker';
 export * from './events';
 export * from './extensions';
 export * from './filters';
+export * from './gif';
 export * from './maths';
 export * from './prepare';
 export * from './rendering';
