@@ -63,7 +63,21 @@ export class MeshGeometry extends Geometry
         options = { ...MeshGeometry.defaultOptions, ...options };
 
         const positions = options.positions || new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]);
-        const uvs = options.uvs || new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]);
+
+        let uvs = options.uvs;
+
+        if (!uvs)
+        {
+            if (options.positions)
+            {
+                uvs = new Float32Array(positions.length);
+            }
+            else
+            {
+                uvs = new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]);
+            }
+        }
+
         const indices = options.indices || new Uint32Array([0, 1, 2, 0, 2, 3]);
 
         const shrinkToFit = options.shrinkBuffersToFit;
