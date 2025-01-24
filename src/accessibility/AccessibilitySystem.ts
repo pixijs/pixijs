@@ -121,29 +121,27 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
     } as const;
 
     /** default options used by the system */
-    public static defaultOptions: AccessibilitySystemOptions = {
-        accessibilityOptions: {
-            /**
-             * Whether to enable accessibility features on initialization
-             * @default false
-             */
-            enabledByDefault: false,
-            /**
-             * Whether to visually show the accessibility divs for debugging
-             * @default false
-             */
-            debug: false,
-            /**
-             * Whether to activate accessibility when tab key is pressed
-             * @default true
-             */
-            activateOnTab: true,
-            /**
-             * Whether to deactivate accessibility when mouse moves
-             * @default true
-             */
-            deactivateOnMouseMove: true,
-        },
+    public static defaultOptions: AccessibilityOptions = {
+        /**
+         * Whether to enable accessibility features on initialization
+         * @default false
+         */
+        enabledByDefault: false,
+        /**
+         * Whether to visually show the accessibility divs for debugging
+         * @default false
+         */
+        debug: false,
+        /**
+         * Whether to activate accessibility when tab key is pressed
+         * @default true
+         */
+        activateOnTab: true,
+        /**
+         * Whether to deactivate accessibility when mouse moves
+         * @default true
+         */
+        deactivateOnMouseMove: true,
     };
 
     /** Whether accessibility divs are visible for debugging */
@@ -449,7 +447,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         const defaultOpts = AccessibilitySystem.defaultOptions;
         const mergedOptions = {
             accessibilityOptions: {
-                ...defaultOpts.accessibilityOptions,
+                ...defaultOpts,
                 ...(options?.accessibilityOptions || {})
             }
         };
