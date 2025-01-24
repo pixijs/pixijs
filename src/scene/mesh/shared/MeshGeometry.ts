@@ -14,7 +14,7 @@ export interface MeshGeometryOptions
 {
     /** The positions of the mesh. */
     positions?: Float32Array;
-    /** The UVs of the mesh. */
+    /** The UVs of the mesh. If not provided, they will be filled with 0 and match the size of the positions. */
     uvs?: Float32Array;
     /** The indices of the mesh. */
     indices?: Uint32Array;
