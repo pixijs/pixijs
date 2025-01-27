@@ -129,6 +129,12 @@ export class MeshGeometry extends Geometry
         return this.attributes.aPosition.buffer.data as Float32Array;
     }
 
+    /**
+     * Set the positions of the mesh.
+     * When setting the positions, its important that the uvs array is at least as long as the positions array.
+     * otherwise the geometry will not be valid.
+     * @param {Float32Array} value - The positions of the mesh.
+     */
     set positions(value: Float32Array)
     {
         this.attributes.aPosition.buffer.data = value;
@@ -140,6 +146,12 @@ export class MeshGeometry extends Geometry
         return this.attributes.aUV.buffer.data as Float32Array;
     }
 
+    /**
+     * Set the UVs of the mesh.
+     * Its important that the uvs array you set is at least as long as the positions array.
+     * otherwise the geometry will not be valid.
+     * @param {Float32Array} value - The UVs of the mesh.
+     */
     set uvs(value: Float32Array)
     {
         this.attributes.aUV.buffer.data = value;
