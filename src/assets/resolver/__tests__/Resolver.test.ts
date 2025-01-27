@@ -497,6 +497,37 @@ describe('Resolver', () =>
         });
     });
 
+    it('should find the preferred order if partial preference is set', () =>
+    {
+        const resolver = new Resolver();
+
+        resolver.prefer({
+            params: {
+                format: ['webm'],
+                resolution: [1, 0.75],
+            },
+        });
+
+        resolver.add({
+            alias: 'test3',
+            src: ['out3.m4v', 'out3.webm', 'out3.mp4'],
+        });
+
+        expect(resolver.resolve(['test3'])).toEqual({
+            test3: {
+                alias: ['test3'],
+                src: 'out3.webm',
+                format: 'webm',
+                loadParser: undefined,
+                data: {}
+            },
+        });
+
+        expect(resolver.resolveUrl(['test3'])).toEqual({
+            test3: 'out3.webm',
+        });
+    });
+
     it('should resolve a bundle id correctly', () =>
     {
         const resolver = new Resolver();

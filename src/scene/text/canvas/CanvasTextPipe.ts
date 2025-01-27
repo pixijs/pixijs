@@ -1,7 +1,7 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { updateQuadBounds } from '../../../utils/data/updateQuadBounds';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { BatchableSprite } from '../../sprite/BatchableSprite';
+import { updateTextBounds } from '../utils/updateTextBounds';
 
 import type { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
@@ -129,9 +129,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
 
         text._didTextUpdate = false;
 
-        const padding = text._style.padding;
-
-        updateQuadBounds(batchableSprite.bounds, text._anchor, batchableSprite.texture, padding);
+        updateTextBounds(batchableSprite, text);
     }
 
     private _updateGpuText(text: Text)
