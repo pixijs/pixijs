@@ -500,11 +500,7 @@ function addColorStops(gradient: CanvasGradient, colorStops: { offset: number, c
 
 function getCanvas(width: number, height: number): CanvasAndContext
 {
-    const canvas = DOMAdapter.get().createCanvas();
-
-    canvas.width = width;
-    canvas.height = height;
-
+    const canvas = DOMAdapter.get().createCanvas(width, height);
     const context = canvas.getContext('2d');
 
     return { canvas, context };
