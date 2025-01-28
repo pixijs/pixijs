@@ -10,8 +10,7 @@ export const scene: TestScene = {
     create: async (scene: Container) =>
     {
         const gradient = new FillGradient({
-            x1: 1,
-            y1: 0,
+            end: { x: 1, y: 0 },
             colorStops: [
                 { offset: 0, color: 0xff0000 },
                 { offset: 0.5, color: 0x00ff00 },

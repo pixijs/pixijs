@@ -679,7 +679,10 @@ function convertV7Tov8Style(style: TextStyleOptions)
             fontSize = style.fontSize as number;
         }
 
-        const gradientFill = new FillGradient(0, 0, 0, fontSize * 1.7);
+        const gradientFill = new FillGradient({
+            start: { x: 0, y: 0 },
+            end: { x: 0, y: (fontSize || 0) * 1.7 },
+        });
 
         const fills: number[] = oldStyle.fillGradientStops
             .map((color: ColorSource) => Color.shared.setValue(color).toNumber());

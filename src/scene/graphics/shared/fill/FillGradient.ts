@@ -5,6 +5,7 @@ import { ImageSource } from '../../../../rendering/renderers/shared/texture/sour
 import { Texture } from '../../../../rendering/renderers/shared/texture/Texture';
 import { uid } from '../../../../utils/data/uid';
 import { deprecation } from '../../../../utils/logging/deprecation';
+import { type PointData } from '~/maths/point/PointData';
 
 import type { ColorSource } from '../../../../color/Color';
 import type { CanvasAndContext } from '../../../../rendering/renderers/shared/texture/CanvasPool';
@@ -24,6 +25,13 @@ export interface BaseGradientOptions
     colorStops?: { offset: number, color: ColorSource }[];
     /** Whether coordinates are 'global' or 'local' */
     textureSpace?: TextureSpace;
+    /**
+     * The size of the texture to use for the gradient - this is for advanced usage.
+     * The texture size does not need to match the size of the object being drawn.
+     * Due to GPU interpolation, gradient textures can be relatively small!
+     * Consider using a larger texture size if your gradient has a lot of very tight color steps
+     */
+    textureSize?: number;
 }
 
 /**
@@ -35,14 +43,22 @@ export interface LinearGradientOptions extends BaseGradientOptions
 {
     /** The type of gradient. Must be 'linear' for linear gradients. */
     type?: 'linear';
-    /** The x coordinate of the starting point where the gradient begins. In local coordinates by default. */
-    x0?: number;
-    /** The y coordinate of the starting point where the gradient begins. In local coordinates by default. */
-    y0?: number;
-    /** The x coordinate of the end point where the gradient ends. In local coordinates by default. */
-    x1?: number;
-    /** The y coordinate of the end point where the gradient ends. In local coordinates by default. */
-    y1?: number;
+
+    /**
+     * The start point of the gradient.
+     * This point defines where the gradient begins.
+     * It is represented as a PointData object containing x and y coordinates.
+     * The coordinates are in local space by default (0-1), but can be in global space if specified.
+     */
+    start?: PointData;
+
+    /**
+     * The end point of the gradient.
+     * This point defines where the gradient ends.
+     * It is represented as a PointData object containing x and y coordinates.
+     * The coordinates are in local space by default (0-1), but can be in global space if specified.
+     */
+    end?: PointData;
 }
 
 /**
@@ -55,27 +71,34 @@ export interface RadialGradientOptions extends BaseGradientOptions
 {
     /** The type of gradient. Must be 'radial' for radial gradients. */
     type?: 'radial';
-    /**
-     * The x coordinate of the center point of the inner circle
-     * where the gradient begins. In local coordinates by default.
-     */
-    x0?: number;
-    /**
-     * The y coordinate of the center point of the inner circle
-     * where the gradient begins. In local coordinates by default.
-     */
-    y0?: number;
+    /** The center point of the inner circle where the gradient begins. In local coordinates by default (0-1). */
+    center?: PointData;
     /** The radius of the inner circle where the gradient begins. */
-    r0?: number;
-    /** The x coordinate of the center point of the outer circle where the gradient ends. In local coordinates by default. */
-    x1?: number;
-    /** The y coordinate of the center point of the outer circle where the gradient ends. In local coordinates by default. */
-    y1?: number;
+    innerRadius?: number;
+    /** The center point of the outer circle where the gradient ends. In local coordinates by default (0-1). */
+    outerCenter?: PointData;
     /** The radius of the outer circle where the gradient ends. */
-    r1?: number;
+    outerRadius?: number;
+    /**
+     * The y scale of the gradient, use this to make the gradient elliptical.
+     * NOTE: Only applied to radial gradients used with Graphics.
+     */
+    scale?: number;
+    /**
+     * The rotation of the gradient in radians, useful for making the gradient elliptical.
+     * NOTE: Only applied to radial gradients used with Graphics.
+     */
+    rotation?: number;
+
 }
 
 export type GradientOptions = LinearGradientOptions | RadialGradientOptions;
+
+/**
+ * If no color stops are provided, we use a default gradient of white to black - this is to avoid a blank gradient if a dev
+ * forgets to set them.
+ */
+const emptyColorStops: { offset: number, color: string }[] = [{ offset: 0, color: 'white' }, { offset: 1, color: 'black' }];
 
 /**
  * Class representing a gradient fill that can be used to fill shapes and text.
@@ -91,8 +114,8 @@ export type GradientOptions = LinearGradientOptions | RadialGradientOptions;
  * // Create a vertical linear gradient from red to blue
  * const linearGradient = new FillGradient({
  *     type: 'linear',
- *     x0: 0, y0: 0,      // Start at top
- *     x1: 0, y1: 1,      // End at bottom
+ *     start: { x: 0, y: 0 },  // Start at top
+ *     end: { x: 0, y: 1 },    // End at bottom
  *     colorStops: [
  *         { offset: 0, color: 'red' },   // Red at start
  *         { offset: 1, color: 'blue' }   // Blue at end
@@ -103,10 +126,10 @@ export type GradientOptions = LinearGradientOptions | RadialGradientOptions;
  * // Create a radial gradient from yellow center to green edge
  * const radialGradient = new FillGradient({
  *     type: 'radial',
- *     x0: 0.5, y0: 0.5,  // Inner circle center
- *     r0: 0,             // Inner circle radius (point)
- *     x1: 0.5, y1: 0.5,  // Outer circle center
- *     r1: 0.5,           // Outer circle radius
+ *     innerCenter: { x: 0.5, y: 0.5 },  // Inner circle center
+ *     innerRadius: 0,                   // Inner circle radius (point)
+ *     outerCenter: { x: 0.5, y: 0.5 },  // Outer circle center
+ *     outerRadius: 0.5,                 // Outer circle radius
  *     colorStops: [
  *         { offset: 0, color: 'yellow' }, // Center color
  *         { offset: 1, color: 'green' }   // Edge color
@@ -156,56 +179,50 @@ export type GradientOptions = LinearGradientOptions | RadialGradientOptions;
  */
 export class FillGradient implements CanvasGradient
 {
-    /** Default width of the internal gradient texture */
-    public static defaultTextureWidth = 256;
-
     /**
      * Default options for creating a gradient fill
-     * @property {number} x0 - X coordinate of start point (default: 0)
-     * @property {number} y0 - Y coordinate of start point (default: 0)
-     * @property {number} x1 - X coordinate of end point (default: 1)
-     * @property {number} y1 - Y coordinate of end point (default: 0)
+     * @property {PointData} start - Start point of the gradient (default: { x: 0, y: 0 })
+     * @property {PointData} end - End point of the gradient (default: { x: 0, y: 1 })
      * @property {TextureSpace} textureSpace - Whether coordinates are 'global' or 'local' (default: 'local')
+     * @property {number} textureSize - The size of the texture to use for the gradient (default: 256)
+     * @property {Array<{offset: number, color: ColorSource}>} colorStops - Array of color stops (default: empty array)
+     * @property {GradientType} type - Type of gradient (default: 'linear')
      */
     public static readonly defaultLinearOptions: LinearGradientOptions = {
-        x0: 0,
-        y0: 0,
-        x1: 0,
-        y1: 1,
+        start: { x: 0, y: 0 },
+        end: { x: 0, y: 1 },
         colorStops: [],
         textureSpace: 'local',
         type: 'linear',
+        textureSize: 256
     };
 
+    /**
+     * Default options for creating a radial gradient fill
+     * @property {PointData} innerCenter - Center of the inner circle (default: { x: 0.5, y: 0.5 })
+     * @property {number} innerRadius - Radius of the inner circle (default: 0)
+     * @property {PointData} outerCenter - Center of the outer circle (default: { x: 0.5, y: 0.5 })
+     * @property {number} outerRadius - Radius of the outer circle (default: 0.5)
+     * @property {TextureSpace} textureSpace - Whether coordinates are 'global' or 'local' (default: 'local')
+     * @property {number} textureSize - The size of the texture to use for the gradient (default: 256)
+     * @property {Array<{offset: number, color: ColorSource}>} colorStops - Array of color stops (default: empty array)
+     * @property {GradientType} type - Type of gradient (default: 'radial')
+     */
     public static readonly defaultRadialOptions: RadialGradientOptions = {
-        x0: 0.5,
-        y0: 0.5,
-        r0: 0,
-        x1: 0.5,
-        y1: 0.5,
-        r1: 0.5,
+        center: { x: 0.5, y: 0.5 },
+        innerRadius: 0,
+        outerRadius: 0.5,
         colorStops: [],
+        scale: 1,
         textureSpace: 'local',
         type: 'radial',
+        textureSize: 256
     };
 
     /** Unique identifier for this gradient instance */
     public readonly uid: number = uid('fillGradient');
     /** Type of gradient - currently only supports 'linear' */
     public readonly type: GradientType = 'linear';
-
-    /** X coordinate of gradient start point */
-    public x0: number;
-    /** Y coordinate of gradient start point */
-    public y0: number;
-    /** X coordinate of gradient end point */
-    public x1: number;
-    /** Y coordinate of gradient end point */
-    public y1: number;
-    /** Radius of gradient start point */
-    public r0: number;
-    /** Radius of gradient end point */
-    public r1: number;
 
     /** Internal texture used to render the gradient */
     public texture: Texture;
@@ -214,19 +231,47 @@ export class FillGradient implements CanvasGradient
     /** Array of color stops defining the gradient */
     public colorStops: Array<{ offset: number, color: string }> = [];
 
-    /** Internal cache of the style key */
-    private _styleKey: string | null = null;
     /** Whether gradient coordinates are in local or global space */
     public textureSpace: TextureSpace;
+    private readonly _textureSize: number;
+
+    /** The start point of the linear gradient */
+    public start: PointData;
+    /** The end point of the linear gradient */
+    public end: PointData;
+
+    /** The center point of the inner circle of the radial gradient */
+    public center: PointData;
+    /** The center point of the outer circle of the radial gradient */
+    public outerCenter: PointData;
+    /** The radius of the inner circle of the radial gradient */
+    public innerRadius: number;
+    /** The radius of the outer circle of the radial gradient */
+    public outerRadius: number;
+    /** The scale of the radial gradient */
+    public scale: number;
+    /** The rotation of the radial gradient */
+    public rotation: number;
 
     /**
-     * Creates a new gradient fill
-     * @param options - The options for the gradient
-     * @param {number} [options.x0=0] - X coordinate of start point
-     * @param {number} [options.y0=0] - Y coordinate of start point
-     * @param {number} [options.x1=1] - X coordinate of end point
-     * @param {number} [options.y1=0] - Y coordinate of end point
-     * @param {string} [options.textureSpace='local'] - Whether coordinates are 'global' or 'local'
+     * Creates a new gradient fill. The constructor behavior changes based on the gradient type.
+     *
+     * For linear gradients:
+     * @param {GradientOptions} options - The options for the gradient
+     * @param {PointData} [options.start] - The start point of the linear gradient
+     * @param {PointData} [options.end] - The end point of the linear gradient
+     *
+     * For radial gradients:
+     * @param {PointData} [options.innerCenter] - The center point of the inner circle of the radial gradient
+     * @param {number} [options.innerRadius] - The radius of the inner circle of the radial gradient
+     * @param {PointData} [options.outerCenter] - The center point of the outer circle of the radial gradient
+     * @param {number} [options.outerRadius] - The radius of the outer circle of the radial gradient
+     *
+     * Common options for both gradient types:
+     * @param {TextureSpace} [options.textureSpace='local'] - Whether coordinates are 'global' or 'local'
+     * @param {number} [options.textureSize=256] - The size of the texture to use for the gradient
+     * @param {Array<{offset: number, color: ColorSource}>} [options.colorStops=[]] - Array of color stops
+     * @param {GradientType} [options.type='linear'] - Type of gradient
      */
     constructor(options: GradientOptions);
     /** @deprecated since 8.5.2 */
@@ -235,9 +280,10 @@ export class FillGradient implements CanvasGradient
         y0?: number,
         x1?: number,
         y1?: number,
-        textureSpace?: TextureSpace
+        textureSpace?: TextureSpace,
+        textureSize?: number
     );
-    constructor(...args: [GradientOptions] | [number?, number?, number?, number?, TextureSpace?])
+    constructor(...args: [GradientOptions] | [number?, number?, number?, number?, TextureSpace?, number?])
     {
         let options = ensureGradientOptions(args);
 
@@ -245,16 +291,21 @@ export class FillGradient implements CanvasGradient
 
         options = { ...defaults, ...options };
 
-        this.x0 = options.x0;
-        this.y0 = options.y0;
-
-        this.x1 = options.x1;
-        this.y1 = options.y1;
+        this._textureSize = options.textureSize;
 
         if (options.type === 'radial')
         {
-            this.r0 = options.r0;
-            this.r1 = options.r1;
+            this.center = options.center;
+            this.outerCenter = options.outerCenter ?? this.center;
+            this.innerRadius = options.innerRadius;
+            this.outerRadius = options.outerRadius;
+            this.scale = options.scale;
+            this.rotation = options.rotation;
+        }
+        else
+        {
+            this.start = options.start;
+            this.end = options.end;
         }
 
         this.textureSpace = options.textureSpace;
@@ -275,7 +326,6 @@ export class FillGradient implements CanvasGradient
     public addColorStop(offset: number, color: ColorSource): this
     {
         this.colorStops.push({ offset, color: Color.shared.setValue(color).toHexa() });
-        this._styleKey = null;
 
         return this;
     }
@@ -289,13 +339,15 @@ export class FillGradient implements CanvasGradient
     {
         if (this.texture) return;
 
-        const defaultSize = FillGradient.defaultTextureWidth;
+        const colorStops = this.colorStops.length ? this.colorStops : emptyColorStops;
+
+        const defaultSize = this._textureSize;
 
         const { canvas, context } = getCanvas(defaultSize, 1);
 
-        const gradient = context.createLinearGradient(0, 0, FillGradient.defaultTextureWidth, 0);
+        const gradient = context.createLinearGradient(0, 0, this._textureSize, 0);
 
-        addColorStops(gradient, this.colorStops);
+        addColorStops(gradient, colorStops);
 
         context.fillStyle = gradient;
         context.fillRect(0, 0, defaultSize, 1);
@@ -308,7 +360,8 @@ export class FillGradient implements CanvasGradient
 
         // generate some UVS based on the gradient direction sent
 
-        const { x0, y0, x1, y1 } = this;
+        const { x: x0, y: y0 } = this.start;
+        const { x: x1, y: y1 } = this.end;
 
         const m = new Matrix();
 
@@ -330,7 +383,6 @@ export class FillGradient implements CanvasGradient
         }
 
         this.transform = m;
-        this._styleKey = null;
     }
 
     public buildGradient(): void
@@ -348,31 +400,53 @@ export class FillGradient implements CanvasGradient
     {
         if (this.texture) return;
 
-        const defaultSize = FillGradient.defaultTextureWidth;
+        const colorStops = this.colorStops.length ? this.colorStops : emptyColorStops;
 
-        const { colorStops: gradientStops } = this;
-
+        const defaultSize = this._textureSize;
         const { canvas, context } = getCanvas(defaultSize, defaultSize);
 
-        const { x0, y0, r0, x1, y1, r1 } = this;
+        const { x: x0, y: y0 } = this.center;
+        const { x: x1, y: y1 } = this.outerCenter;
+
+        const r0 = this.innerRadius;
+        const r1 = this.outerRadius;
 
         const ox = x1 - r1;
         const oy = y1 - r1;
 
         const scale = defaultSize / (r1 * 2);
 
+        const cx = (x0 - ox) * scale;
+        const cy = (y0 - oy) * scale;
+
         const gradient = context.createRadialGradient(
-            (x0 - ox) * scale,
-            (y0 - oy) * scale,
+            cx,
+            cy,
             r0 * scale,
             (x1 - ox) * scale,
             (y1 - oy) * scale,
             r1 * scale
         );
 
-        addColorStops(gradient, gradientStops);
+        addColorStops(gradient, colorStops);
+
+        context.fillStyle = colorStops[colorStops.length - 1].color;
+        context.fillRect(0, 0, defaultSize, defaultSize);
 
         context.fillStyle = gradient;
+
+        // First translate to center
+        context.translate(cx, cy);
+
+        // Then apply rotation
+        context.rotate(this.rotation);
+
+        // Then scale2
+        context.scale(1, this.scale);
+
+        // Finally translate back, taking scale into account
+        context.translate(-cx, -cy);
+
         context.fillRect(0, 0, defaultSize, defaultSize);
 
         this.texture = new Texture({
@@ -395,7 +469,6 @@ export class FillGradient implements CanvasGradient
         }
 
         this.transform = m;
-        this._styleKey = null;
     }
 
     /**
@@ -403,19 +476,9 @@ export class FillGradient implements CanvasGradient
      * Used internally for caching.
      * @returns Unique string key
      */
-    public get styleKey(): string
+    public get styleKey(): number
     {
-        if (this._styleKey)
-        {
-            return this._styleKey;
-        }
-
-        const stops = this.colorStops.map((stop) => `${stop.offset}-${stop.color}`).join('-');
-        const texture = this.texture.uid;
-        const transform = this.transform.toArray().join('-');
-
-        // eslint-disable-next-line max-len
-        return `fill-gradient-${this.uid}-${this.type}-${stops}-${texture}-${transform}-${this.x0}-${this.y0}-${this.x1}-${this.y1}`;
+        return this.uid;
     }
 
     public destroy(): void
@@ -480,11 +543,11 @@ function ensureGradientOptions(
         // #endif
 
         options = {
-            x0: args[0],
-            y0: args[1],
-            x1: args[2],
-            y1: args[3],
+            type: 'linear',
+            start: { x: args[0], y: args[1] },
+            end: { x: args[2], y: args[3] },
             textureSpace: args[4] as 'global' | 'local',
+            textureSize: args[5] ?? FillGradient.defaultLinearOptions.textureSize
         };
     }
 
