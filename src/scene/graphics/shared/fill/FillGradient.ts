@@ -511,13 +511,11 @@ function getCanvas(width: number, height: number): CanvasAndContext
  * This function handles both the new options object format and the deprecated parameter format.
  * @example
  * // New recommended way:
- * const options = ensureGradientOptions([{
- *     x0: 0,
- *     y0: 0,
- *     x1: 100,
- *     y1: 100,
+ * const options = ensureGradientOptions({
+ *     start: { x: 0, y: 0 },
+ *     end: { x: 100, y: 100 },
  *     textureSpace: 'local'
- * }]);
+ * });
  *
  * // Deprecated way (will show warning in debug):
  * const options = ensureGradientOptions([0, 0, 100, 100, 'local']);
