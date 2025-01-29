@@ -1,6 +1,7 @@
 import { Matrix } from '../../maths/matrix/Matrix';
 import { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 import { TexturePool } from '../../rendering/renderers/shared/texture/TexturePool';
+import { type Renderer } from '../../rendering/renderers/types';
 
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
@@ -52,6 +53,7 @@ export class RenderGroup implements Instruction
     // these updates are transform changes..
     public readonly childrenToUpdate: Record<number, { list: Container[]; index: number; }> = Object.create(null);
     public updateTick = 0;
+    public gcTick = 0;
 
     // these update are renderable changes..
     public readonly childrenRenderablesToUpdate: { list: Container[]; index: number; } = { list: [], index: 0 };
@@ -127,7 +129,12 @@ export class RenderGroup implements Instruction
 
         for (let i = 0; i < children.length; i++)
         {
-            this.addChild(children[i]);
+            const child = children[i];
+
+            // make sure the children are all updated on the first pass..
+            child._updateFlags = 0b1111;
+
+            this.addChild(child);
         }
     }
 
@@ -332,11 +339,11 @@ export class RenderGroup implements Instruction
         this._onRenderContainers.splice(this._onRenderContainers.indexOf(container), 1);
     }
 
-    public runOnRender()
+    public runOnRender(renderer: Renderer)
     {
         for (let i = 0; i < this._onRenderContainers.length; i++)
         {
-            this._onRenderContainers[i]._onRender();
+            this._onRenderContainers[i]._onRender(renderer);
         }
     }
 

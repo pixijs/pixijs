@@ -91,7 +91,9 @@ function parseLinearGradient(child: SVGElement): FillGradient
  */
 function parseRadialGradient(_child: SVGElement): FillGradient
 {
+    // #if _DEBUG
     warn('[SVG Parser] Radial gradients are not yet supported');
+    // #endif
 
     return new FillGradient(0, 0, 1, 0);
 }

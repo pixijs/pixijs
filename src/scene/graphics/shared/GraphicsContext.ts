@@ -81,7 +81,7 @@ export class GraphicsContext extends EventEmitter<{
         /** The fill pattern to use. */
         fill: null,
         /** The fill units to use. */
-        textureSpace: 'local',
+        textureSpace: 'global',
     };
 
     /** The default stroke style to use when none is provided. */
@@ -107,7 +107,7 @@ export class GraphicsContext extends EventEmitter<{
         /** The fill pattern to use. */
         fill: null,
         /** The fill units to use. */
-        textureSpace: 'local',
+        textureSpace: 'global',
         /** If the stroke is a pixel line. */
         pixelLine: false,
     };
@@ -1054,15 +1054,15 @@ export class GraphicsContext extends EventEmitter<{
 
                 const alignment = data.style.alignment;
 
-                const padding = (data.style.width * (1 - alignment));
+                const outerPadding = (data.style.width * (1 - alignment));
 
                 const _bounds = data.path.bounds;
 
                 bounds.addFrame(
-                    _bounds.minX - padding,
-                    _bounds.minY - padding,
-                    _bounds.maxX + padding,
-                    _bounds.maxY + padding
+                    _bounds.minX - outerPadding,
+                    _bounds.minY - outerPadding,
+                    _bounds.maxX + outerPadding,
+                    _bounds.maxY + outerPadding
                 );
             }
         }
@@ -1111,7 +1111,9 @@ export class GraphicsContext extends EventEmitter<{
                 }
                 else
                 {
-                    hasHit = shape.strokeContains(transformedPoint.x, transformedPoint.y, (style as ConvertedStrokeStyle).width);
+                    const strokeStyle = (style as ConvertedStrokeStyle);
+
+                    hasHit = shape.strokeContains(transformedPoint.x, transformedPoint.y, strokeStyle.width, strokeStyle.alignment);
                 }
 
                 const holes = data.hole;

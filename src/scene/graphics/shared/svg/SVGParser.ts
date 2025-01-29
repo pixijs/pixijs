@@ -55,12 +55,14 @@ export function SVGParser(
     // Process all child elements except defs
     const children = svg.children;
 
+    const { fillStyle, strokeStyle } = parseSVGStyle(svg, session);
+
     for (let i = 0; i < children.length; i++)
     {
         const child = children[i] as SVGElement;
 
         if (child.nodeName.toLowerCase() === 'defs') continue;
-        renderChildren(child, session, null, null);
+        renderChildren(child, session, fillStyle, strokeStyle);
     }
 
     return graphicsContext;
@@ -99,8 +101,10 @@ function renderChildren(svg: SVGElement, session: Session, fillStyle: FillStyle,
         strokeStyle = s1;
     }
 
+    const noStyle = !fillStyle && !strokeStyle;
+
     // Default to black fill if no styles specified
-    if (!fillStyle && !strokeStyle)
+    if (noStyle)
     {
         fillStyle = { color: 0 };
     }
@@ -129,7 +133,15 @@ function renderChildren(svg: SVGElement, session: Session, fillStyle: FillStyle,
     {
         case 'path':
             d = svg.getAttribute('d') as string;
-            graphicsPath = new GraphicsPath(d);
+
+            if (svg.getAttribute('fill-rule') as string === 'evenodd')
+            {
+                // #if _DEBUG
+                warn('SVG Evenodd fill rule not supported, your svg may render incorrectly');
+                // #endif
+            }
+
+            graphicsPath = new GraphicsPath(d, true);
             session.context.path(graphicsPath);
             if (fillStyle) session.context.fill(fillStyle);
             if (strokeStyle) session.context.stroke(strokeStyle);
@@ -216,6 +228,11 @@ function renderChildren(svg: SVGElement, session: Session, fillStyle: FillStyle,
             warn(`[SVG parser] <${svg.nodeName}> elements unsupported`);
             break;
         }
+    }
+
+    if (noStyle)
+    {
+        fillStyle = null;
     }
 
     // Recursively process child elements

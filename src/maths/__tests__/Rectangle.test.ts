@@ -82,29 +82,130 @@ describe('Rectangle', () =>
     {
         const rectangle = new Rectangle(10, 10, 100, 100);
 
-        test('returns true for a point on the rectangle edge with small stroke width', () =>
+        describe('alignment 0', () =>
         {
-            expect(rectangle.strokeContains(10, 10, 1)).toBe(true);
-            expect(rectangle.strokeContains(60, 10, 1)).toBe(true);
-            expect(rectangle.strokeContains(110, 60, 1)).toBe(true);
-            expect(rectangle.strokeContains(10, 110, 1)).toBe(true);
+            it('point on narrow stroke', () =>
+            {
+                expect(rectangle.strokeContains(10, 50, 1, 0)).toBe(true);
+                expect(rectangle.strokeContains(110, 50, 1, 0)).toBe(true);
+                expect(rectangle.strokeContains(50, 10, 1, 0)).toBe(true);
+                expect(rectangle.strokeContains(50, 110, 1, 0)).toBe(true);
+            });
+
+            it('point on wide stroke', () =>
+            {
+                expect(rectangle.strokeContains(8, 50, 20, 0)).toBe(true);
+                expect(rectangle.strokeContains(10, 50, 20, 0)).toBe(true);
+                expect(rectangle.strokeContains(110, 50, 20, 0)).toBe(true);
+                expect(rectangle.strokeContains(112, 50, 20, 0)).toBe(true);
+
+                expect(rectangle.strokeContains(50, 8, 20, 0)).toBe(true);
+                expect(rectangle.strokeContains(50, 10, 20, 0)).toBe(true);
+                expect(rectangle.strokeContains(50, 110, 20, 0)).toBe(true);
+                expect(rectangle.strokeContains(50, 112, 20, 0)).toBe(true);
+            });
+
+            it('point outside stroke', () =>
+            {
+                expect(rectangle.strokeContains(4, 50, 5, 0)).toBe(false);
+                expect(rectangle.strokeContains(11, 50, 5, 0)).toBe(false);
+                expect(rectangle.strokeContains(109, 50, 5, 0)).toBe(false);
+                expect(rectangle.strokeContains(116, 50, 5, 0)).toBe(false);
+
+                expect(rectangle.strokeContains(50, 4, 5, 0)).toBe(false);
+                expect(rectangle.strokeContains(50, 11, 5, 0)).toBe(false);
+                expect(rectangle.strokeContains(50, 109, 5, 0)).toBe(false);
+                expect(rectangle.strokeContains(50, 116, 5, 0)).toBe(false);
+            });
         });
 
-        test('returns true for a point near the rectangle edge within stroke width', () =>
+        describe('alignment 1', () =>
+        {
+            it('point on narrow stroke', () =>
+            {
+                expect(rectangle.strokeContains(10, 50, 1, 1)).toBe(true);
+                expect(rectangle.strokeContains(110, 50, 1, 1)).toBe(true);
+                expect(rectangle.strokeContains(50, 10, 1, 1)).toBe(true);
+                expect(rectangle.strokeContains(50, 110, 1, 1)).toBe(true);
+            });
+
+            it('point on wide stroke', () =>
+            {
+                expect(rectangle.strokeContains(10, 50, 20, 1)).toBe(true);
+                expect(rectangle.strokeContains(12, 50, 20, 1)).toBe(true);
+                expect(rectangle.strokeContains(108, 50, 20, 1)).toBe(true);
+                expect(rectangle.strokeContains(110, 50, 20, 1)).toBe(true);
+
+                expect(rectangle.strokeContains(50, 10, 20, 1)).toBe(true);
+                expect(rectangle.strokeContains(50, 12, 20, 1)).toBe(true);
+                expect(rectangle.strokeContains(50, 108, 20, 1)).toBe(true);
+                expect(rectangle.strokeContains(50, 110, 20, 1)).toBe(true);
+            });
+
+            it('point outside stroke', () =>
+            {
+                expect(rectangle.strokeContains(9, 50, 5, 1)).toBe(false);
+                expect(rectangle.strokeContains(16, 50, 5, 1)).toBe(false);
+                expect(rectangle.strokeContains(104, 50, 5, 1)).toBe(false);
+                expect(rectangle.strokeContains(111, 50, 5, 1)).toBe(false);
+
+                expect(rectangle.strokeContains(50, 9, 5, 1)).toBe(false);
+                expect(rectangle.strokeContains(50, 16, 5, 1)).toBe(false);
+                expect(rectangle.strokeContains(50, 104, 5, 1)).toBe(false);
+                expect(rectangle.strokeContains(50, 111, 5, 1)).toBe(false);
+            });
+        });
+
+        describe('alignment 0.5', () =>
+        {
+            it('point on narrow stroke', () =>
+            {
+                expect(rectangle.strokeContains(10, 50, 1, 0.5)).toBe(true);
+                expect(rectangle.strokeContains(110, 50, 1, 0.5)).toBe(true);
+                expect(rectangle.strokeContains(50, 10, 1, 0.5)).toBe(true);
+                expect(rectangle.strokeContains(50, 110, 1, 0.5)).toBe(true);
+            });
+
+            it('point on wide stroke', () =>
+            {
+                expect(rectangle.strokeContains(8, 50, 20, 0.5)).toBe(true);
+                expect(rectangle.strokeContains(12, 50, 20, 0.5)).toBe(true);
+                expect(rectangle.strokeContains(108, 50, 20, 0.5)).toBe(true);
+                expect(rectangle.strokeContains(112, 50, 20, 0.5)).toBe(true);
+
+                expect(rectangle.strokeContains(50, 8, 20, 0.5)).toBe(true);
+                expect(rectangle.strokeContains(50, 12, 20, 0.5)).toBe(true);
+                expect(rectangle.strokeContains(50, 108, 20, 0.5)).toBe(true);
+                expect(rectangle.strokeContains(50, 112, 20, 0.5)).toBe(true);
+            });
+
+            it('point outside stroke', () =>
+            {
+                expect(rectangle.strokeContains(7, 50, 5, 0.5)).toBe(false);
+                expect(rectangle.strokeContains(13, 50, 5, 0.5)).toBe(false);
+                expect(rectangle.strokeContains(107, 50, 5, 0.5)).toBe(false);
+                expect(rectangle.strokeContains(113, 50, 5, 0.5)).toBe(false);
+
+                expect(rectangle.strokeContains(50, 7, 5, 0.5)).toBe(false);
+                expect(rectangle.strokeContains(50, 13, 5, 0.5)).toBe(false);
+                expect(rectangle.strokeContains(50, 107, 5, 0.5)).toBe(false);
+                expect(rectangle.strokeContains(50, 113, 5, 0.5)).toBe(false);
+            });
+        });
+
+        it('returns true for a point near the rectangle edge within stroke width', () =>
         {
             expect(rectangle.strokeContains(107, 58, 20)).toBe(true);
             expect(rectangle.strokeContains(117, 70, 20)).toBe(true);
             expect(rectangle.strokeContains(14, 111, 20)).toBe(true);
         });
 
-        test('returns false for a point outside the rectangle and beyond the stroke width', () =>
+        it('returns false for a point outside the rectangle and beyond the stroke width', () =>
         {
             expect(rectangle.strokeContains(5, 5, 4)).toBe(false);
             expect(rectangle.strokeContains(115, 10, 4)).toBe(false);
             expect(rectangle.strokeContains(10, 115, 4)).toBe(false);
         });
-
-        // Add additional tests as necessary
     });
 
     it('should enlarge rectangle', () =>
@@ -326,5 +427,68 @@ describe('Rectangle', () =>
         expect(a.intersects(a.clone(), m.clone().scale(-1, +1).translate(-36, 136))).toEqual(false);
         expect(a.intersects(a.clone(), m.clone().scale(-1, +1).translate(135, 135))).toEqual(true);
         expect(a.intersects(a.clone(), m.clone().scale(-1, +1).translate(136, 136))).toEqual(false);
+    });
+
+    describe('containsRect', () =>
+    {
+        it('should return true when rectangle is fully contained', () =>
+        {
+            const outer = new Rectangle(0, 0, 100, 100);
+            const inner = new Rectangle(25, 25, 50, 50);
+
+            expect(outer.containsRect(inner)).toBe(true);
+        });
+
+        it('should return false when rectangle is partially outside', () =>
+        {
+            const rect1 = new Rectangle(0, 0, 100, 100);
+            const rect2 = new Rectangle(50, 50, 100, 100);
+
+            expect(rect1.containsRect(rect2)).toBe(false);
+        });
+
+        it('should return false when rectangle is completely outside', () =>
+        {
+            const rect1 = new Rectangle(0, 0, 50, 50);
+            const rect2 = new Rectangle(100, 100, 50, 50);
+
+            expect(rect1.containsRect(rect2)).toBe(false);
+        });
+
+        it('should return false when width is 0', () =>
+        {
+            const rect1 = new Rectangle(0, 0, 0, 100);
+            const rect2 = new Rectangle(0, 0, 50, 50);
+
+            expect(rect1.containsRect(rect2)).toBe(false);
+        });
+
+        it('should return false when height is 0', () =>
+        {
+            const rect1 = new Rectangle(0, 0, 100, 0);
+            const rect2 = new Rectangle(0, 0, 50, 50);
+
+            expect(rect1.containsRect(rect2)).toBe(false);
+        });
+
+        it('should handle edge touching cases', () =>
+        {
+            const outer = new Rectangle(0, 0, 100, 100);
+            const edge = new Rectangle(0, 0, 50, 50); // Touches at corner
+            const edge2 = new Rectangle(0, 25, 50, 50); // Touches at left edge
+            const edge3 = new Rectangle(25, 0, 50, 50); // Touches at top edge
+
+            expect(outer.containsRect(edge)).toBe(true);
+            expect(outer.containsRect(edge2)).toBe(true);
+            expect(outer.containsRect(edge3)).toBe(true);
+        });
+
+        it('should handle identical rectangles', () =>
+        {
+            const rect1 = new Rectangle(0, 0, 100, 100);
+            const rect2 = new Rectangle(0, 0, 100, 100);
+
+            expect(rect1.containsRect(rect2)).toBe(false);
+        });
     });
 });

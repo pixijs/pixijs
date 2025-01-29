@@ -1,3 +1,6 @@
+import { type CollectRenderablesMixin } from './container/container-mixins/collectRenderablesMixin';
+import { type GetFastGlobalBoundsMixin } from './container/container-mixins/getFastGlobalBoundsMixin';
+
 import type { ContainerChild } from './container/Container';
 import type { CacheAsTextureMixin, CacheAsTextureMixinConstructor } from './container/container-mixins/cacheAsTextureMixin';
 import type { ChildrenHelperMixin } from './container/container-mixins/childrenHelperMixin';
@@ -23,6 +26,8 @@ declare global
             FindMixin,
             SortMixin,
             GetGlobalMixin,
+            CollectRenderablesMixin,
+            GetFastGlobalBoundsMixin,
             CacheAsTextureMixin {}
 
         interface ContainerOptions

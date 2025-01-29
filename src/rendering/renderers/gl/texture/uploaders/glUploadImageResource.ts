@@ -10,10 +10,6 @@ export const glUploadImageResource = {
 
     upload(source: ImageSource | CanvasSource, glTexture: GlTexture, gl: GlRenderingContext, webGLVersion: number)
     {
-        const premultipliedAlpha = source.alphaMode === 'premultiply-alpha-on-upload';
-
-        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, premultipliedAlpha);
-
         const glWidth = glTexture.width;
         const glHeight = glTexture.height;
 
@@ -67,7 +63,7 @@ export const glUploadImageResource = {
                 );
             }
         }
-        else if (glWidth === textureWidth || glHeight === textureHeight)
+        else if (glWidth === textureWidth && glHeight === textureHeight)
         {
             gl.texSubImage2D(
                 gl.TEXTURE_2D,

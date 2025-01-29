@@ -13,6 +13,7 @@ export const scene: TestScene = {
                 { offset: 0, color: 0xff0000 },
                 { offset: 1, color: 0x0000ff },
             ],
+            textureSpace: 'local',
         });
 
         const fillGradient = new FillGradient({
@@ -20,6 +21,7 @@ export const scene: TestScene = {
                 { offset: 0, color: 0xffffff },
                 { offset: 1, color: 0x000000 },
             ],
+            textureSpace: 'local',
         });
 
         const textGradient = new Text({

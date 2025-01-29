@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "8.6.4",
+  "version": "8.7.3",
   "author": "PixiJS Team",
   "homepage": "http://pixijs.com/",
   "bugs": "https://github.com/pixijs/pixijs/issues",
@@ -27,14 +27,14 @@
     "build:rollup": "npx rollup -c --failAfterWarnings",
     "build:dts-bundle": "dts-bundle-generator --config dts.config.js",
     "build:tsc": "tsc -p tsconfig.types.json",
+    "build:tsc:silent": "tsc-silent -p tsconfig.types.json --suppress @",
     "build:index": "ts-node --transpile-only ./scripts/index/index.ts --write",
     "build:dts": "ts-node --transpile-only ./scripts/types/fixTypes.ts && copyfiles -u 1 \"src/**/*.d.ts\" lib/",
     "build:pkg": "ts-node ./scripts/utils/exports.ts",
     "dist": "run-s build docs && copyfiles -u 1 \"dist/**/*\" .s3_uploads/",
-    "prewatch": "npm run build",
     "watch": "nodemon --watch \"./src/*\" --exec \"npm run watch:build\" -e ts,js,vert,frag,wgsl,d.ts --ignore \"index.ts\"",
     "watch:lib": "cross-env LIB_ONLY=1 nodemon --watch \"./src/*\" --exec \"npm run watch:build\" -e ts,js,vert,frag,wgsl,d.ts --ignore \"index.ts\"",
-    "watch:build": "run-s build:rollup build:tsc build:dts",
+    "watch:build": "run-s build:tsc:silent build:index build:pkg build:pkg build:rollup build:dts",
     "test": "run-s test:unit test:scene",
     "test:unit": "npx jest --silent --testPathIgnorePatterns=tests/visual",
     "test:debug": "cross-env DEBUG_MODE=1 npx jest --testPathIgnorePatterns=tests/visual",
@@ -89,13 +89,14 @@
     "@xmldom/xmldom": "^0.8.10",
     "copyfiles": "^2.4.1",
     "cross-env": "^7.0.3",
-    "dts-bundle-generator": "^9.3.1",
+    "dts-bundle-generator": "^9.5.1",
     "esbuild": "^0.19.0",
     "eslint": "^9.16.0",
     "eslint-plugin-jest": "^28.9.0",
     "eslint-plugin-jsdoc": "^50.6.0",
     "eslint-plugin-no-mixed-operators": "^1.1.1",
     "fs-extra": "^11.2.0",
+    "gifuct-js": "^2.1.2",
     "glob": "^8.1.0",
     "http-server": "^14.1.1",
     "husky": "^8.0.3",
@@ -121,6 +122,7 @@
     "tree-kill": "^1.2.2",
     "ts-jest": "^26.0.0",
     "ts-node": "^9.0.0",
+    "tsc-silent": "^1.2.2",
     "typescript": "^5.0.4",
     "typescript-eslint": "^8.17.0"
   },
@@ -158,6 +160,20 @@
       ]
     },
     {
+      "src": "src/bundle.gif.ts",
+      "target": "dist/packages/gif.js",
+      "module": "dist/packages/gif.mjs",
+      "plugin": [
+        "/utils/",
+        "/assets/",
+        "/ticker/",
+        "/environment/",
+        "/scene/",
+        "/rendering/",
+        "/extensions/"
+      ]
+    },
+    {
       "src": "src/bundle.webworker.ts",
       "target": "dist/webworker.js",
       "module": "dist/webworker.mjs",
@@ -171,6 +187,7 @@
     "./lib/rendering/init.*",
     "./lib/spritesheet/init.*",
     "./lib/rendering/renderers/shared/texture/utils/textureFrom.*",
+    "./lib/gif/init.*",
     "./lib/accessibility/init.*",
     "./lib/advanced-blend-modes/init.*",
     "./lib/app/init.*",
@@ -217,6 +234,16 @@
       },
       "require": {
         "default": "./lib/environment-webworker/webworkerAll.js"
+      }
+    },
+    "./gif": {
+      "import": {
+        "types": "./lib/gif/init.d.ts",
+        "default": "./lib/gif/init.mjs"
+      },
+      "require": {
+        "types": "./lib/gif/init.d.ts",
+        "default": "./lib/gif/init.js"
       }
     },
     "./accessibility": {

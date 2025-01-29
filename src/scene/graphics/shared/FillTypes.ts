@@ -14,8 +14,8 @@ import type { FillPattern } from './fill/FillPattern';
  * │ C   D   │  │ C   D   │  │ C...D   │  │ ...D... │
  * └─────────┘  └─────────┘  └─────────┘  └─────────┘
  * (Each shape   (Each shape  (Texture continues across
- * gets full     gets full    shapes as if they're
-texture)      texture)     windows to same texture)
+ * gets full     gets full    shapes as if they're texture)      texture)     windows to same texture)
+ * @memberof scene
  */
 export type TextureSpace =
     /**

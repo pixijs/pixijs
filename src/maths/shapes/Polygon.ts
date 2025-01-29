@@ -5,6 +5,9 @@ import type { SHAPE_PRIMITIVE } from '../misc/const';
 import type { PointData } from '../point/PointData';
 import type { ShapePrimitive } from './ShapePrimitive';
 
+let tempRect: Rectangle;
+let tempRect2: Rectangle;
+
 /**
  * A class to define a shape via user defined coordinates.
  *
@@ -74,6 +77,79 @@ export class Polygon implements ShapePrimitive
     }
 
     /**
+     * Determines whether the polygon's points are arranged in a clockwise direction.
+     * This is calculated using the "shoelace formula" (also known as surveyor's formula) to find the signed area.
+     * A positive area indicates clockwise winding, while negative indicates counter-clockwise.
+     *
+     * The formula sums up the cross products of adjacent vertices:
+     * For each pair of adjacent points (x1,y1) and (x2,y2), we calculate (x1*y2 - x2*y1)
+     * The final sum divided by 2 gives the signed area - positive for clockwise.
+     * @returns `true` if the polygon's points are arranged clockwise, `false` if counter-clockwise
+     */
+    public isClockwise(): boolean
+    {
+        let area = 0;
+        const points = this.points;
+        const length = points.length;
+
+        for (let i = 0; i < length; i += 2)
+        {
+            const x1 = points[i];
+            const y1 = points[i + 1];
+            const x2 = points[(i + 2) % length];
+            const y2 = points[(i + 3) % length];
+
+            area += (x2 - x1) * (y2 + y1);
+        }
+
+        return area < 0;
+    }
+
+    /**
+     * Checks if this polygon completely contains another polygon.
+     *
+     * This is useful for detecting holes in shapes, like when parsing SVG paths.
+     * For example, if you have two polygons:
+     * ```ts
+     * const outerSquare = new Polygon([0,0, 100,0, 100,100, 0,100]); // A square
+     * const innerSquare = new Polygon([25,25, 75,25, 75,75, 25,75]); // A smaller square inside
+     *
+     * outerSquare.containsPolygon(innerSquare); // Returns true
+     * innerSquare.containsPolygon(outerSquare); // Returns false
+     * ```
+     * @param polygon - The polygon to test for containment
+     * @returns True if this polygon completely contains the other polygon
+     */
+    public containsPolygon(polygon: Polygon): boolean
+    {
+    // Quick early-out: bounds check
+        const thisBounds = this.getBounds(tempRect);
+        const otherBounds = polygon.getBounds(tempRect2);
+
+        if (!thisBounds.containsRect(otherBounds))
+        {
+            return false; // If bounds aren't contained, the polygon cannot be a hole
+        }
+
+        // Full point containment check
+        const points = polygon.points;
+
+        for (let i = 0; i < points.length; i += 2)
+        {
+            const x = points[i];
+            const y = points[i + 1];
+
+            // Combine bounds and polygon checks for efficiency
+            if (!this.contains(x, y))
+            {
+                return false;
+            }
+        }
+
+        return true; // All points are contained within bounds and polygon
+    }
+
+    /**
      * Creates a clone of this polygon.
      * @returns - A copy of the polygon.
      */
@@ -123,12 +199,15 @@ export class Polygon implements ShapePrimitive
      * @param x - The X coordinate of the point to test
      * @param y - The Y coordinate of the point to test
      * @param strokeWidth - The width of the line to check
+     * @param alignment - The alignment of the stroke, 0.5 by default
      * @returns Whether the x/y coordinates are within this polygon
      */
-    public strokeContains(x: number, y: number, strokeWidth: number): boolean
+    public strokeContains(x: number, y: number, strokeWidth: number, alignment = 0.5): boolean
     {
-        const halfStrokeWidth = strokeWidth / 2;
-        const halfStrokeWidthSqrd = halfStrokeWidth * halfStrokeWidth;
+        const strokeWidthSquared = strokeWidth * strokeWidth;
+        const rightWidthSquared = strokeWidthSquared * (1 - alignment);
+        const leftWidthSquared = strokeWidthSquared - rightWidthSquared;
+
         const { points } = this;
         const iterationLength = points.length - (this.closePath ? 0 : 2);
 
@@ -139,9 +218,11 @@ export class Polygon implements ShapePrimitive
             const x2 = points[(i + 2) % points.length];
             const y2 = points[(i + 3) % points.length];
 
-            const distanceSqrd = squaredDistanceToLineSegment(x, y, x1, y1, x2, y2);
+            const distanceSquared = squaredDistanceToLineSegment(x, y, x1, y1, x2, y2);
 
-            if (distanceSqrd <= halfStrokeWidthSqrd)
+            const sign = Math.sign(((x2 - x1) * (y - y1)) - ((y2 - y1) * (x - x1)));
+
+            if (distanceSquared <= (sign < 0 ? leftWidthSquared : rightWidthSquared))
             {
                 return true;
             }

@@ -1,20 +1,21 @@
 import { removeItems } from '../../../utils/data/removeItems';
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 
+import type { IRenderLayer } from '../../layers/RenderLayer';
 import type { Container, ContainerChild } from '../Container';
 
 export interface ChildrenHelperMixin<C = ContainerChild>
 {
     allowChildren: boolean;
-    addChild<U extends C[]>(...children: U): U[0];
-    removeChild<U extends C[]>(...children: U): U[0];
+    addChild<U extends(C | IRenderLayer)[]>(...children: U): U[0];
+    removeChild<U extends(C | IRenderLayer)[]>(...children: U): U[0];
     removeChildren(beginIndex?: number, endIndex?: number): C[];
-    removeChildAt<U extends C>(index: number): U;
-    getChildAt<U extends C>(index: number): U;
-    setChildIndex(child: C, index: number): void;
-    getChildIndex(child: C): number;
-    addChildAt<U extends C>(child: U, index: number): U;
-    swapChildren<U extends C>(child: U, child2: U): void;
+    removeChildAt<U extends(C | IRenderLayer)>(index: number): U;
+    getChildAt<U extends(C | IRenderLayer)>(index: number): U;
+    setChildIndex(child: C | IRenderLayer, index: number): void;
+    getChildIndex(child: C | IRenderLayer): number;
+    addChildAt<U extends(C | IRenderLayer)>(child: U, index: number): U;
+    swapChildren<U extends(C | IRenderLayer)>(child: U, child2: U): void;
     removeFromParent(): void;
 
     reparentChild<U extends C[]>(...child: U): U[0];
@@ -80,7 +81,7 @@ export const childrenHelperMixin: Partial<Container> = {
      * @returns The child that was removed.
      * @memberof scene.Container#
      */
-    removeChildAt<U extends ContainerChild>(index: number): U
+    removeChildAt<U extends(ContainerChild | IRenderLayer)>(index: number): U
     {
         const child = this.getChildAt<U>(index);
 
@@ -93,7 +94,7 @@ export const childrenHelperMixin: Partial<Container> = {
      * @returns - The child at the given index, if any.
      * @memberof scene.Container#
      */
-    getChildAt<U extends ContainerChild>(index: number): U
+    getChildAt<U extends(ContainerChild | IRenderLayer)>(index: number): U
     {
         if (index < 0 || index >= this.children.length)
         {
@@ -109,7 +110,7 @@ export const childrenHelperMixin: Partial<Container> = {
      * @param index - The resulting index number for the child container
      * @memberof scene.Container#
      */
-    setChildIndex(child: ContainerChild, index: number): void
+    setChildIndex(child: ContainerChild | IRenderLayer, index: number): void
     {
         if (index < 0 || index >= this.children.length)
         {
@@ -126,9 +127,9 @@ export const childrenHelperMixin: Partial<Container> = {
      * @returns - The index position of the child container to identify
      * @memberof scene.Container#
      */
-    getChildIndex(child: ContainerChild): number
+    getChildIndex(child: ContainerChild | IRenderLayer): number
     {
-        const index = this.children.indexOf(child);
+        const index = this.children.indexOf(child as ContainerChild);
 
         if (index === -1)
         {
@@ -146,7 +147,7 @@ export const childrenHelperMixin: Partial<Container> = {
      * @returns {Container} The child that was added.
      * @memberof scene.Container#
      */
-    addChildAt<U extends ContainerChild>(child: U, index: number): U
+    addChildAt<U extends(ContainerChild | IRenderLayer)>(child: U, index: number): U
     {
         // #if _DEBUG
         if (!this.allowChildren)
@@ -167,7 +168,7 @@ export const childrenHelperMixin: Partial<Container> = {
 
         if (child.parent)
         {
-            const currentIndex = child.parent.children.indexOf(child);
+            const currentIndex = child.parent.children.indexOf(child as ContainerChild);
 
             // If this child is in the container and in the same position, do nothing
             if (child.parent === this && currentIndex === index)
@@ -183,11 +184,11 @@ export const childrenHelperMixin: Partial<Container> = {
 
         if (index === children.length)
         {
-            children.push(child);
+            children.push(child as ContainerChild);
         }
         else
         {
-            children.splice(index, 0, child);
+            children.splice(index, 0, child as ContainerChild);
         }
 
         child.parent = this;
@@ -198,12 +199,12 @@ export const childrenHelperMixin: Partial<Container> = {
 
         if (renderGroup)
         {
-            renderGroup.addChild(child);
+            renderGroup.addChild(child as ContainerChild);
         }
 
         if (this.sortableChildren) this.sortDirty = true;
 
-        this.emit('childAdded', child, this, index);
+        this.emit('childAdded', child as ContainerChild, this, index);
         child.emit('added', this);
 
         return child;
@@ -214,7 +215,7 @@ export const childrenHelperMixin: Partial<Container> = {
      * @param child2 - Second container to swap
      * @memberof scene.Container#
      */
-    swapChildren<U extends ContainerChild>(child: U, child2: U): void
+    swapChildren<U extends(ContainerChild | IRenderLayer)>(child: U, child2: U): void
     {
         if (child === child2)
         {
@@ -224,8 +225,8 @@ export const childrenHelperMixin: Partial<Container> = {
         const index1 = this.getChildIndex(child);
         const index2 = this.getChildIndex(child2);
 
-        this.children[index1] = child2;
-        this.children[index2] = child;
+        this.children[index1] = child2 as ContainerChild;
+        this.children[index2] = child as ContainerChild;
 
         const renderGroup = this.renderGroup || this.parentRenderGroup;
 

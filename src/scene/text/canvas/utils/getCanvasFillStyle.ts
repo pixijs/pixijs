@@ -65,7 +65,6 @@ export function getCanvasFillStyle(
     {
         const fillGradient = fillStyle.fill;
 
-        const { x0, y0, x1, y1 } = fillGradient;
         const isLinear = fillGradient.type === 'linear';
         const isLocal = fillGradient.textureSpace === 'local';
 
@@ -79,25 +78,39 @@ export function getCanvasFillStyle(
             height = textMetrics.height + padding;
         }
 
-        const gradient = isLinear ? context.createLinearGradient(
-            x0 * width,
-            y0 * height,
-            x1 * width,
-            y1 * height
-        ) : context.createRadialGradient(
-            x0 * width,
-            y0 * height,
-            fillGradient.r0 * width,
-            x1 * width,
-            y1 * height,
-            fillGradient.r1 * width
-        );
+        let gradient: CanvasGradient;
+        let isNearlyVertical = false;
 
-        // Check if gradient is nearly vertical (10% threshold)
-        const isNearlyVertical = Math.abs(x1 - x0) < Math.abs((y1 - y0) * 0.1);
+        if (isLinear)
+        {
+            const { start, end } = fillGradient;
+
+            gradient = context.createLinearGradient(
+                start.x * width,
+                start.y * height,
+                end.x * width,
+                end.y * height
+            );
+
+            // Check if gradient is nearly vertical (10% threshold)
+            isNearlyVertical = Math.abs(end.x - start.x) < Math.abs((end.y - start.y) * 0.1);
+        }
+        else
+        {
+            const { center, innerRadius, outerCenter, outerRadius } = fillGradient;
+
+            gradient = context.createRadialGradient(
+                center.x * width,
+                center.y * height,
+                innerRadius * width,
+                outerCenter.x * width,
+                outerCenter.y * height,
+                outerRadius * width
+            );
+        }
 
         // For vertical gradients in local space, repeat gradient per text line
-        if (isLinear && isNearlyVertical && isLocal && textMetrics)
+        if (isNearlyVertical && isLocal && textMetrics)
         {
             const ratio = (textMetrics.lineHeight) / height;
 

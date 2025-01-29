@@ -181,9 +181,10 @@ export class Rectangle implements ShapePrimitive
      * @param x - The X coordinate of the point to test
      * @param y - The Y coordinate of the point to test
      * @param strokeWidth - The width of the line to check
+     * @param alignment - The alignment of the stroke, 0.5 by default
      * @returns Whether the x/y coordinates are within this rectangle
      */
-    public strokeContains(x: number, y: number, strokeWidth: number): boolean
+    public strokeContains(x: number, y: number, strokeWidth: number, alignment: number = 0.5): boolean
     {
         const { width, height } = this;
 
@@ -192,17 +193,21 @@ export class Rectangle implements ShapePrimitive
         const _x = this.x;
         const _y = this.y;
 
-        const outerLeft = _x - (strokeWidth / 2);
-        const outerRight = _x + width + (strokeWidth / 2);
-        const outerTop = _y - (strokeWidth / 2);
-        const outerBottom = _y + height + (strokeWidth / 2);
-        const innerLeft = _x + (strokeWidth / 2);
-        const innerRight = _x + width - (strokeWidth / 2);
-        const innerTop = _y + (strokeWidth / 2);
-        const innerBottom = _y + height - (strokeWidth / 2);
+        const strokeWidthOuter = strokeWidth * (1 - alignment);
+        const strokeWidthInner = strokeWidth - strokeWidthOuter;
+
+        const outerLeft = _x - strokeWidthOuter;
+        const outerRight = _x + width + strokeWidthOuter;
+        const outerTop = _y - strokeWidthOuter;
+        const outerBottom = _y + height + strokeWidthOuter;
+
+        const innerLeft = _x + strokeWidthInner;
+        const innerRight = _x + width - strokeWidthInner;
+        const innerTop = _y + strokeWidthInner;
+        const innerBottom = _y + height - strokeWidthInner;
 
         return (x >= outerLeft && x <= outerRight && y >= outerTop && y <= outerBottom)
-        && !(x > innerLeft && x < innerRight && y > innerTop && y < innerBottom);
+            && !(x > innerLeft && x < innerRight && y > innerTop && y < innerBottom);
     }
     /**
      * Determines whether the `other` Rectangle transformed by `transform` intersects with `this` Rectangle object.
@@ -389,6 +394,41 @@ export class Rectangle implements ShapePrimitive
         out.copyFrom(this);
 
         return out;
+    }
+
+    /**
+     * Checks if this rectangle fully contains another rectangle.
+     *
+     * A rectangle contains another rectangle if all four corners of the other rectangle
+     * lie within the bounds of this rectangle.
+     *
+     * ```ts
+     * const container = new Rectangle(0, 0, 100, 100);
+     * const inside = new Rectangle(25, 25, 50, 50);
+     * const partial = new Rectangle(75, 75, 50, 50);
+     *
+     * container.containsRect(inside); // Returns true
+     * container.containsRect(partial); // Returns false - partial overlap
+     * ```
+     *
+     * Note: If either rectangle has a width or height of 0, this method returns false
+     * since a zero-area rectangle cannot meaningfully contain another rectangle.
+     * @param other - The rectangle to check if it is contained within this one
+     * @returns True if the other rectangle is fully contained within this one
+     */
+    public containsRect(other: Rectangle): boolean
+    {
+        if (this.width <= 0 || this.height <= 0) return false;
+
+        const x1 = other.x;
+        const y1 = other.y;
+        const x2 = other.x + other.width;
+        const y2 = other.y + other.height;
+
+        return x1 >= this.x && x1 < this.x + this.width
+            && y1 >= this.y && y1 < this.y + this.height
+            && x2 >= this.x && x2 < this.x + this.width
+            && y2 >= this.y && y2 < this.y + this.height;
     }
 
     // #if _DEBUG
