@@ -12,7 +12,7 @@ export type AnimatedSpriteFrames = Texture[] | FrameObject[];
  * @see {@link scene.AnimatedSprite}
  * @memberof scene
  */
-export interface AnimatedSpriteOptions extends SpriteOptions
+export interface AnimatedSpriteOptions extends Omit<SpriteOptions, 'texture'>
 {
     /** The speed that the AnimatedSprite will play at. Higher is faster, lower is slower. */
     animationSpeed?: number;
