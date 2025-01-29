@@ -55,6 +55,20 @@ export class BatchableMesh implements DefaultBatchableMeshElement
         this._textureMatrixUpdateId = -1;
     }
 
+    /**
+     * Sets the texture for the batchable mesh.
+     * As it does so, it resets the texture matrix update ID.
+     * this is to ensure that the texture matrix is recalculated when the uvs are referenced
+     * @param value - The texture to set.
+     */
+    public setTexture(value: Texture)
+    {
+        if (this.texture === value) return;
+
+        this.texture = value;
+        this._textureMatrixUpdateId = -1;
+    }
+
     get uvs()
     {
         const geometry = this.geometry;

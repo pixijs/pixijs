@@ -102,7 +102,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
                 batchableMesh.geometry = geometry;
                 batchableMesh.renderable = tilingSprite;
                 batchableMesh.transform = tilingSprite.groupTransform;
-                batchableMesh.texture = tilingSprite._texture;
+                batchableMesh.setTexture(tilingSprite._texture);
             }
 
             batchableMesh.roundPixels = (this._renderer._roundPixels | tilingSprite._roundPixels) as 0 | 1;
