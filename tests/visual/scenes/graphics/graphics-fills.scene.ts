@@ -16,7 +16,7 @@ export const scene: TestScene = {
         grad.addColorStop(0, 'red');
         grad.addColorStop(1, 'blue');
 
-        const grad2 = new FillGradient(0, 0, 0, 1);
+        const grad2 = new FillGradient(0, 0, 0, 1, 'local');
 
         grad2.addColorStop(0, 'blue');
         grad2.addColorStop(1, 'yellow');

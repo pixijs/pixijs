@@ -50,7 +50,7 @@ export class FillGradient implements CanvasGradient
         y0: number = 0,
         x1: number = 1,
         y1: number = 0,
-        fillUnits: TextureSpace = 'local'
+        fillUnits: TextureSpace = 'global'
     )
     {
         this.x0 = x0;
