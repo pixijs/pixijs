@@ -1,5 +1,5 @@
 import { AbstractText, ensureTextOptions } from '../text/AbstractText';
-import { HTMLTextStyle } from './HtmlTextStyle';
+import { HTMLTextStyle } from './HTMLTextStyle';
 import { measureHtmlText } from './utils/measureHtmlText';
 
 import type { View } from '../../rendering/renderers/shared/view/View';
