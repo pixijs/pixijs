@@ -9,8 +9,6 @@ import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render rects with fills, strokes, gradients using textures',
-    // TODO - fix this test on the CI - it works fine locally, but renders without texture wrapping on the CI. Mystery!
-    skipCI: true,
     create: async (scene: Container) =>
     {
         const texture = await Assets.load<Texture>({
