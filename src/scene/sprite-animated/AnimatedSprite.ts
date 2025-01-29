@@ -16,6 +16,8 @@ export interface AnimatedSpriteOptions extends Omit<SpriteOptions, 'texture'>
 {
     /** The speed that the AnimatedSprite will play at. Higher is faster, lower is slower. */
     animationSpeed?: number;
+    /** Whether to start the animation immediately on creation. */
+    autoPlay?: boolean;
     /** Whether to use Ticker.shared to auto update animation time. */
     autoUpdate?: boolean;
     /** Whether or not the animate sprite repeats after playing. */
@@ -165,6 +167,7 @@ export class AnimatedSprite extends Sprite
 
         const {
             animationSpeed = 1,
+            autoPlay = false,
             autoUpdate = true,
             loop = true,
             onComplete = null,
@@ -199,6 +202,11 @@ export class AnimatedSprite extends Sprite
         this._previousFrame = null;
 
         this.textures = textures;
+
+        if (autoPlay)
+        {
+            this.play();
+        }
     }
 
     /** Stops the AnimatedSprite. */

@@ -12,12 +12,14 @@ describe('AnimatedSprite', () =>
     describe('instance', () =>
     {
         let animationSpeed: number;
+        let isAutoPlay: boolean;
         let textures: Texture[];
         let sprite: AnimatedSprite;
 
         beforeEach(() =>
         {
             animationSpeed = 1;
+            isAutoPlay = false;
             textures = [Texture.EMPTY];
         });
 
@@ -28,7 +30,7 @@ describe('AnimatedSprite', () =>
             expect(sprite.onComplete).toBeNull();
             expect(sprite.onFrameChange).toBeNull();
             expect(sprite.onLoop).toBeNull();
-            expect(sprite.playing).toBe(false);
+            expect(sprite.playing).toBe(isAutoPlay);
 
             sprite.destroy();
             sprite = null;
@@ -67,6 +69,13 @@ describe('AnimatedSprite', () =>
             animationSpeed = 0.5;
             sprite = new AnimatedSprite({ textures, animationSpeed });
             expect(sprite.animationSpeed).toBe(0.5);
+        });
+
+        it('should be correct with autoPlay', () =>
+        {
+            isAutoPlay = true;
+            sprite = new AnimatedSprite({ textures, autoPlay: isAutoPlay });
+            expect(sprite['_playing']).toBe(true);
         });
 
         it('should be correct with loop', () =>
