@@ -44,7 +44,7 @@ export interface NineSliceSpriteOptions extends ContainerOptions
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
     /** The anchor point of the NineSliceSprite. */
-    anchor?: PointData;
+    anchor?: PointData | number;
 }
 
 /**
@@ -154,7 +154,14 @@ export class NineSliceSprite extends ViewContainer implements View
             },
         );
 
-        if (anchor) this.anchor = anchor;
+        if (anchor)
+        {
+            this.anchor = anchor;
+        }
+        else if (this.texture.defaultAnchor)
+        {
+            this.anchor = this.texture.defaultAnchor;
+        }
     }
 
     get anchor(): ObservablePoint
