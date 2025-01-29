@@ -73,7 +73,7 @@ export function buildContextBatches(context: GraphicsContext, gpuContext: GpuGra
             }
 
             addShapePathToGeometryData(shapePath, style, isStroke, batches, geometryData);
-        }//
+        }
     }
 }
 

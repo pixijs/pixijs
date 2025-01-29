@@ -136,7 +136,9 @@ function renderChildren(svg: SVGElement, session: Session, fillStyle: FillStyle,
 
             if (svg.getAttribute('fill-rule') as string === 'evenodd')
             {
+                // #if _DEBUG
                 warn('SVG Evenodd fill rule not supported, your svg may render incorrectly');
+                // #endif
             }
 
             graphicsPath = new GraphicsPath(d, true);
