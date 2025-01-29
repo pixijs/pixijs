@@ -150,7 +150,7 @@ describe('GenerateTexture', () =>
             resource: texturePixels,
             width: 2,
             height: 2,
-            alphaMode: 'premultiply-alpha-on-upload',
+            alphaMode: 'premultiplied-alpha',
         });
 
         const sprite = new Sprite(texture);
@@ -176,7 +176,7 @@ describe('GenerateTexture', () =>
             resource: texturePixels,
             width: 2,
             height: 2,
-            alphaMode: 'premultiply-alpha-on-upload',
+            alphaMode: 'premultiplied-alpha',
         });
 
         const sprite = new Sprite(texture);
@@ -208,7 +208,7 @@ describe('GenerateTexture', () =>
             resource: texturePixels,
             width: 2,
             height: 2,
-            alphaMode: 'premultiply-alpha-on-upload',
+            alphaMode: 'premultiplied-alpha',
         });
 
         const sprite = new Sprite(texture);
@@ -231,6 +231,7 @@ describe('GenerateTexture', () =>
             resource: texturePixels,
             width: 2,
             height: 2,
+            alphaMode: 'premultiplied-alpha',
         });
         const sprite = new Sprite(texture);
         const extract = renderer.extract;
@@ -257,7 +258,7 @@ describe('GenerateTexture', () =>
             width: 2,
             height: 2,
             resource: texturePixels,
-            alphaMode: 'premultiply-alpha-on-upload',
+            alphaMode: 'premultiplied-alpha',
             scaleMode: 'nearest'
         });
 
@@ -297,7 +298,7 @@ describe('GenerateTexture', () =>
             width: 2,
             height: 2,
             resource: texturePixels,
-            alphaMode: 'premultiply-alpha-on-upload',
+            alphaMode: 'premultiplied-alpha',
             scaleMode: 'nearest'
         });
 
