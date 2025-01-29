@@ -16,6 +16,7 @@ export const scene: TestScene = {
                 { offset: 0.5, color: 0x00ff00 },
                 { offset: 1, color: 0x0000ff },
             ],
+            textureSpace: 'local',
         });
 
         const textGradient = new Text({

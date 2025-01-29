@@ -37,7 +37,7 @@ export interface BaseGradientOptions
 /**
  * Options specific to linear gradients.
  * A linear gradient creates a smooth transition between colors along a straight line defined by start and end points.
- * @extends BaseGradientOptions
+ * @memberof scene
  */
 export interface LinearGradientOptions extends BaseGradientOptions
 {
@@ -65,7 +65,7 @@ export interface LinearGradientOptions extends BaseGradientOptions
  * Options specific to radial gradients.
  * A radial gradient creates a smooth transition between colors that radiates outward in a circular pattern.
  * The gradient is defined by inner and outer circles, each with their own radius.
- * @extends BaseGradientOptions
+ * @memberof scene
  */
 export interface RadialGradientOptions extends BaseGradientOptions
 {
@@ -92,6 +92,10 @@ export interface RadialGradientOptions extends BaseGradientOptions
 
 }
 
+/**
+ * Options for creating a gradient fill.
+ * @memberof scene
+ */
 export type GradientOptions = LinearGradientOptions | RadialGradientOptions;
 
 /**
@@ -120,28 +124,30 @@ const emptyColorStops: { offset: number, color: string }[] = [{ offset: 0, color
  *         { offset: 0, color: 'red' },   // Red at start
  *         { offset: 1, color: 'blue' }   // Blue at end
  *     ],
+ *     // Use normalized coordinate system where (0,0) is the top-left and (1,1) is the bottom-right of the shape
  *     textureSpace: 'local'
  * });
  *
  * // Create a radial gradient from yellow center to green edge
  * const radialGradient = new FillGradient({
  *     type: 'radial',
- *     innerCenter: { x: 0.5, y: 0.5 },  // Inner circle center
- *     innerRadius: 0,                   // Inner circle radius (point)
- *     outerCenter: { x: 0.5, y: 0.5 },  // Outer circle center
- *     outerRadius: 0.5,                 // Outer circle radius
+ *     center: { x: 0.5, y: 0.5 },
+ *     innerRadius: 0,
+ *     outerCenter: { x: 0.5, y: 0.5 },
+ *     outerRadius: 0.5,
  *     colorStops: [
  *         { offset: 0, color: 'yellow' }, // Center color
  *         { offset: 1, color: 'green' }   // Edge color
  *     ],
+ *     // Use normalized coordinate system where (0,0) is the top-left and (1,1) is the bottom-right of the shape
  *     textureSpace: 'local'
  * });
  *
  * // Create a rainbow linear gradient in global coordinates
  * const globalGradient = new FillGradient({
  *     type: 'linear',
- *     x0: 0, y0: 0,
- *     x1: 100, y1: 0,
+ *     start: { x: 0, y: 0 },
+ *     end: { x: 100, y: 0 },
  *     colorStops: [
  *         { offset: 0, color: 0xff0000 },    // Red
  *         { offset: 0.33, color: 0x00ff00 }, // Green
@@ -154,10 +160,10 @@ const emptyColorStops: { offset: number, color: string }[] = [{ offset: 0, color
  * // Create an offset radial gradient
  * const offsetRadial = new FillGradient({
  *     type: 'radial',
- *     x0: 0.3, y0: 0.3,  // Inner circle offset from center
- *     r0: 0.1,           // Small inner circle
- *     x1: 0.5, y1: 0.5,  // Outer circle centered
- *     r1: 0.5,           // Large outer circle
+ *     center: { x: 0.3, y: 0.3 },
+ *     innerRadius: 0.1,
+ *     outerCenter: { x: 0.5, y: 0.5 },
+ *     outerRadius: 0.5,
  *     colorStops: [
  *         { offset: 0, color: 'white' },
  *         { offset: 1, color: 'black' }
@@ -192,7 +198,7 @@ export class FillGradient implements CanvasGradient
         start: { x: 0, y: 0 },
         end: { x: 0, y: 1 },
         colorStops: [],
-        textureSpace: 'local',
+        textureSpace: 'global',
         type: 'linear',
         textureSize: 256
     };
@@ -214,7 +220,7 @@ export class FillGradient implements CanvasGradient
         outerRadius: 0.5,
         colorStops: [],
         scale: 1,
-        textureSpace: 'local',
+        textureSpace: 'global',
         type: 'radial',
         textureSize: 256
     };
