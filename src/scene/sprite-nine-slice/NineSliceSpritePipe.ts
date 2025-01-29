@@ -79,7 +79,7 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
             .update(sprite);
 
         // = sprite.bounds;
-        batchableSprite.texture = sprite._texture;
+        batchableSprite.setTexture(sprite._texture);
     }
 
     private _getGpuSprite(sprite: NineSliceSprite): BatchableMesh
