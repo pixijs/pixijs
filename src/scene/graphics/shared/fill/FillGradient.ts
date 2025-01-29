@@ -5,6 +5,7 @@ import { ImageSource } from '../../../../rendering/renderers/shared/texture/sour
 import { Texture } from '../../../../rendering/renderers/shared/texture/Texture';
 import { uid } from '../../../../utils/data/uid';
 import { deprecation } from '../../../../utils/logging/deprecation';
+import { definedProps } from '../../../container/utils/definedProps';
 import { type PointData } from '~/maths/point/PointData';
 
 import type { ColorSource } from '../../../../color/Color';
@@ -168,6 +169,7 @@ const emptyColorStops: { offset: number, color: string }[] = [{ offset: 0, color
  *         { offset: 0, color: 'white' },
  *         { offset: 1, color: 'black' }
  *     ],
+ *     // Use normalized coordinate system where (0,0) is the top-left and (1,1) is the bottom-right of the shape
  *     textureSpace: 'local'
  * });
  * ```
@@ -198,7 +200,7 @@ export class FillGradient implements CanvasGradient
         start: { x: 0, y: 0 },
         end: { x: 0, y: 1 },
         colorStops: [],
-        textureSpace: 'global',
+        textureSpace: 'local',
         type: 'linear',
         textureSize: 256
     };
@@ -220,7 +222,7 @@ export class FillGradient implements CanvasGradient
         outerRadius: 0.5,
         colorStops: [],
         scale: 1,
-        textureSpace: 'global',
+        textureSpace: 'local',
         type: 'radial',
         textureSize: 256
     };
@@ -295,7 +297,7 @@ export class FillGradient implements CanvasGradient
 
         const defaults = options.type === 'radial' ? FillGradient.defaultRadialOptions : FillGradient.defaultLinearOptions;
 
-        options = { ...defaults, ...options };
+        options = { ...defaults, ...definedProps(options) };
 
         this._textureSize = options.textureSize;
 

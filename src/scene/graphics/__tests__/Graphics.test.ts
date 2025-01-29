@@ -125,7 +125,7 @@ describe('Graphics', () =>
 
         matrix.scale(2, 3);
 
-        const style = toFillStyle({ texture, matrix }, GraphicsContext.defaultFillStyle);
+        const style = toFillStyle({ texture, matrix, textureSpace: 'global' }, GraphicsContext.defaultFillStyle);
         const shape = new Rectangle(0, 0, 100, 100);
 
         const textureMatrix = generateTextureFillMatrix(new Matrix(), style, shape, new Matrix());

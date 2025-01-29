@@ -17,7 +17,7 @@ describe('convertStrokeInputToStrokeStyle', () =>
         cap: 'butt',
         join: 'miter',
         texture: Texture.WHITE,
-        textureSpace: 'global',
+        textureSpace: 'local',
         matrix: null,
         fill: null,
         pixelLine: false,
@@ -88,6 +88,7 @@ describe('convertStrokeInputToStrokeStyle', () =>
         expect(result).toEqual({
             ...defaultStyle,
             fill: gradient,
+            textureSpace: 'global',
             color: 0xffffff,
             alpha: 1,
             texture: gradient.texture,
@@ -165,6 +166,7 @@ describe('convertStrokeInputToStrokeStyle', () =>
         expect(result).toEqual({
             ...defaultStyle,
             fill: gradient,
+            textureSpace: 'global',
             alpha: 0.5,
             color: 0xffffff,
             texture: gradient.texture,
