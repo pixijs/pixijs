@@ -25,6 +25,7 @@ export interface PathInstruction
  * This class serves as a collection of drawing commands that can be executed to render shapes and paths on a canvas or
  * similar graphical context. It supports high-level drawing operations like lines, arcs, curves, and more, enabling
  * complex graphic constructions with relative ease.
+ * @memberof scene
  */
 export class GraphicsPath
 {

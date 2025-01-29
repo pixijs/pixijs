@@ -43,14 +43,14 @@ export class FillGradient implements CanvasGradient
     public gradientStops: Array<{ offset: number, color: string }> = [];
 
     private _styleKey: string | null = null;
-    public textureSpace: TextureSpace = 'local';
+    public textureSpace: TextureSpace;
 
     constructor(
         x0: number = 0,
         y0: number = 0,
         x1: number = 1,
         y1: number = 0,
-        fillUnits: 'global' | 'local' = 'local'
+        fillUnits: TextureSpace = 'local'
     )
     {
         this.x0 = x0;

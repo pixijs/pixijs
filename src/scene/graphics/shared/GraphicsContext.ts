@@ -107,7 +107,7 @@ export class GraphicsContext extends EventEmitter<{
         /** The fill pattern to use. */
         fill: null,
         /** The fill units to use. */
-        textureSpace: 'local',
+        textureSpace: 'global',
         /** If the stroke is a pixel line. */
         pixelLine: false,
     };
