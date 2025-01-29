@@ -29,7 +29,7 @@ export const scene: TestScene = {
         // texture fill
         const rect1 = new Graphics();
 
-        rect1.rect(50, 0, 50, 50).fill({ texture });
+        rect1.rect(50, 0, 50, 50).fill(texture);
         scene.addChild(rect1);
 
         // gradient fill
