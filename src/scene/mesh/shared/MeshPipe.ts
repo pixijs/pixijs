@@ -142,7 +142,8 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
         {
             const gpuBatchableMesh = this._gpuBatchableMeshHash[mesh.uid];
 
-            gpuBatchableMesh.texture = mesh._texture;
+            gpuBatchableMesh.setTexture(mesh._texture);
+
             gpuBatchableMesh.geometry = mesh._geometry;
 
             gpuBatchableMesh._batcher.updateElement(gpuBatchableMesh);
