@@ -1,11 +1,11 @@
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
-import { ViewContainer } from '../view/ViewContainer';
+import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';
-import type { ContainerOptions } from '../container/Container';
+import type { Dict } from '../../utils/types';
 import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
 import type { HTMLTextStyle, HTMLTextStyleOptions } from '../text-html/HTMLTextStyle';
@@ -48,7 +48,7 @@ export type AnyTextStyleOptions = TextStyleOptions | HTMLTextStyleOptions;
 export interface TextOptions<
     TEXT_STYLE extends TextStyle = TextStyle,
     TEXT_STYLE_OPTIONS extends TextStyleOptions = TextStyleOptions,
-> extends ContainerOptions
+> extends PixiMixins.TextOptions, ViewContainerOptions
 {
     /** The anchor point of the text. */
     anchor?: PointData | number;
@@ -95,6 +95,15 @@ export abstract class AbstractText<
 
     protected _text: string;
     private readonly _styleClass: new (options: TEXT_STYLE_OPTIONS) => TEXT_STYLE;
+
+    /**
+     * Mixes all enumerable properties and methods from a source object to AbstractText.
+     * @param source - The source of properties and methods to mix in.
+     */
+    public static override mixin(source: Dict<any>): void
+    {
+        Object.defineProperties(AbstractText.prototype, Object.getOwnPropertyDescriptors(source));
+    }
 
     constructor(
         options: TextOptions<TEXT_STYLE, TEXT_STYLE_OPTIONS>,

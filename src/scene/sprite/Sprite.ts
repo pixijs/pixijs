@@ -2,13 +2,13 @@ import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { updateQuadBounds } from '../../utils/data/updateQuadBounds';
 import { deprecation } from '../../utils/logging/deprecation';
-import { ViewContainer } from '../view/ViewContainer';
+import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
 import type { TextureSourceLike } from '../../rendering/renderers/shared/texture/Texture';
+import type { Dict } from '../../utils/types';
 import type { BoundsData } from '../container/bounds/Bounds';
-import type { ContainerOptions } from '../container/Container';
 import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
 
@@ -16,7 +16,7 @@ import type { DestroyOptions } from '../container/destroyTypes';
  * Options for the {@link scene.Sprite} constructor.
  * @memberof scene
  */
-export interface SpriteOptions extends ContainerOptions
+export interface SpriteOptions extends PixiMixins.SpriteOptions, ViewContainerOptions
 {
     /** The texture to use for the sprite. */
     texture?: Texture;
@@ -25,6 +25,7 @@ export interface SpriteOptions extends ContainerOptions
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
+export interface Sprite extends PixiMixins.Sprite, ViewContainer {}
 
 /**
  * The Sprite object is one of the most important objects in PixiJS. It is a
@@ -81,6 +82,15 @@ export class Sprite extends ViewContainer
 
     private _width: number;
     private _height: number;
+
+    /**
+     * Mixes all enumerable properties and methods from a source object to Sprite.
+     * @param source - The source of properties and methods to mix in.
+     */
+    public static mixin(source: Dict<any>): void
+    {
+        Object.defineProperties(Sprite.prototype, Object.getOwnPropertyDescriptors(source));
+    }
 
     /**
      * @param options - The options for creating the sprite.

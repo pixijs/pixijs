@@ -2,12 +2,16 @@ import { type InstructionSet } from '../../rendering/renderers/shared/instructio
 import { type RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
 import { type Renderer } from '../../rendering/renderers/types';
 import { Bounds } from '../container/bounds/Bounds';
-import { Container } from '../container/Container';
+import { Container, type ContainerOptions } from '../container/Container';
 import { type IRenderLayer } from '../layers/RenderLayer';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';
+import type { Dict } from '../../utils/types';
 import type { DestroyOptions } from '../container/destroyTypes';
+
+export interface ViewContainerOptions extends ContainerOptions, PixiMixins.ViewContainerOptions {}
+export interface ViewContainer extends PixiMixins.ViewContainer, Container {}
 
 /**
  * A ViewContainer is a type of container that represents a view.
@@ -62,6 +66,21 @@ export abstract class ViewContainer extends Container implements View
     set roundPixels(value: boolean)
     {
         this._roundPixels = value ? 1 : 0;
+    }
+
+    /**
+     * Mixes all enumerable properties and methods from a source object to ViewContainer.
+     * @param source - The source of properties and methods to mix in.
+     */
+    public static mixin(source: Dict<any>): void
+    {
+        Object.defineProperties(ViewContainer.prototype, Object.getOwnPropertyDescriptors(source));
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+    constructor(options: ViewContainerOptions)
+    {
+        super(options);
     }
 
     /**

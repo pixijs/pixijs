@@ -3,6 +3,7 @@ import { UPDATE_PRIORITY } from '../../ticker/const';
 import { Ticker } from '../../ticker/Ticker';
 import { Sprite } from '../sprite/Sprite';
 
+import type { Dict } from '../../utils/types';
 import type { SpriteOptions } from '../sprite/Sprite';
 
 export type AnimatedSpriteFrames = Texture[] | FrameObject[];
@@ -12,7 +13,7 @@ export type AnimatedSpriteFrames = Texture[] | FrameObject[];
  * @see {@link scene.AnimatedSprite}
  * @memberof scene
  */
-export interface AnimatedSpriteOptions extends Omit<SpriteOptions, 'texture'>
+export interface AnimatedSpriteOptions extends PixiMixins.AnimatedSpriteOptions, Omit<SpriteOptions, 'texture'>
 {
     /** The speed that the AnimatedSprite will play at. Higher is faster, lower is slower. */
     animationSpeed?: number;
@@ -35,6 +36,7 @@ export interface AnimatedSpriteOptions extends Omit<SpriteOptions, 'texture'>
     /** Update anchor to [Texture's defaultAnchor]{@link Texture#defaultAnchor} when frame changes. */
     updateAnchor?: boolean;
 }
+export interface AnimatedSprite extends PixiMixins.AnimatedSprite, Sprite {}
 
 /**
  * An AnimatedSprite is a simple way to display an animation depicted by a list of textures.
@@ -143,6 +145,16 @@ export class AnimatedSprite extends Sprite
 
     /** The texture index that was displayed last time. */
     private _previousFrame: number;
+
+    /**
+     * Mixes all enumerable properties and methods from a source object to AnimatedSprite.
+     * @param source - The source of properties and methods to mix in.
+     */
+    public static override mixin(source: Dict<any>): void
+    {
+        Object.defineProperties(AnimatedSprite.prototype, Object.getOwnPropertyDescriptors(source));
+    }
+
     /**
      * @param frames - Collection of textures or frames to use.
      * @param autoUpdate - Whether to use Ticker.shared to auto update animation time.

@@ -4,8 +4,11 @@ import { TextStyle } from '../text/TextStyle';
 import { BitmapFontManager } from './BitmapFontManager';
 
 import type { View } from '../../rendering/renderers/shared/view/View';
+import type { Dict } from '../../utils/types';
 import type { TextOptions, TextString } from '../text/AbstractText';
 import type { TextStyleOptions } from '../text/TextStyle';
+
+export interface BitmapText extends PixiMixins.BitmapText, AbstractText<TextStyle, TextStyleOptions> {}
 
 /**
  * A BitmapText Object will create a line or multiple lines of text.
@@ -98,6 +101,15 @@ import type { TextStyleOptions } from '../text/TextStyle';
 export class BitmapText extends AbstractText<TextStyle, TextStyleOptions> implements View
 {
     public override readonly renderPipeId: string = 'bitmapText';
+
+    /**
+     * Mixes all enumerable properties and methods from a source object to BitmapText.
+     * @param source - The source of properties and methods to mix in.
+     */
+    public static override mixin(source: Dict<any>): void
+    {
+        Object.defineProperties(BitmapText.prototype, Object.getOwnPropertyDescriptors(source));
+    }
 
     /**
      * **Note:** Our docs parser struggles to properly understand the constructor signature.

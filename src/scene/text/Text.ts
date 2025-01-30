@@ -3,8 +3,11 @@ import { CanvasTextMetrics } from './canvas/CanvasTextMetrics';
 import { TextStyle } from './TextStyle';
 
 import type { View } from '../../rendering/renderers/shared/view/View';
+import type { Dict } from '../../utils/types';
 import type { TextOptions, TextString } from './AbstractText';
 import type { TextStyleOptions } from './TextStyle';
+
+export interface Text extends PixiMixins.Text, AbstractText<TextStyle, TextStyleOptions> {}
 
 /**
  * A Text Object will create a line or multiple lines of text.
@@ -36,6 +39,15 @@ export class Text
     implements View
 {
     public override readonly renderPipeId: string = 'text';
+
+    /**
+     * Mixes all enumerable properties and methods from a source object to Text.
+     * @param source - The source of properties and methods to mix in.
+     */
+    public static override mixin(source: Dict<any>): void
+    {
+        Object.defineProperties(Text.prototype, Object.getOwnPropertyDescriptors(source));
+    }
 
     /**
      * @param {text.TextOptions} options - The options of the text.

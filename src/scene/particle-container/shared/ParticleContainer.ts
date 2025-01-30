@@ -1,12 +1,13 @@
 import { Bounds } from '../../container/bounds/Bounds';
 import { type IRenderLayer } from '../../layers/RenderLayer';
-import { ViewContainer } from '../../view/ViewContainer';
+import { ViewContainer, type ViewContainerOptions } from '../../view/ViewContainer';
 import { particleData } from './particleData';
 
 import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import type { ContainerChild, ContainerOptions } from '../../container/Container';
+import type { Dict } from '../../../utils/types';
+import type { ContainerChild } from '../../container/Container';
 import type { DestroyOptions } from '../../container/destroyTypes';
 import type { IParticle } from './Particle';
 import type { ParticleRendererProperty } from './particleData';
@@ -41,7 +42,7 @@ export interface ParticleProperties
  * @property {IParticle[]} particles - An array of particles to add to the container.
  * @memberof scene
  */
-export interface ParticleContainerOptions extends Omit<ContainerOptions, 'children'>
+export interface ParticleContainerOptions extends PixiMixins.ParticleContainerOptions, Omit<ViewContainerOptions, 'children'>
 {
     dynamicProperties?: Record<string, boolean>;
     shader?: Shader;
@@ -49,6 +50,7 @@ export interface ParticleContainerOptions extends Omit<ContainerOptions, 'childr
     texture?: Texture;
     particles?: IParticle[];
 }
+export interface ParticleContainer extends PixiMixins.ParticleContainer, ViewContainer {}
 
 /**
  * The ParticleContainer class is a highly optimized container that can render 1000s or particles at great speed.
@@ -147,6 +149,15 @@ export class ParticleContainer extends ViewContainer implements Instruction
      * Defaults to the first childs texture if not set
      */
     public texture: Texture;
+
+    /**
+     * Mixes all enumerable properties and methods from a source object to ParticleContainer.
+     * @param source - The source of properties and methods to mix in.
+     */
+    public static mixin(source: Dict<any>): void
+    {
+        Object.defineProperties(ParticleContainer.prototype, Object.getOwnPropertyDescriptors(source));
+    }
 
     /**
      * @param options - The options for creating the sprite.

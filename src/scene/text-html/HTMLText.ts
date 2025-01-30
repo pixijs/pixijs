@@ -3,6 +3,7 @@ import { HTMLTextStyle } from './HTMLTextStyle';
 import { measureHtmlText } from './utils/measureHtmlText';
 
 import type { View } from '../../rendering/renderers/shared/view/View';
+import type { Dict } from '../../utils/types';
 import type { TextOptions, TextString } from '../text/AbstractText';
 import type { HTMLTextStyleOptions } from './HTMLTextStyle';
 
@@ -12,7 +13,8 @@ import type { HTMLTextStyleOptions } from './HTMLTextStyle';
  * @property {text.HTMLTextStyle | text.HTMLTextStyleOptions} [style] - The style of the text.
  * @memberof text
  */
-export type HTMLTextOptions = TextOptions<HTMLTextStyle, HTMLTextStyleOptions>;
+export type HTMLTextOptions = TextOptions<HTMLTextStyle, HTMLTextStyleOptions> & PixiMixins.HTMLTextOptions;
+export interface HTMLText extends PixiMixins.HTMLText, AbstractText<HTMLTextStyle, HTMLTextStyleOptions> {}
 
 /**
  * A HTMLText Object will create a line or multiple lines of text.
@@ -56,6 +58,15 @@ export type HTMLTextOptions = TextOptions<HTMLTextStyle, HTMLTextStyleOptions>;
 export class HTMLText extends AbstractText<HTMLTextStyle, HTMLTextStyleOptions> implements View
 {
     public override readonly renderPipeId: string = 'htmlText';
+
+    /**
+     * Mixes all enumerable properties and methods from a source object to HTMLText.
+     * @param source - The source of properties and methods to mix in.
+     */
+    public static override mixin(source: Dict<any>): void
+    {
+        Object.defineProperties(HTMLText.prototype, Object.getOwnPropertyDescriptors(source));
+    }
 
     /**
      * @param {text.HTMLTextOptions} options - The options of the html text.

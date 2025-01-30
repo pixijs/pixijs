@@ -4,13 +4,13 @@ import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { warn } from '../../utils/logging/warn';
 import { Transform } from '../../utils/misc/Transform';
-import { ViewContainer } from '../view/ViewContainer';
+import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
 import type { View } from '../../rendering/renderers/shared/view/View';
-import type { ContainerOptions } from '../container/Container';
+import type { Dict } from '../../utils/types';
 import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
 
@@ -29,7 +29,7 @@ import type { DestroyOptions } from '../container/destroyTypes';
  * @see {@link scene.TilingSpriteViewOptions}
  * @memberof scene
  */
-export interface TilingSpriteOptions extends ContainerOptions
+export interface TilingSpriteOptions extends PixiMixins.TilingSpriteOptions, ViewContainerOptions
 {
     /**
      * The anchor point of the sprite
@@ -75,6 +75,7 @@ export interface TilingSpriteOptions extends ContainerOptions
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
+export interface TilingSprite extends PixiMixins.TilingSprite, ViewContainer {}
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image.
@@ -173,6 +174,15 @@ export class TilingSprite extends ViewContainer implements View, Instruction
 
     private _width: number;
     private _height: number;
+
+    /**
+     * Mixes all enumerable properties and methods from a source object to TilingSprite.
+     * @param source - The source of properties and methods to mix in.
+     */
+    public static override mixin(source: Dict<any>): void
+    {
+        Object.defineProperties(TilingSprite.prototype, Object.getOwnPropertyDescriptors(source));
+    }
 
     /**
      * @param {rendering.Texture | scene.TilingSpriteOptions} options - The options for creating the tiling sprite.
