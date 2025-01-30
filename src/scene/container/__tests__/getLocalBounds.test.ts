@@ -416,27 +416,39 @@ describe('getLocalBounds', () =>
         expect(child._localBoundsCacheData.didChange).toEqual(true);
     });
 
-    it('should measure correctly if a child has been added and removed', async () =>
+    it('should measure correctly if a children were added and removed', async () =>
     {
         const container = new Container({ label: 'container' });
 
-        const bounds1 = container.getLocalBounds();
-
-        expect(bounds1).toMatchObject({ minX: 0, minY: 0, maxX: 0, maxY: 0 });
+        expect(container.getLocalBounds()).toMatchObject({ minX: 0, minY: 0, maxX: 0, maxY: 0 });
 
         const child = new DummyView({ label: 'child' });
 
         container.addChild(child);
 
-        const bounds2 = container.getLocalBounds();
-
-        expect(bounds2).toMatchObject({ minX: 0, minY: 0, maxX: 100, maxY: 100 });
+        expect(container.getLocalBounds()).toMatchObject({
+            minX: 0,
+            minY: 0,
+            maxX: 100,
+            maxY: 100,
+        });
 
         container.removeChild(child);
 
-        const bounds3 = container.getLocalBounds();
+        expect(container.getLocalBounds()).toMatchObject({ minX: 0, minY: 0, maxX: 0, maxY: 0 });
 
-        expect(bounds3).toMatchObject({ minX: 0, minY: 0, maxX: 0, maxY: 0 });
+        container.addChild(child);
+
+        expect(container.getLocalBounds()).toMatchObject({
+            minX: 0,
+            minY: 0,
+            maxX: 100,
+            maxY: 100,
+        });
+
+        container.removeChildren();
+
+        expect(container.getLocalBounds()).toMatchObject({ minX: 0, minY: 0, maxX: 0, maxY: 0 });
     });
 
     it('should measure correctly if a nested child has been added and removed', async () =>

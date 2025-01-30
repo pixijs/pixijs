@@ -65,6 +65,11 @@ export const childrenHelperMixin: Partial<Container> = {
                 removed[i].emit('removed', this);
             }
 
+            if (removed.length > 0)
+            {
+                this._didViewChangeTick++;
+            }
+
             return removed;
         }
         else if (range === 0 && this.children.length === 0)
