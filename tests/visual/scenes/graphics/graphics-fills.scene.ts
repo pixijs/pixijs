@@ -9,20 +9,20 @@ export const scene: TestScene = {
     it: 'render correct render fills',
     create: async (scene: Container) =>
     {
-        const grad = new FillGradient(0, 0, 50, 50);
+        const grad = new FillGradient(0, 0, 50, 50, 'global');
 
         const texture = await Assets.load('bg_scene_rotate.jpg');
 
         grad.addColorStop(0, 'red');
         grad.addColorStop(1, 'blue');
 
-        const grad2 = new FillGradient(0, 0, 0, 1, 'local');
+        const grad2 = new FillGradient(0, 0, 0, 1);
 
         grad2.addColorStop(0, 'blue');
         grad2.addColorStop(1, 'yellow');
 
-        const g1 = new Graphics().rect(0, 0, 100, 100).fill({ texture, textureSpace: 'local' });
-        const g2 = new Graphics().rect(0, 0, 100, 100).fill(texture);
+        const g1 = new Graphics().rect(0, 0, 100, 100).fill(texture);
+        const g2 = new Graphics().rect(0, 0, 100, 100).fill({ texture, textureSpace: 'global' });
         const g3 = new Graphics().rect(0, 0, 100, 100).fill({ fill: grad });
         const g4 = new Graphics().rect(0, 0, 100, 100).fill({ fill: grad2 });
 
