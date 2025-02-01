@@ -63,7 +63,7 @@ export const glUploadImageResource = {
                 );
             }
         }
-        else if (glWidth === textureWidth || glHeight === textureHeight)
+        else if (glWidth === textureWidth && glHeight === textureHeight)
         {
             gl.texSubImage2D(
                 gl.TEXTURE_2D,

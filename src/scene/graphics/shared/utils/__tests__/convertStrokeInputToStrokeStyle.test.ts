@@ -17,6 +17,7 @@ describe('convertStrokeInputToStrokeStyle', () =>
         cap: 'butt',
         join: 'miter',
         texture: Texture.WHITE,
+        textureSpace: 'local',
         matrix: null,
         fill: null,
         pixelLine: false,
@@ -78,14 +79,32 @@ describe('convertStrokeInputToStrokeStyle', () =>
         });
     });
 
-    it('should convert FillGradient to stroke style', () =>
+    it('should convert FillGradient to stroke style with global space', () =>
     {
         const defaultStyle = getDefaultValue();
-        const gradient = new FillGradient(0, 0, 200, 0);
+        const gradient = new FillGradient(0, 0, 200, 0, 'global');
         const result = toStrokeStyle(gradient, defaultStyle);
 
         expect(result).toEqual({
             ...defaultStyle,
+            fill: gradient,
+            textureSpace: 'global',
+            color: 0xffffff,
+            alpha: 1,
+            texture: gradient.texture,
+            matrix: gradient.transform,
+        });
+    });
+
+    it('should convert FillGradient to stroke style with local space', () =>
+    {
+        const defaultStyle = getDefaultValue();
+        const gradient = new FillGradient(0, 0, 200, 0, 'local');
+        const result = toStrokeStyle(gradient, defaultStyle);
+
+        expect(result).toEqual({
+            ...defaultStyle,
+            textureSpace: 'local',
             fill: gradient,
             color: 0xffffff,
             alpha: 1,
@@ -141,12 +160,13 @@ describe('convertStrokeInputToStrokeStyle', () =>
     it('should convert stroke object with gradient to stroke style', () =>
     {
         const defaultStyle = getDefaultValue();
-        const gradient = new FillGradient(0, 0, 200, 0);
+        const gradient = new FillGradient(0, 0, 200, 0, 'global');
         const result = toStrokeStyle({ fill: gradient, alpha: 0.5 }, defaultStyle);
 
         expect(result).toEqual({
             ...defaultStyle,
             fill: gradient,
+            textureSpace: 'global',
             alpha: 0.5,
             color: 0xffffff,
             texture: gradient.texture,

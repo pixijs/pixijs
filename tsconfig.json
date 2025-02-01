@@ -16,12 +16,13 @@
         "resolveJsonModule": true,
         "downlevelIteration": true,
         "skipDefaultLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
         "types": ["node", "css-font-loading-module", "earcut", "@webgpu/types"],
         "baseUrl": ".",
         "paths": {
             "~/*": ["./src/*"],
             "@test-utils": ["./tests/utils/index.ts"]
-        }
+        },
     },
     "exclude": [
         "node_modules",
