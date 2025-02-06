@@ -5,7 +5,14 @@ import { uid } from '../../../../../utils/data/uid';
 import { TextureStyle } from '../TextureStyle';
 
 import type { BindResource } from '../../../gpu/shader/BindResource';
-import type { ALPHA_MODES, SCALE_MODE, TEXTURE_DIMENSIONS, TEXTURE_FORMATS, WRAP_MODE } from '../const';
+import type {
+    ALPHA_MODES,
+    SCALE_MODE,
+    TEXTURE_DIMENSIONS,
+    TEXTURE_FORMATS,
+    TEXTURE_VIEW_DIMENSIONS,
+    WRAP_MODE
+} from '../const';
 import type { TextureStyleOptions } from '../TextureStyle';
 import type { TextureResourceOrOptions } from '../utils/textureFrom';
 
@@ -41,6 +48,7 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
     antialias?: boolean;
     /** how many dimensions does this texture have? currently v8 only supports 2d */
     dimensions?: TEXTURE_DIMENSIONS;
+    viewDimensions?: TEXTURE_VIEW_DIMENSIONS;
     /** The number of mip levels to generate for this texture. this is  overridden if autoGenerateMipmaps is true */
     mipLevelCount?: number;
     /**
@@ -87,6 +95,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         format: 'bgra8unorm',
         alphaMode: 'premultiply-alpha-on-upload',
         dimensions: '2d',
+        viewDimensions: '2d',
         mipLevelCount: 1,
         autoGenerateMipmaps: false,
         sampleCount: 1,
@@ -168,6 +177,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     public format: TEXTURE_FORMATS = 'rgba8unorm';
     /** how many dimensions does this texture have? currently v8 only supports 2d */
     public dimension: TEXTURE_DIMENSIONS = '2d';
+    public viewDimension: TEXTURE_VIEW_DIMENSIONS = '2d';
     /** the alpha mode of the texture */
     public alphaMode: ALPHA_MODES;
     private _style: TextureStyle;
@@ -250,6 +260,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
         this.format = options.format;
         this.dimension = options.dimensions;
+        this.viewDimension = options.viewDimensions;
         this.mipLevelCount = options.mipLevelCount;
         this.autoGenerateMipmaps = options.autoGenerateMipmaps;
         this.sampleCount = options.sampleCount;

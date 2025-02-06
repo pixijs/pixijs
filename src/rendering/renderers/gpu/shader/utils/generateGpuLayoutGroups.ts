@@ -48,6 +48,18 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
                 }
             });
         }
+        else if (group.type === 'texture_2d_array')
+        {
+            layout[group.group].push({
+                binding: group.binding,
+                visibility: ShaderStage.FRAGMENT,
+                texture: {
+                    sampleType: 'float',
+                    viewDimension: '2d-array',
+                    multisampled: false,
+                }
+            });
+        }
     }
 
     return layout;
