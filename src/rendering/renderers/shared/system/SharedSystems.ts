@@ -2,6 +2,7 @@ import { CustomRenderPipe } from '../../../../scene/container/CustomRenderPipe';
 import { RenderGroupPipe } from '../../../../scene/container/RenderGroupPipe';
 import { RenderGroupSystem } from '../../../../scene/container/RenderGroupSystem';
 import { SpritePipe } from '../../../../scene/sprite/SpritePipe';
+import { Sprite2DArrayPipe } from '../../../../scene/sprite-2d-array/Sprite2DArrayPipe';
 import { RendererInitHook } from '../../../../utils/global/globalHooks';
 import { BatcherPipe } from '../../../batcher/shared/BatcherPipe';
 import { AlphaMaskPipe } from '../../../mask/alpha/AlphaMaskPipe';
@@ -38,6 +39,7 @@ export const SharedRenderPipes = [
     BlendModePipe,
     BatcherPipe,
     SpritePipe,
+    Sprite2DArrayPipe,
     RenderGroupPipe,
     AlphaMaskPipe,
     StencilMaskPipe,
