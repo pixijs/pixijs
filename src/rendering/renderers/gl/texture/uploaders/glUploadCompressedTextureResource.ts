@@ -77,9 +77,40 @@ export const glUploadCompressedTextureResource = {
 
         const compressed = !!compressedFormatMap[source.format];
 
+        if (glTexture.target === gl.TEXTURE_2D_ARRAY)
+        {
+            for (let i = 0; i < source.resource.length; i++)
+            {
+                mipWidth = source.pixelWidth;
+                mipHeight = source.pixelHeight;
+                for (let j = 0; j < source.resource[i].length; j++)
+                {
+                    const levelBuffer = source.resource[i][j] as Uint8Array;
+
+                    if (compressed)
+                    {
+                        gl.compressedTexSubImage3D(
+                            gl.TEXTURE_2D_ARRAY,
+                            j,
+                            0, 0, i,
+                            mipWidth, mipHeight,
+                            1,
+                            glTexture.internalFormat,
+                            levelBuffer
+                        );
+                    }
+
+                    mipWidth = Math.max(mipWidth >> 1, 1);
+                    mipHeight = Math.max(mipHeight >> 1, 1);
+                }
+            }
+
+            return;
+        }
+
         for (let i = 0; i < source.resource.length; i++)
         {
-            const levelBuffer = source.resource[i];
+            const levelBuffer = source.resource[i] as Uint8Array;
 
             if (compressed)
             {
