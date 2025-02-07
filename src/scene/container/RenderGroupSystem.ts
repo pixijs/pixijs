@@ -170,7 +170,7 @@ export class RenderGroupSystem implements System
         const renderer = this._renderer;
         const renderPipes = renderer.renderPipes;
 
-        renderGroup.runOnRender();
+        renderGroup.runOnRender(renderer);
 
         renderGroup.instructionSet.renderPipes = renderPipes;
 

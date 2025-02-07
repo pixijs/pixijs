@@ -1,7 +1,7 @@
 import { Point } from '../../../../maths/point/Point';
 import { uid } from '../../../../utils/data/uid';
 import { warn } from '../../../../utils/logging/warn';
-import { SVGToGraphicsPath } from '../svg/SVGToGraphicsPath';
+import { parseSVGPath } from '../svg/parseSVGPath';
 import { ShapePath } from './ShapePath';
 
 import type { Matrix } from '../../../../maths/matrix/Matrix';
@@ -25,6 +25,7 @@ export interface PathInstruction
  * This class serves as a collection of drawing commands that can be executed to render shapes and paths on a canvas or
  * similar graphical context. It supports high-level drawing operations like lines, arcs, curves, and more, enabling
  * complex graphic constructions with relative ease.
+ * @memberof scene
  */
 export class GraphicsPath
 {
@@ -36,6 +37,21 @@ export class GraphicsPath
     private _dirty = true;
     // needed for hit testing and bounds calculations
     private _shapePath: ShapePath;
+
+    /**
+     * Controls whether shapes in this path should be checked for holes using the non-zero fill rule.
+     * When true, any closed shape that is fully contained within another shape will become
+     * a hole in that shape during filling operations.
+     *
+     * This follows SVG's non-zero fill rule where:
+     * 1. Shapes are analyzed to find containment relationships
+     * 2. If Shape B is fully contained within Shape A, Shape B becomes a hole in Shape A
+     * 3. Multiple nested holes are supported
+     *
+     * Mainly used internally by the SVG parser to correctly handle holes in complex paths.
+     * When false, all shapes are filled independently without checking for holes.
+     */
+    public checkForHoles: boolean;
 
     /**
      * Provides access to the internal shape path, ensuring it is up-to-date with the current instructions.
@@ -60,12 +76,15 @@ export class GraphicsPath
     /**
      * Creates a `GraphicsPath` instance optionally from an SVG path string or an array of `PathInstruction`.
      * @param instructions - An SVG path string or an array of `PathInstruction` objects.
+     * @param signed
      */
-    constructor(instructions?: string | PathInstruction[])
+    constructor(instructions?: string | PathInstruction[], signed = false)
     {
+        this.checkForHoles = signed;
+
         if (typeof instructions === 'string')
         {
-            SVGToGraphicsPath(instructions, this);
+            parseSVGPath(instructions, this);
         }
         else
         {
@@ -584,6 +603,8 @@ export class GraphicsPath
     public clone(deep = false): GraphicsPath
     {
         const newGraphicsPath2D = new GraphicsPath();
+
+        newGraphicsPath2D.checkForHoles = this.checkForHoles;
 
         if (!deep)
         {

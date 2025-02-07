@@ -1,5 +1,4 @@
 import { Color } from '../../../../color/Color';
-import { Matrix } from '../../../../maths/matrix/Matrix';
 import { Texture } from '../../../../rendering/renderers/shared/texture/Texture';
 import { FillGradient } from '../fill/FillGradient';
 import { FillPattern } from '../fill/FillPattern';
@@ -28,6 +27,11 @@ function isFillGradient(value: unknown): value is FillGradient
     return value instanceof FillGradient;
 }
 
+function isTexture(value: unknown): value is Texture
+{
+    return value instanceof Texture;
+}
+
 /**
  * Handles the case where the value is a ColorLike
  * @param fill
@@ -49,6 +53,21 @@ function handleColorLike(
     fill.color = temp.toNumber();
     fill.alpha = temp.alpha === 1 ? defaultStyle.alpha : temp.alpha;
     fill.texture = Texture.WHITE;
+
+    return { ...defaultStyle, ...fill } as ConvertedFillStyle;
+}
+
+/**
+ * Handles the case where the value is a Texture
+ * @param fill
+ * @param value
+ * @param defaultStyle
+ * @example
+ * graphics.fill(new Texture(0xff0000))
+ */
+function handleTexture(fill: FillStyle, value: Texture, defaultStyle: ConvertedFillStyle): ConvertedFillStyle
+{
+    fill.texture = value;
 
     return { ...defaultStyle, ...fill } as ConvertedFillStyle;
 }
@@ -89,11 +108,12 @@ function handleFillGradient(
     defaultStyle: ConvertedFillStyle
 ): ConvertedFillStyle
 {
-    value.buildLinearGradient();
+    value.buildGradient();
     fill.fill = value;
     fill.color = 0xffffff;
     fill.texture = value.texture;
     fill.matrix = value.transform;
+    fill.textureSpace = value.textureSpace;
 
     return { ...defaultStyle, ...fill } as ConvertedFillStyle;
 }
@@ -115,32 +135,10 @@ function handleFillObject(value: FillStyle, defaultStyle: ConvertedFillStyle): C
 {
     const style = { ...defaultStyle, ...(value as FillStyle) };
 
-    if (style.texture)
-    {
-        if (style.texture !== Texture.WHITE)
-        {
-            const m = style.matrix?.clone().invert() || new Matrix();
-
-            m.translate(style.texture.frame.x, style.texture.frame.y);
-            m.scale(1 / style.texture.source.width, 1 / style.texture.source.height);
-
-            style.matrix = m;
-        }
-
-        const sourceStyle = style.texture.source.style;
-
-        if (sourceStyle.addressMode === 'clamp-to-edge')
-        {
-            sourceStyle.addressMode = 'repeat';
-            sourceStyle.update();
-        }
-    }
-
     const color = Color.shared.setValue(style.color);
 
     style.alpha *= color.alpha;
     style.color = color.toNumber();
-    style.matrix = style.matrix ? style.matrix.clone() : null; // todo: lets optimise this!
 
     return style as ConvertedFillStyle;
 }
@@ -170,6 +168,10 @@ export function toFillStyle<T extends FillInput>(
     if (isColorLike(value))
     {
         return handleColorLike(fill, value, defaultStyle);
+    }
+    else if (isTexture(value))
+    {
+        return handleTexture(fill, value, defaultStyle);
     }
     else if (isFillPattern(value))
     {
