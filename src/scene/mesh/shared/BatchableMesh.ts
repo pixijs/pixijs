@@ -34,10 +34,10 @@ export class BatchableMesh implements DefaultBatchableMeshElement
     public _batch: Batch = null;
     public _indexStart: number;
     public _textureId: number;
+    public _textureMatrixUpdateId: number = -1;
 
     private _transformedUvs: Float32Array;
     private _uvUpdateId: number = -1;
-    private _textureMatrixUpdateId: number = -1;
 
     get blendMode() { return this.renderable.groupBlendMode; }
 

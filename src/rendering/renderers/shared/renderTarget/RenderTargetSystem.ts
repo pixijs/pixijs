@@ -406,7 +406,32 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
     }
 
     /**
-     * Copies a render surface to another texture
+     * Copies a render surface to another texture.
+     *
+     * NOTE:
+     * for sourceRenderSurfaceTexture, The render target must be something that is written too by the renderer
+     *
+     * The following is not valid:
+     * @example
+     * const canvas = document.createElement('canvas')
+     * canvas.width = 200;
+     * canvas.height = 200;
+     *
+     * const ctx = canvas2.getContext('2d')!
+     * ctx.fillStyle = 'red'
+     * ctx.fillRect(0, 0, 200, 200);
+     *
+     * const texture = RenderTexture.create({
+     *   width: 200,
+     *   height: 200,
+     * })
+     * const renderTarget = renderer.renderTarget.getRenderTarget(canvas2);
+     *
+     * renderer.renderTarget.copyToTexture(renderTarget,texture, {x:0,y:0},{width:200,height:200},{x:0,y:0});
+     *
+     * The best way to copy a canvas is to create a texture from it. Then render with that.
+     *
+     * Parsing in a RenderTarget canvas context (with a 2d context)
      * @param sourceRenderSurfaceTexture - the render surface to copy from
      * @param destinationTexture - the texture to copy to
      * @param originSrc - the origin of the copy

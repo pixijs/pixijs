@@ -1,16 +1,15 @@
 import { Bounds } from '../../container/bounds/Bounds';
 import { getGlobalBounds } from '../../container/bounds/getGlobalBounds';
-import { Container } from '../../container/Container';
-import { TilingSprite } from '../TilingSprite';
-import '../init';
+import { NineSliceSprite } from '../NineSliceSprite';
 import '../../mesh/init';
-import { getTexture, getWebGLRenderer } from '@test-utils';
+import '../init';
+import { getTexture } from '@test-utils';
 import { Point } from '~/maths';
 import { Texture } from '~/rendering';
 
 import type { TextureSource } from '~/rendering';
 
-describe('TilingSprite', () =>
+describe('NineSliceSprite', () =>
 {
     type SetupOptions = {
         texture: Texture;
@@ -26,7 +25,7 @@ describe('TilingSprite', () =>
     {
         const { texture, source, width = 256, height = 256, x = 0, y = 0, anchor = { x: 0, y: 0 } } = options;
 
-        const sprite = new TilingSprite({
+        const sprite = new NineSliceSprite({
             texture: texture ?? new Texture({ source }),
             width,
             height,
@@ -65,48 +64,14 @@ describe('TilingSprite', () =>
 
         it('should not throw when destroyed', () =>
         {
-            const sprite = new TilingSprite();
+            const sprite = new NineSliceSprite({ texture: getTexture({ width: 256, height: 256 }) });
 
             expect(() => sprite.destroy()).not.toThrow();
         });
 
-        it('should clean up correctly on the pipe and system when destroyed using simple render', async () =>
-        {
-            const renderer = await getWebGLRenderer();
-
-            const container = new Container();
-
-            const sprite = new TilingSprite({
-                texture: getTexture({ width: 256, height: 256 })
-            });
-
-            container.addChild(sprite);
-
-            renderer.render({ container });
-
-            const renderData = renderer.renderPipes.tilingSprite['_tilingSpriteDataHash'][sprite.uid];
-
-            expect(renderData).not.toBeNull();
-
-            expect(renderData.shader).toBeUndefined();
-            expect(renderData.batchableMesh).not.toBeNull();
-
-            sprite.texture = getTexture({ width: 10, height: 10 });
-
-            renderer.render({ container });
-
-            expect(renderData.shader).not.toBeNull();
-
-            sprite.destroy();
-
-            expect(renderer.renderPipes.tilingSprite['_tilingSpriteDataHash'][sprite.uid]).toBeNull();
-
-            expect(sprite.texture).toBeNull();
-        });
-
         it('should global bounds to be correct', async () =>
         {
-            const sprite = new TilingSprite({
+            const sprite = new NineSliceSprite({
                 texture: getTexture({ width: 256, height: 256 })
             });
 
@@ -123,7 +88,7 @@ describe('TilingSprite', () =>
     {
         it('should have the correct bounds', async () =>
         {
-            const sprite = new TilingSprite({
+            const sprite = new NineSliceSprite({
                 texture: getTexture({ width: 256, height: 256 }),
                 anchor: 0.5
             });
@@ -196,16 +161,6 @@ describe('TilingSprite', () =>
             const sprite = setup({ texture });
 
             expect(sprite.texture).toEqual(texture);
-        });
-
-        it('should use empty texture when no texture passed', () =>
-        {
-            const tilingSprite = new TilingSprite({
-                width: 1,
-                height: 1,
-            });
-
-            expect(tilingSprite.texture).toEqual(Texture.EMPTY);
         });
     });
 

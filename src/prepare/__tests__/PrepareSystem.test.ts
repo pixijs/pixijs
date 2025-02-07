@@ -86,6 +86,19 @@ describe('PrepareSystem', () =>
             expect(prepare.getQueue()).toHaveLength(1);
         });
 
+        it('should upload a graphics correctly', async () =>
+        {
+            const { prepare } = await setup();
+
+            const graphics = new Graphics();
+            const spy = jest.spyOn(prepare as any, 'uploadGraphicsContext');
+
+            await prepare.upload(graphics);
+
+            expect(prepare.getQueue()).toHaveLength(0);
+            expect(spy).toHaveBeenCalledWith(graphics.context);
+        });
+
         it('should upload a texture source', async () =>
         {
             const { prepare } = await setup();

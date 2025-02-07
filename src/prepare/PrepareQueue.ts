@@ -89,7 +89,7 @@ export abstract class PrepareQueue extends PrepareBase
      */
     protected resolveGraphicsContextQueueItem(graphicsContext: GraphicsContext): PrepareQueueItem | null
     {
-        this.renderer.graphicsContext.getContextRenderData(graphicsContext);
+        this.renderer.graphicsContext.getGpuContext(graphicsContext);
 
         const { instructions } = graphicsContext;
 
