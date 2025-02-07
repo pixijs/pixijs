@@ -35,7 +35,7 @@ export interface TilingSpriteOptions extends ContainerOptions
      * The anchor point of the sprite
      * @default {x: 0, y: 0}
      */
-    anchor?: PointData
+    anchor?: PointData | number;
     /**
      * The offset of the image that is being tiled.
      * @default {x: 0, y: 0}
@@ -426,11 +426,11 @@ export class TilingSprite extends ViewContainer implements View, Instruction
         const width = this._width;
         const height = this._height;
 
-        bounds.maxX = -anchor._x * width;
-        bounds.minX = bounds.maxX + width;
+        bounds.minX = -anchor._x * width;
+        bounds.maxX = bounds.minX + width;
 
-        bounds.maxY = -anchor._y * height;
-        bounds.minY = bounds.maxY + height;
+        bounds.minY = -anchor._y * height;
+        bounds.maxY = bounds.minY + height;
     }
 
     /**
