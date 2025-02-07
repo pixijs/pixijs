@@ -7,6 +7,7 @@
 /// <reference path="../src/scene/graphics/GraphicsMixins.d.ts" />
 /// <reference path="../src/scene/mesh/MeshMixins.d.ts" />
 /// <reference path="../src/scene/sprite-tiling/TilingSpriteMixins.d.ts" />
+/// <reference path="../src/scene/sprite-nine-slice/NineSliceSpriteMixins.d.ts" />
 /// <reference path="../src/scene/text/TextMixins.d.ts" />
 /// <reference path="../src/scene/text-bitmap/TextBitmapMixins.d.ts" />
 /// <reference path="../src/scene/text-html/TextHTMLMixins.d.ts" />
