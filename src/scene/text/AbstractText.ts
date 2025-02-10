@@ -5,7 +5,6 @@ import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer'
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';
-import type { Dict } from '../../utils/types';
 import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
 import type { HTMLTextStyle, HTMLTextStyleOptions } from '../text-html/HTMLTextStyle';
@@ -95,15 +94,6 @@ export abstract class AbstractText<
 
     protected _text: string;
     private readonly _styleClass: new (options: TEXT_STYLE_OPTIONS) => TEXT_STYLE;
-
-    /**
-     * Mixes all enumerable properties and methods from a source object to AbstractText.
-     * @param source - The source of properties and methods to mix in.
-     */
-    public static override mixin(source: Dict<any>): void
-    {
-        Object.defineProperties(AbstractText.prototype, Object.getOwnPropertyDescriptors(source));
-    }
 
     constructor(
         options: TextOptions<TEXT_STYLE, TEXT_STYLE_OPTIONS>,

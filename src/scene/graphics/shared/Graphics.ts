@@ -7,7 +7,6 @@ import type { Matrix } from '../../../maths/matrix/Matrix';
 import type { PointData } from '../../../maths/point/PointData';
 import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import type { Dict } from '../../../utils/types';
 import type { Bounds } from '../../container/bounds/Bounds';
 import type { ContextDestroyOptions, DestroyOptions } from '../../container/destroyTypes';
 import type { FillInput, FillStyle, StrokeStyle } from './FillTypes';
@@ -48,15 +47,6 @@ export class Graphics extends ViewContainer implements Instruction
 
     private _context: GraphicsContext;
     private readonly _ownedContext: GraphicsContext;
-
-    /**
-     * Mixes all enumerable properties and methods from a source object to Graphics.
-     * @param source - The source of properties and methods to mix in.
-     */
-    public static mixin(source: Dict<any>): void
-    {
-        Object.defineProperties(Graphics.prototype, Object.getOwnPropertyDescriptors(source));
-    }
 
     /**
      * @param options - Options for the Graphics.

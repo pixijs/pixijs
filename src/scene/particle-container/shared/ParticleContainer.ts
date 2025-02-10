@@ -6,7 +6,6 @@ import { particleData } from './particleData';
 import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import type { Dict } from '../../../utils/types';
 import type { ContainerChild } from '../../container/Container';
 import type { DestroyOptions } from '../../container/destroyTypes';
 import type { IParticle } from './Particle';
@@ -149,15 +148,6 @@ export class ParticleContainer extends ViewContainer implements Instruction
      * Defaults to the first childs texture if not set
      */
     public texture: Texture;
-
-    /**
-     * Mixes all enumerable properties and methods from a source object to ParticleContainer.
-     * @param source - The source of properties and methods to mix in.
-     */
-    public static mixin(source: Dict<any>): void
-    {
-        Object.defineProperties(ParticleContainer.prototype, Object.getOwnPropertyDescriptors(source));
-    }
 
     /**
      * @param options - The options for creating the sprite.

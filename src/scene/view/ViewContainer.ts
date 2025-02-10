@@ -7,7 +7,6 @@ import { type IRenderLayer } from '../layers/RenderLayer';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';
-import type { Dict } from '../../utils/types';
 import type { DestroyOptions } from '../container/destroyTypes';
 
 export interface ViewContainerOptions extends ContainerOptions, PixiMixins.ViewContainerOptions {}
@@ -66,15 +65,6 @@ export abstract class ViewContainer extends Container implements View
     set roundPixels(value: boolean)
     {
         this._roundPixels = value ? 1 : 0;
-    }
-
-    /**
-     * Mixes all enumerable properties and methods from a source object to ViewContainer.
-     * @param source - The source of properties and methods to mix in.
-     */
-    public static mixin(source: Dict<any>): void
-    {
-        Object.defineProperties(ViewContainer.prototype, Object.getOwnPropertyDescriptors(source));
     }
 
     // eslint-disable-next-line @typescript-eslint/no-useless-constructor

@@ -10,7 +10,6 @@ import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
 import type { View } from '../../rendering/renderers/shared/view/View';
-import type { Dict } from '../../utils/types';
 import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
 
@@ -174,15 +173,6 @@ export class TilingSprite extends ViewContainer implements View, Instruction
 
     private _width: number;
     private _height: number;
-
-    /**
-     * Mixes all enumerable properties and methods from a source object to TilingSprite.
-     * @param source - The source of properties and methods to mix in.
-     */
-    public static override mixin(source: Dict<any>): void
-    {
-        Object.defineProperties(TilingSprite.prototype, Object.getOwnPropertyDescriptors(source));
-    }
 
     /**
      * @param {rendering.Texture | scene.TilingSpriteOptions} options - The options for creating the tiling sprite.

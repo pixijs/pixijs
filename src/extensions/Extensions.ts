@@ -396,6 +396,11 @@ const extensions = {
             }
         );
     },
+
+    mixin(Target: any, source: Parameters<typeof Object.getOwnPropertyDescriptors>[0])
+    {
+        Object.defineProperties(Target.prototype, Object.getOwnPropertyDescriptors(source));
+    }
 };
 
 export {

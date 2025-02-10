@@ -3,7 +3,6 @@ import { UPDATE_PRIORITY } from '../../ticker/const';
 import { Ticker } from '../../ticker/Ticker';
 import { Sprite } from '../sprite/Sprite';
 
-import type { Dict } from '../../utils/types';
 import type { SpriteOptions } from '../sprite/Sprite';
 
 export type AnimatedSpriteFrames = Texture[] | FrameObject[];
@@ -145,15 +144,6 @@ export class AnimatedSprite extends Sprite
 
     /** The texture index that was displayed last time. */
     private _previousFrame: number;
-
-    /**
-     * Mixes all enumerable properties and methods from a source object to AnimatedSprite.
-     * @param source - The source of properties and methods to mix in.
-     */
-    public static override mixin(source: Dict<any>): void
-    {
-        Object.defineProperties(AnimatedSprite.prototype, Object.getOwnPropertyDescriptors(source));
-    }
 
     /**
      * @param frames - Collection of textures or frames to use.

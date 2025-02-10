@@ -7,7 +7,6 @@ import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer'
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
 import type { TextureSourceLike } from '../../rendering/renderers/shared/texture/Texture';
-import type { Dict } from '../../utils/types';
 import type { BoundsData } from '../container/bounds/Bounds';
 import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
@@ -82,15 +81,6 @@ export class Sprite extends ViewContainer
 
     private _width: number;
     private _height: number;
-
-    /**
-     * Mixes all enumerable properties and methods from a source object to Sprite.
-     * @param source - The source of properties and methods to mix in.
-     */
-    public static mixin(source: Dict<any>): void
-    {
-        Object.defineProperties(Sprite.prototype, Object.getOwnPropertyDescriptors(source));
-    }
 
     /**
      * @param options - The options for creating the sprite.

@@ -22,7 +22,9 @@ export interface ChildrenHelperMixin<C = ContainerChild>
     reparentChildAt<U extends C>(child: U, index: number): U;
 }
 
-export const childrenHelperMixin: Partial<Container> = {
+// type MixinHelper<T extends Container> =
+
+export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
 
     allowChildren: true,
 

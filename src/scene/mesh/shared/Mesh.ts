@@ -11,7 +11,6 @@ import type { Topology } from '../../../rendering/renderers/shared/geometry/cons
 import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import type { View } from '../../../rendering/renderers/shared/view/View';
-import type { Dict } from '../../../utils/types';
 import type { ContainerOptions } from '../../container/Container';
 import type { DestroyOptions } from '../../container/destroyTypes';
 
@@ -91,15 +90,6 @@ export class Mesh<
     public _geometry: GEOMETRY;
     /** @ignore */
     public _shader: SHADER | null = null;
-
-    /**
-     * Mixes all enumerable properties and methods from a source object to Mesh.
-     * @param source - The source of properties and methods to mix in.
-     */
-    public static mixin(source: Dict<any>): void
-    {
-        Object.defineProperties(Mesh.prototype, Object.getOwnPropertyDescriptors(source));
-    }
 
     /**
      * @param {scene.MeshOptions} options - options for the mesh instance

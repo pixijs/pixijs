@@ -7,7 +7,6 @@ import { type PointData } from '~/maths/point/PointData';
 
 import type { Size } from '../../maths/misc/Size';
 import type { View } from '../../rendering/renderers/shared/view/View';
-import type { Dict } from '../../utils/types';
 import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
 
@@ -94,15 +93,6 @@ export class NineSliceSprite extends ViewContainer implements View
     private _bottomHeight: number;
     private _width: number;
     private _height: number;
-
-    /**
-     * Mixes all enumerable properties and methods from a source object to NineSliceSprite.
-     * @param source - The source of properties and methods to mix in.
-     */
-    public static override mixin(source: Dict<any>): void
-    {
-        Object.defineProperties(NineSliceSprite.prototype, Object.getOwnPropertyDescriptors(source));
-    }
 
     /**
      * @param {scene.NineSliceSpriteOptions|Texture} options - Options to use
