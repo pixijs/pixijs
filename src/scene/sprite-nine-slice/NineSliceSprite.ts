@@ -352,11 +352,11 @@ export class NineSliceSprite extends ViewContainer implements View
         const width = this._width;
         const height = this._height;
 
-        bounds.maxX = -anchor._x * width;
-        bounds.minX = bounds.maxX + width;
+        bounds.minX = -anchor._x * width;
+        bounds.maxX = bounds.minX + width;
 
-        bounds.maxY = -anchor._y * height;
-        bounds.minY = bounds.maxY + height;
+        bounds.minY = -anchor._y * height;
+        bounds.maxY = bounds.minY + height;
     }
 }
 
