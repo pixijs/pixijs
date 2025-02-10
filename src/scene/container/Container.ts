@@ -360,7 +360,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         // #if _DEBUG
         deprecation('8.8.0', 'Container.mixin is deprecated, please use extensions.mixin instead.');
         // #endif
-        Object.defineProperties(Container.prototype, Object.getOwnPropertyDescriptors(source));
+        extensions.mixin(Container, source);
     }
 
     /** unique id for this container */
@@ -1400,15 +1400,18 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     }
 }
 
-extensions.mixin(Container, childrenHelperMixin);
-extensions.mixin(Container, getFastGlobalBoundsMixin);
-extensions.mixin(Container, toLocalGlobalMixin);
-extensions.mixin(Container, onRenderMixin);
-extensions.mixin(Container, measureMixin);
-extensions.mixin(Container, effectsMixin);
-extensions.mixin(Container, findMixin);
-extensions.mixin(Container, sortMixin);
-extensions.mixin(Container, cullingMixin);
-extensions.mixin(Container, cacheAsTextureMixin);
-extensions.mixin(Container, getGlobalMixin);
-extensions.mixin(Container, collectRenderablesMixin);
+extensions.mixin(
+    Container,
+    childrenHelperMixin,
+    getFastGlobalBoundsMixin,
+    toLocalGlobalMixin,
+    onRenderMixin,
+    measureMixin,
+    effectsMixin,
+    findMixin,
+    sortMixin,
+    cullingMixin,
+    cacheAsTextureMixin,
+    getGlobalMixin,
+    collectRenderablesMixin,
+);
