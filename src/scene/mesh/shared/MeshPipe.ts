@@ -104,9 +104,14 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
 
             const batchableMesh = this._getBatchableMesh(mesh);
 
+            if (batchableMesh.texture.uid !== mesh._texture.uid)
+            {
+                batchableMesh._textureMatrixUpdateId = -1;
+            }
+
             return !batchableMesh._batcher.checkAndUpdateTexture(
                 batchableMesh,
-                mesh.texture
+                mesh._texture
             );
         }
 
@@ -123,7 +128,7 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
         {
             const gpuBatchableMesh = this._getBatchableMesh(mesh);
 
-            gpuBatchableMesh.texture = mesh._texture;
+            gpuBatchableMesh.setTexture(mesh._texture);
             gpuBatchableMesh.geometry = mesh._geometry;
 
             batcher.addToBatch(gpuBatchableMesh, instructionSet);
@@ -215,7 +220,7 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
         const gpuMesh: BatchableMesh = BigPool.get(BatchableMesh);
 
         gpuMesh.renderable = mesh;
-        gpuMesh.texture = mesh._texture;
+        gpuMesh.setTexture(mesh._texture);
         gpuMesh.transform = mesh.groupTransform;
         gpuMesh.roundPixels = (this.renderer._roundPixels | mesh._roundPixels) as 0 | 1;
 
