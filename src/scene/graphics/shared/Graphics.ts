@@ -1,5 +1,5 @@
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
-import { ViewContainer } from '../../view/ViewContainer';
+import { ViewContainer, type ViewContainerOptions } from '../../view/ViewContainer';
 import { GraphicsContext } from './GraphicsContext';
 
 import type { ColorSource } from '../../../color/Color';
@@ -8,7 +8,6 @@ import type { PointData } from '../../../maths/point/PointData';
 import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { Bounds } from '../../container/bounds/Bounds';
-import type { ContainerOptions } from '../../container/Container';
 import type { ContextDestroyOptions, DestroyOptions } from '../../container/destroyTypes';
 import type { FillInput, FillStyle, StrokeStyle } from './FillTypes';
 import type { GraphicsPath } from './path/GraphicsPath';
@@ -25,13 +24,14 @@ import type { RoundedPoint } from './path/roundShape';
  * @see {@link scene.Graphics}
  * @memberof scene
  */
-export interface GraphicsOptions extends ContainerOptions
+export interface GraphicsOptions extends PixiMixins.GraphicsOptions, ViewContainerOptions
 {
     /** The GraphicsContext to use, useful for reuse and optimisation */
     context?: GraphicsContext;
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
+export interface Graphics extends PixiMixins.Graphics, ViewContainer {}
 
 /**
  * The Graphics class is primarily used to render primitive shapes such as lines, circles and
