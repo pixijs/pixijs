@@ -7,6 +7,8 @@ import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from '../text/AbstractText';
 import type { TextStyleOptions } from '../text/TextStyle';
 
+export interface BitmapText extends PixiMixins.BitmapText, AbstractText<TextStyle, TextStyleOptions> {}
+
 /**
  * A BitmapText Object will create a line or multiple lines of text.
  *

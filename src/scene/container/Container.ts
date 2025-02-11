@@ -1,6 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import { Color, type ColorSource } from '../../color/Color';
 import { cullingMixin } from '../../culling/cullingMixin';
+import { extensions } from '../../extensions/Extensions';
 import { Matrix } from '../../maths/matrix/Matrix';
 import { DEG_TO_RAD, RAD_TO_DEG } from '../../maths/misc/const';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
@@ -352,10 +353,14 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     /**
      * Mixes all enumerable properties and methods from a source object to Container.
      * @param source - The source of properties and methods to mix in.
+     * @deprecated since 8.8.0
      */
     public static mixin(source: Dict<any>): void
     {
-        Object.defineProperties(Container.prototype, Object.getOwnPropertyDescriptors(source));
+        // #if _DEBUG
+        deprecation('8.8.0', 'Container.mixin is deprecated, please use extensions.mixin instead.');
+        // #endif
+        extensions.mixin(Container, source);
     }
 
     /** unique id for this container */
@@ -1395,15 +1400,18 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     }
 }
 
-Container.mixin(childrenHelperMixin);
-Container.mixin(getFastGlobalBoundsMixin);
-Container.mixin(toLocalGlobalMixin);
-Container.mixin(onRenderMixin);
-Container.mixin(measureMixin);
-Container.mixin(effectsMixin);
-Container.mixin(findMixin);
-Container.mixin(sortMixin);
-Container.mixin(cullingMixin);
-Container.mixin(cacheAsTextureMixin);
-Container.mixin(getGlobalMixin);
-Container.mixin(collectRenderablesMixin);
+extensions.mixin(
+    Container,
+    childrenHelperMixin,
+    getFastGlobalBoundsMixin,
+    toLocalGlobalMixin,
+    onRenderMixin,
+    measureMixin,
+    effectsMixin,
+    findMixin,
+    sortMixin,
+    cullingMixin,
+    cacheAsTextureMixin,
+    getGlobalMixin,
+    collectRenderablesMixin,
+);

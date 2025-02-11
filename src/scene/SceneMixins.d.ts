@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import { type CollectRenderablesMixin } from './container/container-mixins/collectRenderablesMixin';
 import { type GetFastGlobalBoundsMixin } from './container/container-mixins/getFastGlobalBoundsMixin';
 
@@ -37,6 +38,38 @@ declare global
             FindMixinConstructor,
             SortMixinConstructor,
             CacheAsTextureMixinConstructor {}
+
+        interface ViewContainer {}
+        interface ViewContainerOptions {}
+
+        interface Graphics {}
+        interface GraphicsOptions {}
+
+        interface Mesh {}
+        interface MeshOptions {}
+
+        interface ParticleContainer {}
+        interface ParticleContainerOptions {}
+
+        interface Sprite {}
+        interface SpriteOptions {}
+
+        interface AnimatedSprite {}
+        interface AnimatedSpriteOptions {}
+
+        interface NineSliceSprite {}
+        interface NineSliceSpriteOptions {}
+
+        interface TilingSprite {}
+        interface TilingSpriteOptions {}
+
+        interface Text {}
+        interface BitmapText {}
+        interface TextOptions {}
+
+        interface HTMLText {}
+        interface HTMLTextOptions {}
+
     }
 }
 

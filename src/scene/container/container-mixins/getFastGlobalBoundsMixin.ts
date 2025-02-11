@@ -99,7 +99,7 @@ export const getFastGlobalBoundsMixin: Partial<Container> = {
         let localBounds = bounds;
 
         // Skip if the container is not in the current render layer when factoring render layers.
-        if (factorRenderLayers && this.parentRenderLayer !== currentLayer) return;
+        if (factorRenderLayers && this.parentRenderLayer && this.parentRenderLayer !== currentLayer) return;
 
         // Skip if the container is not fully visible or not measurable.
         if (this.localDisplayStatus !== 0b111 || (!this.measurable))

@@ -69,7 +69,7 @@ export abstract class PrepareUpload extends PrepareQueue
      */
     protected uploadGraphicsContext(graphicsContext: GraphicsContext): void
     {
-        this.renderer.graphicsContext.getContextRenderData(graphicsContext);
+        this.renderer.graphicsContext.getGpuContext(graphicsContext);
 
         const { instructions } = graphicsContext;
 
