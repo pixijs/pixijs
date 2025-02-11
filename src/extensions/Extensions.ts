@@ -396,6 +396,20 @@ const extensions = {
             }
         );
     },
+
+    /**
+     * Mixin the source object into the target object.
+     * @param Target - The target object to mix into.
+     * @param sources - The source(s) object to mix from
+     */
+    mixin(Target: any, ...sources: Parameters<typeof Object.getOwnPropertyDescriptors>[0][])
+    {
+        // Apply each source's properties to the target prototype
+        for (const source of sources)
+        {
+            Object.defineProperties(Target.prototype, Object.getOwnPropertyDescriptors(source));
+        }
+    }
 };
 
 export {

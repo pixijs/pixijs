@@ -100,4 +100,4 @@ import { FederatedContainer } from './FederatedEventTarget';
 /* eslint-enable max-len */
 
 extensions.add(EventSystem);
-Container.mixin(FederatedContainer);
+extensions.mixin(Container, FederatedContainer);

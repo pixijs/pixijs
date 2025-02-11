@@ -178,4 +178,47 @@ describe('extensions', () =>
             expect(list2).toHaveLength(0);
         });
     });
+
+    describe('mixin', () =>
+    {
+        it('should mixin properties from source objects into the target object', () =>
+        {
+            class Target {}
+            const source1 = { prop1: 'value1' };
+            const source2 = { prop2: 'value2' };
+
+            extensions.mixin(Target, source1, source2);
+
+            const targetInstance = new Target();
+
+            expect(targetInstance).toHaveProperty('prop1', 'value1');
+            expect(targetInstance).toHaveProperty('prop2', 'value2');
+        });
+
+        it('should not affect the prototype chain of the source objects', () =>
+        {
+            class Target {}
+            const source = { prop: 'value' };
+
+            extensions.mixin(Target, source);
+
+            expect(Object.getPrototypeOf(source)).toBe(Object.prototype);
+        });
+
+        it('should handle multiple sources correctly', () =>
+        {
+            class Target {}
+            const source1 = { prop1: 'value1' };
+            const source2 = { prop2: 'value2' };
+            const source3 = { prop3: 'value3' };
+
+            extensions.mixin(Target, source1, source2, source3);
+
+            const targetInstance = new Target();
+
+            expect(targetInstance).toHaveProperty('prop1', 'value1');
+            expect(targetInstance).toHaveProperty('prop2', 'value2');
+            expect(targetInstance).toHaveProperty('prop3', 'value3');
+        });
+    });
 });

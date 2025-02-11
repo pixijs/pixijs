@@ -12,7 +12,8 @@ import type { HTMLTextStyleOptions } from './HTMLTextStyle';
  * @property {text.HTMLTextStyle | text.HTMLTextStyleOptions} [style] - The style of the text.
  * @memberof text
  */
-export type HTMLTextOptions = TextOptions<HTMLTextStyle, HTMLTextStyleOptions>;
+export type HTMLTextOptions = TextOptions<HTMLTextStyle, HTMLTextStyleOptions> & PixiMixins.HTMLTextOptions;
+export interface HTMLText extends PixiMixins.HTMLText, AbstractText<HTMLTextStyle, HTMLTextStyleOptions> {}
 
 /**
  * A HTMLText Object will create a line or multiple lines of text.
