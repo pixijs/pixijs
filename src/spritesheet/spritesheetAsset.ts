@@ -198,6 +198,7 @@ export const spritesheetAsset = {
                     promises.push(loader.load<Spritesheet<SpriteSheetJson>>({
                         src: itemUrl,
                         data: {
+                            textureOptions,
                             ignoreMultiPack: true,
                         }
                     }));
