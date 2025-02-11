@@ -173,6 +173,22 @@ export class CanvasTextSystem implements System
         this._activeTextures[textKey].usageCount++;
     }
 
+    /**
+     * Returns a texture that was created wit the above `getTexture` function.
+     * Handy if you are done with a texture and want to return it to the pool.
+     * @param texture - The texture to be returned.
+     */
+    public returnTexture(texture: Texture)
+    {
+        const source = texture.source;
+
+        source.resource = null;
+        source.uploadMethodId = 'unknown';
+        source.alphaMode = 'no-premultiply-alpha';
+
+        TexturePool.returnTexture(texture);
+    }
+
     public decreaseReferenceCount(textKey: string)
     {
         const activeTexture = this._activeTextures[textKey];
@@ -182,13 +198,8 @@ export class CanvasTextSystem implements System
         if (activeTexture.usageCount === 0)
         {
             CanvasPool.returnCanvasAndContext(activeTexture.canvasAndContext);
-            TexturePool.returnTexture(activeTexture.texture);
 
-            const source = activeTexture.texture.source;
-
-            source.resource = null;
-            source.uploadMethodId = 'unknown';
-            source.alphaMode = 'no-premultiply-alpha';
+            this.returnTexture(activeTexture.texture);
 
             this._activeTextures[textKey] = null;
         }
