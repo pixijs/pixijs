@@ -209,6 +209,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
 
         htmlText._resolution = htmlText._autoResolution ? this._renderer.resolution : htmlText.resolution;
         this._gpuText[htmlText.uid] = gpuTextData;
+        this._updateText(htmlText);
         // TODO perhaps manage this outside this pipe? (a bit like how we update / add)
         htmlText.on('destroyed', this._destroyRenderableBound);
 
