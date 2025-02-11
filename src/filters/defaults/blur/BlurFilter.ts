@@ -137,7 +137,7 @@ export class BlurFilter extends Filter
             this.blurYFilter.blendMode = this.blendMode;
             this.blurYFilter.apply(filterManager, tempTexture, output, clearMode);
 
-            TexturePool.returnTexture(tempTexture);
+            TexturePool.addTexture(tempTexture);
         }
         else if (yStrength)
         {

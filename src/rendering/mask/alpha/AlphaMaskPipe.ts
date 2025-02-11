@@ -248,7 +248,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
 
             if (renderMask)
             {
-                TexturePool.returnTexture(maskData.filterTexture);
+                TexturePool.addTexture(maskData.filterTexture);
             }
 
             BigPool.return(maskData.filterEffect);
