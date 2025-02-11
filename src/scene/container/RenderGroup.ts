@@ -150,7 +150,7 @@ export class RenderGroup implements Instruction
         this.isCachedAsTexture = false;
         if (this.texture)
         {
-            TexturePool.returnTexture(this.texture);
+            TexturePool.addTexture(this.texture);
             this.texture = null;
         }
     }
