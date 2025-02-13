@@ -1,6 +1,5 @@
 import { ExtensionType } from '../extensions/Extensions';
 import { Matrix } from '../maths/matrix/Matrix';
-import { Point } from '../maths/point/Point';
 import { BindGroup } from '../rendering/renderers/gpu/shader/BindGroup';
 import { Geometry } from '../rendering/renderers/shared/geometry/Geometry';
 import { UniformGroup } from '../rendering/renderers/shared/shader/UniformGroup';
@@ -68,17 +67,18 @@ export interface FilterInstruction extends Instruction
     filterEffect: FilterEffect,
 }
 
-export interface FilterData
+class FilterData
 {
-    skip: boolean;
-    enabledLength?: number;
-    inputTexture: Texture
-    bounds: Bounds,
-    blendRequired: boolean,
-    container: Container,
-    filterEffect: FilterEffect,
-    previousRenderSurface: RenderSurface,
-    backTexture?: Texture,
+    public skip = false;
+    public inputTexture: Texture = null;
+    public backTexture?: Texture = null;
+    public bounds = new Bounds();
+    public container: Container = null;
+    public filterEffect: FilterEffect = null;
+    public blendRequired: boolean = false;
+    public outputRenderSurface: RenderSurface = null;
+    public outputOffset = { x: 0, y: 0 };
+    public globalFrame = { x: 0, y: 0, width: 0, height: 0 };
 }
 
 /**
@@ -133,16 +133,9 @@ export class FilterSystem implements System
 
         const filters = instruction.filterEffect.filters;
 
-        if (!this._filterStack[this._filterStackIndex])
-        {
-            this._filterStack[this._filterStackIndex] = this._getFilterData();
-        }
-
         // get a filter data from the stack. They can be reused multiple times each frame,
         // so we don't need to worry about overwriting them in a single pass.
-        const filterData = this._filterStack[this._filterStackIndex];
-
-        this._filterStackIndex++;
+        const filterData = this._pushFilterData();
 
         // if there are no filters, we skip the pass
         if (filters.length === 0)
@@ -294,16 +287,59 @@ export class FilterSystem implements System
             return;
         }
 
+        // set the global frame to the root texture
+
+        // get previous bounds.. we must take into account skipped filters also..
+
+        // // to find the previous resolution we need to account for the skipped filters
+        // // the following will find the last non skipped filter...
+
+        const previousFilterData = this._getPreviousFilterData();
+
+        const rootTexture = this.renderer.renderTarget.rootRenderTarget.colorTexture;
+
+        let globalResolution = rootTexture.source._resolution;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        if (previousFilterData)
+        {
+            offsetX = previousFilterData.bounds.minX;
+            offsetY = previousFilterData.bounds.minY;
+            globalResolution = previousFilterData.inputTexture.source._resolution;
+        }
+
+        filterData.outputOffset.x = bounds.minX - offsetX;
+        filterData.outputOffset.y = bounds.minY - offsetY;
+
+        const globalFrame = filterData.globalFrame;
+
+        globalFrame.x = offsetX * globalResolution;
+        globalFrame.y = offsetY * globalResolution;
+        globalFrame.width = rootTexture.source.width * globalResolution;
+        globalFrame.height = rootTexture.source.width * globalResolution;
+
+        /// /////////
+
         // set all the filter data
         filterData.skip = false;
-
-        filterData.bounds = bounds;
         filterData.blendRequired = blendRequired;
         filterData.container = instruction.container;
         filterData.filterEffect = instruction.filterEffect;
+        filterData.outputRenderSurface = renderer.renderTarget.renderSurface;
+        filterData.backTexture = Texture.EMPTY;
 
-        filterData.previousRenderSurface = renderer.renderTarget.renderSurface;
+        if (filterData.blendRequired)
+        {
+            renderer.renderTarget.finishRenderPass();
+            // this actually forces the current commandQueue to render everything so far.
+            // if we don't do this, we won't be able to copy pixels for the background
+            const renderTarget = renderer.renderTarget.getRenderTarget(filterData.outputRenderSurface);
 
+            filterData.backTexture = this.getBackTexture(renderTarget, bounds, previousFilterData?.bounds);
+        }
+
+        /// ///
         // bind...
         // get a P02 texture from our pool...
         filterData.inputTexture = TexturePool.getOptimalTexture(
@@ -325,8 +361,7 @@ export class FilterSystem implements System
     {
         const renderer = this.renderer;
 
-        this._filterStackIndex--;
-        const filterData = this._filterStack[this._filterStackIndex];
+        const filterData = this._popFilterData();
 
         // if we are skipping this filter then we just do nothing :D
         if (filterData.skip)
@@ -334,28 +369,13 @@ export class FilterSystem implements System
             return;
         }
 
+        renderer.renderTarget.finishRenderPass();
+
         this._activeFilterData = filterData;
 
         const inputTexture = filterData.inputTexture;
 
         const bounds = filterData.bounds;
-
-        let backTexture = Texture.EMPTY;
-
-        renderer.renderTarget.finishRenderPass();
-
-        if (filterData.blendRequired)
-        {
-            // this actually forces the current commandQueue to render everything so far.
-            // if we don't do this, we won't be able to copy pixels for the background
-            const previousBounds = this._filterStackIndex > 0 ? this._filterStack[this._filterStackIndex - 1].bounds : null;
-
-            const renderTarget = renderer.renderTarget.getRenderTarget(filterData.previousRenderSurface);
-
-            backTexture = this.getBackTexture(renderTarget, bounds, previousBounds);
-        }
-
-        filterData.backTexture = backTexture;
 
         const filters = filterData.filterEffect.filters;
 
@@ -365,7 +385,7 @@ export class FilterSystem implements System
 
         // update the resources on the bind group...
         this._globalFilterBindGroup.setResource(inputTexture.source.style, 2);
-        this._globalFilterBindGroup.setResource(backTexture.source, 3);
+        this._globalFilterBindGroup.setResource(filterData.backTexture.source, 3);
 
         renderer.globalUniforms.pop();
 
@@ -373,7 +393,7 @@ export class FilterSystem implements System
         {
             // render a single filter...
             // this.applyFilter(filters[0], inputTexture, filterData.previousRenderSurface, false);
-            filters[0].apply(this, inputTexture, filterData.previousRenderSurface, false);
+            filters[0].apply(this, inputTexture, filterData.outputRenderSurface, false);
 
             // return the texture to the pool so we can reuse the next frame
             TexturePool.returnTexture(inputTexture);
@@ -404,7 +424,7 @@ export class FilterSystem implements System
                 flop = t;
             }
 
-            filters[i].apply(this, flip, filterData.previousRenderSurface, false);
+            filters[i].apply(this, flip, filterData.outputRenderSurface, false);
 
             // return those textures for later!
             TexturePool.returnTexture(flip);
@@ -414,7 +434,7 @@ export class FilterSystem implements System
         // if we made a background texture, lets return that also
         if (filterData.blendRequired)
         {
-            TexturePool.returnTexture(backTexture);
+            TexturePool.returnTexture(filterData.backTexture);
         }
     }
 
@@ -461,28 +481,7 @@ export class FilterSystem implements System
 
         const filterData = this._filterStack[this._filterStackIndex];
 
-        const bounds = filterData.bounds;
-
-        const offset = Point.shared;
-        const previousRenderSurface = filterData.previousRenderSurface;
-
-        const isFinalTarget = previousRenderSurface === output;
-
-        let resolution = this.renderer.renderTarget.rootRenderTarget.colorTexture.source._resolution;
-
-        // to find the previous resolution we need to account for the skipped filters
-        // the following will find the last non skipped filter...
-        let currentIndex = this._filterStackIndex - 1;
-
-        while (currentIndex > 0 && this._filterStack[currentIndex].skip)
-        {
-            --currentIndex;
-        }
-
-        if (currentIndex > 0)
-        {
-            resolution = this._filterStack[currentIndex].inputTexture.source._resolution;
-        }
+        const previousRenderSurface = filterData.outputRenderSurface;
 
         const filterUniforms = this._filterGlobalUniforms;
         const uniforms = filterUniforms.uniforms;
@@ -495,27 +494,10 @@ export class FilterSystem implements System
         const outputTexture = uniforms.uOutputTexture;
 
         // are we rendering back to the original surface?
-        if (isFinalTarget)
+        if (previousRenderSurface === output)
         {
-            let lastIndex = this._filterStackIndex;
-
-            // get previous bounds.. we must take into account skipped filters also..
-            while (lastIndex > 0)
-            {
-                lastIndex--;
-                const filterData = this._filterStack[this._filterStackIndex - 1];
-
-                if (!filterData.skip)
-                {
-                    offset.x = filterData.bounds.minX;
-                    offset.y = filterData.bounds.minY;
-
-                    break;
-                }
-            }
-
-            outputFrame[0] = bounds.minX - offset.x;
-            outputFrame[1] = bounds.minY - offset.y;
+            outputFrame[0] = filterData.outputOffset.x;
+            outputFrame[1] = filterData.outputOffset.y;
         }
         else
         {
@@ -541,13 +523,11 @@ export class FilterSystem implements System
         inputClamp[2] = (input.frame.width * inputSize[2]) - (0.5 * inputPixel[2]);
         inputClamp[3] = (input.frame.height * inputSize[3]) - (0.5 * inputPixel[3]);
 
-        const rootTexture = this.renderer.renderTarget.rootRenderTarget.colorTexture;
+        globalFrame[0] = filterData.globalFrame.x;
+        globalFrame[1] = filterData.globalFrame.y;
 
-        globalFrame[0] = offset.x * resolution;
-        globalFrame[1] = offset.y * resolution;
-
-        globalFrame[2] = rootTexture.source.width * resolution;
-        globalFrame[3] = rootTexture.source.height * resolution;
+        globalFrame[2] = filterData.globalFrame.width;
+        globalFrame[3] = filterData.globalFrame.height;
 
         // set the output texture - this is where we are going to render to
 
@@ -568,6 +548,7 @@ export class FilterSystem implements System
         }
 
         outputTexture[2] = renderTarget.isRoot ? -1 : 1;
+
         filterUniforms.update();
 
         // TODO - should prolly use a adaptor...
@@ -603,19 +584,6 @@ export class FilterSystem implements System
         {
             renderer.renderTarget.finishRenderPass();
         }
-    }
-
-    private _getFilterData(): FilterData
-    {
-        return {
-            skip: false,
-            inputTexture: null,
-            bounds: new Bounds(),
-            container: null,
-            filterEffect: null,
-            blendRequired: false,
-            previousRenderSurface: null,
-        };
     }
 
     /**
@@ -660,4 +628,46 @@ export class FilterSystem implements System
     }
 
     public destroy?: () => void;
+
+    private _popFilterData(): FilterData
+    {
+        this._filterStackIndex--;
+
+        return this._filterStack[this._filterStackIndex];
+    }
+
+    private _getPreviousFilterData(): FilterData | null
+    {
+        let previousFilterData: FilterData;
+
+        let index = this._filterStackIndex - 1;
+
+        while (index > 1)
+        {
+            index--;
+            previousFilterData = this._filterStack[index];
+
+            if (!previousFilterData.skip)
+            {
+                break;
+            }
+        }
+
+        return previousFilterData;
+    }
+
+    private _pushFilterData(): FilterData
+    {
+        let filterData = this._filterStack[this._filterStackIndex];
+
+        if (!filterData)
+        {
+            filterData = this._filterStack[this._filterStackIndex] = new FilterData();
+        }
+
+        this._filterStackIndex++;
+
+        return filterData;
+    }
 }
+
