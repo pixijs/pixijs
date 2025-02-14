@@ -1,13 +1,12 @@
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
-import { ViewContainer } from '../view/ViewContainer';
+import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
 import { NineSliceGeometry } from './NineSliceGeometry';
 import { ObservablePoint } from '~/maths/point/ObservablePoint';
 import { type PointData } from '~/maths/point/PointData';
 
 import type { Size } from '../../maths/misc/Size';
 import type { View } from '../../rendering/renderers/shared/view/View';
-import type { ContainerOptions } from '../container/Container';
 import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
 
@@ -25,7 +24,7 @@ import type { DestroyOptions } from '../container/destroyTypes';
  * @see {@link scene.NineSliceSprite}
  * @memberof scene
  */
-export interface NineSliceSpriteOptions extends ContainerOptions
+export interface NineSliceSpriteOptions extends PixiMixins.NineSliceSpriteOptions, ViewContainerOptions
 {
     /** The texture to use on the NineSliceSprite. */
     texture: Texture;
@@ -46,6 +45,7 @@ export interface NineSliceSpriteOptions extends ContainerOptions
     /** The anchor point of the NineSliceSprite. */
     anchor?: PointData | number;
 }
+export interface NineSliceSprite extends PixiMixins.NineSliceSprite, ViewContainer {}
 
 /**
  * The NineSliceSprite allows you to stretch a texture using 9-slice scaling. The corners will remain unscaled (useful

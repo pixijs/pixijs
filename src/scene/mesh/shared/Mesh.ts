@@ -39,7 +39,7 @@ export interface TextureShader extends Shader
 export interface MeshOptions<
     GEOMETRY extends Geometry = MeshGeometry,
     SHADER extends Shader = TextureShader
-> extends ContainerOptions
+> extends PixiMixins.MeshOptions, ContainerOptions
 {
     /**
      * Includes vertex positions, face indices, colors, UVs, and
@@ -59,6 +59,8 @@ export interface MeshOptions<
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
+export interface Mesh extends PixiMixins.Mesh, ViewContainer {}
+
 /**
  * Base mesh class.
  *
