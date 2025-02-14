@@ -20,7 +20,7 @@ export const buildCircle: ShapeBuildCommand<RoundedShape> = {
         name: 'circle',
     },
 
-    build(shape: RoundedShape, points: number[])
+    build(shape: RoundedShape, points: number[]): boolean
     {
         let x;
         let y;
@@ -65,7 +65,7 @@ export const buildCircle: ShapeBuildCommand<RoundedShape> = {
 
         if (!(rx >= 0 && ry >= 0 && dx >= 0 && dy >= 0))
         {
-            return points;
+            return false;
         }
 
         // Choose a number of segments such that the maximum absolute deviation from the circle is approximately 0.029
@@ -74,7 +74,7 @@ export const buildCircle: ShapeBuildCommand<RoundedShape> = {
 
         if (m === 0)
         {
-            return points;
+            return false;
         }
 
         if (n === 0)
@@ -84,7 +84,7 @@ export const buildCircle: ShapeBuildCommand<RoundedShape> = {
             points[2] = points[4] = x - dx;
             points[5] = points[7] = y - dy;
 
-            return points;
+            return true;
         }
 
         let j1 = 0;
@@ -153,7 +153,7 @@ export const buildCircle: ShapeBuildCommand<RoundedShape> = {
             points[--j4] = x2;
         }
 
-        return points;
+        return true;
     },
 
     triangulate(points, vertices, verticesStride, verticesOffset, indices, indicesOffset)
