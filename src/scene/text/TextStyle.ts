@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import { Color, type ColorSource } from '../../color/Color';
+import { type Filter } from '../../filters/Filter';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { FillGradient } from '../graphics/shared/fill/FillGradient';
 import { FillPattern } from '../graphics/shared/fill/FillPattern';
@@ -130,6 +131,13 @@ export interface TextStyleOptions
     wordWrap?: boolean;
     /** The width at which text will wrap, it needs wordWrap to be set to true */
     wordWrapWidth?: number;
+    /**
+     * An optional filter or array of filters to apply to the text, allowing for advanced visual effects.
+     * These filters will be applied to the text as it is created, resulting in faster rendering for static text
+     * compared to applying the filter directly to the text object (which would be applied at run time).
+     * @default null
+     */
+    filters?: Filter | Filter[];
 }
 
 /**
@@ -259,6 +267,7 @@ export class TextStyle extends EventEmitter<{
     private _whiteSpace: TextStyleWhiteSpace;
     private _wordWrap: boolean;
     private _wordWrapWidth: number;
+    private _filters: Filter[];
 
     private _padding: number;
 
@@ -362,6 +371,14 @@ export class TextStyle extends EventEmitter<{
      */
     get padding(): number { return this._padding; }
     set padding(value: number) { this._padding = value; this.update(); }
+    /**
+     * An optional filter or array of filters to apply to the text, allowing for advanced visual effects.
+     * These filters will be applied to the text as it is created, resulting in faster rendering for static text
+     * compared to applying the filter directly to the text object (which would be applied at run time).
+     * @default null
+     */
+    get filters(): Filter[] { return this._filters; }
+    set filters(value: Filter[]) { this._filters = value; this.update(); }
 
     /** Trim transparent borders. This is an expensive operation so only use this if you have to! */
     get trim(): boolean { return this._trim; }
@@ -527,7 +544,29 @@ export class TextStyle extends EventEmitter<{
             whiteSpace: this.whiteSpace,
             wordWrap: this.wordWrap,
             wordWrapWidth: this.wordWrapWidth,
+            filters: this._filters,
         });
+    }
+
+    /**
+     * Returns the final padding for the text style, taking into account any filters applied.
+     * Used internally for correct measurements
+     * @internal
+     * @returns {number} The final padding for the text style.
+     */
+    public getFinalPadding(): number
+    {
+        let filterPadding = 0;
+
+        if (this._filters)
+        {
+            for (let i = 0; i < this._filters.length; i++)
+            {
+                filterPadding += this._filters[i].padding;
+            }
+        }
+
+        return Math.max(this._padding, filterPadding);
     }
 
     /**
