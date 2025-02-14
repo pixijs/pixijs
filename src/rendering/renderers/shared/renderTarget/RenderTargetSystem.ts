@@ -529,9 +529,6 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
         }
         else if (renderSurface instanceof TextureSource)
         {
-            // we are going to overwrite resource we can set it to null!
-            renderSurface.source.resource = null;
-
             renderTarget = new RenderTarget({
                 colorTextures: [renderSurface],
             });
