@@ -566,7 +566,8 @@ export class FilterSystem implements System
         globalFrame[3] = filterData.globalFrame.height;
 
         // we are going to overwrite resource we can set it to null!
-        output.source.resource = null;
+
+        if (output instanceof Texture) output.source.resource = null;
 
         // set the output texture - this is where we are going to render to
         const renderTarget = this.renderer.renderTarget.getRenderTarget(output);
