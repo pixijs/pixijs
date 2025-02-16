@@ -1,5 +1,5 @@
 import { warn } from '../../../../../utils/logging/warn';
-import { getAttributeInfoFromFormat } from '~/rendering';
+import { getAttributeInfoFromFormat } from '../../../shared/geometry/utils/getAttributeInfoFromFormat';
 
 import type { ExtractedAttributeData } from '../../../shared/geometry/Attribute';
 import type { Geometry } from '../../../shared/geometry/Geometry';
