@@ -37,10 +37,10 @@ export function ensureAttributes(
                 const geomAttrib = getAttributeInfoFromFormat(attribute.format);
                 const programAttrib = getAttributeInfoFromFormat(attributeData.format);
 
-                if (geomAttrib.stride !== programAttrib.stride)
+                if (geomAttrib.size !== programAttrib.size)
                 {
                     // eslint-disable-next-line max-len
-                    warn(`Attribute ${i} has incompatible stride: ${geomAttrib.stride} in geometry, ${programAttrib.stride} in program.`);
+                    warn(`Attribute ${i} has incompatible stride: ${geomAttrib.size} in geometry, ${programAttrib.size} in program.`);
                 }
             }
         }

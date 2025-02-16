@@ -1,4 +1,4 @@
-import { Buffer } from '../buffer/Buffer';
+import { type Buffer } from '../buffer/Buffer';
 import { type BufferOption, ensureIsBuffer, isBufferOption } from './utils/ensureIsBuffer';
 
 import type { VertexFormat } from './const';
@@ -71,10 +71,10 @@ export function ensureIsAttribute(attribute: AttributeOption, defaultBuffer?: Bu
         };
     }
 
-    if (isBufferOption(attribute instanceof Buffer))
+    if (isBufferOption(attribute))
     {
         return {
-            buffer: ensureIsBuffer(attribute as BufferOption, false),
+            buffer: ensureIsBuffer(attribute, false),
         };
     }
 
