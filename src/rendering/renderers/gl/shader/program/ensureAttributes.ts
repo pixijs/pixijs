@@ -40,7 +40,7 @@ export function ensureAttributes(
                 if (geomAttrib.size !== programAttrib.size)
                 {
                     // eslint-disable-next-line max-len
-                    warn(`Attribute ${i} has incompatible stride: ${geomAttrib.size} in geometry, ${programAttrib.size} in program.`);
+                    warn(`Attribute ${i} has incompatible size: ${geomAttrib.size} in geometry, ${programAttrib.size} in program.`);
                 }
             }
         }
