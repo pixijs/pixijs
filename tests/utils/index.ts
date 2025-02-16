@@ -1,5 +1,6 @@
 export * from './async';
 export * from './basePath';
+export * from './blobToBase64';
 export * from './getApp';
 export * from './getGeometry';
 export * from './getGlProgram';

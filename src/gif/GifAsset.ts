@@ -20,7 +20,7 @@ const GifAsset = {
     },
     loader: {
         name: 'gifLoader',
-        test: (url) => path.extname(url) === '.gif',
+        test: (url) => path.extname(url) === '.gif' || url.startsWith('data:image/gif'),
         load: async (url, asset) =>
         {
             const response = await DOMAdapter.get().fetch(url);
