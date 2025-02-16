@@ -38,7 +38,7 @@ export const scene: TestScene = {
 
         const geometry = new Geometry({
             attributes: {
-                aPosition: [-1, -1, -1, 1, 1, 1, 1, -1],
+                aPosition: { buffer: [-1, -1, -1, 1, 1, 1, 1, -1], format: 'float32x2' }
             },
             indexBuffer: [0, 1, 2, 0, 2, 3],
         });
