@@ -1,4 +1,5 @@
 import { warn } from '../../../../../utils/logging/warn';
+import { getAttributeInfoFromFormat } from '~/rendering';
 
 import type { ExtractedAttributeData } from '../../../shared/geometry/Attribute';
 import type { Geometry } from '../../../shared/geometry/Geometry';
@@ -30,6 +31,18 @@ export function ensureAttributes(
         if (attributeData)
         {
             attribute.location ??= attributeData.location;
+
+            if (attribute.format !== attributeData.format)
+            {
+                const geomAttrib = getAttributeInfoFromFormat(attribute.format);
+                const programAttrib = getAttributeInfoFromFormat(attributeData.format);
+
+                if (geomAttrib.stride !== programAttrib.stride)
+                {
+                    // eslint-disable-next-line max-len
+                    warn(`Attribute ${i} has incompatible stride: ${geomAttrib.stride} in geometry, ${programAttrib.stride} in program.`);
+                }
+            }
         }
         else
         {
