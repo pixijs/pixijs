@@ -316,7 +316,16 @@ export class Geometry extends EventEmitter<{
      */
     public getSize(): number
     {
-        return this.vertexBuffer.descriptor.size / this.bufferStride[0];
+        for (const i in this.attributes)
+        {
+            const attribute = this.attributes[i];
+            const buffer = attribute.buffer;
+
+            // TODO use SIZE again like v7..
+            return (buffer.data as any).length / (this.bufferStride[attribute.bufferIndex] / 4);
+        }
+
+        return 0;
     }
 
     /**
