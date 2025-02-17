@@ -17,9 +17,9 @@ export type AttributeOption = ExtractedAttributeData & { buffer?: BufferOption }
 /**
  * Holds the information for a single attribute structure required to render geometry.
  *
- * This does not contain the actual data, but instead has a buffer id that maps to a {@link PIXI.Buffer}
+ * This does not contain the actual data, but instead has a buffer id that maps to a {@link rendering.Buffer}
  * This can include anything from positions, uvs, normals, colors etc.
- * @memberof PIXI
+ * @memberof rendering
  */
 export class Attribute
 {
