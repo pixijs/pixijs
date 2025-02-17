@@ -161,6 +161,10 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
             {
                 gpuContext.isBatchable = (gpuContext.geometryData.vertices.length < 400);
             }
+            else
+            {
+                gpuContext.isBatchable = true;
+            }
 
             context.dirty = false;
         }

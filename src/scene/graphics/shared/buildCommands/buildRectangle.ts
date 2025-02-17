@@ -24,7 +24,7 @@ export const buildRectangle: ShapeBuildCommand<Rectangle> = {
         const width = rectData.width;
         const height = rectData.height;
 
-        if (!(width >= 0 && height >= 0))
+        if (!(width > 0 && height > 0))
         {
             return false;
         }

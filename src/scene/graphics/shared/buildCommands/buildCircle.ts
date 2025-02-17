@@ -34,9 +34,13 @@ export const buildCircle: ShapeBuildCommand<RoundedShape> = {
         {
             const circle = shape as Circle;
 
+            rx = ry = circle.radius;
+            if (rx <= 0)
+            {
+                return false;
+            }
             x = circle.x;
             y = circle.y;
-            rx = ry = circle.radius;
             dx = dy = 0;
         }
 
@@ -44,10 +48,14 @@ export const buildCircle: ShapeBuildCommand<RoundedShape> = {
         {
             const ellipse = shape as Ellipse;
 
-            x = ellipse.x;
-            y = ellipse.y;
             rx = ellipse.halfWidth;
             ry = ellipse.halfHeight;
+            if (rx <= 0 || ry <= 0)
+            { // skip zero ellipse
+                return false;
+            }
+            x = ellipse.x;
+            y = ellipse.y;
             dx = dy = 0;
         }
         else
@@ -63,7 +71,7 @@ export const buildCircle: ShapeBuildCommand<RoundedShape> = {
             dy = halfHeight - ry;
         }
 
-        if (!(rx >= 0 && ry >= 0 && dx >= 0 && dy >= 0))
+        if (dx < 0 || dy < 0)
         {
             return false;
         }
