@@ -5,7 +5,7 @@ import { generateGpuLayoutGroups } from './utils/generateGpuLayoutGroups';
 import { generateLayoutHash } from './utils/generateLayoutHash';
 import { removeStructAndGroupDuplicates } from './utils/removeStructAndGroupDuplicates';
 
-import type { ExtractedAttributeData } from '../../gl/shader/program/extractAttributesFromGlProgram';
+import type { ExtractedAttributeData } from '../../shared/geometry/Attribute';
 import type { StructsAndGroups } from './utils/extractStructAndGroups';
 
 /**
