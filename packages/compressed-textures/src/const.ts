@@ -251,17 +251,17 @@ export const INTERNAL_FORMAT_TO_BYTES_PER_PIXEL: { [id: number]: number } = {
     // @see https://registry.khronos.org/OpenGL/extensions/KHR/KHR_texture_compression_astc_hdr.txt
     // WEBGL_compressed_texture_astc
     /* eslint-disable-next-line camelcase */
-    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_4x4_KHR]: 1,      // 16 bytes per 4x4 block = 1 byte per pixel
-    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_5x4_KHR]: 0.8,    // 16 bytes per 5x4 block = 0.8 bytes per pixel
-    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_5x5_KHR]: 0.64,   // 16 bytes per 5x5 block = 0.64 bytes per pixel
-    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_6x5_KHR]: 0.533,  // 16 bytes per 6x5 block ≈ 0.533 bytes per pixel
-    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_6x6_KHR]: 0.444,  // 16 bytes per 6x6 block ≈ 0.444 bytes per pixel
-    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_8x5_KHR]: 0.32,   // 16 bytes per 8x5 block ≈ 0.32 bytes per pixel
-    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_8x6_KHR]: 0.333,  // 16 bytes per 8x6 block ≈ 0.333 bytes per pixel
-    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_8x8_KHR]: 0.25,   // 16 bytes per 8x8 block = 0.25 bytes per pixel
-    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_10x5_KHR]: 0.32,  // 16 bytes per 10x5 block = 0.32 bytes per pixel
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_4x4_KHR]: 1, // 16 bytes per 4x4 block = 1 byte per pixel
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_5x4_KHR]: 0.8, // 16 bytes per 5x4 block = 0.8 bytes per pixel
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_5x5_KHR]: 0.64, // 16 bytes per 5x5 block = 0.64 bytes per pixel
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_6x5_KHR]: 0.533, // 16 bytes per 6x5 block ≈ 0.533 bytes per pixel
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_6x6_KHR]: 0.444, // 16 bytes per 6x6 block ≈ 0.444 bytes per pixel
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_8x5_KHR]: 0.32, // 16 bytes per 8x5 block ≈ 0.32 bytes per pixel
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_8x6_KHR]: 0.333, // 16 bytes per 8x6 block ≈ 0.333 bytes per pixel
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_8x8_KHR]: 0.25, // 16 bytes per 8x8 block = 0.25 bytes per pixel
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_10x5_KHR]: 0.32, // 16 bytes per 10x5 block = 0.32 bytes per pixel
     [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_10x6_KHR]: 0.267, // 16 bytes per 10x6 block ≈ 0.267 bytes per pixel
-    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_10x8_KHR]: 0.2,   // 16 bytes per 10x8 block = 0.2 bytes per pixel
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_10x8_KHR]: 0.2, // 16 bytes per 10x8 block = 0.2 bytes per pixel
     [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_10x10_KHR]: 0.16, // 16 bytes per 10x10 block = 0.16 bytes per pixel
     [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_12x10_KHR]: 0.133, // 16 bytes per 12x10 block ≈ 0.133 bytes per pixel
     [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_12x12_KHR]: 0.111, // 16 bytes per 12x12 block ≈ 0.111 bytes per pixel
