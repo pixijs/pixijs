@@ -127,20 +127,8 @@ export function parseKTX(url: string, arrayBuffer: ArrayBuffer, loadKeyValueData
         throw new Error('WebGL does not support array textures');
     }
 
-    // TODO: 8x4 blocks for 2bpp pvrtc
-    const blockWidth = 4;
-    const blockHeight = 4;
-
-    const alignedWidth = (pixelWidth + 3) & ~3;
-    const alignedHeight = (pixelHeight + 3) & ~3;
+    // Align to block size
     const imageBuffers = new Array<CompressedLevelBuffer[]>(numberOfArrayElements);
-    let imagePixels = pixelWidth * pixelHeight;
-
-    if (glType === 0)
-    {
-        // Align to 16 pixels (4x4 blocks)
-        imagePixels = alignedWidth * alignedHeight;
-    }
 
     let imagePixelByteSize: number;
 
@@ -158,24 +146,21 @@ export function parseKTX(url: string, arrayBuffer: ArrayBuffer, loadKeyValueData
     }
     else
     {
+        // For compressed textures
         imagePixelByteSize = INTERNAL_FORMAT_TO_BYTES_PER_PIXEL[glInternalFormat];
-    }
 
-    if (imagePixelByteSize === undefined)
-    {
-        throw new Error('Unable to resolve the pixel format stored in the *.ktx file!');
+        if (!imagePixelByteSize)
+        {
+            throw new Error(`Unsupported compressed format: 0x${glInternalFormat.toString(16)}`);
+        }
     }
 
     const kvData: Map<string, DataView> | null = loadKeyValueData
         ? parseKvData(dataView, bytesOfKeyValueData, littleEndian)
         : null;
 
-    const imageByteSize = imagePixels * imagePixelByteSize;
-    let mipByteSize = imageByteSize;
     let mipWidth = pixelWidth;
     let mipHeight = pixelHeight;
-    let alignedMipWidth = alignedWidth;
-    let alignedMipHeight = alignedHeight;
     let imageOffset = FILE_HEADER_SIZE + bytesOfKeyValueData;
 
     for (let mipmapLevel = 0; mipmapLevel < numberOfMipmapLevels; mipmapLevel++)
@@ -185,9 +170,6 @@ export function parseKTX(url: string, arrayBuffer: ArrayBuffer, loadKeyValueData
 
         for (let arrayElement = 0; arrayElement < numberOfArrayElements; arrayElement++)
         {
-            // TODO: Maybe support 3D textures? :-)
-            // for (let zSlice = 0; zSlice < pixelDepth; zSlice)
-
             let mips = imageBuffers[arrayElement];
 
             if (!mips)
@@ -197,27 +179,18 @@ export function parseKTX(url: string, arrayBuffer: ArrayBuffer, loadKeyValueData
 
             mips[mipmapLevel] = {
                 levelID: mipmapLevel,
-
-                // don't align mipWidth when texture not compressed! (glType not zero)
-                levelWidth: numberOfMipmapLevels > 1 || glType !== 0 ? mipWidth : alignedMipWidth,
-                levelHeight: numberOfMipmapLevels > 1 || glType !== 0 ? mipHeight : alignedMipHeight,
-                levelBuffer: new Uint8Array(arrayBuffer, elementOffset, mipByteSize)
+                levelWidth: mipWidth, // Use original width, not aligned
+                levelHeight: mipHeight, // Use original height, not aligned
+                levelBuffer: new Uint8Array(arrayBuffer, elementOffset, imageSize / numberOfArrayElements)
             };
-            elementOffset += mipByteSize;
+            elementOffset += imageSize / numberOfArrayElements;
         }
 
-        // HINT: Aligns to 4-byte boundary after jumping imageSize (in lieu of mipPadding)
-        imageOffset += imageSize + 4;// (+4 to jump the imageSize field itself)
-        imageOffset = imageOffset % 4 !== 0 ? imageOffset + 4 - (imageOffset % 4) : imageOffset;
+        imageOffset += 4 + imageSize;
 
-        // Calculate mipWidth, mipHeight for _next_ iteration
-        mipWidth = (mipWidth >> 1) || 1;
-        mipHeight = (mipHeight >> 1) || 1;
-        alignedMipWidth = (mipWidth + blockWidth - 1) & ~(blockWidth - 1);
-        alignedMipHeight = (mipHeight + blockHeight - 1) & ~(blockHeight - 1);
-
-        // Each mipmap level is 4-times smaller?
-        mipByteSize = alignedMipWidth * alignedMipHeight * imagePixelByteSize;
+        // Calculate next mip level dimensions
+        mipWidth = Math.max(1, mipWidth >> 1);
+        mipHeight = Math.max(1, mipHeight >> 1);
     }
 
     // We use the levelBuffers feature of CompressedTextureResource b/c texture data is image-major, not level-major.
