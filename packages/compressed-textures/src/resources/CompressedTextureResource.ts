@@ -211,7 +211,7 @@ export class CompressedTextureResource extends BlobResource
         {
             return 'bptc';
         }
-        else if (format >= 0x93B0 && format <= 0x93BD)
+        else if (format >= 0x93B0 && format <= 0x93BD || format >= 0x93D0 && format <= 0x93DD)
         {
             return 'astc';
         }
