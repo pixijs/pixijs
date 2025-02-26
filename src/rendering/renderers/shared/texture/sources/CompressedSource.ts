@@ -2,7 +2,7 @@ import { TextureSource } from './TextureSource';
 
 import type { TextureSourceOptions } from './TextureSource';
 
-export class CompressedSource extends TextureSource<Uint8Array[]>
+export class CompressedSource extends TextureSource<Uint8Array[] | Uint8Array[][]>
 {
     public readonly uploadMethodId = 'compressed';
 
@@ -11,6 +11,6 @@ export class CompressedSource extends TextureSource<Uint8Array[]>
         super(options);
 
         this.resource = options.resource;
-        this.mipLevelCount = this.resource.length;
+        this.mipLevelCount = this.viewDimension === '2d-array' ? this.resource[0].length : this.resource.length;
     }
 }
