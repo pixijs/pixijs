@@ -204,7 +204,7 @@ export class HTMLTextSystem implements System
 
     private _cleanUp(activeTexture: HTMLTextTexture)
     {
-        TexturePool.returnTexture(activeTexture.texture);
+        TexturePool.addTexture(activeTexture.texture);
         activeTexture.texture.source.resource = null;
         activeTexture.texture.source.uploadMethodId = 'unknown';
     }
