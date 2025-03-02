@@ -8,7 +8,11 @@ import type { TextureSourceOptions } from './TextureSource';
 
 export interface CanvasSourceOptions extends TextureSourceOptions<ICanvas>
 {
-    /** should the canvas be resized to preserve its screen width and height regardless of the resolution of the renderer */
+    /**
+     * Should the canvas be resized to preserve its screen width and height regardless
+     * of the resolution of the renderer, this is only supported for HTMLCanvasElement
+     * and will be ignored if the canvas is an OffscreenCanvas.
+     */
     autoDensity?: boolean;
     /** if true, this canvas will be set up to be transparent where possible */
     transparent?: boolean;
@@ -62,7 +66,7 @@ export class CanvasSource extends TextureSource<ICanvas>
 
     public resizeCanvas()
     {
-        if (this.autoDensity)
+        if (this.autoDensity && 'style' in this.resource)
         {
             this.resource.style.width = `${this.width}px`;
             this.resource.style.height = `${this.height}px`;
