@@ -15,6 +15,8 @@ export interface BitmapTextLayoutData
         spaceWidth: number
         spacesIndex: number[]
     }[];
+    originChars: string[];
+    font: AbstractBitmapFont<any>
 }
 
 export function getBitmapTextLayout(
@@ -35,7 +37,9 @@ export function getBitmapTextLayout(
             spaceWidth: 0,
             spacesIndex: [],
             chars: [],
-        }]
+        }],
+        originChars: chars,
+        font
     };
 
     layoutData.offsetY = font.baseLineOffset;

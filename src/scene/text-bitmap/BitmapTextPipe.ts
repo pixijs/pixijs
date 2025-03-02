@@ -3,8 +3,7 @@ import { ExtensionType } from '../../extensions/Extensions';
 import { BigPool } from '../../utils/pool/PoolGroup';
 import { Graphics } from '../graphics/shared/Graphics';
 import { SdfShader } from '../text/sdfShader/SdfShader';
-import { BitmapFontManager } from './BitmapFontManager';
-import { getBitmapTextLayout } from './utils/getBitmapTextLayout';
+import { BitmapText } from './BitmapText';
 
 import type { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
@@ -12,7 +11,6 @@ import type { Renderable } from '../../rendering/renderers/shared/Renderable';
 import type { Renderer } from '../../rendering/renderers/types';
 import type { PoolItem } from '../../utils/pool/Pool';
 import type { Container } from '../container/Container';
-import type { BitmapText } from './BitmapText';
 
 export class BitmapTextPipe implements RenderPipe<BitmapText>
 {
@@ -34,6 +32,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
     {
         this._renderer = renderer;
         this._renderer.renderableGC.addManagedHash(this, '_gpuBitmapText');
+        this._renderer.renderableGC.addManagedHash(BitmapText.prototype, '_layoutHash');
     }
 
     public validateRenderable(bitmapText: BitmapText): boolean
@@ -117,9 +116,11 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
     {
         const { context } = proxyGraphics;
 
-        const bitmapFont = BitmapFontManager.getFont(bitmapText.text, bitmapText._style);
+        const bitmapTextLayout = bitmapText.getTextLayout();
 
         context.clear();
+
+        const bitmapFont = bitmapTextLayout.font;
 
         if (bitmapFont.distanceField.type !== 'none')
         {
@@ -129,13 +130,10 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
             }
         }
 
-        const chars = Array.from(bitmapText.text);
+        const chars = bitmapTextLayout.originChars;
         const style = bitmapText._style;
 
         let currentY = bitmapFont.baseLineOffset;
-
-        // measure our text...
-        const bitmapTextLayout = getBitmapTextLayout(chars, style, bitmapFont, true);
 
         let index = 0;
 
@@ -194,6 +192,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
         this._gpuBitmapText[bitmapText.uid] = proxyRenderable;
 
+        bitmapText._didTextUpdate = false;
         this._updateContext(bitmapText, proxyRenderable);
 
         bitmapText.on('destroyed', this._destroyRenderableBound);
