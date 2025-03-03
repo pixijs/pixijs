@@ -186,7 +186,7 @@ export function parseKTX(url: string, arrayBuffer: ArrayBuffer, loadKeyValueData
         {
             // TODO: Maybe support 3D textures? :-)
             // for (let zSlice = 0; zSlice < pixelDepth; zSlice++)
-            
+
             let mips = imageBuffers[arrayElement];
 
             if (!mips)
@@ -196,6 +196,7 @@ export function parseKTX(url: string, arrayBuffer: ArrayBuffer, loadKeyValueData
 
             mips[mipmapLevel] = {
                 levelID: mipmapLevel,
+                // don't align mipWidth when texture not compressed! (glType not zero)
                 levelWidth: numberOfMipmapLevels > 1 || glType !== 0 ? mipWidth : alignedWidth,
                 levelHeight: numberOfMipmapLevels > 1 || glType !== 0 ? mipHeight : alignedHeight,
                 levelBuffer: new Uint8Array(arrayBuffer, elementOffset, imageSize / numberOfArrayElements)
