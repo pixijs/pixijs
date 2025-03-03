@@ -10,7 +10,10 @@ export const scene: TestScene = {
     it: 'should render compressed texture after context restore',
     create: async (scene: Container, renderer: Renderer) =>
     {
-        renderer?.context?.forceContextLoss();
+        if ('context' in renderer)
+        {
+            renderer.context?.forceContextLoss();
+        }
         const texture = await Assets.load('explosion_dxt5_mip.dds');
 
         const sprite = new Sprite(texture);
