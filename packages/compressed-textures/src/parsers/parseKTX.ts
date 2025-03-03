@@ -184,6 +184,9 @@ export function parseKTX(url: string, arrayBuffer: ArrayBuffer, loadKeyValueData
 
         for (let arrayElement = 0; arrayElement < numberOfArrayElements; arrayElement++)
         {
+            // TODO: Maybe support 3D textures? :-)
+            // for (let zSlice = 0; zSlice < pixelDepth; zSlice++)
+            
             let mips = imageBuffers[arrayElement];
 
             if (!mips)
