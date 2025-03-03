@@ -135,8 +135,9 @@ export function parseKTX(url: string, arrayBuffer: ArrayBuffer, loadKeyValueData
     let blockHeight = 4;
 
     // Special case for PVRTC 2bpp formats
-    if (glInternalFormat === INTERNAL_FORMATS.COMPRESSED_RGB_PVRTC_2BPPV1_IMG ||
-        glInternalFormat === INTERNAL_FORMATS.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG) {
+    if (glInternalFormat === INTERNAL_FORMATS.COMPRESSED_RGB_PVRTC_2BPPV1_IMG
+        || glInternalFormat === INTERNAL_FORMATS.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG)
+    {
         blockWidth = 8;
         blockHeight = 4;
     }
