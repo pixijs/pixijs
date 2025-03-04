@@ -2,7 +2,6 @@ import { Container, UPDATE_BLEND, UPDATE_COLOR, UPDATE_VISIBLE } from '../Contai
 import { clearList } from './clearList';
 import { multiplyColors } from './multiplyColors';
 
-import type { ViewContainer } from '../../view/ViewContainer';
 import type { RenderGroup } from '../RenderGroup';
 
 const tempContainer = new Container();
@@ -138,14 +137,6 @@ export function updateTransformAndChildren(container: Container, updateTick: num
         for (let i = 0; i < length; i++)
         {
             updateTransformAndChildren(children[i], updateTick, updateFlags);
-        }
-
-        const renderGroup = container.parentRenderGroup;
-        const renderable = container as ViewContainer;
-
-        if (renderable.renderPipeId && !renderGroup.structureDidChange)
-        {
-            renderGroup.updateRenderable(renderable);
         }
     }
 }

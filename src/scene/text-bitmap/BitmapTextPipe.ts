@@ -36,24 +36,6 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
         this._renderer.renderableGC.addManagedHash(this, '_gpuBitmapText');
     }
 
-    public validateRenderable(bitmapText: BitmapText): boolean
-    {
-        const graphicsRenderable = this._getGpuBitmapText(bitmapText);
-
-        if (bitmapText._didTextUpdate)
-        {
-            bitmapText._didTextUpdate = false;
-
-            this._updateContext(bitmapText, graphicsRenderable);
-        }
-
-        return this._renderer.renderPipes.graphics.validateRenderable(graphicsRenderable);
-
-        // TODO - need to shift all the verts in the graphicsData to the new anchor
-
-        // update the anchor...
-    }
-
     public addRenderable(bitmapText: BitmapText, instructionSet: InstructionSet)
     {
         const graphicsRenderable = this._getGpuBitmapText(bitmapText);
@@ -96,21 +78,6 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
         BigPool.return(this._gpuBitmapText[renderableUid] as PoolItem);
         this._gpuBitmapText[renderableUid] = null;
-    }
-
-    public updateRenderable(bitmapText: BitmapText)
-    {
-        const graphicsRenderable = this._getGpuBitmapText(bitmapText);
-
-        // sync..
-        syncWithProxy(bitmapText, graphicsRenderable);
-
-        this._renderer.renderPipes.graphics.updateRenderable(graphicsRenderable);
-
-        if (graphicsRenderable.context.customShader)
-        {
-            this._updateDistanceField(bitmapText);
-        }
     }
 
     private _updateContext(bitmapText: BitmapText, proxyGraphics: Graphics)

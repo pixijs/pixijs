@@ -98,15 +98,7 @@ export abstract class ViewContainer extends Container implements View
 
         this._boundsDirty = true;
 
-        if (this.didViewUpdate) return;
         this.didViewUpdate = true;
-
-        const renderGroup = this.renderGroup || this.parentRenderGroup;
-
-        if (renderGroup)
-        {
-            renderGroup.onChildViewUpdate(this);
-        }
     }
 
     public override destroy(options?: DestroyOptions): void

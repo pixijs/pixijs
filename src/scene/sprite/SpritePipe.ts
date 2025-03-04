@@ -41,25 +41,6 @@ export class SpritePipe implements RenderPipe<Sprite>
         this._renderer.renderPipes.batch.addToBatch(gpuSprite, instructionSet);
     }
 
-    public updateRenderable(sprite: Sprite)
-    {
-        const gpuSprite = this._gpuSpriteHash[sprite.uid];
-
-        if (sprite.didViewUpdate) this._updateBatchableSprite(sprite, gpuSprite);
-
-        gpuSprite._batcher.updateElement(gpuSprite);
-    }
-
-    public validateRenderable(sprite: Sprite): boolean
-    {
-        const gpuSprite = this._getGpuSprite(sprite);
-
-        return !gpuSprite._batcher.checkAndUpdateTexture(
-            gpuSprite,
-            sprite._texture)
-        ;
-    }
-
     public destroyRenderable(sprite: Sprite)
     {
         const batchableSprite = this._gpuSpriteHash[sprite.uid];

@@ -36,9 +36,7 @@ export class CustomRenderPipe implements InstructionPipe<RenderContainer>, Rende
         this._renderer = renderer;
     }
 
-    public updateRenderable() { /** empty */ }
     public destroyRenderable() { /** empty */ }
-    public validateRenderable() { return false; }
 
     public addRenderable(container: RenderContainer, instructionSet: InstructionSet): void
     {

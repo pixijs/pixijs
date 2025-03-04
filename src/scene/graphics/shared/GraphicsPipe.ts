@@ -60,25 +60,6 @@ export class GraphicsPipe implements RenderPipe<Graphics>
         this.renderer.renderableGC.addManagedHash(this, '_graphicsBatchesHash');
     }
 
-    public validateRenderable(graphics: Graphics): boolean
-    {
-        // assume context is dirty..
-
-        const context = graphics.context;
-
-        const wasBatched = !!this._graphicsBatchesHash[graphics.uid];
-
-        const gpuContext = this.renderer.graphicsContext.updateGpuContext(context);
-
-        if (gpuContext.isBatchable || wasBatched !== gpuContext.isBatchable)
-        {
-            // TODO what if they are the same size??
-            return true;
-        }
-
-        return false;
-    }
-
     public addRenderable(graphics: Graphics, instructionSet: InstructionSet)
     {
         const gpuContext = this.renderer.graphicsContext.updateGpuContext(graphics.context);
@@ -99,21 +80,6 @@ export class GraphicsPipe implements RenderPipe<Graphics>
         {
             this.renderer.renderPipes.batch.break(instructionSet);
             instructionSet.add(graphics);
-        }
-    }
-
-    public updateRenderable(graphics: Graphics)
-    {
-        const batches = this._graphicsBatchesHash[graphics.uid];
-
-        if (batches)
-        {
-            for (let i = 0; i < batches.length; i++)
-            {
-                const batch = batches[i];
-
-                batch._batcher.updateElement(batch);
-            }
         }
     }
 

@@ -74,50 +74,6 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
         renderer.renderableGC.addManagedHash(this, '_meshDataHash');
     }
 
-    public validateRenderable(mesh: Mesh): boolean
-    {
-        const meshData = this._getMeshData(mesh);
-
-        const wasBatched = meshData.batched;
-
-        const isBatched = mesh.batched;
-
-        meshData.batched = isBatched;
-
-        if (wasBatched !== isBatched)
-        {
-            return true;
-        }
-        else if (isBatched)
-        {
-            const geometry = mesh._geometry;
-
-            // no need to break the batch if it's the same size
-            if (geometry.indices.length !== meshData.indexSize
-                    || geometry.positions.length !== meshData.vertexSize)
-            {
-                meshData.indexSize = geometry.indices.length;
-                meshData.vertexSize = geometry.positions.length;
-
-                return true;
-            }
-
-            const batchableMesh = this._getBatchableMesh(mesh);
-
-            if (batchableMesh.texture.uid !== mesh._texture.uid)
-            {
-                batchableMesh._textureMatrixUpdateId = -1;
-            }
-
-            return !batchableMesh._batcher.checkAndUpdateTexture(
-                batchableMesh,
-                mesh._texture
-            );
-        }
-
-        return false;
-    }
-
     public addRenderable(mesh: Mesh, instructionSet: InstructionSet)
     {
         const batcher = this.renderer.renderPipes.batch;
@@ -138,20 +94,6 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
             batcher.break(instructionSet);
 
             instructionSet.add(mesh);
-        }
-    }
-
-    public updateRenderable(mesh: Mesh)
-    {
-        if (mesh.batched)
-        {
-            const gpuBatchableMesh = this._gpuBatchableMeshHash[mesh.uid];
-
-            gpuBatchableMesh.setTexture(mesh._texture);
-
-            gpuBatchableMesh.geometry = mesh._geometry;
-
-            gpuBatchableMesh._batcher.updateElement(gpuBatchableMesh);
         }
     }
 

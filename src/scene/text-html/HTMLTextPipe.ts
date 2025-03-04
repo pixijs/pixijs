@@ -60,30 +60,6 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
         }
     }
 
-    public validateRenderable(htmlText: HTMLText): boolean
-    {
-        const gpuText = this._getGpuText(htmlText);
-
-        const newKey = htmlText._getKey();
-
-        if (gpuText.textureNeedsUploading)
-        {
-            gpuText.textureNeedsUploading = false;
-
-            return true;
-        }
-
-        if (gpuText.currentKey !== newKey)
-        {
-            // TODO - could look into optimising this a tad!
-            // if its a single texture, then we could just swap it?
-            // same for CanvasText..
-            return true;
-        }
-
-        return false;
-    }
-
     public addRenderable(htmlText: HTMLText, instructionSet: InstructionSet)
     {
         const gpuText = this._getGpuText(htmlText);
@@ -96,19 +72,6 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
         }
 
         this._renderer.renderPipes.batch.addToBatch(batchableSprite, instructionSet);
-    }
-
-    public updateRenderable(htmlText: HTMLText)
-    {
-        const gpuText = this._getGpuText(htmlText);
-        const batchableSprite = gpuText.batchableSprite;
-
-        if (htmlText._didTextUpdate)
-        {
-            this._updateText(htmlText);
-        }
-
-        batchableSprite._batcher.updateElement(batchableSprite);
     }
 
     public destroyRenderable(htmlText: HTMLText)

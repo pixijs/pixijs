@@ -57,12 +57,6 @@ export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
         this.state = State.for2d();
     }
 
-    public validateRenderable(_renderable: ParticleContainer): boolean
-    {
-        // always fine :D
-        return false;
-    }
-
     public addRenderable(renderable: ParticleContainer, instructionSet: InstructionSet)
     {
         this.renderer.renderPipes.batch.break(instructionSet);
@@ -84,12 +78,6 @@ export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
         renderable.on('destroyed', this._destroyRenderableBound);
 
         return this._gpuBufferHash[renderable.uid];
-    }
-
-    public updateRenderable(_renderable: ParticleContainer)
-    {
-        // nothing to be done here!
-
     }
 
     public destroyRenderable(renderable: ParticleContainer)

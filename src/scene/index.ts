@@ -36,7 +36,6 @@ export * from './container/utils/multiplyHexColors';
 export * from './container/utils/updateLocalTransform';
 export * from './container/utils/updateRenderGroupTransforms';
 export * from './container/utils/updateWorldTransform';
-export * from './container/utils/validateRenderables';
 export * from './graphics/gl/GlGraphicsAdaptor';
 export * from './graphics/gpu/colorToUniform';
 export * from './graphics/gpu/GpuGraphicsAdaptor';

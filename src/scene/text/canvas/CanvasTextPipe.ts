@@ -57,20 +57,6 @@ export class CanvasTextPipe implements RenderPipe<Text>
         }
     }
 
-    public validateRenderable(text: Text): boolean
-    {
-        const gpuText = this._getGpuText(text);
-
-        const newKey = text._getKey();
-
-        if (gpuText.currentKey !== newKey)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
     public addRenderable(text: Text, instructionSet: InstructionSet)
     {
         const gpuText = this._getGpuText(text);
@@ -83,19 +69,6 @@ export class CanvasTextPipe implements RenderPipe<Text>
         }
 
         this._renderer.renderPipes.batch.addToBatch(batchableSprite, instructionSet);
-    }
-
-    public updateRenderable(text: Text)
-    {
-        const gpuText = this._getGpuText(text);
-        const batchableSprite = gpuText.batchableSprite;
-
-        if (text._didTextUpdate)
-        {
-            this._updateText(text);
-        }
-
-        batchableSprite._batcher.updateElement(batchableSprite);
     }
 
     public destroyRenderable(text: Text)

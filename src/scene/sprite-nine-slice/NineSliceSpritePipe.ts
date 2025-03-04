@@ -41,25 +41,6 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
         this._renderer.renderPipes.batch.addToBatch(gpuSprite, instructionSet);
     }
 
-    public updateRenderable(sprite: NineSliceSprite)
-    {
-        const gpuSprite = this._gpuSpriteHash[sprite.uid];
-
-        if (sprite.didViewUpdate) this._updateBatchableSprite(sprite, gpuSprite);
-
-        gpuSprite._batcher.updateElement(gpuSprite);
-    }
-
-    public validateRenderable(sprite: NineSliceSprite): boolean
-    {
-        const gpuSprite = this._getGpuSprite(sprite);
-
-        return !gpuSprite._batcher.checkAndUpdateTexture(
-            gpuSprite,
-            sprite._texture
-        );
-    }
-
     public destroyRenderable(sprite: NineSliceSprite)
     {
         const batchableMesh = this._gpuSpriteHash[sprite.uid];

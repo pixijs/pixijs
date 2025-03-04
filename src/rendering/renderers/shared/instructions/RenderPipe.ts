@@ -75,26 +75,11 @@ export interface RenderPipe<RENDERABLE = Renderable>
      */
     addRenderable: (renderable: RENDERABLE, instructionSet: InstructionSet) => void;
     /**
-     * Called whenever a renderable has been been updated, eg its position has changed.
-     * This is only called in the render loop if the instructions set is being reused
-     * from the last frame. Otherwise addRenderable is called.
-     * @param renderable - the renderable that needs to be rendered
-     */
-    updateRenderable: (renderable: RENDERABLE) => void;
-    /**
      * Called whenever a renderable is destroyed, often the pipes keep a webGL / webGPU specific representation
      * of the renderable that needs to be tidied up when the renderable is destroyed.
      * @param renderable - the renderable that needs to be rendered
      */
     destroyRenderable: (renderable: RENDERABLE) => void;
-    /**
-     * This function is called when the renderer is determining if it can use the same instruction set again to
-     * improve performance. If this function returns true, the renderer will rebuild the whole instruction set
-     * for the scene. This is only called if the scene has not its changed its structure .
-     * @param renderable
-     * @returns {boolean}
-     */
-    validateRenderable: (renderable: RENDERABLE) => boolean;
 }
 
 /**

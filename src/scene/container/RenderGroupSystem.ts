@@ -2,15 +2,12 @@ import { ExtensionType } from '../../extensions/Extensions';
 import { Matrix } from '../../maths/matrix/Matrix';
 import { TexturePool } from '../../rendering/renderers/shared/texture/TexturePool';
 import { Bounds } from './bounds/Bounds';
-import { clearList } from './utils/clearList';
 import { executeInstructions } from './utils/executeInstructions';
 import { updateRenderGroupTransforms } from './utils/updateRenderGroupTransforms';
-import { validateRenderables } from './utils/validateRenderables';
 
 import type { WebGPURenderer } from '../../rendering/renderers/gpu/WebGPURenderer';
 import type { System } from '../../rendering/renderers/shared/system/System';
 import type { Renderer, RenderPipes } from '../../rendering/renderers/types';
-import type { ViewContainer } from '../view/ViewContainer';
 import type { Container } from './Container';
 import type { RenderGroup } from './RenderGroup';
 
@@ -174,35 +171,12 @@ export class RenderGroupSystem implements System
 
         renderGroup.instructionSet.renderPipes = renderPipes;
 
-        if (!renderGroup.structureDidChange)
-        {
-            // phase 1 - validate all the renderables
-            validateRenderables(renderGroup, renderPipes);
-        }
-        else
-        {
-            clearList(renderGroup.childrenRenderablesToUpdate.list, 0);
-        }
-
         // phase 2 - update all the transforms
         // including updating the renderables..
         updateRenderGroupTransforms(renderGroup);
 
-        if (renderGroup.structureDidChange)
-        {
-            renderGroup.structureDidChange = false;
-
-            // build the renderables
-            this._buildInstructions(renderGroup, renderer);
-        }
-        else
-        {
-            // update remaining renderables
-            this._updateRenderables(renderGroup);
-        }
-
-        // reset the renderables to update
-        renderGroup.childrenRenderablesToUpdate.index = 0;
+        // build the renderables
+        this._buildInstructions(renderGroup, renderer);
 
         // upload all the things!
         renderer.renderPipes.batch.upload(renderGroup.instructionSet);
@@ -214,23 +188,6 @@ export class RenderGroupSystem implements System
         {
             this._updateRenderGroups(renderGroup.renderGroupChildren[i]);
         }
-    }
-
-    private _updateRenderables(renderGroup: RenderGroup)
-    {
-        const { list, index } = renderGroup.childrenRenderablesToUpdate;
-
-        for (let i = 0; i < index; i++)
-        {
-            const container = list[i];
-
-            if (container.didViewUpdate)
-            {
-                renderGroup.updateRenderable(container as ViewContainer);
-            }
-        }
-
-        clearList(list, index);
     }
 
     /**

@@ -50,34 +50,6 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
         this._renderer.renderableGC.addManagedHash(this, '_tilingSpriteDataHash');
     }
 
-    public validateRenderable(renderable: TilingSprite): boolean
-    {
-        const tilingSpriteData = this._getTilingSpriteData(renderable);
-
-        const couldBatch = tilingSpriteData.canBatch;
-
-        this._updateCanBatch(renderable);
-
-        const canBatch = tilingSpriteData.canBatch;
-
-        if (canBatch && canBatch === couldBatch)
-        {
-            const { batchableMesh } = tilingSpriteData;
-
-            return !batchableMesh._batcher.checkAndUpdateTexture(
-                batchableMesh,
-                renderable.texture
-            );
-        }
-
-        return (couldBatch !== canBatch);
-
-        // // TODO - only update if required?
-        // // only texture
-        // // only uvs
-        // // only positions?
-    }
-
     public addRenderable(tilingSprite: TilingSprite, instructionSet: InstructionSet)
     {
         const batcher = this._renderer.renderPipes.batch;
