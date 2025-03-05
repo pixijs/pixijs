@@ -213,6 +213,15 @@ export class GlTextureSystem implements System, CanvasGenerator
             source.mipLevelCount = Math.floor(Math.log2(biggestDimension)) + 1;
         }
 
+        const anisotropicExt = this._renderer.context.extensions.anisotropicFiltering;
+
+        if (anisotropicExt && source.maxAnisotropy > 1)
+        {
+            const level = Math.min(source.maxAnisotropy, gl.getParameter(anisotropicExt.MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+
+            gl.texParameteri(gl.TEXTURE_2D, anisotropicExt.TEXTURE_MAX_ANISOTROPY_EXT, level);
+        }
+
         this._glTextures[source.uid] = glTexture;
 
         if (!this.managedTextures.includes(source))
@@ -252,7 +261,6 @@ export class GlTextureSystem implements System, CanvasGenerator
             source.style,
             gl,
             source.mipLevelCount > 1,
-            this._renderer.context.extensions.anisotropicFiltering,
             'texParameteri',
             gl.TEXTURE_2D,
             // will force a clamp to edge if the texture is not a power of two
@@ -342,7 +350,6 @@ export class GlTextureSystem implements System, CanvasGenerator
             style,
             gl,
             this._boundTextures[this._activeTextureLocation].mipLevelCount > 1,
-            this._renderer.context.extensions.anisotropicFiltering,
             'samplerParameteri',
             glSampler,
             false,

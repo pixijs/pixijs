@@ -58,15 +58,6 @@ export interface TextureStyleOptions extends Partial<TextureStyle>
      * implementation-dependent and may differ from the normal filtering rules.
      */
     compare?: COMPARE_FUNCTION;
-    /**
-     * Specifies the maximum anisotropy value clamp used by the sampler.
-     * Note: Most implementations support {@link GPUSamplerDescriptor#maxAnisotropy} values in range
-     * between 1 and 16, inclusive. The used value of {@link GPUSamplerDescriptor#maxAnisotropy} will
-     * be clamped to the maximum value that the platform supports.
-     *
-     * setting this to anything higher than 1 will set scale modes to 'linear'
-     */
-    maxAnisotropy?: number;
 }
 
 /**
@@ -111,15 +102,6 @@ export class TextureStyle extends EventEmitter<{
      * implementation-dependent and may differ from the normal filtering rules.
      */
     public compare?: COMPARE_FUNCTION;
-    /**
-     * Specifies the maximum anisotropy value clamp used by the sampler.
-     * Note: Most implementations support {@link GPUSamplerDescriptor#maxAnisotropy} values in range
-     * between 1 and 16, inclusive. The used value of {@link GPUSamplerDescriptor#maxAnisotropy} will
-     * be clamped to the maximum value that the platform supports.
-     * @internal
-     * @ignore
-     */
-    public _maxAnisotropy?: number = 1;
 
     /**
      * Has the style been destroyed?
@@ -152,8 +134,6 @@ export class TextureStyle extends EventEmitter<{
         this.lodMaxClamp = options.lodMaxClamp;
 
         this.compare = options.compare;
-
-        this.maxAnisotropy = options.maxAnisotropy ?? 1;
     }
 
     set addressMode(value: WRAP_MODE)
@@ -196,22 +176,6 @@ export class TextureStyle extends EventEmitter<{
         return this.magFilter;
     }
 
-    /** Specifies the maximum anisotropy value clamp used by the sampler. */
-    set maxAnisotropy(value: number)
-    {
-        this._maxAnisotropy = Math.min(value, 16);
-
-        if (this._maxAnisotropy > 1)
-        {
-            this.scaleMode = 'linear';
-        }
-    }
-
-    get maxAnisotropy(): number
-    {
-        return this._maxAnisotropy;
-    }
-
     // TODO - move this to WebGL?
     get _resourceId(): number
     {
@@ -228,7 +192,7 @@ export class TextureStyle extends EventEmitter<{
     private _generateResourceId(): number
     {
         // eslint-disable-next-line max-len
-        const bigKey = `${this.addressModeU}-${this.addressModeV}-${this.addressModeW}-${this.magFilter}-${this.minFilter}-${this.mipmapFilter}-${this.lodMinClamp}-${this.lodMaxClamp}-${this.compare}-${this._maxAnisotropy}`;
+        const bigKey = `${this.addressModeU}-${this.addressModeV}-${this.addressModeW}-${this.magFilter}-${this.minFilter}-${this.mipmapFilter}-${this.lodMinClamp}-${this.lodMaxClamp}-${this.compare}`;
 
         this._sharedResourceId = createResourceIdFromString(bigKey);
 

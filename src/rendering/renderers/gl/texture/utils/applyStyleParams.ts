@@ -11,8 +11,6 @@ export function applyStyleParams(
     style: TextureStyle,
     gl: WebGL2RenderingContext,
     mipmaps: boolean,
-    // eslint-disable-next-line camelcase
-    anisotropicExt: EXT_texture_filter_anisotropic,
     glFunctionName: 'samplerParameteri' | 'texParameteri',
     firstParam: 3553 | WebGLSampler,
     forceClamp: boolean,
@@ -63,15 +61,7 @@ export function applyStyleParams(
         gl[glFunctionName](castParam, gl.TEXTURE_MIN_FILTER, scaleModeToGlFilter[style.minFilter]);
     }
 
-    // 3. set the anisotropy
-    if (anisotropicExt && style.maxAnisotropy > 1)
-    {
-        const level = Math.min(style.maxAnisotropy, gl.getParameter(anisotropicExt.MAX_TEXTURE_MAX_ANISOTROPY_EXT));
-
-        gl[glFunctionName](castParam, anisotropicExt.TEXTURE_MAX_ANISOTROPY_EXT, level);
-    }
-
-    // 4. set the compare mode
+    // 3. set the compare mode
     if (style.compare)
     {
         gl[glFunctionName](castParam, gl.TEXTURE_COMPARE_FUNC, compareModeToGlCompare[style.compare]);

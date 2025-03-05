@@ -52,6 +52,15 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
      * If you do, make sure to call `updateMipmaps` after you update the texture.
      */
     autoGenerateMipmaps?: boolean;
+    /**
+     * Specifies the maximum anisotropy value clamp used by the sampler.
+     * Note: Most implementations support {@link GPUSamplerDescriptor#maxAnisotropy} values in range
+     * between 1 and 16, inclusive. The used value of {@link GPUSamplerDescriptor#maxAnisotropy} will
+     * be clamped to the maximum value that the platform supports.
+     * @internal
+     * @ignore
+     */
+    maxAnisotropy?: number;
     /** the alpha mode of the texture */
     alphaMode?: ALPHA_MODES;
     /** optional label, can be used for debugging */
@@ -88,6 +97,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         alphaMode: 'premultiply-alpha-on-upload',
         dimensions: '2d',
         mipLevelCount: 1,
+        maxAnisotropy: 1,
         autoGenerateMipmaps: false,
         sampleCount: 1,
         antialias: false,
@@ -164,6 +174,15 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      * If you do, make sure to call `updateMipmaps` after you update the texture.
      */
     public autoGenerateMipmaps = false;
+    /**
+     * Specifies the maximum anisotropy value clamp used by the sampler.
+     * Note: Most implementations support {@link GPUSamplerDescriptor#maxAnisotropy} values in range
+     * between 1 and 16, inclusive. The used value of {@link GPUSamplerDescriptor#maxAnisotropy} will
+     * be clamped to the maximum value that the platform supports.
+     * @internal
+     * @ignore
+     */
+    public _maxAnisotropy = 1;
     /** the format that the texture data has */
     public format: TEXTURE_FORMATS = 'rgba8unorm';
     /** how many dimensions does this texture have? currently v8 only supports 2d */
@@ -252,6 +271,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.dimension = options.dimensions;
         this.mipLevelCount = options.mipLevelCount;
         this.autoGenerateMipmaps = options.autoGenerateMipmaps;
+        this.maxAnisotropy = options.maxAnisotropy;
         this.sampleCount = options.sampleCount;
         this.antialias = options.antialias;
         this.alphaMode = options.alphaMode;
@@ -339,6 +359,22 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     set mipmapFilter(value: SCALE_MODE)
     {
         this._style.mipmapFilter = value;
+    }
+
+    /** Specifies the maximum anisotropy value clamp used by the sampler. */
+    set maxAnisotropy(value: number)
+    {
+        this._maxAnisotropy = Math.min(value, 16);
+
+        if (this._maxAnisotropy > 1)
+        {
+            this.scaleMode = 'linear';
+        }
+    }
+
+    get maxAnisotropy(): number
+    {
+        return this._maxAnisotropy;
     }
 
     /** Specifies the minimum and maximum levels of detail, respectively, used internally when sampling a texture. */
