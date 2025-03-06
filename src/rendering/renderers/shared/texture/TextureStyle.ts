@@ -58,6 +58,10 @@ export interface TextureStyleOptions extends Partial<TextureStyle>
      * implementation-dependent and may differ from the normal filtering rules.
      */
     compare?: COMPARE_FUNCTION;
+    /**
+     * @deprecated since 8.8.1 Use `maxAnisotropy` on the texture source instead
+     */
+    maxAnisotropy?: number;
 }
 
 /**
@@ -102,6 +106,7 @@ export class TextureStyle extends EventEmitter<{
      * implementation-dependent and may differ from the normal filtering rules.
      */
     public compare?: COMPARE_FUNCTION;
+    public _maxAnisotropy?: number = 1;
 
     /**
      * Has the style been destroyed?
@@ -134,6 +139,8 @@ export class TextureStyle extends EventEmitter<{
         this.lodMaxClamp = options.lodMaxClamp;
 
         this.compare = options.compare;
+
+        this.maxAnisotropy = options.maxAnisotropy ?? 1;
     }
 
     set addressMode(value: WRAP_MODE)
@@ -176,6 +183,27 @@ export class TextureStyle extends EventEmitter<{
         return this.magFilter;
     }
 
+    /**
+     * @deprecated since 8.8.1 Use `maxAnisotropy` on the texture source instead
+     */
+    set maxAnisotropy(value: number)
+    {
+        this._maxAnisotropy = Math.min(value, 16);
+
+        if (this._maxAnisotropy > 1)
+        {
+            this.scaleMode = 'linear';
+        }
+    }
+
+    /**
+     * @deprecated
+     */
+    get maxAnisotropy(): number
+    {
+        return this._maxAnisotropy;
+    }
+
     // TODO - move this to WebGL?
     get _resourceId(): number
     {
@@ -192,7 +220,7 @@ export class TextureStyle extends EventEmitter<{
     private _generateResourceId(): number
     {
         // eslint-disable-next-line max-len
-        const bigKey = `${this.addressModeU}-${this.addressModeV}-${this.addressModeW}-${this.magFilter}-${this.minFilter}-${this.mipmapFilter}-${this.lodMinClamp}-${this.lodMaxClamp}-${this.compare}`;
+        const bigKey = `${this.addressModeU}-${this.addressModeV}-${this.addressModeW}-${this.magFilter}-${this.minFilter}-${this.mipmapFilter}-${this.lodMinClamp}-${this.lodMaxClamp}-${this.compare}-${this._maxAnisotropy}`;
 
         this._sharedResourceId = createResourceIdFromString(bigKey);
 
