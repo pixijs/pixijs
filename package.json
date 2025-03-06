@@ -38,6 +38,7 @@
     "release": "ts-node ./scripts/release.ts",
     "prepublish-ci": "ts-node ./scripts/prepublish.ts",
     "publish-ci": "workspaces-run --only-fs=\"{packages,bundles}/*\" -- npm publish",
+    "postpublish-ci": "ts-node ./scripts/fixDistTags.ts",
     "webdoc": "webdoc"
   },
   "pre-commit": [
