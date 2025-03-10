@@ -134,8 +134,23 @@ export function parseKTX(url: string, arrayBuffer: ArrayBuffer, loadKeyValueData
     let blockWidth = 4;
     let blockHeight = 4;
 
+    // Handle all ASTC block sizes
+    if ((glInternalFormat >= 0x93B0 && glInternalFormat <= 0x93BD) || // Regular ASTC
+        (glInternalFormat >= 0x93D0 && glInternalFormat <= 0x93DD))   // sRGB ASTC
+    {
+        const formatName = Object.keys(INTERNAL_FORMATS).find(
+            key => INTERNAL_FORMATS[key as keyof typeof INTERNAL_FORMATS] === glInternalFormat
+        );
+        if (formatName) {
+            const matches = formatName.match(/(\d+)x(\d+)/);
+            if (matches) {
+                blockWidth = parseInt(matches[1], 10);
+                blockHeight = parseInt(matches[2], 10);
+            }
+        }
+    }
     // Special case for PVRTC 2bpp formats
-    if (glInternalFormat === INTERNAL_FORMATS.COMPRESSED_RGB_PVRTC_2BPPV1_IMG
+    else if (glInternalFormat === INTERNAL_FORMATS.COMPRESSED_RGB_PVRTC_2BPPV1_IMG
         || glInternalFormat === INTERNAL_FORMATS.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG)
     {
         blockWidth = 8;
@@ -184,9 +199,6 @@ export function parseKTX(url: string, arrayBuffer: ArrayBuffer, loadKeyValueData
 
         for (let arrayElement = 0; arrayElement < numberOfArrayElements; arrayElement++)
         {
-            // TODO: Maybe support 3D textures? :-)
-            // for (let zSlice = 0; zSlice < pixelDepth; zSlice++)
-
             let mips = imageBuffers[arrayElement];
 
             if (!mips)
@@ -196,15 +208,15 @@ export function parseKTX(url: string, arrayBuffer: ArrayBuffer, loadKeyValueData
 
             mips[mipmapLevel] = {
                 levelID: mipmapLevel,
-                // don't align mipWidth when texture not compressed! (glType not zero)
-                levelWidth: numberOfMipmapLevels > 1 || glType !== 0 ? mipWidth : alignedWidth,
-                levelHeight: numberOfMipmapLevels > 1 || glType !== 0 ? mipHeight : alignedHeight,
+                levelWidth: mipWidth,      // Use original width
+                levelHeight: mipHeight,     // Use original height
                 levelBuffer: new Uint8Array(arrayBuffer, elementOffset, imageSize / numberOfArrayElements)
             };
             elementOffset += imageSize / numberOfArrayElements;
         }
 
         imageOffset += 4 + imageSize;
+        
         // Calculate next mip level dimensions
         mipWidth = Math.max(1, mipWidth >> 1);
         mipHeight = Math.max(1, mipHeight >> 1);
