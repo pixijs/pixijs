@@ -1,6 +1,7 @@
 import { CustomRenderPipe } from '../../../../scene/container/CustomRenderPipe';
 import { RenderGroupPipe } from '../../../../scene/container/RenderGroupPipe';
 import { RenderGroupSystem } from '../../../../scene/container/RenderGroupSystem';
+import { DomPipe } from '../../../../scene/dom/DomPipe';
 import { SpritePipe } from '../../../../scene/sprite/SpritePipe';
 import { RendererInitHook } from '../../../../utils/global/globalHooks';
 import { BatcherPipe } from '../../../batcher/shared/BatcherPipe';
@@ -38,6 +39,7 @@ export const SharedRenderPipes = [
     BlendModePipe,
     BatcherPipe,
     SpritePipe,
+    DomPipe,
     RenderGroupPipe,
     AlphaMaskPipe,
     StencilMaskPipe,

@@ -65,6 +65,10 @@ export interface WebGLContextEventMap
  */
 export interface ICanvas extends PixiMixins.ICanvas, Partial<EventTarget>
 {
+    /** The offsetTop property of the canvas. */
+    offsetTop: number;
+    /** The offsetLeft property of the canvas. */
+    offsetLeft: number;
     /** Width of the canvas. */
     width: number;
     /** Height of the canvas. */
