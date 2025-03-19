@@ -115,7 +115,7 @@ export class DomPipe implements RenderPipe<DomContainer>
             return;
         }
 
-        const canvas = this._renderer.view.canvas;
+        const canvas = this._renderer.view.canvas as HTMLCanvasElement;
 
         if (this._domElement.parentNode !== canvas.parentNode)
         {
