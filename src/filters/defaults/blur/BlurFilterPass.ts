@@ -124,7 +124,7 @@ export class BlurFilterPass extends Filter
 
             this._state.blend = true;
             filterManager.applyFilter(this, flip, output, clearMode);
-            TexturePool.returnTexture(tempTexture);
+            TexturePool.addTexture(tempTexture);
         }
     }
 
