@@ -52,6 +52,15 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
      * If you do, make sure to call `updateMipmaps` after you update the texture.
      */
     autoGenerateMipmaps?: boolean;
+    /**
+     * Specifies the maximum anisotropy value clamp used by the sampler.
+     * Note: Most implementations support {@link GPUSamplerDescriptor#maxAnisotropy} values in range
+     * between 1 and 16, inclusive. The used value of {@link GPUSamplerDescriptor#maxAnisotropy} will
+     * be clamped to the maximum value that the platform supports.
+     * @internal
+     * @ignore
+     */
+    maxAnisotropy?: number;
     /** the alpha mode of the texture */
     alphaMode?: ALPHA_MODES;
     /** optional label, can be used for debugging */
@@ -88,6 +97,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         alphaMode: 'premultiply-alpha-on-upload',
         dimensions: '2d',
         mipLevelCount: 1,
+        maxAnisotropy: 1,
         autoGenerateMipmaps: false,
         sampleCount: 1,
         antialias: false,
@@ -258,6 +268,8 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
         this.style = new TextureStyle(definedProps(options));
 
+        this.maxAnisotropy = options.maxAnisotropy;
+
         this.destroyed = false;
 
         this._refreshPOT();
@@ -339,6 +351,17 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     set mipmapFilter(value: SCALE_MODE)
     {
         this._style.mipmapFilter = value;
+    }
+
+    /** Specifies the maximum anisotropy value clamp used by the sampler. */
+    set maxAnisotropy(value: number)
+    {
+        this._style.maxAnisotropy = value;
+    }
+
+    get maxAnisotropy(): number
+    {
+        return this._style.maxAnisotropy;
     }
 
     /** Specifies the minimum and maximum levels of detail, respectively, used internally when sampling a texture. */
