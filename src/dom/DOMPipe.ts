@@ -145,7 +145,7 @@ export class DOMPipe implements RenderPipe<DOMContainer>
                 }
 
                 const wt = domContainer.worldTransform;
-                const anchor = domContainer.anchor;
+                const anchor = domContainer._anchor;
                 const ax = domContainer.width * anchor.x;
                 const ay = domContainer.height * anchor.y;
 
