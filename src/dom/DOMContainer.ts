@@ -1,32 +1,32 @@
-import { Point } from '../../maths/point/Point';
-import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
+import { Point } from '../maths/point/Point';
+import { ViewContainer, type ViewContainerOptions } from '../scene/view/ViewContainer';
 
 /**
- * Options for the {@link scene.DomContainer} constructor.
+ * Options for the {@link scene.DOMContainer} constructor.
  * @memberof scene
  */
-export interface DomContainerOptions extends ViewContainerOptions
+export interface DOMContainerOptions extends ViewContainerOptions
 {
     /** The DOM element to use for the container. */
     element?: HTMLElement;
 }
 
 /**
- * The DomContainer object is used to render DOM elements within the PixiJS scene graph.
+ * The DOMContainer object is used to render DOM elements within the PixiJS scene graph.
  * It allows you to integrate HTML elements into your PixiJS application.
  *
  * ```js
- * import { DomContainer } from 'pixi.js';
+ * import { DOMContainer } from 'pixi.js';
  *
  * const element = document.createElement('div');
  * element.innerHTML = 'Hello World!';
  *
- * const domContainer = new DomContainer({ element });
+ * const domContainer = new DOMContainer({ element });
  * ```
  * @memberof scene
  * @extends scene.ViewContainer
  */
-export class DomContainer extends ViewContainer
+export class DOMContainer extends ViewContainer
 {
     public override readonly renderPipeId: string = 'dom';
 
@@ -38,10 +38,10 @@ export class DomContainer extends ViewContainer
     /**
      * @param options - The options for creating the DOM container.
      */
-    constructor(options: DomContainerOptions = {})
+    constructor(options: DOMContainerOptions = {})
     {
         super({
-            label: 'DomContainer',
+            label: 'DOMContainer',
             ...options
         });
 
