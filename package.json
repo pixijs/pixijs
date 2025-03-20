@@ -196,6 +196,7 @@
     "./lib/compressed-textures/ktx2/init.*",
     "./lib/compressed-textures/basis/init.*",
     "./lib/events/init.*",
+    "./lib/dom/init.*",
     "./lib/filters/init.*",
     "./lib/math-extras/init.*",
     "./lib/scene/sprite-tiling/init.*",
@@ -308,6 +309,14 @@
       },
       "require": {
         "default": "./lib/events/init.js"
+      }
+    },
+    "./dom": {
+      "import": {
+        "default": "./lib/dom/init.mjs"
+      },
+      "require": {
+        "default": "./lib/dom/init.js"
       }
     },
     "./filters": {
