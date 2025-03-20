@@ -6,9 +6,9 @@ import { Texture } from '../../../../rendering/renderers/shared/texture/Texture'
 import { uid } from '../../../../utils/data/uid';
 import { deprecation } from '../../../../utils/logging/deprecation';
 import { definedProps } from '../../../container/utils/definedProps';
-import { type PointData } from '~/maths/point/PointData';
 
 import type { ColorSource } from '../../../../color/Color';
+import type { PointData } from '../../../../maths/point/PointData';
 import type { CanvasAndContext } from '../../../../rendering/renderers/shared/texture/CanvasPool';
 import type { TextureSpace } from '../FillTypes';
 
