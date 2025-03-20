@@ -19,6 +19,19 @@ export interface DOMContainerOptions extends ViewContainerOptions
  * The DOMContainer object is used to render DOM elements within the PixiJS scene graph.
  * It allows you to integrate HTML elements into your PixiJS application.
  *
+ * DOMContainer is especially useful for rendering standard DOM elements
+ * that handle user input, such as `<input>` or `<textarea>`.
+ * This is often simpler and more flexible than trying to implement text input
+ * directly in PixiJS. For instance, if you need text fields or text areas,
+ * you can embed them through this container for native browser text handling.
+ *
+ * --------- EXPERIMENTAL ---------
+ *
+ * This is a new API, things may change and it may not work as expected.
+ * We want to hear your feedback as we go!
+ *
+ * --------------------------------
+ * @example
  * ```js
  * import { DOMContainer } from 'pixi.js';
  *
@@ -89,9 +102,7 @@ export class DOMContainer extends ViewContainer
 
     set element(value: HTMLElement)
     {
-        const currentElement = this._element;
-
-        if (currentElement === value) return;
+        if (this._element === value) return;
 
         this._element = value;
         this.onViewUpdate();
@@ -136,8 +147,7 @@ export class DOMContainer extends ViewContainer
     {
         super.destroy(options);
 
-         this._element?.parentNode?.removeChild(this._element);
-
+        this._element?.parentNode?.removeChild(this._element);
         this._element = null;
         (this._anchor as null) = null;
     }
