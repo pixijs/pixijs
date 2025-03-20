@@ -136,10 +136,7 @@ export class DOMContainer extends ViewContainer
     {
         super.destroy(options);
 
-        if (this._element && this._element.parentNode)
-        {
-            this._element.parentNode.removeChild(this._element);
-        }
+         this._element?.parentNode?.removeChild(this._element);
 
         this._element = null;
         (this._anchor as null) = null;
