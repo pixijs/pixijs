@@ -261,8 +261,8 @@ describe('Text', () =>
             });
 
             // answer locally is 99.999999999999 which is acceptable!
-            expect(text.width).toEqual(100);
-            expect(text.height).toEqual(100);
+            expect(text.width).toBeCloseTo(100, 5);
+            expect(text.height).toBeCloseTo(100, 5);
         });
     });
 

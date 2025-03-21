@@ -1,11 +1,13 @@
 import { Text } from '../../text/Text';
 import { loadBitmapFont } from '../asset/loadBitmapFont';
+import { BitmapFontManager } from '../BitmapFontManager';
 import { BitmapText } from '../BitmapText';
 import '../../text/init';
 import '../init';
 import '../../graphics/init';
 import { basePath, getWebGLRenderer } from '@test-utils';
 import { Cache, Loader, loadTextures, loadTxt } from '~/assets';
+import { cleanHash } from '~/utils';
 
 import type { BitmapFont } from '../BitmapFont';
 
@@ -243,5 +245,78 @@ describe('BitmapText', () =>
 
         expect(boundsNoPadding.width).toBe(bounds.width);
         expect(boundsNoPadding.height).toBe(bounds.height);
+    });
+
+    it('should use cache getBitmapTextLayout', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+
+        (BitmapText['_layoutHash'] as any) = {}; // rm old cache
+
+        const text = new BitmapText({
+            text: 'Hello Pixi!',
+            style: {
+                fontFamily: font.fontFamily,
+            }
+        });
+
+        let count = 0;
+        const fn = BitmapFontManager.getLayout;
+
+        BitmapFontManager.getLayout = (...args) =>
+        {
+            ++count;
+
+            return fn.apply(BitmapFontManager, args);
+        };
+
+        // test1: simple render
+        renderer.render(text);
+        expect(count).toEqual(1);
+
+        // test2: first getBounds and next render
+        text.text = 'What\'s the weather like today?';
+        text.getBounds();
+        renderer.render(text);
+        expect(count).toEqual(2);
+
+        // test3: getBounds, reset cache + renderer
+        text.text = 'Oh, it rained recently';
+        text.getBounds();
+        text.getTextLayout();
+        renderer.render(text);
+        expect(count).toEqual(4);
+
+        // test4: multiple render + getBounds
+        text.text = 'It\'s okay, nature doesn\'t have bad weather!';
+        renderer.render(text);
+        text.getBounds();
+        renderer.render(text);
+        renderer.render(text);
+        text.getBounds();
+        expect(count).toEqual(5);
+
+        // test5: _layoutHash count
+        let hash = BitmapText['_layoutHash'];
+        let hashCount = 0;
+
+        for (const kind in hash)
+        {
+            expect(kind).toEqual(text.uid.toString());
+            ++hashCount;
+        }
+        expect(hashCount).toEqual(1);
+
+        // test5: clear _layoutHash
+        text.destroy();
+        (BitmapText['_layoutHash'] as any) = hash = cleanHash(hash); // demo RenderableGCSystem
+        hashCount = 0;
+        for (const _ in hash)
+        {
+            ++hashCount;
+        }
+        expect(hashCount).toEqual(0);
+
+        BitmapFontManager.getLayout = fn;
     });
 });
