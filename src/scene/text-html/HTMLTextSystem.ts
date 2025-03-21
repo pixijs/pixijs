@@ -71,13 +71,14 @@ export class HTMLTextSystem implements System
         return this._buildTexturePromise(options);
     }
 
-    private async _buildTexturePromise(options: {
-        text: string,
-        style: HTMLTextStyle,
-        resolution: number,
-    })
+    private async _buildTexturePromise(options: HTMLTextOptions)
     {
-        const { text, style, resolution } = options;
+        const { text, style, resolution } = options as {
+            text: string,
+            style: HTMLTextStyle,
+            resolution: number,
+        };
+
         const htmlTextData = BigPool.get(HTMLTextRenderData);
         const fontFamilies = extractFontFamilies(text, style);
         const fontCSS = await getFontCss(
