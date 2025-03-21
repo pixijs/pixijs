@@ -317,11 +317,6 @@ export abstract class AbstractText<
         super.onViewUpdate();
     }
 
-    public _getKey(): string
-    {
-        return `${this.text}:${this._style.styleKey}:${this._resolution}`;
-    }
-
     /**
      * Destroys this text renderable and optionally its style texture.
      * @param options - Options parameter. A boolean will act as if all options

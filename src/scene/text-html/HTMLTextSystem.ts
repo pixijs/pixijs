@@ -21,13 +21,6 @@ import type { PoolItem } from '../../utils/pool/Pool';
 import type { HTMLTextOptions } from './HTMLText';
 import type { FontCSSStyleOptions } from './utils/loadFontCSS';
 
-interface HTMLTextTexture
-{
-    texture: Texture,
-    usageCount: number,
-    promise: Promise<Texture>,
-}
-
 /**
  * System plugin to the renderer to manage HTMLText
  * @memberof rendering
@@ -50,8 +43,6 @@ export class HTMLTextSystem implements System
         fontWeight: 'normal',
     };
 
-    private _activeTextures: Record<string, HTMLTextTexture> = {};
-
     /**
      * WebGPU has a cors issue when uploading an image that is an SVGImage
      * To get around this we need to create a canvas draw the image to it and upload that instead.
@@ -66,52 +57,27 @@ export class HTMLTextSystem implements System
         this._createCanvas = renderer.type === RendererType.WEBGPU;
     }
 
+    /**
+     * @param options
+     * @deprecated Use getTexturePromise instead
+     */
     public getTexture(options: HTMLTextOptions): Promise<Texture>
     {
-        return this._buildTexturePromise(
-            options.text as string,
-            options.resolution,
-            options.style as HTMLTextStyle
-        );
+        return this.getTexturePromise(options);
     }
 
-    public getManagedTexture(
-        text: string,
-        resolution: number,
-        style: HTMLTextStyle,
-        textKey: string
-    ): Promise<Texture>
+    public getTexturePromise(options: HTMLTextOptions): Promise<Texture>
     {
-        if (this._activeTextures[textKey])
-        {
-            this._increaseReferenceCount(textKey);
-
-            return this._activeTextures[textKey].promise;
-        }
-
-        const promise = this._buildTexturePromise(text, resolution, style)
-            .then((texture) =>
-            {
-                this._activeTextures[textKey].texture = texture;
-
-                return texture;
-            });
-
-        this._activeTextures[textKey] = {
-            texture: null,
-            promise,
-            usageCount: 1,
-        };
-
-        return promise;
+        return this._buildTexturePromise(options);
     }
 
-    private async _buildTexturePromise(
+    private async _buildTexturePromise(options: {
         text: string,
-        resolution: number,
         style: HTMLTextStyle,
-    )
+        resolution: number,
+    })
     {
+        const { text, style, resolution } = options;
         const htmlTextData = BigPool.get(HTMLTextRenderData);
         const fontFamilies = extractFontFamilies(text, style);
         const fontCSS = await getFontCss(
@@ -162,60 +128,29 @@ export class HTMLTextSystem implements System
         return texture;
     }
 
-    private _increaseReferenceCount(textKey: string)
+    public returnTexturePromise(texturePromise: Promise<Texture>)
     {
-        this._activeTextures[textKey].usageCount++;
-    }
-
-    public decreaseReferenceCount(textKey: string)
-    {
-        const activeTexture = this._activeTextures[textKey];
-
-        // TODO SHOULD NOT BE NEEDED
-        if (!activeTexture) return;
-
-        activeTexture.usageCount--;
-
-        if (activeTexture.usageCount === 0)
+        texturePromise.then((texture) =>
         {
-            if (activeTexture.texture)
-            {
-                this._cleanUp(activeTexture);
-            }
-            else
-            {
-                // we did not resolve...
-                activeTexture.promise.then((texture) =>
-                {
-                    activeTexture.texture = texture;
-
-                    this._cleanUp(activeTexture);
-                }).catch(() =>
-                {
-                    // #if _DEBUG
-                    warn('HTMLTextSystem: Failed to clean texture');
-                    // #endif
-                });
-            }
-
-            this._activeTextures[textKey] = null;
-        }
+            this._cleanUp(texture);
+        }).catch(() =>
+        {
+            // #if _DEBUG
+            warn('HTMLTextSystem: Failed to clean texture');
+            // #endif
+        });
     }
 
-    private _cleanUp(activeTexture: HTMLTextTexture)
+    private _cleanUp(texture: Texture)
     {
-        TexturePool.returnTexture(activeTexture.texture);
-        activeTexture.texture.source.resource = null;
-        activeTexture.texture.source.uploadMethodId = 'unknown';
+        TexturePool.returnTexture(texture);
+        texture.source.resource = null;
+        texture.source.uploadMethodId = 'unknown';
     }
 
-    public getReferenceCount(textKey: string)
+    public destroy()
     {
-        return this._activeTextures[textKey].usageCount;
-    }
-
-    public destroy(): void
-    {
-        this._activeTextures = null;
+        // BOOM!
+        (this._renderer as null) = null;
     }
 }
