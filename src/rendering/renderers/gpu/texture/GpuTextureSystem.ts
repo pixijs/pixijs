@@ -88,10 +88,11 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
         const width = Math.ceil(source.pixelWidth / blockData.blockWidth) * blockData.blockWidth;
         const height = Math.ceil(source.pixelHeight / blockData.blockHeight) * blockData.blockHeight;
+        const depthOrArrayLayers = source.viewDimension === '2d-array' && source.resource ? source.resource.length : 1;
 
         const textureDescriptor: GPUTextureDescriptor = {
             label: source.label,
-            size: { width, height },
+            size: { width, height, depthOrArrayLayers },
             format: source.format,
             sampleCount: source.sampleCount,
             mipLevelCount: source.mipLevelCount,
@@ -247,7 +248,17 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
     private _createTextureView(texture: TextureSource)
     {
-        this._textureViewHash[texture.uid] = this.getGpuSource(texture).createView();
+        let argsView: GPUTextureViewDescriptor = {};
+
+        if (texture.viewDimension === '2d-array')
+        {
+            argsView = {
+                dimension: '2d-array',
+                baseArrayLayer: 0,
+                arrayLayerCount: texture.resource.length,
+            };
+        }
+        this._textureViewHash[texture.uid] = this.getGpuSource(texture).createView(argsView);
 
         return this._textureViewHash[texture.uid];
     }

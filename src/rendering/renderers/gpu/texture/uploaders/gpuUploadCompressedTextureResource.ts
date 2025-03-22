@@ -25,9 +25,51 @@ export const gpuUploadCompressedTextureResource = {
 
         const blockData = blockDataMap[source.format] || defaultBlockData;
 
+        if (source.viewDimension === '2d-array')
+        {
+            for (let i = 0; i < source.resource.length; i++)
+            {
+                mipWidth = source.pixelWidth;
+                mipHeight = source.pixelHeight;
+                for (let j = 0; j < source.resource[i].length; j++)
+                {
+                    const levelBuffer = source.resource[i][j] as Uint8Array;
+
+                    const bytesPerRow = Math.ceil(mipWidth / blockData.blockWidth) * blockData.blockBytes;
+
+                    gpu.device.queue.writeTexture(
+                        {
+                            texture: gpuTexture,
+                            mipLevel: j,
+                            origin: {
+                                x: 0,
+                                y: 0,
+                                z: i
+                            }
+                        },
+                        levelBuffer,
+                        {
+                            offset: 0,
+                            bytesPerRow,
+                        },
+                        {
+                            width: Math.ceil(mipWidth / blockData.blockWidth) * blockData.blockWidth,
+                            height: Math.ceil(mipHeight / blockData.blockHeight) * blockData.blockHeight,
+                            depthOrArrayLayers: 1,
+                        }
+                    );
+
+                    mipWidth = Math.max(mipWidth >> 1, 1);
+                    mipHeight = Math.max(mipHeight >> 1, 1);
+                }
+            }
+
+            return;
+        }
+
         for (let i = 0; i < source.resource.length; i++)
         {
-            const levelBuffer = source.resource[i];
+            const levelBuffer = source.resource[i] as Uint8Array;
 
             const bytesPerRow = Math.ceil(mipWidth / blockData.blockWidth) * blockData.blockBytes;
 

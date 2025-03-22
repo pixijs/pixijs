@@ -1,6 +1,7 @@
 import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Texture } from '../../shared/texture/Texture';
+import { GL_TARGETS } from './const';
 import { GlTexture } from './GlTexture';
 import { glUploadBufferImageResource } from './uploaders/glUploadBufferImageResource';
 import { glUploadCompressedTextureResource } from './uploaders/glUploadCompressedTextureResource';
@@ -205,6 +206,7 @@ export class GlTextureSystem implements System, CanvasGenerator
         glTexture.type = this._mapFormatToType[source.format];
         glTexture.internalFormat = this._mapFormatToInternalFormat[source.format];
         glTexture.format = this._mapFormatToFormat[source.format];
+        glTexture.target = source.viewDimension === '2d-array' ? GL_TARGETS.TEXTURE_2D_ARRAY : GL_TARGETS.TEXTURE_2D;
 
         if (source.autoGenerateMipmaps && (this._renderer.context.supports.nonPowOf2mipmaps || source.isPowerOfTwo))
         {
@@ -244,7 +246,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         const glTexture = this.getGlSource(source);
 
-        gl.bindTexture(gl.TEXTURE_2D, glTexture.texture);
+        gl.bindTexture(glTexture.target, glTexture.texture);
 
         this._boundTextures[this._activeTextureLocation] = source;
 
@@ -254,7 +256,7 @@ export class GlTextureSystem implements System, CanvasGenerator
             source.mipLevelCount > 1,
             this._renderer.context.extensions.anisotropicFiltering,
             'texParameteri',
-            gl.TEXTURE_2D,
+            glTexture.target,
             // will force a clamp to edge if the texture is not a power of two
             !this._renderer.context.supports.nonPowOf2wrapping && !source.isPowerOfTwo,
             firstCreation,
@@ -279,7 +281,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         const glTexture = this.getGlSource(source);
 
-        gl.bindTexture(gl.TEXTURE_2D, glTexture.texture);
+        gl.bindTexture(glTexture.target, glTexture.texture);
 
         this._boundTextures[this._activeTextureLocation] = source;
 
@@ -289,6 +291,18 @@ export class GlTextureSystem implements System, CanvasGenerator
         {
             this._premultiplyAlpha = premultipliedAlpha;
             gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, premultipliedAlpha);
+        }
+
+        if (glTexture.target === GL_TARGETS.TEXTURE_2D_ARRAY)
+        {
+            gl.texStorage3D(
+                gl.TEXTURE_2D_ARRAY,
+                source.mipLevelCount,
+                glTexture.internalFormat,
+                source.pixelWidth,
+                source.pixelHeight,
+                source.resource.length
+            );
         }
 
         if (this._uploads[source.uploadMethodId])

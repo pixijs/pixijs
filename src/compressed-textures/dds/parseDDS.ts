@@ -12,6 +12,7 @@ export function parseDDS(arrayBuffer: ArrayBuffer, supportedFormats: TEXTURE_FOR
         height,
         dataOffset,
         mipmapCount,
+        arraySize,
     } = parseDDSHeader(arrayBuffer);
 
     if (!supportedFormats.includes(format))
@@ -30,14 +31,24 @@ export function parseDDS(arrayBuffer: ArrayBuffer, supportedFormats: TEXTURE_FOR
         } as TextureSourceOptions;
     }
 
-    const levelBuffers = getMipmapLevelBuffers(format, width, height, dataOffset, mipmapCount, arrayBuffer);
+    const resources = [];
+    let offset = dataOffset;
+
+    for (let layer = 0; layer < arraySize; ++layer)
+    {
+        const levelBuffersInfo = getMipmapLevelBuffers(format, width, height, offset, mipmapCount, arrayBuffer);
+
+        resources.push(levelBuffersInfo.levelBuffers);
+        offset = levelBuffersInfo.offset;
+    }
 
     const textureOptions: TextureSourceOptions = {
         format,
         width,
         height,
-        resource: levelBuffers,
-        alphaMode: 'no-premultiply-alpha'
+        resource: arraySize > 1 ? resources : resources[0],
+        alphaMode: 'no-premultiply-alpha',
+        viewDimensions: arraySize > 1 ? '2d-array' : '2d',
     };
 
     return textureOptions;
@@ -72,7 +83,7 @@ function getMipmapLevelBuffers(format: TEXTURE_FORMATS, width: number, height: n
         mipHeight = Math.max(mipHeight >> 1, 1);
     }
 
-    return levelBuffers;
+    return { levelBuffers, offset };
 }
 
 function parseDDSHeader(buffer: ArrayBuffer)
@@ -91,6 +102,7 @@ function parseDDSHeader(buffer: ArrayBuffer)
     const flags = header[DDS.HEADER_FIELDS.PF_FLAGS];
     const fourCC = header[DDS.HEADER_FIELDS.FOURCC];
     const format = getTextureFormat(header, flags, fourCC, buffer);
+    const arraySize = getArraySize(flags, fourCC, buffer);
 
     const dataOffset = DDS.MAGIC_SIZE + DDS.HEADER_SIZE
         + ((fourCC === DDS.D3DFMT.DX10) ? DDS.HEADER_DX10_SIZE : 0);
@@ -101,8 +113,26 @@ function parseDDSHeader(buffer: ArrayBuffer)
         width,
         height,
         dataOffset,
-        mipmapCount
+        mipmapCount,
+        arraySize,
     };
+}
+
+function getArraySize(flags: number, fourCC: number, buffer: ArrayBuffer)
+{
+    if (flags & DDS.PIXEL_FORMAT_FLAGS.FOURCC && fourCC === DDS.D3DFMT.DX10)
+    {
+        const dx10Header = new Uint32Array(
+            buffer,
+            DDS.MAGIC_SIZE + DDS.HEADER_SIZE, // there is a 20-byte DDS_HEADER_DX10 after DDS_HEADER
+            DDS.HEADER_DX10_SIZE / Uint32Array.BYTES_PER_ELEMENT);
+
+        const arraySize = dx10Header[DDS.HEADER_DX10_FIELDS.ARRAY_SIZE];
+
+        return arraySize;
+    }
+
+    return 1;
 }
 
 function getTextureFormat(header: Uint32Array, flags: number, fourCC: number, buffer: ArrayBuffer)
