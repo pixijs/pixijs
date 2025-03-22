@@ -1,6 +1,7 @@
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import { ViewContainer, type ViewContainerOptions } from '../../view/ViewContainer';
 import { GraphicsContext } from './GraphicsContext';
+import { type GraphicsGpuData } from './GraphicsPipe';
 
 import type { ColorSource } from '../../../color/Color';
 import type { Matrix } from '../../../maths/matrix/Matrix';
@@ -47,6 +48,12 @@ export class Graphics extends ViewContainer implements Instruction
 
     private _context: GraphicsContext;
     private readonly _ownedContext: GraphicsContext;
+
+    /**
+     * holds gpu data for the graphics
+     * @ignore
+     */
+    public _gpuData: GraphicsGpuData;
 
     /**
      * @param options - Options for the Graphics.
@@ -152,6 +159,8 @@ export class Graphics extends ViewContainer implements Instruction
         (this._ownedContext as null) = null;
         this._context = null;
 
+        this._gpuData?.destroy();
+        this._gpuData = null;
         super.destroy(options);
     }
 

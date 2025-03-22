@@ -1,6 +1,7 @@
 import { Bounds } from '../../container/bounds/Bounds';
 import { type IRenderLayer } from '../../layers/RenderLayer';
 import { ViewContainer, type ViewContainerOptions } from '../../view/ViewContainer';
+import { type ParticleBuffer } from './ParticleBuffer';
 import { particleData } from './particleData';
 
 import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
@@ -149,6 +150,8 @@ export class ParticleContainer extends ViewContainer implements Instruction
      */
     public texture: Texture;
 
+    public _gpuData: ParticleBuffer;
+
     /**
      * @param options - The options for creating the sprite.
      */
@@ -292,6 +295,9 @@ export class ParticleContainer extends ViewContainer implements Instruction
 
         this.texture = null;
         this.shader?.destroy();
+
+        this._gpuData?.destroy();
+        this._gpuData = null;
     }
 
     /**

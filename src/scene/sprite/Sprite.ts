@@ -3,6 +3,7 @@ import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { updateQuadBounds } from '../../utils/data/updateQuadBounds';
 import { deprecation } from '../../utils/logging/deprecation';
 import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
+import { type BatchableSprite } from './BatchableSprite';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
@@ -81,6 +82,12 @@ export class Sprite extends ViewContainer
 
     private _width: number;
     private _height: number;
+
+    /**
+     * holds gpu data for the sprite
+     * @ignore
+     */
+    public _gpuData: BatchableSprite;
 
     /**
      * @param options - The options for creating the sprite.
@@ -224,6 +231,7 @@ export class Sprite extends ViewContainer
         (this._visualBounds as null) = null;
         (this._bounds as null) = null;
         (this._anchor as null) = null;
+        this._gpuData = null;
     }
 
     /**

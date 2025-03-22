@@ -120,7 +120,7 @@ describe('Round Pixels', () =>
 
         expect(batchableSprite.roundPixels).toBe(1);
 
-        const batchableGraphics = renderer.renderPipes.graphics['_getBatchesForRenderable'](graphics);
+        const batchableGraphics = renderer.renderPipes.graphics['_getGpuDataForRenderable'](graphics).batches;
 
         expect(batchableGraphics[0].roundPixels).toBe(1);
 

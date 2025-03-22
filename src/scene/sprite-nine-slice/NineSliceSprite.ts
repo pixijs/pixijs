@@ -2,6 +2,7 @@ import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
 import { NineSliceGeometry } from './NineSliceGeometry';
+import { type NineSliceSpriteGpuData } from './NineSliceSpritePipe';
 import { ObservablePoint } from '~/maths/point/ObservablePoint';
 import { type PointData } from '~/maths/point/PointData';
 
@@ -93,6 +94,8 @@ export class NineSliceSprite extends ViewContainer implements View
     private _bottomHeight: number;
     private _width: number;
     private _height: number;
+
+    public _gpuData: NineSliceSpriteGpuData;
 
     /**
      * @param {scene.NineSliceSpriteOptions|Texture} options - Options to use

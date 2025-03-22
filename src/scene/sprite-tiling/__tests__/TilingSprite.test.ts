@@ -84,7 +84,7 @@ describe('TilingSprite', () =>
 
             renderer.render({ container });
 
-            const renderData = renderer.renderPipes.tilingSprite['_tilingSpriteDataHash'][sprite.uid];
+            const renderData = sprite._gpuData;
 
             expect(renderData).not.toBeNull();
 
@@ -99,7 +99,7 @@ describe('TilingSprite', () =>
 
             sprite.destroy();
 
-            expect(renderer.renderPipes.tilingSprite['_tilingSpriteDataHash'][sprite.uid]).toBeNull();
+            expect(sprite._gpuData).toBeNull();
 
             expect(sprite.texture).toBeNull();
         });

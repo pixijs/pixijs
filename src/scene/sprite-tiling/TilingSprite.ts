@@ -5,6 +5,7 @@ import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { warn } from '../../utils/logging/warn';
 import { Transform } from '../../utils/misc/Transform';
 import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
+import { type TilingSpriteGpuData } from './TilingSpritePipe';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
@@ -173,6 +174,12 @@ export class TilingSprite extends ViewContainer implements View, Instruction
 
     private _width: number;
     private _height: number;
+
+    /**
+     * holds gpu data for the tiling sprite
+     * @ignore
+     */
+    public _gpuData: TilingSpriteGpuData;
 
     /**
      * @param {rendering.Texture | scene.TilingSpriteOptions} options - The options for creating the tiling sprite.
@@ -479,6 +486,9 @@ export class TilingSprite extends ViewContainer implements View, Instruction
         }
 
         this._texture = null;
+
+        this._gpuData?.destroy();
+        this._gpuData = null;
     }
 }
 
