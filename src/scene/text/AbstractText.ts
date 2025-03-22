@@ -79,8 +79,9 @@ export interface TextOptions<
  * @memberof scene
  */
 export abstract class AbstractText<
-    TEXT_STYLE extends TextStyle = TextStyle,
-    TEXT_STYLE_OPTIONS extends TextStyleOptions = TextStyleOptions,
+    TEXT_STYLE extends TextStyle,
+    TEXT_STYLE_OPTIONS extends TextStyleOptions,
+    GPU_DATA extends { destroy: () => void } = any
 > extends ViewContainer implements View
 {
     public batched = true;
@@ -91,6 +92,12 @@ export abstract class AbstractText<
 
     public _style: TEXT_STYLE;
     public _didTextUpdate = true;
+
+    /**
+     * stores the gpu data for the text
+     * @ignore
+     */
+    public _gpuData: GPU_DATA;
 
     protected _text: string;
     private readonly _styleClass: new (options: TEXT_STYLE_OPTIONS) => TEXT_STYLE;
@@ -340,6 +347,9 @@ export abstract class AbstractText<
 
         this._style = null;
         this._text = null;
+
+        this._gpuData?.destroy();
+        this._gpuData = null;
     }
 }
 

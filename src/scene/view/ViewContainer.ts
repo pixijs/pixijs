@@ -122,7 +122,7 @@ export abstract class ViewContainer extends Container implements View
         currentLayer: IRenderLayer,
     ): void
     {
-        const { renderPipes, renderableGC } = renderer;
+        const { renderPipes } = renderer;
 
         // TODO add blends in
         renderPipes.blendMode.setBlendMode(this, this.groupBlendMode, instructionSet);
@@ -130,8 +130,6 @@ export abstract class ViewContainer extends Container implements View
         const rp = renderPipes as unknown as Record<string, RenderPipe>;
 
         rp[this.renderPipeId].addRenderable(this, instructionSet);
-
-        renderableGC.addRenderable(this);
 
         this.didViewUpdate = false;
 
