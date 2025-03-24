@@ -2,6 +2,7 @@ import { Color } from '../../../../color/Color';
 import { loadEnvironmentExtensions } from '../../../../environment/autoDetectEnvironment';
 import { Container } from '../../../../scene/container/Container';
 import { unsafeEvalSupported } from '../../../../utils/browser/unsafeEvalSupported';
+import { uid } from '../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { EventEmitter } from '../../../../utils/utils';
 import { CLEAR } from '../../gl/const';
@@ -176,6 +177,8 @@ export class AbstractRenderer<
     public readonly type: number;
     /** The name of the renderer. */
     public readonly name: string;
+
+    public readonly uid = uid('renderer');
 
     public _roundPixels: 0 | 1;
 

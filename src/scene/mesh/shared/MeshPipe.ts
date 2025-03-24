@@ -3,8 +3,8 @@ import { Matrix } from '../../../maths/matrix/Matrix';
 import { BindGroup } from '../../../rendering/renderers/gpu/shader/BindGroup';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
 import { getAdjustedBlendModeBlend } from '../../../rendering/renderers/shared/state/getAdjustedBlendModeBlend';
-import { BigPool } from '../../../utils/pool/PoolGroup';
 import { color32BitToUniform } from '../../graphics/gpu/colorToUniform';
+import { type GPUData } from '../../view/ViewContainer';
 import { BatchableMesh } from './BatchableMesh';
 
 import type { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
@@ -13,12 +13,21 @@ import type {
     RenderPipe
 } from '../../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../../../rendering/renderers/types';
-import type { PoolItem } from '../../../utils/pool/Pool';
-import type { Container } from '../../container/Container';
 import type { Mesh } from './Mesh';
 
 // TODO Record mode is a P2, will get back to this as it's not a priority
 // const recordMode = true;
+
+export class MeshGpuData implements GPUData
+{
+    public meshData?: MeshData;
+    public batchableMesh?: BatchableMesh;
+
+    public destroy()
+    {
+        // BOOM!
+    }
+}
 
 interface MeshData
 {
@@ -58,10 +67,7 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
 
     public renderer: Renderer;
 
-    private _meshDataHash: Record<number, MeshData> = Object.create(null);
-    private _gpuBatchableMeshHash: Record<number, BatchableMesh> = Object.create(null);
     private _adaptor: MeshAdaptor;
-    private readonly _destroyRenderableBound = this.destroyRenderable.bind(this) as (renderable: Container) => void;
 
     constructor(renderer: Renderer, adaptor: MeshAdaptor)
     {
@@ -69,9 +75,6 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
         this._adaptor = adaptor;
 
         this._adaptor.init();
-
-        renderer.renderableGC.addManagedHash(this, '_gpuBatchableMeshHash');
-        renderer.renderableGC.addManagedHash(this, '_meshDataHash');
     }
 
     public validateRenderable(mesh: Mesh): boolean
@@ -145,7 +148,7 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
     {
         if (mesh.batched)
         {
-            const gpuBatchableMesh = this._gpuBatchableMeshHash[mesh.uid];
+            const gpuBatchableMesh = this._getBatchableMesh(mesh);
 
             gpuBatchableMesh.setTexture(mesh._texture);
 
@@ -153,21 +156,6 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
 
             gpuBatchableMesh._batcher.updateElement(gpuBatchableMesh);
         }
-    }
-
-    public destroyRenderable(mesh: Mesh)
-    {
-        this._meshDataHash[mesh.uid] = null;
-
-        const gpuMesh = this._gpuBatchableMeshHash[mesh.uid];
-
-        if (gpuMesh)
-        {
-            BigPool.return(gpuMesh as PoolItem);
-            this._gpuBatchableMeshHash[mesh.uid] = null;
-        }
-
-        mesh.off('destroyed', this._destroyRenderableBound);
     }
 
     public execute(mesh: Mesh)
@@ -193,55 +181,46 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
 
     private _getMeshData(mesh: Mesh): MeshData
     {
-        return this._meshDataHash[mesh.uid] || this._initMeshData(mesh);
+        mesh._gpuData[this.renderer.uid] ||= new MeshGpuData();
+
+        return mesh._gpuData[this.renderer.uid].meshData || this._initMeshData(mesh);
     }
 
     private _initMeshData(mesh: Mesh): MeshData
     {
-        this._meshDataHash[mesh.uid] = {
+        mesh._gpuData[this.renderer.uid].meshData = {
             batched: mesh.batched,
             indexSize: mesh._geometry.indices?.length,
             vertexSize: mesh._geometry.positions?.length,
         };
 
-        mesh.on('destroyed', this._destroyRenderableBound);
-
-        return this._meshDataHash[mesh.uid];
+        return mesh._gpuData[this.renderer.uid].meshData;
     }
 
     private _getBatchableMesh(mesh: Mesh): BatchableMesh
     {
-        return this._gpuBatchableMeshHash[mesh.uid] || this._initBatchableMesh(mesh);
+        mesh._gpuData[this.renderer.uid] ||= new MeshGpuData();
+
+        return mesh._gpuData[this.renderer.uid].batchableMesh || this._initBatchableMesh(mesh);
     }
 
     private _initBatchableMesh(mesh: Mesh): BatchableMesh
     {
         // TODO - make this batchable graphics??
-        const gpuMesh: BatchableMesh = BigPool.get(BatchableMesh);
+        const gpuMesh: BatchableMesh = new BatchableMesh();
 
         gpuMesh.renderable = mesh;
         gpuMesh.setTexture(mesh._texture);
         gpuMesh.transform = mesh.groupTransform;
         gpuMesh.roundPixels = (this.renderer._roundPixels | mesh._roundPixels) as 0 | 1;
 
-        this._gpuBatchableMeshHash[mesh.uid] = gpuMesh;
+        mesh._gpuData[this.renderer.uid].batchableMesh = gpuMesh;
 
         return gpuMesh;
     }
 
     public destroy()
     {
-        for (const i in this._gpuBatchableMeshHash)
-        {
-            if (this._gpuBatchableMeshHash[i])
-            {
-                BigPool.return(this._gpuBatchableMeshHash[i] as PoolItem);
-            }
-        }
-
-        this._gpuBatchableMeshHash = null;
-        this._meshDataHash = null;
-
         this.localUniforms = null;
         this.localUniformsBindGroup = null;
 

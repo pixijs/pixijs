@@ -74,7 +74,7 @@ describe('Sprite', () =>
 
             sprite.destroy();
 
-            expect(renderer.renderPipes.sprite['_gpuSpriteHash'][sprite.uid]).toBeNull();
+            expect(sprite._gpuData).toBeNull();
         });
     });
 

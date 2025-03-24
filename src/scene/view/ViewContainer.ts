@@ -9,8 +9,16 @@ import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { DestroyOptions } from '../container/destroyTypes';
 
+export interface GPUData
+{
+    destroy: () => void;
+}
+
 export interface ViewContainerOptions extends ContainerOptions, PixiMixins.ViewContainerOptions {}
-export interface ViewContainer extends PixiMixins.ViewContainer, Container {}
+export interface ViewContainer<GPU_DATA extends GPUData = any> extends PixiMixins.ViewContainer, Container
+{
+    _gpuData: Record<number, GPU_DATA>;
+}
 
 /**
  * A ViewContainer is a type of container that represents a view.
@@ -18,7 +26,7 @@ export interface ViewContainer extends PixiMixins.ViewContainer, Container {}
  * This class is abstract and should not be used directly.
  * @memberof scene
  */
-export abstract class ViewContainer extends Container implements View
+export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Container implements View
 {
     /** @private */
     public override readonly renderPipeId: string;
@@ -31,6 +39,8 @@ export abstract class ViewContainer extends Container implements View
     public _roundPixels: 0 | 1 = 0;
     /** @private */
     public _lastUsed = -1;
+
+    public _gpuData: Record<number, GPU_DATA> = Object.create(null);
 
     protected _bounds: Bounds = new Bounds(0, 1, 0, 0);
     protected _boundsDirty = true;
@@ -114,6 +124,13 @@ export abstract class ViewContainer extends Container implements View
         super.destroy(options);
 
         this._bounds = null;
+
+        for (const key in this._gpuData)
+        {
+            (this._gpuData[key] as GPU_DATA).destroy?.();
+        }
+
+        this._gpuData = null;
     }
 
     public override collectRenderablesSimple(
@@ -122,7 +139,7 @@ export abstract class ViewContainer extends Container implements View
         currentLayer: IRenderLayer,
     ): void
     {
-        const { renderPipes, renderableGC } = renderer;
+        const { renderPipes } = renderer;
 
         // TODO add blends in
         renderPipes.blendMode.setBlendMode(this, this.groupBlendMode, instructionSet);
@@ -130,8 +147,6 @@ export abstract class ViewContainer extends Container implements View
         const rp = renderPipes as unknown as Record<string, RenderPipe>;
 
         rp[this.renderPipeId].addRenderable(this, instructionSet);
-
-        renderableGC.addRenderable(this);
 
         this.didViewUpdate = false;
 

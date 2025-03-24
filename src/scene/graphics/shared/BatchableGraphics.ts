@@ -56,13 +56,14 @@ export class BatchableGraphics implements DefaultBatchableMeshElement
 
     get blendMode()
     {
-        if (this.applyTransform)
+        if (this.renderable && this.applyTransform)
         {
             return this.renderable.groupBlendMode;
         }
 
         return 'normal';
     }
+
     get color()
     {
         const rgb = this.baseColor;

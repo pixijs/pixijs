@@ -1,6 +1,7 @@
 import { updateQuadBounds } from '../../../utils/data/updateQuadBounds';
 import { type BatchableSprite } from '../../sprite/BatchableSprite';
 import { type AbstractText } from '../AbstractText';
+import { type TextStyle, type TextStyleOptions } from '../TextStyle';
 
 /**
  * Updates the bounds of the given batchable sprite based on the provided text object.
@@ -11,7 +12,7 @@ import { type AbstractText } from '../AbstractText';
  * @param {BatchableSprite} batchableSprite - The sprite whose bounds need to be updated.
  * @param {AbstractText} text - The text object containing the texture and style information.
  */
-export function updateTextBounds(batchableSprite: BatchableSprite, text: AbstractText)
+export function updateTextBounds(batchableSprite: BatchableSprite, text: AbstractText<TextStyle, TextStyleOptions>)
 {
     const { texture, bounds } = batchableSprite;
 

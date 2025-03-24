@@ -5,6 +5,7 @@ import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import { ViewContainer } from '../../view/ViewContainer';
 import { MeshGeometry } from './MeshGeometry';
+import { type MeshGpuData } from './MeshPipe';
 
 import type { PointData } from '../../../maths/point/PointData';
 import type { Topology } from '../../../rendering/renderers/shared/geometry/const';
@@ -59,7 +60,7 @@ export interface MeshOptions<
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
-export interface Mesh extends PixiMixins.Mesh, ViewContainer {}
+export interface Mesh extends PixiMixins.Mesh, ViewContainer<MeshGpuData> {}
 
 /**
  * Base mesh class.
@@ -79,7 +80,7 @@ export interface Mesh extends PixiMixins.Mesh, ViewContainer {}
 export class Mesh<
     GEOMETRY extends Geometry = MeshGeometry,
     SHADER extends Shader = TextureShader
-> extends ViewContainer implements View, Instruction
+> extends ViewContainer<MeshGpuData> implements View, Instruction
 {
     public override readonly renderPipeId: string = 'mesh';
     public state: State;
@@ -90,7 +91,6 @@ export class Mesh<
     public _geometry: GEOMETRY;
     /** @ignore */
     public _shader: SHADER | null = null;
-
     /**
      * @param {scene.MeshOptions} options - options for the mesh instance
      */
@@ -346,5 +346,7 @@ export class Mesh<
         this._texture = null;
         this._geometry = null;
         this._shader = null;
+
+        this._gpuData = null;
     }
 }

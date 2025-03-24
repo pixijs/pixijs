@@ -45,17 +45,12 @@ describe('Mesh', () =>
 
         renderer.render({ container });
 
-        const gpuMesh = renderer.renderPipes.mesh['_gpuBatchableMeshHash'][mesh.uid];
-
         mesh.destroy();
 
         expect(mesh.geometry).toBeNull();
         expect(mesh.texture).toBeNull();
 
-        expect(renderer.renderPipes.mesh['_meshDataHash'][mesh.uid]).toBeNull();
-        expect(renderer.renderPipes.mesh['_gpuBatchableMeshHash'][mesh.uid]).toBeNull();
-
-        expect(gpuMesh.renderable).toBeNull();
+        expect(mesh._gpuData).toBeNull();
     });
 
     it('should clean up correctly when not batching', async () =>
@@ -70,7 +65,7 @@ describe('Mesh', () =>
 
         renderer.render({ container });
 
-        const gpuMesh = renderer.renderPipes.mesh['_gpuBatchableMeshHash'][mesh.uid];
+        const gpuMesh = mesh._gpuData[renderer.uid].batchableMesh;
 
         expect(gpuMesh).toBeUndefined();
 
@@ -79,8 +74,7 @@ describe('Mesh', () =>
         expect(mesh.geometry).toBeNull();
         expect(mesh.texture).toBeNull();
 
-        expect(renderer.renderPipes.mesh['_meshDataHash'][mesh.uid]).toBeNull();
-        expect(renderer.renderPipes.mesh['_gpuBatchableMeshHash'][mesh.uid]).toBeUndefined();
+        expect(mesh._gpuData).toBeNull();
     });
 
     it('should support color tinting', () =>
