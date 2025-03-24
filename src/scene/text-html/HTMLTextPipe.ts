@@ -99,7 +99,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
 
     private _getGpuText(htmlText: HTMLText)
     {
-        return htmlText._gpuData || this.initGpuText(htmlText);
+        return htmlText._gpuData[this._renderer.uid] || this.initGpuText(htmlText);
     }
 
     public initGpuText(htmlText: HTMLText)
@@ -113,7 +113,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
         batchableHTMLText.roundPixels = (this._renderer._roundPixels | htmlText._roundPixels) as 0 | 1;
 
         htmlText._resolution = htmlText._autoResolution ? this._renderer.resolution : htmlText.resolution;
-        htmlText._gpuData = batchableHTMLText;
+        htmlText._gpuData[this._renderer.uid] = batchableHTMLText;
 
         return batchableHTMLText;
     }

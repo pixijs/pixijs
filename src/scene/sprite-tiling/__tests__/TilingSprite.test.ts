@@ -84,7 +84,7 @@ describe('TilingSprite', () =>
 
             renderer.render({ container });
 
-            const renderData = sprite._gpuData;
+            const renderData = sprite._gpuData[renderer.uid];
 
             expect(renderData).not.toBeNull();
 

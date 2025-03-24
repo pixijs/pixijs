@@ -66,17 +66,17 @@ export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
 
     public getBuffers(renderable: ParticleContainer): ParticleBuffer
     {
-        return renderable._gpuData || this._initBuffer(renderable);
+        return renderable._gpuData[this.renderer.uid] || this._initBuffer(renderable);
     }
 
     private _initBuffer(renderable: ParticleContainer): ParticleBuffer
     {
-        renderable._gpuData = new ParticleBuffer({
+        renderable._gpuData[this.renderer.uid] = new ParticleBuffer({
             size: renderable.particleChildren.length,
             properties: renderable._properties,
         });
 
-        return renderable._gpuData;
+        return renderable._gpuData[this.renderer.uid];
     }
 
     public updateRenderable(_renderable: ParticleContainer)

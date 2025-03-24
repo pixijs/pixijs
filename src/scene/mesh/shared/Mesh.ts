@@ -60,7 +60,7 @@ export interface MeshOptions<
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
-export interface Mesh extends PixiMixins.Mesh, ViewContainer {}
+export interface Mesh extends PixiMixins.Mesh, ViewContainer<MeshGpuData> {}
 
 /**
  * Base mesh class.
@@ -80,7 +80,7 @@ export interface Mesh extends PixiMixins.Mesh, ViewContainer {}
 export class Mesh<
     GEOMETRY extends Geometry = MeshGeometry,
     SHADER extends Shader = TextureShader
-> extends ViewContainer implements View, Instruction
+> extends ViewContainer<MeshGpuData> implements View, Instruction
 {
     public override readonly renderPipeId: string = 'mesh';
     public state: State;
@@ -91,12 +91,6 @@ export class Mesh<
     public _geometry: GEOMETRY;
     /** @ignore */
     public _shader: SHADER | null = null;
-    /**
-     * holds gpu data for the mesh
-     * @ignore
-     */
-    public _gpuData: MeshGpuData;
-
     /**
      * @param {scene.MeshOptions} options - options for the mesh instance
      */

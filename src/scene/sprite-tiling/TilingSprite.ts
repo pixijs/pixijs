@@ -75,7 +75,7 @@ export interface TilingSpriteOptions extends PixiMixins.TilingSpriteOptions, Vie
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
-export interface TilingSprite extends PixiMixins.TilingSprite, ViewContainer {}
+export interface TilingSprite extends PixiMixins.TilingSprite, ViewContainer<TilingSpriteGpuData> {}
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image.
@@ -93,7 +93,7 @@ export interface TilingSprite extends PixiMixins.TilingSprite, ViewContainer {}
  * @memberof scene
  * @extends scene.Container
  */
-export class TilingSprite extends ViewContainer implements View, Instruction
+export class TilingSprite extends ViewContainer<TilingSpriteGpuData> implements View, Instruction
 {
     /**
      * Creates a new tiling sprite.
@@ -174,12 +174,6 @@ export class TilingSprite extends ViewContainer implements View, Instruction
 
     private _width: number;
     private _height: number;
-
-    /**
-     * holds gpu data for the tiling sprite
-     * @ignore
-     */
-    public _gpuData: TilingSpriteGpuData;
 
     /**
      * @param {rendering.Texture | scene.TilingSpriteOptions} options - The options for creating the tiling sprite.
@@ -486,9 +480,6 @@ export class TilingSprite extends ViewContainer implements View, Instruction
         }
 
         this._texture = null;
-
-        this._gpuData?.destroy();
-        this._gpuData = null;
     }
 }
 

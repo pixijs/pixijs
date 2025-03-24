@@ -25,7 +25,7 @@ export interface SpriteOptions extends PixiMixins.SpriteOptions, ViewContainerOp
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
-export interface Sprite extends PixiMixins.Sprite, ViewContainer {}
+export interface Sprite extends PixiMixins.Sprite, ViewContainer<BatchableSprite> {}
 
 /**
  * The Sprite object is one of the most important objects in PixiJS. It is a
@@ -51,7 +51,7 @@ export interface Sprite extends PixiMixins.Sprite, ViewContainer {}
  * @memberof scene
  * @extends scene.Container
  */
-export class Sprite extends ViewContainer
+export class Sprite extends ViewContainer<BatchableSprite>
 {
     /**
      * Helper function that creates a new sprite based on the source you provide.
@@ -82,12 +82,6 @@ export class Sprite extends ViewContainer
 
     private _width: number;
     private _height: number;
-
-    /**
-     * holds gpu data for the sprite
-     * @ignore
-     */
-    public _gpuData: BatchableSprite;
 
     /**
      * @param options - The options for creating the sprite.

@@ -52,7 +52,7 @@ describe('Text', () =>
 
             renderer.renderPipes.text['_updateGpuText'](text);
 
-            const texture = text._gpuData.texture;
+            const texture = text._gpuData[renderer.uid].texture;
 
             expect(texture.source.resolution).toEqual(2); // <-- getting null
 

@@ -67,7 +67,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
 
     private _getGpuText(text: Text)
     {
-        return text._gpuData || this.initGpuText(text);
+        return text._gpuData[this._renderer.uid] || this.initGpuText(text);
     }
 
     public initGpuText(text: Text)
@@ -79,7 +79,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
         batchableText.bounds = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
         batchableText.roundPixels = (this._renderer._roundPixels | text._roundPixels) as 0 | 1;
 
-        text._gpuData = batchableText;
+        text._gpuData[this._renderer.uid] = batchableText;
 
         return batchableText;
     }

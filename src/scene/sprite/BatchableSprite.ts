@@ -45,4 +45,9 @@ export class BatchableSprite implements DefaultBatchableQuadElement
         this._batch = null;
         this.bounds = null;
     }
+
+    public destroy()
+    {
+        // BOOM!
+    }
 }

@@ -3,8 +3,8 @@ import { Matrix } from '../../../maths/matrix/Matrix';
 import { BindGroup } from '../../../rendering/renderers/gpu/shader/BindGroup';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
 import { getAdjustedBlendModeBlend } from '../../../rendering/renderers/shared/state/getAdjustedBlendModeBlend';
-import { BigPool } from '../../../utils/pool/PoolGroup';
 import { color32BitToUniform } from '../../graphics/gpu/colorToUniform';
+import { type GPUData } from '../../view/ViewContainer';
 import { BatchableMesh } from './BatchableMesh';
 
 import type { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
@@ -18,10 +18,15 @@ import type { Mesh } from './Mesh';
 // TODO Record mode is a P2, will get back to this as it's not a priority
 // const recordMode = true;
 
-export class MeshGpuData
+export class MeshGpuData implements GPUData
 {
     public meshData?: MeshData;
     public batchableMesh?: BatchableMesh;
+
+    public destroy()
+    {
+        // BOOM!
+    }
 }
 
 interface MeshData
@@ -143,7 +148,7 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
     {
         if (mesh.batched)
         {
-            const gpuBatchableMesh = mesh._gpuData.batchableMesh;
+            const gpuBatchableMesh = this._getBatchableMesh(mesh);
 
             gpuBatchableMesh.setTexture(mesh._texture);
 
@@ -176,40 +181,40 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
 
     private _getMeshData(mesh: Mesh): MeshData
     {
-        mesh._gpuData ||= new MeshGpuData();
+        mesh._gpuData[this.renderer.uid] ||= new MeshGpuData();
 
-        return mesh._gpuData.meshData || this._initMeshData(mesh);
+        return mesh._gpuData[this.renderer.uid].meshData || this._initMeshData(mesh);
     }
 
     private _initMeshData(mesh: Mesh): MeshData
     {
-        mesh._gpuData.meshData = {
+        mesh._gpuData[this.renderer.uid].meshData = {
             batched: mesh.batched,
             indexSize: mesh._geometry.indices?.length,
             vertexSize: mesh._geometry.positions?.length,
         };
 
-        return mesh._gpuData.meshData;
+        return mesh._gpuData[this.renderer.uid].meshData;
     }
 
     private _getBatchableMesh(mesh: Mesh): BatchableMesh
     {
-        mesh._gpuData ||= new MeshGpuData();
+        mesh._gpuData[this.renderer.uid] ||= new MeshGpuData();
 
-        return mesh._gpuData.batchableMesh || this._initBatchableMesh(mesh);
+        return mesh._gpuData[this.renderer.uid].batchableMesh || this._initBatchableMesh(mesh);
     }
 
     private _initBatchableMesh(mesh: Mesh): BatchableMesh
     {
         // TODO - make this batchable graphics??
-        const gpuMesh: BatchableMesh = BigPool.get(BatchableMesh);
+        const gpuMesh: BatchableMesh = new BatchableMesh();
 
         gpuMesh.renderable = mesh;
         gpuMesh.setTexture(mesh._texture);
         gpuMesh.transform = mesh.groupTransform;
         gpuMesh.roundPixels = (this.renderer._roundPixels | mesh._roundPixels) as 0 | 1;
 
-        mesh._gpuData.batchableMesh = gpuMesh;
+        mesh._gpuData[this.renderer.uid].batchableMesh = gpuMesh;
 
         return gpuMesh;
     }

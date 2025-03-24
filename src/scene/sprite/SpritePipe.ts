@@ -37,7 +37,7 @@ export class SpritePipe implements RenderPipe<Sprite>
 
     public updateRenderable(sprite: Sprite)
     {
-        const gpuSprite = sprite._gpuData;
+        const gpuSprite = this._getGpuSprite(sprite);
 
         if (sprite.didViewUpdate) this._updateBatchableSprite(sprite, gpuSprite);
 
@@ -62,7 +62,7 @@ export class SpritePipe implements RenderPipe<Sprite>
 
     private _getGpuSprite(sprite: Sprite): BatchableSprite
     {
-        return sprite._gpuData || this._initGPUSprite(sprite);
+        return sprite._gpuData[this._renderer.uid] || this._initGPUSprite(sprite);
     }
 
     private _initGPUSprite(sprite: Sprite): BatchableSprite
@@ -76,7 +76,7 @@ export class SpritePipe implements RenderPipe<Sprite>
         batchableSprite.bounds = sprite.visualBounds;
         batchableSprite.roundPixels = (this._renderer._roundPixels | sprite._roundPixels) as 0 | 1;
 
-        sprite._gpuData = batchableSprite;
+        sprite._gpuData[this._renderer.uid] = batchableSprite;
 
         return batchableSprite;
     }

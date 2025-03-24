@@ -65,7 +65,7 @@ describe('Mesh', () =>
 
         renderer.render({ container });
 
-        const gpuMesh = mesh._gpuData.batchableMesh;
+        const gpuMesh = mesh._gpuData[renderer.uid].batchableMesh;
 
         expect(gpuMesh).toBeUndefined();
 

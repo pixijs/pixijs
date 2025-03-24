@@ -32,7 +32,7 @@ export interface GraphicsOptions extends PixiMixins.GraphicsOptions, ViewContain
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
-export interface Graphics extends PixiMixins.Graphics, ViewContainer {}
+export interface Graphics extends PixiMixins.Graphics, ViewContainer<GraphicsGpuData> {}
 
 /**
  * The Graphics class is primarily used to render primitive shapes such as lines, circles and
@@ -41,19 +41,13 @@ export interface Graphics extends PixiMixins.Graphics, ViewContainer {}
  * @memberof scene
  * @extends scene.Container
  */
-export class Graphics extends ViewContainer implements Instruction
+export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruction
 {
     public override readonly renderPipeId: string = 'graphics';
     public batched: boolean;
 
     private _context: GraphicsContext;
     private readonly _ownedContext: GraphicsContext;
-
-    /**
-     * holds gpu data for the graphics
-     * @ignore
-     */
-    public _gpuData: GraphicsGpuData;
 
     /**
      * @param options - Options for the Graphics.
@@ -82,6 +76,8 @@ export class Graphics extends ViewContainer implements Instruction
         }
 
         this._context.on('update', this.onViewUpdate, this);
+
+        this.didViewUpdate = true;
 
         this.allowChildren = false;
         this.roundPixels = roundPixels ?? false;
@@ -159,8 +155,6 @@ export class Graphics extends ViewContainer implements Instruction
         (this._ownedContext as null) = null;
         this._context = null;
 
-        this._gpuData?.destroy();
-        this._gpuData = null;
         super.destroy(options);
     }
 

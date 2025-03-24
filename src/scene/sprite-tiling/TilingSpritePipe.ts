@@ -134,7 +134,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
 
     public execute(tilingSprite: TilingSprite)
     {
-        const { shader } = tilingSprite._gpuData;
+        const { shader } = this._getTilingSpriteData(tilingSprite);
 
         shader.groups[0] = this._renderer.globalUniforms.bindGroup;
 
@@ -191,16 +191,17 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
 
     private _getTilingSpriteData(renderable: TilingSprite): TilingSpriteGpuData
     {
-        return renderable._gpuData || this._initTilingSpriteData(renderable);
+        return renderable._gpuData[this._renderer.uid] || this._initTilingSpriteData(renderable);
     }
 
     private _initTilingSpriteData(tilingSprite: TilingSprite): TilingSpriteGpuData
     {
-        tilingSprite._gpuData = new TilingSpriteGpuData();
+        const gpuData = new TilingSpriteGpuData();
 
-        tilingSprite._gpuData.renderable = tilingSprite;
+        gpuData.renderable = tilingSprite;
+        tilingSprite._gpuData[this._renderer.uid] = gpuData;
 
-        return tilingSprite._gpuData;
+        return gpuData;
     }
 
     private _updateBatchableMesh(tilingSprite: TilingSprite)

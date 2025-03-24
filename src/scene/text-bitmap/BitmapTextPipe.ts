@@ -172,7 +172,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
     private _getGpuBitmapText(bitmapText: BitmapText)
     {
-        return bitmapText._gpuData || this.initGpuText(bitmapText);
+        return bitmapText._gpuData[this._renderer.uid] || this.initGpuText(bitmapText);
     }
 
     public initGpuText(bitmapText: BitmapText)
@@ -180,7 +180,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
         // TODO we could keep a bunch of contexts around and reuse one that has the same style!
         const proxyRenderable = new BitmapTextGraphics();
 
-        bitmapText._gpuData = proxyRenderable;
+        bitmapText._gpuData[this._renderer.uid] = proxyRenderable;
 
         this._updateContext(bitmapText, proxyRenderable);
 

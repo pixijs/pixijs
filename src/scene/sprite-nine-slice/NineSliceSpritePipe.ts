@@ -51,7 +51,7 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
 
     public updateRenderable(sprite: NineSliceSprite)
     {
-        const gpuSprite = sprite._gpuData;
+        const gpuSprite = this._getGpuSprite(sprite);
 
         if (sprite.didViewUpdate) this._updateBatchableSprite(sprite, gpuSprite);
 
@@ -79,12 +79,12 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
 
     private _getGpuSprite(sprite: NineSliceSprite): NineSliceSpriteGpuData
     {
-        return sprite._gpuData || this._initGPUSprite(sprite);
+        return sprite._gpuData[this._renderer.uid] || this._initGPUSprite(sprite);
     }
 
     private _initGPUSprite(sprite: NineSliceSprite): NineSliceSpriteGpuData
     {
-        const gpuData = sprite._gpuData = new NineSliceSpriteGpuData();
+        const gpuData = sprite._gpuData[this._renderer.uid] = new NineSliceSpriteGpuData();
 
         const batchableMesh = gpuData;
 

@@ -50,7 +50,7 @@ export interface ParticleContainerOptions extends PixiMixins.ParticleContainerOp
     texture?: Texture;
     particles?: IParticle[];
 }
-export interface ParticleContainer extends PixiMixins.ParticleContainer, ViewContainer {}
+export interface ParticleContainer extends PixiMixins.ParticleContainer, ViewContainer<ParticleBuffer> {}
 
 /**
  * The ParticleContainer class is a highly optimized container that can render 1000s or particles at great speed.
@@ -102,7 +102,7 @@ export interface ParticleContainer extends PixiMixins.ParticleContainer, ViewCon
  * }
  * @memberof scene
  */
-export class ParticleContainer extends ViewContainer implements Instruction
+export class ParticleContainer extends ViewContainer<ParticleBuffer> implements Instruction
 {
     /**
      * Defines the default options for creating a ParticleContainer.
@@ -149,8 +149,6 @@ export class ParticleContainer extends ViewContainer implements Instruction
      * Defaults to the first childs texture if not set
      */
     public texture: Texture;
-
-    public _gpuData: ParticleBuffer;
 
     /**
      * @param options - The options for creating the sprite.
@@ -295,9 +293,6 @@ export class ParticleContainer extends ViewContainer implements Instruction
 
         this.texture = null;
         this.shader?.destroy();
-
-        this._gpuData?.destroy();
-        this._gpuData = null;
     }
 
     /**
