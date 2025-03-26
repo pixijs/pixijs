@@ -1,5 +1,6 @@
 import { AbstractText, ensureTextOptions } from './AbstractText';
 import { type BatchableText } from './canvas/BatchableText';
+import { CanvasTextGenerator } from './canvas/CanvasTextGenerator';
 import { CanvasTextMetrics } from './canvas/CanvasTextMetrics';
 import { TextStyle } from './TextStyle';
 
@@ -59,12 +60,32 @@ export class Text
         const bounds = this._bounds;
         const anchor = this._anchor;
 
-        const canvasMeasurement = CanvasTextMetrics.measureText(
-            this._text,
-            this._style
-        );
+        let width = 0;
+        let height = 0;
 
-        const { width, height } = canvasMeasurement;
+        if (this._style.trim)
+        {
+            const { frame, canvasAndContext } = CanvasTextGenerator.getCanvasAndContext({
+                text: this.text,
+                style: this._style,
+                resolution: 1,
+            });
+
+            CanvasTextGenerator.returnCanvasAndContext(canvasAndContext);
+
+            width = frame.width;
+            height = frame.height;
+        }
+        else
+        {
+            const canvasMeasurement = CanvasTextMetrics.measureText(
+                this._text,
+                this._style
+            );
+
+            width = canvasMeasurement.width;
+            height = canvasMeasurement.height;
+        }
 
         bounds.minX = (-anchor._x * width);
         bounds.maxX = bounds.minX + width;

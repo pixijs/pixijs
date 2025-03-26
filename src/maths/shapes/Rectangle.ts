@@ -431,6 +431,24 @@ export class Rectangle implements ShapePrimitive
             && y2 >= this.y && y2 < this.y + this.height;
     }
 
+    /**
+     * Sets the values of the rectangle.
+     * @param x - The X coordinate of the upper-left corner of the rectangle
+     * @param y - The Y coordinate of the upper-left corner of the rectangle
+     * @param width - The overall width of the rectangle
+     * @param height - The overall height of the rectangle
+     * @returns Returns itself.
+     */
+    public set(x: number, y: number, width: number, height: number): this
+    {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+
+        return this;
+    }
+
     // #if _DEBUG
     public toString(): string
     {
