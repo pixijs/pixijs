@@ -16,7 +16,7 @@ export const buildTriangle: ShapeBuildCommand<Triangle> = {
         name: 'triangle',
     },
 
-    build(shape: Triangle, points: number[]): number[]
+    build(shape: Triangle, points: number[]): boolean
     {
         points[0] = shape.x;
         points[1] = shape.y;
@@ -25,7 +25,7 @@ export const buildTriangle: ShapeBuildCommand<Triangle> = {
         points[4] = shape.x3;
         points[5] = shape.y3;
 
-        return points;
+        return true;
     },
 
     triangulate(
