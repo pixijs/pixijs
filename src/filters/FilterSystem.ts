@@ -376,7 +376,7 @@ export class FilterSystem implements System
             filters[0].apply(this, inputTexture, filterData.previousRenderSurface, false);
 
             // return the texture to the pool so we can reuse the next frame
-            TexturePool.returnTexture(inputTexture);
+            TexturePool.addTexture(inputTexture);
         }
         else
         {
@@ -407,14 +407,14 @@ export class FilterSystem implements System
             filters[i].apply(this, flip, filterData.previousRenderSurface, false);
 
             // return those textures for later!
-            TexturePool.returnTexture(flip);
-            TexturePool.returnTexture(flop);
+            TexturePool.addTexture(flip);
+            TexturePool.addTexture(flop);
         }
 
         // if we made a background texture, lets return that also
         if (filterData.blendRequired)
         {
-            TexturePool.returnTexture(backTexture);
+            TexturePool.addTexture(backTexture);
         }
     }
 
