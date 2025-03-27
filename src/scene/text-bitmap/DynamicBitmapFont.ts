@@ -9,7 +9,6 @@ import { fontStringFromTextStyle } from '../text/canvas/utils/fontStringFromText
 import { getCanvasFillStyle } from '../text/canvas/utils/getCanvasFillStyle';
 import { TextStyle } from '../text/TextStyle';
 import { AbstractBitmapFont } from './AbstractBitmapFont';
-import { resolveCharacters } from './utils/resolveCharacters';
 
 import type { ICanvasRenderingContext2D } from '../../environment/canvas/ICanvasRenderingContext2D';
 import type { CanvasAndContext } from '../../rendering/renderers/shared/texture/CanvasPool';
@@ -116,7 +115,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
 
     public ensureCharacters(chars: string): void
     {
-        const charList = resolveCharacters(chars)
+        const charList = CanvasTextMetrics.graphemeSegmenter(chars)
             .filter((char) => !this._currentChars.includes(char))
             .filter((char, index, self) => self.indexOf(char) === index);
         // filter returns..

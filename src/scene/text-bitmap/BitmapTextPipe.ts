@@ -2,6 +2,7 @@ import { Cache } from '../../assets/cache/Cache';
 import { ExtensionType } from '../../extensions/Extensions';
 import { BigPool } from '../../utils/pool/PoolGroup';
 import { Graphics } from '../graphics/shared/Graphics';
+import { CanvasTextMetrics } from '../text/canvas/CanvasTextMetrics';
 import { SdfShader } from '../text/sdfShader/SdfShader';
 import { BitmapFontManager } from './BitmapFontManager';
 import { getBitmapTextLayout } from './utils/getBitmapTextLayout';
@@ -129,7 +130,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
             }
         }
 
-        const chars = Array.from(bitmapText.text);
+        const chars = CanvasTextMetrics.graphemeSegmenter(bitmapText.text);
         const style = bitmapText._style;
 
         let currentY = bitmapFont.baseLineOffset;
