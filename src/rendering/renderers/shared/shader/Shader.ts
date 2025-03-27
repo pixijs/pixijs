@@ -1,10 +1,10 @@
 import EventEmitter from 'eventemitter3';
+import { uid } from '../../../../utils/data/uid';
 import { GlProgram } from '../../gl/shader/GlProgram';
 import { BindGroup } from '../../gpu/shader/BindGroup';
 import { GpuProgram } from '../../gpu/shader/GpuProgram';
 import { RendererType } from '../../types';
 import { UniformGroup } from './UniformGroup';
-import { uid } from '~/utils/data/uid';
 
 import type { GlProgramOptions } from '../../gl/shader/GlProgram';
 import type { BindResource } from '../../gpu/shader/BindResource';
