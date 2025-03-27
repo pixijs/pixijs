@@ -108,9 +108,18 @@ export class BindGroupSystem implements System
             {
                 const texture = resource as TextureSource;
 
-                gpuResource = renderer.texture.getGpuSource(texture).createView({
+                let argsView: GPUTextureViewDescriptor = {};
 
-                });
+                if (texture.viewDimension === '2d-array')
+                {
+                    argsView = {
+                        dimension: '2d-array',
+                        baseArrayLayer: 0,
+                        arrayLayerCount: texture.resource ? texture.resource.length : 1,
+                    };
+                }
+
+                gpuResource = renderer.texture.getGpuSource(texture).createView(argsView);
             }
 
             entries.push({
