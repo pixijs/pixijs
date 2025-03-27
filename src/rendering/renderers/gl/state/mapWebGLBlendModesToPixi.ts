@@ -16,7 +16,7 @@ export function mapWebGLBlendModesToPixi(gl: GlRenderingContext): Record<BLEND_M
     // add a boolean for that!
     blendMap.normal = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
     blendMap.add = [gl.ONE, gl.ONE];
-    blendMap.multiply = [gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
+    blendMap.multiply = [gl.DST_COLOR, gl.ZERO, gl.DST_ALPHA, gl.ZERO];
     blendMap.screen = [gl.ONE, gl.ONE_MINUS_SRC_COLOR, gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
     blendMap.none = [0, 0];
 
