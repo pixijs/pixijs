@@ -1,9 +1,9 @@
+import { ObservablePoint } from '../../maths/point/ObservablePoint';
+import { type PointData } from '../../maths/point/PointData';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
 import { NineSliceGeometry } from './NineSliceGeometry';
-import { ObservablePoint } from '~/maths/point/ObservablePoint';
-import { type PointData } from '~/maths/point/PointData';
 
 import type { Size } from '../../maths/misc/Size';
 import type { View } from '../../rendering/renderers/shared/view/View';
