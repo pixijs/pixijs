@@ -2,6 +2,7 @@ import { warn } from '../../utils/logging/warn';
 import { AbstractText, ensureTextOptions } from '../text/AbstractText';
 import { TextStyle } from '../text/TextStyle';
 import { BitmapFontManager } from './BitmapFontManager';
+import { type BitmapTextLayoutData } from './utils/getBitmapTextLayout';
 
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from '../text/AbstractText';
@@ -101,6 +102,8 @@ export class BitmapText extends AbstractText<TextStyle, TextStyleOptions> implem
 {
     public override readonly renderPipeId: string = 'bitmapText';
 
+    private static readonly _layoutHash: Record<number, BitmapTextLayoutData> = {};
+
     /**
      * **Note:** Our docs parser struggles to properly understand the constructor signature.
      * This is the correct signature.
@@ -125,12 +128,39 @@ export class BitmapText extends AbstractText<TextStyle, TextStyleOptions> implem
     /** @private */
     protected updateBounds()
     {
+        const layout = BitmapFontManager.getLayout(this.text, this._style, true);
+
+        BitmapText._layoutHash[this.uid] = layout;
+        this._calcBounds(layout);
+    }
+
+    public getTextLayout(): BitmapTextLayoutData
+    {
+        let layout: BitmapTextLayoutData;
+
+        if (!this._boundsDirty)
+        {
+            layout = BitmapText._layoutHash[this.uid];
+            if (layout)
+            {
+                BitmapText._layoutHash[this.uid] = null;
+
+                return layout;
+            }
+        }
+        layout = BitmapFontManager.getLayout(this.text, this._style, true);
+        this._calcBounds(layout);
+        this._boundsDirty = false;
+
+        return layout;
+    }
+
+    private _calcBounds(bitmapMeasurement: BitmapTextLayoutData): void
+    {
         const bounds = this._bounds;
         const anchor = this._anchor;
 
-        const bitmapMeasurement = BitmapFontManager.measureText(this.text, this._style);
         const scale = bitmapMeasurement.scale;
-        const offset = bitmapMeasurement.offsetY * scale;
 
         let width = bitmapMeasurement.width * scale;
         let height = bitmapMeasurement.height * scale;
@@ -143,10 +173,26 @@ export class BitmapText extends AbstractText<TextStyle, TextStyleOptions> implem
             height += stroke.width;
         }
 
-        bounds.minX = (-anchor._x * width);
-        bounds.maxX = bounds.minX + width;
-        bounds.minY = (-anchor._y * (height + offset));
-        bounds.maxY = bounds.minY + height;
+        if (anchor._x === 0)
+        {
+            bounds.minX = 0;
+            bounds.maxX = width;
+        }
+        else
+        {
+            bounds.minX = (-anchor._x * width);
+            bounds.maxX = bounds.minX + width;
+        }
+        if (anchor._y === 0)
+        {
+            bounds.minY = 0;
+            bounds.maxY = height;
+        }
+        else
+        {
+            bounds.minY = (-anchor._y * (height + (bitmapMeasurement.offsetY * scale)));
+            bounds.maxY = bounds.minY + height;
+        }
     }
 
     /**
@@ -169,5 +215,14 @@ export class BitmapText extends AbstractText<TextStyle, TextStyleOptions> implem
     override get resolution(): number
     {
         return this._resolution;
+    }
+
+    public override destroy(options: any = false): void
+    {
+        if (BitmapText._layoutHash[this.uid])
+        {
+            BitmapText._layoutHash[this.uid] = null;
+        }
+        super.destroy(options);
     }
 }
