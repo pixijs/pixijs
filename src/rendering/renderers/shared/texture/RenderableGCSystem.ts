@@ -250,9 +250,7 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
         // versus ones that haven't been rendered recently.
         // The instruction set also gets updated with this tick value to track
         // when its renderables were last used.
-        container.renderGroup.gcTick = renderableGCTick++;
-
-        this._updateInstructionGCTick(container.renderGroup, container.renderGroup.gcTick);
+        this._updateInstructionGCTick(container.renderGroup, renderableGCTick++);
     }
 
     /**
@@ -360,6 +358,7 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
     private _updateInstructionGCTick(renderGroup: RenderGroup, gcTick: number): void
     {
         renderGroup.instructionSet.gcTick = gcTick;
+        renderGroup.gcTick = gcTick;
 
         for (const child of renderGroup.renderGroupChildren)
         {
