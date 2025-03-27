@@ -65,7 +65,7 @@ describe('Text', () =>
 
             const renderer = await getWebGLRenderer({ resolution: 2 });
 
-            const texture = renderer.canvasText.getManagedTexture(text);
+            const texture = renderer.canvasText.getTexture(text);
 
             expect(texture.source.resolution).toEqual(3);
 
@@ -157,14 +157,9 @@ describe('Text', () =>
             container.addChild(text);
             renderer.render({ container });
 
-            const key = text._getKey();
-
-            expect(renderer.canvasText['_activeTextures'][key].usageCount).toBe(1);
-
             text.destroy();
 
             expect(renderer.renderPipes.text['_gpuText'][text.uid]).toBeNull();
-            expect(renderer.canvasText['_activeTextures'][key]).toBeNull();
         });
 
         it('should destroy bitmap text correctly on the pipes and systems', async () =>

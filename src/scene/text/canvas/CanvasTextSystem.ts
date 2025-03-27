@@ -1,6 +1,5 @@
 import { Color } from '../../../color/Color';
 import { ExtensionType } from '../../../extensions/Extensions';
-import { nextPow2 } from '../../../maths/misc/pow2';
 import { CanvasPool } from '../../../rendering/renderers/shared/texture/CanvasPool';
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
 import { getCanvasBoundingBox } from '../../../utils/canvas/getCanvasBoundingBox';
@@ -17,7 +16,6 @@ import type { System } from '../../../rendering/renderers/shared/system/System';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { Renderer } from '../../../rendering/renderers/types';
 import type { TextOptions } from '../AbstractText';
-import type { Text } from '../Text';
 
 interface CanvasAndContext
 {
@@ -41,32 +39,11 @@ export class CanvasTextSystem implements System
         name: 'canvasText',
     } as const;
 
-    private _activeTextures: Record<string, {
-        canvasAndContext: CanvasAndContext,
-        texture: Texture,
-        usageCount: number,
-    }> = {};
-
     private readonly _renderer: Renderer;
 
     constructor(_renderer: Renderer)
     {
         this._renderer = _renderer;
-    }
-
-    public getTextureSize(text: string, resolution: number, style: TextStyle): { width: number, height: number }
-    {
-        const measured = CanvasTextMetrics.measureText(text || ' ', style);
-
-        let width = Math.ceil(Math.ceil((Math.max(1, measured.width) + (style.padding * 2))) * resolution);
-        let height = Math.ceil(Math.ceil((Math.max(1, measured.height) + (style.padding * 2))) * resolution);
-
-        width = Math.ceil((width) - 1e-6);
-        height = Math.ceil((height) - 1e-6);
-        width = nextPow2(width);
-        height = nextPow2(height);
-
-        return { width, height };
     }
 
     /**
@@ -145,34 +122,6 @@ export class CanvasTextSystem implements System
         return { texture, canvasAndContext };
     }
 
-    public getManagedTexture(text: Text)
-    {
-        text._resolution = text._autoResolution ? this._renderer.resolution : text.resolution;
-        const textKey = text._getKey();
-
-        if (this._activeTextures[textKey])
-        {
-            this._increaseReferenceCount(textKey);
-
-            return this._activeTextures[textKey].texture;
-        }
-
-        const { texture, canvasAndContext } = this.createTextureAndCanvas(text);
-
-        this._activeTextures[textKey] = {
-            canvasAndContext,
-            texture,
-            usageCount: 1,
-        };
-
-        return texture;
-    }
-
-    private _increaseReferenceCount(textKey: string)
-    {
-        this._activeTextures[textKey].usageCount++;
-    }
-
     /**
      * Returns a texture that was created wit the above `getTexture` function.
      * Handy if you are done with a texture and want to return it to the pool.
@@ -187,27 +136,6 @@ export class CanvasTextSystem implements System
         source.alphaMode = 'no-premultiply-alpha';
 
         TexturePool.returnTexture(texture);
-    }
-
-    public decreaseReferenceCount(textKey: string)
-    {
-        const activeTexture = this._activeTextures[textKey];
-
-        activeTexture.usageCount--;
-
-        if (activeTexture.usageCount === 0)
-        {
-            CanvasPool.returnCanvasAndContext(activeTexture.canvasAndContext);
-
-            this.returnTexture(activeTexture.texture);
-
-            this._activeTextures[textKey] = null;
-        }
-    }
-
-    public getReferenceCount(textKey: string)
-    {
-        return this._activeTextures[textKey].usageCount;
     }
 
     /**
@@ -455,6 +383,6 @@ export class CanvasTextSystem implements System
 
     public destroy(): void
     {
-        this._activeTextures = null;
+        // BOOM!
     }
 }

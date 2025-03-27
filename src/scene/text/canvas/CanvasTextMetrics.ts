@@ -196,8 +196,6 @@ export class CanvasTextMetrics
     // eslint-disable-next-line @typescript-eslint/naming-convention
     private static __context: ICanvasRenderingContext2D;
 
-    private static readonly _measurementCache: Record<string, CanvasTextMetrics> = {};
-
     /**
      * @param text - the text that was measured
      * @param style - the style that was measured
@@ -238,13 +236,6 @@ export class CanvasTextMetrics
         wordWrap: boolean = style.wordWrap,
     ): CanvasTextMetrics
     {
-        const textKey = `${text}:${style.styleKey}`;
-
-        // TODO - if we find this starts to go nuts with memory, we can remove the cache
-        // or instead just stick a usage tick that we increment each time we return it.
-        // if some are not used, we can just tidy them up!
-        if (CanvasTextMetrics._measurementCache[textKey]) return CanvasTextMetrics._measurementCache[textKey];
-
         const font = fontStringFromTextStyle(style);
         const fontProperties = CanvasTextMetrics.measureFont(font);
 
@@ -302,8 +293,6 @@ export class CanvasTextMetrics
             maxLineWidth,
             fontProperties
         );
-
-        // CanvasTextMetrics._measurementCache[textKey] = measurements;
 
         return measurements;
     }

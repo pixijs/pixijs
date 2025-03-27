@@ -26,7 +26,6 @@ export class CanvasTextPipe implements RenderPipe<Text>
 
     private _gpuText: Record<number, {
         texture: Texture,
-        currentKey: string,
         batchableSprite: BatchableSprite,
     }> = Object.create(null);
 
@@ -59,16 +58,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
 
     public validateRenderable(text: Text): boolean
     {
-        const gpuText = this._getGpuText(text);
-
-        const newKey = text._getKey();
-
-        if (gpuText.currentKey !== newKey)
-        {
-            return true;
-        }
-
-        return false;
+        return text._didTextUpdate;
     }
 
     public addRenderable(text: Text, instructionSet: InstructionSet)
@@ -109,7 +99,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
     {
         const gpuText = this._gpuText[textUid];
 
-        this._renderer.canvasText.decreaseReferenceCount(gpuText.currentKey);
+        this._renderer.canvasText.returnTexture(gpuText.texture);
 
         BigPool.return(gpuText.batchableSprite);
 
@@ -118,14 +108,10 @@ export class CanvasTextPipe implements RenderPipe<Text>
 
     private _updateText(text: Text)
     {
-        const newKey = text._getKey();
         const gpuText = this._getGpuText(text);
         const batchableSprite = gpuText.batchableSprite;
 
-        if (gpuText.currentKey !== newKey)
-        {
-            this._updateGpuText(text);
-        }
+        this._updateGpuText(text);
 
         text._didTextUpdate = false;
 
@@ -139,12 +125,10 @@ export class CanvasTextPipe implements RenderPipe<Text>
 
         if (gpuText.texture)
         {
-            this._renderer.canvasText.decreaseReferenceCount(gpuText.currentKey);
+            this._renderer.canvasText.returnTexture(gpuText.texture);
         }
 
-        gpuText.texture = batchableSprite.texture = this._renderer.canvasText.getManagedTexture(text);
-        gpuText.currentKey = text._getKey();
-        batchableSprite.texture = gpuText.texture;
+        gpuText.texture = batchableSprite.texture = this._renderer.canvasText.getTexture(text);
     }
 
     private _getGpuText(text: Text)
@@ -156,7 +140,6 @@ export class CanvasTextPipe implements RenderPipe<Text>
     {
         const gpuTextData: CanvasTextPipe['_gpuText'][number] = {
             texture: null,
-            currentKey: '--',
             batchableSprite: BigPool.get(BatchableSprite),
         };
 

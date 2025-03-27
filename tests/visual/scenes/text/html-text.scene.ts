@@ -8,7 +8,7 @@ export const scene: TestScene = {
     it: 'should render html-text correctly',
     create: async (scene: Container, renderer: Renderer) =>
     {
-        const htmlTexture = await renderer.htmlText.getTexture({
+        const htmlTexture = await renderer.htmlText.getTexturePromise({
             text: '<red>Red</red>\n<blue>Blue</blue>\n<green>Green</green>',
             resolution: 1,
             style: new HTMLTextStyle({
