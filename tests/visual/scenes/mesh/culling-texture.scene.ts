@@ -20,7 +20,7 @@ export const scene: TestScene = {
         const geometry = new MeshGeometry({
             positions: new Float32Array(points.map((p) => 100 * p)),
             uvs: new Float32Array(points),
-            indices: new Uint16Array(triangles),
+            indices: new Uint32Array(triangles),
         });
 
         // Create state that has face culling enabled
