@@ -193,20 +193,21 @@ describe('Geometry', () =>
 
     it('should not allow format-less Attribute to be added Geometry without prototype', () =>
     {
-        expect(() =>
-        {
-            // eslint-disable-next-line no-new
-            new Geometry({
-                attributes: {
-                    a: {
-                        buffer: [1, 2, 3, 4],
-                        format: 'float32x4'
-                    },
-                    b: {
-                        buffer: [1, 2, 3, 4],
-                    }
+        const geom = new Geometry({
+            attributes: {
+                a: {
+                    buffer: [1, 2, 3, 4],
+                    format: 'float32x4'
+                },
+                b: {
+                    buffer: [1, 2, 3, 4],
                 }
-            });
-        }).toThrow(new Error(`Geometry: cannot add attribute "b" without vertex format`));
+            }
+        });
+
+        expect(geom._hasUndefinedFormats).toEqual(true);
+
+        // TODO: change to new Error(`Geometry: cannot add attribute "b" without vertex format`)
+        // when format becomes required
     });
 });

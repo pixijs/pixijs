@@ -20,6 +20,20 @@ export function ensureAttributes(
     extractedData: Record<string, ExtractedAttributeData>
 ): void
 {
+    if (geometry._hasUndefinedFormats)
+    {
+        for (const i in geometry.attributes)
+        {
+            const attribute = geometry.attributes[i];
+            const attributeData = extractedData[i];
+
+            if (attributeData)
+            {
+                attribute.format = attributeData.format;
+            }
+        }
+    }
+
     // this call automatically calculates offset / stride values , no need to use program data for that
     geometry.ensureAttributes();
 

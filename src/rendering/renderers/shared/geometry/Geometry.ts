@@ -1,6 +1,8 @@
 import EventEmitter from 'eventemitter3';
 import { Bounds } from '../../../../scene/container/bounds/Bounds';
 import { uid } from '../../../../utils/data/uid';
+import { deprecation } from '../../../../utils/logging/deprecation';
+import { warn } from '../../../../utils/logging/warn';
 import { Attribute, type AttributeOption, ensureIsAttribute, type IAttribute } from './Attribute';
 import { DrawInstanceParameters } from './DrawInstanceParameters';
 import { ensureIsBuffer, isBufferOption } from './utils/ensureIsBuffer';
@@ -107,6 +109,7 @@ export class Geometry extends EventEmitter<{
     private readonly _bounds: Bounds = new Bounds();
     private _boundsDirty = true;
     private _attributesFinalized = false;
+    public _hasUndefinedFormats = false;
 
     /**
      * Create a new instance of a geometry
@@ -247,22 +250,30 @@ export class Geometry extends EventEmitter<{
 
         const attributes = this.attributes;
         const bufferStride = this.bufferStride;
-        const inst = this.instanceParams;
 
-        if (this.vertexBuffer)
+        for (const j in attributes)
         {
-            if (this.instanceParams)
+            const attr = attributes[j];
+
+            if (!attr.format)
             {
-                if (inst.vertexCount)
-                {
-                    this.bufferStride[0] = (inst.instanced ? inst.vertexCount : 1) * 4;
-                }
-                else
-                {
-                    inst.strideFloats = this.bufferStride[0] / 4;
-                }
+                throw new Error(`Geometry: cannot use geometry, attribute "${name}" without vertex format`);
             }
+
+            // TODO: move this part to "addAttribute" when format becomes a requirement
+
+            const attrInfo = getAttributeInfoFromFormat(attr.format);
+            const bufferIndex = attr.bufferIndex;
+
+            if (attr.offset === undefined)
+            {
+                attr.offset = bufferStride[bufferIndex];
+            }
+
+            bufferStride[bufferIndex] = Math.max(bufferStride[bufferIndex], attr.offset + attrInfo.stride);
         }
+
+        this._hasUndefinedFormats = false;
 
         for (const j in attributes)
         {
@@ -271,6 +282,20 @@ export class Geometry extends EventEmitter<{
             if (attribute.stride === undefined)
             {
                 attribute.stride = bufferStride[attribute.bufferIndex];
+            }
+        }
+
+        const inst = this.instanceParams;
+
+        if (this.vertexBuffer && inst)
+        {
+            if (inst.vertexCount)
+            {
+                this.bufferStride[0] = (inst.instanced ? inst.vertexCount : 1) * 4;
+            }
+            else
+            {
+                inst.strideFloats = this.bufferStride[0] / 4;
             }
         }
     }
@@ -370,19 +395,14 @@ export class Geometry extends EventEmitter<{
             }
         }
 
-        if (attr.format === undefined)
+        if (!attr.format)
         {
-            throw new Error(`Geometry: cannot add attribute "${name}" without vertex format`);
+            warn(`No format specified for geometry attribute ${name}`);
+            // eslint-disable-next-line max-len
+            deprecation('8.9.2', `Please specify format for geometry attribute. This will become an error in later versions!`);
+
+            this._hasUndefinedFormats = true;
         }
-
-        const attrInfo = getAttributeInfoFromFormat(attr.format);
-
-        if (attr.offset === undefined)
-        {
-            attr.offset = bufferStride[bufferIndex];
-        }
-
-        bufferStride[bufferIndex] = Math.max(bufferStride[bufferIndex], attr.offset + attrInfo.stride);
 
         this.attributes[name] = attr;
     }
