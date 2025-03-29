@@ -3,6 +3,8 @@ import { BufferUsage } from '../../buffer/const';
 
 import type { TypedArray } from '../../buffer/Buffer';
 
+export type BufferOption = Buffer | TypedArray | number[];
+
 /**
  * Converts something into a buffer. If it is already a buffer it will pass it through
  * if it is a number array it will convert it to a float32 array before being passed into a buffer
@@ -12,7 +14,7 @@ import type { TypedArray } from '../../buffer/Buffer';
  * @returns a buffer
  * @memberof rendering
  */
-export function ensureIsBuffer(buffer: Buffer | TypedArray | number[], index: boolean): Buffer
+export function ensureIsBuffer(buffer: BufferOption, index: boolean): Buffer
 {
     if (!(buffer instanceof Buffer))
     {
@@ -42,4 +44,9 @@ export function ensureIsBuffer(buffer: Buffer | TypedArray | number[], index: bo
     }
 
     return buffer;
+}
+
+export function isBufferOption(attr: any): attr is BufferOption
+{
+    return attr instanceof Buffer || Array.isArray(attr) || (!!(attr as TypedArray).BYTES_PER_ELEMENT);
 }
