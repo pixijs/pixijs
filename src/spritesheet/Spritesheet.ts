@@ -124,14 +124,14 @@ export interface SpritesheetData
  *             "frame": {"x":103,"y":1,"w":32,"h":32},
  *             "spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
  *             "sourceSize": {"w":32,"h":32},
- *             "anchor": {"x":16,"y":16}
+ *             "anchor": {"x":0.5,"y":0.5}
  *         },
  *         "enemy2.png":
  *         {
  *             "frame": {"x":103,"y":35,"w":32,"h":32},
  *             "spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
  *             "sourceSize": {"w":32,"h":32},
- *             "anchor": {"x":16,"y":16}
+ *             "anchor": {"x":0.5,"y":0.5}
  *         },
  *         "button.png":
  *         {
