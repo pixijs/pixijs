@@ -1,5 +1,5 @@
+import { type PointData } from '../../maths/point/PointData';
 import { PlaneGeometry } from '../mesh-plane/PlaneGeometry';
-import { type PointData } from '~/maths/point/PointData';
 
 /**
  * Options for the NineSliceGeometry.
