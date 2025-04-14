@@ -1,5 +1,4 @@
 import { BufferResource, FORMATS, TYPES } from '@pixi/core';
-import { INTERNAL_FORMAT_TO_BYTES_PER_PIXEL, INTERNAL_FORMATS } from '../const';
 import { CompressedTextureResource } from '../resources';
 
 import type { CompressedLevelBuffer } from '../resources';
@@ -128,57 +127,6 @@ export function parseKTX(url: string, arrayBuffer: ArrayBuffer, loadKeyValueData
     }
 
     const imageBuffers = new Array<CompressedLevelBuffer[]>(numberOfArrayElements);
-    let imagePixelByteSize: number;
-
-    // Get block dimensions for the format
-    let blockWidth = 4;
-    let blockHeight = 4;
-
-    // Handle all ASTC block sizes
-    if ((glInternalFormat >= 0x93B0 && glInternalFormat <= 0x93BD) || // Regular ASTC
-        (glInternalFormat >= 0x93D0 && glInternalFormat <= 0x93DD))   // sRGB ASTC
-    {
-        const formatName = Object.keys(INTERNAL_FORMATS).find(
-            key => INTERNAL_FORMATS[key as keyof typeof INTERNAL_FORMATS] === glInternalFormat
-        );
-        if (formatName) {
-            const matches = formatName.match(/(\d+)x(\d+)/);
-            if (matches) {
-                blockWidth = parseInt(matches[1], 10);
-                blockHeight = parseInt(matches[2], 10);
-            }
-        }
-    }
-    // Special case for PVRTC 2bpp formats
-    else if (glInternalFormat === INTERNAL_FORMATS.COMPRESSED_RGB_PVRTC_2BPPV1_IMG
-        || glInternalFormat === INTERNAL_FORMATS.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG)
-    {
-        blockWidth = 8;
-        blockHeight = 4;
-    }
-
-    if (glType !== 0)
-    {
-        // Uncompressed texture format
-        if (TYPES_TO_BYTES_PER_COMPONENT[glType])
-        {
-            imagePixelByteSize = TYPES_TO_BYTES_PER_COMPONENT[glType] * FORMATS_TO_COMPONENTS[glFormat];
-        }
-        else
-        {
-            imagePixelByteSize = TYPES_TO_BYTES_PER_PIXEL[glType];
-        }
-    }
-    else
-    {
-        // For compressed textures
-        imagePixelByteSize = INTERNAL_FORMAT_TO_BYTES_PER_PIXEL[glInternalFormat];
-
-        if (!imagePixelByteSize)
-        {
-            throw new Error(`Unsupported compressed format: 0x${glInternalFormat.toString(16)}`);
-        }
-    }
 
     const kvData: Map<string, DataView> | null = loadKeyValueData
         ? parseKvData(dataView, bytesOfKeyValueData, littleEndian)
@@ -192,10 +140,6 @@ export function parseKTX(url: string, arrayBuffer: ArrayBuffer, loadKeyValueData
     {
         const imageSize = dataView.getUint32(imageOffset, littleEndian);
         let elementOffset = imageOffset + 4;
-
-        // For compressed textures, align dimensions to block size
-        const alignedWidth = glType === 0 ? ((mipWidth + blockWidth - 1) & ~(blockWidth - 1)) : mipWidth;
-        const alignedHeight = glType === 0 ? ((mipHeight + blockHeight - 1) & ~(blockHeight - 1)) : mipHeight;
 
         for (let arrayElement = 0; arrayElement < numberOfArrayElements; arrayElement++)
         {
@@ -211,15 +155,15 @@ export function parseKTX(url: string, arrayBuffer: ArrayBuffer, loadKeyValueData
 
             mips[mipmapLevel] = {
                 levelID: mipmapLevel,
-                levelWidth: mipWidth,      // Use original width
-                levelHeight: mipHeight,     // Use original height
+                levelWidth: mipWidth, // Use original width
+                levelHeight: mipHeight, // Use original height
                 levelBuffer: new Uint8Array(arrayBuffer, elementOffset, imageSize / numberOfArrayElements)
             };
             elementOffset += imageSize / numberOfArrayElements;
         }
 
         imageOffset += 4 + imageSize;
-        
+
         // Calculate next mip level dimensions
         mipWidth = Math.max(1, mipWidth >> 1);
         mipHeight = Math.max(1, mipHeight >> 1);
