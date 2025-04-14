@@ -130,7 +130,58 @@ export enum INTERNAL_FORMATS
      * @default 0x93B0
      */
     COMPRESSED_RGBA_ASTC_4x4_KHR = 0x93B0,
-
+    /**
+     * @default 0x93B1
+     */
+    COMPRESSED_RGBA_ASTC_5x4_KHR = 0x93B1,
+    /**
+     * @default 0x93B2
+     */
+    COMPRESSED_RGBA_ASTC_5x5_KHR = 0x93B2,
+    /**
+     * @default 0x93B3
+     */
+    COMPRESSED_RGBA_ASTC_6x5_KHR = 0x93B3,
+    /**
+     * @default 0x93B4
+     */
+    COMPRESSED_RGBA_ASTC_6x6_KHR = 0x93B4,
+    /**
+     * @default 0x93B5
+     */
+    COMPRESSED_RGBA_ASTC_8x5_KHR = 0x93B5,
+    /**
+     * @default 0x93B6
+     */
+    COMPRESSED_RGBA_ASTC_8x6_KHR = 0x93B6,
+    /**
+     * @default 0x93B7
+     */
+    COMPRESSED_RGBA_ASTC_8x8_KHR = 0x93B7,
+    /**
+     * @default 0x93B8
+     */
+    COMPRESSED_RGBA_ASTC_10x5_KHR = 0x93B8,
+    /**
+     * @default 0x93B9
+     */
+    COMPRESSED_RGBA_ASTC_10x6_KHR = 0x93B9,
+    /**
+     * @default 0x93BA
+     */
+    COMPRESSED_RGBA_ASTC_10x8_KHR = 0x93BA,
+    /**
+     * @default 0x93BB
+     */
+    COMPRESSED_RGBA_ASTC_10x10_KHR = 0x93BB,
+    /**
+     * @default 0x93BC
+     */
+    COMPRESSED_RGBA_ASTC_12x10_KHR = 0x93BC,
+    /**
+     * @default 0x93BD
+     */
+    COMPRESSED_RGBA_ASTC_12x12_KHR = 0x93BD,
     // EXT_texture_compression_bptc
     /**
      * @default 0x8E8C
@@ -147,7 +198,63 @@ export enum INTERNAL_FORMATS
     /**
      * @default 0x8E8F
      */
-    COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_EXT = 0x8E8F
+    COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_EXT = 0x8E8F,
+    /**
+     * @default 0x93D0
+     */
+    COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR = 0x93D0,
+    /**
+     * @default 0x93D1
+     */
+    COMPRESSED_SRGB8_ALPHA8_ASTC_5x4_KHR = 0x93D1,
+    /**
+     * @default 0x93D2
+     */
+    COMPRESSED_SRGB8_ALPHA8_ASTC_5x5_KHR = 0x93D2,
+    /**
+     * @default 0x93D3
+     */
+    COMPRESSED_SRGB8_ALPHA8_ASTC_6x5_KHR = 0x93D3,
+    /**
+     * @default 0x93D4
+     */
+    COMPRESSED_SRGB8_ALPHA8_ASTC_6x6_KHR = 0x93D4,
+    /**
+     * @default 0x93D5
+     */
+    COMPRESSED_SRGB8_ALPHA8_ASTC_8x5_KHR = 0x93D5,
+    /**
+     * @default 0x93D6
+     */
+    COMPRESSED_SRGB8_ALPHA8_ASTC_8x6_KHR = 0x93D6,
+    /**
+     * @default 0x93D7
+     */
+    COMPRESSED_SRGB8_ALPHA8_ASTC_8x8_KHR = 0x93D7,
+    /**
+     * @default 0x93D8
+     */
+    COMPRESSED_SRGB8_ALPHA8_ASTC_10x5_KHR = 0x93D8,
+    /**
+     * @default 0x93D9
+     */
+    COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR = 0x93D9,
+    /**
+     * @default 0x93DA
+     */
+    COMPRESSED_SRGB8_ALPHA8_ASTC_10x8_KHR = 0x93DA,
+    /**
+     * @default 0x93DB
+     */
+    COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR = 0x93DB,
+    /**
+     * @default 0x93DC
+     */
+    COMPRESSED_SRGB8_ALPHA8_ASTC_12x10_KHR = 0x93DC,
+    /**
+     * @default 0x93DD
+     */
+    COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR = 0x93DD
 }
 
 /**
@@ -200,7 +307,20 @@ export const INTERNAL_FORMAT_TO_BYTES_PER_PIXEL: { [id: number]: number } = {
     // @see https://registry.khronos.org/OpenGL/extensions/KHR/KHR_texture_compression_astc_hdr.txt
     // WEBGL_compressed_texture_astc
     /* eslint-disable-next-line camelcase */
-    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_4x4_KHR]: 1,
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_4x4_KHR]: 1, // 16 bytes per 4x4 block = 1 byte per pixel
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_5x4_KHR]: 0.8, // 16 bytes per 5x4 block = 0.8 bytes per pixel
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_5x5_KHR]: 0.64, // 16 bytes per 5x5 block = 0.64 bytes per pixel
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_6x5_KHR]: 0.533, // 16 bytes per 6x5 block ≈ 0.533 bytes per pixel
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_6x6_KHR]: 0.444, // 16 bytes per 6x6 block ≈ 0.444 bytes per pixel
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_8x5_KHR]: 0.32, // 16 bytes per 8x5 block ≈ 0.32 bytes per pixel
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_8x6_KHR]: 0.333, // 16 bytes per 8x6 block ≈ 0.333 bytes per pixel
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_8x8_KHR]: 0.25, // 16 bytes per 8x8 block = 0.25 bytes per pixel
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_10x5_KHR]: 0.32, // 16 bytes per 10x5 block = 0.32 bytes per pixel
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_10x6_KHR]: 0.267, // 16 bytes per 10x6 block ≈ 0.267 bytes per pixel
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_10x8_KHR]: 0.2, // 16 bytes per 10x8 block = 0.2 bytes per pixel
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_10x10_KHR]: 0.16, // 16 bytes per 10x10 block = 0.16 bytes per pixel
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_12x10_KHR]: 0.133, // 16 bytes per 12x10 block ≈ 0.133 bytes per pixel
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_12x12_KHR]: 0.111, // 16 bytes per 12x12 block ≈ 0.111 bytes per pixel
 
     // @see https://registry.khronos.org/OpenGL/extensions/EXT/EXT_texture_compression_bptc.txt
     // EXT_texture_compression_bptc
@@ -208,4 +328,18 @@ export const INTERNAL_FORMAT_TO_BYTES_PER_PIXEL: { [id: number]: number } = {
     [INTERNAL_FORMATS.COMPRESSED_SRGB_ALPHA_BPTC_UNORM_EXT]: 1,
     [INTERNAL_FORMATS.COMPRESSED_RGB_BPTC_SIGNED_FLOAT_EXT]: 1,
     [INTERNAL_FORMATS.COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_EXT]: 1,
+    [INTERNAL_FORMATS.COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR]: 1,
+    [INTERNAL_FORMATS.COMPRESSED_SRGB8_ALPHA8_ASTC_5x4_KHR]: 0.8,
+    [INTERNAL_FORMATS.COMPRESSED_SRGB8_ALPHA8_ASTC_5x5_KHR]: 0.64,
+    [INTERNAL_FORMATS.COMPRESSED_SRGB8_ALPHA8_ASTC_6x5_KHR]: 0.533,
+    [INTERNAL_FORMATS.COMPRESSED_SRGB8_ALPHA8_ASTC_6x6_KHR]: 0.444,
+    [INTERNAL_FORMATS.COMPRESSED_SRGB8_ALPHA8_ASTC_8x5_KHR]: 0.32,
+    [INTERNAL_FORMATS.COMPRESSED_SRGB8_ALPHA8_ASTC_8x6_KHR]: 0.333,
+    [INTERNAL_FORMATS.COMPRESSED_SRGB8_ALPHA8_ASTC_8x8_KHR]: 0.25,
+    [INTERNAL_FORMATS.COMPRESSED_SRGB8_ALPHA8_ASTC_10x5_KHR]: 0.32,
+    [INTERNAL_FORMATS.COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR]: 0.267,
+    [INTERNAL_FORMATS.COMPRESSED_SRGB8_ALPHA8_ASTC_10x8_KHR]: 0.2,
+    [INTERNAL_FORMATS.COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR]: 0.16,
+    [INTERNAL_FORMATS.COMPRESSED_SRGB8_ALPHA8_ASTC_12x10_KHR]: 0.133,
+    [INTERNAL_FORMATS.COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR]: 0.111
 };
