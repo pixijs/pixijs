@@ -300,13 +300,15 @@ export class ParticleContainer extends ViewContainer implements Instruction
      * @param endIndex - The ending position. Default value is size of the container.
      * @returns - List of removed particles
      */
-    public removeParticles(beginIndex?: number, endIndex?: number) {
+    public removeParticles(beginIndex?: number, endIndex?: number)
+    {
         // Default beginIndex to 0 if not provided
         const start = beginIndex ?? 0;
         // Default endIndex to the length of particleChildren if not provided
         const end = endIndex ?? this.particleChildren.length;
         // Remove the correct range
         const children = this.particleChildren.splice(start, end);
+
         this.onViewUpdate();
 
         return children;
