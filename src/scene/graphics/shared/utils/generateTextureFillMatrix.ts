@@ -2,7 +2,7 @@ import { Matrix } from '../../../../maths/matrix/Matrix';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 
 import type { ShapePrimitive } from '../../../../maths/shapes/ShapePrimitive';
-import type { FillStyle } from '../FillTypes';
+import type { FillStyle, StrokeStyle } from '../FillTypes';
 
 /**
  * Temporary matrix used for matrix calculations
@@ -34,7 +34,7 @@ const tempRect = new Rectangle();
  * // textureMatrix now contains the proper UV mapping for the texture
  * ```
  */
-export function generateTextureMatrix(out: Matrix, style: FillStyle, shape: ShapePrimitive, matrix?: Matrix)
+export function generateTextureMatrix(out: Matrix, style: FillStyle | StrokeStyle, shape: ShapePrimitive, matrix?: Matrix)
 {
     // Start with either the style's matrix inverted, or identity matrix
     const textureMatrix = style.matrix
@@ -45,6 +45,11 @@ export function generateTextureMatrix(out: Matrix, style: FillStyle, shape: Shap
     {
         // For local space, map texture to shape's bounds
         const bounds = shape.getBounds(tempRect);
+
+        if ((style as StrokeStyle).width)
+        {
+            bounds.pad((style as StrokeStyle).width);
+        }
 
         const { x: tx, y: ty } = bounds;
         const sx = 1 / bounds.width;
