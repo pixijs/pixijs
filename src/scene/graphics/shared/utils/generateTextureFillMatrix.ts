@@ -1,5 +1,6 @@
 import { Matrix } from '../../../../maths/matrix/Matrix';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
+import { FillGradient } from '../fill/FillGradient';
 
 import type { ShapePrimitive } from '../../../../maths/shapes/ShapePrimitive';
 import type { FillStyle, StrokeStyle } from '../FillTypes';
@@ -74,14 +75,14 @@ export function generateTextureMatrix(out: Matrix, style: FillStyle | StrokeStyl
     else
     {
         // For global space, use texture's own dimensions
-
         textureMatrix.translate(style.texture.frame.x, style.texture.frame.y);
         textureMatrix.scale(1 / (style.texture.source.width), 1 / (style.texture.source.height));
     }
 
     const sourceStyle = style.texture.source.style;
 
-    if (sourceStyle.addressMode === 'clamp-to-edge')
+    // we don't want to set the address mode if the fill is a gradient as this handles its own address mode
+    if (!(style.fill instanceof FillGradient) && sourceStyle.addressMode === 'clamp-to-edge')
     {
         sourceStyle.addressMode = 'repeat';
         sourceStyle.update();

@@ -1,6 +1,7 @@
 import { Color } from '../../../../color/Color';
 import { DOMAdapter } from '../../../../environment/adapter';
 import { Matrix } from '../../../../maths/matrix/Matrix';
+import { type WRAP_MODE } from '../../../../rendering/renderers/shared/texture/const';
 import { ImageSource } from '../../../../rendering/renderers/shared/texture/sources/ImageSource';
 import { Texture } from '../../../../rendering/renderers/shared/texture/Texture';
 import { uid } from '../../../../utils/data/uid';
@@ -33,6 +34,12 @@ export interface BaseGradientOptions
      * Consider using a larger texture size if your gradient has a lot of very tight color steps
      */
     textureSize?: number;
+    /**
+     * The wrap mode of the gradient.
+     * This can be 'clamp-to-edge' or 'repeat'.
+     * @default 'clamp-to-edge'
+     */
+    wrapMode?: WRAP_MODE
 }
 
 /**
@@ -195,6 +202,7 @@ export class FillGradient implements CanvasGradient
      * @property {number} textureSize - The size of the texture to use for the gradient (default: 256)
      * @property {Array<{offset: number, color: ColorSource}>} colorStops - Array of color stops (default: empty array)
      * @property {GradientType} type - Type of gradient (default: 'linear')
+     * @property {WRAP_MODE} wrapMode - The wrap mode of the gradient (default: 'clamp-to-edge')
      */
     public static readonly defaultLinearOptions: LinearGradientOptions = {
         start: { x: 0, y: 0 },
@@ -202,7 +210,8 @@ export class FillGradient implements CanvasGradient
         colorStops: [],
         textureSpace: 'local',
         type: 'linear',
-        textureSize: 256
+        textureSize: 256,
+        wrapMode: 'clamp-to-edge'
     };
 
     /**
@@ -215,6 +224,7 @@ export class FillGradient implements CanvasGradient
      * @property {number} textureSize - The size of the texture to use for the gradient (default: 256)
      * @property {Array<{offset: number, color: ColorSource}>} colorStops - Array of color stops (default: empty array)
      * @property {GradientType} type - Type of gradient (default: 'radial')
+     * @property {WRAP_MODE} wrapMode - The wrap mode of the gradient (default: 'clamp-to-edge')
      */
     public static readonly defaultRadialOptions: RadialGradientOptions = {
         center: { x: 0.5, y: 0.5 },
@@ -224,7 +234,8 @@ export class FillGradient implements CanvasGradient
         scale: 1,
         textureSpace: 'local',
         type: 'radial',
-        textureSize: 256
+        textureSize: 256,
+        wrapMode: 'clamp-to-edge'
     };
 
     /** Unique identifier for this gradient instance */
@@ -247,6 +258,8 @@ export class FillGradient implements CanvasGradient
     public start: PointData;
     /** The end point of the linear gradient */
     public end: PointData;
+    /** The wrap mode of the gradient texture */
+    private readonly _wrapMode: WRAP_MODE;
 
     /** The center point of the inner circle of the radial gradient */
     public center: PointData;
@@ -300,6 +313,7 @@ export class FillGradient implements CanvasGradient
         options = { ...defaults, ...definedProps(options) };
 
         this._textureSize = options.textureSize;
+        this._wrapMode = options.wrapMode;
 
         if (options.type === 'radial')
         {
@@ -347,13 +361,44 @@ export class FillGradient implements CanvasGradient
     {
         if (this.texture) return;
 
+        let { x: x0, y: y0 } = this.start;
+        let { x: x1, y: y1 } = this.end;
+
+        let dx = x1 - x0;
+        let dy = y1 - y0;
+
+        // Determine flip based on original dx/dy and swap coordinates if necessary
+        const flip = dx < 0 || dy < 0;
+
+        if (this._wrapMode === 'clamp-to-edge')
+        {
+            if (dx < 0)
+            {
+                const temp = x0;
+
+                x0 = x1;
+                x1 = temp;
+                dx *= -1;
+            }
+            if (dy < 0)
+            {
+                const temp = y0;
+
+                y0 = y1;
+                y1 = temp;
+                dy *= -1;
+            }
+        }
+
         const colorStops = this.colorStops.length ? this.colorStops : emptyColorStops;
 
         const defaultSize = this._textureSize;
 
         const { canvas, context } = getCanvas(defaultSize, 1);
 
-        const gradient = context.createLinearGradient(0, 0, this._textureSize, 0);
+        const gradient = !flip
+            ? context.createLinearGradient(0, 0, this._textureSize, 0)
+            : context.createLinearGradient(this._textureSize, 0, 0, 0);
 
         addColorStops(gradient, colorStops);
 
@@ -363,19 +408,11 @@ export class FillGradient implements CanvasGradient
         this.texture = new Texture({
             source: new ImageSource({
                 resource: canvas,
+                addressMode: this._wrapMode,
             }),
         });
 
         // generate some UVS based on the gradient direction sent
-
-        const { x: x0, y: y0 } = this.start;
-        const { x: x1, y: y1 } = this.end;
-
-        const m = new Matrix();
-
-        // get angle
-        const dx = x1 - x0;
-        const dy = y1 - y0;
 
         const dist = Math.sqrt((dx * dx) + (dy * dy));
         const angle = Math.atan2(dy, dx);
@@ -383,7 +420,9 @@ export class FillGradient implements CanvasGradient
         // little offset to stop the uvs from flowing over the edge..
         // this matrix is inverted when used in the graphics
         // add a tiny off set to prevent uv bleeding..
-        m.scale((dist / (defaultSize - 0.5)), 1);
+        const m = new Matrix();
+
+        m.scale((dist / defaultSize), 1);
         m.rotate(angle);
         m.translate(x0, y0);
 
@@ -461,8 +500,7 @@ export class FillGradient implements CanvasGradient
         this.texture = new Texture({
             source: new ImageSource({
                 resource: canvas,
-                addressModeU: 'clamp-to-edge',
-                addressModeV: 'clamp-to-edge',
+                addressMode: this._wrapMode,
             }),
         });
 
