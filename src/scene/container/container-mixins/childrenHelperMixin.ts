@@ -63,10 +63,7 @@ export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
             {
                 const child = removed[i];
 
-                if (child.parentRenderLayer)
-                {
-                    child.parentRenderLayer.detach(child);
-                }
+                child.parentRenderLayer?.detach(child);
 
                 this.emit('childRemoved', child, this, i);
                 removed[i].emit('removed', this);
