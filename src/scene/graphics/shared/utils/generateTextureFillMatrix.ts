@@ -1,6 +1,5 @@
 import { Matrix } from '../../../../maths/matrix/Matrix';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
-import { FillGradient } from '../fill/FillGradient';
 
 import type { ShapePrimitive } from '../../../../maths/shapes/ShapePrimitive';
 import type { FillStyle } from '../FillTypes';
@@ -48,27 +47,39 @@ export function generateTextureMatrix(out: Matrix, style: FillStyle, shape: Shap
         const bounds = shape.getBounds(tempRect);
 
         const { x: tx, y: ty } = bounds;
+        const sx = 1 / bounds.width;
+        const sy = 1 / bounds.height;
 
-        // translate the bounds - this needs to be appended to the matrix
-        textureMatrix.tx = (-tx * textureMatrix.a) + (-ty * textureMatrix.c) + textureMatrix.tx;
-        textureMatrix.ty = (-tx * textureMatrix.b) + (-ty * textureMatrix.d) + textureMatrix.ty;
+        const mTx = -tx * sx;
+        const mTy = -ty * sy;
 
-        // scale the matrix to fit the bounds
-        textureMatrix.scale(1 / bounds.width, 1 / bounds.height);
+        const a1 = textureMatrix.a;
+        const b1 = textureMatrix.b;
+        const c1 = textureMatrix.c;
+        const d1 = textureMatrix.d;
+
+        textureMatrix.a *= sx;
+        textureMatrix.b *= sx;
+        textureMatrix.c *= sy;
+        textureMatrix.d *= sy;
+
+        textureMatrix.tx = (mTx * a1) + (mTy * c1) + textureMatrix.tx;
+        textureMatrix.ty = (mTx * b1) + (mTy * d1) + textureMatrix.ty;
     }
     else
     {
         // For global space, use texture's own dimensions
+
         textureMatrix.translate(style.texture.frame.x, style.texture.frame.y);
-        textureMatrix.scale(1 / style.texture.source.width, 1 / style.texture.source.height);
+        textureMatrix.scale(1 / (style.texture.source.width), 1 / (style.texture.source.height));
+    }
 
-        const sourceStyle = style.texture.source.style;
+    const sourceStyle = style.texture.source.style;
 
-        if (!(style.fill instanceof FillGradient) && sourceStyle.addressMode === 'clamp-to-edge')
-        {
-            sourceStyle.addressMode = 'repeat';
-            sourceStyle.update();
-        }
+    if (sourceStyle.addressMode === 'clamp-to-edge')
+    {
+        sourceStyle.addressMode = 'repeat';
+        sourceStyle.update();
     }
 
     // Apply any additional transform matrix
