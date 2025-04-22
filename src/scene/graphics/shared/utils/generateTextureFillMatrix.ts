@@ -1,5 +1,6 @@
 import { Matrix } from '../../../../maths/matrix/Matrix';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
+import { FillGradient } from '../fill/FillGradient';
 
 import type { ShapePrimitive } from '../../../../maths/shapes/ShapePrimitive';
 import type { FillStyle } from '../FillTypes';
@@ -46,7 +47,13 @@ export function generateTextureMatrix(out: Matrix, style: FillStyle, shape: Shap
         // For local space, map texture to shape's bounds
         const bounds = shape.getBounds(tempRect);
 
-        textureMatrix.translate(-bounds.x, -bounds.y);
+        const { x: tx, y: ty } = bounds;
+
+        // translate the bounds - this needs to be appended to the matrix
+        textureMatrix.tx = (-tx * textureMatrix.a) + (-ty * textureMatrix.c) + textureMatrix.tx;
+        textureMatrix.ty = (-tx * textureMatrix.b) + (-ty * textureMatrix.d) + textureMatrix.ty;
+
+        // scale the matrix to fit the bounds
         textureMatrix.scale(1 / bounds.width, 1 / bounds.height);
     }
     else
@@ -57,8 +64,7 @@ export function generateTextureMatrix(out: Matrix, style: FillStyle, shape: Shap
 
         const sourceStyle = style.texture.source.style;
 
-        // Ensure texture repeats properly
-        if (sourceStyle.addressMode === 'clamp-to-edge')
+        if (!(style.fill instanceof FillGradient) && sourceStyle.addressMode === 'clamp-to-edge')
         {
             sourceStyle.addressMode = 'repeat';
             sourceStyle.update();
