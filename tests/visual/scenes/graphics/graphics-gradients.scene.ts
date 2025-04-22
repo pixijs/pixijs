@@ -101,6 +101,5 @@ export const scene: TestScene = {
 
         scene.addChild(container);
 
-        scene.addChild(container);
     },
 };
