@@ -100,6 +100,5 @@ export const scene: TestScene = {
         container.y = -bounds.y * scaleY;
 
         scene.addChild(container);
-
     },
 };
