@@ -381,19 +381,16 @@ export class FillGradient implements CanvasGradient
         const angle = Math.atan2(dy, dx);
 
         // little offset to stop the uvs from flowing over the edge..
-        const eps = 0.00001;
-
         // this matrix is inverted when used in the graphics
-        m.scale((dist / defaultSize) + eps, 1);
+        // add a tiny off set to prevent uv bleeding..
+        m.scale((dist / (defaultSize - 0.5)), 1);
         m.rotate(angle);
         m.translate(x0, y0);
 
         if (this.textureSpace === 'local')
         {
-            m.translate(-eps, -eps);
             m.scale(defaultSize, defaultSize);
         }
-
         this.transform = m;
     }
 
