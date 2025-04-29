@@ -178,7 +178,7 @@ export class CanvasTextSystem implements System
      * Handy if you are done with a texture and want to return it to the pool.
      * @param texture - The texture to be returned.
      */
-    public returnTexture(texture: Texture)
+    public addTexture(texture: Texture)
     {
         const source = texture.source;
 
@@ -186,7 +186,19 @@ export class CanvasTextSystem implements System
         source.uploadMethodId = 'unknown';
         source.alphaMode = 'no-premultiply-alpha';
 
-        TexturePool.returnTexture(texture);
+        TexturePool.addTexture(texture);
+    }
+
+    /**
+     * @deprecated since 8.9.0
+     * @param texture
+     */
+    public returnTexture(texture: Texture)
+    {
+        // #if _DEBUG
+        deprecation('8.9.0', 'CanvasTextSystem.returnTexture is deprecated use CanvasTextSystem.addTexture');
+        // #endif
+        this.addTexture(texture);
     }
 
     public decreaseReferenceCount(textKey: string)
@@ -199,7 +211,7 @@ export class CanvasTextSystem implements System
         {
             CanvasPool.returnCanvasAndContext(activeTexture.canvasAndContext);
 
-            this.returnTexture(activeTexture.texture);
+            this.addTexture(activeTexture.texture);
 
             this._activeTextures[textKey] = null;
         }

@@ -132,7 +132,7 @@ export class RenderGroupSystem implements System
 
                 if (renderGroup.texture)
                 {
-                    TexturePool.returnTexture(renderGroup.texture);
+                    TexturePool.addTexture(renderGroup.texture);
                 }
 
                 const renderer = this._renderer;
@@ -160,7 +160,7 @@ export class RenderGroupSystem implements System
         }
         else if (renderGroup.texture)
         {
-            TexturePool.returnTexture(renderGroup.texture);
+            TexturePool.addTexture(renderGroup.texture);
             renderGroup.texture = null;
         }
     }

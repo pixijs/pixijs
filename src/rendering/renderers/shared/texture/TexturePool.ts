@@ -1,4 +1,5 @@
 import { nextPow2 } from '../../../../maths/misc/pow2';
+import { deprecation } from '../../../../utils/logging/deprecation';
 import { TextureSource } from './sources/TextureSource';
 import { Texture } from './Texture';
 
@@ -133,11 +134,23 @@ export class TexturePoolClass
      * Place a render texture back into the pool.
      * @param renderTexture - The renderTexture to free
      */
-    public returnTexture(renderTexture: Texture): void
+    public addTexture(renderTexture: Texture): void
     {
         const key = this._poolKeyHash[renderTexture.uid];
 
         this._texturePool[key].push(renderTexture);
+    }
+
+    /**
+     * @deprecated since 8.9.0
+     * @param renderTexture
+     */
+    public returnTexture(renderTexture: Texture): void
+    {
+        // #if _DEBUG
+        deprecation('8.9.0', 'TexturePool.returnTexture is deprecated use TexturePool.addTexture');
+        // #endif
+        this.addTexture(renderTexture);
     }
 
     /**
