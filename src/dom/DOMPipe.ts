@@ -122,7 +122,10 @@ export class DOMPipe implements RenderPipe<DOMContainer>
             canvas.parentNode?.appendChild(this._domElement);
         }
 
-        this._domElement.style.transform = `translate(${canvas.offsetLeft}px, ${canvas.offsetTop}px)`;
+        const scale = (parseFloat(canvas.style.height) / canvas.height) * this._renderer.resolution;
+
+        // scale according to the canvas scale and translate
+        this._domElement.style.transform = `translate(${canvas.offsetLeft}px, ${canvas.offsetTop}px) scale(${scale})`;
 
         for (let i = 0; i < attachedDomElements.length; i++)
         {
