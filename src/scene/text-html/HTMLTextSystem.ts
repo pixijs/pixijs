@@ -120,7 +120,7 @@ export class HTMLTextSystem implements System
             resolution
         );
 
-        if (textureStyle) texture.source.style.copyFrom(textureStyle);
+        if (textureStyle) texture.source.style = textureStyle;
 
         if (this._createCanvas)
         {

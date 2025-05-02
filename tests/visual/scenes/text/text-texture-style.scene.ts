@@ -5,7 +5,6 @@ import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render text correctly with texture style',
-    only: true,
     create: async (scene: Container) =>
     {
         const text = new Text({

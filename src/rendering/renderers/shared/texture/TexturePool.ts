@@ -145,7 +145,10 @@ export class TexturePoolClass
         const key = this._poolKeyHash[renderTexture.uid];
 
         // we can skip the copy if we don't need to reset the style
-        if (resetStyle) renderTexture.source.style.copyFrom(this.textureStyle);
+        if (resetStyle)
+        {
+            renderTexture.source.style = this.textureStyle;
+        }
 
         this._texturePool[key].push(renderTexture);
     }

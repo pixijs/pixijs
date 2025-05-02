@@ -7,7 +7,6 @@ import type { Container } from '~/scene';
 
 export const scene: TestScene = {
     it: 'should render html-text correctly with texture style',
-    only: true,
     create: async (scene: Container, renderer: Renderer) =>
     {
         const htmlTexture = await renderer.htmlText.getTexturePromise({

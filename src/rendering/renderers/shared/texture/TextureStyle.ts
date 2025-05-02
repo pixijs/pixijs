@@ -235,29 +235,6 @@ export class TextureStyle extends EventEmitter<{
         return this._resourceId;
     }
 
-    /**
-     * Copies the style from another style
-     * @param style - The style to copy from
-     */
-    public copyFrom(style: TextureStyle)
-    {
-        this.addressModeU = style.addressModeU;
-        this.addressModeV = style.addressModeV;
-        this.addressModeW = style.addressModeW;
-
-        this.magFilter = style.magFilter;
-        this.minFilter = style.minFilter;
-        this.mipmapFilter = style.mipmapFilter;
-
-        this.lodMinClamp = style.lodMinClamp;
-        this.lodMaxClamp = style.lodMaxClamp;
-
-        this.compare = style.compare;
-
-        this.maxAnisotropy = style.maxAnisotropy;
-
-        this.update();
-    }
     /** Destroys the style */
     public destroy()
     {

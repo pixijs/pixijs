@@ -116,7 +116,7 @@ export class CanvasTextSystem implements System
 
         const texture = getPo2TextureFromSource(canvas, width, height, resolution);
 
-        if (textureStyle) texture.source.style.copyFrom(textureStyle);
+        if (textureStyle) texture.source.style = textureStyle;
 
         if (style.trim)
         {
