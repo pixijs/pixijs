@@ -152,6 +152,8 @@ export interface ContainerOptions<C extends ContainerChild = ContainerChild> ext
     y?: number;
     /** @see scene.Container#boundArea */
     boundsArea?: Rectangle;
+    /** @see scene.Container#onRender */
+    onRender?: () => void;
 }
 
 export interface Container<C extends ContainerChild>

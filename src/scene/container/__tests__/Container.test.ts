@@ -15,6 +15,14 @@ describe('Container', () =>
             expect(object.renderable).toBe(true);
             expect(object.visible).toBe(true);
         });
+
+        it('should allow setting onRender function via constructor', () =>
+        {
+            const mockOnRender = jest.fn();
+            const container = new Container({ onRender: mockOnRender });
+
+            expect(container.onRender).toBe(mockOnRender);
+        });
     });
 
     describe('setTransform', () =>
