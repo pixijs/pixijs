@@ -2,6 +2,7 @@ import { Color } from '../../../color/Color';
 import { ExtensionType } from '../../../extensions/Extensions';
 import { CanvasPool } from '../../../rendering/renderers/shared/texture/CanvasPool';
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
+import { type TextureStyle } from '../../../rendering/renderers/shared/texture/TextureStyle';
 import { getCanvasBoundingBox } from '../../../utils/canvas/getCanvasBoundingBox';
 import { deprecation } from '../../../utils/logging/deprecation';
 import { TextStyle } from '../TextStyle';
@@ -79,7 +80,7 @@ export class CanvasTextSystem implements System
         }
 
         const { texture, canvasAndContext } = this.createTextureAndCanvas(
-            options as {text: string, style: TextStyle, resolution?: number}
+            options as {text: string, style: TextStyle, resolution?: number, textureStyle?: TextureStyle}
         );
 
         this._renderer.texture.initSource(texture._source);
@@ -89,9 +90,14 @@ export class CanvasTextSystem implements System
         return texture;
     }
 
-    public createTextureAndCanvas(options: {text: string, style: TextStyle, resolution?: number})
+    public createTextureAndCanvas(options: {
+        text: string,
+        style: TextStyle,
+        resolution?: number,
+        textureStyle?: TextureStyle
+    })
     {
-        const { text, style } = options;
+        const { text, style, textureStyle } = options;
 
         const resolution = options.resolution ?? this._renderer.resolution;
 
@@ -109,6 +115,8 @@ export class CanvasTextSystem implements System
         this.renderTextToCanvas(text, style, resolution, canvasAndContext);
 
         const texture = getPo2TextureFromSource(canvas, width, height, resolution);
+
+        if (textureStyle) texture.source.style.copyFrom(textureStyle);
 
         if (style.trim)
         {
@@ -135,7 +143,7 @@ export class CanvasTextSystem implements System
         source.uploadMethodId = 'unknown';
         source.alphaMode = 'no-premultiply-alpha';
 
-        TexturePool.returnTexture(texture);
+        TexturePool.returnTexture(texture, true);
     }
 
     /**

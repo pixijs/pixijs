@@ -1,6 +1,7 @@
 import { ExtensionType } from '../../extensions/Extensions';
 import { type CanvasAndContext, CanvasPool } from '../../rendering/renderers/shared/texture/CanvasPool';
 import { TexturePool } from '../../rendering/renderers/shared/texture/TexturePool';
+import { type TextureStyle } from '../../rendering/renderers/shared/texture/TextureStyle';
 import { type Renderer, RendererType } from '../../rendering/renderers/types';
 import { isSafari } from '../../utils/browser/isSafari';
 import { warn } from '../../utils/logging/warn';
@@ -73,10 +74,11 @@ export class HTMLTextSystem implements System
 
     private async _buildTexturePromise(options: HTMLTextOptions)
     {
-        const { text, style, resolution } = options as {
+        const { text, style, resolution, textureStyle } = options as {
             text: string,
             style: HTMLTextStyle,
             resolution: number,
+            textureStyle?: TextureStyle,
         };
 
         const htmlTextData = BigPool.get(HTMLTextRenderData);
@@ -118,6 +120,8 @@ export class HTMLTextSystem implements System
             resolution
         );
 
+        if (textureStyle) texture.source.style.copyFrom(textureStyle);
+
         if (this._createCanvas)
         {
             this._renderer.texture.initSource(texture.source);
@@ -144,7 +148,7 @@ export class HTMLTextSystem implements System
 
     private _cleanUp(texture: Texture)
     {
-        TexturePool.returnTexture(texture);
+        TexturePool.returnTexture(texture, true);
         texture.source.resource = null;
         texture.source.uploadMethodId = 'unknown';
     }

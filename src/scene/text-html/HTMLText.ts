@@ -1,3 +1,4 @@
+import { TextureStyle, type TextureStyleOptions } from '../../rendering/renderers/shared/texture/TextureStyle';
 import { AbstractText, ensureTextOptions } from '../text/AbstractText';
 import { HTMLTextStyle } from './HTMLTextStyle';
 import { measureHtmlText } from './utils/measureHtmlText';
@@ -12,7 +13,12 @@ import type { HTMLTextStyleOptions } from './HTMLTextStyle';
  * @property {text.HTMLTextStyle | text.HTMLTextStyleOptions} [style] - The style of the text.
  * @memberof text
  */
-export type HTMLTextOptions = TextOptions<HTMLTextStyle, HTMLTextStyleOptions> & PixiMixins.HTMLTextOptions;
+export interface HTMLTextOptions extends TextOptions<HTMLTextStyle, HTMLTextStyleOptions>, PixiMixins.HTMLTextOptions
+{
+    /** optional texture style to use for the text. */
+    textureStyle?: TextureStyle | TextureStyleOptions;
+}
+
 export interface HTMLText extends PixiMixins.HTMLText, AbstractText<HTMLTextStyle, HTMLTextStyleOptions> {}
 
 /**
@@ -52,11 +58,32 @@ export interface HTMLText extends PixiMixins.HTMLText, AbstractText<HTMLTextStyl
  *         align: 'center',
  *     }
  * });
+ *
+ * If you would like to use a different texture style for the text, you can do so by passing a `textureStyle` object.
+ * An example might be to use a different scale mode for the text.
+ * @example
+ * const text = new HTMLText({
+ *     text: 'Hello Pixi!',
+ *     style: {
+ *         fontFamily: 'Arial',
+ *         fontSize: 24,
+ *     },
+ *     textureStyle: {
+ *         scaleMode: 'nearest',
+ *     }
+ * });
  * @memberof scene
  */
-export class HTMLText extends AbstractText<HTMLTextStyle, HTMLTextStyleOptions> implements View
+export class HTMLText extends AbstractText<HTMLTextStyle, HTMLTextStyleOptions, HTMLTextOptions> implements View
 {
     public override readonly renderPipeId: string = 'htmlText';
+
+    /**
+     * optional texture style to use for the text.
+     * NOTE: HTMLText is not updated when this property is updated,
+     * you must update the text manually by calling `text.onViewUpdate()`
+     */
+    public textureStyle?: TextureStyle;
 
     /**
      * @param {text.HTMLTextOptions} options - The options of the html text.
@@ -66,9 +93,16 @@ export class HTMLText extends AbstractText<HTMLTextStyle, HTMLTextStyleOptions> 
     constructor(text?: TextString, options?: Partial<HTMLTextStyle>);
     constructor(...args: [HTMLTextOptions?] | [TextString, Partial<HTMLTextStyle>])
     {
-        const options = ensureTextOptions<HTMLTextStyle, HTMLTextStyleOptions>(args, 'HtmlText');
+        const options = ensureTextOptions<HTMLTextOptions>(args, 'HtmlText');
 
         super(options, HTMLTextStyle);
+
+        if (options.textureStyle)
+        {
+            this.textureStyle = options.textureStyle instanceof TextureStyle
+                ? options.textureStyle
+                : new TextureStyle(options.textureStyle);
+        }
     }
 
     /** @private */
