@@ -1,3 +1,4 @@
+import { RenderLayer } from '../../layers/RenderLayer';
 import { Container } from '../Container';
 import { updateRenderGroupTransforms } from '../utils/updateRenderGroupTransforms';
 
@@ -688,6 +689,40 @@ describe('Container', () =>
             expect(renderGroup2.instructionSet).toBeNull();
             expect(renderGroup2.renderGroupChildren).toBeNull();
             expect(renderGroup2['_onRenderContainers']).toBeNull();
+        });
+
+        it('should destroy children if children option is true', () =>
+        {
+            const container = new Container();
+            const child = new Container();
+
+            container.addChild(child);
+            container.destroy({ children: true });
+
+            expect(container.children.length).toEqual(0);
+            expect(container.destroyed).toBeTrue();
+            expect(child.destroyed).toBeTrue();
+        });
+
+        it('should detach destroyed children from their render layer', () =>
+        {
+            const parent = new Container();
+            const child = new Container();
+            const layer = new RenderLayer();
+
+            // Add child to parent and attach to layer
+            parent.addChild(child);
+            layer.attach(child);
+
+            expect(layer.renderLayerChildren).toContain(child);
+            expect(child.parentRenderLayer).toBe(layer);
+
+            // Destroy parent, which should destroy child and detach it from the layer
+            parent.destroy({ children: false });
+
+            expect(parent.destroyed).toBe(true);
+            expect(layer.renderLayerChildren).not.toContain(child);
+            expect(child.parentRenderLayer).toBeNull();
         });
     });
 
