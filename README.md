@@ -10,7 +10,7 @@
   <a href="https://opencollective.com/pixijs"><img src="https://opencollective.com/pixijs/tiers/badge.svg" alt="open collective"></a>
 </p>
 <p align="center">
- <a href="https://pixijs.com/8.x/guides">Guides</a> | <a href="https://pixijs.com/8.x/tutorials">Tutorials</a> | <a href="https://pixijs.com/8.x/examples">Examples</a> | <a href="https://pixijs.download/release/docs/index.html">API Docs</a> | <a href="https://discord.gg/QrnxmQUPGV">Discord</a> | <a href="https://x.com/pixijs">𝕏</a>
+ <a href="https://pixijs.com/8.x/guides">Guides</a> | <a href="https://pixijs.com/8.x/tutorials">Tutorials</a> | <a href="https://pixijs.com/8.x/examples">Examples</a> | <a href="https://pixijs.download/release/docs/index.html">API Docs</a> | <a href="https://discord.gg/QrnxmQUPGV">Discord</a> | <a href="https://bsky.app/profile/pixijs.com">Bluesky</a> | <a href="https://x.com/pixijs">𝕏</a>
 </p>
 
 # PixiJS ⚡️
