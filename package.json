@@ -9,6 +9,10 @@
     "type": "git",
     "url": "https://github.com/pixijs/pixijs.git"
   },
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/pixijs"
+  },
   "main": "lib/index.js",
   "module": "lib/index.mjs",
   "types": "lib/index.d.ts",
