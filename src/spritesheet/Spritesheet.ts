@@ -95,7 +95,7 @@ export interface SpritesheetData
  * Options for loading a spritesheet from an atlas.
  * @memberof assets
  */
-interface SpritesheetOptions<S extends SpritesheetData = SpritesheetData>
+export interface SpritesheetOptions<S extends SpritesheetData = SpritesheetData>
 {
     /** Reference to Texture */
     texture: BindableTexture;
