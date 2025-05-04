@@ -422,6 +422,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
     /** Handles a restored webgl context. */
     protected handleContextRestored(): void
     {
+        this.getExtensions(); // restore extensions state
         this._renderer.runners.contextChange.emit(this.gl);
     }
 

@@ -69,6 +69,15 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        this._renderer.runners.prerender.add(this);
+    }
+
+    public prerender()
+    {
+        // make sure we reset the blend modes to normal
+        // this way the next render will register any changes
+        this._activeBlendMode = 'normal';
+        this._isAdvanced = false;
     }
 
     /**

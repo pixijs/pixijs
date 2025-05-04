@@ -4,4 +4,4 @@ import { AccessibilitySystem } from './AccessibilitySystem';
 import { accessibilityTarget } from './accessibilityTarget';
 
 extensions.add(AccessibilitySystem);
-Container.mixin(accessibilityTarget);
+extensions.mixin(Container, accessibilityTarget);

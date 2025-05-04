@@ -12,13 +12,30 @@ export type AnimatedSpriteFrames = Texture[] | FrameObject[];
  * @see {@link scene.AnimatedSprite}
  * @memberof scene
  */
-export interface AnimatedSpriteOptions extends SpriteOptions
+export interface AnimatedSpriteOptions extends PixiMixins.AnimatedSpriteOptions, Omit<SpriteOptions, 'texture'>
 {
-    /** An array of {@link Texture} or frame objects that make up the animation. */
-    textures: AnimatedSpriteFrames;
+    /** The speed that the AnimatedSprite will play at. Higher is faster, lower is slower. */
+    animationSpeed?: number;
+    /** Whether to start the animation immediately on creation. */
+    autoPlay?: boolean;
     /** Whether to use Ticker.shared to auto update animation time. */
     autoUpdate?: boolean;
+    /** Whether or not the animate sprite repeats after playing. */
+    loop?: boolean;
+    /** User-assigned function to call when an AnimatedSprite finishes playing. */
+    onComplete?: () => void;
+    /** User-assigned function to call when an AnimatedSprite changes which texture is being rendered. */
+    onFrameChange?: (currentFrame: number) => void;
+    /**
+     * User-assigned function to call when `loop` is true, and an AnimatedSprite is played and loops around to start again.
+     */
+    onLoop?: () => void;
+    /** An array of {@link Texture} or frame objects that make up the animation. */
+    textures: AnimatedSpriteFrames;
+    /** Update anchor to [Texture's defaultAnchor]{@link Texture#defaultAnchor} when frame changes. */
+    updateAnchor?: boolean;
 }
+export interface AnimatedSprite extends PixiMixins.AnimatedSprite, Sprite {}
 
 /**
  * An AnimatedSprite is a simple way to display an animation depicted by a list of textures.
@@ -127,6 +144,7 @@ export class AnimatedSprite extends Sprite
 
     /** The texture index that was displayed last time. */
     private _previousFrame: number;
+
     /**
      * @param frames - Collection of textures or frames to use.
      * @param autoUpdate - Whether to use Ticker.shared to auto update animation time.
@@ -149,7 +167,18 @@ export class AnimatedSprite extends Sprite
             };
         }
 
-        const { textures, autoUpdate, ...rest } = options;
+        const {
+            animationSpeed = 1,
+            autoPlay = false,
+            autoUpdate = true,
+            loop = true,
+            onComplete = null,
+            onFrameChange = null,
+            onLoop = null,
+            textures,
+            updateAnchor = false,
+            ...rest
+        } = options;
         const [firstFrame] = textures;
 
         super({
@@ -159,15 +188,15 @@ export class AnimatedSprite extends Sprite
 
         this._textures = null;
         this._durations = null;
-        this._autoUpdate = autoUpdate ?? true;
+        this._autoUpdate = autoUpdate;
         this._isConnectedToTicker = false;
 
-        this.animationSpeed = 1;
-        this.loop = true;
-        this.updateAnchor = false;
-        this.onComplete = null;
-        this.onFrameChange = null;
-        this.onLoop = null;
+        this.animationSpeed = animationSpeed;
+        this.loop = loop;
+        this.updateAnchor = updateAnchor;
+        this.onComplete = onComplete;
+        this.onFrameChange = onFrameChange;
+        this.onLoop = onLoop;
 
         this._currentTime = 0;
 
@@ -175,6 +204,11 @@ export class AnimatedSprite extends Sprite
         this._previousFrame = null;
 
         this.textures = textures;
+
+        if (autoPlay)
+        {
+            this.play();
+        }
     }
 
     /** Stops the AnimatedSprite. */
@@ -338,7 +372,7 @@ export class AnimatedSprite extends Sprite
 
         this.texture = this._textures[currentFrame];
 
-        if (this.updateAnchor)
+        if (this.updateAnchor && this.texture.defaultAnchor)
         {
             this.anchor.copyFrom(this.texture.defaultAnchor);
         }

@@ -1,4 +1,4 @@
-import { AbstractText, ensureOptions } from '../text/AbstractText';
+import { AbstractText, ensureTextOptions } from '../text/AbstractText';
 import { HTMLTextStyle } from './HTMLTextStyle';
 import { measureHtmlText } from './utils/measureHtmlText';
 
@@ -12,7 +12,8 @@ import type { HTMLTextStyleOptions } from './HTMLTextStyle';
  * @property {text.HTMLTextStyle | text.HTMLTextStyleOptions} [style] - The style of the text.
  * @memberof text
  */
-export type HTMLTextOptions = TextOptions<HTMLTextStyle, HTMLTextStyleOptions>;
+export type HTMLTextOptions = TextOptions<HTMLTextStyle, HTMLTextStyleOptions> & PixiMixins.HTMLTextOptions;
+export interface HTMLText extends PixiMixins.HTMLText, AbstractText<HTMLTextStyle, HTMLTextStyleOptions> {}
 
 /**
  * A HTMLText Object will create a line or multiple lines of text.
@@ -65,7 +66,7 @@ export class HTMLText extends AbstractText<HTMLTextStyle, HTMLTextStyleOptions> 
     constructor(text?: TextString, options?: Partial<HTMLTextStyle>);
     constructor(...args: [HTMLTextOptions?] | [TextString, Partial<HTMLTextStyle>])
     {
-        const options = ensureOptions<HTMLTextStyle, HTMLTextStyleOptions>(args, 'HtmlText');
+        const options = ensureTextOptions<HTMLTextStyle, HTMLTextStyleOptions>(args, 'HtmlText');
 
         super(options, HTMLTextStyle);
     }

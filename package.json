@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "8.7.2",
+  "version": "8.9.2",
   "author": "PixiJS Team",
   "homepage": "http://pixijs.com/",
   "bugs": "https://github.com/pixijs/pixijs/issues",
@@ -66,6 +66,7 @@
     "@xmldom/xmldom": "^0.8.10",
     "earcut": "^2.2.4",
     "eventemitter3": "^5.0.1",
+    "gifuct-js": "^2.1.2",
     "ismobilejs": "^1.1.1",
     "parse-svg-path": "^0.1.2"
   },
@@ -96,7 +97,6 @@
     "eslint-plugin-jsdoc": "^50.6.0",
     "eslint-plugin-no-mixed-operators": "^1.1.1",
     "fs-extra": "^11.2.0",
-    "gifuct-js": "^2.1.2",
     "glob": "^8.1.0",
     "http-server": "^14.1.1",
     "husky": "^8.0.3",
@@ -196,6 +196,7 @@
     "./lib/compressed-textures/ktx2/init.*",
     "./lib/compressed-textures/basis/init.*",
     "./lib/events/init.*",
+    "./lib/dom/init.*",
     "./lib/filters/init.*",
     "./lib/math-extras/init.*",
     "./lib/scene/sprite-tiling/init.*",
@@ -308,6 +309,14 @@
       },
       "require": {
         "default": "./lib/events/init.js"
+      }
+    },
+    "./dom": {
+      "import": {
+        "default": "./lib/dom/init.mjs"
+      },
+      "require": {
+        "default": "./lib/dom/init.js"
       }
     },
     "./filters": {

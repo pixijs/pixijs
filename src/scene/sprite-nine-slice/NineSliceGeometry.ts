@@ -1,3 +1,4 @@
+import { type PointData } from '../../maths/point/PointData';
 import { PlaneGeometry } from '../mesh-plane/PlaneGeometry';
 
 /**
@@ -23,6 +24,9 @@ export interface NineSliceGeometryOptions
     rightWidth?: number
     /** The height of the bottom row. */
     bottomHeight?: number
+
+    /** The anchor point of the NineSliceSprite. */
+    anchor?: PointData
 }
 
 /**
@@ -59,6 +63,8 @@ export class NineSliceGeometry extends PlaneGeometry
 
     private _originalWidth: number;
     private _originalHeight: number;
+    private _anchorX: any;
+    private _anchorY: number;
 
     constructor(options: NineSliceGeometryOptions = {})
     {
@@ -89,6 +95,9 @@ export class NineSliceGeometry extends PlaneGeometry
         this._topHeight = options.topHeight ?? this._topHeight;
         this._bottomHeight = options.bottomHeight ?? this._bottomHeight;
 
+        this._anchorX = options.anchor?.x;
+        this._anchorY = options.anchor?.y;
+
         this.updateUvs();
         this.updatePositions();
     }
@@ -96,23 +105,38 @@ export class NineSliceGeometry extends PlaneGeometry
     /** Updates the positions of the vertices. */
     public updatePositions()
     {
-        const positions = this.positions;
+        const p = this.positions;
+        const {
+            width,
+            height,
+            _leftWidth,
+            _rightWidth,
+            _topHeight,
+            _bottomHeight,
+            _anchorX,
+            _anchorY,
+        } = this;
 
-        const w = this._leftWidth + this._rightWidth;
-        const scaleW = this.width > w ? 1.0 : this.width / w;
+        const w = _leftWidth + _rightWidth;
+        const scaleW = width > w ? 1.0 : width / w;
 
-        const h = this._topHeight + this._bottomHeight;
-        const scaleH = this.height > h ? 1.0 : this.height / h;
+        const h = _topHeight + _bottomHeight;
+        const scaleH = height > h ? 1.0 : height / h;
 
         const scale = Math.min(scaleW, scaleH);
 
-        positions[9] = positions[11] = positions[13] = positions[15] = this._topHeight * scale;
-        positions[17] = positions[19] = positions[21] = positions[23] = this.height - (this._bottomHeight * scale);
-        positions[25] = positions[27] = positions[29] = positions[31] = this.height;
+        const anchorOffsetX = _anchorX * width;
+        const anchorOffsetY = _anchorY * height;
 
-        positions[2] = positions[10] = positions[18] = positions[26] = this._leftWidth * scale;
-        positions[4] = positions[12] = positions[20] = positions[28] = this.width - (this._rightWidth * scale);
-        positions[6] = positions[14] = positions[22] = positions[30] = this.width;
+        p[0] = p[8] = p[16] = p[24] = -anchorOffsetX;
+        p[2] = p[10] = p[18] = p[26] = (_leftWidth * scale) - anchorOffsetX;
+        p[4] = p[12] = p[20] = p[28] = width - (_rightWidth * scale) - anchorOffsetX;
+        p[6] = p[14] = p[22] = p[30] = width - anchorOffsetX;
+
+        p[1] = p[3] = p[5] = p[7] = -anchorOffsetY;
+        p[9] = p[11] = p[13] = p[15] = (_topHeight * scale) - anchorOffsetY;
+        p[17] = p[19] = p[21] = p[23] = height - (_bottomHeight * scale) - anchorOffsetY;
+        p[25] = p[27] = p[29] = p[31] = height - anchorOffsetY;
 
         this.getBuffer('aPosition').update();
     }

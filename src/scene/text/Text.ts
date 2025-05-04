@@ -1,10 +1,12 @@
-import { AbstractText, ensureOptions } from './AbstractText';
+import { AbstractText, ensureTextOptions } from './AbstractText';
 import { CanvasTextMetrics } from './canvas/CanvasTextMetrics';
 import { TextStyle } from './TextStyle';
 
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from './AbstractText';
 import type { TextStyleOptions } from './TextStyle';
+
+export interface Text extends PixiMixins.Text, AbstractText<TextStyle, TextStyleOptions> {}
 
 /**
  * A Text Object will create a line or multiple lines of text.
@@ -45,7 +47,7 @@ export class Text
     constructor(text?: TextString, options?: Partial<TextStyle>);
     constructor(...args: [TextOptions?] | [TextString, Partial<TextStyle>])
     {
-        const options = ensureOptions(args, 'Text');
+        const options = ensureTextOptions(args, 'Text');
 
         super(options, TextStyle);
     }

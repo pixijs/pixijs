@@ -22,7 +22,7 @@ export interface ChildrenHelperMixin<C = ContainerChild>
     reparentChildAt<U extends C>(child: U, index: number): U;
 }
 
-export const childrenHelperMixin: Partial<Container> = {
+export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
 
     allowChildren: true,
 
@@ -61,8 +61,17 @@ export const childrenHelperMixin: Partial<Container> = {
 
             for (let i = 0; i < removed.length; ++i)
             {
-                this.emit('childRemoved', removed[i], this, i);
+                const child = removed[i];
+
+                child.parentRenderLayer?.detach(child);
+
+                this.emit('childRemoved', child, this, i);
                 removed[i].emit('removed', this);
+            }
+
+            if (removed.length > 0)
+            {
+                this._didViewChangeTick++;
             }
 
             return removed;

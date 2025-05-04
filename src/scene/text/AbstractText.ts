@@ -1,11 +1,10 @@
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
-import { ViewContainer } from '../view/ViewContainer';
+import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';
-import type { ContainerOptions } from '../container/Container';
 import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
 import type { HTMLTextStyle, HTMLTextStyleOptions } from '../text-html/HTMLTextStyle';
@@ -48,7 +47,7 @@ export type AnyTextStyleOptions = TextStyleOptions | HTMLTextStyleOptions;
 export interface TextOptions<
     TEXT_STYLE extends TextStyle = TextStyle,
     TEXT_STYLE_OPTIONS extends TextStyleOptions = TextStyleOptions,
-> extends ContainerOptions
+> extends PixiMixins.TextOptions, ViewContainerOptions
 {
     /** The anchor point of the text. */
     anchor?: PointData | number;
@@ -349,7 +348,26 @@ export abstract class AbstractText<
     }
 }
 
-export function ensureOptions<
+/**
+ * Helper function to ensure consistent handling of text options across different text classes.
+ * This function handles both the new options object format and the deprecated parameter format.
+ * @example
+ * // New recommended way:
+ * const options = ensureTextOptions([{
+ *     text: "Hello",
+ *     style: { fontSize: 20 }
+ * }], "Text");
+ *
+ * // Deprecated way (will show warning in debug):
+ * const options = ensureTextOptions(["Hello", { fontSize: 20 }], "Text");
+ * @param args - Arguments passed to text constructor
+ * @param name - Name of the text class (used in deprecation warning)
+ * @returns Normalized text options object
+ * @template TEXT_STYLE - The specific TextStyle class being used
+ * @template TEXT_STYLE_OPTIONS - The options type for the TextStyle
+ * @internal
+ */
+export function ensureTextOptions<
     TEXT_STYLE extends TextStyle,
     TEXT_STYLE_OPTIONS extends TextStyleOptions
 >(
