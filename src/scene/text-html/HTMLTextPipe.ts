@@ -9,7 +9,6 @@ import type { RenderPipe } from '../../rendering/renderers/shared/instructions/R
 import type { Renderer } from '../../rendering/renderers/types';
 import type { Container } from '../container/Container';
 import type { HTMLText } from './HTMLText';
-import type { HTMLTextStyle } from './HTMLTextStyle';
 
 export class HTMLTextPipe implements RenderPipe<HTMLText>
 {
@@ -26,10 +25,9 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
     private _renderer: Renderer;
 
     private _gpuText: Record<number, {
-        textureNeedsUploading: boolean;
         generatingTexture: boolean;
         texture: Texture,
-        currentKey: string,
+        texturePromise: Promise<Texture>,
         batchableSprite: BatchableSprite,
     }> = Object.create(null);
 
@@ -62,26 +60,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
 
     public validateRenderable(htmlText: HTMLText): boolean
     {
-        const gpuText = this._getGpuText(htmlText);
-
-        const newKey = htmlText._getKey();
-
-        if (gpuText.textureNeedsUploading)
-        {
-            gpuText.textureNeedsUploading = false;
-
-            return true;
-        }
-
-        if (gpuText.currentKey !== newKey)
-        {
-            // TODO - could look into optimising this a tad!
-            // if its a single texture, then we could just swap it?
-            // same for CanvasText..
-            return true;
-        }
-
-        return false;
+        return htmlText._didTextUpdate;
     }
 
     public addRenderable(htmlText: HTMLText, instructionSet: InstructionSet)
@@ -121,7 +100,9 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
     {
         const gpuText = this._gpuText[htmlTextUid];
 
-        this._renderer.htmlText.decreaseReferenceCount(gpuText.currentKey);
+        this._renderer.htmlText.returnTexturePromise(gpuText.texturePromise);
+
+        gpuText.texturePromise = null;
 
         BigPool.return(gpuText.batchableSprite);
 
@@ -130,17 +111,13 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
 
     private _updateText(htmlText: HTMLText)
     {
-        const newKey = htmlText._getKey();
         const gpuText = this._getGpuText(htmlText);
         const batchableSprite = gpuText.batchableSprite;
 
-        if (gpuText.currentKey !== newKey)
+        this._updateGpuText(htmlText).catch((e) =>
         {
-            this._updateGpuText(htmlText).catch((e) =>
-            {
-                console.error(e);
-            });
-        }
+            console.error(e);
+        });
 
         htmlText._didTextUpdate = false;
 
@@ -155,31 +132,28 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
 
         if (gpuText.generatingTexture) return;
 
-        const newKey = htmlText._getKey();
-
-        this._renderer.htmlText.decreaseReferenceCount(gpuText.currentKey);
+        if (gpuText.texturePromise)
+        {
+            this._renderer.htmlText.returnTexturePromise(gpuText.texturePromise);
+            gpuText.texturePromise = null;
+        }
 
         gpuText.generatingTexture = true;
 
-        gpuText.currentKey = newKey;
+        htmlText._resolution = htmlText._autoResolution ? this._renderer.resolution : htmlText.resolution;
 
-        const resolution = htmlText.resolution ?? this._renderer.resolution;
+        const texturePromise = this._renderer.htmlText.getTexturePromise(htmlText);
 
-        const texture = await this._renderer.htmlText.getManagedTexture(
-            htmlText.text,
-            resolution,
-            htmlText._style as HTMLTextStyle,
-            htmlText._getKey()
-        );
+        gpuText.texturePromise = texturePromise;
 
         const batchableSprite = gpuText.batchableSprite;
 
-        batchableSprite.texture = gpuText.texture = texture;
+        batchableSprite.texture = gpuText.texture = await texturePromise;
+
+        // need a rerender...
+        htmlText.parentRenderGroup.structureDidChange = true;
 
         gpuText.generatingTexture = false;
-
-        gpuText.textureNeedsUploading = true;
-        htmlText.onViewUpdate();
 
         updateTextBounds(batchableSprite, htmlText);
     }
@@ -193,9 +167,8 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
     {
         const gpuTextData: HTMLTextPipe['_gpuText'][number] = {
             texture: Texture.EMPTY,
-            currentKey: '--',
+            texturePromise: null,
             batchableSprite: BigPool.get(BatchableSprite),
-            textureNeedsUploading: false,
             generatingTexture: false,
         };
 
