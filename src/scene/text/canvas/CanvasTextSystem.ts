@@ -383,6 +383,6 @@ export class CanvasTextSystem implements System
 
     public destroy(): void
     {
-        // BOOM!
+        (this._renderer as null) = null;
     }
 }
