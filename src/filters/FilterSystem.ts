@@ -686,7 +686,6 @@ export class FilterSystem implements System
         if (filters.length === 1)
         {
             // render a single filter...
-            // this.applyFilter(filters[0], inputTexture, filterData.previousRenderSurface, false);
             filters[0].apply(this, inputTexture, filterData.outputRenderSurface, clear);
         }
         else
