@@ -83,8 +83,6 @@ export class CanvasTextSystem implements System
             options as {text: string, style: TextStyle, resolution?: number}
         );
 
-        this._renderer.texture.initSource(texture._source);
-
         CanvasPool.returnCanvasAndContext(canvasAndContext);
 
         return texture;
@@ -134,6 +132,8 @@ export class CanvasTextSystem implements System
             // return the new texture with the filters applied
             return { texture: filteredTexture, canvasAndContext };
         }
+
+        this._renderer.texture.initSource(texture._source);
 
         return { texture, canvasAndContext };
     }
