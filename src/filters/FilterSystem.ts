@@ -397,8 +397,8 @@ export class FilterSystem implements System
         const offsetX = 0;
         const offsetY = 0;
 
-        filterData.outputOffset.x = -bounds.minX;// - offsetX;
-        filterData.outputOffset.y = -bounds.minY;// - offsetY;
+        filterData.outputOffset.x = -bounds.minX;
+        filterData.outputOffset.y = -bounds.minY;
 
         const globalFrame = filterData.globalFrame;
 
