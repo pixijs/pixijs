@@ -544,7 +544,7 @@ export class TextStyle extends EventEmitter<{
             whiteSpace: this.whiteSpace,
             wordWrap: this.wordWrap,
             wordWrapWidth: this.wordWrapWidth,
-            filters: [...this._filters],
+            filters: this._filters ? [...this._filters] : undefined,
         });
     }
 
