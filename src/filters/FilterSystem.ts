@@ -124,9 +124,9 @@ class FilterData
 
     /**
      * The offset of the output render surface.
-     * @type {{ x: number, y: number }}
+     * @type {PointData}
      */
-    public outputOffset = { x: 0, y: 0 };
+    public outputOffset: PointData = { x: 0, y: 0 };
 
     /**
      * The global frame of the filter area.
