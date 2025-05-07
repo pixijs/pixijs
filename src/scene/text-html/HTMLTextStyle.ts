@@ -1,7 +1,6 @@
 /* eslint-disable accessor-pairs */
 import { warn } from '../../utils/logging/warn';
 import { TextStyle } from '../text/TextStyle';
-import { generateTextStyleKey } from '../text/utils/generateTextStyleKey';
 import { textStyleToCSS } from './utils/textStyleToCSS';
 
 import type { FillInput, StrokeInput } from '../graphics/shared/FillTypes';
@@ -71,13 +70,6 @@ export class HTMLTextStyle extends TextStyle
     get cssOverrides(): string[]
     {
         return this._cssOverrides;
-    }
-
-    protected override _generateKey(): string
-    {
-        this._styleKey = generateTextStyleKey(this) + this._cssOverrides.join('-');
-
-        return this._styleKey;
     }
 
     public update()
