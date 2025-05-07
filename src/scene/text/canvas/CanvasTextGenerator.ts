@@ -80,7 +80,7 @@ export class CanvasTextGeneratorClass
         this._renderTextToCanvas(text, style, resolution, canvasAndContext);
 
         const frame = style.trim
-            ? getCanvasBoundingBox(canvasAndContext.canvas, width, height, 1, tempRect)
+            ? getCanvasBoundingBox({ canvas: canvasAndContext.canvas, width, height, resolution: 1, output: tempRect })
             : tempRect.set(0, 0, width, height);
 
         return {
