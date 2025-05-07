@@ -88,7 +88,7 @@ class FilterData
 
     /**
      * The back texture used for blending, if required.
-     * @type {Texture | undefined}
+     * @type {Texture | null}
      */
     public backTexture?: Texture = null;
 
