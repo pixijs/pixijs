@@ -132,7 +132,7 @@ export class CanvasTextSystem implements System
         // create a texture from the canvas
         const { canvas } = canvasAndContext;
 
-        this.renderTextToCanvas(text, style, padding, resolution, canvasAndContext);
+        this._renderTextToCanvas(text, style, padding, resolution, canvasAndContext);
 
         const texture = getPo2TextureFromSource(canvas, width, height, resolution);
 
@@ -228,17 +228,35 @@ export class CanvasTextSystem implements System
 
     /**
      * Renders text to its canvas, and updates its texture.
-     *
-     * By default this is used internally to ensure the texture is correct before rendering,
-     * but it can be used called externally, for example from this class to 'pre-generate' the texture from a piece of text,
-     * and then shared across multiple Sprites.
      * @param text
      * @param style
      * @param padding
      * @param resolution
      * @param canvasAndContext
+     * @deprecated since 8.8.0
      */
     public renderTextToCanvas(
+        text: string,
+        style: TextStyle,
+        padding: number,
+        resolution: number,
+        canvasAndContext: CanvasAndContext
+    ): void
+    {
+        deprecation('8.8.0', 'CanvasTextSystem.renderTextToCanvas: is now private');
+
+        this._renderTextToCanvas(text, style, padding, resolution, canvasAndContext);
+    }
+
+    /**
+     * Renders text to its canvas, and updates its texture.
+     * @param text - The text to render
+     * @param style - The style of the text
+     * @param padding - The padding of the text
+     * @param resolution - The resolution of the text
+     * @param canvasAndContext - The canvas and context to render the text to
+     */
+    private _renderTextToCanvas(
         text: string,
         style: TextStyle,
         padding: number,

@@ -135,7 +135,7 @@ export interface TextStyleOptions
      * An optional filter or array of filters to apply to the text, allowing for advanced visual effects.
      * These filters will be applied to the text as it is created, resulting in faster rendering for static text
      * compared to applying the filter directly to the text object (which would be applied at run time).
-     * @default null
+     * @default undefined
      */
     filters?: Filter | Filter[];
 }
@@ -544,7 +544,7 @@ export class TextStyle extends EventEmitter<{
             whiteSpace: this.whiteSpace,
             wordWrap: this.wordWrap,
             wordWrapWidth: this.wordWrapWidth,
-            filters: this._filters,
+            filters: [...this._filters],
         });
     }
 
