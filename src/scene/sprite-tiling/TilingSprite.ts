@@ -5,6 +5,7 @@ import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { warn } from '../../utils/logging/warn';
 import { Transform } from '../../utils/misc/Transform';
 import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
+import { type TilingSpriteGpuData } from './TilingSpritePipe';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
@@ -74,7 +75,7 @@ export interface TilingSpriteOptions extends PixiMixins.TilingSpriteOptions, Vie
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
-export interface TilingSprite extends PixiMixins.TilingSprite, ViewContainer {}
+export interface TilingSprite extends PixiMixins.TilingSprite, ViewContainer<TilingSpriteGpuData> {}
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image.
@@ -92,7 +93,7 @@ export interface TilingSprite extends PixiMixins.TilingSprite, ViewContainer {}
  * @memberof scene
  * @extends scene.Container
  */
-export class TilingSprite extends ViewContainer implements View, Instruction
+export class TilingSprite extends ViewContainer<TilingSpriteGpuData> implements View, Instruction
 {
     /**
      * Creates a new tiling sprite.
