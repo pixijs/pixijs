@@ -1,4 +1,5 @@
 import { AbstractText, ensureTextOptions } from '../text/AbstractText';
+import { type BatchableHTMLText } from './BatchableHTMLText';
 import { HTMLTextStyle } from './HTMLTextStyle';
 import { measureHtmlText } from './utils/measureHtmlText';
 
@@ -13,7 +14,10 @@ import type { HTMLTextStyleOptions } from './HTMLTextStyle';
  * @memberof text
  */
 export type HTMLTextOptions = TextOptions<HTMLTextStyle, HTMLTextStyleOptions> & PixiMixins.HTMLTextOptions;
-export interface HTMLText extends PixiMixins.HTMLText, AbstractText<HTMLTextStyle, HTMLTextStyleOptions> {}
+export interface HTMLText extends PixiMixins.HTMLText, AbstractText<
+    HTMLTextStyle,
+    HTMLTextStyleOptions, BatchableHTMLText
+> {}
 
 /**
  * A HTMLText Object will create a line or multiple lines of text.
@@ -54,7 +58,7 @@ export interface HTMLText extends PixiMixins.HTMLText, AbstractText<HTMLTextStyl
  * });
  * @memberof scene
  */
-export class HTMLText extends AbstractText<HTMLTextStyle, HTMLTextStyleOptions> implements View
+export class HTMLText extends AbstractText<HTMLTextStyle, HTMLTextStyleOptions, BatchableHTMLText> implements View
 {
     public override readonly renderPipeId: string = 'htmlText';
 

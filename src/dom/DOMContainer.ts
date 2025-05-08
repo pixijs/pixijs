@@ -43,7 +43,7 @@ export interface DOMContainerOptions extends ViewContainerOptions
  * @memberof scene
  * @extends scene.ViewContainer
  */
-export class DOMContainer extends ViewContainer
+export class DOMContainer extends ViewContainer<null>
 {
     /** @private */
     public override readonly renderPipeId: string = 'dom';

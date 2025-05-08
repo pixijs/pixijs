@@ -94,6 +94,23 @@ describe('Spritesheet', () =>
         spritesheet.destroy(true);
     });
 
+    it('should create an instance with options', () =>
+    {
+        const baseTexture = new Texture();
+        const data = {
+            frames: {},
+            meta: {},
+        } as unknown as SpritesheetData;
+
+        const spritesheet = new Spritesheet({ texture: baseTexture, data });
+
+        expect(spritesheet.data).toEqual(data);
+        expect(spritesheet['_texture']).toEqual(baseTexture);
+        expect(spritesheet.resolution).toEqual(1);
+
+        spritesheet.destroy(true);
+    });
+
     it('should create instance with scale resolution', () =>
         new Promise<void>(async (done) =>
         {

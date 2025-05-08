@@ -4,6 +4,7 @@ import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
 import { NineSliceGeometry } from './NineSliceGeometry';
+import { type NineSliceSpriteGpuData } from './NineSliceSpritePipe';
 
 import type { Size } from '../../maths/misc/Size';
 import type { View } from '../../rendering/renderers/shared/view/View';
@@ -45,7 +46,7 @@ export interface NineSliceSpriteOptions extends PixiMixins.NineSliceSpriteOption
     /** The anchor point of the NineSliceSprite. */
     anchor?: PointData | number;
 }
-export interface NineSliceSprite extends PixiMixins.NineSliceSprite, ViewContainer {}
+export interface NineSliceSprite extends PixiMixins.NineSliceSprite, ViewContainer<NineSliceSpriteGpuData> {}
 
 /**
  * The NineSliceSprite allows you to stretch a texture using 9-slice scaling. The corners will remain unscaled (useful
@@ -74,7 +75,7 @@ export interface NineSliceSprite extends PixiMixins.NineSliceSprite, ViewContain
  * const plane9 = new NineSliceSprite(Texture.from('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
  * @memberof scene
  */
-export class NineSliceSprite extends ViewContainer implements View
+export class NineSliceSprite extends ViewContainer<NineSliceSpriteGpuData> implements View
 {
     /** The default options, used to override the initial values of any options passed in the constructor. */
     public static defaultOptions: NineSliceSpriteOptions = {
