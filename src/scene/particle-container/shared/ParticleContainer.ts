@@ -302,8 +302,8 @@ export class ParticleContainer extends ViewContainer implements Instruction
      */
     public removeParticles(beginIndex?: number, endIndex?: number)
     {
-        beginIndex ||= 0;
-        endIndex ||= this.particleChildren.length;
+        beginIndex ??= 0;
+        endIndex ??= this.particleChildren.length;
 
         // Remove the correct range
         const children = this.particleChildren.splice(
