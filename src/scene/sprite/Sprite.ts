@@ -3,6 +3,7 @@ import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { updateQuadBounds } from '../../utils/data/updateQuadBounds';
 import { deprecation } from '../../utils/logging/deprecation';
 import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
+import { type BatchableSprite } from './BatchableSprite';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
@@ -24,7 +25,7 @@ export interface SpriteOptions extends PixiMixins.SpriteOptions, ViewContainerOp
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
-export interface Sprite extends PixiMixins.Sprite, ViewContainer {}
+export interface Sprite extends PixiMixins.Sprite, ViewContainer<BatchableSprite> {}
 
 /**
  * The Sprite object is one of the most important objects in PixiJS. It is a
@@ -50,7 +51,7 @@ export interface Sprite extends PixiMixins.Sprite, ViewContainer {}
  * @memberof scene
  * @extends scene.Container
  */
-export class Sprite extends ViewContainer
+export class Sprite extends ViewContainer<BatchableSprite>
 {
     /**
      * Helper function that creates a new sprite based on the source you provide.
@@ -224,6 +225,7 @@ export class Sprite extends ViewContainer
         (this._visualBounds as null) = null;
         (this._bounds as null) = null;
         (this._anchor as null) = null;
+        this._gpuData = null;
     }
 
     /**
