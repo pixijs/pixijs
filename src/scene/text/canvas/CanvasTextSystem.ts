@@ -1,5 +1,6 @@
 import { Color } from '../../../color/Color';
 import { ExtensionType } from '../../../extensions/Extensions';
+import { type Filter } from '../../../filters/Filter';
 import { CanvasPool } from '../../../rendering/renderers/shared/texture/CanvasPool';
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
 import { getCanvasBoundingBox } from '../../../utils/canvas/getCanvasBoundingBox';
@@ -82,8 +83,6 @@ export class CanvasTextSystem implements System
             options as {text: string, style: TextStyle, resolution?: number}
         );
 
-        this._renderer.texture.initSource(texture._source);
-
         CanvasPool.returnCanvasAndContext(canvasAndContext);
 
         return texture;
@@ -93,20 +92,22 @@ export class CanvasTextSystem implements System
     {
         const { text, style } = options;
 
+        const padding = style._getFinalPadding();
+
         const resolution = options.resolution ?? this._renderer.resolution;
 
         // create a canvas with the word hello on it
         const measured = CanvasTextMetrics.measureText(text || ' ', style);
 
-        const width = Math.ceil(Math.ceil((Math.max(1, measured.width) + (style.padding * 2))) * resolution);
-        const height = Math.ceil(Math.ceil((Math.max(1, measured.height) + (style.padding * 2))) * resolution);
+        const width = Math.ceil(Math.ceil((Math.max(1, measured.width) + (padding * 2))) * resolution);
+        const height = Math.ceil(Math.ceil((Math.max(1, measured.height) + (padding * 2))) * resolution);
 
         const canvasAndContext = CanvasPool.getOptimalCanvasAndContext(width, height);
 
         // create a texture from the canvas
         const { canvas } = canvasAndContext;
 
-        this.renderTextToCanvas(text, style, resolution, canvasAndContext);
+        this._renderTextToCanvas(text, style, padding, resolution, canvasAndContext);
 
         const texture = getPo2TextureFromSource(canvas, width, height, resolution);
 
@@ -118,6 +119,21 @@ export class CanvasTextSystem implements System
 
             texture.updateUvs();
         }
+
+        if (style.filters)
+        {
+            // apply the filters to the texture if required..
+            // this returns a new texture with the filters applied
+            const filteredTexture = this._applyFilters(texture, style.filters);
+
+            // return the original texture to the pool so we can reuse the next frame
+            this.returnTexture(texture);
+
+            // return the new texture with the filters applied
+            return { texture: filteredTexture, canvasAndContext };
+        }
+
+        this._renderer.texture.initSource(texture._source);
 
         return { texture, canvasAndContext };
     }
@@ -140,16 +156,41 @@ export class CanvasTextSystem implements System
 
     /**
      * Renders text to its canvas, and updates its texture.
-     *
-     * By default this is used internally to ensure the texture is correct before rendering,
-     * but it can be used called externally, for example from this class to 'pre-generate' the texture from a piece of text,
-     * and then shared across multiple Sprites.
      * @param text
      * @param style
      * @param resolution
      * @param canvasAndContext
+     * @param padding
+     * @deprecated since 8.8.0
      */
-    public renderTextToCanvas(text: string, style: TextStyle, resolution: number, canvasAndContext: CanvasAndContext): void
+    public renderTextToCanvas(
+        text: string,
+        style: TextStyle,
+        resolution: number,
+        canvasAndContext: CanvasAndContext,
+        padding: number,
+    ): void
+    {
+        deprecation('8.8.0', 'CanvasTextSystem.renderTextToCanvas: is now private');
+
+        this._renderTextToCanvas(text, style, padding, resolution, canvasAndContext);
+    }
+
+    /**
+     * Renders text to its canvas, and updates its texture.
+     * @param text - The text to render
+     * @param style - The style of the text
+     * @param padding - The padding of the text
+     * @param resolution - The resolution of the text
+     * @param canvasAndContext - The canvas and context to render the text to
+     */
+    private _renderTextToCanvas(
+        text: string,
+        style: TextStyle,
+        padding: number,
+        resolution: number,
+        canvasAndContext: CanvasAndContext
+    ): void
     {
         const { canvas, context } = canvasAndContext;
 
@@ -205,7 +246,7 @@ export class CanvasTextSystem implements System
         {
             const isShadowPass = style.dropShadow && i === 0;
             // we only want the drop shadow, so put text way off-screen
-            const dsOffsetText = isShadowPass ? Math.ceil(Math.max(1, height) + (style.padding * 2)) : 0;
+            const dsOffsetText = isShadowPass ? Math.ceil(Math.max(1, height) + (padding * 2)) : 0;
             const dsOffsetShadow = dsOffsetText * resolution;
 
             if (isShadowPass)
@@ -277,8 +318,8 @@ export class CanvasTextSystem implements System
                         lines[i],
                         style,
                         canvasAndContext,
-                        linePositionX + style.padding,
-                        linePositionY + style.padding - dsOffsetText,
+                        linePositionX + padding,
+                        linePositionY + padding - dsOffsetText,
                         true
                     );
                 }
@@ -289,8 +330,8 @@ export class CanvasTextSystem implements System
                         lines[i],
                         style,
                         canvasAndContext,
-                        linePositionX + style.padding,
-                        linePositionY + style.padding - dsOffsetText
+                        linePositionX + padding,
+                        linePositionY + padding - dsOffsetText
                     );
                 }
             }
@@ -379,6 +420,36 @@ export class CanvasTextSystem implements System
             currentPosition += previousWidth - currentWidth + letterSpacing;
             previousWidth = currentWidth;
         }
+    }
+
+    /**
+     * Applies the specified filters to the given texture.
+     *
+     * This method takes a texture and a list of filters, applies the filters to the texture,
+     * and returns the resulting texture. It also ensures that the alpha mode of the resulting
+     * texture is set to 'premultiplied-alpha'.
+     * @param {Texture} texture - The texture to which the filters will be applied.
+     * @param {Filter[]} filters - The filters to apply to the texture.
+     * @returns {Texture} The resulting texture after all filters have been applied.
+     */
+    private _applyFilters(texture: Texture, filters: Filter[]): Texture
+    {
+        // Save the current render target so it can be restored later
+        const currentRenderTarget = this._renderer.renderTarget.renderTarget;
+
+        // Apply the filters to the texture and get the resulting texture
+        const resultTexture = this._renderer.filter.generateFilteredTexture({
+            texture,
+            filters,
+        });
+
+        // Set the alpha mode of the resulting texture to 'premultiplied-alpha'
+
+        // Restore the previous render target
+        this._renderer.renderTarget.bind(currentRenderTarget, false);
+
+        // Return the resulting texture with the filters applied
+        return resultTexture;
     }
 
     public destroy(): void

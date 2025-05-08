@@ -533,7 +533,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
                 colorTextures: [renderSurface],
             });
 
-            if (CanvasSource.test(renderSurface.source.resource))
+            if (renderSurface.source instanceof CanvasSource)
             {
                 renderTarget.isRoot = true;
             }

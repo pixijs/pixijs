@@ -13,7 +13,7 @@ import type { TextStyleOptions } from '../text/TextStyle';
  * @property {string[]} [cssOverrides] - CSS style(s) to add.
  * @property {Record<string, text.HTMLTextStyleOptions>} [tagStyles] - Tag styles.
  */
-export interface HTMLTextStyleOptions extends Omit<TextStyleOptions, 'leading' | 'textBaseline' | 'trim' >
+export interface HTMLTextStyleOptions extends Omit<TextStyleOptions, 'leading' | 'textBaseline' | 'trim' | 'filters' >
 {
     cssOverrides?: string[];
     tagStyles?: Record<string, HTMLTextStyleOptions>;
