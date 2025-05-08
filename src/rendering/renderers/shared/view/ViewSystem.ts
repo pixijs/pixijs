@@ -18,6 +18,7 @@ import type { Texture } from '../texture/Texture';
  * @property {number} [height=600] - The height of the screen.
  * @property {ICanvas} [canvas] - The canvas to use as a view, optional.
  * @property {boolean} [autoDensity=false] - Resizes renderer view in CSS pixels to allow for resolutions other than 1.
+ *  This is only supported for HTMLCanvasElement and will be ignored if the canvas is an OffscreenCanvas.
  * @property {number} [resolution] - The resolution / device pixel ratio of the renderer.
  * @property {boolean} [antialias=false] - Whether to enable anti-aliasing. This may affect performance.
  * @property {boolean} [depth] -
@@ -48,6 +49,9 @@ export interface ViewSystemOptions
     view?: ICanvas;
     /**
      * Resizes renderer view in CSS pixels to allow for resolutions other than 1.
+     *
+     * This is only supported for HTMLCanvasElement
+     * and will be ignored if the canvas is an OffscreenCanvas.
      * @memberof rendering.SharedRendererOptions
      */
     autoDensity?: boolean;
@@ -130,6 +134,7 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
 
     /**
      * Whether CSS dimensions of canvas view should be resized to screen dimensions automatically.
+     * This is only supported for HTMLCanvasElement and will be ignored if the canvas is an OffscreenCanvas.
      * @member {boolean}
      */
     public get autoDensity(): boolean

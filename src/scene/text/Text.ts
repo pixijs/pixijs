@@ -1,4 +1,5 @@
 import { AbstractText, ensureTextOptions } from './AbstractText';
+import { type BatchableText } from './canvas/BatchableText';
 import { CanvasTextMetrics } from './canvas/CanvasTextMetrics';
 import { TextStyle } from './TextStyle';
 
@@ -6,7 +7,7 @@ import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from './AbstractText';
 import type { TextStyleOptions } from './TextStyle';
 
-export interface Text extends PixiMixins.Text, AbstractText<TextStyle, TextStyleOptions> {}
+export interface Text extends PixiMixins.Text, AbstractText<TextStyle, TextStyleOptions, BatchableText> {}
 
 /**
  * A Text Object will create a line or multiple lines of text.
@@ -34,7 +35,7 @@ export interface Text extends PixiMixins.Text, AbstractText<TextStyle, TextStyle
  * @memberof scene
  */
 export class Text
-    extends AbstractText<TextStyle, TextStyleOptions>
+    extends AbstractText<TextStyle, TextStyleOptions, BatchableText>
     implements View
 {
     public override readonly renderPipeId: string = 'text';

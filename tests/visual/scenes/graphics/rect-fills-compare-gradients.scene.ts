@@ -14,7 +14,12 @@ export const scene: TestScene = {
             const rect = new Graphics();
 
             const xy = type === 'local' ? [0, 0, 1, 1] : [0, 0, 50, 50];
-            const gradient = new FillGradient(...xy, type as any);
+            const gradient = new FillGradient({
+                start: { x: xy[0], y: xy[1] },
+                end: { x: xy[2], y: xy[3] },
+                textureSpace: type as any,
+                wrapMode: 'repeat',
+            });
 
             gradient.addColorStop(0, 0xff0000);
             gradient.addColorStop(0.5, 0x00ff00);

@@ -11,7 +11,7 @@ export const scene: TestScene = {
     {
         await Assets.load({ alias: 'Crosterian', src: 'fonts/Crosterian.woff2' });
 
-        const htmlTexture = await renderer.htmlText.getTexture({
+        const htmlTexture = await renderer.htmlText.getTexturePromise({
             text: '<red>Arial</red>\n<blue>load</blue>',
             resolution: 1,
             style: new HTMLTextStyle({

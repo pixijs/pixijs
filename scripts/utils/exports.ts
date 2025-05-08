@@ -13,6 +13,7 @@ const subImports = [
     ['./ktx2', './lib/compressed-textures/ktx2'],
     ['./basis', './lib/compressed-textures/basis'],
     ['./events', './lib/events'],
+    ['./dom', './lib/dom'],
     ['./filters', './lib/filters'],
     ['./math-extras', './lib/math-extras'],
     ['./sprite-tiling', './lib/scene/sprite-tiling'],
