@@ -118,6 +118,7 @@ export interface TextStyleOptions
      * @type {'alphabetic'|'top'|'hanging'|'middle'|'ideographic'|'bottom'}
      */
     textBaseline?: TextStyleTextBaseline;
+    /** Trim transparent borders. WARNING: This can be an expensive operation so only use this if you have to! */
     trim?: boolean,
     /**
      * Determines whether newlines & spaces are collapsed or preserved "normal"
