@@ -8,7 +8,12 @@ import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from '../text/AbstractText';
 import type { TextStyleOptions } from '../text/TextStyle';
 
-export interface BitmapText extends PixiMixins.BitmapText, AbstractText<TextStyle, TextStyleOptions, BitmapTextGraphics> {}
+export interface BitmapText extends PixiMixins.BitmapText, AbstractText<
+    TextStyle,
+    TextStyleOptions,
+    TextOptions,
+    BitmapTextGraphics
+> {}
 
 /**
  * A BitmapText Object will create a line or multiple lines of text.
@@ -98,7 +103,12 @@ export interface BitmapText extends PixiMixins.BitmapText, AbstractText<TextStyl
  * }
  * @memberof scene
  */
-export class BitmapText extends AbstractText<TextStyle, TextStyleOptions, BitmapTextGraphics> implements View
+export class BitmapText extends AbstractText<
+    TextStyle,
+    TextStyleOptions,
+    TextOptions,
+    BitmapTextGraphics
+> implements View
 {
     public override readonly renderPipeId: string = 'bitmapText';
 

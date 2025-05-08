@@ -8,7 +8,12 @@ import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from './AbstractText';
 import type { TextStyleOptions } from './TextStyle';
 
-export interface Text extends PixiMixins.Text, AbstractText<TextStyle, TextStyleOptions, BatchableText> {}
+export interface Text extends PixiMixins.Text, AbstractText<
+    TextStyle,
+    TextStyleOptions,
+    CanvasTextOptions,
+    BatchableText
+> {}
 
 export interface CanvasTextOptions extends TextOptions
 {
