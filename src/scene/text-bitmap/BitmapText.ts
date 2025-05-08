@@ -2,12 +2,13 @@ import { warn } from '../../utils/logging/warn';
 import { AbstractText, ensureTextOptions } from '../text/AbstractText';
 import { TextStyle } from '../text/TextStyle';
 import { BitmapFontManager } from './BitmapFontManager';
+import { type BitmapTextGraphics } from './BitmapTextPipe';
 
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from '../text/AbstractText';
 import type { TextStyleOptions } from '../text/TextStyle';
 
-export interface BitmapText extends PixiMixins.BitmapText, AbstractText<TextStyle, TextStyleOptions> {}
+export interface BitmapText extends PixiMixins.BitmapText, AbstractText<TextStyle, TextStyleOptions, BitmapTextGraphics> {}
 
 /**
  * A BitmapText Object will create a line or multiple lines of text.
@@ -97,7 +98,7 @@ export interface BitmapText extends PixiMixins.BitmapText, AbstractText<TextStyl
  * }
  * @memberof scene
  */
-export class BitmapText extends AbstractText<TextStyle, TextStyleOptions> implements View
+export class BitmapText extends AbstractText<TextStyle, TextStyleOptions, BitmapTextGraphics> implements View
 {
     public override readonly renderPipeId: string = 'bitmapText';
 

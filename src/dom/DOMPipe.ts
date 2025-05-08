@@ -4,7 +4,6 @@ import { type DOMContainer } from './DOMContainer';
 import type { InstructionSet } from '../rendering/renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../rendering/renderers/types';
-import type { Container } from '../scene/container/Container';
 
 /**
  * The DOMPipe class is responsible for managing and rendering DOM elements within a PixiJS scene.
@@ -26,7 +25,6 @@ export class DOMPipe implements RenderPipe<DOMContainer>
     } as const;
 
     private _renderer: Renderer;
-    private readonly _destroyRenderableBound = this.destroyRenderable.bind(this) as (renderable: Container) => void;
 
     /** Array to keep track of attached DOM elements */
     private readonly _attachedDomElements: DOMContainer[] = [];
@@ -64,7 +62,6 @@ export class DOMPipe implements RenderPipe<DOMContainer>
         if (!this._attachedDomElements.includes(domContainer))
         {
             this._attachedDomElements.push(domContainer);
-            domContainer.on('destroyed', this._destroyRenderableBound);
         }
     }
 
@@ -85,22 +82,6 @@ export class DOMPipe implements RenderPipe<DOMContainer>
     public validateRenderable(_domContainer: DOMContainer): boolean
     {
         return true;
-    }
-
-    /**
-     * Destroys a renderable DOM container, removing it from the list of attached elements.
-     * @param domContainer - The DOM container to be destroyed.
-     */
-    public destroyRenderable(domContainer: DOMContainer): void
-    {
-        const index = this._attachedDomElements.indexOf(domContainer);
-
-        if (index !== -1)
-        {
-            this._attachedDomElements.splice(index, 1);
-        }
-
-        domContainer.off('destroyed', this._destroyRenderableBound);
     }
 
     /** Handles the post-rendering process, ensuring DOM elements are correctly positioned and visible. */
@@ -134,7 +115,7 @@ export class DOMPipe implements RenderPipe<DOMContainer>
 
             if (!domContainer.parent || domContainer.globalDisplayStatus < 0b111)
             {
-                element.remove();
+                element?.remove();
                 attachedDomElements.splice(i, 1);
                 i--;
             }
@@ -168,8 +149,7 @@ export class DOMPipe implements RenderPipe<DOMContainer>
         {
             const domContainer = this._attachedDomElements[i];
 
-            domContainer.off('destroyed', this._destroyRenderableBound);
-            domContainer.element.remove();
+            domContainer.element?.remove();
         }
 
         this._attachedDomElements.length = 0;

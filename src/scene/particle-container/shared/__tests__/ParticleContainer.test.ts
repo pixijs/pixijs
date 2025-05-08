@@ -58,7 +58,7 @@ describe('ParticleContainer', () =>
 
             particleContainer.destroy();
 
-            expect(renderer.renderPipes.particle['_gpuBufferHash'][particleContainer.uid]).toBeNull();
+            expect(particleContainer._gpuData).toBeNull();
         });
     });
 
