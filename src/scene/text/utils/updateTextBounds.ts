@@ -18,7 +18,7 @@ export function updateTextBounds(batchableSprite: BatchableSprite, text: Abstrac
 
     updateQuadBounds(bounds, text._anchor, texture);
 
-    const padding = text._style.getFinalPadding();
+    const padding = text._style._getFinalPadding();
 
     // When HTML text textures are created, they include the padding around the text content
     // to prevent text clipping and provide a buffer zone. This padding is built into

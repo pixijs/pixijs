@@ -92,7 +92,7 @@ export class CanvasTextSystem implements System
     {
         const { text, style } = options;
 
-        const padding = style.getFinalPadding();
+        const padding = style._getFinalPadding();
 
         const resolution = options.resolution ?? this._renderer.resolution;
 
@@ -158,17 +158,17 @@ export class CanvasTextSystem implements System
      * Renders text to its canvas, and updates its texture.
      * @param text
      * @param style
-     * @param padding
      * @param resolution
      * @param canvasAndContext
+     * @param padding
      * @deprecated since 8.8.0
      */
     public renderTextToCanvas(
         text: string,
         style: TextStyle,
-        padding: number,
         resolution: number,
-        canvasAndContext: CanvasAndContext
+        canvasAndContext: CanvasAndContext,
+        padding: number,
     ): void
     {
         deprecation('8.8.0', 'CanvasTextSystem.renderTextToCanvas: is now private');

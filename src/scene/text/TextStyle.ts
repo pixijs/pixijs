@@ -554,7 +554,7 @@ export class TextStyle extends EventEmitter<{
      * @internal
      * @returns {number} The final padding for the text style.
      */
-    public getFinalPadding(): number
+    public _getFinalPadding(): number
     {
         let filterPadding = 0;
 
