@@ -81,8 +81,9 @@ export interface TextOptions<
 export abstract class AbstractText<
     TEXT_STYLE extends TextStyle = TextStyle,
     TEXT_STYLE_OPTIONS extends TextStyleOptions = TextStyleOptions,
-    TEXT_OPTIONS extends TextOptions<TEXT_STYLE, TEXT_STYLE_OPTIONS> = TextOptions<TEXT_STYLE, TEXT_STYLE_OPTIONS>
-> extends ViewContainer implements View
+    TEXT_OPTIONS extends TextOptions<TEXT_STYLE, TEXT_STYLE_OPTIONS> = TextOptions<TEXT_STYLE, TEXT_STYLE_OPTIONS>,
+    GPU_DATA extends { destroy: () => void } = any
+> extends ViewContainer<GPU_DATA> implements View
 {
     public batched = true;
     public _anchor: ObservablePoint;

@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "8.9.0",
+  "version": "8.9.2",
   "author": "PixiJS Team",
   "homepage": "http://pixijs.com/",
   "bugs": "https://github.com/pixijs/pixijs/issues",
@@ -8,6 +8,10 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/pixijs/pixijs.git"
+  },
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/pixijs"
   },
   "main": "lib/index.js",
   "module": "lib/index.mjs",

@@ -1,6 +1,7 @@
 import { Bounds } from '../../container/bounds/Bounds';
 import { type IRenderLayer } from '../../layers/RenderLayer';
 import { ViewContainer, type ViewContainerOptions } from '../../view/ViewContainer';
+import { type ParticleBuffer } from './ParticleBuffer';
 import { particleData } from './particleData';
 
 import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
@@ -49,7 +50,7 @@ export interface ParticleContainerOptions extends PixiMixins.ParticleContainerOp
     texture?: Texture;
     particles?: IParticle[];
 }
-export interface ParticleContainer extends PixiMixins.ParticleContainer, ViewContainer {}
+export interface ParticleContainer extends PixiMixins.ParticleContainer, ViewContainer<ParticleBuffer> {}
 
 /**
  * The ParticleContainer class is a highly optimized container that can render 1000s or particles at great speed.
@@ -101,7 +102,7 @@ export interface ParticleContainer extends PixiMixins.ParticleContainer, ViewCon
  * }
  * @memberof scene
  */
-export class ParticleContainer extends ViewContainer implements Instruction
+export class ParticleContainer extends ViewContainer<ParticleBuffer> implements Instruction
 {
     /**
      * Defines the default options for creating a ParticleContainer.

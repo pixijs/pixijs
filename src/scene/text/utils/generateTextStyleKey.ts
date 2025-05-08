@@ -1,4 +1,5 @@
 import { Color } from '../../../color/Color';
+import { type Filter } from '../../../filters/Filter';
 
 import type { ConvertedFillStyle, ConvertedStrokeStyle } from '../../graphics/shared/FillTypes';
 import type { HTMLTextStyle } from '../../text-html/HTMLTextStyle';
@@ -45,8 +46,21 @@ export function generateTextStyleKey(style: TextStyle): string
     index = addFillStyleKey(style._fill, key as string[], index);
     index = addStokeStyleKey(style._stroke, key as string[], index);
     index = addDropShadowKey(style.dropShadow, key as string[], index);
+    index = addFiltersKey(style.filters, key as string[], index);
 
     return key.join('-');
+}
+
+function addFiltersKey(filters: Filter[], key: (number | string)[], index: number)
+{
+    if (!filters) return index;
+
+    for (const filter of filters)
+    {
+        key[index++] = filter.uid;
+    }
+
+    return index;
 }
 
 function addFillStyleKey(fillStyle: ConvertedFillStyle, key: (number | string)[], index: number)

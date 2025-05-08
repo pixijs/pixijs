@@ -1,6 +1,7 @@
 import { updateQuadBounds } from '../../../utils/data/updateQuadBounds';
 import { type BatchableSprite } from '../../sprite/BatchableSprite';
 import { type AbstractText } from '../AbstractText';
+import { type TextStyle, type TextStyleOptions } from '../TextStyle';
 
 /**
  * Updates the bounds of the given batchable sprite based on the provided text object.
@@ -11,13 +12,14 @@ import { type AbstractText } from '../AbstractText';
  * @param {BatchableSprite} batchableSprite - The sprite whose bounds need to be updated.
  * @param {AbstractText} text - The text object containing the texture and style information.
  */
-export function updateTextBounds(batchableSprite: BatchableSprite, text: AbstractText)
+export function updateTextBounds(batchableSprite: BatchableSprite, text: AbstractText<TextStyle, TextStyleOptions>)
 {
     const { texture, bounds } = batchableSprite;
 
     updateQuadBounds(bounds, text._anchor, texture);
 
-    const padding = text._style.padding;
+    const padding = text._style._getFinalPadding();
+
     // When HTML text textures are created, they include the padding around the text content
     // to prevent text clipping and provide a buffer zone. This padding is built into
     // the texture itself. However, we don't want this padding to affect the text's

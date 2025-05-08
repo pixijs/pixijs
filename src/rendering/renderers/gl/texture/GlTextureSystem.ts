@@ -441,6 +441,12 @@ export class GlTextureSystem implements System, CanvasGenerator
         this._activeTextureLocation = -1;
         this._boundTextures.fill(Texture.EMPTY.source);
         this._boundSamplers = Object.create(null);
+
+        const gl = this._gl;
+
+        this._premultiplyAlpha = false;
+
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this._premultiplyAlpha);
     }
 }
 

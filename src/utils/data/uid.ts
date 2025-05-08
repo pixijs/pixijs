@@ -25,7 +25,8 @@ type UIDNames =
     | 'spriteView' //
     | 'textView' //
     | 'tilingSpriteView' //
-    | 'shader';
+    | 'shader' //
+    | 'renderer';
 
 /**
  * Gets the next unique identifier
