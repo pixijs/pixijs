@@ -1,5 +1,6 @@
 import { ExtensionType } from '../extensions/Extensions';
 import { Matrix } from '../maths/matrix/Matrix';
+import { type PointData } from '../maths/point/PointData';
 import { type Rectangle } from '../maths/shapes/Rectangle';
 import { BindGroup } from '../rendering/renderers/gpu/shader/BindGroup';
 import { Geometry } from '../rendering/renderers/shared/geometry/Geometry';
