@@ -2,8 +2,7 @@ declare global
 {
     namespace PixiMixins
     {
-
-        interface RendererSystems
+        interface RendererPipes
         {
             dom: import('./DOMPipe').DOMPipe;
         }
