@@ -59,12 +59,7 @@ export interface TextureStyleOptions extends Partial<TextureStyle>
      */
     compare?: COMPARE_FUNCTION;
     /**
-     * Specifies the maximum anisotropy value clamp used by the sampler.
-     * Note: Most implementations support {@link GPUSamplerDescriptor#maxAnisotropy} values in range
-     * between 1 and 16, inclusive. The used value of {@link GPUSamplerDescriptor#maxAnisotropy} will
-     * be clamped to the maximum value that the platform supports.
-     *
-     * setting this to anything higher than 1 will set scale modes to 'linear'
+     * @deprecated since 8.8.1 Use `maxAnisotropy` on the texture source instead
      */
     maxAnisotropy?: number;
 }
@@ -111,14 +106,6 @@ export class TextureStyle extends EventEmitter<{
      * implementation-dependent and may differ from the normal filtering rules.
      */
     public compare?: COMPARE_FUNCTION;
-    /**
-     * Specifies the maximum anisotropy value clamp used by the sampler.
-     * Note: Most implementations support {@link GPUSamplerDescriptor#maxAnisotropy} values in range
-     * between 1 and 16, inclusive. The used value of {@link GPUSamplerDescriptor#maxAnisotropy} will
-     * be clamped to the maximum value that the platform supports.
-     * @internal
-     * @ignore
-     */
     public _maxAnisotropy?: number = 1;
 
     /**
@@ -196,7 +183,9 @@ export class TextureStyle extends EventEmitter<{
         return this.magFilter;
     }
 
-    /** Specifies the maximum anisotropy value clamp used by the sampler. */
+    /**
+     * @deprecated since 8.8.1 Use `maxAnisotropy` on the texture source instead
+     */
     set maxAnisotropy(value: number)
     {
         this._maxAnisotropy = Math.min(value, 16);
@@ -207,6 +196,9 @@ export class TextureStyle extends EventEmitter<{
         }
     }
 
+    /**
+     * @deprecated
+     */
     get maxAnisotropy(): number
     {
         return this._maxAnisotropy;
