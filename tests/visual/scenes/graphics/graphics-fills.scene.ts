@@ -9,7 +9,12 @@ export const scene: TestScene = {
     it: 'render correct render fills',
     create: async (scene: Container) =>
     {
-        const grad = new FillGradient(0, 0, 50, 50, 'global');
+        const grad = new FillGradient({
+            start: { x: 0, y: 0 },
+            end: { x: 50, y: 50 },
+            textureSpace: 'global',
+            wrapMode: 'repeat',
+        });
 
         const texture = await Assets.load('bg_scene_rotate.jpg');
 

@@ -35,7 +35,7 @@ function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack:
 
     Object.keys(asset.textures).forEach((key) =>
     {
-        out[key] = asset.textures[key];
+        out[`${asset.cachePrefix}${key}`] = asset.textures[key];
     });
 
     if (!ignoreMultiPack)
@@ -130,7 +130,8 @@ export const spritesheetAsset = {
                 texture?: Texture,
                 imageFilename?: string,
                 ignoreMultiPack?: boolean,
-                textureOptions?: TextureSourceOptions
+                textureOptions?: TextureSourceOptions,
+                cachePrefix?: string,
             }>,
             loader?: Loader
         ): Promise<Spritesheet>
@@ -138,7 +139,8 @@ export const spritesheetAsset = {
             const {
                 texture: imageTexture, // if user need to use preloaded texture
                 imageFilename, // if user need to use custom filename (not from jsonFile.meta.image)
-                textureOptions // if user need to set texture options on texture
+                textureOptions, // if user need to set texture options on texture
+                cachePrefix, // if user need to use custom cache prefix
             } = options?.data ?? {};
 
             let basePath = path.dirname(options.src);
@@ -163,10 +165,11 @@ export const spritesheetAsset = {
                 texture = assets[imagePath];
             }
 
-            const spritesheet = new Spritesheet(
-                texture.source,
-                asset,
-            );
+            const spritesheet = new Spritesheet({
+                texture: texture.source,
+                data: asset,
+                cachePrefix
+            });
 
             await spritesheet.parse();
 

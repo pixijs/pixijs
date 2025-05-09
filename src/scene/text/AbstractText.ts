@@ -79,9 +79,10 @@ export interface TextOptions<
  * @memberof scene
  */
 export abstract class AbstractText<
-    TEXT_STYLE extends TextStyle = TextStyle,
-    TEXT_STYLE_OPTIONS extends TextStyleOptions = TextStyleOptions,
-> extends ViewContainer implements View
+    TEXT_STYLE extends TextStyle,
+    TEXT_STYLE_OPTIONS extends TextStyleOptions,
+    GPU_DATA extends { destroy: () => void } = any
+> extends ViewContainer<GPU_DATA> implements View
 {
     public batched = true;
     public _anchor: ObservablePoint;
@@ -315,11 +316,6 @@ export abstract class AbstractText<
     {
         if (!this.didViewUpdate) this._didTextUpdate = true;
         super.onViewUpdate();
-    }
-
-    public _getKey(): string
-    {
-        return `${this.text}:${this._style.styleKey}:${this._resolution}`;
     }
 
     /**

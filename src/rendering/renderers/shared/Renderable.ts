@@ -1,6 +1,3 @@
-import type { Container } from '../../../scene/container/Container';
-import type { View } from './view/View';
+import { type ViewContainer } from '../../../scene/view/ViewContainer';
 
-export interface Renderable extends Container, View
-{
-}
+export type Renderable = ViewContainer;

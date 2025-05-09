@@ -11,6 +11,7 @@ export * from './assets';
 export * from './color';
 export * from './compressed-textures';
 export * from './culling';
+export * from './dom';
 export * from './environment';
 export * from './environment-browser';
 export * from './environment-webworker';
