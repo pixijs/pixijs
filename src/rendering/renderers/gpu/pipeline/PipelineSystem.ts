@@ -92,7 +92,7 @@ export class PipelineSystem implements System
 
     private _moduleCache: Record<string, GPUShaderModule> = Object.create(null);
     private _bufferLayoutsCache: Record<number, GPUVertexBufferLayout[]> = Object.create(null);
-    private readonly _bindingNamesCache: Record<string, Record<string, string>> = Object.create(null);
+    private readonly _bindingNamesCache: Record<string, number[]> = Object.create(null);
 
     private _pipeCache: PipeHash = Object.create(null);
     private readonly _pipeStateCaches: Record<number, PipeHash> = Object.create(null);
@@ -281,6 +281,7 @@ export class PipelineSystem implements System
             keyGen[index++] = attribute.format;
             keyGen[index++] = attribute.stride;
             keyGen[index++] = attribute.instance;
+            keyGen[index++] = attribute.bufferIndex;
         }
 
         const stringKey = keyGen.join('|');
@@ -312,6 +313,27 @@ export class PipelineSystem implements System
         return program._attributeLocationsKey;
     }
 
+    public ensureGeometryLayoutKey(geometry: Geometry): number
+    {
+        if (geometry._layoutKey)
+        {
+            return geometry._layoutKey;
+        }
+        if (geometry.proto?._layoutKey)
+        {
+            geometry._layoutKey = geometry.proto._layoutKey;
+        }
+
+        // prepare the geometry for the pipeline
+        this._generateBufferKey(geometry);
+        if (geometry.proto)
+        {
+            geometry.proto._layoutKey = geometry._layoutKey;
+        }
+
+        return geometry._layoutKey;
+    }
+
     /**
      * Returns a hash of buffer names mapped to bind locations.
      * This is used to bind the correct buffer to the correct location in the shader.
@@ -319,38 +341,19 @@ export class PipelineSystem implements System
      * @param program - The program where to get the buffer names
      * @returns An object of buffer names mapped to the bind location.
      */
-    public getBufferNamesToBind(geometry: Geometry, program: GpuProgram): Record<string, string>
+    public getBufferNamesToBind(geometry: Geometry, program: GpuProgram): number[]
     {
+        this.ensureGeometryLayoutKey(geometry);
+
+        if (!program._attributeLocationsKey) this._generateAttributeLocationsKey(program);
+
         const key = (geometry._layoutKey << 16) | program._attributeLocationsKey;
 
         if (this._bindingNamesCache[key]) return this._bindingNamesCache[key];
 
-        const data = this._createVertexBufferLayouts(geometry, program);
+        this._createVertexBufferLayouts(geometry, program);
 
-        // now map the data to the buffers..
-        const bufferNamesToBind: Record<string, string> = Object.create(null);
-
-        const attributeData = program.attributeData;
-
-        for (let i = 0; i < data.length; i++)
-        {
-            const attributes = Object.values(data[i].attributes);
-
-            const shaderLocation = attributes[0].shaderLocation;
-
-            for (const j in attributeData)
-            {
-                if (attributeData[j].location === shaderLocation)
-                {
-                    bufferNamesToBind[i] = j;
-                    break;
-                }
-            }
-        }
-
-        this._bindingNamesCache[key] = bufferNamesToBind;
-
-        return bufferNamesToBind;
+        return this._bindingNamesCache[key];
     }
 
     private _createVertexBufferLayouts(geometry: Geometry, program: GpuProgram): GPUVertexBufferLayout[]
@@ -365,8 +368,9 @@ export class PipelineSystem implements System
         }
 
         const vertexBuffersLayout: GPUVertexBufferLayout[] = [];
+        const bufferIndices = [];
 
-        geometry.buffers.forEach((buffer) =>
+        for (let i = 0; i < geometry.buffers.length; i++)
         {
             const bufferEntry: GPUVertexBufferLayout = {
                 arrayStride: 0,
@@ -376,9 +380,21 @@ export class PipelineSystem implements System
 
             const bufferEntryAttributes = bufferEntry.attributes as GPUVertexAttribute[];
 
-            for (const i in program.attributeData)
+            for (const j in geometry.attributes)
             {
-                const attribute = geometry.attributes[i];
+                const attribute = geometry.attributes[j];
+
+                if (attribute.bufferIndex !== i)
+                {
+                    continue;
+                }
+
+                const attrData = program.attributeData[j];
+
+                if (!attrData)
+                {
+                    continue;
+                }
 
                 if ((attribute.divisor ?? 1) !== 1)
                 {
@@ -388,26 +404,34 @@ export class PipelineSystem implements System
                         + 'WebGPU only supports a divisor value of 1');
                 }
 
-                if (attribute.buffer === buffer)
-                {
-                    bufferEntry.arrayStride = attribute.stride;
-                    bufferEntry.stepMode = attribute.instance ? 'instance' : 'vertex';
+                bufferEntry.arrayStride = attribute.stride;
+                bufferEntry.stepMode = attribute.instance ? 'instance' : 'vertex';
 
-                    bufferEntryAttributes.push({
-                        shaderLocation: program.attributeData[i].location,
-                        offset: attribute.offset,
-                        format: attribute.format,
-                    });
-                }
+                bufferEntryAttributes.push({
+                    shaderLocation: attrData.location,
+                    offset: attribute.offset,
+                    format: attribute.format,
+                });
             }
 
             if (bufferEntryAttributes.length)
             {
                 vertexBuffersLayout.push(bufferEntry);
+                bufferIndices.push(i);
             }
-        });
+        }
+        for (const j in program.attributeData)
+        {
+            if (!geometry.attributes[j])
+            {
+                // eslint-disable-next-line max-len
+                warn(`Attribute ${j} is not present in the shader, but is present in the geometry. Unable to infer attribute details.`);
+            }
+        }
 
         this._bufferLayoutsCache[key] = vertexBuffersLayout;
+
+        this._bindingNamesCache[key] = bufferIndices;
 
         return vertexBuffersLayout;
     }

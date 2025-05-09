@@ -1,54 +1,19 @@
 import EventEmitter from 'eventemitter3';
 import { Bounds } from '../../../../scene/container/bounds/Bounds';
 import { uid } from '../../../../utils/data/uid';
-import { Buffer } from '../buffer/Buffer';
-import { ensureIsBuffer } from './utils/ensureIsBuffer';
+import { deprecation } from '../../../../utils/logging/deprecation';
+import { warn } from '../../../../utils/logging/warn';
+import { Attribute, type AttributeOption, ensureIsAttribute, type IAttribute } from './Attribute';
+import { DrawInstanceParameters } from './DrawInstanceParameters';
+import { ensureIsBuffer, isBufferOption } from './utils/ensureIsBuffer';
+import { getAttributeInfoFromFormat } from './utils/getAttributeInfoFromFormat';
 import { getGeometryBounds } from './utils/getGeometryBounds';
 
-import type { TypedArray } from '../buffer/Buffer';
-import type { Topology, VertexFormat } from './const';
+import type { Buffer } from '../buffer/Buffer';
+import type { Topology } from './const';
+import type { BufferOption } from './utils/ensureIsBuffer';
 
 export type IndexBufferArray = Uint16Array | Uint32Array;
-
-/**
- * The attribute data for a geometries attributes
- * @memberof rendering
- */
-export interface Attribute
-{
-    /** the buffer that this attributes data belongs to */
-    buffer: Buffer;
-    /** the format of the attribute */
-    format?: VertexFormat;
-    /** the stride of the data in the buffer - in bytes*/
-    stride?: number;
-    /** the offset of the attribute from the buffer, defaults to 0 - in bytes*/
-    offset?: number;
-    /** is this an instanced buffer? (defaults to false) */
-    instance?: boolean;
-    /** the number of elements to be rendered. If not specified, all vertices after the starting vertex will be drawn. */
-    size?: number;
-    /**
-     * the starting vertex in the geometry to start drawing from. If not specified,
-     *  drawing will start from the first vertex.
-     */
-    start?: number;
-    /**
-     * attribute divisor for instanced rendering. Note: this is a **WebGL-only** feature, the WebGPU renderer will
-     * issue a warning if one of the attributes has divisor set.
-     */
-    divisor?: number;
-}
-
-/**
- * The attribute options used by the constructor for adding geometries attributes
- * extends {@link rendering.Attribute} but allows for the buffer to be a typed or number array
- * @memberof rendering
- */
-type AttributeOption = Omit<Attribute, 'buffer'> & { buffer: Buffer | TypedArray | number[]}
-| Buffer | TypedArray | number[];
-
-export type AttributeOptions = Record<string, AttributeOption>;
 
 /**
  * the interface that describes the structure of the geometry
@@ -59,26 +24,18 @@ export interface GeometryDescriptor
     /** an optional label to easily identify the geometry */
     label?: string;
     /** the attributes that make up the geometry */
-    attributes?: AttributeOptions;
+    attributes?: Record<string, AttributeOption>;
+    vertexBuffer?: BufferOption;
     /** optional index buffer for this geometry */
-    indexBuffer?: Buffer | TypedArray | number[];
+    indexBuffer?: BufferOption;
     /** the topology of the geometry, defaults to 'triangle-list' */
     topology?: Topology;
+    proto?: Geometry;
 
+    /** Number of instances */
     instanceCount?: number;
-}
-function ensureIsAttribute(attribute: AttributeOption): Attribute
-{
-    if (attribute instanceof Buffer || Array.isArray(attribute) || (attribute as TypedArray).BYTES_PER_ELEMENT)
-    {
-        attribute = {
-            buffer: attribute as Buffer | TypedArray | number[],
-        };
-    }
-
-    (attribute as Attribute).buffer = ensureIsBuffer(attribute.buffer as Buffer | TypedArray | number[], false);
-
-    return attribute as Attribute;
+    /** Instancing parameters */
+    instanceParams?: DrawInstanceParameters
 }
 
 /**
@@ -119,16 +76,24 @@ export class Geometry extends EventEmitter<{
     destroy: Geometry,
 }>
 {
+    /** prototype of geometry, holds the same attributes, bufferStride, and instanceParams */
+    public proto: Geometry;
     /** The topology of the geometry. */
     public topology: Topology;
     /** The unique id of the geometry. */
     public readonly uid: number = uid('geometry');
     /** A record of the attributes of the geometry. */
     public readonly attributes: Record<string, Attribute>;
-    /** The buffers that the attributes use */
-    public readonly buffers: Buffer[];
+    /** The buffers that the attributes use. First is some vertex buffer. Last is index buffer. */
+    public readonly buffers: Buffer[] = [];
+    /** strides of all vertex buffers, vertex per byte */
+    public bufferStride: Array<number>;
+    /** First vertex buffer */
+    public vertexBuffer: Buffer = null;
     /** The index buffer of the geometry */
     public indexBuffer: Buffer;
+    /** Whether the geometry is instanced. Calculated by constuctor parameters and by attribute definitions */
+    public instanceParams: DrawInstanceParameters;
 
     /**
      * the layout key will be generated by WebGPU all geometries that have the same structure
@@ -143,37 +108,196 @@ export class Geometry extends EventEmitter<{
 
     private readonly _bounds: Bounds = new Bounds();
     private _boundsDirty = true;
+    private _attributesFinalized = false;
+    public _hasUndefinedFormats = false;
 
     /**
      * Create a new instance of a geometry
      * @param options - The options for the geometry.
      */
-    constructor(options: GeometryDescriptor = {})
+    constructor(options: GeometryDescriptor = { attributes: {} })
     {
         super();
 
-        const { attributes, indexBuffer, topology } = options;
+        this.instanceCount = options.instanceCount || 1;
 
-        this.buffers = [];
-
-        this.attributes = {};
-
-        if (attributes)
+        if (options.vertexBuffer)
         {
-            for (const i in attributes)
+            this.vertexBuffer = ensureIsBuffer(options.vertexBuffer, false);
+        }
+        if (options.indexBuffer)
+        {
+            this.indexBuffer = ensureIsBuffer(options.indexBuffer, true);
+        }
+
+        const proto = options.proto;
+
+        if (options.proto)
+        {
+            this.buffers = proto.buffers.slice(0);
+            this.attributes = proto.attributes;
+            this._initFromProto(options);
+        }
+        else
+        {
+            this.buffers = [];
+            this.attributes = {};
+            this._initFromAttributes(options);
+        }
+    }
+
+    private _initFromProto(options: GeometryDescriptor)
+    {
+        const proto = this.proto = options.proto;
+
+        this.bufferStride = proto.bufferStride;
+        this.topology = options.topology || proto.topology;
+        this.instanceParams = proto.instanceParams;
+        this.instanceCount = options.instanceCount ?? 1;
+
+        if (!proto._attributesFinalized)
+        {
+            proto._finalizeAttributes();
+        }
+        this._attributesFinalized = true;
+
+        if (this.vertexBuffer)
+        {
+            this.buffers[0] = this.vertexBuffer;
+        }
+        if (this.indexBuffer)
+        {
+            const ind = this.buffers.indexOf(proto.indexBuffer);
+
+            if (ind >= 0)
             {
-                this.addAttribute(i, attributes[i]);
+                this.buffers[ind] = this.indexBuffer;
+            }
+            else
+            {
+                this.buffers.push(this.indexBuffer);
+            }
+        }
+        for (const i in options.attributes)
+        {
+            const attr = options.attributes[i];
+
+            if (this.attributes[i])
+            {
+                const bufInd = this.attributes[i].bufferIndex;
+
+                if (isBufferOption(attr))
+                {
+                    this.buffers[bufInd] = ensureIsBuffer(attr as BufferOption, false);
+                }
+                else
+                {
+                    const buf = (attr as IAttribute).buffer;
+
+                    if (buf)
+                    {
+                        this.buffers[bufInd] = buf;
+                    }
+                }
+            }
+            else
+            {
+                throw new Error(`Geometry: attribute does not exist in prototype geom ${i}`);
+            }
+        }
+    }
+
+    private _initFromAttributes(options: GeometryDescriptor)
+    {
+        this.bufferStride = [];
+        this.topology = options.topology || 'triangle-list';
+        this.instanceParams = options.instanceParams;
+
+        if (this.vertexBuffer)
+        {
+            this.buffers[0] = this.vertexBuffer;
+            this.bufferStride[0] = 0;
+        }
+
+        for (const i in options.attributes)
+        {
+            this.addAttribute(i, options.attributes[i]);
+        }
+
+        if (this.indexBuffer)
+        {
+            this.buffers.push(this.indexBuffer);
+        }
+    }
+
+    /** Ensures that attribute list is final and will not change */
+    public ensureAttributes()
+    {
+        if (!this._attributesFinalized)
+        {
+            this._finalizeAttributes();
+        }
+    }
+
+    private _finalizeAttributes()
+    {
+        if (this._attributesFinalized)
+        {
+            return;
+        }
+
+        this._attributesFinalized = true;
+
+        const attributes = this.attributes;
+        const bufferStride = this.bufferStride;
+
+        for (const j in attributes)
+        {
+            const attr = attributes[j];
+
+            if (!attr.format)
+            {
+                throw new Error(`Geometry: cannot use geometry, attribute "${name}" without vertex format`);
+            }
+
+            // TODO: move this part to "addAttribute" when format becomes a requirement
+
+            const attrInfo = getAttributeInfoFromFormat(attr.format);
+            const bufferIndex = attr.bufferIndex;
+
+            if (attr.offset === undefined)
+            {
+                attr.offset = bufferStride[bufferIndex];
+            }
+
+            bufferStride[bufferIndex] = Math.max(bufferStride[bufferIndex], attr.offset + attrInfo.stride);
+        }
+
+        this._hasUndefinedFormats = false;
+
+        for (const j in attributes)
+        {
+            const attribute = attributes[j];
+
+            if (attribute.stride === undefined)
+            {
+                attribute.stride = bufferStride[attribute.bufferIndex];
             }
         }
 
-        this.instanceCount = options.instanceCount ?? 1;
+        const inst = this.instanceParams;
 
-        if (indexBuffer)
+        if (this.vertexBuffer && inst)
         {
-            this.addIndex(indexBuffer);
+            if (inst.vertexCount)
+            {
+                this.bufferStride[0] = (inst.instanced ? inst.vertexCount : 1) * 4;
+            }
+            else
+            {
+                inst.strideFloats = this.bufferStride[0] / 4;
+            }
         }
-
-        this.topology = topology || 'triangle-list';
     }
 
     protected onBufferUpdate(): void
@@ -223,7 +347,7 @@ export class Geometry extends EventEmitter<{
             const buffer = attribute.buffer;
 
             // TODO use SIZE again like v7..
-            return (buffer.data as any).length / ((attribute.stride / 4) || attribute.size);
+            return (buffer.data as any).length / (this.bufferStride[attribute.bufferIndex] / 4);
         }
 
         return 0;
@@ -236,28 +360,73 @@ export class Geometry extends EventEmitter<{
      */
     public addAttribute(name: string, attributeOption: AttributeOption): void
     {
-        const attribute = ensureIsAttribute(attributeOption);
+        if (this._attributesFinalized)
+        {
+            throw new Error('Geometry: cannot add attribute to geometry with prototype or finalized');
+        }
 
-        const bufferIndex = this.buffers.indexOf(attribute.buffer);
+        const defaultInstanced = this.instanceParams?.instanced ?? false;
+        const attr = new Attribute(ensureIsAttribute(attributeOption, this.vertexBuffer, defaultInstanced));
+
+        let bufferIndex = attr.bufferIndex = this.buffers.indexOf(attr.buffer);
+        const bufferStride = this.bufferStride;
 
         if (bufferIndex === -1)
         {
-            this.buffers.push(attribute.buffer);
+            bufferIndex = attr.bufferIndex = this.buffers.length;
+            this.buffers.push(attr.buffer);
+            bufferStride[bufferIndex] = 0;
 
             // two events here - one for a resize (new buffer change)
             // and one for an update (existing buffer change)
-            attribute.buffer.on('update', this.onBufferUpdate, this);
-            attribute.buffer.on('change', this.onBufferUpdate, this);
+            attr.buffer.on('update', this.onBufferUpdate, this);
+            attr.buffer.on('change', this.onBufferUpdate, this);
         }
-        this.attributes[name] = attribute;
+
+        if (attr.instance)
+        {
+            if (!this.instanceParams)
+            {
+                this.instanceParams = new DrawInstanceParameters({ instanced: true });
+            }
+            else
+            {
+                this.instanceParams.instanced = true;
+            }
+        }
+
+        if (!attr.format)
+        {
+            warn(`No format specified for geometry attribute ${name}`);
+            // eslint-disable-next-line max-len
+            deprecation('8.9.2', `Please specify format for geometry attribute. This will become an error in later versions!`);
+
+            this._hasUndefinedFormats = true;
+        }
+
+        this.attributes[name] = attr;
     }
 
     /**
      * Adds an index buffer to the geometry.
      * @param indexBuffer - The index buffer to add. Can be a Buffer, TypedArray, or an array of numbers.
      */
-    public addIndex(indexBuffer: Buffer | TypedArray | number[]): void
+    public addIndex(indexBuffer: BufferOption): void
     {
+        if (this.proto)
+        {
+            // can set index buffer only if current one is from prototype
+            if (this.indexBuffer !== this.proto.indexBuffer)
+            {
+                throw new Error('Geometry: cannot add second index buffer to prototype that didnt have it');
+            }
+
+            const ind = this.buffers.indexOf(this.indexBuffer);
+
+            this.indexBuffer = ensureIsBuffer(indexBuffer, true);
+            this.buffers[ind] = this.indexBuffer;
+        }
+
         this.indexBuffer = ensureIsBuffer(indexBuffer, true);
         this.buffers.push(this.indexBuffer);
     }
@@ -284,12 +453,27 @@ export class Geometry extends EventEmitter<{
 
         if (destroyBuffers)
         {
-            this.buffers.forEach((buffer) => buffer.destroy());
+            if (this.proto)
+            {
+                for (let i = 0; i < this.buffers.length; i++)
+                {
+                    if (this.buffers[i] !== this.proto.buffers[i])
+                    {
+                        this.buffers[i].destroy();
+                    }
+                }
+            }
+            else
+            {
+                this.buffers.forEach((buffer) => buffer.destroy());
+            }
         }
 
         (this.attributes as null) = null;
         (this.buffers as null) = null;
         (this.indexBuffer as null) = null;
         (this._bounds as null) = null;
+        (this.bufferStride as null) = null;
+        this.instanceParams = null;
     }
 }
