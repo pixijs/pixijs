@@ -178,7 +178,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
             if (char !== '\n' && char !== '\r' && char !== '\t' && char !== ' ')
             {
                 skipTexture = true;
-                currentMaxCharHeight = Math.ceil(Math.max(paddedHeight, currentMaxCharHeight));// / 1.5;
+                currentMaxCharHeight = Math.ceil(Math.max(paddedHeight, currentMaxCharHeight));
             }
 
             if (currentX + paddedWidth > maxTextureWidth)
