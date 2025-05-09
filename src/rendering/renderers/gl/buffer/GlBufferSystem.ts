@@ -72,10 +72,10 @@ export class GlBufferSystem implements System
     /** Sets up the renderer context and necessary buffers. */
     protected contextChange(): void
     {
-        const gl = this._gl = this._renderer.gl;
+        this._gl = this._renderer.gl;
 
         this._gpuBuffers = Object.create(null);
-        this._maxBindings = gl.MAX_UNIFORM_BUFFER_BINDINGS ? gl.getParameter(gl.MAX_UNIFORM_BUFFER_BINDINGS) : 0;
+        this._maxBindings = this._renderer.limits.maxUniformBindings;
     }
 
     public getGlBuffer(buffer: Buffer): GlBuffer

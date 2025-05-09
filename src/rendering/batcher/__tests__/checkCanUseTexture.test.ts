@@ -36,7 +36,7 @@ describe('checkCanUseTexture', () =>
 {
     it('should return false if a texture source is not already in a batch', () =>
     {
-        const batcher = new TestBatcher();
+        const batcher = new TestBatcher({ maxTextures: 16 });
 
         const batchableObject = new DummyBatchableObject();
 
@@ -51,7 +51,7 @@ describe('checkCanUseTexture', () =>
 
     it('should return true if a texture source is not already in a batch', () =>
     {
-        const batcher = new TestBatcher();
+        const batcher = new TestBatcher({ maxTextures: 16 });
 
         const batchableObject = new DummyBatchableObject();
 

@@ -1,11 +1,9 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { getMaxTexturesPerBatch } from '../../../batcher/gl/utils/maxRecommendedTextures';
 import { generateShaderSyncCode } from './GenerateShaderSyncCode';
 import { generateProgram } from './program/generateProgram';
 
 import type { BufferResource } from '../../shared/buffer/BufferResource';
 import type { Shader } from '../../shared/shader/Shader';
-import type { ShaderSystem } from '../../shared/shader/ShaderSystem';
 import type { UniformGroup } from '../../shared/shader/UniformGroup';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
@@ -30,7 +28,7 @@ const defaultSyncData: ShaderSyncData = {
  * System plugin to the renderer to manage the shaders for WebGL.
  * @memberof rendering
  */
-export class GlShaderSystem implements ShaderSystem
+export class GlShaderSystem
 {
     /** @ignore */
     public static extension = {
@@ -39,8 +37,6 @@ export class GlShaderSystem implements ShaderSystem
         ],
         name: 'shader',
     } as const;
-
-    public maxTextures: number;
 
     /**
      * @internal
@@ -70,7 +66,6 @@ export class GlShaderSystem implements ShaderSystem
          */
         this._shaderSyncFunctions = Object.create(null);
         this._activeProgram = null;
-        this.maxTextures = getMaxTexturesPerBatch();
     }
 
     /**
