@@ -10,6 +10,7 @@ import { GpuBufferSystem } from './buffer/GpuBufferSystem';
 import { GpuColorMaskSystem } from './GpuColorMaskSystem';
 import { type GPU, GpuDeviceSystem } from './GpuDeviceSystem';
 import { GpuEncoderSystem } from './GpuEncoderSystem';
+import { GpuLimitsSystem } from './GpuLimitsSystem';
 import { GpuStencilSystem } from './GpuStencilSystem';
 import { GpuUboSystem } from './GpuUboSystem';
 import { GpuUniformBatchPipe } from './GpuUniformBatchPipe';
@@ -30,6 +31,7 @@ const DefaultWebGPUSystems = [
     GpuUboSystem,
     GpuEncoderSystem,
     GpuDeviceSystem,
+    GpuLimitsSystem,
     GpuBufferSystem,
     GpuTextureSystem,
     GpuRenderTargetSystem,

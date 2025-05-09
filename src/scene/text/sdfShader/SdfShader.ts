@@ -1,5 +1,4 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
-import { getMaxTexturesPerBatch } from '../../../rendering/batcher/gl/utils/maxRecommendedTextures';
 import {
     compileHighShaderGlProgram,
     compileHighShaderGpuProgram
@@ -24,7 +23,7 @@ let glProgram: GlProgram;
 
 export class SdfShader extends Shader
 {
-    constructor()
+    constructor(maxTextures: number)
     {
         const uniforms = new UniformGroup({
             uColor: { value: new Float32Array([1, 1, 1, 1]), type: 'vec4<f32>' },
@@ -32,8 +31,6 @@ export class SdfShader extends Shader
             uDistance: { value: 4, type: 'f32' },
             uRound: { value: 0, type: 'f32' },
         });
-
-        const maxTextures = getMaxTexturesPerBatch();
 
         gpuProgram ??= compileHighShaderGpuProgram({
             name: 'sdf-shader',
