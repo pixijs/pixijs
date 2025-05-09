@@ -15,6 +15,10 @@ export interface Text extends PixiMixins.Text, AbstractText<
     BatchableText
 > {}
 
+/**
+ * Constructor options used for `Text` instances.
+ * @memberof scene
+ */
 export interface CanvasTextOptions extends TextOptions
 {
     /** optional texture style to use for the text. */

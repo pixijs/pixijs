@@ -3,9 +3,10 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import { type Filter } from '../../../filters/Filter';
 import { CanvasPool } from '../../../rendering/renderers/shared/texture/CanvasPool';
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
-import { type TextureStyle } from '../../../rendering/renderers/shared/texture/TextureStyle';
+import { TextureStyle } from '../../../rendering/renderers/shared/texture/TextureStyle';
 import { getCanvasBoundingBox } from '../../../utils/canvas/getCanvasBoundingBox';
 import { deprecation } from '../../../utils/logging/deprecation';
+import { type CanvasTextOptions } from '../Text';
 import { TextStyle } from '../TextStyle';
 import { getPo2TextureFromSource } from '../utils/getPo2TextureFromSource';
 import { CanvasTextMetrics } from './CanvasTextMetrics';
@@ -17,7 +18,6 @@ import type { ICanvasRenderingContext2D } from '../../../environment/canvas/ICan
 import type { System } from '../../../rendering/renderers/shared/system/System';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { Renderer } from '../../../rendering/renderers/types';
-import type { TextOptions } from '../AbstractText';
 
 interface CanvasAndContext
 {
@@ -59,8 +59,13 @@ export class CanvasTextSystem implements System
      */
     /** @deprecated since 8.0.0 */
     public getTexture(text: string, resolution: number, style: TextStyle, textKey: string): Texture;
-    public getTexture(options: TextOptions): Texture;
-    public getTexture(options: TextOptions | string, resolution?: number, style?: TextStyle, _textKey?: string): Texture
+    public getTexture(options: CanvasTextOptions): Texture;
+    public getTexture(
+        options: CanvasTextOptions | string,
+        resolution?: number,
+        style?: TextStyle,
+        _textKey?: string
+    ): Texture
     {
         if (typeof options === 'string')
         {
@@ -80,8 +85,18 @@ export class CanvasTextSystem implements System
             options.style = new TextStyle(options.style);
         }
 
+        if (!(options.textureStyle instanceof TextureStyle))
+        {
+            options.textureStyle = new TextureStyle(options.textureStyle);
+        }
+
+        if (typeof options.text !== 'string')
+        {
+            options.text = options.text.toString();
+        }
+
         const { texture, canvasAndContext } = this.createTextureAndCanvas(
-            options as {text: string, style: TextStyle, resolution?: number, textureStyle?: TextureStyle}
+            options as { text: string, style: TextStyle, resolution?: number, textureStyle?: TextureStyle }
         );
 
         CanvasPool.returnCanvasAndContext(canvasAndContext);
