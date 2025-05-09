@@ -61,10 +61,10 @@ GpuStencilModesToPixi[STENCIL_MODES.INVERSE_MASK_ACTIVE] = {
     stencilWriteMask: 0,
     stencilFront: {
         compare: 'not-equal',
-        passOp: 'replace',
+        passOp: 'keep',
     },
     stencilBack: {
         compare: 'not-equal',
-        passOp: 'replace',
+        passOp: 'keep',
     },
 };
