@@ -124,7 +124,20 @@ export class CanvasTextMetrics
         {
             const segmenter = new (Intl as IIntl).Segmenter();
 
-            return (s: string) => [...segmenter.segment(s)].map((x) => x.segment);
+            return (s: string) =>
+            {
+                const segments = segmenter.segment(s);
+                const result = [];
+
+                let i = 0;
+
+                for (const segment of segments)
+                {
+                    result[i++] = (segment.segment);
+                }
+
+                return result;
+            };
         }
 
         return (s: string) => [...s];
