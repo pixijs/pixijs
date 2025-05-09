@@ -15,7 +15,7 @@ export const scene: TestScene = {
         const text1 = new BitmapText({ text: 'abcdefgh', style });
 
         const text2 = new BitmapText({
-            text: ' ijk', /* remove the whitespace and it's fine */
+            text: ' ijk', // The leading whitespace is intentional to test how BitmapText handles it.
             style, y: 40,
         });
 
