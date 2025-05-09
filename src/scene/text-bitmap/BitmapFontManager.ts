@@ -2,6 +2,7 @@ import { Cache } from '../../assets/cache/Cache';
 import { type TextureStyle, type TextureStyleOptions } from '../../rendering/renderers/shared/texture/TextureStyle';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { warn } from '../../utils/logging/warn';
+import { CanvasTextMetrics } from '../text/canvas/CanvasTextMetrics';
 import { TextStyle } from '../text/TextStyle';
 import { DynamicBitmapFont } from './DynamicBitmapFont';
 import { getBitmapTextLayout } from './utils/getBitmapTextLayout';
@@ -188,7 +189,9 @@ class BitmapFontManagerClass
     {
         const bitmapFont = this.getFont(text, style);
 
-        return getBitmapTextLayout([...text], style, bitmapFont, trimEnd);
+        const segments = CanvasTextMetrics.graphemeSegmenter(text);
+
+        return getBitmapTextLayout(segments, style, bitmapFont, trimEnd);
     }
 
     /**
