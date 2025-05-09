@@ -13,7 +13,9 @@ module.exports = {
         '\\.vert$': 'jest-raw-loader',
         '\\.frag$': 'jest-raw-loader',
         '\\.wgsl$': 'jest-raw-loader',
+        '\\.js$': 'babel-jest'
     },
+    transformIgnorePatterns: ['/node_modules/(?!earcut|@types/earcut)'],
     moduleNameMapper: {
         '^worker:(.*)$': '$1',
         '^~/(.*)$': '<rootDir>/src/$1',

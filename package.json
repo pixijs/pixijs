@@ -65,16 +65,18 @@
   "dependencies": {
     "@pixi/colord": "^2.9.6",
     "@types/css-font-loading-module": "^0.0.12",
-    "@types/earcut": "^2.1.4",
+    "@types/earcut": "^3.0.0",
     "@webgpu/types": "^0.1.40",
     "@xmldom/xmldom": "^0.8.10",
-    "earcut": "^2.2.4",
+    "earcut": "^3.0.1",
     "eventemitter3": "^5.0.1",
     "gifuct-js": "^2.1.2",
     "ismobilejs": "^1.1.1",
     "parse-svg-path": "^0.1.2"
   },
   "devDependencies": {
+    "@babel/core": "7.22",
+    "@babel/plugin-transform-modules-commonjs": "^7.26.3",
     "@pixi/eslint-config": "^6.0.0",
     "@pixi/jest-electron": "^26.1.0",
     "@pixi/webdoc-template": "^2.2.3",
@@ -92,6 +94,7 @@
     "@types/semver": "^7.5.8",
     "@webdoc/cli": "^2.2.0",
     "@xmldom/xmldom": "^0.8.10",
+    "babel-jest": "^26.0.0",
     "copyfiles": "^2.4.1",
     "cross-env": "^7.0.3",
     "dts-bundle-generator": "^9.5.1",
