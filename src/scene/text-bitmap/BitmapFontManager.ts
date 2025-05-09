@@ -1,4 +1,5 @@
 import { Cache } from '../../assets/cache/Cache';
+import { type TextureStyle, type TextureStyleOptions } from '../../rendering/renderers/shared/texture/TextureStyle';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { warn } from '../../utils/logging/warn';
 import { CanvasTextMetrics } from '../text/canvas/CanvasTextMetrics';
@@ -52,6 +53,8 @@ export interface BitmapFontInstallOptions
     skipKerning?: boolean;
     /** Style options to render with BitmapFont. */
     style?: TextStyle | TextStyleOptions;
+    /** Optional texture style to use when creating the font textures. */
+    textureStyle?: TextureStyle | TextureStyleOptions;
 }
 
 /**
@@ -106,6 +109,7 @@ class BitmapFontManagerClass
         resolution: 1,
         padding: 4,
         skipKerning: false,
+        textureStyle: null,
     };
 
     /**
@@ -265,7 +269,8 @@ class BitmapFontManagerClass
             skipKerning: options.skipKerning,
             padding: options.padding,
             resolution: options.resolution,
-            overrideSize: false
+            overrideSize: false,
+            textureStyle: options.textureStyle,
         });
 
         const flatChars = resolveCharacters(options.chars);

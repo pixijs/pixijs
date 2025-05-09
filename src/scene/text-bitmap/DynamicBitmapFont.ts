@@ -3,6 +3,7 @@ import { Rectangle } from '../../maths/shapes/Rectangle';
 import { CanvasPool } from '../../rendering/renderers/shared/texture/CanvasPool';
 import { ImageSource } from '../../rendering/renderers/shared/texture/sources/ImageSource';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
+import { TextureStyle, type TextureStyleOptions } from '../../rendering/renderers/shared/texture/TextureStyle';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { CanvasTextMetrics } from '../text/canvas/CanvasTextMetrics';
 import { fontStringFromTextStyle } from '../text/canvas/utils/fontStringFromTextStyle';
@@ -24,6 +25,7 @@ export interface DynamicBitmapFontOptions
     overrideSize?: boolean
     textureSize?: number
     mipmap?: boolean
+    textureStyle?: TextureStyle | TextureStyleOptions
 }
 
 /**
@@ -57,6 +59,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
     private readonly _skipKerning: boolean = false;
     private readonly _textureSize: number;
     private readonly _mipmap: boolean;
+    private readonly _textureStyle?: TextureStyle;
 
     /**
      * @param options - The options for the dynamic bitmap font.
@@ -109,6 +112,13 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         this._skipKerning = dynamicOptions.skipKerning ?? false;
         this.resolution = dynamicOptions.resolution ?? 1;
         this._padding = dynamicOptions.padding ?? 4;
+
+        if (dynamicOptions.textureStyle)
+        {
+            this._textureStyle = dynamicOptions.textureStyle instanceof TextureStyle
+                ? dynamicOptions.textureStyle
+                : new TextureStyle(dynamicOptions.textureStyle);
+        }
 
         (this.fontMetrics as FontMetrics) = CanvasTextMetrics.measureFont(font);
         (this.lineHeight as number) = style.lineHeight || this.fontMetrics.fontSize || style.fontSize;
@@ -334,6 +344,11 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
             }),
 
         });
+
+        if (this._textureStyle)
+        {
+            texture.source.style = this._textureStyle;
+        }
 
         const pageData = {
             canvasAndContext,
