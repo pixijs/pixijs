@@ -52,6 +52,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
     private _currentChars: string[] = [];
     private _currentX = 0;
     private _currentY = 0;
+    private _currentMaxCharHeight = 0;
     private _currentPageIndex = -1;
     private readonly _style: TextStyle;
     private readonly _skipKerning: boolean = false;
@@ -143,11 +144,11 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
 
         let currentX = this._currentX;
         let currentY = this._currentY;
+        let currentMaxCharHeight = this._currentMaxCharHeight;
 
         const fontScale = this.baseRenderedFontSize / this.baseMeasurementFontSize;
         const padding = this._padding * fontScale;
 
-        let maxCharHeight = 0;
         let skipTexture = false;
 
         const maxTextureWidth = canvas.width / this.resolution;
@@ -177,18 +178,18 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
             if (char !== '\n' && char !== '\r' && char !== '\t' && char !== ' ')
             {
                 skipTexture = true;
-                maxCharHeight = Math.ceil(Math.max(paddedHeight, maxCharHeight));// / 1.5;
+                currentMaxCharHeight = Math.ceil(Math.max(paddedHeight, currentMaxCharHeight));// / 1.5;
             }
 
             if (currentX + paddedWidth > maxTextureWidth)
             {
-                currentY += maxCharHeight;
+                currentY += currentMaxCharHeight;
 
                 // reset the line x and height..
-                maxCharHeight = paddedHeight;
+                currentMaxCharHeight = paddedHeight;
                 currentX = 0;
 
-                if (currentY + maxCharHeight > maxTextureHeight)
+                if (currentY + currentMaxCharHeight > maxTextureHeight)
                 {
                     textureSource.update();
 
@@ -198,7 +199,9 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
                     context = pageData.canvasAndContext.context;
                     textureSource = pageData.texture.source;
 
+                    currentX = 0;
                     currentY = 0;
+                    currentMaxCharHeight = 0;
                 }
             }
 
@@ -243,14 +246,13 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
 
                 currentX += Math.ceil(paddedWidth);
             }
-
-            // now add it to the font data..
         }
 
         textureSource.update();
 
         this._currentX = currentX;
         this._currentY = currentY;
+        this._currentMaxCharHeight = currentMaxCharHeight;
 
         // now apply kerning..
         this._skipKerning && this._applyKerning(charList, context);
