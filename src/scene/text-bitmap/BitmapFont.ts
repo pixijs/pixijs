@@ -113,7 +113,7 @@ export class BitmapFont extends AbstractBitmapFont<BitmapFont>
      * import { BitmapFont, BitmapText } from 'pixi.js';
      *
      * BitmapFont.install({
-     *     name: 'TitleFont', 
+     *     name: 'TitleFont',
      *     style: {
      *         fontFamily: 'Arial',
      *         fontSize: 12,
