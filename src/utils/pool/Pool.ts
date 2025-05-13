@@ -77,7 +77,6 @@ export class Pool<T extends PoolItem>
     /**
      * Gets the number of items in the pool.
      * @readonly
-     * @member {number}
      */
     get totalSize(): number
     {
@@ -87,7 +86,6 @@ export class Pool<T extends PoolItem>
     /**
      * Gets the number of items in the pool that are free to use without needing to create more.
      * @readonly
-     * @member {number}
      */
     get totalFree(): number
     {
@@ -97,7 +95,6 @@ export class Pool<T extends PoolItem>
     /**
      * Gets the number of items in the pool that are currently in use.
      * @readonly
-     * @member {number}
      */
     get totalUsed(): number
     {

@@ -35,7 +35,7 @@ export default tseslint.config(
             'jsdoc/check-alignment': 1,
             'jsdoc/check-param-names': 1,
             'jsdoc/check-property-names': 1,
-            'jsdoc/check-tag-names': 1,
+            'jsdoc/check-tag-names': 0,
             'jsdoc/check-types': 1,
             'jsdoc/check-values': 1,
             'jsdoc/empty-tags': 1,

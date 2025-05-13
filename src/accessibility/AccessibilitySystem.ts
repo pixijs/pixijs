@@ -10,44 +10,6 @@ import type { Renderer } from '../rendering/renderers/types';
 import type { Container } from '../scene/container/Container';
 import type { isMobileResult } from '../utils/browser/isMobile';
 
-/**
- * The accessibility module provides screen reader and keyboard navigation support for PixiJS content.
- * This is very important as it can possibly help people with disabilities access PixiJS content.
- *
- * This module is a mixin for {@link AbstractRenderer} and needs to be imported if managing your own renderer:
- * ```js
- * import 'pixi.js/accessibility';
- * ```
- *
- * Make objects accessible by setting their properties:
- * ```js
- * container.accessible = true;        // Enable accessibility for this container
- * container.accessibleType = 'button' // Type of DOM element to create (default: 'button')
- * container.accessibleTitle = 'Play'  // Optional: Add screen reader labels
- * ```
- *
- * By default, the accessibility system activates when users press the tab key. For cases where
- * you need control over when accessibility features are active, configuration options are available:
- * ```js
- * const app = new Application({
- *     accessibilityOptions: {
- *         enabledByDefault: true,    // Create accessibility elements immediately
- *         activateOnTab: false,      // Prevent tab key activation
- *         debug: false,               // Show accessibility divs
- *         deactivateOnMouseMove: false, // Prevent accessibility from being deactivated when mouse moves
- *     }
- * });
- * ```
- *
- * The system can also be controlled programmatically:
- * ```js
- * app.renderer.accessibility.setAccessibilityEnabled(true);
- * ```
- *
- * See {@link accessibility.AccessibleOptions} for all configuration options.
- * @namespace accessibility
- */
-
 /** @ignore */
 const KEY_CODE_TAB = 9;
 
@@ -61,13 +23,20 @@ const DIV_HOOK_POS_X = -1000;
 const DIV_HOOK_POS_Y = -1000;
 const DIV_HOOK_ZINDEX = 2;
 
-/** @ignore */
+/**
+ * Initialisation options for the accessibility system when used with an Application.
+ * @category accessibility
+ */
 export interface AccessibilitySystemOptions
 {
+    /** Options for the accessibility system */
     accessibilityOptions?: AccessibilityOptions;
 }
 
-/** @ignore */
+/**
+ * The options for the accessibility system.
+ * @category accessibility
+ */
 export interface AccessibilityOptions
 {
     /** Whether to enable accessibility features on initialization instead of waiting for tab key */
@@ -107,7 +76,7 @@ export interface AccessibilityOptions
  * ```
  *
  * An instance of this class is automatically created at `renderer.accessibility`
- * @memberof accessibility
+ * @category accessibility
  */
 export class AccessibilitySystem implements System<AccessibilitySystemOptions>
 {
@@ -222,6 +191,10 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         return this._isMobileAccessibility;
     }
 
+    /**
+     * The DOM element that will sit over the PixiJS element. This is where the div overlays will go.
+     * @readonly
+     */
     get hookDiv()
     {
         return this._hookDiv;
