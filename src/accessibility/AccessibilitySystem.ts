@@ -14,7 +14,7 @@ import type { isMobileResult } from '../utils/browser/isMobile';
  * The accessibility module provides screen reader and keyboard navigation support for PixiJS content.
  * This is very important as it can possibly help people with disabilities access PixiJS content.
  *
- * This module is a mixin for {@link AbstractRenderer} and needs to be imported if managing your own renderer:
+ * This module is opt-in to reduce bundle size and must be explicitly enabled if managing your own renderer:
  * ```js
  * import 'pixi.js/accessibility';
  * ```
@@ -61,13 +61,20 @@ const DIV_HOOK_POS_X = -1000;
 const DIV_HOOK_POS_Y = -1000;
 const DIV_HOOK_ZINDEX = 2;
 
-/** @ignore */
+/**
+ * Initialisation options for the accessibility system when used with an Application.
+ * @memberof accessibility
+ */
 export interface AccessibilitySystemOptions
 {
+    /** Options for the accessibility system */
     accessibilityOptions?: AccessibilityOptions;
 }
 
-/** @ignore */
+/**
+ * The options for the accessibility system.
+ * @memberof accessibility
+ */
 export interface AccessibilityOptions
 {
     /** Whether to enable accessibility features on initialization instead of waiting for tab key */
@@ -222,6 +229,10 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         return this._isMobileAccessibility;
     }
 
+    /**
+     * The DOM element that will sit over the PixiJS element. This is where the div overlays will go.
+     * @readonly
+     */
     get hookDiv()
     {
         return this._hookDiv;

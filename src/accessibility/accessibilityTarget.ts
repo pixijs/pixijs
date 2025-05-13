@@ -31,6 +31,12 @@ export type PointerEvents = 'auto'
 
 /**
  * When `accessible` is enabled on any display object, these properties will affect its accessibility.
+ * @example
+ * const container = new Container();
+ * container.accessible = true;
+ * container.accessibleTitle = 'My Container';
+ * container.accessibleHint = 'This is a container';
+ * container.tabIndex = 0;
  * @memberof accessibility
  */
 export interface AccessibleOptions
@@ -47,9 +53,14 @@ export interface AccessibleOptions
      * @member {string}
      */
     accessibleTitle: string | null;
-    /** Sets the aria-label attribute of the shadow div */
+    /**
+     * Sets the aria-label attribute of the shadow div
+     * @default null
+     */
     accessibleHint: string | null;
     /**
+     * Sets the tabIndex of the shadow div. You can use this to set the order of the
+     * elements when using the tab key to navigate.
      * @default 0
      */
     tabIndex: number;
@@ -57,6 +68,7 @@ export interface AccessibleOptions
      * Specify the type of div the accessible layer is. Screen readers treat the element differently
      * depending on this type. Defaults to button.
      * @default 'button'
+     * @type {string}
      */
     accessibleType: keyof HTMLElementTagNameMap;
     /**
@@ -65,11 +77,14 @@ export interface AccessibleOptions
      * @default 'auto'
      * @type {accessibility.PointerEvents}
      */
+    accessiblePointerEvents: PointerEvents;
 
-    /** Sets the text content of the shadow div */
+    /**
+     * Sets the text content of the shadow
+     * @default null
+     */
     accessibleText: string | null;
 
-    accessiblePointerEvents: PointerEvents;
     /**
      * Setting to false will prevent any children inside this container to
      * be accessible. Defaults to true.

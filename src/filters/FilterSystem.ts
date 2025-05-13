@@ -59,6 +59,7 @@ const quadGeometry = new Geometry({
  * 3. Need to look at perhaps aliasing when flip flopping filters. Really we should only need to antialias the FIRST
  * Texture we render too. The rest can be non aliased. This might help performance.
  * Currently we flip flop with an antialiased texture if antialiasing is enabled on the filter.
+ * @internal
  */
 export interface FilterInstruction extends Instruction
 {
@@ -72,6 +73,7 @@ export interface FilterInstruction extends Instruction
 /**
  * Class representing the data required for applying filters.
  * This class holds various properties that are used during the filter application process.
+ * @internal
  */
 class FilterData
 {
@@ -194,6 +196,11 @@ export class FilterSystem implements System
         return this._activeFilterData?.backTexture;
     }
 
+    /**
+     * Pushes a filter instruction onto the filter stack.
+     * @param instruction - The instruction containing the filter effect and container.
+     * @internal
+     */
     public push(instruction: FilterInstruction)
     {
         const renderer = this.renderer;
@@ -445,6 +452,7 @@ export class FilterSystem implements System
         return outputTexture;
     }
 
+    /** @internal */
     public pop()
     {
         const renderer = this.renderer;
@@ -475,6 +483,12 @@ export class FilterSystem implements System
         TexturePool.returnTexture(filterData.inputTexture);
     }
 
+    /**
+     * Copies the last render surface to a texture.
+     * @param lastRenderSurface - The last render surface to copy from.
+     * @param bounds - The bounds of the area to copy.
+     * @param previousBounds - The previous bounds to use for offsetting the copy.
+     */
     public getBackTexture(lastRenderSurface: RenderTarget, bounds: Bounds, previousBounds?: Bounds)
     {
         const backgroundResolution = lastRenderSurface.colorTexture.source._resolution;
@@ -512,6 +526,13 @@ export class FilterSystem implements System
         return backTexture;
     }
 
+    /**
+     * Applies a filter to a texture.
+     * @param filter - The filter to apply.
+     * @param input - The input texture.
+     * @param output - The output render surface.
+     * @param clear - Whether to clear the output surface before applying the filter.
+     */
     public applyFilter(filter: Filter, input: Texture, output: RenderSurface, clear: boolean)
     {
         const renderer = this.renderer;
@@ -666,7 +687,10 @@ export class FilterSystem implements System
         return mappedMatrix;
     }
 
-    public destroy?: () => void;
+    public destroy(): void
+    {
+        // BOOM!
+    }
 
     private _applyFiltersToTexture(filterData: FilterData, clear: boolean)
     {

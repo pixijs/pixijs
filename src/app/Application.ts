@@ -21,7 +21,7 @@ import type { DestroyOptions } from '../scene/container/destroyTypes';
  *
  * const app = new Application();
  *
- * await app.init();
+ * await app.init({ backgroundColor: '#1099bb' });
  *
  * // don't forget to add the canvas to the DOM
  * document.body.appendChild(app.canvas);

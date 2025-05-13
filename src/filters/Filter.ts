@@ -104,7 +104,11 @@ export interface FilterOptions
     clipToViewport?: boolean;
 }
 
-/** Filter options mixed with shader resources. A filter needs a shader and some resources to work. */
+/**
+ * Filter options mixed with shader resources. A filter needs a shader and some resources to work.
+ * @memberof filters
+ * @see {@link filters.FilterOptions}
+ */
 export type FilterWithShader = FilterOptions & IShaderWithResources;
 
 /**
@@ -142,16 +146,34 @@ export type FilterAntialias = 'on' | 'off' | 'inherit';
  * Its not generally the complexity of the shader that is the bottle neck,
  * but all the framebuffer / shader switching that has to take place.
  * One filter applied to a container with many objects is MUCH faster than many filter applied to many objects.
- * @class
+ * @example
+ * import { Filter } from 'pixi.js';
+ *
+ * const customFilter = new Filter({
+ *     glProgram: new GlProgram({
+ *         fragment,
+ *         vertex,
+ *     }),
+ *     resources: {
+ *         timeUniforms: {
+ *             uTime: { value: 0.0, type: 'f32' },
+ *         },
+ *     },
+ * });
+ *
+ * // Apply the filter
+ * sprite.filters = [customFilter];
+ *
+ * // Update uniform
+ * app.ticker.add((ticker) => {
+ *     filter.resources.timeUniforms.uniforms.uTime += 0.04 * ticker.deltaTime;
+ * });
  * @memberof filters
  */
 export class Filter extends Shader
 {
-    /**
-     * The default filter settings
-     * @static
-     */
-    public static readonly defaultOptions: FilterOptions = {
+    /** The default filter settings */
+    public static defaultOptions: FilterOptions = {
         blendMode: 'normal',
         resolution: 1,
         padding: 0,
