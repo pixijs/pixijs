@@ -3,6 +3,7 @@ export interface IGAUSSIAN_VALUES
     [x: number]: number[];
 }
 
+/** @internal */
 export const GAUSSIAN_VALUES: IGAUSSIAN_VALUES = {
     5: [0.153388, 0.221461, 0.250301],
     7: [0.071303, 0.131514, 0.189879, 0.214607],

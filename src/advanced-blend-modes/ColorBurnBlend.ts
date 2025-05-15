@@ -4,8 +4,11 @@ import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
 /**
- * Looks at the color information in each channel and darkens the base color to
- * reflect the blend color by increasing the contrast between the two.
+ * The final color is the result of inverting the bottom color, dividing the value by the top color,
+ * and inverting that value. A white foreground leads to no change.
+ * A foreground with the inverse color of the backdrop leads to a black final image.
+ * This blend mode is similar to multiply, but the foreground need only be as dark as the inverse
+ * of the backdrop to make the final image black.
  *
  * Available as `container.blendMode = 'color-burn'` after importing `pixi.js/advanced-blend-modes`.
  * @example

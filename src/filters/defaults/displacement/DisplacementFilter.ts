@@ -28,9 +28,12 @@ export interface DisplacementFilterOptions extends FilterOptions
 }
 
 /**
- * A Noise effect filter.
+ * The DisplacementFilter applies a displacement map to an object.
+ * @example
+ * import { DisplacementFilter } from 'pixi.js';
  *
- * original filter: https://github.com/evanw/glfx.js/blob/master/src/filters/adjust/noise.js
+ * const displacementFilter = new DisplacementFilter(sprite);
+ * sprite.filters = [displacementFilter];
  * @category filters
  * @author Vico: vicocotea
  */
@@ -39,16 +42,12 @@ export class DisplacementFilter extends Filter
     private readonly _sprite: Sprite;
 
     /**
-     * **Note:** Our docs parser struggles to properly understand the constructor signature.
-     * This is the correct signature.
-     * ```ts
-     * new DisplacementFilter(options?: DisplacementFilterOptions);
-     * ```
-     * @param options - The options for the filter.
-     * @param options.sprite - The texture used for the displacement map.
-     * @param options.scale - The scale of the displacement.
+     * @param {Sprite | DisplacementFilterOptions} options - The sprite or options object.
+     * @param {Sprite} options.sprite - The texture used for the displacement map.
+     * @param {number | PointData} options.scale - The scale of the displacement.
      */
     constructor(options: Sprite | DisplacementFilterOptions);
+    /** @deprecated since 8.0.0 */
     constructor(sprite: Sprite, scale?: number | PointData);
     constructor(...args: [Sprite | DisplacementFilterOptions] | [Sprite, (number | PointData)?])
     {

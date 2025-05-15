@@ -23,9 +23,11 @@ export type ColorMatrix = ArrayFixed<number, 20>;
  * with a new set of RGBA color and alpha values. It's pretty powerful!
  *
  * ```js
- *  let colorMatrix = new filters.ColorMatrixFilter();
- *  container.filters = [colorMatrix];
- *  colorMatrix.contrast(2);
+ * import { ColorMatrixFilter } from 'pixi.js';
+ *
+ * let colorMatrix = new ColorMatrixFilter();
+ * container.filters = [colorMatrix];
+ * colorMatrix.contrast(2);
  * ```
  * @author Clément Chenebault <clement@goodboydigital.com>
  * @category filters
@@ -219,9 +221,9 @@ export class ColorMatrixFilter extends Filter
     }
 
     /**
-     * for our american friends!
-     * @param scale
-     * @param multiply
+     * Set the matrices in gray scales
+     * @param scale - value of the gray (0-1, where 0 is black)
+     * @param multiply - if true, current matrix and matrix are multiplied. If false,
      */
     public grayscale(scale: number, multiply: boolean): void
     {

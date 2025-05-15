@@ -58,7 +58,6 @@ declare global
              * the horizontal and vertical space between the two rectangles.
              *
              * _Note: Only available with **pixi.js/math-extras**._
-             * @memberof Rectangle#
              * @param {Rectangle} other - The Rectangle to unite with `this`.
              * @param {Rectangle} [outRect] - A Rectangle object in which to store the value,
              * optional (otherwise will create a new Rectangle).

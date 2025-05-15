@@ -13,6 +13,10 @@ const fragTemplate = [
 
 ].join('\n');
 
+/**
+ * @internal
+ * @param kernelSize - The size of the kernel.
+ */
 export function generateBlurFragSource(kernelSize: number): string
 {
     const kernel = GAUSSIAN_VALUES[kernelSize];

@@ -4,7 +4,7 @@ import type { Filter } from './Filter';
 
 /**
  * A filter effect is an effect that can be applied to a container that involves applying special pixel effects
- * to that container as it is rendered. Used internally when the filters property is modified on a container
+ * to that container as it is rendered. Used internally when the filters property is modified on a container.
  * @internal
  */
 export class FilterEffect implements Effect
