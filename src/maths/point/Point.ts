@@ -11,9 +11,7 @@ export interface Point extends PixiMixins.Point { }
  * <br/>
  * Many Pixi functions accept the `PointData` type as an alternative to `Point`,
  * which only requires `x` and `y` properties.
- * @class
- * @implements {PointLike}
- * @memberof maths
+ * @category maths
  */
 export class Point implements PointLike
 {

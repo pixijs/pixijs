@@ -13,7 +13,7 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  *
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'color'
- * @memberof filters
+ * @category filters
  */
 export class ColorBlend extends BlendModeFilter
 {

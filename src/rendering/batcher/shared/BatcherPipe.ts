@@ -22,7 +22,7 @@ export interface BatcherAdaptor
  *
  * You can install new Batchers using ExtensionType.Batcher. Each render group will
  * have a default batcher and any required ones will be created on demand.
- * @memberof rendering
+ * @category rendering
  */
 export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
 {

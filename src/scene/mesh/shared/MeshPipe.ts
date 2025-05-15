@@ -18,6 +18,10 @@ import type { Mesh } from './Mesh';
 // TODO Record mode is a P2, will get back to this as it's not a priority
 // const recordMode = true;
 
+/**
+ * GPUData for Mesh
+ * @internal
+ */
 export class MeshGpuData implements GPUData
 {
     public meshData?: MeshData;
@@ -29,10 +33,17 @@ export class MeshGpuData implements GPUData
     }
 }
 
+/**
+ * The data for the mesh
+ * @internal
+ */
 interface MeshData
 {
+    /** if the mesh is batched or not */
     batched: boolean;
+    /** the size of the index buffer */
     indexSize: number;
+    /** the size of the vertex buffer */
     vertexSize: number;
 }
 

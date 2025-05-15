@@ -74,7 +74,7 @@ const tempLocalMapping = new Point();
  *     }
  * }
  * ```
- * @memberof events
+ * @category events
  */
 export class EventBoundary
 {
@@ -268,7 +268,7 @@ export class EventBoundary
 
     /**
      * Propagate the passed event from from {@link EventBoundary.rootTarget this.rootTarget} to its
-     * target {@code e.target}.
+     * target `e.target`.
      * @param e - The event to propagate.
      * @param type - The type of event to propagate. Defaults to `e.type`.
      */
@@ -316,7 +316,7 @@ export class EventBoundary
     }
 
     /**
-     * Emits the event {@code e} to all interactive containers. The event is propagated in the bubbling phase always.
+     * Emits the event `e` to all interactive containers. The event is propagated in the bubbling phase always.
      *
      * This is used in the `globalpointermove` event.
      * @param e - The emitted event.
@@ -345,7 +345,7 @@ export class EventBoundary
 
     /**
      * Finds the propagation path from {@link EventBoundary.rootTarget rootTarget} to the passed
-     * {@code target}. The last element in the path is {@code target}.
+     * `target`. The last element in the path is `target`.
      * @param target - The target to find the propagation path to.
      */
     public propagationPath(target: Container): Container[]
@@ -1187,10 +1187,10 @@ export class EventBoundary
     }
 
     /**
-     * Creates an event whose {@code originalEvent} is {@code from}, with an optional `type` and `target` override.
+     * Creates an event whose `originalEvent` is `from`, with an optional `type` and `target` override.
      *
      * The event is allocated using {@link EventBoundary#allocateEvent this.allocateEvent}.
-     * @param from - The {@code originalEvent} for the returned event.
+     * @param from - The `originalEvent` for the returned event.
      * @param [type=from.type] - The type of the returned event.
      * @param target - The target of the returned event.
      */
@@ -1221,7 +1221,7 @@ export class EventBoundary
     }
 
     /**
-     * Creates a wheel event whose {@code originalEvent} is {@code from}.
+     * Creates a wheel event whose `originalEvent` is `from`.
      *
      * The event is allocated using {@link EventBoundary#allocateEvent this.allocateEvent}.
      * @param from - The upstream wheel event.
@@ -1242,7 +1242,7 @@ export class EventBoundary
     }
 
     /**
-     * Clones the event {@code from}, with an optional {@code type} override.
+     * Clones the event `from`, with an optional `type` override.
      *
      * The event is allocated using {@link EventBoundary#allocateEvent this.allocateEvent}.
      * @param from - The event to clone.
@@ -1268,7 +1268,7 @@ export class EventBoundary
     }
 
     /**
-     * Copies wheel {@link FederatedWheelEvent} data from {@code from} into {@code to}.
+     * Copies wheel {@link FederatedWheelEvent} data from `from` into `to`.
      *
      * The following properties are copied:
      * + deltaMode
@@ -1287,7 +1287,7 @@ export class EventBoundary
     }
 
     /**
-     * Copies pointer {@link FederatedPointerEvent} data from {@code from} into {@code to}.
+     * Copies pointer {@link FederatedPointerEvent} data from `from` into `to`.
      *
      * The following properties are copied:
      * + pointerId
@@ -1319,7 +1319,7 @@ export class EventBoundary
     }
 
     /**
-     * Copies mouse {@link FederatedMouseEvent} data from {@code from} to {@code to}.
+     * Copies mouse {@link FederatedMouseEvent} data from `from` to `to`.
      *
      * The following properties are copied:
      * + altKey
@@ -1357,7 +1357,7 @@ export class EventBoundary
     }
 
     /**
-     * Copies base {@link FederatedEvent} data from {@code from} into {@code to}.
+     * Copies base {@link FederatedEvent} data from `from` into `to`.
      *
      * The following properties are copied:
      * + isTrusted

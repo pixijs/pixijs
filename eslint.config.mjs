@@ -30,7 +30,14 @@ export default tseslint.config(
             'no-mixed-operators': 'off',
             'no-mixed-operators/no-mixed-operators': 1,
 
-            'jsdoc/multiline-blocks': [1, { noMultilineBlocks: true, minimumLengthForMultiline: 115 }],
+            'jsdoc/multiline-blocks': [
+                1,
+                {
+                    noMultilineBlocks: true,
+                    minimumLengthForMultiline: 115,
+                    multilineTags: ['param', 'returns', 'see', 'deprecated', 'typeParam'],
+                },
+            ],
             'jsdoc/check-access': 1,
             'jsdoc/check-alignment': 1,
             'jsdoc/check-param-names': 1,

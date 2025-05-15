@@ -6,5 +6,7 @@ import type { PoolItem } from '../../../../utils/pool/Pool';
 
 type MatrixPoolItem = Matrix & PoolItem;
 type BoundsPoolItem = Bounds & PoolItem;
+/** @internal */
 export const matrixPool = new Pool<MatrixPoolItem>(Matrix);
+/** @internal */
 export const boundsPool = new Pool<BoundsPoolItem>(Bounds);

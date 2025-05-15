@@ -22,8 +22,8 @@ import type { RoundedPoint } from './path/roundShape';
  *    strokeStyle: { color: 0x00ff00, width: 2 },
  * });
  * ```
- * @see {@link scene.Graphics}
- * @memberof scene
+ * @see {@link Graphics}
+ * @category scene
  */
 export interface GraphicsOptions extends PixiMixins.GraphicsOptions, ViewContainerOptions
 {
@@ -38,8 +38,7 @@ export interface Graphics extends PixiMixins.Graphics, ViewContainer<GraphicsGpu
  * The Graphics class is primarily used to render primitive shapes such as lines, circles and
  * rectangles to the display, and to color and fill them.  However, you can also use a Graphics
  * object to build a list of primitives to use as a mask, or as a complex hitArea.
- * @memberof scene
- * @extends scene.Container
+ * @category scene
  */
 export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruction
 {
@@ -104,7 +103,7 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
 
     /**
      * The local bounds of the graphic.
-     * @type {rendering.Bounds}
+     * @type {Bounds}
      */
     override get bounds(): Bounds
     {
@@ -137,9 +136,11 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
      * then you should pass destroy({ context: false })
      *
      * If the context was passed in as an argument to the constructor then it will not be destroyed
-     * @param {boolean} [options.texture=false] - Should destroy the texture of the graphics context
-     * @param {boolean} [options.textureSource=false] - Should destroy the texture source of the graphics context
-     * @param {boolean} [options.context=false] - Should destroy the context
+     * @example
+     * // Destroy the graphics and its context
+     * graphics.destroy();
+     * graphics.destroy(true);
+     * graphics.destroy({ context: true, texture: true, textureSource: true });
      */
     public override destroy(options?: DestroyOptions): void
     {
@@ -216,6 +217,13 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
         return this._callContextMethod('stroke', args);
     }
     /**
+     * Adds a texture to the graphics context. This method supports multiple overloads for specifying the texture.
+     * If only a texture is provided, it uses the texture's width and height for drawing.
+     * @param texture - The Texture object to use.
+     * @returns The instance of the current GraphicsContext for method chaining.
+     */
+    public texture(texture: Texture): this;
+    /**
      * Adds a texture to the graphics context. This method supports multiple overloads for specifying the texture,
      * tint, and dimensions. If only a texture is provided, it uses the texture's width and height for drawing.
      * Additional parameters allow for specifying a tint color, and custom dimensions for the texture drawing area.
@@ -232,7 +240,6 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
      * @returns The instance of the current GraphicsContext for method chaining.
      */
     public texture(texture: Texture, tint?: ColorSource, dx?: number, dy?: number, dw?: number, dh?: number): this;
-    public texture(texture: Texture): this;
     public texture(...args: [Texture, number?, number?, number?, number?, number?]): this
     {
         return this._callContextMethod('texture', args);
@@ -615,6 +622,13 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
     /**
      * Sets the current transformation matrix of the graphics context to the specified matrix or values.
      * This replaces the current transformation matrix.
+     * @param transform - The matrix to set as the current transformation matrix.
+     * @returns The instance of the current GraphicsContext for method chaining.
+     */
+    public setTransform(transform: Matrix): this;
+    /**
+     * Sets the current transformation matrix of the graphics context to the specified matrix or values.
+     * This replaces the current transformation matrix.
      * @param a - The value for the a property of the matrix, or a Matrix object to use directly.
      * @param b - The value for the b property of the matrix.
      * @param c - The value for the c property of the matrix.
@@ -623,13 +637,19 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
      * @param dy - The value for the ty (translate y) property of the matrix.
      * @returns The instance of the current GraphicsContext for method chaining.
      */
-    public setTransform(transform: Matrix): this;
     public setTransform(a: number, b: number, c: number, d: number, dx: number, dy: number): this;
     public setTransform(a: number | Matrix, b?: number, c?: number, d?: number, dx?: number, dy?: number): this;
     public setTransform(...args: [Matrix] | [number, number, number, number, number, number]): this
     {
         return this._callContextMethod('setTransform', args);
     }
+    /**
+     * Applies the specified transformation matrix to the current graphics context by multiplying
+     * the current matrix with the specified matrix.
+     * @param transform - The matrix to apply to the current transformation.
+     * @returns The instance of the current GraphicsContext for method chaining.
+     */
+    public transform(transform: Matrix): this;
     /**
      * Applies the specified transformation matrix to the current graphics context by multiplying
      * the current matrix with the specified matrix.
@@ -641,7 +661,6 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
      * @param dy - The value for the ty (translate y) property of the matrix.
      * @returns The instance of the current GraphicsContext for method chaining.
      */
-    public transform(transform: Matrix): this;
     public transform(a: number, b: number, c: number, d: number, dx: number, dy: number): this;
     public transform(a: number | Matrix, b?: number, c?: number, d?: number, dx?: number, dy?: number): this;
     public transform(...args: [Matrix] | [number, number, number, number, number, number]): this

@@ -8,7 +8,7 @@ import type { Dict } from '../utils/types';
 
 /**
  * Represents the JSON data for a spritesheet atlas.
- * @memberof assets
+ * @category assets
  */
 
 export interface SpritesheetFrameData
@@ -44,7 +44,7 @@ export interface SpritesheetFrameData
 
 /**
  * Atlas format.
- * @memberof assets
+ * @category assets
  */
 export interface SpritesheetData
 {
@@ -93,7 +93,7 @@ export interface SpritesheetData
 
 /**
  * Options for loading a spritesheet from an atlas.
- * @memberof assets
+ * @category assets
  */
 export interface SpritesheetOptions<S extends SpritesheetData = SpritesheetData>
 {
@@ -207,7 +207,7 @@ export interface SpritesheetOptions<S extends SpritesheetData = SpritesheetData>
  * });
  * const sheet = await Assets.load('atlas')
  * ```
- * @memberof assets
+ * @category assets
  */
 export class Spritesheet<S extends SpritesheetData = SpritesheetData>
 {
@@ -222,7 +222,7 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
 
     /**
      * A map containing all textures of the sprite sheet.
-     * Can be used to create a {@link Sprite|Sprite}:
+     * Can be used to create a {@link Sprite}:
      * @example
      * import { Sprite } from 'pixi.js';
      *
@@ -232,7 +232,7 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
 
     /**
      * A map containing the textures for each animation.
-     * Can be used to create an {@link AnimatedSprite|AnimatedSprite}:
+     * Can be used to create an {@link AnimatedSprite}:
      * @example
      * import { AnimatedSprite } from 'pixi.js';
      *

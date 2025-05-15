@@ -5,7 +5,7 @@ import type { Container } from './Container';
 
 /**
  * An effect that can be applied to a container. This is used to create effects such as filters/masks etc.
- * @memberof rendering
+ * @category rendering
  */
 export interface Effect
 {

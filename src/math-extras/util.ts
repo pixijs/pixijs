@@ -10,7 +10,7 @@ import type { PointData } from '../maths/point/PointData';
  * @param {number} a - First floating number to compare.
  * @param {number} b - Second floating number to compare.
  * @returns {boolean} Returns `true` if the difference between the values is less than `Math.EPSILON`; otherwise `false`.
- * @memberof maths
+ * @category maths
  */
 export function floatEqual(a: number, b: number): boolean;
 /**
@@ -25,7 +25,7 @@ export function floatEqual(a: number, b: number): boolean;
  * The larger the epsilon, the easier for the numbers to be considered equals.
  * @returns {boolean} Returns `true` if the difference between the values is less than the given epsilon;
  * otherwise `false`.
- * @memberof maths
+ * @category maths
  */
 export function floatEqual(a: number, b: number, epsilon: number): boolean;
 export function floatEqual(a: number, b: number, epsilon: number = Number.EPSILON): boolean
@@ -116,7 +116,7 @@ function genericLineIntersection<T extends PointData>(
  * @param bStart - First point of the second line.
  * @param bEnd - Second point of the second line.
  * @returns {PointData} The point where the lines intersect.
- * @memberof maths
+ * @category maths
  */
 export function lineIntersection(aStart: PointData, aEnd: PointData, bStart: PointData, bEnd: PointData): Point;
 /**
@@ -132,7 +132,7 @@ export function lineIntersection(aStart: PointData, aEnd: PointData, bStart: Poi
  * @param {PointData} outPoint - A Point-like object in which to store the value,
  * optional (otherwise will create a new Point).
  * @returns {PointData} The point where the lines intersect or a `NaN` Point.
- * @memberof maths
+ * @category maths
  */
 export function lineIntersection
 <T extends PointData>(aStart: PointData, aEnd: PointData, bStart: PointData, bEnd: PointData, outPoint: T): T;
@@ -153,7 +153,7 @@ export function lineIntersection
  * @param bStart - Starting point of the second segment.
  * @param bEnd - Ending point of the second segment.
  * @returns {PointData} The point where the segments intersect.
- * @memberof maths
+ * @category maths
  */
 export function segmentIntersection(aStart: PointData, aEnd: PointData, bStart: PointData, bEnd: PointData): Point;
 /**
@@ -169,7 +169,7 @@ export function segmentIntersection(aStart: PointData, aEnd: PointData, bStart: 
  * @param {PointData} outPoint - A Point-like object in which to store the value,
  * optional (otherwise will create a new Point).
  * @returns {PointData} The point where the segments intersect or a `NaN` Point.
- * @memberof maths
+ * @category maths
  */
 export function segmentIntersection
 <T extends PointData>(aStart: PointData, aEnd: PointData, bStart: PointData, bEnd: PointData, outPoint: T): T;

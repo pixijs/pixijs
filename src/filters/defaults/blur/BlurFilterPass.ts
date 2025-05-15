@@ -11,7 +11,7 @@ import type { BlurFilterOptions } from './BlurFilter';
 
 /**
  * Options for BlurFilterPass
- * @memberof filters
+ * @category filters
  */
 export interface BlurFilterPassOptions extends BlurFilterOptions
 {
@@ -21,7 +21,7 @@ export interface BlurFilterPassOptions extends BlurFilterOptions
 
 /**
  * The BlurFilterPass applies a horizontal or vertical Gaussian blur to an object.
- * @memberof filters
+ * @category filters
  */
 export class BlurFilterPass extends Filter
 {

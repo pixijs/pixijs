@@ -15,7 +15,7 @@ export type GenerateTextureSourceOptions = Omit<TextureSourceOptions, 'resource'
 
 /**
  * Options for generating a texture from a container.
- * @memberof rendering
+ * @category rendering
  */
 export type GenerateTextureOptions =
 {
@@ -45,7 +45,7 @@ const noColor: ColorSource = [0, 0, 0, 0];
  *
  *
  * Do not instantiate these plugins directly. It is available from the `renderer.textureGenerator` property.
- * @memberof rendering
+ * @category rendering
  */
 export class GenerateTextureSystem implements System
 {
@@ -68,12 +68,7 @@ export class GenerateTextureSystem implements System
     /**
      * A Useful function that returns a texture of the display object that can then be used to create sprites
      * This can be quite useful if your container is complicated and needs to be reused multiple times.
-     * @param {GenerateTextureOptions | Container} options - Generate texture options.
-     * @param {Container} [options.container] - If not given, the renderer's resolution is used.
-     * @param {Rectangle} options.region - The region of the container, that shall be rendered,
-     * @param {number} [options.resolution] - The resolution of the texture being generated.
-     *        if no region is specified, defaults to the local bounds of the container.
-     * @param {GenerateTextureSourceOptions} [options.textureSourceOptions] - Texture options for GPU.
+     * @param {GenerateTextureOptions | Container} options - Generate texture options or a container.
      * @returns a shiny new texture of the container passed in
      */
     public generateTexture(options: GenerateTextureOptions | Container): RenderTexture

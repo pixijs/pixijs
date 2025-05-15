@@ -53,15 +53,15 @@ export interface TextureStyleOptions extends Partial<TextureStyle>
     lodMaxClamp?: number;
     /**
      * When provided the sampler will be a comparison sampler with the specified
-     * {@link GPUCompareFunction}.
+     * {@link COMPARE_FUNCTION}.
      * Note: Comparison samplers may use filtering, but the sampling results will be
      * implementation-dependent and may differ from the normal filtering rules.
      */
     compare?: COMPARE_FUNCTION;
     /**
      * Specifies the maximum anisotropy value clamp used by the sampler.
-     * Note: Most implementations support {@link GPUSamplerDescriptor#maxAnisotropy} values in range
-     * between 1 and 16, inclusive. The used value of {@link GPUSamplerDescriptor#maxAnisotropy} will
+     * Note: Most implementations support {@link TextureStyle#maxAnisotropy} values in range
+     * between 1 and 16, inclusive. The used value of {@link TextureStyle#maxAnisotropy} will
      * be clamped to the maximum value that the platform supports.
      *
      * setting this to anything higher than 1 will set scale modes to 'linear'
@@ -71,7 +71,7 @@ export interface TextureStyleOptions extends Partial<TextureStyle>
 
 /**
  * A texture style describes how a texture should be sampled by a shader.
- * @memberof rendering
+ * @category rendering
  */
 export class TextureStyle extends EventEmitter<{
     change: TextureStyle,
@@ -106,18 +106,17 @@ export class TextureStyle extends EventEmitter<{
     public lodMaxClamp?: number;
     /**
      * When provided the sampler will be a comparison sampler with the specified
-     * {@link GPUCompareFunction}.
+     * {@link COMPARE_FUNCTION}.
      * Note: Comparison samplers may use filtering, but the sampling results will be
      * implementation-dependent and may differ from the normal filtering rules.
      */
     public compare?: COMPARE_FUNCTION;
     /**
      * Specifies the maximum anisotropy value clamp used by the sampler.
-     * Note: Most implementations support {@link GPUSamplerDescriptor#maxAnisotropy} values in range
-     * between 1 and 16, inclusive. The used value of {@link GPUSamplerDescriptor#maxAnisotropy} will
+     * Note: Most implementations support {@link TextureStyle#maxAnisotropy} values in range
+     * between 1 and 16, inclusive. The used value of {@link TextureStyle#maxAnisotropy} will
      * be clamped to the maximum value that the platform supports.
      * @internal
-     * @ignore
      */
     public _maxAnisotropy?: number = 1;
 

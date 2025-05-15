@@ -14,7 +14,7 @@ type VideoResource = HTMLVideoElement;
 
 /**
  * Options for video sources.
- * @memberof rendering
+ * @category rendering
  */
 export interface VideoSourceOptions extends TextureSourceOptions<VideoResource>
 {
@@ -48,7 +48,7 @@ export interface VideoResourceOptionsElement
 
 /**
  * A source for video-based textures.
- * @memberof rendering
+ * @category rendering
  */
 export class VideoSource extends TextureSource<VideoResource>
 {

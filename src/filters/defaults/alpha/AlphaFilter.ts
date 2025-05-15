@@ -10,7 +10,7 @@ import type { FilterOptions } from '../../Filter';
 
 /**
  * Options for AlphaFilter
- * @memberof filters
+ * @category filters
  */
 export interface AlphaFilterOptions extends FilterOptions
 {
@@ -33,7 +33,7 @@ export interface AlphaFilterOptions extends FilterOptions
  * 1. Assign a blendMode to this filter, blend all elements inside display object with background.
  *
  * 2. To use clipping in display coordinates, assign a filterArea to the same container that has this filter.
- * @memberof filters
+ * @category filters
  */
 export class AlphaFilter extends Filter
 {

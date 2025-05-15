@@ -47,7 +47,7 @@ export const SharedRenderPipes = [
 
 /**
  * Options for the shared systems of a renderer.
- * @memberof rendering
+ * @category rendering
  */
 export interface SharedRendererOptions extends ExtractRendererOptions<typeof SharedSystems>, PixiMixins.RendererOptions
 {

@@ -15,7 +15,7 @@ import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
 
 /**
- * Constructor options used for `TilingSprite` instances. Extends {@link scene.TilingSpriteViewOptions}
+ * Constructor options used for `TilingSprite` instances.
  * ```js
  * const tilingSprite = new TilingSprite({
  *    texture: Texture.from('assets/image.png'),
@@ -25,9 +25,8 @@ import type { DestroyOptions } from '../container/destroyTypes';
  *    tileScale: { x: 2, y: 2 },
  * });
  * ```
- * @see {@link scene.TilingSprite}
- * @see {@link scene.TilingSpriteViewOptions}
- * @memberof scene
+ * @see {@link TilingSprite}
+ * @category scene
  */
 export interface TilingSpriteOptions extends PixiMixins.TilingSpriteOptions, ViewContainerOptions
 {
@@ -66,9 +65,9 @@ export interface TilingSpriteOptions extends PixiMixins.TilingSpriteOptions, Vie
      * @default 256
      */
     height?: number
-    // TODO needs a better name..
     /**
-     * @todo
+     * Flags whether the tiling pattern should originate from the origin instead of the top-left corner in
+     * local space.
      * @default false
      */
     applyAnchorToTexture?: boolean
@@ -90,8 +89,7 @@ export interface TilingSprite extends PixiMixins.TilingSprite, ViewContainer<Til
  * tilingSprite.tilePosition.y = 100;
  *
  * app.stage.addChild(tilingSprite);
- * @memberof scene
- * @extends scene.Container
+ * @category scene
  */
 export class TilingSprite extends ViewContainer<TilingSpriteGpuData> implements View, Instruction
 {
@@ -153,7 +151,7 @@ export class TilingSprite extends ViewContainer<TilingSpriteGpuData> implements 
      */
     public applyAnchorToTexture: boolean;
     /**
-     * @see {@link scene.TilingSpriteOptions.applyAnchorToTexture}
+     * @see {@link TilingSpriteOptions.applyAnchorToTexture}
      * @deprecated since 8.0.0
      */
     public get uvRespectAnchor(): boolean
@@ -176,7 +174,7 @@ export class TilingSprite extends ViewContainer<TilingSpriteGpuData> implements 
     private _height: number;
 
     /**
-     * @param {rendering.Texture | scene.TilingSpriteOptions} options - The options for creating the tiling sprite.
+     * @param {Texture | TilingSpriteOptions} options - The options for creating the tiling sprite.
      */
     constructor(options?: Texture | TilingSpriteOptions);
     /** @deprecated since 8.0.0 */
@@ -256,7 +254,7 @@ export class TilingSprite extends ViewContainer<TilingSpriteGpuData> implements 
      * Changes frame clamping in corresponding textureMatrix
      * Change to -0.5 to add a pixel to the edge, recommended for transparent trimmed textures in atlas
      * @default 0.5
-     * @member {number}
+     * @type {number}
      */
     get clampMargin()
     {
@@ -415,9 +413,7 @@ export class TilingSprite extends ViewContainer<TilingSpriteGpuData> implements 
         return out;
     }
 
-    /**
-     * @private
-     */
+    /** @private */
     protected override updateBounds()
     {
         const bounds = this._bounds;
@@ -459,8 +455,10 @@ export class TilingSprite extends ViewContainer<TilingSpriteGpuData> implements 
      * Destroys this sprite renderable and optionally its texture.
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
-     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
-     * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
+     * @example
+     * tilingSprite.destroy();
+     * tilingSprite.destroy(true);
+     * tilingSprite.destroy({ texture: true, textureSource: true });
      */
     public override destroy(options: DestroyOptions = false)
     {

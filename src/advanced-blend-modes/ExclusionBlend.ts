@@ -11,7 +11,7 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  *
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'exclusion'
- * @memberof filters
+ * @category filters
  */
 export class ExclusionBlend extends BlendModeFilter
 {

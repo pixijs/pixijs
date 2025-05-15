@@ -30,7 +30,7 @@ export interface DynamicBitmapFontOptions
 
 /**
  * A BitmapFont that generates its glyphs dynamically.
- * @memberof text
+ * @category text
  * @ignore
  */
 export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>

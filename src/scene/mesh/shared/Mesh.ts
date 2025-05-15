@@ -21,7 +21,7 @@ export interface TextureShader extends Shader
 }
 
 /**
- * Constructor options used for `Mesh` instances. Extends {@link scene.MeshViewOptions}
+ * Constructor options used for `Mesh` instances. Extends {@link MeshViewOptions}
  * ```js
  * const mesh = new Mesh({
  *    texture: Texture.from('assets/image.png'),
@@ -29,14 +29,12 @@ export interface TextureShader extends Shader
  *    shader: Shader.from(VERTEX, FRAGMENT),
  * });
  * ```
- * @see {@link scene.Mesh}
- * @see {@link scene.MeshViewOptions}
- * @memberof scene
+ * @see {@link Mesh}
+ * @see {@link MeshViewOptions}
+ * @category scene
  */
 
-/**
- * @memberof scene
- */
+/** @category scene */
 export interface MeshOptions<
     GEOMETRY extends Geometry = MeshGeometry,
     SHADER extends Shader = TextureShader
@@ -75,7 +73,7 @@ export interface Mesh extends PixiMixins.Mesh, ViewContainer<MeshGpuData> {}
  * - State - This is the state of WebGL required to render the mesh.
  *
  * Through a combination of the above elements you can render anything you want, 2D or 3D!
- * @memberof scene
+ * @category scene
  */
 export class Mesh<
     GEOMETRY extends Geometry = MeshGeometry,
@@ -92,7 +90,7 @@ export class Mesh<
     /** @ignore */
     public _shader: SHADER | null = null;
     /**
-     * @param {scene.MeshOptions} options - options for the mesh instance
+     * @param {MeshOptions} options - options for the mesh instance
      */
     constructor(options: MeshOptions<GEOMETRY, SHADER>);
     /** @deprecated since 8.0.0 */
@@ -141,7 +139,7 @@ export class Mesh<
         this.roundPixels = roundPixels ?? false;
     }
 
-    /** Alias for {@link scene.Mesh#shader}. */
+    /** Alias for {@link Mesh#shader}. */
     get material()
     {
         // #if _DEBUG
@@ -238,7 +236,7 @@ export class Mesh<
 
     /**
      * The local bounds of the mesh.
-     * @type {rendering.Bounds}
+     * @type {Bounds}
      */
     override get bounds()
     {
@@ -325,8 +323,10 @@ export class Mesh<
      * Destroys this sprite renderable and optionally its texture.
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
-     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
-     * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
+     * @example
+     * mesh.destroy();
+     * mesh.destroy(true);
+     * mesh.destroy({ texture: true, textureSource: true });
      */
     public override destroy(options?: DestroyOptions): void
     {

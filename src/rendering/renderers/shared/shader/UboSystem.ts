@@ -14,7 +14,7 @@ export interface UboAdaptor
 
 /**
  * System plugin to the renderer to manage uniform buffers.
- * @memberof rendering
+ * @category rendering
  */
 export class UboSystem implements System
 {

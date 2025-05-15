@@ -17,7 +17,7 @@ export interface Text extends PixiMixins.Text, AbstractText<
 
 /**
  * Constructor options used for `Text` instances.
- * @memberof scene
+ * @category scene
  */
 export interface CanvasTextOptions extends TextOptions
 {
@@ -64,7 +64,7 @@ export interface CanvasTextOptions extends TextOptions
  *         scaleMode: 'nearest',
  *     }
  * });
- * @memberof scene
+ * @category scene
  */
 export class Text
     extends AbstractText<TextStyle, TextStyleOptions, CanvasTextOptions, BatchableText>
@@ -80,7 +80,7 @@ export class Text
     public textureStyle?: TextureStyle;
 
     /**
-     * @param {text.CanvasTextOptions} options - The options of the text.
+     * @param {CanvasTextOptions} options - The options of the text.
      */
     constructor(options?: CanvasTextOptions);
     /** @deprecated since 8.0.0 */

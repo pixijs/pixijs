@@ -8,6 +8,7 @@ import type { Renderer } from '../rendering/renderers/types';
 /**
  * The DOMPipe class is responsible for managing and rendering DOM elements within a PixiJS scene.
  * It maps dom elements to the canvas and ensures they are correctly positioned and visible.
+ * @internal
  */
 export class DOMPipe implements RenderPipe<DOMContainer>
 {

@@ -12,8 +12,8 @@ import type { MeshGeometryOptions } from '../mesh/shared/MeshGeometry';
  *    textureScale: 0,
  * });
  * ```
- * @see {@link scene.RopeGeometry}
- * @memberof scene
+ * @see {@link RopeGeometry}
+ * @category scene
  */
 export interface RopeGeometryOptions
 {
@@ -43,7 +43,7 @@ export interface RopeGeometryOptions
  *     points.push(new Point(i * 50, 0));
  * };
  * const rope = new RopeGeometry(100, points);
- * @memberof scene
+ * @category scene
  */
 export class RopeGeometry extends MeshGeometry
 {

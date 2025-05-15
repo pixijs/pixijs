@@ -7,6 +7,7 @@ import type { HTMLText } from './HTMLText';
 /**
  * The BatchableHTMLText class extends the BatchableSprite class and is used to handle HTML text rendering.
  * It includes a promise for the texture as generating the HTML texture takes some time.
+ * @internal
  */
 export class BatchableHTMLText extends BatchableSprite
 {

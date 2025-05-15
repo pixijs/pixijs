@@ -11,7 +11,7 @@ export interface EffectsMixinConstructor
 {
     mask?: Mask;
     setMask?: (options: Partial<MaskOptionsAndMask>) => void;
-    filters?: Filter | Filter[];
+    filters?: Filter | readonly Filter[];
 }
 
 export type Mask = number | Container | null;
@@ -28,16 +28,82 @@ export interface MaskOptionsAndMask extends MaskOptions
 
 export interface EffectsMixin extends Required<EffectsMixinConstructor>
 {
+    /** @private */
     _maskEffect?: MaskEffect;
+    /** @private */
     _maskOptions?: MaskOptions;
+    /** @private */
     _filterEffect?: FilterEffect,
-
-    filterArea?: Rectangle,
-    effects?: Effect[];
-
+    /** @private */
     _markStructureAsChanged(): void;
+
+    /**
+     * The area the filter is applied to. This is used as more of an optimization
+     * rather than figuring out the dimensions of the displayObject each frame you can set this rectangle.
+     *
+     * Also works as an interaction mask.
+     */
+    filterArea?: Rectangle,
+    /** todo Needs docs. */
+    effects?: Effect[];
+    /**
+     * todo Needs docs.
+     * @param {Effect} effect - The effect to add.
+     * @ignore
+     */
     addEffect(effect: Effect): void;
+    /**
+     * todo Needs docs.
+     * @param {Effect} effect - The effect to remove.
+     * @ignore
+     */
     removeEffect(effect: Effect): void;
+    /**
+     * Used to set mask and control mask options.
+     * @param {MaskOptionsAndMask} options
+     * @example
+     * import { Graphics, Sprite } from 'pixi.js';
+     *
+     * const graphics = new Graphics();
+     * graphics.beginFill(0xFF3300);
+     * graphics.drawRect(50, 250, 100, 100);
+     * graphics.endFill();
+     *
+     * const sprite = new Sprite(texture);
+     * sprite.setMask({
+     *     mask: graphics,
+     *     inverse: true,
+     * });
+     */
+    setMask(options: Partial<MaskOptionsAndMask>): void;
+    /**
+     * Sets a mask for the displayObject. A mask is an object that limits the visibility of an
+     * object to the shape of the mask applied to it. In PixiJS a regular mask must be a
+     * {@link Graphics} or a {@link Sprite} object. This allows for much faster masking in canvas as it
+     * utilities shape clipping. Furthermore, a mask of an object must be in the subtree of its parent.
+     * Otherwise, `getLocalBounds` may calculate incorrect bounds, which makes the container's width and height wrong.
+     * To remove a mask, set this property to `null`.
+     *
+     * For sprite mask both alpha and red channel are used. Black mask is the same as transparent mask.
+     * @example
+     * import { Graphics, Sprite } from 'pixi.js';
+     *
+     * const graphics = new Graphics();
+     * graphics.beginFill(0xFF3300);
+     * graphics.drawRect(50, 250, 100, 100);
+     * graphics.endFill();
+     *
+     * const sprite = new Sprite(texture);
+     * sprite.mask = graphics;
+     */
+    mask: Mask;
+    /**
+     * Sets the filters for the displayObject.
+     * IMPORTANT: This is a WebGL/WebGPU only feature and will be ignored by the canvas renderer.
+     * To remove filters simply set this property to `'null'`.
+     */
+    set filters(value: Filter | Filter[] | null | undefined);
+    get filters(): readonly Filter[];
 }
 
 export const effectsMixin: Partial<Container> = {
@@ -47,11 +113,6 @@ export const effectsMixin: Partial<Container> = {
     },
     _filterEffect: null,
 
-    /**
-     * @todo Needs docs.
-     * @memberof scene.Container#
-     * @type {Array<Effect>}
-     */
     effects: [],
 
     _markStructureAsChanged()
@@ -63,12 +124,7 @@ export const effectsMixin: Partial<Container> = {
             renderGroup.structureDidChange = true;
         }
     },
-    /**
-     * @todo Needs docs.
-     * @param effect - The effect to add.
-     * @memberof scene.Container#
-     * @ignore
-     */
+
     addEffect(effect: Effect)
     {
         const index = this.effects.indexOf(effect);
@@ -88,12 +144,7 @@ export const effectsMixin: Partial<Container> = {
 
         this._updateIsSimple();
     },
-    /**
-     * @todo Needs docs.
-     * @param effect - The effect to remove.
-     * @memberof scene.Container#
-     * @ignore
-     */
+
     removeEffect(effect: Effect)
     {
         const index = this.effects.indexOf(effect);
@@ -128,25 +179,11 @@ export const effectsMixin: Partial<Container> = {
 
         this.addEffect(this._maskEffect);
     },
+    get mask(): unknown
+    {
+        return this._maskEffect?.mask;
+    },
 
-    /**
-     * Used to set mask and control mask options.
-     * @param options
-     * @example
-     * import { Graphics, Sprite } from 'pixi.js';
-     *
-     * const graphics = new Graphics();
-     * graphics.beginFill(0xFF3300);
-     * graphics.drawRect(50, 250, 100, 100);
-     * graphics.endFill();
-     *
-     * const sprite = new Sprite(texture);
-     * sprite.setMask({
-     *     mask: graphics,
-     *     inverse: true,
-     * });
-     * @memberof scene.Container#
-     */
     setMask(options: Partial<MaskOptionsAndMask>)
     {
         this._maskOptions = {
@@ -160,32 +197,6 @@ export const effectsMixin: Partial<Container> = {
         }
 
         this._markStructureAsChanged();
-    },
-
-    /**
-     * Sets a mask for the displayObject. A mask is an object that limits the visibility of an
-     * object to the shape of the mask applied to it. In PixiJS a regular mask must be a
-     * {@link Graphics} or a {@link Sprite} object. This allows for much faster masking in canvas as it
-     * utilities shape clipping. Furthermore, a mask of an object must be in the subtree of its parent.
-     * Otherwise, `getLocalBounds` may calculate incorrect bounds, which makes the container's width and height wrong.
-     * To remove a mask, set this property to `null`.
-     *
-     * For sprite mask both alpha and red channel are used. Black mask is the same as transparent mask.
-     * @example
-     * import { Graphics, Sprite } from 'pixi.js';
-     *
-     * const graphics = new Graphics();
-     * graphics.beginFill(0xFF3300);
-     * graphics.drawRect(50, 250, 100, 100);
-     * graphics.endFill();
-     *
-     * const sprite = new Sprite(texture);
-     * sprite.mask = graphics;
-     * @memberof scene.Container#
-     */
-    get mask(): unknown
-    {
-        return this._maskEffect?.mask;
     },
 
     set filters(value: Filter | Filter[] | null | undefined)
@@ -223,13 +234,6 @@ export const effectsMixin: Partial<Container> = {
             }
         }
     },
-
-    /**
-     * Sets the filters for the displayObject.
-     * IMPORTANT: This is a WebGL only feature and will be ignored by the canvas renderer.
-     * To remove filters simply set this property to `'null'`.
-     * @memberof scene.Container#
-     */
     get filters(): readonly Filter[]
     {
         return this._filterEffect?.filters;
@@ -241,14 +245,6 @@ export const effectsMixin: Partial<Container> = {
 
         this._filterEffect.filterArea = value;
     },
-
-    /**
-     * The area the filter is applied to. This is used as more of an optimization
-     * rather than figuring out the dimensions of the displayObject each frame you can set this rectangle.
-     *
-     * Also works as an interaction mask.
-     * @memberof scene.Container#
-     */
     get filterArea(): Rectangle
     {
         return this._filterEffect?.filterArea;

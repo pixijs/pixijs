@@ -14,14 +14,12 @@ export type MaskEffect = {mask: unknown} & Effect;
 
 /**
  * A class that manages the conversion of masks to mask effects.
- * @memberof rendering
+ * @category rendering
  * @ignore
  */
 export class MaskEffectManagerClass
 {
-    /**
-     * @private
-     */
+    /** @private */
     public readonly _effectClasses: EffectConstructor[] = [];
     private readonly _tests: MaskConversionTest[] = [];
     private _initialized = false;

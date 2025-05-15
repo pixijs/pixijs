@@ -173,7 +173,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
 
     /**
      * Value of `true` if accessibility is currently active and accessibility layers are showing.
-     * @member {boolean}
+     * @type {boolean}
      * @readonly
      */
     get isActive(): boolean
@@ -183,7 +183,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
 
     /**
      * Value of `true` if accessibility is enabled for touch devices.
-     * @member {boolean}
+     * @type {boolean}
      * @readonly
      */
     get isMobileAccessibility(): boolean

@@ -19,7 +19,7 @@ export type BatchAction = 'startBatch' | 'renderBatch';
 
 /**
  * A batch pool is used to store batches when they are not currently in use.
- * @memberof rendering
+ * @category rendering
  */
 export class Batch implements Instruction
 {
@@ -81,7 +81,7 @@ function returnBatchToPool(batch: Batch)
 /**
  * Represents an element that can be batched for rendering.
  * @interface
- * @memberof rendering
+ * @category rendering
  */
 export interface BatchableElement
 {
@@ -167,7 +167,7 @@ export interface BatchableElement
 /**
  * Represents a batchable quad element.
  * @extends BatchableElement
- * @memberof rendering
+ * @category rendering
  */
 export interface BatchableQuadElement extends BatchableElement
 {
@@ -199,7 +199,7 @@ export interface BatchableQuadElement extends BatchableElement
 /**
  * Represents a batchable mesh element.
  * @extends BatchableElement
- * @memberof rendering
+ * @category rendering
  */
 export interface BatchableMeshElement extends BatchableElement
 {
@@ -244,7 +244,7 @@ let BATCH_TICK = 0;
 
 /**
  * The options for the batcher.
- * @memberof rendering
+ * @category rendering
  */
 export interface BatcherOptions
 {
@@ -257,7 +257,7 @@ export interface BatcherOptions
 /**
  * A batcher is used to batch together objects with the same texture.
  * It is an abstract class that must be extended. see DefaultBatcher for an example.
- * @memberof rendering
+ * @category rendering
  */
 export abstract class Batcher
 {

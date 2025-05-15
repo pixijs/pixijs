@@ -185,9 +185,12 @@ function fourCCToInt32(value: string)
         + (value.charCodeAt(3) << 24);
 }
 
-// Four character codes for DXTn formats
-// https://learn.microsoft.com/en-us/windows/win32/direct3ddds/dx-graphics-dds-pguide
-// https://learn.microsoft.com/en-us/windows/win32/direct3d9/d3dformat
+/**
+ * Four character codes for DXTn formats
+ * https://learn.microsoft.com/en-us/windows/win32/direct3ddds/dx-graphics-dds-pguide
+ * https://learn.microsoft.com/en-us/windows/win32/direct3d9/d3dformat
+ * @internal
+ */
 export enum D3DFMT
 {
     UNKNOWN = 0,
@@ -333,6 +336,10 @@ export const DXGI_TO_TEXTURE_FORMAT: { [id: number]: TEXTURE_FORMATS } = {
 
 };
 
+/**
+ * Maps {@link DXGI_FORMAT} to {@link D3DFMT}
+ * @internal
+ */
 export const DDS = {
     MAGIC_VALUE: 0x20534444,
     MAGIC_SIZE: 4,

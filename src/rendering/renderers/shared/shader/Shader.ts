@@ -14,7 +14,7 @@ import type { GpuProgramOptions } from '../../gpu/shader/GpuProgram';
  * A record of {@link BindGroup}'s used by the shader.
  *
  * `Record<number, BindGroup>`
- * @memberof rendering
+ * @category rendering
  */
 export type ShaderGroups = Record<number, BindGroup>;
 
@@ -74,31 +74,38 @@ interface GroupsData
 
 /**
  * A descriptor for a shader
- * @memberof rendering
+ * @category rendering
  */
 export type ShaderWith = GlShaderWith | GpuShaderWith;
 
 /**
  * A descriptor for a shader with groups.
- * @memberof rendering
+ * @category rendering
  */
 export type ShaderWithGroups = ShaderWithGroupsDescriptor & ShaderWith;
-export interface IShaderWithGroups extends ShaderWithGroupsDescriptor, ShaderBase {}
 
 /**
  * A descriptor for a shader with resources. This is an easier way to work with uniforms.
  * especially when you are not working with bind groups
- * @memberof rendering
+ * @category rendering
  */
 export type ShaderWithResources = ShaderWithResourcesDescriptor & ShaderWith;
 export interface IShaderWithResources extends ShaderWithResourcesDescriptor, ShaderBase {}
 
 export type ShaderDescriptor = ShaderWithGroups & ShaderWithResources;
 
+/**
+ * A descriptor for a shader with resources and groups.
+ * @category rendering
+ */
 type GlShaderFromWith = {
     gpu?: GpuProgramOptions,
     gl: GlProgramOptions
 };
+/**
+ * A descriptor for a shader with groups and resources.
+ * @category rendering
+ */
 type GpuShaderFromWith = {
     gpu: GpuProgramOptions,
     gl?: GlProgramOptions
@@ -141,7 +148,7 @@ export type ShaderFromResources = (GlShaderFromWith | GpuShaderFromWith)
  * shader.resources.uColor[1] = 1;
  * shader.resources.uTexture = texture2.source;
  * @class
- * @memberof rendering
+ * @category rendering
  */
 export class Shader extends EventEmitter<{'destroy': Shader}>
 {
@@ -167,14 +174,13 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
      * A record of the uniform groups and resources used by the shader.
      * This is used by WebGL renderer to sync uniform data.
      * @internal
-     * @ignore
      */
     public _uniformBindMap: Record<number, Record<number, string>> = Object.create(null);
     private readonly _ownedBindGroups: BindGroup[] = [];
 
     /**
      * Fired after rendering finishes.
-     * @event rendering.Shader#destroy
+     * @event Shader#destroy
      */
 
     /**
@@ -185,7 +191,7 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
      * For most cases you will want to use resources as they are easier to work with.
      * USe Groups if you want to share {@link BindGroup}s between shaders.
      * you cannot mix and match - either use resources or groups.
-     * @param {ShaderWithResourcesDescriptor} options - The options for the shader using ShaderWithResourcesDescriptor.
+     * @param options - The options for the shader
      */
     constructor(options: ShaderWithResources);
     constructor(options: ShaderWithGroups);

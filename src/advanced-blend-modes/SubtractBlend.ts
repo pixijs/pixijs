@@ -12,7 +12,7 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  *
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'subtract'
- * @memberof filters
+ * @category filters
  */
 export class SubtractBlend extends BlendModeFilter
 {

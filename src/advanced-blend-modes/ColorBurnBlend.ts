@@ -14,7 +14,7 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  *
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'color-burn'
- * @memberof filters
+ * @category filters
  */
 export class ColorBurnBlend extends BlendModeFilter
 {

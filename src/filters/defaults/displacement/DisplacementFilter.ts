@@ -17,7 +17,7 @@ import type { FilterSystem } from '../../FilterSystem';
 
 /**
  * Options for DisplacementFilter
- * @memberof filters
+ * @category filters
  */
 export interface DisplacementFilterOptions extends FilterOptions
 {
@@ -31,8 +31,8 @@ export interface DisplacementFilterOptions extends FilterOptions
  * A Noise effect filter.
  *
  * original filter: https://github.com/evanw/glfx.js/blob/master/src/filters/adjust/noise.js
- * @memberof filters
- * @author Vico @vicocotea
+ * @category filters
+ * @author Vico: vicocotea
  */
 export class DisplacementFilter extends Filter
 {

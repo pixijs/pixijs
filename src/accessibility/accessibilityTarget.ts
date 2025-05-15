@@ -38,7 +38,8 @@ export interface AccessibleOptions
     /**
      * Sets the title attribute of the shadow div
      * If accessibleTitle AND accessibleHint has not been this will default to 'container [tabIndex]'
-     * @member {string}
+     * @type {string}
+     * @default null
      */
     accessibleTitle: string | null;
     /**
@@ -63,7 +64,7 @@ export interface AccessibleOptions
      * Specify the pointer-events the accessible div will use
      * Defaults to auto.
      * @default 'auto'
-     * @type {accessibility.PointerEvents}
+     * @type {PointerEvents}
      */
     accessiblePointerEvents: PointerEvents;
 
@@ -111,87 +112,15 @@ export interface AccessibleHTMLElement extends HTMLElement
  * Object.assign(MyObject.prototype, accessibleTarget);
  */
 export const accessibilityTarget: AccessibleTarget = {
-    /**
-     * Flag for if the object is accessible. If true AccessibilityManager will overlay a
-     * shadow div with attributes set
-     * @member {boolean}
-     * @memberof Container#
-     */
     accessible: false,
-
-    /**
-     * Sets the title attribute of the shadow div
-     * If accessibleTitle AND accessibleHint has not been this will default to 'container [tabIndex]'
-     * @member {string}
-     * @memberof Container#
-     */
     accessibleTitle: null,
-
-    /**
-     * Sets the aria-label attribute of the shadow div
-     * @member {string}
-     * @memberof Container
-     */
     accessibleHint: null,
-
-    /**
-     * @member {number}
-     * @memberof Container#
-     * @todo Needs docs.
-     */
     tabIndex: 0,
-
-    /**
-     * @member {boolean}
-     * @memberof Container#
-     * @private
-     */
-    _accessibleActive: false,
-
-    /**
-     * @memberof Container#
-     * @private
-     */
-    _accessibleDiv: null,
-
-    /**
-     * Specify the type of div the accessible layer is. Screen readers treat the element differently
-     * depending on this type. Defaults to button.
-     * @member {string}
-     * @memberof Container#
-     * @default 'button'
-     */
     accessibleType: 'button',
-
-    /**
-     * Sets the text content of the shadow div
-     * @member {string}
-     * @memberof Container#
-     */
     accessibleText: null,
-
-    /**
-     * Specify the pointer-events the accessible div will use
-     * Defaults to auto.
-     * @type {PointerEvents}
-     * @memberof Container#
-     * @default 'auto'
-     */
     accessiblePointerEvents: 'auto',
-
-    /**
-     * Setting to false will prevent any children inside this container to
-     * be accessible. Defaults to true.
-     * @member {boolean}
-     * @memberof Container#
-     * @default true
-     */
     accessibleChildren: true,
-
-    /**
-     * @member {number}
-     * @memberof Container#
-     * @private
-     */
+    _accessibleActive: false,
+    _accessibleDiv: null,
     _renderId: -1,
 };

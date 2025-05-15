@@ -10,7 +10,7 @@ import type { FilterOptions } from '../../Filter';
 
 /**
  * Options for NoiseFilter
- * @memberof filters
+ * @category filters
  */
 export interface NoiseFilterOptions extends FilterOptions
 {
@@ -24,8 +24,8 @@ export interface NoiseFilterOptions extends FilterOptions
  * A Noise effect filter.
  *
  * original filter: https://github.com/evanw/glfx.js/blob/master/src/filters/adjust/noise.js
- * @memberof filters
- * @author Vico @vicocotea
+ * @category filters
+ * @author Vico: vicocotea
  */
 export class NoiseFilter extends Filter
 {

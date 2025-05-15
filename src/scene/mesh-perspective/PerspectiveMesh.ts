@@ -21,8 +21,8 @@ import type { MeshPlaneOptions } from '../mesh-plane/MeshPlane';
  *  x3: 0,
  *  y3: 100
  * });
- * @see {@link scene.PerspectiveMesh}
- * @memberof scene
+ * @see {@link PerspectiveMesh}
+ * @category scene
  */
 export interface PerspectivePlaneOptions extends MeshPlaneOptions
 {
@@ -68,8 +68,8 @@ export interface PerspectivePlaneOptions extends MeshPlaneOptions
  *  x3: 0,
  *  y3: 100
  * });
- * @see {@link scene.PerspectiveMesh}
- * @memberof scene
+ * @see {@link PerspectiveMesh}
+ * @category scene
  */
 export class PerspectiveMesh extends Mesh<PerspectivePlaneGeometry>
 {

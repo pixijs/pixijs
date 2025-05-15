@@ -32,13 +32,14 @@ export type TextStyleTextBaseline = 'alphabetic' | 'top' | 'hanging' | 'middle' 
 export type TextStyleWhiteSpace = 'normal' | 'pre' | 'pre-line';
 
 /**
+ * @module
+ * @categoryDescription text
  * A collection of text related classes.
- * @namespace text
  */
 
 /**
  * A drop shadow effect.
- * @memberof text
+ * @category text
  */
 export type TextDropShadow = {
     /** Set alpha for the drop shadow  */
@@ -61,8 +62,8 @@ export type TextDropShadow = {
  *    fill: 'black',
  * });
  * ```
- * @see {@link text.TextStyle}
- * @memberof text
+ * @see {@link TextStyle}
+ * @category text
  */
 export interface TextStyleOptions
 {
@@ -144,7 +145,7 @@ export interface TextStyleOptions
  * A TextStyle Object contains information to decorate a Text objects.
  *
  * An instance can be shared between multiple Text objects; then changing the style will update all text objects using it.
- * @memberof text
+ * @category text
  * @example
  * import { TextStyle } from 'pixi.js';
  * const style = new TextStyle({
@@ -294,7 +295,7 @@ export class TextStyle extends EventEmitter<{
 
     /**
      * Alignment for multiline text, does not affect single line text.
-     * @member {'left'|'center'|'right'|'justify'}
+     * @type {'left'|'center'|'right'|'justify'}
      */
     get align(): TextStyleAlign { return this._align; }
     set align(value: TextStyleAlign) { this._align = value; this.update(); }
@@ -336,7 +337,7 @@ export class TextStyle extends EventEmitter<{
     }
     /**
      * The font style.
-     * @member {'normal'|'italic'|'oblique'}
+     * @type {'normal'|'italic'|'oblique'}
      */
     get fontStyle(): TextStyleFontStyle { return this._fontStyle; }
     set fontStyle(value: TextStyleFontStyle)
@@ -346,13 +347,13 @@ export class TextStyle extends EventEmitter<{
     }
     /**
      * The font variant.
-     * @member {'normal'|'small-caps'}
+     * @type {'normal'|'small-caps'}
      */
     get fontVariant(): TextStyleFontVariant { return this._fontVariant; }
     set fontVariant(value: TextStyleFontVariant) { this._fontVariant = value; this.update(); }
     /**
      * The font weight.
-     * @member {'normal'|'bold'|'bolder'|'lighter'|'100'|'200'|'300'|'400'|'500'|'600'|'700'|'800'|'900'}
+     * @type {'normal'|'bold'|'bolder'|'lighter'|'100'|'200'|'300'|'400'|'500'|'600'|'700'|'800'|'900'}
      */
     get fontWeight(): TextStyleFontWeight { return this._fontWeight; }
     set fontWeight(value: TextStyleFontWeight) { this._fontWeight = value; this.update(); }
@@ -385,7 +386,7 @@ export class TextStyle extends EventEmitter<{
     set trim(value: boolean) { this._trim = value; this.update(); }
     /**
      * The baseline of the text that is rendered.
-     * @member {'alphabetic'|'top'|'hanging'|'middle'|'ideographic'|'bottom'}
+     * @type {'alphabetic'|'top'|'hanging'|'middle'|'ideographic'|'bottom'}
      */
     get textBaseline(): TextStyleTextBaseline { return this._textBaseline; }
     set textBaseline(value: TextStyleTextBaseline) { this._textBaseline = value; this.update(); }
@@ -398,7 +399,7 @@ export class TextStyle extends EventEmitter<{
      * 'normal'     | Collapse      |   Collapse
      * 'pre'        | Preserve      |   Preserve
      * 'pre-line'   | Preserve      |   Collapse
-     * @member {'normal'|'pre'|'pre-line'}
+     * @type {'normal'|'pre'|'pre-line'}
      */
     get whiteSpace(): TextStyleWhiteSpace { return this._whiteSpace; }
     set whiteSpace(value: TextStyleWhiteSpace) { this._whiteSpace = value; this.update(); }
@@ -573,8 +574,10 @@ export class TextStyle extends EventEmitter<{
      * Destroys this text style.
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
-     * @param {boolean} [options.texture=false] - Should it destroy the texture of the this style
-     * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the this style
+     * @example
+     * // Destroy the text style and its textures
+     * textStyle.destroy({ texture: true, textureSource: true });
+     * textStyle.destroy(true);
      */
     public destroy(options: TypeOrBool<TextureDestroyOptions> = false)
     {

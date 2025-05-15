@@ -14,7 +14,7 @@ export const v8_3_4 = '8.3.4';
  * Helper for warning developers about deprecated features & settings.
  * A stack track for warnings is given; useful for tracking-down where
  * deprecated methods/properties/classes are being used within the code.
- * @memberof utils
+ * @category utils
  * @ignore
  * @function deprecation
  * @param {string} version - The version where the feature became deprecated

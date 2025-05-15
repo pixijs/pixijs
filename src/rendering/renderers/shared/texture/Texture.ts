@@ -11,8 +11,8 @@ import { TextureMatrix } from './TextureMatrix';
 import type { TextureResourceOrOptions } from './utils/textureFrom';
 
 /**
- * Stores the width of the non-scalable borders, for example when used with {@link scene.NineSlicePlane} texture.
- * @memberof rendering
+ * Stores the width of the non-scalable borders, for example when used with {@link NineSlicePlane} texture.
+ * @category rendering
  */
 export interface TextureBorders
 {
@@ -28,7 +28,7 @@ export interface TextureBorders
 
 /**
  * The UVs data structure for a texture.
- * @memberof rendering
+ * @category rendering
  */
 export type UVs = {
     x0: number;
@@ -43,7 +43,7 @@ export type UVs = {
 
 /**
  * The options that can be passed to a new Texture
- * @memberof rendering
+ * @category rendering
  */
 export interface TextureOptions<TextureSourceType extends TextureSource = TextureSource>
 {
@@ -120,7 +120,7 @@ export type TextureSourceLike = TextureSource | TextureResourceOrOptions | strin
  *
  * If you didn't pass the texture frame to constructor, it enables `noFrame` mode:
  * it subscribes on baseTexture events, it automatically resizes at the same time as baseTexture.
- * @memberof rendering
+ * @category rendering
  * @class
  */
 export class Texture<TextureSourceType extends TextureSource = TextureSource> extends EventEmitter<{
@@ -154,7 +154,7 @@ export class Texture<TextureSourceType extends TextureSource = TextureSource> ex
      * set to 2 to compensate for texture packer rotation
      * set to 6 to compensate for spine packer rotation
      * can be used to rotate or mirror sprites
-     * See {@link maths.groupD8} for explanation
+     * See {@link groupD8} for explanation
      */
     public readonly rotate: number;
     /** A uvs object based on the given frame and the texture source */
@@ -168,7 +168,7 @@ export class Texture<TextureSourceType extends TextureSource = TextureSource> ex
     /**
      * Default width of the non-scalable border that is used if 9-slice plane is created with this texture.
      * @since 7.2.0
-     * @see scene.NineSliceSprite
+     * @see NineSliceSprite
      */
     public readonly defaultBorders?: TextureBorders;
     /**
@@ -211,7 +211,7 @@ export class Texture<TextureSourceType extends TextureSource = TextureSource> ex
     public readonly isTexture = true;
 
     /**
-     * @param {rendering.TextureOptions} options - Options for the texture
+     * @param {TextureOptions} options - Options for the texture
      */
     constructor({
         source,

@@ -4,6 +4,8 @@ export type ArrayFixed<T, L extends number> = [ T, ...Array<T> ] & { length: L }
 export type Dict<T> = {[key: string]: T};
 
 /**
+ * @module
+ * @categoryDescription utils
  * A collection of utility functions used by Pixi, but also handy for your games and applications.
  *
  * ```js
@@ -13,5 +15,4 @@ export type Dict<T> = {[key: string]: T};
  *    // WebGL is supported, proceed!
  * }
  * ```
- * @namespace utils
  */

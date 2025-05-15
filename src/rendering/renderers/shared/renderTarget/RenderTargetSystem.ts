@@ -21,10 +21,10 @@ import type { BindableTexture } from '../texture/Texture';
 
 /**
  * A render surface is a texture, canvas, or render target
- * @memberof rendering
+ * @category rendering
  * @see environment.ICanvas
- * @see rendering.Texture
- * @see rendering.RenderTarget
+ * @see Texture
+ * @see RenderTarget
  */
 export type RenderSurface = ICanvas | BindableTexture | RenderTarget;
 
@@ -146,7 +146,7 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends GlRenderTarget | GpuR
  *
  * // draw something!
  * ```
- * @memberof rendering
+ * @category rendering
  */
 export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRenderTarget> implements System
 {

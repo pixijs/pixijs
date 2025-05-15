@@ -35,7 +35,7 @@ export type ShapePrimitiveWithHoles = {
  * ends, and transformations for shapes.
  *
  * It is used internally by `GraphicsPath` to build up the path.
- * @memberof scene
+ * @category scene
  */
 export class ShapePath
 {

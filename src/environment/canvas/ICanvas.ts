@@ -61,7 +61,7 @@ export interface WebGLContextEventMap
  * Common interface for HTMLCanvasElement, OffscreenCanvas, and other custom canvas classes.
  * @extends PixiMixins.ICanvas
  * @extends Partial<EventTarget>
- * @memberof environment
+ * @category environment
  */
 export interface ICanvas extends PixiMixins.ICanvas, Partial<EventTarget>
 {
@@ -141,7 +141,6 @@ export interface ICanvas extends PixiMixins.ICanvas, Partial<EventTarget>
 
     /**
      * Adds the listener for the specified event.
-     * @method
      * @param {string} type - The type of event to listen for.
      * @param {EventListenerOrEventListenerObject} listener - The callback to invoke when the event is fired.
      * @param {boolean | AddEventListenerOptions} options - The options for adding event listener.
@@ -160,7 +159,6 @@ export interface ICanvas extends PixiMixins.ICanvas, Partial<EventTarget>
 
     /**
      * Removes the listener for the specified event.
-     * @method
      * @param {string} type - The type of event to listen for.
      * @param {EventListenerOrEventListenerObject} listener - The callback to invoke when the event is fired.
      * @param {boolean | EventListenerOptions} options - The options for removing event listener.

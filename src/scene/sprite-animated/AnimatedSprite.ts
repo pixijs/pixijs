@@ -9,8 +9,8 @@ export type AnimatedSpriteFrames = Texture[] | FrameObject[];
 
 /**
  * Constructor options used for `AnimatedSprite` instances.
- * @see {@link scene.AnimatedSprite}
- * @memberof scene
+ * @see {@link AnimatedSprite}
+ * @category scene
  */
 export interface AnimatedSpriteOptions extends PixiMixins.AnimatedSpriteOptions, Omit<SpriteOptions, 'texture'>
 {
@@ -67,7 +67,7 @@ export interface AnimatedSprite extends PixiMixins.AnimatedSprite, Sprite {}
  *
  * const sheet = await Assets.load('assets/spritesheet.json');
  * animatedSprite = new AnimatedSprite(sheet.animations['image_sequence']);
- * @memberof scene
+ * @category scene
  */
 export class AnimatedSprite extends Sprite
 {
@@ -535,8 +535,8 @@ export class AnimatedSprite extends Sprite
 }
 
 /**
- * A reference to a frame in an {@link scene.AnimatedSprite}
- * @memberof scene
+ * A reference to a frame in an {@link AnimatedSprite}
+ * @category scene
  */
 export interface FrameObject
 {

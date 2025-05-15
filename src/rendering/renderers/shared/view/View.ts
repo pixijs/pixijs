@@ -8,7 +8,7 @@ export interface ViewObserver
 
 /**
  * A view is something that is able to be rendered by the renderer.
- * @memberof scene
+ * @category scene
  */
 export interface View
 {

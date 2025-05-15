@@ -19,8 +19,8 @@ import type { CacheParser } from './CacheParser';
  * import { Cache } from 'pixi.js';
  *
  * Cache.set('bunny', bunnyTexture);
- * @class Cache
- * @memberof assets
+ * @category assets
+ * {@label Cache}
  */
 class CacheClass
 {

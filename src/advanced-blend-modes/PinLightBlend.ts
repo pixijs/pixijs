@@ -12,7 +12,7 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  *
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'pin-light'
- * @memberof filters
+ * @category filters
  */
 export class PinLightBlend extends BlendModeFilter
 {

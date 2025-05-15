@@ -11,7 +11,7 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  *
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'difference'
- * @memberof filters
+ * @category filters
  */
 export class DifferenceBlend extends BlendModeFilter
 {

@@ -69,7 +69,7 @@ function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack:
  *     }
  * })
  * @type {AssetExtension}
- * @memberof assets
+ * @category assets
  */
 export const spritesheetAsset = {
     extension: ExtensionType.Asset,

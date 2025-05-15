@@ -21,7 +21,7 @@ let fontCount = 0;
  *
  * Install a new BitmapFont will create the characters provided for the font and store them in the cache.
  * But don't worry, if a character is requested that hasn't been generated yet, it will be created on the fly.
- * @memberof text
+ * @category text
  */
 export interface BitmapFontInstallOptions
 {
@@ -57,21 +57,6 @@ export interface BitmapFontInstallOptions
     textureStyle?: TextureStyle | TextureStyleOptions;
 }
 
-/**
- * The BitmapFontManager is a helper that exists to install and uninstall fonts
- * into the cache for BitmapText objects.
- * @memberof text
- * @name BitmapFontManager
- * @example
- * import { BitmapFontManager, BitmapText } from 'pixi.js';
- *
- * BitmapFontManager.install({
- *   name: 'TitleFont',
- *   style: {}
- * });
- *
- * const title = new BitmapText({ text: 'This is the title', style: { fontFamily: 'TitleFont' }});
- */
 class BitmapFontManagerClass
 {
     /**
@@ -98,7 +83,7 @@ class BitmapFontManagerClass
 
     /**
      * This character set consists of all the ASCII table.
-     * @member {string[][]}
+     * @type {string[][]}
      * @see http://www.asciitable.com/
      */
     public readonly ASCII = [[' ', '~']];
@@ -300,4 +285,19 @@ class BitmapFontManagerClass
     }
 }
 
+/**
+ * The BitmapFontManager is a helper that exists to install and uninstall fonts
+ * into the cache for BitmapText objects.
+ * @category text
+ * @class
+ * @example
+ * import { BitmapFontManager, BitmapText } from 'pixi.js';
+ *
+ * BitmapFontManager.install({
+ *   name: 'TitleFont',
+ *   style: {}
+ * });
+ *
+ * const title = new BitmapText({ text: 'This is the title', style: { fontFamily: 'TitleFont' }});
+ */
 export const BitmapFontManager = new BitmapFontManagerClass();

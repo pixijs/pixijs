@@ -24,9 +24,6 @@ import type { Sprite } from '../scene/sprite/Sprite';
 import type { Filter } from './Filter';
 import type { FilterEffect } from './FilterEffect';
 
-type FilterAction = 'pushFilter' | 'popFilter';
-
-//
 const quadGeometry = new Geometry({
     attributes: {
         aPosition: {
@@ -63,7 +60,7 @@ const quadGeometry = new Geometry({
 export interface FilterInstruction extends Instruction
 {
     renderPipeId: 'filter',
-    action: FilterAction,
+    action: 'pushFilter' | 'popFilter',
     container?: Container,
     renderables?: Renderable[],
     filterEffect: FilterEffect,
@@ -150,7 +147,7 @@ class FilterData
 
 /**
  * System that manages the filter pipeline
- * @memberof rendering
+ * @category rendering
  */
 export class FilterSystem implements System
 {

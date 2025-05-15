@@ -36,7 +36,7 @@ export interface RendererConfig
 
 /**
  * The options for rendering a view.
- * @memberof rendering
+ * @category rendering
  */
 export interface RenderOptions extends ClearOptions
 {
@@ -48,7 +48,7 @@ export interface RenderOptions extends ClearOptions
 
 /**
  * The options for clearing the render target.
- * @memberof rendering
+ * @category rendering
  */
 export interface ClearOptions
 {
@@ -88,9 +88,9 @@ type Runners = {[key in DefaultRunners]: SystemRunner} & {
 /**
  * The base class for a PixiJS Renderer. It contains the shared logic for all renderers.
  *
- * You should not use this class directly, but instead use {@linkrendering.WebGLRenderer}
- * or {@link rendering.WebGPURenderer}.
- * Alternatively, you can also use {@link rendering.autoDetectRenderer} if you want us to
+ * You should not use this class directly, but instead use {@link WebGLRenderer}
+ * or {@link WebGPURenderer}.
+ * Alternatively, you can also use {@link autoDetectRenderer} if you want us to
  * determine the best renderer for you.
  *
  * The renderer is composed of systems that manage specific tasks. The following systems are added by default
@@ -99,38 +99,38 @@ type Runners = {[key in DefaultRunners]: SystemRunner} & {
  *
  * | Generic Systems                      | Systems that manage functionality that all renderer types share               |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
- * | {@link rendering.ViewSystem}              | This manages the main view of the renderer usually a Canvas              |
- * | {@link rendering.BackgroundSystem}        | This manages the main views background color and alpha                   |
- * | {@link events.EventSystem}           | This manages UI events.                                                       |
- * | {@link accessibility.AccessibilitySystem} | This manages accessibility features. Requires `import 'pixi.js/accessibility'`|
+ * | {@link ViewSystem}              | This manages the main view of the renderer usually a Canvas              |
+ * | {@link BackgroundSystem}        | This manages the main views background color and alpha                   |
+ * | {@link EventSystem}           | This manages UI events.                                                       |
+ * | {@link AccessibilitySystem} | This manages accessibility features. Requires `import 'pixi.js/accessibility'`|
  *
  * | Core Systems                   | Provide an optimised, easy to use API to work with WebGL/WebGPU               |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
- * | {@link rendering.RenderGroupSystem} | This manages the what what we are rendering to (eg - canvas or texture)   |
- * | {@link rendering.GlobalUniformSystem} | This manages shaders, programs that run on the GPU to calculate 'em pixels.   |
- * | {@link rendering.TextureGCSystem}     | This will automatically remove textures from the GPU if they are not used.    |
+ * | {@link RenderGroupSystem} | This manages the what what we are rendering to (eg - canvas or texture)   |
+ * | {@link GlobalUniformSystem} | This manages shaders, programs that run on the GPU to calculate 'em pixels.   |
+ * | {@link TextureGCSystem}     | This will automatically remove textures from the GPU if they are not used.    |
  *
  * | PixiJS High-Level Systems            | Set of specific systems designed to work with PixiJS objects                  |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
- * | {@link rendering.HelloSystem}               | Says hello, buy printing out the pixi version into the console log (along with the renderer type)       |
- * | {@link rendering.GenerateTextureSystem} | This adds the ability to generate textures from any Container       |
- * | {@link rendering.FilterSystem}          | This manages the filtering pipeline for post-processing effects.             |
- * | {@link rendering.PrepareSystem}               | This manages uploading assets to the GPU. Requires `import 'pixi.js/prepare'`|
- * | {@link rendering.ExtractSystem}               | This extracts image data from display objects.                               |
+ * | {@link HelloSystem}               | Says hello, buy printing out the pixi version into the console log (along with the renderer type)       |
+ * | {@link GenerateTextureSystem} | This adds the ability to generate textures from any Container       |
+ * | {@link FilterSystem}          | This manages the filtering pipeline for post-processing effects.             |
+ * | {@link PrepareSystem}               | This manages uploading assets to the GPU. Requires `import 'pixi.js/prepare'`|
+ * | {@link ExtractSystem}               | This extracts image data from display objects.                               |
  *
  * The breadth of the API surface provided by the renderer is contained within these systems.
  * @abstract
- * @memberof rendering
- * @property {rendering.HelloSystem} hello - HelloSystem instance.
- * @property {rendering.RenderGroupSystem} renderGroup - RenderGroupSystem instance.
- * @property {rendering.TextureGCSystem} textureGC - TextureGCSystem instance.
- * @property {rendering.FilterSystem} filter - FilterSystem instance.
- * @property {rendering.GlobalUniformSystem} globalUniforms - GlobalUniformSystem instance.
- * @property {rendering.TextureSystem} texture - TextureSystem instance.
- * @property {rendering.EventSystem} events - EventSystem instance.
- * @property {rendering.ExtractSystem} extract - ExtractSystem instance. Requires `import 'pixi.js/extract'`.
- * @property {rendering.PrepareSystem} prepare - PrepareSystem instance. Requires `import 'pixi.js/prepare'`.
- * @property {rendering.AccessibilitySystem} accessibility - AccessibilitySystem instance. Requires `import 'pixi.js/accessibility'`.
+ * @category rendering
+ * @property {HelloSystem} hello - HelloSystem instance.
+ * @property {RenderGroupSystem} renderGroup - RenderGroupSystem instance.
+ * @property {TextureGCSystem} textureGC - TextureGCSystem instance.
+ * @property {FilterSystem} filter - FilterSystem instance.
+ * @property {GlobalUniformSystem} globalUniforms - GlobalUniformSystem instance.
+ * @property {TextureSystem} texture - TextureSystem instance.
+ * @property {EventSystem} events - EventSystem instance.
+ * @property {ExtractSystem} extract - ExtractSystem instance. Requires `import 'pixi.js/extract'`.
+ * @property {PrepareSystem} prepare - PrepareSystem instance. Requires `import 'pixi.js/prepare'`.
+ * @property {AccessibilitySystem} accessibility - AccessibilitySystem instance. Requires `import 'pixi.js/accessibility'`.
  */
 /* eslint-enable max-len */
 export class AbstractRenderer<
@@ -174,14 +174,17 @@ export class AbstractRenderer<
         roundPixels: false
     };
 
+    /** @internal */
     public readonly type: number;
     /** The name of the renderer. */
     public readonly name: string;
 
     public readonly uid = uid('renderer');
 
+    /** @internal */
     public _roundPixels: 0 | 1;
 
+    /** @internal */
     public readonly runners: Runners = Object.create(null) as Runners;
     public readonly renderPipes = Object.create(null) as PIPES;
     /** The view system manages the main canvas that is attached to the DOM */
@@ -363,7 +366,7 @@ export class AbstractRenderer<
 
     /**
      * Same as view.width, actual number of pixels in the canvas by horizontal.
-     * @member {number}
+     * @type {number}
      * @readonly
      * @default 800
      */

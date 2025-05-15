@@ -17,7 +17,7 @@ export type PrepareQueueItem = TextureSource | Text | GraphicsContext;
 /**
  * Part of the prepare system. Responsible for uploading all the items to the GPU.
  * This class provides the base functionality and handles processing the queue asynchronously.
- * @memberof rendering
+ * @category rendering
  */
 export abstract class PrepareBase
 {
@@ -37,7 +37,7 @@ export abstract class PrepareBase
     protected timeout?: number;
 
     /**
-     * @param {rendering.Renderer} renderer - A reference to the current renderer
+     * @param {Renderer} renderer - A reference to the current renderer
      */
     constructor(renderer: Renderer)
     {

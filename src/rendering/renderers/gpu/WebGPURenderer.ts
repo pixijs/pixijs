@@ -55,17 +55,23 @@ extensions.handleByNamedList(ExtensionType.WebGPUPipesAdaptor, renderPipeAdaptor
 // add all the default systems as well as any user defined ones from the extensions
 extensions.add(...DefaultWebGPUSystems, ...DefaultWebGPUPipes, ...DefaultWebGPUAdapters);
 
-type WebGPUSystems = ExtractSystemTypes<typeof DefaultWebGPUSystems> &
+/** @internal */
+export type WebGPUSystems = ExtractSystemTypes<typeof DefaultWebGPUSystems> &
 PixiMixins.RendererSystems &
 PixiMixins.WebGPUSystems;
 
+/**
+ * The WebGPU renderer pipes. These are used to render the scene.
+ * @see {@link WebGPURenderer}
+ * @internal
+ */
 export type WebGPUPipes = ExtractSystemTypes<typeof DefaultWebGPUPipes> &
 PixiMixins.RendererPipes &
 PixiMixins.WebGPUPipes;
 
 /**
  * Options for WebGPURenderer.
- * @memberof rendering
+ * @category rendering
  */
 export interface WebGPUOptions extends
     SharedRendererOptions,
@@ -94,11 +100,12 @@ export interface WebGPURenderer<T extends ICanvas = HTMLCanvasElement>
  * renderer.render(stage);
  * ```
  *
- * You can use {@link rendering.autoDetectRenderer} to create a renderer that will automatically detect the best
+ * You can use {@link autoDetectRenderer} to create a renderer that will automatically detect the best
  * renderer for the environment.
  * ```ts
+ * import { autoDetectRenderer } from 'pixi.js';
  * // Create a new renderer
- * const renderer = await rendering.autoDetectRenderer();
+ * const renderer = await autoDetectRenderer();
  * ```
  *
  * The renderer is composed of systems that manage specific tasks. The following systems are added by default
@@ -106,34 +113,34 @@ export interface WebGPURenderer<T extends ICanvas = HTMLCanvasElement>
  *
  * | WebGPU Core Systems                      | Systems that are specific to the WebGL renderer                               |
  * | ---------------------------------------- | ----------------------------------------------------------------------------- |
- * | {@link rendering.GpuUboSystem}           | This manages WebGPU uniform buffer objects feature for shaders                |
- * | {@link rendering.GpuEncoderSystem}       | This manages the WebGPU command encoder                                       |
- * | {@link rendering.GpuDeviceSystem}        | This manages the WebGPU Device and its extensions                             |
- * | {@link rendering.GpuBufferSystem}        | This manages buffers and their GPU resources, keeps everything in sync        |
- * | {@link rendering.GpuTextureSystem}       | This manages textures and their GPU resources, keeps everything in sync       |
- * | {@link rendering.GpuRenderTargetSystem}  | This manages what we render too. For example the screen, or another texture   |
- * | {@link rendering.GpuShaderSystem}        | This manages shaders, programs that run on the GPU to output lovely pixels    |
- * | {@link rendering.GpuStateSystem}         | This manages the state of the WebGPU Pipelines. eg the various flags that can be set blend modes / depthTesting etc |
- * | {@link rendering.PipelineSystem}         | This manages the WebGPU pipelines, used for rendering                         |
- * | {@link rendering.GpuColorMaskSystem}     | This manages the color mask. Used for color masking                           |
- * | {@link rendering.GpuStencilSystem}       | This manages the stencil buffer. Used primarily for masking                   |
- * | {@link rendering.BindGroupSystem}        | This manages the WebGPU bind groups. this is how data is bound to a shader when rendering |
+ * | {@link GpuUboSystem}           | This manages WebGPU uniform buffer objects feature for shaders                |
+ * | {@link GpuEncoderSystem}       | This manages the WebGPU command encoder                                       |
+ * | {@link GpuDeviceSystem}        | This manages the WebGPU Device and its extensions                             |
+ * | {@link GpuBufferSystem}        | This manages buffers and their GPU resources, keeps everything in sync        |
+ * | {@link GpuTextureSystem}       | This manages textures and their GPU resources, keeps everything in sync       |
+ * | {@link GpuRenderTargetSystem}  | This manages what we render too. For example the screen, or another texture   |
+ * | {@link GpuShaderSystem}        | This manages shaders, programs that run on the GPU to output lovely pixels    |
+ * | {@link GpuStateSystem}         | This manages the state of the WebGPU Pipelines. eg the various flags that can be set blend modes / depthTesting etc |
+ * | {@link PipelineSystem}         | This manages the WebGPU pipelines, used for rendering                         |
+ * | {@link GpuColorMaskSystem}     | This manages the color mask. Used for color masking                           |
+ * | {@link GpuStencilSystem}       | This manages the stencil buffer. Used primarily for masking                   |
+ * | {@link BindGroupSystem}        | This manages the WebGPU bind groups. this is how data is bound to a shader when rendering |
  *
  * The breadth of the API surface provided by the renderer is contained within these systems.
- * @memberof rendering
- * @property {rendering.GpuUboSystem} ubo - UboSystem instance.
- * @property {rendering.GpuEncoderSystem} encoder - EncoderSystem instance.
- * @property {rendering.GpuDeviceSystem} device - DeviceSystem instance.
- * @property {rendering.GpuBufferSystem} buffer - BufferSystem instance.
- * @property {rendering.GpuTextureSystem} texture - TextureSystem instance.
- * @property {rendering.GpuRenderTargetSystem} renderTarget - RenderTargetSystem instance.
- * @property {rendering.GpuShaderSystem} shader - ShaderSystem instance.
- * @property {rendering.GpuStateSystem} state - StateSystem instance.
- * @property {rendering.PipelineSystem} pipeline - PipelineSystem instance.
- * @property {rendering.GpuColorMaskSystem} colorMask - ColorMaskSystem instance.
- * @property {rendering.GpuStencilSystem} stencil - StencilSystem instance.
- * @property {rendering.BindGroupSystem} bindGroup - BindGroupSystem instance.
- * @extends rendering.AbstractRenderer
+ * @category rendering
+ * @property {GpuUboSystem} ubo - UboSystem instance.
+ * @property {GpuEncoderSystem} encoder - EncoderSystem instance.
+ * @property {GpuDeviceSystem} device - DeviceSystem instance.
+ * @property {GpuBufferSystem} buffer - BufferSystem instance.
+ * @property {GpuTextureSystem} texture - TextureSystem instance.
+ * @property {GpuRenderTargetSystem} renderTarget - RenderTargetSystem instance.
+ * @property {GpuShaderSystem} shader - ShaderSystem instance.
+ * @property {GpuStateSystem} state - StateSystem instance.
+ * @property {PipelineSystem} pipeline - PipelineSystem instance.
+ * @property {GpuColorMaskSystem} colorMask - ColorMaskSystem instance.
+ * @property {GpuStencilSystem} stencil - StencilSystem instance.
+ * @property {BindGroupSystem} bindGroup - BindGroupSystem instance.
+ * @extends AbstractRenderer
  */
 export class WebGPURenderer<T extends ICanvas = HTMLCanvasElement>
     extends AbstractRenderer<WebGPUPipes, WebGPUOptions, T>

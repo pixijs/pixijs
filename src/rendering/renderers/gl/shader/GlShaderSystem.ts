@@ -28,7 +28,7 @@ const defaultSyncData: ShaderSyncData = {
 
 /**
  * System plugin to the renderer to manage the shaders for WebGL.
- * @memberof rendering
+ * @category rendering
  */
 export class GlShaderSystem implements ShaderSystem
 {

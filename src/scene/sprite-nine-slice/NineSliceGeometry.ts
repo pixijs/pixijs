@@ -3,7 +3,7 @@ import { PlaneGeometry } from '../mesh-plane/PlaneGeometry';
 
 /**
  * Options for the NineSliceGeometry.
- * @memberof scene
+ * @category scene
  */
 export interface NineSliceGeometryOptions
 {
@@ -31,7 +31,7 @@ export interface NineSliceGeometryOptions
 
 /**
  * The NineSliceGeometry class allows you to create a NineSlicePlane object.
- * @memberof scene
+ * @category scene
  */
 export class NineSliceGeometry extends PlaneGeometry
 {

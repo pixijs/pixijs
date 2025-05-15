@@ -12,7 +12,7 @@ export interface GPUProgramData
 
 /**
  * A system that manages the rendering of GpuPrograms.
- * @memberof rendering
+ * @category rendering
  */
 export class GpuShaderSystem implements ShaderSystem
 {

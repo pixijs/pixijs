@@ -19,11 +19,27 @@ export interface MeasureMixin extends Required<MeasureMixinConstructor>
     getSize(out?: Size): Size;
     setSize(width: number, height?: number): void;
     setSize(value: Optional<Size, 'height'>): void;
+    /**
+     * Retrieves the local bounds of the container as a Bounds object.
+     * @returns - The bounding area.
+     */
     getLocalBounds(bounds?: Bounds): Bounds;
+    /**
+     * Calculates and returns the (world) bounds of the display object as a {@link Rectangle}.
+     * @param {boolean} [skipUpdate] - Setting to `true` will stop the transforms of the scene graph from
+     *  being updated. This means the calculation returned MAY be out of date BUT will give you a
+     *  nice performance boost.
+     * @param {Bounds} [bounds] - Optional bounds to store the result of the bounds calculation.
+     * @returns - The minimum axis-aligned rectangle in world space that fits around this object.
+     */
     getBounds(skipUpdate?: boolean, bounds?: Bounds): Bounds;
+    /** @private */
     _localBoundsCacheData: LocalBoundsCacheData;
+    /** @private */
     _localBoundsCacheId: number;
+    /** @private */
     _setWidth(width: number, localWidth: number): void;
+    /** @private */
     _setHeight(height: number, localHeight: number): void;
 }
 
@@ -70,11 +86,6 @@ export const measureMixin: Partial<Container> = {
         }
     },
 
-    /**
-     * Retrieves the local bounds of the container as a Bounds object.
-     * @returns - The bounding area.
-     * @memberof scene.Container#
-     */
     getLocalBounds(): Bounds
     {
         if (!this._localBoundsCacheData)
@@ -108,15 +119,6 @@ export const measureMixin: Partial<Container> = {
         return localBoundsCacheData.localBounds;
     },
 
-    /**
-     * Calculates and returns the (world) bounds of the display object as a [Rectangle]{@link Rectangle}.
-     * @param skipUpdate - Setting to `true` will stop the transforms of the scene graph from
-     *  being updated. This means the calculation returned MAY be out of date BUT will give you a
-     *  nice performance boost.
-     * @param bounds - Optional bounds to store the result of the bounds calculation.
-     * @returns - The minimum axis-aligned rectangle in world space that fits around this object.
-     * @memberof scene.Container#
-     */
     getBounds(skipUpdate?: boolean, bounds?: Bounds): Bounds
     {
         return getGlobalBounds(this, skipUpdate, bounds || new Bounds());

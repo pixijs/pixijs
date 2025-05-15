@@ -12,6 +12,7 @@ import type { PoolItem } from '../../../utils/pool/Pool';
 import type { Graphics } from './Graphics';
 import type { GpuGraphicsContext, GraphicsContextSystem } from './GraphicsContextSystem';
 
+/** @internal */
 export interface GraphicsAdaptor
 {
     shader: Shader;
@@ -19,7 +20,7 @@ export interface GraphicsAdaptor
     execute(graphicsPipe: GraphicsPipe, renderable: Graphics): void;
     destroy(): void;
 }
-export interface GraphicsSystem
+interface GraphicsSystem
 {
     graphicsContext: GraphicsContextSystem;
     renderableGC: RenderableGCSystem;
@@ -30,6 +31,7 @@ export interface GraphicsSystem
     uid: number;
 }
 
+/** @internal */
 export class GraphicsGpuData
 {
     public batches: BatchableGraphics[] = [];
@@ -45,6 +47,7 @@ export class GraphicsGpuData
     }
 }
 
+/** @internal */
 export class GraphicsPipe implements RenderPipe<Graphics>
 {
     /** @ignore */

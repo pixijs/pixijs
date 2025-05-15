@@ -27,12 +27,15 @@ export const UNIFORM_TYPES_MAP = UNIFORM_TYPES_VALUES.reduce((acc, type) =>
     return acc;
 }, {} as Record<UNIFORM_TYPES, boolean>);
 
+/** @internal */
 export type UNIFORM_TYPES_SINGLE = typeof UNIFORM_TYPES_VALUES[number];
 
 type OPTIONAL_SPACE = ' ' | '';
 
+/** @internal */
 export type UNIFORM_TYPES_ARRAY = `array<${UNIFORM_TYPES_SINGLE},${OPTIONAL_SPACE}${number}>`;
 
+/** @internal */
 export type UNIFORM_TYPES = UNIFORM_TYPES_SINGLE | UNIFORM_TYPES_ARRAY;
 
 export interface UniformData

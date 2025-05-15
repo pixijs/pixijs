@@ -21,7 +21,7 @@ const emptyBounds = new Bounds(0, 0, 0, 0);
  * @property {boolean} [rotation] - Indicates if rotation is dynamic.
  * @property {boolean} [uvs] - Indicates if UVs are dynamic.
  * @property {boolean} [color] - Indicates if color is dynamic.
- * @memberof scene
+ * @category scene
  */
 export interface ParticleProperties
 {
@@ -40,7 +40,7 @@ export interface ParticleProperties
  * @property {boolean} roundPixels - Indicates if pixels should be rounded.
  * @property {Texture} texture - The texture to use for rendering - if not provided the texture of the first child is used.
  * @property {IParticle[]} particles - An array of particles to add to the container.
- * @memberof scene
+ * @category scene
  */
 export interface ParticleContainerOptions extends PixiMixins.ParticleContainerOptions, Omit<ViewContainerOptions, 'children'>
 {
@@ -100,7 +100,7 @@ export interface ParticleContainer extends PixiMixins.ParticleContainer, ViewCon
  *     let particle = new Particle(texture);
  *     container.addParticle(particle);
  * }
- * @memberof scene
+ * @category scene
  */
 export class ParticleContainer extends ViewContainer<ParticleBuffer> implements Instruction
 {
@@ -270,8 +270,10 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * Destroys this sprite renderable and optionally its texture.
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
-     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
-     * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
+     * @example
+     * particleContainer.destroy();
+     * particleContainer.destroy(true);
+     * particleContainer.destroy({ texture: true, textureSource: true, children: true });
      */
     public override destroy(options: DestroyOptions = false)
     {

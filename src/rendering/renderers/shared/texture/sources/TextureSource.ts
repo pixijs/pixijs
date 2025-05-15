@@ -11,7 +11,7 @@ import type { TextureResourceOrOptions } from '../utils/textureFrom';
 
 /**
  * options for creating a new TextureSource
- * @memberof rendering
+ * @category rendering
  */
 export interface TextureSourceOptions<T extends Record<string, any> = any> extends TextureStyleOptions
 {
@@ -67,7 +67,7 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
  *
  * This is an class is extended depending on the source of the texture.
  * Eg if you are using an an image as your resource, then an ImageSource is used.
- * @memberof rendering
+ * @category rendering
  * @typeParam T - The TextureSource's Resource type.
  */
 export class TextureSource<T extends Record<string, any> = any> extends EventEmitter<{
@@ -149,7 +149,6 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      * The number of samples of a multisample texture. This is always 1 for non-multisample textures.
      * To enable multisample for a texture, set antialias to true
      * @internal
-     * @ignore
      */
     public sampleCount = 1;
 

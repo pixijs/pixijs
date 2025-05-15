@@ -49,7 +49,7 @@ export interface GlobalUniformRenderer
 
 /**
  * System plugin to the renderer to manage global uniforms for the renderer.
- * @memberof rendering
+ * @category rendering
  */
 export class GlobalUniformSystem implements System
 {

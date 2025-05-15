@@ -24,7 +24,7 @@ import type { FontCSSStyleOptions } from './utils/loadFontCSS';
 
 /**
  * System plugin to the renderer to manage HTMLText
- * @memberof rendering
+ * @category rendering
  */
 export class HTMLTextSystem implements System
 {

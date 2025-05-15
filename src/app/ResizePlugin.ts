@@ -6,32 +6,28 @@ import type { Renderer } from '../rendering/renderers/types';
 type ResizeableRenderer = Pick<Renderer, 'resize'>;
 
 /**
- * Application options for the {@link app.ResizePlugin}.
- * @memberof app
- * @property {Window|HTMLElement} [resizeTo=window] - Element to automatically resize the renderer to.
+ * Application options for the {@link ResizePlugin}.
+ * @category app
  */
 export interface ResizePluginOptions
 {
-    /**
-     * Element to automatically resize the renderer to.
-     * @memberof app.ApplicationOptions
-     */
+    /** Element to automatically resize the renderer to. If not set, the renderer will not resize automatically. */
     resizeTo?: Window | HTMLElement;
 }
 
 /**
  * Middleware for Application's resize functionality.
  *
- * Adds the following methods to {@link app.Application}:
- * * {@link app.Application#resizeTo}
- * * {@link app.Application#resize}
- * * {@link app.Application#queueResize}
- * * {@link app.Application#cancelResize}
+ * Adds the following methods to {@link Application}:
+ * * {@link Application#resizeTo}
+ * * {@link Application#resize}
+ * * {@link Application#queueResize}
+ * * {@link Application#cancelResize}
  * @example
  * import { extensions, ResizePlugin } from 'pixi.js';
  *
  * extensions.add(ResizePlugin);
- * @memberof app
+ * @category app
  */
 export class ResizePlugin
 {
@@ -40,29 +36,25 @@ export class ResizePlugin
 
     public static resizeTo: Window | HTMLElement;
     public static resize: () => void;
+    /** @internal */
     public static renderer: ResizeableRenderer;
     public static queueResize: () => void;
     public static render: () => void;
+    /** @internal */
     private static _resizeId: number;
+    /** @internal */
     private static _resizeTo: Window | HTMLElement;
+    /** @internal */
     private static _cancelResize: () => void;
 
     /**
      * Initialize the plugin with scope of application instance
-     * @static
      * @private
      * @param {object} [options] - See application options
      */
     public static init(options: ResizePluginOptions): void
     {
         Object.defineProperty(this, 'resizeTo',
-            /**
-             * The HTML element or window to automatically resize the
-             * renderer's view element to match width and height.
-             * @member {Window|HTMLElement}
-             * @name resizeTo
-             * @memberof app.Application#
-             */
             {
                 set(dom: Window | HTMLElement)
                 {
@@ -80,13 +72,6 @@ export class ResizePlugin
                 },
             });
 
-        /**
-         * Resize is throttled, so it's safe to call this multiple times per frame and it'll
-         * only be called once.
-         * @memberof app.Application#
-         * @method queueResize
-         * @private
-         */
         this.queueResize = (): void =>
         {
             if (!this._resizeTo)
@@ -100,12 +85,6 @@ export class ResizePlugin
             this._resizeId = requestAnimationFrame(() => this.resize());
         };
 
-        /**
-         * Cancel the resize queue.
-         * @memberof app.Application#
-         * @method cancelResize
-         * @private
-         */
         this._cancelResize = (): void =>
         {
             if (this._resizeId)
@@ -115,13 +94,6 @@ export class ResizePlugin
             }
         };
 
-        /**
-         * Execute an immediate resize on the renderer, this is not
-         * throttled and can be expensive to call many times in a row.
-         * Will resize only if `resizeTo` property is set.
-         * @memberof app.Application#
-         * @method resize
-         */
         this.resize = (): void =>
         {
             if (!this._resizeTo)
@@ -162,7 +134,6 @@ export class ResizePlugin
 
     /**
      * Clean up the ticker, scoped to application
-     * @static
      * @private
      */
     public static destroy(): void

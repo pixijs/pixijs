@@ -7,7 +7,7 @@ import type { ResolveURLParser } from './resolver/types';
 /**
  * A more verbose version of the AssetExtension,
  * allowing you to set the cached, loaded, parsed, and unloaded asset separately
- * @memberof assets
+ * @category assets
  */
 interface AssetExtensionAdvanced<
     ASSET = any,
@@ -82,7 +82,7 @@ interface AssetExtensionAdvanced<
  *     resolver,
  *     loader,
  * }
- * @memberof assets
+ * @category assets
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface AssetExtension<ASSET = any, META_DATA = any> extends AssetExtensionAdvanced<ASSET, META_DATA>{}

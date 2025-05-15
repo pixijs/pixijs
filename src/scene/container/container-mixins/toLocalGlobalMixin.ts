@@ -6,19 +6,35 @@ import type { Container } from '../Container';
 
 export interface ToLocalGlobalMixin
 {
+    /**
+     * Returns the global position of the container.
+     * @param {Point} point - The optional point to write the global value to.
+     * @param {boolean} skipUpdate - Should we skip the update transform.
+     * @returns - The updated point.
+     */
     getGlobalPosition(point?: Point, skipUpdate?: boolean): Point;
+    /**
+     * Calculates the global position of the container.
+     * @param {PointData} position - The world origin to calculate from.
+     * @param {P} point - A Point object in which to store the value, optional
+     *  (otherwise will create a new Point).
+     * @param {boolean} skipUpdate - Should we skip the update transform.
+     * @returns - A point object representing the position of this object.
+     */
     toGlobal<P extends PointData = Point>(position: PointData, point?: P, skipUpdate?: boolean): P;
+    /**
+     * Calculates the local position of the container relative to another point.
+     * @param {PointData} position - The world origin to calculate from.
+     * @param {Container} from - The Container to calculate the global position from.
+     * @param {P} point - A Point object in which to store the value, optional
+     *  (otherwise will create a new Point).
+     * @param {boolean} skipUpdate - Should we skip the update transform
+     * @returns - A point object representing the position of this object
+     */
     toLocal<P extends PointData = Point>(position: PointData, from?: Container, point?: P, skipUpdate?: boolean): P;
 }
 
 export const toLocalGlobalMixin: Partial<Container> = {
-    /**
-     * Returns the global position of the container.
-     * @param point - The optional point to write the global value to.
-     * @param skipUpdate - Should we skip the update transform.
-     * @returns - The updated point.
-     * @memberof scene.Container#
-     */
     getGlobalPosition(point: Point = new Point(), skipUpdate = false): Point
     {
         if (this.parent)
@@ -34,15 +50,6 @@ export const toLocalGlobalMixin: Partial<Container> = {
         return point;
     },
 
-    /**
-     * Calculates the global position of the container.
-     * @param position - The world origin to calculate from.
-     * @param point - A Point object in which to store the value, optional
-     *  (otherwise will create a new Point).
-     * @param skipUpdate - Should we skip the update transform.
-     * @returns - A point object representing the position of this object.
-     * @memberof scene.Container#
-     */
     toGlobal<P extends PointData = Point>(position: PointData, point?: P, skipUpdate = false): P
     {
         const globalMatrix = this.getGlobalTransform(matrixPool.get(), skipUpdate);
@@ -55,16 +62,6 @@ export const toLocalGlobalMixin: Partial<Container> = {
         return point;
     },
 
-    /**
-     * Calculates the local position of the container relative to another point.
-     * @param position - The world origin to calculate from.
-     * @param from - The Container to calculate the global position from.
-     * @param point - A Point object in which to store the value, optional
-     *  (otherwise will create a new Point).
-     * @param skipUpdate - Should we skip the update transform
-     * @returns - A point object representing the position of this object
-     * @memberof scene.Container#
-     */
     toLocal<P extends PointData = Point>(position: PointData, from?: Container, point?: P, skipUpdate?: boolean): P
     {
         if (from)

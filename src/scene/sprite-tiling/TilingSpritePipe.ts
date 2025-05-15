@@ -41,6 +41,11 @@ export class TilingSpriteGpuData
     }
 }
 
+/**
+ * The TilingSpritePipe is a render pipe for rendering TilingSprites.
+ * It handles the batching and rendering of TilingSprites using a shader.
+ * @internal
+ */
 export class TilingSpritePipe implements RenderPipe<TilingSprite>
 {
     /** @ignore */

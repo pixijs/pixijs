@@ -5,7 +5,7 @@ import type { FormatDetectionParser } from '../types';
 
 /**
  * Detects if the browser supports the MP4 video format.
- * @memberof assets
+ * @category assets
  */
 export const detectMp4 = {
     extension: {
