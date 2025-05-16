@@ -5,7 +5,7 @@ import { DefaultShader } from './DefaultShader';
 
 import type { Matrix } from '../../../maths/matrix/Matrix';
 import type { Shader } from '../../renderers/shared/shader/Shader';
-import type { BatchableMeshElement, BatchableQuadElement } from './Batcher';
+import type { BatchableMeshElement, BatchableQuadElement, BatcherOptions } from './Batcher';
 
 let defaultShader: Shader = null;
 
@@ -69,12 +69,21 @@ export class DefaultBatcher extends Batcher
     } as const;
 
     public geometry = new BatchGeometry();
-    public shader = defaultShader || (defaultShader = new DefaultShader(this.maxTextures));
+    public shader: DefaultShader;
 
     public name = DefaultBatcher.extension.name;
 
     /** The size of one attribute. 1 = 32 bit. x, y, u, v, color, textureIdAndRound -> total = 6 */
     public vertexSize = 6;
+
+    constructor(options: BatcherOptions)
+    {
+        super(options);
+
+        defaultShader ??= new DefaultShader(options.maxTextures);
+
+        this.shader = defaultShader;
+    }
 
     /**
      * Packs the attributes of a DefaultBatchableMeshElement into the provided views.

@@ -6,7 +6,6 @@ import { deprecation, v8_3_4 } from '../../../utils/logging/deprecation';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { buildContextBatches } from './utils/buildContextBatches';
 
-import type { Batcher } from '../../../rendering/batcher/shared/Batcher';
 import type { System } from '../../../rendering/renderers/shared/system/System';
 import type { Renderer } from '../../../rendering/renderers/types';
 import type { PoolItem } from '../../../utils/pool/Pool';
@@ -46,11 +45,15 @@ export class GpuGraphicsContext
  */
 export class GraphicsContextRenderData
 {
-    public batcher: Batcher = new DefaultBatcher();
+    public batcher: DefaultBatcher;
     public instructions = new InstructionSet();
 
-    public init()
+    public init(maxTextures: number)
     {
+        this.batcher = new DefaultBatcher({
+            maxTextures,
+        });
+
         this.instructions.reset();
     }
 
@@ -109,9 +112,11 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
     private _gpuContextHash: Record<number, GpuGraphicsContext> = {};
     // used for non-batchable graphics
     private _graphicsDataContextHash: Record<number, GraphicsContextRenderData> = Object.create(null);
+    private readonly _renderer: Renderer;
 
     constructor(renderer: Renderer)
     {
+        this._renderer = renderer;
         renderer.renderableGC.addManagedHash(this, '_gpuContextHash');
         renderer.renderableGC.addManagedHash(this, '_graphicsDataContextHash');
     }
@@ -175,7 +180,9 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
 
     private _initContextRenderData(context: GraphicsContext): GraphicsContextRenderData
     {
-        const graphicsData: GraphicsContextRenderData = BigPool.get(GraphicsContextRenderData);// ();
+        const graphicsData: GraphicsContextRenderData = BigPool.get(GraphicsContextRenderData, {
+            maxTextures: this._renderer.limits.maxBatchableTextures,
+        });
 
         const { batches, geometryData } = this._gpuContextHash[context.uid];
 
@@ -218,7 +225,11 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
         {
             const batch = drawBatches[i];
 
-            batch.bindGroup = getTextureBatchBindGroup(batch.textures.textures, batch.textures.count);
+            batch.bindGroup = getTextureBatchBindGroup(
+                batch.textures.textures,
+                batch.textures.count,
+                this._renderer.limits.maxBatchableTextures
+            );
         }
 
         this._graphicsDataContextHash[context.uid] = graphicsData;

@@ -1,5 +1,6 @@
 import { uid } from '../../../utils/data/uid';
 import { ViewableBuffer } from '../../../utils/data/ViewableBuffer';
+import { deprecation } from '../../../utils/logging/deprecation';
 import { fastCopy } from '../../renderers/shared/buffer/utils/fastCopy';
 import { type BLEND_MODES } from '../../renderers/shared/state/const';
 import { getAdjustedBlendModeBlend } from '../../renderers/shared/state/getAdjustedBlendModeBlend';
@@ -249,8 +250,10 @@ let BATCH_TICK = 0;
 export interface BatcherOptions
 {
     /** The maximum number of textures per batch. */
-    maxTextures?: number;
+    maxTextures: number;
+    /** The initial size of the attribute buffer. */
     attributesInitialSize?: number;
+    /** The initial size of the index buffer. */
     indicesInitialSize?: number;
 }
 
@@ -353,10 +356,15 @@ export abstract class Batcher
         textureId: number
     ): void;
 
-    constructor(options: BatcherOptions = {})
+    constructor(options: BatcherOptions)
     {
-        Batcher.defaultOptions.maxTextures = Batcher.defaultOptions.maxTextures ?? getMaxTexturesPerBatch();
         options = { ...Batcher.defaultOptions, ...options };
+
+        if (!options.maxTextures)
+        {
+            deprecation('v8.8.0', 'maxTextures is a required option for Batcher now, please pass it in the options');
+            options.maxTextures = getMaxTexturesPerBatch();
+        }
 
         const { maxTextures, attributesInitialSize, indicesInitialSize } = options;
 
