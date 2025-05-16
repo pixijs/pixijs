@@ -72,7 +72,9 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
         if (!batchers)
         {
             batchers = this._batchersByInstructionSet[instructionSet.uid] = Object.create(null);
-            batchers.default ||= new DefaultBatcher();
+            batchers.default ||= new DefaultBatcher({
+                maxTextures: this.renderer.limits.maxBatchableTextures,
+            });
         }
 
         this._activeBatches = batchers;

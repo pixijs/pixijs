@@ -6,6 +6,7 @@ describe('Batcher', () =>
     it('should ensure attribute size and resize correctly', () =>
     {
         const batcher = new TestBatcher({
+            maxTextures: 16,
             attributesInitialSize: 2 * 6,
             indicesInitialSize: 1,
         });
@@ -32,6 +33,7 @@ describe('Batcher', () =>
     it('should ensure index size and resize correctly', () =>
     {
         const batcher = new TestBatcher({
+            maxTextures: 16,
             attributesInitialSize: 2 * 6,
             indicesInitialSize: 2,
         });

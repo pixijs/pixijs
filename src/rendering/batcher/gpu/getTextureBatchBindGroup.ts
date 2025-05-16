@@ -1,6 +1,5 @@
 import { BindGroup } from '../../renderers/gpu/shader/BindGroup';
 import { Texture } from '../../renderers/shared/texture/Texture';
-import { getMaxTexturesPerBatch } from '../gl/utils/maxRecommendedTextures';
 
 import type { TextureSource } from '../../renderers/shared/texture/sources/TextureSource';
 
@@ -9,9 +8,10 @@ const cachedGroups: Record<number, BindGroup> = {};
 /**
  * @param textures
  * @param size
+ * @param maxTextures
  * @internal
  */
-export function getTextureBatchBindGroup(textures: TextureSource[], size: number)
+export function getTextureBatchBindGroup(textures: TextureSource[], size: number, maxTextures: number)
 {
     let uid = 2166136261; // FNV-1a 32-bit offset basis
 
@@ -22,18 +22,14 @@ export function getTextureBatchBindGroup(textures: TextureSource[], size: number
         uid >>>= 0;
     }
 
-    return cachedGroups[uid] || generateTextureBatchBindGroup(textures, size, uid);
+    return cachedGroups[uid] || generateTextureBatchBindGroup(textures, size, uid, maxTextures);
 }
 
-let maxTextures = 0;
-
-function generateTextureBatchBindGroup(textures: TextureSource[], size: number, key: number): BindGroup
+function generateTextureBatchBindGroup(textures: TextureSource[], size: number, key: number, maxTextures: number): BindGroup
 {
     const bindGroupResources: Record<string, any> = {};
 
     let bindIndex = 0;
-
-    if (!maxTextures)maxTextures = getMaxTexturesPerBatch();
 
     for (let i = 0; i < maxTextures; i++)
     {

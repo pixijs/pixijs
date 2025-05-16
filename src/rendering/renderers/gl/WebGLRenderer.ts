@@ -11,6 +11,7 @@ import { GlGeometrySystem } from './geometry/GlGeometrySystem';
 import { GlBackBufferSystem } from './GlBackBufferSystem';
 import { GlColorMaskSystem } from './GlColorMaskSystem';
 import { GlEncoderSystem } from './GlEncoderSystem';
+import { GlLimitsSystem } from './GlLimitsSystem';
 import { GlStencilSystem } from './GlStencilSystem';
 import { GlUboSystem } from './GlUboSystem';
 import { GlRenderTargetSystem } from './renderTarget/GlRenderTargetSystem';
@@ -31,6 +32,7 @@ const DefaultWebGLSystems = [
     GlUboSystem,
     GlBackBufferSystem,
     GlContextSystem,
+    GlLimitsSystem,
     GlBufferSystem,
     GlTextureSystem,
     GlRenderTargetSystem,

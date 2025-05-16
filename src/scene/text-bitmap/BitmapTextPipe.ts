@@ -1,6 +1,5 @@
 import { Cache } from '../../assets/cache/Cache';
 import { ExtensionType } from '../../extensions/Extensions';
-import { BigPool } from '../../utils/pool/PoolGroup';
 import { Graphics } from '../graphics/shared/Graphics';
 import { CanvasTextMetrics } from '../text/canvas/CanvasTextMetrics';
 import { SdfShader } from '../text/sdfShader/SdfShader';
@@ -11,7 +10,6 @@ import type { InstructionSet } from '../../rendering/renderers/shared/instructio
 import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderable } from '../../rendering/renderers/shared/Renderable';
 import type { Renderer } from '../../rendering/renderers/types';
-import type { PoolItem } from '../../utils/pool/Pool';
 import type { BitmapText } from './BitmapText';
 
 /** @internal */
@@ -21,7 +19,7 @@ export class BitmapTextGraphics extends Graphics
     {
         if (this.context.customShader)
         {
-            BigPool.return(this.context.customShader as PoolItem);
+            this.context.customShader.destroy();
         }
 
         super.destroy();
@@ -116,7 +114,8 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
         {
             if (!context.customShader)
             {
-                context.customShader = BigPool.get(SdfShader);
+                // TODO: Check if this is a WebGL renderer before asserting type
+                context.customShader = new SdfShader(this._renderer.limits.maxBatchableTextures);
             }
         }
 
