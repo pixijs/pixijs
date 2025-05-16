@@ -82,7 +82,9 @@ export class TextureStyle extends EventEmitter<{
     destroy: TextureStyle,
 }> implements BindResource
 {
+    /** @internal */
     public _resourceType = 'textureSampler';
+    /** @internal */
     public _touched = 0;
     private _sharedResourceId: number;
 

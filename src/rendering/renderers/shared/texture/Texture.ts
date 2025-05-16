@@ -158,6 +158,7 @@ export class Texture<TextureSourceType extends TextureSource = TextureSource> ex
      */
     public destroyed: boolean;
 
+    /** @internal */
     public _source: TextureSourceType;
 
     /**

@@ -138,7 +138,10 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      */
     public _properties: Record<string, ParticleRendererProperty>;
 
-    /** Indicates if the children of this ParticleContainer have changed and need to be updated. */
+    /**
+     * Indicates if the children of this ParticleContainer have changed and need to be updated.
+     * @internal
+     */
     public _childrenDirty = false;
 
     /**

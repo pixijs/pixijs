@@ -66,6 +66,7 @@ export class RopeGeometry extends MeshGeometry
     /**
      * The width (i.e., thickness) of the rope.
      * @readonly
+     * @internal
      */
     public _width: number;
 

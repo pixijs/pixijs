@@ -35,6 +35,7 @@ export class State
      * at all the individual settings.
      */
     public data: number;
+    /** @internal */
     public _blendModeId: number;
     private _blendMode: BLEND_MODES;
     private _polygonOffset: number;

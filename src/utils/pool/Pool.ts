@@ -5,6 +5,7 @@
  */
 export class Pool<T extends PoolItem>
 {
+    /** @internal */
     public readonly _classType: PoolItemConstructor<T>;
     private readonly _pool: T[] = [];
     private _count = 0;

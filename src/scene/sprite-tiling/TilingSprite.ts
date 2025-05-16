@@ -166,9 +166,12 @@ export class TilingSprite extends ViewContainer<TilingSpriteGpuData> implements 
         warn('uvRespectAnchor is deprecated, please use applyAnchorToTexture instead');
         this.applyAnchorToTexture = value;
     }
-    public _anchor: ObservablePoint;
 
+    /** @internal */
+    public _anchor: ObservablePoint;
+    /** @internal */
     public _tileTransform: Transform;
+    /** @internal */
     public _texture: Texture;
 
     private _width: number;

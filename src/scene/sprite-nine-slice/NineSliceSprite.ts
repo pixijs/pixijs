@@ -85,10 +85,12 @@ export class NineSliceSprite extends ViewContainer<NineSliceSpriteGpuData> imple
     };
 
     public override readonly renderPipeId: string = 'nineSliceSprite';
+    /** @internal */
     public _texture: Texture;
+    /** @internal */
+    public _anchor: ObservablePoint;
 
     public batched = true;
-    public _anchor: ObservablePoint;
     private _leftWidth: number;
     private _topHeight: number;
     private _rightWidth: number;

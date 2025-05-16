@@ -73,9 +73,10 @@ export class Sprite extends ViewContainer<BatchableSprite>
     public override readonly renderPipeId: string = 'sprite';
 
     public batched = true;
+    /** @internal */
     public readonly _anchor: ObservablePoint;
 
-    // sprite specific..
+    /** @internal */
     public _texture: Texture;
 
     private readonly _visualBounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };

@@ -48,6 +48,7 @@ export class GlShaderSystem
 
     private _programDataHash: Record<string, GlProgramData> = Object.create(null);
     private readonly _renderer: WebGLRenderer;
+    /** @internal */
     public _gl: WebGL2RenderingContext;
     private _shaderSyncFunctions: Record<string, ShaderSyncFunction> = Object.create(null);
 

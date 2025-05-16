@@ -91,11 +91,11 @@ export class Mesh<
     public override readonly renderPipeId: string = 'mesh';
     public state: State;
 
-    /** @ignore */
+    /** @internal */
     public _texture: Texture;
-    /** @ignore */
+    /** @internal */
     public _geometry: GEOMETRY;
-    /** @ignore */
+    /** @internal */
     public _shader: SHADER | null = null;
     /**
      * @param {MeshOptions} options - options for the mesh instance

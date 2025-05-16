@@ -102,25 +102,24 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     /**
      * The resource type used by this TextureSource. This is used by the bind groups to determine
      * how to handle this resource.
-     * @ignore
      * @internal
      */
     public readonly _resourceType = 'textureSource';
     /**
      * i unique resource id, used by the bind group systems.
      * This can change if the texture is resized or its resource changes
+     * @internal
      */
     public _resourceId = uid('resource');
     /**
      * this is how the backends know how to upload this texture to the GPU
      * It changes depending on the resource type. Classes that extend TextureSource
      * should override this property.
-     * @ignore
      * @internal
      */
     public uploadMethodId = 'unknown';
 
-    // dimensions
+    /** @internal */
     public _resolution = 1;
 
     /** the pixel width of this texture source. This is the REAL pure number, not accounting resolution */
