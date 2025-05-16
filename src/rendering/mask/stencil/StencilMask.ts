@@ -9,6 +9,13 @@ import type { Bounds } from '../../../scene/container/bounds/Bounds';
 import type { Effect } from '../../../scene/container/Effect';
 import type { PoolItem } from '../../../utils/pool/Pool';
 
+/**
+ * A mask that uses the stencil buffer to clip the rendering of a container.
+ * This is useful for complex masks that cannot be achieved with simple shapes.
+ * It is more performant than using a `Graphics` mask, but requires WebGL support.
+ * It is also useful for masking with `Container` objects that have complex shapes.
+ * @category rendering
+ */
 export class StencilMask implements Effect, PoolItem
 {
     public static extension: ExtensionMetadata = ExtensionType.MaskEffect;

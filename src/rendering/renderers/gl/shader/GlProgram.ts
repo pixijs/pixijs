@@ -9,14 +9,7 @@ import { stripVersion } from './program/preprocessors/stripVersion';
 import type { TypedArray } from '../../shared/buffer/Buffer';
 import type { ExtractedAttributeData } from './program/extractAttributesFromGlProgram';
 
-export interface GlAttributeData
-{
-    type: string;
-    size: number;
-    location: number;
-    name: string;
-}
-
+/** @internal */
 export interface GlUniformData
 {
     name: string;
@@ -27,6 +20,7 @@ export interface GlUniformData
     value: any;
 }
 
+/** @internal */
 export interface GlUniformBlockData
 {
     index: number;
@@ -37,7 +31,7 @@ export interface GlUniformBlockData
 
 /**
  * The options for the gl program
- * @memberof rendering
+ * @category rendering
  */
 export interface GlProgramOptions
 {
@@ -98,7 +92,7 @@ const programCache: Record<string, GlProgram> = Object.create(null);
  * For optimal usage and best performance, its best to reuse programs as much as possible.
  * You should use the {@link GlProgram.from} helper function to create programs.
  * @class
- * @memberof rendering
+ * @category rendering
  */
 export class GlProgram
 {
@@ -115,19 +109,16 @@ export class GlProgram
     /**
      * attribute data extracted from the program once created this happens when the program is used for the first time
      * @internal
-     * @ignore
      */
     public _attributeData: Record<string, ExtractedAttributeData>;
     /**
      * uniform data extracted from the program once created this happens when the program is used for the first time
      * @internal
-     * @ignore
      */
     public _uniformData: Record<string, GlUniformData>;
     /**
      * uniform data extracted from the program once created this happens when the program is used for the first time
      * @internal
-     * @ignore
      */
     public _uniformBlockData: Record<string, GlUniformBlockData>;
     /** details on how to use this program with transform feedback */
@@ -135,7 +126,6 @@ export class GlProgram
     /**
      * the key that identifies the program via its source vertex + fragment
      * @internal
-     * @ignore
      */
     public readonly _key: number;
 

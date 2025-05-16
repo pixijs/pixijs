@@ -12,6 +12,7 @@ import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import type { Renderer } from '../../../rendering/renderers/types';
 import type { ParticleContainer } from './ParticleContainer';
 
+/** @internal */
 export interface ParticleContainerAdaptor
 {
     execute(particleContainerPop: ParticleContainerPipe, container: ParticleContainer): void;
@@ -19,17 +20,21 @@ export interface ParticleContainerAdaptor
 
 /**
  * Renderer for Particles that is designer for speed over feature set.
- * @memberof scene
+ * @category scene
  */
 export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
 {
     /** The default shader that is used if a sprite doesn't have a more specific one. */
     public defaultShader: Shader;
 
+    /** @internal */
     public adaptor: ParticleContainerAdaptor;
+    /** @internal */
     public readonly state = State.for2d();
+    /** @internal */
     public readonly renderer: Renderer;
 
+    /** Local uniforms that are used for rendering particles. */
     public readonly localUniforms = new UniformGroup({
         uTranslationMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
         uColor: { value: new Float32Array(4), type: 'vec4<f32>' },

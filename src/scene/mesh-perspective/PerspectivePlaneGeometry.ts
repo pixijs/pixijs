@@ -7,7 +7,7 @@ import type { PlaneGeometryOptions } from '../mesh-plane/PlaneGeometry';
 
 /**
  * Constructor options used for `PerspectivePlaneGeometry` instances.
- * @memberof scene
+ * @category scene
  */
 export interface PerspectivePlaneGeometryOptions extends PlaneGeometryOptions
 {
@@ -31,8 +31,8 @@ export interface PerspectivePlaneGeometryOptions extends PlaneGeometryOptions
  *  verticesY: 10,
  * });
  * ```
- * @see {@link scene.PerspectivePlaneGeometry}
- * @memberof scene
+ * @see {@link PerspectivePlaneGeometry}
+ * @category scene
  */
 export class PerspectivePlaneGeometry extends PlaneGeometry
 {

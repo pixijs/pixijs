@@ -8,7 +8,7 @@ let uid = 1;
 
 /**
  * The SchedulerSystem manages scheduled tasks with specific intervals.
- * @memberof rendering
+ * @category rendering
  */
 export class SchedulerSystem implements System<null>
 {
@@ -116,7 +116,6 @@ export class SchedulerSystem implements System<null>
     /**
      * Destroys the scheduler system and removes all tasks.
      * @internal
-     * @ignore
      */
     public destroy(): void
     {

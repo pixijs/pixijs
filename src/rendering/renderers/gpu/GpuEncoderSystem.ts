@@ -17,7 +17,7 @@ import type { WebGPURenderer } from './WebGPURenderer';
 
 /**
  * The system that handles encoding commands for the GPU.
- * @memberof rendering
+ * @category rendering
  */
 export class GpuEncoderSystem implements System
 {

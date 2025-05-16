@@ -21,7 +21,7 @@ import type { Container } from '../scene/container/Container';
  *  propagation paths by each button of the pointer.
  * @property {Record.<number, object>} clicksByButton - Holds clicking data for each button of the pointer.
  * @property {Container[]} overTargets - The Container propagation path over which the pointer is hovering.
- * @memberof events
+ * @category events
  */
 export type TrackingData = {
     pressTargetsByButton: {
@@ -59,7 +59,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code mousedown}.
+ * Capture phase equivalent of `mousedown`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#mousedowncapture
@@ -76,7 +76,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code rightdown}.
+ * Capture phase equivalent of `rightdown`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#rightdowncapture
@@ -93,7 +93,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code mouseup}.
+ * Capture phase equivalent of `mouseup`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#mouseupcapture
@@ -110,7 +110,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code rightup}.
+ * Capture phase equivalent of `rightup`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#rightupcapture
@@ -121,12 +121,12 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  * Fired when a pointer device button (usually a mouse left-button) is pressed and released on
  * the container. Container's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
- * A {@code click} event fires after the {@code pointerdown} and {@code pointerup} events, in that
- * order. If the mouse is moved over another Container after the {@code pointerdown} event, the
- * {@code click} event is fired on the most specific common ancestor of the two target Containers.
+ * A `click` event fires after the `pointerdown` and `pointerup` events, in that
+ * order. If the mouse is moved over another Container after the `pointerdown` event, the
+ * `click` event is fired on the most specific common ancestor of the two target Containers.
  *
- * The {@code detail} property of the event is the number of clicks that occurred within a 200ms
- * window of each other upto the current click. For example, it will be {@code 2} for a double click.
+ * The `detail` property of the event is the number of clicks that occurred within a 200ms
+ * window of each other upto the current click. For example, it will be `2` for a double click.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#click
@@ -134,7 +134,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code click}.
+ * Capture phase equivalent of `click`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#clickcapture
@@ -146,7 +146,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  * and released on the container. Container's `eventMode`
  * property must be set to `static` or 'dynamic' to fire event.
  *
- * This event follows the semantics of {@code click}.
+ * This event follows the semantics of `click`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#rightclick
@@ -154,7 +154,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code rightclick}.
+ * Capture phase equivalent of `rightclick`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#rightclickcapture
@@ -168,8 +168,8 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  * Container's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * This event is specific to the Federated Events API. It does not have a capture phase, unlike most of the
- * other events. It only bubbles to the most specific ancestor of the targets of the corresponding {@code pointerdown}
- * and {@code pointerup} events, i.e. the target of the {@code click} event.
+ * other events. It only bubbles to the most specific ancestor of the targets of the corresponding `pointerdown`
+ * and `pointerup` events, i.e. the target of the `click` event.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#mouseupoutside
@@ -177,7 +177,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code mouseupoutside}.
+ * Capture phase equivalent of `mouseupoutside`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#mouseupoutsidecapture
@@ -196,7 +196,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code rightupoutside}.
+ * Capture phase equivalent of `rightupoutside`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#rightupoutsidecapture
@@ -222,7 +222,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code mousemove}.
+ * Capture phase equivalent of `mousemove`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#mousemovecapture
@@ -239,7 +239,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code mouseover}.
+ * Capture phase equivalent of `mouseover`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#mouseovercapture
@@ -255,7 +255,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code mouseenter}
+ * Capture phase equivalent of `mouseenter`
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#mouseentercapture
@@ -267,7 +267,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  * Container's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * This may be fired on a Container that was removed from the scene graph immediately after
- * a {@code mouseover} event.
+ * a `mouseover` event.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#mouseout
@@ -275,7 +275,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code mouseout}.
+ * Capture phase equivalent of `mouseout`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#mouseoutcapture
@@ -291,7 +291,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code mouseleave}.
+ * Capture phase equivalent of `mouseleave`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#mouseleavecapture
@@ -308,7 +308,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code pointerdown}.
+ * Capture phase equivalent of `pointerdown`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#pointerdowncapture
@@ -325,7 +325,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code pointerup}.
+ * Capture phase equivalent of `pointerup`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#pointerupcapture
@@ -342,7 +342,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code pointercancel}.
+ * Capture phase equivalent of `pointercancel`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#pointercancelcapture
@@ -359,7 +359,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code pointertap}.
+ * Capture phase equivalent of `pointertap`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#pointertapcapture
@@ -372,8 +372,8 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  * Container's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * This event is specific to the Federated Events API. It does not have a capture phase, unlike most of the
- * other events. It only bubbles to the most specific ancestor of the targets of the corresponding {@code pointerdown}
- * and {@code pointerup} events, i.e. the target of the {@code click} event.
+ * other events. It only bubbles to the most specific ancestor of the targets of the corresponding `pointerdown`
+ * and `pointerup` events, i.e. the target of the `click` event.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#pointerupoutside
@@ -381,7 +381,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code pointerupoutside}.
+ * Capture phase equivalent of `pointerupoutside`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#pointerupoutsidecapture
@@ -407,7 +407,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code pointermove}.
+ * Capture phase equivalent of `pointermove`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#pointermovecapture
@@ -424,7 +424,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code pointerover}.
+ * Capture phase equivalent of `pointerover`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#pointerovercapture
@@ -440,7 +440,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code pointerenter}
+ * Capture phase equivalent of `pointerenter`
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#pointerentercapture
@@ -457,7 +457,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code pointerout}.
+ * Capture phase equivalent of `pointerout`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#pointeroutcapture
@@ -475,7 +475,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code pointerleave}.
+ * Capture phase equivalent of `pointerleave`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#pointerleavecapture
@@ -492,7 +492,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code touchstart}.
+ * Capture phase equivalent of `touchstart`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#touchstartcapture
@@ -509,7 +509,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code touchend}.
+ * Capture phase equivalent of `touchend`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#touchendcapture
@@ -526,7 +526,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code touchcancel}.
+ * Capture phase equivalent of `touchcancel`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#touchcancelcapture
@@ -543,7 +543,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code tap}.
+ * Capture phase equivalent of `tap`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#tapcapture
@@ -561,7 +561,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code touchendoutside}.
+ * Capture phase equivalent of `touchendoutside`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#touchendoutsidecapture
@@ -587,7 +587,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code touchmove}.
+ * Capture phase equivalent of `touchmove`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#touchmovecapture
@@ -603,7 +603,7 @@ export type EmitterListeners = Record<string, EmitterListener | EmitterListener[
  */
 
 /**
- * Capture phase equivalent of {@code wheel}.
+ * Capture phase equivalent of `wheel`.
  *
  * These events are propagating from the {@link EventSystem EventSystem}.
  * @event Container#wheelcapture

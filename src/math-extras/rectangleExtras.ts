@@ -1,18 +1,7 @@
 import { Rectangle } from '../maths/shapes/Rectangle';
 
+/** @internal */
 export const rectangleExtraMixins: Partial<Rectangle> = {
-    /**
-     * Determines whether the `other` Rectangle is contained within `this` Rectangle object.
-     * Rectangles that occupy the same space are considered to be containing each other.
-     * Rectangles without area (width or height equal to zero) can't contain anything,
-     * not even other arealess rectangles.
-     *
-     * _Note: Only available with **pixi.js/math-extras**._
-     * @method containsRect
-     * @memberof maths.Rectangle#
-     * @param {Rectangle} other - The Rectangle to fit inside `this`.
-     * @returns {boolean} A value of `true` if `this` Rectangle contains `other`; otherwise `false`.
-     */
     containsRect(other: Rectangle): boolean
     {
         if (other.width <= 0 || other.height <= 0)
@@ -22,15 +11,6 @@ export const rectangleExtraMixins: Partial<Rectangle> = {
 
         return other.x >= this.x && other.y >= this.y && other.right <= this.right && other.bottom <= this.bottom;
     },
-    /**
-     * Accepts `other` Rectangle and returns true if the given Rectangle is equal to `this` Rectangle.
-     *
-     * _Note: Only available with **pixi.js/math-extras**._
-     * @method equals
-     * @memberof maths.Rectangle#
-     * @param {Rectangle} other - The Rectangle to compare with `this`
-     * @returns {boolean} Returns true if all `x`, `y`, `width`, and `height` are equal.
-     */
     equals(other: Rectangle): boolean
     {
         if (other === this)
@@ -46,22 +26,6 @@ export const rectangleExtraMixins: Partial<Rectangle> = {
             && this.height === other.height
         );
     },
-
-    /**
-     * If the area of the intersection between the Rectangles `other` and `this` is not zero,
-     * returns the area of intersection as a Rectangle object. Otherwise, return an empty Rectangle
-     * with its properties set to zero.
-     * Rectangles without area (width or height equal to zero) can't intersect or be intersected
-     * and will always return an empty rectangle with its properties set to zero.
-     *
-     * _Note: Only available with **pixi.js/math-extras**._
-     * @method intersection
-     * @memberof maths.Rectangle#
-     * @param {Rectangle} other - The Rectangle to intersect with `this`.
-     * @param {Rectangle} [outRect] - A Rectangle object in which to store the value,
-     * optional (otherwise will create a new Rectangle).
-     * @returns {Rectangle} The intersection of `this` and `other`.
-     */
     intersection<T extends Rectangle>(other: Rectangle, outRect?: T): T
     {
         if (!outRect)
@@ -96,19 +60,6 @@ export const rectangleExtraMixins: Partial<Rectangle> = {
 
         return outRect;
     },
-
-    /**
-     * Adds `this` and `other` Rectangles together to create a new Rectangle object filling
-     * the horizontal and vertical space between the two rectangles.
-     *
-     * _Note: Only available with **pixi.js/math-extras**._
-     * @method union
-     * @memberof maths.Rectangle#
-     * @param {Rectangle} other - The Rectangle to unite with `this`.
-     * @param {Rectangle} [outRect] - A Rectangle object in which to store the value,
-     * optional (otherwise will create a new Rectangle).
-     * @returns {Rectangle} The union of `this` and `other`.
-     */
     union<T extends Rectangle>(other: Rectangle, outRect?: T): T
     {
         if (!outRect)

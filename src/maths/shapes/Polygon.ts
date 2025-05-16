@@ -29,7 +29,7 @@ let tempRect2: Rectangle;
  * const polygon3 = new Polygon(new Point(0, 0), new Point(0, 100), new Point(100, 100));
  * const polygon4 = new Polygon(0, 0, 0, 100, 100, 100);
  * ```
- * @memberof maths
+ * @category maths
  */
 export class Polygon implements ShapePrimitive
 {

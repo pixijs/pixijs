@@ -6,6 +6,9 @@ import { hslgpu } from '../filters/blend-modes/hls/GPUhls';
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
 /**
+ * The final color has the saturation of the top color, while using the hue and luminosity of the bottom color.
+ * A pure gray backdrop, having no saturation, will have no effect.
+ *
  * Available as `container.blendMode = 'saturation'` after importing `pixi.js/advanced-blend-modes`.
  * @example
  * import 'pixi.js/advanced-blend-modes';
@@ -13,6 +16,7 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  *
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'saturation'
+ * @category filters
  */
 export class SaturationBlend extends BlendModeFilter
 {

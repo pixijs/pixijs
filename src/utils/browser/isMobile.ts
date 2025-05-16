@@ -5,15 +5,11 @@ type isMobileJsType = typeof isMobileJs & { default?: typeof isMobileJs };
 const isMobileCall = (isMobileJs as isMobileJsType).default ?? isMobileJs;
 
 /**
- * The result of the {@link utils.isMobile} function.
- * @ignore
- * @memberof utils
+ * The result of the {@link isMobile} function.
+ * @category utils
  */
 export type isMobileResult = {
-    /**
-     * Whether the device is an Apple device.
-     * @memberof utils.isMobile
-     */
+    /** Whether the device is an Apple device. */
     apple: {
         phone: boolean;
         ipod: boolean;
@@ -21,37 +17,25 @@ export type isMobileResult = {
         universal: boolean;
         device: boolean;
     };
-    /**
-     * Whether the device is an Amazon device.
-     * @memberof utils.isMobile
-     */
+    /** Whether the device is an Amazon device. */
     amazon: {
         phone: boolean;
         tablet: boolean;
         device: boolean;
     };
-    /**
-     * Whether the device is an Android device.
-     * @memberof utils.isMobile
-     */
+    /** Whether the device is an Android device. */
     android: {
         phone: boolean;
         tablet: boolean;
         device: boolean;
     };
-    /**
-     * Whether the device is a Windows device.
-     * @memberof utils.isMobile
-     */
+    /** Whether the device is a Windows device. */
     windows: {
         phone: boolean;
         tablet: boolean;
         device: boolean;
     };
-    /**
-     * Whether the device is a specific device.
-     * @memberof utils.isMobile
-     */
+    /** Whether the device is a specific device. */
     other: {
         blackberry: boolean;
         blackberry10: boolean;
@@ -60,20 +44,11 @@ export type isMobileResult = {
         chrome: boolean;
         device: boolean;
     };
-    /**
-     * Whether the device is a phone device.
-     * @memberof utils.isMobile
-     */
+    /** Whether the device is a phone device. */
     phone: boolean;
-    /**
-     * Whether the device is a tablet device.
-     * @memberof utils.isMobile
-     */
+    /** Whether the device is a tablet device. */
     tablet: boolean;
-    /**
-     * Whether the device is any kind of device.
-     * @memberof utils.isMobile
-     */
+    /** Whether the device is any kind of device. */
     any: boolean;
 };
 
@@ -86,6 +61,6 @@ export type isMobileResult = {
  *    // The device is an Apple tablet device.
  * }
  * ```
- * @memberof utils
+ * @category utils
  */
 export const isMobile: isMobileResult = isMobileCall(globalThis.navigator);

@@ -5,6 +5,7 @@ import type { TextureSource } from '../../../shared/texture/sources/TextureSourc
 import type { GPU } from '../../GpuDeviceSystem';
 import type { GpuTextureUploader } from './GpuTextureUploader';
 
+/** @internal */
 export const gpuUploadImageResource = {
 
     type: 'image',

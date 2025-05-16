@@ -34,6 +34,7 @@ const tempRect = new Rectangle();
  * const textureMatrix = generateTextureMatrix(matrix, fillStyle, shape);
  * // textureMatrix now contains the proper UV mapping for the texture
  * ```
+ * @internal
  */
 export function generateTextureMatrix(out: Matrix, style: FillStyle | StrokeStyle, shape: ShapePrimitive, matrix?: Matrix)
 {

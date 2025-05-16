@@ -3,6 +3,7 @@ import { bitmapFontXMLParser } from './bitmapFontXMLParser';
 
 import type { BitmapFontData } from '../AbstractBitmapFont';
 
+/** @internal */
 export const bitmapFontXMLStringParser = {
     test(data: string | XMLDocument | BitmapFontData): boolean
     {

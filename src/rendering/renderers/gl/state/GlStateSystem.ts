@@ -17,7 +17,7 @@ const DEPTH_MASK = 5;
 
 /**
  * System plugin to the renderer to manage WebGL state machines
- * @memberof rendering
+ * @category rendering
  */
 export class GlStateSystem implements System
 {
@@ -53,7 +53,7 @@ export class GlStateSystem implements System
 
     /**
      * GL context
-     * @member {WebGLRenderingContext}
+     * @type {WebGLRenderingContext}
      * @readonly
      */
     protected gl: GlRenderingContext;
@@ -62,13 +62,13 @@ export class GlStateSystem implements System
 
     /**
      * Collection of calls
-     * @member {Function[]}
+     * @type {Function[]}
      */
     protected readonly map: ((value: boolean) => void)[];
 
     /**
      * Collection of check calls
-     * @member {Function[]}
+     * @type {Function[]}
      */
     protected readonly checks: ((system: this, state: State) => void)[];
 
@@ -329,7 +329,6 @@ export class GlStateSystem implements System
         this.gl.polygonOffset(value, scale);
     }
 
-    // used
     /** Resets all the logic and disables the VAOs. */
     public resetState(): void
     {
@@ -393,9 +392,7 @@ export class GlStateSystem implements System
         system.setPolygonOffset(1, state.polygonOffset);
     }
 
-    /**
-     * @ignore
-     */
+    /** @ignore */
     public destroy(): void
     {
         this.gl = null;

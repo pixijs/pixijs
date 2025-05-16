@@ -18,6 +18,10 @@ import type { Mesh } from './Mesh';
 // TODO Record mode is a P2, will get back to this as it's not a priority
 // const recordMode = true;
 
+/**
+ * GPUData for Mesh
+ * @internal
+ */
 export class MeshGpuData implements GPUData
 {
     public meshData?: MeshData;
@@ -29,13 +33,21 @@ export class MeshGpuData implements GPUData
     }
 }
 
+/**
+ * The data for the mesh
+ * @internal
+ */
 interface MeshData
 {
+    /** if the mesh is batched or not */
     batched: boolean;
+    /** the size of the index buffer */
     indexSize: number;
+    /** the size of the vertex buffer */
     vertexSize: number;
 }
 
+/** @internal */
 export interface MeshAdaptor
 {
     init(): void;
@@ -43,6 +55,12 @@ export interface MeshAdaptor
     destroy(): void;
 }
 
+/**
+ * The MeshPipe is responsible for handling the rendering of Mesh objects.
+ * It manages the batching of meshes, updates their GPU data, and executes the rendering instructions.
+ * It also handles the local uniforms for each mesh, such as transformation matrices and colors.
+ * @category scene
+ */
 export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
 {
     /** @ignore */

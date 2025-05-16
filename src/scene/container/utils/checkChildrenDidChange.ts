@@ -14,6 +14,7 @@ import type { Container } from '../Container';
  * @param previousData.data - the data array
  * @param previousData.index - the index of the data array
  * @param previousData.didChange - did the data change
+ * @internal
  */
 export function checkChildrenDidChange(
     container: Container,

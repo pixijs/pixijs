@@ -8,7 +8,7 @@ import type { Container } from '../container/Container';
 
 /**
  * A batchable sprite object.
- * @ignore
+ * @internal
  */
 export class BatchableSprite implements DefaultBatchableQuadElement
 {

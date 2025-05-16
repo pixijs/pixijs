@@ -5,6 +5,12 @@ import type { TextureSource } from '../../renderers/shared/texture/sources/Textu
 
 const cachedGroups: Record<number, BindGroup> = {};
 
+/**
+ * @param textures
+ * @param size
+ * @param maxTextures
+ * @internal
+ */
 export function getTextureBatchBindGroup(textures: TextureSource[], size: number, maxTextures: number)
 {
     let uid = 2166136261; // FNV-1a 32-bit offset basis

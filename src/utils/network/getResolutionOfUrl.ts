@@ -3,8 +3,7 @@ import { Resolver } from '../../assets/resolver/Resolver';
 /**
  * get the resolution / device pixel ratio of an asset by looking for the prefix
  * used by spritesheets and image urls
- * @memberof utils
- * @function getResolutionOfUrl
+ * @category utils
  * @param {string} url - the image path
  * @param {number} [defaultValue=1] - the defaultValue if no filename prefix is set.
  * @returns {number} resolution / device pixel ratio of an asset

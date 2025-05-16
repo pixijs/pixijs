@@ -7,6 +7,8 @@ import { GifSource } from './GifSource';
 import type { SCALE_MODE } from '../rendering/renderers/shared/texture/const';
 
 /**
+ * @module
+ * @categoryDescription gif
  * Optional module to import to decode and play animated GIFs.
  * @example
  * import { Assets } from 'pixi.js';
@@ -14,12 +16,11 @@ import type { SCALE_MODE } from '../rendering/renderers/shared/texture/const';
  *
  * const source = await Assets.load('example.gif');
  * const gif = new GifSprite({ source });
- * @namespace gif
  */
 
 /**
  * Default options for all GifSprite objects.
- * @memberof gif
+ * @category gif
  */
 interface GifSpriteOptions extends Omit<SpriteOptions, 'texture'>
 {
@@ -29,7 +30,7 @@ interface GifSpriteOptions extends Omit<SpriteOptions, 'texture'>
     autoPlay?: boolean;
     /**
      * Scale Mode to use for the texture
-     * @type {PIXI.SCALE_MODE}
+     * @type {SCALE_MODE}
      */
     scaleMode?: SCALE_MODE;
     /** To enable looping */
@@ -51,14 +52,14 @@ interface GifSpriteOptions extends Omit<SpriteOptions, 'texture'>
 /**
  * Runtime object to play animated GIFs. This object is similar to an AnimatedSprite.
  * It support playback (seek, play, stop) as well as animation speed and looping.
- * @memberof gif
+ * @category gif
  * @see Thanks to {@link https://github.com/matt-way/gifuct-js/ gifuct-js}
  */
 class GifSprite extends Sprite
 {
     /**
      * Default options for all GifSprite objects.
-     * @property {PIXI.SCALE_MODE} [scaleMode='linear'] - Scale mode to use for the texture.
+     * @property {SCALE_MODE} [scaleMode='linear'] - Scale mode to use for the texture.
      * @property {boolean} [loop=true] - To enable looping.
      * @property {number} [animationSpeed=1] - Speed of the animation.
      * @property {boolean} [autoUpdate=true] - Set to `false` to manage updates yourself.
@@ -136,10 +137,10 @@ class GifSprite extends Sprite
     /** The current frame number (zero-based index). */
     private _currentFrame = 0;
 
-    /** `true` uses PIXI.Ticker.shared to auto update animation time.*/
+    /** `true` uses {@link Ticker.shared} to auto update animation time.*/
     private _autoUpdate = false;
 
-    /** `true` if the instance is currently connected to PIXI.Ticker.shared to auto update animation time. */
+    /** `true` if the instance is currently connected to {@link Ticker.shared} to auto update animation time. */
     private _isConnectedToTicker = false;
 
     /** If animation is currently playing. */
@@ -323,7 +324,7 @@ class GifSprite extends Sprite
     }
 
     /**
-     * Whether to use PIXI.Ticker.shared to auto update animation time.
+     * Whether to use {@link Ticker.shared} to auto update animation time.
      * @default true
      */
     get autoUpdate(): boolean

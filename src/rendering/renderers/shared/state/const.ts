@@ -1,6 +1,6 @@
 /**
  * Various blend modes supported by Pixi
- * @memberof filters
+ * @category filters
  */
 export type BLEND_MODES = 'inherit'
 | 'normal'
@@ -39,7 +39,7 @@ export type BLEND_MODES = 'inherit'
 
 /**
  * The map of blend modes supported by Pixi
- * @memberof rendering
+ * @category rendering
  */
 export const BLEND_TO_NPM = {
     normal: 'normal-npm',
@@ -49,7 +49,7 @@ export const BLEND_TO_NPM = {
 
 /**
  * The stencil operation to perform when using the stencil buffer
- * @memberof rendering
+ * @category rendering
  */
 export enum STENCIL_MODES
 {
@@ -63,7 +63,7 @@ export enum STENCIL_MODES
 
 /**
  * The culling mode to use. It can be either `none`, `front` or `back`.
- * @memberof rendering
+ * @category rendering
  */
 export type CULL_MODES = 'none' | 'back' | 'front';
 

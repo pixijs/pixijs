@@ -10,6 +10,7 @@ import { buildArc } from './buildArc';
  * @param x2
  * @param y2
  * @param radius
+ * @internal
  */
 export function buildArcTo(
     points: number[],

@@ -4,6 +4,7 @@ import type { TEXTURE_FORMATS } from '../../../shared/texture/const';
 
 let supportedGPUCompressedTextureFormats: TEXTURE_FORMATS[];
 
+/** @internal */
 export async function getSupportedGPUCompressedTextureFormats(): Promise<TEXTURE_FORMATS[]>
 {
     if (supportedGPUCompressedTextureFormats) return supportedGPUCompressedTextureFormats;

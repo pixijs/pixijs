@@ -14,9 +14,9 @@ import type { ResolvedAsset } from '../../../types';
 import type { Loader } from '../../Loader';
 
 /**
- * Configuration for the [loadSVG]{@link assets.loadSVG} plugin.
- * @see assets.loadSVG
- * @memberof assets
+ * Configuration for the {@link loadSvg} plugin.
+ * @see loadSvg
+ * @category assets
  */
 export interface LoadSVGConfig
 {
@@ -42,7 +42,7 @@ const validSVGMIME = 'image/svg+xml';
 
 /**
  * A simple loader plugin for loading json data
- * @memberof assets
+ * @category assets
  */
 export const loadSvg: LoaderParser<Texture | GraphicsContext, TextureSourceOptions & LoadSVGConfig, LoadSVGConfig> = {
     extension: {

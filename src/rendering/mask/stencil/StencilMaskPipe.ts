@@ -11,8 +11,10 @@ import type { Renderable } from '../../renderers/shared/Renderable';
 import type { Renderer } from '../../renderers/types';
 import type { StencilMask } from './StencilMask';
 
+/** @internal */
 type MaskMode = 'pushMaskBegin' | 'pushMaskEnd' | 'popMaskBegin' | 'popMaskEnd';
 
+/** @internal */
 export interface StencilMaskInstruction extends Instruction
 {
     renderPipeId: 'stencilMask',
@@ -21,6 +23,7 @@ export interface StencilMaskInstruction extends Instruction
     mask: StencilMask,
 }
 
+/** @internal */
 export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
 {
     public static extension = {

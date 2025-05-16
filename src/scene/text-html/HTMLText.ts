@@ -11,8 +11,8 @@ import type { HTMLTextStyleOptions } from './HTMLTextStyle';
 /**
  * Constructor options used for `HTMLText` instances.
  * @property {string} [text=''] - The string that you would like the text to display.
- * @property {text.HTMLTextStyle | text.HTMLTextStyleOptions} [style] - The style of the text.
- * @memberof text
+ * @property {HTMLTextStyle | HTMLTextStyleOptions} [style] - The style of the text.
+ * @category text
  */
 export interface HTMLTextOptions extends TextOptions<HTMLTextStyle, HTMLTextStyleOptions>, PixiMixins.HTMLTextOptions
 {
@@ -20,6 +20,7 @@ export interface HTMLTextOptions extends TextOptions<HTMLTextStyle, HTMLTextStyl
     textureStyle?: TextureStyle | TextureStyleOptions;
 }
 
+// eslint-disable-next-line requireExport/require-export-jsdoc
 export interface HTMLText extends PixiMixins.HTMLText, AbstractText<
     HTMLTextStyle,
     HTMLTextStyleOptions,
@@ -78,7 +79,7 @@ export interface HTMLText extends PixiMixins.HTMLText, AbstractText<
  *         scaleMode: 'nearest',
  *     }
  * });
- * @memberof scene
+ * @category scene
  */
 export class HTMLText extends AbstractText<
     HTMLTextStyle,
@@ -97,7 +98,7 @@ export class HTMLText extends AbstractText<
     public textureStyle?: TextureStyle;
 
     /**
-     * @param {text.HTMLTextOptions} options - The options of the html text.
+     * @param {HTMLTextOptions} options - The options of the html text.
      */
     constructor(options?: HTMLTextOptions);
     /** @deprecated since 8.0.0 */

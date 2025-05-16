@@ -1,5 +1,6 @@
 import type { IParticle } from '../../scene/particle-container/shared/Particle';
 
+/** @internal */
 export const particleUpdateFunctions = {
     aVertex: (ps: IParticle[], f32v: Float32Array, _u32v: Uint32Array, offset: number, stride: number) =>
     {

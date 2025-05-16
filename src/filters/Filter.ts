@@ -14,6 +14,8 @@ import type { Texture } from '../rendering/renderers/shared/texture/Texture';
 import type { FilterSystem } from './FilterSystem';
 
 /**
+ * @module
+ * @categoryDescription filters
  * Filters provide additional shading and post-processing effects to any display object and its children
  * they are attached to.
  *
@@ -33,22 +35,22 @@ import type { FilterSystem } from './FilterSystem';
  *
  * Pixi has a number of built-in filters which can be used in your game or application:
  *
- * - {@link filters.AlphaFilter} - Applies alpha to the display object and any of its children.
- * - {@link filters.BlurFilter} - Applies a Gaussian blur to the display object.
- * - {@link filters.BlurFilterPass} - Applies a blur pass to an object.
- * - {@link filters.ColorBurnBlend} - Blend mode to add color burn to display objects.
- * - {@link filters.ColorDodgeBlend} - Blend mode to add color dodge to display objects.
- * - {@link filters.ColorMatrixFilter} - Transform the color channels by matrix multiplication.
- * - {@link filters.DarkenBlend} - Blend mode to darken display objects.
- * - {@link filters.DisplacementFilter} - Applies a displacement map to distort an object.
- * - {@link filters.DivideBlend} - Blend mode to divide display objects.
- * - {@link filters.HardMixBlend} - Blend mode to hard mix display objects.
- * - {@link filters.LinearBurnBlend} - Blend mode to add linear burn to display objects.
- * - {@link filters.LinearDodgeBlend} - Blend mode to add linear dodge to display objects.
- * - {@link filters.LinearLightBlend} - Blend mode to add linear light to display objects.
- * - {@link filters.NoiseFilter} - Applies random noise to an object.
- * - {@link filters.PinLightBlend} - Blend mode to add pin light to display objects.
- * - {@link filters.SubtractBlend} - Blend mode to subtract display objects.
+ * - {@link AlphaFilter} - Applies alpha to the display object and any of its children.
+ * - {@link BlurFilter} - Applies a Gaussian blur to the display object.
+ * - {@link BlurFilterPass} - Applies a blur pass to an object.
+ * - {@link ColorBurnBlend} - Blend mode to add color burn to display objects.
+ * - {@link ColorDodgeBlend} - Blend mode to add color dodge to display objects.
+ * - {@link ColorMatrixFilter} - Transform the color channels by matrix multiplication.
+ * - {@link DarkenBlend} - Blend mode to darken display objects.
+ * - {@link DisplacementFilter} - Applies a displacement map to distort an object.
+ * - {@link DivideBlend} - Blend mode to divide display objects.
+ * - {@link HardMixBlend} - Blend mode to hard mix display objects.
+ * - {@link LinearBurnBlend} - Blend mode to add linear burn to display objects.
+ * - {@link LinearDodgeBlend} - Blend mode to add linear dodge to display objects.
+ * - {@link LinearLightBlend} - Blend mode to add linear light to display objects.
+ * - {@link NoiseFilter} - Applies random noise to an object.
+ * - {@link PinLightBlend} - Blend mode to add pin light to display objects.
+ * - {@link SubtractBlend} - Blend mode to subtract display objects.
  *
  * <br/>
  * For more available filters, check out the
@@ -56,12 +58,11 @@ import type { FilterSystem } from './FilterSystem';
  *
  * You can also check out the awesome {@link https://pixijs.io/filters/examples/ Filter demo} to see
  * filters in action and combine them!
- * @namespace filters
  */
 
 /**
  * The options to use when creating a new filter.
- * @memberof filters
+ * @category filters
  */
 export interface FilterOptions
 {
@@ -86,7 +87,7 @@ export interface FilterOptions
      * Definitely don't set this to true if the render target has antialiasing set to false. As it will antialias,
      * but you won't see the difference. (default 'off')
      *
-     * This can be a boolean or [FilterAntialias]{@link filters.FilterAntialias} string.
+     * This can be a boolean or [FilterAntialias]{@link FilterAntialias} string.
      */
     antialias?: FilterAntialias | boolean;
     /**
@@ -104,7 +105,11 @@ export interface FilterOptions
     clipToViewport?: boolean;
 }
 
-/** Filter options mixed with shader resources. A filter needs a shader and some resources to work. */
+/**
+ * Filter options mixed with shader resources. A filter needs a shader and some resources to work.
+ * @category filters
+ * @see {@link FilterOptions}
+ */
 export type FilterWithShader = FilterOptions & IShaderWithResources;
 
 /**
@@ -112,7 +117,7 @@ export type FilterWithShader = FilterOptions & IShaderWithResources;
  * - `on` - the filter is always antialiased regardless of the render target settings
  * - `off` - (default) the filter is never antialiased regardless of the render target settings
  * - `inherit` - the filter uses the antialias settings of the render target
- * @memberof filters
+ * @category filters
  */
 export type FilterAntialias = 'on' | 'off' | 'inherit';
 
@@ -142,16 +147,34 @@ export type FilterAntialias = 'on' | 'off' | 'inherit';
  * Its not generally the complexity of the shader that is the bottle neck,
  * but all the framebuffer / shader switching that has to take place.
  * One filter applied to a container with many objects is MUCH faster than many filter applied to many objects.
- * @class
- * @memberof filters
+ * @category filters
+ * @example
+ * import { Filter } from 'pixi.js';
+ *
+ * const customFilter = new Filter({
+ *     glProgram: new GlProgram({
+ *         fragment,
+ *         vertex,
+ *     }),
+ *     resources: {
+ *         timeUniforms: {
+ *             uTime: { value: 0.0, type: 'f32' },
+ *         },
+ *     },
+ * });
+ *
+ * // Apply the filter
+ * sprite.filters = [customFilter];
+ *
+ * // Update uniform
+ * app.ticker.add((ticker) => {
+ *     filter.resources.timeUniforms.uniforms.uTime += 0.04 * ticker.deltaTime;
+ * });
  */
 export class Filter extends Shader
 {
-    /**
-     * The default filter settings
-     * @static
-     */
-    public static readonly defaultOptions: FilterOptions = {
+    /** The default filter settings */
+    public static defaultOptions: FilterOptions = {
         blendMode: 'normal',
         resolution: 1,
         padding: 0,
@@ -180,7 +203,6 @@ export class Filter extends Shader
     /**
      * The gpu state the filter requires to render.
      * @internal
-     * @ignore
      */
     public _state = State.for2d();
 

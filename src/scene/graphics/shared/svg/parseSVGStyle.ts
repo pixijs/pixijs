@@ -10,6 +10,7 @@ import type { Session } from './SVGParser';
  * - 'paint' type can be a color or gradient
  * - 'number' type is a numeric value
  * - 'string' type is a text value
+ * @category scene
  */
 export const styleAttributes = {
     // Fill properties
@@ -29,7 +30,11 @@ export const styleAttributes = {
     // Global properties
     opacity: { type: 'number', default: 1 }, // Overall opacity
 };
-/** Represents the result of parsing SVG style attributes */
+
+/**
+ * Represents the result of parsing SVG style attributes
+ * @internal
+ */
 export type StyleResult = {
     /** The stroke style properties */
     strokeStyle: StrokeStyle;
@@ -47,6 +52,7 @@ export type StyleResult = {
  * @param svg - The SVG element to parse styles from
  * @param session - The current SVG parsing session containing definitions
  * @returns An object containing the parsed fill and stroke styles
+ * @internal
  */
 export function parseSVGStyle(svg: SVGElement, session: Session): StyleResult
 {
@@ -108,7 +114,7 @@ export function parseSVGStyle(svg: SVGElement, session: Session): StyleResult
  * @param id - The attribute name/id to parse
  * @param value - The attribute value to parse
  */
-export function parseAttribute(
+function parseAttribute(
     session: Session,
     result: StyleResult,
     id: string,

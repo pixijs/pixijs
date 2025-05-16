@@ -3,7 +3,7 @@ import { Rectangle } from '../../../maths/shapes/Rectangle';
 
 /**
  * Simple bounds implementation instead of more ambiguous [number, number, number, number]
- * @memberof rendering
+ * @category rendering
  */
 export interface BoundsData
 {
@@ -21,7 +21,7 @@ const defaultMatrix = new Matrix();
 
 /**
  * A representation of an AABB bounding box.
- * @memberof rendering
+ * @category rendering
  */
 export class Bounds
 {

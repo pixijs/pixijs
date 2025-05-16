@@ -22,7 +22,7 @@ import type { Buffer } from './Buffer';
  *    offset: 0,
  *    size: 100,
  * });
- * @memberof rendering
+ * @category rendering
  */
 export class BufferResource extends EventEmitter<{
     change: BindResource,
@@ -40,21 +40,18 @@ export class BufferResource extends EventEmitter<{
     /**
      * a resource type, used to identify how to handle it when its in a bind group / shader resource
      * @internal
-     * @ignore
      */
     public readonly _resourceType = 'bufferResource';
 
     /**
      * used internally to know if a uniform group was used in the last render pass
      * @internal
-     * @ignore
      */
     public _touched = 0;
 
     /**
      * the resource id used internally by the renderer to build bind group keys
      * @internal
-     * @ignore
      */
     public _resourceId = uid('resource');
 
@@ -67,7 +64,6 @@ export class BufferResource extends EventEmitter<{
     /**
      * A cheeky hint to the GL renderer to let it know this is a BufferResource
      * @internal
-     * @ignore
      */
     public readonly _bufferResource = true;
 

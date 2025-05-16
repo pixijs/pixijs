@@ -7,6 +7,10 @@ import type { RenderPipe } from '../../rendering/renderers/shared/instructions/R
 import type { Renderer } from '../../rendering/renderers/types';
 import type { NineSliceSprite } from './NineSliceSprite';
 
+/**
+ * GPU data for NineSliceSprite.
+ * @internal
+ */
 export class NineSliceSpriteGpuData extends BatchableMesh
 {
     constructor()
@@ -21,6 +25,10 @@ export class NineSliceSpriteGpuData extends BatchableMesh
     }
 }
 
+/**
+ * The NineSliceSpritePipe is a render pipe for rendering NineSliceSprites.
+ * @internal
+ */
 export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
 {
     /** @ignore */

@@ -5,7 +5,7 @@ import type { CacheParser } from '../CacheParser';
 
 /**
  * Returns an object of textures from an array of textures to be cached
- * @memberof assets
+ * @category assets
  */
 export const cacheTextureArray: CacheParser<Texture[]> = {
     extension: {

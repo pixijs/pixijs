@@ -3,6 +3,7 @@ import { BatchableSprite } from '../../sprite/BatchableSprite';
 import type { Renderer } from '../../../rendering/renderers/types';
 import type { Text } from '../Text';
 
+/** @internal */
 export class BatchableText extends BatchableSprite
 {
     private readonly _renderer: Renderer;

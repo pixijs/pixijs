@@ -2,7 +2,7 @@ import { FederatedMouseEvent } from './FederatedMouseEvent';
 
 /**
  * A {@link FederatedEvent} for wheel events.
- * @memberof events
+ * @category events
  */
 export class FederatedWheelEvent extends FederatedMouseEvent implements WheelEvent
 {

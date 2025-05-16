@@ -5,7 +5,13 @@ import type { Container } from '../scene/container/Container';
 
 const tempBounds = new Bounds();
 
-type RectangleLike = {x: number, y: number, width: number, height: number};
+/**
+ * A rectangle-like object that contains x, y, width, and height properties.
+ * @example
+ * const rect = { x: 0, y: 0, width: 100, height: 100 };
+ * @category utils
+ */
+export type RectangleLike = {x: number, y: number, width: number, height: number};
 
 /**
  * The Culler class is responsible for managing and culling containers.
@@ -23,7 +29,7 @@ type RectangleLike = {x: number, y: number, width: number, height: number};
  *
  * culler.cull(stage, { x: 0, y: 0, width: 800, height: 600 });
  * renderer.render(stage);
- * @memberof scene
+ * @category scene
  */
 export class Culler
 {

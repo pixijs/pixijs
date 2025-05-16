@@ -1,7 +1,7 @@
 import { Color } from '../../../color/Color';
 import { ExtensionType } from '../../../extensions/Extensions';
 import { type Filter } from '../../../filters/Filter';
-import { CanvasPool } from '../../../rendering/renderers/shared/texture/CanvasPool';
+import { type CanvasAndContext, CanvasPool } from '../../../rendering/renderers/shared/texture/CanvasPool';
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
 import { TextureStyle } from '../../../rendering/renderers/shared/texture/TextureStyle';
 import { getCanvasBoundingBox } from '../../../utils/canvas/getCanvasBoundingBox';
@@ -13,21 +13,13 @@ import { CanvasTextMetrics } from './CanvasTextMetrics';
 import { fontStringFromTextStyle } from './utils/fontStringFromTextStyle';
 import { getCanvasFillStyle } from './utils/getCanvasFillStyle';
 
-import type { ICanvas } from '../../../environment/canvas/ICanvas';
-import type { ICanvasRenderingContext2D } from '../../../environment/canvas/ICanvasRenderingContext2D';
 import type { System } from '../../../rendering/renderers/shared/system/System';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { Renderer } from '../../../rendering/renderers/types';
 
-interface CanvasAndContext
-{
-    canvas: ICanvas;
-    context: ICanvasRenderingContext2D;
-}
-
 /**
  * System plugin to the renderer to manage canvas text.
- * @memberof rendering
+ * @category rendering
  */
 export class CanvasTextSystem implements System
 {
@@ -104,7 +96,15 @@ export class CanvasTextSystem implements System
         return texture;
     }
 
-    public createTextureAndCanvas(options: {
+    /**
+     * @param options - The options of the text that will be used to generate the texture.
+     * @param options.text - the text to render
+     * @param options.style - the style of the text
+     * @param options.resolution - the resolution of the texture
+     * @param options.textureStyle - the style of the texture
+     * @internal
+     */
+    protected createTextureAndCanvas(options: {
         text: string,
         style: TextStyle,
         resolution?: number,
@@ -179,11 +179,11 @@ export class CanvasTextSystem implements System
 
     /**
      * Renders text to its canvas, and updates its texture.
-     * @param text
-     * @param style
-     * @param resolution
-     * @param canvasAndContext
-     * @param padding
+     * @param text - The text to render
+     * @param style - The style of the text
+     * @param resolution - The resolution of the text
+     * @param canvasAndContext - The canvas and context to render the text to
+     * @param padding - The padding of the text
      * @deprecated since 8.8.0
      */
     public renderTextToCanvas(

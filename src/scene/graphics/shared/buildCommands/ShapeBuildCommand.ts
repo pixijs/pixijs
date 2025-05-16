@@ -1,6 +1,7 @@
 import type { ExtensionMetadataDetails } from '../../../../extensions/Extensions';
 import type { ShapePrimitive } from '../../../../maths/shapes/ShapePrimitive';
 
+/** @internal */
 export interface ShapeBuildCommand<T extends ShapePrimitive = ShapePrimitive>
 {
     extension: ExtensionMetadataDetails

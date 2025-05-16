@@ -8,11 +8,11 @@ import type { Texture } from '../../../rendering/renderers/shared/texture/Textur
 import type { Graphics } from './Graphics';
 
 const identityMatrix = new Matrix();
+
 /**
  * A batchable graphics object.
  * @ignore
  */
-
 export class BatchableGraphics implements DefaultBatchableMeshElement
 {
     public readonly packAsQuad = false;

@@ -1,3 +1,14 @@
+/**
+ * @param points
+ * @param x
+ * @param y
+ * @param radius
+ * @param start
+ * @param end
+ * @param clockwise
+ * @param steps
+ * @internal
+ */
 export function buildArc(
     points: number[],
     x: number, y: number,

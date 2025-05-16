@@ -1,5 +1,6 @@
 import type { TEXTURE_FORMATS } from '../../rendering/renderers/shared/texture/const';
 
+/** @internal */
 export enum GL_INTERNAL_FORMAT
 {
     RGBA8_SNORM = 0x8F97,
@@ -297,6 +298,10 @@ const INTERNAL_FORMAT_TO_BYTES_PER_PIXEL: { [id: number]: number } = {
     [GL_INTERNAL_FORMAT.COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_EXT]: 1,
 };
 
+/**
+ * The KTX file format constants.
+ * @internal
+ */
 export const KTX = {
     FILE_HEADER_SIZE,
     FILE_IDENTIFIER,

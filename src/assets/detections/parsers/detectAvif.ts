@@ -5,7 +5,7 @@ import type { FormatDetectionParser } from '../types';
 
 /**
  * Detects if the browser supports the AVIF image format.
- * @memberof assets
+ * @category assets
  */
 export const detectAvif: FormatDetectionParser = {
     extension: {

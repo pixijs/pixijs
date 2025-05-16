@@ -3,7 +3,7 @@ import type { ResolvedAsset } from './types';
 
 /**
  * Quietly Loads assets in the background.
- * @memberof assets
+ * @category assets
  */
 export class BackgroundLoader
 {

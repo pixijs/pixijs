@@ -29,6 +29,11 @@ function generateIfTestSrc(maxIfs: number): string
     return src;
 }
 
+/**
+ * @param maxIfs
+ * @param gl
+ * @internal
+ */
 export function checkMaxIfStatementsInShader(maxIfs: number, gl: GlRenderingContext): number
 {
     if (maxIfs === 0)

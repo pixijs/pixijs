@@ -8,7 +8,7 @@ import type { WebGPURenderer } from '../WebGPURenderer';
 
 /**
  * System plugin to the renderer to manage buffers.
- * @memberof rendering
+ * @category rendering
  */
 export class GpuBufferSystem implements System
 {

@@ -9,6 +9,7 @@ import type { HTMLTextStyle } from '../HTMLTextStyle';
  * @param fontCSS - The font css to use
  * @param htmlTextData - The HTMLTextRenderData to write the SVG to
  * @returns - The SVG as a url string
+ * @internal
  */
 export function getSVGUrl(
     text: string,

@@ -15,6 +15,7 @@ import type { Bounds } from './Bounds';
  * @returns The bounds.
  * @deprecated since 8.7.0
  * @see container.getFastGlobalBounds
+ * @internal
  */
 export function getFastGlobalBounds(target: Container, bounds: Bounds): Bounds
 {

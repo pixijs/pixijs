@@ -12,6 +12,14 @@ import type { ResolvedAsset } from '../assets/types';
 import type { TextureSourceOptions } from '../rendering/renderers/shared/texture/sources/TextureSource';
 import type { SpritesheetData } from './Spritesheet';
 
+/**
+ * Interface for the JSON data structure of a spritesheet.
+ * This is used to define the structure of the JSON file that describes a spritesheet.
+ * It includes metadata about the spritesheet and the frames it contains.
+ * @see {@link Spritesheet}
+ * @see {@link SpritesheetData}
+ * @category assets
+ */
 export interface SpriteSheetJson extends SpritesheetData
 {
     meta: {
@@ -69,7 +77,7 @@ function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack:
  *     }
  * })
  * @type {AssetExtension}
- * @memberof assets
+ * @category assets
  */
 export const spritesheetAsset = {
     extension: ExtensionType.Asset,

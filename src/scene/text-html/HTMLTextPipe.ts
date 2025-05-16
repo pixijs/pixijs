@@ -8,7 +8,10 @@ import type { RenderPipe } from '../../rendering/renderers/shared/instructions/R
 import type { Renderer } from '../../rendering/renderers/types';
 import type { HTMLText } from './HTMLText';
 
-/** The HTMLTextPipe class is responsible for rendering HTML text. */
+/**
+ * The HTMLTextPipe class is responsible for rendering HTML text.
+ * @internal
+ */
 export class HTMLTextPipe implements RenderPipe<HTMLText>
 {
     /** @ignore */

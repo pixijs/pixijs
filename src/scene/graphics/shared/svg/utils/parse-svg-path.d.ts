@@ -8,6 +8,7 @@ declare module 'parse-svg-path'
      * Remaining elements are the numeric parameters for that command
      * @example ['M', 10, 20] // Move to x=10, y=20
      * @example ['L', 30, 40] // Line to x=30, y=40
+     * @internal
      */
     export type Command = [string, ...number[]];
 

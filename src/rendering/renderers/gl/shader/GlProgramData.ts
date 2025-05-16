@@ -1,6 +1,4 @@
-/**
- * @private
- */
+/** @private */
 export class IGLUniformData
 {
     public location: WebGLUniformLocation;

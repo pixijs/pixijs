@@ -13,7 +13,7 @@ let defaultShader: Shader = null;
  * Represents the common elements for default batch rendering.
  * This interface defines the properties that are used by the DefaultBatcher
  * to render elements efficiently in a batch.
- * @memberof rendering
+ * @category rendering
  */
 export interface DefaultBatchElements
 {
@@ -40,13 +40,13 @@ export interface DefaultBatchElements
 
 /**
  * Represents a batchable quad element with default batch properties.
- * @memberof rendering
+ * @category rendering
  */
 export interface DefaultBatchableQuadElement extends BatchableQuadElement, DefaultBatchElements {}
 
 /**
  * Represents a batchable mesh element with default batch properties.
- * @memberof rendering
+ * @category rendering
  */
 export interface DefaultBatchableMeshElement extends BatchableMeshElement, DefaultBatchElements {}
 
@@ -56,7 +56,7 @@ export interface DefaultBatchableMeshElement extends BatchableMeshElement, Defau
  * - roundPixels
  * - texture
  * - transform
- * @memberof rendering
+ * @category rendering
  */
 export class DefaultBatcher extends Batcher
 {

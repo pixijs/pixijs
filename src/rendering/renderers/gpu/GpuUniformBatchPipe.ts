@@ -10,8 +10,7 @@ import type { WebGPURenderer } from './WebGPURenderer';
 
 const minUniformOffsetAlignment = 128;// 256 / 2;
 
-// TODO renderStart and renderFinish - perhaps just make them instructions to fit the architecture of the
-// rest of the system
+/** @internal */
 export class GpuUniformBatchPipe
 {
     /** @ignore */

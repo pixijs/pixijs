@@ -2,6 +2,11 @@ import type { InstructionPipe } from '../../../rendering/renderers/shared/instru
 import type { RenderPipes } from '../../../rendering/renderers/types';
 import type { RenderGroup } from '../RenderGroup';
 
+/**
+ * @param renderGroup
+ * @param renderer
+ * @internal
+ */
 export function executeInstructions(renderGroup: RenderGroup, renderer: RenderPipes)
 {
     const instructionSet = renderGroup.instructionSet;

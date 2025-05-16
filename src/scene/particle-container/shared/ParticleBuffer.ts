@@ -13,12 +13,13 @@ import type { ParticleUpdateFunction } from './utils/generateParticleUpdateFunct
 
 /**
  * Options for creating a ParticleBuffer.
- * @property {number} size - The size of the particle buffer.
- * @property {Record<string, ParticleRendererProperty>} properties - A record of attributes that the particle container uses.
+ * @internal
  */
 export interface ParticleBufferOptions
 {
+    /** The size of the particle buffer, defaults to 1000. */
     size: number;
+    /** A record of attributes that the particle container uses. */
     properties: Record<string, ParticleRendererProperty>;
 }
 

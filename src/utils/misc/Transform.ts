@@ -4,8 +4,8 @@ import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import type { Observer } from '../../maths/point/ObservablePoint';
 
 /**
- * Options for the {@link utils.Transform} constructor.
- * @memberof utils.Transform
+ * Options for the {@link Transform} constructor.
+ * @category utils
  */
 export interface TransformOptions
 {
@@ -18,7 +18,7 @@ export interface TransformOptions
 /**
  * The Transform class facilitates the manipulation of a 2D transformation matrix through
  * user-friendly properties: position, scale, rotation, skew, and pivot.
- * @memberof utils
+ * @category utils
  */
 export class Transform
 {

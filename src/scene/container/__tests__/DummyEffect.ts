@@ -2,7 +2,7 @@ import type { PointData } from '../../../maths/point/PointData';
 import type { Bounds } from '../bounds/Bounds';
 import type { Effect } from '../Effect';
 
-// pads out the bounds by 10
+/** @internal */
 export class DummyEffect implements Effect
 {
     public pipe: string;

@@ -19,20 +19,32 @@ import type { RoundedPoint } from './path/roundShape';
 
 const tmpPoint = new Point();
 
+/**
+ * The mode for batching graphics instructions.
+ *
+ * It can be:
+ * - 'auto': Automatically determines whether to batch based on the number of instructions.
+ * - 'batch': Forces batching of all instructions.
+ * - 'no-batch': Disables batching, processing each instruction individually.
+ * @category scene
+ */
 export type BatchMode = 'auto' | 'batch' | 'no-batch';
 
+/** @internal */
 export interface FillInstruction
 {
     action: 'fill' | 'cut'
     data: { style: ConvertedFillStyle, path: GraphicsPath, hole?: GraphicsPath }
 }
 
+/** @internal */
 export interface StrokeInstruction
 {
     action: 'stroke'
     data: { style: ConvertedStrokeStyle, path: GraphicsPath, hole?: GraphicsPath }
 }
 
+/** @internal */
 export interface TextureInstruction
 {
     action: 'texture'
@@ -51,6 +63,7 @@ export interface TextureInstruction
     }
 }
 
+/** @internal */
 export type GraphicsInstructions = FillInstruction | StrokeInstruction | TextureInstruction;
 
 const tempMatrix = new Matrix();
@@ -61,7 +74,7 @@ const tempMatrix = new Matrix();
  *
  * This sharing of a `GraphicsContext` means that the intensive task of converting graphics instructions into GPU-ready geometry is done once, and the results are reused,
  * much like sprites reusing textures.
- * @memberof scene
+ * @category scene
  */
 export class GraphicsContext extends EventEmitter<{
     update: GraphicsContext
@@ -116,6 +129,7 @@ export class GraphicsContext extends EventEmitter<{
     public readonly uid: number = uid('graphicsContext');
     public dirty = true;
     public batchMode: BatchMode = 'auto';
+    /** @internal */
     public instructions: GraphicsInstructions[] = [];
     public customShader?: Shader;
 
@@ -208,21 +222,29 @@ export class GraphicsContext extends EventEmitter<{
     }
 
     /**
-     * Adds a texture to the graphics context. This method supports multiple overloads for specifying the texture, tint, and dimensions.
-     * If only a texture is provided, it uses the texture's width and height for drawing. Additional parameters allow for specifying
-     * a tint color, and custom dimensions for the texture drawing area.
+     * Adds a texture to the graphics context. This method supports multiple overloads for specifying the texture.
+     * If only a texture is provided, it uses the texture's width and height for drawing.
      * @param texture - The Texture object to use.
-     * @param tint - (Optional) A ColorSource to tint the texture. If not provided, defaults to white (0xFFFFFF).
-     * @param dx - (Optional) The x-coordinate in the destination canvas at which to place the top-left corner of the source image.
-     * @param dy - (Optional) The y-coordinate in the destination canvas at which to place the top-left corner of the source image.
-     * @param dw - (Optional) The width of the rectangle within the source image to draw onto the destination canvas. If not provided, uses the texture's frame width.
-     * @param dh - (Optional) The height of the rectangle within the source image to draw onto the destination canvas. If not provided, uses the texture's frame height.
      * @returns The instance of the current GraphicsContext for method chaining.
      */
     public texture(texture: Texture): this;
-    public texture(texture: Texture, tint: ColorSource): this;
-    public texture(texture: Texture, tint: ColorSource, dx: number, dy: number): this;
-    public texture(texture: Texture, tint: ColorSource, dx: number, dy: number, dw: number, dh: number): this;
+    /**
+     * Adds a texture to the graphics context. This method supports multiple overloads for specifying the texture,
+     * tint, and dimensions. If only a texture is provided, it uses the texture's width and height for drawing.
+     * Additional parameters allow for specifying a tint color, and custom dimensions for the texture drawing area.
+     * @param texture - The Texture object to use.
+     * @param tint - (Optional) A ColorSource to tint the texture. If not provided, defaults to white (0xFFFFFF).
+     * @param dx - (Optional) The x-coordinate in the destination canvas at which to place the top-left corner of
+     * the source image.
+     * @param dy - (Optional) The y-coordinate in the destination canvas at which to place the top-left corner of
+     * the source image.
+     * @param dw - (Optional) The width of the rectangle within the source image to draw onto the destination canvas.
+     * If not provided, uses the texture's frame width.
+     * @param dh - (Optional) The height of the rectangle within the source image to draw onto the destination canvas.
+     * If not provided, uses the texture's frame height.
+     * @returns The instance of the current GraphicsContext for method chaining.
+     */
+    public texture(texture: Texture, tint?: ColorSource, dx?: number, dy?: number, dw?: number, dh?: number): this;
     public texture(texture: Texture, tint?: ColorSource, dx?: number, dy?: number, dw?: number, dh?: number): this
     {
         this.instructions.push({
@@ -932,6 +954,13 @@ export class GraphicsContext extends EventEmitter<{
     /**
      * Sets the current transformation matrix of the graphics context to the specified matrix or values.
      * This replaces the current transformation matrix.
+     * @param transform - The matrix to set as the current transformation matrix.
+     * @returns The instance of the current GraphicsContext for method chaining.
+     */
+    public setTransform(transform: Matrix): this;
+    /**
+     * Sets the current transformation matrix of the graphics context to the specified matrix or values.
+     * This replaces the current transformation matrix.
      * @param a - The value for the a property of the matrix, or a Matrix object to use directly.
      * @param b - The value for the b property of the matrix.
      * @param c - The value for the c property of the matrix.
@@ -940,7 +969,6 @@ export class GraphicsContext extends EventEmitter<{
      * @param dy - The value for the ty (translate y) property of the matrix.
      * @returns The instance of the current GraphicsContext for method chaining.
      */
-    public setTransform(transform: Matrix): this;
     public setTransform(a: number, b: number, c: number, d: number, dx: number, dy: number): this;
     public setTransform(a: number | Matrix, b?: number, c?: number, d?: number, dx?: number, dy?: number): this
     {
@@ -957,7 +985,15 @@ export class GraphicsContext extends EventEmitter<{
     }
 
     /**
-     * Applies the specified transformation matrix to the current graphics context by multiplying the current matrix with the specified matrix.
+     * Applies the specified transformation matrix to the current graphics context by multiplying
+     * the current matrix with the specified matrix.
+     * @param transform - The matrix to apply to the current transformation.
+     * @returns The instance of the current GraphicsContext for method chaining.
+     */
+    public transform(transform: Matrix): this;
+    /**
+     * Applies the specified transformation matrix to the current graphics context by multiplying
+     * the current matrix with the specified matrix.
      * @param a - The value for the a property of the matrix, or a Matrix object to use directly.
      * @param b - The value for the b property of the matrix.
      * @param c - The value for the c property of the matrix.
@@ -966,7 +1002,6 @@ export class GraphicsContext extends EventEmitter<{
      * @param dy - The value for the ty (translate y) property of the matrix.
      * @returns The instance of the current GraphicsContext for method chaining.
      */
-    public transform(transform: Matrix): this;
     public transform(a: number, b: number, c: number, d: number, dx: number, dy: number): this;
     public transform(a: number | Matrix, b?: number, c?: number, d?: number, dx?: number, dy?: number): this
     {
@@ -1148,8 +1183,10 @@ export class GraphicsContext extends EventEmitter<{
      * Destroys the GraphicsData object.
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
-     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the fill/stroke style?
-     * @param {boolean} [options.textureSource=false] - Should it destroy the texture source of the fill/stroke style?
+     * @example
+     * context.destroy();
+     * context.destroy(true);
+     * context.destroy({ texture: true, textureSource: true });
      */
     public destroy(options: TypeOrBool<TextureDestroyOptions> = false): void
     {

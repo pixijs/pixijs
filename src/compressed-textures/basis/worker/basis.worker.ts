@@ -8,7 +8,7 @@ import type { BASISModuleCreator, BasisTextureConstructor } from '../types';
 /**
  * -----------------------------------------------------------
  * This code includes parts that are adapted from the webGPU(GL) wizard @toji's web-texture-tool.
- * Massive thanks to @toji for making this tool and sharing it with the world.
+ * Massive thanks to toji for making this tool and sharing it with the world.
  *
  * Original Repository: https://github.com/toji/web-texture-tool
  *

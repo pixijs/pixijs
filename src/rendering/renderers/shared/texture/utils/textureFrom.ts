@@ -21,6 +21,11 @@ const sources: TextureSourceConstructor[] = [];
 
 extensions.handleByList(ExtensionType.TextureSource, sources);
 
+/**
+ * The type of resource or options that can be used to create a texture source.
+ * This includes ImageResource, TextureSourceOptions, BufferSourceOptions, and CanvasSourceOptions.
+ * @category rendering
+ */
 export type TextureResourceOrOptions =
   ImageResource
   | TextureSourceOptions<ImageResource>
@@ -31,6 +36,7 @@ export type TextureResourceOrOptions =
  * @param options
  * @deprecated since v8.2.0
  * @see TextureSource.from
+ * @category rendering
  */
 export function autoDetectSource(options: TextureResourceOrOptions = {}): TextureSource
 {
@@ -60,6 +66,11 @@ function textureSourceFrom(options: TextureResourceOrOptions = {}): TextureSourc
     throw new Error(`Could not find a source type for resource: ${opts.resource}`);
 }
 
+/**
+ * @param options
+ * @param skipCache
+ * @internal
+ */
 export function resourceToTexture(
     options: TextureResourceOrOptions = {},
     skipCache = false
@@ -98,6 +109,7 @@ export function resourceToTexture(
  * @param id - String or Source to create texture from
  * @param skipCache - Skip adding the texture to the cache
  * @returns The texture based on the Id provided
+ * @category utils
  */
 export function textureFrom(id: TextureSourceLike, skipCache = false): Texture
 {

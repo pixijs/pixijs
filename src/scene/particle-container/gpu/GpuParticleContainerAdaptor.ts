@@ -2,6 +2,7 @@ import type { WebGPURenderer } from '../../../rendering/renderers/gpu/WebGPURend
 import type { ParticleContainer } from '../shared/ParticleContainer';
 import type { ParticleContainerAdaptor, ParticleContainerPipe } from '../shared/ParticleContainerPipe';
 
+/** @internal */
 export class GpuParticleContainerAdaptor implements ParticleContainerAdaptor
 {
     public execute(particleContainerPipe: ParticleContainerPipe, container: ParticleContainer)

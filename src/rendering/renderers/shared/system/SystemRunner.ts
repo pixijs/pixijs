@@ -38,7 +38,8 @@
  *
  * myGame.update.emit(time);
  * ```
- * @memberof rendering
+ * @category rendering
+ * @internal
  */
 export class SystemRunner
 {

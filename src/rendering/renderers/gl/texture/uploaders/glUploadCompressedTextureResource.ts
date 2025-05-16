@@ -64,6 +64,7 @@ const compressedFormatMap: Record<string, boolean> = {
     'astc-12x12-unorm-srgb': true,
 };
 
+/** @internal */
 export const glUploadCompressedTextureResource = {
 
     id: 'compressed',

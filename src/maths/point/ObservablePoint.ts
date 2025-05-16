@@ -1,12 +1,12 @@
 import type { PointData } from './PointData';
 import type { PointLike } from './PointLike';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type, requireExport/require-export-jsdoc
 export interface ObservablePoint extends PixiMixins.ObservablePoint { }
 
 /**
  * Observer used to listen for observable point changes.
- * @memberof maths
+ * @category maths
  */
 export interface Observer<T>
 {
@@ -19,7 +19,7 @@ export interface Observer<T>
  * the position on the horizontal axis and `y` represents the position on the vertical axis.
  *
  * An `ObservablePoint` is a point that triggers the `onUpdate` method on an observer when the point's position is changed.
- * @memberof maths
+ * @category maths
  */
 export class ObservablePoint implements PointLike
 {

@@ -1,3 +1,7 @@
+/**
+ * Defines the structure of the extracted WGSL structs and groups.
+ * @category rendering
+ */
 export interface StructsAndGroups
 {
     groups: {
@@ -13,6 +17,10 @@ export interface StructsAndGroups
     }[];
 }
 
+/**
+ * @param wgsl
+ * @internal
+ */
 export function extractStructAndGroups(wgsl: string): StructsAndGroups
 {
     // Patterns for parsing the WGSL file

@@ -6,7 +6,7 @@ import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
  * - `no-premultiply-alpha`: Does not premultiply alpha.
  * - `premultiply-alpha-on-upload`: Premultiplies alpha on texture upload.
  * - `premultiplied-alpha`: Assumes the texture is already in premultiplied alpha format.
- * @typedef {'no-premultiply-alpha' | 'premultiply-alpha-on-upload' | 'premultiplied-alpha'} ALPHA_MODES
+ * @category rendering
  */
 export type ALPHA_MODES =
     'no-premultiply-alpha' |
@@ -14,24 +14,12 @@ export type ALPHA_MODES =
     'premultiplied-alpha';
 
 /**
- * Constants for multi-sampling antialiasing.
- * @see Framebuffer#multisample
- * @name MSAA_QUALITY
- * @static
- * @enum {number}
- * @property {number} NONE - No multisampling for this renderTexture
- * @property {number} LOW - Try 2 samples
- * @property {number} MEDIUM - Try 4 samples
- * @property {number} HIGH - Try 8 samples
+ * The texture formats that are supported by pixi.
+ *
+ * These formats are used to specify the format of textures in WebGPU and WebGL.
+ * They include various uncompressed, compressed, and depth/stencil formats.
+ * @category rendering
  */
-export enum MSAA_QUALITY
-{
-    NONE = 0,
-    LOW = 2,
-    MEDIUM = 4,
-    HIGH = 8
-}
-
 export type TEXTURE_FORMATS =
     // 8-bit formats
     'r8unorm' |
@@ -151,36 +139,34 @@ export type TEXTURE_FORMATS =
     'astc-12x12-unorm' |
     'astc-12x12-unorm-srgb';
 
-export type TEXTURE_VIEW_DIMENSIONS =
-    '1d' |
-    '2d' |
-    '2d-array' |
-    'cube' |
-    'cube-array' |
-    '3d';
-
+/**
+ * The texture dimensions that are supported by pixi.
+ *
+ * - `1d` is a one-dimensional texture, which is typically used for linear data.
+ * - `2d` is a two-dimensional texture, which is commonly used for images and textures.
+ * - `3d` is a three-dimensional texture, which is used for volumetric data or 3D textures.
+ * @category rendering
+ */
 export type TEXTURE_DIMENSIONS =
     | '1d'
     | '2d'
     | '3d';
 
+/**
+ * The wrap modes that are supported by pixi.
+ *
+ * The wrap mode affects the default wrapping mode of future operations.
+ * - `clamp-to-edge` is the default mode, which clamps the texture coordinates to the edge of the texture.
+ * - `repeat` allows the texture to repeat in both u and v directions.
+ * - `mirror-repeat` allows the texture to repeat in both u and v directions, but mirrors the texture on every other repeat.
+ * @category rendering
+ */
 export type WRAP_MODE =
-    /**
-     * The texture uvs are clamped
-     * @default 33071
-     */
     | 'clamp-to-edge'
-    /**
-     * The texture uvs tile and repeat
-     * @default 10497
-     */
     | 'repeat'
-    /**
-     * The texture uvs tile and repeat with mirroring
-     * @default 33648
-     */
     | 'mirror-repeat';
 
+/** @internal */
 export enum DEPRECATED_WRAP_MODES
 {
     CLAMP = 'clamp-to-edge',
@@ -190,7 +176,12 @@ export enum DEPRECATED_WRAP_MODES
     MIRRORED_REPEAT = 'mirror-repeat',
 }
 
-/** @deprecated since 8.0.0 */
+/**
+ * The wrap modes that are supported by pixi.
+ * @deprecated since 8.0.0
+ * @category rendering
+ * @see WRAP_MODE
+ */
 export const WRAP_MODES = new Proxy(DEPRECATED_WRAP_MODES, {
     get(target, prop: keyof typeof DEPRECATED_WRAP_MODES)
     {
@@ -205,16 +196,16 @@ export const WRAP_MODES = new Proxy(DEPRECATED_WRAP_MODES, {
 /**
  * The scale modes that are supported by pixi.
  *
- * The {@link settings.SCALE_MODE} scale mode affects the default scaling mode of future operations.
+ * The scale mode affects the default scaling mode of future operations.
  * It can be re-assigned to either LINEAR or NEAREST, depending upon suitability.
- * @static
+ *
+ * - `nearest` is a pixelating scaling mode, which does not interpolate pixels.
+ * - `linear` is a smooth scaling mode, which interpolates pixels for smoother results.
+ * @category rendering
  */
-export type SCALE_MODE =
-    /** Pixelating scaling */
- | 'nearest'
-     /** Smooth scaling */
- | 'linear';
+export type SCALE_MODE = | 'nearest' | 'linear';
 
+/** @internal */
 export enum DEPRECATED_SCALE_MODES
 {
     NEAREST = 'nearest',
@@ -222,7 +213,10 @@ export enum DEPRECATED_SCALE_MODES
 }
 
 /**
+ * The scale modes that are supported by pixi.
  * @deprecated since 8.0.0
+ * @category rendering
+ * @see SCALE_MODE
  */
 export const SCALE_MODES = new Proxy(DEPRECATED_SCALE_MODES, {
     get(target, prop: keyof typeof DEPRECATED_SCALE_MODES)
@@ -235,6 +229,10 @@ export const SCALE_MODES = new Proxy(DEPRECATED_SCALE_MODES, {
     },
 });
 
+/**
+ * The compare function types used for comparing values in various operations.
+ * @category rendering
+ */
 export type COMPARE_FUNCTION =
     | 'never'
     | 'less'

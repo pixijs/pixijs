@@ -1,6 +1,10 @@
 import type { FederatedPointerEvent } from './FederatedPointerEvent';
 import type { FederatedWheelEvent } from './FederatedWheelEvent';
 
+/**
+ * The types for the events that can be emitted by a Container
+ * @category events
+ */
 export type FederatedEventMap = {
     click: FederatedPointerEvent;
     mousedown: FederatedPointerEvent;
@@ -34,14 +38,26 @@ export type FederatedEventMap = {
     wheel: FederatedWheelEvent;
 };
 
+/**
+ * The types for the global events that can be emitted by a Container
+ * @category events
+ */
 export type GlobalFederatedEventMap = {
     globalmousemove: FederatedPointerEvent;
     globalpointermove: FederatedPointerEvent;
     globaltouchmove: FederatedPointerEvent;
 };
 
+/**
+ * The types for the events that can be emitted by a Container
+ * @category events
+ */
 export type AllFederatedEventMap = FederatedEventMap & GlobalFederatedEventMap;
 
+/**
+ * The types for the events that can be emitted by a Container
+ * @category events
+ */
 export type FederatedEventEmitterTypes = {
     [K in keyof FederatedEventMap as K | `${K}capture`]: [event: FederatedEventMap[K]];
 } & {

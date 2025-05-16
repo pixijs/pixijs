@@ -4,6 +4,7 @@ import type { VideoSource } from '../../../shared/texture/sources/VideoSource';
 import type { GPU } from '../../GpuDeviceSystem';
 import type { GpuTextureUploader } from './GpuTextureUploader';
 
+/** @internal */
 export const gpuUploadVideoResource = {
 
     type: 'video',

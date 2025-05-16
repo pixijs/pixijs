@@ -5,6 +5,8 @@ import { FederatedContainer } from './FederatedEventTarget';
 
 /* eslint-disable max-len */
 /**
+ * @module
+ * @categoryDescription events
  * PixiJS is primarily a rendering system, but it also includes support for interactivity.
  * Adding support for mouse and touch events to your project is simple and consistent.
  *
@@ -17,7 +19,7 @@ import { FederatedContainer } from './FederatedEventTarget';
  * <summary>Enabling Interaction</summary>
  *
  * Any Container-derived object (Sprite, Container, etc.) can become interactive simply by setting its `eventMode` property to any of
- * the {@link events.EventMode} values. Doing so will cause the object to emit interaction events that can be responded to in order to drive your project's behavior.
+ * the {@link EventMode} values. Doing so will cause the object to emit interaction events that can be responded to in order to drive your project's behavior.
  *
  * Check out the [interaction example code](/examples/events/click).
  *
@@ -95,7 +97,6 @@ import { FederatedContainer } from './FederatedEventTarget';
  * | `rightup ` | Right mouse button is released over the display object. |
  * | `rightupoutside ` | Right mouse button is released outside the display object that initially registered a rightdown. |
  * </details>
- * @namespace events
  */
 /* eslint-enable max-len */
 

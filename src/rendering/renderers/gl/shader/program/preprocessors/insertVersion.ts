@@ -1,3 +1,8 @@
+/**
+ * @param src
+ * @param isES300
+ * @internal
+ */
 export function insertVersion(src: string, isES300: boolean): string
 {
     if (!isES300) return src;

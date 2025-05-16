@@ -29,6 +29,7 @@ interface SubPath
  * @param svgPath - The SVG path data string to parse (e.g. "M0,0 L100,100")
  * @param path - The GraphicsPath object to build the path into
  * @returns The input path object with the SVG commands applied
+ * @internal
  */
 export function parseSVGPath(svgPath: string, path: GraphicsPath): GraphicsPath
 {

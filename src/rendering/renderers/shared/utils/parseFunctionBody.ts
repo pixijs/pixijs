@@ -1,3 +1,7 @@
+/**
+ * @param fn
+ * @internal
+ */
 export function parseFunctionBody(fn: (...args: any[]) => any): string
 {
     const fnStr = fn.toString();

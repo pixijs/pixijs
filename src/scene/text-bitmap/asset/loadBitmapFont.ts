@@ -15,7 +15,10 @@ import type { Texture } from '../../../rendering/renderers/shared/texture/Textur
 
 const validExtensions = ['.xml', '.fnt'];
 
-/** simple loader plugin for loading in bitmap fonts! */
+/**
+ * simple loader plugin for loading in bitmap fonts!
+ * @category assets
+ */
 export const bitmapFontCachePlugin = {
     extension: {
         type: ExtensionType.CacheParser,
@@ -38,6 +41,11 @@ export const bitmapFontCachePlugin = {
     }
 } satisfies CacheParser<BitmapFont>;
 
+/**
+ * Loader plugin for loading bitmap fonts.
+ * It supports both XML and text formats, and can handle distance field fonts.
+ * @category assets
+ */
 export const loadBitmapFont = {
     extension: {
         type: ExtensionType.LoadParser,

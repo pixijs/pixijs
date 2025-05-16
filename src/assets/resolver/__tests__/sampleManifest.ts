@@ -1,5 +1,6 @@
 import type { AssetsManifest } from '../../types';
 
+/** @internal */
 export const manifest: AssetsManifest = {
     bundles: [
         {

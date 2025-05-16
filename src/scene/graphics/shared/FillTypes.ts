@@ -15,7 +15,7 @@ import type { FillPattern } from './fill/FillPattern';
  * └─────────┘  └─────────┘  └─────────┘  └─────────┘
  * (Each shape   (Each shape  (Texture continues across
  * gets full     gets full    shapes as if they're texture)      texture)     windows to same texture)
- * @memberof scene
+ * @category scene
  */
 export type TextureSpace =
     /**
@@ -34,7 +34,7 @@ export type TextureSpace =
 
 /**
  * A fill style object.
- * @memberof scene
+ * @category scene
  */
 export interface FillStyle
 {
@@ -54,7 +54,7 @@ export interface FillStyle
 
 /**
  * A stroke attribute object, used to define properties for a stroke.
- * @memberof scene
+ * @category scene
  */
 export interface StrokeAttributes
 {
@@ -74,7 +74,7 @@ export interface StrokeAttributes
 
 /**
  * A stroke style object.
- * @memberof scene
+ * @category scene
  */
 export interface StrokeStyle extends FillStyle, StrokeAttributes {}
 
@@ -97,7 +97,7 @@ export interface StrokeStyle extends FillStyle, StrokeAttributes {}
  *   fill: new FillGradient(0, 0, 200, 0),
  * });
  * ```
- * @memberof scene
+ * @category scene
  */
 export type FillInput = ColorSource | FillGradient | FillPattern | FillStyle | Texture;
 
@@ -123,18 +123,25 @@ export type FillInput = ColorSource | FillGradient | FillPattern | FillStyle | T
  *   alignment: 0.5,
  * });
  * ```
- * @memberof scene
+ * @category scene
  */
 export type StrokeInput = ColorSource | FillGradient | FillPattern | StrokeStyle;
 
-// used internally and is a complete fill style
+/**
+ * used internally and is a complete fill style
+ * @category scene
+ */
 export type ConvertedFillStyle = Omit<Required<FillStyle>, 'color'> & { color: number };
-// used internally and is a complete stroke style
+/**
+ * used internally and is a complete stroke style
+ * @category scene
+ */
 export type ConvertedStrokeStyle = ConvertedFillStyle & Required<StrokeAttributes>;
 
 /**
  * @deprecated since v8.1.6
- * @see scene.FillInput
+ * @see FillInput
+ * @category scene
  */
 // eslint-disable-next-line max-len
 export type FillStyleInputs = ColorSource | FillGradient | FillPattern | FillStyle | ConvertedFillStyle | StrokeStyle | ConvertedStrokeStyle;

@@ -1,3 +1,7 @@
+/**
+ * @param points
+ * @internal
+ */
 export function getOrientationOfPoints(points: number[]): number
 {
     const m = points.length;

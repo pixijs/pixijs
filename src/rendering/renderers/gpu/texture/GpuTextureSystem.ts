@@ -21,7 +21,7 @@ import type { GpuTextureUploader } from './uploaders/GpuTextureUploader';
 
 /**
  * The system that handles textures for the GPU.
- * @memberof rendering
+ * @category rendering
  */
 export class GpuTextureSystem implements System, CanvasGenerator
 {

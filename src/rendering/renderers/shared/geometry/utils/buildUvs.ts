@@ -11,7 +11,7 @@ import type { Matrix } from '../../../../../maths/matrix/Matrix';
  * @param uvsStride - the stride of the uvs
  * @param size - the size of the vertices
  * @param matrix - the matrix to apply to the uvs
- * @memberof rendering
+ * @internal
  */
 export function buildUvs(
     vertices: number[],
@@ -53,7 +53,13 @@ export function buildUvs(
         index++;
     }
 }
-
+/**
+ * @param uvs
+ * @param uvsOffset
+ * @param uvsStride
+ * @param size
+ * @internal
+ */
 export function buildSimpleUvs(
     uvs: number[],
     uvsOffset: number,

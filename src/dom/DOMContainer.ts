@@ -4,8 +4,8 @@ import { ViewContainer, type ViewContainerOptions } from '../scene/view/ViewCont
 import type { PointData } from '../maths/point/PointData';
 
 /**
- * Options for the {@link scene.DOMContainer} constructor.
- * @memberof scene
+ * Options for the {@link DOMContainer} constructor.
+ * @category scene
  */
 export interface DOMContainerOptions extends ViewContainerOptions
 {
@@ -40,19 +40,18 @@ export interface DOMContainerOptions extends ViewContainerOptions
  *
  * const domContainer = new DOMContainer({ element });
  * ```
- * @memberof scene
- * @extends scene.ViewContainer
+ * @category scene
  */
 export class DOMContainer extends ViewContainer<null>
 {
-    /** @private */
+    /** @internal */
     public override readonly renderPipeId: string = 'dom';
 
-    /** @private */
+    /** @internal */
     public batched = false;
     /**
      * The anchor point of the container.
-     * @private
+     * @internal
      */
     public readonly _anchor: Point;
 
@@ -141,7 +140,10 @@ export class DOMContainer extends ViewContainer<null>
     /**
      * Destroys this DOM container.
      * @param options - Options parameter. A boolean will act as if all options
-     *  have been set to that value
+     *  have been set to that
+     * @example
+     * domContainer.destroy();
+     * domContainer.destroy(true);
      */
     public override destroy(options: boolean = false)
     {

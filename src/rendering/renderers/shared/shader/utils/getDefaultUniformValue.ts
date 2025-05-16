@@ -1,5 +1,4 @@
 /**
- * @method defaultValue
  * @param {string} type - Type of value
  * @param {number} size
  * @private

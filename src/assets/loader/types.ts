@@ -2,7 +2,7 @@ import type { LoaderParser } from './parsers/LoaderParser';
 
 /**
  * A promise and parser pair
- * @memberof assets
+ * @category assets
  */
 export interface PromiseAndParser
 {

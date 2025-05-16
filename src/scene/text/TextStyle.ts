@@ -21,24 +21,103 @@ import type {
     StrokeStyle
 } from '../graphics/shared/FillTypes';
 
+/**
+ * The alignment of the text.
+ *
+ * - 'left': Aligns text to the left edge.
+ * - 'center': Centers text horizontally.
+ * - 'right': Aligns text to the right edge.
+ * - 'justify': Justifies text, aligning both left and right edges.
+ * @category text
+ */
 export type TextStyleAlign = 'left' | 'center' | 'right' | 'justify';
+/**
+ * The fill style input for text styles.
+ *
+ * This can be:
+ * - A color string like 'red', '#00FF00', or 'rgba(255,0,0,0.5)'
+ * - A hex number like 0xff0000 for red
+ * - A FillStyle object with properties like { color: 0xff0000, alpha: 0.5 }
+ * - A FillGradient for gradient fills
+ * - A FillPattern for pattern/texture fills
+ * @category text
+ */
 export type TextStyleFill = string | string[] | number | number[] | CanvasGradient | CanvasPattern;
+/**
+ * The font style input for text styles.
+ *
+ * This can be:
+ * - 'normal': Normal font style
+ * - 'italic': Italic font style
+ * - 'oblique': Oblique font style
+ * @category text
+ */
 export type TextStyleFontStyle = 'normal' | 'italic' | 'oblique';
+/**
+ * The font variant input for text styles.
+ *
+ * This can be:
+ * - 'normal': Normal font variant
+ * - 'small-caps': Small caps font variant
+ * @category text
+ */
 export type TextStyleFontVariant = 'normal' | 'small-caps';
+/**
+ * The font weight input for text styles.
+ *
+ * This can be:
+ * - 'normal': Normal font weight
+ * - 'bold': Bold font weight
+ * - 'bolder': Bolder font weight
+ * - 'lighter': Lighter font weight
+ * - '100', '200', '300', '400', '500', '600', '700', '800', '900': Numeric font weights
+ * @category text
+ */
 // eslint-disable-next-line max-len
 export type TextStyleFontWeight = 'normal' | 'bold' | 'bolder' | 'lighter' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';
+/**
+ * The line join style for text styles.
+ *
+ * This can be:
+ * - 'miter': Sharp corners
+ * - 'round': Rounded corners
+ * - 'bevel': Beveled corners
+ * @category text
+ */
 export type TextStyleLineJoin = 'miter' | 'round' | 'bevel';
+/**
+ * The text baseline for text styles.
+ *
+ * This can be:
+ * - 'alphabetic': The alphabetic baseline
+ * - 'top': The top of the text
+ * - 'hanging': The hanging baseline
+ * - 'middle': The middle of the text
+ * - 'ideographic': The ideographic baseline
+ * - 'bottom': The bottom of the text
+ * @category text
+ */
 export type TextStyleTextBaseline = 'alphabetic' | 'top' | 'hanging' | 'middle' | 'ideographic' | 'bottom';
+/**
+ * The white space handling for text styles.
+ *
+ * This can be:
+ * - 'normal': Collapses newlines and spaces
+ * - 'pre': Preserves newlines and spaces
+ * - 'pre-line': Preserves newlines but collapses spaces
+ * @category text
+ */
 export type TextStyleWhiteSpace = 'normal' | 'pre' | 'pre-line';
 
 /**
+ * @module
+ * @categoryDescription text
  * A collection of text related classes.
- * @namespace text
  */
 
 /**
  * A drop shadow effect.
- * @memberof text
+ * @category text
  */
 export type TextDropShadow = {
     /** Set alpha for the drop shadow  */
@@ -61,8 +140,8 @@ export type TextDropShadow = {
  *    fill: 'black',
  * });
  * ```
- * @see {@link text.TextStyle}
- * @memberof text
+ * @see {@link TextStyle}
+ * @category text
  */
 export interface TextStyleOptions
 {
@@ -144,7 +223,7 @@ export interface TextStyleOptions
  * A TextStyle Object contains information to decorate a Text objects.
  *
  * An instance can be shared between multiple Text objects; then changing the style will update all text objects using it.
- * @memberof text
+ * @category text
  * @example
  * import { TextStyle } from 'pixi.js';
  * const style = new TextStyle({
@@ -243,9 +322,11 @@ export class TextStyle extends EventEmitter<{
     };
 
     // colors!!
+    /** @internal */
     public _fill: ConvertedFillStyle;
     private _originalFill: FillInput;
 
+    /** @internal */
     public _stroke: ConvertedStrokeStyle;
     private _originalStroke: StrokeInput;
 
@@ -294,7 +375,7 @@ export class TextStyle extends EventEmitter<{
 
     /**
      * Alignment for multiline text, does not affect single line text.
-     * @member {'left'|'center'|'right'|'justify'}
+     * @type {'left'|'center'|'right'|'justify'}
      */
     get align(): TextStyleAlign { return this._align; }
     set align(value: TextStyleAlign) { this._align = value; this.update(); }
@@ -336,7 +417,7 @@ export class TextStyle extends EventEmitter<{
     }
     /**
      * The font style.
-     * @member {'normal'|'italic'|'oblique'}
+     * @type {'normal'|'italic'|'oblique'}
      */
     get fontStyle(): TextStyleFontStyle { return this._fontStyle; }
     set fontStyle(value: TextStyleFontStyle)
@@ -346,13 +427,13 @@ export class TextStyle extends EventEmitter<{
     }
     /**
      * The font variant.
-     * @member {'normal'|'small-caps'}
+     * @type {'normal'|'small-caps'}
      */
     get fontVariant(): TextStyleFontVariant { return this._fontVariant; }
     set fontVariant(value: TextStyleFontVariant) { this._fontVariant = value; this.update(); }
     /**
      * The font weight.
-     * @member {'normal'|'bold'|'bolder'|'lighter'|'100'|'200'|'300'|'400'|'500'|'600'|'700'|'800'|'900'}
+     * @type {'normal'|'bold'|'bolder'|'lighter'|'100'|'200'|'300'|'400'|'500'|'600'|'700'|'800'|'900'}
      */
     get fontWeight(): TextStyleFontWeight { return this._fontWeight; }
     set fontWeight(value: TextStyleFontWeight) { this._fontWeight = value; this.update(); }
@@ -385,7 +466,7 @@ export class TextStyle extends EventEmitter<{
     set trim(value: boolean) { this._trim = value; this.update(); }
     /**
      * The baseline of the text that is rendered.
-     * @member {'alphabetic'|'top'|'hanging'|'middle'|'ideographic'|'bottom'}
+     * @type {'alphabetic'|'top'|'hanging'|'middle'|'ideographic'|'bottom'}
      */
     get textBaseline(): TextStyleTextBaseline { return this._textBaseline; }
     set textBaseline(value: TextStyleTextBaseline) { this._textBaseline = value; this.update(); }
@@ -398,7 +479,7 @@ export class TextStyle extends EventEmitter<{
      * 'normal'     | Collapse      |   Collapse
      * 'pre'        | Preserve      |   Preserve
      * 'pre-line'   | Preserve      |   Collapse
-     * @member {'normal'|'pre'|'pre-line'}
+     * @type {'normal'|'pre'|'pre-line'}
      */
     get whiteSpace(): TextStyleWhiteSpace { return this._whiteSpace; }
     set whiteSpace(value: TextStyleWhiteSpace) { this._whiteSpace = value; this.update(); }
@@ -573,8 +654,10 @@ export class TextStyle extends EventEmitter<{
      * Destroys this text style.
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
-     * @param {boolean} [options.texture=false] - Should it destroy the texture of the this style
-     * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the this style
+     * @example
+     * // Destroy the text style and its textures
+     * textStyle.destroy({ texture: true, textureSource: true });
+     * textStyle.destroy(true);
      */
     public destroy(options: TypeOrBool<TextureDestroyOptions> = false)
     {

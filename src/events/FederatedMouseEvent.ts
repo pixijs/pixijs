@@ -7,7 +7,7 @@ import type { PixiTouch } from './FederatedEvent';
 
 /**
  * A {@link FederatedEvent} for mouse events.
- * @memberof events
+ * @category events
  */
 export class FederatedMouseEvent extends FederatedEvent<
 MouseEvent | PointerEvent | PixiTouch
@@ -86,19 +86,19 @@ MouseEvent | PointerEvent | PixiTouch
     get globalY(): number { return this.global.y; }
 
     /**
-     * The pointer coordinates in the renderer's {@link Renderer.screen screen}. This has slightly
+     * The pointer coordinates in the renderer's {@link AbstractRenderer.screen screen}. This has slightly
      * different semantics than native PointerEvent screenX/screenY.
      */
     public screen: Point = new Point();
 
     /**
-     * The pointer coordinates in the renderer's screen. Alias for {@code screen.x}.
+     * The pointer coordinates in the renderer's screen. Alias for `screen.x`.
      * @readonly
      */
     get screenX(): number { return this.screen.x; }
 
     /**
-     * The pointer coordinates in the renderer's screen. Alias for {@code screen.y}.
+     * The pointer coordinates in the renderer's screen. Alias for `screen.y`.
      * @readonly
      */
     get screenY(): number { return this.screen.y; }

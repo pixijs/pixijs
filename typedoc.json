@@ -1,0 +1,35 @@
+{
+    "$schema": "https://typedoc.org/schema.json",
+    "entryPoints": ["./src/index.ts"],
+    "tsconfig": "tsconfig.json",
+    "out": ".s3_uploads/docs",
+    "disableSources": true,
+    "navigation": {
+        "includeCategories": true,
+        "includeGroups": true,
+        "excludeReferences": false,
+        "includeFolders": true
+    },
+    "excludePrivate": true,
+    "excludeInternal": true,
+    "excludeProtected": true,
+    "plugin": [
+        "typedoc-plugin-mdn-links"
+    ],
+    "navigationLinks": {
+        "Website": "https://pixijs.com",
+        "GitHub": "https://github.com/pixijs/pixijs",
+        "Discord": "https://discord.gg/QrnxmQUPGV",
+    },
+    "hideGenerator": true,
+    "visibilityFilters": {
+        "inherited": true,
+    },
+    "validation": {
+        "notExported": false,
+        "invalidLink": true,
+        "rewrittenLink": true,
+        "notDocumented": false,
+        "unusedMergeModuleWith": true
+    }
+}

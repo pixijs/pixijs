@@ -1,3 +1,4 @@
+/** @internal */
 export const textureBit = {
     name: 'texture-bit',
     vertex: {
@@ -18,7 +19,7 @@ export const textureBit = {
             @group(2) @binding(0) var uTexture: texture_2d<f32>;
             @group(2) @binding(1) var uSampler: sampler;
 
-         
+
         `,
         main: /* wgsl */`
             outColor = textureSample(uTexture, uSampler, vUV);
@@ -26,6 +27,7 @@ export const textureBit = {
     }
 };
 
+/** @internal */
 export const textureBitGl = {
     name: 'texture-bit',
     vertex: {
@@ -40,7 +42,7 @@ export const textureBitGl = {
         header: /* glsl */`
         uniform sampler2D uTexture;
 
-         
+
         `,
         main: /* glsl */`
             outColor = texture(uTexture, vUV);

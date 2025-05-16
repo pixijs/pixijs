@@ -10,6 +10,7 @@ import type { BoundsData } from '../../scene/container/bounds/Bounds';
  * @param {BoundsData} bounds - The bounds object to be updated. It contains minX, maxX, minY, and maxY properties.
  * @param {ObservablePoint} anchor - The anchor point of the texture, which affects the positioning of the bounds.
  * @param {Texture} texture - The texture whose dimensions and trimming information are used to update the bounds.
+ * @internal
  */
 export function updateQuadBounds(
     bounds: BoundsData,

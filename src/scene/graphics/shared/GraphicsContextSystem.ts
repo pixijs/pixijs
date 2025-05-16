@@ -21,7 +21,7 @@ interface GeometryData
 
 /**
  * A class that holds batchable graphics data for a GraphicsContext.
- * @memberof rendering
+ * @category rendering
  * @ignore
  */
 export class GpuGraphicsContext
@@ -40,7 +40,7 @@ export class GpuGraphicsContext
 
 /**
  * A class that holds the render data for a GraphicsContext.
- * @memberof rendering
+ * @category rendering
  * @ignore
  */
 export class GraphicsContextRenderData
@@ -74,7 +74,7 @@ export class GraphicsContextRenderData
 
 /**
  * Options for the GraphicsContextSystem.
- * @memberof rendering
+ * @category rendering
  */
 export interface GraphicsContextSystemOptions
 {
@@ -84,7 +84,7 @@ export interface GraphicsContextSystemOptions
 
 /**
  * A system that manages the rendering of GraphicsContexts.
- * @memberof rendering
+ * @category rendering
  */
 export class GraphicsContextSystem implements System<GraphicsContextSystemOptions>
 {

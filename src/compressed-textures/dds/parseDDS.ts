@@ -3,6 +3,11 @@ import { DDS, DXGI_TO_TEXTURE_FORMAT, FOURCC_TO_TEXTURE_FORMAT, TEXTURE_FORMAT_B
 import type { TEXTURE_FORMATS } from '../../rendering/renderers/shared/texture/const';
 import type { TextureSourceOptions } from '../../rendering/renderers/shared/texture/sources/TextureSource';
 
+/**
+ * @param arrayBuffer
+ * @param supportedFormats
+ * @internal
+ */
 export function parseDDS(arrayBuffer: ArrayBuffer, supportedFormats: TEXTURE_FORMATS[]): TextureSourceOptions<Uint8Array[]>
 {
     const {

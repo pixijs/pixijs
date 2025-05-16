@@ -1,3 +1,10 @@
+/**
+ * @param rgb
+ * @param alpha
+ * @param out
+ * @param offset
+ * @internal
+ */
 export function colorToUniform(rgb: number, alpha: number, out: Float32Array, offset: number)
 {
     // TODO replace with Color..
@@ -7,6 +14,12 @@ export function colorToUniform(rgb: number, alpha: number, out: Float32Array, of
     out[offset++] = alpha;
 }
 
+/**
+ * @param abgr
+ * @param out
+ * @param offset
+ * @internal
+ */
 export function color32BitToUniform(abgr: number, out: Float32Array, offset: number)
 {
     const alpha = ((abgr >> 24) & 0xFF) / 255;

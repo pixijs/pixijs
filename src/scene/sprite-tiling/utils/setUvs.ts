@@ -3,6 +3,11 @@ import { applyMatrix } from './applyMatrix';
 
 import type { TilingSprite } from '../TilingSprite';
 
+/**
+ * @param tilingSprite
+ * @param uvs
+ * @internal
+ */
 export function setUvs(tilingSprite: TilingSprite, uvs: Float32Array)
 {
     const texture = tilingSprite.texture;

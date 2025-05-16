@@ -2,6 +2,13 @@ import { uniformParsers } from './uniformParsers';
 
 import type { UboElement, UNIFORM_TYPES_SINGLE, UniformsSyncCallback } from '../types';
 
+/**
+ * @param uboElements
+ * @param parserCode
+ * @param arrayGenerationFunction
+ * @param singleSettersMap
+ * @internal
+ */
 export function createUboSyncFunction(
     uboElements: UboElement[],
     parserCode: 'uboWgsl' | 'uboStd40',

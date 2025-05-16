@@ -1,5 +1,6 @@
 import type { BUFFER_TYPE } from './const';
 
+/** @internal */
 export class GlBuffer
 {
     public buffer: WebGLBuffer;

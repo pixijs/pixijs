@@ -16,6 +16,10 @@ import type { GpuProgram } from '../../../rendering/renderers/gpu/shader/GpuProg
 let gpuProgram: GpuProgram;
 let glProgram: GlProgram;
 
+/**
+ * The shader used by the TilingSprite.
+ * @internal
+ */
 export class TilingSpriteShader extends Shader
 {
     constructor()

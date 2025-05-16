@@ -1,5 +1,10 @@
 import type { TilingSprite } from '../TilingSprite';
 
+/**
+ * @param tilingSprite
+ * @param positions
+ * @internal
+ */
 export function setPositions(tilingSprite: TilingSprite, positions: Float32Array)
 {
     const anchorX = tilingSprite.anchor.x;

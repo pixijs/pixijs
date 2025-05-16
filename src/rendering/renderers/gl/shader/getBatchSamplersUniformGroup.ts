@@ -7,6 +7,7 @@ const batchSamplersUniformGroupHash: Record<number, UniformGroup> = {};
  * This is used mainly by the shaders that batch textures!
  * @param maxTextures - the number of textures that this uniform group will contain.
  * @returns a uniform group that holds the texture samplers.
+ * @internal
  */
 export function getBatchSamplersUniformGroup(maxTextures: number)
 {

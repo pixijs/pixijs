@@ -11,6 +11,10 @@ import type { RenderGroup } from './RenderGroup';
 
 const tempMatrix = new Matrix();
 
+/**
+ * The RenderGroupPipe is a render pipe for rendering RenderGroups.
+ * @internal
+ */
 export class RenderGroupPipe implements InstructionPipe<RenderGroup>
 {
     public static extension = {

@@ -10,7 +10,7 @@ import type { TypedArray } from '../../buffer/Buffer';
  * @param buffer - number array
  * @param index - is this an index buffer?
  * @returns a buffer
- * @memberof rendering
+ * @category rendering
  */
 export function ensureIsBuffer(buffer: Buffer | TypedArray | number[], index: boolean): Buffer
 {

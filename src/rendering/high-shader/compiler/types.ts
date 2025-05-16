@@ -1,4 +1,7 @@
-/** the vertex source code, an obj */
+/**
+ * the vertex source code, an obj
+ * @internal
+ */
 export type Vertex = {
     /** stick uniforms and functions in here all headers will be compiled at the top of the shader */
     header?: string;
@@ -10,6 +13,7 @@ export type Vertex = {
     end?: string;
 };
 
+/** @internal */
 export type Fragment = {
     /** stick uniforms and functions in here all headers will be compiled at the top of the shader */
     header?: string;
@@ -27,6 +31,7 @@ export type Fragment = {
  *
  * Internally shaders are made up of many of these.
  * You can even write your own and compile them in.
+ * @internal
  */
 export interface HighShaderBit
 {
@@ -40,7 +45,13 @@ export interface HighShaderBit
     fragment?: Fragment;
 }
 
-/** source code to compile a shader. this can be directly used by pixi and should be good to go! */
+/**
+ * source code to compile a shader. this can be directly used by pixi and should be good to go!
+ * It contains the vertex and fragment source code.
+ * This is the final output of the HighShader compiler.
+ * It is used to create a shader program.
+ * @internal
+ */
 export interface HighShaderSource
 {
     fragment: string;

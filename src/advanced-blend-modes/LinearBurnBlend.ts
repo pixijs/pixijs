@@ -14,7 +14,7 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  *
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'linear-burn'
- * @memberof filters
+ * @category filters
  */
 export class LinearBurnBlend extends BlendModeFilter
 {

@@ -29,6 +29,7 @@ const valuesToIterateForKeys: Partial<keyof TextStyle | keyof HTMLTextStyle>[] =
  * Generates a unique key for the text style.
  * @param style - The style to generate a key for.
  * @returns the key for the style.
+ * @internal
  */
 export function generateTextStyleKey(style: TextStyle): string
 {

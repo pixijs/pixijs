@@ -5,7 +5,7 @@ import type { ShapePrimitive } from './ShapePrimitive';
 
 /**
  * The Circle object is used to help draw graphics and can also be used to specify a hit area for containers.
- * @memberof maths
+ * @category maths
  */
 export class Circle implements ShapePrimitive
 {

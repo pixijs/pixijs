@@ -10,18 +10,20 @@ interface MaskConversionTest
     maskClass: new (item: any) => Effect & PoolItem;
 }
 
+/**
+ * Represents a mask effect that can be applied to a container.
+ * @category rendering
+ */
 export type MaskEffect = {mask: unknown} & Effect;
 
 /**
  * A class that manages the conversion of masks to mask effects.
- * @memberof rendering
+ * @category rendering
  * @ignore
  */
 export class MaskEffectManagerClass
 {
-    /**
-     * @private
-     */
+    /** @private */
     public readonly _effectClasses: EffectConstructor[] = [];
     private readonly _tests: MaskConversionTest[] = [];
     private _initialized = false;
@@ -69,6 +71,11 @@ export class MaskEffectManagerClass
     }
 }
 
+/**
+ * A class that manages the conversion of masks to mask effects.
+ * @class
+ * @category rendering
+ */
 export const MaskEffectManager = new MaskEffectManagerClass();
 
 // Handle registration of extensions

@@ -1,5 +1,6 @@
 import type { BLEND_MODES } from '../../shared/state/const';
 
+/** @internal */
 export const GpuBlendModesToPixi: Partial<Record<BLEND_MODES, GPUBlendState>> = {};
 
 GpuBlendModesToPixi.normal = {

@@ -5,7 +5,11 @@ import type { System } from '../shared/system/System';
 import type { GpuPowerPreference } from '../types';
 import type { WebGPURenderer } from './WebGPURenderer';
 
-/** The GPU object. */
+/**
+ * The GPU object.
+ * Contains the GPU adapter and device.
+ * @category rendering
+ */
 export interface GPU
 {
     /** The GPU adapter */
@@ -21,7 +25,7 @@ export interface GPU
  * Setting to `'high-performance'` will prioritize rendering performance over power consumption,
  * while setting to `'low-power'` will prioritize power saving over rendering performance.
  * @property {boolean} [forceFallbackAdapter=false] - Force the use of the fallback adapter
- * @memberof rendering
+ * @category rendering
  */
 export interface GpuContextOptions
 {
@@ -31,13 +35,11 @@ export interface GpuContextOptions
      * Setting to `'high-performance'` will prioritize rendering performance over power consumption,
      * while setting to `'low-power'` will prioritize power saving over rendering performance.
      * @default undefined
-     * @memberof rendering.WebGPUOptions
      */
     powerPreference?: GpuPowerPreference;
     /**
      * Force the use of the fallback adapter
      * @default false
-     * @memberof rendering.WebGPUOptions
      */
     forceFallbackAdapter: boolean;
 }
@@ -45,7 +47,7 @@ export interface GpuContextOptions
 /**
  * System plugin to the renderer to manage the context.
  * @class
- * @memberof rendering
+ * @category rendering
  */
 export class GpuDeviceSystem implements System<GpuContextOptions>
 {

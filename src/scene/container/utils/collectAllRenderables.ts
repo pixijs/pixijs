@@ -10,6 +10,7 @@ import { type Container } from '../Container';
  * @param rendererOrPipes - The renderer to collect the renderables from.
  * @deprecated since version 8.7.0
  * @see container.collectRenderables
+ * @internal
  */
 export function collectAllRenderables(
     container: Container, instructionSet: InstructionSet, rendererOrPipes: Renderer | RenderPipes
