@@ -9,14 +9,7 @@ import { stripVersion } from './program/preprocessors/stripVersion';
 import type { TypedArray } from '../../shared/buffer/Buffer';
 import type { ExtractedAttributeData } from './program/extractAttributesFromGlProgram';
 
-export interface GlAttributeData
-{
-    type: string;
-    size: number;
-    location: number;
-    name: string;
-}
-
+/** @internal */
 export interface GlUniformData
 {
     name: string;
@@ -27,6 +20,7 @@ export interface GlUniformData
     value: any;
 }
 
+/** @internal */
 export interface GlUniformBlockData
 {
     index: number;

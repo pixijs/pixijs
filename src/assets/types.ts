@@ -1,3 +1,7 @@
+/**
+ * A utility type that allows a value to be either a single item of type T or an array of items of type T.
+ * @category utils
+ */
 export type ArrayOr<T> = T | T[];
 
 /**

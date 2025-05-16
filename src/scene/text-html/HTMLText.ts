@@ -20,6 +20,7 @@ export interface HTMLTextOptions extends TextOptions<HTMLTextStyle, HTMLTextStyl
     textureStyle?: TextureStyle | TextureStyleOptions;
 }
 
+// eslint-disable-next-line requireExport/require-export-jsdoc
 export interface HTMLText extends PixiMixins.HTMLText, AbstractText<
     HTMLTextStyle,
     HTMLTextStyleOptions,

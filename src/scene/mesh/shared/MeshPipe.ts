@@ -47,6 +47,7 @@ interface MeshData
     vertexSize: number;
 }
 
+/** @internal */
 export interface MeshAdaptor
 {
     init(): void;
@@ -54,6 +55,12 @@ export interface MeshAdaptor
     destroy(): void;
 }
 
+/**
+ * The MeshPipe is responsible for handling the rendering of Mesh objects.
+ * It manages the batching of meshes, updates their GPU data, and executes the rendering instructions.
+ * It also handles the local uniforms for each mesh, such as transformation matrices and colors.
+ * @category scene
+ */
 export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
 {
     /** @ignore */

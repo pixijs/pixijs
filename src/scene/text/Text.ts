@@ -8,6 +8,7 @@ import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from './AbstractText';
 import type { TextStyleOptions } from './TextStyle';
 
+// eslint-disable-next-line requireExport/require-export-jsdoc
 export interface Text extends PixiMixins.Text, AbstractText<
     TextStyle,
     TextStyleOptions,

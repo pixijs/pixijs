@@ -31,6 +31,11 @@ import type { Dict } from '../../utils/types';
 import type { Optional } from './container-mixins/measureMixin';
 import type { DestroyOptions } from './destroyTypes';
 
+/**
+ * The type of child that can be added to a {@link Container}.
+ * This is a generic type that extends the {@link Container} class.
+ * @category scene
+ */
 export type ContainerChild = Container;
 
 /**
@@ -62,12 +67,40 @@ const defaultSkew = new ObservablePoint(null);
 const defaultPivot = new ObservablePoint(null);
 const defaultScale = new ObservablePoint(null, 1, 1);
 
+/**
+ * The events that can be emitted by a Container.
+ * @category scene
+ */
 export interface ContainerEvents<C extends ContainerChild> extends PixiMixins.ContainerEvents
 {
+    /**
+     * Emitted when this container is added to a new container.
+     * @param container - The parent container.
+     */
     added: [container: Container];
+    /**
+     * Emitted when a child is added to the container.
+     * @param child - The child that was added.
+     * @param container - The container that the child was added to.
+     * @param index - The index at which the child was added.
+     */
     childAdded: [child: C, container: Container, index: number];
+    /**
+     * Emitted when this container is removed from the parent.
+     * @param container - The parent container.
+     */
     removed: [container: Container];
+    /**
+     * Emitted when a child is removed from the container.
+     * @param child - The child that was removed.
+     * @param container - The container that the child was removed from.
+     * @param index - The index at which the child was removed.
+     */
     childRemoved: [child: C, container: Container, index: number];
+    /**
+     * Emitted when the container is destroyed.
+     * @param container - The container that was destroyed.
+     */
     destroyed: [container: Container];
 }
 
@@ -85,11 +118,19 @@ type AnyEvent = {
     [K: ({} & string) | ({} & symbol)]: any;
 };
 
+/** @internal */
 export const UPDATE_COLOR = 0b0001;
+/** @internal */
 export const UPDATE_BLEND = 0b0010;
+/** @internal */
 export const UPDATE_VISIBLE = 0b0100;
+/** @internal */
 export const UPDATE_TRANSFORM = 0b1000;
 
+/**
+ * Options for updating the transform of a container.
+ * @category scene
+ */
 export interface UpdateTransformOptions
 {
     x: number;
@@ -155,6 +196,7 @@ export interface ContainerOptions<C extends ContainerChild = ContainerChild> ext
     boundsArea?: Rectangle;
 }
 
+// eslint-disable-next-line requireExport/require-export-jsdoc
 export interface Container<C extends ContainerChild>
     extends PixiMixins.Container<C>, EventEmitter<ContainerEvents<C> & AnyEvent> {}
 

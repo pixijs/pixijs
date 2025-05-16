@@ -1,5 +1,10 @@
 import type { ICanvasRenderingContext2D } from './ICanvasRenderingContext2D';
 
+/**
+ * The context identifiers for the canvas.
+ * These identifiers are used to specify the type of rendering context to create.
+ * @category environment
+ */
 export type ContextIds = '2d'
 | 'bitmaprenderer'
 | 'webgl'
@@ -8,11 +13,23 @@ export type ContextIds = '2d'
 | 'experimental-webgl2'
 | 'webgpu';
 
+/**
+ * The predefined color spaces for the canvas.
+ * @category environment
+ */
 export type PredefinedColorSpace = 'srgb' | 'display-p3';
 
+/**
+ * The rendering context for the canvas.
+ * @category environment
+ */
 export type RenderingContext =
     ICanvasRenderingContext2D | ImageBitmapRenderingContext | WebGLRenderingContext | WebGL2RenderingContext;
 
+/**
+ * The context 2D settings for creating a rendering context.
+ * @category environment
+ */
 export interface ICanvasRenderingContext2DSettings
 {
     alpha?: boolean;
@@ -21,9 +38,17 @@ export interface ICanvasRenderingContext2DSettings
     willReadFrequently?: boolean;
 }
 
+/**
+ * The context settings for creating a rendering context.
+ * @category environment
+ */
 export type ContextSettings =
     ICanvasRenderingContext2DSettings | ImageBitmapRenderingContextSettings | WebGLContextAttributes;
 
+/**
+ * The parent node of the canvas.
+ * @category environment
+ */
 export interface ICanvasParentNode
 {
     /** Adds a node to the end of the list of children of the parent node. */
@@ -33,6 +58,10 @@ export interface ICanvasParentNode
     removeChild(element: ICanvas): void;
 }
 
+/**
+ * Represents the style properties of a canvas element.
+ * @category environment
+ */
 export interface ICanvasStyle
 {
     width?: string;
@@ -43,14 +72,26 @@ export interface ICanvasStyle
     msContentZooming?: string;
 }
 
+/**
+ * Represents a rectangle in the canvas.
+ * @category environment
+ */
 export interface ICanvasRect
 {
+    /** The x-coordinate of the rectangle's top-left corner. */
     x: number;
+    /** The y-coordinate of the rectangle's top-left corner. */
     y: number;
+    /** The width of the rectangle. */
     width: number;
+    /** The height of the rectangle. */
     height: number;
 }
 
+/**
+ * WebGL context events.
+ * @category environment
+ */
 export interface WebGLContextEventMap
 {
     'webglcontextlost': WebGLContextEvent;

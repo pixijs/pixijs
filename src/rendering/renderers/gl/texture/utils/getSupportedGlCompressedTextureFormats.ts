@@ -2,6 +2,7 @@ import type { TEXTURE_FORMATS } from '../../../shared/texture/const';
 
 let supportedGLCompressedTextureFormats: TEXTURE_FORMATS[];
 
+/** @internal */
 export function getSupportedGlCompressedTextureFormats(): TEXTURE_FORMATS[]
 {
     if (supportedGLCompressedTextureFormats) return supportedGLCompressedTextureFormats;

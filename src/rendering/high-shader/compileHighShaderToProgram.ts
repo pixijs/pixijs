@@ -6,6 +6,12 @@ import { globalUniformsBit, globalUniformsBitGl } from './shader-bits/globalUnif
 
 import type { HighShaderBit } from './compiler/types';
 
+/**
+ * @param root0
+ * @param root0.bits
+ * @param root0.name
+ * @internal
+ */
 export function compileHighShaderGpuProgram({ bits, name }: {bits: HighShaderBit[], name: string}): GpuProgram
 {
     const source = compileHighShader({
@@ -32,6 +38,12 @@ export function compileHighShaderGpuProgram({ bits, name }: {bits: HighShaderBit
     });
 }
 
+/**
+ * @param root0
+ * @param root0.bits
+ * @param root0.name
+ * @internal
+ */
 export function compileHighShaderGlProgram({ bits, name }: {bits: HighShaderBit[], name: string}): GlProgram
 {
     return new GlProgram({

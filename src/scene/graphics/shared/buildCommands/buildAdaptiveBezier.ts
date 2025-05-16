@@ -11,6 +11,19 @@ const curveAngleToleranceEpsilon = 0.01;
 const mAngleTolerance = 0;
 const mCuspLimit = 0;
 
+/**
+ * @param points
+ * @param sX
+ * @param sY
+ * @param cp1x
+ * @param cp1y
+ * @param cp2x
+ * @param cp2y
+ * @param eX
+ * @param eY
+ * @param smoothness
+ * @internal
+ */
 export function buildAdaptiveBezier(
     points: number[],
     sX: number, sY: number,

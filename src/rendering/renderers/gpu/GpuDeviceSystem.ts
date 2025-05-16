@@ -5,7 +5,11 @@ import type { System } from '../shared/system/System';
 import type { GpuPowerPreference } from '../types';
 import type { WebGPURenderer } from './WebGPURenderer';
 
-/** The GPU object. */
+/**
+ * The GPU object.
+ * Contains the GPU adapter and device.
+ * @category rendering
+ */
 export interface GPU
 {
     /** The GPU adapter */

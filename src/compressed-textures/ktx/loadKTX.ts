@@ -12,7 +12,10 @@ import type { ResolvedAsset } from '../../assets/types';
 import type { TextureSourceOptions } from '../../rendering/renderers/shared/texture/sources/TextureSource';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 
-/** Loads KTX textures! */
+/**
+ * Loads KTX textures.
+ * @category assets
+ */
 export const loadKTX = {
     extension: {
         type: ExtensionType.LoadParser,

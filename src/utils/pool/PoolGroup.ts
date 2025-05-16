@@ -97,4 +97,8 @@ export class PoolGroupClass
     }
 }
 
+/**
+ * A singleton instance of the PoolGroupClass that can be used throughout the application.
+ * @internal
+ */
 export const BigPool = new PoolGroupClass();

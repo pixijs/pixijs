@@ -14,6 +14,7 @@ import type { Renderer } from '../../rendering/renderers/types';
 import type { PoolItem } from '../../utils/pool/Pool';
 import type { BitmapText } from './BitmapText';
 
+/** @internal */
 export class BitmapTextGraphics extends Graphics
 {
     public destroy()
@@ -27,6 +28,7 @@ export class BitmapTextGraphics extends Graphics
     }
 }
 
+/** @internal */
 export class BitmapTextPipe implements RenderPipe<BitmapText>
 {
     /** @ignore */

@@ -8,6 +8,10 @@ import { getGeometryBounds } from './utils/getGeometryBounds';
 import type { TypedArray } from '../buffer/Buffer';
 import type { Topology, VertexFormat } from './const';
 
+/**
+ * The index buffer array type used in geometries.
+ * @category rendering
+ */
 export type IndexBufferArray = Uint16Array | Uint32Array;
 
 /**

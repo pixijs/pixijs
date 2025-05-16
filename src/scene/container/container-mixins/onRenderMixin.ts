@@ -1,6 +1,7 @@
 import type { Renderer } from '../../../rendering/renderers/types';
 import type { Container } from '../Container';
 
+/** @internal */
 export interface OnRenderMixinConstructor
 {
     /**
@@ -17,12 +18,20 @@ export interface OnRenderMixinConstructor
      */
     onRender?: ((renderer: Renderer) => void | null);
 }
+
+/**
+ * The OnRenderMixin interface provides a way to define a callback that is executed
+ * every time the container is rendered. This is useful for adding custom rendering logic
+ * or animations that need to be updated each frame.
+ * @category scene
+ */
 export interface OnRenderMixin extends Required<OnRenderMixinConstructor>
 {
     /** @private */
     _onRender: ((renderer: Renderer) => void) | null;
 }
 
+/** @internal */
 export const onRenderMixin: Partial<Container> = {
     _onRender: null,
 

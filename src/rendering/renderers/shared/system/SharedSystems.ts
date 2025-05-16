@@ -20,6 +20,10 @@ import { ViewSystem } from '../view/ViewSystem';
 
 import type { ExtractRendererOptions } from './utils/typeUtils';
 
+/**
+ * Shared systems for the renderer.
+ * @category rendering
+ */
 export const SharedSystems = [
     BackgroundSystem,
     GlobalUniformSystem,
@@ -34,6 +38,10 @@ export const SharedSystems = [
     SchedulerSystem,
 ];
 
+/**
+ * Shared render pipes for the renderer.
+ * @category rendering
+ */
 export const SharedRenderPipes = [
     BlendModePipe,
     BatcherPipe,

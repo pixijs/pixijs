@@ -6,15 +6,6 @@ import type { PointData } from '../maths/point/PointData';
 
 /**
  * The idea of a relative epsilon comparison is to find the difference between the two numbers,
- * and see if it is less than `Math.EPSILON`.
- * @param {number} a - First floating number to compare.
- * @param {number} b - Second floating number to compare.
- * @returns {boolean} Returns `true` if the difference between the values is less than `Math.EPSILON`; otherwise `false`.
- * @category maths
- */
-export function floatEqual(a: number, b: number): boolean;
-/**
- * The idea of a relative epsilon comparison is to find the difference between the two numbers,
  * and see if it is less than a given epsilon.
  * A good epsilon would be the N% of the largest of the two values or `Math.EPSILON`.
  *
@@ -27,7 +18,6 @@ export function floatEqual(a: number, b: number): boolean;
  * otherwise `false`.
  * @category maths
  */
-export function floatEqual(a: number, b: number, epsilon: number): boolean;
 export function floatEqual(a: number, b: number, epsilon: number = Number.EPSILON): boolean
 {
     if (a === b)
@@ -115,47 +105,18 @@ function genericLineIntersection<T extends PointData>(
  * @param aEnd - Second point of the first line.
  * @param bStart - First point of the second line.
  * @param bEnd - Second point of the second line.
- * @returns {PointData} The point where the lines intersect.
- * @category maths
- */
-export function lineIntersection(aStart: PointData, aEnd: PointData, bStart: PointData, bEnd: PointData): Point;
-/**
- * Computes the point where non-coincident and non-parallel Lines intersect.
- * Coincident or parallel lines return a `NaN` point `{x: NaN, y: NaN}`.
- * The intersection point may land outside the extents of the lines.
- *
- * _Note: Only available with **pixi.js/math-extras**._
- * @param aStart - First point of the first line.
- * @param aEnd - Second point of the first line.
- * @param bStart - First point of the second line.
- * @param bEnd - Second point of the second line.
  * @param {PointData} outPoint - A Point-like object in which to store the value,
  * optional (otherwise will create a new Point).
  * @returns {PointData} The point where the lines intersect or a `NaN` Point.
  * @category maths
+ * @mergeModuleWith index
  */
 export function lineIntersection
-<T extends PointData>(aStart: PointData, aEnd: PointData, bStart: PointData, bEnd: PointData, outPoint: T): T;
-export function lineIntersection
-<T extends PointData>(aStart: PointData, aEnd: PointData, bStart: PointData, bEnd: PointData, outPoint?: T): T
+<T extends PointData = Point>(aStart: PointData, aEnd: PointData, bStart: PointData, bEnd: PointData, outPoint?: T): T
 {
     return genericLineIntersection(aStart, aEnd, bStart, bEnd, true, outPoint);
 }
 
-/**
- * Computes the point where non-coincident and non-parallel segments intersect.
- * Coincident, parallel or non-intersecting segments return a `NaN` point `{x: NaN, y: NaN}`.
- * The intersection point must land inside the extents of the segments or return a `NaN` Point.
- *
- * _Note: Only available with **pixi.js/math-extras**._
- * @param aStart - Starting point of the first segment.
- * @param aEnd - Ending point of the first segment.
- * @param bStart - Starting point of the second segment.
- * @param bEnd - Ending point of the second segment.
- * @returns {PointData} The point where the segments intersect.
- * @category maths
- */
-export function segmentIntersection(aStart: PointData, aEnd: PointData, bStart: PointData, bEnd: PointData): Point;
 /**
  * Computes the point where non-coincident and non-parallel segments intersect.
  * Coincident, parallel or non-intersecting segments return a `NaN` point `{x: NaN, y: NaN}`.
@@ -172,9 +133,7 @@ export function segmentIntersection(aStart: PointData, aEnd: PointData, bStart: 
  * @category maths
  */
 export function segmentIntersection
-<T extends PointData>(aStart: PointData, aEnd: PointData, bStart: PointData, bEnd: PointData, outPoint: T): T;
-export function segmentIntersection
-<T extends PointData>(aStart: PointData, aEnd: PointData, bStart: PointData, bEnd: PointData, outPoint?: T): T
+<T extends PointData = Point>(aStart: PointData, aEnd: PointData, bStart: PointData, bEnd: PointData, outPoint?: T): T
 {
     return genericLineIntersection(aStart, aEnd, bStart, bEnd, false, outPoint);
 }

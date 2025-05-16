@@ -11,6 +11,10 @@ import type { Renderer } from '../../types';
 import type { System } from '../system/System';
 import type { TextureSourceOptions } from '../texture/sources/TextureSource';
 
+/**
+ * Options for generating a texture source.
+ * @category rendering
+ */
 export type GenerateTextureSourceOptions = Omit<TextureSourceOptions, 'resource' | 'width' | 'height' | 'resolution'>;
 
 /**

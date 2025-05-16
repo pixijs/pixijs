@@ -7,13 +7,24 @@ import { checkChildrenDidChange } from '../utils/checkChildrenDidChange';
 import type { Size } from '../../../maths/misc/Size';
 import type { Container } from '../Container';
 
+/**
+ * A utility type that makes all properties of T optional except for the specified keys K.
+ * @category utils
+ */
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
+/** @ignore */
 export interface MeasureMixinConstructor
 {
     width?: number;
     height?: number;
 }
+/**
+ * The MeasureMixin interface provides methods for measuring and manipulating the size and bounds of a display object.
+ * It includes methods to get and set the size of the object, retrieve its local bounds,
+ * and calculate its global bounds.
+ * @category scene
+ */
 export interface MeasureMixin extends Required<MeasureMixinConstructor>
 {
     getSize(out?: Size): Size;
@@ -53,6 +64,7 @@ interface LocalBoundsCacheData
 
 const tempMatrix = new Matrix();
 
+/** @internal */
 export const measureMixin: Partial<Container> = {
 
     _localBoundsCacheId: -1,

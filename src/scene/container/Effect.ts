@@ -17,6 +17,11 @@ export interface Effect
     destroy(): void
 }
 
+/**
+ * The constructor for an Effect.
+ * It is used to create instances of effects that can be applied to containers.
+ * @category rendering
+ */
 export interface EffectConstructor
 {
     new(options?: any): Effect

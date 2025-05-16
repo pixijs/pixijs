@@ -15,6 +15,10 @@ import type { InstructionSet } from '../../renderers/shared/instructions/Instruc
 import type { Shader } from '../../renderers/shared/shader/Shader';
 import type { Texture } from '../../renderers/shared/texture/Texture';
 
+/**
+ * The action types for a batch.
+ * @category rendering
+ */
 export type BatchAction = 'startBatch' | 'renderBatch';
 
 /**

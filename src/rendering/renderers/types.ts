@@ -47,5 +47,6 @@ export enum RendererType
  *
  * - `'high-performance'` will prioritize rendering performance over power consumption,
  * - `'low-power'` will prioritize power saving over rendering performance.
+ * @category rendering
  */
 export type GpuPowerPreference = 'low-power' | 'high-performance';

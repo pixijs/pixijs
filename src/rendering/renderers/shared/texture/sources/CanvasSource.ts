@@ -6,6 +6,10 @@ import type { ICanvas } from '../../../../../environment/canvas/ICanvas';
 import type { ExtensionMetadata } from '../../../../../extensions/Extensions';
 import type { TextureSourceOptions } from './TextureSource';
 
+/**
+ * Options for creating a CanvasSource.
+ * @category rendering
+ */
 export interface CanvasSourceOptions extends TextureSourceOptions<ICanvas>
 {
     /**
@@ -18,6 +22,12 @@ export interface CanvasSourceOptions extends TextureSourceOptions<ICanvas>
     transparent?: boolean;
 }
 
+/**
+ * A texture source that uses a canvas as its resource.
+ * It automatically resizes the canvas based on the width, height, and resolution.
+ * It also provides a 2D rendering context for drawing.
+ * @category rendering
+ */
 export class CanvasSource extends TextureSource<ICanvas>
 {
     public static extension: ExtensionMetadata = ExtensionType.TextureSource;

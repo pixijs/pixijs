@@ -19,20 +19,32 @@ import type { RoundedPoint } from './path/roundShape';
 
 const tmpPoint = new Point();
 
+/**
+ * The mode for batching graphics instructions.
+ *
+ * It can be:
+ * - 'auto': Automatically determines whether to batch based on the number of instructions.
+ * - 'batch': Forces batching of all instructions.
+ * - 'no-batch': Disables batching, processing each instruction individually.
+ * @category scene
+ */
 export type BatchMode = 'auto' | 'batch' | 'no-batch';
 
+/** @internal */
 export interface FillInstruction
 {
     action: 'fill' | 'cut'
     data: { style: ConvertedFillStyle, path: GraphicsPath, hole?: GraphicsPath }
 }
 
+/** @internal */
 export interface StrokeInstruction
 {
     action: 'stroke'
     data: { style: ConvertedStrokeStyle, path: GraphicsPath, hole?: GraphicsPath }
 }
 
+/** @internal */
 export interface TextureInstruction
 {
     action: 'texture'
@@ -51,6 +63,7 @@ export interface TextureInstruction
     }
 }
 
+/** @internal */
 export type GraphicsInstructions = FillInstruction | StrokeInstruction | TextureInstruction;
 
 const tempMatrix = new Matrix();
@@ -116,6 +129,7 @@ export class GraphicsContext extends EventEmitter<{
     public readonly uid: number = uid('graphicsContext');
     public dirty = true;
     public batchMode: BatchMode = 'auto';
+    /** @internal */
     public instructions: GraphicsInstructions[] = [];
     public customShader?: Shader;
 

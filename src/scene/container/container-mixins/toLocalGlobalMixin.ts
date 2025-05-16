@@ -4,6 +4,15 @@ import { matrixPool } from '../bounds/utils/matrixAndBoundsPool';
 import type { PointData } from '../../../maths/point/PointData';
 import type { Container } from '../Container';
 
+/**
+ * Interface for a mixin that provides methods to convert between local and global coordinates.
+ * This mixin allows you to get the global position of a container,
+ * convert a point from local to global coordinates,
+ * and convert a point from global to local coordinates.
+ *
+ * It includes methods to optimize performance by using cached matrices when available.
+ * @category scene
+ */
 export interface ToLocalGlobalMixin
 {
     /**
@@ -34,6 +43,7 @@ export interface ToLocalGlobalMixin
     toLocal<P extends PointData = Point>(position: PointData, from?: Container, point?: P, skipUpdate?: boolean): P;
 }
 
+/** @internal */
 export const toLocalGlobalMixin: Partial<Container> = {
     getGlobalPosition(point: Point = new Point(), skipUpdate = false): Point
     {

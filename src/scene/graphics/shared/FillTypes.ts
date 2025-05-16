@@ -127,14 +127,21 @@ export type FillInput = ColorSource | FillGradient | FillPattern | FillStyle | T
  */
 export type StrokeInput = ColorSource | FillGradient | FillPattern | StrokeStyle;
 
-// used internally and is a complete fill style
+/**
+ * used internally and is a complete fill style
+ * @category scene
+ */
 export type ConvertedFillStyle = Omit<Required<FillStyle>, 'color'> & { color: number };
-// used internally and is a complete stroke style
+/**
+ * used internally and is a complete stroke style
+ * @category scene
+ */
 export type ConvertedStrokeStyle = ConvertedFillStyle & Required<StrokeAttributes>;
 
 /**
  * @deprecated since v8.1.6
  * @see FillInput
+ * @category scene
  */
 // eslint-disable-next-line max-len
 export type FillStyleInputs = ColorSource | FillGradient | FillPattern | FillStyle | ConvertedFillStyle | StrokeStyle | ConvertedStrokeStyle;

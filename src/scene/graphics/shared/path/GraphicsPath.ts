@@ -9,6 +9,11 @@ import type { PointData } from '../../../../maths/point/PointData';
 import type { Bounds } from '../../../container/bounds/Bounds';
 import type { RoundedPoint } from './roundShape';
 
+/**
+ * Represents a single drawing instruction in a `GraphicsPath`.
+ * Each instruction consists of an action type and associated data.
+ * @category scene
+ */
 export interface PathInstruction
 {
     action: 'moveTo' | 'lineTo' | 'quadraticCurveTo' |

@@ -34,18 +34,31 @@ interface ShaderBase
     compatibleRenderers?: number
 }
 
+/**
+ * A base interface for shaders that includes the common properties.
+ * @category rendering
+ */
 export interface GlShaderWith extends ShaderBase
 {
     /** The WebGL program used by the WebGL renderer. */
     glProgram: GlProgram
 }
 
+/**
+ * A base interface for shaders that includes the common properties.
+ * @category rendering
+ */
 export interface GpuShaderWith extends ShaderBase
 {
     /** The WebGPU program used by the WebGPU renderer. */
     gpuProgram: GpuProgram
 }
 
+/**
+ * A descriptor for a shader with groups.
+ * This is used to define a shader that uses {@link BindGroup}'s.
+ * @category rendering
+ */
 export interface ShaderWithGroupsDescriptor
 {
     /** A record of {@link BindGroup}'s used by the shader. */
@@ -90,8 +103,16 @@ export type ShaderWithGroups = ShaderWithGroupsDescriptor & ShaderWith;
  * @category rendering
  */
 export type ShaderWithResources = ShaderWithResourcesDescriptor & ShaderWith;
+/**
+ * A shader that can be used with both WebGL and WebGPU.
+ * @category rendering
+ */
 export interface IShaderWithResources extends ShaderWithResourcesDescriptor, ShaderBase {}
 
+/**
+ * A descriptor for a shader that can be used with both WebGL and WebGPU.
+ * @category rendering
+ */
 export type ShaderDescriptor = ShaderWithGroups & ShaderWithResources;
 
 /**
@@ -110,7 +131,15 @@ type GpuShaderFromWith = {
     gpu: GpuProgramOptions,
     gl?: GlProgramOptions
 };
+/**
+ * A descriptor for a shader that can be used with both WebGL and WebGPU.
+ * @category rendering
+ */
 export type ShaderFromGroups = (GlShaderFromWith | GpuShaderFromWith) & Omit<ShaderWithGroups, 'glProgram' | 'gpuProgram'>;
+/**
+ * A descriptor for a shader that can be used with both WebGL and WebGPU.
+ * @category rendering
+ */
 export type ShaderFromResources = (GlShaderFromWith | GpuShaderFromWith)
 & Omit<ShaderWithResources, 'glProgram' | 'gpuProgram'>;
 

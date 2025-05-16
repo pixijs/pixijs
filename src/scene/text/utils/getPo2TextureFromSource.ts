@@ -14,6 +14,7 @@ const tempBounds = new Bounds();
  * @param height - the frame height of the texture
  * @param resolution - The resolution of the texture
  * @returns - The texture
+ * @internal
  */
 export function getPo2TextureFromSource(
     image: HTMLImageElement | HTMLCanvasElement | ICanvas,

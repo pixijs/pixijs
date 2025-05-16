@@ -26,6 +26,10 @@ function createResourceIdFromString(value: string): number
     return id;
 }
 
+/**
+ * The options for the texture style.
+ * @category rendering
+ */
 export interface TextureStyleOptions extends Partial<TextureStyle>
 {
     /** setting this will set wrapModeU,wrapModeV and wrapModeW all at once! */

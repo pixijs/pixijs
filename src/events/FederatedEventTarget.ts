@@ -488,6 +488,10 @@ export type AddListenerOptions = boolean | AddEventListenerOptions;
  */
 export type RemoveListenerOptions = boolean | EventListenerOptions;
 
+/**
+ * Additional properties for a Container that is used for interaction events.
+ * @category events
+ */
 export interface IFederatedContainer extends FederatedOptions
 {
     /** The parent of this event target. */
@@ -595,6 +599,7 @@ export interface IFederatedContainer extends FederatedOptions
     dispatchEvent(e: FederatedEvent): boolean;
 }
 
+/** @internal */
 export const FederatedContainer: IFederatedContainer = {
     onclick: null,
     onmousedown: null,

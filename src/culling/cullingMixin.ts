@@ -1,5 +1,12 @@
 import type { Rectangle } from '../maths/shapes/Rectangle';
 
+/**
+ * The CullingMixin interface provides properties and methods for managing culling behavior
+ * of a display object. Culling is the process of determining whether an object should be rendered
+ * based on its visibility within the current view or frame. This mixin allows for optimization
+ * of rendering by skipping objects that are not visible, thus improving performance in complex scenes.
+ * @category scene
+ */
 export interface CullingMixinConstructor
 {
     /**
@@ -24,6 +31,7 @@ export interface CullingMixinConstructor
     cullableChildren: boolean,
 }
 
+/** @internal */
 export const cullingMixin: CullingMixinConstructor = {
     cullArea: null,
     cullable: false,

@@ -46,6 +46,7 @@ export interface NineSliceSpriteOptions extends PixiMixins.NineSliceSpriteOption
     /** The anchor point of the NineSliceSprite. */
     anchor?: PointData | number;
 }
+// eslint-disable-next-line requireExport/require-export-jsdoc
 export interface NineSliceSprite extends PixiMixins.NineSliceSprite, ViewContainer<NineSliceSpriteGpuData> {}
 
 /**

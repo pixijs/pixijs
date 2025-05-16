@@ -9,6 +9,7 @@ import type { TextureSource } from '../texture/sources/TextureSource';
  * @param blendMode - The blend mode to get the adjusted blend mode for.
  * @param textureSource - The texture to test the format of.
  * @returns - the blend mode that should be used to render this texture correctly based on its alphaMode
+ * @internal
  */
 export function getAdjustedBlendModeBlend(blendMode: BLEND_MODES, textureSource: TextureSource): BLEND_MODES
 {

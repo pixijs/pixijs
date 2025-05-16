@@ -2,7 +2,7 @@
 import type { PointData } from './PointData';
 import type { PointLike } from './PointLike';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type, requireExport/require-export-jsdoc
 export interface Point extends PixiMixins.Point { }
 
 /**

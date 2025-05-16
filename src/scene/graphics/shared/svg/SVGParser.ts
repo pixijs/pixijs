@@ -10,7 +10,10 @@ import type {
     GraphicsContext,
 } from '../GraphicsContext';
 
-/** Represents a session for SVG parsing. Contains the current state and resources needed during parsing. */
+/**
+ * Represents a session for SVG parsing. Contains the current state and resources needed during parsing.
+ * @internal
+ */
 export interface Session
 {
     /** The graphics context to render to */
@@ -27,6 +30,7 @@ export interface Session
  * @param svg - The SVG content to parse, either as a string or element
  * @param graphicsContext - Optional graphics context to render to
  * @returns The graphics context with the SVG rendered into it
+ * @internal
  */
 export function SVGParser(
     svg: string | SVGElement | SVGSVGElement,

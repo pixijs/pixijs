@@ -34,22 +34,22 @@ export interface ParticleProperties
 
 /**
  * Options for the ParticleContainer constructor.
- * @extends ContainerOptions
- * @property {Record<string, boolean>} dynamicProperties - Specifies which properties are dynamic.
- * @property {Shader} shader - The shader to use for rendering.
- * @property {boolean} roundPixels - Indicates if pixels should be rounded.
- * @property {Texture} texture - The texture to use for rendering - if not provided the texture of the first child is used.
- * @property {IParticle[]} particles - An array of particles to add to the container.
  * @category scene
  */
 export interface ParticleContainerOptions extends PixiMixins.ParticleContainerOptions, Omit<ViewContainerOptions, 'children'>
 {
+    /** Specifies which properties are dynamic. */
     dynamicProperties?: Record<string, boolean>;
+    /** The shader to use for rendering particles. */
     shader?: Shader;
+    /** Indicates if pixels should be rounded. */
     roundPixels?: boolean;
+    /** The texture to use for rendering particles. If not provided, the texture of the first child is used. */
     texture?: Texture;
+    /** An array of particles to add to the container. */
     particles?: IParticle[];
 }
+// eslint-disable-next-line requireExport/require-export-jsdoc
 export interface ParticleContainer extends PixiMixins.ParticleContainer, ViewContainer<ParticleBuffer> {}
 
 /**
@@ -110,14 +110,21 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * @property {boolean} roundPixels - Indicates if pixels should be  rounded.
      */
     public static defaultOptions: ParticleContainerOptions = {
+        /** Specifies which properties are dynamic. */
         dynamicProperties: {
-            vertex: false, // Indicates if vertex positions are dynamic.
-            position: true, // Indicates if particle positions are dynamic.
-            rotation: false, // Indicates if particle rotations are dynamic.
-            uvs: false, // Indicates if UV coordinates are dynamic.
-            color: false, // Indicates if particle colors are dynamic.
+            /** Indicates if vertex positions are dynamic. */
+            vertex: false,
+            /** Indicates if particle positions are dynamic. */
+            position: true,
+            /** Indicates if particle rotations are dynamic. */
+            rotation: false,
+            /** Indicates if UV coordinates are dynamic. */
+            uvs: false,
+            /** Indicates if particle colors are dynamic. */
+            color: false,
         },
-        roundPixels: false, // Indicates if pixels should be rounded for rendering.
+        /** Indicates if pixels should be rounded for rendering. */
+        roundPixels: false
     };
 
     /** The unique identifier for the render pipe of this ParticleContainer. */

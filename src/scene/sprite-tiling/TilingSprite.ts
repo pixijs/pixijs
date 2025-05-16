@@ -74,6 +74,7 @@ export interface TilingSpriteOptions extends PixiMixins.TilingSpriteOptions, Vie
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
+// eslint-disable-next-line requireExport/require-export-jsdoc
 export interface TilingSprite extends PixiMixins.TilingSprite, ViewContainer<TilingSpriteGpuData> {}
 
 /**

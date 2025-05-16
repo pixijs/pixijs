@@ -2,6 +2,7 @@ import type { TextureSource } from '../../../shared/texture/sources/TextureSourc
 import type { GlRenderingContext } from '../../context/GlRenderingContext';
 import type { GlTexture } from '../GlTexture';
 
+/** @internal */
 export interface GLTextureUploader
 {
     id: string;

@@ -1,4 +1,5 @@
 // TODO add more types as required
+/** @internal */
 export const UNIFORM_TYPES_VALUES = [
     'f32',
     'i32',
@@ -19,7 +20,10 @@ export const UNIFORM_TYPES_VALUES = [
     'vec4<i32>',
 ] as const;
 
-/** useful for checking if a type is supported - a map of supported types with a true value. */
+/**
+ * useful for checking if a type is supported - a map of supported types with a true value.
+ * @internal
+ */
 export const UNIFORM_TYPES_MAP = UNIFORM_TYPES_VALUES.reduce((acc, type) =>
 {
     acc[type] = true;
@@ -38,6 +42,10 @@ export type UNIFORM_TYPES_ARRAY = `array<${UNIFORM_TYPES_SINGLE},${OPTIONAL_SPAC
 /** @internal */
 export type UNIFORM_TYPES = UNIFORM_TYPES_SINGLE | UNIFORM_TYPES_ARRAY;
 
+/**
+ * This is the type of the uniform structures that are used in the UniformGroup.
+ * @category rendering
+ */
 export interface UniformData
 {
     /** the value of the uniform, this could be any object - a parser will figure out how to write it to the buffer */
@@ -48,6 +56,7 @@ export interface UniformData
     name?: string;
 }
 
+/** @internal */
 export interface UboElement
 {
     data: UniformData;
@@ -55,6 +64,7 @@ export interface UboElement
     size: number;
 }
 
+/** @internal */
 export interface UboLayout
 {
     uboElements: UboElement[];
@@ -62,4 +72,5 @@ export interface UboLayout
     size: number;
 }
 
+/** @internal */
 export type UniformsSyncCallback = (...args: any[]) => void;

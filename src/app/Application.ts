@@ -57,7 +57,7 @@ export interface ApplicationPlugin
  */
 export interface ApplicationOptions extends AutoDetectOptions, PixiMixins.ApplicationOptions { }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type, requireExport/require-export-jsdoc
 export interface Application extends PixiMixins.Application { }
 
 /**

@@ -36,6 +36,11 @@ function getKTX2Worker(supportedTextures: TEXTURE_FORMATS[]): Worker
     return ktxWorker;
 }
 
+/**
+ * @param url
+ * @param supportedTextures
+ * @internal
+ */
 export function loadKTX2onWorker(
     url: string,
     supportedTextures: TEXTURE_FORMATS[]

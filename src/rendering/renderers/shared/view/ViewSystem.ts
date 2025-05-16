@@ -50,6 +50,10 @@ export interface ViewSystemOptions
     depth?: boolean;
 }
 
+/**
+ * Options for destroying the ViewSystem.
+ * @category rendering
+ */
 export interface ViewSystemDestroyOptions
 {
     /** Whether to remove the view element from the DOM. Defaults to `false`. */

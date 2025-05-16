@@ -16,5 +16,8 @@ export const DATA_URI = /^\s*data:(?:([\w-]+)\/([\w+.-]+))?(?:;charset=([\w-]+))
 // export the event emitter so we can use it in external modules
 export { EventEmitter };
 
-/** The current version of PixiJS. This is automatically replaced by the build process. */
+/**
+ * The current version of PixiJS. This is automatically replaced by the build process.
+ * @internal
+ */
 export const VERSION = '$_VERSION';

@@ -804,6 +804,10 @@ export class Resolver
     }
 }
 
+/**
+ * @param url
+ * @internal
+ */
 export function getUrlExtension(url: string)
 {
     return url.split('.').pop().split('?').shift()

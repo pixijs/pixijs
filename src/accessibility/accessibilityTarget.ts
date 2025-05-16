@@ -96,6 +96,7 @@ export interface AccessibleTarget extends AccessibleOptions
     _renderId: number;
 }
 
+/** @internal */
 export interface AccessibleHTMLElement extends HTMLElement
 {
     type?: string;
@@ -105,6 +106,7 @@ export interface AccessibleHTMLElement extends HTMLElement
 /**
  * Default property values of accessible objects
  * used by {@link AccessibilitySystem}.
+ * @internal
  * @example
  * import { accessibleTarget } from 'pixi.js';
  *

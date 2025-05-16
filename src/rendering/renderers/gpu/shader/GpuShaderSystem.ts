@@ -4,6 +4,11 @@ import type { ShaderSystem } from '../../shared/shader/ShaderSystem';
 import type { GPU } from '../GpuDeviceSystem';
 import type { GpuProgram } from './GpuProgram';
 
+/**
+ * Data structure for GPU program layout.
+ * Contains bind group layouts and pipeline layout.
+ * @category rendering
+ */
 export interface GPUProgramData
 {
     bindGroups: GPUBindGroupLayout[]

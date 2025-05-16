@@ -8,6 +8,11 @@ import type { RenderGroup } from '../RenderGroup';
 const tempContainer = new Container();
 const UPDATE_BLEND_COLOR_VISIBLE = UPDATE_VISIBLE | UPDATE_COLOR | UPDATE_BLEND;
 
+/**
+ * @param renderGroup
+ * @param updateChildRenderGroups
+ * @internal
+ */
 export function updateRenderGroupTransforms(renderGroup: RenderGroup, updateChildRenderGroups = false)
 {
     updateRenderGroupTransform(renderGroup);
@@ -53,6 +58,10 @@ export function updateRenderGroupTransforms(renderGroup: RenderGroup, updateChil
     }
 }
 
+/**
+ * @param renderGroup
+ * @internal
+ */
 export function updateRenderGroupTransform(renderGroup: RenderGroup)
 {
     const root = renderGroup.root;
@@ -90,6 +99,12 @@ export function updateRenderGroupTransform(renderGroup: RenderGroup)
             + (((worldAlpha * 255) | 0) << 24);
 }
 
+/**
+ * @param container
+ * @param updateTick
+ * @param updateFlags
+ * @internal
+ */
 export function updateTransformAndChildren(container: Container, updateTick: number, updateFlags: number)
 {
     if (updateTick === container.updateTick) return;

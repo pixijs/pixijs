@@ -5,6 +5,11 @@ import { Sprite } from '../sprite/Sprite';
 
 import type { SpriteOptions } from '../sprite/Sprite';
 
+/**
+ * A collection of textures or frame objects that can be used to create an `AnimatedSprite`.
+ * @see {@link AnimatedSprite}
+ * @category scene
+ */
 export type AnimatedSpriteFrames = Texture[] | FrameObject[];
 
 /**
@@ -35,6 +40,7 @@ export interface AnimatedSpriteOptions extends PixiMixins.AnimatedSpriteOptions,
     /** Update anchor to [Texture's defaultAnchor]{@link Texture#defaultAnchor} when frame changes. */
     updateAnchor?: boolean;
 }
+// eslint-disable-next-line requireExport/require-export-jsdoc
 export interface AnimatedSprite extends PixiMixins.AnimatedSprite, Sprite {}
 
 /**

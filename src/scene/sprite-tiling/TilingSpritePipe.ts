@@ -17,6 +17,7 @@ import type { TilingSprite } from './TilingSprite';
 
 const sharedQuad = new QuadGeometry();
 
+/** @internal */
 export class TilingSpriteGpuData
 {
     public canBatch: boolean = true;

@@ -9,6 +9,7 @@ import type { Container } from '../Container';
  * The CollectRenderablesMixin interface defines methods for collecting renderable objects
  * from a container and its children. These methods add the renderables to an instruction set,
  * which is used by the renderer to process and display the scene.
+ * @category scene
  */
 export interface CollectRenderablesMixin
 {
@@ -50,17 +51,9 @@ export interface CollectRenderablesMixin
 /**
  * The collectRenderablesMixin provides implementations for the methods defined in the CollectRenderablesMixin interface.
  * It includes logic to determine the appropriate method for collecting renderables based on the container's properties.
+ * @internal
  */
 export const collectRenderablesMixin: Partial<Container> = {
-
-    /**
-     * Main method to collect renderables from the container and its children.
-     * It checks the container's properties to decide whether to use a simple or advanced collection method.
-     * @param {InstructionSet} instructionSet - The set of instructions to which the renderables will be added.
-     * @param {Renderer} renderer - The renderer responsible for rendering the scene.
-     * @param {IRenderLayer} currentLayer - The current render layer being processed.
-     * @internal
-     */
     collectRenderables(instructionSet: InstructionSet, renderer: Renderer, currentLayer: IRenderLayer): void
     {
         // Skip processing if the container is not in the current render layer or is not fully visible.
@@ -87,15 +80,6 @@ export const collectRenderablesMixin: Partial<Container> = {
             this.collectRenderablesWithEffects(instructionSet, renderer, currentLayer);
         }
     },
-
-    /**
-     * Simple method for collecting renderables from the container's children.
-     * This method is efficient and used when the container is marked as simple.
-     * @param {InstructionSet} instructionSet - The set of instructions to which the renderables will be added.
-     * @param {Renderer} renderer - The renderer responsible for rendering the scene.
-     * @param {IRenderLayer} currentLayer - The current render layer being processed.
-     * @internal
-     */
     collectRenderablesSimple(
         instructionSet: InstructionSet,
         renderer: Renderer,
@@ -111,15 +95,6 @@ export const collectRenderablesMixin: Partial<Container> = {
             children[i].collectRenderables(instructionSet, renderer, currentLayer);
         }
     },
-
-    /**
-     * Advanced method for collecting renderables, which handles additional effects.
-     * This method is used when the container has complex processing needs.
-     * @param {InstructionSet} instructionSet - The set of instructions to which the renderables will be added.
-     * @param {Renderer} renderer - The renderer responsible for rendering the scene.
-     * @param {IRenderLayer} currentLayer - The current render layer being processed.
-     * @internal
-     */
     collectRenderablesWithEffects(
         instructionSet: InstructionSet,
         renderer: Renderer,

@@ -10,7 +10,6 @@ import type { Dict } from '../utils/types';
  * Represents the JSON data for a spritesheet atlas.
  * @category assets
  */
-
 export interface SpritesheetFrameData
 {
     /** The frame rectangle of the texture. */

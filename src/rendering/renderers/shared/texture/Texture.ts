@@ -76,11 +76,22 @@ export interface TextureOptions<TextureSourceType extends TextureSource = Textur
     dynamic?: boolean;
 }
 
+/**
+ * A texture that can be bound to a shader as it has a texture source.
+ * @category rendering
+ */
 export interface BindableTexture
 {
     source: TextureSource;
 }
 
+/**
+ * A texture source can be a string, an image, a video, a canvas, or a texture resource.
+ * @category rendering
+ * @see {@link TextureSource}
+ * @see {@link TextureResourceOrOptions}
+ * @see {@link Texture.from}
+ */
 export type TextureSourceLike = TextureSource | TextureResourceOrOptions | string;
 
 /**

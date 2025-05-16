@@ -154,7 +154,6 @@ export interface WebGLRenderer<T extends ICanvas = HTMLCanvasElement>
  * @property {GlColorMaskSystem} colorMask - ColorMaskSystem instance.
  * @extends AbstractRenderer
  */
-/* eslint-enable max-len */
 export class WebGLRenderer<T extends ICanvas = HTMLCanvasElement>
     extends AbstractRenderer<WebGLPipes, WebGLOptions, T>
     implements WebGLSystems

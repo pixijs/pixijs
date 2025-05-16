@@ -6,6 +6,11 @@ import type { CanvasSourceOptions } from '../sources/CanvasSource';
 
 const canvasCache: Map<ICanvas, Texture<CanvasSource>> = new Map();
 
+/**
+ * @param canvas
+ * @param options
+ * @internal
+ */
 export function getCanvasTexture(canvas: ICanvas, options?: CanvasSourceOptions): Texture<CanvasSource>
 {
     if (!canvasCache.has(canvas))
@@ -34,6 +39,10 @@ export function getCanvasTexture(canvas: ICanvas, options?: CanvasSourceOptions)
     return canvasCache.get(canvas);
 }
 
+/**
+ * @param canvas
+ * @internal
+ */
 export function hasCachedCanvasTexture(canvas: ICanvas): boolean
 {
     return canvasCache.has(canvas);

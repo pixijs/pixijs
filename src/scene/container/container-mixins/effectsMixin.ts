@@ -7,6 +7,7 @@ import type { MaskEffect } from '../../../rendering/mask/MaskEffectManager';
 import type { Container } from '../Container';
 import type { Effect } from '../Effect';
 
+/** @ignore */
 export interface EffectsMixinConstructor
 {
     mask?: Mask;
@@ -14,18 +15,42 @@ export interface EffectsMixinConstructor
     filters?: Filter | readonly Filter[];
 }
 
+/**
+ * The Mask type can be a number, a Container, or null.
+ * - A number represents a mask ID.
+ * - A Container represents a mask object, such as a Graphics or Sprite.
+ * - null indicates that no mask is applied.
+ * @category scene
+ */
 export type Mask = number | Container | null;
 
+/**
+ * Options for applying a mask.
+ * @category scene
+ */
 export interface MaskOptions
 {
+    /** Whether the mask should be inverted. */
     inverse: boolean;
 }
 
+/**
+ * MaskOptionsAndMask combines MaskOptions with a Mask.
+ * It includes properties for mask options such as `inverse` and the mask itself.
+ * @category scene
+ */
 export interface MaskOptionsAndMask extends MaskOptions
 {
+    /** The mask to apply, which can be a Container or null. */
     mask: Mask;
 }
 
+/**
+ * The EffectsMixin interface provides methods and properties for managing effects
+ * such as masks and filters on a display object.
+ * It allows for adding, removing, and configuring effects, as well as setting a mask for the display object.
+ * @category scene
+ */
 export interface EffectsMixin extends Required<EffectsMixinConstructor>
 {
     /** @private */
@@ -106,6 +131,7 @@ export interface EffectsMixin extends Required<EffectsMixinConstructor>
     get filters(): readonly Filter[];
 }
 
+/** @internal */
 export const effectsMixin: Partial<Container> = {
     _maskEffect: null,
     _maskOptions: {

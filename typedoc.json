@@ -2,7 +2,7 @@
     "$schema": "https://typedoc.org/schema.json",
     "entryPoints": ["./src/index.ts"],
     "tsconfig": "tsconfig.json",
-    "out": "docs",
+    "out": ".s3_uploads/docs",
     "disableSources": true,
     "navigation": {
         "includeCategories": true,
@@ -13,7 +13,6 @@
     "excludePrivate": true,
     "excludeInternal": true,
     "excludeProtected": true,
-    "excludeExternals": true,
     "plugin": [
         "typedoc-plugin-mdn-links"
     ],
@@ -25,8 +24,6 @@
     "hideGenerator": true,
     "visibilityFilters": {
         "inherited": true,
-        "@standard": true,
-        "@advanced": false
     },
     "validation": {
         "notExported": false,

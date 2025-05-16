@@ -4,6 +4,11 @@ import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import type { IRenderLayer } from '../../layers/RenderLayer';
 import type { Container, ContainerChild } from '../Container';
 
+/**
+ * Mixin interface for containers that allows them to manage children.
+ * It provides methods for adding, removing, and manipulating child containers.
+ * @category scene
+ */
 export interface ChildrenHelperMixin<C = ContainerChild>
 {
     /** @internal */
@@ -71,6 +76,7 @@ export interface ChildrenHelperMixin<C = ContainerChild>
     reparentChildAt<U extends C>(child: U, index: number): U;
 }
 
+/** @internal */
 export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
 
     allowChildren: true,

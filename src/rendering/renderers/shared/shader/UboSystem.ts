@@ -6,6 +6,7 @@ import type { System } from '../system/System';
 import type { UboElement, UboLayout, UniformData, UniformsSyncCallback } from './types';
 import type { UniformGroup } from './UniformGroup';
 
+/** @internal */
 export interface UboAdaptor
 {
     createUboElements: (uniformData: UniformData[]) => UboLayout;

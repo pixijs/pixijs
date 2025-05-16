@@ -1,3 +1,9 @@
+/**
+ * @param input
+ * @param transform
+ * @param forceTransform
+ * @internal
+ */
 export const convertToList = <T>(
     input: string | T | (string | T)[],
     transform?: (input: string) => T,

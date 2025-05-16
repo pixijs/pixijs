@@ -4,6 +4,7 @@
  * Which will be the case for where this is used!
  * @param list - the array to clean
  * @param index - the index to start from
+ * @category utils
  */
 export function clearList(list: Array<unknown>, index?: number)
 {

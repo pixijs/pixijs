@@ -4,11 +4,22 @@ import { BufferUsage } from './const';
 
 import type { BindResource } from '../../gpu/shader/BindResource';
 
-/** All the various typed arrays that exist in js */
+/**
+ * All the various typed arrays that exist in js
+ * @category rendering
+ */
 // eslint-disable-next-line max-len
 export type TypedArray = Int8Array | Uint8Array | Int16Array | Uint16Array | Int32Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array;
 
-/** Options for creating a buffer */
+/**
+ * Options for creating a buffer
+ *
+ * This interface defines the options that can be passed to the Buffer constructor.
+ * It includes the data to initialize the buffer with, the size of the buffer,
+ * the usage of the buffer, a label for debugging, and whether the buffer should shrink to fit
+ * when the data becomes smaller.
+ * @category rendering
+ */
 export interface BufferOptions
 {
     /**
@@ -33,6 +44,7 @@ export interface BufferOptions
     shrinkToFit?: boolean;
 }
 
+/** @internal */
 export interface BufferDescriptor
 {
     label?: string;

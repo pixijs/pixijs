@@ -21,14 +21,92 @@ import type {
     StrokeStyle
 } from '../graphics/shared/FillTypes';
 
+/**
+ * The alignment of the text.
+ *
+ * - 'left': Aligns text to the left edge.
+ * - 'center': Centers text horizontally.
+ * - 'right': Aligns text to the right edge.
+ * - 'justify': Justifies text, aligning both left and right edges.
+ * @category text
+ */
 export type TextStyleAlign = 'left' | 'center' | 'right' | 'justify';
+/**
+ * The fill style input for text styles.
+ *
+ * This can be:
+ * - A color string like 'red', '#00FF00', or 'rgba(255,0,0,0.5)'
+ * - A hex number like 0xff0000 for red
+ * - A FillStyle object with properties like { color: 0xff0000, alpha: 0.5 }
+ * - A FillGradient for gradient fills
+ * - A FillPattern for pattern/texture fills
+ * @category text
+ */
 export type TextStyleFill = string | string[] | number | number[] | CanvasGradient | CanvasPattern;
+/**
+ * The font style input for text styles.
+ *
+ * This can be:
+ * - 'normal': Normal font style
+ * - 'italic': Italic font style
+ * - 'oblique': Oblique font style
+ * @category text
+ */
 export type TextStyleFontStyle = 'normal' | 'italic' | 'oblique';
+/**
+ * The font variant input for text styles.
+ *
+ * This can be:
+ * - 'normal': Normal font variant
+ * - 'small-caps': Small caps font variant
+ * @category text
+ */
 export type TextStyleFontVariant = 'normal' | 'small-caps';
+/**
+ * The font weight input for text styles.
+ *
+ * This can be:
+ * - 'normal': Normal font weight
+ * - 'bold': Bold font weight
+ * - 'bolder': Bolder font weight
+ * - 'lighter': Lighter font weight
+ * - '100', '200', '300', '400', '500', '600', '700', '800', '900': Numeric font weights
+ * @category text
+ */
 // eslint-disable-next-line max-len
 export type TextStyleFontWeight = 'normal' | 'bold' | 'bolder' | 'lighter' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';
+/**
+ * The line join style for text styles.
+ *
+ * This can be:
+ * - 'miter': Sharp corners
+ * - 'round': Rounded corners
+ * - 'bevel': Beveled corners
+ * @category text
+ */
 export type TextStyleLineJoin = 'miter' | 'round' | 'bevel';
+/**
+ * The text baseline for text styles.
+ *
+ * This can be:
+ * - 'alphabetic': The alphabetic baseline
+ * - 'top': The top of the text
+ * - 'hanging': The hanging baseline
+ * - 'middle': The middle of the text
+ * - 'ideographic': The ideographic baseline
+ * - 'bottom': The bottom of the text
+ * @category text
+ */
 export type TextStyleTextBaseline = 'alphabetic' | 'top' | 'hanging' | 'middle' | 'ideographic' | 'bottom';
+/**
+ * The white space handling for text styles.
+ *
+ * This can be:
+ * - 'normal': Collapses newlines and spaces
+ * - 'pre': Preserves newlines and spaces
+ * - 'pre-line': Preserves newlines but collapses spaces
+ * @category text
+ */
 export type TextStyleWhiteSpace = 'normal' | 'pre' | 'pre-line';
 
 /**
@@ -244,9 +322,11 @@ export class TextStyle extends EventEmitter<{
     };
 
     // colors!!
+    /** @internal */
     public _fill: ConvertedFillStyle;
     private _originalFill: FillInput;
 
+    /** @internal */
     public _stroke: ConvertedStrokeStyle;
     private _originalStroke: StrokeInput;
 

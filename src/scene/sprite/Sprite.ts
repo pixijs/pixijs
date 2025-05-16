@@ -25,6 +25,7 @@ export interface SpriteOptions extends PixiMixins.SpriteOptions, ViewContainerOp
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
+// eslint-disable-next-line requireExport/require-export-jsdoc
 export interface Sprite extends PixiMixins.Sprite, ViewContainer<BatchableSprite> {}
 
 /**

@@ -2,6 +2,7 @@ import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 
 import type { Container } from '../Container';
 
+/** @ignore */
 export interface FindMixinConstructor
 {
     /**
@@ -10,6 +11,13 @@ export interface FindMixinConstructor
      */
     label?: string;
 }
+
+/**
+ * The FindMixin interface provides methods for finding children within a container by their label.
+ * It allows for searching for a single child or multiple children with a specific label,
+ * either directly or recursively through the container's hierarchy.
+ * @category scene
+ */
 export interface FindMixin extends Required<FindMixinConstructor>
 {
     /**
@@ -46,6 +54,7 @@ export interface FindMixin extends Required<FindMixinConstructor>
     getChildrenByLabel(label: RegExp | string, deep?: boolean, out?: Container[]): Container[];
 }
 
+/** @internal */
 export const findMixin: Partial<Container> = {
     label: null,
 

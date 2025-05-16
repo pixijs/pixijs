@@ -3,6 +3,7 @@ import jsdoc from 'eslint-plugin-jsdoc';
 import noMixed from 'eslint-plugin-no-mixed-operators';
 import tseslint from 'typescript-eslint';
 import config from '@pixi/eslint-config';
+import requireExport from './scripts/eslint-require-export.mjs';
 
 export default tseslint.config(
     ...config,
@@ -123,5 +124,15 @@ export default tseslint.config(
                 },
             ],
         },
+    },
+    {
+        files: ['src/**/*'],
+        plugins: {
+            requireExport,
+        },
+        rules: {
+            'requireExport/require-export-jsdoc': ['error'],
+
+        }
     },
 );

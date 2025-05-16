@@ -78,6 +78,7 @@ export interface WebGPUOptions extends
     ExtractRendererOptions<typeof DefaultWebGPUSystems>,
     PixiMixins.WebGPUOptions{}
 
+// eslint-disable-next-line requireExport/require-export-jsdoc
 export interface WebGPURenderer<T extends ICanvas = HTMLCanvasElement>
     extends AbstractRenderer<WebGPUPipes, WebGPUOptions, T>,
     WebGPUSystems {}

@@ -1,6 +1,7 @@
 import type { Point } from '../../../../maths/point/Point';
 import type { BoundsData } from '../../../../scene/container/bounds/Bounds';
 
+/** @internal */
 export interface ViewObserver
 {
     onViewUpdate: () => void;

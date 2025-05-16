@@ -9,12 +9,18 @@ import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { DestroyOptions } from '../container/destroyTypes';
 
+/** @internal */
 export interface GPUData
 {
     destroy: () => void;
 }
 
+/**
+ * Options for the construction of a ViewContainer.
+ * @category scene
+ */
 export interface ViewContainerOptions extends ContainerOptions, PixiMixins.ViewContainerOptions {}
+// eslint-disable-next-line requireExport/require-export-jsdoc
 export interface ViewContainer<GPU_DATA extends GPUData = any> extends PixiMixins.ViewContainer, Container
 {
     _gpuData: Record<number, GPU_DATA>;

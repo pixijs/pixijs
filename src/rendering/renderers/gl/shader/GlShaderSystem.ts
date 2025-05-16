@@ -12,12 +12,14 @@ import type { WebGLRenderer } from '../WebGLRenderer';
 import type { GlProgram } from './GlProgram';
 import type { GlProgramData } from './GlProgramData';
 
+/** @internal */
 export interface ShaderSyncData
 {
     textureCount: number;
     blockIndex: number;
 }
 
+/** @internal */
 export type ShaderSyncFunction = (renderer: WebGLRenderer, shader: Shader, syncData: ShaderSyncData) => void;
 
 // default sync data so we don't create a new one each time!

@@ -2,6 +2,7 @@ import { Point } from '../maths/point/Point';
 
 import type { PointData } from '../maths/point/PointData';
 
+/** @internal */
 export const pointExtraMixins: any = {
     add<T extends PointData>(other: PointData, outPoint?: T): T
     {

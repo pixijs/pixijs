@@ -20,6 +20,7 @@ const PRECISION = 100000;
  * @param textMetrics - Metrics about the text being rendered
  * @param padding - Padding to add to the text metrics (used to ensure that the gradient accommodates the stroke width)
  * @returns Canvas-compatible fill style (string, CanvasGradient, or CanvasPattern)
+ * @internal
  */
 export function getCanvasFillStyle(
     fillStyle: ConvertedFillStyle,

@@ -1,5 +1,6 @@
 import { Rectangle } from '../maths/shapes/Rectangle';
 
+/** @internal */
 export const rectangleExtraMixins: Partial<Rectangle> = {
     containsRect(other: Rectangle): boolean
     {

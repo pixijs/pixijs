@@ -15,8 +15,15 @@ import type { View } from '../../../rendering/renderers/shared/view/View';
 import type { ContainerOptions } from '../../container/Container';
 import type { DestroyOptions } from '../../container/destroyTypes';
 
+/**
+ * Shader that uses a texture.
+ * This is the default shader used by `Mesh` when no shader is provided.
+ * It is a simple shader that samples a texture and applies it to the geometry.
+ * @category scene
+ */
 export interface TextureShader extends Shader
 {
+    /** The texture that the shader uses. */
     texture: Texture;
 }
 
@@ -58,6 +65,7 @@ export interface MeshOptions<
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
+// eslint-disable-next-line requireExport/require-export-jsdoc
 export interface Mesh extends PixiMixins.Mesh, ViewContainer<MeshGpuData> {}
 
 /**

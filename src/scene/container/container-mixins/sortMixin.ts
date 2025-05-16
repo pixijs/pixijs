@@ -1,5 +1,6 @@
 import type { Container } from '../Container';
 
+/** @ignore */
 export interface SortMixinConstructor
 {
     /**
@@ -32,6 +33,14 @@ export interface SortMixinConstructor
      */
     sortableChildren?: boolean;
 }
+
+/**
+ * The SortMixin interface provides methods and properties for sorting children of a container
+ * based on their `zIndex` values. It allows for automatic sorting of children when their `zIndex`
+ * changes or when new children are added. The mixin includes properties to manage sorting state
+ * and methods to sort children explicitly.
+ * @category scene
+ */
 export interface SortMixin extends Required<SortMixinConstructor>
 {
     /** @internal */
@@ -42,6 +51,7 @@ export interface SortMixin extends Required<SortMixinConstructor>
     depthOfChildModified: () => void;
 }
 
+/** @internal */
 export const sortMixin: Partial<Container> = {
     _zIndex: 0,
     sortDirty: false,

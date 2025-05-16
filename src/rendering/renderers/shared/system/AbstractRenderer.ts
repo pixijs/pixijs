@@ -24,6 +24,11 @@ import type { ViewSystem, ViewSystemDestroyOptions } from '../view/ViewSystem';
 import type { SharedRendererOptions } from './SharedSystems';
 import type { System, SystemConstructor } from './System';
 
+/**
+ * The configuration for the renderer.
+ * This is used to define the systems and render pipes that will be used by the renderer.
+ * @category rendering
+ */
 export interface RendererConfig
 {
     type: number;
@@ -63,6 +68,13 @@ export interface ClearOptions
     clear?: CLEAR_OR_BOOL
 }
 
+/**
+ * Options for destroying the renderer.
+ * This can be a boolean or an object.
+ * @see {@link ViewSystemDestroyOptions}
+ * @see {@link TypeOrBool}
+ * @category rendering
+ */
 export type RendererDestroyOptions = TypeOrBool<ViewSystemDestroyOptions>;
 
 const defaultRunners = [
@@ -132,7 +144,6 @@ type Runners = {[key in DefaultRunners]: SystemRunner} & {
  * @property {PrepareSystem} prepare - PrepareSystem instance. Requires `import 'pixi.js/prepare'`.
  * @property {AccessibilitySystem} accessibility - AccessibilitySystem instance. Requires `import 'pixi.js/accessibility'`.
  */
-/* eslint-enable max-len */
 export class AbstractRenderer<
     PIPES, OPTIONS extends SharedRendererOptions, CANVAS extends ICanvas = HTMLCanvasElement
 > extends EventEmitter<{resize: [screenWidth: number, screenHeight: number, resolution: number]}>

@@ -95,6 +95,7 @@ type GD8Symmetry = number;
  * and `(vX(a), vY(a))`. These aren't necessarily unit vectors.
  * @author Ivan: ivanpopelyshev
  * @groupDescription groupD8
+ * @category maths
  */
 export const groupD8 = {
     /**

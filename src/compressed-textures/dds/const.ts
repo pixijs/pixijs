@@ -368,7 +368,7 @@ export const DDS = {
     D3DFMT
 };
 
-// formats and block size (in bytes)
+/** @internal */
 export const TEXTURE_FORMAT_BLOCK_SIZE: Record<string, number> = {
     'bc1-rgba-unorm':  8,
     'bc1-rgba-unorm-srgb':  8,

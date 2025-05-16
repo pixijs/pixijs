@@ -3,11 +3,19 @@ import { deprecation } from '../../../utils/logging/deprecation';
 import type { Container } from '../Container';
 import type { CacheAsTextureOptions } from '../RenderGroup';
 
+/** @ignore */
 export interface CacheAsTextureMixinConstructor
 {
     cacheAsTexture?: (val: boolean | CacheAsTextureOptions) => void;
 }
 
+/**
+ * The CacheAsTextureMixin interface provides methods and properties for caching a container as a texture.
+ * This can improve rendering performance for complex static containers by allowing them to be rendered as a single texture.
+ * It includes methods to enable or disable caching, update the cached texture, and check
+ * 1if the container is currently cached.
+ * @category scene
+ */
 export interface CacheAsTextureMixin extends Required<CacheAsTextureMixinConstructor>
 {
     /**
@@ -38,6 +46,7 @@ export interface CacheAsTextureMixin extends Required<CacheAsTextureMixinConstru
     readonly isCachedAsTexture: boolean;
 }
 
+/** @internal */
 export const cacheAsTextureMixin: Partial<Container> = {
     get isCachedAsTexture(): boolean
     {

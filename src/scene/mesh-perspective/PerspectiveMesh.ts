@@ -53,6 +53,8 @@ export interface PerspectivePlaneOptions extends MeshPlaneOptions
  * could be slower. It is a balance between performance and quality! We leave that to you to decide.
  *
  * IMPORTANT: This is not a full 3D mesh, it is a 2D mesh with a perspective projection applied to it :)
+ * @category scene
+ * @see {@link PerspectiveMesh}
  * @example
  * ```js
  * const meshPlane = new PerspectiveMesh({
@@ -68,8 +70,7 @@ export interface PerspectivePlaneOptions extends MeshPlaneOptions
  *  x3: 0,
  *  y3: 100
  * });
- * @see {@link PerspectiveMesh}
- * @category scene
+ * ```
  */
 export class PerspectiveMesh extends Mesh<PerspectivePlaneGeometry>
 {

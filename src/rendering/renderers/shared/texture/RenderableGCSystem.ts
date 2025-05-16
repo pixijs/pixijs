@@ -56,8 +56,7 @@ export interface RenderableGCSystemOptions
  * - Always call destroy() explicitly when done with renderables (e.g. sprite.destroy())
  * - This system is a safety net, not a replacement for proper cleanup
  * - Adjust frequency and timeouts via options if needed
- *
- * Example:
+ * @example
  * ```js
  * // Sprite created but reference lost without destroy
  * let sprite = new Sprite(texture);
@@ -71,6 +70,7 @@ export interface RenderableGCSystemOptions
  * // - RenderableGC will clean up the sprite's GPU resources
  * // - JS garbage collector can then clean up the sprite itself
  * ```
+ * @category rendering
  */
 export class RenderableGCSystem implements System<RenderableGCSystemOptions>
 {

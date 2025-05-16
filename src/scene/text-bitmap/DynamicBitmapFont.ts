@@ -15,6 +15,7 @@ import type { ICanvasRenderingContext2D } from '../../environment/canvas/ICanvas
 import type { CanvasAndContext } from '../../rendering/renderers/shared/texture/CanvasPool';
 import type { FontMetrics } from '../text/canvas/CanvasTextMetrics';
 
+/** @internal */
 export interface DynamicBitmapFontOptions
 {
     style: TextStyle
@@ -31,7 +32,7 @@ export interface DynamicBitmapFontOptions
 /**
  * A BitmapFont that generates its glyphs dynamically.
  * @category text
- * @ignore
+ * @internal
  */
 export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
 {

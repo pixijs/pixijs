@@ -37,6 +37,7 @@ export function crossOrigin(element: HTMLImageElement | HTMLVideoElement, url: s
 /**
  * Preload a video element
  * @param element - Video element to preload
+ * @internal
  */
 export function preloadVideo(element: HTMLVideoElement): Promise<void>
 {

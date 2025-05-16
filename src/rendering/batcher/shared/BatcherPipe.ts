@@ -9,6 +9,7 @@ import type { Shader } from '../../renderers/shared/shader/Shader';
 import type { Renderer } from '../../renderers/types';
 import type { Batch, BatchableElement, Batcher } from './Batcher';
 
+/** @internal */
 export interface BatcherAdaptor
 {
     start(batchPipe: BatcherPipe, geometry: Geometry, shader: Shader): void

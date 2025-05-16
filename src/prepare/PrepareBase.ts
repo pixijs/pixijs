@@ -8,10 +8,16 @@ import type { Renderer } from '../rendering/renderers/types';
 import type { GraphicsContext } from '../scene/graphics/shared/GraphicsContext';
 import type { Text } from '../scene/text/Text';
 
-/** The accepted types to pass to the prepare system */
+/**
+ * The accepted types to pass to the prepare system
+ * @category rendering
+ */
 export type PrepareSourceItem = Container | TextureSource | Texture | GraphicsContext;
 
-/** The valid types resolved to the queue ready for upload */
+/**
+ * The valid types resolved to the queue ready for upload
+ * @category rendering
+ */
 export type PrepareQueueItem = TextureSource | Text | GraphicsContext;
 
 /**

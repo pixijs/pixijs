@@ -32,6 +32,7 @@ export interface GraphicsOptions extends PixiMixins.GraphicsOptions, ViewContain
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
+// eslint-disable-next-line requireExport/require-export-jsdoc
 export interface Graphics extends PixiMixins.Graphics, ViewContainer<GraphicsGpuData> {}
 
 /**

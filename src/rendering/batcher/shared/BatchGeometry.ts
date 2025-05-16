@@ -5,6 +5,11 @@ import { Geometry } from '../../renderers/shared/geometry/Geometry';
 const placeHolderBufferData = new Float32Array(1);
 const placeHolderIndexData = new Uint32Array(1);
 
+/**
+ * This class represents a geometry used for batching in the rendering system.
+ * It defines the structure of vertex attributes and index buffers for batched rendering.
+ * @category rendering
+ */
 export class BatchGeometry extends Geometry
 {
     constructor()
