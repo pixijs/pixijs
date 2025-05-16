@@ -10,10 +10,12 @@ describe('glEnsureAttributes', () =>
         const geometry = new Geometry({
             attributes: {
                 a: {
-                    buffer: [1, 2, 3],
+                    buffer: [1, 2, 3, 4],
+                    format: 'float32x4'
                 },
                 b: {
-                    buffer: [1, 2, 3],
+                    buffer: [1, 2, 3, 4],
+                    format: 'float32x4'
                 },
             }
         });
@@ -49,12 +51,13 @@ describe('glEnsureAttributes', () =>
         ensureAttributes(geometry, program._attributeData);
 
         expect(program._attributeData.a.location).toBe(0);
+        expect(program._attributeData.b.location).toBe(1);
         expect(geometry.attributes.a).toMatchObject({
             format: 'float32x4',
             stride: 16,
             offset: 0,
             instance: false,
-            start: 0,
+            bufferIndex: 0,
         });
     });
 
@@ -69,9 +72,11 @@ describe('glEnsureAttributes', () =>
             attributes: {
                 a: {
                     buffer,
+                    format: 'float32x4'
                 },
                 b: {
                     buffer,
+                    format: 'float32x2'
                 },
             }
         });
@@ -111,16 +116,16 @@ describe('glEnsureAttributes', () =>
             stride: 16 + 8,
             offset: 0,
             instance: false,
-            start: 0,
+            bufferIndex: 0,
         });
 
         expect(program._attributeData.b.location).toBe(1);
         expect(geometry.attributes.b).toMatchObject({
             format: 'float32x2',
             stride: 16 + 8,
-            offset: 0,
+            offset: 16,
             instance: false,
-            start: 16,
+            bufferIndex: 0,
         });
     });
 });

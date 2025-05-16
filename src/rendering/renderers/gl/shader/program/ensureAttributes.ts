@@ -1,8 +1,8 @@
 import { warn } from '../../../../../utils/logging/warn';
 import { getAttributeInfoFromFormat } from '../../../shared/geometry/utils/getAttributeInfoFromFormat';
 
+import type { ExtractedAttributeData } from '../../../shared/geometry/Attribute';
 import type { Geometry } from '../../../shared/geometry/Geometry';
-import type { ExtractedAttributeData } from './extractAttributesFromGlProgram';
 
 /**
  * This function looks at the attribute information provided to the geometry and attempts
@@ -20,6 +20,23 @@ export function ensureAttributes(
     extractedData: Record<string, ExtractedAttributeData>
 ): void
 {
+    if (geometry._hasUndefinedFormats)
+    {
+        for (const i in geometry.attributes)
+        {
+            const attribute = geometry.attributes[i];
+            const attributeData = extractedData[i];
+
+            if (attributeData)
+            {
+                attribute.format = attributeData.format;
+            }
+        }
+    }
+
+    // this call automatically calculates offset / stride values , no need to use program data for that
+    geometry.ensureAttributes();
+
     for (const i in geometry.attributes)
     {
         const attribute = geometry.attributes[i];
@@ -27,50 +44,24 @@ export function ensureAttributes(
 
         if (attributeData)
         {
-            attribute.format ??= attributeData.format;
-            attribute.offset ??= attributeData.offset;
-            attribute.instance ??= attributeData.instance;
+            attribute.location ??= attributeData.location;
+
+            if (attribute.format !== attributeData.format)
+            {
+                const geomAttrib = getAttributeInfoFromFormat(attribute.format);
+                const programAttrib = getAttributeInfoFromFormat(attributeData.format);
+
+                if (geomAttrib.size !== programAttrib.size)
+                {
+                    // eslint-disable-next-line max-len
+                    warn(`Attribute ${i} has incompatible size: ${geomAttrib.size} in geometry, ${programAttrib.size} in program.`);
+                }
+            }
         }
         else
         {
             // eslint-disable-next-line max-len
             warn(`Attribute ${i} is not present in the shader, but is present in the geometry. Unable to infer attribute details.`);
         }
-    }
-
-    ensureStartAndStride(geometry);
-}
-
-function ensureStartAndStride(geometry: Geometry): void
-{
-    const { buffers, attributes } = geometry;
-
-    const tempStride: Record<string, number> = {};
-    const tempStart: Record<string, number> = {};
-
-    for (const j in buffers)
-    {
-        const buffer = buffers[j];
-
-        tempStride[buffer.uid] = 0;
-        tempStart[buffer.uid] = 0;
-    }
-
-    for (const j in attributes)
-    {
-        const attribute = attributes[j];
-
-        tempStride[attribute.buffer.uid] += getAttributeInfoFromFormat(attribute.format).stride;
-    }
-
-    for (const j in attributes)
-    {
-        const attribute = attributes[j];
-
-        attribute.stride ??= tempStride[attribute.buffer.uid];
-
-        attribute.start ??= tempStart[attribute.buffer.uid];
-
-        tempStart[attribute.buffer.uid] += getAttributeInfoFromFormat(attribute.format).stride;
     }
 }

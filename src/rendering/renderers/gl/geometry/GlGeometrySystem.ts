@@ -346,8 +346,8 @@ export class GlGeometrySystem implements System
     protected activateVao(geometry: Geometry, program: GlProgram): void
     {
         const gl = this._renderer.gl;
-
         const bufferSystem = this._renderer.buffer;
+        const buffers = geometry.buffers;
         const attributes = geometry.attributes;
 
         if (geometry.indexBuffer)
@@ -362,7 +362,7 @@ export class GlGeometrySystem implements System
         for (const j in attributes)
         {
             const attribute = attributes[j];
-            const buffer = attribute.buffer;
+            const buffer = buffers[attribute.bufferIndex];
             const glBuffer = bufferSystem.getGlBuffer(buffer);
             const programAttrib = program._attributeData[j];
 
@@ -376,16 +376,14 @@ export class GlGeometrySystem implements System
                 }
 
                 const location = programAttrib.location;
+                const attributeInfo = getAttributeInfoFromFormat(attribute.format);
+                const type = getGlTypeFromFormat(attribute.format);
 
                 // TODO introduce state again
                 // we can optimise this for older devices that have no VAOs
                 gl.enableVertexAttribArray(location);
 
-                const attributeInfo = getAttributeInfoFromFormat(attribute.format);
-
-                const type = getGlTypeFromFormat(attribute.format);
-
-                if (programAttrib.format?.substring(1, 4) === 'int')
+                if (programAttrib.format.substring(1, 4) === 'int')
                 {
                     gl.vertexAttribIPointer(location,
                         attributeInfo.size,
@@ -408,11 +406,7 @@ export class GlGeometrySystem implements System
                     // TODO calculate instance count based of this...
                     if (this.hasInstance)
                     {
-                        // Can't use truthiness check to determine if divisor is set,
-                        // since 0 is a valid value for divisor
-                        const divisor = attribute.divisor ?? 1;
-
-                        gl.vertexAttribDivisor(location, divisor);
+                        gl.vertexAttribDivisor(location, 1);
                     }
                     else
                     {
