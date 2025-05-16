@@ -22,15 +22,23 @@ export function getTextureBatchBindGroup(textures: TextureSource[], size: number
 function generateTextureBatchBindGroup(textures: TextureSource[], size: number, key: number, maxTextures: number): BindGroup
 {
     const bindGroupResources: Record<string, any> = {};
+    let emptySource: TextureSource = size > 1 ? null : Texture.EMPTY.source;
 
     let bindIndex = 0;
 
     for (let i = 0; i < maxTextures; i++)
     {
-        const texture = i < size ? textures[i] : Texture.EMPTY.source;
+        const texture = i < size ? textures[i] : emptySource;
 
         bindGroupResources[bindIndex++] = texture.source;
         bindGroupResources[bindIndex++] = texture.style;
+
+        if (!emptySource)
+        {
+            emptySource = textures[i].source.viewDimension === '2d-array'
+                ? Texture.EMPTY_2DARRAY.source
+                : Texture.EMPTY.source;
+        }
     }
 
     // pad out with empty textures

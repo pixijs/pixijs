@@ -404,6 +404,7 @@ export class Texture<TextureSourceType extends TextureSource = TextureSource> ex
 
     /** an Empty Texture used internally by the engine */
     public static EMPTY: Texture;
+    public static EMPTY_2DARRAY: Texture;
     /** a White texture used internally by the engine */
     public static WHITE: Texture<BufferImageSource>;
 }
@@ -414,6 +415,16 @@ Texture.EMPTY = new Texture({
         label: 'EMPTY',
     })
 });
+
+Texture.EMPTY_2DARRAY = new Texture({
+    label: 'EMPTY_2DARRAY',
+    source: new TextureSource({
+        label: 'EMPTY_2DARRAY',
+        viewDimensions: '2d-array',
+    }),
+});
+
+Texture.EMPTY_2DARRAY.destroy = NOOP;
 
 Texture.EMPTY.destroy = NOOP;
 

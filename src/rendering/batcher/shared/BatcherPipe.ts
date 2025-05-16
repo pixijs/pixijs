@@ -1,5 +1,6 @@
 import { extensions, ExtensionType } from '../../../extensions/Extensions';
 import { State } from '../../renderers/shared/state/State';
+import { Default2DArrayBatcher } from './Default2DArrayBatcher';
 import { DefaultBatcher } from './DefaultBatcher';
 
 import type { Geometry } from '../../renderers/shared/geometry/Geometry';
@@ -180,3 +181,4 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
 extensions.handleByMap(ExtensionType.Batcher, BatcherPipe._availableBatchers);
 
 extensions.add(DefaultBatcher);
+extensions.add(Default2DArrayBatcher);
