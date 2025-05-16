@@ -19,14 +19,14 @@ export const buildPolygon: ShapeBuildCommand<Polygon> = {
         name: 'polygon',
     },
 
-    build(shape: Polygon, points: number[]): number[]
+    build(shape: Polygon, points: number[]): boolean
     {
         for (let i = 0; i < shape.points.length; i++)
         {
             points[i] = shape.points[i];
         }
 
-        return points;
+        return true;
     },
 
     triangulate(
