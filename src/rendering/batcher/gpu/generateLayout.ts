@@ -1,3 +1,7 @@
+/**
+ * @param maxTextures
+ * @internal
+ */
 export function generateLayout(maxTextures: number): Record<string, number>
 {
     const layout: Record<string, number> = {};

@@ -5,6 +5,7 @@ import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import { ViewContainer } from '../../view/ViewContainer';
 import { MeshGeometry } from './MeshGeometry';
+import { type MeshGpuData } from './MeshPipe';
 
 import type { PointData } from '../../../maths/point/PointData';
 import type { Topology } from '../../../rendering/renderers/shared/geometry/const';
@@ -14,13 +15,20 @@ import type { View } from '../../../rendering/renderers/shared/view/View';
 import type { ContainerOptions } from '../../container/Container';
 import type { DestroyOptions } from '../../container/destroyTypes';
 
+/**
+ * Shader that uses a texture.
+ * This is the default shader used by `Mesh` when no shader is provided.
+ * It is a simple shader that samples a texture and applies it to the geometry.
+ * @category scene
+ */
 export interface TextureShader extends Shader
 {
+    /** The texture that the shader uses. */
     texture: Texture;
 }
 
 /**
- * Constructor options used for `Mesh` instances. Extends {@link scene.MeshViewOptions}
+ * Constructor options used for `Mesh` instances. Extends {@link MeshViewOptions}
  * ```js
  * const mesh = new Mesh({
  *    texture: Texture.from('assets/image.png'),
@@ -28,14 +36,12 @@ export interface TextureShader extends Shader
  *    shader: Shader.from(VERTEX, FRAGMENT),
  * });
  * ```
- * @see {@link scene.Mesh}
- * @see {@link scene.MeshViewOptions}
- * @memberof scene
+ * @see {@link Mesh}
+ * @see {@link MeshViewOptions}
+ * @category scene
  */
 
-/**
- * @memberof scene
- */
+/** @category scene */
 export interface MeshOptions<
     GEOMETRY extends Geometry = MeshGeometry,
     SHADER extends Shader = TextureShader
@@ -59,7 +65,8 @@ export interface MeshOptions<
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
-export interface Mesh extends PixiMixins.Mesh, ViewContainer {}
+// eslint-disable-next-line requireExport/require-export-jsdoc
+export interface Mesh extends PixiMixins.Mesh, ViewContainer<MeshGpuData> {}
 
 /**
  * Base mesh class.
@@ -74,25 +81,24 @@ export interface Mesh extends PixiMixins.Mesh, ViewContainer {}
  * - State - This is the state of WebGL required to render the mesh.
  *
  * Through a combination of the above elements you can render anything you want, 2D or 3D!
- * @memberof scene
+ * @category scene
  */
 export class Mesh<
     GEOMETRY extends Geometry = MeshGeometry,
     SHADER extends Shader = TextureShader
-> extends ViewContainer implements View, Instruction
+> extends ViewContainer<MeshGpuData> implements View, Instruction
 {
     public override readonly renderPipeId: string = 'mesh';
     public state: State;
 
-    /** @ignore */
+    /** @internal */
     public _texture: Texture;
-    /** @ignore */
+    /** @internal */
     public _geometry: GEOMETRY;
-    /** @ignore */
+    /** @internal */
     public _shader: SHADER | null = null;
-
     /**
-     * @param {scene.MeshOptions} options - options for the mesh instance
+     * @param {MeshOptions} options - options for the mesh instance
      */
     constructor(options: MeshOptions<GEOMETRY, SHADER>);
     /** @deprecated since 8.0.0 */
@@ -141,7 +147,7 @@ export class Mesh<
         this.roundPixels = roundPixels ?? false;
     }
 
-    /** Alias for {@link scene.Mesh#shader}. */
+    /** Alias for {@link Mesh#shader}. */
     get material()
     {
         // #if _DEBUG
@@ -238,7 +244,7 @@ export class Mesh<
 
     /**
      * The local bounds of the mesh.
-     * @type {rendering.Bounds}
+     * @type {Bounds}
      */
     override get bounds()
     {
@@ -325,8 +331,10 @@ export class Mesh<
      * Destroys this sprite renderable and optionally its texture.
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
-     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
-     * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
+     * @example
+     * mesh.destroy();
+     * mesh.destroy(true);
+     * mesh.destroy({ texture: true, textureSource: true });
      */
     public override destroy(options?: DestroyOptions): void
     {
@@ -346,5 +354,7 @@ export class Mesh<
         this._texture = null;
         this._geometry = null;
         this._shader = null;
+
+        this._gpuData = null;
     }
 }

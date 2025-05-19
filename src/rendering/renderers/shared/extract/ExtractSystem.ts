@@ -20,7 +20,7 @@ type Formats = keyof typeof imageTypes;
 
 /**
  * Options for creating an image from a renderer.
- * @memberof rendering
+ * @category rendering
  */
 export interface ImageOptions
 {
@@ -32,7 +32,7 @@ export interface ImageOptions
 
 /**
  * Options for extracting content from a renderer.
- * @memberof rendering
+ * @category rendering
  */
 export interface BaseExtractOptions
 {
@@ -49,12 +49,12 @@ export interface BaseExtractOptions
 }
 /**
  * Options for extracting an HTMLImage from the renderer.
- * @memberof rendering
+ * @category rendering
  */
 export type ExtractImageOptions = BaseExtractOptions & ImageOptions;
 /**
  * Options for extracting and downloading content from a renderer.
- * @memberof rendering
+ * @category rendering
  */
 export type ExtractDownloadOptions = BaseExtractOptions & {
     /** The filename to use when downloading the content. */
@@ -62,7 +62,7 @@ export type ExtractDownloadOptions = BaseExtractOptions & {
 };
 /**
  * Options for extracting content from a renderer.
- * @memberof rendering
+ * @category rendering
  */
 export type ExtractOptions = BaseExtractOptions | ExtractImageOptions | ExtractDownloadOptions;
 
@@ -86,7 +86,7 @@ export type ExtractOptions = BaseExtractOptions | ExtractImageOptions | ExtractD
  * // Render the graphics as an HTMLImageElement
  * const image = await app.renderer.extract.image(graphics);
  * document.body.appendChild(image);
- * @memberof rendering
+ * @category rendering
  */
 export class ExtractSystem implements System
 {

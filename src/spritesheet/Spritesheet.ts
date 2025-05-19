@@ -1,16 +1,15 @@
 import { Rectangle } from '../maths/shapes/Rectangle';
+import { TextureSource } from '../rendering/renderers/shared/texture/sources/TextureSource';
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 
 import type { PointData } from '../maths/point/PointData';
-import type { TextureSource } from '../rendering/renderers/shared/texture/sources/TextureSource';
 import type { BindableTexture, TextureBorders } from '../rendering/renderers/shared/texture/Texture';
 import type { Dict } from '../utils/types';
 
 /**
  * Represents the JSON data for a spritesheet atlas.
- * @memberof assets
+ * @category assets
  */
-
 export interface SpritesheetFrameData
 {
     /** The frame rectangle of the texture. */
@@ -44,7 +43,7 @@ export interface SpritesheetFrameData
 
 /**
  * Atlas format.
- * @memberof assets
+ * @category assets
  */
 export interface SpritesheetData
 {
@@ -92,6 +91,26 @@ export interface SpritesheetData
 }
 
 /**
+ * Options for loading a spritesheet from an atlas.
+ * @category assets
+ */
+export interface SpritesheetOptions<S extends SpritesheetData = SpritesheetData>
+{
+    /** Reference to Texture */
+    texture: BindableTexture;
+    /** JSON data for the atlas. */
+    data: S;
+    /** The filename to consider when determining the resolution of the spritesheet. */
+    resolutionFilename?: string;
+    /**
+     * Prefix to add to texture names when adding to global TextureCache,
+     * using this option can be helpful if you have multiple texture atlases
+     * that share texture names and you need to disambiguate them.
+     */
+    cachePrefix?: string;
+}
+
+/**
  * Utility class for maintaining reference to a collection
  * of Textures on a single Spritesheet.
  *
@@ -124,14 +143,14 @@ export interface SpritesheetData
  *             "frame": {"x":103,"y":1,"w":32,"h":32},
  *             "spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
  *             "sourceSize": {"w":32,"h":32},
- *             "anchor": {"x":16,"y":16}
+ *             "anchor": {"x":0.5,"y":0.5}
  *         },
  *         "enemy2.png":
  *         {
  *             "frame": {"x":103,"y":35,"w":32,"h":32},
  *             "spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
  *             "sourceSize": {"w":32,"h":32},
- *             "anchor": {"x":16,"y":16}
+ *             "anchor": {"x":0.5,"y":0.5}
  *         },
  *         "button.png":
  *         {
@@ -187,7 +206,7 @@ export interface SpritesheetData
  * });
  * const sheet = await Assets.load('atlas')
  * ```
- * @memberof assets
+ * @category assets
  */
 export class Spritesheet<S extends SpritesheetData = SpritesheetData>
 {
@@ -202,7 +221,7 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
 
     /**
      * A map containing all textures of the sprite sheet.
-     * Can be used to create a {@link Sprite|Sprite}:
+     * Can be used to create a {@link Sprite}:
      * @example
      * import { Sprite } from 'pixi.js';
      *
@@ -212,7 +231,7 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
 
     /**
      * A map containing the textures for each animation.
-     * Can be used to create an {@link AnimatedSprite|AnimatedSprite}:
+     * Can be used to create an {@link AnimatedSprite}:
      * @example
      * import { AnimatedSprite } from 'pixi.js';
      *
@@ -253,12 +272,35 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
      */
     private _callback: (textures: Dict<Texture>) => void;
 
+    /** Prefix string to add to global cache */
+    public readonly cachePrefix: string;
+
+    /**
+     * @class
+     * @param options - Options to use when constructing a new Spritesheet.
+     */
+    constructor(options: SpritesheetOptions<S>);
+
     /**
      * @param texture - Reference to the source BaseTexture object.
      * @param {object} data - Spritesheet image data.
      */
-    constructor(texture: BindableTexture, data: S)
+    constructor(texture: BindableTexture, data: S);
+    /** @ignore */
+    constructor(optionsOrTexture: SpritesheetOptions<S> | BindableTexture, arg1?: S)
     {
+        let options = optionsOrTexture as SpritesheetOptions<S>;
+
+        if ((optionsOrTexture as BindableTexture)?.source instanceof TextureSource)
+        {
+            options = {
+                texture: optionsOrTexture as BindableTexture,
+                data: arg1,
+            };
+        }
+        const { texture, data, cachePrefix = '' } = options;
+
+        this.cachePrefix = cachePrefix;
         this._texture = texture instanceof Texture ? texture : null;
         this.textureSource = texture.source;
         this.textures = {} as Record<keyof S['frames'], Texture>;

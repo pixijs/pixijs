@@ -7,6 +7,7 @@
  * @param url - The url to load the SVG from
  * @param delay - Whether to delay the load
  * @returns - A promise that resolves when the image has loaded
+ * @internal
  */
 export function loadSVGImage(image: HTMLImageElement, url: string, delay: boolean)
 {

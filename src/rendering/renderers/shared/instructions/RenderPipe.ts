@@ -10,7 +10,7 @@ import type { InstructionSet } from './InstructionSet';
  * An interface for a pipe that can be used to build instructions for the renderer.
  * InstructionPipes are specifically  used to manage the state of the renderer.
  * For example, the BlendModePipe is used to set the blend mode of the renderer.
- * @memberof rendering
+ * @category rendering
  */
 export interface InstructionPipe<INSTRUCTION extends Instruction>
 {
@@ -58,7 +58,7 @@ export interface InstructionPipe<INSTRUCTION extends Instruction>
 /**
  * An interface for a pipe that can be used to build instructions for the renderer.
  * RenderPipes are specifically used to render Renderables like a Mesh.
- * @memberof rendering
+ * @category rendering
  */
 export interface RenderPipe<RENDERABLE = Renderable>
 {
@@ -86,7 +86,7 @@ export interface RenderPipe<RENDERABLE = Renderable>
      * of the renderable that needs to be tidied up when the renderable is destroyed.
      * @param renderable - the renderable that needs to be rendered
      */
-    destroyRenderable: (renderable: RENDERABLE) => void;
+    destroyRenderable?: (renderable: RENDERABLE) => void;
     /**
      * This function is called when the renderer is determining if it can use the same instruction set again to
      * improve performance. If this function returns true, the renderer will rebuild the whole instruction set
@@ -100,6 +100,7 @@ export interface RenderPipe<RENDERABLE = Renderable>
 /**
  * An interface for a pipe that can be used to build instructions for the renderer.
  * BatchPipes are specifically used to build and render Batches.
+ * @category rendering
  */
 export interface BatchPipe
 {
@@ -117,7 +118,10 @@ export interface BatchPipe
     break: (instructionSet: InstructionSet) => void;
 }
 
-/** A helpful type that can be used to create a new RenderPipe, BatchPipe or InstructionPipe */
+/**
+ * A helpful type that can be used to create a new RenderPipe, BatchPipe or InstructionPipe
+ * @category rendering
+ */
 export interface PipeConstructor
 {
     new (renderer: Renderer, adaptor?: any): RenderPipe | BatchPipe | InstructionPipe<any> ;

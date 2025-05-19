@@ -10,7 +10,7 @@ import type { WebGLExtensions } from './WebGLExtensions';
 
 /**
  * Options for the context system.
- * @memberof rendering
+ * @category rendering
  * @property {WebGL2RenderingContext | null} [context=null] - User-provided WebGL rendering context object.
  * @property {GpuPowerPreference} [powerPreference='default'] - An optional hint indicating what configuration
  * of GPU is suitable for the WebGL context, can be `'high-performance'` or `'low-power'`. Setting to `'high-performance'`
@@ -29,7 +29,6 @@ export interface ContextSystemOptions
     /**
      * User-provided WebGL rendering context object.
      * @default null
-     * @memberof rendering.SharedRendererOptions
      */
     context: WebGL2RenderingContext | null;
     /**
@@ -37,7 +36,6 @@ export interface ContextSystemOptions
      * can be `'high-performance'` or `'low-power'`.
      * Setting to `'high-performance'` will prioritize rendering performance over power consumption,
      * while setting to `'low-power'` will prioritize power saving over rendering performance.
-     * @memberof rendering.SharedRendererOptions
      * @default undefined
      */
     powerPreference?: GpuPowerPreference;
@@ -45,14 +43,12 @@ export interface ContextSystemOptions
     /**
      * Whether the compositor will assume the drawing buffer contains colors with premultiplied alpha.
      * @default true
-     * @memberof rendering.SharedRendererOptions
      */
     premultipliedAlpha: boolean;
     /**
      * Whether to enable drawing buffer preservation. If enabled, the drawing buffer will preserve
      * its value until cleared or overwritten. Enable this if you need to call `toDataUrl` on the WebGL context.
      * @default false
-     * @memberof rendering.SharedRendererOptions
      */
     preserveDrawingBuffer: boolean;
 
@@ -61,7 +57,6 @@ export interface ContextSystemOptions
     /**
      * The preferred WebGL version to use.
      * @default 2
-     * @memberof rendering.SharedRendererOptions
      */
     preferWebGLVersion?: 1 | 2;
 
@@ -69,14 +64,13 @@ export interface ContextSystemOptions
      * Whether to enable multi-view rendering. Set to true when rendering to multiple
      * canvases on the dom.
      * @default false
-     * @memberof rendering.SharedRendererOptions
      */
     multiView: boolean;
 }
 
 /**
  * System plugin to the renderer to manage the context
- * @memberof rendering
+ * @category rendering
  */
 export class GlContextSystem implements System<ContextSystemOptions>
 {
@@ -422,6 +416,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
     /** Handles a restored webgl context. */
     protected handleContextRestored(): void
     {
+        this.getExtensions(); // restore extensions state
         this._renderer.runners.contextChange.emit(this.gl);
     }
 

@@ -3,6 +3,7 @@ import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { updateQuadBounds } from '../../utils/data/updateQuadBounds';
 import { deprecation } from '../../utils/logging/deprecation';
 import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
+import { type BatchableSprite } from './BatchableSprite';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
@@ -12,8 +13,8 @@ import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
 
 /**
- * Options for the {@link scene.Sprite} constructor.
- * @memberof scene
+ * Options for the {@link Sprite} constructor.
+ * @category scene
  */
 export interface SpriteOptions extends PixiMixins.SpriteOptions, ViewContainerOptions
 {
@@ -24,7 +25,8 @@ export interface SpriteOptions extends PixiMixins.SpriteOptions, ViewContainerOp
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
-export interface Sprite extends PixiMixins.Sprite, ViewContainer {}
+// eslint-disable-next-line requireExport/require-export-jsdoc
+export interface Sprite extends PixiMixins.Sprite, ViewContainer<BatchableSprite> {}
 
 /**
  * The Sprite object is one of the most important objects in PixiJS. It is a
@@ -38,7 +40,7 @@ export interface Sprite extends PixiMixins.Sprite, ViewContainer {}
  * const sprite = Sprite.from('assets/image.png');
  * ```
  *
- * The more efficient way to create sprites is using a {@link assets.Spritesheet},
+ * The more efficient way to create sprites is using a {@link Spritesheet},
  * as swapping base textures when rendering to the screen is inefficient.
  *
  * ```js
@@ -47,10 +49,9 @@ export interface Sprite extends PixiMixins.Sprite, ViewContainer {}
  * const sheet = await Assets.load('assets/spritesheet.json');
  * const sprite = new Sprite(sheet.textures['image.png']);
  * ```
- * @memberof scene
- * @extends scene.Container
+ * @category scene
  */
-export class Sprite extends ViewContainer
+export class Sprite extends ViewContainer<BatchableSprite>
 {
     /**
      * Helper function that creates a new sprite based on the source you provide.
@@ -72,9 +73,10 @@ export class Sprite extends ViewContainer
     public override readonly renderPipeId: string = 'sprite';
 
     public batched = true;
+    /** @internal */
     public readonly _anchor: ObservablePoint;
 
-    // sprite specific..
+    /** @internal */
     public _texture: Texture;
 
     private readonly _visualBounds: BoundsData = { minX: 0, maxX: 1, minY: 0, maxY: 0 };
@@ -162,7 +164,7 @@ export class Sprite extends ViewContainer
 
     /**
      * The bounds of the sprite, taking the texture's trim into account.
-     * @type {rendering.Bounds}
+     * @type {Bounds}
      */
     get visualBounds()
     {
@@ -204,8 +206,10 @@ export class Sprite extends ViewContainer
      * Destroys this sprite renderable and optionally its texture.
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
-     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
-     * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
+     * @example
+     * sprite.destroy();
+     * sprite.destroy(true);
+     * sprite.destroy({ texture: true, textureSource: true });
      */
     public override destroy(options: DestroyOptions = false)
     {
@@ -224,6 +228,7 @@ export class Sprite extends ViewContainer
         (this._visualBounds as null) = null;
         (this._bounds as null) = null;
         (this._anchor as null) = null;
+        this._gpuData = null;
     }
 
     /**

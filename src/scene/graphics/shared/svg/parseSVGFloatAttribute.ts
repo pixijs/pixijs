@@ -10,6 +10,7 @@
  * // For SVG: <rect x="10.5" width="20"/>
  * parseSVGFloatAttribute(rectElement, 'x', 0) // Returns 10.5
  * parseSVGFloatAttribute(rectElement, 'y', 0) // Returns 0 since y is not specified
+ * @internal
  */
 export function parseSVGFloatAttribute(svg: SVGElement, id: string, defaultValue: number): number
 {

@@ -4,6 +4,7 @@ import type { Geometry } from '../../renderers/shared/geometry/Geometry';
 import type { Shader } from '../../renderers/shared/shader/Shader';
 import type { BatchableMeshElement, BatchableQuadElement } from '../shared/Batcher';
 
+/** @internal */
 export class TestBatcher extends Batcher
 {
     public name: string;

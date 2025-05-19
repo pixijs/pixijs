@@ -15,8 +15,8 @@ import type { MeshOptions } from '../mesh/shared/Mesh';
  *    textureScale: 0,
  * });
  * ```
- * @see {@link scene.MeshRope}
- * @memberof scene
+ * @see {@link MeshRope}
+ * @category scene
  */
 export interface MeshRopeOptions extends Omit<MeshOptions, 'geometry'>
 {
@@ -42,7 +42,7 @@ export interface MeshRopeOptions extends Omit<MeshOptions, 'geometry'>
  *     points.push(new Point(i * 50, 0));
  * };
  * const rope = new MeshRope(Texture.from('snake.png'), points);
- * @memberof scene
+ * @category scene
  */
 export class MeshRope extends Mesh
 {

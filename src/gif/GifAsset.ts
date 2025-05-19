@@ -9,7 +9,7 @@ import type { AssetExtension } from '../assets/AssetExtension';
  * Handle the loading of GIF images. Registering this loader plugin will
  * load all `.gif` images as an ArrayBuffer and transform into an
  * GifSource object.
- * @memberof gif
+ * @category gif
  */
 const GifAsset = {
     extension: ExtensionType.Asset,
@@ -20,7 +20,7 @@ const GifAsset = {
     },
     loader: {
         name: 'gifLoader',
-        test: (url) => path.extname(url) === '.gif',
+        test: (url) => path.extname(url) === '.gif' || url.startsWith('data:image/gif'),
         load: async (url, asset) =>
         {
             const response = await DOMAdapter.get().fetch(url);

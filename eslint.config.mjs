@@ -3,6 +3,7 @@ import jsdoc from 'eslint-plugin-jsdoc';
 import noMixed from 'eslint-plugin-no-mixed-operators';
 import tseslint from 'typescript-eslint';
 import config from '@pixi/eslint-config';
+import requireExport from './scripts/eslint-require-export.mjs';
 
 export default tseslint.config(
     ...config,
@@ -30,12 +31,19 @@ export default tseslint.config(
             'no-mixed-operators': 'off',
             'no-mixed-operators/no-mixed-operators': 1,
 
-            'jsdoc/multiline-blocks': [1, { noMultilineBlocks: true, minimumLengthForMultiline: 115 }],
+            'jsdoc/multiline-blocks': [
+                1,
+                {
+                    noMultilineBlocks: true,
+                    minimumLengthForMultiline: 115,
+                    multilineTags: ['param', 'returns', 'see', 'deprecated', 'typeParam'],
+                },
+            ],
             'jsdoc/check-access': 1,
             'jsdoc/check-alignment': 1,
             'jsdoc/check-param-names': 1,
             'jsdoc/check-property-names': 1,
-            'jsdoc/check-tag-names': 1,
+            'jsdoc/check-tag-names': 0,
             'jsdoc/check-types': 1,
             'jsdoc/check-values': 1,
             'jsdoc/empty-tags': 1,
@@ -116,5 +124,15 @@ export default tseslint.config(
                 },
             ],
         },
+    },
+    {
+        files: ['src/**/*'],
+        plugins: {
+            requireExport,
+        },
+        rules: {
+            'requireExport/require-export-jsdoc': ['error'],
+
+        }
     },
 );

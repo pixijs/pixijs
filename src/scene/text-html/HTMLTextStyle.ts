@@ -1,7 +1,6 @@
 /* eslint-disable accessor-pairs */
 import { warn } from '../../utils/logging/warn';
 import { TextStyle } from '../text/TextStyle';
-import { generateTextStyleKey } from '../text/utils/generateTextStyleKey';
 import { textStyleToCSS } from './utils/textStyleToCSS';
 
 import type { FillInput, StrokeInput } from '../graphics/shared/FillTypes';
@@ -9,10 +8,9 @@ import type { TextStyleOptions } from '../text/TextStyle';
 
 /**
  * Options for HTML text style, extends {@link TextStyle}.
- * @memberof text
- * @extends text.TextStyleOptions
+ * @category text
  * @property {string[]} [cssOverrides] - CSS style(s) to add.
- * @property {Record<string, text.HTMLTextStyleOptions>} [tagStyles] - Tag styles.
+ * @property {Record<string, HTMLTextStyleOptions>} [tagStyles] - Tag styles.
  */
 export interface HTMLTextStyleOptions extends Omit<TextStyleOptions, 'leading' | 'textBaseline' | 'trim' | 'filters' >
 {
@@ -22,7 +20,7 @@ export interface HTMLTextStyleOptions extends Omit<TextStyleOptions, 'leading' |
 
 /**
  * A TextStyle object rendered by the HTMLTextSystem.
- * @memberof text
+ * @category text
  */
 export class HTMLTextStyle extends TextStyle
 {
@@ -71,13 +69,6 @@ export class HTMLTextStyle extends TextStyle
     get cssOverrides(): string[]
     {
         return this._cssOverrides;
-    }
-
-    protected override _generateKey(): string
-    {
-        this._styleKey = generateTextStyleKey(this) + this._cssOverrides.join('-');
-
-        return this._styleKey;
     }
 
     public update()

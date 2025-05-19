@@ -11,7 +11,7 @@ import type { TextureResourceOrOptions } from '../utils/textureFrom';
 
 /**
  * options for creating a new TextureSource
- * @memberof rendering
+ * @category rendering
  */
 export interface TextureSourceOptions<T extends Record<string, any> = any> extends TextureStyleOptions
 {
@@ -67,7 +67,7 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
  *
  * This is an class is extended depending on the source of the texture.
  * Eg if you are using an an image as your resource, then an ImageSource is used.
- * @memberof rendering
+ * @category rendering
  * @typeParam T - The TextureSource's Resource type.
  */
 export class TextureSource<T extends Record<string, any> = any> extends EventEmitter<{
@@ -102,25 +102,24 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     /**
      * The resource type used by this TextureSource. This is used by the bind groups to determine
      * how to handle this resource.
-     * @ignore
      * @internal
      */
     public readonly _resourceType = 'textureSource';
     /**
      * i unique resource id, used by the bind group systems.
      * This can change if the texture is resized or its resource changes
+     * @internal
      */
     public _resourceId = uid('resource');
     /**
      * this is how the backends know how to upload this texture to the GPU
      * It changes depending on the resource type. Classes that extend TextureSource
      * should override this property.
-     * @ignore
      * @internal
      */
     public uploadMethodId = 'unknown';
 
-    // dimensions
+    /** @internal */
     public _resolution = 1;
 
     /** the pixel width of this texture source. This is the REAL pure number, not accounting resolution */
@@ -149,7 +148,6 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      * The number of samples of a multisample texture. This is always 1 for non-multisample textures.
      * To enable multisample for a texture, set antialias to true
      * @internal
-     * @ignore
      */
     public sampleCount = 1;
 

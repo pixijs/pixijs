@@ -7,6 +7,10 @@ import type { UboElement, UniformsSyncCallback } from '../../rendering/renderers
 import type { UniformGroup } from '../../rendering/renderers/shared/shader/UniformGroup';
 import type { UboUploadFunction } from './uboSyncFunctions';
 
+/**
+ * @param uboElements
+ * @internal
+ */
 export function generateUboSyncPolyfillSTD40(uboElements: UboElement[]): UniformsSyncCallback
 {
     return generateUboSyncPolyfill(
@@ -37,6 +41,10 @@ export function generateUboSyncPolyfillSTD40(uboElements: UboElement[]): Uniform
     );
 }
 
+/**
+ * @param uboElements
+ * @internal
+ */
 export function generateUboSyncPolyfillWGSL(uboElements: UboElement[]): UniformsSyncCallback
 {
     return generateUboSyncPolyfill(

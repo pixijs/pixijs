@@ -1,3 +1,4 @@
+/** @internal */
 export const colorBit = {
     name: 'color-bit',
     vertex: {
@@ -10,6 +11,7 @@ export const colorBit = {
     }
 };
 
+/** @internal */
 export const colorBitGl = {
     name: 'color-bit',
     vertex: {

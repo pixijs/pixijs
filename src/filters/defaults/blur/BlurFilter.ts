@@ -11,7 +11,7 @@ import type { FilterSystem } from '../../FilterSystem';
 
 /**
  * Options for BlurFilter
- * @memberof filters
+ * @category filters
  */
 export interface BlurFilterOptions extends FilterOptions
 {
@@ -36,7 +36,8 @@ export interface BlurFilterOptions extends FilterOptions
      */
     quality?: number;
     /**
-     * The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
+     * The kernelSize of the blur filter.
+     * Options: 5, 7, 9, 11, 13, 15.
      * @default 5
      */
     kernelSize?: number;
@@ -46,7 +47,15 @@ export interface BlurFilterOptions extends FilterOptions
  * The BlurFilter applies a Gaussian blur to an object.
  *
  * The strength of the blur can be set for the x-axis and y-axis separately.
- * @memberof filters
+ * @category filters
+ * @example
+ * import { BlurFilter } from 'pixi.js';
+ *
+ * const filter = new BlurFilter({ strength: 8, quality: 4 });
+ * sprite.filters = filter;
+ *
+ * // update filter values
+ * filter.strength = 10;
  */
 export class BlurFilter extends Filter
 {

@@ -1,6 +1,7 @@
 import '../accessibility/init';
 import '../app/init';
 import '../events/init';
+import '../dom/init';
 import '../spritesheet/init';
 import '../rendering/init';
 import '../scene/graphics/init';

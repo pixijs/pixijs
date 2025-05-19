@@ -4,6 +4,7 @@ import type { GlRenderingContext } from '../../context/GlRenderingContext';
 import type { GlTexture } from '../GlTexture';
 import type { GLTextureUploader } from './GLTextureUploader';
 
+/** @internal */
 export const glUploadImageResource = {
 
     id: 'image',

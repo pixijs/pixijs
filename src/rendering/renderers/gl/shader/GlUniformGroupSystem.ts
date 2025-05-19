@@ -10,7 +10,7 @@ import type { GlProgram, GlUniformData } from './GlProgram';
 
 /**
  * System plugin to the renderer to manage shaders.
- * @memberof rendering
+ * @category rendering
  */
 export class GlUniformGroupSystem implements System
 {
@@ -24,7 +24,7 @@ export class GlUniformGroupSystem implements System
 
     /**
      * The current WebGL rendering context.
-     * @member {WebGLRenderingContext}
+     * @type {WebGLRenderingContext}
      */
     protected gl: GlRenderingContext;
 

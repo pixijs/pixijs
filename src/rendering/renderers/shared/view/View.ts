@@ -1,6 +1,7 @@
 import type { Point } from '../../../../maths/point/Point';
 import type { BoundsData } from '../../../../scene/container/bounds/Bounds';
 
+/** @internal */
 export interface ViewObserver
 {
     onViewUpdate: () => void;
@@ -8,7 +9,7 @@ export interface ViewObserver
 
 /**
  * A view is something that is able to be rendered by the renderer.
- * @memberof scene
+ * @category scene
  */
 export interface View
 {

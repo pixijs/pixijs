@@ -5,7 +5,7 @@ import type { FormatDetectionParser } from '../types';
 
 /**
  * Detects if the browser supports the OGV video format.
- * @memberof assets
+ * @category assets
  */
 export const detectOgv = {
     extension: {

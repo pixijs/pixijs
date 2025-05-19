@@ -1,5 +1,7 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { type RenderTarget } from '../../shared/renderTarget/RenderTarget';
 import { State } from '../../shared/state/State';
+import { type WebGLRenderer } from '../WebGLRenderer';
 import { mapWebGLBlendModesToPixi } from './mapWebGLBlendModesToPixi';
 
 import type { BLEND_MODES } from '../../shared/state/const';
@@ -15,7 +17,7 @@ const DEPTH_MASK = 5;
 
 /**
  * System plugin to the renderer to manage WebGL state machines
- * @memberof rendering
+ * @category rendering
  */
 export class GlStateSystem implements System
 {
@@ -51,7 +53,7 @@ export class GlStateSystem implements System
 
     /**
      * GL context
-     * @member {WebGLRenderingContext}
+     * @type {WebGLRenderingContext}
      * @readonly
      */
     protected gl: GlRenderingContext;
@@ -60,13 +62,13 @@ export class GlStateSystem implements System
 
     /**
      * Collection of calls
-     * @member {Function[]}
+     * @type {Function[]}
      */
     protected readonly map: ((value: boolean) => void)[];
 
     /**
      * Collection of check calls
-     * @member {Function[]}
+     * @type {Function[]}
      */
     protected readonly checks: ((system: this, state: State) => void)[];
 
@@ -76,7 +78,18 @@ export class GlStateSystem implements System
      */
     protected defaultState: State;
 
-    constructor()
+    /**
+     * Whether to invert the front face when rendering
+     * This is used for render textures where the Y-coordinate is flipped
+     * @default false
+     */
+    private _invertFrontFace: boolean = false;
+    private _glFrontFace: boolean;
+    private _cullFace: boolean;
+    private _frontFaceDirty: boolean;
+    private _frontFace: boolean;
+
+    constructor(renderer: WebGLRenderer)
     {
         this.gl = null;
 
@@ -98,6 +111,27 @@ export class GlStateSystem implements System
         this.checks = [];
 
         this.defaultState = State.for2d();
+
+        // listen for when the renderTarget changes
+        // as rendering to textures means we need to invert the front face
+        renderer.renderTarget.onRenderTargetChange.add(this);
+    }
+
+    protected onRenderTargetChange(renderTarget: RenderTarget)
+    {
+        this._invertFrontFace = !renderTarget.isRoot;
+
+        // mini optimization to avoid setting the front face if culling is disabled
+        if (this._cullFace)
+        {
+            // need to set the front face to the requested value as it matters because of the culling is active!
+            this.setFrontFace(this._frontFace);
+        }
+        else
+        {
+            // if culling is disabled, we need to set the front face dirty
+            this._frontFaceDirty = true;
+        }
     }
 
     protected contextChange(gl: GlRenderingContext): void
@@ -105,6 +139,8 @@ export class GlStateSystem implements System
         this.gl = gl;
 
         this.blendModesMap = mapWebGLBlendModesToPixi(gl);
+
+        // Reset face culling variables
 
         this.resetState();
     }
@@ -213,7 +249,14 @@ export class GlStateSystem implements System
      */
     public setCullFace(value: boolean): void
     {
+        this._cullFace = value;
         this.gl[value ? 'enable' : 'disable'](this.gl.CULL_FACE);
+
+        if (this._cullFace && this._frontFaceDirty)
+        {
+            // need to set the front face to the requested value as it matters because of the culling is active!
+            this.setFrontFace(this._frontFace);
+        }
     }
 
     /**
@@ -222,7 +265,16 @@ export class GlStateSystem implements System
      */
     public setFrontFace(value: boolean): void
     {
-        this.gl.frontFace(this.gl[value ? 'CW' : 'CCW']);
+        this._frontFace = value;
+        this._frontFaceDirty = false;
+        // If invertFrontFace is true, we invert the face direction
+        const faceMode = this._invertFrontFace ? !value : value;
+
+        if (this._glFrontFace !== faceMode)
+        {
+            this._glFrontFace = faceMode;
+            this.gl.frontFace(this.gl[faceMode ? 'CW' : 'CCW']);
+        }
     }
 
     /**
@@ -277,10 +329,16 @@ export class GlStateSystem implements System
         this.gl.polygonOffset(value, scale);
     }
 
-    // used
     /** Resets all the logic and disables the VAOs. */
     public resetState(): void
     {
+        this._glFrontFace = false;
+        this._frontFace = false;
+        this._cullFace = false;
+        this._frontFaceDirty = false;
+        this._invertFrontFace = false;
+
+        this.gl.frontFace(this.gl.CCW);
         this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, false);
 
         this.forceState(this.defaultState);
@@ -334,9 +392,7 @@ export class GlStateSystem implements System
         system.setPolygonOffset(1, state.polygonOffset);
     }
 
-    /**
-     * @ignore
-     */
+    /** @ignore */
     public destroy(): void
     {
         this.gl = null;

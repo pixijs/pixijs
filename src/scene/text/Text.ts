@@ -1,4 +1,6 @@
+import { TextureStyle, type TextureStyleOptions } from '../../rendering/renderers/shared/texture/TextureStyle';
 import { AbstractText, ensureTextOptions } from './AbstractText';
+import { type BatchableText } from './canvas/BatchableText';
 import { CanvasTextMetrics } from './canvas/CanvasTextMetrics';
 import { TextStyle } from './TextStyle';
 
@@ -6,7 +8,23 @@ import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from './AbstractText';
 import type { TextStyleOptions } from './TextStyle';
 
-export interface Text extends PixiMixins.Text, AbstractText<TextStyle, TextStyleOptions> {}
+// eslint-disable-next-line requireExport/require-export-jsdoc
+export interface Text extends PixiMixins.Text, AbstractText<
+    TextStyle,
+    TextStyleOptions,
+    CanvasTextOptions,
+    BatchableText
+> {}
+
+/**
+ * Constructor options used for `Text` instances.
+ * @category scene
+ */
+export interface CanvasTextOptions extends TextOptions
+{
+    /** optional texture style to use for the text. */
+    textureStyle?: TextureStyle | TextureStyleOptions;
+}
 
 /**
  * A Text Object will create a line or multiple lines of text.
@@ -31,25 +49,55 @@ export interface Text extends PixiMixins.Text, AbstractText<TextStyle, TextStyle
  *         align: 'center',
  *     }
  * });
- * @memberof scene
+ *
+ * If you would like to use a different texture style for the text, you can do so by passing a `textureStyle` object.
+ * An example might be to use a different scale mode for the text.
+ * @example
+ * const text = new Text({
+ *     text: 'Hello Pixi!',
+ *     style: {
+ *         fontFamily: 'Arial',
+ *         fontSize: 24,
+ *         fill: 0xff1010,
+ *         align: 'center',
+ *     },
+ *     textureStyle: {
+ *         scaleMode: 'nearest',
+ *     }
+ * });
+ * @category scene
  */
 export class Text
-    extends AbstractText<TextStyle, TextStyleOptions>
+    extends AbstractText<TextStyle, TextStyleOptions, CanvasTextOptions, BatchableText>
     implements View
 {
     public override readonly renderPipeId: string = 'text';
 
     /**
-     * @param {text.TextOptions} options - The options of the text.
+     * optional texture style to use for the text.
+     * NOTE: Text is not updated when this property is updated,
+     * you must update the text manually by calling `text.onViewUpdate()`
      */
-    constructor(options?: TextOptions);
+    public textureStyle?: TextureStyle;
+
+    /**
+     * @param {CanvasTextOptions} options - The options of the text.
+     */
+    constructor(options?: CanvasTextOptions);
     /** @deprecated since 8.0.0 */
     constructor(text?: TextString, options?: Partial<TextStyle>);
-    constructor(...args: [TextOptions?] | [TextString, Partial<TextStyle>])
+    constructor(...args: [CanvasTextOptions?] | [TextString, Partial<TextStyle>])
     {
-        const options = ensureTextOptions(args, 'Text');
+        const options = ensureTextOptions<CanvasTextOptions>(args, 'Text');
 
         super(options, TextStyle);
+
+        if (options.textureStyle)
+        {
+            this.textureStyle = options.textureStyle instanceof TextureStyle
+                ? options.textureStyle
+                : new TextureStyle(options.textureStyle);
+        }
     }
 
     /** @private */

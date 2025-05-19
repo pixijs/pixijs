@@ -120,7 +120,7 @@ describe('Round Pixels', () =>
 
         expect(batchableSprite.roundPixels).toBe(1);
 
-        const batchableGraphics = renderer.renderPipes.graphics['_getBatchesForRenderable'](graphics);
+        const batchableGraphics = renderer.renderPipes.graphics['_getGpuDataForRenderable'](graphics).batches;
 
         expect(batchableGraphics[0].roundPixels).toBe(1);
 
@@ -148,11 +148,11 @@ describe('Round Pixels', () =>
 
         const batchableTextData = renderer.renderPipes.text['_getGpuText'](text);
 
-        expect(batchableTextData.batchableSprite.roundPixels).toBe(1);
+        expect(batchableTextData.roundPixels).toBe(1);
 
         const batchableTextHTMLData = renderer.renderPipes.htmlText['_getGpuText'](textHTML);
 
-        expect(batchableTextHTMLData.batchableSprite.roundPixels).toBe(1);
+        expect(batchableTextHTMLData.roundPixels).toBe(1);
     });
 
     it('renderer round pixels should override non batched items round pixels if false', async () =>

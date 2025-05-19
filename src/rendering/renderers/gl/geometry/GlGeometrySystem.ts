@@ -20,7 +20,7 @@ const topologyToGlMap = {
 
 /**
  * System plugin to the renderer to manage geometry.
- * @memberof rendering
+ * @category rendering
  */
 export class GlGeometrySystem implements System
 {

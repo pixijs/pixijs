@@ -1,6 +1,6 @@
 import { GifAsset } from '../GifAsset';
 import { GifSource } from '../GifSource';
-import { basePath } from '@test-utils';
+import { basePath, blobToBase64, toArrayBuffer } from '@test-utils';
 import { Assets } from '~/assets';
 import { extensions } from '~/extensions';
 
@@ -28,6 +28,26 @@ describe('GifSpriteLoader', () =>
     it('should load a gif file', async () =>
     {
         const test = await Assets.load<GifSource>({ alias: 'test', src: 'gif/example.gif' });
+
+        expect(test).toBeInstanceOf(GifSource);
+        expect(test.totalFrames).toBeGreaterThan(0);
+        expect(test.width).toBeGreaterThan(0);
+        expect(test.height).toBeGreaterThan(0);
+        expect(test.frames).toBeDefined();
+        expect(test.textures).toBeDefined();
+        await Assets.unload('test');
+        expect(test.frames).toBe(null);
+        expect(test.textures).toBe(null);
+    });
+
+    it('should load base64 gif file', async () =>
+    {
+        const arrayBuffer = toArrayBuffer('gif/example.gif');
+        const blob = new Blob([arrayBuffer], { type: 'image/gif' });
+
+        const base64Data = await blobToBase64(blob);
+
+        const test = await Assets.load<GifSource>({ alias: 'test', src: base64Data });
 
         expect(test).toBeInstanceOf(GifSource);
         expect(test.totalFrames).toBeGreaterThan(0);

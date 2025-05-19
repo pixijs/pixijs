@@ -36,6 +36,11 @@ function getBasisWorker(supportedTextures: TEXTURE_FORMATS[]): Worker
     return basisWorker;
 }
 
+/**
+ * @param url
+ * @param supportedTextures
+ * @internal
+ */
 export function loadBasisOnWorker(
     url: string,
     supportedTextures: TEXTURE_FORMATS[]

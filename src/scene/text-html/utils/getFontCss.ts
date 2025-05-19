@@ -3,6 +3,7 @@ import { loadFontCSS } from './loadFontCSS';
 
 import type { FontCSSStyleOptions } from './loadFontCSS';
 
+/** @internal */
 export const FontStylePromiseCache = new Map<string, Promise<string>>();
 
 /**
@@ -14,6 +15,7 @@ export const FontStylePromiseCache = new Map<string, Promise<string>>();
  * @param defaultOptions.fontWeight - The default font weight
  * @param defaultOptions.fontStyle - The default font style
  * @returns - The css string
+ * @internal
  */
 export async function getFontCss(
     fontFamilies: string[],

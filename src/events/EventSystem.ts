@@ -51,7 +51,7 @@ export interface EventSystemOptions
  * The event features that are enabled by the EventSystem
  * (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
  * @since 7.2.0
- * @memberof events
+ * @category events
  */
 export interface EventSystemFeatures
 {
@@ -84,7 +84,7 @@ export interface EventSystemFeatures
 
 /**
  * The system for handling UI events.
- * @memberof events
+ * @category events
  */
 export class EventSystem implements System<EventSystemOptions>
 {
@@ -158,7 +158,7 @@ export class EventSystem implements System<EventSystemOptions>
 
     /**
      * Dictionary of how different cursor modes are handled. Strings are handled as CSS cursor
-     * values, objects are handled as dictionaries of CSS values for {@code domElement},
+     * values, objects are handled as dictionaries of CSS values for `domElement`,
      * and functions are called instead of changing the CSS.
      * Default CSS cursor values are provided for 'default' and 'pointer' modes.
      */
@@ -470,7 +470,7 @@ export class EventSystem implements System<EventSystemOptions>
     /**
      * Sets the {@link EventSystem#domElement domElement} and binds event listeners.
      *
-     * To deregister the current DOM element without setting a new one, pass {@code null}.
+     * To deregister the current DOM element without setting a new one, pass `null`.
      * @param element - The new DOM element.
      */
     public setTargetElement(element: HTMLElement): void
@@ -787,7 +787,7 @@ export class EventSystem implements System<EventSystemOptions>
     }
 
     /**
-     * Transfers base & mouse event data from the {@code nativeEvent} to the federated event.
+     * Transfers base & mouse event data from the `nativeEvent` to the federated event.
      * @param event
      * @param nativeEvent
      */

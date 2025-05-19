@@ -2,7 +2,7 @@ import type { PointData } from './PointData';
 
 /**
  * Common interface for points. Both Point and ObservablePoint implement it
- * @memberof maths
+ * @category maths
  */
 export interface PointLike extends PointData
 {

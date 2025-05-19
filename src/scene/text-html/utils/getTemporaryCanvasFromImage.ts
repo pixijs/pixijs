@@ -12,6 +12,7 @@ import type { CanvasAndContext } from '../../../rendering/renderers/shared/textu
  * (eg upload it to the GPU!)
  * @param image - The image to convert to a canvas.
  * @param resolution - The resolution of the canvas.
+ * @internal
  */
 export function getTemporaryCanvasFromImage(image: HTMLImageElement, resolution: number): CanvasAndContext
 {

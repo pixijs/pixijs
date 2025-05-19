@@ -5,8 +5,8 @@ import { Ticker } from '../ticker/Ticker';
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
 /**
- * Application options for the {@link app.TickerPlugin}.
- * @memberof app
+ * Application options for the {@link TickerPlugin}.
+ * @category app
  * @property {boolean} [autoStart=true] - Automatically starts the rendering after the construction.
  * **Note**: Setting this parameter to `false` does NOT stop the shared ticker even if you set
  * `options.sharedTicker` to `true` in case that it is already started. Stop it by your own.
@@ -20,7 +20,7 @@ export interface TickerPluginOptions
      * Automatically starts the rendering after the construction.
      *  **Note**: Setting this parameter to `false` does NOT stop the shared ticker even if you set
      *  `options.sharedTicker` to `true` in case that it is already started. Stop it by your own.
-     * @memberof app.ApplicationOptions
+     * @category app.ApplicationOptions
      * @default true
      */
     autoStart?: boolean;
@@ -28,24 +28,24 @@ export interface TickerPluginOptions
      * Set`true` to use `Ticker.shared`, `false` to create new ticker.
      *  If set to `false`, you cannot register a handler to occur before anything that runs on the shared ticker.
      *  The system ticker will always run before both the shared ticker and the app ticker.
-     * @memberof app.ApplicationOptions
+     * @category app.ApplicationOptions
      * @default false
      */
     sharedTicker?: boolean;
 }
 
 /**
- * Middleware for Application's {@link ticker.Ticker} functionality.
+ * Middleware for Application's {@link Ticker} functionality.
  *
- * Adds the following methods to {@link app.Application}:
- * * {@link app.Application#start}
- * * {@link app.Application#stop}
- * * {@link app.Application#ticker}
+ * Adds the following methods to {@link Application}:
+ * * {@link Application#start}
+ * * {@link Application#stop}
+ * * {@link Application#ticker}
  * @example
  * import { extensions, TickerPlugin } from 'pixi.js';
  *
  * extensions.add(TickerPlugin);
- * @memberof app
+ * @category app
  */
 export class TickerPlugin
 {
@@ -54,12 +54,12 @@ export class TickerPlugin
 
     public static start: () => void;
     public static stop: () => void;
+    /** @internal */
     private static _ticker: Ticker;
     public static ticker: Ticker;
 
     /**
      * Initialize the plugin with scope of application instance
-     * @static
      * @private
      * @param {object} [options] - See application options
      */
@@ -92,44 +92,17 @@ export class TickerPlugin
                 },
             });
 
-        /**
-         * Convenience method for stopping the render.
-         * @method
-         * @memberof app.Application
-         * @instance
-         */
         this.stop = (): void =>
         {
             this._ticker.stop();
         };
 
-        /**
-         * Convenience method for starting the render.
-         * @method
-         * @memberof app.Application
-         * @instance
-         */
         this.start = (): void =>
         {
             this._ticker.start();
         };
 
-        /**
-         * Internal reference to the ticker.
-         * @type {Ticker}
-         * @name _ticker
-         * @memberof app.Application#
-         * @private
-         */
         this._ticker = null;
-
-        /**
-         * Ticker for doing render updates.
-         * @type {ticker.Ticker}
-         * @name ticker
-         * @memberof app.Application#
-         * @default Ticker.shared
-         */
         this.ticker = options.sharedTicker ? Ticker.shared : new Ticker();
 
         // Start the rendering
@@ -141,7 +114,6 @@ export class TickerPlugin
 
     /**
      * Clean up the ticker, scoped to application.
-     * @static
      * @private
      */
     public static destroy(): void

@@ -17,7 +17,7 @@ const tempMat = new Matrix();
  * @see Texture
  * @see Mesh
  * @see TilingSprite
- * @memberof rendering
+ * @category rendering
  */
 export class TextureMatrix
 {

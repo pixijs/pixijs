@@ -1,9 +1,10 @@
+import { ObservablePoint } from '../../maths/point/ObservablePoint';
+import { type PointData } from '../../maths/point/PointData';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
 import { NineSliceGeometry } from './NineSliceGeometry';
-import { ObservablePoint } from '~/maths/point/ObservablePoint';
-import { type PointData } from '~/maths/point/PointData';
+import { type NineSliceSpriteGpuData } from './NineSliceSpritePipe';
 
 import type { Size } from '../../maths/misc/Size';
 import type { View } from '../../rendering/renderers/shared/view/View';
@@ -21,8 +22,8 @@ import type { DestroyOptions } from '../container/destroyTypes';
  *    bottomHeight: 20,
  * });
  * ```
- * @see {@link scene.NineSliceSprite}
- * @memberof scene
+ * @see {@link NineSliceSprite}
+ * @category scene
  */
 export interface NineSliceSpriteOptions extends PixiMixins.NineSliceSpriteOptions, ViewContainerOptions
 {
@@ -45,7 +46,8 @@ export interface NineSliceSpriteOptions extends PixiMixins.NineSliceSpriteOption
     /** The anchor point of the NineSliceSprite. */
     anchor?: PointData | number;
 }
-export interface NineSliceSprite extends PixiMixins.NineSliceSprite, ViewContainer {}
+// eslint-disable-next-line requireExport/require-export-jsdoc
+export interface NineSliceSprite extends PixiMixins.NineSliceSprite, ViewContainer<NineSliceSpriteGpuData> {}
 
 /**
  * The NineSliceSprite allows you to stretch a texture using 9-slice scaling. The corners will remain unscaled (useful
@@ -72,9 +74,9 @@ export interface NineSliceSprite extends PixiMixins.NineSliceSprite, ViewContain
  * import { NineSliceSprite, Texture } from 'pixi.js';
  *
  * const plane9 = new NineSliceSprite(Texture.from('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
- * @memberof scene
+ * @category scene
  */
-export class NineSliceSprite extends ViewContainer implements View
+export class NineSliceSprite extends ViewContainer<NineSliceSpriteGpuData> implements View
 {
     /** The default options, used to override the initial values of any options passed in the constructor. */
     public static defaultOptions: NineSliceSpriteOptions = {
@@ -83,10 +85,12 @@ export class NineSliceSprite extends ViewContainer implements View
     };
 
     public override readonly renderPipeId: string = 'nineSliceSprite';
+    /** @internal */
     public _texture: Texture;
+    /** @internal */
+    public _anchor: ObservablePoint;
 
     public batched = true;
-    public _anchor: ObservablePoint;
     private _leftWidth: number;
     private _topHeight: number;
     private _rightWidth: number;
@@ -95,7 +99,7 @@ export class NineSliceSprite extends ViewContainer implements View
     private _height: number;
 
     /**
-     * @param {scene.NineSliceSpriteOptions|Texture} options - Options to use
+     * @param {NineSliceSpriteOptions|Texture} options - Options to use
      * @param options.texture - The texture to use on the NineSliceSprite.
      * @param options.leftWidth - Width of the left vertical bar (A)
      * @param options.topHeight - Height of the top horizontal bar (C)
@@ -321,8 +325,10 @@ export class NineSliceSprite extends ViewContainer implements View
      * Destroys this sprite renderable and optionally its texture.
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
-     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
-     * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
+     * @example
+     * nineSliceSprite.destroy();
+     * nineSliceSprite.destroy(true);
+     * nineSliceSprite.destroy({ texture: true, textureSource: true });
      */
     public override destroy(options?: DestroyOptions): void
     {
@@ -340,9 +346,7 @@ export class NineSliceSprite extends ViewContainer implements View
         this._texture = null;
     }
 
-    /**
-     * @private
-     */
+    /** @private */
     protected override updateBounds()
     {
         const bounds = this._bounds;
@@ -363,7 +367,7 @@ export class NineSliceSprite extends ViewContainer implements View
 /**
  * Please use the `NineSliceSprite` class instead.
  * @deprecated since 8.0.0
- * @memberof scene
+ * @category scene
  */
 export class NineSlicePlane extends NineSliceSprite
 {

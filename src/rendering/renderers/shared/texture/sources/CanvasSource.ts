@@ -6,14 +6,28 @@ import type { ICanvas } from '../../../../../environment/canvas/ICanvas';
 import type { ExtensionMetadata } from '../../../../../extensions/Extensions';
 import type { TextureSourceOptions } from './TextureSource';
 
+/**
+ * Options for creating a CanvasSource.
+ * @category rendering
+ */
 export interface CanvasSourceOptions extends TextureSourceOptions<ICanvas>
 {
-    /** should the canvas be resized to preserve its screen width and height regardless of the resolution of the renderer */
+    /**
+     * Should the canvas be resized to preserve its screen width and height regardless
+     * of the resolution of the renderer, this is only supported for HTMLCanvasElement
+     * and will be ignored if the canvas is an OffscreenCanvas.
+     */
     autoDensity?: boolean;
     /** if true, this canvas will be set up to be transparent where possible */
     transparent?: boolean;
 }
 
+/**
+ * A texture source that uses a canvas as its resource.
+ * It automatically resizes the canvas based on the width, height, and resolution.
+ * It also provides a 2D rendering context for drawing.
+ * @category rendering
+ */
 export class CanvasSource extends TextureSource<ICanvas>
 {
     public static extension: ExtensionMetadata = ExtensionType.TextureSource;
@@ -62,7 +76,7 @@ export class CanvasSource extends TextureSource<ICanvas>
 
     public resizeCanvas()
     {
-        if (this.autoDensity)
+        if (this.autoDensity && 'style' in this.resource)
         {
             this.resource.style.width = `${this.width}px`;
             this.resource.style.height = `${this.height}px`;

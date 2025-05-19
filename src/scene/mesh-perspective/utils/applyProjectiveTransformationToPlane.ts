@@ -7,6 +7,7 @@ import type { PlaneGeometry } from '../../mesh-plane/PlaneGeometry';
  * @param height - The height of the plane
  * @param geometry - The plane geometry to apply the transformation to
  * @param transformationMatrix - The transformation matrix to apply
+ * @internal
  */
 export function applyProjectiveTransformationToPlane(
     width: number,

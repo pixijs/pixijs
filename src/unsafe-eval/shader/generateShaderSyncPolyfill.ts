@@ -7,6 +7,7 @@ import type { ShaderSyncData, ShaderSyncFunction } from '../../rendering/rendere
 import type { WebGLRenderer } from '../../rendering/renderers/gl/WebGLRenderer';
 import type { Shader } from '../../rendering/renderers/shared/shader/Shader';
 
+/** @internal */
 export function generateShaderSyncPolyfill(): ShaderSyncFunction
 {
     return syncShader;

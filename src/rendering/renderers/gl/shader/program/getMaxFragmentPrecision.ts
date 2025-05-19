@@ -4,6 +4,7 @@ import type { PRECISION } from '../const';
 
 let maxFragmentPrecision: PRECISION;
 
+/** @internal */
 export function getMaxFragmentPrecision(): PRECISION
 {
     if (!maxFragmentPrecision)

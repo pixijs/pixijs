@@ -1,3 +1,4 @@
+/** @internal */
 export const globalUniformsBit = {
     name: 'global-uniforms-bit',
     vertex: {
@@ -14,6 +15,7 @@ export const globalUniformsBit = {
     }
 };
 
+/** @internal */
 export const globalUniformsUBOBitGl = {
     name: 'global-uniforms-ubo-bit',
     vertex: {
@@ -28,6 +30,7 @@ export const globalUniformsUBOBitGl = {
     }
 };
 
+/** @internal */
 export const globalUniformsBitGl = {
     name: 'global-uniforms-bit',
     vertex: {

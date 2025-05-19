@@ -34,7 +34,7 @@ import type { ArrayOr, AssetsBundle, AssetsManifest, ResolvedAsset, UnresolvedAs
  * Callback for when progress on asset loading is made.
  * The function is passed a single parameter, `progress`, which represents the percentage (0.0 - 1.0)
  * of the assets loaded.
- * @memberof assets
+ * @category assets
  * @callback ProgressCallback
  * @param {number} progress - The percentage (0.0 - 1.0) of the assets loaded.
  * @returns {void}
@@ -46,13 +46,13 @@ export type ProgressCallback = (progress: number) => void;
 /**
  * Extensible preferences that can be used, for instance, when configuring loaders.
  * @since 7.2.0
- * @memberof assets
+ * @category assets
  */
 export interface AssetsPreferences extends LoadTextureConfig, LoadSVGConfig, PixiMixins.AssetsPreferences {}
 
 /**
  * Initialization options object for the Assets Class.
- * @memberof assets
+ * @category assets
  */
 export interface AssetInitOptions
 {
@@ -97,11 +97,12 @@ export interface AssetInitOptions
 }
 
 /**
+ * @module
+ * @categoryDescription assets
  * A one stop shop for all Pixi resource management!
  * Super modern and easy to use, with enough flexibility to customize and do what you need!
- * @namespace assets
  *
- * Use the singleton class [Assets]{@link assets.Assets} to easily load and manage all your assets.
+ * Use the singleton class [Assets]{@link Assets} to easily load and manage all your assets.
  *
  * ```typescript
  * import { Assets, Texture } from 'pixi.js';
@@ -132,15 +133,15 @@ export interface AssetInitOptions
  * Here both promises will be the same. Once resolved... Forever resolved! It makes for really easy resource management!
  *
  * Out of the box Pixi supports the following files:
- * - Textures (**_avif_**, **_webp_**, **_png_**, **_jpg_**, **_gif_**, **_svg_**) via {@link assets.loadTextures}, {@link assets.loadSvg}
- * - Video Textures (**_mp4_**, **_m4v_**, **_webm_**, **_ogg_**, **_ogv_**, **_h264_**, **_avi_**, **_mov_**) via {@link assets.loadVideoTextures}
- * - Sprite sheets (**_json_**) via {@link assets.spritesheetAsset}
- * - Bitmap fonts (**_xml_**, **_fnt_**, **_txt_**) via {@link assets.loadBitmapFont}
- * - Web fonts (**_ttf_**, **_woff_**, **_woff2_**) via {@link assets.loadWebFont}
- * - JSON files (**_json_**) via {@link assets.loadJson}
- * - Text Files (**_txt_**) via {@link assets.loadTxt}
+ * - Textures (**_avif_**, **_webp_**, **_png_**, **_jpg_**, **_gif_**, **_svg_**) via {@link loadTextures}, {@link loadSvg}
+ * - Video Textures (**_mp4_**, **_m4v_**, **_webm_**, **_ogg_**, **_ogv_**, **_h264_**, **_avi_**, **_mov_**) via {@link loadVideoTextures}
+ * - Sprite sheets (**_json_**) via {@link spritesheetAsset}
+ * - Bitmap fonts (**_xml_**, **_fnt_**, **_txt_**) via {@link loadBitmapFont}
+ * - Web fonts (**_ttf_**, **_woff_**, **_woff2_**) via {@link loadWebFont}
+ * - JSON files (**_json_**) via {@link loadJson}
+ * - Text Files (**_txt_**) via {@link loadTxt}
  * <br/>
- * More types can be added fairly easily by creating additional {@link assets.LoaderParser LoaderParsers}.
+ * More types can be added fairly easily by creating additional {@link LoaderParser LoaderParsers}.
  * </details>
  *
  * <details id="textures">
@@ -208,8 +209,8 @@ export interface AssetInitOptions
  *
  * <summary>Manifest and Bundles</summary>
  *
- * - {@link assets.AssetsManifest Manifest} is a descriptor that contains a list of all assets and their properties.
- * - {@link assets.AssetsBundle Bundles} are a way to group assets together.
+ * - {@link AssetsManifest Manifest} is a descriptor that contains a list of all assets and their properties.
+ * - {@link AssetsBundle Bundles} are a way to group assets together.
  *
  * ```js
  * import { Assets } from 'pixi.js';
@@ -256,38 +257,14 @@ export interface AssetInitOptions
  * </details>
  */
 
-/**
- * The global Assets class, it's a singleton so you don't need to instantiate it.
- *
- * **The `Assets` class has four main responsibilities:**
- * 1. Allows users to map URLs to keys and resolve them according to the user's browser capabilities
- * 2. Loads the resources and transforms them into assets that developers understand.
- * 3. Caches the assets and provides a way to access them.
- * 4. Allow developers to unload assets and clear the cache.
- *
- *
- * **It also has a few advanced features:**
- * 1. Allows developers to provide a {@link assets.Manifest} upfront of all assets and help manage
- * them via {@link assets.AssetsBundles Bundles}.
- * 2. Allows users to background load assets. Shortening (or eliminating) load times and improving UX. With this feature,
- * in-game loading bars can be a thing of the past!
- * @example
- * import { Assets } from 'pixi.js';
- *
- * const bunny = await Assets.load('bunny.png');
- * @memberof assets
- * @class Assets
- */
+/** @internal */
 export class AssetsClass
 {
     /** the resolver to map various urls */
     public resolver: Resolver;
     /** The loader, loads stuff! */
     public loader: Loader;
-    /**
-     * The global cache of all assets within PixiJS
-     * @type {assets.Cache}
-     */
+    /** The global cache of all assets within PixiJS {@link Cache} */
     public cache: typeof Cache;
 
     /** takes care of loading assets in the background */
@@ -946,6 +923,28 @@ export class AssetsClass
     }
 }
 
+/**
+ * The global Assets class, it's a singleton so you don't need to instantiate it.
+ *
+ * **The `Assets` class has four main responsibilities:**
+ * 1. Allows users to map URLs to keys and resolve them according to the user's browser capabilities
+ * 2. Loads the resources and transforms them into assets that developers understand.
+ * 3. Caches the assets and provides a way to access them.
+ * 4. Allow developers to unload assets and clear the cache.
+ *
+ *
+ * **It also has a few advanced features:**
+ * 1. Allows developers to provide a {@link AssetsManifest} upfront of all assets and help manage
+ * them via {@link AssetsBundle}.
+ * 2. Allows users to background load assets. Shortening (or eliminating) load times and improving UX. With this feature,
+ * in-game loading bars can be a thing of the past!
+ * @example
+ * import { Assets } from 'pixi.js';
+ *
+ * const bunny = await Assets.load('bunny.png');
+ * @category assets
+ * @class
+ */
 export const Assets = new AssetsClass();
 
 // Handle registration of extensions

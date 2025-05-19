@@ -5,8 +5,12 @@ import type { IParticle } from '../../scene/particle-container/shared/Particle';
 import type { ParticleRendererProperty } from '../../scene/particle-container/shared/particleData';
 
 // eslint-disable-next-line max-len
-export type ParticleUpdateFunction = (ps: IParticle[], f32v: Float32Array, u32v: Uint32Array, offset: number, stride: number) => void;
+type ParticleUpdateFunction = (ps: IParticle[], f32v: Float32Array, u32v: Uint32Array, offset: number, stride: number) => void;
 
+/**
+ * @param properties
+ * @internal
+ */
 export function generateParticleUpdatePolyfill(properties: ParticleRendererProperty[])
 {
     const dynamicProperties = properties.filter((p) => p.dynamic);
