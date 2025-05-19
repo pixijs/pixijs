@@ -10,12 +10,14 @@ import type { WebGLRenderer } from '../WebGLRenderer';
 import type { GlProgram } from './GlProgram';
 import type { GlProgramData } from './GlProgramData';
 
+/** @internal */
 export interface ShaderSyncData
 {
     textureCount: number;
     blockIndex: number;
 }
 
+/** @internal */
 export type ShaderSyncFunction = (renderer: WebGLRenderer, shader: Shader, syncData: ShaderSyncData) => void;
 
 // default sync data so we don't create a new one each time!
@@ -26,7 +28,7 @@ const defaultSyncData: ShaderSyncData = {
 
 /**
  * System plugin to the renderer to manage the shaders for WebGL.
- * @memberof rendering
+ * @category rendering
  */
 export class GlShaderSystem
 {
@@ -46,6 +48,7 @@ export class GlShaderSystem
 
     private _programDataHash: Record<string, GlProgramData> = Object.create(null);
     private readonly _renderer: WebGLRenderer;
+    /** @internal */
     public _gl: WebGL2RenderingContext;
     private _shaderSyncFunctions: Record<string, ShaderSyncFunction> = Object.create(null);
 

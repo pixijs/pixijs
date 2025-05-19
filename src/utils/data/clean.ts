@@ -5,7 +5,7 @@
  * this function can be used to clean a hash.
  * @param hash - The hash to clean.
  * @returns A new hash with all the `undefined`/`null` values removed.
- * @memberof utils
+ * @category utils
  */
 export function cleanHash<T>(hash: Record<string, T>): Record<string, T>
 {
@@ -51,7 +51,7 @@ export function cleanHash<T>(hash: Record<string, T>): Record<string, T>
  * const arr = [1, undefined, 2, undefined, 3];
  * const cleanedArr = cleanArray(arr);
  * console.log(cleanedArr); // Output: [1, 2, 3]
- * @memberof utils
+ * @category utils
  */
 export function cleanArray<T>(arr: T[]): T[]
 {

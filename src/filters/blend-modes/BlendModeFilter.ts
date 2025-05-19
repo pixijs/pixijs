@@ -7,6 +7,7 @@ import blendTemplateFrag from './blend-template.frag';
 import blendTemplateVert from './blend-template.vert';
 import blendTemplate from './blend-template.wgsl';
 
+/** @internal */
 export interface BlendModeFilterOptions
 {
     source?: string;
@@ -20,6 +21,7 @@ export interface BlendModeFilterOptions
     }
 }
 
+/** @internal */
 export class BlendModeFilter extends Filter
 {
     constructor(options: BlendModeFilterOptions)

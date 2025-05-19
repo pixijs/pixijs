@@ -6,8 +6,13 @@ import type { IParticle } from '../Particle';
 import type { ParticleRendererProperty } from '../particleData';
 
 // TODO rename to update function
+/** @internal */
 export type ParticleUpdateFunction = (ps: IParticle[], f32v: Float32Array, u32v: Uint32Array) => void;
 
+/**
+ * @param properties
+ * @internal
+ */
 export function generateParticleUpdateFunction(properties: Record<string, ParticleRendererProperty>)
 {
     return {
@@ -24,7 +29,7 @@ function generateUpdateFunction(
     const funcFragments: string[] = [];
 
     funcFragments.push(`
-      
+
         var index = 0;
 
         for (let i = 0; i < ps.length; ++i)

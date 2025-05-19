@@ -3,7 +3,7 @@ import type { Rectangle } from './Rectangle';
 
 /**
  * A basic object to define a Pixi shape.
- * @memberof maths
+ * @category maths
  */
 export interface ShapePrimitive
 {

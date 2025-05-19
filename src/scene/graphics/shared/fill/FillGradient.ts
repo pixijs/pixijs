@@ -13,11 +13,19 @@ import type { PointData } from '../../../../maths/point/PointData';
 import type { CanvasAndContext } from '../../../../rendering/renderers/shared/texture/CanvasPool';
 import type { TextureSpace } from '../FillTypes';
 
+/**
+ * Defines the type of gradient to create.
+ *
+ * It can be:
+ * - 'linear': A linear gradient that transitions colors along a straight line.
+ * - 'radial': A radial gradient that transitions colors in a circular pattern from an inner circle to an outer circle.
+ * @category scene
+ */
 export type GradientType = 'linear' | 'radial';
 
 /**
  * Represents the style options for a linear gradient fill.
- * @memberof scene
+ * @category scene
  */
 export interface BaseGradientOptions
 {
@@ -45,7 +53,7 @@ export interface BaseGradientOptions
 /**
  * Options specific to linear gradients.
  * A linear gradient creates a smooth transition between colors along a straight line defined by start and end points.
- * @memberof scene
+ * @category scene
  */
 export interface LinearGradientOptions extends BaseGradientOptions
 {
@@ -73,7 +81,7 @@ export interface LinearGradientOptions extends BaseGradientOptions
  * Options specific to radial gradients.
  * A radial gradient creates a smooth transition between colors that radiates outward in a circular pattern.
  * The gradient is defined by inner and outer circles, each with their own radius.
- * @memberof scene
+ * @category scene
  */
 export interface RadialGradientOptions extends BaseGradientOptions
 {
@@ -102,7 +110,7 @@ export interface RadialGradientOptions extends BaseGradientOptions
 
 /**
  * Options for creating a gradient fill.
- * @memberof scene
+ * @category scene
  */
 export type GradientOptions = LinearGradientOptions | RadialGradientOptions;
 
@@ -189,21 +197,11 @@ const emptyColorStops: { offset: number, color: string }[] = [{ offset: 0, color
  *
  * If you want to animate a gradient then it's best to modify and update an existing one
  * rather than creating a whole new one each time. That or use a custom shader.
- * @memberof scene
- * @implements {CanvasGradient}
+ * @category scene
  */
 export class FillGradient implements CanvasGradient
 {
-    /**
-     * Default options for creating a gradient fill
-     * @property {PointData} start - Start point of the gradient (default: { x: 0, y: 0 })
-     * @property {PointData} end - End point of the gradient (default: { x: 0, y: 1 })
-     * @property {TextureSpace} textureSpace - Whether coordinates are 'global' or 'local' (default: 'local')
-     * @property {number} textureSize - The size of the texture to use for the gradient (default: 256)
-     * @property {Array<{offset: number, color: ColorSource}>} colorStops - Array of color stops (default: empty array)
-     * @property {GradientType} type - Type of gradient (default: 'linear')
-     * @property {WRAP_MODE} wrapMode - The wrap mode of the gradient (default: 'clamp-to-edge')
-     */
+    /** Default options for creating a gradient fill */
     public static readonly defaultLinearOptions: LinearGradientOptions = {
         start: { x: 0, y: 0 },
         end: { x: 0, y: 1 },
@@ -214,18 +212,7 @@ export class FillGradient implements CanvasGradient
         wrapMode: 'clamp-to-edge'
     };
 
-    /**
-     * Default options for creating a radial gradient fill
-     * @property {PointData} innerCenter - Center of the inner circle (default: { x: 0.5, y: 0.5 })
-     * @property {number} innerRadius - Radius of the inner circle (default: 0)
-     * @property {PointData} outerCenter - Center of the outer circle (default: { x: 0.5, y: 0.5 })
-     * @property {number} outerRadius - Radius of the outer circle (default: 0.5)
-     * @property {TextureSpace} textureSpace - Whether coordinates are 'global' or 'local' (default: 'local')
-     * @property {number} textureSize - The size of the texture to use for the gradient (default: 256)
-     * @property {Array<{offset: number, color: ColorSource}>} colorStops - Array of color stops (default: empty array)
-     * @property {GradientType} type - Type of gradient (default: 'radial')
-     * @property {WRAP_MODE} wrapMode - The wrap mode of the gradient (default: 'clamp-to-edge')
-     */
+    /** Default options for creating a radial gradient fill */
     public static readonly defaultRadialOptions: RadialGradientOptions = {
         center: { x: 0.5, y: 0.5 },
         innerRadius: 0,
@@ -276,26 +263,16 @@ export class FillGradient implements CanvasGradient
 
     /**
      * Creates a new gradient fill. The constructor behavior changes based on the gradient type.
-     *
-     * For linear gradients:
      * @param {GradientOptions} options - The options for the gradient
-     * @param {PointData} [options.start] - The start point of the linear gradient
-     * @param {PointData} [options.end] - The end point of the linear gradient
-     *
-     * For radial gradients:
-     * @param {PointData} [options.innerCenter] - The center point of the inner circle of the radial gradient
-     * @param {number} [options.innerRadius] - The radius of the inner circle of the radial gradient
-     * @param {PointData} [options.outerCenter] - The center point of the outer circle of the radial gradient
-     * @param {number} [options.outerRadius] - The radius of the outer circle of the radial gradient
-     *
-     * Common options for both gradient types:
-     * @param {TextureSpace} [options.textureSpace='local'] - Whether coordinates are 'global' or 'local'
-     * @param {number} [options.textureSize=256] - The size of the texture to use for the gradient
-     * @param {Array<{offset: number, color: ColorSource}>} [options.colorStops=[]] - Array of color stops
-     * @param {GradientType} [options.type='linear'] - Type of gradient
+     * @see {@link LinearGradientOptions}
+     * @see {@link RadialGradientOptions}
      */
     constructor(options: GradientOptions);
-    /** @deprecated since 8.5.2 */
+    /**
+     * Deprecated: Use the options object instead.
+     * @deprecated since 8.5.2
+     * @ignore
+     */
     constructor(
         x0?: number,
         y0?: number,

@@ -24,7 +24,7 @@ import type { BindResource } from './BindResource';
  *
  * This bind group class will also watch for changes in its resources ensuring that the changes
  * are reflected in the WebGPU BindGroup.
- * @memberof rendering
+ * @category rendering
  */
 export class BindGroup
 {
@@ -33,7 +33,6 @@ export class BindGroup
     /**
      * a key used internally to match it up to a WebGPU Bindgroup
      * @internal
-     * @ignore
      */
     public _key: string;
     private _dirty = true;
@@ -60,7 +59,6 @@ export class BindGroup
      * Updates the key if its flagged as dirty. This is used internally to
      * match this bind group to a WebGPU BindGroup.
      * @internal
-     * @ignore
      */
     public _updateKey(): void
     {
@@ -120,7 +118,6 @@ export class BindGroup
      * knows that all resources in this bind group are still being used.
      * @param tick - The current tick.
      * @internal
-     * @ignore
      */
     public _touch(tick: number)
     {

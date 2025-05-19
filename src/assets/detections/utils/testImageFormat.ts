@@ -1,3 +1,7 @@
+/**
+ * @param imageData
+ * @internal
+ */
 export async function testImageFormat(imageData: string): Promise<boolean>
 {
     // Some browsers currently do not support createImageBitmap with Blob, so new Image() is preferred when exist.

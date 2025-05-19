@@ -3,6 +3,7 @@
  * @param target - The target object to assign properties to.
  * @param options - The object to assign properties from.
  * @param ignore - An object of property names to ignore ({ propToIgnore: true }).
+ * @category utils
  */
 export function assignWithIgnore<T extends Record<string, any>>(
     target: T,

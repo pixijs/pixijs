@@ -9,12 +9,18 @@ import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { DestroyOptions } from '../container/destroyTypes';
 
+/** @internal */
 export interface GPUData
 {
     destroy: () => void;
 }
 
+/**
+ * Options for the construction of a ViewContainer.
+ * @category scene
+ */
 export interface ViewContainerOptions extends ContainerOptions, PixiMixins.ViewContainerOptions {}
+// eslint-disable-next-line requireExport/require-export-jsdoc
 export interface ViewContainer<GPU_DATA extends GPUData = any> extends PixiMixins.ViewContainer, Container
 {
     _gpuData: Record<number, GPU_DATA>;
@@ -24,22 +30,23 @@ export interface ViewContainer<GPU_DATA extends GPUData = any> extends PixiMixin
  * A ViewContainer is a type of container that represents a view.
  * This view can be a Sprite, a Graphics object, or any other object that can be rendered.
  * This class is abstract and should not be used directly.
- * @memberof scene
+ * @category scene
  */
 export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Container implements View
 {
-    /** @private */
+    /** @internal */
     public override readonly renderPipeId: string;
-    /** @private */
+    /** @internal */
     public readonly canBundle = true;
-    /** @private */
+    /** @internal */
     public override allowChildren = false;
 
-    /** @private */
+    /** @internal */
     public _roundPixels: 0 | 1 = 0;
-    /** @private */
+    /** @internal */
     public _lastUsed = -1;
 
+    /** @internal */
     public _gpuData: Record<number, GPU_DATA> = Object.create(null);
 
     protected _bounds: Bounds = new Bounds(0, 1, 0, 0);
@@ -47,7 +54,7 @@ export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Cont
 
     /**
      * The local bounds of the view.
-     * @type {rendering.Bounds}
+     * @type {Bounds}
      */
     public get bounds()
     {

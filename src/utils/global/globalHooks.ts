@@ -15,7 +15,7 @@ declare global
 
 /**
  * Calls global __PIXI_APP_INIT__ hook with the application instance, after the application is initialized.
- * @memberof app
+ * @category app
  */
 export class ApplicationInitHook
 {
@@ -33,7 +33,7 @@ export class ApplicationInitHook
 
 /**
  * Calls global __PIXI_RENDERER_INIT__ hook with the renderer instance, after the renderer is initialized.
- * @memberof rendering
+ * @category rendering
  */
 export class RendererInitHook implements System
 {

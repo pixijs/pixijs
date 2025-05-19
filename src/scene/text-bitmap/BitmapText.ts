@@ -8,6 +8,7 @@ import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from '../text/AbstractText';
 import type { TextStyleOptions } from '../text/TextStyle';
 
+// eslint-disable-next-line requireExport/require-export-jsdoc
 export interface BitmapText extends PixiMixins.BitmapText, AbstractText<
     TextStyle,
     TextStyleOptions,
@@ -101,7 +102,7 @@ export interface BitmapText extends PixiMixins.BitmapText, AbstractText<
  *        align: 'center',
  *     }
  * }
- * @memberof scene
+ * @category scene
  */
 export class BitmapText extends AbstractText<
     TextStyle,
@@ -118,7 +119,7 @@ export class BitmapText extends AbstractText<
      * ```ts
      * new BitmapText(options?: TextOptions);
      * ```
-     * @param { text.TextOptions } options - The options of the bitmap text.
+     * @param { TextOptions } options - The options of the bitmap text.
      */
     constructor(options?: TextOptions);
     /** @deprecated since 8.0.0 */

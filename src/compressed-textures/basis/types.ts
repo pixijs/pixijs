@@ -1,11 +1,14 @@
+/** @internal */
 export type BASISModuleCreator = (config: {
     locateFile: (file: string) => string
 }) => {
     then: (result: (libktx: BASISModule) => void) => void
 };
 
+/** @internal */
 export type BasisTextureConstructor = new (data: Uint8Array) => BasisTexture;
 
+/** @internal */
 export interface BASISModule
 {
     initializeBasis(): void;
@@ -13,6 +16,7 @@ export interface BASISModule
     BasisFile: BasisTextureConstructor;
 }
 
+/** @internal */
 export interface BasisTexture
 {
     getNumImages(): number;

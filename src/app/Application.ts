@@ -11,25 +11,6 @@ import type { Renderer } from '../rendering/renderers/types';
 import type { DestroyOptions } from '../scene/container/destroyTypes';
 
 /**
- * The app module provides a set of classes to use as a starting point when building applications.
- *
- * <aside>This module has a mixin for <code>TickerPlugin</code> and <code>ResizePlugin</code>.
- * These will need to be imported if you are managing your own renderer.</aside>
- *
- * ```js
- * import { Application } from 'pixi.js';
- *
- * const app = new Application();
- *
- * await app.init();
- *
- * // don't forget to add the canvas to the DOM
- * document.body.appendChild(app.canvas);
- * ```
- * @namespace app
- */
-
-/**
  * Any plugin that's usable for Application should contain these methods.
  * @example
  * import { ApplicationPlugin } from 'pixi.js';
@@ -44,8 +25,8 @@ import type { DestroyOptions } from '../scene/container/destroyTypes';
  *       // handle destruction code here
  *    }
  * }
- * @memberof app
- * @see {@link app.ApplicationOptions}
+ * @category app
+ * @see {@link ApplicationOptions}
  * @ignore
  */
 export interface ApplicationPlugin
@@ -61,8 +42,8 @@ export interface ApplicationPlugin
 }
 
 /**
- * Application options supplied to the {@link app.Application#init} method.
- * @memberof app
+ * Application options supplied to the {@link Application#init} method.
+ * @category app
  * @example
  * import { Application } from 'pixi.js';
  *
@@ -76,7 +57,7 @@ export interface ApplicationPlugin
  */
 export interface ApplicationOptions extends AutoDetectOptions, PixiMixins.ApplicationOptions { }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type, requireExport/require-export-jsdoc
 export interface Application extends PixiMixins.Application { }
 
 /**
@@ -96,13 +77,13 @@ export interface Application extends PixiMixins.Application { }
  *
  * // ex, add display objects
  * app.stage.addChild(Sprite.from('something.png'));
- * @memberof app
+ * @category app
  */
 export class Application<R extends Renderer = Renderer>
 {
     /**
      * Collection of installed plugins.
-     * @alias _plugins
+     * @internal
      */
     public static _plugins: ApplicationPlugin[] = [];
 
@@ -111,7 +92,7 @@ export class Application<R extends Renderer = Renderer>
 
     /**
      * WebGL renderer if available, otherwise CanvasRenderer.
-     * @member {rendering.Renderer}
+     * @type {Renderer}
      */
     public renderer: R;
 
@@ -158,7 +139,7 @@ export class Application<R extends Renderer = Renderer>
     /**
      * Reference to the renderer's canvas element.
      * @readonly
-     * @member {HTMLCanvasElement}
+     * @type {HTMLCanvasElement}
      */
     get canvas(): R['canvas']
     {
@@ -167,7 +148,7 @@ export class Application<R extends Renderer = Renderer>
 
     /**
      * Reference to the renderer's canvas element.
-     * @member {HTMLCanvasElement}
+     * @type {HTMLCanvasElement}
      * @deprecated since 8.0.0
      */
     get view(): R['canvas']
@@ -190,20 +171,13 @@ export class Application<R extends Renderer = Renderer>
 
     /**
      * Destroys the application and all of its resources.
-     * @param {object|boolean}[rendererDestroyOptions=false] - The options for destroying the renderer.
-     * @param {boolean}[rendererDestroyOptions.removeView=false] - Removes the Canvas element from the DOM.
-     * @param {object|boolean} [options=false] - The options for destroying the stage.
-     * @param {boolean} [options.children=false] - If set to true, all the children will have their destroy method
-     * called as well. `options` will be passed on to those calls.
-     * @param {boolean} [options.texture=false] - Only used for children with textures e.g. Sprites.
-     * If options.children is set to true,
-     * it should destroy the texture of the child sprite.
-     * @param {boolean} [options.textureSource=false] - Only used for children with textures e.g. Sprites.
-     *  If options.children is set to true,
-     * it should destroy the texture source of the child sprite.
-     * @param {boolean} [options.context=false] - Only used for children with graphicsContexts e.g. Graphics.
-     * If options.children is set to true,
-     * it should destroy the context of the child graphics.
+     * @param rendererDestroyOptions - Options for destroying the renderer.
+     * @param options - Options for destroying the application.
+     * @example
+     * app.destroy()
+     * app.destroy(true, true);
+     * app.destroy({ removeView: true }, true);
+     * app.destroy({ removeView: true }, { children: true, texture: true, textureSource: true, context: true });
      */
     public destroy(rendererDestroyOptions: RendererDestroyOptions = false, options: DestroyOptions = false): void
     {

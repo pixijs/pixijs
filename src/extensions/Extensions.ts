@@ -1,10 +1,12 @@
 /**
+ * @module
+ * @categoryDescription extensions
  * `extensions` is a global object that holds all the extensions registered with PixiJS.
  * PixiJS uses a this extensions architecture a lot to make the library more modular and
  * flexible.
  *
  * For example, if you want to add load a new type of asset, you can register a new
- * {@link assets.LoaderParser} with the `extensions` object.
+ * {@link LoaderParser} with the `extensions` object.
  *
  * ```js
  * import { extensions, ExtensionType } from 'pixi.js';
@@ -29,13 +31,12 @@
  *
  * This would add the `customAssetLoader` to the list of available loaders that PixiJS can use.
  *
- * There are many different types of extensions, which are listed in {@link extensions.ExtensionType}.
- * @namespace extensions
+ * There are many different types of extensions, which are listed in {@link ExtensionType}.
  */
 
 /**
  * Collection of valid extension types.
- * @memberof extensions
+ * @category extensions
  */
 enum ExtensionType
 {
@@ -95,7 +96,7 @@ enum ExtensionType
 
 /**
  * The metadata for an extension.
- * @memberof extensions
+ * @category extensions
  * @ignore
  */
 interface ExtensionMetadataDetails
@@ -110,7 +111,7 @@ interface ExtensionMetadataDetails
 
 /**
  * The metadata for an extension.
- * @memberof extensions
+ * @category extensions
  */
 type ExtensionMetadata = ExtensionType | ExtensionMetadataDetails;
 
@@ -118,7 +119,7 @@ type ExtensionMetadata = ExtensionType | ExtensionMetadataDetails;
  * Format when registering an extension. Generally, the extension
  * should have these values as `extension` static property,
  * but you can override name or type by providing an object.
- * @memberof extensions
+ * @category extensions
  */
 interface ExtensionFormat
 {
@@ -134,7 +135,7 @@ interface ExtensionFormat
 
 /**
  * Extension format that is used internally for registrations.
- * @memberof extensions
+ * @category extensions
  * @ignore
  */
 interface StrictExtensionFormat extends ExtensionFormat
@@ -189,7 +190,7 @@ const normalizeExtension = (ext: ExtensionFormat | any): StrictExtensionFormat =
  * @param ext - Any extension
  * @param defaultPriority - Fallback priority if none is defined.
  * @returns The priority for the extension.
- * @memberof extensions
+ * @category extensions
  */
 export const normalizeExtensionPriority = (ext: ExtensionFormat | any, defaultPriority: number): number =>
     normalizeExtension(ext).priority ?? defaultPriority;
@@ -210,7 +211,7 @@ export const normalizeExtensionPriority = (ext: ExtensionFormat | any, defaultPr
  * @property {Function} handleByMap - Handle a type, but using a map by `name` property.
  * @property {Function} handleByNamedList - Handle a type, but using a list of extensions with a `name` property.
  * @property {Function} handleByList - Handle a type, but using a list of extensions.
- * @memberof extensions
+ * @category extensions
  */
 const extensions = {
 
@@ -274,6 +275,7 @@ const extensions = {
      * @param onAdd  - Function handler when extensions are added/registered {@link StrictExtensionFormat}.
      * @param onRemove  - Function handler when extensions are removed/unregistered {@link StrictExtensionFormat}.
      * @returns {extensions} For chaining.
+     * @internal
      */
     handle(type: ExtensionType, onAdd: ExtensionHandler, onRemove: ExtensionHandler)
     {

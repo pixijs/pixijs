@@ -5,7 +5,7 @@ import type { WebGLRenderer } from './WebGLRenderer';
 
 /**
  * The system that handles color masking for the WebGL.
- * @memberof rendering
+ * @category rendering
  */
 export class GlColorMaskSystem implements System
 {

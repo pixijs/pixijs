@@ -6,9 +6,11 @@ import type { AnyColor, HslaColor, HslColor, HsvaColor, HsvColor, RgbaColor, Rgb
 extend([namesPlugin]);
 
 /**
+ * @module
+ * @categoryDescription color
  * Pixi supports multiple color formats, including CSS color strings, hex, numbers, and arrays.
  *
- * When providing values for any of the color properties, you can use any of the {@link color.ColorSource} formats.
+ * When providing values for any of the color properties, you can use any of the {@link ColorSource} formats.
  * ```typescript
  * import { Color } from 'pixi.js';
  *
@@ -24,19 +26,18 @@ extend([namesPlugin]);
  * graphics.stroke({ color: '#ff0000' });
  * graphics.stroke({ color: new Color('red')};
  * ```
- * @namespace color
  */
 
 /**
  * RGBA color array.
  *
  * `[number, number, number, number]`
- * @memberof color
+ * @category color
  */
 export type RgbaArray = [number, number, number, number];
 
 /**
- * Valid formats to use when defining any color properties, also valid for the {@link color.Color} constructor.
+ * Valid formats to use when defining any color properties, also valid for the {@link Color} constructor.
  *
  * These types are extended from [colord](https://www.npmjs.com/package/colord) with some PixiJS-specific extensions.
  *
@@ -68,9 +69,9 @@ export type RgbaArray = [number, number, number, number];
  *   `'hsl(0, 100%, 50%)'`, `'hsl(0deg 100% 50%)'`, `'hsla(0, 100%, 50%, 0.5)'`, `'hsla(0deg 100% 50% / 50%)'`, etc.
  * - HSV(A) objects:
  *   `{ h: 0, s: 100, v: 100 }`, `{ h: 0, s: 100, v: 100, a: 0.5 }`, etc.
- * - {@link color.Color} objects.
+ * - {@link Color} objects.
  * @since 7.2.0
- * @memberof color
+ * @category color
  */
 export type ColorSource =
     | string
@@ -91,7 +92,7 @@ export type ColorSource =
 type ColorSourceTypedArray = Float32Array | Uint8Array | Uint8ClampedArray;
 
 /**
- * Color utility class. Can accept any {@link color.ColorSource} format in its constructor.
+ * Color utility class. Can accept any {@link ColorSource} format in its constructor.
  * ```js
  * import { Color } from 'pixi.js';
  *
@@ -113,7 +114,7 @@ type ColorSourceTypedArray = Float32Array | Uint8Array | Uint8ClampedArray;
  * new Color({ h: 0, s: 100, v: 100, a: 0.5 }).toArray(); // [1, 0, 0, 0.5]
  * ```
  * @since 7.2.0
- * @memberof color
+ * @category color
  */
 export class Color
 {
@@ -210,7 +211,7 @@ export class Color
      *
      * When getting:
      * - A return value of `null` means the previous value was overridden (e.g., {@link Color.multiply multiply},
-     *   {@link Color.premultiply premultiply} or {@link Color.round round}).
+     *   {@link Color.premultiply premultiply}.
      * - Otherwise, the color source used when setting is returned.
      */
     set value(value: ColorSource | null)
@@ -352,9 +353,7 @@ export class Color
      * new Color('white').toUint8RgbArray(); // returns [255, 255, 255]
      * @param {number[]|Uint8Array|Uint8ClampedArray} [out] - Output array
      */
-    public toUint8RgbArray(): number[];
-    public toUint8RgbArray<T extends number[] | Uint8Array | Uint8ClampedArray>(out: T): T;
-    public toUint8RgbArray<T extends number[] | Uint8Array | Uint8ClampedArray>(out?: T): T
+    public toUint8RgbArray<T extends number[] | Uint8Array | Uint8ClampedArray = number[]>(out?: T): T
     {
         const [r, g, b] = this._components;
 
@@ -379,9 +378,7 @@ export class Color
      * new Color('white').toArray(); // returns [1, 1, 1, 1]
      * @param {number[]|Float32Array} [out] - Output array
      */
-    public toArray(): number[];
-    public toArray<T extends number[] | Float32Array>(out: T): T;
-    public toArray<T extends number[] | Float32Array>(out?: T): T
+    public toArray<T extends number[] | Float32Array = number[]>(out?: T): T
     {
         if (!this._arrayRgba)
         {
@@ -406,9 +403,7 @@ export class Color
      * new Color('white').toRgbArray(); // returns [1, 1, 1]
      * @param {number[]|Float32Array} [out] - Output array
      */
-    public toRgbArray(): number[];
-    public toRgbArray<T extends number[] | Float32Array>(out: T): T;
-    public toRgbArray<T extends number[] | Float32Array>(out?: T): T
+    public toRgbArray<T extends number[] | Float32Array = number[]>(out?: T): T
     {
         if (!this._arrayRgb)
         {
@@ -702,7 +697,6 @@ export class Color
      * Check if the value is a color-like object
      * @param value - Value to check
      * @returns True if the value is a color-like object
-     * @static
      * @example
      * import { Color } from 'pixi.js';
      * Color.isColorLike('white'); // returns true

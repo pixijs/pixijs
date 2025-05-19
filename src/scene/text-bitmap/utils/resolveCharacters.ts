@@ -6,7 +6,6 @@
  * @param {string | string[] | string[][] } chars
  * @returns {string[]} the flattened array of characters
  */
-
 export function resolveCharacters(chars: string | (string | string[])[]): string[]
 {
     // Skip unexpected 'empty set' check at end

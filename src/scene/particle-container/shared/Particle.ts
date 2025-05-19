@@ -16,7 +16,7 @@ import type { ColorSource } from '../../../color/Color';
  * @property {number} rotation - The rotation of the particle in radians.
  * @property {number} color - The color of the particle as a hexadecimal number.
  * @property {Texture} texture - The texture of the particle.
- * @memberof scene
+ * @category scene
  */
 export interface IParticle
 {
@@ -43,7 +43,7 @@ export interface IParticle
  * @property {Texture} texture - The texture of the particle.
  * @property {ColorSource} tint - The tint color of the particle as a hexadecimal number.
  * @property {number} alpha - The alpha value of the particle.
- * @memberof scene
+ * @category scene
  */
 export type ParticleOptions = Omit<Partial<IParticle>, 'color'> & {
     texture: Texture
@@ -71,8 +71,7 @@ export type ParticleOptions = Omit<Partial<IParticle>, 'color'> & {
  *   color: 0xff0000,
  * });
  * ```
- * @implements {IParticle}
- * @memberof scene
+ * @category scene
  */
 export class Particle implements IParticle
 {

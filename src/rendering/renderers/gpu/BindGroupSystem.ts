@@ -14,7 +14,7 @@ import type { WebGPURenderer } from './WebGPURenderer';
 
 /**
  * This manages the WebGPU bind groups. this is how data is bound to a shader when rendering
- * @memberof rendering
+ * @category rendering
  */
 export class BindGroupSystem implements System
 {

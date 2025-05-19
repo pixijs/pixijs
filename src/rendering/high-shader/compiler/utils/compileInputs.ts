@@ -9,6 +9,12 @@ function extractInputs(fragmentSource: string, out: string[])
     }
 }
 
+/**
+ * @param fragments
+ * @param template
+ * @param sort
+ * @internal
+ */
 export function compileInputs(fragments: any[], template: string, sort = false)
 {
     // get all the inputs from the fragments..

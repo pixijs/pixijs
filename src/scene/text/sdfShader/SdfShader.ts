@@ -21,6 +21,7 @@ import type { GpuProgram } from '../../../rendering/renderers/gpu/shader/GpuProg
 let gpuProgram: GpuProgram;
 let glProgram: GlProgram;
 
+/** @internal */
 export class SdfShader extends Shader
 {
     constructor(maxTextures: number)

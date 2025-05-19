@@ -1,6 +1,7 @@
 import type { VertexFormat } from '../../../rendering/renderers/shared/geometry/const';
 import type { IParticle } from './Particle';
 
+/** @internal */
 export interface ParticleRendererProperty
 {
     attributeName: string;
@@ -11,6 +12,7 @@ export interface ParticleRendererProperty
     updateFunction?: (ps: IParticle[], f32v: Float32Array, u32v: Uint32Array, offset: number, stride: number) => void;
 }
 
+/** @internal */
 export const particleData = {
     vertex: {
         attributeName: 'aVertex',

@@ -23,6 +23,7 @@ import type { WebGLRenderer } from './WebGLRenderer';
  *
  * console.log(renderer.limits.maxTextures);
  * ```
+ * @category rendering
  */
 export class GlLimitsSystem implements System
 {

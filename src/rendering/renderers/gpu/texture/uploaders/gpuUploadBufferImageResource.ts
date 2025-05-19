@@ -2,6 +2,7 @@ import type { BufferImageSource } from '../../../shared/texture/sources/BufferIm
 import type { GPU } from '../../GpuDeviceSystem';
 import type { GpuTextureUploader } from './GpuTextureUploader';
 
+/** @internal */
 export const gpuUploadBufferImageResource = {
 
     type: 'image',
