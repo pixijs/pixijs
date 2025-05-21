@@ -21,6 +21,8 @@ export interface ParticleBufferOptions
     size: number;
     /** A record of attributes that the particle container uses. */
     properties: Record<string, ParticleRendererProperty>;
+    /** The minimum size the buffer can shrink to. Defaults to the initial size. */
+    minSize?: number;
 }
 
 /**
@@ -48,6 +50,7 @@ export class ParticleBuffer
     public readonly geometry: Geometry;
 
     private _size = 0;
+    private readonly _minSize: number;
     private readonly _dynamicUpload: ParticleUpdateFunction;
     private readonly _staticUpload: ParticleUpdateFunction;
     private readonly _generateParticleUpdateCache: Record<string, {
@@ -59,6 +62,7 @@ export class ParticleBuffer
     {
         // size in sprites!
         const size = this._size = options.size ?? 1000;
+        this._minSize = options.minSize ?? size;
 
         // TODO add the option to specify what is dynamic!
         const properties = options.properties;
@@ -185,6 +189,24 @@ export class ParticleBuffer
 
             this.geometry.indexBuffer.setDataWithSize(
                 this.indexBuffer, this.indexBuffer.byteLength, true);
+        }
+        else if (particles.length < this._size * 0.5 && this._size > this._minSize)
+        {
+            uploadStatic = true;
+
+            const newSize = Math.max(this._minSize, (this._size * 0.75) | 0, particles.length);
+
+            if (newSize < this._size)
+            {
+                this._size = newSize;
+
+                this.staticAttributeBuffer = new ViewableBuffer(this._size * this._staticStride * 4 * 4);
+                this.dynamicAttributeBuffer = new ViewableBuffer(this._size * this._dynamicStride * 4 * 4);
+                this.indexBuffer = createIndicesForQuads(this._size);
+
+                this.geometry.indexBuffer.setDataWithSize(
+                    this.indexBuffer, this.indexBuffer.byteLength, true);
+            }
         }
 
         const dynamicAttributeBuffer = this.dynamicAttributeBuffer;
