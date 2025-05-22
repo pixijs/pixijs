@@ -42,6 +42,8 @@ export interface GpuContextOptions
      * @default false
      */
     forceFallbackAdapter: boolean;
+    /** Using shared device and adaptor from other engine */
+    gpu?: GPU;
 }
 
 /**
@@ -91,7 +93,7 @@ export class GpuDeviceSystem implements System<GpuContextOptions>
     {
         if (this._initPromise) return this._initPromise;
 
-        this._initPromise = this._createDeviceAndAdaptor(options)
+        this._initPromise = (options.gpu ? Promise.resolve(options.gpu) : this._createDeviceAndAdaptor(options))
             .then((gpu) =>
             {
                 this.gpu = gpu;
