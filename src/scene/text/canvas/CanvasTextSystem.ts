@@ -299,13 +299,13 @@ export class CanvasTextSystem implements System
             }
             else
             {
-                context.fillStyle = style._fill ? getCanvasFillStyle(style._fill, context, measured) : null;
+                context.fillStyle = style._fill ? getCanvasFillStyle(style._fill, context, measured, padding * 2) : null;
 
                 if (style._stroke?.width)
                 {
-                    const padding = style._stroke.width * style._stroke.alignment;
+                    const strokePadding = style._stroke.width * style._stroke.alignment;
 
-                    context.strokeStyle = getCanvasFillStyle(style._stroke, context, measured, padding);
+                    context.strokeStyle = getCanvasFillStyle(style._stroke, context, measured, strokePadding);
                 }
 
                 context.shadowColor = 'black';
