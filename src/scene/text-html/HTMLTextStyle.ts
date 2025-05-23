@@ -55,7 +55,7 @@ export class HTMLTextStyle extends TextStyle
     {
         super(options);
 
-        this.cssOverrides ??= options.cssOverrides;
+        this.cssOverrides = options.cssOverrides ?? [];
         this.tagStyles = options.tagStyles ?? {};
     }
 
@@ -101,6 +101,7 @@ export class HTMLTextStyle extends TextStyle
             wordWrap: this.wordWrap,
             wordWrapWidth: this.wordWrapWidth,
             cssOverrides: this.cssOverrides,
+            tagStyles: { ...this.tagStyles },
         });
     }
 
