@@ -16,7 +16,7 @@
     "excludeExternals": true,
     "customCss": "./scripts/plugins/typedoc-custom.css",
     "plugin": [
-        "typedoc-plugin-mdn-links"
+        "typedoc-plugin-mdn-links",
         "typedoc-plugin-no-inherit",
         "./scripts/plugins/typedoc-plugin-remove-standard-tag.mjs",
     ],
