@@ -14,9 +14,12 @@
     "excludeInternal": true,
     "excludeProtected": true,
     "excludeExternals": true,
+    "customCss": "./scripts/plugins/typedoc-custom.css",
     "plugin": [
         "typedoc-plugin-mdn-links"
     ],
+    "lightHighlightTheme": "github-light-default",
+    "darkHighlightTheme": "github-dark-default",
     "kindSortOrder": [
         "Reference",
         "Project",
