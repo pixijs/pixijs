@@ -59,7 +59,6 @@ export interface AssetsPreferences extends LoadTextureConfig, LoadSVGConfig, Pix
  */
 export interface AssetInitOptions
 {
-    // basic...
     /** a base path for any assets loaded */
     basePath?: string;
 

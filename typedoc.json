@@ -18,6 +18,7 @@
     "plugin": [
         "typedoc-plugin-mdn-links"
     ],
+    "customJs": "./scripts/plugins/typedoc-custom.mjs",
     "lightHighlightTheme": "github-light-default",
     "darkHighlightTheme": "github-dark-default",
     "kindSortOrder": [
