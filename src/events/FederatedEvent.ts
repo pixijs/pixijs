@@ -55,7 +55,7 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
      * Flag added for compatibility with DOM `Event`. It is not used in the Federated Events
      * API.
      * @see https://dom.spec.whatwg.org/#dom-event-composed
-     * @ingnore
+     * @ignore
      */
     public readonly composed = false;
 
@@ -233,28 +233,24 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
 
     /**
      * The event propagation phase NONE that indicates that the event is not in any phase.
-     * @constant
      * @default 0
      * @advanced
      */
     public readonly NONE = 0;
     /**
      * The event propagation phase CAPTURING_PHASE that indicates that the event is in the capturing phase.
-     * @constant
      * @default 1
      * @advanced
      */
     public readonly CAPTURING_PHASE = 1;
     /**
      * The event propagation phase AT_TARGET that indicates that the event is at the target.
-     * @constant
      * @default 2
      * @advanced
      */
     public readonly AT_TARGET = 2;
     /**
      * The event propagation phase BUBBLING_PHASE that indicates that the event is in the bubbling phase.
-     * @constant
      * @default 3
      * @advanced
      */
