@@ -62,7 +62,10 @@ export interface AssetInitOptions
     /** a base path for any assets loaded */
     basePath?: string;
 
-    /** a default URL parameter string to append to all assets loaded */
+    /**
+     * a default URL parameter string to append to all assets loaded
+     * @advanced
+     */
     defaultSearchParams?: string | Record<string, any>;
 
     /**
@@ -88,6 +91,7 @@ export interface AssetInitOptions
     /**
      * If true, don't attempt to detect whether browser has preferred formats available.
      * May result in increased performance as it skips detection step.
+     * @advanced
      */
     skipDetections?: boolean;
 
@@ -900,7 +904,10 @@ export class AssetsClass
         return formats;
     }
 
-    /** All the detection parsers currently added to the Assets class. */
+    /**
+     * All the detection parsers currently added to the Assets class.
+     * @advanced
+     */
     public get detections(): FormatDetectionParser[]
     {
         return this._detections;

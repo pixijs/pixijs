@@ -55,6 +55,7 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
      * Flag added for compatibility with DOM `Event`. It is not used in the Federated Events
      * API.
      * @see https://dom.spec.whatwg.org/#dom-event-composed
+     * @ingnore
      */
     public readonly composed = false;
 
@@ -115,6 +116,7 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
     /**
      * Not supported.
      * @deprecated since 7.0.0
+     * @ignore
      */
     public which: number;
 
@@ -154,7 +156,10 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
         return this;
     }
 
-    /** The propagation path for this event. Alias for {@link EventBoundary.propagationPath}. */
+    /**
+     * The propagation path for this event. Alias for {@link EventBoundary.propagationPath}.
+     * @advanced
+     */
     public composedPath(): Container[]
     {
         // Find the propagation path if it isn't cached or if the target has changed since since
@@ -170,6 +175,7 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
     /**
      * Unimplemented method included for implementing the DOM interface `Event`. It will throw an `Error`.
      * @deprecated
+     * @ignore
      * @param _type
      * @param _bubbles
      * @param _cancelable
@@ -181,6 +187,7 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
 
     /**
      * Unimplemented method included for implementing the DOM interface `UIEvent`. It will throw an `Error`.
+     * @ignore
      * @deprecated
      * @param _typeArg
      * @param _bubblesArg
@@ -224,8 +231,32 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
         this.propagationStopped = true;
     }
 
+    /**
+     * The event propagation phase NONE that indicates that the event is not in any phase.
+     * @constant
+     * @default 0
+     * @advanced
+     */
     public readonly NONE = 0;
+    /**
+     * The event propagation phase CAPTURING_PHASE that indicates that the event is in the capturing phase.
+     * @constant
+     * @default 1
+     * @advanced
+     */
     public readonly CAPTURING_PHASE = 1;
+    /**
+     * The event propagation phase AT_TARGET that indicates that the event is at the target.
+     * @constant
+     * @default 2
+     * @advanced
+     */
     public readonly AT_TARGET = 2;
+    /**
+     * The event propagation phase BUBBLING_PHASE that indicates that the event is in the bubbling phase.
+     * @constant
+     * @default 3
+     * @advanced
+     */
     public readonly BUBBLING_PHASE = 3;
 }

@@ -147,6 +147,7 @@ MouseEvent | PointerEvent | PixiTouch
      * @param _buttonArg
      * @param _relatedTargetArg
      * @deprecated since 7.0.0
+     * @ignore
      */
     // eslint-disable-next-line max-params
     public initMouseEvent(

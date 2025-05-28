@@ -142,7 +142,10 @@ class CacheClass
         });
     }
 
-    /** All loader parsers registered */
+    /**
+     * All loader parsers registered
+     * @advanced
+     */
     public get parsers(): CacheParser[]
     {
         return this._parsers;

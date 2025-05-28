@@ -6,7 +6,7 @@
  * @param {number} v - input value
  * @returns {number} - next rounded power of two
  * @category maths
- * @standard
+ * @advanced
  */
 export function nextPow2(v: number): number
 {
@@ -27,7 +27,7 @@ export function nextPow2(v: number): number
  * @param {number} v - input value
  * @returns {boolean} `true` if value is power of two
  * @category maths
- * @standard
+ * @advanced
  */
 export function isPow2(v: number): boolean
 {
@@ -40,7 +40,7 @@ export function isPow2(v: number): boolean
  * @param {number} v - input value
  * @returns {number} logarithm base 2
  * @category maths
- * @standard
+ * @advanced
  */
 export function log2(v: number): number
 {

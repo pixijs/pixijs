@@ -22,21 +22,39 @@ export class FederatedWheelEvent extends FederatedMouseEvent implements WheelEve
     /** z-axis scroll amount. */
     public deltaZ: number;
 
-    /** Units specified in pixels. */
+    /**
+     * Units specified in pixels.
+     * @ignore
+     */
     public static readonly DOM_DELTA_PIXEL = 0;
 
-    /** Units specified in pixels. */
+    /**
+     * Units specified in pixels.
+     * @ignore
+     */
     public readonly DOM_DELTA_PIXEL = 0;
 
-    /** Units specified in lines. */
+    /**
+     * Units specified in lines.
+     * @ignore
+     */
     public static readonly DOM_DELTA_LINE = 1;
 
-    /** Units specified in lines. */
+    /**
+     * Units specified in lines.
+     * @ignore
+     */
     public readonly DOM_DELTA_LINE = 1;
 
-    /** Units specified in pages. */
+    /**
+     * Units specified in pages.
+     * @ignore
+     */
     public static readonly DOM_DELTA_PAGE = 2;
 
-    /** Units specified in pages. */
+    /**
+     * Units specified in pages.
+     * @ignore
+     */
     public readonly DOM_DELTA_PAGE = 2;
 }

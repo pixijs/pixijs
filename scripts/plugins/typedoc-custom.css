@@ -455,3 +455,8 @@ footer p {
     margin-top: auto;
     margin-bottom: auto;
 }
+
+
+section.tsd-panel.tsd-member {
+    border-bottom: 1px solid var(--color-accent);
+}

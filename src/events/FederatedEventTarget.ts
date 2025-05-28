@@ -74,7 +74,7 @@ export interface IHitArea
 /**
  * Function type for handlers, e.g., onclick
  * @category events
- * @standard
+ * @advanced
  */
 export type FederatedEventHandler<T = FederatedPointerEvent> = (event: T) => void;
 
@@ -103,7 +103,7 @@ export type EventMode = 'none' | 'passive' | 'auto' | 'static' | 'dynamic';
 /**
  * The properties available for any interactive object.
  * @category events
- * @standard
+ * @advanced
  */
 export interface FederatedOptions
 {
@@ -484,21 +484,21 @@ export interface FederatedOptions
  * The options for the `addEventListener` method.
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener}
  * @category events
- * @standard
+ * @advanced
  */
 export type AddListenerOptions = boolean | AddEventListenerOptions;
 /**
  * The options for the `removeEventListener` method.
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/removeEventListener}
  * @category events
- * @standard
+ * @advanced
  */
 export type RemoveListenerOptions = boolean | EventListenerOptions;
 
 /**
  * Additional properties for a Container that is used for interaction events.
  * @category events
- * @standard
+ * @advanced
  */
 export interface IFederatedContainer extends FederatedOptions
 {

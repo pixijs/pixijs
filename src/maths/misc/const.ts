@@ -25,7 +25,7 @@ export const DEG_TO_RAD = Math.PI / 180;
 /**
  * Constants that identify shapes, mainly to prevent `instanceof` calls.
  * @category maths
- * @standard
+ * @advanced
  */
 export type SHAPE_PRIMITIVE =
     | 'polygon'

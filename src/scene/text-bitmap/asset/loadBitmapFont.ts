@@ -46,7 +46,7 @@ export const bitmapFontCachePlugin = {
  * Loader plugin for loading bitmap fonts.
  * It supports both XML and text formats, and can handle distance field fonts.
  * @category assets
- * @standard
+ * @advanced
  */
 export const loadBitmapFont = {
     extension: {

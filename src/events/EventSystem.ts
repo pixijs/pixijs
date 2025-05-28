@@ -144,6 +144,7 @@ export class EventSystem implements System<EventSystemOptions>
      *
      * The root boundary should only be changed during initialization. Otherwise, any state held by the
      * event boundary may be lost (like hovered & pressed Containers).
+     * @advanced
      */
     public readonly rootBoundary: EventBoundary;
 

@@ -14,7 +14,7 @@ import { type Adapter } from '../environment/adapter';
  * @property {Function} getFontFaceSet - Return the font face set if available
  * @property {Function} fetch - Returns a Response object that has been fetched from the given URL.
  * @property {Function} parseXML - Returns Document object that has been parsed from the given XML string.
- * @standard
+ * @advanced
  */
 export const BrowserAdapter = {
     createCanvas: (width: number, height: number): HTMLCanvasElement =>

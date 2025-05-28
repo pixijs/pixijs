@@ -30,7 +30,7 @@ import type { ICanvasRenderingContext2D } from './canvas/ICanvasRenderingContext
  * Implementations of this interface can be used to make sure Pixi will work in any environment,
  * such as browser, Web Workers, and Node.js.
  * @category environment
- * @standard
+ * @advanced
  */
 export interface Adapter
 {
@@ -72,7 +72,7 @@ let currentAdapter: Adapter = BrowserAdapter;
  * // use the adapter to create a canvas (in this case an OffscreenCanvas)
  * DOMAdapter.get().createCanvas(800, 600);
  * @category environment
- * @standard
+ * @advanced
  */
 export const DOMAdapter = {
     /**

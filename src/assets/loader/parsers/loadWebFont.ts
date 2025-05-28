@@ -25,7 +25,7 @@ const validFontMIMEs = [
 /**
  * Data for loading a font
  * @category assets
- * @standard
+ * @advanced
  */
 export type LoadFontData = {
     /** Font family name */
@@ -130,7 +130,7 @@ function encodeURIWhenNeeded(uri: string)
  *   }
  * })
  * @category assets
- * @standard
+ * @advanced
  */
 export const loadWebFont = {
     extension: {

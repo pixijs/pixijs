@@ -90,7 +90,10 @@ export class FederatedPointerEvent extends FederatedMouseEvent implements Pointe
     /** This is the number of clicks that occurs in 200ms/click of each other. */
     public detail: number;
 
-    // Only included for completeness for now
+    /**
+     * Only included for completeness for now
+     * @ignore
+     */
     public getCoalescedEvents(): PointerEvent[]
     {
         if (this.type === 'pointermove' || this.type === 'mousemove' || this.type === 'touchmove')
@@ -101,7 +104,10 @@ export class FederatedPointerEvent extends FederatedMouseEvent implements Pointe
         return [];
     }
 
-    // Only included for completeness for now
+    /**
+     * Only included for completeness for now
+     * @ignore
+     */
     public getPredictedEvents(): PointerEvent[]
     {
         throw new Error('getPredictedEvents is not supported!');

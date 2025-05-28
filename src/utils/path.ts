@@ -139,7 +139,7 @@ function normalizeStringPosix(path: string, allowAboveRoot: boolean)
  * path.normalize('http://www.example.com/foo/bar/../baz'); // http://www.example.com/foo/baz
  * ```
  * @category utils
- * @standard
+ * @advanced
  */
 export interface Path
 {
