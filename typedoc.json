@@ -18,6 +18,7 @@
     "plugin": [
         "typedoc-plugin-mdn-links"
         "typedoc-plugin-no-inherit",
+        "./scripts/plugins/typedoc-plugin-remove-standard-tag.mjs",
     ],
     "customJs": "./scripts/plugins/typedoc-custom.mjs",
     "lightHighlightTheme": "github-light-default",

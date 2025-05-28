@@ -9,10 +9,10 @@
         },
         {
             "tagName": "@advanced",
-            "syntaxKind": "block"
+            "syntaxKind": "modifier"
         },
         {
-            "tagName": "@noInheritDocs",
+            "tagName": "@noInheritDoc",
             "syntaxKind": "block"
         }
     ]
