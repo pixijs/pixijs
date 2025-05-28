@@ -50,6 +50,7 @@ export interface BlurFilterOptions extends FilterOptions
  * The strength of the blur can be set for the x-axis and y-axis separately.
  * @category filters
  * @standard
+ * @noInheritDoc
  * @example
  * import { BlurFilter } from 'pixi.js';
  *

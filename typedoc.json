@@ -17,6 +17,7 @@
     "customCss": "./scripts/plugins/typedoc-custom.css",
     "plugin": [
         "typedoc-plugin-mdn-links"
+        "typedoc-plugin-no-inherit",
     ],
     "customJs": "./scripts/plugins/typedoc-custom.mjs",
     "lightHighlightTheme": "github-light-default",

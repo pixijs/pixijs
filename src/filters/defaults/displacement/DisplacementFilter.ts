@@ -38,6 +38,7 @@ export interface DisplacementFilterOptions extends FilterOptions
  * @category filters
  * @author Vico: vicocotea
  * @standard
+ * @noInheritDoc
  */
 export class DisplacementFilter extends Filter
 {

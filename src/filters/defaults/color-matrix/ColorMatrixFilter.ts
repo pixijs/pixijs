@@ -33,6 +33,7 @@ export type ColorMatrix = ArrayFixed<number, 20>;
  * @author Clément Chenebault <clement@goodboydigital.com>
  * @category filters
  * @standard
+ * @noInheritDoc
  */
 export class ColorMatrixFilter extends Filter
 {

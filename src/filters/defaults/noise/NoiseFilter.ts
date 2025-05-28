@@ -36,6 +36,7 @@ export interface NoiseFilterOptions extends FilterOptions
  * @category filters
  * @author Vico: vicocotea
  * @standard
+ * @noInheritDoc
  */
 export class NoiseFilter extends Filter
 {

@@ -19,6 +19,7 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'color-dodge'
  * @category filters
+ * @noInheritDoc
  */
 export class ColorDodgeBlend extends BlendModeFilter
 {
