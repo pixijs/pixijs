@@ -53,7 +53,7 @@ export interface MaskOptionsAndMask extends MaskOptions
  * such as masks and filters on a display object.
  * It allows for adding, removing, and configuring effects, as well as setting a mask for the display object.
  * @category scene
- * @standard
+ * @advanced
  */
 export interface EffectsMixin extends Required<EffectsMixinConstructor>
 {
@@ -73,7 +73,10 @@ export interface EffectsMixin extends Required<EffectsMixinConstructor>
      * Also works as an interaction mask.
      */
     filterArea?: Rectangle,
-    /** todo Needs docs. */
+    /**
+     * todo Needs docs
+     * @advanced
+     */
     effects?: Effect[];
     /**
      * todo Needs docs.

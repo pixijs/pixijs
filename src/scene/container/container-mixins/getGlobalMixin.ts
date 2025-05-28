@@ -23,7 +23,7 @@ export function bgr2rgb(color: number): number
  * taking into account its parent containers and render groups.
  * It includes methods to optimize performance by using cached values when available.
  * @category scene
- * @standard
+ * @advanced
  */
 export interface GetGlobalMixin
 {

@@ -24,7 +24,7 @@ export interface OnRenderMixinConstructor
  * every time the container is rendered. This is useful for adding custom rendering logic
  * or animations that need to be updated each frame.
  * @category scene
- * @standard
+ * @advanced
  */
 export interface OnRenderMixin extends Required<OnRenderMixinConstructor>
 {

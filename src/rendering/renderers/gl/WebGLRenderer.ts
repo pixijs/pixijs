@@ -61,7 +61,9 @@ extensions.add(...DefaultWebGLSystems, ...DefaultWebGLPipes, ...DefaultWebGLAdap
 
 /**
  * The default WebGL renderer, uses WebGL2 contexts.
- * @internal
+ * @category rendering
+ * @standard
+ * @interface
  */
 export type WebGLSystems = ExtractSystemTypes<typeof DefaultWebGLSystems>
 & PixiMixins.RendererSystems & PixiMixins.WebGLSystems;

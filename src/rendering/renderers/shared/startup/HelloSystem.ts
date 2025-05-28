@@ -9,7 +9,7 @@ import type { System } from '../system/System';
  * Options for the startup system.
  * @property {boolean} [hello=false] - Whether to log the version and type information of renderer to console.
  * @category rendering
- * @standard
+ * @advanced
  */
 export interface HelloSystemOptions
 {
@@ -23,7 +23,7 @@ export interface HelloSystemOptions
 /**
  * A simple system responsible for initiating the renderer.
  * @category rendering
- * @standard
+ * @advanced
  */
 export class HelloSystem implements System<HelloSystemOptions>
 {

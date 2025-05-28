@@ -21,7 +21,7 @@ export type GenerateTextureSourceOptions = Omit<TextureSourceOptions, 'resource'
 /**
  * Options for generating a texture from a container.
  * @category rendering
- * @standard
+ * @advanced
  */
 export type GenerateTextureOptions =
 {

@@ -13,7 +13,7 @@ import type { TextureResourceOrOptions } from './utils/textureFrom';
 /**
  * Stores the width of the non-scalable borders, for example when used with {@link NineSlicePlane} texture.
  * @category rendering
- * @standard
+ * @advanced
  */
 export interface TextureBorders
 {
@@ -92,7 +92,7 @@ export interface BindableTexture
 /**
  * A texture source can be a string, an image, a video, a canvas, or a texture resource.
  * @category rendering
- * @standard
+ * @advanced
  * @see {@link TextureSource}
  * @see {@link TextureResourceOrOptions}
  * @see {@link Texture.from}

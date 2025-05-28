@@ -13,7 +13,7 @@ import type { Container } from './Container';
 /**
  * Options for caching a container as a texture.
  * @category rendering
- * @standard
+ * @advanced
  */
 export interface CacheAsTextureOptions
 {

@@ -15,7 +15,7 @@ export interface CacheAsTextureMixinConstructor
  * It includes methods to enable or disable caching, update the cached texture, and check
  * 1if the container is currently cached.
  * @category scene
- * @standard
+ * @advanced
  */
 export interface CacheAsTextureMixin extends Required<CacheAsTextureMixinConstructor>
 {

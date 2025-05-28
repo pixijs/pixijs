@@ -6,7 +6,7 @@ import type { System } from '../system/System';
 /**
  * Options for the {@link TextureGCSystem}.
  * @category rendering
- * @standard
+ * @advanced
  */
 export interface TextureGCSystemOptions
 {
@@ -35,7 +35,7 @@ export interface TextureGCSystemOptions
  * System plugin to the renderer to manage texture garbage collection on the GPU,
  * ensuring that it does not get clogged up with textures that are no longer being used.
  * @category rendering
- * @standard
+ * @advanced
  */
 export class TextureGCSystem implements System<TextureGCSystemOptions>
 {

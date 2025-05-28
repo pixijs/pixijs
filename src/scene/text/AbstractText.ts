@@ -81,7 +81,7 @@ export interface TextOptions<
  * @see BitmapText
  * @see HTMLText
  * @category scene
- * @standard
+ * @advanced
  */
 export abstract class AbstractText<
     TEXT_STYLE extends TextStyle = TextStyle,

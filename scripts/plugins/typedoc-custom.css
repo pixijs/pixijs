@@ -456,11 +456,44 @@ footer p {
     margin-bottom: auto;
 }
 
-
 section.tsd-panel.tsd-member {
     border-bottom: 1px solid var(--color-accent);
 }
 
 h1 code.tsd-tag:first-child {
-  margin-left: 8px;
+    margin-left: 8px;
+}
+
+/*
+ * Fix Inline Tags
+ */
+h3 code.tsd-tag:last-of-type {
+    margin-right: 4px;
+}
+
+/*
+ * Fix Since Tags
+ */
+.tsd-tag-since h4 {
+    margin-bottom: 0px;
+}
+.tsd-tag-since p {
+    padding-left: 1.5em;
+    position: relative;
+    margin-top: 0px;
+}
+
+.tsd-tag-since p::before {
+    content: '•';
+    padding-left: 1em;
+    position: absolute;
+    left: 0;
+}
+
+.tsd-panel.tsd-member {
+    margin-bottom: 3rem;
+}
+
+section.tsd-panel.tsd-index-panel {
+  padding-top: 0;
 }

@@ -15,7 +15,7 @@ import type { TextureSourceOptions } from './TextureSource';
  * - `HTMLImageElement` is used for HTML image elements.
  * - `HTMLVideoElement` is used for HTML video elements.
  * @category rendering
- * @standard
+ * @advanced
  */
 export type ImageResource =
 ImageBitmap

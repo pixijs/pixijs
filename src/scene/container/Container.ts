@@ -411,7 +411,10 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         extensions.mixin(Container, source);
     }
 
-    /** unique id for this container */
+    /**
+     * unique id for this container
+     * @internal
+     */
     public readonly uid: number = uid('renderable');
 
     /** @private */
@@ -462,6 +465,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * The RenderLayer this container belongs to, if any.
      * If it belongs to a RenderLayer, it will be rendered from the RenderLayer's position in the scene.
      * @readonly
+     * @advanced
      */
     public parentRenderLayer: IRenderLayer;
 
@@ -482,6 +486,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * transforms and up to the render group (think of it as kind of like a stage - but the stage can be nested).
      * If this container is is self a render group matrix will be relative to its parent render group
      * @readonly
+     * @advanced
      */
     public relativeGroupTransform: Matrix = new Matrix();
     /**
@@ -490,6 +495,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * will be the same as the relativeGroupTransform.
      * Use this value when actually rendering things to the screen
      * @readonly
+     * @advanced
      */
     public groupTransform: Matrix = this.relativeGroupTransform;
 
@@ -561,11 +567,16 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     // / COLOR related props //////////////
 
     // color stored as ABGR
+    /** @internal */
     public localColor = 0xFFFFFF;
+    /** @internal */
     public localAlpha = 1;
 
+    /** @internal */
     public groupAlpha = 1; // A
+    /** @internal */
     public groupColor = 0xFFFFFF; // BGR
+    /** @internal */
     public groupColorAlpha = 0xFFFFFFFF; // ABGR
 
     // / BLEND related props //////////////
@@ -591,6 +602,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     /** @internal */
     public globalDisplayStatus = 0b111; // 0b11 | 0b10 | 0b01 | 0b00
 
+    /** @internal */
     public readonly renderPipeId: string;
 
     /**
@@ -615,6 +627,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      */
     public _didViewChangeTick = 0;
 
+    /** @internal */
     public layerParentId: string;// = 'default';
     /**
      * We now use the _didContainerChangeTick and _didViewChangeTick to track changes
@@ -626,7 +639,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         this._didViewChangeTick = (value >> 12) & 0xFFF; // Extract the upper 12 bits
         this._didContainerChangeTick = value & 0xFFF; // Extract the lower 12 bits
     }
-
+    /** @ignore */
     get _didChangeId(): number
     {
         return (this._didContainerChangeTick & 0xfff) | ((this._didViewChangeTick & 0xfff) << 12);

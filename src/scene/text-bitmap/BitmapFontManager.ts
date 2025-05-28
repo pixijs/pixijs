@@ -58,7 +58,7 @@ export interface BitmapFontInstallOptions
     textureStyle?: TextureStyle | TextureStyleOptions;
 }
 
-/** @standard */
+/** @advanced */
 class BitmapFontManagerClass
 {
     /**

@@ -66,6 +66,7 @@ export interface TextDestroyOptions
  * A utility type that allows a type to be either the specified type or a boolean.
  * This is useful for options that can be either a specific value or a boolean flag.
  * @category utils
+ * @advanced
  */
 export type TypeOrBool<T> = T | boolean;
 

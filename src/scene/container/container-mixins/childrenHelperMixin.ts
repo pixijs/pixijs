@@ -8,7 +8,7 @@ import type { Container, ContainerChild } from '../Container';
  * Mixin interface for containers that allows them to manage children.
  * It provides methods for adding, removing, and manipulating child containers.
  * @category scene
- * @standard
+ * @advanced
  */
 export interface ChildrenHelperMixin<C = ContainerChild>
 {

@@ -14,14 +14,14 @@ import type { TextureSourceOptions } from './TextureSource';
  * The type of resource used for video textures.
  * This is typically an HTMLVideoElement.
  * @category rendering
- * @standard
+ * @advanced
  */
 export type VideoResource = HTMLVideoElement;
 
 /**
  * Options for video sources.
  * @category rendering
- * @standard
+ * @advanced
  */
 export interface VideoSourceOptions extends TextureSourceOptions<VideoResource>
 {

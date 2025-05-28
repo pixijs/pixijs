@@ -57,7 +57,12 @@ extensions.handleByNamedList(ExtensionType.WebGPUPipesAdaptor, renderPipeAdaptor
 // add all the default systems as well as any user defined ones from the extensions
 extensions.add(...DefaultWebGPUSystems, ...DefaultWebGPUPipes, ...DefaultWebGPUAdapters);
 
-/** @internal */
+/**
+ * The default WebGPU systems. These are the systems that are added by default to the WebGPURenderer.
+ * @category rendering
+ * @standard
+ * @interface
+ */
 export type WebGPUSystems = ExtractSystemTypes<typeof DefaultWebGPUSystems> &
 PixiMixins.RendererSystems &
 PixiMixins.WebGPUSystems;

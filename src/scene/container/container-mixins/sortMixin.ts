@@ -40,7 +40,7 @@ export interface SortMixinConstructor
  * changes or when new children are added. The mixin includes properties to manage sorting state
  * and methods to sort children explicitly.
  * @category scene
- * @standard
+ * @advanced
  */
 export interface SortMixin extends Required<SortMixinConstructor>
 {

@@ -9,7 +9,7 @@ import type { Renderer, RendererOptions } from './types';
 /**
  * Options for {@link autoDetectRenderer}.
  * @category rendering
- * @standard
+ * @advanced
  */
 export interface AutoDetectOptions extends RendererOptions
 {

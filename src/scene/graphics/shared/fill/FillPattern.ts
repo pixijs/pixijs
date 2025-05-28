@@ -57,7 +57,10 @@ const repetitionMap = {
  */
 export class FillPattern implements CanvasPattern
 {
-    /** unique id for this fill pattern */
+    /**
+     * unique id for this fill pattern
+     * @internal
+     */
     public readonly uid: number = uid('fillPattern');
     /** Internal texture used to render the gradient */
     public texture: Texture;

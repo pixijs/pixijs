@@ -74,8 +74,6 @@ export interface ClearOptions
 /**
  * Options for destroying the renderer.
  * This can be a boolean or an object.
- * @see {@link ViewSystemDestroyOptions}
- * @see {@link TypeOrBool}
  * @category rendering
  * @standard
  */
@@ -136,7 +134,7 @@ type Runners = {[key in DefaultRunners]: SystemRunner} & {
  * The breadth of the API surface provided by the renderer is contained within these systems.
  * @abstract
  * @category rendering
- * @standard
+ * @advanced
  * @property {HelloSystem} hello - HelloSystem instance.
  * @property {TextureGCSystem} textureGC - TextureGCSystem instance.
  * @property {FilterSystem} filter - FilterSystem instance.

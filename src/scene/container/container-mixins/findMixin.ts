@@ -17,7 +17,7 @@ export interface FindMixinConstructor
  * It allows for searching for a single child or multiple children with a specific label,
  * either directly or recursively through the container's hierarchy.
  * @category scene
- * @standard
+ * @advanced
  */
 export interface FindMixin extends Required<FindMixinConstructor>
 {

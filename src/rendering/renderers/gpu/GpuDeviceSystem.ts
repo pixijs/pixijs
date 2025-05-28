@@ -9,7 +9,7 @@ import type { WebGPURenderer } from './WebGPURenderer';
  * The GPU object.
  * Contains the GPU adapter and device.
  * @category rendering
- * @standard
+ * @advanced
  */
 export interface GPU
 {
@@ -27,7 +27,7 @@ export interface GPU
  * while setting to `'low-power'` will prioritize power saving over rendering performance.
  * @property {boolean} [forceFallbackAdapter=false] - Force the use of the fallback adapter
  * @category rendering
- * @standard
+ * @advanced
  */
 export interface GpuContextOptions
 {

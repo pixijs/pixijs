@@ -27,7 +27,7 @@ const tmpPoint = new Point();
  * - 'batch': Forces batching of all instructions.
  * - 'no-batch': Disables batching, processing each instruction individually.
  * @category scene
- * @standard
+ * @advanced
  */
 export type BatchMode = 'auto' | 'batch' | 'no-batch';
 
@@ -127,7 +127,10 @@ export class GraphicsContext extends EventEmitter<{
         pixelLine: false,
     };
 
-    /** unique id for this graphics context */
+    /**
+     * unique id for this graphics context
+     * @internal
+     */
     public readonly uid: number = uid('graphicsContext');
     /** @internal */
     public dirty = true;
@@ -135,6 +138,10 @@ export class GraphicsContext extends EventEmitter<{
     public batchMode: BatchMode = 'auto';
     /** @internal */
     public instructions: GraphicsInstructions[] = [];
+    /**
+     * Custom shader to apply to the graphics when rendering.
+     * @advanced
+     */
     public customShader?: Shader;
 
     private _activePath: GraphicsPath = new GraphicsPath();
