@@ -12,6 +12,7 @@ let promise: Promise<ALPHA_MODES> | undefined;
  * without `UNPACK_PREMULTIPLY_ALPHA_WEBGL` and then checking whether
  * the uploaded pixels are premultiplied.
  * @category utils
+ * @internal
  * @returns {Promise<ALPHA_MODES>} The correct alpha mode for video textures.
  */
 export async function detectVideoAlphaMode(): Promise<ALPHA_MODES>

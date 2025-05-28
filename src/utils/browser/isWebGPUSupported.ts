@@ -6,6 +6,7 @@ let _isWebGPUSupported: boolean | undefined;
  * Helper for checking for WebGPU support.
  * @param options - The options for requesting a GPU adapter.
  * @category utils
+ * @standard
  * @returns Is WebGPU supported.
  */
 export async function isWebGPUSupported(options: GPURequestAdapterOptions = {}): Promise<boolean>

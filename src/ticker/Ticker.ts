@@ -9,6 +9,7 @@ import { TickerListener } from './TickerListener';
  * });
  * ```
  * @category ticker
+ * @standard
  */
 export type TickerCallback<T> = (this: T, ticker: Ticker) => any;
 
@@ -46,6 +47,7 @@ export type TickerCallback<T> = (this: T, ticker: Ticker) => any;
  * Animation frames are requested only when necessary, e.g. When the ticker is started and the emitter has listeners.
  * @class
  * @category ticker
+ * @standard
  */
 export class Ticker
 {
@@ -172,7 +174,6 @@ export class Ticker
      * Conditionally requests a new animation frame.
      * If a frame has not already been requested, and if the internal
      * emitter has listeners, a new frame is requested.
-     * @private
      */
     private _requestIfNeeded(): void
     {
@@ -185,10 +186,7 @@ export class Ticker
         }
     }
 
-    /**
-     * Conditionally cancels a pending animation frame.
-     * @private
-     */
+    /** Conditionally cancels a pending animation frame. */
     private _cancelIfNeeded(): void
     {
         if (this._requestId !== null)
@@ -205,7 +203,6 @@ export class Ticker
      * conditions are met, a new frame is requested. If the ticker has not
      * been started, but autoStart is `true`, then the ticker starts now,
      * and continues with the previous conditions to request a new frame.
-     * @private
      */
     private _startIfPossible(): void
     {
@@ -610,6 +607,7 @@ export class Ticker
      * The property {@link Ticker#autoStart|autoStart} is set to `true` for this instance.
      * @type {Ticker}
      * @readonly
+     * @advanced
      */
     static get system(): Ticker
     {

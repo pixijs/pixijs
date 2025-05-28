@@ -13,6 +13,7 @@ import type { Effect } from '../../../scene/container/Effect';
  * The mask must be a Container that is not renderable or measurable.
  * This effect is used to create clipping regions in the rendering process.
  * @category rendering
+ * @advanced
  */
 export class ScissorMask implements Effect
 {

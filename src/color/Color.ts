@@ -33,6 +33,7 @@ extend([namesPlugin]);
  *
  * `[number, number, number, number]`
  * @category color
+ * @standard
  */
 export type RgbaArray = [number, number, number, number];
 
@@ -72,6 +73,7 @@ export type RgbaArray = [number, number, number, number];
  * - {@link Color} objects.
  * @since 7.2.0
  * @category color
+ * @standard
  */
 export type ColorSource =
     | string
@@ -115,6 +117,7 @@ type ColorSourceTypedArray = Float32Array | Uint8Array | Uint8ClampedArray;
  * ```
  * @since 7.2.0
  * @category color
+ * @standard
  */
 export class Color
 {

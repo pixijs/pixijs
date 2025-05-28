@@ -27,6 +27,7 @@ const tmpPoint = new Point();
  * - 'batch': Forces batching of all instructions.
  * - 'no-batch': Disables batching, processing each instruction individually.
  * @category scene
+ * @standard
  */
 export type BatchMode = 'auto' | 'batch' | 'no-batch';
 
@@ -75,6 +76,7 @@ const tempMatrix = new Matrix();
  * This sharing of a `GraphicsContext` means that the intensive task of converting graphics instructions into GPU-ready geometry is done once, and the results are reused,
  * much like sprites reusing textures.
  * @category scene
+ * @standard
  */
 export class GraphicsContext extends EventEmitter<{
     update: GraphicsContext
@@ -127,7 +129,9 @@ export class GraphicsContext extends EventEmitter<{
 
     /** unique id for this graphics context */
     public readonly uid: number = uid('graphicsContext');
+    /** @internal */
     public dirty = true;
+    /** The batch mode for this graphics context. It can be 'auto', 'batch', or 'no-batch'. */
     public batchMode: BatchMode = 'auto';
     /** @internal */
     public instructions: GraphicsInstructions[] = [];

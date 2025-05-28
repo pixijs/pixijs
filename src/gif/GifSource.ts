@@ -32,6 +32,7 @@ interface GifBufferOptions
  * Texture between Sprites. This source contains all the frames and animation needed
  * to support playback.
  * @category gif
+ * @advanced
  */
 class GifSource
 {

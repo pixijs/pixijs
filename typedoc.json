@@ -13,8 +13,34 @@
     "excludePrivate": true,
     "excludeInternal": true,
     "excludeProtected": true,
+    "excludeExternals": true,
     "plugin": [
         "typedoc-plugin-mdn-links"
+    ],
+    "kindSortOrder": [
+        "Reference",
+        "Project",
+        "Module",
+        "Namespace",
+        "Class",
+        "Constructor",
+        "Variable",
+        "Function",
+        "Property",
+        "Accessor",
+        "Method",
+        "Parameter",
+        "TypeParameter",
+        "TypeLiteral",
+        "CallSignature",
+        "ConstructorSignature",
+        "IndexSignature",
+        "GetSignature",
+        "SetSignature",
+        "Enum",
+        "EnumMember",
+        "Interface",
+        "TypeAlias",
     ],
     "navigationLinks": {
         "Website": "https://pixijs.com",
@@ -24,6 +50,7 @@
     "hideGenerator": true,
     "visibilityFilters": {
         "inherited": true,
+        "@advanced": true,
     },
     "validation": {
         "notExported": false,

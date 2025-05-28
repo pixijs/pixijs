@@ -12,6 +12,7 @@ import type { Container } from '../scene/container/Container';
  *
  * extensions.add(CullerPlugin);
  * @category app
+ * @standard
  * @see {@link Culler}
  */
 export class CullerPlugin
@@ -23,11 +24,15 @@ export class CullerPlugin
         name: 'culler',
     };
 
+    /** @internal */
     public static renderer: Renderer;
+    /** @internal */
     public static stage: Container;
+    /** @internal */
     public static render: () => void;
     private static _renderRef: () => void;
 
+    /** @internal */
     public static init(): void
     {
         this._renderRef = this.render.bind(this);
@@ -39,6 +44,7 @@ export class CullerPlugin
         };
     }
 
+    /** @internal */
     public static destroy(): void
     {
         this.render = this._renderRef;

@@ -15,6 +15,7 @@ import type { TextureSourceOptions } from './TextureSource';
  * - `HTMLImageElement` is used for HTML image elements.
  * - `HTMLVideoElement` is used for HTML video elements.
  * @category rendering
+ * @standard
  */
 export type ImageResource =
 ImageBitmap
@@ -30,6 +31,7 @@ ImageBitmap
  * It can handle HTMLImageElement, ImageBitmap, VideoFrame, and HTMLVideoElement.
  * It is used for textures that can be uploaded to the GPU.
  * @category rendering
+ * @advanced
  */
 export class ImageSource extends TextureSource<ImageResource>
 {

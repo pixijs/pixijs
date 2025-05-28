@@ -17,6 +17,7 @@ import type { Loader } from '../../Loader';
  * Configuration for the {@link loadSvg} plugin.
  * @see loadSvg
  * @category assets
+ * @standard
  */
 export interface LoadSVGConfig
 {
@@ -43,6 +44,7 @@ const validSVGMIME = 'image/svg+xml';
 /**
  * A simple loader plugin for loading json data
  * @category assets
+ * @standard
  */
 export const loadSvg: LoaderParser<Texture | GraphicsContext, TextureSourceOptions & LoadSVGConfig, LoadSVGConfig> = {
     extension: {

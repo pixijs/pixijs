@@ -8,6 +8,7 @@ let saidHello = false;
  * @param type - The name of the renderer this instance is using.
  * @returns {void}
  * @category utils
+ * @standard
  */
 export function sayHello(type: string): void
 {

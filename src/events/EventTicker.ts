@@ -3,6 +3,7 @@ import { Ticker } from '../ticker/Ticker';
 
 import type { EventSystem } from './EventSystem';
 
+/** @advanced */
 class EventsTickerClass
 {
     /** The event system. */
@@ -136,5 +137,6 @@ class EventsTickerClass
  * @since 7.2.0
  * @category events
  * @class
+ * @advanced
  */
 export const EventsTicker = new EventsTickerClass();

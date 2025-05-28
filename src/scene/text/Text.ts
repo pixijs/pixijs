@@ -8,7 +8,7 @@ import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from './AbstractText';
 import type { TextStyleOptions } from './TextStyle';
 
-// eslint-disable-next-line requireExport/require-export-jsdoc
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface Text extends PixiMixins.Text, AbstractText<
     TextStyle,
     TextStyleOptions,
@@ -19,10 +19,14 @@ export interface Text extends PixiMixins.Text, AbstractText<
 /**
  * Constructor options used for `Text` instances.
  * @category scene
+ * @standard
  */
 export interface CanvasTextOptions extends TextOptions
 {
-    /** optional texture style to use for the text. */
+    /**
+     * optional texture style to use for the text.
+     * @advanced
+     */
     textureStyle?: TextureStyle | TextureStyleOptions;
 }
 
@@ -66,17 +70,20 @@ export interface CanvasTextOptions extends TextOptions
  *     }
  * });
  * @category scene
+ * @standard
  */
 export class Text
     extends AbstractText<TextStyle, TextStyleOptions, CanvasTextOptions, BatchableText>
     implements View
 {
+    /** @internal */
     public override readonly renderPipeId: string = 'text';
 
     /**
      * optional texture style to use for the text.
      * NOTE: Text is not updated when this property is updated,
      * you must update the text manually by calling `text.onViewUpdate()`
+     * @advanced
      */
     public textureStyle?: TextureStyle;
 

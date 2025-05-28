@@ -14,12 +14,14 @@ import type { TextureSourceOptions } from '../texture/sources/TextureSource';
 /**
  * Options for generating a texture source.
  * @category rendering
+ * @advanced
  */
 export type GenerateTextureSourceOptions = Omit<TextureSourceOptions, 'resource' | 'width' | 'height' | 'resolution'>;
 
 /**
  * Options for generating a texture from a container.
  * @category rendering
+ * @standard
  */
 export type GenerateTextureOptions =
 {
@@ -36,7 +38,10 @@ export type GenerateTextureOptions =
     clearColor?: ColorSource;
     /** Whether to enable anti-aliasing. This may affect performance. */
     antialias?: boolean;
-    /** The options passed to the texture source. */
+    /**
+     * The options passed to the texture source.
+     * @advanced
+     */
     textureSourceOptions?: GenerateTextureSourceOptions,
 };
 
@@ -50,6 +55,7 @@ const noColor: ColorSource = [0, 0, 0, 0];
  *
  * Do not instantiate these plugins directly. It is available from the `renderer.textureGenerator` property.
  * @category rendering
+ * @standard
  */
 export class GenerateTextureSystem implements System
 {

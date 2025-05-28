@@ -9,6 +9,7 @@ import type { Dict } from '../utils/types';
 /**
  * Represents the JSON data for a spritesheet atlas.
  * @category assets
+ * @standard
  */
 export interface SpritesheetFrameData
 {
@@ -44,6 +45,7 @@ export interface SpritesheetFrameData
 /**
  * Atlas format.
  * @category assets
+ * @standard
  */
 export interface SpritesheetData
 {
@@ -93,6 +95,7 @@ export interface SpritesheetData
 /**
  * Options for loading a spritesheet from an atlas.
  * @category assets
+ * @standard
  */
 export interface SpritesheetOptions<S extends SpritesheetData = SpritesheetData>
 {
@@ -207,6 +210,7 @@ export interface SpritesheetOptions<S extends SpritesheetData = SpritesheetData>
  * const sheet = await Assets.load('atlas')
  * ```
  * @category assets
+ * @standard
  */
 export class Spritesheet<S extends SpritesheetData = SpritesheetData>
 {

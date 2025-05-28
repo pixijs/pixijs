@@ -7,6 +7,7 @@ import type { System } from '../system/System';
 /**
  * Options for the background system.
  * @category rendering
+ * @standard
  */
 export interface BackgroundSystemOptions
 {
@@ -32,6 +33,7 @@ export interface BackgroundSystemOptions
 /**
  * The background system manages the background color and alpha of the main view.
  * @category rendering
+ * @standard
  */
 export class BackgroundSystem implements System<BackgroundSystemOptions>
 {

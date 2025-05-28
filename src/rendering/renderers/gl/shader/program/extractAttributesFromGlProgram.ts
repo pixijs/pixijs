@@ -8,6 +8,7 @@ import type { Attribute } from '../../../shared/geometry/Geometry';
  * It extends the `Attribute` interface but omits the `buffer` property.
  * It includes an optional `location` property that indicates where the shader location is for this attribute.
  * @category rendering
+ * @advanced
  */
 export interface ExtractedAttributeData extends Omit<Attribute, 'buffer'>
 {

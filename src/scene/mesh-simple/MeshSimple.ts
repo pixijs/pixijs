@@ -10,6 +10,7 @@ import type { MeshOptions } from '../mesh/shared/Mesh';
 /**
  * Options for the simple mesh.
  * @category scene
+ * @advanced
  */
 export interface SimpleMeshOptions extends Omit<MeshOptions, 'geometry'>
 {
@@ -29,6 +30,7 @@ export interface SimpleMeshOptions extends Omit<MeshOptions, 'geometry'>
  * The Simple Mesh class mimics Mesh in PixiJS, providing easy-to-use constructor arguments.
  * For more robust customization, use {@link Mesh}.
  * @category scene
+ * @advanced
  */
 export class MeshSimple extends Mesh
 {

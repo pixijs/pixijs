@@ -7,6 +7,7 @@ const isMobileCall = (isMobileJs as isMobileJsType).default ?? isMobileJs;
 /**
  * The result of the {@link isMobile} function.
  * @category utils
+ * @standard
  */
 export type isMobileResult = {
     /** Whether the device is an Apple device. */
@@ -62,5 +63,6 @@ export type isMobileResult = {
  * }
  * ```
  * @category utils
+ * @standard
  */
 export const isMobile: isMobileResult = isMobileCall(globalThis.navigator);

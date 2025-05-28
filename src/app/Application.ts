@@ -44,6 +44,7 @@ export interface ApplicationPlugin
 /**
  * Application options supplied to the {@link Application#init} method.
  * @category app
+ * @standard
  * @example
  * import { Application } from 'pixi.js';
  *
@@ -57,7 +58,8 @@ export interface ApplicationPlugin
  */
 export interface ApplicationOptions extends AutoDetectOptions, PixiMixins.ApplicationOptions { }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type, requireExport/require-export-jsdoc
+// eslint-disable-next-line max-len
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type, requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface Application extends PixiMixins.Application { }
 
 /**
@@ -78,6 +80,7 @@ export interface Application extends PixiMixins.Application { }
  * // ex, add display objects
  * app.stage.addChild(Sprite.from('something.png'));
  * @category app
+ * @standard
  */
 export class Application<R extends Renderer = Renderer>
 {

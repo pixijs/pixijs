@@ -45,6 +45,7 @@ export type UNIFORM_TYPES = UNIFORM_TYPES_SINGLE | UNIFORM_TYPES_ARRAY;
 /**
  * This is the type of the uniform structures that are used in the UniformGroup.
  * @category rendering
+ * @advanced
  */
 export interface UniformData
 {

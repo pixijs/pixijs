@@ -63,6 +63,7 @@ import type { FilterSystem } from './FilterSystem';
 /**
  * The options to use when creating a new filter.
  * @category filters
+ * @advanced
  */
 export interface FilterOptions
 {
@@ -108,6 +109,7 @@ export interface FilterOptions
 /**
  * Filter options mixed with shader resources. A filter needs a shader and some resources to work.
  * @category filters
+ * @advanced
  * @see {@link FilterOptions}
  */
 export type FilterWithShader = FilterOptions & IShaderWithResources;
@@ -118,6 +120,7 @@ export type FilterWithShader = FilterOptions & IShaderWithResources;
  * - `off` - (default) the filter is never antialiased regardless of the render target settings
  * - `inherit` - the filter uses the antialias settings of the render target
  * @category filters
+ * @advanced
  */
 export type FilterAntialias = 'on' | 'off' | 'inherit';
 
@@ -148,6 +151,7 @@ export type FilterAntialias = 'on' | 'off' | 'inherit';
  * but all the framebuffer / shader switching that has to take place.
  * One filter applied to a container with many objects is MUCH faster than many filter applied to many objects.
  * @category filters
+ * @advanced
  * @example
  * import { Filter } from 'pixi.js';
  *

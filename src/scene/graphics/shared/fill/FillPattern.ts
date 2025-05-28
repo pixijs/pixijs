@@ -12,6 +12,7 @@ import type { Texture } from '../../../../rendering/renderers/shared/texture/Tex
  * - `repeat-y`: The pattern repeats vertically only.
  * - `no-repeat`: The pattern does not repeat.
  * @category scene
+ * @standard
  */
 export type PatternRepetition = 'repeat' | 'repeat-x' | 'repeat-y' | 'no-repeat';
 
@@ -38,6 +39,7 @@ const repetitionMap = {
  * A class that represents a fill pattern for use in Text and Graphics fills.
  * It allows for textures to be used as patterns, with optional repetition modes.
  * @category scene
+ * @standard
  * @example
  * const txt = await Assets.load('https://pixijs.com/assets/bg_scene_rotate.jpg');
  * const pat = new FillPattern(txt, 'repeat');

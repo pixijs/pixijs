@@ -4,6 +4,7 @@
  * priority items, such as render, should go later.
  * @enum {number}
  * @category ticker
+ * @standard
  */
 export enum UPDATE_PRIORITY
 {

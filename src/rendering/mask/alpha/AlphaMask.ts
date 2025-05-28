@@ -15,6 +15,7 @@ import type { PoolItem } from '../../../utils/pool/Pool';
  * It can be used to create complex masking effects by using a sprite as the mask.
  * The mask can be inverted, and it can render the mask to a texture if the mask is not a sprite.
  * @category rendering
+ * @advanced
  */
 export class AlphaMask implements Effect, PoolItem
 {

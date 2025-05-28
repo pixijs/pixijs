@@ -29,6 +29,7 @@ import type {
  * - 'right': Aligns text to the right edge.
  * - 'justify': Justifies text, aligning both left and right edges.
  * @category text
+ * @standard
  */
 export type TextStyleAlign = 'left' | 'center' | 'right' | 'justify';
 /**
@@ -41,6 +42,7 @@ export type TextStyleAlign = 'left' | 'center' | 'right' | 'justify';
  * - A FillGradient for gradient fills
  * - A FillPattern for pattern/texture fills
  * @category text
+ * @standard
  */
 export type TextStyleFill = string | string[] | number | number[] | CanvasGradient | CanvasPattern;
 /**
@@ -51,6 +53,7 @@ export type TextStyleFill = string | string[] | number | number[] | CanvasGradie
  * - 'italic': Italic font style
  * - 'oblique': Oblique font style
  * @category text
+ * @standard
  */
 export type TextStyleFontStyle = 'normal' | 'italic' | 'oblique';
 /**
@@ -60,6 +63,7 @@ export type TextStyleFontStyle = 'normal' | 'italic' | 'oblique';
  * - 'normal': Normal font variant
  * - 'small-caps': Small caps font variant
  * @category text
+ * @standard
  */
 export type TextStyleFontVariant = 'normal' | 'small-caps';
 /**
@@ -72,6 +76,7 @@ export type TextStyleFontVariant = 'normal' | 'small-caps';
  * - 'lighter': Lighter font weight
  * - '100', '200', '300', '400', '500', '600', '700', '800', '900': Numeric font weights
  * @category text
+ * @standard
  */
 // eslint-disable-next-line max-len
 export type TextStyleFontWeight = 'normal' | 'bold' | 'bolder' | 'lighter' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';
@@ -83,6 +88,7 @@ export type TextStyleFontWeight = 'normal' | 'bold' | 'bolder' | 'lighter' | '10
  * - 'round': Rounded corners
  * - 'bevel': Beveled corners
  * @category text
+ * @standard
  */
 export type TextStyleLineJoin = 'miter' | 'round' | 'bevel';
 /**
@@ -96,6 +102,7 @@ export type TextStyleLineJoin = 'miter' | 'round' | 'bevel';
  * - 'ideographic': The ideographic baseline
  * - 'bottom': The bottom of the text
  * @category text
+ * @standard
  */
 export type TextStyleTextBaseline = 'alphabetic' | 'top' | 'hanging' | 'middle' | 'ideographic' | 'bottom';
 /**
@@ -106,6 +113,7 @@ export type TextStyleTextBaseline = 'alphabetic' | 'top' | 'hanging' | 'middle' 
  * - 'pre': Preserves newlines and spaces
  * - 'pre-line': Preserves newlines but collapses spaces
  * @category text
+ * @standard
  */
 export type TextStyleWhiteSpace = 'normal' | 'pre' | 'pre-line';
 
@@ -118,6 +126,7 @@ export type TextStyleWhiteSpace = 'normal' | 'pre' | 'pre-line';
 /**
  * A drop shadow effect.
  * @category text
+ * @standard
  */
 export type TextDropShadow = {
     /** Set alpha for the drop shadow  */
@@ -142,6 +151,7 @@ export type TextDropShadow = {
  * ```
  * @see {@link TextStyle}
  * @category text
+ * @standard
  */
 export interface TextStyleOptions
 {
@@ -230,6 +240,7 @@ export interface TextStyleOptions
  *   fontFamily: ['Helvetica', 'Arial', 'sans-serif'],
  *   fontSize: 36,
  * });
+ * @standard
  */
 export class TextStyle extends EventEmitter<{
     update: TextDropShadow

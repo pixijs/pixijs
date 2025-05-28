@@ -150,6 +150,7 @@ class FilterData
 /**
  * System that manages the filter pipeline
  * @category rendering
+ * @advanced
  */
 export class FilterSystem implements System
 {

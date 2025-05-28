@@ -6,6 +6,7 @@ import type { Container } from './Container';
 /**
  * An effect that can be applied to a container. This is used to create effects such as filters/masks etc.
  * @category rendering
+ * @advanced
  */
 export interface Effect
 {
@@ -21,6 +22,7 @@ export interface Effect
  * The constructor for an Effect.
  * It is used to create instances of effects that can be applied to containers.
  * @category rendering
+ * @advanced
  */
 export interface EffectConstructor
 {

@@ -20,11 +20,11 @@ import type { System } from '../../rendering/renderers/shared/system/System';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { PoolItem } from '../../utils/pool/Pool';
 import type { HTMLTextOptions } from './HTMLText';
-import type { FontCSSStyleOptions } from './utils/loadFontCSS';
 
 /**
  * System plugin to the renderer to manage HTMLText
  * @category rendering
+ * @advanced
  */
 export class HTMLTextSystem implements System
 {
@@ -37,12 +37,6 @@ export class HTMLTextSystem implements System
         ],
         name: 'htmlText',
     } as const;
-
-    public static defaultFontOptions: FontCSSStyleOptions = {
-        fontFamily: 'Arial',
-        fontStyle: 'normal',
-        fontWeight: 'normal',
-    };
 
     /**
      * WebGPU has a cors issue when uploading an image that is an SVGImage

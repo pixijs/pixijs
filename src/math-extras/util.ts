@@ -17,6 +17,7 @@ import type { PointData } from '../maths/point/PointData';
  * @returns {boolean} Returns `true` if the difference between the values is less than the given epsilon;
  * otherwise `false`.
  * @category maths
+ * @advanced
  */
 export function floatEqual(a: number, b: number, epsilon: number = Number.EPSILON): boolean
 {
@@ -109,7 +110,7 @@ function genericLineIntersection<T extends PointData>(
  * optional (otherwise will create a new Point).
  * @returns {PointData} The point where the lines intersect or a `NaN` Point.
  * @category maths
- * @mergeModuleWith index
+ * @advanced
  */
 export function lineIntersection
 <T extends PointData = Point>(aStart: PointData, aEnd: PointData, bStart: PointData, bEnd: PointData, outPoint?: T): T
@@ -131,6 +132,7 @@ export function lineIntersection
  * optional (otherwise will create a new Point).
  * @returns {PointData} The point where the segments intersect or a `NaN` Point.
  * @category maths
+ * @advanced
  */
 export function segmentIntersection
 <T extends PointData = Point>(aStart: PointData, aEnd: PointData, bStart: PointData, bEnd: PointData, outPoint?: T): T

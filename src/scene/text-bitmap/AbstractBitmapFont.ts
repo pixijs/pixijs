@@ -4,7 +4,10 @@ import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { FontMetrics } from '../text/canvas/CanvasTextMetrics';
 
-/** @category text */
+/**
+ * @category text
+ * @advanced
+ */
 export interface CharData
 {
     /** Unique id of character */
@@ -24,6 +27,7 @@ export interface CharData
 /**
  * The raw data of a character in a bitmap font.
  * @category text
+ * @advanced
  */
 export interface RawCharData extends Omit<CharData, 'texture'>
 {
@@ -44,6 +48,7 @@ export interface RawCharData extends Omit<CharData, 'texture'>
 /**
  * The raw data of a bitmap font.
  * @category text
+ * @advanced
  */
 export interface BitmapFontData
 {
@@ -81,6 +86,7 @@ interface BitmapFontEvents<Type>
 /**
  * An abstract representation of a bitmap font.
  * @category text
+ * @advanced
  */
 export abstract class AbstractBitmapFont<FontType>
     extends EventEmitter<BitmapFontEvents<FontType>>

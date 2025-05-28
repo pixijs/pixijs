@@ -7,6 +7,7 @@ let _isWebGLSupported: boolean | undefined;
  * Helper for checking for WebGL support.
  * @param failIfMajorPerformanceCaveat - whether to fail if there is a major performance caveat, defaults to false
  * @category utils
+ * @standard
  * @returns {boolean} Is WebGL supported.
  */
 export function isWebGLSupported(

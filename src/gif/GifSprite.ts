@@ -21,6 +21,7 @@ import type { SCALE_MODE } from '../rendering/renderers/shared/texture/const';
 /**
  * Default options for all GifSprite objects.
  * @category gif
+ * @standard
  */
 interface GifSpriteOptions extends Omit<SpriteOptions, 'texture'>
 {
@@ -54,6 +55,7 @@ interface GifSpriteOptions extends Omit<SpriteOptions, 'texture'>
  * It support playback (seek, play, stop) as well as animation speed and looping.
  * @category gif
  * @see Thanks to {@link https://github.com/matt-way/gifuct-js/ gifuct-js}
+ * @standard
  */
 class GifSprite extends Sprite
 {

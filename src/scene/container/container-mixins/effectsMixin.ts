@@ -21,12 +21,14 @@ export interface EffectsMixinConstructor
  * - A Container represents a mask object, such as a Graphics or Sprite.
  * - null indicates that no mask is applied.
  * @category scene
+ * @standard
  */
 export type Mask = number | Container | null;
 
 /**
  * Options for applying a mask.
  * @category scene
+ * @standard
  */
 export interface MaskOptions
 {
@@ -38,6 +40,7 @@ export interface MaskOptions
  * MaskOptionsAndMask combines MaskOptions with a Mask.
  * It includes properties for mask options such as `inverse` and the mask itself.
  * @category scene
+ * @standard
  */
 export interface MaskOptionsAndMask extends MaskOptions
 {
@@ -50,6 +53,7 @@ export interface MaskOptionsAndMask extends MaskOptions
  * such as masks and filters on a display object.
  * It allows for adding, removing, and configuring effects, as well as setting a mask for the display object.
  * @category scene
+ * @standard
  */
 export interface EffectsMixin extends Required<EffectsMixinConstructor>
 {

@@ -3,6 +3,7 @@ import { convertToList } from '../utils/convertToList';
 
 import type { CacheParser } from './CacheParser';
 
+/** @internal */
 class CacheClass
 {
     private readonly _parsers: CacheParser[] = [];
@@ -166,5 +167,6 @@ class CacheClass
  * Cache.set('bunny', bunnyTexture);
  * @category assets
  * @class
+ * @standard
  */
 export const Cache = new CacheClass();

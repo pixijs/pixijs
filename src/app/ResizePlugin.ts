@@ -8,6 +8,7 @@ type ResizeableRenderer = Pick<Renderer, 'resize'>;
 /**
  * Application options for the {@link ResizePlugin}.
  * @category app
+ * @standard
  */
 export interface ResizePluginOptions
 {
@@ -28,17 +29,21 @@ export interface ResizePluginOptions
  *
  * extensions.add(ResizePlugin);
  * @category app
+ * @standard
  */
 export class ResizePlugin
 {
     /** @ignore */
     public static extension: ExtensionMetadata = ExtensionType.Application;
-
+    /** @internal */
     public static resizeTo: Window | HTMLElement;
+    /** @internal */
     public static resize: () => void;
     /** @internal */
     public static renderer: ResizeableRenderer;
+    /** @internal */
     public static queueResize: () => void;
+    /** @internal */
     public static render: () => void;
     /** @internal */
     private static _resizeId: number;

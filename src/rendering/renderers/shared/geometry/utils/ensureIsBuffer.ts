@@ -11,6 +11,7 @@ import type { TypedArray } from '../../buffer/Buffer';
  * @param index - is this an index buffer?
  * @returns a buffer
  * @category rendering
+ * @internal
  */
 export function ensureIsBuffer(buffer: Buffer | TypedArray | number[], index: boolean): Buffer
 {

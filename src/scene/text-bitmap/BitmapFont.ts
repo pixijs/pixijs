@@ -10,6 +10,7 @@ import type { BitmapFontInstallOptions } from './BitmapFontManager';
 /**
  * Options for creating a BitmapFont.
  * @category text
+ * @standard
  */
 export interface BitmapFontOptions
 {
@@ -20,6 +21,7 @@ export interface BitmapFontOptions
 /**
  * A BitmapFont object represents a particular font face, size, and style.
  * @category text
+ * @standard
  */
 export class BitmapFont extends AbstractBitmapFont<BitmapFont>
 {

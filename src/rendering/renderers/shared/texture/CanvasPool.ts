@@ -7,6 +7,7 @@ import type { ICanvasRenderingContext2D } from '../../../../environment/canvas/I
 /**
  * A utility type that represents a canvas and its rendering context.
  * @category rendering
+ * @internal
  */
 export interface CanvasAndContext
 {
@@ -114,5 +115,6 @@ export class CanvasPoolClass
 /**
  * CanvasPool is a utility class that manages a pool of reusable canvas elements
  * @category rendering
+ * @internal
  */
 export const CanvasPool = new CanvasPoolClass();

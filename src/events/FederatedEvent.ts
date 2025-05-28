@@ -6,6 +6,7 @@ import type { EventBoundary } from './EventBoundary';
 /**
  * A PixiJS compatible `Touch` event.
  * @category events
+ * @standard
  */
 export interface PixiTouch extends Touch
 {
@@ -34,6 +35,7 @@ export interface PixiTouch extends Touch
  * FederatedEvent or native {@link https://dom.spec.whatwg.org/#event Event}.
  * @typeParam N - The type of native event held.
  * @category events
+ * @standard
  */
 export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch> implements UIEvent
 {

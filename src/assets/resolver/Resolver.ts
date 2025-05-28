@@ -18,6 +18,7 @@ import type { PreferOrder, ResolveURLParser } from './types';
 /**
  * Options for how the resolver deals with generating bundle ids
  * @category assets
+ * @advanced
  */
 export interface BundleIdentifierOptions
 {
@@ -72,6 +73,7 @@ export interface BundleIdentifierOptions
  * It is not intended that this class is created by developers - its part of the Asset class
  * This is the third major system of PixiJS' main Assets class
  * @category assets
+ * @standard
  */
 export class Resolver
 {

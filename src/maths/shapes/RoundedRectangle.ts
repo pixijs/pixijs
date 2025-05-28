@@ -24,6 +24,7 @@ const isCornerWithinStroke = (
  * point (`x`, `y`) and by its `width` and its `height`, including a `radius` property that
  * defines the radius of the rounded corners.
  * @category maths
+ * @standard
  */
 export class RoundedRectangle implements ShapePrimitive
 {

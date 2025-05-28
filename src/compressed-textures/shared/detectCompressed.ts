@@ -13,6 +13,7 @@ let compressedTextureExtensions: string[];
 /**
  * Detects if the browser supports compressed texture formats.
  * @category assets
+ * @internal
  */
 export const detectCompressed = {
     extension: {

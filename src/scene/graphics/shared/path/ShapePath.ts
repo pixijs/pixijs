@@ -24,6 +24,7 @@ const tempRectangle = new Rectangle();
 /**
  * A type representing a shape primitive with optional transformation and holes.
  * @category scene
+ * @advanced
  */
 export type ShapePrimitiveWithHoles = {
     shape: ShapePrimitive,
@@ -40,6 +41,7 @@ export type ShapePrimitiveWithHoles = {
  *
  * It is used internally by `GraphicsPath` to build up the path.
  * @category scene
+ * @advanced
  */
 export class ShapePath
 {

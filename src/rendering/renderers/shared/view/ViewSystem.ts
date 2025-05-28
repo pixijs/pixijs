@@ -15,6 +15,7 @@ import type { Texture } from '../texture/Texture';
 /**
  * Options passed to the ViewSystem
  * @category rendering
+ * @standard
  */
 export interface ViewSystemOptions
 {
@@ -53,6 +54,7 @@ export interface ViewSystemOptions
 /**
  * Options for destroying the ViewSystem.
  * @category rendering
+ * @standard
  */
 export interface ViewSystemDestroyOptions
 {
@@ -64,6 +66,7 @@ export interface ViewSystemDestroyOptions
  * The view system manages the main canvas that is attached to the DOM.
  * This main role is to deal with how the holding the view reference and dealing with how it is resized.
  * @category rendering
+ * @standard
  */
 export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSystemDestroyOptions> >
 {

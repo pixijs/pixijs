@@ -29,6 +29,7 @@ function createResourceIdFromString(value: string): number
 /**
  * The options for the texture style.
  * @category rendering
+ * @advanced
  */
 export interface TextureStyleOptions extends Partial<TextureStyle>
 {
@@ -76,6 +77,7 @@ export interface TextureStyleOptions extends Partial<TextureStyle>
 /**
  * A texture style describes how a texture should be sampled by a shader.
  * @category rendering
+ * @advanced
  */
 export class TextureStyle extends EventEmitter<{
     change: TextureStyle,

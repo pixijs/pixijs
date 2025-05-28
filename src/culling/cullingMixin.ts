@@ -6,6 +6,7 @@ import type { Rectangle } from '../maths/shapes/Rectangle';
  * based on its visibility within the current view or frame. This mixin allows for optimization
  * of rendering by skipping objects that are not visible, thus improving performance in complex scenes.
  * @category scene
+ * @standard
  */
 export interface CullingMixinConstructor
 {

@@ -7,6 +7,7 @@ import type { ResolveURLParser } from '../types';
 /**
  * A parser that will resolve a texture url
  * @category assets
+ * @internal
  */
 export const resolveTextureUrl = {
     extension: {

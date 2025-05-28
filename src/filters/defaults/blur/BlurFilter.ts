@@ -12,6 +12,7 @@ import type { FilterSystem } from '../../FilterSystem';
 /**
  * Options for BlurFilter
  * @category filters
+ * @standard
  */
 export interface BlurFilterOptions extends FilterOptions
 {
@@ -48,6 +49,7 @@ export interface BlurFilterOptions extends FilterOptions
  *
  * The strength of the blur can be set for the x-axis and y-axis separately.
  * @category filters
+ * @standard
  * @example
  * import { BlurFilter } from 'pixi.js';
  *

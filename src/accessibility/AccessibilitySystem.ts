@@ -26,6 +26,7 @@ const DIV_HOOK_ZINDEX = 2;
 /**
  * Initialisation options for the accessibility system when used with an Application.
  * @category accessibility
+ * @advanced
  */
 export interface AccessibilitySystemOptions
 {
@@ -36,6 +37,7 @@ export interface AccessibilitySystemOptions
 /**
  * The options for the accessibility system.
  * @category accessibility
+ * @advanced
  */
 export interface AccessibilityOptions
 {
@@ -77,6 +79,7 @@ export interface AccessibilityOptions
  *
  * An instance of this class is automatically created at `renderer.accessibility`
  * @category accessibility
+ * @standard
  */
 export class AccessibilitySystem implements System<AccessibilitySystemOptions>
 {

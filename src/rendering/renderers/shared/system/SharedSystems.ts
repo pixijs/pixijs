@@ -23,6 +23,7 @@ import type { ExtractRendererOptions } from './utils/typeUtils';
 /**
  * Shared systems for the renderer.
  * @category rendering
+ * @internal
  */
 export const SharedSystems = [
     BackgroundSystem,
@@ -41,6 +42,7 @@ export const SharedSystems = [
 /**
  * Shared render pipes for the renderer.
  * @category rendering
+ * @internal
  */
 export const SharedRenderPipes = [
     BlendModePipe,
@@ -56,6 +58,7 @@ export const SharedRenderPipes = [
 /**
  * Options for the shared systems of a renderer.
  * @category rendering
+ * @standard
  */
 export interface SharedRendererOptions extends ExtractRendererOptions<typeof SharedSystems>, PixiMixins.RendererOptions
 {

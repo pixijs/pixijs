@@ -35,6 +35,7 @@ import type { DestroyOptions } from './destroyTypes';
  * The type of child that can be added to a {@link Container}.
  * This is a generic type that extends the {@link Container} class.
  * @category scene
+ * @standard
  */
 export type ContainerChild = Container;
 
@@ -70,6 +71,7 @@ const defaultScale = new ObservablePoint(null, 1, 1);
 /**
  * The events that can be emitted by a Container.
  * @category scene
+ * @standard
  */
 export interface ContainerEvents<C extends ContainerChild> extends PixiMixins.ContainerEvents
 {
@@ -130,6 +132,7 @@ export const UPDATE_TRANSFORM = 0b1000;
 /**
  * Options for updating the transform of a container.
  * @category scene
+ * @standard
  */
 export interface UpdateTransformOptions
 {
@@ -154,6 +157,7 @@ export interface UpdateTransformOptions
  * });
  * ```
  * @category scene
+ * @standard
  * @see Container
  */
 export interface ContainerOptions<C extends ContainerChild = ContainerChild> extends PixiMixins.ContainerOptions
@@ -196,7 +200,7 @@ export interface ContainerOptions<C extends ContainerChild = ContainerChild> ext
     boundsArea?: Rectangle;
 }
 
-// eslint-disable-next-line requireExport/require-export-jsdoc
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface Container<C extends ContainerChild>
     extends PixiMixins.Container<C>, EventEmitter<ContainerEvents<C> & AnyEvent> {}
 
@@ -390,6 +394,7 @@ export interface Container<C extends ContainerChild>
  * 3. worldTransform, this is the transform of the container relative to the Scene being rendered
  * </details>
  * @category scene
+ * @standard
  */
 export class Container<C extends ContainerChild = ContainerChild> extends EventEmitter<ContainerEvents<C> & AnyEvent>
 {

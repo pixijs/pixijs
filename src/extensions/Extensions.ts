@@ -120,6 +120,7 @@ type ExtensionMetadata = ExtensionType | ExtensionMetadataDetails;
  * should have these values as `extension` static property,
  * but you can override name or type by providing an object.
  * @category extensions
+ * @standard
  */
 interface ExtensionFormat
 {
@@ -144,6 +145,11 @@ interface StrictExtensionFormat extends ExtensionFormat
     type: ExtensionType[];
 }
 
+/**
+ * The function that is called when an extension is added or removed.
+ * @category extensions
+ * @ignore
+ */
 type ExtensionHandler = (extension: StrictExtensionFormat) => void;
 
 /**
@@ -212,6 +218,7 @@ export const normalizeExtensionPriority = (ext: ExtensionFormat | any, defaultPr
  * @property {Function} handleByNamedList - Handle a type, but using a list of extensions with a `name` property.
  * @property {Function} handleByList - Handle a type, but using a list of extensions.
  * @category extensions
+ * @standard
  */
 const extensions = {
 

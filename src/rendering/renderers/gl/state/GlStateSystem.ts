@@ -18,6 +18,7 @@ const DEPTH_MASK = 5;
 /**
  * System plugin to the renderer to manage WebGL state machines
  * @category rendering
+ * @advanced
  */
 export class GlStateSystem implements System
 {

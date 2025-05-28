@@ -7,6 +7,7 @@ import type { TextureSourceOptions } from './sources/TextureSource';
  * A render texture, extends `Texture`.
  * @see {@link Texture}
  * @category rendering
+ * @advanced
  */
 export class RenderTexture extends Texture
 {

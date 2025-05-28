@@ -16,6 +16,7 @@ import type { FillPattern } from './fill/FillPattern';
  * (Each shape   (Each shape  (Texture continues across
  * gets full     gets full    shapes as if they're texture)      texture)     windows to same texture)
  * @category scene
+ * @advanced
  */
 export type TextureSpace =
     /**
@@ -35,6 +36,7 @@ export type TextureSpace =
 /**
  * A fill style object.
  * @category scene
+ * @standard
  */
 export interface FillStyle
 {
@@ -55,6 +57,7 @@ export interface FillStyle
 /**
  * A stroke attribute object, used to define properties for a stroke.
  * @category scene
+ * @standard
  */
 export interface StrokeAttributes
 {
@@ -75,6 +78,7 @@ export interface StrokeAttributes
 /**
  * A stroke style object.
  * @category scene
+ * @standard
  */
 export interface StrokeStyle extends FillStyle, StrokeAttributes {}
 
@@ -98,6 +102,7 @@ export interface StrokeStyle extends FillStyle, StrokeAttributes {}
  * });
  * ```
  * @category scene
+ * @standard
  */
 export type FillInput = ColorSource | FillGradient | FillPattern | FillStyle | Texture;
 
@@ -124,17 +129,20 @@ export type FillInput = ColorSource | FillGradient | FillPattern | FillStyle | T
  * });
  * ```
  * @category scene
+ * @standard
  */
 export type StrokeInput = ColorSource | FillGradient | FillPattern | StrokeStyle;
 
 /**
  * used internally and is a complete fill style
  * @category scene
+ * @advanced
  */
 export type ConvertedFillStyle = Omit<Required<FillStyle>, 'color'> & { color: number };
 /**
  * used internally and is a complete stroke style
  * @category scene
+ * @advanced
  */
 export type ConvertedStrokeStyle = ConvertedFillStyle & Required<StrokeAttributes>;
 
@@ -142,6 +150,7 @@ export type ConvertedStrokeStyle = ConvertedFillStyle & Required<StrokeAttribute
  * @deprecated since v8.1.6
  * @see FillInput
  * @category scene
+ * @standard
  */
 // eslint-disable-next-line max-len
 export type FillStyleInputs = ColorSource | FillGradient | FillPattern | FillStyle | ConvertedFillStyle | StrokeStyle | ConvertedStrokeStyle;

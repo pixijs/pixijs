@@ -21,7 +21,11 @@ const TOUCH_TO_POINTER: Record<string, string> = {
     touchcancel: 'pointercancel',
 };
 
-/** @ignore */
+/**
+ * Options for the {@link EventSystem}.
+ * @category events
+ * @advanced
+ */
 export interface EventSystemOptions
 {
     /**
@@ -52,6 +56,7 @@ export interface EventSystemOptions
  * (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
  * @since 7.2.0
  * @category events
+ * @advanced
  */
 export interface EventSystemFeatures
 {
@@ -85,6 +90,7 @@ export interface EventSystemFeatures
 /**
  * The system for handling UI events.
  * @category events
+ * @standard
  */
 export class EventSystem implements System<EventSystemOptions>
 {

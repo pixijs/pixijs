@@ -12,6 +12,7 @@ import type { Container } from '../Container';
  *
  * It includes methods to optimize performance by using cached matrices when available.
  * @category scene
+ * @standard
  */
 export interface ToLocalGlobalMixin
 {

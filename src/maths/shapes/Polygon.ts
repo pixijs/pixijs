@@ -30,6 +30,7 @@ let tempRect2: Rectangle;
  * const polygon4 = new Polygon(0, 0, 0, 100, 100, 100);
  * ```
  * @category maths
+ * @standard
  */
 export class Polygon implements ShapePrimitive
 {

@@ -35,6 +35,7 @@ import type { ArrayOr, AssetsBundle, AssetsManifest, ResolvedAsset, UnresolvedAs
  * The function is passed a single parameter, `progress`, which represents the percentage (0.0 - 1.0)
  * of the assets loaded.
  * @category assets
+ * @standard
  * @callback ProgressCallback
  * @param {number} progress - The percentage (0.0 - 1.0) of the assets loaded.
  * @returns {void}
@@ -46,6 +47,7 @@ export type ProgressCallback = (progress: number) => void;
 /**
  * Extensible preferences that can be used, for instance, when configuring loaders.
  * @since 7.2.0
+ * @advanced
  * @category assets
  */
 export interface AssetsPreferences extends LoadTextureConfig, LoadSVGConfig, PixiMixins.AssetsPreferences {}
@@ -53,6 +55,7 @@ export interface AssetsPreferences extends LoadTextureConfig, LoadSVGConfig, Pix
 /**
  * Initialization options object for the Assets Class.
  * @category assets
+ * @standard
  */
 export interface AssetInitOptions
 {
@@ -89,7 +92,10 @@ export interface AssetInitOptions
      */
     skipDetections?: boolean;
 
-    /** advanced - override how bundlesIds are generated */
+    /**
+     * override how bundlesIds are generated
+     * @advanced
+     */
     bundleIdentifier?: BundleIdentifierOptions;
 
     /** Optional loader preferences */
@@ -944,6 +950,7 @@ export class AssetsClass
  * const bunny = await Assets.load('bunny.png');
  * @category assets
  * @class
+ * @standard
  */
 export const Assets = new AssetsClass();
 

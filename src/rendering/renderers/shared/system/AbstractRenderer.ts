@@ -28,6 +28,7 @@ import type { System, SystemConstructor } from './System';
  * The configuration for the renderer.
  * This is used to define the systems and render pipes that will be used by the renderer.
  * @category rendering
+ * @advanced
  */
 export interface RendererConfig
 {
@@ -42,6 +43,7 @@ export interface RendererConfig
 /**
  * The options for rendering a view.
  * @category rendering
+ * @standard
  */
 export interface RenderOptions extends ClearOptions
 {
@@ -54,6 +56,7 @@ export interface RenderOptions extends ClearOptions
 /**
  * The options for clearing the render target.
  * @category rendering
+ * @advanced
  */
 export interface ClearOptions
 {
@@ -74,6 +77,7 @@ export interface ClearOptions
  * @see {@link ViewSystemDestroyOptions}
  * @see {@link TypeOrBool}
  * @category rendering
+ * @standard
  */
 export type RendererDestroyOptions = TypeOrBool<ViewSystemDestroyOptions>;
 
@@ -118,7 +122,6 @@ type Runners = {[key in DefaultRunners]: SystemRunner} & {
  *
  * | Core Systems                   | Provide an optimised, easy to use API to work with WebGL/WebGPU               |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
- * | {@link RenderGroupSystem} | This manages the what what we are rendering to (eg - canvas or texture)   |
  * | {@link GlobalUniformSystem} | This manages shaders, programs that run on the GPU to calculate 'em pixels.   |
  * | {@link TextureGCSystem}     | This will automatically remove textures from the GPU if they are not used.    |
  *
@@ -133,8 +136,8 @@ type Runners = {[key in DefaultRunners]: SystemRunner} & {
  * The breadth of the API surface provided by the renderer is contained within these systems.
  * @abstract
  * @category rendering
+ * @standard
  * @property {HelloSystem} hello - HelloSystem instance.
- * @property {RenderGroupSystem} renderGroup - RenderGroupSystem instance.
  * @property {TextureGCSystem} textureGC - TextureGCSystem instance.
  * @property {FilterSystem} filter - FilterSystem instance.
  * @property {GlobalUniformSystem} globalUniforms - GlobalUniformSystem instance.
@@ -190,6 +193,7 @@ export class AbstractRenderer<
     /** The name of the renderer. */
     public readonly name: string;
 
+    /** @internal */
     public readonly uid = uid('renderer');
 
     /** @internal */
@@ -197,6 +201,7 @@ export class AbstractRenderer<
 
     /** @internal */
     public readonly runners: Runners = Object.create(null) as Runners;
+    /** @internal */
     public readonly renderPipes = Object.create(null) as PIPES;
     /** The view system manages the main canvas that is attached to the DOM */
     public view!: ViewSystem;
@@ -347,6 +352,14 @@ export class AbstractRenderer<
         }
     }
 
+    /**
+     * Clears the render target.
+     * @param options - The options to use when clearing the render target.
+     * @param options.target - The render target to clear.
+     * @param options.clearColor - The color to clear with.
+     * @param options.clear - The clear mode to use.
+     * @advanced
+     */
     public clear(options: ClearOptions = {}): void
     {
         // override!
@@ -584,6 +597,7 @@ export class AbstractRenderer<
      * // Now render Pixi content
      * pixiRenderer.render(pixiScene);
      * ```
+     * @advanced
      */
     public resetState(): void
     {

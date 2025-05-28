@@ -19,6 +19,7 @@ import type { SpritesheetData } from './Spritesheet';
  * @see {@link Spritesheet}
  * @see {@link SpritesheetData}
  * @category assets
+ * @standard
  */
 export interface SpriteSheetJson extends SpritesheetData
 {
@@ -78,6 +79,7 @@ function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack:
  * })
  * @type {AssetExtension}
  * @category assets
+ * @standard
  */
 export const spritesheetAsset = {
     extension: ExtensionType.Asset,

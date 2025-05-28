@@ -4,6 +4,7 @@
  * // Destroy the sprite and all its children.
  * sprite.destroy({ children: true });
  * @category scene
+ * @standard
  */
 export interface BaseDestroyOptions
 {

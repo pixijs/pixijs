@@ -24,6 +24,7 @@ import type { DestroyOptions } from '../container/destroyTypes';
  * ```
  * @see {@link NineSliceSprite}
  * @category scene
+ * @standard
  */
 export interface NineSliceSpriteOptions extends PixiMixins.NineSliceSpriteOptions, ViewContainerOptions
 {
@@ -46,7 +47,7 @@ export interface NineSliceSpriteOptions extends PixiMixins.NineSliceSpriteOption
     /** The anchor point of the NineSliceSprite. */
     anchor?: PointData | number;
 }
-// eslint-disable-next-line requireExport/require-export-jsdoc
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface NineSliceSprite extends PixiMixins.NineSliceSprite, ViewContainer<NineSliceSpriteGpuData> {}
 
 /**
@@ -73,8 +74,15 @@ export interface NineSliceSprite extends PixiMixins.NineSliceSprite, ViewContain
  * @example
  * import { NineSliceSprite, Texture } from 'pixi.js';
  *
- * const plane9 = new NineSliceSprite(Texture.from('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
+ * const plane9 = new NineSliceSprite({
+ *   texture: Texture.from('BoxWithRoundedCorners.png'),
+ *   leftWidth: 15,
+ *   topHeight: 15,
+ *   rightWidth: 15,
+ *   bottomHeight: 15,
+ * });
  * @category scene
+ * @standard
  */
 export class NineSliceSprite extends ViewContainer<NineSliceSpriteGpuData> implements View
 {
@@ -84,12 +92,13 @@ export class NineSliceSprite extends ViewContainer<NineSliceSpriteGpuData> imple
         texture: Texture.EMPTY,
     };
 
+    /** @internal */
     public override readonly renderPipeId: string = 'nineSliceSprite';
     /** @internal */
     public _texture: Texture;
     /** @internal */
     public _anchor: ObservablePoint;
-
+    /** @advanced */
     public batched = true;
     private _leftWidth: number;
     private _topHeight: number;
@@ -98,18 +107,6 @@ export class NineSliceSprite extends ViewContainer<NineSliceSpriteGpuData> imple
     private _width: number;
     private _height: number;
 
-    /**
-     * @param {NineSliceSpriteOptions|Texture} options - Options to use
-     * @param options.texture - The texture to use on the NineSliceSprite.
-     * @param options.leftWidth - Width of the left vertical bar (A)
-     * @param options.topHeight - Height of the top horizontal bar (C)
-     * @param options.rightWidth - Width of the right vertical bar (B)
-     * @param options.bottomHeight - Height of the bottom horizontal bar (D)
-     * @param options.width - Width of the NineSliceSprite,
-     * setting this will actually modify the vertices and not the UV's of this plane.
-     * @param options.height - Height of the NineSliceSprite,
-     * setting this will actually modify the vertices and not UV's of this plane.
-     */
     constructor(options: NineSliceSpriteOptions | Texture)
     {
         if ((options instanceof Texture))

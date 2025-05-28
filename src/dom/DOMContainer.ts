@@ -6,6 +6,7 @@ import type { PointData } from '../maths/point/PointData';
 /**
  * Options for the {@link DOMContainer} constructor.
  * @category scene
+ * @standard
  */
 export interface DOMContainerOptions extends ViewContainerOptions
 {
@@ -41,6 +42,7 @@ export interface DOMContainerOptions extends ViewContainerOptions
  * const domContainer = new DOMContainer({ element });
  * ```
  * @category scene
+ * @standard
  */
 export class DOMContainer extends ViewContainer<null>
 {

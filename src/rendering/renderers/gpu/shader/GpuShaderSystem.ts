@@ -7,6 +7,7 @@ import type { GpuProgram } from './GpuProgram';
  * Data structure for GPU program layout.
  * Contains bind group layouts and pipeline layout.
  * @category rendering
+ * @advanced
  */
 export interface GPUProgramData
 {
@@ -17,6 +18,7 @@ export interface GPUProgramData
 /**
  * A system that manages the rendering of GpuPrograms.
  * @category rendering
+ * @advanced
  */
 export class GpuShaderSystem
 {

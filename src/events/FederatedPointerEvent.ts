@@ -3,6 +3,7 @@ import { FederatedMouseEvent } from './FederatedMouseEvent';
 /**
  * A {@link FederatedEvent} for pointer events.
  * @category events
+ * @standard
  */
 export class FederatedPointerEvent extends FederatedMouseEvent implements PointerEvent
 {

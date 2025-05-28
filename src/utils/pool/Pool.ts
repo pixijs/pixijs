@@ -2,6 +2,7 @@
  * A generic class for managing a pool of items.
  * @template T The type of items in the pool. Must implement {@link PoolItem}.
  * @category utils
+ * @standard
  */
 export class Pool<T extends PoolItem>
 {

@@ -25,6 +25,7 @@ import type { BindableTexture } from '../texture/Texture';
  * @see environment.ICanvas
  * @see Texture
  * @see RenderTarget
+ * @advanced
  */
 export type RenderSurface = ICanvas | BindableTexture | RenderTarget;
 
@@ -147,6 +148,7 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends GlRenderTarget | GpuR
  * // draw something!
  * ```
  * @category rendering
+ * @advanced
  */
 export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRenderTarget> implements System
 {

@@ -12,6 +12,7 @@ import type { Instruction } from './Instruction';
  * InstructionSet.instructions contains all the instructions, but does not resize (for performance).
  * So for the true length of the instructions you need to use InstructionSet.instructionSize
  * @category rendering
+ * @advanced
  */
 export class InstructionSet
 {

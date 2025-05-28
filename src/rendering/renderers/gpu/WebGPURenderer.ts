@@ -74,13 +74,14 @@ PixiMixins.WebGPUPipes;
 /**
  * Options for WebGPURenderer.
  * @category rendering
+ * @standard
  */
 export interface WebGPUOptions extends
     SharedRendererOptions,
     ExtractRendererOptions<typeof DefaultWebGPUSystems>,
     PixiMixins.WebGPUOptions{}
 
-// eslint-disable-next-line requireExport/require-export-jsdoc
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface WebGPURenderer<T extends ICanvas = HTMLCanvasElement>
     extends AbstractRenderer<WebGPUPipes, WebGPUOptions, T>,
     WebGPUSystems {}
@@ -131,6 +132,7 @@ export interface WebGPURenderer<T extends ICanvas = HTMLCanvasElement>
  *
  * The breadth of the API surface provided by the renderer is contained within these systems.
  * @category rendering
+ * @standard
  * @property {GpuUboSystem} ubo - UboSystem instance.
  * @property {GpuEncoderSystem} encoder - EncoderSystem instance.
  * @property {GpuDeviceSystem} device - DeviceSystem instance.

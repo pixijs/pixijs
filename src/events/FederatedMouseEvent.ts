@@ -8,6 +8,7 @@ import type { PixiTouch } from './FederatedEvent';
 /**
  * A {@link FederatedEvent} for mouse events.
  * @category events
+ * @standard
  */
 export class FederatedMouseEvent extends FederatedEvent<
 MouseEvent | PointerEvent | PixiTouch

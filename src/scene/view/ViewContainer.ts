@@ -18,11 +18,13 @@ export interface GPUData
 /**
  * Options for the construction of a ViewContainer.
  * @category scene
+ * @standard
  */
 export interface ViewContainerOptions extends ContainerOptions, PixiMixins.ViewContainerOptions {}
-// eslint-disable-next-line requireExport/require-export-jsdoc
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface ViewContainer<GPU_DATA extends GPUData = any> extends PixiMixins.ViewContainer, Container
 {
+    // eslint-disable-next-line requireMemberAPI/require-member-api-doc
     _gpuData: Record<number, GPU_DATA>;
 }
 
@@ -31,6 +33,7 @@ export interface ViewContainer<GPU_DATA extends GPUData = any> extends PixiMixin
  * This view can be a Sprite, a Graphics object, or any other object that can be rendered.
  * This class is abstract and should not be used directly.
  * @category scene
+ * @standard
  */
 export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Container implements View
 {
@@ -140,6 +143,13 @@ export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Cont
         this._gpuData = null;
     }
 
+    /**
+     * Collects renderables for the view container.
+     * @param instructionSet - The instruction set to collect renderables for.
+     * @param renderer - The renderer to collect renderables for.
+     * @param currentLayer - The current render layer.
+     * @internal
+     */
     public override collectRenderablesSimple(
         instructionSet: InstructionSet,
         renderer: Renderer,

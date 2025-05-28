@@ -11,6 +11,7 @@ import type { WebGLExtensions } from './WebGLExtensions';
 /**
  * Options for the context system.
  * @category rendering
+ * @standard
  * @property {WebGL2RenderingContext | null} [context=null] - User-provided WebGL rendering context object.
  * @property {GpuPowerPreference} [powerPreference='default'] - An optional hint indicating what configuration
  * of GPU is suitable for the WebGL context, can be `'high-performance'` or `'low-power'`. Setting to `'high-performance'`
@@ -71,6 +72,7 @@ export interface ContextSystemOptions
 /**
  * System plugin to the renderer to manage the context
  * @category rendering
+ * @advanced
  */
 export class GlContextSystem implements System<ContextSystemOptions>
 {

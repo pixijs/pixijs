@@ -13,14 +13,18 @@ import type { HTMLTextStyleOptions } from './HTMLTextStyle';
  * @property {string} [text=''] - The string that you would like the text to display.
  * @property {HTMLTextStyle | HTMLTextStyleOptions} [style] - The style of the text.
  * @category text
+ * @standard
  */
 export interface HTMLTextOptions extends TextOptions<HTMLTextStyle, HTMLTextStyleOptions>, PixiMixins.HTMLTextOptions
 {
-    /** optional texture style to use for the text. */
+    /**
+     * optional texture style to use for the text.
+     * @advanced
+     */
     textureStyle?: TextureStyle | TextureStyleOptions;
 }
 
-// eslint-disable-next-line requireExport/require-export-jsdoc
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface HTMLText extends PixiMixins.HTMLText, AbstractText<
     HTMLTextStyle,
     HTMLTextStyleOptions,
@@ -80,6 +84,7 @@ export interface HTMLText extends PixiMixins.HTMLText, AbstractText<
  *     }
  * });
  * @category scene
+ * @standard
  */
 export class HTMLText extends AbstractText<
     HTMLTextStyle,
@@ -88,12 +93,14 @@ export class HTMLText extends AbstractText<
     BatchableHTMLText
 > implements View
 {
+    /** @internal */
     public override readonly renderPipeId: string = 'htmlText';
 
     /**
      * optional texture style to use for the text.
      * NOTE: HTMLText is not updated when this property is updated,
      * you must update the text manually by calling `text.onViewUpdate()`
+     * @advanced
      */
     public textureStyle?: TextureStyle;
 

@@ -27,6 +27,7 @@ import type { DestroyOptions } from '../container/destroyTypes';
  * ```
  * @see {@link TilingSprite}
  * @category scene
+ * @standard
  */
 export interface TilingSpriteOptions extends PixiMixins.TilingSpriteOptions, ViewContainerOptions
 {
@@ -74,7 +75,7 @@ export interface TilingSpriteOptions extends PixiMixins.TilingSpriteOptions, Vie
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
-// eslint-disable-next-line requireExport/require-export-jsdoc
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface TilingSprite extends PixiMixins.TilingSprite, ViewContainer<TilingSpriteGpuData> {}
 
 /**
@@ -91,6 +92,7 @@ export interface TilingSprite extends PixiMixins.TilingSprite, ViewContainer<Til
  *
  * app.stage.addChild(tilingSprite);
  * @category scene
+ * @standard
  */
 export class TilingSprite extends ViewContainer<TilingSpriteGpuData> implements View, Instruction
 {
@@ -139,7 +141,9 @@ export class TilingSprite extends ViewContainer<TilingSpriteGpuData> implements 
         applyAnchorToTexture: false,
     };
 
+    /** @internal */
     public override readonly renderPipeId: string = 'tilingSprite';
+    /** @advanced */
     public readonly batched = true;
 
     /**
@@ -154,6 +158,7 @@ export class TilingSprite extends ViewContainer<TilingSpriteGpuData> implements 
     /**
      * @see {@link TilingSpriteOptions.applyAnchorToTexture}
      * @deprecated since 8.0.0
+     * @advanced
      */
     public get uvRespectAnchor(): boolean
     {
@@ -161,6 +166,7 @@ export class TilingSprite extends ViewContainer<TilingSpriteGpuData> implements 
 
         return this.applyAnchorToTexture;
     }
+    /** @advanced */
     public set uvRespectAnchor(value: boolean)
     {
         warn('uvRespectAnchor is deprecated, please use applyAnchorToTexture instead');
@@ -259,12 +265,14 @@ export class TilingSprite extends ViewContainer<TilingSpriteGpuData> implements 
      * Change to -0.5 to add a pixel to the edge, recommended for transparent trimmed textures in atlas
      * @default 0.5
      * @type {number}
+     * @advanced
      */
     get clampMargin()
     {
         return this._texture.textureMatrix.clampMargin;
     }
 
+    /** @advanced */
     set clampMargin(value: number)
     {
         this._texture.textureMatrix.clampMargin = value;

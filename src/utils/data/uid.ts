@@ -5,6 +5,7 @@ const uidCache: Record<string, number> = {
 /**
  * The names of the unique identifiers. These are used to create unique identifiers for different types of objects.
  * @category utils
+ * @internal
  */
 export type UIDNames =
     | 'default'
@@ -37,6 +38,7 @@ export type UIDNames =
  * @param name - The name of the identifier.
  * @returns {number} The next unique identifier to use.
  * @category utils
+ * @internal
  */
 export function uid(name: UIDNames = 'default'): number
 {

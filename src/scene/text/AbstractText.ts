@@ -13,11 +13,13 @@ import type { TextStyle, TextStyleOptions } from './TextStyle';
 /**
  * A string or number that can be used as text.
  * @category text
+ * @standard
  */
 export type TextString = string | number | { toString: () => string };
 /**
  * A union of all text styles, including HTML, Bitmap and Canvas text styles.
  * @category text
+ * @standard
  * @see TextStyle
  * @see HTMLTextStyle
  */
@@ -25,6 +27,7 @@ export type AnyTextStyle = TextStyle | HTMLTextStyle;
 /**
  * A union of all text style options, including HTML, Bitmap and Canvas text style options.
  * @category text
+ * @standard
  * @see TextStyleOptions
  * @see HTMLTextStyleOptions
  */
@@ -43,6 +46,7 @@ export type AnyTextStyleOptions = TextStyleOptions | HTMLTextStyleOptions;
  *  }
  * });
  * @category text
+ * @standard
  */
 export interface TextOptions<
     TEXT_STYLE extends TextStyle = TextStyle,
@@ -77,7 +81,7 @@ export interface TextOptions<
  * @see BitmapText
  * @see HTMLText
  * @category scene
- * @internal
+ * @standard
  */
 export abstract class AbstractText<
     TEXT_STYLE extends TextStyle = TextStyle,
