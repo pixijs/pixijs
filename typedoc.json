@@ -54,7 +54,7 @@
     "hideGenerator": true,
     "visibilityFilters": {
         "inherited": true,
-        "@advanced": true,
+        "@advanced": false,
     },
     "validation": {
         "notExported": false,
