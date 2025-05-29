@@ -26,6 +26,7 @@
     "lightHighlightTheme": "github-light-default",
     "darkHighlightTheme": "github-dark-default",
     "kindSortOrder": [
+        "Document",
         "Reference",
         "Project",
         "Module",

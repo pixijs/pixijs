@@ -31,7 +31,7 @@ export async function loadEnvironmentExtensions(skip: boolean): Promise<void>
  * @param add - whether to add the default imports to the bundle
  * @deprecated since 8.1.6. Use `loadEnvironmentExtensions` instead
  * @category environment
- * @internal
+ * @advanced
  */
 export async function autoDetectEnvironment(add: boolean): Promise<void>
 {

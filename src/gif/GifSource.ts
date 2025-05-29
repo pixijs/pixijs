@@ -6,6 +6,7 @@ import { Texture } from '../rendering/renderers/shared/texture/Texture';
 /**
  * Represents a single frame of a GIF. Includes image and timing data.
  * @category gif
+ * @advanced
  */
 interface GifFrame
 {
@@ -20,6 +21,7 @@ interface GifFrame
 /**
  * Options when constructing from buffer
  * @category gif
+ * @advanced
  */
 interface GifBufferOptions
 {
