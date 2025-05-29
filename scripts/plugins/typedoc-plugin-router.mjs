@@ -1,13 +1,46 @@
-import { CategoryRouter } from 'typedoc';
+import { CategoryRouter, DocumentReflection } from 'typedoc';
 
 const Chars = {
+    EOF: -1,
+    NULL: 0,
+    TAB: 0x9,
+    LF: 0xa,
+    FF: 0xc,
+    SPACE: 0x20,
+    NUMBER_SIGN: 0x23,
+    BANG: 0x21,
+    QUOTATION_MARK: 0x22,
+    DOLLAR: 0x24,
+    AMPERSAND: 0x26,
+    APOSTROPHE: 0x27,
     LEFT_PAREN: 0x28,
     RIGHT_PAREN: 0x29,
+    ASTERISK: 0x2a,
     PLUS: 0x2b,
     COMMA: 0x2c,
     DASH: 0x2d,
     DOT: 0x2e,
+    SOLIDUS: 0x2f,
+    ZERO: 0x30,
+    NINE: 0x39,
+    COLON: 0x3a,
+    SEMICOLON: 0x3b,
+    LESS_THAN: 0x3c,
+    EQUALS: 0x3d,
+    GREATER_THAN: 0x3e,
+    QUESTION_MARK: 0x3f,
+    AT: 0x40,
+    UPPERCASE_A: 0x41,
+    UPPERCASE_F: 0x46,
+    UPPERCASE_X: 0x58,
+    UPPERCASE_Z: 0x5a,
     UNDERSCORE: 0x5f,
+    GRAVE_ACCENT: 0x60,
+    LOWERCASE_A: 0x61,
+    LOWERCASE_F: 0x66,
+    LOWERCASE_X: 0x78,
+    LOWERCASE_Z: 0x7a,
+    TILDE: 0x7e,
 };
 
 function isalpha(ch)
@@ -95,6 +128,12 @@ class PixiRouter extends CategoryRouter
         }
 
         const baseName = parts.join('.');
+
+        if (reflection instanceof DocumentReflection)
+        {
+            // For document reflections, we use the category as the base name
+            return `${cat}`;
+        }
 
         return `${cat}.${baseName}`;
     }
