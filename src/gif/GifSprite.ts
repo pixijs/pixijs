@@ -7,18 +7,6 @@ import { GifSource } from './GifSource';
 import type { SCALE_MODE } from '../rendering/renderers/shared/texture/const';
 
 /**
- * @module
- * @categoryDescription gif
- * Optional module to import to decode and play animated GIFs.
- * @example
- * import { Assets } from 'pixi.js';
- * import { GifSprite } from 'pixi.js/gif';
- *
- * const source = await Assets.load('example.gif');
- * const gif = new GifSprite({ source });
- */
-
-/**
  * Default options for all GifSprite objects.
  * @category gif
  * @standard

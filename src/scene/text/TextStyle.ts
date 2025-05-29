@@ -118,12 +118,6 @@ export type TextStyleTextBaseline = 'alphabetic' | 'top' | 'hanging' | 'middle' 
 export type TextStyleWhiteSpace = 'normal' | 'pre' | 'pre-line';
 
 /**
- * @module
- * @categoryDescription text
- * A collection of text related classes.
- */
-
-/**
  * A drop shadow effect.
  * @category text
  * @standard

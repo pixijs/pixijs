@@ -2,7 +2,7 @@
  * A generic class for managing a pool of items.
  * @template T The type of items in the pool. Must implement {@link PoolItem}.
  * @category utils
- * @standard
+ * @advanced
  */
 export class Pool<T extends PoolItem>
 {
@@ -114,6 +114,7 @@ export class Pool<T extends PoolItem>
 /**
  * An object that can be stored in a {@link Pool}.
  * @category utils
+ * @advanced
  */
 export type PoolItem = {
     init?: (data?: any) => void;
@@ -125,5 +126,6 @@ export type PoolItem = {
  * The constructor of an object that can be stored in a {@link Pool}.
  * @typeParam K - The type of the object that can be stored in a {@link Pool}.
  * @category utils
+ * @advanced
  */
 export type PoolItemConstructor<K extends PoolItem> = new () => K;

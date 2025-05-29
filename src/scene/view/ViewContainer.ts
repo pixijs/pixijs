@@ -18,7 +18,7 @@ export interface GPUData
 /**
  * Options for the construction of a ViewContainer.
  * @category scene
- * @standard
+ * @advanced
  */
 export interface ViewContainerOptions extends ContainerOptions, PixiMixins.ViewContainerOptions {}
 // eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
@@ -33,7 +33,7 @@ export interface ViewContainer<GPU_DATA extends GPUData = any> extends PixiMixin
  * This view can be a Sprite, a Graphics object, or any other object that can be rendered.
  * This class is abstract and should not be used directly.
  * @category scene
- * @standard
+ * @advanced
  */
 export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Container implements View
 {

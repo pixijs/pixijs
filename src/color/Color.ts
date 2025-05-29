@@ -6,29 +6,6 @@ import type { AnyColor, HslaColor, HslColor, HsvaColor, HsvColor, RgbaColor, Rgb
 extend([namesPlugin]);
 
 /**
- * @module
- * @categoryDescription color
- * Pixi supports multiple color formats, including CSS color strings, hex, numbers, and arrays.
- *
- * When providing values for any of the color properties, you can use any of the {@link ColorSource} formats.
- * ```typescript
- * import { Color } from 'pixi.js';
- *
- * // All of these are valid:
- * sprite.tint = 'red';
- * sprite.tint = 0xff0000;
- * sprite.tint = '#ff0000';
- * sprite.tint = new Color('red');
- *
- * // Same for graphics fill/stroke colors and other  color values:
- * graphics.fill({ color: 'red' });
- * graphics.fill({ color: 0xff0000 });
- * graphics.stroke({ color: '#ff0000' });
- * graphics.stroke({ color: new Color('red')};
- * ```
- */
-
-/**
  * RGBA color array.
  *
  * `[number, number, number, number]`

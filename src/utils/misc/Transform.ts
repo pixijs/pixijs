@@ -6,7 +6,7 @@ import type { Observer } from '../../maths/point/ObservablePoint';
 /**
  * Options for the {@link Transform} constructor.
  * @category utils
- * @standard
+ * @advanced
  */
 export interface TransformOptions
 {
