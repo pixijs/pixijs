@@ -214,7 +214,7 @@ export const loadVideoTextures = {
                 resolve(createTexture(base, loader, url));
             };
 
-            if (asset.data.preload && !asset.data.autoplay)
+            if (options.preload && !options.autoplay)
             {
                 videoElement.load();
             }
