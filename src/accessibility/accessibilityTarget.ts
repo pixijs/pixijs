@@ -35,6 +35,11 @@ export interface AccessibleOptions
      * Flag for if the object is accessible. If true AccessibilityManager will overlay a
      * shadow div with attributes set
      * @default false
+     * @example
+     * ```js
+     * const container = new Container();
+     * container.accessible = true;
+     * ```
      */
     accessible: boolean;
     /**
@@ -42,18 +47,39 @@ export interface AccessibleOptions
      * If accessibleTitle AND accessibleHint has not been this will default to 'container [tabIndex]'
      * @type {string}
      * @default null
+     * @example
+     * ```js
+     * const container = new Container();
+     * container.accessible = true;
+     * container.accessibleTitle = 'My Container';
+     * ```
      */
     accessibleTitle: string | null;
     /**
      * Sets the aria-label attribute of the shadow div
      * @default null
      * @advanced
+     * @example
+     * ```js
+     * const container = new Container();
+     * container.accessible = true;
+     * container.accessibleHint = 'This is a container';
      */
     accessibleHint: string | null;
     /**
      * Sets the tabIndex of the shadow div. You can use this to set the order of the
      * elements when using the tab key to navigate.
      * @default 0
+     * @example
+     * ```js
+     * const container = new Container();
+     * container.accessible = true;
+     * container.tabIndex = 0;
+     *
+     * const sprite = new Sprite(texture);
+     * sprite.accessible = true;
+     * sprite.tabIndex = 1;
+     * ```
      */
     tabIndex: number;
     /**
@@ -62,6 +88,12 @@ export interface AccessibleOptions
      * @default 'button'
      * @type {string}
      * @advanced
+     * @example
+     * ```js
+     * const container = new Container();
+     * container.accessible = true;
+     * container.accessibleType = 'button'; // or 'link', 'checkbox', etc.
+     * ```
      */
     accessibleType: keyof HTMLElementTagNameMap;
     /**
@@ -70,12 +102,23 @@ export interface AccessibleOptions
      * @default 'auto'
      * @type {PointerEvents}
      * @advanced
+     * @example
+     * ```js
+     * const container = new Container();
+     * container.accessible = true;
+     * container.accessiblePointerEvents = 'none'; // or 'auto', 'visiblePainted', etc.
      */
     accessiblePointerEvents: PointerEvents;
 
     /**
      * Sets the text content of the shadow
      * @default null
+     * @example
+     * ```js
+     * const container = new Container();
+     * container.accessible = true;
+     * container.accessibleText = 'This is a container';
+     * ```
      */
     accessibleText: string | null;
 
@@ -83,6 +126,15 @@ export interface AccessibleOptions
      * Setting to false will prevent any children inside this container to
      * be accessible. Defaults to true.
      * @default true
+     * @example
+     * ```js
+     * const container = new Container();
+     * container.accessible = true;
+     * container.accessibleChildren = false; // This will prevent any children from being accessible
+     *
+     * const sprite = new Sprite(texture);
+     * sprite.accessible = true; // This will not work since accessibleChildren is false
+     * ```
      */
     accessibleChildren: boolean;
 }

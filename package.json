@@ -48,7 +48,7 @@
     "test:types": "tsc --noEmit",
     "test:index": "ts-node --transpile-only ./scripts/index/index.ts --check",
     "docs": "mkdirp out && npx typedoc",
-    "docs:watch": "nodemon --watch \"./src/*\" --exec \"rimraf .s3_uploads/docs && npm run docs\" -e ts",
+    "docs:watch": "nodemon --watch \"./src/*\" --exec \"rimraf .s3_uploads/docs && npm run docs\" -e ts,md",
     "lint": "eslint ./ --cache --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "codesandbox-ci": "run-s build",

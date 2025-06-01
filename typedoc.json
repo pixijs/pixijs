@@ -1,6 +1,6 @@
 {
     "$schema": "https://typedoc.org/schema.json",
-    "entryPoints": ["./src/index.ts"],
+    "entryPoints": ["./src/docs.entry.ts"],
     "tsconfig": "tsconfig.json",
     "out": ".s3_uploads/docs",
     "disableSources": true,
@@ -20,7 +20,7 @@
         "typedoc-plugin-mdn-links",
         "typedoc-plugin-no-inherit",
         "./scripts/plugins/typedoc-plugin-remove-standard-tag.mjs",
-        "./scripts/plugins/typedoc-plugin-router.mjs",
+        "./scripts/plugins/typedoc-plugin-router.mjs"
     ],
     "customJs": "./scripts/plugins/typedoc-custom.mjs",
     "lightHighlightTheme": "github-light-default",
@@ -49,7 +49,7 @@
         "Enum",
         "EnumMember",
         "Interface",
-        "TypeAlias",
+        "TypeAlias"
     ],
     "categoryOrder": [
         "accessibility",
@@ -72,12 +72,12 @@
     "navigationLinks": {
         "Website": "https://pixijs.com",
         "GitHub": "https://github.com/pixijs/pixijs",
-        "Discord": "https://discord.gg/QrnxmQUPGV",
+        "Discord": "https://discord.gg/QrnxmQUPGV"
     },
     "hideGenerator": true,
     "visibilityFilters": {
         "inherited": true,
-        "@advanced": false,
+        "@advanced": false
     },
     "validation": {
         "notExported": false,

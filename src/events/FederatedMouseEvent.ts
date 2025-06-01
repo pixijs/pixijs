@@ -6,8 +6,43 @@ import type { Container } from '../scene/container/Container';
 import type { PixiTouch } from './FederatedEvent';
 
 /**
- * A {@link FederatedEvent} for mouse events.
+ * A specialized event class for mouse interactions in PixiJS applications.
+ * Extends {@link FederatedEvent} to provide mouse-specific properties and methods
+ * while maintaining compatibility with the DOM MouseEvent interface.
+ *
+ * Key features:
+ * - Tracks mouse button states
+ * - Provides modifier key states
+ * - Supports coordinate systems (client, screen, global)
+ * - Enables precise position tracking
+ * @example
+ * ```ts
+ * // Basic mouse event handling
+ * sprite.on('mousemove', (event: FederatedMouseEvent) => {
+ *     // Get coordinates in different spaces
+ *     console.log('Global position:', event.global.x, event.global.y);
+ *     console.log('Client position:', event.client.x, event.client.y);
+ *     console.log('Screen position:', event.screen.x, event.screen.y);
+ *
+ *     // Check button and modifier states
+ *     if (event.buttons === 1 && event.ctrlKey) {
+ *         console.log('Left click + Control key');
+ *     }
+ *
+ *     // Get local coordinates relative to any container
+ *     const localPos = event.getLocalPosition(container);
+ *     console.log('Local position:', localPos.x, localPos.y);
+ * });
+ *
+ * // Handle mouse button states
+ * sprite.on('mousedown', (event: FederatedMouseEvent) => {
+ *     console.log('Mouse button:', event.button); // 0=left, 1=middle, 2=right
+ *     console.log('Active buttons:', event.buttons);
+ * });
+ * ```
  * @category events
+ * @see {@link FederatedEvent} For base event functionality
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent} DOM MouseEvent Interface
  * @standard
  */
 export class FederatedMouseEvent extends FederatedEvent<
@@ -105,15 +140,32 @@ MouseEvent | PointerEvent | PixiTouch
     get screenY(): number { return this.screen.y; }
 
     /**
-     * This will return the local coordinates of the specified container for this InteractionData
-     * @param {Container} container - The Container that you would like the local
-     *  coords off
-     * @param {PointData} point - A Point object in which to store the value, optional (otherwise
-     *  will create a new point)
-     * @param {PointData} globalPos - A Point object containing your custom global coords, optional
-     *  (otherwise will use the current global coords)
-     * @returns - A point containing the coordinates of the InteractionData position relative
-     *  to the Container
+     * Converts global coordinates into container-local coordinates.
+     *
+     * This method transforms coordinates from world space to a container's local space,
+     * useful for precise positioning and hit testing.
+     * @param container - The Container to get local coordinates for
+     * @param point - Optional Point object to store the result. If not provided, a new Point will be created
+     * @param globalPos - Optional custom global coordinates. If not provided, the event's global position is used
+     * @returns The local coordinates as a Point object
+     * @example
+     * ```ts
+     * // Basic usage - get local coordinates relative to a container
+     * sprite.on('pointermove', (event: FederatedMouseEvent) => {
+     *     // Get position relative to the sprite
+     *     const localPos = event.getLocalPosition(sprite);
+     *     console.log('Local position:', localPos.x, localPos.y);
+     * });
+     * // Using custom global coordinates
+     * const customGlobal = new Point(100, 100);
+     * sprite.on('pointermove', (event: FederatedMouseEvent) => {
+     *     // Transform custom coordinates
+     *     const localPos = event.getLocalPosition(sprite, undefined, customGlobal);
+     *     console.log('Custom local position:', localPos.x, localPos.y);
+     * });
+     * ```
+     * @see {@link Container.worldTransform} For the transformation matrix
+     * @see {@link Point} For the point class used to store coordinates
      */
     public getLocalPosition<P extends PointData = Point>(container: Container, point?: P, globalPos?: PointData): P
     {

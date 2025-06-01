@@ -7,40 +7,202 @@ import { GifSource } from './GifSource';
 import type { SCALE_MODE } from '../rendering/renderers/shared/texture/const';
 
 /**
- * Default options for all GifSprite objects.
+ * Configuration options for creating a GifSprite instance.
+ *
+ * These options control both the visual appearance and playback behavior
+ * of animated GIFs.
+ * @example
+ * ```ts
+ * import { GifSprite, Assets } from 'pixi.js';
+ *
+ * // Create with options
+ * const source = await Assets.load('animation.gif');
+ * const options: GifSpriteOptions = {
+ *     source,                    // GIF data source
+ *     animationSpeed: 1.5,      // 50% faster than normal
+ *     loop: true,               // Loop the animation
+ *     autoPlay: true,           // Start playing immediately
+ *     scaleMode: 'nearest',     // Pixel art style scaling
+ *     onComplete: () => {       // Called when non-looping animation ends
+ *         console.log('Animation complete!');
+ *     }
+ * };
+ *
+ * const animation = new GifSprite(options);
+ * ```
  * @category gif
  * @standard
  */
 interface GifSpriteOptions extends Omit<SpriteOptions, 'texture'>
 {
-    /** Source to the GIF frame and animation data */
+    /**
+     * Source containing the GIF frame and animation data
+     * @see {@link GifSource}
+     * @example
+     * ```ts
+     * const source = await Assets.load('animation.gif');
+     * const animation = new GifSprite({ source });
+     * ```
+     */
     source: GifSource;
-    /** Whether to start playing right away */
+    /**
+     * Whether to start playing right away
+     * @default true
+     * @example
+     * ```ts
+     * const animation = new GifSprite({ source, autoPlay: true });
+     * ```
+     * @see {@link GifSprite.play}
+     */
     autoPlay?: boolean;
     /**
      * Scale Mode to use for the texture
      * @type {SCALE_MODE}
+     * @default 'linear'
+     * @example
+     * ```ts
+     * const animation = new GifSprite({ source, scaleMode: 'nearest' });
+     * ```
+     * @see {@link SCALE_MODE}
+     * @see {@link Texture.scaleMode}
      */
     scaleMode?: SCALE_MODE;
-    /** To enable looping */
+    /**
+     * Whether to loop the animation.
+     * If `false`, the animation will stop after the last frame.
+     * @default true
+     * @example
+     * ```ts
+     * const animation = new GifSprite({ source, loop: false });
+     * ```
+     */
     loop?: boolean;
-    /** Speed of the animation */
+    /**
+     * Animation playback speed multiplier.
+     * Higher values speed up the animation, lower values slow it down.
+     * @default 1
+     * @example
+     * ```ts
+     * const animation = new GifSprite({ source, animationSpeed: 2 }); // 2x speed
+     * ```
+     * @see {@link GifSprite.play}
+     * @see {@link GifSprite.stop}
+     */
     animationSpeed?: number;
-    /** Set to `false` to manage updates yourself */
+    /**
+     * Whether to auto-update animation via shared ticker.
+     * Set to `false` to manage updates yourself.
+     * @default true
+     * @example
+     * ```ts
+     * const animation = new GifSprite({ source, autoUpdate: false });
+     * // Manage updates manually:
+     * app.ticker.add((ticker) => {
+     *     animation.update(ticker);
+     * });
+     * ```
+     */
     autoUpdate?: boolean;
-    /** The completed callback, optional */
+    /**
+     * Callback when non-looping animation completes
+     * @default null
+     * @example
+     * ```ts
+     * const animation = new GifSprite({
+     *     source,
+     *     onComplete: () => {
+     *         console.log('Animation finished!');
+     *     }
+     * });
+     * ```
+     * @see {@link GifSprite.play}
+     * @see {@link GifSprite.stop}
+     */
     onComplete?: null | (() => void);
-    /** The loop callback, optional */
+    /**
+     * Callback when looping animation completes a loop
+     * @default null
+     * @example
+     * ```ts
+     * const animation = new GifSprite({
+     *     source,
+     *     onLoop: () => {
+     *         console.log('Animation looped!');
+     *     }
+     * });
+     * ```
+     * @see {@link GifSprite.play}
+     * @see {@link GifSprite.stop}
+     */
     onLoop?: null | (() => void);
-    /** The frame callback, optional */
+    /**
+     * Callback when animation frame changes
+     * @default null
+     * @example
+     * ```ts
+     * const animation = new GifSprite({
+     *     source,
+     *     onFrameChange: (currentFrame) => {
+     *         console.log(`Current frame: ${currentFrame}`);
+     *     }
+     * });
+     * ```
+     * @see {@link GifSprite.currentFrame}
+     * @see {@link GifSprite.play}
+     * @see {@link GifSprite.stop}
+     */
     onFrameChange?: null | ((currentFrame: number) => void);
-    /** Fallback FPS if GIF contains no time information */
+    /**
+     * Fallback FPS if GIF contains no timing information
+     * @default 30
+     * @example
+     * ```ts
+     * const animation = new GifSprite({
+     *     source,
+     *     fps: 24 // Use 24 FPS if GIF timing is missing
+     * });
+     * ```
+     * @see {@link GifSource.fps}
+     * @see {@link GifSprite.play}
+     * @see {@link GifSprite.stop}
+     * @see {@link GifSprite.update}
+     */
     fps?: number;
 }
 
 /**
- * Runtime object to play animated GIFs. This object is similar to an AnimatedSprite.
- * It support playback (seek, play, stop) as well as animation speed and looping.
+ * Runtime object for playing animated GIFs with advanced playback control.
+ *
+ * Features:
+ * - Play, pause, and seek controls
+ * - Adjustable animation speed
+ * - Loop control
+ * - Frame change callbacks
+ * - Auto-updating via shared ticker
+ *
+ * This class extends Sprite and provides similar functionality to AnimatedSprite,
+ * but specifically optimized for GIF playback.
+ * @example
+ * ```ts
+ * import { GifSprite, Assets } from 'pixi.js';
+ *
+ * // Load and create a GIF sprite
+ * const source = await Assets.load('animation.gif');
+ * const animation = new GifSprite({
+ *     source,
+ *     animationSpeed: 1,
+ *     loop: true,
+ *     autoPlay: true
+ * });
+ *
+ * // Add to stage
+ * app.stage.addChild(animation);
+ *
+ * // Control playback
+ * animation.play();
+ * animation.stop();
+ * animation.currentFrame = 5; // Jump to frame
+ * ```
  * @category gif
  * @see Thanks to {@link https://github.com/matt-way/gifuct-js/ gifuct-js}
  * @standard
@@ -48,16 +210,17 @@ interface GifSpriteOptions extends Omit<SpriteOptions, 'texture'>
 class GifSprite extends Sprite
 {
     /**
-     * Default options for all GifSprite objects.
-     * @property {SCALE_MODE} [scaleMode='linear'] - Scale mode to use for the texture.
-     * @property {boolean} [loop=true] - To enable looping.
-     * @property {number} [animationSpeed=1] - Speed of the animation.
-     * @property {boolean} [autoUpdate=true] - Set to `false` to manage updates yourself.
-     * @property {boolean} [autoPlay=true] - To start playing right away.
-     * @property {Function} [onComplete=null] - The completed callback, optional.
-     * @property {Function} [onLoop=null] - The loop callback, optional.
-     * @property {Function} [onFrameChange=null] - The frame callback, optional.
-     * @property {number} [fps=30] - Fallback FPS if GIF contains no time information.
+     * Default configuration options for GifSprite instances.
+     *
+     * These values are used when specific options are not provided to the constructor.
+     * Each property can be overridden by passing it in the options object.
+     * @example
+     * ```ts
+     * GifSprite.defaultOptions.fps = 24; // Change default FPS to 24
+     * GifSprite.defaultOptions.loop = false; // Disable looping by default
+     *
+     * const animation = new GifSprite(); // Will use these defaults
+     * ```
      */
     public static defaultOptions: Omit<GifSpriteOptions, 'source'> = {
         scaleMode: 'linear',
