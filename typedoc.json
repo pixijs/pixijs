@@ -1,6 +1,6 @@
 {
     "$schema": "https://typedoc.org/schema.json",
-    "entryPoints": ["./src/docs.entry.ts"],
+    "entryPoints": ["./src/index.docs.ts"],
     "tsconfig": "tsconfig.json",
     "out": ".s3_uploads/docs",
     "gaID": "G-ZXJM5CB1QM",
