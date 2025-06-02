@@ -30,7 +30,6 @@ const GLSL_TO_SIZE: Dict<number> = {
 
 /**
  * @private
- * @method mapSize
  * @param {string} type
  */
 export function mapSize(type: string): number

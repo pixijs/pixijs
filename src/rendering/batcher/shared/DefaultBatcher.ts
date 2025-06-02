@@ -5,7 +5,7 @@ import { DefaultShader } from './DefaultShader';
 
 import type { Matrix } from '../../../maths/matrix/Matrix';
 import type { Shader } from '../../renderers/shared/shader/Shader';
-import type { BatchableMeshElement, BatchableQuadElement } from './Batcher';
+import type { BatchableMeshElement, BatchableQuadElement, BatcherOptions } from './Batcher';
 
 let defaultShader: Shader = null;
 
@@ -13,7 +13,7 @@ let defaultShader: Shader = null;
  * Represents the common elements for default batch rendering.
  * This interface defines the properties that are used by the DefaultBatcher
  * to render elements efficiently in a batch.
- * @memberof rendering
+ * @category rendering
  */
 export interface DefaultBatchElements
 {
@@ -40,13 +40,13 @@ export interface DefaultBatchElements
 
 /**
  * Represents a batchable quad element with default batch properties.
- * @memberof rendering
+ * @category rendering
  */
 export interface DefaultBatchableQuadElement extends BatchableQuadElement, DefaultBatchElements {}
 
 /**
  * Represents a batchable mesh element with default batch properties.
- * @memberof rendering
+ * @category rendering
  */
 export interface DefaultBatchableMeshElement extends BatchableMeshElement, DefaultBatchElements {}
 
@@ -56,7 +56,7 @@ export interface DefaultBatchableMeshElement extends BatchableMeshElement, Defau
  * - roundPixels
  * - texture
  * - transform
- * @memberof rendering
+ * @category rendering
  */
 export class DefaultBatcher extends Batcher
 {
@@ -69,12 +69,21 @@ export class DefaultBatcher extends Batcher
     } as const;
 
     public geometry = new BatchGeometry();
-    public shader = defaultShader || (defaultShader = new DefaultShader(this.maxTextures));
+    public shader: DefaultShader;
 
     public name = DefaultBatcher.extension.name;
 
     /** The size of one attribute. 1 = 32 bit. x, y, u, v, color, textureIdAndRound -> total = 6 */
     public vertexSize = 6;
+
+    constructor(options: BatcherOptions)
+    {
+        super(options);
+
+        defaultShader ??= new DefaultShader(options.maxTextures);
+
+        this.shader = defaultShader;
+    }
 
     /**
      * Packs the attributes of a DefaultBatchableMeshElement into the provided views.

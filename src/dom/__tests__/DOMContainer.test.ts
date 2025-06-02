@@ -173,5 +173,29 @@ describe('DOMContainer', () =>
             expect(element.style.transform).toBe('matrix(1, 0, 0, 1, 50, 50)');
             expect(element.style.transformOrigin).toBe('50px 50px');
         });
+
+        it('should render the element with the correct transform when canvas is scaled', async () =>
+        {
+            const app = await getApp({
+                width: 100,
+                height: 100,
+            });
+            const element = document.createElement('div');
+
+            Object.defineProperties(element, {
+                offsetWidth: { value: 100 },
+                offsetHeight: { value: 100 }
+            });
+
+            const canvas = app.renderer.canvas as HTMLCanvasElement;
+
+            canvas.style.width = '200px';
+            canvas.style.height = '200px';
+
+            app.stage.addChild(domContainer);
+            app.renderer.render(app.stage);
+
+            expect(app.renderer.renderPipes.dom['_domElement'].style.transform).toBe('translate(0px, 0px) scale(2, 2)');
+        });
     });
 });

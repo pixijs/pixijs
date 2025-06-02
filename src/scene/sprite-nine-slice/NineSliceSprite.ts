@@ -22,8 +22,8 @@ import type { DestroyOptions } from '../container/destroyTypes';
  *    bottomHeight: 20,
  * });
  * ```
- * @see {@link scene.NineSliceSprite}
- * @memberof scene
+ * @see {@link NineSliceSprite}
+ * @category scene
  */
 export interface NineSliceSpriteOptions extends PixiMixins.NineSliceSpriteOptions, ViewContainerOptions
 {
@@ -46,6 +46,7 @@ export interface NineSliceSpriteOptions extends PixiMixins.NineSliceSpriteOption
     /** The anchor point of the NineSliceSprite. */
     anchor?: PointData | number;
 }
+// eslint-disable-next-line requireExport/require-export-jsdoc
 export interface NineSliceSprite extends PixiMixins.NineSliceSprite, ViewContainer<NineSliceSpriteGpuData> {}
 
 /**
@@ -73,7 +74,7 @@ export interface NineSliceSprite extends PixiMixins.NineSliceSprite, ViewContain
  * import { NineSliceSprite, Texture } from 'pixi.js';
  *
  * const plane9 = new NineSliceSprite(Texture.from('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
- * @memberof scene
+ * @category scene
  */
 export class NineSliceSprite extends ViewContainer<NineSliceSpriteGpuData> implements View
 {
@@ -84,10 +85,12 @@ export class NineSliceSprite extends ViewContainer<NineSliceSpriteGpuData> imple
     };
 
     public override readonly renderPipeId: string = 'nineSliceSprite';
+    /** @internal */
     public _texture: Texture;
+    /** @internal */
+    public _anchor: ObservablePoint;
 
     public batched = true;
-    public _anchor: ObservablePoint;
     private _leftWidth: number;
     private _topHeight: number;
     private _rightWidth: number;
@@ -96,7 +99,7 @@ export class NineSliceSprite extends ViewContainer<NineSliceSpriteGpuData> imple
     private _height: number;
 
     /**
-     * @param {scene.NineSliceSpriteOptions|Texture} options - Options to use
+     * @param {NineSliceSpriteOptions|Texture} options - Options to use
      * @param options.texture - The texture to use on the NineSliceSprite.
      * @param options.leftWidth - Width of the left vertical bar (A)
      * @param options.topHeight - Height of the top horizontal bar (C)
@@ -322,8 +325,10 @@ export class NineSliceSprite extends ViewContainer<NineSliceSpriteGpuData> imple
      * Destroys this sprite renderable and optionally its texture.
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
-     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
-     * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
+     * @example
+     * nineSliceSprite.destroy();
+     * nineSliceSprite.destroy(true);
+     * nineSliceSprite.destroy({ texture: true, textureSource: true });
      */
     public override destroy(options?: DestroyOptions): void
     {
@@ -341,9 +346,7 @@ export class NineSliceSprite extends ViewContainer<NineSliceSpriteGpuData> imple
         this._texture = null;
     }
 
-    /**
-     * @private
-     */
+    /** @private */
     protected override updateBounds()
     {
         const bounds = this._bounds;
@@ -364,7 +367,7 @@ export class NineSliceSprite extends ViewContainer<NineSliceSpriteGpuData> imple
 /**
  * Please use the `NineSliceSprite` class instead.
  * @deprecated since 8.0.0
- * @memberof scene
+ * @category scene
  */
 export class NineSlicePlane extends NineSliceSprite
 {

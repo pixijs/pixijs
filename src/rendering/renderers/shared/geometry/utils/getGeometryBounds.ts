@@ -7,6 +7,7 @@ import type { Geometry } from '../Geometry';
  * @param attributeId - AttributeId that contains the x,y data
  * @param bounds - Bounds to store the result in
  * @returns the bounds
+ * @internal
  */
 export function getGeometryBounds(geometry: Geometry, attributeId: string, bounds: Bounds): Bounds
 {

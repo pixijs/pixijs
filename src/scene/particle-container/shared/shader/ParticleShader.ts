@@ -9,6 +9,7 @@ import fragment from './particles.frag';
 import vertex from './particles.vert';
 import wgsl from './particles.wgsl';
 
+/** @internal */
 export class ParticleShader extends Shader
 {
     constructor()

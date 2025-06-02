@@ -5,7 +5,11 @@
 
 import type { UNIFORM_TYPES } from '../../rendering/renderers/shared/shader/types';
 
+/** @internal */
 export type UboUploadFunction = (name: string, data: Float32Array, offset: number, uv: any, v: any) => void;
+
+// eslint-disable-next-line jsdoc/require-param
+/** @internal */
 export const uboParserFunctions: UboUploadFunction[] = [
     (name: string, data: Float32Array, offset: number, uv: any, _v: any): void =>
     {
@@ -51,6 +55,8 @@ export const uboParserFunctions: UboUploadFunction[] = [
         data[offset + 2] = v.blue;
     },
 ];
+
+/** @internal */
 export const uboSingleFunctionsWGSL: Record<UNIFORM_TYPES | string, UboUploadFunction> = {
     f32: (_name: string, data: Float32Array, offset: number, _uv: any, v: any): void =>
     {
@@ -147,6 +153,8 @@ export const uboSingleFunctionsWGSL: Record<UNIFORM_TYPES | string, UboUploadFun
         }
     },
 };
+
+/** @internal */
 export const uboSingleFunctionsSTD40: Record<UNIFORM_TYPES | string, UboUploadFunction> = {
     f32: (_name: string, data: Float32Array, offset: number, _uv: any, v: any): void =>
     {

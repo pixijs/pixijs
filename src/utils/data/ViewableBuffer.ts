@@ -1,8 +1,8 @@
-type TypedArray = Float32Array | Uint32Array | Int32Array | Uint8Array;
+import { type TypedArray } from '../../rendering/renderers/shared/buffer/Buffer';
 
 /**
  * Flexible wrapper around `ArrayBuffer` that also provides typed array views on demand.
- * @memberof utils
+ * @category utils
  */
 export class ViewableBuffer
 {

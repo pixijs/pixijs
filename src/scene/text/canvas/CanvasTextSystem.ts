@@ -1,32 +1,25 @@
 import { Color } from '../../../color/Color';
 import { ExtensionType } from '../../../extensions/Extensions';
 import { type Filter } from '../../../filters/Filter';
-import { CanvasPool } from '../../../rendering/renderers/shared/texture/CanvasPool';
+import { type CanvasAndContext, CanvasPool } from '../../../rendering/renderers/shared/texture/CanvasPool';
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
+import { TextureStyle } from '../../../rendering/renderers/shared/texture/TextureStyle';
 import { getCanvasBoundingBox } from '../../../utils/canvas/getCanvasBoundingBox';
 import { deprecation } from '../../../utils/logging/deprecation';
+import { type CanvasTextOptions } from '../Text';
 import { TextStyle } from '../TextStyle';
 import { getPo2TextureFromSource } from '../utils/getPo2TextureFromSource';
 import { CanvasTextMetrics } from './CanvasTextMetrics';
 import { fontStringFromTextStyle } from './utils/fontStringFromTextStyle';
 import { getCanvasFillStyle } from './utils/getCanvasFillStyle';
 
-import type { ICanvas } from '../../../environment/canvas/ICanvas';
-import type { ICanvasRenderingContext2D } from '../../../environment/canvas/ICanvasRenderingContext2D';
 import type { System } from '../../../rendering/renderers/shared/system/System';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { Renderer } from '../../../rendering/renderers/types';
-import type { TextOptions } from '../AbstractText';
-
-interface CanvasAndContext
-{
-    canvas: ICanvas;
-    context: ICanvasRenderingContext2D;
-}
 
 /**
  * System plugin to the renderer to manage canvas text.
- * @memberof rendering
+ * @category rendering
  */
 export class CanvasTextSystem implements System
 {
@@ -58,8 +51,13 @@ export class CanvasTextSystem implements System
      */
     /** @deprecated since 8.0.0 */
     public getTexture(text: string, resolution: number, style: TextStyle, textKey: string): Texture;
-    public getTexture(options: TextOptions): Texture;
-    public getTexture(options: TextOptions | string, resolution?: number, style?: TextStyle, _textKey?: string): Texture
+    public getTexture(options: CanvasTextOptions): Texture;
+    public getTexture(
+        options: CanvasTextOptions | string,
+        resolution?: number,
+        style?: TextStyle,
+        _textKey?: string
+    ): Texture
     {
         if (typeof options === 'string')
         {
@@ -79,8 +77,18 @@ export class CanvasTextSystem implements System
             options.style = new TextStyle(options.style);
         }
 
+        if (!(options.textureStyle instanceof TextureStyle))
+        {
+            options.textureStyle = new TextureStyle(options.textureStyle);
+        }
+
+        if (typeof options.text !== 'string')
+        {
+            options.text = options.text.toString();
+        }
+
         const { texture, canvasAndContext } = this.createTextureAndCanvas(
-            options as {text: string, style: TextStyle, resolution?: number}
+            options as { text: string, style: TextStyle, resolution?: number, textureStyle?: TextureStyle }
         );
 
         CanvasPool.returnCanvasAndContext(canvasAndContext);
@@ -88,9 +96,22 @@ export class CanvasTextSystem implements System
         return texture;
     }
 
-    public createTextureAndCanvas(options: {text: string, style: TextStyle, resolution?: number})
+    /**
+     * @param options - The options of the text that will be used to generate the texture.
+     * @param options.text - the text to render
+     * @param options.style - the style of the text
+     * @param options.resolution - the resolution of the texture
+     * @param options.textureStyle - the style of the texture
+     * @internal
+     */
+    protected createTextureAndCanvas(options: {
+        text: string,
+        style: TextStyle,
+        resolution?: number,
+        textureStyle?: TextureStyle
+    })
     {
-        const { text, style } = options;
+        const { text, style, textureStyle } = options;
 
         const padding = style._getFinalPadding();
 
@@ -110,6 +131,8 @@ export class CanvasTextSystem implements System
         this._renderTextToCanvas(text, style, padding, resolution, canvasAndContext);
 
         const texture = getPo2TextureFromSource(canvas, width, height, resolution);
+
+        if (textureStyle) texture.source.style = textureStyle;
 
         if (style.trim)
         {
@@ -151,16 +174,16 @@ export class CanvasTextSystem implements System
         source.uploadMethodId = 'unknown';
         source.alphaMode = 'no-premultiply-alpha';
 
-        TexturePool.returnTexture(texture);
+        TexturePool.returnTexture(texture, true);
     }
 
     /**
      * Renders text to its canvas, and updates its texture.
-     * @param text
-     * @param style
-     * @param resolution
-     * @param canvasAndContext
-     * @param padding
+     * @param text - The text to render
+     * @param style - The style of the text
+     * @param resolution - The resolution of the text
+     * @param canvasAndContext - The canvas and context to render the text to
+     * @param padding - The padding of the text
      * @deprecated since 8.8.0
      */
     public renderTextToCanvas(

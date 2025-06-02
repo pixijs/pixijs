@@ -16,7 +16,6 @@
  *     baz: { extension: { name: 'baz' }, defaultOptions: { baz: 3 } },
  * }
  */
-
 interface System
 {
     extension: {name: string}
@@ -32,8 +31,11 @@ type InstanceType<T extends new (...args: any) => any> = T extends new (...args:
 // Extract the type of the 'name' property
 type NameType<T extends SystemsWithExtensionList> = T[number]['extension']['name'];
 
-// Create a mapped type where each property key is a 'name' value,
-// and each property value is an ElementType with a matching 'name'
+/**
+ * Create a mapped type where each property key is a 'name' value,
+ * and each property value is an ElementType with a matching 'name'
+ * @internal
+ */
 export type ExtractSystemTypes<T extends SystemsWithExtensionList> = {
     [K in NameType<T>]: InstanceType<Extract<T[number], { extension: { name: K } }>>
 };
@@ -76,4 +78,5 @@ type SeparateOptions<T extends SystemsWithExtensionList> = KnownProperties<Defau
 // Create a distributive conditional type that turns the union into an intersection
 type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never;
 
+/** @internal */
 export type ExtractRendererOptions<T extends SystemsWithExtensionList> = UnionToIntersection<OptionsUnion<T>>;

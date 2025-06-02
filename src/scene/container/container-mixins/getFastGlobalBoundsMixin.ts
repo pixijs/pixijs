@@ -11,6 +11,7 @@ const tempMatrix = new Matrix();
 /**
  * Interface for the GetFastGlobalBoundsMixin, which provides methods to compute
  * an approximate global bounding box for a container and its children.
+ * @category scene
  */
 export interface GetFastGlobalBoundsMixin
 {
@@ -24,7 +25,6 @@ export interface GetFastGlobalBoundsMixin
      * @param {boolean} [factorRenderLayers] - A flag indicating whether to consider render layers in the calculation.
      * @param {Bounds} [bounds] - The output bounds object to store the result. If not provided, a new one is created.
      * @returns {Bounds} The computed bounds.
-     * @memberof scene.Container#
      */
     getFastGlobalBounds(factorRenderLayers?: boolean, bounds?: Bounds): Bounds;
 
@@ -34,7 +34,7 @@ export interface GetFastGlobalBoundsMixin
      * @param {boolean} factorRenderLayers - A flag indicating whether to consider render layers in the calculation.
      * @param {Bounds} bounds - The bounds object to update with the calculated values.
      * @param {IRenderLayer} currentLayer - The current render layer being processed.
-     * @memberof scene.Container#
+     * @internal
      */
     _getGlobalBoundsRecursive(
         factorRenderLayers: boolean,
@@ -46,17 +46,9 @@ export interface GetFastGlobalBoundsMixin
 /**
  * Mixin providing the implementation of the GetFastGlobalBoundsMixin interface.
  * It includes methods to compute and recursively calculate global bounds for containers.
+ * @internal
  */
 export const getFastGlobalBoundsMixin: Partial<Container> = {
-    /**
-     * Computes the global bounds for the container, considering its children and optionally
-     * factoring in render layers. It starts by clearing the provided bounds object, then
-     * recursively calculates the bounds, and finally applies the world transformation.
-     * @param {boolean} [factorRenderLayers] - Whether to consider render layers in the calculation.
-     * @param {Bounds} [bounds] - The bounds object to store the result. If not provided, a new one is created.
-     * @returns {Bounds} The computed bounds.
-     * @memberof scene.Container#
-     */
     getFastGlobalBounds(factorRenderLayers?: boolean, bounds?: Bounds): Bounds
     {
         bounds ||= new Bounds();
@@ -81,15 +73,6 @@ export const getFastGlobalBoundsMixin: Partial<Container> = {
         return bounds;
     },
 
-    /**
-     * Recursively calculates the global bounds for the container and its children.
-     * It considers visibility, measurability, and effects, and applies transformations
-     * as necessary to compute the bounds accurately.
-     * @param {boolean} factorRenderLayers - Whether to consider render layers in the calculation.
-     * @param {Bounds} bounds - The bounds object to update with the calculated values.
-     * @param {IRenderLayer} currentLayer - The current render layer being processed.
-     * @memberof scene.Container#
-     */
     _getGlobalBoundsRecursive(
         factorRenderLayers: boolean,
         bounds: Bounds,

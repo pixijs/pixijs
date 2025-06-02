@@ -10,6 +10,7 @@ import type { Session } from './SVGParser';
  * Currently supports linear gradients and has placeholder support for radial gradients.
  * @param svg - The root SVG element to parse definitions from
  * @param session - The parsing session to store definitions in
+ * @internal
  */
 export function parseSVGDefinitions(svg: SVGElement, session: Session): void
 {

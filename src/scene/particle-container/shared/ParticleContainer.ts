@@ -21,7 +21,7 @@ const emptyBounds = new Bounds(0, 0, 0, 0);
  * @property {boolean} [rotation] - Indicates if rotation is dynamic.
  * @property {boolean} [uvs] - Indicates if UVs are dynamic.
  * @property {boolean} [color] - Indicates if color is dynamic.
- * @memberof scene
+ * @category scene
  */
 export interface ParticleProperties
 {
@@ -34,22 +34,22 @@ export interface ParticleProperties
 
 /**
  * Options for the ParticleContainer constructor.
- * @extends ContainerOptions
- * @property {Record<string, boolean>} dynamicProperties - Specifies which properties are dynamic.
- * @property {Shader} shader - The shader to use for rendering.
- * @property {boolean} roundPixels - Indicates if pixels should be rounded.
- * @property {Texture} texture - The texture to use for rendering - if not provided the texture of the first child is used.
- * @property {IParticle[]} particles - An array of particles to add to the container.
- * @memberof scene
+ * @category scene
  */
 export interface ParticleContainerOptions extends PixiMixins.ParticleContainerOptions, Omit<ViewContainerOptions, 'children'>
 {
+    /** Specifies which properties are dynamic. */
     dynamicProperties?: Record<string, boolean>;
+    /** The shader to use for rendering particles. */
     shader?: Shader;
+    /** Indicates if pixels should be rounded. */
     roundPixels?: boolean;
+    /** The texture to use for rendering particles. If not provided, the texture of the first child is used. */
     texture?: Texture;
+    /** An array of particles to add to the container. */
     particles?: IParticle[];
 }
+// eslint-disable-next-line requireExport/require-export-jsdoc
 export interface ParticleContainer extends PixiMixins.ParticleContainer, ViewContainer<ParticleBuffer> {}
 
 /**
@@ -100,7 +100,7 @@ export interface ParticleContainer extends PixiMixins.ParticleContainer, ViewCon
  *     let particle = new Particle(texture);
  *     container.addParticle(particle);
  * }
- * @memberof scene
+ * @category scene
  */
 export class ParticleContainer extends ViewContainer<ParticleBuffer> implements Instruction
 {
@@ -110,14 +110,21 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * @property {boolean} roundPixels - Indicates if pixels should be  rounded.
      */
     public static defaultOptions: ParticleContainerOptions = {
+        /** Specifies which properties are dynamic. */
         dynamicProperties: {
-            vertex: false, // Indicates if vertex positions are dynamic.
-            position: true, // Indicates if particle positions are dynamic.
-            rotation: false, // Indicates if particle rotations are dynamic.
-            uvs: false, // Indicates if UV coordinates are dynamic.
-            color: false, // Indicates if particle colors are dynamic.
+            /** Indicates if vertex positions are dynamic. */
+            vertex: false,
+            /** Indicates if particle positions are dynamic. */
+            position: true,
+            /** Indicates if particle rotations are dynamic. */
+            rotation: false,
+            /** Indicates if UV coordinates are dynamic. */
+            uvs: false,
+            /** Indicates if particle colors are dynamic. */
+            color: false,
         },
-        roundPixels: false, // Indicates if pixels should be rounded for rendering.
+        /** Indicates if pixels should be rounded for rendering. */
+        roundPixels: false
     };
 
     /** The unique identifier for the render pipe of this ParticleContainer. */
@@ -131,7 +138,10 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      */
     public _properties: Record<string, ParticleRendererProperty>;
 
-    /** Indicates if the children of this ParticleContainer have changed and need to be updated. */
+    /**
+     * Indicates if the children of this ParticleContainer have changed and need to be updated.
+     * @internal
+     */
     public _childrenDirty = false;
 
     /**
@@ -270,8 +280,10 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * Destroys this sprite renderable and optionally its texture.
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
-     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
-     * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
+     * @example
+     * particleContainer.destroy();
+     * particleContainer.destroy(true);
+     * particleContainer.destroy({ texture: true, textureSource: true, children: true });
      */
     public override destroy(options: DestroyOptions = false)
     {
@@ -303,7 +315,14 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      */
     public removeParticles(beginIndex?: number, endIndex?: number)
     {
-        const children = this.particleChildren.splice(beginIndex, endIndex);
+        beginIndex ??= 0;
+        endIndex ??= this.particleChildren.length;
+
+        // Remove the correct range
+        const children = this.particleChildren.splice(
+            beginIndex,
+            endIndex - beginIndex
+        );
 
         this.onViewUpdate();
 

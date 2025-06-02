@@ -25,6 +25,11 @@ function stripVariable(value: string)
     return value.replace(regex, '');
 }
 
+/**
+ * @param fragments
+ * @param template
+ * @internal
+ */
 export function compileOutputs(fragments: any[], template: string)
 {
     // get all the inputs from the fragments..

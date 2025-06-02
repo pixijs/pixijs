@@ -5,14 +5,14 @@ import type { Ellipse } from '../../../../maths/shapes/Ellipse';
 import type { RoundedRectangle } from '../../../../maths/shapes/RoundedRectangle';
 import type { ShapeBuildCommand } from './ShapeBuildCommand';
 
+/** @internal */
 type RoundedShape = Circle | Ellipse | RoundedRectangle;
 
 /**
  * Builds a rectangle to draw
  *
  * Ignored from docs since it is not directly exposed.
- * @ignore
- * @private
+ * @internal
  */
 export const buildCircle: ShapeBuildCommand<RoundedShape> = {
     extension: {
@@ -213,5 +213,7 @@ export const buildCircle: ShapeBuildCommand<RoundedShape> = {
 
 };
 
+/** @internal */
 export const buildEllipse = { ...buildCircle, extension: { ...buildCircle.extension, name: 'ellipse' } };
+/** @internal */
 export const buildRoundedRectangle = { ...buildCircle, extension: { ...buildCircle.extension, name: 'roundedRectangle' } };

@@ -18,6 +18,10 @@ const converters: Record<string, ColorConverter> = {
     }
 };
 
+/**
+ * @param textureOptions
+ * @internal
+ */
 export function convertFormatIfRequired(textureOptions: TextureSourceOptions)
 {
     const format = textureOptions.format;

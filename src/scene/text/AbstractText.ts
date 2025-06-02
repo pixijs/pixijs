@@ -12,26 +12,26 @@ import type { TextStyle, TextStyleOptions } from './TextStyle';
 
 /**
  * A string or number that can be used as text.
- * @memberof text
+ * @category text
  */
 export type TextString = string | number | { toString: () => string };
 /**
  * A union of all text styles, including HTML, Bitmap and Canvas text styles.
- * @memberof text
- * @see text.TextStyle
- * @see text.HTMLTextStyle
+ * @category text
+ * @see TextStyle
+ * @see HTMLTextStyle
  */
 export type AnyTextStyle = TextStyle | HTMLTextStyle;
 /**
  * A union of all text style options, including HTML, Bitmap and Canvas text style options.
- * @memberof text
- * @see text.TextStyleOptions
- * @see text.HTMLTextStyleOptions
+ * @category text
+ * @see TextStyleOptions
+ * @see HTMLTextStyleOptions
  */
 export type AnyTextStyleOptions = TextStyleOptions | HTMLTextStyleOptions;
 
 /**
- * Options for the {@link scene.Text} class.
+ * Options for the {@link Text} class.
  * @example
  * const text = new Text({
  *    text: 'Hello Pixi!',
@@ -42,7 +42,7 @@ export type AnyTextStyleOptions = TextStyleOptions | HTMLTextStyleOptions;
  *    align: 'center',
  *  }
  * });
- * @memberof text
+ * @category text
  */
 export interface TextOptions<
     TEXT_STYLE extends TextStyle = TextStyle,
@@ -58,12 +58,12 @@ export interface TextOptions<
     /**
      * The text style
      * @type {
-     * text.TextStyle |
-     * Partial<text.TextStyle> |
-     * text.TextStyleOptions |
-     * text.HTMLTextStyle |
-     * Partial<text.HTMLTextStyle> |
-     * text.HTMLTextStyleOptions
+     * TextStyle |
+     * Partial<TextStyle> |
+     * TextStyleOptions |
+     * HTMLTextStyle |
+     * Partial<HTMLTextStyle> |
+     * HTMLTextStyleOptions
      * }
      */
     style?: TEXT_STYLE | TEXT_STYLE_OPTIONS;
@@ -73,31 +73,38 @@ export interface TextOptions<
 
 /**
  * An abstract Text class, used by all text type in Pixi. This includes Canvas, HTML, and Bitmap Text.
- * @see scene.Text
- * @see scene.BitmapText
- * @see scene.HTMLText
- * @memberof scene
+ * @see Text
+ * @see BitmapText
+ * @see HTMLText
+ * @category scene
+ * @internal
  */
 export abstract class AbstractText<
-    TEXT_STYLE extends TextStyle,
-    TEXT_STYLE_OPTIONS extends TextStyleOptions,
+    TEXT_STYLE extends TextStyle = TextStyle,
+    TEXT_STYLE_OPTIONS extends TextStyleOptions = TextStyleOptions,
+    TEXT_OPTIONS extends TextOptions<TEXT_STYLE, TEXT_STYLE_OPTIONS> = TextOptions<TEXT_STYLE, TEXT_STYLE_OPTIONS>,
     GPU_DATA extends { destroy: () => void } = any
 > extends ViewContainer<GPU_DATA> implements View
 {
     public batched = true;
+    /** @internal */
     public _anchor: ObservablePoint;
 
+    /** @internal */
     public _resolution: number = null;
+    /** @internal */
     public _autoResolution: boolean = true;
 
+    /** @internal */
     public _style: TEXT_STYLE;
+    /** @internal */
     public _didTextUpdate = true;
 
     protected _text: string;
     private readonly _styleClass: new (options: TEXT_STYLE_OPTIONS) => TEXT_STYLE;
 
     constructor(
-        options: TextOptions<TEXT_STYLE, TEXT_STYLE_OPTIONS>,
+        options: TEXT_OPTIONS,
         styleClass: new (options: TEXT_STYLE_OPTIONS) => TEXT_STYLE
     )
     {
@@ -204,12 +211,12 @@ export abstract class AbstractText<
      *
      * If setting the `style` can also be partial {@link AnyTextStyleOptions}.
      * @type {
-     * text.TextStyle |
-     * Partial<text.TextStyle> |
-     * text.TextStyleOptions |
-     * text.HTMLTextStyle |
-     * Partial<text.HTMLTextStyle> |
-     * text.HTMLTextStyleOptions
+     * TextStyle |
+     * Partial<TextStyle> |
+     * TextStyleOptions |
+     * HTMLTextStyle |
+     * Partial<HTMLTextStyle> |
+     * HTMLTextStyleOptions
      * }
      */
     set style(style: TEXT_STYLE | Partial<TEXT_STYLE> | TEXT_STYLE_OPTIONS)
@@ -322,9 +329,11 @@ export abstract class AbstractText<
      * Destroys this text renderable and optionally its style texture.
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
-     * @param {boolean} [options.texture=false] - Should it destroy the texture of the text style
-     * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the text style
-     * @param {boolean} [options.style=false] - Should it destroy the style of the text
+     * @example
+     * // Destroys the text and its style
+     * text.destroy({ style: true, texture: true, textureSource: true });
+     * text.destroy(true);
+     * text.destroy() // Destroys the text, but not its style
      */
     public override destroy(options: DestroyOptions = false): void
     {
@@ -359,19 +368,17 @@ export abstract class AbstractText<
  * @param args - Arguments passed to text constructor
  * @param name - Name of the text class (used in deprecation warning)
  * @returns Normalized text options object
- * @template TEXT_STYLE - The specific TextStyle class being used
- * @template TEXT_STYLE_OPTIONS - The options type for the TextStyle
+ * @template TEXT_OPTIONS - The type of the text options
  * @internal
  */
 export function ensureTextOptions<
-    TEXT_STYLE extends TextStyle,
-    TEXT_STYLE_OPTIONS extends TextStyleOptions
+    TEXT_OPTIONS extends TextOptions
 >(
     args: any[],
     name: string
-): TextOptions<TEXT_STYLE, TEXT_STYLE_OPTIONS>
+): TEXT_OPTIONS
 {
-    let options = (args[0] ?? {}) as TextOptions<TEXT_STYLE, TEXT_STYLE_OPTIONS>;
+    let options = (args[0] ?? {}) as TEXT_OPTIONS;
 
     // @deprecated
     if (typeof options === 'string' || args[1])
@@ -383,7 +390,7 @@ export function ensureTextOptions<
         options = {
             text: options,
             style: args[1],
-        } as TextOptions<TEXT_STYLE, TEXT_STYLE_OPTIONS>;
+        } as unknown as TEXT_OPTIONS;
     }
 
     return options;

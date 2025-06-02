@@ -1,5 +1,6 @@
 import type { UboElement, UboLayout, UNIFORM_TYPES, UniformData } from '../../../shared/shader/types';
 
+/** @internal */
 export const WGSL_ALIGN_SIZE_DATA: Record<UNIFORM_TYPES | string, {align: number, size: number}> = {
     i32: { align: 4, size: 4 },
     u32: { align: 4, size: 4 },
@@ -37,6 +38,10 @@ export const WGSL_ALIGN_SIZE_DATA: Record<UNIFORM_TYPES | string, {align: number
     'mat4x4<f16>': { align: 8, size: 32 },
 };
 
+/**
+ * @param uniformData
+ * @internal
+ */
 export function createUboElementsWGSL(uniformData: UniformData[]): UboLayout
 {
     const uboElements: UboElement[] = uniformData.map((data: UniformData) =>

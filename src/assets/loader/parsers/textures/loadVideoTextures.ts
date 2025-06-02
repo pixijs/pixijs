@@ -20,7 +20,7 @@ const validVideoMIMEs = validVideoExtensions.map((ext) => `video/${ext.substring
  * @param element - Element to apply crossOrigin
  * @param url - URL to check
  * @param crossorigin - Cross origin value to use
- * @memberof assets
+ * @category assets
  */
 export function crossOrigin(element: HTMLImageElement | HTMLVideoElement, url: string, crossorigin?: boolean | string): void
 {
@@ -37,6 +37,7 @@ export function crossOrigin(element: HTMLImageElement | HTMLVideoElement, url: s
 /**
  * Preload a video element
  * @param element - Video element to preload
+ * @internal
  */
 export function preloadVideo(element: HTMLVideoElement): Promise<void>
 {
@@ -76,7 +77,7 @@ export function preloadVideo(element: HTMLVideoElement): Promise<void>
  * @param url - The url to test.
  * @param {object} [loc=window.location] - The location object to test against.
  * @returns The crossOrigin value to use (or empty string for none).
- * @memberof assets
+ * @category assets
  */
 export function determineCrossOrigin(url: string, loc: Location = globalThis.location): string
 {
@@ -115,7 +116,7 @@ export function determineCrossOrigin(url: string, loc: Location = globalThis.loc
  *     },
  * });
  * ```
- * @memberof assets
+ * @category assets
  */
 export const loadVideoTextures = {
 
@@ -212,6 +213,11 @@ export const loadVideoTextures = {
 
                 resolve(createTexture(base, loader, url));
             };
+
+            if (options.preload && !options.autoPlay)
+            {
+                videoElement.load();
+            }
 
             videoElement.addEventListener('canplay', onCanPlay);
             videoElement.appendChild(sourceElement);

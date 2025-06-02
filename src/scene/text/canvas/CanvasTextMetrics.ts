@@ -28,7 +28,7 @@ interface IIntl
 
 /**
  * A number, or a string containing a number.
- * @memberof text
+ * @category text
  * @typedef {object} FontMetrics
  * @property {number} ascent - Font ascent
  * @property {number} descent - Font descent
@@ -61,7 +61,7 @@ const contextSettings: ICanvasRenderingContext2DSettings = {
  *     align: 'center',
  * });
  * const textMetrics = CanvasTextMetrics.measureText('Your text', style);
- * @memberof text
+ * @category text
  */
 export class CanvasTextMetrics
 {
@@ -124,7 +124,20 @@ export class CanvasTextMetrics
         {
             const segmenter = new (Intl as IIntl).Segmenter();
 
-            return (s: string) => [...segmenter.segment(s)].map((x) => x.segment);
+            return (s: string) =>
+            {
+                const segments = segmenter.segment(s);
+                const result = [];
+
+                let i = 0;
+
+                for (const segment of segments)
+                {
+                    result[i++] = (segment.segment);
+                }
+
+                return result;
+            };
         }
 
         return (s: string) => [...s];
@@ -164,7 +177,7 @@ export class CanvasTextMetrics
      */
     public static experimentalLetterSpacing = false;
 
-    /** Cache of {@see TextMetrics.FontMetrics} objects. */
+    /** Cache of {@link TextMetrics.FontMetrics} objects. */
     private static _fonts: Record<string, FontMetrics> = {};
 
     /** Cache of new line chars. */

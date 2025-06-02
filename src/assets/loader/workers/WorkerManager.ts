@@ -160,6 +160,7 @@ class WorkerManagerClass
     }
 }
 
+/** @internal */
 const WorkerManager = new WorkerManagerClass();
 
 export {

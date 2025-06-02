@@ -1,35 +1,27 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { State } from '../../../rendering/renderers/shared/state/State';
+import { type Renderer } from '../../../rendering/renderers/types';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { color32BitToUniform } from '../gpu/colorToUniform';
 import { BatchableGraphics } from './BatchableGraphics';
 
 import type { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
-import type { BatchPipe, RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
+import type { RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
-import type { RenderableGCSystem } from '../../../rendering/renderers/shared/texture/RenderableGCSystem';
 import type { PoolItem } from '../../../utils/pool/Pool';
 import type { Graphics } from './Graphics';
-import type { GpuGraphicsContext, GraphicsContextSystem } from './GraphicsContextSystem';
+import type { GpuGraphicsContext } from './GraphicsContextSystem';
 
+/** @internal */
 export interface GraphicsAdaptor
 {
     shader: Shader;
-    init(): void;
+    contextChange(renderer: Renderer): void;
     execute(graphicsPipe: GraphicsPipe, renderable: Graphics): void;
     destroy(): void;
 }
-export interface GraphicsSystem
-{
-    graphicsContext: GraphicsContextSystem;
-    renderableGC: RenderableGCSystem;
-    renderPipes: {
-        batch: BatchPipe
-    }
-    _roundPixels: 0 | 1;
-    uid: number;
-}
 
+/** @internal */
 export class GraphicsGpuData
 {
     public batches: BatchableGraphics[] = [];
@@ -45,6 +37,7 @@ export class GraphicsGpuData
     }
 }
 
+/** @internal */
 export class GraphicsPipe implements RenderPipe<Graphics>
 {
     /** @ignore */
@@ -57,17 +50,23 @@ export class GraphicsPipe implements RenderPipe<Graphics>
         name: 'graphics',
     } as const;
 
-    public renderer: GraphicsSystem;
+    public renderer: Renderer;
     public state: State = State.for2d();
 
     private _adaptor: GraphicsAdaptor;
 
-    constructor(renderer: GraphicsSystem, adaptor: GraphicsAdaptor)
+    constructor(renderer: Renderer, adaptor: GraphicsAdaptor)
     {
         this.renderer = renderer;
 
         this._adaptor = adaptor;
-        this._adaptor.init();
+
+        this.renderer.runners.contextChange.add(this);
+    }
+
+    public contextChange(): void
+    {
+        this._adaptor.contextChange(this.renderer);
     }
 
     public validateRenderable(graphics: Graphics): boolean

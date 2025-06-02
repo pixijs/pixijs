@@ -1,6 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/matrix/Matrix';
-import { getMaxTexturesPerBatch } from '../../../rendering/batcher/gl/utils/maxRecommendedTextures';
 import { getTextureBatchBindGroup } from '../../../rendering/batcher/gpu/getTextureBatchBindGroup';
 import { compileHighShaderGpuProgram } from '../../../rendering/high-shader/compileHighShaderToProgram';
 import { colorBit } from '../../../rendering/high-shader/shader-bits/colorBit';
@@ -9,6 +8,7 @@ import { localUniformBitGroup2 } from '../../../rendering/high-shader/shader-bit
 import { roundPixelsBit } from '../../../rendering/high-shader/shader-bits/roundPixelsBit';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
+import { type Renderer } from '../../../rendering/renderers/types';
 
 import type { Batch } from '../../../rendering/batcher/shared/Batcher';
 import type { GpuEncoderSystem } from '../../../rendering/renderers/gpu/GpuEncoderSystem';
@@ -19,7 +19,7 @@ import type { GraphicsAdaptor, GraphicsPipe } from '../shared/GraphicsPipe';
 
 /**
  * A GraphicsAdaptor that uses the GPU to render graphics.
- * @memberof rendering
+ * @category rendering
  * @ignore
  */
 export class GpuGraphicsAdaptor implements GraphicsAdaptor
@@ -34,7 +34,9 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
 
     public shader: Shader;
 
-    public init()
+    private _maxTextures = 0;
+
+    public contextChange(renderer: Renderer): void
     {
         const localUniforms = new UniformGroup({
             uTransformMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
@@ -42,11 +44,13 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
             uRound: { value: 0, type: 'f32' },
         });
 
+        this._maxTextures = renderer.limits.maxBatchableTextures;
+
         const gpuProgram = compileHighShaderGpuProgram({
             name: 'graphics',
             bits: [
                 colorBit,
-                generateTextureBatchBit(getMaxTexturesPerBatch()),
+                generateTextureBatchBit(this._maxTextures),
 
                 localUniformBitGroup2,
                 roundPixelsBit
@@ -115,7 +119,12 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
             {
                 const textureBatch = batch.textures;
 
-                batch.bindGroup = getTextureBatchBindGroup(textureBatch.textures, textureBatch.count);
+                batch.bindGroup = getTextureBatchBindGroup(
+                    textureBatch.textures,
+                    textureBatch.count,
+                    this._maxTextures
+                );
+
                 batch.gpuBindGroup = renderer.bindGroup.getBindGroup(
                     batch.bindGroup, shader.gpuProgram, 1
                 );

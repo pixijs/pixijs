@@ -10,6 +10,17 @@ const PATH_DISTANCE_EPSILON = 1.0;
 const curveAngleToleranceEpsilon = 0.01;
 const mAngleTolerance = 0;
 
+/**
+ * @param points
+ * @param sX
+ * @param sY
+ * @param cp1x
+ * @param cp1y
+ * @param eX
+ * @param eY
+ * @param smoothness
+ * @internal
+ */
 export function buildAdaptiveQuadratic(
     points: number[],
     sX: number, sY: number,

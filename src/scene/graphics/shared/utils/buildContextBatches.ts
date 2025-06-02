@@ -23,6 +23,10 @@ import type { GraphicsContext, TextureInstruction } from '../GraphicsContext';
 import type { GpuGraphicsContext } from '../GraphicsContextSystem';
 import type { ShapePath, ShapePrimitiveWithHoles } from '../path/ShapePath';
 
+/**
+ * A record of shape builders, keyed by shape type.
+ * @category scene
+ */
 export const shapeBuilders: Record<string, ShapeBuildCommand> = {};
 
 extensions.handleByMap(ExtensionType.ShapeBuilder, shapeBuilders);
@@ -31,6 +35,11 @@ extensions.add(buildRectangle, buildPolygon, buildTriangle, buildCircle, buildEl
 const tempRect = new Rectangle();
 const tempTextureMatrix = new Matrix();
 
+/**
+ * @param context
+ * @param gpuContext
+ * @internal
+ */
 export function buildContextBatches(context: GraphicsContext, gpuContext: GpuGraphicsContext)
 {
     const { geometryData, batches } = gpuContext;

@@ -7,6 +7,7 @@ import type { RenderPipe } from '../../../rendering/renderers/shared/instruction
 import type { Renderer } from '../../../rendering/renderers/types';
 import type { Text } from '../Text';
 
+/** @internal */
 export class CanvasTextPipe implements RenderPipe<Text>
 {
     /** @ignore */

@@ -30,6 +30,12 @@ const WGSL_TO_VERTEX_TYPES: Record<string, VertexFormat> = {
     'vec4<bool>': 'uint32x4',
 };
 
+/**
+ * @param root0
+ * @param root0.source
+ * @param root0.entryPoint
+ * @internal
+ */
 export function extractAttributesFromGpuProgram(
     { source, entryPoint }: ProgramSource
 ): Record<string, ExtractedAttributeData>

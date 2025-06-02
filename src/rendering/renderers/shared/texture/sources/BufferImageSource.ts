@@ -5,12 +5,21 @@ import type { ExtensionMetadata } from '../../../../../extensions/Extensions';
 import type { TypedArray } from '../../buffer/Buffer';
 import type { TextureSourceOptions } from './TextureSource';
 
+/**
+ * Options for creating a BufferImageSource.
+ * @category rendering
+ */
 export interface BufferSourceOptions extends TextureSourceOptions<TypedArray | ArrayBuffer>
 {
     width: number;
     height: number;
 }
 
+/**
+ * A texture source that uses a TypedArray or ArrayBuffer as its resource.
+ * It automatically determines the format based on the type of TypedArray provided.
+ * @category rendering
+ */
 export class BufferImageSource extends TextureSource<TypedArray | ArrayBuffer>
 {
     public static extension: ExtensionMetadata = ExtensionType.TextureSource;

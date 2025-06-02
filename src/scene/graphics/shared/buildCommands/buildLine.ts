@@ -158,6 +158,7 @@ function round(
  * @param closed
  * @param vertices
  * @param indices
+ * @internal
  */
 export function buildLine(
     points: number[],

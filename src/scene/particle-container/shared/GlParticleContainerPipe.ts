@@ -4,6 +4,10 @@ import { ParticleContainerPipe } from './ParticleContainerPipe';
 
 import type { WebGLRenderer } from '../../../rendering/renderers/gl/WebGLRenderer';
 
+/**
+ * WebGL renderer for Particles that is designed for speed over feature set.
+ * @category scene
+ */
 export class GlParticleContainerPipe extends ParticleContainerPipe
 {
     /** @ignore */

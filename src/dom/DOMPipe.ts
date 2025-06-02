@@ -8,6 +8,7 @@ import type { Renderer } from '../rendering/renderers/types';
 /**
  * The DOMPipe class is responsible for managing and rendering DOM elements within a PixiJS scene.
  * It maps dom elements to the canvas and ensures they are correctly positioned and visible.
+ * @internal
  */
 export class DOMPipe implements RenderPipe<DOMContainer>
 {
@@ -103,7 +104,11 @@ export class DOMPipe implements RenderPipe<DOMContainer>
             canvas.parentNode?.appendChild(this._domElement);
         }
 
-        this._domElement.style.transform = `translate(${canvas.offsetLeft}px, ${canvas.offsetTop}px)`;
+        const sx = (parseFloat(canvas.style.width) / canvas.width) * this._renderer.resolution;
+        const sy = (parseFloat(canvas.style.height) / canvas.height) * this._renderer.resolution;
+        // scale according to the canvas scale and translate
+
+        this._domElement.style.transform = `translate(${canvas.offsetLeft}px, ${canvas.offsetTop}px) scale(${sx}, ${sy})`;
 
         for (let i = 0; i < attachedDomElements.length; i++)
         {

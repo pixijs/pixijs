@@ -11,6 +11,7 @@ import { type TextStyle, type TextStyleOptions } from '../TextStyle';
  * specified in the text's style to ensure the text is rendered correctly on screen.
  * @param {BatchableSprite} batchableSprite - The sprite whose bounds need to be updated.
  * @param {AbstractText} text - The text object containing the texture and style information.
+ * @internal
  */
 export function updateTextBounds(batchableSprite: BatchableSprite, text: AbstractText<TextStyle, TextStyleOptions>)
 {

@@ -6,6 +6,7 @@ import type { RenderPipe } from '../../rendering/renderers/shared/instructions/R
 import type { Renderer } from '../../rendering/renderers/types';
 import type { Sprite } from './Sprite';
 
+/** @internal */
 export class SpritePipe implements RenderPipe<Sprite>
 {
     /** @ignore */

@@ -7,8 +7,8 @@ import type { WebGPUOptions } from './gpu/WebGPURenderer';
 import type { Renderer, RendererOptions } from './types';
 
 /**
- * Options for {@link rendering.autoDetectRenderer}.
- * @memberof rendering
+ * Options for {@link autoDetectRenderer}.
+ * @category rendering
  */
 export interface AutoDetectOptions extends RendererOptions
 {
@@ -58,7 +58,7 @@ const renderPriority = ['webgl', 'webgpu', 'canvas'];
  *  });
  * @param options - A partial configuration object based on the `AutoDetectOptions` type.
  * @returns A Promise that resolves to an instance of the selected renderer.
- * @memberof rendering
+ * @category rendering
  */
 export async function autoDetectRenderer(options: Partial<AutoDetectOptions>): Promise<Renderer>
 {

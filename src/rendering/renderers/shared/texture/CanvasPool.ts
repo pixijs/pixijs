@@ -4,21 +4,22 @@ import { nextPow2 } from '../../../../maths/misc/pow2';
 import type { ICanvas, ICanvasRenderingContext2DSettings } from '../../../../environment/canvas/ICanvas';
 import type { ICanvasRenderingContext2D } from '../../../../environment/canvas/ICanvasRenderingContext2D';
 
+/**
+ * A utility type that represents a canvas and its rendering context.
+ * @category rendering
+ */
 export interface CanvasAndContext
 {
+    /** The canvas element. */
     canvas: ICanvas;
+    /** The rendering context of the canvas. */
     context: ICanvasRenderingContext2D;
 }
 
 /**
- * Texture pool, used by FilterSystem and plugins.
- *
- * Stores collection of temporary pow2 or screen-sized renderTextures
- *
- * If you use custom RenderTexturePool for your filters, you can use methods
- * `getFilterTexture` and `returnFilterTexture` same as in
- * @name CanvasPool
- * @memberof rendering
+ * CanvasPool is a utility class that manages a pool of reusable canvas elements
+ * @category rendering
+ * @internal
  */
 export class CanvasPoolClass
 {
@@ -110,4 +111,8 @@ export class CanvasPoolClass
     }
 }
 
+/**
+ * CanvasPool is a utility class that manages a pool of reusable canvas elements
+ * @category rendering
+ */
 export const CanvasPool = new CanvasPoolClass();

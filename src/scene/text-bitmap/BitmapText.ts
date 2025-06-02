@@ -8,7 +8,13 @@ import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from '../text/AbstractText';
 import type { TextStyleOptions } from '../text/TextStyle';
 
-export interface BitmapText extends PixiMixins.BitmapText, AbstractText<TextStyle, TextStyleOptions, BitmapTextGraphics> {}
+// eslint-disable-next-line requireExport/require-export-jsdoc
+export interface BitmapText extends PixiMixins.BitmapText, AbstractText<
+    TextStyle,
+    TextStyleOptions,
+    TextOptions,
+    BitmapTextGraphics
+> {}
 
 /**
  * A BitmapText Object will create a line or multiple lines of text.
@@ -96,9 +102,14 @@ export interface BitmapText extends PixiMixins.BitmapText, AbstractText<TextStyl
  *        align: 'center',
  *     }
  * }
- * @memberof scene
+ * @category scene
  */
-export class BitmapText extends AbstractText<TextStyle, TextStyleOptions, BitmapTextGraphics> implements View
+export class BitmapText extends AbstractText<
+    TextStyle,
+    TextStyleOptions,
+    TextOptions,
+    BitmapTextGraphics
+> implements View
 {
     public override readonly renderPipeId: string = 'bitmapText';
 
@@ -108,7 +119,7 @@ export class BitmapText extends AbstractText<TextStyle, TextStyleOptions, Bitmap
      * ```ts
      * new BitmapText(options?: TextOptions);
      * ```
-     * @param { text.TextOptions } options - The options of the bitmap text.
+     * @param { TextOptions } options - The options of the bitmap text.
      */
     constructor(options?: TextOptions);
     /** @deprecated since 8.0.0 */

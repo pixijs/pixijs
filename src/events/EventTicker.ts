@@ -3,14 +3,6 @@ import { Ticker } from '../ticker/Ticker';
 
 import type { EventSystem } from './EventSystem';
 
-/**
- * This class handles automatic firing of PointerEvents
- * in the case where the pointer is stationary for too long.
- * This is to ensure that hit-tests are still run on moving objects.
- * @since 7.2.0
- * @memberof events
- * @class EventsTicker
- */
 class EventsTickerClass
 {
     /** The event system. */
@@ -137,4 +129,12 @@ class EventsTickerClass
     }
 }
 
+/**
+ * This class handles automatic firing of PointerEvents
+ * in the case where the pointer is stationary for too long.
+ * This is to ensure that hit-tests are still run on moving objects.
+ * @since 7.2.0
+ * @category events
+ * @class
+ */
 export const EventsTicker = new EventsTickerClass();
