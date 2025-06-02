@@ -453,7 +453,7 @@ export class TextStyle extends EventEmitter<{
     set lineHeight(value: number) { this._lineHeight = value; this.update(); }
     /**
      * Occasionally some fonts are cropped. Adding some padding will prevent this from happening
-     * by adding padding to all sides of the text.
+     * by adding padding to all sides of the text. (this will NOT affect the positioning or bounds of the text)
      */
     get padding(): number { return this._padding; }
     set padding(value: number) { this._padding = value; this.update(); }
@@ -466,8 +466,11 @@ export class TextStyle extends EventEmitter<{
     get filters(): Filter[] { return this._filters; }
     set filters(value: Filter[]) { this._filters = value; this.update(); }
 
-    /** Trim transparent borders. This is an expensive operation so only use this if you have to! */
-    get trim(): boolean { return this._trim; }
+    /**
+     * Trim transparent borders from the text texture.
+     * PERFORMANCE WARNING: This is a costly operation as it requires scanning pixel alpha values.
+     * Avoid using `trim: true` for dynamic text, as it could significantly impact performance.
+     */get trim(): boolean { return this._trim; }
     set trim(value: boolean) { this._trim = value; this.update(); }
     /**
      * The baseline of the text that is rendered.
