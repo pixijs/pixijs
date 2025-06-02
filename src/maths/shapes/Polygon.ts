@@ -322,20 +322,39 @@ export class Polygon implements ShapePrimitive
     }
 
     /**
-     * Get the first X coordinate of the polygon
+     * Get the first X coordinate of the polygon.
+     * @example
+     * ```ts
+     * // Basic coordinate access
+     * const polygon = new Polygon([0, 0, 100, 200, 300, 400]);
+     * console.log(polygon.x); // 0
+     * ```
      * @readonly
+     * @returns The x-coordinate of the first vertex
+     * @see {@link Polygon.y} For first Y coordinate
+     * @see {@link Polygon.points} For raw points array
      */
     get x(): number
     {
-        return this.points[this.points.length - 2];
+        return this.points[0];
     }
+
     /**
-     * Get the first Y coordinate of the polygon
+     * Get the first Y coordinate of the polygon.
+     * @example
+     * ```ts
+     * // Basic coordinate access
+     * const polygon = new Polygon([0, 0, 100, 200, 300, 400]);
+     * console.log(polygon.y); // 0
+     * ```
      * @readonly
+     * @returns The y-coordinate of the first vertex
+     * @see {@link Polygon.x} For first X coordinate
+     * @see {@link Polygon.points} For raw points array
      */
     get y(): number
     {
-        return this.points[this.points.length - 1];
+        return this.points[1];
     }
 }
 
