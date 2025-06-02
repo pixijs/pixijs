@@ -11,6 +11,7 @@ export const scene: TestScene = {
         const text = new Text({
             text: 'NO TRIM',
             style: {
+                fontFamily: 'Arial',
                 fontSize: 24,
                 fill: 'red',
                 padding: 25,
@@ -31,6 +32,7 @@ export const scene: TestScene = {
         const text2 = new Text({
             text: 'TRIM',
             style: {
+                fontFamily: 'Arial',
                 fontSize: 24,
                 fill: 'red',
                 padding: 5,
