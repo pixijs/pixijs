@@ -237,29 +237,66 @@ export interface Path
 /**
  * Path utilities for working with URLs and file paths in a cross-platform way.
  * All paths that are passed in will become normalized to have posix separators.
- * ```js
+ * @example
+ * ```ts
  * import { path } from 'pixi.js';
  *
- * path.normalize('http://www.example.com/foo/bar/../baz'); // http://www.example.com/foo/baz
+ * // Basic path normalization
+ * path.normalize('http://www.example.com/foo/bar/../baz');
+ * // -> 'http://www.example.com/foo/baz'
+ *
+ * // Working with file paths
+ * path.join('assets', 'images', 'sprite.png');
+ * // -> 'assets/images/sprite.png'
+ *
+ * // URL handling
+ * path.toAbsolute('images/texture.png', 'http://example.com/assets/');
+ * // -> 'http://example.com/assets/images/texture.png'
  * ```
- * @see {@link Path}
+ * @remarks
+ * - Normalizes to POSIX separators (forward slashes)
+ * - Handles URLs, data URLs, and file paths
+ * - Supports path composition and decomposition
+ * - Common in asset loading and URL management
  * @category utils
  * @standard
+ * @see {@link Path} For full API reference
+ * @see {@link DOMAdapter} For platform-specific path handling
  */
 export const path: Path = {
     /**
      * Converts a path to posix format.
      * @param path - The path to convert to posix
+     * @example
+     * ```ts
+     * // Convert a Windows path to POSIX format
+     * path.toPosix('C:\\Users\\User\\Documents\\file.txt');
+     * // -> 'C:/Users/User/Documents/file.txt'
+     * ```
      */
     toPosix(path: string) { return replaceAll(path, '\\', '/'); },
     /**
      * Checks if the path is a URL e.g. http://, https://
      * @param path - The path to check
+     * @example
+     * ```ts
+     * // Check if a path is a URL
+     * path.isUrl('http://www.example.com');
+     * // -> true
+     * path.isUrl('C:/Users/User/Documents/file.txt');
+     * // -> false
+     * ```
      */
     isUrl(path: string) { return (/^https?:/).test(this.toPosix(path)); },
     /**
      * Checks if the path is a data URL
      * @param path - The path to check
+     * @example
+     * ```ts
+     * // Check if a path is a data URL
+     * path.isDataUrl('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...');
+     * // -> true
+     * ```
      */
     isDataUrl(path: string)
     {
@@ -270,6 +307,12 @@ export const path: Path = {
     /**
      * Checks if the path is a blob URL
      * @param path - The path to check
+     * @example
+     * ```ts
+     * // Check if a path is a blob URL
+     * path.isBlobUrl('blob:http://www.example.com/12345678-1234-1234-1234-123456789012');
+     * // -> true
+     * ```
      */
     isBlobUrl(path: string)
     {
@@ -280,11 +323,28 @@ export const path: Path = {
      * Checks if the path has a protocol e.g. http://, https://, file:///, data:, blob:, C:/
      * This will return true for windows file paths
      * @param path - The path to check
+     * @example
+     * ```ts
+     * // Check if a path has a protocol
+     * path.hasProtocol('http://www.example.com');
+     * // -> true
+     * path.hasProtocol('C:/Users/User/Documents/file.txt');
+     * // -> true
+     * ```
      */
     hasProtocol(path: string) { return (/^[^/:]+:/).test(this.toPosix(path)); },
     /**
      * Returns the protocol of the path e.g. http://, https://, file:///, data:, blob:, C:/
      * @param path - The path to get the protocol from
+     * @example
+     * ```ts
+     * // Get the protocol from a URL
+     * path.getProtocol('http://www.example.com/path/to/resource');
+     * // -> 'http://'
+     * // Get the protocol from a file path
+     * path.getProtocol('C:/Users/User/Documents/file.txt');
+     * // -> 'C:/'
+     * ```
      */
     getProtocol(path: string)
     {
@@ -316,6 +376,12 @@ export const path: Path = {
      * @param url - The URL to test
      * @param customBaseUrl - The base URL to use
      * @param customRootUrl - The root URL to use
+     * @example
+     * ```ts
+     * // Convert a relative URL to an absolute path
+     * path.toAbsolute('images/texture.png', 'http://example.com/assets/');
+     * // -> 'http://example.com/assets/images/texture.png'
+     * ```
      */
     toAbsolute(url: string, customBaseUrl?: string, customRootUrl?: string)
     {
@@ -342,6 +408,15 @@ export const path: Path = {
     /**
      * Normalizes the given path, resolving '..' and '.' segments
      * @param path - The path to normalize
+     * @example
+     * ```ts
+     * // Normalize a path with relative segments
+     * path.normalize('http://www.example.com/foo/bar/../baz');
+     * // -> 'http://www.example.com/foo/baz'
+     * // Normalize a file path with relative segments
+     * path.normalize('C:\\Users\\User\\Documents\\..\\file.txt');
+     * // -> 'C:/Users/User/file.txt'
+     * ```
      */
     normalize(path: string)
     {
@@ -376,6 +451,14 @@ export const path: Path = {
      * Determines if path is an absolute path.
      * Absolute paths can be urls, data urls, or paths on disk
      * @param path - The path to test
+     * @example
+     * ```ts
+     * // Check if a path is absolute
+     * path.isAbsolute('http://www.example.com/foo/bar');
+     * // -> true
+     * path.isAbsolute('C:/Users/User/Documents/file.txt');
+     * // -> true
+     * ```
      */
     isAbsolute(path: string)
     {
@@ -391,6 +474,15 @@ export const path: Path = {
      * Joins all given path segments together using the platform-specific separator as a delimiter,
      * then normalizes the resulting path
      * @param segments - The segments of the path to join
+     * @example
+     * ```ts
+     * // Join multiple path segments
+     * path.join('assets', 'images', 'sprite.png');
+     * // -> 'assets/images/sprite.png'
+     * // Join with relative segments
+     * path.join('assets', 'images', '../textures', 'sprite.png');
+     * // -> 'assets/textures/sprite.png'
+     * ```
      */
     join(...segments: string[])
     {
@@ -429,6 +521,15 @@ export const path: Path = {
     /**
      * Returns the directory name of a path
      * @param path - The path to parse
+     * @example
+     * ```ts
+     * // Get the directory name of a path
+     * path.dirname('http://www.example.com/foo/bar/baz.png');
+     * // -> 'http://www.example.com/foo/bar'
+     * // Get the directory name of a file path
+     * path.dirname('C:/Users/User/Documents/file.txt');
+     * // -> 'C:/Users/User/Documents'
+     * ```
      */
     dirname(path: string)
     {
@@ -474,6 +575,15 @@ export const path: Path = {
     /**
      * Returns the root of the path e.g. /, C:/, file:///, http://domain.com/
      * @param path - The path to parse
+     * @example
+     * ```ts
+     * // Get the root of a URL
+     * path.rootname('http://www.example.com/foo/bar/baz.png');
+     * // -> 'http://www.example.com/'
+     * // Get the root of a file path
+     * path.rootname('C:/Users/User/Documents/file.txt');
+     * // -> 'C:/'
+     * ```
      */
     rootname(path: string)
     {
@@ -509,6 +619,15 @@ export const path: Path = {
      * Returns the last portion of a path
      * @param path - The path to test
      * @param ext - Optional extension to remove
+     * @example
+     * ```ts
+     * // Get the basename of a URL
+     * path.basename('http://www.example.com/foo/bar/baz.png');
+     * // -> 'baz.png'
+     * // Get the basename of a file path
+     * path.basename('C:/Users/User/Documents/file.txt');
+     * // -> 'file.txt'
+     * ```
      */
     basename(path: string, ext?: string)
     {
@@ -609,6 +728,15 @@ export const path: Path = {
      * portion of the path. If there is no . in the last portion of the path, or if there are no . characters other than
      * the first character of the basename of path, an empty string is returned.
      * @param path - The path to parse
+     * @example
+     * ```ts
+     * // Get the extension of a URL
+     * path.extname('http://www.example.com/foo/bar/baz.png');
+     * // -> '.png'
+     * // Get the extension of a file path
+     * path.extname('C:/Users/User/Documents/file.txt');
+     * // -> '.txt'
+     * ```
      */
     extname(path: string)
     {
@@ -677,6 +805,27 @@ export const path: Path = {
     /**
      * Parses a path into an object containing the 'root', `dir`, `base`, `ext`, and `name` properties.
      * @param path - The path to parse
+     * @example
+     * ```ts
+     * // Parse a URL
+     * const parsed = path.parse('http://www.example.com/foo/bar/baz.png');
+     * // -> {
+     * //   root: 'http://www.example.com/',
+     * //   dir: 'http://www.example.com/foo/bar',
+     * //   base: 'baz.png',
+     * //   ext: '.png',
+     * //   name: 'baz'
+     * // }
+     * // Parse a file path
+     * const parsedFile = path.parse('C:/Users/User/Documents/file.txt');
+     * // -> {
+     * //   root: 'C:/',
+     * //   dir: 'C:/Users/User/Documents',
+     * //   base: 'file.txt',
+     * //   ext: '.txt',
+     * //   name: 'file'
+     * // }
+     * ```
      */
     parse(path: string)
     {
