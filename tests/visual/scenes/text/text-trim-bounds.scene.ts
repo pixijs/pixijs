@@ -1,4 +1,3 @@
-import { Assets } from '~/assets';
 import { Graphics, Text } from '~/scene';
 
 import type { TestScene } from '../../types';
@@ -9,12 +8,9 @@ export const scene: TestScene = {
     pixelMatch: 258,
     create: async (scene: Container) =>
     {
-        await Assets.load('fonts/msdf/pinyon/PinyonScript-Regular.ttf');
-
         const text = new Text({
             text: 'NO TRIM',
             style: {
-                fontFamily: 'Outfit',
                 fontSize: 24,
                 fill: 'red',
                 padding: 25,
