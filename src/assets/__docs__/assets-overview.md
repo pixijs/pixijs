@@ -5,128 +5,183 @@ category: assets
 
 # Assets
 
-A one stop shop for all Pixi resource management!
-Super modern and easy to use, with enough flexibility to customize and do what you need!
-Use the singleton class [Assets]{@link Assets} to easily load and manage all your assets.
+The `Assets` class provides a modern, centralized system for managing and loading resources in PixiJS. It offers caching, background loading, bundle management, and smart format detection while supporting a wide range of file types.
 
-```typescript
+## Basic Usage
+
+Load assets using the global `Assets` singleton:
+
+```ts
 import { Assets, Texture } from 'pixi.js';
-const bunnyTexture = await Assets.load<Texture>('bunny.png');
-const sprite = new Sprite(bunnyTexture);
-```
 
-Check out the sections below for more information on how to deal with assets.
-
-<details id="assets-loading">
-<summary>Asset Loading</summary>
-Do not be afraid to load things multiple times - under the hood, it will **NEVER** load anything more than once.
-*For example:*
-```js
-import { Assets } from 'pixi.js';
-promise1 = Assets.load('bunny.png')
-promise2 = Assets.load('bunny.png')
-// promise1 === promise2
-```
-Here both promises will be the same. Once resolved... Forever resolved! It makes for really easy resource management!
-Out of the box Pixi supports the following files:
-- Textures (**_avif_**, **_webp_**, **_png_**, **_jpg_**, **_gif_**, **_svg_**) via {@link loadTextures}, {@link loadSvg}
-- Video Textures (**_mp4_**, **_m4v_**, **_webm_**, **_ogg_**, **_ogv_**, **_h264_**, **_avi_**, **_mov_**) via {@link loadVideoTextures}
-- Sprite sheets (**_json_**) via {@link spritesheetAsset}
-- Bitmap fonts (**_xml_**, **_fnt_**, **_txt_**) via {@link loadBitmapFont}
-- Web fonts (**_ttf_**, **_woff_**, **_woff2_**) via {@link loadWebFont}
-- JSON files (**_json_**) via {@link loadJson}
-- Text Files (**_txt_**) via {@link loadTxt}
-<br/>
-More types can be added fairly easily by creating additional {@link LoaderParser LoaderParsers}.
-</details>
-<details id="textures">
-<summary>Textures</summary>
-- Textures are loaded as ImageBitmap on a worker thread where possible. Leading to much less janky load + parse times.
-- By default, we will prefer to load AVIF and WebP image files if you specify them.
-But if the browser doesn't support AVIF or WebP we will fall back to png and jpg.
-- Textures can also be accessed via `Texture.from()` (see {@link Texture.from})
-and now use this asset manager under the hood!
-- Don't worry if you set preferences for textures that don't exist
-(for example you prefer 2x resolutions images but only 1x is available for that texture,
-the Assets manager will pick that up as a fallback automatically)
-#### Sprite sheets
-- It's hard to know what resolution a sprite sheet is without loading it first, to address this
-there is a naming convention we have added that will let Pixi understand the image format and resolution
-of the spritesheet via its file name: `my-spritesheet{resolution}.{imageFormat}.json`
-<br><br>For example:
-  - `my-spritesheet@2x.webp.json`* // 2x resolution, WebP sprite sheet*
-  - `my-spritesheet@0.5x.png.json`* // 0.5x resolution, png sprite sheet*
-- This is optional! You can just load a sprite sheet as normal.
-This is only useful if you have a bunch of different res / formatted spritesheets.
-</details>
-<details id="fonts">
-<summary>Fonts</summary>
-Web fonts will be loaded with all weights.
-It is possible to load only specific weights by doing the following:
-```js
-import { Assets } from 'pixi.js';
-// Load specific weights..
-await Assets.load({
-    data: {
-        weights: ['normal'], // Only loads the weight
-    },
-    src: `outfit.woff2`,
+// Initialize the asset system
+await Assets.init({
+    basePath: 'assets/',
 });
-// Load everything...
-await Assets.load(`outfit.woff2`);
+
+// Load a single asset
+const texture = await Assets.load<Texture>('bunny.png');
+
+// Load multiple assets
+const assets = await Assets.load(['bunny.png', 'spritesheet.json', 'font.ttf']);
 ```
-</details>
-<details id="background-loading">
-<summary>Background Loading</summary>
-Background loading will load stuff for you passively behind the scenes. To minimize jank,
-it will only load one asset at a time. As soon as a developer calls `Assets.load(...)` the
-background loader is paused and requested assets are loaded as a priority.
-Don't worry if something is in there that's already loaded, it will just get skipped!
-You still need to call `Assets.load(...)` to get an asset that has been loaded in the background.
-It's just that this promise will resolve instantly if the asset
-has already been loaded.
-</details>
-<details id="manifests-and-bundles">
-<summary>Manifest and Bundles</summary>
-- {@link AssetsManifest Manifest} is a descriptor that contains a list of all assets and their properties.
-- {@link AssetsBundle Bundles} are a way to group assets together.
-```js
-import { Assets } from 'pixi.js';
-// Manifest Example
+
+## Core Features
+
+### Asset Loading
+
+The system supports many file types out of the box:
+
+```ts
+// Load textures (avif, webp, png, jpg, gif, svg)
+const texture = await Assets.load('sprite.{webp,png}');
+
+// Load video textures (mp4, webm, ogg)
+const video = await Assets.load('clip.{webm,mp4}');
+
+// Load spritesheets
+const sheet = await Assets.load('sprites.json');
+
+// Load fonts (ttf, woff, woff2)
+const font = await Assets.load('font.ttf');
+
+// Load data files
+const data = await Assets.load('config.json');
+const text = await Assets.load('info.txt');
+```
+
+Supported Asset Types:
+| Type | Extensions | Loaders |
+| ------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Textures | `.png`, `.jpg`, `.gif`, `.webp`, `.avif`, `.svg` | {@link loadTextures}, {@link loadSvg} |
+| Video Textures | `.mp4`, `.m4v`, `.webm`, `.ogg`, `.ogv`, `.h264`, `.avi`, `.mov` | {@link loadVideoTextures} |
+| Sprite Sheets | `.json` | {@link spritesheetAsset} |
+| Bitmap Fonts | `.fnt`, `.xml`, `.txt` | {@link loadBitmapFont} |
+| Web Fonts | `.ttf`, `.otf`, `.woff`, `.woff2` | {@link loadWebFont} |
+| JSON | `.json` | {@link loadJson} |
+| Text | `.txt` | {@link loadTxt} |
+| Compressed Textures | `.basis`, `.dds`, `.ktx`, `.ktx2` | {@link loadBasis}, {@link loadDDS}, {@link loadKTX}, {@link loadKTX2} |
+
+### Asset Bundles
+
+Group related assets into bundles for organized loading:
+
+```ts
+// Define bundles
+Assets.addBundle('loading-screen', [
+    { alias: 'background', src: 'bg.png' },
+    { alias: 'progress-bar', src: 'bar.png' },
+]);
+
+Assets.addBundle('game', [
+    { alias: 'character', src: 'hero.png' },
+    { alias: 'enemies', src: 'monsters.json' },
+]);
+
+// Load bundles
+const loadingAssets = await Assets.loadBundle('loading-screen');
+const gameAssets = await Assets.loadBundle('game');
+```
+
+### Background Loading
+
+Load assets in the background while maintaining performance:
+
+```ts
+// Start background loading
+Assets.backgroundLoad(['level1.json', 'level2.json']);
+
+// Later, get the assets instantly
+const level1 = await Assets.load('level1.json'); // Resolves immediately if loaded
+const level2 = await Assets.load('level2.json'); // Resolves immediately if loaded
+```
+
+## Asset Configuration
+
+### Manifests
+
+Define all your game's assets in a manifest:
+
+```ts
 const manifest = {
     bundles: [
         {
-            name: 'load-screen',
+            name: 'game-essential',
             assets: [
                 {
-                    alias: 'background',
-                    src: 'sunset.png',
+                    alias: 'hero',
+                    src: 'characters/hero.{webp,png}',
                 },
                 {
-                    alias: 'bar',
-                    src: 'load-bar.{png,webp}',
+                    alias: 'ui',
+                    src: 'interface.json',
                 },
             ],
         },
-        {
-            name: 'game-screen',
-            assets: [
-                {
-                    alias: 'character',
-                    src: 'robot.png',
-                },
-                {
-                    alias: 'enemy',
-                    src: 'bad-guy.png',
-                },
-            ],
-        },
-    ]
+    ],
 };
+
 await Assets.init({ manifest });
-// Load a bundle...
-loadScreenAssets = await Assets.loadBundle('load-screen');
-// Load another bundle...
-gameScreenAssets = await Assets.loadBundle('game-screen');
+// Load a bundle from the manifest
+const gameAssets = await Assets.loadBundle('game-essential');
+// or load individual assets
+const heroTexture = await Assets.load('hero');
 ```
-</details>
+
+### Format Preferences
+
+Configure preferred asset formats and resolutions:
+
+```ts
+await Assets.init({
+    texturePreference: {
+        format: ['webp', 'png'], // Prefer WebP over PNG
+        resolution: 2, // Prefer 2x resolution
+    },
+    defaultSearchParams: {
+        // URL parameters
+        version: '1.0.0',
+    },
+});
+```
+
+## Cache Management
+
+Control the asset cache:
+
+```ts
+// Check if asset is cached
+const isCached = Assets.cache.has('texture.png');
+
+// Get cached asset
+const texture = Assets.get('texture.png');
+
+// Unload specific assets
+await Assets.unload('texture.png');
+
+// Reset entire cache
+Assets.reset();
+```
+
+## Best Practices
+
+- Use `Assets.init()` before loading any assets
+- Leverage bundles for organized loading
+- Use format fallbacks (e.g., `image.{webp,png}`)
+- Take advantage of background loading for better performance
+- Clean up unused assets with `Assets.unload()`
+- Consider using manifests for large applications
+
+## Related Documentation
+
+- See {@link Assets} for the main asset manager
+- See {@link AssetsManifest} for manifest configuration
+- See {@link LoaderParser} for custom loaders
+- See {@link CacheParser} for cache handling
+- See {@link BackgroundLoader} for background loading
+- See {@link Texture} for texture management
+- See {@link Spritesheet} for sprite sheets
+- See {@link loadTextures} for texture loading
+- See {@link loadWebFont} for font loading
+
+For more specific implementation details and advanced usage, refer to the API documentation of individual classes and interfaces.
