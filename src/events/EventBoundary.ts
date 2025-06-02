@@ -96,7 +96,7 @@ export class EventBoundary
     public dispatch: EventEmitter = new EventEmitter();
 
     /** The cursor preferred by the event targets underneath this boundary. */
-    public cursor: Cursor | string;
+    public cursor: Cursor | (string & {});
 
     /**
      * This flag would emit `pointermove`, `touchmove`, and `mousemove` events on all Containers.

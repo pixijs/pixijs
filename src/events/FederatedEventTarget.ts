@@ -103,7 +103,7 @@ export type EventMode = 'none' | 'passive' | 'auto' | 'static' | 'dynamic';
 export interface FederatedOptions
 {
     /** The cursor preferred when the mouse pointer is hovering over. */
-    cursor?: Cursor | string;
+    cursor?: Cursor | (string & {});
     /**
      * Enable interaction events for the Container. Touch, pointer and mouse.
      * There are 5 types of interaction settings:
