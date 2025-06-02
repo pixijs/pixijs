@@ -97,18 +97,11 @@ function addTextureToGeometryData(
     }
 )
 {
-    const { vertices, uvs, indices } = geometryData;
-
-    const indexOffset = indices.length;
-    const vertOffset = vertices.length / 2;
-
     const points: number[] = [];
 
     const build = shapeBuilders.rectangle;
 
     const rect = tempRect;
-
-    const texture = data.image;
 
     rect.x = data.dx;
     rect.y = data.dy;
@@ -118,7 +111,15 @@ function addTextureToGeometryData(
     const matrix = data.transform;
 
     // TODO - this can be cached...
-    build.build(rect, points);
+    if (!build.build(rect, points))
+    {
+        return;
+    }
+
+    const { vertices, uvs, indices } = geometryData;
+
+    const indexOffset = indices.length;
+    const vertOffset = vertices.length / 2;
 
     if (matrix)
     {
@@ -127,6 +128,7 @@ function addTextureToGeometryData(
 
     build.triangulate(points, vertices, 2, vertOffset, indices, indexOffset);
 
+    const texture = data.image;
     const textureUvs = texture.uvs;
 
     uvs.push(
@@ -169,19 +171,21 @@ function addShapePathToGeometryData(
 
     shapePath.shapePrimitives.forEach(({ shape, transform: matrix, holes }) =>
     {
-        const indexOffset = indices.length;
-        const vertOffset = vertices.length / 2;
-
         const points: number[] = [];
-
         const build = shapeBuilders[shape.type];
-        let topology: Topology = 'triangle-list';
         // TODO - this can be cached...
         // TODO - THIS IS DONE TWICE!!!!!!
         // ONCE FOR STROKE AND ONCE FOR FILL
         // move to the ShapePath2D class itself?
 
-        build.build(shape, points);
+        if (!build.build(shape, points))
+        {
+            return;
+        }
+
+        const indexOffset = indices.length;
+        const vertOffset = vertices.length / 2;
+        let topology: Topology = 'triangle-list';
 
         if (matrix)
         {
@@ -274,9 +278,10 @@ function getHoleArrays(holePrimitives: ShapePrimitiveWithHoles[])
 
         const holeBuilder = shapeBuilders[holePrimitive.type] as ShapeBuildCommand;
 
-        holeBuilder.build(holePrimitive, holePoints);
-
-        holeArrays.push(holePoints);
+        if (holeBuilder.build(holePrimitive, holePoints))
+        {
+            holeArrays.push(holePoints);
+        }
     }
 
     return holeArrays;
