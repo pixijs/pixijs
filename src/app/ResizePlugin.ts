@@ -65,6 +65,7 @@ export interface ResizePluginOptions
  * // Example 3: Change resize target at runtime
  * app.resizeTo = window;                    // Enable auto-resize to window
  * app.resizeTo = null;                      // Disable auto-resize
+ * ```
  * @category app
  * @standard
  */

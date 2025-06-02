@@ -235,6 +235,7 @@ export interface AssetInitOptions
      * const resources2 = await Assets.loadBundle('bunny2');
      *
      * console.log(resources.character === resources2.character); // false
+     * ```
      */
     bundleIdentifier?: BundleIdentifierOptions;
 

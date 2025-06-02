@@ -1,20 +1,20 @@
 /**
  * @packageDocumentation
- * @document _documents/accessibility-overview.md
- * @document _documents/app-overview.md
- * @document _documents/assets-overview.md
- * @document _documents/color-overview.md
- * @document _documents/environment-overview.md
- * @document _documents/events-overview.md
- * @document _documents/extensions-overview.md
- * @document _documents/filters-overview.md
- * @document _documents/maths-overview.md
- * @document _documents/rendering-overview.md
- * @document _documents/scene-overview.md
- * @document _documents/scene-gif-overview.md
- * @document _documents/scene-text-overview.md
- * @document _documents/ticker-overview.md
- * @document _documents/utils-overview.md
+ * @document accessibility/__docs__/accessibility-overview.md
+ * @document app/__docs__/app-overview.md
+ * @document assets/__docs__/assets-overview.md
+ * @document color/__docs__/color-overview.md
+ * @document environment/__docs__/environment-overview.md
+ * @document events/__docs__/events-overview.md
+ * @document extensions/__docs__/extensions-overview.md
+ * @document filters/__docs__/filters-overview.md
+ * @document maths/__docs__/maths-overview.md
+ * @document rendering/__docs__/rendering-overview.md
+ * @document scene/__docs__/scene-overview.md
+ * @document gif/__docs__/scene-gif-overview.md
+ * @document scene/__docs__/scene-text-overview.md
+ * @document ticker/__docs__/ticker-overview.md
+ * @document utils/__docs__/utils-overview.md
  */
 
 export * from './accessibility';

@@ -64,6 +64,7 @@ export interface AccessibleOptions
      * const container = new Container();
      * container.accessible = true;
      * container.accessibleHint = 'This is a container';
+     * ```
      */
     accessibleHint: string | null;
     /**
@@ -107,6 +108,7 @@ export interface AccessibleOptions
      * const container = new Container();
      * container.accessible = true;
      * container.accessiblePointerEvents = 'none'; // or 'auto', 'visiblePainted', etc.
+     * ```
      */
     accessiblePointerEvents: PointerEvents;
 

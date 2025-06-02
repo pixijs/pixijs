@@ -261,6 +261,7 @@ export class EventSystem implements System<EventSystemOptions>
      *     // Enable wheel events
      *     wheel: true,
      * };
+     * ```
      */
     public static defaultEventFeatures: EventSystemFeatures = {
         /** Enables pointer events associated with pointer movement. */
@@ -393,6 +394,7 @@ export class EventSystem implements System<EventSystemOptions>
      *     default: 'inherit',
      *     pointer: 'pointer' // Default cursor styles
      * }
+     * ```
      */
     public cursorStyles: Record<string, string | ((mode: string) => void) | CSSStyleDeclaration>;
 

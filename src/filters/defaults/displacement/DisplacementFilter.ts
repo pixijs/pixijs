@@ -57,6 +57,7 @@ export interface DisplacementFilterOptions extends FilterOptions
      * new DisplacementFilter({ sprite, scale: 20 });
      * // Separate scaling
      * new DisplacementFilter({ sprite, scale: { x: 10, y: 15 } });
+     * ```
      */
     scale?: number | PointData;
 }
