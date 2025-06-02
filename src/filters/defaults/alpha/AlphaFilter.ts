@@ -58,7 +58,6 @@ export class AlphaFilter extends Filter
      * // Use default options
      * const filter = new AlphaFilter(); // Uses default alpha of 0.5
      * ```
-     * @member {AlphaFilterOptions}
      */
     public static defaultOptions: AlphaFilterOptions = {
         /**

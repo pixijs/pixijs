@@ -134,7 +134,6 @@ export class BlurFilter extends Filter
      * // Create a filter with these defaults
      * const filter = new BlurFilter(); // Uses default options
      * ```
-     * @member {Partial<BlurFilterOptions>}
      * @remarks
      * - These options are used when creating a new BlurFilter without specific parameters
      * - Can be overridden by passing options to the constructor
