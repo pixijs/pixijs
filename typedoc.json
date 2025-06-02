@@ -3,6 +3,7 @@
     "entryPoints": ["./src/docs.entry.ts"],
     "tsconfig": "tsconfig.json",
     "out": ".s3_uploads/docs",
+    "gaID": "G-ZXJM5CB1QM",
     "disableSources": true,
     "navigation": {
         "includeCategories": true,
@@ -17,6 +18,7 @@
     "customCss": "./scripts/plugins/typedoc-custom.css",
     "router": "pixi",
     "plugin": [
+        "typedoc-plugin-ga",
         "typedoc-plugin-mdn-links",
         "typedoc-plugin-no-inherit",
         "./scripts/plugins/typedoc-plugin-remove-standard-tag.mjs",
