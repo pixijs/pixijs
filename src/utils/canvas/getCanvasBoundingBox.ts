@@ -49,7 +49,6 @@ function checkColumn(data: Uint8ClampedArray, width: number, x: number, top: num
     return true;
 }
 
-/** @memberof utils */
 /** @internal */
 export interface GetCanvasBoundingBoxOptions
 {
@@ -70,7 +69,6 @@ export interface GetCanvasBoundingBoxOptions
 }
 
 /**
- *
  * Measures the bounding box of a canvas's visible (non-transparent) pixels.
  *
  * This function analyzes the alpha channel of the canvas pixels to find the smallest
@@ -80,7 +78,7 @@ export interface GetCanvasBoundingBoxOptions
  * Uses an internal canvas with `willReadFrequently: true` for efficient pixel data access.
  * This internal canvas is reused between calls for better performance.
  * @example
- * - ```typescript
+ * ```typescript
  * // Basic usage - get trim bounds at full resolution
  * const bounds = getCanvasBoundingBox({ canvas: myCanvas });
  * console.log(bounds); // Rectangle{x: 10, y: 5, width: 100, height: 200}
@@ -100,9 +98,7 @@ export interface GetCanvasBoundingBoxOptions
  * @param options - The options for measuring the bounding box, including the canvas to measure.
  * @returns The bounding box as a Rectangle containing the visible content.
  *          Returns Rectangle.EMPTY if the canvas is completely transparent.
- * @since 7.1.0
  * @internal
- * @memberof utils
  */
 export function getCanvasBoundingBox(
     options: GetCanvasBoundingBoxOptions,
@@ -111,7 +107,7 @@ export function getCanvasBoundingBox(
  * @param canvas
  * @param resolution
  * @internal
- * @deprecated since 8.8.0
+ * @deprecated since 8.10.0
  */
 export function getCanvasBoundingBox(canvas: ICanvas, resolution?: number): Rectangle;
 /**

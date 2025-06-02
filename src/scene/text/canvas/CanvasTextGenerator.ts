@@ -48,7 +48,6 @@ const tempRect = new Rectangle();
  * });
  *
  * @internal
- * @memberof rendering
  */
 class CanvasTextGeneratorClass
 {

@@ -145,11 +145,16 @@ export class CanvasTextSystem implements System
 
     /**
      * Renders text to its canvas, and updates its texture.
-     * @deprecated since 8.8.0
+     * @deprecated since 8.10.0
      */
     public renderTextToCanvas(): void
     {
-        deprecation('8.8.0', 'CanvasTextSystem.renderTextToCanvas: no longer supported, use CanvasText.getTexture instead');
+        // #if _DEBUG
+        deprecation(
+            '8.10.0',
+            'CanvasTextSystem.renderTextToCanvas: no longer supported, use CanvasTextSystem.getTexture instead'
+        );
+        // #endif
     }
 
     /**
