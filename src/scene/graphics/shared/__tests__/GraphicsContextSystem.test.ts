@@ -6,7 +6,7 @@ describe('GraphicsContextSystem', () =>
 {
     describe('ShapeBuildCommand', () =>
     {
-        it('no skip', async () =>
+        it('should successfully build shapes', async () =>
         {
             const renderer = await getWebGLRenderer();
             const system = new GraphicsContextSystem(renderer);
@@ -48,7 +48,7 @@ describe('GraphicsContextSystem', () =>
             expect(gpuContext.batches.length).toEqual(5);
         });
 
-        it('skip', async () =>
+        it('should skip shapes correctly', async () =>
         {
             const renderer = await getWebGLRenderer();
             const system = new GraphicsContextSystem(renderer);
@@ -80,7 +80,7 @@ describe('GraphicsContextSystem', () =>
             expect(gpuContext.batches.length).toEqual(2);
         });
 
-        it('batchMode', async () =>
+        it('should handle different batch modes', async () =>
         {
             const renderer = await getWebGLRenderer();
             const system = new GraphicsContextSystem(renderer);
