@@ -159,7 +159,7 @@ export class CanvasTextMetrics
     {
         let result = CanvasTextMetrics._experimentalLetterSpacingSupported;
 
-        if (result !== undefined)
+        if (result === undefined)
         {
             const proto = DOMAdapter.get().getCanvasRenderingContext2D().prototype;
 
