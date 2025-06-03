@@ -26,6 +26,7 @@ export interface GetFastGlobalBoundsMixin
      * @param {boolean} [factorRenderLayers] - A flag indicating whether to consider render layers in the calculation.
      * @param {Bounds} [bounds] - The output bounds object to store the result. If not provided, a new one is created.
      * @returns {Bounds} The computed bounds.
+     * @advanced
      */
     getFastGlobalBounds(factorRenderLayers?: boolean, bounds?: Bounds): Bounds;
 

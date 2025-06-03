@@ -98,7 +98,7 @@ export class NineSliceSprite extends ViewContainer<NineSliceSpriteGpuData> imple
     public _texture: Texture;
     /** @internal */
     public _anchor: ObservablePoint;
-    /** @advanced */
+    /** @internal */
     public batched = true;
     private _leftWidth: number;
     private _topHeight: number;

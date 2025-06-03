@@ -142,7 +142,7 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      */
     public override readonly renderPipeId: string = 'particle';
 
-    /** @advanced */
+    /** @internal */
     public batched = false;
 
     /**

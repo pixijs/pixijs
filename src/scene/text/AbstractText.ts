@@ -90,6 +90,7 @@ export abstract class AbstractText<
     GPU_DATA extends { destroy: () => void } = any
 > extends ViewContainer<GPU_DATA> implements View
 {
+    /** @internal */
     public batched = true;
     /** @internal */
     public _anchor: ObservablePoint;

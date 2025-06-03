@@ -15,22 +15,46 @@ import type { GraphicsPath } from './path/GraphicsPath';
 import type { RoundedPoint } from './path/roundShape';
 
 /**
- * Constructor options used for `Graphics` instances.
- * ```js
+ * Constructor options used for Graphics instances.
+ * Configures the initial state and behavior of a Graphics object.
+ * @example
+ * ```ts
  * const graphics = new Graphics({
- *    fillStyle: { color: 0xff0000, alpha: 0.5 },
- *    strokeStyle: { color: 0x00ff00, width: 2 },
+ *     roundPixels: true,
+ *     position: { x: 100.5, y: 100.5 }
  * });
+ *
+ * // Reuse graphics context
+ * const sharedContext = new GraphicsContext();
+ * const graphics1 = new Graphics({ context: sharedContext });
+ * const graphics2 = new Graphics({ context: sharedContext });
  * ```
- * @see {@link Graphics}
+ * @see {@link Graphics} For the graphics class implementation
+ * @see {@link GraphicsContext} For the graphics context API
  * @category scene
  * @standard
  */
 export interface GraphicsOptions extends PixiMixins.GraphicsOptions, ViewContainerOptions
 {
-    /** The GraphicsContext to use, useful for reuse and optimisation */
+    /**
+     * The GraphicsContext to use, useful for reuse and optimisation
+     * If not provided, a new GraphicsContext will be created.
+     * @example
+     * ```ts
+     * const sharedContext = new GraphicsContext();
+     * const graphics1 = new Graphics({ context: sharedContext });
+     * const graphics2 = new Graphics({ context: sharedContext });
+     * ```
+     */
     context?: GraphicsContext;
-    /** Whether or not to round the x/y position. */
+    /**
+     * Whether or not to round the x/y position.
+     * @default false
+     * @example
+     * ```ts
+     * const graphics = new Graphics({ roundPixels: true });
+     * ```
+     */
     roundPixels?: boolean;
 }
 // eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
@@ -38,8 +62,32 @@ export interface Graphics extends PixiMixins.Graphics, ViewContainer<GraphicsGpu
 
 /**
  * The Graphics class is primarily used to render primitive shapes such as lines, circles and
- * rectangles to the display, and to color and fill them.  However, you can also use a Graphics
- * object to build a list of primitives to use as a mask, or as a complex hitArea.
+ * rectangles to the display, and to color and fill them. It can also be used to create complex
+ * masks and hit areas for interaction.
+ * @example
+ * ```ts
+ * // Create a new graphics object
+ * const graphics = new Graphics();
+ *
+ * // Draw a filled rectangle with a stroke
+ * graphics
+ *     .rect(0, 0, 100, 100)
+ *     .fill({ color: 0xff0000 }) // Fill with red
+ *     .stroke({ width: 2, color: 0x000000 }); // Stroke with black
+ *
+ * // Draw a complex shape
+ * graphics
+ *     .moveTo(50, 50)
+ *     .lineTo(100, 100)
+ *     .arc(100, 100, 50, 0, Math.PI)
+ *     .closePath()
+ *     .fill({ color: 0x00ff00, alpha: 0.5 }); // Fill the shape
+ *
+ * // Use as a mask
+ * sprite.mask = graphics;
+ * ```
+ * @see {@link GraphicsContext} For the underlying drawing API
+ * @see {@link GraphicsPath} For path creation
  * @category scene
  * @standard
  */
@@ -47,12 +95,14 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
 {
     /** @internal */
     public override readonly renderPipeId: string = 'graphics';
+    /** @internal */
     public batched: boolean;
 
     private _context: GraphicsContext;
     private readonly _ownedContext: GraphicsContext;
 
     /**
+     * Creates a new Graphics object.
      * @param options - Options for the Graphics.
      */
     constructor(options?: GraphicsOptions | GraphicsContext)
@@ -100,14 +150,55 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
         this.onViewUpdate();
     }
 
+    /**
+     * The underlying graphics context used for drawing operations.
+     * Controls how shapes and paths are rendered.
+     * @example
+     * ```ts
+     * // Create a shared context
+     * const sharedContext = new GraphicsContext();
+     *
+     * // Create graphics objects sharing the same context
+     * const graphics1 = new Graphics();
+     * const graphics2 = new Graphics();
+     *
+     * // Assign shared context
+     * graphics1.context = sharedContext;
+     * graphics2.context = sharedContext;
+     *
+     * // Both graphics will show the same shapes
+     * sharedContext
+     *     .rect(0, 0, 100, 100)
+     *     .fill({ color: 0xff0000 });
+     * ```
+     * @see {@link GraphicsContext} For drawing operations
+     * @see {@link GraphicsOptions} For context configuration
+     */
     get context(): GraphicsContext
     {
         return this._context;
     }
 
     /**
-     * The local bounds of the graphic.
-     * @type {Bounds}
+     * The local bounds of the graphics object.
+     * Returns the boundaries after all graphical operations but before any transforms.
+     * @example
+     * ```ts
+     * const graphics = new Graphics();
+     *
+     * // Draw a shape
+     * graphics
+     *     .rect(0, 0, 100, 100)
+     *     .fill({ color: 0xff0000 });
+     *
+     * // Get bounds information
+     * const bounds = graphics.bounds;
+     * console.log(bounds.width);  // 100
+     * console.log(bounds.height); // 100
+     * ```
+     * @readonly
+     * @see {@link Bounds} For bounds operations
+     * @see {@link Container#getBounds} For transformed bounds
      */
     override get bounds(): Bounds
     {
@@ -122,7 +213,25 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
 
     /**
      * Checks if the object contains the given point.
-     * @param point - The point to check
+     * Returns true if the point lies within the Graphics object's rendered area.
+     * @example
+     * ```ts
+     * const graphics = new Graphics();
+     *
+     * // Draw a shape
+     * graphics
+     *     .rect(0, 0, 100, 100)
+     *     .fill({ color: 0xff0000 });
+     *
+     * // Check point intersection
+     * if (graphics.containsPoint({ x: 50, y: 50 })) {
+     *     console.log('Point is inside rectangle!');
+     * }
+     * ```
+     * @param point - The point to check in local coordinates
+     * @returns True if the point is inside the Graphics object
+     * @see {@link Graphics#bounds} For bounding box checks
+     * @see {@link PointData} For point data structure
      */
     public override containsPoint(point: PointData)
     {
@@ -141,10 +250,12 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
      *
      * If the context was passed in as an argument to the constructor then it will not be destroyed
      * @example
+     * ```ts
      * // Destroy the graphics and its context
      * graphics.destroy();
      * graphics.destroy(true);
      * graphics.destroy({ context: true, texture: true, textureSource: true });
+     * ```
      */
     public override destroy(options?: DestroyOptions): void
     {
@@ -172,11 +283,43 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
 
     // --------------------------------------- GraphicsContext methods ---------------------------------------
     /**
-     * Sets the current fill style of the graphics context. The fill style can be a color, gradient,
-     * pattern, or a more complex style defined by a FillStyle object.
-     * @param {FillInput} args - The fill style to apply. This can be a simple color, a gradient or
-     * pattern object, or a FillStyle or ConvertedFillStyle object.
-     * @returns The instance of the current GraphicsContext for method chaining.
+     * Sets the current fill style of the graphics context.
+     * The fill style can be a color, gradient, pattern, or a complex style object.
+     * @example
+     * ```ts
+     * const graphics = new Graphics();
+     *
+     * // Basic color fill
+     * graphics
+     *     .setFillStyle({ color: 0xff0000 }) // Red fill
+     *     .rect(0, 0, 100, 100)
+     *     .fill();
+     *
+     * // Gradient fill
+     * const gradient = new FillGradient(0, 0, 100, 0);
+     * gradient.addColorStop(0, 'red');
+     * gradient.addColorStop(1, 'blue');
+     *
+     * graphics
+     *     .setFillStyle(gradient)
+     *     .circle(100, 100, 50)
+     *     .fill();
+     *
+     * // Pattern fill
+     * const pattern = new FillPattern(texture);
+     * graphics
+     *     .setFillStyle({
+     *         fill: pattern,
+     *         alpha: 0.5
+     *     })
+     *     .rect(0, 0, 200, 200)
+     *     .fill();
+     * ```
+     * @param {FillInput} args - The fill style to apply
+     * @returns The Graphics instance for chaining
+     * @see {@link FillStyle} For fill style options
+     * @see {@link FillGradient} For gradient fills
+     * @see {@link FillPattern} For pattern fills
      */
     public setFillStyle(...args: Parameters<GraphicsContext['setFillStyle']>): this
     {
@@ -184,11 +327,52 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
     }
 
     /**
-     * Sets the current stroke style of the graphics context. Similar to fill styles, stroke styles can
-     * encompass colors, gradients, patterns, or more detailed configurations via a StrokeStyle object.
-     * @param {StrokeInput} args - The stroke style to apply. Can be defined as a color, a gradient or pattern,
-     * or a StrokeStyle or ConvertedStrokeStyle object.
-     * @returns The instance of the current GraphicsContext for method chaining.
+     * Sets the current stroke style of the graphics context.
+     * Similar to fill styles, stroke styles can encompass colors, gradients, patterns, or more detailed configurations.
+     * @example
+     * ```ts
+     * const graphics = new Graphics();
+     *
+     * // Basic color stroke
+     * graphics
+     *     .setStrokeStyle({
+     *         width: 2,
+     *         color: 0x000000
+     *     })
+     *     .rect(0, 0, 100, 100)
+     *     .stroke();
+     *
+     * // Complex stroke style
+     * graphics
+     *     .setStrokeStyle({
+     *         width: 4,
+     *         color: 0xff0000,
+     *         alpha: 0.5,
+     *         join: 'round',
+     *         cap: 'round',
+     *         alignment: 0.5
+     *     })
+     *     .circle(100, 100, 50)
+     *     .stroke();
+     *
+     * // Gradient stroke
+     * const gradient = new FillGradient(0, 0, 100, 0);
+     * gradient.addColorStop(0, 'red');
+     * gradient.addColorStop(1, 'blue');
+     *
+     * graphics
+     *     .setStrokeStyle({
+     *         width: 10,
+     *         fill: gradient
+     *     })
+     *     .poly([0,0, 100,50, 0,100])
+     *     .stroke();
+     * ```
+     * @param {StrokeInput} args - The stroke style to apply
+     * @returns The Graphics instance for chaining
+     * @see {@link StrokeStyle} For stroke style options
+     * @see {@link FillGradient} For gradient strokes
+     * @see {@link FillPattern} For pattern strokes
      */
     public setStrokeStyle(...args: Parameters<GraphicsContext['setStrokeStyle']>): this
     {
@@ -196,11 +380,55 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
     }
 
     /**
-     * Fills the current or given path with the current fill style. This method can optionally take
-     * a color and alpha for a simple fill, or a more complex FillStyle object for advanced fills.
-     * @param {FillInput} style - (Optional) The style to fill the path with. Can be a color, gradient, pattern, or a
-     * complex style object. If omitted, uses the current fill style.
-     * @returns The instance of the current GraphicsContext for method chaining.
+     * Fills the current or given path with the current fill style or specified style.
+     * @example
+     * ```ts
+     * const graphics = new Graphics();
+     *
+     * // Fill with direct color
+     * graphics
+     *     .circle(50, 50, 25)
+     *     .fill('red'); // Red fill
+     *
+     * // Fill with texture
+     * graphics
+     *    .rect(0, 0, 100, 100)
+     *    .fill(myTexture); // Fill with texture
+     *
+     * // Fill with complex style
+     * graphics
+     *     .rect(0, 0, 100, 100)
+     *     .fill({
+     *         color: 0x00ff00,
+     *         alpha: 0.5,
+     *         texture: myTexture,
+     *         matrix: new Matrix()
+     *     });
+     *
+     * // Fill with gradient
+     * const gradient = new FillGradient({
+     *     end: { x: 1, y: 0 },
+     *     colorStops: [
+     *         { offset: 0, color: 0xff0000 },
+     *         { offset: 0.5, color: 0x00ff00 },
+     *         { offset: 1, color: 0x0000ff },
+     *     ],
+     * });
+     *
+     * graphics
+     *     .circle(100, 100, 50)
+     *     .fill(gradient);
+     * ```
+     * @param {FillInput} style - The style to fill the path with. Can be:
+     * - A ColorSource
+     * - A gradient
+     * - A pattern
+     * - A complex style object
+     * If omitted, uses current fill style.
+     * @returns The Graphics instance for chaining
+     * @see {@link FillStyle} For fill style options
+     * @see {@link FillGradient} For gradient fills
+     * @see {@link FillPattern} For pattern fills
      */
     public fill(style?: FillInput): this;
     /** @deprecated 8.0.0 */
@@ -210,39 +438,96 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
         return this._callContextMethod('fill', args);
     }
     /**
-     * Strokes the current path with the current stroke style. This method can take an optional
-     * FillStyle parameter to define the stroke's appearance, including its color, width, and other properties.
-     * @param {FillStyle} args - (Optional) The stroke style to apply. Can be defined as a simple color or a more
-     * complex style object. If omitted, uses the current stroke style.
-     * @returns The instance of the current GraphicsContext for method chaining.
+     * Strokes the current path with the current stroke style or specified style.
+     * Outlines the shape using the stroke settings.
+     * @example
+     * ```ts
+     * const graphics = new Graphics();
+     *
+     * // Stroke with direct color
+     * graphics
+     *     .circle(50, 50, 25)
+     *     .stroke({
+     *         width: 2,
+     *         color: 0xff0000
+     *     }); // 2px red stroke
+     *
+     * // Fill with texture
+     * graphics
+     *    .rect(0, 0, 100, 100)
+     *    .stroke(myTexture); // Fill with texture
+     *
+     * // Stroke with gradient
+     * const gradient = new FillGradient({
+     *     end: { x: 1, y: 0 },
+     *     colorStops: [
+     *         { offset: 0, color: 0xff0000 },
+     *         { offset: 0.5, color: 0x00ff00 },
+     *         { offset: 1, color: 0x0000ff },
+     *     ],
+     * });
+     *
+     * graphics
+     *     .rect(0, 0, 100, 100)
+     *     .stroke({
+     *         width: 4,
+     *         fill: gradient,
+     *         alignment: 0.5,
+     *         join: 'round'
+     *     });
+     * ```
+     * @param {StrokeStyle} args - Optional stroke style to apply. Can be:
+     * - A stroke style object with width, color, etc.
+     * - A gradient
+     * - A pattern
+     * If omitted, uses current stroke style.
+     * @returns The Graphics instance for chaining
+     * @see {@link StrokeStyle} For stroke style options
+     * @see {@link FillGradient} For gradient strokes
+     * @see {@link setStrokeStyle} For setting default stroke style
      */
     public stroke(...args: Parameters<GraphicsContext['stroke']>): this
     {
         return this._callContextMethod('stroke', args);
     }
     /**
-     * Adds a texture to the graphics context. This method supports multiple overloads for specifying the texture.
-     * If only a texture is provided, it uses the texture's width and height for drawing.
+     * Adds a texture to the graphics context. This method supports multiple ways to draw textures
+     * including basic textures, tinted textures, and textures with custom dimensions.
+     * @example
+     * ```ts
+     * const graphics = new Graphics();
+     *
+     * // Basic texture drawing
+     * graphics.texture(myTexture);
+     *
+     * // Tinted texture with position
+     * graphics.texture(myTexture, 0xff0000); // Red tint
+     *
+     * // Texture with custom position and dimensions
+     * graphics
+     *     .texture(
+     *         myTexture,    // texture
+     *         0xffffff,     // white tint
+     *         100, 100,     // position
+     *         200, 150      // dimensions
+     *     );
+     * ```
+     * Basic texture drawing:
      * @param texture - The Texture object to use.
-     * @returns The instance of the current GraphicsContext for method chaining.
+     * @returns The instance of the current Graphics for chaining.
+     *
+     * Extended texture drawing:
+     * @param texture - The Texture object to use.
+     *        tint - A ColorSource to tint the texture (defaults to white).
+     *        dx - The x-coordinate for the texture placement.
+     *        dy - The y-coordinate for the texture placement.
+     *        dw - The width to draw the texture (defaults to texture width).
+     *        dh - The height to draw the texture (defaults to texture height).
+     * @returns The instance of the current Graphics for chaining.
+     * @see {@link Texture} For texture creation
+     * @see {@link FillPattern} For pattern fills
      */
     public texture(texture: Texture): this;
-    /**
-     * Adds a texture to the graphics context. This method supports multiple overloads for specifying the texture,
-     * tint, and dimensions. If only a texture is provided, it uses the texture's width and height for drawing.
-     * Additional parameters allow for specifying a tint color, and custom dimensions for the texture drawing area.
-     * @param texture - The Texture object to use.
-     * @param tint - (Optional) A ColorSource to tint the texture. If not provided, defaults to white (0xFFFFFF).
-     * @param dx - (Optional) The x-coordinate in the destination canvas at which to place the top-left corner of
-     * the source image.
-     * @param dy - (Optional) The y-coordinate in the destination canvas at which to place the top-left corner of
-     * the source image.
-     * @param dw - (Optional) The width of the rectangle within the source image to draw onto the destination canvas.
-     * If not provided, uses the texture's frame width.
-     * @param dh - (Optional) The height of the rectangle within the source image to draw onto the destination canvas.
-     * If not provided, uses the texture's frame height.
-     * @returns The instance of the current GraphicsContext for method chaining.
-     */
     public texture(texture: Texture, tint?: ColorSource, dx?: number, dy?: number, dw?: number, dh?: number): this;
     public texture(...args: [Texture, number?, number?, number?, number?, number?]): this
     {
@@ -251,7 +536,19 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
     /**
      * Resets the current path. Any previous path and its commands are discarded and a new path is
      * started. This is typically called before beginning a new shape or series of drawing commands.
-     * @returns The instance of the current GraphicsContext for method chaining.
+     * @example
+     * ```ts
+     * const graphics = new Graphics();
+     * graphics
+     *     .circle(150, 150, 50)
+     *     .fill({ color: 0x00ff00 })
+     *     .beginPath() // Starts a new path
+     *     .circle(250, 150, 50)
+     *     .fill({ color: 0x0000ff });
+     * ```
+     * @returns The Graphics instance for chaining
+     * @see {@link Graphics#moveTo} For starting a new subpath
+     * @see {@link Graphics#closePath} For closing the current path
      */
     public beginPath(): this
     {
@@ -259,8 +556,20 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
     }
     /**
      * Applies a cutout to the last drawn shape. This is used to create holes or complex shapes by
-     * subtracting a path from the previously drawn path. If a hole is not completely in a shape, it will
-     * fail to cut correctly!
+     * subtracting a path from the previously drawn path.
+     *
+     * If a hole is not completely in a shape, it will fail to cut correctly.
+     * @example
+     * ```ts
+     * const graphics = new Graphics();
+     *
+     * // Draw outer circle
+     * graphics
+     *     .circle(100, 100, 50)
+     *     .fill({ color: 0xff0000 });
+     *     .circle(100, 100, 25) // Inner circle
+     *     .cut() // Cuts out the inner circle from the outer circle
+     * ```
      */
     public cut(): this
     {

@@ -6,10 +6,21 @@ export interface SortMixinConstructor
     /**
      * The zIndex of the container.
      *
-     * Setting this value, will automatically set the parent to be sortable. Children will be automatically
-     * sorted by zIndex value; a higher value will mean it will be moved towards the end of the array,
-     * and thus rendered on top of other display objects within the same container.
-     * @see Container#sortableChildren
+     * Controls the rendering order of children within their parent container.
+     *
+     * A higher value will mean it will be moved towards the front of the rendering order.
+     * @example
+     * ```ts
+     * // Add in any order
+     * container.addChild(character, background, foreground);
+     *
+     * // Adjust rendering order
+     * background.zIndex = 0;
+     * character.zIndex = 1;
+     * foreground.zIndex = 2;
+     * ```
+     * @see {@link Container#sortableChildren} For enabling sorting
+     * @see {@link Container#sortChildren} For manual sorting
      * @default 0
      */
     zIndex?: number;
@@ -18,6 +29,7 @@ export interface SortMixinConstructor
      *
      * Will get automatically set to true if a new child is added, or if a child's zIndex changes.
      * @default false
+     * @internal
      */
     sortDirty?: boolean;
     /**
@@ -27,8 +39,12 @@ export interface SortMixinConstructor
      * This actually changes the order of elements in the array of children,
      * so it will affect the rendering order.
      *
-     * Also be aware of that this may not work nicely with the `addChildAt()` function,
-     * as the `zIndex` sorting may cause the child to automatically sorted to another position.
+     * > [!NOTE] Also be aware of that this may not work nicely with the `addChildAt()` function,
+     * > as the `zIndex` sorting may cause the child to automatically sorted to another position.
+     * @example
+     * ```ts
+     * container.sortableChildren = true;
+     * ```
      * @default false
      */
     sortableChildren?: boolean;
@@ -46,7 +62,17 @@ export interface SortMixin extends Required<SortMixinConstructor>
 {
     /** @internal */
     _zIndex: number;
-    /** Sorts children by zIndex. */
+    /**
+     * Sorts children by zIndex value. Only sorts if container is marked as dirty.
+     * @example
+     * ```ts
+     * // Basic sorting
+     * particles.zIndex = 2;     // Will mark as dirty
+     * container.sortChildren();
+     * ```
+     * @see {@link Container#sortableChildren} For enabling automatic sorting
+     * @see {@link Container#zIndex} For setting child order
+     */
     sortChildren: () => void;
     /** @internal */
     depthOfChildModified: () => void;

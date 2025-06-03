@@ -38,19 +38,44 @@ export interface FindMixin extends Required<FindMixinConstructor>
     getChildByName(label: RegExp | string, deep?: boolean): Container | null;
     /**
      * Returns the first child in the container with the specified label.
-     *
      * Recursive searches are done in a pre-order traversal.
-     * @param {string|RegExp} label - Instance label.
-     * @param {boolean}[deep=false] - Whether to search recursively
-     * @returns {Container} The child with the specified label.
+     * @example
+     * ```ts
+     * // Basic label search
+     * const child = container.getChildByLabel('player');
+     *
+     * // Search with regular expression
+     * const enemy = container.getChildByLabel(/enemy-\d+/);
+     *
+     * // Deep search through children
+     * const deepChild = container.getChildByLabel('powerup', true);
+     * ```
+     * @param {RegExp|string} label - Instance label to search for
+     * @param {boolean} deep - Whether to search recursively through children
+     * @returns The first child with the specified label, or null if none found
+     * @see {@link Container#getChildrenByLabel} For finding all matches
+     * @see {@link Container#label} For setting labels
      */
     getChildByLabel(label: RegExp | string, deep?: boolean): Container | null;
     /**
      * Returns all children in the container with the specified label.
-     * @param {string|RegExp} label - Instance label.
-     * @param {boolean}[deep=false] - Whether to search recursively
-     * @param {Container[]} [out=[]] - The array to store matching children in.
-     * @returns {Container[]} An array of children with the specified label.
+     * Recursive searches are done in a pre-order traversal.
+     * @example
+     * ```ts
+     * // Basic label search
+     * const enemies = container.getChildrenByLabel('enemy');
+     * // Search with regular expression
+     * const powerups = container.getChildrenByLabel(/powerup-\d+/);
+     * // Deep search with collection
+     * const buttons = [];
+     * container.getChildrenByLabel('button', true, buttons);
+     * ```
+     * @param {string|RegExp} label  - Instance label to search for
+     * @param {boolean}[deep=false] - Whether to search recursively through children
+     * @param {Container[]} [out=[]]  - Optional array to store matching children in
+     * @returns An array of children with the specified label
+     * @see {@link Container#getChildByLabel} For finding first match
+     * @see {@link Container#label} For setting labels
      */
     getChildrenByLabel(label: RegExp | string, deep?: boolean, out?: Container[]): Container[];
 }

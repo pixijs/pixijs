@@ -75,7 +75,7 @@ export class Sprite extends ViewContainer<BatchableSprite>
     /** @internal */
     public override readonly renderPipeId: string = 'sprite';
 
-    /** @advanced */
+    /** @internal */
     public batched = true;
     /** @internal */
     public readonly _anchor: ObservablePoint;

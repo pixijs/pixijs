@@ -38,19 +38,6 @@ if (isMobile.any) {
 }
 ```
 
-## Canvas Operations
-
-Manage canvas elements and boundaries:
-
-```ts
-import { getCanvasBoundingBox } from 'pixi.js';
-
-// Get precise canvas bounds
-const canvas = document.createElement('canvas');
-const bounds = getCanvasBoundingBox(canvas);
-console.log(bounds.x, bounds.y, bounds.width, bounds.height);
-```
-
 ## Data Management
 
 Handle data structures and arrays efficiently:
@@ -101,9 +88,6 @@ const dir = path.dirname('assets/image.png'); // 'assets'
 - See {@link isWebGLSupported} for WebGL detection
 - See {@link isWebGPUSupported} for WebGPU detection
 - See {@link isMobile} for mobile device detection
-- See {@link isSafari} for Safari browser detection
 - See {@link path} for path utilities
-- See {@link uid} for unique ID generation
-- See {@link getCanvasBoundingBox} for canvas bounds
 
 For detailed implementation requirements and advanced usage, refer to the API documentation of individual utilities.
