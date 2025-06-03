@@ -36,7 +36,6 @@ export interface EffectsMixinConstructor
      * });
      * ```
      * @see {@link Filter} For filter base class
-     * @see {@link filterArea} For optimizing filter bounds
      */
     filters?: Filter | readonly Filter[];
 }
@@ -262,7 +261,6 @@ export interface EffectsMixin extends Required<EffectsMixinConstructor>
      * sprite.filters = null;
      * ```
      * @see {@link Filter} For filter base class
-     * @see {@link filterArea} For optimizing filter bounds
      */
     set filters(value: Filter | Filter[] | null | undefined);
     get filters(): readonly Filter[];
