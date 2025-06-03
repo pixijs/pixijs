@@ -147,6 +147,7 @@ export * from './text-html/utils/measureHtmlText';
 export * from './text-html/utils/textStyleToCSS';
 export * from './text/AbstractText';
 export * from './text/canvas/BatchableText';
+export * from './text/canvas/CanvasTextGenerator';
 export * from './text/canvas/CanvasTextMetrics';
 export * from './text/canvas/CanvasTextPipe';
 export * from './text/canvas/CanvasTextSystem';

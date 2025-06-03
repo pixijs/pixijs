@@ -100,11 +100,14 @@ class EventsTickerClass
             return;
         }
 
-        globalThis.document.dispatchEvent(new PointerEvent('pointermove', {
+        globalThis.document.dispatchEvent(this.events.supportsPointerEvents ? new PointerEvent('pointermove', {
             clientX: rootPointerEvent.clientX,
             clientY: rootPointerEvent.clientY,
             pointerType: rootPointerEvent.pointerType,
             pointerId: rootPointerEvent.pointerId,
+        }) : new MouseEvent('mousemove', {
+            clientX: rootPointerEvent.clientX,
+            clientY: rootPointerEvent.clientY,
         }));
     }
 
