@@ -123,7 +123,7 @@ export interface ContextDestroyOptions
  * text.destroy({ style: false }); // Keep style for reuse
  * text.destroy({ style: true }); // Destroy style as well
  * ```
- * @category scene
+ * @category text
  * @standard
  */
 export interface TextDestroyOptions

@@ -22,26 +22,6 @@ import type { TextStyleOptions } from '../text/TextStyle';
  *     }
  * });
  *
- * // Advanced styling with CSS overrides
- * const richText = new HTMLText({
- *     text: `
- *         <div class="header">Title</div>
- *         <div class="content">
- *             <p>First paragraph</p>
- *             <p>Second paragraph</p>
- *         </div>
- *     `,
- *     style: {
- *         fontSize: 16,
- *         fill: '#333333',
- *         cssOverrides: [
- *             '.header { font-size: 24px; color: red; }',
- *             '.content { line-height: 1.5; }',
- *             'p { margin: 10px 0; }'
- *         ]
- *     }
- * });
- *
  * // Custom tag styling
  * const taggedText = new HTMLText({
  *     text: '<custom>Custom Tag</custom>',
@@ -65,18 +45,6 @@ export interface HTMLTextStyleOptions extends Omit<TextStyleOptions, 'leading' |
     /**
      * List of CSS style overrides to apply to the HTML text.
      * These styles are added after the built-in styles and can override any default styling.
-     * @example
-     * ```ts
-     * const text = new HTMLText({
-     *     text: '<div class="custom">Styled Text</div>',
-     *     style: {
-     *         cssOverrides: [
-     *             // Basic style override
-     *             '.custom { color: red; }',
-     *         ]
-     *     }
-     * });
-     * ```
      * @advanced
      */
     cssOverrides?: string[];
@@ -88,26 +56,20 @@ export interface HTMLTextStyleOptions extends Omit<TextStyleOptions, 'leading' |
      * ```ts
      * const text = new HTMLText({
      *     text: `
-     *         <Title>Main Title</Title>
-     *         <Subtitle>The subtitle</Subtitle>
-     *         <Content>Regular content text</Content>
+     *         <red>Main Title</red>
+     *         <grey>The subtitle</grey>
+     *         <blue>Regular content text</blue>
      *     `,
      *     style: {
      *         tagStyles: {
-     *             Title: {
-     *                 fontSize: 32,
+     *             red: {
      *                 fill: '#ff0000',
-     *                 fontWeight: 'bold'
      *             },
-     *             Subtitle: {
-     *                 fontSize: 24,
+     *             grey: {
      *                 fill: '#666666',
-     *                 fontStyle: 'italic'
      *             },
-     *             Content: {
-     *                 fontSize: 16,
-     *                 fill: '#333333',
-     *                 letterSpacing: 1
+     *             blue: {
+     *                 fill: 'blue',
      *             }
      *         }
      *     }
@@ -164,17 +126,6 @@ export class HTMLTextStyle extends TextStyle
     /**
      * List of CSS style overrides to apply to the HTML text.
      * These styles are added after the built-in styles and can override any default styling.
-     * @example
-     * ```ts
-     * const text = new HTMLText({
-     *     text: '<div class="custom">Styled Text</div>',
-     *     style: {
-     *         cssOverrides: [
-     *             // Basic style override
-     *             '.custom { color: red; }',
-     *         ]
-     *     }
-     * });
      * @advanced
      */
     set cssOverrides(value: string | string[])
@@ -204,13 +155,6 @@ export class HTMLTextStyle extends TextStyle
      * style.fill = '#00ff00';
      * style.fontFamily = 'Arial';
      * style.update(); // Apply all changes at once
-     *
-     * // Update after CSS overrides
-     * style.cssOverrides = [
-     *     'color: blue',
-     *     'font-weight: bold'
-     * ];
-     * style.update(); // Regenerate CSS with new overrides
      * ```
      * @advanced
      * @see {@link HTMLTextStyle#cssStyle} For accessing the generated CSS
@@ -231,7 +175,6 @@ export class HTMLTextStyle extends TextStyle
      * const originalStyle = new HTMLTextStyle({
      *     fontSize: 24,
      *     fill: '#ff0000',
-     *     cssOverrides: ['.custom { color: blue; }'],
      *     tagStyles: {
      *         header: { fontSize: 32, fill: '#00ff00' }
      *     }

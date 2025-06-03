@@ -113,7 +113,7 @@ export interface BitmapText extends PixiMixins.BitmapText, AbstractText<
  * - Manual pre-installation via `BitmapFont.install`
  * - Smart font reuse to optimize memory
  * - Scale existing fonts instead of generating new ones when possible
- * @category scene
+ * @category text
  * @standard
  * @see {@link BitmapFont} For font installation and management
  * @see {@link Text} For canvas-based text rendering

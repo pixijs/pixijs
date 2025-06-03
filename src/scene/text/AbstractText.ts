@@ -236,7 +236,7 @@ export interface TextOptions<
  * @see Text
  * @see BitmapText
  * @see HTMLText
- * @category scene
+ * @category text
  * @advanced
  */
 export abstract class AbstractText<

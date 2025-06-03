@@ -115,7 +115,7 @@ class PixiRouter extends CategoryRouter
 {
     getIdealBaseName(reflection)
     {
-        const cat = this.getCategory(reflection)
+        let cat = this.getCategory(reflection)
             .split('/')
             .map(createNormalizedUrl)
             .join('/');
@@ -133,6 +133,19 @@ class PixiRouter extends CategoryRouter
         {
             // For document reflections, we use the category as the base name
             return `${cat}`;
+        }
+
+        // remap text classes back to scene for backwards compatibility
+        switch (baseName)
+        {
+            case 'Text':
+            case 'BitmapText':
+            case 'HTMLText':
+            case 'TextDestroyOptions':
+            case 'AbstractText':
+            case 'CanvasTextOptions':
+                cat = 'scene';
+                break;
         }
 
         return `${cat}.${baseName}`;

@@ -45,7 +45,7 @@ export interface Text extends PixiMixins.Text, AbstractText<
  * });
  * ```
  * @extends TextOptions
- * @category scene
+ * @category text
  * @standard
  */
 export interface CanvasTextOptions extends TextOptions
@@ -151,7 +151,7 @@ export interface CanvasTextOptions extends TextOptions
  * - Texture is regenerated when text or style changes
  * - Use BitmapText for better performance with static text
  * - Consider texture style options for quality vs performance tradeoffs
- * @category scene
+ * @category text
  * @standard
  * @see {@link TextStyle} For detailed style options
  * @see {@link BitmapText} For better performance with static text

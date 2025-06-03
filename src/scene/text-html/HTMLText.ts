@@ -24,23 +24,20 @@ import type { HTMLTextStyleOptions } from './HTMLTextStyle';
  *
  * // Rich HTML text with styling
  * const richText = new HTMLText({
- *     text: `
- *         <Header style="color: red">My Header</Header>
- *         <Paragraph style="font-size: 16px">
- *             Text with <strong>bold</strong> and
- *             <em>emphasis</em>
- *         </Paragraph>
- *     `,
+ *     text: '<custom>Custom Tag</custom>',
  *     style: {
  *         fontFamily: 'Arial',
  *         fontSize: 32,
  *         fill: 0x4a4a4a,
  *         align: 'center',
  *         tagStyles: {
- *             Header: { fontSize: 40 },
- *             Paragraph: { letterSpacing: 2 }
+ *             custom: {
+ *                 fontSize: 32,
+ *                 fill: '#00ff00',
+ *                 fontStyle: 'italic'
+ *             }
  *         }
- *     },
+ *     }
  *     textureStyle: {
  *         scaleMode: 'linear',
  *         resolution: 2
@@ -155,7 +152,7 @@ export interface HTMLText extends PixiMixins.HTMLText, AbstractText<
  * - Requires browser support for foreignObject
  * - Performance similar to Canvas text
  * - Memory usage comparable to Canvas text
- * @category scene
+ * @category text
  * @standard
  * @see {@link HTMLTextStyle} For detailed style options
  * @see {@link Text} For canvas-based text rendering
