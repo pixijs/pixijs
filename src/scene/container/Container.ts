@@ -46,7 +46,40 @@ const defaultPivot = new ObservablePoint(null);
 const defaultScale = new ObservablePoint(null, 1, 1);
 
 /**
- * The events that can be emitted by a Container.
+ * Events that can be emitted by a Container. These events provide lifecycle hooks and notifications
+ * for container state changes.
+ * @example
+ * ```ts
+ * import { Container, Sprite } from 'pixi.js';
+ *
+ * // Setup container with event listeners
+ * const container = new Container();
+ *
+ * // Listen for child additions
+ * container.on('childAdded', (child, container, index) => {
+ *     console.log(`Child added at index ${index}:`, child);
+ * });
+ *
+ * // Listen for child removals
+ * container.on('childRemoved', (child, container, index) => {
+ *     console.log(`Child removed from index ${index}:`, child);
+ * });
+ *
+ * // Listen for when container is added to parent
+ * container.on('added', (parent) => {
+ *     console.log('Added to parent:', parent);
+ * });
+ *
+ * // Listen for when container is removed from parent
+ * container.on('removed', (parent) => {
+ *     console.log('Removed from parent:', parent);
+ * });
+ *
+ * // Listen for container destruction
+ * container.on('destroyed', (container) => {
+ *     console.log('Container destroyed:', container);
+ * });
+ * ```
  * @category scene
  * @standard
  */
@@ -54,31 +87,76 @@ export interface ContainerEvents<C extends ContainerChild> extends PixiMixins.Co
 {
     /**
      * Emitted when this container is added to a new container.
-     * @param container - The parent container.
+     * Useful for setting up parent-specific behaviors.
+     * @param container - The parent container this was added to
+     * @example
+     * ```ts
+     * const child = new Container();
+     * child.on('added', (parent) => {
+     *     console.log('Child added to parent:', parent.label);
+     * });
+     * parentContainer.addChild(child);
+     * ```
      */
     added: [container: Container];
+
     /**
-     * Emitted when a child is added to the container.
-     * @param child - The child that was added.
-     * @param container - The container that the child was added to.
-     * @param index - The index at which the child was added.
+     * Emitted when a child is added to this container.
+     * Useful for tracking container composition changes.
+     * @param child - The child that was added
+     * @param container - The container the child was added to (this container)
+     * @param index - The index at which the child was added
+     * @example
+     * ```ts
+     * const parent = new Container();
+     * parent.on('childAdded', (child, container, index) => {
+     *     console.log(`New child at index ${index}:`, child);
+     * });
+     * ```
      */
     childAdded: [child: C, container: Container, index: number];
+
     /**
-     * Emitted when this container is removed from the parent.
-     * @param container - The parent container.
+     * Emitted when this container is removed from its parent.
+     * Useful for cleanup and state management.
+     * @param container - The parent container this was removed from
+     * @example
+     * ```ts
+     * const child = new Container();
+     * child.on('removed', (oldParent) => {
+     *     console.log('Child removed from parent:', oldParent.label);
+     * });
+     * ```
      */
     removed: [container: Container];
+
     /**
-     * Emitted when a child is removed from the container.
-     * @param child - The child that was removed.
-     * @param container - The container that the child was removed from.
-     * @param index - The index at which the child was removed.
+     * Emitted when a child is removed from this container.
+     * Useful for cleanup and maintaining container state.
+     * @param child - The child that was removed
+     * @param container - The container the child was removed from (this container)
+     * @param index - The index from which the child was removed
+     * @example
+     * ```ts
+     * const parent = new Container();
+     * parent.on('childRemoved', (child, container, index) => {
+     *     console.log(`Child removed from index ${index}:`, child);
+     * });
+     * ```
      */
     childRemoved: [child: C, container: Container, index: number];
+
     /**
      * Emitted when the container is destroyed.
-     * @param container - The container that was destroyed.
+     * Useful for final cleanup and resource management.
+     * @param container - The container that was destroyed
+     * @example
+     * ```ts
+     * const container = new Container();
+     * container.on('destroyed', (container) => {
+     *     console.log('Container destroyed:', container.label);
+     * });
+     * ```
      */
     destroyed: [container: Container];
 }
@@ -142,38 +220,210 @@ export interface ContainerOptions<C extends ContainerChild = ContainerChild> ext
     /** @see Container#isRenderGroup */
     isRenderGroup?: boolean;
 
-    /** @see Container#blendMode */
+    /**
+     * The blend mode to be applied to the sprite. Controls how pixels are blended when rendering.
+     *
+     * Setting to 'normal' will reset to default blending.
+     * > [!NOTE] More blend modes are available after importing the `pixi.js/advanced-blend-modes` sub-export.
+     * @example
+     * ```ts
+     * // Basic blend modes
+     * new Container({ blendMode: 'normal' }); // Default blending
+     * new Container({ blendMode: 'add' });    // Additive blending
+     * new Container({ blendMode: 'multiply' }); // Multiply colors
+     * new Container({ blendMode: 'screen' }); // Screen blend
+     * ```
+     * @default 'normal'
+     * @see {@link Container#alpha} For transparency
+     * @see {@link Container#tint} For color adjustments
+     */
     blendMode?: BLEND_MODES;
-    /** @see Container#tint */
+    /**
+     * The tint applied to the sprite.
+     *
+     * This can be any valid {@link ColorSource}.
+     * @example
+     * ```ts
+     * new Container({ tint: 0xff0000 }); // Red tint
+     * new Container({ tint: 'blue' }); // Blue tint
+     * new Container({ tint: '#00ff00' }); // Green tint
+     * new Container({ tint: 'rgb(0,0,255)' }); // Blue tint
+     * ```
+     * @default 0xFFFFFF
+     * @see {@link Container#alpha} For transparency
+     * @see {@link Container#visible} For visibility control
+     */
     tint?: ColorSource;
 
-    /** @see Container#alpha */
+    /**
+     * The opacity of the object relative to its parent's opacity.
+     * Value ranges from 0 (fully transparent) to 1 (fully opaque).
+     * @example
+     * ```ts
+     * new Container({ alpha: 0.5 }); // 50% opacity
+     * new Container({ alpha: 1 }); // Fully opaque
+     * ```
+     * @default 1
+     * @see {@link Container#visible} For toggling visibility
+     * @see {@link Container#renderable} For render control
+     */
     alpha?: number;
-    /** @see Container#angle */
+    /**
+     * The angle of the object in degrees.
+     *
+     * > [!NOTE] 'rotation' and 'angle' have the same effect on a display object;
+     * > rotation is in radians, angle is in degrees.
+     @example
+     * ```ts
+     * new Container({ angle: 45 }); // Rotate 45 degrees
+     * new Container({ angle: 90 }); // Rotate 90 degrees
+     * ```
+     */
     angle?: number;
-    /** @see Container#children */
+    /**
+     * The array of children of this container. Each child must be a Container or extend from it.
+     *
+     * The array is read-only, but its contents can be modified using Container methods.
+     * @example
+     * ```ts
+     * new Container({
+     *    children: [
+     *        new Container(), // First child
+     *        new Container(), // Second child
+     *    ],
+     * });
+     * ```
+     * @readonly
+     * @see {@link Container#addChild} For adding children
+     * @see {@link Container#removeChild} For removing children
+     */
     children?: C[];
-    /** @see Container#parent */
+    /**
+     * The display object container that contains this display object.
+     * This represents the parent-child relationship in the display tree.
+     * @readonly
+     * @see {@link Container#addChild} For adding to a parent
+     * @see {@link Container#removeChild} For removing from parent
+     */
     parent?: Container;
-    /** @see Container#renderable */
+    /**
+     * Controls whether this object can be rendered. If false the object will not be drawn,
+     * but the transform will still be updated. This is different from visible, which skips
+     * transform updates.
+     * @example
+     * ```ts
+     * new Container({ renderable: false }); // Will not be drawn, but transforms will update
+     * ```
+     * @default true
+     * @see {@link Container#visible} For skipping transform updates
+     * @see {@link Container#alpha} For transparency
+     */
     renderable?: boolean;
-    /** @see Container#rotation */
+    /**
+     * The rotation of the object in radians.
+     *
+     * > [!NOTE] 'rotation' and 'angle' have the same effect on a display object;
+     * > rotation is in radians, angle is in degrees.
+     * @example
+     * ```ts
+     * new Container({ rotation: Math.PI / 4 }); // Rotate 45 degrees
+     * new Container({ rotation: Math.PI / 2 }); // Rotate 90 degrees
+     * ```
+     */
     rotation?: number;
-    /** @see Container#scale */
+    /**
+     * The scale factors of this object along the local coordinate axes.
+     *
+     * The default scale is (1, 1).
+     * @example
+     * ```ts
+     * new Container({ scale: new Point(2, 2) }); // Scale by 2x
+     * new Container({ scale: 0.5 }); // Scale by 0.5x
+     * new Container({ scale: { x: 1.5, y: 1.5 } }); // Scale by 1.5x
+     * ```
+     */
     scale?: PointData | number;
-    /** @see Container#pivot */
+    /**
+     * The center of rotation, scaling, and skewing for this display object in its local space.
+     * The `position` is the projection of `pivot` in the parent's local space.
+     *
+     * By default, the pivot is the origin (0, 0).
+     * @example
+     * ```ts
+     * new Container({ pivot: new Point(100, 200) }); // Set pivot to (100, 200)
+     * new Container({ pivot: 50 }); // Set pivot to (50, 50)
+     * new Container({ pivot: { x: 150, y: 150 } }); // Set pivot to (150, 150)
+     * ```
+     */
     pivot?: PointData | number;
-    /** @see Container#position */
+    /**
+     * The coordinate of the object relative to the local coordinates of the parent.
+     * @example
+     * ```ts
+     * new Container({ position: new Point(100, 200) }); // Set position to (100, 200)
+     * new Container({ position: { x: 150, y: 150 } }); // Set position to (150, 150)
+     * ```
+     */
     position?: PointData;
-    /** @see Container#skew */
+    /**
+     * The skew factor for the object in radians. Skewing is a transformation that distorts
+     * the object by rotating it differently at each point, creating a non-uniform shape.
+     * @example
+     * ```ts
+     * new Container({ skew: new Point(0.1, 0.2) }); // Skew by 0.1 radians on x and 0.2 radians on y
+     * new Container({ skew: { x: 0.1, y: 0.2 } }); // Skew by 0.1 radians on x and 0.2 radians on y
+     * ```
+     * @default { x: 0, y: 0 }
+     */
     skew?: PointData;
-    /** @see Container#visible */
+    /**
+     * The visibility of the object. If false the object will not be drawn,
+     * and the transform will not be updated.
+     * @example
+     * ```ts
+     * new Container({ visible: false }); // Will not be drawn and transforms will not update
+     * new Container({ visible: true }); // Will be drawn and transforms will update
+     * ```
+     * @default true
+     * @see {@link Container#renderable} For render-only control
+     * @see {@link Container#alpha} For transparency
+     */
     visible?: boolean;
-    /** @see Container#x */
+    /**
+     * The position of the container on the x axis relative to the local coordinates of the parent.
+     *
+     * An alias to position.x
+     * @example
+     * ```ts
+     * new Container({ x: 100 }); // Set x position to 100
+     * ```
+     */
     x?: number;
-    /** @see Container#y */
+    /**
+     * The position of the container on the y axis relative to the local coordinates of the parent.
+     *
+     * An alias to position.y
+     * @example
+     * ```ts
+     * new Container({ y: 200 }); // Set y position to 200
+     * ```
+     */
     y?: number;
-    /** @see Container#boundArea */
+    /**
+     * An optional bounds area for this container. Setting this rectangle will stop the renderer
+     * from recursively measuring the bounds of each children and instead use this single boundArea.
+     *
+     * > [!IMPORTANT] This is great for optimisation! If for example you have a
+     * > 1000 spinning particles and you know they all sit within a specific bounds,
+     * > then setting it will mean the renderer will not need to measure the
+     * > 1000 children to find the bounds. Instead it will just use the bounds you set.
+     * @example
+     * ```ts
+     * const container = new Container({
+     *    boundsArea: new Rectangle(0, 0, 500, 500) // Set a fixed bounds area
+     * });
+     * ```
+     */
     boundsArea?: Rectangle;
 }
 
@@ -1143,8 +1393,33 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     }
 
     /**
-     * The skew factor for the object in radians.
+     * The skew factor for the object in radians. Skewing is a transformation that distorts
+     * the object by rotating it differently at each point, creating a non-uniform shape.
+     * @example
+     * ```ts
+     * // Basic skewing
+     * container.skew.set(0.5, 0); // Skew horizontally
+     * container.skew.set(0, 0.5); // Skew vertically
+     *
+     * // Skew with point data
+     * container.skew = { x: 0.3, y: 0.3 }; // Diagonal skew
+     *
+     * // Reset skew
+     * container.skew.set(0, 0);
+     *
+     * // Animate skew
+     * app.ticker.add(() => {
+     *     // Create wave effect
+     *     container.skew.x = Math.sin(Date.now() / 1000) * 0.3;
+     * });
+     *
+     * // Combine with rotation
+     * container.rotation = Math.PI / 4; // 45 degrees
+     * container.skew.set(0.2, 0.2); // Skew the rotated object
+     * ```
      * @since 4.0.0
+     * @type {ObservablePoint} Point-like object with x/y properties in radians
+     * @default {x: 0, y: 0}
      */
     get skew(): ObservablePoint
     {

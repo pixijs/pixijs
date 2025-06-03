@@ -210,7 +210,7 @@ const noColor: ColorSource = [0, 0, 0, 0];
  * - Be mindful of resolution and size
  * - Clean up unused textures
  * @see {@link GenerateTextureOptions} For detailed texture generation options
- * @see {@link Renderer.generateTexture} For the main renderer method
+ * @see {@link AbstractRenderer.generateTexture} For the main renderer method
  * @see {@link RenderTexture} For the resulting texture type
  * @category rendering
  * @standard
@@ -265,7 +265,6 @@ export class GenerateTextureSystem implements System
      * // Clean up when done
      * texture.destroy(true);
      * ```
-     * @note The generated texture should be destroyed when no longer needed
      * @see {@link GenerateTextureOptions} For detailed texture generation options
      * @see {@link RenderTexture} For the type of texture created
      * @category rendering

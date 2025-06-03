@@ -17,7 +17,23 @@ export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 /** @ignore */
 export interface MeasureMixinConstructor
 {
+    /**
+     * The width of the display object, in pixels.
+     * @example
+     * ```ts
+     * new Container({ width: 100});
+     * ```
+     * @default 0
+     */
     width?: number;
+    /**
+     * The height of the display object, in pixels.
+     * @example
+     * ```ts
+     * new Container({ height: 100});
+     * ```
+     * @default 0
+     */
     height?: number;
 }
 /**

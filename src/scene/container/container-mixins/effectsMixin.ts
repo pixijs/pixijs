@@ -10,8 +10,34 @@ import type { Effect } from '../Effect';
 /** @ignore */
 export interface EffectsMixinConstructor
 {
+    /**
+     * The mask to apply, which can be a Container or null.
+     *
+     * If null, it clears the existing mask.
+     * @example
+     * ```ts
+     * // Set a mask
+     * sprite.setMask({
+     *     mask: graphics,
+     *     inverse: false,
+     * });
+     */
     mask?: Mask;
     setMask?: (options: Partial<MaskOptionsAndMask>) => void;
+    /**
+     * Sets the filters for the displayObject.
+     * Filters are visual effects that can be applied to any display object and its children.
+     *
+     * > [!IMPORTANT] This is a WebGL/WebGPU only feature and will be ignored by the canvas renderer.
+     * @example
+     * ```ts
+     * new Container({
+     *     filters: [new BlurFilter(2), new ColorMatrixFilter()],
+     * });
+     * ```
+     * @see {@link Filter} For filter base class
+     * @see {@link filterArea} For optimizing filter bounds
+     */
     filters?: Filter | readonly Filter[];
 }
 

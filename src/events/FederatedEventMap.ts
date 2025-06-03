@@ -61,6 +61,7 @@ export type AllFederatedEventMap = FederatedEventMap & GlobalFederatedEventMap;
  * The types for the events that can be emitted by a Container
  * @category events
  * @advanced
+ * @interface
  */
 export type FederatedEventEmitterTypes = {
     [K in keyof FederatedEventMap as K | `${K}capture`]: [event: FederatedEventMap[K]];
