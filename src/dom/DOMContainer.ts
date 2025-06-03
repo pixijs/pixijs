@@ -16,6 +16,7 @@ import type { PointData } from '../maths/point/PointData';
  * ```
  * @category scene
  * @standard
+ * @noInheritDoc
  */
 export interface DOMContainerOptions extends ViewContainerOptions
 {

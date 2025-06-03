@@ -780,12 +780,25 @@ export class Rectangle implements ShapePrimitive
     }
 
     /**
-     * Sets the values of the rectangle.
+     * Sets the position and dimensions of the rectangle.
+     * @example
+     * ```ts
+     * // Basic usage
+     * const rect = new Rectangle();
+     * rect.set(100, 100, 200, 150);
+     *
+     * // Chain with other operations
+     * const bounds = new Rectangle()
+     *     .set(0, 0, 100, 100)
+     *     .pad(10);
+     * ```
      * @param x - The X coordinate of the upper-left corner of the rectangle
      * @param y - The Y coordinate of the upper-left corner of the rectangle
      * @param width - The overall width of the rectangle
      * @param height - The overall height of the rectangle
-     * @returns Returns itself.
+     * @returns Returns itself for method chaining
+     * @see {@link Rectangle.copyFrom} For copying from another rectangle
+     * @see {@link Rectangle.clone} For creating a new copy
      */
     public set(x: number, y: number, width: number, height: number): this
     {

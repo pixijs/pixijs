@@ -34,51 +34,369 @@ export type TextureSpace =
     | 'global';
 
 /**
- * A fill style object.
+ * Defines the style properties used for filling shapes in graphics and text operations.
+ * This interface provides options for colors, textures, patterns, and gradients.
+ * @example
+ * ```ts
+ * // Basic color fill
+ * const fillStyle = {
+ *     color: 0xff0000,  // Red
+ *     alpha: 0.5        // 50% opacity
+ * };
+ *
+ * // Textured fill ( Graphics only )
+ * const fillStyle = {
+ *     texture: Texture.from('myImage.png'),
+ *     matrix: new Matrix().scale(0.5, 0.5),
+ * };
+ *
+ * // Gradient fill
+ * const gradient = new FillGradient({
+ *    end: { x: 1, y: 0 },
+ *    stops: [
+ *        { color: 0xff0000, offset: 0 }, // Red at start
+ *        { color: 0x0000ff, offset: 1 }, // Blue at end
+ *    ]
+ * })
+ *
+ * const fillStyle = {
+ *     fill: gradient,
+ *     alpha: 1
+ * };
+ * ```
+ * @see {@link FillPattern} For creating pattern fills
+ * @see {@link FillGradient} For creating gradient fills
+ * @see {@link TextureSpace} For texture coordinate calculation modes
  * @category scene
  * @standard
  */
 export interface FillStyle
 {
-    /** The color to use for the fill. */
+    /**
+     * The color to use for the fill.
+     * This can be any valid color source, such as a hex value, a Color object, or a string.
+     * @example
+     * ```ts
+     * // Using a hex color
+     * const fillStyle = { color: 0xff0000 }; // Red
+     * // Using a Color object
+     * const fillStyle = { color: new Color(1, 0, 0) }; // Red
+     * // Using a string color
+     * const fillStyle = { color: 'red' }; // Red
+     * // Using object string
+     * const fillStyle = { color: 'rgb(255, 0, 0)' }; // Red
+     * ```
+     * @see {@link ColorSource} For more details on color sources
+     */
     color?: ColorSource;
-    /** The alpha value to use for the fill. */
+    /**
+     * The alpha value to use for the fill.
+     * This value should be between 0 (fully transparent) and 1 (fully opaque).
+     * @example
+     * ```ts
+     * const fillStyle = { alpha: 0.5 }; // 50% opacity
+     * ```
+     * @default 1
+     * @see {@link ColorSource} For more details on color sources
+     * @see {@link FillStyle#color} For color usage
+     */
     alpha?: number;
-    /** The texture to use for the fill. */
+    /**
+     * The texture to use for the fill.
+     * @example
+     * ```ts
+     * const fillStyle = { texture: Texture.from('myImage.png') };
+     * ```
+     * @see {@link Texture} For more details on textures
+     */
     texture?: Texture | null;
-    /** The matrix to apply. */
+    /**
+     * The transformation matrix to apply to the fill pattern or texture.
+     * Used to scale, rotate, translate, or skew the fill.
+     * @example
+     * ```ts
+     * // Scale and rotate a texture fill
+     * const fillStyle = {
+     *     texture: Texture.from('myImage.png'),
+     *     matrix: new Matrix()
+     *         .scale(0.5, 0.5)
+     *         .rotate(Math.PI / 4)
+     * };
+     * ```
+     * @default null
+     */
     matrix?: Matrix | null;
-    /** The fill pattern to use. */
+    /**
+     * The fill pattern or gradient to use. This can be either a FillPattern for
+     * repeating textures or a FillGradient for color transitions.
+     * @example
+     * ```ts
+     * // Using a gradient
+     * const gradient = new FillGradient({
+     *    end: { x: 1, y: 0 },
+     *    stops: [
+     *        { color: 0xff0000, offset: 0 }, // Red at start
+     *        { color: 0x0000ff, offset: 1 }, // Blue at end
+     *    ]
+     * });
+     *
+     * const fillStyle = {
+     *     fill: gradient,
+     *     alpha: 0.8
+     * };
+     *
+     * // Using a pattern
+     * const pattern = new FillPattern(
+     *     Texture.from('pattern.png'),
+     *     'repeat' // or 'no-repeat', 'repeat-x', 'repeat-y'
+     * );
+     *
+     * const fillStyle = {
+     *     fill: pattern
+     * };
+     * ```
+     * @see {@link FillPattern} For creating pattern fills
+     * @see {@link FillGradient} For creating gradient fills
+     */
     fill?: FillPattern | FillGradient | null;
-    /** The fill units to use. */
+    /**
+     * Determines how texture coordinates are calculated across shapes.
+     * - 'local': Texture coordinates are relative to each shape's bounds
+     * - 'global': Texture coordinates are in world space
+     * @example
+     * ```ts
+     * // Local space - texture fits each shape independently
+     * const fillStyle = {
+     *     texture: Texture.from('myImage.png'),
+     *     textureSpace: 'local'
+     * };
+     *
+     * // Global space - texture continues across shapes
+     * const fillStyle = {
+     *     texture: Texture.from('myImage.png'),
+     *     textureSpace: 'global'
+     * };
+     * ```
+     * @default 'local'
+     * @see {@link TextureSpace} For more details on texture spaces
+     */
     textureSpace?: TextureSpace;
 }
 
 /**
- * A stroke attribute object, used to define properties for a stroke.
+ * A stroke attribute object that defines how lines and shape outlines are drawn.
+ * Controls properties like width, alignment, line caps, joins, and more.
+ * @example
+ * ```ts
+ * const graphics = new Graphics();
+ *
+ * // Basic stroke with width
+ * graphics.stroke({
+ *     width: 4,
+ *     color: 0xff0000 // Or use a Color object
+ * });
+ *
+ * // Stroke with rounded corners and ends
+ * const text = new Text('Hello World', {
+ *     fontSize: 32,
+ *     fill: 0x000000, // Text color
+ *     stroke: {
+ *     width: 8,
+ *         color: 0x00ff00, // Or use a Color object
+ *         cap: 'round',    // Round end caps
+ *         join: 'round',   // Round corner joins
+ *         alignment: 0.5   // Center alignment
+ *     }
+ * });
+ *
+ * // Stroke with mitered corners
+ * graphics.stroke({
+ *     width: 6,
+ *     color: 0x0000ff, // Or use a Color object
+ *     join: 'miter',
+ *     miterLimit: 3,   // Limit how far miter extends
+ *     alignment: 1     // Outside alignment
+ * });
+ *
+ * // Pixel-perfect line
+ * graphics.stroke({
+ *     width: 1,
+ *     pixelLine: true, // Ensures crisp 1px lines
+ *     color: 0x000000  // Or use a Color object
+ * });
+ * ```
+ * @see {@link Graphics#stroke} For applying strokes to paths
+ * @see {@link LineCap} For line end cap options
+ * @see {@link LineJoin} For line join options
  * @category scene
  * @standard
  */
 export interface StrokeAttributes
 {
-    /** The width of the stroke. */
+    /**
+     * The width of the stroke in pixels.
+     * @example
+     * ```ts
+     * const stroke = { width: 4 };
+     * ```
+     * @default 1
+     */
     width?: number;
-    /** The alignment of the stroke. */
+
+    /**
+     * The alignment of the stroke relative to the path.
+     * - 0: Inside the shape
+     * - 0.5: Centered on the path (default)
+     * - 1: Outside the shape
+     * @example
+     * ```ts
+     * // Inside alignment
+     * const stroke = { alignment: 0 };
+     * // Centered alignment
+     * const stroke = { alignment: 0.5 };
+     * // Outside alignment
+     * const stroke = { alignment: 1 };
+     * ```
+     * @default 0.5
+     */
     alignment?: number;
-    /** The line cap style to use. */
+
+    /**
+     * The style to use for the ends of open paths.
+     * - 'butt': Ends at path end
+     * - 'round': Rounds past path end
+     * - 'square': Squares past path end
+     * @example
+     * ```ts
+     * const stroke = { cap: 'round' };
+     * ```
+     * @default 'butt'
+     * @see {@link LineCap} For line cap options
+     */
     cap?: LineCap;
-    /** The line join style to use. */
+
+    /**
+     * The style to use where paths connect.
+     * - 'miter': Sharp corner
+     * - 'round': Rounded corner
+     * - 'bevel': Beveled corner
+     * @example
+     * ```ts
+     * const stroke = { join: 'round' };
+     * ```
+     * @default 'miter'
+     * @see {@link LineJoin} For line join options
+     */
     join?: LineJoin;
-    /** The miter limit to use. */
+
+    /**
+     * Controls how far miter joins can extend. Only applies when join is 'miter'.
+     * Higher values allow sharper corners.
+     * @example
+     * ```ts
+     * const stroke = {
+     *     join: 'miter',
+     *     miterLimit: 3,
+     * };
+     * ```
+     * @default 10
+     */
     miterLimit?: number;
-    /** If the stroke is a pixel line. NOTE: this is only available for Graphic fills */
+
+    /**
+     * When true, ensures crisp 1px lines by aligning to pixel boundaries.
+     * > [!NOTE] Only available for Graphics fills.
+     * @example
+     * ```ts
+     * const graphics = new Graphics();
+     *
+     * // Draw pixel-perfect line
+     * graphics
+     *     .moveTo(50, 50)
+     *     .lineTo(150, 50)
+     *     .stroke({
+     *         width: 1,
+     *         pixelLine: true,
+     *         color: 0x000000
+     *     });
+     * ```
+     * @default false
+     */
     pixelLine?: boolean;
 }
 
 /**
- * A stroke style object.
+ * A stroke style object that combines fill properties with stroke attributes to define
+ * both the visual style and stroke behavior of lines, shape outlines, and text strokes.
+ * @example
+ * ```ts
+ * // --- Graphics Examples ---
+ * const graphics = new Graphics();
+ *
+ * // Basic solid color stroke
+ * graphics.stroke({
+ *     width: 4,
+ *     color: 0xff0000,
+ *     alpha: 0.8,
+ *     join: 'round'
+ * });
+ *
+ * // Gradient stroke with attributes
+ * const gradient = new FillGradient({
+ *    end: { x: 1, y: 0 },
+ *    stops: [
+ *        { color: 0xff0000, offset: 0 }, // Red at start
+ *        { color: 0x0000ff, offset: 1 }, // Blue at end
+ *    ]
+ * });
+ *
+ * graphics.stroke({
+ *     width: 8,
+ *     fill: gradient,
+ *     cap: 'round',
+ *     join: 'round',
+ *     alignment: 0.5
+ * });
+ *
+ * // --- Text Examples ---
+ *
+ * // Basic text stroke
+ * const text = new Text('Hello World', {
+ *     fontSize: 48,
+ *     stroke: {
+ *         width: 4,
+ *         color: 0x000000,
+ *         alignment: 1  // Outside stroke
+ *     }
+ * });
+ *
+ * // Gradient text stroke
+ * const textGradient = new FillGradient({
+ *   end: { x: 1, y: 0 },
+ *   stops: [
+ *       { color: 0xff0000, offset: 0 }, // Red at start
+ *       { color: 0x0000ff, offset: 1 }, // Blue at end
+ *   ]
+ * });
+ *
+ * const fancyText = new Text('Gradient Outline', {
+ *     fontSize: 64,
+ *     fill: 0xffffff,
+ *     stroke: {
+ *         width: 6,
+ *         fill: textGradient,
+ *         alignment: 0.5,
+ *         join: 'round'
+ *     }
+ * });
+ * ```
+ * @see {@link FillStyle} For fill properties
+ * @see {@link StrokeAttributes} For stroke properties
+ * @see {@link Graphics#stroke} For applying strokes to paths
+ * @see {@link Text} For text stroke options
  * @category scene
  * @standard
+ * @interface
  */
 export interface StrokeStyle extends FillStyle, StrokeAttributes {}
 
@@ -137,12 +455,14 @@ export type StrokeInput = ColorSource | FillGradient | FillPattern | StrokeStyle
  * used internally and is a complete fill style
  * @category scene
  * @advanced
+ * @interface
  */
 export type ConvertedFillStyle = Omit<Required<FillStyle>, 'color'> & { color: number };
 /**
  * used internally and is a complete stroke style
  * @category scene
  * @advanced
+ * @interface
  */
 export type ConvertedStrokeStyle = ConvertedFillStyle & Required<StrokeAttributes>;
 

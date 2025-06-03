@@ -12,12 +12,25 @@ import type { TextStyle, TextStyleOptions } from './TextStyle';
 
 /**
  * A string or number that can be used as text.
+ * @example
+ * ```ts
+ * const text: TextString = 'Hello Pixi!';
+ * const text2: TextString = 12345;
+ * const text3: TextString = { toString: () => 'Hello Pixi!' };
+ * ```
  * @category text
  * @standard
  */
 export type TextString = string | number | { toString: () => string };
 /**
  * A union of all text styles, including HTML, Bitmap and Canvas text styles.
+ * This is used to allow for any text style to be passed to a text object.
+ * @example
+ * ```ts
+ * import { TextStyle, HTMLTextStyle } from 'pixi.js';
+ * const style: AnyTextStyle = new TextStyle({ fontSize: 24 });
+ * const htmlStyle: AnyTextStyle = new HTMLTextStyle({ fontSize: '24px' });
+ * ```
  * @category text
  * @standard
  * @see TextStyle
@@ -26,6 +39,13 @@ export type TextString = string | number | { toString: () => string };
 export type AnyTextStyle = TextStyle | HTMLTextStyle;
 /**
  * A union of all text style options, including HTML, Bitmap and Canvas text style options.
+ * This is used to allow for any text style options to be passed to a text object.
+ * @example
+ * ```ts
+ * import { TextStyleOptions, HTMLTextStyleOptions } from 'pixi.js';
+ * const styleOptions: AnyTextStyleOptions = { fontSize: 24 } as TextStyleOptions;
+ * const htmlStyleOptions: AnyTextStyleOptions = { fontSize: '24px' } as HTMLTextStyleOptions;
+ * ```
  * @category text
  * @standard
  * @see TextStyleOptions
@@ -34,44 +54,180 @@ export type AnyTextStyle = TextStyle | HTMLTextStyle;
 export type AnyTextStyleOptions = TextStyleOptions | HTMLTextStyleOptions;
 
 /**
- * Options for the {@link Text} class.
+ * Options for creating text objects in PixiJS. This interface defines the common properties
+ * used across different text rendering implementations (Canvas, HTML, and Bitmap).
  * @example
- * const text = new Text({
- *    text: 'Hello Pixi!',
- *    style: {
- *       fontFamily: 'Arial',
- *       fontSize: 24,
- *    fill: 0xff1010,
- *    align: 'center',
- *  }
+ * ```ts
+ * // Create basic text with minimal options
+ * const basicText = new Text({
+ *     text: 'Hello Pixi!',
+ *     style: {
+ *         fontSize: 24,
+ *         fill: 0xff1010
+ *     }
  * });
+ *
+ * // Create text with advanced styling
+ * const styledText = new Text({
+ *     text: 'Styled Text',
+ *     style: {
+ *         fontFamily: 'Arial',
+ *         fontSize: 32,
+ *         fill: new FillGradient({
+ *             end: { x: 1, y: 1 },
+ *             stops: [
+ *                 { color: 0xff0000, offset: 0 }, // Red at start
+ *                 { color: 0x0000ff, offset: 1 }, // Blue at end
+ *             ]
+ *         }),
+ *         stroke: { color: '#4a1850', width: 5 },
+ *         dropShadow: {
+ *             color: '#000000',
+ *             blur: 4,
+ *             distance: 6
+ *         },
+ *         align: 'center'
+ *     },
+ *     anchor: 0.5,
+ *     resolution: window.devicePixelRatio
+ * });
+ *
+ * // Create multiline text with word wrap
+ * const wrappedText = new Text({
+ *     text: 'This is a long piece of text that will wrap onto multiple lines',
+ *     style: {
+ *         fontSize: 20,
+ *         wordWrap: true,
+ *         wordWrapWidth: 200,
+ *         lineHeight: 30
+ *     },
+ *     resolution: 2,
+ *     roundPixels: true
+ * });
+ * ```
  * @category text
  * @standard
+ * @noInheritDoc
  */
 export interface TextOptions<
     TEXT_STYLE extends TextStyle = TextStyle,
     TEXT_STYLE_OPTIONS extends TextStyleOptions = TextStyleOptions,
 > extends PixiMixins.TextOptions, ViewContainerOptions
 {
-    /** The anchor point of the text. */
+    /**
+     * The anchor point of the text that controls the origin point for positioning and rotation.
+     * Can be a number (same value for x/y) or a PointData object.
+     * - (0,0) is top-left
+     * - (0.5,0.5) is center
+     * - (1,1) is bottom-right
+     * ```ts
+     * // Set anchor to center
+     * const text = new Text({
+     *     text: 'Hello Pixi!',
+     *     anchor: 0.5 // Same as { x: 0.5, y: 0.5 }
+     * });
+     * // Set anchor to top-left
+     * const text2 = new Text({
+     *     text: 'Hello Pixi!',
+     *     anchor: { x: 0, y: 0 } // Top-left corner
+     * });
+     * // Set anchor to bottom-right
+     * const text3 = new Text({
+     *     text: 'Hello Pixi!',
+     *     anchor: { x: 1, y: 1 } // Bottom-right corner
+     * });
+     * ```
+     * @default { x: 0, y: 0 }
+     */
     anchor?: PointData | number;
-    /** The copy for the text object. To split a line you can use '\n'. */
+    /**
+     * The text content to display. Use '\n' for line breaks.
+     * Accepts strings, numbers, or objects with toString() method.
+     * @example
+     * ```ts
+     * const text = new Text({
+     *     text: 'Hello Pixi!',
+     * });
+     * const multilineText = new Text({
+     *     text: 'Line 1\nLine 2\nLine 3',
+     * });
+     * const numberText = new Text({
+     *     text: 12345, // Will be converted to '12345'
+     * });
+     * const objectText = new Text({
+     *     text: { toString: () => 'Object Text' }, // Custom toString
+     * });
+     * ```
+     * @default ''
+     */
     text?: TextString;
-    /** The resolution of the text. */
+    /**
+     * The resolution/device pixel ratio for rendering.
+     * Higher values result in sharper text at the cost of performance.
+     * Set to null for auto-resolution based on device.
+     * @example
+     * ```ts
+     * const text = new Text({
+     *     text: 'Hello Pixi!',
+     *     resolution: 2 // High DPI for sharper text
+     * });
+     * const autoResText = new Text({
+     *     text: 'Auto Resolution',
+     *     resolution: null // Use device's pixel ratio
+     * });
+     * ```
+     * @default null
+     */
     resolution?: number;
     /**
-     * The text style
-     * @type {
-     * TextStyle |
-     * Partial<TextStyle> |
-     * TextStyleOptions |
-     * HTMLTextStyle |
-     * Partial<HTMLTextStyle> |
-     * HTMLTextStyleOptions
-     * }
+     * The style configuration for the text.
+     * Can be a TextStyle instance or a configuration object.
+     * Supports canvas text styles, HTML text styles, and bitmap text styles.
+     * @example
+     * ```ts
+     * const text = new Text({
+     *     text: 'Styled Text',
+     *     style: {
+     *         fontSize: 24,
+     *         fill: 0xff1010, // Red color
+     *         fontFamily: 'Arial',
+     *         align: 'center', // Center alignment
+     *         stroke: { color: '#4a1850', width: 5 }, // Purple stroke
+     *         dropShadow: {
+     *             color: '#000000', // Black shadow
+     *             blur: 4, // Shadow blur
+     *             distance: 6 // Shadow distance
+     *         }
+     *     }
+     * });
+     * const htmlText = new HTMLText({
+     *     text: 'HTML Styled Text',
+     *     style: {
+     *         fontSize: '20px',
+     *         fill: 'blue',
+     *         fontFamily: 'Verdana',
+     *     }
+     * });
+     * const bitmapText = new BitmapText({
+     *     text: 'Bitmap Styled Text',
+     *     style: {
+     *         fontName: 'Arial',
+     *         fontSize: 32,
+     *     }
+     * })
      */
     style?: TEXT_STYLE | TEXT_STYLE_OPTIONS;
-    /** Whether or not to round the x/y position. */
+    /**
+     * Whether to round the x/y position to whole pixels.
+     * Enabling can prevent anti-aliasing of text edges but may cause slight position shifting.
+     * @example
+     * ```ts
+     * const text = new Text({
+     *     text: 'Rounded Text',
+     *     roundPixels: true // Rounds position to whole pixels
+     * });
+     * @default false
+     */
     roundPixels?: boolean;
 }
 
@@ -147,19 +303,29 @@ export abstract class AbstractText<
     }
 
     /**
-     * The anchor sets the origin point of the text.
-     * The default is `(0,0)`, this means the text's origin is the top left.
-     *
-     * Setting the anchor to `(0.5,0.5)` means the text's origin is centered.
-     *
-     * Setting the anchor to `(1,1)` would mean the text's origin point will be the bottom right corner.
-     *
-     * If you pass only single parameter, it will set both x and y to the same value as shown in the example below.
-     * @example
-     * import { Text } from 'pixi.js';
-     *
-     * const text = new Text('hello world');
-     * text.anchor.set(0.5); // This will set the origin to center. (0.5) is same as (0.5, 0.5).
+     * The anchor point of the text that controls the origin point for positioning and rotation.
+     * Can be a number (same value for x/y) or a PointData object.
+     * - (0,0) is top-left
+     * - (0.5,0.5) is center
+     * - (1,1) is bottom-right
+     * ```ts
+     * // Set anchor to center
+     * const text = new Text({
+     *     text: 'Hello Pixi!',
+     *     anchor: 0.5 // Same as { x: 0.5, y: 0.5 }
+     * });
+     * // Set anchor to top-left
+     * const text2 = new Text({
+     *     text: 'Hello Pixi!',
+     *     anchor: { x: 0, y: 0 } // Top-left corner
+     * });
+     * // Set anchor to bottom-right
+     * const text3 = new Text({
+     *     text: 'Hello Pixi!',
+     *     anchor: { x: 1, y: 1 } // Bottom-right corner
+     * });
+     * ```
+     * @default { x: 0, y: 0 }
      */
     get anchor(): ObservablePoint
     {
@@ -171,7 +337,33 @@ export abstract class AbstractText<
         typeof value === 'number' ? this._anchor.set(value) : this._anchor.copyFrom(value);
     }
 
-    /** Set the copy for the text object. To split a line you can use '\n'. */
+    /**
+     * The text content to display. Use '\n' for line breaks.
+     * Accepts strings, numbers, or objects with toString() method.
+     * @example
+     * ```ts
+     * const text = new Text({
+     *     text: 'Hello Pixi!',
+     * });
+     * const multilineText = new Text({
+     *     text: 'Line 1\nLine 2\nLine 3',
+     * });
+     * const numberText = new Text({
+     *     text: 12345, // Will be converted to '12345'
+     * });
+     * const objectText = new Text({
+     *     text: { toString: () => 'Object Text' }, // Custom toString
+     * });
+     *
+     * // Update text dynamically
+     * text.text = 'Updated Text'; // Re-renders with new text
+     * text.text = 67890; // Updates to '67890'
+     * text.text = { toString: () => 'Dynamic Text' }; // Uses custom toString method
+     * // Clear text
+     * text.text = ''; // Clears the text
+     * ```
+     * @default ''
+     */
     set text(value: TextString)
     {
         // check its a string
@@ -189,8 +381,21 @@ export abstract class AbstractText<
     }
 
     /**
-     * The resolution / device pixel ratio of the canvas.
-     * @default 1
+     * The resolution/device pixel ratio for rendering.
+     * Higher values result in sharper text at the cost of performance.
+     * Set to null for auto-resolution based on device.
+     * @example
+     * ```ts
+     * const text = new Text({
+     *     text: 'Hello Pixi!',
+     *     resolution: 2 // High DPI for sharper text
+     * });
+     * const autoResText = new Text({
+     *     text: 'Auto Resolution',
+     *     resolution: null // Use device's pixel ratio
+     * });
+     * ```
+     * @default null
      */
     set resolution(value: number)
     {
@@ -210,18 +415,48 @@ export abstract class AbstractText<
     }
 
     /**
-     * Set the style of the text.
+     * The style configuration for the text.
+     * Can be a TextStyle instance or a configuration object.
+     * Supports canvas text styles, HTML text styles, and bitmap text styles.
+     * @example
+     * ```ts
+     * const text = new Text({
+     *     text: 'Styled Text',
+     *     style: {
+     *         fontSize: 24,
+     *         fill: 0xff1010, // Red color
+     *         fontFamily: 'Arial',
+     *         align: 'center', // Center alignment
+     *         stroke: { color: '#4a1850', width: 5 }, // Purple stroke
+     *         dropShadow: {
+     *             color: '#000000', // Black shadow
+     *             blur: 4, // Shadow blur
+     *             distance: 6 // Shadow distance
+     *         }
+     *     }
+     * });
+     * const htmlText = new HTMLText({
+     *     text: 'HTML Styled Text',
+     *     style: {
+     *         fontSize: '20px',
+     *         fill: 'blue',
+     *         fontFamily: 'Verdana',
+     *     }
+     * });
+     * const bitmapText = new BitmapText({
+     *     text: 'Bitmap Styled Text',
+     *     style: {
+     *         fontName: 'Arial',
+     *         fontSize: 32,
+     *     }
+     * })
      *
-     * Set up an event listener to listen for changes on the style object and mark the text as dirty.
-     *
-     * If setting the `style` can also be partial {@link AnyTextStyleOptions}.
-     * @type {
-     * TextStyle |
-     * Partial<TextStyle> |
-     * TextStyleOptions |
-     * HTMLTextStyle |
-     * Partial<HTMLTextStyle> |
-     * HTMLTextStyleOptions
+     * // Update style dynamically
+     * text.style = {
+     *     fontSize: 30, // Change font size
+     *     fill: 0x00ff00, // Change color to green
+     *     align: 'right', // Change alignment to right
+     *     stroke: { color: '#000000', width: 2 }, // Add black stroke
      * }
      */
     set style(style: TEXT_STYLE | Partial<TEXT_STYLE> | TEXT_STYLE_OPTIONS)
@@ -243,7 +478,18 @@ export abstract class AbstractText<
         this.onViewUpdate();
     }
 
-    /** The width of the sprite, setting this will actually modify the scale to achieve the value set. */
+    /**
+     * The width of the sprite, setting this will actually modify the scale to achieve the value set.
+     * @example
+     * ```ts
+     * // Set width directly
+     * texture.width = 200;
+     * console.log(texture.scale.x); // Scale adjusted to match width
+     *
+     * // For better performance when setting both width and height
+     * texture.setSize(300, 400); // Avoids recalculating bounds twice
+     * ```
+     */
     override get width(): number
     {
         return Math.abs(this.scale.x) * this.bounds.width;
@@ -254,7 +500,18 @@ export abstract class AbstractText<
         this._setWidth(value, this.bounds.width);
     }
 
-    /** The height of the sprite, setting this will actually modify the scale to achieve the value set. */
+    /**
+     * The height of the sprite, setting this will actually modify the scale to achieve the value set.
+     * @example
+     * ```ts
+     * // Set height directly
+     * texture.height = 200;
+     * console.log(texture.scale.y); // Scale adjusted to match height
+     *
+     * // For better performance when setting both width and height
+     * texture.setSize(300, 400); // Avoids recalculating bounds twice
+     * ```
+     */
     override get height(): number
     {
         return Math.abs(this.scale.y) * this.bounds.height;
@@ -266,10 +523,27 @@ export abstract class AbstractText<
     }
 
     /**
-     * Retrieves the size of the Text as a [Size]{@link Size} object.
-     * This is faster than get the width and height separately.
-     * @param out - Optional object to store the size in.
-     * @returns - The size of the Text.
+     * Retrieves the size of the Text as a [Size]{@link Size} object based on the texture dimensions and scale.
+     * This is faster than getting width and height separately as it only calculates the bounds once.
+     * @example
+     * ```ts
+     * // Basic size retrieval
+     * const text = new Text({
+     *     text: 'Hello Pixi!',
+     *     style: { fontSize: 24 }
+     * });
+     * const size = text.getSize();
+     * console.log(`Size: ${size.width}x${size.height}`);
+     *
+     * // Reuse existing size object
+     * const reuseSize = { width: 0, height: 0 };
+     * text.getSize(reuseSize);
+     * ```
+     * @param out - Optional object to store the size in, to avoid allocating a new object
+     * @returns The size of the Sprite
+     * @see {@link Text#width} For getting just the width
+     * @see {@link Text#height} For getting just the height
+     * @see {@link Text#setSize} For setting both width and height
      */
     public override getSize(out?: Size): Size
     {
@@ -282,9 +556,29 @@ export abstract class AbstractText<
 
     /**
      * Sets the size of the Text to the specified width and height.
-     * This is faster than setting the width and height separately.
-     * @param value - This can be either a number or a [Size]{@link Size} object.
-     * @param height - The height to set. Defaults to the value of `width` if not provided.
+     * This is faster than setting width and height separately as it only recalculates bounds once.
+     * @example
+     * ```ts
+     * // Basic size setting
+     * const text = new Text({
+     *    text: 'Hello Pixi!',
+     *    style: { fontSize: 24 }
+     * });
+     * text.setSize(100, 200); // Width: 100, Height: 200
+     *
+     * // Set uniform size
+     * text.setSize(100); // Sets both width and height to 100
+     *
+     * // Set size with object
+     * text.setSize({
+     *     width: 200,
+     *     height: 300
+     * });
+     * ```
+     * @param value - This can be either a number or a {@link Size} object
+     * @param height - The height to set. Defaults to the value of `width` if not provided
+     * @see {@link Text#width} For setting width only
+     * @see {@link Text#height} For setting height only
      */
     public override setSize(value: number | Optional<Size, 'height'>, height?: number)
     {
@@ -303,8 +597,18 @@ export abstract class AbstractText<
     }
 
     /**
-     * Checks if the text contains the given point.
-     * @param point - The point to check
+     * Checks if the object contains the given point in local coordinates.
+     * Uses the text's bounds for hit testing.
+     * @example
+     * ```ts
+     * // Basic point check
+     * const localPoint = { x: 50, y: 25 };
+     * const contains = text.containsPoint(localPoint);
+     * console.log('Point is inside:', contains);
+     * ```
+     * @param point - The point to check in local coordinates
+     * @returns True if the point is within the text's bounds
+     * @see {@link Container#toLocal} For converting global coordinates to local
      */
     public override containsPoint(point: PointData)
     {
@@ -324,6 +628,7 @@ export abstract class AbstractText<
         return false;
     }
 
+    /** @internal */
     public override onViewUpdate()
     {
         if (!this.didViewUpdate) this._didTextUpdate = true;

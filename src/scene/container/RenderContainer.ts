@@ -31,6 +31,7 @@ export type RenderFunction = (renderer: Renderer) => void;
  * Options for the {@link RenderContainer} constructor.
  * @category scene
  * @advanced
+ * @noInheritDoc
  */
 export interface RenderContainerOptions extends ContainerOptions
 {
