@@ -4,6 +4,7 @@ import type { ResolvedAsset } from './types';
 /**
  * Quietly Loads assets in the background.
  * @category assets
+ * @standard
  */
 export class BackgroundLoader
 {
@@ -19,7 +20,10 @@ export class BackgroundLoader
     /** Number of assets to load at a time. */
     private readonly _maxConcurrent: number;
 
-    /** Should the loader log to the console. */
+    /**
+     * Should the loader log to the console.
+     * @advanced
+     */
     public verbose: boolean;
     private readonly _loader: Loader;
 

@@ -8,7 +8,7 @@ import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from '../text/AbstractText';
 import type { TextStyleOptions } from '../text/TextStyle';
 
-// eslint-disable-next-line requireExport/require-export-jsdoc
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface BitmapText extends PixiMixins.BitmapText, AbstractText<
     TextStyle,
     TextStyleOptions,
@@ -103,6 +103,7 @@ export interface BitmapText extends PixiMixins.BitmapText, AbstractText<
  *     }
  * }
  * @category scene
+ * @standard
  */
 export class BitmapText extends AbstractText<
     TextStyle,
@@ -111,6 +112,7 @@ export class BitmapText extends AbstractText<
     BitmapTextGraphics
 > implements View
 {
+    /** @internal */
     public override readonly renderPipeId: string = 'bitmapText';
 
     /**

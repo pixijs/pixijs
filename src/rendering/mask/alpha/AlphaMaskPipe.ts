@@ -23,6 +23,7 @@ type MaskMode = 'pushMaskBegin' | 'pushMaskEnd' | 'popMaskBegin' | 'popMaskEnd';
 
 const tempBounds = new Bounds();
 
+/** @internal */
 class AlphaMaskEffect extends FilterEffect implements PoolItem
 {
     constructor()

@@ -6,6 +6,7 @@ import { createUboSyncFunctionWGSL } from './shader/utils/createUboSyncFunctionW
 /**
  * System plugin to the renderer to manage uniform buffers. With a WGSL twist!
  * @category rendering
+ * @advanced
  */
 export class GpuUboSystem extends UboSystem
 {

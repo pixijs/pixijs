@@ -11,6 +11,7 @@ import type { ShapePrimitive } from './ShapePrimitive';
  * const isPointInEllipse = ellipse.contains(0, 0); // true
  * ```
  * @category maths
+ * @standard
  */
 export class Ellipse implements ShapePrimitive
 {

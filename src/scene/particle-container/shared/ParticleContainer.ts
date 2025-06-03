@@ -16,31 +16,39 @@ const emptyBounds = new Bounds(0, 0, 0, 0);
 
 /**
  * Represents the properties of a particle that can be dynamically updated.
- * @property {boolean} [vertices] - Indicates if vertices are dynamic.
- * @property {boolean} [position] - Indicates if position is dynamic.
- * @property {boolean} [rotation] - Indicates if rotation is dynamic.
- * @property {boolean} [uvs] - Indicates if UVs are dynamic.
- * @property {boolean} [color] - Indicates if color is dynamic.
  * @category scene
+ * @standard
  */
 export interface ParticleProperties
 {
+    /** Indicates if vertices should be updated dynamically each frame */
     vertex?: boolean;
+    /** Indicates if position should be updated dynamically each frame */
     position?: boolean;
+    /** Indicates if rotation should be updated dynamically each frame */
     rotation?: boolean;
+    /** Indicates if UVs should be updated dynamically each frame */
     uvs?: boolean;
+    /** Indicates if color should be updated dynamically each frame */
     color?: boolean;
 }
 
 /**
  * Options for the ParticleContainer constructor.
  * @category scene
+ * @standard
  */
 export interface ParticleContainerOptions extends PixiMixins.ParticleContainerOptions, Omit<ViewContainerOptions, 'children'>
 {
-    /** Specifies which properties are dynamic. */
-    dynamicProperties?: Record<string, boolean>;
-    /** The shader to use for rendering particles. */
+    /**
+     * Specifies which properties are dynamic.
+     * @standard
+     */
+    dynamicProperties?: ParticleProperties & Record<string, boolean>;
+    /**
+     * The shader to use for rendering particles.
+     * @advanced
+     */
     shader?: Shader;
     /** Indicates if pixels should be rounded. */
     roundPixels?: boolean;
@@ -49,7 +57,7 @@ export interface ParticleContainerOptions extends PixiMixins.ParticleContainerOp
     /** An array of particles to add to the container. */
     particles?: IParticle[];
 }
-// eslint-disable-next-line requireExport/require-export-jsdoc
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface ParticleContainer extends PixiMixins.ParticleContainer, ViewContainer<ParticleBuffer> {}
 
 /**
@@ -101,6 +109,7 @@ export interface ParticleContainer extends PixiMixins.ParticleContainer, ViewCon
  *     container.addParticle(particle);
  * }
  * @category scene
+ * @standard
  */
 export class ParticleContainer extends ViewContainer<ParticleBuffer> implements Instruction
 {
@@ -127,9 +136,13 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
         roundPixels: false
     };
 
-    /** The unique identifier for the render pipe of this ParticleContainer. */
+    /**
+     * The unique identifier for the render pipe of this ParticleContainer.
+     * @internal
+     */
     public override readonly renderPipeId: string = 'particle';
 
+    /** @advanced */
     public batched = false;
 
     /**
@@ -151,7 +164,10 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      */
     public particleChildren: IParticle[];
 
-    /** The shader used for rendering particles in this ParticleContainer. */
+    /**
+     * The shader used for rendering particles in this ParticleContainer.
+     * @advanced
+     */
     public shader: Shader;
 
     /**
@@ -365,6 +381,7 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * Calling this method will throw an error. Please use `ParticleContainer.addParticle()` instead.
      * @param {...any} _children
      * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
      */
     public override addChild<U extends(ContainerChild | IRenderLayer)[]>(..._children: U): U[0]
     {
@@ -377,6 +394,7 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * Calling this method will throw an error. Please use `ParticleContainer.removeParticle()` instead.
      * @param {...any} _children
      * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
      */
     public override removeChild<U extends(ContainerChild | IRenderLayer)[]>(..._children: U): U[0]
     {
@@ -391,6 +409,7 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * @param {number} [_beginIndex]
      * @param {number} [_endIndex]
      * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
      */
     public override removeChildren(_beginIndex?: number, _endIndex?: number): ContainerChild[]
     {
@@ -404,6 +423,7 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * Calling this method will throw an error. Please use `ParticleContainer.removeParticleAt()` instead.
      * @param {number} _index
      * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
      */
     public override removeChildAt<U extends(ContainerChild | IRenderLayer)>(_index: number): U
     {
@@ -417,6 +437,7 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * Calling this method will throw an error. Please use `ParticleContainer.getParticleAt()` instead.
      * @param {number} _index
      * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
      */
     public override getChildAt<U extends(ContainerChild | IRenderLayer)>(_index: number): U
     {
@@ -431,6 +452,7 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * @param {ContainerChild} _child
      * @param {number} _index
      * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
      */
     public override setChildIndex(_child: ContainerChild, _index: number): void
     {
@@ -444,6 +466,7 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * Calling this method will throw an error. Please use `ParticleContainer.getParticleIndex()` instead.
      * @param {ContainerChild} _child
      * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
      */
     public override getChildIndex(_child: ContainerChild): number
     {
@@ -458,6 +481,7 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * @param {ContainerChild} _child
      * @param {number} _index
      * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
      */
     public override addChildAt<U extends(ContainerChild | IRenderLayer)>(_child: U, _index: number): U
     {
@@ -471,6 +495,7 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * Calling this method will throw an error. Please use `ParticleContainer.swapParticles()` instead.
      * @param {ContainerChild} _child
      * @param {ContainerChild} _child2
+     * @ignore
      */
     public override swapChildren<U extends(ContainerChild | IRenderLayer)>(_child: U, _child2: U): void
     {
@@ -485,6 +510,7 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * Calling this method will throw an error.
      * @param _child - The child to reparent
      * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
      */
     public override reparentChild(..._child: ContainerChild[]): any
     {
@@ -498,6 +524,7 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * @param _child - The child to reparent
      * @param _index - The index to reparent the child to
      * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
      */
     public override reparentChildAt(_child: ContainerChild, _index: number): any
     {

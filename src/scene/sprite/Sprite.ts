@@ -15,6 +15,7 @@ import type { DestroyOptions } from '../container/destroyTypes';
 /**
  * Options for the {@link Sprite} constructor.
  * @category scene
+ * @standard
  */
 export interface SpriteOptions extends PixiMixins.SpriteOptions, ViewContainerOptions
 {
@@ -25,7 +26,7 @@ export interface SpriteOptions extends PixiMixins.SpriteOptions, ViewContainerOp
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
-// eslint-disable-next-line requireExport/require-export-jsdoc
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface Sprite extends PixiMixins.Sprite, ViewContainer<BatchableSprite> {}
 
 /**
@@ -50,6 +51,7 @@ export interface Sprite extends PixiMixins.Sprite, ViewContainer<BatchableSprite
  * const sprite = new Sprite(sheet.textures['image.png']);
  * ```
  * @category scene
+ * @standard
  */
 export class Sprite extends ViewContainer<BatchableSprite>
 {
@@ -70,8 +72,10 @@ export class Sprite extends ViewContainer<BatchableSprite>
         return new Sprite(Texture.from(source, skipCache));
     }
 
+    /** @internal */
     public override readonly renderPipeId: string = 'sprite';
 
+    /** @advanced */
     public batched = true;
     /** @internal */
     public readonly _anchor: ObservablePoint;
@@ -175,6 +179,7 @@ export class Sprite extends ViewContainer<BatchableSprite>
 
     /**
      * @deprecated
+     * @ignore
      */
     get sourceBounds()
     {

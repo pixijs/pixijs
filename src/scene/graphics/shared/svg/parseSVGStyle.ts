@@ -11,6 +11,7 @@ import type { Session } from './SVGParser';
  * - 'number' type is a numeric value
  * - 'string' type is a text value
  * @category scene
+ * @advanced
  */
 export const styleAttributes = {
     // Fill properties

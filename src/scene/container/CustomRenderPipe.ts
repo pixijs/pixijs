@@ -17,6 +17,7 @@ import type { RenderContainer } from './RenderContainer';
  *     });
  * })
  * @category rendering
+ * @internal
  */
 export class CustomRenderPipe implements InstructionPipe<RenderContainer>, RenderPipe<RenderContainer>
 {

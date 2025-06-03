@@ -3,6 +3,7 @@
 /**
  * WebGL extensions for compressed textures using the PVRTC format.
  * @category rendering
+ * @advanced
  */
 export interface WEBGL_compressed_texture_pvrtc
 {
@@ -15,6 +16,7 @@ export interface WEBGL_compressed_texture_pvrtc
 /**
  * WebGL extensions for texture compression using the ETC format.
  * @category rendering
+ * @advanced
  */
 export interface WEBGL_compressed_texture_etc
 {
@@ -33,6 +35,7 @@ export interface WEBGL_compressed_texture_etc
 /**
  * WebGL extensions for texture compression using the ETC1 format.
  * @category rendering
+ * @advanced
  */
 export interface WEBGL_compressed_texture_etc1
 {
@@ -42,6 +45,7 @@ export interface WEBGL_compressed_texture_etc1
 /**
  * WebGL extensions for texture compression using the ATC format.
  * @category rendering
+ * @advanced
  */
 export interface WEBGL_compressed_texture_atc
 {
@@ -53,6 +57,7 @@ export interface WEBGL_compressed_texture_atc
 /**
  * WebGL extensions for texture compression using the BPTC format.
  * @category rendering
+ * @advanced
  */
 export interface EXT_texture_compression_bptc
 {
@@ -65,6 +70,7 @@ export interface EXT_texture_compression_bptc
 /**
  * WebGL extensions for texture compression using the RGTC format.
  * @category rendering
+ * @advanced
  */
 export interface EXT_texture_compression_rgtc
 {
@@ -77,6 +83,7 @@ export interface EXT_texture_compression_rgtc
 /**
  * WebGL extensions that are available in the current context.
  * @category rendering
+ * @advanced
  */
 export interface WebGLExtensions
 {

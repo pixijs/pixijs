@@ -31,6 +31,7 @@ function checkColumn(data: Uint8ClampedArray, width: number, x: number, top: num
  * @returns The bounding box of the canvas' visible pixels.
  * @since 7.1.0
  * @category utils
+ * @internal
  */
 export function getCanvasBoundingBox(canvas: ICanvas, resolution = 1): Rectangle
 {

@@ -22,6 +22,7 @@ let fontCount = 0;
  * Install a new BitmapFont will create the characters provided for the font and store them in the cache.
  * But don't worry, if a character is requested that hasn't been generated yet, it will be created on the fly.
  * @category text
+ * @standard
  */
 export interface BitmapFontInstallOptions
 {
@@ -57,6 +58,7 @@ export interface BitmapFontInstallOptions
     textureStyle?: TextureStyle | TextureStyleOptions;
 }
 
+/** @advanced */
 class BitmapFontManagerClass
 {
     /**
@@ -289,6 +291,7 @@ class BitmapFontManagerClass
  * The BitmapFontManager is a helper that exists to install and uninstall fonts
  * into the cache for BitmapText objects.
  * @category text
+ * @standard
  * @class
  * @example
  * import { BitmapFontManager, BitmapText } from 'pixi.js';

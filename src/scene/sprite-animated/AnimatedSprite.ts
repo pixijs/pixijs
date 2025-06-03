@@ -9,6 +9,7 @@ import type { SpriteOptions } from '../sprite/Sprite';
  * A collection of textures or frame objects that can be used to create an `AnimatedSprite`.
  * @see {@link AnimatedSprite}
  * @category scene
+ * @standard
  */
 export type AnimatedSpriteFrames = Texture[] | FrameObject[];
 
@@ -16,6 +17,7 @@ export type AnimatedSpriteFrames = Texture[] | FrameObject[];
  * Constructor options used for `AnimatedSprite` instances.
  * @see {@link AnimatedSprite}
  * @category scene
+ * @standard
  */
 export interface AnimatedSpriteOptions extends PixiMixins.AnimatedSpriteOptions, Omit<SpriteOptions, 'texture'>
 {
@@ -40,7 +42,7 @@ export interface AnimatedSpriteOptions extends PixiMixins.AnimatedSpriteOptions,
     /** Update anchor to [Texture's defaultAnchor]{@link Texture#defaultAnchor} when frame changes. */
     updateAnchor?: boolean;
 }
-// eslint-disable-next-line requireExport/require-export-jsdoc
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface AnimatedSprite extends PixiMixins.AnimatedSprite, Sprite {}
 
 /**
@@ -74,6 +76,7 @@ export interface AnimatedSprite extends PixiMixins.AnimatedSprite, Sprite {}
  * const sheet = await Assets.load('assets/spritesheet.json');
  * animatedSprite = new AnimatedSprite(sheet.animations['image_sequence']);
  * @category scene
+ * @standard
  */
 export class AnimatedSprite extends Sprite
 {
@@ -543,6 +546,7 @@ export class AnimatedSprite extends Sprite
 /**
  * A reference to a frame in an {@link AnimatedSprite}
  * @category scene
+ * @advanced
  */
 export interface FrameObject
 {

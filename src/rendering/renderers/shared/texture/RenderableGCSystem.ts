@@ -18,6 +18,7 @@ let renderableGCTick = 0;
  * @property {number} [renderableGCAMaxIdle=60000] -
  * The maximum idle frames before a texture is destroyed by garbage collection.
  * @property {number} [renderableGCCheckCountMax=60000] - time between two garbage collections.
+ * @advanced
  */
 export interface RenderableGCSystemOptions
 {
@@ -71,6 +72,7 @@ export interface RenderableGCSystemOptions
  * // - JS garbage collector can then clean up the sprite itself
  * ```
  * @category rendering
+ * @advanced
  */
 export class RenderableGCSystem implements System<RenderableGCSystemOptions>
 {

@@ -15,6 +15,7 @@ let count = 0;
  * If you use custom RenderTexturePool for your filters, you can use methods
  * `getFilterTexture` and `returnFilterTexture` same as in default pool
  * @category rendering
+ * @advanced
  */
 export class TexturePoolClass
 {
@@ -182,5 +183,6 @@ export class TexturePoolClass
 /**
  * The default texture pool instance.
  * @category rendering
+ * @advanced
  */
 export const TexturePool = new TexturePoolClass();

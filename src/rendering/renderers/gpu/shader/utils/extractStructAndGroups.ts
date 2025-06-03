@@ -1,6 +1,7 @@
 /**
  * Defines the structure of the extracted WGSL structs and groups.
  * @category rendering
+ * @advanced
  */
 export interface StructsAndGroups
 {

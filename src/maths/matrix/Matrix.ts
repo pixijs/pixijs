@@ -8,6 +8,7 @@ import type { PointData } from '../point/PointData';
  * The data structure that contains the position, scale, pivot, skew and rotation of an object.
  * This is used by the {@link Matrix} class to decompose the matrix into its components.
  * @category maths
+ * @advanced
  */
 export interface TransformableObject
 {
@@ -31,6 +32,7 @@ export interface TransformableObject
  * | 0 | 0 | 1 |
  * ```
  * @category maths
+ * @standard
  */
 export class Matrix
 {

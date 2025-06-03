@@ -11,6 +11,7 @@ import type { GlProgram, GlUniformData } from './GlProgram';
 /**
  * System plugin to the renderer to manage shaders.
  * @category rendering
+ * @advanced
  */
 export class GlUniformGroupSystem implements System
 {

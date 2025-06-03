@@ -26,6 +26,7 @@ import type { ShapePath, ShapePrimitiveWithHoles } from '../path/ShapePath';
 /**
  * A record of shape builders, keyed by shape type.
  * @category scene
+ * @advanced
  */
 export const shapeBuilders: Record<string, ShapeBuildCommand> = {};
 

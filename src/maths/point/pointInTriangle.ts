@@ -10,6 +10,7 @@
  * @param y3 - y coordinate of the third vertex of the triangle
  * @returns `true` if the point is inside the triangle, `false` otherwise
  * @category maths
+ * @internal
  */
 export function pointInTriangle(
     px: number, py: number,

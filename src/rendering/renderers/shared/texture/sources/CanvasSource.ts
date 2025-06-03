@@ -9,6 +9,7 @@ import type { TextureSourceOptions } from './TextureSource';
 /**
  * Options for creating a CanvasSource.
  * @category rendering
+ * @advanced
  */
 export interface CanvasSourceOptions extends TextureSourceOptions<ICanvas>
 {
@@ -27,6 +28,7 @@ export interface CanvasSourceOptions extends TextureSourceOptions<ICanvas>
  * It automatically resizes the canvas based on the width, height, and resolution.
  * It also provides a 2D rendering context for drawing.
  * @category rendering
+ * @advanced
  */
 export class CanvasSource extends TextureSource<ICanvas>
 {

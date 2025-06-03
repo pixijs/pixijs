@@ -8,6 +8,7 @@ import type { PixiTouch } from './FederatedEvent';
 /**
  * A {@link FederatedEvent} for mouse events.
  * @category events
+ * @standard
  */
 export class FederatedMouseEvent extends FederatedEvent<
 MouseEvent | PointerEvent | PixiTouch
@@ -146,6 +147,7 @@ MouseEvent | PointerEvent | PixiTouch
      * @param _buttonArg
      * @param _relatedTargetArg
      * @deprecated since 7.0.0
+     * @ignore
      */
     // eslint-disable-next-line max-params
     public initMouseEvent(

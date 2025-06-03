@@ -4,6 +4,7 @@ import type { ResolvedAsset } from '../types';
 /**
  * A prefer order lets the resolver know which assets to prefer depending on the various parameters passed to it.
  * @category assets
+ * @standard
  */
 export interface PreferOrder
 {
@@ -17,6 +18,7 @@ export interface PreferOrder
 /**
  * Format for url parser, will test a string and if it pass will then parse it, turning it into an ResolvedAsset
  * @category assets
+ * @advanced
  */
 export interface ResolveURLParser
 {

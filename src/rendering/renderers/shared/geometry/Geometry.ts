@@ -11,12 +11,14 @@ import type { Topology, VertexFormat } from './const';
 /**
  * The index buffer array type used in geometries.
  * @category rendering
+ * @advanced
  */
 export type IndexBufferArray = Uint16Array | Uint32Array;
 
 /**
  * The attribute data for a geometries attributes
  * @category rendering
+ * @advanced
  */
 export interface Attribute
 {
@@ -48,6 +50,7 @@ export interface Attribute
  * The attribute option used by the constructor for adding geometries attributes
  * extends {@link Attribute} but allows for the buffer to be a typed or number array
  * @category rendering
+ * @advanced
  */
 export type AttributeOption = Omit<Attribute, 'buffer'> & { buffer: Buffer | TypedArray | number[]}
 | Buffer | TypedArray | number[];
@@ -56,12 +59,14 @@ export type AttributeOption = Omit<Attribute, 'buffer'> & { buffer: Buffer | Typ
  * The attribute options used by the constructor for adding geometries attributes
  * extends {@link Attribute} but allows for the buffer to be a typed or number array
  * @category rendering
+ * @advanced
  */
 export type AttributeOptions = Record<string, AttributeOption>;
 
 /**
  * the interface that describes the structure of the geometry
  * @category rendering
+ * @advanced
  */
 export interface GeometryDescriptor
 {
@@ -121,7 +126,7 @@ function ensureIsAttribute(attribute: AttributeOption): Attribute
  *   }
  * });
  * @category rendering
- * @class
+ * @advanced
  */
 export class Geometry extends EventEmitter<{
     update: Geometry,

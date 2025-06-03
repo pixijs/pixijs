@@ -4,6 +4,7 @@ import type { ICanvasRenderingContext2D } from './ICanvasRenderingContext2D';
  * The context identifiers for the canvas.
  * These identifiers are used to specify the type of rendering context to create.
  * @category environment
+ * @advanced
  */
 export type ContextIds = '2d'
 | 'bitmaprenderer'
@@ -16,12 +17,14 @@ export type ContextIds = '2d'
 /**
  * The predefined color spaces for the canvas.
  * @category environment
+ * @advanced
  */
 export type PredefinedColorSpace = 'srgb' | 'display-p3';
 
 /**
  * The rendering context for the canvas.
  * @category environment
+ * @advanced
  */
 export type RenderingContext =
     ICanvasRenderingContext2D | ImageBitmapRenderingContext | WebGLRenderingContext | WebGL2RenderingContext;
@@ -29,6 +32,7 @@ export type RenderingContext =
 /**
  * The context 2D settings for creating a rendering context.
  * @category environment
+ * @advanced
  */
 export interface ICanvasRenderingContext2DSettings
 {
@@ -41,6 +45,7 @@ export interface ICanvasRenderingContext2DSettings
 /**
  * The context settings for creating a rendering context.
  * @category environment
+ * @advanced
  */
 export type ContextSettings =
     ICanvasRenderingContext2DSettings | ImageBitmapRenderingContextSettings | WebGLContextAttributes;
@@ -48,6 +53,7 @@ export type ContextSettings =
 /**
  * The parent node of the canvas.
  * @category environment
+ * @advanced
  */
 export interface ICanvasParentNode
 {
@@ -61,6 +67,7 @@ export interface ICanvasParentNode
 /**
  * Represents the style properties of a canvas element.
  * @category environment
+ * @advanced
  */
 export interface ICanvasStyle
 {
@@ -75,6 +82,7 @@ export interface ICanvasStyle
 /**
  * Represents a rectangle in the canvas.
  * @category environment
+ * @advanced
  */
 export interface ICanvasRect
 {
@@ -91,6 +99,7 @@ export interface ICanvasRect
 /**
  * WebGL context events.
  * @category environment
+ * @advanced
  */
 export interface WebGLContextEventMap
 {
@@ -103,6 +112,7 @@ export interface WebGLContextEventMap
  * @extends PixiMixins.ICanvas
  * @extends Partial<EventTarget>
  * @category environment
+ * @advanced
  */
 export interface ICanvas extends PixiMixins.ICanvas, Partial<EventTarget>
 {

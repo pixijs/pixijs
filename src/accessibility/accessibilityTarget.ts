@@ -3,6 +3,7 @@ import type { Container } from '../scene/container/Container';
 /**
  * The type of the pointer event to listen for.
  * @category accessibility
+ * @standard
  * @see https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events
  */
 export type PointerEvents = 'auto'
@@ -26,6 +27,7 @@ export type PointerEvents = 'auto'
  * container.accessibleHint = 'This is a container';
  * container.tabIndex = 0;
  * @category accessibility
+ * @standard
  */
 export interface AccessibleOptions
 {
@@ -45,6 +47,7 @@ export interface AccessibleOptions
     /**
      * Sets the aria-label attribute of the shadow div
      * @default null
+     * @advanced
      */
     accessibleHint: string | null;
     /**
@@ -58,6 +61,7 @@ export interface AccessibleOptions
      * depending on this type. Defaults to button.
      * @default 'button'
      * @type {string}
+     * @advanced
      */
     accessibleType: keyof HTMLElementTagNameMap;
     /**
@@ -65,6 +69,7 @@ export interface AccessibleOptions
      * Defaults to auto.
      * @default 'auto'
      * @type {PointerEvents}
+     * @advanced
      */
     accessiblePointerEvents: PointerEvents;
 

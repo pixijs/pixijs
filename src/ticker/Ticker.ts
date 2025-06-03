@@ -9,35 +9,9 @@ import { TickerListener } from './TickerListener';
  * });
  * ```
  * @category ticker
+ * @standard
  */
 export type TickerCallback<T> = (this: T, ticker: Ticker) => any;
-
-/**
- * @module
- * @categoryDescription ticker
- * {@link Ticker|Tickers} provide periodic callbacks based on the system clock.
- * Your game update logic will generally be run in response to a tick once per frame.
- * You can have multiple tickers in use at one time.
- * ```js
- * import { Ticker } from 'pixi.js';
- *
- * const callback = (ticker: Ticker) => {
- *    // do something on the next animation frame
- * };
- *
- * // create a ticker
- * const ticker = new Ticker();
- *
- * // register the callback and start the ticker
- * ticker.add(callback);
- * ticker.start();
- * ```
- *
- * You can always use the {@link Ticker.shared|shared} ticker that Pixi renders with by default.
- * ```js
- * Ticker.shared.add(callback);
- * ```
- */
 
 /**
  * A Ticker class that runs an update loop that other objects listen to.
@@ -46,6 +20,7 @@ export type TickerCallback<T> = (this: T, ticker: Ticker) => any;
  * Animation frames are requested only when necessary, e.g. When the ticker is started and the emitter has listeners.
  * @class
  * @category ticker
+ * @standard
  */
 export class Ticker
 {
@@ -172,7 +147,6 @@ export class Ticker
      * Conditionally requests a new animation frame.
      * If a frame has not already been requested, and if the internal
      * emitter has listeners, a new frame is requested.
-     * @private
      */
     private _requestIfNeeded(): void
     {
@@ -185,10 +159,7 @@ export class Ticker
         }
     }
 
-    /**
-     * Conditionally cancels a pending animation frame.
-     * @private
-     */
+    /** Conditionally cancels a pending animation frame. */
     private _cancelIfNeeded(): void
     {
         if (this._requestId !== null)
@@ -205,7 +176,6 @@ export class Ticker
      * conditions are met, a new frame is requested. If the ticker has not
      * been started, but autoStart is `true`, then the ticker starts now,
      * and continues with the previous conditions to request a new frame.
-     * @private
      */
     private _startIfPossible(): void
     {
@@ -610,6 +580,7 @@ export class Ticker
      * The property {@link Ticker#autoStart|autoStart} is set to `true` for this instance.
      * @type {Ticker}
      * @readonly
+     * @advanced
      */
     static get system(): Ticker
     {

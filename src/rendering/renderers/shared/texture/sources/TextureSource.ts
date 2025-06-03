@@ -12,6 +12,7 @@ import type { TextureResourceOrOptions } from '../utils/textureFrom';
 /**
  * options for creating a new TextureSource
  * @category rendering
+ * @advanced
  */
 export interface TextureSourceOptions<T extends Record<string, any> = any> extends TextureStyleOptions
 {
@@ -68,7 +69,7 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
  * This is an class is extended depending on the source of the texture.
  * Eg if you are using an an image as your resource, then an ImageSource is used.
  * @category rendering
- * @typeParam T - The TextureSource's Resource type.
+ * @advanced
  */
 export class TextureSource<T extends Record<string, any> = any> extends EventEmitter<{
     change: BindResource;

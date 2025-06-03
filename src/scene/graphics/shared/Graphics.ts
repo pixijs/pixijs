@@ -24,6 +24,7 @@ import type { RoundedPoint } from './path/roundShape';
  * ```
  * @see {@link Graphics}
  * @category scene
+ * @standard
  */
 export interface GraphicsOptions extends PixiMixins.GraphicsOptions, ViewContainerOptions
 {
@@ -32,7 +33,7 @@ export interface GraphicsOptions extends PixiMixins.GraphicsOptions, ViewContain
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
-// eslint-disable-next-line requireExport/require-export-jsdoc
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface Graphics extends PixiMixins.Graphics, ViewContainer<GraphicsGpuData> {}
 
 /**
@@ -40,9 +41,11 @@ export interface Graphics extends PixiMixins.Graphics, ViewContainer<GraphicsGpu
  * rectangles to the display, and to color and fill them.  However, you can also use a Graphics
  * object to build a list of primitives to use as a mask, or as a complex hitArea.
  * @category scene
+ * @standard
  */
 export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruction
 {
+    /** @internal */
     public override readonly renderPipeId: string = 'graphics';
     public batched: boolean;
 

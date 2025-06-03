@@ -10,6 +10,7 @@ import type { WebGLRenderer } from './WebGLRenderer';
 /**
  * The system that handles encoding commands for the WebGL.
  * @category rendering
+ * @advanced
  */
 export class GlEncoderSystem implements System
 {

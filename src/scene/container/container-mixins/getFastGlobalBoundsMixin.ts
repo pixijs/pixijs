@@ -12,6 +12,7 @@ const tempMatrix = new Matrix();
  * Interface for the GetFastGlobalBoundsMixin, which provides methods to compute
  * an approximate global bounding box for a container and its children.
  * @category scene
+ * @advanced
  */
 export interface GetFastGlobalBoundsMixin
 {

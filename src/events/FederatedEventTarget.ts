@@ -18,6 +18,7 @@ import type { FederatedWheelEvent } from './FederatedWheelEvent';
  *  `seresize`, `swresize`, `wresize`, `nsresize`, `ewresize`, `neswresize`, `colresize`,
  *  `nwseresize`, `rowresize`, `allscroll`, `zoomin`, `zoomout`, `grab`, `grabbing`
  * @category events
+ * @standard
  */
 export type Cursor = 'auto'
 | 'default'
@@ -59,6 +60,7 @@ export type Cursor = 'auto'
 /**
  * The hit area specifies the area for which pointer events should be captured by this event target.
  * @category events
+ * @standard
  */
 export interface IHitArea
 {
@@ -72,6 +74,7 @@ export interface IHitArea
 /**
  * Function type for handlers, e.g., onclick
  * @category events
+ * @advanced
  */
 export type FederatedEventHandler<T = FederatedPointerEvent> = (event: T) => void;
 
@@ -93,12 +96,14 @@ export type FederatedEventHandler<T = FederatedPointerEvent> = (event: T) => voi
  * `pointer-events: auto`.
  * @since 7.2.0
  * @category events
+ * @standard
  */
 export type EventMode = 'none' | 'passive' | 'auto' | 'static' | 'dynamic';
 
 /**
  * The properties available for any interactive object.
  * @category events
+ * @advanced
  */
 export interface FederatedOptions
 {
@@ -479,18 +484,21 @@ export interface FederatedOptions
  * The options for the `addEventListener` method.
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener}
  * @category events
+ * @advanced
  */
 export type AddListenerOptions = boolean | AddEventListenerOptions;
 /**
  * The options for the `removeEventListener` method.
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/removeEventListener}
  * @category events
+ * @advanced
  */
 export type RemoveListenerOptions = boolean | EventListenerOptions;
 
 /**
  * Additional properties for a Container that is used for interaction events.
  * @category events
+ * @advanced
  */
 export interface IFederatedContainer extends FederatedOptions
 {

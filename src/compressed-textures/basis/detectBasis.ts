@@ -9,6 +9,7 @@ import type { FormatDetectionParser } from '../../assets/detections/types';
  * This is done by checking if WebGL or WebGPU is supported.
  * If either is supported, Basis textures can be used.
  * @category assets
+ * @internal
  */
 export const detectBasis = {
     extension: {

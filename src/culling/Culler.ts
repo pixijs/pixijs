@@ -10,6 +10,7 @@ const tempBounds = new Bounds();
  * @example
  * const rect = { x: 0, y: 0, width: 100, height: 100 };
  * @category utils
+ * @advanced
  */
 export type RectangleLike = {x: number, y: number, width: number, height: number};
 
@@ -30,6 +31,7 @@ export type RectangleLike = {x: number, y: number, width: number, height: number
  * culler.cull(stage, { x: 0, y: 0, width: 800, height: 600 });
  * renderer.render(stage);
  * @category scene
+ * @standard
  */
 export class Culler
 {

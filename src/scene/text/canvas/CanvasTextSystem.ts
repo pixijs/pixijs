@@ -20,6 +20,7 @@ import type { Renderer } from '../../../rendering/renderers/types';
 /**
  * System plugin to the renderer to manage canvas text.
  * @category rendering
+ * @advanced
  */
 export class CanvasTextSystem implements System
 {
@@ -40,6 +41,8 @@ export class CanvasTextSystem implements System
         this._renderer = _renderer;
     }
 
+    /** @deprecated since 8.0.0 */
+    public getTexture(text: string, resolution: number, style: TextStyle, textKey: string): Texture;
     /**
      * This is a function that will create a texture from a text string, style and resolution.
      * Useful if you want to make a texture of your text and use if for various other pixi things!
@@ -49,8 +52,6 @@ export class CanvasTextSystem implements System
      * @param options.resolution - the resolution of the texture
      * @returns the newly created texture
      */
-    /** @deprecated since 8.0.0 */
-    public getTexture(text: string, resolution: number, style: TextStyle, textKey: string): Texture;
     public getTexture(options: CanvasTextOptions): Texture;
     public getTexture(
         options: CanvasTextOptions | string,

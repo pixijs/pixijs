@@ -10,6 +10,7 @@ import type EventEmitter from 'eventemitter3';
 /**
  * Options for configuring a RenderLayer.
  * @category scene
+ * @standard
  */
 export interface RenderLayerOptions
 {
@@ -42,6 +43,7 @@ type PartialContainerKeys = Exclude<ContainerKeys,
 /** @internal */
 export type IRenderLayer = Omit<RenderLayerClass, PartialContainerKeys>;
 
+/** @standard */
 class RenderLayerClass extends Container
 {
     /**
@@ -283,6 +285,7 @@ class RenderLayerClass extends Container
  * @category scene
  * @class
  * @extends null
+ * @standard
  */
 export const RenderLayer = RenderLayerClass as {
     new (options?: RenderLayerOptions): IRenderLayer;

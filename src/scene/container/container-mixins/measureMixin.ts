@@ -10,6 +10,7 @@ import type { Container } from '../Container';
 /**
  * A utility type that makes all properties of T optional except for the specified keys K.
  * @category utils
+ * @internal
  */
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -24,6 +25,7 @@ export interface MeasureMixinConstructor
  * It includes methods to get and set the size of the object, retrieve its local bounds,
  * and calculate its global bounds.
  * @category scene
+ * @advanced
  */
 export interface MeasureMixin extends Required<MeasureMixinConstructor>
 {

@@ -11,6 +11,7 @@ import type { FilterOptions } from '../../Filter';
 /**
  * Options for NoiseFilter
  * @category filters
+ * @standard
  */
 export interface NoiseFilterOptions extends FilterOptions
 {
@@ -34,6 +35,8 @@ export interface NoiseFilterOptions extends FilterOptions
  * filter.noise = 0.8;
  * @category filters
  * @author Vico: vicocotea
+ * @standard
+ * @noInheritDoc
  */
 export class NoiseFilter extends Filter
 {

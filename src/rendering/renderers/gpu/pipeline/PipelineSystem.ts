@@ -78,6 +78,7 @@ type PipeHash = Record<number, GPURenderPipeline>;
  * then then used to caching the pipe. The next time we need a pipe we can check
  * the cache by first looking at the state cache and then the pipe cache.
  * @category rendering
+ * @advanced
  */
 export class PipelineSystem implements System
 {

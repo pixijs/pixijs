@@ -3,6 +3,7 @@ import { loadFontAsBase64 } from './loadFontAsBase64';
 /**
  * Options for the font CSS style
  * @category text
+ * @internal
  */
 export interface FontCSSStyleOptions
 {

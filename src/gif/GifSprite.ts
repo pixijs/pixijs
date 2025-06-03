@@ -7,20 +7,9 @@ import { GifSource } from './GifSource';
 import type { SCALE_MODE } from '../rendering/renderers/shared/texture/const';
 
 /**
- * @module
- * @categoryDescription gif
- * Optional module to import to decode and play animated GIFs.
- * @example
- * import { Assets } from 'pixi.js';
- * import { GifSprite } from 'pixi.js/gif';
- *
- * const source = await Assets.load('example.gif');
- * const gif = new GifSprite({ source });
- */
-
-/**
  * Default options for all GifSprite objects.
  * @category gif
+ * @standard
  */
 interface GifSpriteOptions extends Omit<SpriteOptions, 'texture'>
 {
@@ -54,6 +43,7 @@ interface GifSpriteOptions extends Omit<SpriteOptions, 'texture'>
  * It support playback (seek, play, stop) as well as animation speed and looping.
  * @category gif
  * @see Thanks to {@link https://github.com/matt-way/gifuct-js/ gifuct-js}
+ * @standard
  */
 class GifSprite extends Sprite
 {

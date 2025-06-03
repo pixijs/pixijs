@@ -14,6 +14,7 @@ import type { FilterOptions } from '../../Filter';
 /**
  * 5x4 matrix for transforming RGBA color and alpha
  * @category filters
+ * @standard
  */
 export type ColorMatrix = ArrayFixed<number, 20>;
 
@@ -31,6 +32,8 @@ export type ColorMatrix = ArrayFixed<number, 20>;
  * ```
  * @author Clément Chenebault <clement@goodboydigital.com>
  * @category filters
+ * @standard
+ * @noInheritDoc
  */
 export class ColorMatrixFilter extends Filter
 {

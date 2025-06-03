@@ -9,6 +9,7 @@ import type { Dict } from '../utils/types';
 /**
  * Represents the JSON data for a spritesheet atlas.
  * @category assets
+ * @advanced
  */
 export interface SpritesheetFrameData
 {
@@ -44,6 +45,7 @@ export interface SpritesheetFrameData
 /**
  * Atlas format.
  * @category assets
+ * @advanced
  */
 export interface SpritesheetData
 {
@@ -93,6 +95,7 @@ export interface SpritesheetData
 /**
  * Options for loading a spritesheet from an atlas.
  * @category assets
+ * @advanced
  */
 export interface SpritesheetOptions<S extends SpritesheetData = SpritesheetData>
 {
@@ -207,10 +210,14 @@ export interface SpritesheetOptions<S extends SpritesheetData = SpritesheetData>
  * const sheet = await Assets.load('atlas')
  * ```
  * @category assets
+ * @standard
  */
 export class Spritesheet<S extends SpritesheetData = SpritesheetData>
 {
-    /** The maximum number of Textures to build per process. */
+    /**
+     * The maximum number of Textures to build per process.
+     * @advanced
+     */
     public static readonly BATCH_SIZE = 1000;
 
     /** For multi-packed spritesheets, this contains a reference to all the other spritesheets it depends on. */

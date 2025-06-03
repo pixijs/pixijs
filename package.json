@@ -129,6 +129,7 @@
     "tsc-silent": "^1.2.2",
     "typedoc": "^0.28.4",
     "typedoc-plugin-mdn-links": "^5.0.2",
+    "typedoc-plugin-no-inherit": "^1.6.1",
     "typescript": "^5.0.4",
     "typescript-eslint": "^8.17.0"
   },

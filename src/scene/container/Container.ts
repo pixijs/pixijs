@@ -35,31 +35,9 @@ import type { DestroyOptions } from './destroyTypes';
  * The type of child that can be added to a {@link Container}.
  * This is a generic type that extends the {@link Container} class.
  * @category scene
+ * @standard
  */
 export type ContainerChild = Container;
-
-/**
- * @module
- * @categoryDescription scene
- * This is where you'll find all the display objects available in Pixi.
- *
- * All display objects inherit from the {@link Container} class. You can use a `Container` for simple grouping of
- * other display objects. Here's all the available display object classes.
- *
- * - {@link Container} is the base class for all display objects that act as a container for other objects.
- *   - {@link Sprite} is a display object that uses a texture
- *      - {@link AnimatedSprite} is a sprite that can play animations
- *   - {@link TilingSprite} a fast way of rendering a tiling image
- *   - {@link NineSliceSprite} allows you to stretch a texture using 9-slice scaling
- *   - {@link Graphics} is a graphic object that can be drawn to the screen.
- *   - {@link Mesh} empowers you to have maximum flexibility to render any kind of visuals you can think of
- *      - {@link MeshSimple} mimics Mesh, providing easy-to-use constructor arguments
- *      - {@link MeshPlane} allows you to draw a texture across several points and then manipulate these points
- *      - {@link MeshRope} allows you to draw a texture across several points and then manipulate these points
- *   - {@link Text} render text using custom fonts
- *      - {@link BitmapText} render text using a bitmap font
- *      - {@link HTMLText} render text using HTML and CSS
- */
 
 // as pivot and skew are the least used properties of a container, we can use this optimisation
 // to avoid allocating lots of unnecessary objects for them.
@@ -70,6 +48,7 @@ const defaultScale = new ObservablePoint(null, 1, 1);
 /**
  * The events that can be emitted by a Container.
  * @category scene
+ * @standard
  */
 export interface ContainerEvents<C extends ContainerChild> extends PixiMixins.ContainerEvents
 {
@@ -130,6 +109,7 @@ export const UPDATE_TRANSFORM = 0b1000;
 /**
  * Options for updating the transform of a container.
  * @category scene
+ * @standard
  */
 export interface UpdateTransformOptions
 {
@@ -154,6 +134,7 @@ export interface UpdateTransformOptions
  * });
  * ```
  * @category scene
+ * @standard
  * @see Container
  */
 export interface ContainerOptions<C extends ContainerChild = ContainerChild> extends PixiMixins.ContainerOptions
@@ -196,7 +177,7 @@ export interface ContainerOptions<C extends ContainerChild = ContainerChild> ext
     boundsArea?: Rectangle;
 }
 
-// eslint-disable-next-line requireExport/require-export-jsdoc
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface Container<C extends ContainerChild>
     extends PixiMixins.Container<C>, EventEmitter<ContainerEvents<C> & AnyEvent> {}
 
@@ -390,6 +371,7 @@ export interface Container<C extends ContainerChild>
  * 3. worldTransform, this is the transform of the container relative to the Scene being rendered
  * </details>
  * @category scene
+ * @standard
  */
 export class Container<C extends ContainerChild = ContainerChild> extends EventEmitter<ContainerEvents<C> & AnyEvent>
 {
@@ -406,7 +388,10 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         extensions.mixin(Container, source);
     }
 
-    /** unique id for this container */
+    /**
+     * unique id for this container
+     * @internal
+     */
     public readonly uid: number = uid('renderable');
 
     /** @private */
@@ -457,6 +442,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * The RenderLayer this container belongs to, if any.
      * If it belongs to a RenderLayer, it will be rendered from the RenderLayer's position in the scene.
      * @readonly
+     * @advanced
      */
     public parentRenderLayer: IRenderLayer;
 
@@ -477,6 +463,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * transforms and up to the render group (think of it as kind of like a stage - but the stage can be nested).
      * If this container is is self a render group matrix will be relative to its parent render group
      * @readonly
+     * @advanced
      */
     public relativeGroupTransform: Matrix = new Matrix();
     /**
@@ -485,6 +472,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * will be the same as the relativeGroupTransform.
      * Use this value when actually rendering things to the screen
      * @readonly
+     * @advanced
      */
     public groupTransform: Matrix = this.relativeGroupTransform;
 
@@ -556,11 +544,16 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     // / COLOR related props //////////////
 
     // color stored as ABGR
+    /** @internal */
     public localColor = 0xFFFFFF;
+    /** @internal */
     public localAlpha = 1;
 
+    /** @internal */
     public groupAlpha = 1; // A
+    /** @internal */
     public groupColor = 0xFFFFFF; // BGR
+    /** @internal */
     public groupColorAlpha = 0xFFFFFFFF; // ABGR
 
     // / BLEND related props //////////////
@@ -586,6 +579,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     /** @internal */
     public globalDisplayStatus = 0b111; // 0b11 | 0b10 | 0b01 | 0b00
 
+    /** @internal */
     public readonly renderPipeId: string;
 
     /**
@@ -610,6 +604,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      */
     public _didViewChangeTick = 0;
 
+    /** @internal */
     public layerParentId: string;// = 'default';
     /**
      * We now use the _didContainerChangeTick and _didViewChangeTick to track changes
@@ -621,7 +616,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         this._didViewChangeTick = (value >> 12) & 0xFFF; // Extract the upper 12 bits
         this._didContainerChangeTick = value & 0xFFF; // Extract the lower 12 bits
     }
-
+    /** @ignore */
     get _didChangeId(): number
     {
         return (this._didContainerChangeTick & 0xfff) | ((this._didViewChangeTick & 0xfff) << 12);

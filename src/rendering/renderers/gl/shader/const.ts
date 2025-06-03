@@ -6,5 +6,6 @@
  * - `mediump`: Medium precision, typically 16-bit floating-point.
  * - `lowp`: Low precision, typically 8-bit floating-point.
  * @category rendering
+ * @advanced
  */
 export type PRECISION = `highp` | `mediump` | `lowp`;

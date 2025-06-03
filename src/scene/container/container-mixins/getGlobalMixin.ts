@@ -10,6 +10,7 @@ import type { Container } from '../Container';
  * @param color - The color in BGR format (0xBBGGRR).
  * @returns The color in RGB format (0xRRGGBB).
  * @category utils
+ * @internal
  */
 export function bgr2rgb(color: number): number
 {
@@ -22,6 +23,7 @@ export function bgr2rgb(color: number): number
  * taking into account its parent containers and render groups.
  * It includes methods to optimize performance by using cached values when available.
  * @category scene
+ * @advanced
  */
 export interface GetGlobalMixin
 {

@@ -8,7 +8,8 @@ import type { ShapePrimitive } from './ShapePrimitive';
 
 const tempPoints = [new Point(), new Point(), new Point(), new Point()];
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type, requireExport/require-export-jsdoc
+// eslint-disable-next-line max-len
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type, requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface Rectangle extends PixiMixins.Rectangle { }
 
 /**
@@ -18,6 +19,7 @@ export interface Rectangle extends PixiMixins.Rectangle { }
  * It also provides convenience methods to get and set the position and size of the rectangle such as
  * {@link Rectangle#bottom|bottom}, {@link Rectangle#right|right} and {@link Rectangle#isEmpty|isEmpty}.
  * @category maths
+ * @standard
  */
 export class Rectangle implements ShapePrimitive
 {

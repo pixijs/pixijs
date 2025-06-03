@@ -11,6 +11,7 @@ import type { FilterOptions } from '../../Filter';
 /**
  * Options for AlphaFilter
  * @category filters
+ * @standard
  */
 export interface AlphaFilterOptions extends FilterOptions
 {
@@ -34,6 +35,8 @@ export interface AlphaFilterOptions extends FilterOptions
  *
  * 2. To use clipping in display coordinates, assign a filterArea to the same container that has this filter.
  * @category filters
+ * @standard
+ * @noInheritDoc
  * @example
  * import { AlphaFilter } from 'pixi.js';
  *

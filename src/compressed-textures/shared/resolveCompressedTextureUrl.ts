@@ -10,6 +10,7 @@ export const validFormats = ['basis', 'bc7', 'bc6h', 'astc', 'etc2', 'bc5', 'bc4
 /**
  * A parser that will resolve a compressed texture url
  * @category assets
+ * @internal
  */
 export const resolveCompressedTextureUrl = {
     extension: ExtensionType.ResolveParser,

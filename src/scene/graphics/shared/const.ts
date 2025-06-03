@@ -5,6 +5,7 @@
  * - `butt`: The ends of the stroke are squared off at the endpoints.
  * - `round`: The ends of the stroke are rounded.
  * @category scene
+ * @standard
  */
 export type LineCap = 'butt' | 'round' | 'square';
 /**
@@ -15,6 +16,7 @@ export type LineCap = 'butt' | 'round' | 'square';
  * - `bevel`: The corners of the stroke are squared off.
  * - `miter`: The corners of the stroke are extended to meet at a point.
  * @category scene
+ * @standard
  */
 export type LineJoin = 'round' | 'bevel' | 'miter';
 

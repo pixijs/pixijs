@@ -17,6 +17,7 @@ import type { MeshOptions } from '../mesh/shared/Mesh';
  * ```
  * @see {@link MeshPlane}
  * @category scene
+ * @standard
  */
 export interface MeshPlaneOptions extends Omit<MeshOptions, 'geometry'>
 {
@@ -38,6 +39,7 @@ export interface MeshPlaneOptions extends Omit<MeshOptions, 'geometry'>
  * }
  * const MeshPlane = new MeshPlane({ texture: Texture.from('snake.png'), verticesX: points });
  * @category scene
+ * @standard
  */
 export class MeshPlane extends Mesh
 {

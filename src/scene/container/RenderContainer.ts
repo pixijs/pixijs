@@ -23,12 +23,14 @@ import type { ContainerOptions } from './Container';
  * });
  * ```
  * @category scene
+ * @advanced
  */
 export type RenderFunction = (renderer: Renderer) => void;
 
 /**
  * Options for the {@link RenderContainer} constructor.
  * @category scene
+ * @advanced
  */
 export interface RenderContainerOptions extends ContainerOptions
 {
@@ -71,10 +73,13 @@ export interface RenderContainerOptions extends ContainerOptions
  * })
  * ```
  * @category scene
+ * @advanced
  */
 export class RenderContainer extends ViewContainer implements Instruction
 {
+    /** @internal */
     public override readonly renderPipeId: string = 'customRender';
+    /** @internal */
     public batched = false;
 
     /**

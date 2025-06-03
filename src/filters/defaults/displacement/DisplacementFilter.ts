@@ -18,6 +18,7 @@ import type { FilterSystem } from '../../FilterSystem';
 /**
  * Options for DisplacementFilter
  * @category filters
+ * @standard
  */
 export interface DisplacementFilterOptions extends FilterOptions
 {
@@ -36,6 +37,8 @@ export interface DisplacementFilterOptions extends FilterOptions
  * sprite.filters = [displacementFilter];
  * @category filters
  * @author Vico: vicocotea
+ * @standard
+ * @noInheritDoc
  */
 export class DisplacementFilter extends Filter
 {

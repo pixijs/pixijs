@@ -8,6 +8,7 @@ import type { WebGLRenderer } from '../WebGLRenderer';
 /**
  * The WebGL adaptor for the render target system. Allows the Render Target System to be used with the WebGl renderer
  * @category rendering
+ * @advanced
  */
 export class GlRenderTargetSystem extends RenderTargetSystem<GlRenderTarget>
 {

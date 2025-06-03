@@ -26,6 +26,7 @@ const DIV_HOOK_ZINDEX = 2;
 /**
  * Initialisation options for the accessibility system when used with an Application.
  * @category accessibility
+ * @advanced
  */
 export interface AccessibilitySystemOptions
 {
@@ -36,6 +37,7 @@ export interface AccessibilitySystemOptions
 /**
  * The options for the accessibility system.
  * @category accessibility
+ * @advanced
  */
 export interface AccessibilityOptions
 {
@@ -57,15 +59,19 @@ export interface AccessibilityOptions
  * ```js
  * const app = new Application({
  *     accessibilityOptions: {
- *         enabledByDefault: true,    // Enable immediately instead of waiting for tab
- *         activateOnTab: false,      // Disable tab key activation
- *         debug: false,               // Show/hide accessibility divs
- *         deactivateOnMouseMove: false, // Prevent accessibility from being deactivated when mouse moves
- *     }
+ *     // Enable immediately instead of waiting for tab
+ *     enabledByDefault: true,
+ *     // Disable tab key activation
+ *     activateOnTab: false,
+ *     // Show/hide accessibility divs
+ *     debug: false,
+ *     // Prevent accessibility from being deactivated when mouse moves
+ *     deactivateOnMouseMove: false,
+ * }
  * });
  * ```
  *
- * The system can also be controlled programmatically:
+ * The system can also be controlled programmatically by accessing the `renderer.accessibility` property:
  * ```js
  * app.renderer.accessibility.setAccessibilityEnabled(true);
  * ```
@@ -74,9 +80,10 @@ export interface AccessibilityOptions
  * ```js
  * container.accessible = true;
  * ```
- *
- * An instance of this class is automatically created at `renderer.accessibility`
+ * There are several properties that can be set on a Container to control its accessibility which can
+ * be found here: {@link AccessibleOptions}.
  * @category accessibility
+ * @standard
  */
 export class AccessibilitySystem implements System<AccessibilitySystemOptions>
 {
@@ -89,7 +96,19 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         name: 'accessibility',
     } as const;
 
-    /** default options used by the system */
+    /**
+     * The default options used by the system.
+     * You can set these before initializing the {@link Application} to change the default behavior.
+     * @example
+     * ```js
+     * import { AccessibilitySystem } from 'pixi.js';
+     *
+     * AccessibilitySystem.defaultOptions.enabledByDefault = true;
+     *
+     * const app = new Application()
+     * app.init()
+     * ```
+     */
     public static defaultOptions: AccessibilityOptions = {
         /**
          * Whether to enable accessibility features on initialization
@@ -798,7 +817,11 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         this._deactivate();
     }
 
-    /** Destroys the accessibility system. Removes all elements and listeners. */
+    /**
+     * Destroys the accessibility system. Removes all elements and listeners.
+     * > [!IMPORTANT] This is typically called automatically when the {@link Application} is destroyed.
+     * > A typically user should not need to call this method directly.
+     */
     public destroy(): void
     {
         this._deactivate();
@@ -818,6 +841,11 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
     /**
      * Enables or disables the accessibility system.
      * @param enabled - Whether to enable or disable accessibility.
+     * @example
+     * ```js
+     * app.renderer.accessibility.setAccessibilityEnabled(true); // Enable accessibility
+     * app.renderer.accessibility.setAccessibilityEnabled(false); // Disable accessibility
+     * ```
      */
     public setAccessibilityEnabled(enabled: boolean): void
     {

@@ -9,6 +9,7 @@ import type { BindableTexture } from '../texture/Texture';
 /**
  * Options for creating a render target.
  * @category rendering
+ * @advanced
  */
 export interface RenderTargetOptions
 {
@@ -40,6 +41,7 @@ export interface RenderTargetOptions
  * If you need something more complex than a Texture to render to, you should use this class.
  * Under the hood, all textures you render to have a RenderTarget created on their behalf.
  * @category rendering
+ * @advanced
  */
 export class RenderTarget
 {
