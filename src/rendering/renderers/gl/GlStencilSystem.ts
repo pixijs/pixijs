@@ -8,7 +8,8 @@ import type { WebGLRenderer } from './WebGLRenderer';
 
 /**
  * This manages the stencil buffer. Used primarily for masking
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class GlStencilSystem implements System
 {
@@ -90,10 +91,7 @@ export class GlStencilSystem implements System
             'decrement-wrap': gl.DECR_WRAP,
         };
 
-        // reset stencil cache
-        this._stencilCache.enabled = false;
-        this._stencilCache.stencilMode = STENCIL_MODES.NONE;
-        this._stencilCache.stencilReference = 0;
+        this.resetState();
     }
 
     protected onRenderTargetChange(renderTarget: RenderTarget)
@@ -114,6 +112,14 @@ export class GlStencilSystem implements System
 
         // restore the current render targets stencil state..
         this.setStencilMode(stencilState.stencilMode, stencilState.stencilReference);
+    }
+
+    public resetState()
+    {
+        // reset stencil cache
+        this._stencilCache.enabled = false;
+        this._stencilCache.stencilMode = STENCIL_MODES.NONE;
+        this._stencilCache.stencilReference = 0;
     }
 
     public setStencilMode(stencilMode: STENCIL_MODES, stencilReference: number)

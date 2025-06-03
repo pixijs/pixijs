@@ -4,12 +4,23 @@ import { Point } from '../point/Point';
 
 import type { PointData } from '../point/PointData';
 
-interface TransformableObject
+/**
+ * The data structure that contains the position, scale, pivot, skew and rotation of an object.
+ * This is used by the {@link Matrix} class to decompose the matrix into its components.
+ * @category maths
+ * @advanced
+ */
+export interface TransformableObject
 {
+    /** The position of the object */
     position: PointData;
+    /** The scale of the object */
     scale: PointData;
+    /** The pivot of the object */
     pivot: PointData;
+    /** The skew of the object */
     skew: PointData;
+    /** The rotation of the object */
     rotation: number;
 }
 
@@ -20,7 +31,8 @@ interface TransformableObject
  * | b | d | ty|
  * | 0 | 0 | 1 |
  * ```
- * @memberof maths
+ * @category maths
+ * @standard
  */
 export class Matrix
 {

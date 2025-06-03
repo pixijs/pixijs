@@ -25,4 +25,23 @@ describe('GLTextureSystem', () =>
         expect(pixelInfo.width).toBe(texture.width);
         expect(pixelInfo.height).toBe(texture.height);
     });
+
+    it('should reset premultiply alpha state when resetState is called', async () =>
+    {
+        const renderer = await getWebGLRenderer({}) as WebGLRenderer;
+
+        const gl = renderer.gl;
+
+        // Force internal state to true (different from default)
+        renderer.texture['_premultiplyAlpha'] = true;
+
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+        // Call reset state
+        renderer.texture.resetState();
+
+        // Verify internal state was reset
+        expect(renderer.texture['_premultiplyAlpha']).toBe(false);
+
+        expect(gl.getParameter(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL)).toBe(false);
+    });
 });

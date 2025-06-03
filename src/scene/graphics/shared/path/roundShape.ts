@@ -122,6 +122,11 @@ export function roundedShapeArc(
     }
 }
 
+/**
+ * Data structure for points with optional radius.
+ * @category scene
+ * @standard
+ */
 export type RoundedPoint = PointData & { radius?: number };
 
 /**

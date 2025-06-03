@@ -3,25 +3,7 @@ import { convertToList } from '../utils/convertToList';
 
 import type { CacheParser } from './CacheParser';
 
-/**
- * A single Cache for all assets.
- *
- * When assets are added to the cache via set they normally are added to the cache as key-value pairs.
- *
- * With this cache, you can add parsers that will take the object and convert it to a list of assets that can be cached.
- * for example a cacheSpritesheet parser will add all of the textures found within its sprite sheet directly to the cache.
- *
- * This gives devs the flexibility to cache any type of object however we want.
- *
- * It is not intended that this class is created by developers - it is part of the Asset package.
- * This is the first major system of PixiJS' main Assets class.
- * @example
- * import { Cache } from 'pixi.js';
- *
- * Cache.set('bunny', bunnyTexture);
- * @class Cache
- * @memberof assets
- */
+/** @internal */
 class CacheClass
 {
     private readonly _parsers: CacheParser[] = [];
@@ -160,11 +142,34 @@ class CacheClass
         });
     }
 
-    /** All loader parsers registered */
+    /**
+     * All loader parsers registered
+     * @advanced
+     */
     public get parsers(): CacheParser[]
     {
         return this._parsers;
     }
 }
 
+/**
+ * A single Cache for all assets.
+ *
+ * When assets are added to the cache via set they normally are added to the cache as key-value pairs.
+ *
+ * With this cache, you can add parsers that will take the object and convert it to a list of assets that can be cached.
+ * for example a cacheSpritesheet parser will add all of the textures found within its sprite sheet directly to the cache.
+ *
+ * This gives devs the flexibility to cache any type of object however we want.
+ *
+ * It is not intended that this class is created by developers - it is part of the Asset package.
+ * This is the first major system of PixiJS' main Assets class.
+ * @example
+ * import { Cache } from 'pixi.js';
+ *
+ * Cache.set('bunny', bunnyTexture);
+ * @category assets
+ * @class
+ * @standard
+ */
 export const Cache = new CacheClass();

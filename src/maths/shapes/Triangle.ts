@@ -14,7 +14,8 @@ import type { ShapePrimitive } from './ShapePrimitive';
  *
  * const triangle = new Triangle(0, 0, 100, 0, 50, 50);
  * ```
- * @memberof maths
+ * @category maths
+ * @standard
  */
 export class Triangle implements ShapePrimitive
 {

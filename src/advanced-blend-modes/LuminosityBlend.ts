@@ -6,6 +6,9 @@ import { hslgpu } from '../filters/blend-modes/hls/GPUhls';
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
 /**
+ * The final color has the luminosity of the top color, while using the hue and saturation of the bottom color.
+ * This blend mode is equivalent to color, but with the layers swapped.
+ *
  * Available as `container.blendMode = 'luminosity'` after importing `pixi.js/advanced-blend-modes`.
  * @example
  * import 'pixi.js/advanced-blend-modes';
@@ -13,7 +16,8 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  *
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'luminosity'
- * @memberof filters
+ * @category filters
+ * @noInheritDoc
  */
 export class LuminosityBlend extends BlendModeFilter
 {

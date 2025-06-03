@@ -6,6 +6,7 @@ import type { HTMLTextStyle } from '../HTMLTextStyle';
  * @param  text - The text to extract font families from
  * @param style - The style to extract font families from
  * @returns {string[]} - The font families as an array of strings
+ * @internal
  */
 export function extractFontFamilies(text: string, style: HTMLTextStyle): string[]
 {

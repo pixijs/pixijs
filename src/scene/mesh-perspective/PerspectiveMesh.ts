@@ -5,8 +5,8 @@ import { PerspectivePlaneGeometry } from './PerspectivePlaneGeometry';
 
 import type { MeshPlaneOptions } from '../mesh-plane/MeshPlane';
 /**
- *
  * Constructor options used for `PerspectiveMesh` instances.
+ * @example
  * ```js
  * const meshPlane = new PerspectiveMesh({
  *  texture: Texture.from('snake.png'),
@@ -21,8 +21,10 @@ import type { MeshPlaneOptions } from '../mesh-plane/MeshPlane';
  *  x3: 0,
  *  y3: 100
  * });
- * @see {@link scene.PerspectiveMesh}
- * @memberof scene
+ * ```
+ * @see {@link PerspectiveMesh}
+ * @category scene
+ * @standard
  */
 export interface PerspectivePlaneOptions extends MeshPlaneOptions
 {
@@ -53,6 +55,9 @@ export interface PerspectivePlaneOptions extends MeshPlaneOptions
  * could be slower. It is a balance between performance and quality! We leave that to you to decide.
  *
  * IMPORTANT: This is not a full 3D mesh, it is a 2D mesh with a perspective projection applied to it :)
+ * @category scene
+ * @standard
+ * @see {@link PerspectiveMesh}
  * @example
  * ```js
  * const meshPlane = new PerspectiveMesh({
@@ -68,8 +73,7 @@ export interface PerspectivePlaneOptions extends MeshPlaneOptions
  *  x3: 0,
  *  y3: 100
  * });
- * @see {@link scene.PerspectiveMesh}
- * @memberof scene
+ * ```
  */
 export class PerspectiveMesh extends Mesh<PerspectivePlaneGeometry>
 {

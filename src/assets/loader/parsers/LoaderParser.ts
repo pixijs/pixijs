@@ -6,7 +6,8 @@ import type { Loader } from '../Loader';
  * The extension priority for loader parsers.
  * Helpful when managing multiple parsers that share the same extension test.
  * The higher priority parsers will be checked first.
- * @enum {number}
+ * @category assets
+ * @advanced
  */
 export enum LoaderParserPriority
 {
@@ -18,7 +19,11 @@ export enum LoaderParserPriority
     High = 2,
 }
 
-/** A more verbose version of the LoaderParser, allowing you to set the loaded, parsed, and unloaded asset separately */
+/**
+ * A more verbose version of the LoaderParser, allowing you to set the loaded, parsed, and unloaded asset separately
+ * @category assets
+ * @advanced
+ */
 export interface LoaderParserAdvanced<
     ASSET = any,
     PARSED_ASSET = ASSET,
@@ -98,7 +103,8 @@ export interface LoaderParserAdvanced<
  *
  * <br/>
  * Some loaders may only be used for parsing, some only for loading, and some for both!
- * @memberof assets
+ * @category assets
+ * @advanced
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface LoaderParser<ASSET = any, META_DATA = any, CONFIG = Record<string, any>>

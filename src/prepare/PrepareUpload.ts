@@ -9,9 +9,10 @@ import type { FillInstruction, TextureInstruction } from '../scene/graphics/shar
 import type { PrepareQueueItem } from './PrepareBase';
 
 /**
+ * @advanced
  * Part of the prepare system. Responsible for uploading all the items to the GPU.
  * This class extends the resolver functionality and uploads the given queue items.
- * @memberof rendering
+ * @category rendering
  */
 export abstract class PrepareUpload extends PrepareQueue
 {
@@ -69,7 +70,7 @@ export abstract class PrepareUpload extends PrepareQueue
      */
     protected uploadGraphicsContext(graphicsContext: GraphicsContext): void
     {
-        this.renderer.graphicsContext.getContextRenderData(graphicsContext);
+        this.renderer.graphicsContext.getGpuContext(graphicsContext);
 
         const { instructions } = graphicsContext;
 

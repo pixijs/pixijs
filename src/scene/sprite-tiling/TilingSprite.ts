@@ -4,18 +4,18 @@ import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { warn } from '../../utils/logging/warn';
 import { Transform } from '../../utils/misc/Transform';
-import { ViewContainer } from '../view/ViewContainer';
+import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
+import { type TilingSpriteGpuData } from './TilingSpritePipe';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
 import type { View } from '../../rendering/renderers/shared/view/View';
-import type { ContainerOptions } from '../container/Container';
 import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
 
 /**
- * Constructor options used for `TilingSprite` instances. Extends {@link scene.TilingSpriteViewOptions}
+ * Constructor options used for `TilingSprite` instances.
  * ```js
  * const tilingSprite = new TilingSprite({
  *    texture: Texture.from('assets/image.png'),
@@ -25,17 +25,17 @@ import type { DestroyOptions } from '../container/destroyTypes';
  *    tileScale: { x: 2, y: 2 },
  * });
  * ```
- * @see {@link scene.TilingSprite}
- * @see {@link scene.TilingSpriteViewOptions}
- * @memberof scene
+ * @see {@link TilingSprite}
+ * @category scene
+ * @standard
  */
-export interface TilingSpriteOptions extends ContainerOptions
+export interface TilingSpriteOptions extends PixiMixins.TilingSpriteOptions, ViewContainerOptions
 {
     /**
      * The anchor point of the sprite
      * @default {x: 0, y: 0}
      */
-    anchor?: PointData
+    anchor?: PointData | number;
     /**
      * The offset of the image that is being tiled.
      * @default {x: 0, y: 0}
@@ -66,15 +66,17 @@ export interface TilingSpriteOptions extends ContainerOptions
      * @default 256
      */
     height?: number
-    // TODO needs a better name..
     /**
-     * @todo
+     * Flags whether the tiling pattern should originate from the origin instead of the top-left corner in
+     * local space.
      * @default false
      */
     applyAnchorToTexture?: boolean
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
+export interface TilingSprite extends PixiMixins.TilingSprite, ViewContainer<TilingSpriteGpuData> {}
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image.
@@ -89,10 +91,10 @@ export interface TilingSpriteOptions extends ContainerOptions
  * tilingSprite.tilePosition.y = 100;
  *
  * app.stage.addChild(tilingSprite);
- * @memberof scene
- * @extends scene.Container
+ * @category scene
+ * @standard
  */
-export class TilingSprite extends ViewContainer implements View, Instruction
+export class TilingSprite extends ViewContainer<TilingSpriteGpuData> implements View, Instruction
 {
     /**
      * Creates a new tiling sprite.
@@ -139,7 +141,9 @@ export class TilingSprite extends ViewContainer implements View, Instruction
         applyAnchorToTexture: false,
     };
 
+    /** @internal */
     public override readonly renderPipeId: string = 'tilingSprite';
+    /** @advanced */
     public readonly batched = true;
 
     /**
@@ -152,8 +156,9 @@ export class TilingSprite extends ViewContainer implements View, Instruction
      */
     public applyAnchorToTexture: boolean;
     /**
-     * @see {@link scene.TilingSpriteOptions.applyAnchorToTexture}
+     * @see {@link TilingSpriteOptions.applyAnchorToTexture}
      * @deprecated since 8.0.0
+     * @advanced
      */
     public get uvRespectAnchor(): boolean
     {
@@ -161,21 +166,25 @@ export class TilingSprite extends ViewContainer implements View, Instruction
 
         return this.applyAnchorToTexture;
     }
+    /** @advanced */
     public set uvRespectAnchor(value: boolean)
     {
         warn('uvRespectAnchor is deprecated, please use applyAnchorToTexture instead');
         this.applyAnchorToTexture = value;
     }
-    public _anchor: ObservablePoint;
 
+    /** @internal */
+    public _anchor: ObservablePoint;
+    /** @internal */
     public _tileTransform: Transform;
+    /** @internal */
     public _texture: Texture;
 
     private _width: number;
     private _height: number;
 
     /**
-     * @param {rendering.Texture | scene.TilingSpriteOptions} options - The options for creating the tiling sprite.
+     * @param {Texture | TilingSpriteOptions} options - The options for creating the tiling sprite.
      */
     constructor(options?: Texture | TilingSpriteOptions);
     /** @deprecated since 8.0.0 */
@@ -255,13 +264,15 @@ export class TilingSprite extends ViewContainer implements View, Instruction
      * Changes frame clamping in corresponding textureMatrix
      * Change to -0.5 to add a pixel to the edge, recommended for transparent trimmed textures in atlas
      * @default 0.5
-     * @member {number}
+     * @type {number}
+     * @advanced
      */
     get clampMargin()
     {
         return this._texture.textureMatrix.clampMargin;
     }
 
+    /** @advanced */
     set clampMargin(value: number)
     {
         this._texture.textureMatrix.clampMargin = value;
@@ -414,9 +425,7 @@ export class TilingSprite extends ViewContainer implements View, Instruction
         return out;
     }
 
-    /**
-     * @private
-     */
+    /** @private */
     protected override updateBounds()
     {
         const bounds = this._bounds;
@@ -426,11 +435,11 @@ export class TilingSprite extends ViewContainer implements View, Instruction
         const width = this._width;
         const height = this._height;
 
-        bounds.maxX = -anchor._x * width;
-        bounds.minX = bounds.maxX + width;
+        bounds.minX = -anchor._x * width;
+        bounds.maxX = bounds.minX + width;
 
-        bounds.maxY = -anchor._y * height;
-        bounds.minY = bounds.maxY + height;
+        bounds.minY = -anchor._y * height;
+        bounds.maxY = bounds.minY + height;
     }
 
     /**
@@ -458,8 +467,10 @@ export class TilingSprite extends ViewContainer implements View, Instruction
      * Destroys this sprite renderable and optionally its texture.
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
-     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
-     * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
+     * @example
+     * tilingSprite.destroy();
+     * tilingSprite.destroy(true);
+     * tilingSprite.destroy({ texture: true, textureSource: true });
      */
     public override destroy(options: DestroyOptions = false)
     {

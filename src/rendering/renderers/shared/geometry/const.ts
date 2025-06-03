@@ -2,7 +2,8 @@ import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 
 /**
  * The different topology types supported by the renderer used to describe how the geometry should be renderer
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export type Topology =
     'point-list'
@@ -19,7 +20,11 @@ const DEPRECATED_DRAW_MODES = {
     TRIANGLE_STRIP: 'triangle-strip',
 };
 
-/** @deprecated since 8.0.0 */
+/**
+ * @deprecated since 8.0.0
+ * @category rendering
+ * @advanced
+ */
 export const DRAW_MODES = new Proxy(DEPRECATED_DRAW_MODES, {
     get(target, prop: keyof typeof DEPRECATED_DRAW_MODES)
     {
@@ -33,7 +38,8 @@ export const DRAW_MODES = new Proxy(DEPRECATED_DRAW_MODES, {
 
 /**
  * The different types of vertex formats supported by the renderer
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export type VertexFormat =
     | 'uint8x2'

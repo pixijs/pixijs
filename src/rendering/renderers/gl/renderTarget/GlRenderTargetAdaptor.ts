@@ -13,7 +13,7 @@ import type { WebGLRenderer } from '../WebGLRenderer';
 
 /**
  * The WebGL adaptor for the render target system. Allows the Render Target System to be used with the WebGL renderer
- * @memberof rendering
+ * @category rendering
  * @ignore
  */
 export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget>
@@ -165,7 +165,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         // we are rendering to the main canvas..
         const colorTexture = renderTarget.colorTexture;
 
-        if (colorTexture.resource === renderer.canvas)
+        if (colorTexture instanceof CanvasSource)
         {
             this._renderer.context.ensureCanvasSize(renderTarget.colorTexture.resource);
 

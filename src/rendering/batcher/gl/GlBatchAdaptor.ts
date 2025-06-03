@@ -9,7 +9,7 @@ import type { BatcherAdaptor, BatcherPipe } from '../shared/BatcherPipe';
 
 /**
  * A BatcherAdaptor that uses WebGL to render batches.
- * @memberof rendering
+ * @category rendering
  * @ignore
  */
 export class GlBatchAdaptor implements BatcherAdaptor
@@ -22,9 +22,15 @@ export class GlBatchAdaptor implements BatcherAdaptor
         name: 'batch',
     } as const;
 
-    private _didUpload = false;
     private readonly _tempState = State.for2d();
 
+    /**
+     * We only want to sync the a batched shaders uniforms once on first use
+     * this is a hash of shader uids to a boolean value.  When the shader is first bound
+     * we set the value to true.  When the shader is bound again we check the value and
+     * if it is true we know that the uniforms have already been synced and we skip it.
+     */
+    private _didUploadHash: Record<string, boolean> = {};
     public init(batcherPipe: BatcherPipe): void
     {
         batcherPipe.renderer.runners.contextChange.add(this);
@@ -32,15 +38,22 @@ export class GlBatchAdaptor implements BatcherAdaptor
 
     public contextChange(): void
     {
-        this._didUpload = false;
+        this._didUploadHash = {};
     }
 
     public start(batchPipe: BatcherPipe, geometry: Geometry, shader: Shader): void
     {
         const renderer = batchPipe.renderer as WebGLRenderer;
 
+        const didUpload = this._didUploadHash[shader.uid];
+
         // only want to sync the shade ron its first bind!
-        renderer.shader.bind(shader, this._didUpload);
+        renderer.shader.bind(shader, didUpload);
+
+        if (!didUpload)
+        {
+            this._didUploadHash[shader.uid] = true;
+        }
 
         renderer.shader.updateUniformGroup(renderer.globalUniforms.uniformGroup);
 
@@ -50,8 +63,6 @@ export class GlBatchAdaptor implements BatcherAdaptor
     public execute(batchPipe: BatcherPipe, batch: Batch): void
     {
         const renderer = batchPipe.renderer as WebGLRenderer;
-
-        this._didUpload = true;
 
         this._tempState.blendMode = batch.blendMode;
 

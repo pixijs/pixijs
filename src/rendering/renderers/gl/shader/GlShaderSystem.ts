@@ -1,23 +1,23 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { getMaxTexturesPerBatch } from '../../../batcher/gl/utils/maxRecommendedTextures';
 import { generateShaderSyncCode } from './GenerateShaderSyncCode';
 import { generateProgram } from './program/generateProgram';
 
 import type { BufferResource } from '../../shared/buffer/BufferResource';
 import type { Shader } from '../../shared/shader/Shader';
-import type { ShaderSystem } from '../../shared/shader/ShaderSystem';
 import type { UniformGroup } from '../../shared/shader/UniformGroup';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
 import type { GlProgram } from './GlProgram';
 import type { GlProgramData } from './GlProgramData';
 
+/** @internal */
 export interface ShaderSyncData
 {
     textureCount: number;
     blockIndex: number;
 }
 
+/** @internal */
 export type ShaderSyncFunction = (renderer: WebGLRenderer, shader: Shader, syncData: ShaderSyncData) => void;
 
 // default sync data so we don't create a new one each time!
@@ -28,9 +28,10 @@ const defaultSyncData: ShaderSyncData = {
 
 /**
  * System plugin to the renderer to manage the shaders for WebGL.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
-export class GlShaderSystem implements ShaderSystem
+export class GlShaderSystem
 {
     /** @ignore */
     public static extension = {
@@ -40,16 +41,12 @@ export class GlShaderSystem implements ShaderSystem
         name: 'shader',
     } as const;
 
-    public maxTextures: number;
-
-    /**
-     * @internal
-     * @private
-     */
+    /** @internal */
     public _activeProgram: GlProgram = null;
 
     private _programDataHash: Record<string, GlProgramData> = Object.create(null);
     private readonly _renderer: WebGLRenderer;
+    /** @internal */
     public _gl: WebGL2RenderingContext;
     private _shaderSyncFunctions: Record<string, ShaderSyncFunction> = Object.create(null);
 
@@ -70,7 +67,6 @@ export class GlShaderSystem implements ShaderSystem
          */
         this._shaderSyncFunctions = Object.create(null);
         this._activeProgram = null;
-        this.maxTextures = getMaxTexturesPerBatch();
     }
 
     /**
@@ -175,7 +171,6 @@ export class GlShaderSystem implements ShaderSystem
     /**
      * @param program - the program to get the data for
      * @internal
-     * @private
      */
     public _getProgramData(program: GlProgram): GlProgramData
     {

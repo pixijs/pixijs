@@ -8,14 +8,18 @@ import type { Buffer } from '../buffer/Buffer';
 
 type FLOPS<T = UniformData> = T extends { value: infer V } ? V : never;
 
-// TODO replace..T['value']
-type ExtractUniformObject<T = Record<string, UniformData>> = {
+/**
+ * Extracts the value type from a uniform data object.
+ * @internal
+ */
+export type ExtractUniformObject<T = Record<string, UniformData>> = {
     [K in keyof T]: FLOPS<T[K]>;
 };
 
 /**
  * Uniform group options
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export type UniformGroupOptions = {
     /**
@@ -52,11 +56,11 @@ export type UniformGroupOptions = {
  * - The name of the ubo object added to the group must match exactly the name of the ubo in the shader.
  *
  * When declaring your uniform options, you ust parse in the value and the type of the uniform.
- * The types correspond to the WebGPU types {@link UNIFORM_TYPES}
+ * The types correspond to the WebGPU types
  *
  Uniforms can be modified via the classes 'uniforms' property. It will contain all the uniforms declared in the constructor.
  *
- * ```glsl
+ * ```
  * // UBO in shader:
  * uniform myCoolData { // Declaring a UBO...
  *     mat4 uCoolMatrix;
@@ -77,10 +81,9 @@ export type UniformGroupOptions = {
  * const shader = Shader.from(srcVert, srcFrag, {
  *     myCoolData // Name matches the UBO name in the shader. Will be processed accordingly.
  * })
- *
- *
- *  ```
- * @memberof rendering
+ * ```
+ * @category rendering
+ * @advanced
  */
 export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any> implements BindResource
 {
@@ -92,14 +95,23 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
         isStatic: false,
     };
 
-    /** used internally to know if a uniform group was used in the last render pass */
+    /**
+     * used internally to know if a uniform group was used in the last render pass
+     * @internal
+     */
     public _touched = 0;
 
     /** a unique id for this uniform group used through the renderer */
     public readonly uid: number = uid('uniform');
-    /** a resource type, used to identify how to handle it when its in a bind group / shader resource */
+    /**
+     * a resource type, used to identify how to handle it when its in a bind group / shader resource
+     * @internal
+     */
     public _resourceType = 'uniformGroup';
-    /** the resource id used internally by the renderer to build bind group keys */
+    /**
+     * the resource id used internally by the renderer to build bind group keys
+     * @internal
+     */
     public _resourceId = uid('resource');
     /** the structures of the uniform group */
     public uniformStructures: UNIFORMS;
@@ -119,13 +131,11 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
     /**
      * used to flag if this Uniform groups data is different from what it has stored in its buffer / on the GPU
      * @internal
-     * @ignore
      */
     public _dirtyId = 0;
     /**
      * a signature string generated for internal use
      * @internal
-     * @ignore
      */
     public readonly _signature: number;
 

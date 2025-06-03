@@ -35,7 +35,7 @@ extensions.handle(ExtensionType.BlendMode, (value) =>
 
 /**
  * This Pipe handles the blend mode switching of the renderer.
- * It will insert instructions into the {@link renderers.InstructionSet} to switch the blend mode according to the
+ * It will insert instructions into the {@link InstructionSet} to switch the blend mode according to the
  * blend modes of the scene graph.
  *
  * This pipe is were wwe handle Advanced blend modes. Advanced blend modes essentially wrap the renderables
@@ -43,7 +43,8 @@ extensions.handle(ExtensionType.BlendMode, (value) =>
  *
  * You only need to use this class if you are building your own render instruction set rather than letting PixiJS build
  * the instruction set for you by traversing the scene graph
- * @memberof rendering
+ * @category rendering
+ * @internal
  */
 export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
 {
@@ -69,6 +70,15 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        this._renderer.runners.prerender.add(this);
+    }
+
+    public prerender()
+    {
+        // make sure we reset the blend modes to normal
+        // this way the next render will register any changes
+        this._activeBlendMode = 'normal';
+        this._isAdvanced = false;
     }
 
     /**
@@ -156,7 +166,6 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
     /**
      * called when the instruction build process is starting this will reset internally to the default blend mode
      * @internal
-     * @ignore
      */
     public buildStart()
     {
@@ -168,7 +177,6 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
      * active, we add the final render instructions added to the instruction set
      * @param instructionSet - The instruction set we are adding to
      * @internal
-     * @ignore
      */
     public buildEnd(instructionSet: InstructionSet)
     {
@@ -178,10 +186,7 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
         }
     }
 
-    /**
-     * @internal
-     * @ignore
-     */
+    /** @internal */
     public destroy()
     {
         this._renderer = null;

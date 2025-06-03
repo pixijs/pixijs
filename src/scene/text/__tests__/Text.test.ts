@@ -50,7 +50,9 @@ describe('Text', () =>
 
             const renderer = await getWebGLRenderer({ resolution: 2 });
 
-            const texture = renderer.renderPipes.text['_getGpuText'](text).texture;
+            renderer.renderPipes.text['_updateGpuText'](text);
+
+            const texture = text._gpuData[renderer.uid].texture;
 
             expect(texture.source.resolution).toEqual(2); // <-- getting null
 
@@ -65,7 +67,7 @@ describe('Text', () =>
 
             const renderer = await getWebGLRenderer({ resolution: 2 });
 
-            const texture = renderer.canvasText.getManagedTexture(text);
+            const texture = renderer.canvasText.getTexture(text);
 
             expect(texture.source.resolution).toEqual(3);
 
@@ -157,14 +159,9 @@ describe('Text', () =>
             container.addChild(text);
             renderer.render({ container });
 
-            const key = text._getKey();
-
-            expect(renderer.canvasText['_activeTextures'][key].usageCount).toBe(1);
-
             text.destroy();
 
-            expect(renderer.renderPipes.text['_gpuText'][text.uid]).toBeNull();
-            expect(renderer.canvasText['_activeTextures'][key]).toBeNull();
+            expect(text._gpuData).toBeNull();
         });
 
         it('should destroy bitmap text correctly on the pipes and systems', async () =>
@@ -179,11 +176,11 @@ describe('Text', () =>
 
             renderer.render({ container });
 
-            expect(renderer.renderPipes.bitmapText['_gpuBitmapText'][text.uid]).not.toBeNull();
+            expect(text._gpuData).not.toBeNull();
 
             text.destroy();
 
-            expect(renderer.renderPipes.bitmapText['_gpuBitmapText'][text.uid]).toBeNull();
+            expect(text._gpuData).toBeNull();
         });
 
         it('should destroy textStyle correctly', () =>

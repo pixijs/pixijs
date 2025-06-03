@@ -1,7 +1,8 @@
 /**
  * Buffer usage flags. they can be combined using the bitwise OR operator
  * eg : BufferUsage.VERTEX | BufferUsage.INDEX
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export enum BufferUsage
 {

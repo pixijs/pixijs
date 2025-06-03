@@ -9,7 +9,8 @@ import type EventEmitter from 'eventemitter3';
 
 /**
  * Options for configuring a RenderLayer.
- * @memberof scene
+ * @category scene
+ * @standard
  */
 export interface RenderLayerOptions
 {
@@ -39,87 +40,11 @@ type PartialContainerKeys = Exclude<ContainerKeys,
 'parent' | 'didChange' | '_updateFlags' | keyof EventEmitter | 'parentRenderLayer' |
 'destroyed' | 'layerParentId' | 'sortableChildren' | 'getFastGlobalBounds'
 >;
+/** @internal */
 export type IRenderLayer = Omit<RenderLayerClass, PartialContainerKeys>;
 
-/**
- * The RenderLayer API provides a way to control the rendering order of objects independently
- * of their logical parent-child relationships in the scene graph.
- * This allows developers to decouple how objects are transformed
- * (via their logical parent) from how they are rendered on the screen.
- *
- * ### Key Concepts
- *
- * #### RenderLayers Control Rendering Order:
- * - RenderLayers define where in the render stack objects are drawn,
- * but they do not affect an object's transformations (e.g., position, scale, rotation) or logical hierarchy.
- * - RenderLayers can be added anywhere in the scene graph.
- *
- * #### Logical Parenting Remains Unchanged:
- * - Objects still have a logical parent for transformations via addChild.
- * - Assigning an object to a layer does not reparent it.
- *
- * #### Explicit Control:
- * - Developers assign objects to layers using renderLayer.add and remove them using renderLayer.remove.
- * ---
- * ### API Details
- *
- * #### 1. Creating a RenderLayer
- * A RenderLayer is a lightweight object responsible for controlling render order.
- * It has no children or transformations of its own
- * but can be inserted anywhere in the scene graph to define its render position.
- * ```js
- * const layer = new RenderLayer();
- * app.stage.addChild(layer); // Insert the layer into the scene graph
- * ```
- *
- * #### 2. Adding Objects to a Layer
- * Use renderLayer.add to assign an object to a layer.
- * This overrides the object's default render order defined by its logical parent.
- * ```js
- * const rect = new PIXI.Graphics();
- * container.addChild(rect);    // Add to logical parent
- * layer.attach(rect);      // Control render order via the layer
- * ```
- *
- * #### 3. Removing Objects from a Layer
- * To stop an object from being rendered in the layer, use remove.
- * ```js
- * layer.remove(rect); // Stop rendering rect via the layer
- * ```
- * When an object is removed from its logical parent (removeChild), it is automatically removed from the layer.
- *
- * #### 4. Re-Adding Objects to Layers
- * If an object is re-added to a logical parent, it does not automatically reassign itself to the layer.
- * Developers must explicitly reassign it.
- * ```js
- * container.addChild(rect);    // Logical parent
- * layer.attach(rect);      // Explicitly reassign to the layer
- * ```
- *
- * #### 5. Layer Position in Scene Graph
- * A layer's position in the scene graph determines its render priority relative to other layers and objects.
- * Layers can be inserted anywhere in the scene graph.
- * ```js
- * const backgroundLayer = new RenderLayer();
- * const uiLayer = new RenderLayer();
- *
- * app.stage.addChild(backgroundLayer);
- * app.stage.addChild(world);
- * app.stage.addChild(uiLayer);
- * ```
- * This is a new API and therefore considered experimental at this stage.
- * While the core is pretty robust, there are still a few tricky issues we need to tackle.
- * However, even with the known issues below, we believe this API is incredibly useful!
- *
- * Known issues:
- *  - Interaction may not work as expected since hit testing does not account for the visual render order created by layers.
- *    For example, if an object is visually moved to the front via a layer, hit testing will still use its original position.
- *  - RenderLayers and their children must all belong to the same renderGroup to work correctly
- * @memberof scene
- * @class RenderLayer
- * @extends null
- */
-export class RenderLayerClass extends Container
+/** @standard */
+class RenderLayerClass extends Container
 {
     /**
      * Default options for RenderLayer instances
@@ -283,6 +208,85 @@ export class RenderLayerClass extends Container
     }
 }
 
+/**
+ * The RenderLayer API provides a way to control the rendering order of objects independently
+ * of their logical parent-child relationships in the scene graph.
+ * This allows developers to decouple how objects are transformed
+ * (via their logical parent) from how they are rendered on the screen.
+ *
+ * ### Key Concepts
+ *
+ * #### RenderLayers Control Rendering Order:
+ * - RenderLayers define where in the render stack objects are drawn,
+ * but they do not affect an object's transformations (e.g., position, scale, rotation) or logical hierarchy.
+ * - RenderLayers can be added anywhere in the scene graph.
+ *
+ * #### Logical Parenting Remains Unchanged:
+ * - Objects still have a logical parent for transformations via addChild.
+ * - Assigning an object to a layer does not reparent it.
+ *
+ * #### Explicit Control:
+ * - Developers assign objects to layers using renderLayer.add and remove them using renderLayer.remove.
+ * ---
+ * ### API Details
+ *
+ * #### 1. Creating a RenderLayer
+ * A RenderLayer is a lightweight object responsible for controlling render order.
+ * It has no children or transformations of its own
+ * but can be inserted anywhere in the scene graph to define its render position.
+ * ```js
+ * const layer = new RenderLayer();
+ * app.stage.addChild(layer); // Insert the layer into the scene graph
+ * ```
+ *
+ * #### 2. Adding Objects to a Layer
+ * Use renderLayer.add to assign an object to a layer.
+ * This overrides the object's default render order defined by its logical parent.
+ * ```js
+ * const rect = new Graphics();
+ * container.addChild(rect);    // Add to logical parent
+ * layer.attach(rect);      // Control render order via the layer
+ * ```
+ *
+ * #### 3. Removing Objects from a Layer
+ * To stop an object from being rendered in the layer, use remove.
+ * ```js
+ * layer.remove(rect); // Stop rendering rect via the layer
+ * ```
+ * When an object is removed from its logical parent (removeChild), it is automatically removed from the layer.
+ *
+ * #### 4. Re-Adding Objects to Layers
+ * If an object is re-added to a logical parent, it does not automatically reassign itself to the layer.
+ * Developers must explicitly reassign it.
+ * ```js
+ * container.addChild(rect);    // Logical parent
+ * layer.attach(rect);      // Explicitly reassign to the layer
+ * ```
+ *
+ * #### 5. Layer Position in Scene Graph
+ * A layer's position in the scene graph determines its render priority relative to other layers and objects.
+ * Layers can be inserted anywhere in the scene graph.
+ * ```js
+ * const backgroundLayer = new RenderLayer();
+ * const uiLayer = new RenderLayer();
+ *
+ * app.stage.addChild(backgroundLayer);
+ * app.stage.addChild(world);
+ * app.stage.addChild(uiLayer);
+ * ```
+ * This is a new API and therefore considered experimental at this stage.
+ * While the core is pretty robust, there are still a few tricky issues we need to tackle.
+ * However, even with the known issues below, we believe this API is incredibly useful!
+ *
+ * Known issues:
+ *  - Interaction may not work as expected since hit testing does not account for the visual render order created by layers.
+ *    For example, if an object is visually moved to the front via a layer, hit testing will still use its original position.
+ *  - RenderLayers and their children must all belong to the same renderGroup to work correctly
+ * @category scene
+ * @class
+ * @extends null
+ * @standard
+ */
 export const RenderLayer = RenderLayerClass as {
     new (options?: RenderLayerOptions): IRenderLayer;
 };

@@ -45,7 +45,7 @@ directories.forEach((directory) =>
 
         shortName += ext.charAt(0).toUpperCase() + ext.slice(1);
 
-        return `export { default as ${shortName} } from './${file}';`;
+        return `/** @ignore */\nexport { default as ${shortName} } from './${file}';`;
     });
 
     // Combine the export statements into one file

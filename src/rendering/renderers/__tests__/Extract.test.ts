@@ -1,7 +1,6 @@
 import '~/scene/graphics/init';
 import { ExtractSystem } from '../shared/extract/ExtractSystem';
 import { RenderTexture } from '../shared/texture/RenderTexture';
-import { ImageSource } from '../shared/texture/sources/ImageSource';
 import { Texture } from '../shared/texture/Texture';
 import '../../init';
 import { getTexture, getWebGLRenderer } from '@test-utils';
@@ -150,7 +149,7 @@ describe('GenerateTexture', () =>
             resource: texturePixels,
             width: 2,
             height: 2,
-            alphaMode: 'premultiply-alpha-on-upload',
+            alphaMode: 'premultiplied-alpha',
         });
 
         const sprite = new Sprite(texture);
@@ -176,7 +175,7 @@ describe('GenerateTexture', () =>
             resource: texturePixels,
             width: 2,
             height: 2,
-            alphaMode: 'premultiply-alpha-on-upload',
+            alphaMode: 'premultiplied-alpha',
         });
 
         const sprite = new Sprite(texture);
@@ -208,7 +207,7 @@ describe('GenerateTexture', () =>
             resource: texturePixels,
             width: 2,
             height: 2,
-            alphaMode: 'premultiply-alpha-on-upload',
+            alphaMode: 'premultiplied-alpha',
         });
 
         const sprite = new Sprite(texture);
@@ -231,6 +230,7 @@ describe('GenerateTexture', () =>
             resource: texturePixels,
             width: 2,
             height: 2,
+            alphaMode: 'premultiplied-alpha',
         });
         const sprite = new Sprite(texture);
         const extract = renderer.extract;
@@ -257,7 +257,7 @@ describe('GenerateTexture', () =>
             width: 2,
             height: 2,
             resource: texturePixels,
-            alphaMode: 'premultiply-alpha-on-upload',
+            alphaMode: 'premultiplied-alpha',
             scaleMode: 'nearest'
         });
 
@@ -297,7 +297,7 @@ describe('GenerateTexture', () =>
             width: 2,
             height: 2,
             resource: texturePixels,
-            alphaMode: 'premultiply-alpha-on-upload',
+            alphaMode: 'premultiplied-alpha',
             scaleMode: 'nearest'
         });
 
@@ -472,21 +472,5 @@ describe('GenerateTexture', () =>
 
         graphics.destroy();
         renderer.destroy();
-    });
-
-    it('should convert image element to canvas resource and warn user', async () =>
-    {
-        const spy = jest.spyOn(console, 'warn');
-        const renderer = (await getWebGLRenderer()) as WebGLRenderer;
-        const sprite = new Sprite(Texture.WHITE);
-        const image = await renderer.extract.image(sprite);
-        const imageSource = new ImageSource({ resource: image });
-
-        expect(imageSource.resource).toBeInstanceOf(HTMLCanvasElement);
-        expect(spy)
-            .toHaveBeenCalledWith(
-                'PixiJS Warning: ',
-                'ImageSource: Image element passed, converting to canvas. Use CanvasSource instead.'
-            );
     });
 });

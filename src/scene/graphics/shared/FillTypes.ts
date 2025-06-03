@@ -6,8 +6,37 @@ import type { FillGradient } from './fill/FillGradient';
 import type { FillPattern } from './fill/FillPattern';
 
 /**
+ * Determines how texture coordinates are calculated
+ * Local Space:              Global Space:
+ * ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐
+ * │ A   B   │  │ A   B   │  │ A...B   │  │ ...B... │
+ * │         │  │         │  │         │  │         │
+ * │ C   D   │  │ C   D   │  │ C...D   │  │ ...D... │
+ * └─────────┘  └─────────┘  └─────────┘  └─────────┘
+ * (Each shape   (Each shape  (Texture continues across
+ * gets full     gets full    shapes as if they're texture)      texture)     windows to same texture)
+ * @category scene
+ * @advanced
+ */
+export type TextureSpace =
+    /**
+     * 'local' - Texture coordinates are relative to the shape's bounds.
+     * The texture will stretch/fit to each individual shape's boundaries.
+     * Think of it like the shape having its own coordinate system.
+     */
+    | 'local'
+    /**
+     * 'global' - Texture coordinates are in world space.
+     * The texture position is consistent across all shapes,
+     * as if the texture was laid down first and shapes were cut out of it.
+     * Think of it like wallpaper that shows through shaped holes.
+     */
+    | 'global';
+
+/**
  * A fill style object.
- * @memberof scene
+ * @category scene
+ * @standard
  */
 export interface FillStyle
 {
@@ -21,11 +50,14 @@ export interface FillStyle
     matrix?: Matrix | null;
     /** The fill pattern to use. */
     fill?: FillPattern | FillGradient | null;
+    /** The fill units to use. */
+    textureSpace?: TextureSpace;
 }
 
 /**
  * A stroke attribute object, used to define properties for a stroke.
- * @memberof scene
+ * @category scene
+ * @standard
  */
 export interface StrokeAttributes
 {
@@ -45,7 +77,8 @@ export interface StrokeAttributes
 
 /**
  * A stroke style object.
- * @memberof scene
+ * @category scene
+ * @standard
  */
 export interface StrokeStyle extends FillStyle, StrokeAttributes {}
 
@@ -68,9 +101,10 @@ export interface StrokeStyle extends FillStyle, StrokeAttributes {}
  *   fill: new FillGradient(0, 0, 200, 0),
  * });
  * ```
- * @memberof scene
+ * @category scene
+ * @standard
  */
-export type FillInput = ColorSource | FillGradient | FillPattern | FillStyle;
+export type FillInput = ColorSource | FillGradient | FillPattern | FillStyle | Texture;
 
 /**
  * These can be directly used as a stroke
@@ -94,18 +128,29 @@ export type FillInput = ColorSource | FillGradient | FillPattern | FillStyle;
  *   alignment: 0.5,
  * });
  * ```
- * @memberof scene
+ * @category scene
+ * @standard
  */
 export type StrokeInput = ColorSource | FillGradient | FillPattern | StrokeStyle;
 
-// used internally and is a complete fill style
+/**
+ * used internally and is a complete fill style
+ * @category scene
+ * @advanced
+ */
 export type ConvertedFillStyle = Omit<Required<FillStyle>, 'color'> & { color: number };
-// used internally and is a complete stroke style
+/**
+ * used internally and is a complete stroke style
+ * @category scene
+ * @advanced
+ */
 export type ConvertedStrokeStyle = ConvertedFillStyle & Required<StrokeAttributes>;
 
 /**
  * @deprecated since v8.1.6
- * @see scene.FillInput
+ * @see FillInput
+ * @category scene
+ * @standard
  */
 // eslint-disable-next-line max-len
 export type FillStyleInputs = ColorSource | FillGradient | FillPattern | FillStyle | ConvertedFillStyle | StrokeStyle | ConvertedStrokeStyle;

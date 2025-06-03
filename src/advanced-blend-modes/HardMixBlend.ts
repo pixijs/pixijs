@@ -14,7 +14,8 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  *
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'hard-mix'
- * @memberof filters
+ * @category filters
+ * @noInheritDoc
  */
 export class HardMixBlend extends BlendModeFilter
 {

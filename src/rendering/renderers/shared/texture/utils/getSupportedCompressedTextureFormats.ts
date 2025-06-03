@@ -7,6 +7,7 @@ import type { TEXTURE_FORMATS } from '../const';
 
 let supportedCompressedTextureFormats: TEXTURE_FORMATS[];
 
+/** @internal */
 export async function getSupportedCompressedTextureFormats(): Promise<TEXTURE_FORMATS[]>
 {
     if (supportedCompressedTextureFormats !== undefined) return supportedCompressedTextureFormats;

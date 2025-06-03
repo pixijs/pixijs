@@ -2,7 +2,8 @@
 import type { PointData } from './PointData';
 import type { PointLike } from './PointLike';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+// eslint-disable-next-line max-len
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type, requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface Point extends PixiMixins.Point { }
 
 /**
@@ -11,9 +12,8 @@ export interface Point extends PixiMixins.Point { }
  * <br/>
  * Many Pixi functions accept the `PointData` type as an alternative to `Point`,
  * which only requires `x` and `y` properties.
- * @class
- * @implements {PointLike}
- * @memberof maths
+ * @category maths
+ * @standard
  */
 export class Point implements PointLike
 {

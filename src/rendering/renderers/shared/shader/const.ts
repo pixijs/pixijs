@@ -1,3 +1,4 @@
+/** @internal */
 export enum ShaderStage
 {
     VERTEX = 1,

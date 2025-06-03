@@ -4,8 +4,9 @@ import type { Container } from '../scene/container/Container';
 import type { EventBoundary } from './EventBoundary';
 
 /**
- * A PixiJS compatible {@code Touch} event.
- * @memberof events
+ * A PixiJS compatible `Touch` event.
+ * @category events
+ * @standard
  */
 export interface PixiTouch extends Touch
 {
@@ -33,7 +34,8 @@ export interface PixiTouch extends Touch
  * An DOM-compatible synthetic event implementation that is "forwarded" on behalf of an original
  * FederatedEvent or native {@link https://dom.spec.whatwg.org/#event Event}.
  * @typeParam N - The type of native event held.
- * @memberof events
+ * @category events
+ * @standard
  */
 export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch> implements UIEvent
 {
@@ -50,9 +52,10 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
     public readonly cancelable = false;
 
     /**
-     * Flag added for compatibility with DOM {@code Event}. It is not used in the Federated Events
+     * Flag added for compatibility with DOM `Event`. It is not used in the Federated Events
      * API.
      * @see https://dom.spec.whatwg.org/#dom-event-composed
+     * @ignore
      */
     public readonly composed = false;
 
@@ -83,7 +86,7 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
     /** The timestamp of when the event was created. */
     public timeStamp: number;
 
-    /** The type of event, e.g. {@code "mouseup"}. */
+    /** The type of event, e.g. `"mouseup"`. */
     public type: string;
 
     /** The native event that caused the foremost original event. */
@@ -98,7 +101,7 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
     /** Flags whether propagation was immediately stopped. */
     public propagationImmediatelyStopped = false;
 
-    /** The composed path of the event's propagation. The {@code target} is at the end. */
+    /** The composed path of the event's propagation. The `target` is at the end. */
     public path: Container[];
 
     /** The {@link EventBoundary} that manages this event. Null for root events. */
@@ -113,6 +116,7 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
     /**
      * Not supported.
      * @deprecated since 7.0.0
+     * @ignore
      */
     public which: number;
 
@@ -144,7 +148,7 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
     }
 
     /**
-     * Fallback for the deprecated @code{InteractionEvent.data}.
+     * Fallback for the deprecated `InteractionEvent.data`.
      * @deprecated since 7.0.0
      */
     get data(): this
@@ -152,7 +156,10 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
         return this;
     }
 
-    /** The propagation path for this event. Alias for {@link EventBoundary.propagationPath}. */
+    /**
+     * The propagation path for this event. Alias for {@link EventBoundary.propagationPath}.
+     * @advanced
+     */
     public composedPath(): Container[]
     {
         // Find the propagation path if it isn't cached or if the target has changed since since
@@ -166,8 +173,9 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
     }
 
     /**
-     * Unimplemented method included for implementing the DOM interface {@code Event}. It will throw an {@code Error}.
+     * Unimplemented method included for implementing the DOM interface `Event`. It will throw an `Error`.
      * @deprecated
+     * @ignore
      * @param _type
      * @param _bubbles
      * @param _cancelable
@@ -178,7 +186,8 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
     }
 
     /**
-     * Unimplemented method included for implementing the DOM interface {@code UIEvent}. It will throw an {@code Error}.
+     * Unimplemented method included for implementing the DOM interface `UIEvent`. It will throw an `Error`.
+     * @ignore
      * @deprecated
      * @param _typeArg
      * @param _bubblesArg
@@ -205,7 +214,7 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
 
     /**
      * Stop this event from propagating to any addition listeners, including on the
-     * {@link FederatedEventTarget.currentTarget currentTarget} and also the following
+     * {@link FederatedEvent.currentTarget} and also the following
      * event targets on the propagation path.
      */
     public stopImmediatePropagation(): void
@@ -214,16 +223,36 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
     }
 
     /**
-     * Stop this event from propagating to the next {@link FederatedEventTarget}. The rest of the listeners
-     * on the {@link FederatedEventTarget.currentTarget currentTarget} will still be notified.
+     * Stop this event from propagating to the next {@link FederatedEvent}. The rest of the listeners
+     * on the {@link FederatedEvent.currentTarget} will still be notified.
      */
     public stopPropagation(): void
     {
         this.propagationStopped = true;
     }
 
+    /**
+     * The event propagation phase NONE that indicates that the event is not in any phase.
+     * @default 0
+     * @advanced
+     */
     public readonly NONE = 0;
+    /**
+     * The event propagation phase CAPTURING_PHASE that indicates that the event is in the capturing phase.
+     * @default 1
+     * @advanced
+     */
     public readonly CAPTURING_PHASE = 1;
+    /**
+     * The event propagation phase AT_TARGET that indicates that the event is at the target.
+     * @default 2
+     * @advanced
+     */
     public readonly AT_TARGET = 2;
+    /**
+     * The event propagation phase BUBBLING_PHASE that indicates that the event is in the bubbling phase.
+     * @default 3
+     * @advanced
+     */
     public readonly BUBBLING_PHASE = 3;
 }

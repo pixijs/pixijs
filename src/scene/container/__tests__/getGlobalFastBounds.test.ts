@@ -354,4 +354,24 @@ describe('getFastGlobalBounds', () =>
 
         expect(rootBounds).toMatchObject({ minX: 0, minY: 0, maxX: 100, maxY: 100 });
     });
+
+    it('should handle nested objects in render layers', () =>
+    {
+        const root = new Container({ isRenderGroup: true, label: 'root' });
+        const layer = new RenderLayer();
+        const front = new Container({ label: 'front' });
+        const child = new DummyView({ label: 'child' });
+
+        root.addChild(layer);
+        root.addChild(front);
+        front.addChild(child);
+        layer.attach(front);
+
+        updateRenderGroupTransforms(root.renderGroup, true);
+
+        // Initial bounds with child in layer
+        const bounds = front.getFastGlobalBounds(true);
+
+        expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 100, maxY: 100 });
+    });
 });

@@ -6,6 +6,7 @@ import type { System } from '../system/System';
 import type { UboElement, UboLayout, UniformData, UniformsSyncCallback } from './types';
 import type { UniformGroup } from './UniformGroup';
 
+/** @internal */
 export interface UboAdaptor
 {
     createUboElements: (uniformData: UniformData[]) => UboLayout;
@@ -14,7 +15,8 @@ export interface UboAdaptor
 
 /**
  * System plugin to the renderer to manage uniform buffers.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class UboSystem implements System
 {

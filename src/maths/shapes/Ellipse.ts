@@ -10,7 +10,8 @@ import type { ShapePrimitive } from './ShapePrimitive';
  * const ellipse = new Ellipse(0, 0, 20, 10); // 40x20 rectangle
  * const isPointInEllipse = ellipse.contains(0, 0); // true
  * ```
- * @memberof maths
+ * @category maths
+ * @standard
  */
 export class Ellipse implements ShapePrimitive
 {

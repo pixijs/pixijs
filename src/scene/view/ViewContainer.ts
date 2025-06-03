@@ -2,39 +2,62 @@ import { type InstructionSet } from '../../rendering/renderers/shared/instructio
 import { type RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
 import { type Renderer } from '../../rendering/renderers/types';
 import { Bounds } from '../container/bounds/Bounds';
-import { Container } from '../container/Container';
+import { Container, type ContainerOptions } from '../container/Container';
 import { type IRenderLayer } from '../layers/RenderLayer';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { DestroyOptions } from '../container/destroyTypes';
 
+/** @internal */
+export interface GPUData
+{
+    destroy: () => void;
+}
+
+/**
+ * Options for the construction of a ViewContainer.
+ * @category scene
+ * @advanced
+ */
+export interface ViewContainerOptions extends ContainerOptions, PixiMixins.ViewContainerOptions {}
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
+export interface ViewContainer<GPU_DATA extends GPUData = any> extends PixiMixins.ViewContainer, Container
+{
+    // eslint-disable-next-line requireMemberAPI/require-member-api-doc
+    _gpuData: Record<number, GPU_DATA>;
+}
+
 /**
  * A ViewContainer is a type of container that represents a view.
  * This view can be a Sprite, a Graphics object, or any other object that can be rendered.
  * This class is abstract and should not be used directly.
- * @memberof scene
+ * @category scene
+ * @advanced
  */
-export abstract class ViewContainer extends Container implements View
+export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Container implements View
 {
-    /** @private */
+    /** @internal */
     public override readonly renderPipeId: string;
-    /** @private */
+    /** @internal */
     public readonly canBundle = true;
-    /** @private */
+    /** @internal */
     public override allowChildren = false;
 
-    /** @private */
+    /** @internal */
     public _roundPixels: 0 | 1 = 0;
-    /** @private */
+    /** @internal */
     public _lastUsed = -1;
+
+    /** @internal */
+    public _gpuData: Record<number, GPU_DATA> = Object.create(null);
 
     protected _bounds: Bounds = new Bounds(0, 1, 0, 0);
     protected _boundsDirty = true;
 
     /**
      * The local bounds of the view.
-     * @type {rendering.Bounds}
+     * @type {Bounds}
      */
     public get bounds()
     {
@@ -62,6 +85,12 @@ export abstract class ViewContainer extends Container implements View
     set roundPixels(value: boolean)
     {
         this._roundPixels = value ? 1 : 0;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+    constructor(options: ViewContainerOptions)
+    {
+        super(options);
     }
 
     /**
@@ -105,15 +134,29 @@ export abstract class ViewContainer extends Container implements View
         super.destroy(options);
 
         this._bounds = null;
+
+        for (const key in this._gpuData)
+        {
+            (this._gpuData[key] as GPU_DATA).destroy?.();
+        }
+
+        this._gpuData = null;
     }
 
+    /**
+     * Collects renderables for the view container.
+     * @param instructionSet - The instruction set to collect renderables for.
+     * @param renderer - The renderer to collect renderables for.
+     * @param currentLayer - The current render layer.
+     * @internal
+     */
     public override collectRenderablesSimple(
         instructionSet: InstructionSet,
         renderer: Renderer,
         currentLayer: IRenderLayer,
     ): void
     {
-        const { renderPipes, renderableGC } = renderer;
+        const { renderPipes } = renderer;
 
         // TODO add blends in
         renderPipes.blendMode.setBlendMode(this, this.groupBlendMode, instructionSet);
@@ -121,8 +164,6 @@ export abstract class ViewContainer extends Container implements View
         const rp = renderPipes as unknown as Record<string, RenderPipe>;
 
         rp[this.renderPipeId].addRenderable(this, instructionSet);
-
-        renderableGC.addRenderable(this);
 
         this.didViewUpdate = false;
 

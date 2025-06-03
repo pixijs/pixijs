@@ -1,12 +1,19 @@
 import type { Rectangle } from '../maths/shapes/Rectangle';
 
+/**
+ * The CullingMixin interface provides properties and methods for managing culling behavior
+ * of a display object. Culling is the process of determining whether an object should be rendered
+ * based on its visibility within the current view or frame. This mixin allows for optimization
+ * of rendering by skipping objects that are not visible, thus improving performance in complex scenes.
+ * @category scene
+ * @standard
+ */
 export interface CullingMixinConstructor
 {
     /**
      * If set, this shape is used for culling instead of the bounds of this object.
      * It can improve the culling performance of objects with many children.
      * The culling area is defined in local space.
-     * @memberof scene.Container#
      */
     cullArea: Rectangle,
     /**
@@ -14,7 +21,6 @@ export interface CullingMixinConstructor
      *
      * Culling has no effect on whether updateTransform is called.
      * @default false
-     * @memberof scene.Container#
      */
     cullable: boolean,
     /**
@@ -22,11 +28,11 @@ export interface CullingMixinConstructor
      * Setting this to false allows PixiJS to bypass a recursive culling function
      * Which can help to optimize very complex scenes
      * @default true
-     * @memberof scene.Container#
      */
     cullableChildren: boolean,
 }
 
+/** @internal */
 export const cullingMixin: CullingMixinConstructor = {
     cullArea: null,
     cullable: false,

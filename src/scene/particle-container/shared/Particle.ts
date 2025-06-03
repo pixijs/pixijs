@@ -7,47 +7,42 @@ import type { ColorSource } from '../../../color/Color';
 
 /**
  * Represents a particle with properties for position, scale, rotation, color, and texture.
- * @property {number} x - The x-coordinate of the particle.
- * @property {number} y - The y-coordinate of the particle.
- * @property {number} scaleX - The scale factor in the x-axis.
- * @property {number} scaleY - The scale factor in the y-axis.
- * @property {number} anchorX - The x-coordinate of the anchor point.
- * @property {number} anchorY - The y-coordinate of the anchor point.
- * @property {number} rotation - The rotation of the particle in radians.
- * @property {number} color - The color of the particle as a hexadecimal number.
- * @property {Texture} texture - The texture of the particle.
- * @memberof scene
+ * @category scene
+ * @standard
  */
 export interface IParticle
 {
+    /** The x-coordinate of the particle position */
     x: number;
+    /** The y-coordinate of the particle position */
     y: number;
+    /** The horizontal scale factor of the particle */
     scaleX: number;
+    /** The vertical scale factor of the particle */
     scaleY: number;
+    /** The x-coordinate of the particle's anchor point (0-1 range) */
     anchorX: number;
+    /** The y-coordinate of the particle's anchor point (0-1 range) */
     anchorY: number;
+    /** The rotation of the particle in radians */
     rotation: number;
+    /** The color of the particle as a 32-bit RGBA value */
     color: number;
+    /** The texture used to render this particle */
     texture: Texture;
 }
 
 /**
  * Represents the options for creating a new particle.
- * @property {number} x - The x-coordinate of the particle.
- * @property {number} y - The y-coordinate of the particle.
- * @property {number} scaleX - The scale factor in the x-axis.
- * @property {number} scaleY - The scale factor in the y-axis.
- * @property {number} anchorX - The x-coordinate of the anchor point.
- * @property {number} anchorY - The y-coordinate of the anchor point.
- * @property {number} rotation - The rotation of the particle in radians.
- * @property {Texture} texture - The texture of the particle.
- * @property {ColorSource} tint - The tint color of the particle as a hexadecimal number.
- * @property {number} alpha - The alpha value of the particle.
- * @memberof scene
+ * @category scene
+ * @standard
  */
 export type ParticleOptions = Omit<Partial<IParticle>, 'color'> & {
+    /** The texture of the particle */
     texture: Texture
+    /** The tint color of the particle as a hexadecimal number */
     tint?: ColorSource;
+    /** The alpha value of the particle (0-1 range) */
     alpha?: number;
 };
 
@@ -71,8 +66,8 @@ export type ParticleOptions = Omit<Partial<IParticle>, 'color'> & {
  *   color: 0xff0000,
  * });
  * ```
- * @implements {IParticle}
- * @memberof scene
+ * @category scene
+ * @standard
  */
 export class Particle implements IParticle
 {

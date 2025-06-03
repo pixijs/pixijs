@@ -1,6 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import { Color, type ColorSource } from '../../color/Color';
 import { cullingMixin } from '../../culling/cullingMixin';
+import { extensions } from '../../extensions/Extensions';
 import { Matrix } from '../../maths/matrix/Matrix';
 import { DEG_TO_RAD, RAD_TO_DEG } from '../../maths/misc/const';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
@@ -30,29 +31,13 @@ import type { Dict } from '../../utils/types';
 import type { Optional } from './container-mixins/measureMixin';
 import type { DestroyOptions } from './destroyTypes';
 
-export type ContainerChild = Container;
-
 /**
- * This is where you'll find all the display objects available in Pixi.
- *
- * All display objects inherit from the {@link scene.Container} class. You can use a `Container` for simple grouping of
- * other display objects. Here's all the available display object classes.
- *
- * - {@link scene.Container} is the base class for all display objects that act as a container for other objects.
- *   - {@link scene.Sprite} is a display object that uses a texture
- *      - {@link scene.AnimatedSprite} is a sprite that can play animations
- *   - {@link scene.TilingSprite} a fast way of rendering a tiling image
- *   - {@link scene.NineSliceSprite} allows you to stretch a texture using 9-slice scaling
- *   - {@link scene.Graphics} is a graphic object that can be drawn to the screen.
- *   - {@link scene.Mesh} empowers you to have maximum flexibility to render any kind of visuals you can think of
- *      - {@link scene.MeshSimple} mimics Mesh, providing easy-to-use constructor arguments
- *      - {@link scene.MeshPlane} allows you to draw a texture across several points and then manipulate these points
- *      - {@link scene.MeshRope} allows you to draw a texture across several points and then manipulate these points
- *   - {@link scene.Text} render text using custom fonts
- *      - {@link scene.BitmapText} render text using a bitmap font
- *      - {@link scene.HTMLText} render text using HTML and CSS
- * @namespace scene
+ * The type of child that can be added to a {@link Container}.
+ * This is a generic type that extends the {@link Container} class.
+ * @category scene
+ * @standard
  */
+export type ContainerChild = Container;
 
 // as pivot and skew are the least used properties of a container, we can use this optimisation
 // to avoid allocating lots of unnecessary objects for them.
@@ -60,12 +45,41 @@ const defaultSkew = new ObservablePoint(null);
 const defaultPivot = new ObservablePoint(null);
 const defaultScale = new ObservablePoint(null, 1, 1);
 
+/**
+ * The events that can be emitted by a Container.
+ * @category scene
+ * @standard
+ */
 export interface ContainerEvents<C extends ContainerChild> extends PixiMixins.ContainerEvents
 {
+    /**
+     * Emitted when this container is added to a new container.
+     * @param container - The parent container.
+     */
     added: [container: Container];
+    /**
+     * Emitted when a child is added to the container.
+     * @param child - The child that was added.
+     * @param container - The container that the child was added to.
+     * @param index - The index at which the child was added.
+     */
     childAdded: [child: C, container: Container, index: number];
+    /**
+     * Emitted when this container is removed from the parent.
+     * @param container - The parent container.
+     */
     removed: [container: Container];
+    /**
+     * Emitted when a child is removed from the container.
+     * @param child - The child that was removed.
+     * @param container - The container that the child was removed from.
+     * @param index - The index at which the child was removed.
+     */
     childRemoved: [child: C, container: Container, index: number];
+    /**
+     * Emitted when the container is destroyed.
+     * @param container - The container that was destroyed.
+     */
     destroyed: [container: Container];
 }
 
@@ -83,11 +97,20 @@ type AnyEvent = {
     [K: ({} & string) | ({} & symbol)]: any;
 };
 
+/** @internal */
 export const UPDATE_COLOR = 0b0001;
+/** @internal */
 export const UPDATE_BLEND = 0b0010;
+/** @internal */
 export const UPDATE_VISIBLE = 0b0100;
+/** @internal */
 export const UPDATE_TRANSFORM = 0b1000;
 
+/**
+ * Options for updating the transform of a container.
+ * @category scene
+ * @standard
+ */
 export interface UpdateTransformOptions
 {
     x: number;
@@ -110,49 +133,51 @@ export interface UpdateTransformOptions
  *    rotation: Math.PI / 2,
  * });
  * ```
- * @memberof scene
- * @see scene.Container
+ * @category scene
+ * @standard
+ * @see Container
  */
 export interface ContainerOptions<C extends ContainerChild = ContainerChild> extends PixiMixins.ContainerOptions
 {
-    /** @see scene.Container#isRenderGroup */
+    /** @see Container#isRenderGroup */
     isRenderGroup?: boolean;
 
-    /** @see scene.Container#blendMode */
+    /** @see Container#blendMode */
     blendMode?: BLEND_MODES;
-    /** @see scene.Container#tint */
+    /** @see Container#tint */
     tint?: ColorSource;
 
-    /** @see scene.Container#alpha */
+    /** @see Container#alpha */
     alpha?: number;
-    /** @see scene.Container#angle */
+    /** @see Container#angle */
     angle?: number;
-    /** @see scene.Container#children */
+    /** @see Container#children */
     children?: C[];
-    /** @see scene.Container#parent */
+    /** @see Container#parent */
     parent?: Container;
-    /** @see scene.Container#renderable */
+    /** @see Container#renderable */
     renderable?: boolean;
-    /** @see scene.Container#rotation */
+    /** @see Container#rotation */
     rotation?: number;
-    /** @see scene.Container#scale */
+    /** @see Container#scale */
     scale?: PointData | number;
-    /** @see scene.Container#pivot */
+    /** @see Container#pivot */
     pivot?: PointData | number;
-    /** @see scene.Container#position */
+    /** @see Container#position */
     position?: PointData;
-    /** @see scene.Container#skew */
+    /** @see Container#skew */
     skew?: PointData;
-    /** @see scene.Container#visible */
+    /** @see Container#visible */
     visible?: boolean;
-    /** @see scene.Container#x */
+    /** @see Container#x */
     x?: number;
-    /** @see scene.Container#y */
+    /** @see Container#y */
     y?: number;
-    /** @see scene.Container#boundArea */
+    /** @see Container#boundArea */
     boundsArea?: Rectangle;
 }
 
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface Container<C extends ContainerChild>
     extends PixiMixins.Container<C>, EventEmitter<ContainerEvents<C> & AnyEvent> {}
 
@@ -167,7 +192,7 @@ export interface Container<C extends ContainerChild>
  *
  * <summary>Transforms</summary>
  *
- * The [transform]{@link scene.Container#transform} of a display object describes the projection from its
+ * The [transform]{@link Container#localTransform} of a display object describes the projection from its
  * local coordinate space to its parent's local coordinate space. The following properties are derived
  * from the transform:
  *
@@ -180,7 +205,7 @@ export interface Container<C extends ContainerChild>
  *   </thead>
  *   <tbody>
  *     <tr>
- *       <td>[pivot]{@link scene.Container#pivot}</td>
+ *       <td>[pivot]{@link Container#pivot}</td>
  *       <td>
  *         Invariant under rotation, scaling, and skewing. The projection of into the parent's space of the pivot
  *         is equal to position, regardless of the other three transformations. In other words, It is the center of
@@ -188,29 +213,29 @@ export interface Container<C extends ContainerChild>
  *       </td>
  *     </tr>
  *     <tr>
- *       <td>[position]{@link scene.Container#position}</td>
+ *       <td>[position]{@link Container#position}</td>
  *       <td>
- *         Translation. This is the position of the [pivot]{@link scene.Container#pivot} in the parent's local
+ *         Translation. This is the position of the [pivot]{@link Container#pivot} in the parent's local
  *         space. The default value of the pivot is the origin (0,0). If the top-left corner of your display object
  *         is (0,0) in its local space, then the position will be its top-left corner in the parent's local space.
  *       </td>
  *     </tr>
  *     <tr>
- *       <td>[scale]{@link scene.Container#scale}</td>
+ *       <td>[scale]{@link Container#scale}</td>
  *       <td>
  *         Scaling. This will stretch (or compress) the display object's projection. The scale factors are along the
  *         local coordinate axes. In other words, the display object is scaled before rotated or skewed. The center
- *         of scaling is the [pivot]{@link scene.Container#pivot}.
+ *         of scaling is the [pivot]{@link Container#pivot}.
  *       </td>
  *     </tr>
  *     <tr>
- *       <td>[rotation]{@link scene.Container#rotation}</td>
+ *       <td>[rotation]{@link Container#rotation}</td>
  *       <td>
  *          Rotation. This will rotate the display object's projection by this angle (in radians).
  *       </td>
  *     </tr>
  *     <tr>
- *       <td>[skew]{@link scene.Container#skew}</td>
+ *       <td>[skew]{@link Container#skew}</td>
  *       <td>
  *         <p>Skewing. This can be used to deform a rectangular display object into a parallelogram.</p>
  *         <p>
@@ -231,29 +256,29 @@ export interface Container<C extends ContainerChild>
  *       </td>
  *     </tr>
  *     <tr>
- *       <td>[angle]{@link scene.Container#angle}</td>
- *       <td>Rotation. This is an alias for [rotation]{@link scene.Container#rotation}, but in degrees.</td>
+ *       <td>[angle]{@link Container#angle}</td>
+ *       <td>Rotation. This is an alias for [rotation]{@link Container#rotation}, but in degrees.</td>
  *     </tr>
  *     <tr>
- *       <td>[x]{@link scene.Container#x}</td>
+ *       <td>[x]{@link Container#x}</td>
  *       <td>Translation. This is an alias for position.x!</td>
  *     </tr>
  *     <tr>
- *       <td>[y]{@link scene.Container#y}</td>
+ *       <td>[y]{@link Container#y}</td>
  *       <td>Translation. This is an alias for position.y!</td>
  *     </tr>
  *     <tr>
- *       <td>[width]{@link scene.Container#width}</td>
+ *       <td>[width]{@link Container#width}</td>
  *       <td>
- *         Implemented in [Container]{@link scene.Container}. Scaling. The width property calculates scale.x by dividing
+ *         Implemented in [Container]{@link Container}. Scaling. The width property calculates scale.x by dividing
  *         the "requested" width by the local bounding box width. It is indirectly an abstraction over scale.x, and there
  *         is no concept of user-defined width.
  *       </td>
  *     </tr>
  *     <tr>
- *       <td>[height]{@link scene.Container#height}</td>
+ *       <td>[height]{@link Container#height}</td>
  *       <td>
- *         Implemented in [Container]{@link scene.Container}. Scaling. The height property calculates scale.y by dividing
+ *         Implemented in [Container]{@link Container}. Scaling. The height property calculates scale.y by dividing
  *         the "requested" height by the local bounding box height. It is indirectly an abstraction over scale.y, and there
  *         is no concept of user-defined height.
  *       </td>
@@ -345,20 +370,28 @@ export interface Container<C extends ContainerChild>
  * 2. groupTransform, this it the transform of the container relative to the renderGroup it belongs too
  * 3. worldTransform, this is the transform of the container relative to the Scene being rendered
  * </details>
- * @memberof scene
+ * @category scene
+ * @standard
  */
 export class Container<C extends ContainerChild = ContainerChild> extends EventEmitter<ContainerEvents<C> & AnyEvent>
 {
     /**
      * Mixes all enumerable properties and methods from a source object to Container.
      * @param source - The source of properties and methods to mix in.
+     * @deprecated since 8.8.0
      */
     public static mixin(source: Dict<any>): void
     {
-        Object.defineProperties(Container.prototype, Object.getOwnPropertyDescriptors(source));
+        // #if _DEBUG
+        deprecation('8.8.0', 'Container.mixin is deprecated, please use extensions.mixin instead.');
+        // #endif
+        extensions.mixin(Container, source);
     }
 
-    /** unique id for this container */
+    /**
+     * unique id for this container
+     * @internal
+     */
     public readonly uid: number = uid('renderable');
 
     /** @private */
@@ -409,6 +442,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * The RenderLayer this container belongs to, if any.
      * If it belongs to a RenderLayer, it will be rendered from the RenderLayer's position in the scene.
      * @readonly
+     * @advanced
      */
     public parentRenderLayer: IRenderLayer;
 
@@ -416,10 +450,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
     // used by the transform system to check if a container needs to be updated that frame
     // if the tick matches the current transform system tick, it is not updated again
-    /**
-     * @internal
-     * @ignore
-     */
+    /** @internal */
     public updateTick = -1;
 
     /**
@@ -432,6 +463,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * transforms and up to the render group (think of it as kind of like a stage - but the stage can be nested).
      * If this container is is self a render group matrix will be relative to its parent render group
      * @readonly
+     * @advanced
      */
     public relativeGroupTransform: Matrix = new Matrix();
     /**
@@ -440,6 +472,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * will be the same as the relativeGroupTransform.
      * Use this value when actually rendering things to the screen
      * @readonly
+     * @advanced
      */
     public groupTransform: Matrix = this.relativeGroupTransform;
 
@@ -453,28 +486,24 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     /**
      * The coordinate of the object relative to the local coordinates of the parent.
      * @internal
-     * @ignore
      */
     public _position: ObservablePoint = new ObservablePoint(this, 0, 0);
 
     /**
      * The scale factor of the object.
      * @internal
-     * @ignore
      */
     public _scale: ObservablePoint = defaultScale;
 
     /**
      * The pivot point of the container that it rotates around.
      * @internal
-     * @ignore
      */
     public _pivot: ObservablePoint = defaultPivot;
 
     /**
      * The skew amount, on the x and y axis.
      * @internal
-     * @ignore
      */
     public _skew: ObservablePoint = defaultSkew;
 
@@ -482,7 +511,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * The X-coordinate value of the normalized local X axis,
      * the first column of the local transformation matrix without a scale.
      * @internal
-     * @ignore
      */
     public _cx = 1;
 
@@ -490,7 +518,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * The Y-coordinate value of the normalized local X axis,
      * the first column of the local transformation matrix without a scale.
      * @internal
-     * @ignore
      */
     public _sx = 0;
 
@@ -498,7 +525,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * The X-coordinate value of the normalized local Y axis,
      * the second column of the local transformation matrix without a scale.
      * @internal
-     * @ignore
      */
     public _cy = 0;
 
@@ -506,38 +532,35 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * The Y-coordinate value of the normalized local Y axis,
      * the second column of the local transformation matrix without a scale.
      * @internal
-     * @ignore
      */
     public _sy = 1;
 
     /**
      * The rotation amount.
      * @internal
-     * @ignore
      */
     private _rotation = 0;
 
     // / COLOR related props //////////////
 
     // color stored as ABGR
+    /** @internal */
     public localColor = 0xFFFFFF;
+    /** @internal */
     public localAlpha = 1;
 
+    /** @internal */
     public groupAlpha = 1; // A
+    /** @internal */
     public groupColor = 0xFFFFFF; // BGR
+    /** @internal */
     public groupColorAlpha = 0xFFFFFFFF; // ABGR
 
     // / BLEND related props //////////////
 
-    /**
-     * @internal
-     * @ignore
-     */
+    /** @internal */
     public localBlendMode: BLEND_MODES = 'inherit';
-    /**
-     * @internal
-     * @ignore
-     */
+    /** @internal */
     public groupBlendMode: BLEND_MODES = 'normal';
 
     // / VISIBILITY related props //////////////
@@ -551,15 +574,12 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * the second bit represents visibility (0 = not visible, 1 = visible) 0b010
      * the first bit represents renderable (0 = not renderable, 1 = renderable) 0b001
      * @internal
-     * @ignore
      */
     public localDisplayStatus = 0b111; // 0b11 | 0b10 | 0b01 | 0b00
-    /**
-     * @internal
-     * @ignore
-     */
+    /** @internal */
     public globalDisplayStatus = 0b111; // 0b11 | 0b10 | 0b01 | 0b00
 
+    /** @internal */
     public readonly renderPipeId: string;
 
     /**
@@ -584,6 +604,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      */
     public _didViewChangeTick = 0;
 
+    /** @internal */
     public layerParentId: string;// = 'default';
     /**
      * We now use the _didContainerChangeTick and _didViewChangeTick to track changes
@@ -595,7 +616,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         this._didViewChangeTick = (value >> 12) & 0xFFF; // Extract the upper 12 bits
         this._didContainerChangeTick = value & 0xFFF; // Extract the lower 12 bits
     }
-
+    /** @ignore */
     get _didChangeId(): number
     {
         return (this._didContainerChangeTick & 0xfff) | ((this._didViewChangeTick & 0xfff) << 12);
@@ -1019,10 +1040,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         typeof value === 'number' ? this._scale.set(value) : this._scale.copyFrom(value);
     }
 
-    /**
-     * The width of the Container, setting this will actually modify the scale to achieve the value set.
-     * @memberof scene.Container#
-     */
+    /** The width of the Container, setting this will actually modify the scale to achieve the value set. */
     get width(): number
     {
         return Math.abs(this.scale.x * this.getLocalBounds().width);
@@ -1035,10 +1053,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         this._setWidth(value, localWidth);
     }
 
-    /**
-     * The height of the Container, setting this will actually modify the scale to achieve the value set.
-     * @memberof scene.Container#
-     */
+    /** The height of the Container, setting this will actually modify the scale to achieve the value set. */
     get height(): number
     {
         return Math.abs(this.scale.y * this.getLocalBounds().height);
@@ -1056,7 +1071,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * This is faster than get the width and height separately.
      * @param out - Optional object to store the size in.
      * @returns - The size of the container.
-     * @memberof scene.Container#
      */
     public getSize(out?: Size): Size
     {
@@ -1078,7 +1092,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * This is faster than setting the width and height separately.
      * @param value - This can be either a number or a [Size]{@link Size} object.
      * @param height - The height to set. Defaults to the value of `width` if not provided.
-     * @memberof scene.Container#
      */
     public setSize(value: number | Optional<Size, 'height'>, height?: number)
     {
@@ -1341,14 +1354,11 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * Do not use a Container after calling `destroy`.
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
-     * @param {boolean} [options.children=false] - if set to true, all the children will have their destroy
-     *  method called as well. 'options' will be passed on to those calls.
-     * @param {boolean} [options.texture=false] - Only used for children with textures e.g. Sprites. If options.children
-     * is set to true it should destroy the texture of the child sprite
-     * @param {boolean} [options.textureSource=false] - Only used for children with textures e.g. Sprites.
-     * If options.children is set to true it should destroy the texture source of the child sprite
-     * @param {boolean} [options.context=false] - Only used for children with graphicsContexts e.g. Graphics.
-     * If options.children is set to true it should destroy the context of the child graphics
+     * @example
+     * container.destroy();
+     * container.destroy(true);
+     * container.destroy({ children: true });
+     * container.destroy({ children: true, texture: true, textureSource: true });
      */
     public destroy(options: DestroyOptions = false): void
     {
@@ -1395,15 +1405,18 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     }
 }
 
-Container.mixin(childrenHelperMixin);
-Container.mixin(getFastGlobalBoundsMixin);
-Container.mixin(toLocalGlobalMixin);
-Container.mixin(onRenderMixin);
-Container.mixin(measureMixin);
-Container.mixin(effectsMixin);
-Container.mixin(findMixin);
-Container.mixin(sortMixin);
-Container.mixin(cullingMixin);
-Container.mixin(cacheAsTextureMixin);
-Container.mixin(getGlobalMixin);
-Container.mixin(collectRenderablesMixin);
+extensions.mixin(
+    Container,
+    childrenHelperMixin,
+    getFastGlobalBoundsMixin,
+    toLocalGlobalMixin,
+    onRenderMixin,
+    measureMixin,
+    effectsMixin,
+    findMixin,
+    sortMixin,
+    cullingMixin,
+    cacheAsTextureMixin,
+    getGlobalMixin,
+    collectRenderablesMixin,
+);

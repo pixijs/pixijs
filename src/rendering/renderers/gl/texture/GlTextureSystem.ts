@@ -26,7 +26,8 @@ const BYTES_PER_PIXEL = 4;
 
 /**
  * The system for managing textures in WebGL.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class GlTextureSystem implements System, CanvasGenerator
 {
@@ -62,6 +63,8 @@ export class GlTextureSystem implements System, CanvasGenerator
     private _mapFormatToType: Record<string, number>;
     private _mapFormatToFormat: Record<string, number>;
 
+    private _premultiplyAlpha = false;
+
     // TODO - separate samplers will be a cool thing to add, but not right now!
     private readonly _useSeparateSamplers = false;
 
@@ -87,6 +90,7 @@ export class GlTextureSystem implements System, CanvasGenerator
         this._glTextures = Object.create(null);
         this._glSamplers = Object.create(null);
         this._boundSamplers = Object.create(null);
+        this._premultiplyAlpha = false;
 
         for (let i = 0; i < 16; i++)
         {
@@ -280,6 +284,14 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         this._boundTextures[this._activeTextureLocation] = source;
 
+        const premultipliedAlpha = source.alphaMode === 'premultiply-alpha-on-upload';
+
+        if (this._premultiplyAlpha !== premultipliedAlpha)
+        {
+            this._premultiplyAlpha = premultipliedAlpha;
+            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, premultipliedAlpha);
+        }
+
         if (this._uploads[source.uploadMethodId])
         {
             this._uploads[source.uploadMethodId].upload(source, glTexture, gl, this._renderer.context.webGLVersion);
@@ -430,6 +442,12 @@ export class GlTextureSystem implements System, CanvasGenerator
         this._activeTextureLocation = -1;
         this._boundTextures.fill(Texture.EMPTY.source);
         this._boundSamplers = Object.create(null);
+
+        const gl = this._gl;
+
+        this._premultiplyAlpha = false;
+
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this._premultiplyAlpha);
     }
 }
 

@@ -1,3 +1,7 @@
+/**
+ * @param pixels
+ * @internal
+ */
 export function unpremultiplyAlpha(pixels: Uint8Array | Uint8ClampedArray): void
 {
     if (pixels instanceof Uint8ClampedArray)

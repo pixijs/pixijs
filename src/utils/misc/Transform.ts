@@ -4,28 +4,32 @@ import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import type { Observer } from '../../maths/point/ObservablePoint';
 
 /**
- * Options for the {@link utils.Transform} constructor.
- * @memberof utils.Transform
+ * Options for the {@link Transform} constructor.
+ * @category utils
+ * @advanced
  */
 export interface TransformOptions
 {
     /** The matrix to use. */
     matrix?: Matrix;
-    /** The observer to use. */
+    /**
+     * The observer to use.
+     * @advanced
+     */
     observer?: {_onUpdate: (transform: Transform) => void}
 }
 
 /**
  * The Transform class facilitates the manipulation of a 2D transformation matrix through
  * user-friendly properties: position, scale, rotation, skew, and pivot.
- * @memberof utils
+ * @category utils
+ * @standard
  */
 export class Transform
 {
     /**
      * The local transformation matrix.
      * @internal
-     * @private
      */
     public _matrix: Matrix;
 
@@ -120,7 +124,6 @@ export class Transform
      * Called when a value changes.
      * @param point
      * @internal
-     * @private
      */
     public _onUpdate(point?: ObservablePoint): void
     {

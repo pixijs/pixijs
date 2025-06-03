@@ -23,7 +23,8 @@ const isCornerWithinStroke = (
  * The `RoundedRectangle` object is an area defined by its position, as indicated by its top-left corner
  * point (`x`, `y`) and by its `width` and its `height`, including a `radius` property that
  * defines the radius of the rounded corners.
- * @memberof maths
+ * @category maths
+ * @standard
  */
 export class RoundedRectangle implements ShapePrimitive
 {

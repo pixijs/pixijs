@@ -2,6 +2,7 @@ import type { WebGLRenderer } from '../../../rendering/renderers/gl/WebGLRendere
 import type { ParticleContainer } from '../shared/ParticleContainer';
 import type { ParticleContainerAdaptor, ParticleContainerPipe } from '../shared/ParticleContainerPipe';
 
+/** @internal */
 export class GlParticleContainerAdaptor implements ParticleContainerAdaptor
 {
     public execute(particleContainerPipe: ParticleContainerPipe, container: ParticleContainer)

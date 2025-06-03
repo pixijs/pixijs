@@ -35,6 +35,10 @@ const infoMap = {
     sint32x4: GL_TYPES.INT
 };
 
+/**
+ * @param format
+ * @internal
+ */
 export function getGlTypeFromFormat(format: VertexFormat): number
 {
     return infoMap[format] ?? infoMap.float32;

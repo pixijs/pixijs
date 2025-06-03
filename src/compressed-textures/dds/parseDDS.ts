@@ -3,6 +3,11 @@ import { DDS, DXGI_TO_TEXTURE_FORMAT, FOURCC_TO_TEXTURE_FORMAT, TEXTURE_FORMAT_B
 import type { TEXTURE_FORMATS } from '../../rendering/renderers/shared/texture/const';
 import type { TextureSourceOptions } from '../../rendering/renderers/shared/texture/sources/TextureSource';
 
+/**
+ * @param arrayBuffer
+ * @param supportedFormats
+ * @internal
+ */
 export function parseDDS(arrayBuffer: ArrayBuffer, supportedFormats: TEXTURE_FORMATS[]): TextureSourceOptions<Uint8Array[]>
 {
     const {
@@ -55,8 +60,11 @@ function getMipmapLevelBuffers(format: TEXTURE_FORMATS, width: number, height: n
 
     for (let level = 0; level < mipmapCount; ++level)
     {
+        // Each dimension must be aligned to a multiple of 4
+        const alignedWidth = Math.ceil(Math.max(4, mipWidth) / 4) * 4;
+        const alignedHeight = Math.ceil(Math.max(4, mipHeight) / 4) * 4;
         const byteLength = blockBytes
-            ? Math.max(4, mipWidth) / 4 * Math.max(4, mipHeight) / 4 * blockBytes
+            ? alignedWidth / 4 * alignedHeight / 4 * blockBytes
             : mipWidth * mipHeight * 4;
 
         const levelBuffer = new Uint8Array(arrayBuffer, offset, byteLength);

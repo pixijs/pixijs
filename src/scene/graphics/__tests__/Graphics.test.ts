@@ -1,7 +1,9 @@
+import { Rectangle } from '../../../maths/shapes/Rectangle';
 import { Graphics } from '../shared/Graphics';
 import { GraphicsContext } from '../shared/GraphicsContext';
 import { GraphicsPath } from '../shared/path/GraphicsPath';
 import { toFillStyle } from '../shared/utils/convertFillInputToFillStyle';
+import { generateTextureMatrix as generateTextureFillMatrix } from '../shared/utils/generateTextureFillMatrix';
 import { getWebGLRenderer } from '@test-utils';
 import { Matrix } from '~/maths';
 import { Texture } from '~/rendering';
@@ -114,19 +116,22 @@ describe('Graphics', () =>
 
             graphics.destroy();
         });
+    });
 
-        it('should invert matrix when used with texture fill', () =>
-        {
-            const matrix = new Matrix();
-            const texture = Texture.EMPTY;
+    it('should invert matrix when used with texture fill', async () =>
+    {
+        const matrix = new Matrix();
+        const texture = Texture.EMPTY;
 
-            matrix.scale(2, 3);
+        matrix.scale(2, 3);
 
-            const style = toFillStyle({ texture, matrix }, GraphicsContext.defaultFillStyle);
+        const style = toFillStyle({ texture, matrix, textureSpace: 'global' }, GraphicsContext.defaultFillStyle);
+        const shape = new Rectangle(0, 0, 100, 100);
 
-            expect(style.matrix.a).toBe(1 / 2);
-            expect(style.matrix.d).toBe(1 / 3);
-        });
+        const textureMatrix = generateTextureFillMatrix(new Matrix(), style, shape, new Matrix());
+
+        expect(textureMatrix.a).toBe(1 / 2);
+        expect(textureMatrix.d).toBe(1 / 3);
     });
 
     describe('tint', () =>

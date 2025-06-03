@@ -10,7 +10,8 @@ import type { FilterOptions } from '../../Filter';
 
 /**
  * Options for NoiseFilter
- * @memberof filters
+ * @category filters
+ * @standard
  */
 export interface NoiseFilterOptions extends FilterOptions
 {
@@ -24,12 +25,22 @@ export interface NoiseFilterOptions extends FilterOptions
  * A Noise effect filter.
  *
  * original filter: https://github.com/evanw/glfx.js/blob/master/src/filters/adjust/noise.js
- * @memberof filters
- * @author Vico @vicocotea
+ * @example
+ * import { NoiseFilter } from 'pixi.js';
+ *
+ * const filter = new NoiseFilter({ noise: 0.5 });
+ * sprite.filters = filter;
+ *
+ * // update noise
+ * filter.noise = 0.8;
+ * @category filters
+ * @author Vico: vicocotea
+ * @standard
+ * @noInheritDoc
  */
 export class NoiseFilter extends Filter
 {
-    public static readonly defaultOptions: NoiseFilterOptions = {
+    public static defaultOptions: NoiseFilterOptions = {
         noise: 0.5,
     };
 

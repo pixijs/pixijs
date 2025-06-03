@@ -138,7 +138,8 @@ function normalizeStringPosix(path: string, allowAboveRoot: boolean)
  *
  * path.normalize('http://www.example.com/foo/bar/../baz'); // http://www.example.com/foo/baz
  * ```
- * @memberof utils
+ * @category utils
+ * @advanced
  */
 export interface Path
 {
@@ -179,8 +180,8 @@ export interface Path
      * If the URL is already absolute we return it as is
      * If it's not, we convert it
      * @param url - The URL to test
-     * @param customBaseUrl - The base URL to use
-     * @param customRootUrl - The root URL to use
+     * @param baseUrl - The base URL to use
+     * @param rootUrl - The root URL to use
      */
     toAbsolute: (url: string, baseUrl?: string, rootUrl?: string) => string;
     /**
@@ -197,7 +198,7 @@ export interface Path
     /**
      * Joins all given path segments together using the platform-specific separator as a delimiter,
      * then normalizes the resulting path
-     * @param segments - The segments of the path to join
+     * @param paths - The segments of the path to join
      */
     join: (...paths: string[]) => string;
     /**
@@ -241,8 +242,9 @@ export interface Path
  *
  * path.normalize('http://www.example.com/foo/bar/../baz'); // http://www.example.com/foo/baz
  * ```
- * @see {@link utils.Path}
- * @memberof utils
+ * @see {@link Path}
+ * @category utils
+ * @standard
  */
 export const path: Path = {
     /**

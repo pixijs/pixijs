@@ -1,6 +1,7 @@
 import { Matrix } from '../../maths/matrix/Matrix';
 import { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 import { TexturePool } from '../../rendering/renderers/shared/texture/TexturePool';
+import { type Renderer } from '../../rendering/renderers/types';
 
 import type { Instruction } from '../../rendering/renderers/shared/instructions/Instruction';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
@@ -11,8 +12,8 @@ import type { Container } from './Container';
 
 /**
  * Options for caching a container as a texture.
- * @memberof rendering
- * @see {@link RenderGroup#textureOptions}
+ * @category rendering
+ * @advanced
  */
 export interface CacheAsTextureOptions
 {
@@ -32,7 +33,8 @@ export interface CacheAsTextureOptions
  * A RenderGroup is a class that is responsible for I generating a set of instructions that are used to render the
  * root container and its children. It also watches for any changes in that container or its children,
  * these changes are analysed and either the instruction set is rebuild or the instructions data is updated.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class RenderGroup implements Instruction
 {
@@ -338,11 +340,11 @@ export class RenderGroup implements Instruction
         this._onRenderContainers.splice(this._onRenderContainers.indexOf(container), 1);
     }
 
-    public runOnRender()
+    public runOnRender(renderer: Renderer)
     {
         for (let i = 0; i < this._onRenderContainers.length; i++)
         {
-            this._onRenderContainers[i]._onRender();
+            this._onRenderContainers[i]._onRender(renderer);
         }
     }
 

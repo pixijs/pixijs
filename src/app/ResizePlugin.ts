@@ -6,63 +6,105 @@ import type { Renderer } from '../rendering/renderers/types';
 type ResizeableRenderer = Pick<Renderer, 'resize'>;
 
 /**
- * Application options for the {@link app.ResizePlugin}.
- * @memberof app
- * @property {Window|HTMLElement} [resizeTo=window] - Element to automatically resize the renderer to.
+ * Application options for the {@link ResizePlugin}.
+ * These options control how your application handles window and element resizing.
+ * @example
+ * ```ts
+ * // Auto-resize to window
+ * await app.init({ resizeTo: window });
+ *
+ * // Auto-resize to container element
+ * await app.init({ resizeTo: document.querySelector('#game') });
+ * ```
+ * @category app
+ * @standard
  */
 export interface ResizePluginOptions
 {
     /**
      * Element to automatically resize the renderer to.
-     * @memberof app.ApplicationOptions
+     * @example
+     * ```ts
+     * const app = new Application();
+     * await app.init({
+     *     resizeTo: window, // Resize to the entire window
+     *     // or
+     *     resizeTo: document.querySelector('#game-container'), // Resize to a specific element
+     *     // or
+     *     resizeTo: null, // Disable auto-resize
+     * });
+     * ```
+     * @default null
      */
     resizeTo?: Window | HTMLElement;
 }
 
 /**
- * Middleware for Application's resize functionality.
+ * Middleware for Application's resize functionality. This plugin handles automatic
+ * and manual resizing of your PixiJS application.
  *
- * Adds the following methods to {@link app.Application}:
- * * {@link app.Application#resizeTo}
- * * {@link app.Application#resize}
- * * {@link app.Application#queueResize}
- * * {@link app.Application#cancelResize}
+ * Adds the following features to {@link Application}:
+ * - `resizeTo`: Set an element to automatically resize to
+ * - `resize`: Manually trigger a resize
+ * - `queueResize`: Queue a resize for the next animation frame
+ * - `cancelResize`: Cancel a queued resize
  * @example
- * import { extensions, ResizePlugin } from 'pixi.js';
+ * ```ts
+ * import { Application, ResizePlugin } from 'pixi.js';
  *
- * extensions.add(ResizePlugin);
- * @memberof app
+ * // Create application
+ * const app = new Application();
+ *
+ * // Example 1: Auto-resize to window
+ * await app.init({ resizeTo: window });
+ *
+ * // Example 2: Auto-resize to specific element
+ * const container = document.querySelector('#game-container');
+ * await app.init({ resizeTo: container });
+ *
+ * // Example 3: Manual resize control (Only if resizeTo is set)
+ * await app.init();
+ * window.addEventListener('resize', () => {
+ *    app.resize(); // Resize immediately
+ *    // or
+ *    app.queueResize(); // Queue resize for next frame
+ * });
+ *
+ * // Example 4: Change resize target at runtime
+ * app.resizeTo = window;                    // Enable auto-resize to window
+ * app.resizeTo = null;                      // Disable auto-resize
+ * @category app
+ * @standard
  */
 export class ResizePlugin
 {
     /** @ignore */
     public static extension: ExtensionMetadata = ExtensionType.Application;
-
+    /** @internal */
     public static resizeTo: Window | HTMLElement;
+    /** @internal */
     public static resize: () => void;
+    /** @internal */
     public static renderer: ResizeableRenderer;
+    /** @internal */
     public static queueResize: () => void;
+    /** @internal */
     public static render: () => void;
+    /** @internal */
     private static _resizeId: number;
+    /** @internal */
     private static _resizeTo: Window | HTMLElement;
+    /** @internal */
     private static _cancelResize: () => void;
 
     /**
      * Initialize the plugin with scope of application instance
-     * @static
      * @private
      * @param {object} [options] - See application options
      */
     public static init(options: ResizePluginOptions): void
     {
         Object.defineProperty(this, 'resizeTo',
-            /**
-             * The HTML element or window to automatically resize the
-             * renderer's view element to match width and height.
-             * @member {Window|HTMLElement}
-             * @name resizeTo
-             * @memberof app.Application#
-             */
             {
                 set(dom: Window | HTMLElement)
                 {
@@ -80,13 +122,6 @@ export class ResizePlugin
                 },
             });
 
-        /**
-         * Resize is throttled, so it's safe to call this multiple times per frame and it'll
-         * only be called once.
-         * @memberof app.Application#
-         * @method queueResize
-         * @private
-         */
         this.queueResize = (): void =>
         {
             if (!this._resizeTo)
@@ -100,12 +135,6 @@ export class ResizePlugin
             this._resizeId = requestAnimationFrame(() => this.resize());
         };
 
-        /**
-         * Cancel the resize queue.
-         * @memberof app.Application#
-         * @method cancelResize
-         * @private
-         */
         this._cancelResize = (): void =>
         {
             if (this._resizeId)
@@ -115,13 +144,6 @@ export class ResizePlugin
             }
         };
 
-        /**
-         * Execute an immediate resize on the renderer, this is not
-         * throttled and can be expensive to call many times in a row.
-         * Will resize only if `resizeTo` property is set.
-         * @memberof app.Application#
-         * @method resize
-         */
         this.resize = (): void =>
         {
             if (!this._resizeTo)
@@ -162,7 +184,6 @@ export class ResizePlugin
 
     /**
      * Clean up the ticker, scoped to application
-     * @static
      * @private
      */
     public static destroy(): void

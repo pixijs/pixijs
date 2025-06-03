@@ -10,6 +10,11 @@ import type { TEXTURE_FORMATS } from '../../rendering/renderers/shared/texture/c
 
 let compressedTextureExtensions: string[];
 
+/**
+ * Detects if the browser supports compressed texture formats.
+ * @category assets
+ * @internal
+ */
 export const detectCompressed = {
     extension: {
         type: ExtensionType.DetectionParser,

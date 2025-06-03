@@ -8,7 +8,8 @@ import type { ShapePrimitive } from './ShapePrimitive';
 
 const tempPoints = [new Point(), new Point(), new Point(), new Point()];
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+// eslint-disable-next-line max-len
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type, requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface Rectangle extends PixiMixins.Rectangle { }
 
 /**
@@ -16,8 +17,9 @@ export interface Rectangle extends PixiMixins.Rectangle { }
  * point (`x`, `y`) and by its `width` and its `height`.
  *
  * It also provides convenience methods to get and set the position and size of the rectangle such as
- * {@link maths.Rectangle#bottom|bottom}, {@link maths.Rectangle#right|right} and {@link maths.Rectangle#isEmpty|isEmpty}.
- * @memberof maths
+ * {@link Rectangle#bottom|bottom}, {@link Rectangle#right|right} and {@link Rectangle#isEmpty|isEmpty}.
+ * @category maths
+ * @standard
  */
 export class Rectangle implements ShapePrimitive
 {
@@ -394,6 +396,41 @@ export class Rectangle implements ShapePrimitive
         out.copyFrom(this);
 
         return out;
+    }
+
+    /**
+     * Checks if this rectangle fully contains another rectangle.
+     *
+     * A rectangle contains another rectangle if all four corners of the other rectangle
+     * lie within the bounds of this rectangle.
+     *
+     * ```ts
+     * const container = new Rectangle(0, 0, 100, 100);
+     * const inside = new Rectangle(25, 25, 50, 50);
+     * const partial = new Rectangle(75, 75, 50, 50);
+     *
+     * container.containsRect(inside); // Returns true
+     * container.containsRect(partial); // Returns false - partial overlap
+     * ```
+     *
+     * Note: If either rectangle has a width or height of 0, this method returns false
+     * since a zero-area rectangle cannot meaningfully contain another rectangle.
+     * @param other - The rectangle to check if it is contained within this one
+     * @returns True if the other rectangle is fully contained within this one
+     */
+    public containsRect(other: Rectangle): boolean
+    {
+        if (this.width <= 0 || this.height <= 0) return false;
+
+        const x1 = other.x;
+        const y1 = other.y;
+        const x2 = other.x + other.width;
+        const y2 = other.y + other.height;
+
+        return x1 >= this.x && x1 < this.x + this.width
+            && y1 >= this.y && y1 < this.y + this.height
+            && x2 >= this.x && x2 < this.x + this.width
+            && y2 >= this.y && y2 < this.y + this.height;
     }
 
     // #if _DEBUG

@@ -24,7 +24,8 @@ const validFontMIMEs = [
 
 /**
  * Data for loading a font
- * @memberof assets
+ * @category assets
+ * @advanced
  */
 export type LoadFontData = {
     /** Font family name */
@@ -61,7 +62,8 @@ const CSS_IDENT_TOKEN_REGEX = /^(--|-?[A-Z_])[0-9A-Z_-]*$/i;
  * Return font face name from a file name
  * Ex.: 'fonts/titan-one.woff' turns into 'Titan One'
  * @param url - File url
- * @memberof assets
+ * @category assets
+ * @internal
  */
 export function getFontFamilyName(url: string): string
 {
@@ -127,7 +129,8 @@ function encodeURIWhenNeeded(uri: string)
  *     weights: ['normal', 'bold'],
  *   }
  * })
- * @memberof assets
+ * @category assets
+ * @advanced
  */
 export const loadWebFont = {
     extension: {

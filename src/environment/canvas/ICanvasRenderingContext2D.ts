@@ -2,7 +2,8 @@ import type { ICanvas } from './ICanvas';
 
 /**
  * Common interface for CanvasRenderingContext2D, OffscreenCanvasRenderingContext2D, and other custom canvas 2D context.
- * @memberof environment
+ * @category environment
+ * @advanced
  */
 export interface ICanvasRenderingContext2D extends
     CanvasState,

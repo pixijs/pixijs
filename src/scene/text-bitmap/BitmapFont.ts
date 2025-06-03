@@ -9,7 +9,8 @@ import type { BitmapFontInstallOptions } from './BitmapFontManager';
 
 /**
  * Options for creating a BitmapFont.
- * @memberof text
+ * @category text
+ * @standard
  */
 export interface BitmapFontOptions
 {
@@ -19,7 +20,8 @@ export interface BitmapFontOptions
 
 /**
  * A BitmapFont object represents a particular font face, size, and style.
- * @memberof text
+ * @category text
+ * @standard
  */
 export class BitmapFont extends AbstractBitmapFont<BitmapFont>
 {
@@ -112,11 +114,14 @@ export class BitmapFont extends AbstractBitmapFont<BitmapFont>
      * @example
      * import { BitmapFont, BitmapText } from 'pixi.js';
      *
-     * BitmapFont.install('TitleFont', {
-     *     fontFamily: 'Arial',
-     *     fontSize: 12,
-     *     strokeThickness: 2,
-     *     fill: 'purple',
+     * BitmapFont.install({
+     *     name: 'TitleFont',
+     *     style: {
+     *         fontFamily: 'Arial',
+     *         fontSize: 12,
+     *         strokeThickness: 2,
+     *         fill: 'purple',
+     *     }
      * });
      *
      * const title = new BitmapText({ text: 'This is the title', fontFamily: 'TitleFont' });

@@ -34,10 +34,10 @@ export class BatchableMesh implements DefaultBatchableMeshElement
     public _batch: Batch = null;
     public _indexStart: number;
     public _textureId: number;
+    public _textureMatrixUpdateId: number = -1;
 
     private _transformedUvs: Float32Array;
     private _uvUpdateId: number = -1;
-    private _textureMatrixUpdateId: number = -1;
 
     get blendMode() { return this.renderable.groupBlendMode; }
 
@@ -52,6 +52,20 @@ export class BatchableMesh implements DefaultBatchableMeshElement
         this._batch = null;
         this.geometry = null;
         this._uvUpdateId = -1;
+        this._textureMatrixUpdateId = -1;
+    }
+
+    /**
+     * Sets the texture for the batchable mesh.
+     * As it does so, it resets the texture matrix update ID.
+     * this is to ensure that the texture matrix is recalculated when the uvs are referenced
+     * @param value - The texture to set.
+     */
+    public setTexture(value: Texture)
+    {
+        if (this.texture === value) return;
+
+        this.texture = value;
         this._textureMatrixUpdateId = -1;
     }
 

@@ -1,7 +1,6 @@
 /* eslint-disable accessor-pairs */
 import { warn } from '../../utils/logging/warn';
 import { TextStyle } from '../text/TextStyle';
-import { generateTextStyleKey } from '../text/utils/generateTextStyleKey';
 import { textStyleToCSS } from './utils/textStyleToCSS';
 
 import type { FillInput, StrokeInput } from '../graphics/shared/FillTypes';
@@ -9,20 +8,26 @@ import type { TextStyleOptions } from '../text/TextStyle';
 
 /**
  * Options for HTML text style, extends {@link TextStyle}.
- * @memberof text
- * @extends text.TextStyleOptions
- * @property {string[]} [cssOverrides] - CSS style(s) to add.
- * @property {Record<string, text.HTMLTextStyleOptions>} [tagStyles] - Tag styles.
+ * @category text
+ * @standard
  */
-export interface HTMLTextStyleOptions extends Omit<TextStyleOptions, 'leading' | 'textBaseline' | 'trim' >
+export interface HTMLTextStyleOptions extends Omit<TextStyleOptions, 'leading' | 'textBaseline' | 'trim' | 'filters' >
 {
+    /**
+     * List of style overrides that will be applied to the HTML text.
+     * @advanced
+     */
     cssOverrides?: string[];
+    /**
+     * List of styles per tag.
+     * @standard
+     */
     tagStyles?: Record<string, HTMLTextStyleOptions>;
 }
 
 /**
  * A TextStyle object rendered by the HTMLTextSystem.
- * @memberof text
+ * @category text
  */
 export class HTMLTextStyle extends TextStyle
 {
@@ -50,6 +55,7 @@ export class HTMLTextStyle extends TextStyle
      *       }
      *   }
      * );
+     * @standard
      */
     public tagStyles: Record<string, HTMLTextStyleOptions>;
 
@@ -57,29 +63,30 @@ export class HTMLTextStyle extends TextStyle
     {
         super(options);
 
-        this.cssOverrides ??= options.cssOverrides;
+        this.cssOverrides = options.cssOverrides ?? [];
         this.tagStyles = options.tagStyles ?? {};
     }
 
-    /** List of style overrides that will be applied to the HTML text. */
+    /**
+     * List of style overrides that will be applied to the HTML text.
+     * @advanced
+     */
     set cssOverrides(value: string | string[])
     {
         this._cssOverrides = value instanceof Array ? value : [value];
         this.update();
     }
 
+    /** @advanced */
     get cssOverrides(): string[]
     {
         return this._cssOverrides;
     }
 
-    protected override _generateKey(): string
-    {
-        this._styleKey = generateTextStyleKey(this) + this._cssOverrides.join('-');
-
-        return this._styleKey;
-    }
-
+    /**
+     * update the text style
+     * @advanced
+     */
     public update()
     {
         this._cssStyle = null;
@@ -89,6 +96,7 @@ export class HTMLTextStyle extends TextStyle
     /**
      * Creates a new HTMLTextStyle object with the same values as this one.
      * @returns New cloned HTMLTextStyle object
+     * @standard
      */
     public clone(): HTMLTextStyle
     {
@@ -110,9 +118,14 @@ export class HTMLTextStyle extends TextStyle
             wordWrap: this.wordWrap,
             wordWrapWidth: this.wordWrapWidth,
             cssOverrides: this.cssOverrides,
+            tagStyles: { ...this.tagStyles },
         });
     }
 
+    /**
+     * The CSS style string that will be applied to the HTML text.
+     * @advanced
+     */
     get cssStyle(): string
     {
         if (!this._cssStyle)
@@ -131,6 +144,7 @@ export class HTMLTextStyle extends TextStyle
      * @param {string} value - CSS style(s) to add.
      * @example
      * style.addOverride('background-color: red');
+     * @advanced
      */
     public addOverride(...value: string[]): void
     {
@@ -148,6 +162,7 @@ export class HTMLTextStyle extends TextStyle
      * @param {string} value - CSS style to remove.
      * @example
      * style.removeOverride('background-color: red');
+     * @advanced
      */
     public removeOverride(...value: string[]): void
     {
@@ -160,6 +175,7 @@ export class HTMLTextStyle extends TextStyle
         }
     }
 
+    /** @standard */
     override set fill(value: FillInput)
     {
         // if its not a string or a number, then its a texture!
@@ -173,6 +189,7 @@ export class HTMLTextStyle extends TextStyle
         super.fill = value;
     }
 
+    /** @standard */
     override set stroke(value: StrokeInput)
     {
         // if its not a string or a number, then its a texture!

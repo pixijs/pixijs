@@ -84,7 +84,7 @@ describe('TilingSprite', () =>
 
             renderer.render({ container });
 
-            const renderData = renderer.renderPipes.tilingSprite['_tilingSpriteDataHash'][sprite.uid];
+            const renderData = sprite._gpuData[renderer.uid];
 
             expect(renderData).not.toBeNull();
 
@@ -99,7 +99,7 @@ describe('TilingSprite', () =>
 
             sprite.destroy();
 
-            expect(renderer.renderPipes.tilingSprite['_tilingSpriteDataHash'][sprite.uid]).toBeNull();
+            expect(sprite._gpuData).toBeNull();
 
             expect(sprite.texture).toBeNull();
         });
@@ -121,6 +121,18 @@ describe('TilingSprite', () =>
 
     describe('Geometry', () =>
     {
+        it('should have the correct bounds', async () =>
+        {
+            const sprite = new TilingSprite({
+                texture: getTexture({ width: 256, height: 256 }),
+                anchor: 0.5
+            });
+
+            expect(sprite.bounds.minX).toBe(-128);
+            expect(sprite.bounds.maxX).toBe(128);
+            expect(sprite.bounds.minY).toBe(-128);
+            expect(sprite.bounds.maxY).toBe(128);
+        });
         it('should calculate correct bounds when transformed', () =>
         {
             const sprite = setup({ width: 200, height: 300 });

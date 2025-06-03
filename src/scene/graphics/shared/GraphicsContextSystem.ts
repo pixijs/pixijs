@@ -6,7 +6,6 @@ import { deprecation, v8_3_4 } from '../../../utils/logging/deprecation';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { buildContextBatches } from './utils/buildContextBatches';
 
-import type { Batcher } from '../../../rendering/batcher/shared/Batcher';
 import type { System } from '../../../rendering/renderers/shared/system/System';
 import type { Renderer } from '../../../rendering/renderers/types';
 import type { PoolItem } from '../../../utils/pool/Pool';
@@ -22,7 +21,7 @@ interface GeometryData
 
 /**
  * A class that holds batchable graphics data for a GraphicsContext.
- * @memberof rendering
+ * @category rendering
  * @ignore
  */
 export class GpuGraphicsContext
@@ -41,16 +40,20 @@ export class GpuGraphicsContext
 
 /**
  * A class that holds the render data for a GraphicsContext.
- * @memberof rendering
+ * @category rendering
  * @ignore
  */
 export class GraphicsContextRenderData
 {
-    public batcher: Batcher = new DefaultBatcher();
+    public batcher: DefaultBatcher;
     public instructions = new InstructionSet();
 
-    public init()
+    public init(maxTextures: number)
     {
+        this.batcher = new DefaultBatcher({
+            maxTextures,
+        });
+
         this.instructions.reset();
     }
 
@@ -71,7 +74,8 @@ export class GraphicsContextRenderData
 
 /**
  * Options for the GraphicsContextSystem.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export interface GraphicsContextSystemOptions
 {
@@ -81,7 +85,8 @@ export interface GraphicsContextSystemOptions
 
 /**
  * A system that manages the rendering of GraphicsContexts.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class GraphicsContextSystem implements System<GraphicsContextSystemOptions>
 {
@@ -109,9 +114,11 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
     private _gpuContextHash: Record<number, GpuGraphicsContext> = {};
     // used for non-batchable graphics
     private _graphicsDataContextHash: Record<number, GraphicsContextRenderData> = Object.create(null);
+    private readonly _renderer: Renderer;
 
     constructor(renderer: Renderer)
     {
+        this._renderer = renderer;
         renderer.renderableGC.addManagedHash(this, '_gpuContextHash');
         renderer.renderableGC.addManagedHash(this, '_graphicsDataContextHash');
     }
@@ -126,12 +133,23 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
             ?? GraphicsContextSystem.defaultOptions.bezierSmoothness;
     }
 
+    /**
+     * Returns the render data for a given GraphicsContext.
+     * @param context - The GraphicsContext to get the render data for.
+     * @internal
+     */
     public getContextRenderData(context: GraphicsContext): GraphicsContextRenderData
     {
         return this._graphicsDataContextHash[context.uid] || this._initContextRenderData(context);
     }
 
-    // Context management functions
+    /**
+     * Updates the GPU context for a given GraphicsContext.
+     * If the context is dirty, it will rebuild the batches and geometry data.
+     * @param context - The GraphicsContext to update.
+     * @returns The updated GpuGraphicsContext.
+     * @internal
+     */
     public updateGpuContext(context: GraphicsContext)
     {
         let gpuContext: GpuGraphicsContext = this._gpuContextHash[context.uid]
@@ -161,6 +179,10 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
             {
                 gpuContext.isBatchable = (gpuContext.geometryData.vertices.length < 400);
             }
+            else
+            {
+                gpuContext.isBatchable = true;
+            }
 
             context.dirty = false;
         }
@@ -168,6 +190,13 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
         return gpuContext;
     }
 
+    /**
+     * Returns the GpuGraphicsContext for a given GraphicsContext.
+     * If it does not exist, it will initialize a new one.
+     * @param context - The GraphicsContext to get the GpuGraphicsContext for.
+     * @returns The GpuGraphicsContext for the given GraphicsContext.
+     * @internal
+     */
     public getGpuContext(context: GraphicsContext): GpuGraphicsContext
     {
         return this._gpuContextHash[context.uid] || this._initContext(context);
@@ -175,7 +204,9 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
 
     private _initContextRenderData(context: GraphicsContext): GraphicsContextRenderData
     {
-        const graphicsData: GraphicsContextRenderData = BigPool.get(GraphicsContextRenderData);// ();
+        const graphicsData: GraphicsContextRenderData = BigPool.get(GraphicsContextRenderData, {
+            maxTextures: this._renderer.limits.maxBatchableTextures,
+        });
 
         const { batches, geometryData } = this._gpuContextHash[context.uid];
 
@@ -218,7 +249,11 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
         {
             const batch = drawBatches[i];
 
-            batch.bindGroup = getTextureBatchBindGroup(batch.textures.textures, batch.textures.count);
+            batch.bindGroup = getTextureBatchBindGroup(
+                batch.textures.textures,
+                batch.textures.count,
+                this._renderer.limits.maxBatchableTextures
+            );
         }
 
         this._graphicsDataContextHash[context.uid] = graphicsData;

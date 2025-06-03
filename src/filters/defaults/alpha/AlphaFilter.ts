@@ -10,7 +10,8 @@ import type { FilterOptions } from '../../Filter';
 
 /**
  * Options for AlphaFilter
- * @memberof filters
+ * @category filters
+ * @standard
  */
 export interface AlphaFilterOptions extends FilterOptions
 {
@@ -33,12 +34,22 @@ export interface AlphaFilterOptions extends FilterOptions
  * 1. Assign a blendMode to this filter, blend all elements inside display object with background.
  *
  * 2. To use clipping in display coordinates, assign a filterArea to the same container that has this filter.
- * @memberof filters
+ * @category filters
+ * @standard
+ * @noInheritDoc
+ * @example
+ * import { AlphaFilter } from 'pixi.js';
+ *
+ * const filter = new AlphaFilter({ alpha: 0.5 });
+ * sprite.filters = filter;
+ *
+ * // update alpha
+ * filter.alpha = 0.8;
  */
 export class AlphaFilter extends Filter
 {
     /** Default filter options */
-    public static readonly defaultOptions: AlphaFilterOptions = {
+    public static defaultOptions: AlphaFilterOptions = {
         /** Amount of alpha from 0 to 1, where 0 is transparent */
         alpha: 1,
     };

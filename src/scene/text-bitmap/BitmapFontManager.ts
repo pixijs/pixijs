@@ -1,6 +1,8 @@
 import { Cache } from '../../assets/cache/Cache';
+import { type TextureStyle, type TextureStyleOptions } from '../../rendering/renderers/shared/texture/TextureStyle';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { warn } from '../../utils/logging/warn';
+import { CanvasTextMetrics } from '../text/canvas/CanvasTextMetrics';
 import { TextStyle } from '../text/TextStyle';
 import { DynamicBitmapFont } from './DynamicBitmapFont';
 import { getBitmapTextLayout } from './utils/getBitmapTextLayout';
@@ -19,7 +21,8 @@ let fontCount = 0;
  *
  * Install a new BitmapFont will create the characters provided for the font and store them in the cache.
  * But don't worry, if a character is requested that hasn't been generated yet, it will be created on the fly.
- * @memberof text
+ * @category text
+ * @standard
  */
 export interface BitmapFontInstallOptions
 {
@@ -51,23 +54,11 @@ export interface BitmapFontInstallOptions
     skipKerning?: boolean;
     /** Style options to render with BitmapFont. */
     style?: TextStyle | TextStyleOptions;
+    /** Optional texture style to use when creating the font textures. */
+    textureStyle?: TextureStyle | TextureStyleOptions;
 }
 
-/**
- * The BitmapFontManager is a helper that exists to install and uninstall fonts
- * into the cache for BitmapText objects.
- * @memberof text
- * @name BitmapFontManager
- * @example
- * import { BitmapFontManager, BitmapText } from 'pixi.js';
- *
- * BitmapFontManager.install({
- *   name: 'TitleFont',
- *   style: {}
- * });
- *
- * const title = new BitmapText({ text: 'This is the title', style: { fontFamily: 'TitleFont' }});
- */
+/** @advanced */
 class BitmapFontManagerClass
 {
     /**
@@ -94,7 +85,7 @@ class BitmapFontManagerClass
 
     /**
      * This character set consists of all the ASCII table.
-     * @member {string[][]}
+     * @type {string[][]}
      * @see http://www.asciitable.com/
      */
     public readonly ASCII = [[' ', '~']];
@@ -105,6 +96,7 @@ class BitmapFontManagerClass
         resolution: 1,
         padding: 4,
         skipKerning: false,
+        textureStyle: null,
     };
 
     /**
@@ -184,7 +176,9 @@ class BitmapFontManagerClass
     {
         const bitmapFont = this.getFont(text, style);
 
-        return getBitmapTextLayout([...text], style, bitmapFont, trimEnd);
+        const segments = CanvasTextMetrics.graphemeSegmenter(text);
+
+        return getBitmapTextLayout(segments, style, bitmapFont, trimEnd);
     }
 
     /**
@@ -262,7 +256,8 @@ class BitmapFontManagerClass
             skipKerning: options.skipKerning,
             padding: options.padding,
             resolution: options.resolution,
-            overrideSize: false
+            overrideSize: false,
+            textureStyle: options.textureStyle,
         });
 
         const flatChars = resolveCharacters(options.chars);
@@ -292,4 +287,20 @@ class BitmapFontManagerClass
     }
 }
 
+/**
+ * The BitmapFontManager is a helper that exists to install and uninstall fonts
+ * into the cache for BitmapText objects.
+ * @category text
+ * @standard
+ * @class
+ * @example
+ * import { BitmapFontManager, BitmapText } from 'pixi.js';
+ *
+ * BitmapFontManager.install({
+ *   name: 'TitleFont',
+ *   style: {}
+ * });
+ *
+ * const title = new BitmapText({ text: 'This is the title', style: { fontFamily: 'TitleFont' }});
+ */
 export const BitmapFontManager = new BitmapFontManagerClass();

@@ -15,8 +15,9 @@ import type { MeshOptions } from '../mesh/shared/Mesh';
  *    verticesY: 20,
  * });
  * ```
- * @see {@link scene.MeshPlane}
- * @memberof scene
+ * @see {@link MeshPlane}
+ * @category scene
+ * @standard
  */
 export interface MeshPlaneOptions extends Omit<MeshOptions, 'geometry'>
 {
@@ -37,7 +38,8 @@ export interface MeshPlaneOptions extends Omit<MeshOptions, 'geometry'>
  *     points.push(new Point(i * 50, 0));
  * }
  * const MeshPlane = new MeshPlane({ texture: Texture.from('snake.png'), verticesX: points });
- * @memberof scene
+ * @category scene
+ * @standard
  */
 export class MeshPlane extends Mesh
 {
@@ -103,8 +105,10 @@ export class MeshPlane extends Mesh
      * Destroys this sprite renderable and optionally its texture.
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
-     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
-     * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
+     * @example
+     * meshPlane.destroy();
+     * meshPlane.destroy(true);
+     * meshPlane.destroy({ texture: true, textureSource: true });
      */
     public destroy(options?: DestroyOptions): void
     {

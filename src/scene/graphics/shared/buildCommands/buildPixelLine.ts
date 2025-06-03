@@ -6,6 +6,7 @@ import { closePointEps } from '../const';
  * @param closed
  * @param vertices
  * @param indices
+ * @internal
  */
 export function buildPixelLine(
     points: number[],

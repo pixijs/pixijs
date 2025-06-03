@@ -1,11 +1,20 @@
 import { warn } from '../../utils/logging/warn';
-import { AbstractText, ensureOptions } from '../text/AbstractText';
+import { AbstractText, ensureTextOptions } from '../text/AbstractText';
 import { TextStyle } from '../text/TextStyle';
 import { BitmapFontManager } from './BitmapFontManager';
+import { type BitmapTextGraphics } from './BitmapTextPipe';
 
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from '../text/AbstractText';
 import type { TextStyleOptions } from '../text/TextStyle';
+
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
+export interface BitmapText extends PixiMixins.BitmapText, AbstractText<
+    TextStyle,
+    TextStyleOptions,
+    TextOptions,
+    BitmapTextGraphics
+> {}
 
 /**
  * A BitmapText Object will create a line or multiple lines of text.
@@ -93,10 +102,17 @@ import type { TextStyleOptions } from '../text/TextStyle';
  *        align: 'center',
  *     }
  * }
- * @memberof scene
+ * @category scene
+ * @standard
  */
-export class BitmapText extends AbstractText<TextStyle, TextStyleOptions> implements View
+export class BitmapText extends AbstractText<
+    TextStyle,
+    TextStyleOptions,
+    TextOptions,
+    BitmapTextGraphics
+> implements View
 {
+    /** @internal */
     public override readonly renderPipeId: string = 'bitmapText';
 
     /**
@@ -105,14 +121,14 @@ export class BitmapText extends AbstractText<TextStyle, TextStyleOptions> implem
      * ```ts
      * new BitmapText(options?: TextOptions);
      * ```
-     * @param { text.TextOptions } options - The options of the bitmap text.
+     * @param { TextOptions } options - The options of the bitmap text.
      */
     constructor(options?: TextOptions);
     /** @deprecated since 8.0.0 */
     constructor(text?: TextString, options?: Partial<TextStyle>);
     constructor(...args: [TextOptions?] | [TextString, Partial<TextStyle>])
     {
-        const options = ensureOptions(args, 'BitmapText');
+        const options = ensureTextOptions(args, 'BitmapText');
 
         options.style ??= options.style || {};
         options.style.fill ??= 0xffffff;

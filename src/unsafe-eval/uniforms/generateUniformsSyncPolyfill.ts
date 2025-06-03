@@ -7,6 +7,11 @@ import type { UniformsSyncCallback } from '../../rendering/renderers/shared/shad
 import type { UniformGroup } from '../../rendering/renderers/shared/shader/UniformGroup';
 import type { UniformUploadFunction } from './uniformSyncFunctions';
 
+/**
+ * @param group
+ * @param uniformData
+ * @internal
+ */
 export function generateUniformsSyncPolyfill(
     group: UniformGroup,
     uniformData: Record<string, GlUniformData>

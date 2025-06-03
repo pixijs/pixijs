@@ -1,5 +1,11 @@
 import { STENCIL_MODES } from '../../shared/state/const';
 
+/**
+ * The stencil state for the GPU renderer.
+ * This is used to define how the stencil buffer should be configured.
+ * @category rendering
+ * @advanced
+ */
 export interface StencilState
 {
     stencilWriteMask?: number
@@ -14,6 +20,7 @@ export interface StencilState
     }
 }
 
+/** @internal */
 export const GpuStencilModesToPixi: StencilState[] = [];
 
 GpuStencilModesToPixi[STENCIL_MODES.NONE] = undefined;
@@ -61,10 +68,10 @@ GpuStencilModesToPixi[STENCIL_MODES.INVERSE_MASK_ACTIVE] = {
     stencilWriteMask: 0,
     stencilFront: {
         compare: 'not-equal',
-        passOp: 'replace',
+        passOp: 'keep',
     },
     stencilBack: {
         compare: 'not-equal',
-        passOp: 'replace',
+        passOp: 'keep',
     },
 };

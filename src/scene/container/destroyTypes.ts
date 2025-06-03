@@ -3,7 +3,8 @@
  * @example
  * // Destroy the sprite and all its children.
  * sprite.destroy({ children: true });
- * @memberof scene
+ * @category scene
+ * @standard
  */
 export interface BaseDestroyOptions
 {
@@ -12,18 +13,24 @@ export interface BaseDestroyOptions
 }
 
 /**
- * Options when destroying textures. Most of these use cases are internal.
+ * Options when destroying textures through .destroy() calls.
  * ```js
  * // destroy the graphics context and its texture
- * graphicsContext.destroy({ texture: true });
+ * graphicsContext.destroy({ texture: true, textureSource: true });
  * ```
- * @memberof scene
+ * @category scene
  */
 export interface TextureDestroyOptions
 {
-    /** Destroy the texture as well. */
+    /**
+     * Destroy the texture as well.
+     * @default false
+     */
     texture?: boolean;
-    /** Destroy the texture source as well. */
+    /**
+     * Destroy the texture source as well.
+     * @default false
+     */
     textureSource?: boolean;
 }
 
@@ -31,9 +38,9 @@ export interface TextureDestroyOptions
  * Options when destroying a graphics context.
  * ```js
  * // destroy the graphics context and its texture
- * graphicsContext.destroy({ context: true, texture: true });
+ * graphicsContext.destroy({ context: true, texture: true, textureSource: true });
  * ```
- * @memberof scene
+ * @category scene
  */
 export interface ContextDestroyOptions
 {
@@ -47,7 +54,7 @@ export interface ContextDestroyOptions
  * // destroy the text and its style
  * text.destroy({ style: true });
  * ```
- * @memberof scene
+ * @category scene
  */
 export interface TextDestroyOptions
 {
@@ -55,6 +62,12 @@ export interface TextDestroyOptions
     style?: boolean
 }
 
+/**
+ * A utility type that allows a type to be either the specified type or a boolean.
+ * This is useful for options that can be either a specific value or a boolean flag.
+ * @category utils
+ * @advanced
+ */
 export type TypeOrBool<T> = T | boolean;
 
 /**
@@ -64,7 +77,7 @@ export type TypeOrBool<T> = T | boolean;
  * @property {boolean} [textureSource=false] - Destroy the texture source of the container's children.
  * @property {boolean} [context=false] - Destroy the context of the container's children.
  * @property {boolean} [style=false] - Destroy the style of the container's children.
- * @memberof scene
+ * @category scene
  */
 export type DestroyOptions = TypeOrBool<
 BaseDestroyOptions &

@@ -4,35 +4,84 @@ import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import type { IRenderLayer } from '../../layers/RenderLayer';
 import type { Container, ContainerChild } from '../Container';
 
+/**
+ * Mixin interface for containers that allows them to manage children.
+ * It provides methods for adding, removing, and manipulating child containers.
+ * @category scene
+ * @advanced
+ */
 export interface ChildrenHelperMixin<C = ContainerChild>
 {
+    /** @internal */
     allowChildren: boolean;
     addChild<U extends(C | IRenderLayer)[]>(...children: U): U[0];
     removeChild<U extends(C | IRenderLayer)[]>(...children: U): U[0];
+    /**
+     * Removes all children from this container that are within the begin and end indexes.
+     * @param {number} beginIndex - The beginning position.
+     * @param {number} endIndex - The ending position. Default value is size of the container.
+     * @returns - List of removed children
+     */
     removeChildren(beginIndex?: number, endIndex?: number): C[];
+    /**
+     * Removes a child from the specified index position.
+     * @param {number} index - The index to get the child from
+     * @returns The child that was removed.
+     */
     removeChildAt<U extends(C | IRenderLayer)>(index: number): U;
+    /**
+     * Returns the child at the specified index
+     * @param {number} index - The index to get the child at
+     * @returns - The child at the given index, if any.
+     */
     getChildAt<U extends(C | IRenderLayer)>(index: number): U;
+    /**
+     * Changes the position of an existing child in the container
+     * @param {Container} child - The child Container instance for which you want to change the index number
+     * @param {number} index - The resulting index number for the child container
+     */
     setChildIndex(child: C | IRenderLayer, index: number): void;
+    /**
+     * Returns the index position of a child Container instance
+     * @param {Container} child - The Container instance to identify
+     * @returns - The index position of the child container to identify
+     */
     getChildIndex(child: C | IRenderLayer): number;
+    /**
+     * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown.
+     * If the child is already in this container, it will be moved to the specified index.
+     * @param {Container} child - The child to add.
+     * @param {number} index - The absolute index where the child will be positioned at the end of the operation.
+     * @returns {Container} The child that was added.
+     */
     addChildAt<U extends(C | IRenderLayer)>(child: U, index: number): U;
+    /**
+     * Swaps the position of 2 Containers within this container.
+     * @param {Container} child - First container to swap
+     * @param {Container} child2 - Second container to swap
+     */
     swapChildren<U extends(C | IRenderLayer)>(child: U, child2: U): void;
+    /** Remove the Container from its parent Container. If the Container has no parent, do nothing. */
     removeFromParent(): void;
-
+    /**
+     * Reparent the child to this container, keeping the same worldTransform.
+     * @param {Container} child - The child to reparent
+     * @returns The first child that was reparented.
+     */
     reparentChild<U extends C[]>(...child: U): U[0];
+    /**
+     * Reparent the child to this container at the specified index, keeping the same worldTransform.
+     * @param {Container} child - The child to reparent
+     * @param {number} index - The index to reparent the child to
+     */
     reparentChildAt<U extends C>(child: U, index: number): U;
 }
 
-export const childrenHelperMixin: Partial<Container> = {
+/** @internal */
+export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
 
     allowChildren: true,
 
-    /**
-     * Removes all children from this container that are within the begin and end indexes.
-     * @param beginIndex - The beginning position.
-     * @param endIndex - The ending position. Default value is size of the container.
-     * @returns - List of removed children
-     * @memberof scene.Container#
-     */
     removeChildren(beginIndex = 0, endIndex?: number): ContainerChild[]
     {
         const end = endIndex ?? this.children.length;
@@ -61,8 +110,17 @@ export const childrenHelperMixin: Partial<Container> = {
 
             for (let i = 0; i < removed.length; ++i)
             {
-                this.emit('childRemoved', removed[i], this, i);
+                const child = removed[i];
+
+                child.parentRenderLayer?.detach(child);
+
+                this.emit('childRemoved', child, this, i);
                 removed[i].emit('removed', this);
+            }
+
+            if (removed.length > 0)
+            {
+                this._didViewChangeTick++;
             }
 
             return removed;
@@ -75,12 +133,6 @@ export const childrenHelperMixin: Partial<Container> = {
         throw new RangeError('removeChildren: numeric values are outside the acceptable range.');
     },
 
-    /**
-     * Removes a child from the specified index position.
-     * @param index - The index to get the child from
-     * @returns The child that was removed.
-     * @memberof scene.Container#
-     */
     removeChildAt<U extends(ContainerChild | IRenderLayer)>(index: number): U
     {
         const child = this.getChildAt<U>(index);
@@ -88,12 +140,6 @@ export const childrenHelperMixin: Partial<Container> = {
         return this.removeChild(child);
     },
 
-    /**
-     * Returns the child at the specified index
-     * @param index - The index to get the child at
-     * @returns - The child at the given index, if any.
-     * @memberof scene.Container#
-     */
     getChildAt<U extends(ContainerChild | IRenderLayer)>(index: number): U
     {
         if (index < 0 || index >= this.children.length)
@@ -104,12 +150,6 @@ export const childrenHelperMixin: Partial<Container> = {
         return this.children[index] as U;
     },
 
-    /**
-     * Changes the position of an existing child in the container
-     * @param child - The child Container instance for which you want to change the index number
-     * @param index - The resulting index number for the child container
-     * @memberof scene.Container#
-     */
     setChildIndex(child: ContainerChild | IRenderLayer, index: number): void
     {
         if (index < 0 || index >= this.children.length)
@@ -121,12 +161,6 @@ export const childrenHelperMixin: Partial<Container> = {
         this.addChildAt(child, index);
     },
 
-    /**
-     * Returns the index position of a child Container instance
-     * @param child - The Container instance to identify
-     * @returns - The index position of the child container to identify
-     * @memberof scene.Container#
-     */
     getChildIndex(child: ContainerChild | IRenderLayer): number
     {
         const index = this.children.indexOf(child as ContainerChild);
@@ -139,14 +173,6 @@ export const childrenHelperMixin: Partial<Container> = {
         return index;
     },
 
-    /**
-     * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown.
-     * If the child is already in this container, it will be moved to the specified index.
-     * @param {Container} child - The child to add.
-     * @param {number} index - The absolute index where the child will be positioned at the end of the operation.
-     * @returns {Container} The child that was added.
-     * @memberof scene.Container#
-     */
     addChildAt<U extends(ContainerChild | IRenderLayer)>(child: U, index: number): U
     {
         // #if _DEBUG
@@ -209,12 +235,7 @@ export const childrenHelperMixin: Partial<Container> = {
 
         return child;
     },
-    /**
-     * Swaps the position of 2 Containers within this container.
-     * @param child - First container to swap
-     * @param child2 - Second container to swap
-     * @memberof scene.Container#
-     */
+
     swapChildren<U extends(ContainerChild | IRenderLayer)>(child: U, child2: U): void
     {
         if (child === child2)
@@ -237,21 +258,12 @@ export const childrenHelperMixin: Partial<Container> = {
 
         this._didContainerChangeTick++;
     },
-    /**
-     * Remove the Container from its parent Container. If the Container has no parent, do nothing.
-     * @memberof scene.Container#
-     */
+
     removeFromParent()
     {
         this.parent?.removeChild(this);
     },
 
-    /**
-     * Reparent the child to this container, keeping the same worldTransform.
-     * @param child - The child to reparent
-     * @returns The first child that was reparented.
-     * @memberof scene.Container#
-     */
     reparentChild<U extends ContainerChild[]>(...child: U): U[0]
     {
         if (child.length === 1)
@@ -264,12 +276,6 @@ export const childrenHelperMixin: Partial<Container> = {
         return child[0];
     },
 
-    /**
-     * Reparent the child to this container at the specified index, keeping the same worldTransform.
-     * @param child - The child to reparent
-     * @param index - The index to reparent the child to
-     * @memberof scene.Container#
-     */
     reparentChildAt<U extends ContainerChild>(child: U, index: number): U
     {
         if (child.parent === this)

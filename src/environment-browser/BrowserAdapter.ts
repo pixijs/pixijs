@@ -1,9 +1,9 @@
 import { type Adapter } from '../environment/adapter';
 
 /**
- * This is an implementation of the {@link environment.Adapter} interface.
+ * This is an implementation of the {@link Adapter} interface.
  * It can be used to make Pixi work in the browser.
- * @memberof environment
+ * @category environment
  * @property {Function} createCanvas - Creates a canvas element of the given size.
  * This canvas is created using the browser's native canvas element.
  * @property {Function} getCanvasRenderingContext2D - Returns a 2D rendering context.
@@ -14,6 +14,7 @@ import { type Adapter } from '../environment/adapter';
  * @property {Function} getFontFaceSet - Return the font face set if available
  * @property {Function} fetch - Returns a Response object that has been fetched from the given URL.
  * @property {Function} parseXML - Returns Document object that has been parsed from the given XML string.
+ * @advanced
  */
 export const BrowserAdapter = {
     createCanvas: (width: number, height: number): HTMLCanvasElement =>

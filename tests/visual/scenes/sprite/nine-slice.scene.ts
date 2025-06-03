@@ -22,5 +22,21 @@ export const scene: TestScene = {
 
         nineSlice.width = 128;
         nineSlice.height = 128;
+
+        const nineSlice2 = new NineSliceSprite({
+            texture,
+            leftWidth: 26 * 2,
+            rightWidth: 26 * 2,
+            topHeight: 26 * 2,
+            bottomHeight: 26 * 2,
+        });
+
+        scene.addChild(nineSlice2);
+
+        nineSlice2.anchor = 0.5;
+        nineSlice2.position.set(128 / 2, 128 / 2);
+        nineSlice2.width = 64;
+        nineSlice2.height = 64;
     },
 };
+

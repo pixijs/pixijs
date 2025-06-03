@@ -9,6 +9,7 @@ import type { Shader } from '../../renderers/shared/shader/Shader';
 import type { Renderer } from '../../renderers/types';
 import type { Batch, BatchableElement, Batcher } from './Batcher';
 
+/** @internal */
 export interface BatcherAdaptor
 {
     start(batchPipe: BatcherPipe, geometry: Geometry, shader: Shader): void
@@ -22,7 +23,8 @@ export interface BatcherAdaptor
  *
  * You can install new Batchers using ExtensionType.Batcher. Each render group will
  * have a default batcher and any required ones will be created on demand.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
 {
@@ -71,7 +73,9 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
         if (!batchers)
         {
             batchers = this._batchersByInstructionSet[instructionSet.uid] = Object.create(null);
-            batchers.default ||= new DefaultBatcher();
+            batchers.default ||= new DefaultBatcher({
+                maxTextures: this.renderer.limits.maxBatchableTextures,
+            });
         }
 
         this._activeBatches = batchers;

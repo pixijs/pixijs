@@ -11,7 +11,8 @@ const validTXTMIME = 'text/plain';
 
 /**
  * A simple loader plugin for loading text data
- * @memberof assets
+ * @category assets
+ * @internal
  */
 export const loadTxt = {
 

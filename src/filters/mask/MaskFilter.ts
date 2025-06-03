@@ -13,6 +13,7 @@ import type { Sprite } from '../../scene/sprite/Sprite';
 import type { FilterOptions } from '../Filter';
 import type { FilterSystem } from '../FilterSystem';
 
+/** @internal */
 export interface MaskFilterOptions extends FilterOptions
 {
     sprite: Sprite,
@@ -20,6 +21,7 @@ export interface MaskFilterOptions extends FilterOptions
     scale?: number | { x: number, y: number },
 }
 
+/** @internal */
 export class MaskFilter extends Filter
 {
     public sprite: Sprite;

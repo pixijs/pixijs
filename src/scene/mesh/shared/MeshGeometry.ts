@@ -8,13 +8,14 @@ import type { BatchMode } from '../../graphics/shared/GraphicsContext';
 
 /**
  * Options for the mesh geometry.
- * @memberof scene
+ * @category scene
+ * @advanced
  */
 export interface MeshGeometryOptions
 {
     /** The positions of the mesh. */
     positions?: Float32Array;
-    /** The UVs of the mesh. */
+    /** The UVs of the mesh. If not provided, they will be filled with 0 and match the size of the positions. */
     uvs?: Float32Array;
     /** The indices of the mesh. */
     indices?: Uint32Array;
@@ -26,7 +27,8 @@ export interface MeshGeometryOptions
 
 /**
  * A geometry used to batch multiple meshes with the same texture.
- * @memberof scene
+ * @category scene
+ * @advanced
  */
 export class MeshGeometry extends Geometry
 {
@@ -38,7 +40,7 @@ export class MeshGeometry extends Geometry
     public batchMode: BatchMode = 'auto';
 
     /**
-     * @param {scene.MeshGeometryOptions} options - The options of the mesh geometry.
+     * @param {MeshGeometryOptions} options - The options of the mesh geometry.
      */
     constructor(options: MeshGeometryOptions);
     /** @deprecated since 8.0.0 */
@@ -63,7 +65,21 @@ export class MeshGeometry extends Geometry
         options = { ...MeshGeometry.defaultOptions, ...options };
 
         const positions = options.positions || new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]);
-        const uvs = options.uvs || new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]);
+
+        let uvs = options.uvs;
+
+        if (!uvs)
+        {
+            if (options.positions)
+            {
+                uvs = new Float32Array(positions.length);
+            }
+            else
+            {
+                uvs = new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]);
+            }
+        }
+
         const indices = options.indices || new Uint32Array([0, 1, 2, 0, 2, 3]);
 
         const shrinkToFit = options.shrinkBuffersToFit;
@@ -115,6 +131,12 @@ export class MeshGeometry extends Geometry
         return this.attributes.aPosition.buffer.data as Float32Array;
     }
 
+    /**
+     * Set the positions of the mesh.
+     * When setting the positions, its important that the uvs array is at least as long as the positions array.
+     * otherwise the geometry will not be valid.
+     * @param {Float32Array} value - The positions of the mesh.
+     */
     set positions(value: Float32Array)
     {
         this.attributes.aPosition.buffer.data = value;
@@ -126,6 +148,12 @@ export class MeshGeometry extends Geometry
         return this.attributes.aUV.buffer.data as Float32Array;
     }
 
+    /**
+     * Set the UVs of the mesh.
+     * Its important that the uvs array you set is at least as long as the positions array.
+     * otherwise the geometry will not be valid.
+     * @param {Float32Array} value - The UVs of the mesh.
+     */
     set uvs(value: Float32Array)
     {
         this.attributes.aUV.buffer.data = value;

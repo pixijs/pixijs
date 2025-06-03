@@ -1,11 +1,13 @@
+import { ObservablePoint } from '../../maths/point/ObservablePoint';
+import { type PointData } from '../../maths/point/PointData';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
-import { ViewContainer } from '../view/ViewContainer';
+import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
 import { NineSliceGeometry } from './NineSliceGeometry';
+import { type NineSliceSpriteGpuData } from './NineSliceSpritePipe';
 
 import type { Size } from '../../maths/misc/Size';
 import type { View } from '../../rendering/renderers/shared/view/View';
-import type { ContainerOptions } from '../container/Container';
 import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
 
@@ -20,10 +22,11 @@ import type { DestroyOptions } from '../container/destroyTypes';
  *    bottomHeight: 20,
  * });
  * ```
- * @see {@link scene.NineSliceSprite}
- * @memberof scene
+ * @see {@link NineSliceSprite}
+ * @category scene
+ * @standard
  */
-export interface NineSliceSpriteOptions extends ContainerOptions
+export interface NineSliceSpriteOptions extends PixiMixins.NineSliceSpriteOptions, ViewContainerOptions
 {
     /** The texture to use on the NineSliceSprite. */
     texture: Texture;
@@ -41,7 +44,11 @@ export interface NineSliceSpriteOptions extends ContainerOptions
     height?: number;
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
+    /** The anchor point of the NineSliceSprite. */
+    anchor?: PointData | number;
 }
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
+export interface NineSliceSprite extends PixiMixins.NineSliceSprite, ViewContainer<NineSliceSpriteGpuData> {}
 
 /**
  * The NineSliceSprite allows you to stretch a texture using 9-slice scaling. The corners will remain unscaled (useful
@@ -67,10 +74,17 @@ export interface NineSliceSpriteOptions extends ContainerOptions
  * @example
  * import { NineSliceSprite, Texture } from 'pixi.js';
  *
- * const plane9 = new NineSliceSprite(Texture.from('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
- * @memberof scene
+ * const plane9 = new NineSliceSprite({
+ *   texture: Texture.from('BoxWithRoundedCorners.png'),
+ *   leftWidth: 15,
+ *   topHeight: 15,
+ *   rightWidth: 15,
+ *   bottomHeight: 15,
+ * });
+ * @category scene
+ * @standard
  */
-export class NineSliceSprite extends ViewContainer implements View
+export class NineSliceSprite extends ViewContainer<NineSliceSpriteGpuData> implements View
 {
     /** The default options, used to override the initial values of any options passed in the constructor. */
     public static defaultOptions: NineSliceSpriteOptions = {
@@ -78,11 +92,14 @@ export class NineSliceSprite extends ViewContainer implements View
         texture: Texture.EMPTY,
     };
 
+    /** @internal */
     public override readonly renderPipeId: string = 'nineSliceSprite';
+    /** @internal */
     public _texture: Texture;
-
+    /** @internal */
+    public _anchor: ObservablePoint;
+    /** @advanced */
     public batched = true;
-
     private _leftWidth: number;
     private _topHeight: number;
     private _rightWidth: number;
@@ -90,18 +107,6 @@ export class NineSliceSprite extends ViewContainer implements View
     private _width: number;
     private _height: number;
 
-    /**
-     * @param {scene.NineSliceSpriteOptions|Texture} options - Options to use
-     * @param options.texture - The texture to use on the NineSliceSprite.
-     * @param options.leftWidth - Width of the left vertical bar (A)
-     * @param options.topHeight - Height of the top horizontal bar (C)
-     * @param options.rightWidth - Width of the right vertical bar (B)
-     * @param options.bottomHeight - Height of the bottom horizontal bar (D)
-     * @param options.width - Width of the NineSliceSprite,
-     * setting this will actually modify the vertices and not the UV's of this plane.
-     * @param options.height - Height of the NineSliceSprite,
-     * setting this will actually modify the vertices and not UV's of this plane.
-     */
     constructor(options: NineSliceSpriteOptions | Texture)
     {
         if ((options instanceof Texture))
@@ -112,6 +117,7 @@ export class NineSliceSprite extends ViewContainer implements View
         const {
             width,
             height,
+            anchor,
             leftWidth,
             rightWidth,
             topHeight,
@@ -132,16 +138,42 @@ export class NineSliceSprite extends ViewContainer implements View
         this._bottomHeight = bottomHeight
                             ?? texture?.defaultBorders?.bottom
                             ?? NineSliceGeometry.defaultOptions.bottomHeight;
-        this.bounds.maxX = this._width = width ?? texture.width ?? NineSliceGeometry.defaultOptions.width;
-        this.bounds.maxY = this._height = height ?? texture.height ?? NineSliceGeometry.defaultOptions.height;
+
+        this._width = width ?? texture.width ?? NineSliceGeometry.defaultOptions.width;
+        this._height = height ?? texture.height ?? NineSliceGeometry.defaultOptions.height;
 
         this.allowChildren = false;
         this.texture = texture ?? NineSliceSprite.defaultOptions.texture;
         this.roundPixels = roundPixels ?? false;
+
+        this._anchor = new ObservablePoint(
+            {
+                _onUpdate: () =>
+                {
+                    this.onViewUpdate();
+                }
+            },
+        );
+
+        if (anchor)
+        {
+            this.anchor = anchor;
+        }
+        else if (this.texture.defaultAnchor)
+        {
+            this.anchor = this.texture.defaultAnchor;
+        }
     }
 
-    /** @private */
-    protected override updateBounds(): void { /* empty */ }
+    get anchor(): ObservablePoint
+    {
+        return this._anchor;
+    }
+
+    set anchor(value: PointData | number)
+    {
+        typeof value === 'number' ? this._anchor.set(value) : this._anchor.copyFrom(value);
+    }
 
     /** The width of the NineSliceSprite, setting this will actually modify the vertices and UV's of this plane. */
     override get width(): number
@@ -151,7 +183,7 @@ export class NineSliceSprite extends ViewContainer implements View
 
     override set width(value: number)
     {
-        this.bounds.maxX = this._width = value;
+        this._width = value;
         this.onViewUpdate();
     }
 
@@ -163,7 +195,7 @@ export class NineSliceSprite extends ViewContainer implements View
 
     override set height(value: number)
     {
-        this.bounds.maxY = this._height = value;
+        this._height = value;
         this.onViewUpdate();
     }
 
@@ -182,8 +214,9 @@ export class NineSliceSprite extends ViewContainer implements View
             value = value.width;
         }
 
-        this.bounds.maxX = this._width = value;
-        this.bounds.maxY = this._height = height ?? value;
+        this._width = value;
+        this._height = height ?? value;
+
         this.onViewUpdate();
     }
 
@@ -289,8 +322,10 @@ export class NineSliceSprite extends ViewContainer implements View
      * Destroys this sprite renderable and optionally its texture.
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
-     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
-     * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
+     * @example
+     * nineSliceSprite.destroy();
+     * nineSliceSprite.destroy(true);
+     * nineSliceSprite.destroy({ texture: true, textureSource: true });
      */
     public override destroy(options?: DestroyOptions): void
     {
@@ -307,12 +342,29 @@ export class NineSliceSprite extends ViewContainer implements View
 
         this._texture = null;
     }
+
+    /** @private */
+    protected override updateBounds()
+    {
+        const bounds = this._bounds;
+
+        const anchor = this._anchor;
+
+        const width = this._width;
+        const height = this._height;
+
+        bounds.minX = -anchor._x * width;
+        bounds.maxX = bounds.minX + width;
+
+        bounds.minY = -anchor._y * height;
+        bounds.maxY = bounds.minY + height;
+    }
 }
 
 /**
  * Please use the `NineSliceSprite` class instead.
  * @deprecated since 8.0.0
- * @memberof scene
+ * @category scene
  */
 export class NineSlicePlane extends NineSliceSprite
 {
