@@ -1,7 +1,49 @@
 import { FederatedMouseEvent } from './FederatedMouseEvent';
 
 /**
- * A {@link FederatedEvent} for wheel events.
+ * A specialized event class for wheel/scroll interactions in PixiJS applications.
+ * Extends {@link FederatedMouseEvent} to provide wheel-specific properties while
+ * maintaining compatibility with the DOM WheelEvent interface.
+ *
+ * Key features:
+ * - Provides scroll delta information
+ * - Supports different scroll modes (pixel, line, page)
+ * - Inherits mouse event properties
+ * - Normalizes cross-browser wheel events
+ * @example
+ * ```ts
+ * // Basic wheel event handling
+ * sprite.on('wheel', (event: FederatedWheelEvent) => {
+ *     // Get scroll amount
+ *     console.log('Vertical scroll:', event.deltaY);
+ *     console.log('Horizontal scroll:', event.deltaX);
+ *
+ *     // Check scroll mode
+ *     if (event.deltaMode === FederatedWheelEvent.DOM_DELTA_LINE) {
+ *         console.log('Scrolling by lines');
+ *     } else if (event.deltaMode === FederatedWheelEvent.DOM_DELTA_PAGE) {
+ *         console.log('Scrolling by pages');
+ *     } else {
+ *         console.log('Scrolling by pixels');
+ *     }
+ *
+ *     // Get scroll position
+ *     console.log('Scroll at:', event.global.x, event.global.y);
+ * });
+ *
+ * // Common use case: Zoom control
+ * container.on('wheel', (event: FederatedWheelEvent) => {
+ *     // Prevent page scrolling
+ *     event.preventDefault();
+ *
+ *     // Zoom in/out based on scroll direction
+ *     const zoomFactor = 1 + (event.deltaY / 1000);
+ *     container.scale.set(container.scale.x * zoomFactor);
+ * });
+ * ```
+ * @see {@link FederatedMouseEvent} For base mouse event functionality
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/WheelEvent} DOM WheelEvent Interface
+ * @see {@link EventSystem} For the event management system
  * @category events
  * @standard
  */

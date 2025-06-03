@@ -34,11 +34,13 @@ export interface GetGlobalMixin
      *   - If true: Uses cached worldAlpha from the last render pass for better performance
      * @returns The resulting alpha value (between 0 and 1)
      * @example
+     * ```ts
      * // Accurate but slower - recalculates entire alpha chain
      * const preciseAlpha = container.getGlobalAlpha();
      *
      * // Faster but may be outdated - uses cached alpha
      * const cachedAlpha = container.getGlobalAlpha(true);
+     * ```
      */
     getGlobalAlpha(skipUpdate: boolean): number;
     /**
@@ -49,6 +51,7 @@ export interface GetGlobalMixin
      *   - If true: Uses cached worldTransform from the last render pass for better performance
      * @returns The resulting transformation matrix (either the input matrix or a new one)
      * @example
+     * ```ts
      * // Accurate but slower - recalculates entire transform chain
      * const preciseTransform = container.getGlobalTransform();
      *
@@ -58,6 +61,7 @@ export interface GetGlobalMixin
      * // Reuse existing matrix
      * const existingMatrix = new Matrix();
      * container.getGlobalTransform(existingMatrix);
+     * ```
      */
     getGlobalTransform(matrix: Matrix, skipUpdate: boolean): Matrix;
     /**
@@ -67,11 +71,13 @@ export interface GetGlobalMixin
      *   - If true: Uses cached worldColor from the last render pass for better performance
      * @returns The resulting tint color as a 24-bit RGB number (0xRRGGBB)
      * @example
+     * ```ts
      * // Accurate but slower - recalculates entire tint chain
      * const preciseTint = container.getGlobalTint();
      *
      * // Faster but may be outdated - uses cached tint
      * const cachedTint = container.getGlobalTint(true);
+     * ```
      */
     getGlobalTint(skipUpdate?: boolean): number;
 }

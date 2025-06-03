@@ -60,7 +60,7 @@ export type UniformGroupOptions = {
  *
  Uniforms can be modified via the classes 'uniforms' property. It will contain all the uniforms declared in the constructor.
  *
- * ```
+ * ```ts
  * // UBO in shader:
  * uniform myCoolData { // Declaring a UBO...
  *     mat4 uCoolMatrix;

@@ -168,17 +168,53 @@ export const normalizeExtensionPriority = (ext: ExtensionFormat | any, defaultPr
     normalizeExtension(ext).priority ?? defaultPriority;
 
 /**
- * Global registration of all PixiJS extensions. One-stop-shop for extensibility.
+ * Global registration system for all PixiJS extensions. Provides a centralized way to add, remove,
+ * and manage functionality across the engine.
  *
- * Import the `extensions` object and use it to register new functionality via the described methods below.
- * ```js
- * import { extensions } from 'pixi.js';
+ * Features:
+ * - Register custom extensions and plugins
+ * - Handle multiple extension types
+ * - Priority-based ordering
+ * @example
+ * ```ts
+ * import { extensions, ExtensionType } from 'pixi.js';
  *
- * // register a new extension
- * extensions.add(myExtension);
+ * // Register a simple object extension
+ * extensions.add({
+ *   extension: {
+ *       type: ExtensionType.LoadParser,
+ *       name: 'my-loader',
+ *       priority: 100, // Optional priority for ordering
+ *   },
+ *   // add load parser functions
+ * });
+ *
+ * // Register a class-based extension
+ * class MyRendererPlugin {
+ *     static extension = {
+ *         type: [ExtensionType.WebGLSystem, ExtensionType.WebGPUSystem],
+ *         name: 'myRendererPlugin'
+ *     };
+ *
+ *    // add renderer plugin methods
+ * }
+ * extensions.add(MyRendererPlugin);
+ *
+ * // Remove extensions
+ * extensions.remove(MyRendererPlugin);
  * ```
+ * @remarks
+ * - Extensions must have a type from {@link ExtensionType}
+ * - Can be registered before or after their handlers
+ * - Supports priority-based ordering
+ * - Automatically normalizes extension formats
+ * @see {@link ExtensionType} For all available extension types
+ * @see {@link ExtensionFormat} For extension registration format
+ * @see {@link Application} For application plugin system
+ * @see {@link LoaderParser} For asset loading extensions
  * @category extensions
  * @standard
+ * @class
  */
 const extensions = {
 
@@ -193,8 +229,24 @@ const extensions = {
 
     /**
      * Remove extensions from PixiJS.
-     * @param extensions - Extensions to be removed.
-     * @returns {Function} this for chaining.
+     * @param extensions - Extensions to be removed. Can be:
+     * - Extension class with static `extension` property
+     * - Extension format object with `type` and `ref`
+     * - Multiple extensions as separate arguments
+     * @returns {extensions} this for chaining
+     * @example
+     * ```ts
+     * // Remove a single extension
+     * extensions.remove(MyRendererPlugin);
+     *
+     * // Remove multiple extensions
+     * extensions.remove(
+     *     MyRendererPlugin,
+     *     MySystemPlugin
+     * );
+     * ```
+     * @see {@link ExtensionType} For available extension types
+     * @see {@link ExtensionFormat} For extension format details
      */
     remove(...extensions: Array<ExtensionFormat | any>)
     {
@@ -207,9 +259,29 @@ const extensions = {
     },
 
     /**
-     * Register new extensions with PixiJS.
-     * @param extensions - The spread of extensions to add to PixiJS.
-     * @returns this for chaining.
+     * Register new extensions with PixiJS. Extensions can be registered in multiple formats:
+     * - As a class with a static `extension` property
+     * - As an extension format object
+     * - As multiple extensions passed as separate arguments
+     * @param extensions - Extensions to add to PixiJS. Each can be:
+     * - A class with static `extension` property
+     * - An extension format object with `type` and `ref`
+     * - Multiple extensions as separate arguments
+     * @returns This extensions instance for chaining
+     * @example
+     * ```ts
+     * // Register a simple extension
+     * extensions.add(MyRendererPlugin);
+     *
+     * // Register multiple extensions
+     * extensions.add(
+     *     MyRendererPlugin,
+     *     MySystemPlugin,
+     * });
+     * ```
+     * @see {@link ExtensionType} For available extension types
+     * @see {@link ExtensionFormat} For extension format details
+     * @see {@link extensions.remove} For removing registered extensions
      */
     add(...extensions: Array<ExtensionFormat | any>)
     {
@@ -371,9 +443,44 @@ const extensions = {
     },
 
     /**
-     * Mixin the source object into the target object.
-     * @param Target - The target object to mix into.
-     * @param sources - The source(s) object to mix from
+     * Mixin the source object(s) properties into the target class's prototype.
+     * Copies all property descriptors from source objects to the target's prototype.
+     * @param Target - The target class to mix properties into
+     * @param sources - One or more source objects containing properties to mix in
+     * @example
+     * ```ts
+     * // Create a mixin with shared properties
+     * const moveable = {
+     *     x: 0,
+     *     y: 0,
+     *     move(x: number, y: number) {
+     *         this.x += x;
+     *         this.y += y;
+     *     }
+     * };
+     *
+     * // Create a mixin with computed properties
+     * const scalable = {
+     *     scale: 1,
+     *     get scaled() {
+     *         return this.scale > 1;
+     *     }
+     * };
+     *
+     * // Apply mixins to a class
+     * extensions.mixin(Sprite, moveable, scalable);
+     *
+     * // Use mixed-in properties
+     * const sprite = new Sprite();
+     * sprite.move(10, 20);
+     * console.log(sprite.x, sprite.y); // 10, 20
+     * ```
+     * @remarks
+     * - Copies all properties including getters/setters
+     * - Does not modify source objects
+     * - Preserves property descriptors
+     * @see {@link Object.defineProperties} For details on property descriptors
+     * @see {@link Object.getOwnPropertyDescriptors} For details on property copying
      */
     mixin(Target: any, ...sources: Parameters<typeof Object.getOwnPropertyDescriptors>[0][])
     {

@@ -7,52 +7,154 @@ import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { MeshOptions } from '../mesh/shared/Mesh';
 
 /**
- * Constructor options used for `MeshRope` instances.
- * ```js
- * const meshRope = new MeshRope({
- *    texture: Texture.from('snake.png'),
- *    points: [new Point(0, 0), new Point(100, 0)],
- *    textureScale: 0,
+ * Constructor options used for `MeshRope` instances. Allows configuration of a rope-like mesh
+ * that follows a series of points with a texture applied.
+ * @example
+ * ```ts
+ * // Create a basic rope with two points
+ * const rope = new MeshRope({
+ *     texture: Texture.from('snake.png'),
+ *     points: [
+ *         new Point(0, 0),
+ *         new Point(100, 0)
+ *     ]
+ * });
+ *
+ * // Create a rope with high-quality texture scaling
+ * const highQualityRope = new MeshRope({
+ *     texture: Texture.from('rope-hd.png'),
+ *     points: [
+ *         new Point(0, 0),
+ *         new Point(50, 25),
+ *         new Point(100, 0)
+ *     ],
+ *     textureScale: 0.5  // Downscale HD texture for better quality
  * });
  * ```
- * @see {@link MeshRope}
+ * @see {@link MeshRope} For the rope implementation
+ * @see {@link RopeGeometry} For the underlying geometry
  * @category scene
  * @standard
+ * @noInheritDoc
  */
 export interface MeshRopeOptions extends Omit<MeshOptions, 'geometry'>
 {
-    /** The texture to use on the rope. */
+    /** The texture to use on the rope */
     texture: Texture;
-    /** An array of points that determine the rope. */
+
+    /** An array of points that determine the rope's shape and path */
     points: PointData[];
+
     /**
-     * Rope texture scale, if zero then the rope texture is stretched.
-     * Positive values scale rope texture
-     * keeping its aspect ratio. You can reduce alpha channel artifacts by providing a larger texture
-     * and downsampling here. If set to zero, texture will be stretched instead.
+     * Controls how the texture is scaled along the rope.
+     * - If 0 (default), the texture stretches to fit between points
+     * - If > 0, texture repeats with preserved aspect ratio
+     * - Larger textures with textureScale < 1 can reduce artifacts
+     * @default 0
      */
     textureScale?: number;
 }
 
 /**
- * The rope allows you to draw a texture across several points and then manipulate these points
+ * A specialized mesh that renders a texture along a path defined by points. Perfect for
+ * creating snake-like animations, chains, ropes, and other flowing objects.
  * @example
- * import { Point, MeshRope, Texture } from 'pixi.js';
- *
+ * ```ts
+ * // Create a snake with multiple segments
+ * const points = [];
  * for (let i = 0; i < 20; i++) {
  *     points.push(new Point(i * 50, 0));
- * };
- * const rope = new MeshRope(Texture.from('snake.png'), points);
+ * }
+ *
+ * const snake = new MeshRope({
+ *     texture: Texture.from('snake.png'),
+ *     points,
+ *     textureScale: 0.5
+ * });
+ *
+ * // Animate the snake
+ * app.ticker.add((delta) => {
+ *     const time = performance.now() / 1000;
+ *
+ *     // Update points to create wave motion
+ *     for (let i = 0; i < points.length; i++) {
+ *         points[i].y = Math.sin(i * 0.5 + time) * 30;
+ *         points[i].x = (i * 50) + Math.cos(i * 0.3 + time) * 20;
+ *     }
+ * });
+ *
+ * // Disable auto updates if manually updating
+ * snake.autoUpdate = false;
+ * ```
  * @category scene
  * @standard
  */
 export class MeshRope extends Mesh
 {
+    /**
+     * Default options for creating a MeshRope instance. These values are used when specific
+     * options aren't provided in the constructor.
+     * @example
+     * ```ts
+     * // Use default options globally
+     * MeshRope.defaultOptions = {
+     *     textureScale: 0.5  // Set higher quality texture scaling
+     * };
+     *
+     * // Create rope with modified defaults
+     * const rope = new MeshRope({
+     *     texture: Texture.from('rope.png'),
+     *     points: [
+     *         new Point(0, 0),
+     *         new Point(100, 0)
+     *     ]
+     * }); // Will use textureScale: 0.5
+     * ```
+     * @property {number} textureScale - Controls texture scaling along the rope (0 = stretch)
+     * @see {@link MeshRopeOptions} For all available options
+     */
     public static defaultOptions: Partial<MeshRopeOptions> = {
         textureScale: 0,
     };
 
-    /** re-calculate vertices by rope points each frame */
+    /**
+     * Controls whether the rope's vertices are automatically recalculated each frame based on
+     * its points. When true, the rope will update to follow point movements. When false,
+     * manual updates are required.
+     * @example
+     * ```ts
+     * const points = [];
+     * for (let i = 0; i < 20; i++) {
+     *     points.push(new Point(i * 50, 0));
+     * }
+     *
+     * const rope = new MeshRope({
+     *     texture: Texture.from('rope.png'),
+     *     points
+     * });
+     *
+     * // Auto-update (default)
+     * app.ticker.add(() => {
+     *     // Points will automatically update the rope
+     *     for (let i = 0; i < points.length; i++) {
+     *         points[i].y = Math.sin(i * 0.5 + performance.now() / 1000) * 30;
+     *     }
+     * });
+     *
+     * // Manual update
+     * rope.autoUpdate = false;
+     * app.ticker.add(() => {
+     *     // Update points
+     *     for (let i = 0; i < points.length; i++) {
+     *         points[i].y = Math.sin(i * 0.5 + performance.now() / 1000) * 30;
+     *     }
+     *     // Manually trigger update
+     *     (rope.geometry as RopeGeometry).update();
+     * });
+     * ```
+     * @default true
+     * @see {@link RopeGeometry#update} For manual geometry updates
+     */
     public autoUpdate: boolean;
 
     /**

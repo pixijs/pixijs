@@ -46,6 +46,7 @@ export interface TextureShader extends Shader
  * Options for creating a Mesh instance.
  * @category scene
  * @advanced
+ * @noInheritDoc
  */
 export interface MeshOptions<
     GEOMETRY extends Geometry = MeshGeometry,

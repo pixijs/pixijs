@@ -153,23 +153,53 @@ class CacheClass
 }
 
 /**
- * A single Cache for all assets.
+ * A global cache for all assets in your PixiJS application. The cache system provides fast
+ * access to loaded assets and prevents duplicate loading.
  *
- * When assets are added to the cache via set they normally are added to the cache as key-value pairs.
- *
- * With this cache, you can add parsers that will take the object and convert it to a list of assets that can be cached.
- * for example a cacheSpritesheet parser will add all of the textures found within its sprite sheet directly to the cache.
- *
- * This gives devs the flexibility to cache any type of object however we want.
- *
- * It is not intended that this class is created by developers - it is part of the Asset package.
- * This is the first major system of PixiJS' main Assets class.
+ * Key Features:
+ * - Automatic caching of loaded assets
+ * - Support for custom cache parsers
+ * - Automatic parsing of complex assets (e.g., spritesheets)
+ * - Memory management utilities
+ * > [!IMPORTANT] You typically do not need to use this class directly.
+ * > Use the main {@link Assets} class for high-level asset management.
+ * > `Assets.get(key)` will automatically use the cache.
  * @example
+ * ```ts
  * import { Cache } from 'pixi.js';
  *
- * Cache.set('bunny', bunnyTexture);
+ * // Store an asset in the cache
+ * Cache.set('myTexture', texture);
+ *
+ * // Retrieve an asset
+ * const texture = Cache.get('myTexture');
+ *
+ * // Check if an asset exists
+ * if (Cache.has('myTexture')) {
+ *     // Use the cached asset
+ *     const sprite = new Sprite(Cache.get('myTexture'));
+ * }
+ *
+ * // Remove an asset from cache
+ * Cache.remove('myTexture');
+ *
+ * // Clear all cached assets
+ * Cache.reset();
+ * ```
+ * @remarks
+ * The Cache is a core component of PixiJS' asset management system:
+ * - Used internally by the {@link Assets} class
+ * - Supports automatic parsing via {@link CacheParser}
+ * - Handles complex asset types like spritesheets
+ * - Manages memory through asset removal
+ *
+ * > [!IMPORTANT]
+ * > This is a singleton class and should not be instantiated directly.
+ * > Use the exported `Cache` instance instead.
+ * @see {@link Assets} For high-level asset management
+ * @see {@link CacheParser} For custom cache parsing
  * @category assets
  * @class
- * @standard
+ * @advanced
  */
 export const Cache = new CacheClass();

@@ -18,34 +18,80 @@ export interface Text extends PixiMixins.Text, AbstractText<
 > {}
 
 /**
- * Constructor options used for `Text` instances.
- * @category scene
+ * Constructor options used for `Text` instances. These options extend TextOptions with
+ * canvas-specific features like texture styling.
+ * @example
+ * ```ts
+ * // Create basic canvas text
+ * const text = new Text({
+ *     text: 'Hello Pixi!',
+ *     style: {
+ *         fontSize: 24,
+ *         fill: 0xff1010,
+ *     }
+ * });
+ *
+ * // Create text with custom texture style
+ * const customText = new Text({
+ *     text: 'Custom Text',
+ *     style: {
+ *         fontSize: 32,
+ *         fill: 0x4a4a4a
+ *     },
+ *     textureStyle: {
+ *         scaleMode: 'nearest',
+ *         resolution: 2
+ *     }
+ * });
+ * ```
+ * @extends TextOptions
+ * @category text
  * @standard
  */
 export interface CanvasTextOptions extends TextOptions
 {
     /**
-     * optional texture style to use for the text.
+     * Optional texture style to use for the text texture. This allows fine control over
+     * how the text is rendered to a texture before being displayed.
+     *
+     * The texture style can affect:
+     * - Scale mode (nearest/linear)
+     * - Resolution
+     * - Format (rgb/rgba)
+     * - Alpha handling
+     * @example
+     * ```ts
+     * const text = new Text({
+     *     text: 'Crisp Text',
+     *     textureStyle: {
+     *         scaleMode: 'nearest', // Pixel-perfect scaling
+     *         format: 'rgba',       // Include alpha channel
+     *         resolution: 2,        // Higher resolution
+     *         premultiplyAlpha: true
+     *     }
+     * });
+     * ```
      * @advanced
      */
     textureStyle?: TextureStyle | TextureStyleOptions;
 }
 
 /**
- * A Text Object will create a line or multiple lines of text.
+ * A powerful text rendering class that creates one or multiple lines of text using the Canvas API.
+ * Provides rich text styling capabilities with runtime modifications.
  *
- * To split a line you can use '\n' in your text string, or, on the `style` object,
- * change its `wordWrap` property to true and and givae the `wordWrapWidth` property a value.
- *
- * The primary advantage of this class over BitmapText is that you have great control over the style of the text,
- * which you can change at runtime.
- *
- * The primary disadvantages is that each piece of text has it's own texture, which can use more memory.
- * When text changes, this texture has to be re-generated and re-uploaded to the GPU, taking up time.
+ * Key features:
+ * - Dynamic text content and styling
+ * - Multi-line text support
+ * - Word wrapping
+ * - Custom texture styling
+ * - High-quality text rendering
  * @example
+ * ```ts
  * import { Text } from 'pixi.js';
  *
- * const text = new Text({
+ * // Basic text creation
+ * const basicText = new Text({
  *     text: 'Hello Pixi!',
  *     style: {
  *         fontFamily: 'Arial',
@@ -55,23 +101,61 @@ export interface CanvasTextOptions extends TextOptions
  *     }
  * });
  *
- * If you would like to use a different texture style for the text, you can do so by passing a `textureStyle` object.
- * An example might be to use a different scale mode for the text.
- * @example
- * const text = new Text({
- *     text: 'Hello Pixi!',
+ * // Rich text with multiple styles
+ * const richText = new Text({
+ *     text: 'Styled\nMultiline\nText',
  *     style: {
  *         fontFamily: 'Arial',
- *         fontSize: 24,
- *         fill: 0xff1010,
+ *         fontSize: 36,
+ *         fill: 'red',
+ *         stroke: { color: '#4a1850', width: 5 },
  *         align: 'center',
+ *         lineHeight: 45,
+ *         dropShadow: {
+ *             color: '#000000',
+ *             blur: 4,
+ *             distance: 6,
+ *         }
+ *     },
+ *     anchor: 0.5,
+ * });
+ *
+ * // Text with custom texture settings
+ * const crispText = new Text({
+ *     text: 'High Quality Text',
+ *     style: {
+ *         fontSize: 24,
+ *         fill: 0x4a4a4a,
  *     },
  *     textureStyle: {
  *         scaleMode: 'nearest',
+ *         resolution: 2,
+ *         format: 'rgba',
  *     }
  * });
- * @category scene
+ *
+ * // Word-wrapped text
+ * const wrappedText = new Text({
+ *     text: 'This is a long piece of text that will automatically wrap to multiple lines',
+ *     style: {
+ *         fontSize: 20,
+ *         wordWrap: true,
+ *         wordWrapWidth: 200,
+ *         lineHeight: 30,
+ *     }
+ * });
+ * ```
+ *
+ * Performance Considerations:
+ * - Each text instance creates its own texture
+ * - Texture is regenerated when text or style changes
+ * - Use BitmapText for better performance with static text
+ * - Consider texture style options for quality vs performance tradeoffs
+ * @category text
  * @standard
+ * @see {@link TextStyle} For detailed style options
+ * @see {@link BitmapText} For better performance with static text
+ * @see {@link HTMLText} For HTML/CSS-based text rendering
  */
 export class Text
     extends AbstractText<TextStyle, TextStyleOptions, CanvasTextOptions, BatchableText>
@@ -81,9 +165,9 @@ export class Text
     public override readonly renderPipeId: string = 'text';
 
     /**
-     * optional texture style to use for the text.
-     * NOTE: Text is not updated when this property is updated,
-     * you must update the text manually by calling `text.onViewUpdate()`
+     * Optional texture style to use for the text.
+     * > [!NOTE] Text is not updated when this property is updated,
+     * > you must update the text manually by calling `text.onViewUpdate()`
      * @advanced
      */
     public textureStyle?: TextureStyle;

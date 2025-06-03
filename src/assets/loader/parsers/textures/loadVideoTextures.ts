@@ -118,7 +118,7 @@ export function determineCrossOrigin(url: string, loc: Location = globalThis.loc
  * });
  * ```
  * @category assets
- * @internal
+ * @advanced
  */
 export const loadVideoTextures = {
 

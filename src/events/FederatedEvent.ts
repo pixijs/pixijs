@@ -4,36 +4,114 @@ import type { Container } from '../scene/container/Container';
 import type { EventBoundary } from './EventBoundary';
 
 /**
- * A PixiJS compatible `Touch` event.
+ * A PixiJS compatible touch event interface that extends the standard DOM Touch interface.
+ * Provides additional properties to normalize touch input with mouse/pointer events.
+ * @example
+ * ```ts
+ * // Access touch information
+ * sprite.on('touchstart', (event) => {
+ *     // Standard touch properties
+ *     console.log('Touch position:', event.clientX, event.clientY);
+ *     console.log('Touch ID:', event.pointerId);
+ *
+ *     // Additional PixiJS properties
+ *     console.log('Pressure:', event.pressure);
+ *     console.log('Size:', event.width, event.height);
+ *     console.log('Tilt:', event.tiltX, event.tiltY);
+ * });
+ * ```
  * @category events
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Touch} DOM Touch Interface
  * @standard
  */
 export interface PixiTouch extends Touch
 {
+    /** The button being pressed (0: left, 1: middle, 2: right) */
     button: number;
+
+    /** Bitmap of currently pressed buttons */
     buttons: number;
+
+    /** Whether this is the primary touch point */
     isPrimary: boolean;
+
+    /** The width of the touch contact area */
     width: number;
+
+    /** The height of the touch contact area */
     height: number;
+
+    /** The angle of tilt along the x-axis (in degrees) */
     tiltX: number;
+
+    /** The angle of tilt along the y-axis (in degrees) */
     tiltY: number;
+
+    /** The type of pointer that triggered this event */
     pointerType: string;
+
+    /** Unique identifier for this touch point */
     pointerId: number;
+
+    /** The normalized pressure of the pointer (0 to 1) */
     pressure: number;
+
+    /** The rotation angle of the pointer (e.g., pen) */
     twist: number;
+
+    /** The normalized tangential pressure of the pointer */
     tangentialPressure: number;
+
+    /** The x coordinate relative to the current layer */
     layerX: number;
+
+    /** The y coordinate relative to the current layer */
     layerY: number;
+
+    /** The x coordinate relative to the target's offset parent */
     offsetX: number;
+
+    /** The y coordinate relative to the target's offset parent */
     offsetY: number;
+
+    /** Whether the event was normalized by PixiJS */
     isNormalized: boolean;
+
+    /** The type of touch event */
     type: string;
 }
 
 /**
- * An DOM-compatible synthetic event implementation that is "forwarded" on behalf of an original
- * FederatedEvent or native {@link https://dom.spec.whatwg.org/#event Event}.
- * @typeParam N - The type of native event held.
+ * A DOM-compatible synthetic event implementation for PixiJS's event system.
+ * This class implements the standard DOM Event interface while providing additional
+ * functionality specific to PixiJS events.
+ * > [!NOTE] You wont receive an instance of this class directly, but rather a subclass
+ * > of this class, such as {@link FederatedPointerEvent}, {@link FederatedMouseEvent}, or
+ * > {@link FederatedWheelEvent}. This class is the base for all federated events.
+ * @example
+ * ```ts
+ * // Basic event handling
+ * sprite.on('pointerdown', (event: FederatedEvent) => {
+ *     // Access standard DOM event properties
+ *     console.log('Target:', event.target);
+ *     console.log('Phase:', event.eventPhase);
+ *     console.log('Type:', event.type);
+ *
+ *     // Control propagation
+ *     event.stopPropagation();
+ * });
+ * ```
+ * @typeParam N - The type of native event held. Can be either a UIEvent or PixiTouch.
+ * @remarks
+ * - Implements the standard DOM UIEvent interface
+ * - Provides event bubbling and capturing phases
+ * - Supports propagation control
+ * - Manages event paths through display tree
+ * - Normalizes native browser events
+ * @see {@link https://dom.spec.whatwg.org/#event} DOM Event Specification
+ * @see {@link FederatedPointerEvent} For pointer-specific events
+ * @see {@link FederatedMouseEvent} For mouse-specific events
+ * @see {@link FederatedWheelEvent} For wheel-specific events
  * @category events
  * @standard
  */
@@ -201,7 +279,23 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
         throw new Error('initUIEvent() is a legacy DOM API. It is not implemented in the Federated Events API.');
     }
 
-    /** Prevent default behavior of PixiJS and the user agent. */
+    /**
+     * Prevent default behavior of both PixiJS and the user agent.
+     * @example
+     * ```ts
+     * sprite.on('click', (event) => {
+     *     // Prevent both browser's default click behavior
+     *     // and PixiJS's default handling
+     *     event.preventDefault();
+     *
+     *     // Custom handling
+     *     customClickHandler();
+     * });
+     * ```
+     * @remarks
+     * - Only works if the native event is cancelable
+     * - Does not stop event propagation
+     */
     public preventDefault(): void
     {
         if (this.nativeEvent instanceof Event && this.nativeEvent.cancelable)
@@ -213,9 +307,23 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
     }
 
     /**
-     * Stop this event from propagating to any addition listeners, including on the
-     * {@link FederatedEvent.currentTarget} and also the following
-     * event targets on the propagation path.
+     * Stop this event from propagating to any additional listeners, including those
+     * on the current target and any following targets in the propagation path.
+     * @example
+     * ```ts
+     * container.on('pointerdown', (event) => {
+     *     // Stop all further event handling
+     *     event.stopImmediatePropagation();
+     *
+     *     // These handlers won't be called:
+     *     // - Other pointerdown listeners on this container
+     *     // - Any pointerdown listeners on parent containers
+     * });
+     * ```
+     * @remarks
+     * - Immediately stops all event propagation
+     * - Prevents other listeners on same target from being called
+     * - More aggressive than stopPropagation()
      */
     public stopImmediatePropagation(): void
     {
@@ -223,8 +331,27 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
     }
 
     /**
-     * Stop this event from propagating to the next {@link FederatedEvent}. The rest of the listeners
-     * on the {@link FederatedEvent.currentTarget} will still be notified.
+     * Stop this event from propagating to the next target in the propagation path.
+     * The rest of the listeners on the current target will still be notified.
+     * @example
+     * ```ts
+     * child.on('pointermove', (event) => {
+     *     // Handle event on child
+     *     updateChild();
+     *
+     *     // Prevent parent handlers from being called
+     *     event.stopPropagation();
+     * });
+     *
+     * // This won't be called if child handles the event
+     * parent.on('pointermove', (event) => {
+     *     updateParent();
+     * });
+     * ```
+     * @remarks
+     * - Stops event bubbling to parent containers
+     * - Does not prevent other listeners on same target
+     * - Less aggressive than stopImmediatePropagation()
      */
     public stopPropagation(): void
     {

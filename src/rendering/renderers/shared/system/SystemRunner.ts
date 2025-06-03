@@ -2,7 +2,7 @@
  * SystemRunner is used internally by the renderers as an efficient way for systems to
  * be notified about what the renderer is up to during the rendering phase.
  *
- * ```
+ * ```ts
  * import { SystemRunner } from 'pixi.js';
  *
  * const myObject = {
@@ -21,7 +21,7 @@
  * ```
  *
  * Or for handling calling the same function on many items
- * ```
+ * ```ts
  * import { SystemRunner } from 'pixi.js';
  *
  * const myGame = {
@@ -83,7 +83,7 @@ export class SystemRunner
      *
      * Eg A listener passed to this Runner will require a 'complete' function.
      *
-     * ```
+     * ```ts
      * import { Runner } from 'pixi.js';
      *
      * const complete = new Runner('complete');

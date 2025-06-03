@@ -5,16 +5,24 @@ import type { Container } from '../Container';
 export interface OnRenderMixinConstructor
 {
     /**
-     * This callback is used when the container is rendered. This is where you should add your custom
-     * logic that is needed to be run every frame.
+     * This callback is used when the container is rendered. It runs every frame during the render process,
+     * making it ideal for per-frame updates and animations.
      *
-     * In v7 many users used `updateTransform` for this, however the way v8 renders objects is different
-     * and "updateTransform" is no longer called every frame
+     * > [!NOTE] In v7 many users used `updateTransform` for this, however the way v8 renders objects is different
+     * > and "updateTransform" is no longer called every frame
      * @example
+     * ```ts
+     * // Basic rotation animation
      * const container = new Container();
      * container.onRender = () => {
-     *    container.rotation += 0.01;
+     *     container.rotation += 0.01;
      * };
+     *
+     * // Cleanup when done
+     * container.onRender = null; // Removes callback
+     * ```
+     * @param renderer - The renderer instance
+     * @see {@link Renderer} For renderer capabilities
      */
     onRender?: ((renderer: Renderer) => void | null);
 }

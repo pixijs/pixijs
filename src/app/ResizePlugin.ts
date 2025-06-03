@@ -62,17 +62,10 @@ export interface ResizePluginOptions
  * const container = document.querySelector('#game-container');
  * await app.init({ resizeTo: container });
  *
- * // Example 3: Manual resize control (Only if resizeTo is set)
- * await app.init();
- * window.addEventListener('resize', () => {
- *    app.resize(); // Resize immediately
- *    // or
- *    app.queueResize(); // Queue resize for next frame
- * });
- *
- * // Example 4: Change resize target at runtime
+ * // Example 3: Change resize target at runtime
  * app.resizeTo = window;                    // Enable auto-resize to window
  * app.resizeTo = null;                      // Disable auto-resize
+ * ```
  * @category app
  * @standard
  */
