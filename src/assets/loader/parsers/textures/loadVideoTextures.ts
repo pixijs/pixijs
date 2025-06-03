@@ -216,6 +216,11 @@ export const loadVideoTextures = {
                 resolve(createTexture(base, loader, url));
             };
 
+            if (options.preload && !options.autoPlay)
+            {
+                videoElement.load();
+            }
+
             videoElement.addEventListener('canplay', onCanPlay);
             videoElement.appendChild(sourceElement);
         });
