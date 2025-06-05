@@ -1,4 +1,5 @@
-import earcut from 'earcut';
+import earcutModule from 'earcut';
+
 /**
  * A high performance event emitter
  * @see {@link https://github.com/primus/eventemitter3}
@@ -15,5 +16,6 @@ export { default as EventEmitter } from 'eventemitter3';
  * @param {number} [dimensions=2] - The number of coordinates per vertex in the input array
  * @returns {number[]} Triangulated polygon
  * @category utils
+ * @advanced
  */
-export { earcut };
+export const earcut = ((earcutModule as any).default || earcutModule) as typeof earcutModule;
