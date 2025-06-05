@@ -1,3 +1,4 @@
+import earcut from 'earcut';
 /**
  * A high performance event emitter
  * @see {@link https://github.com/primus/eventemitter3}
@@ -15,4 +16,4 @@ export { default as EventEmitter } from 'eventemitter3';
  * @returns {number[]} Triangulated polygon
  * @category utils
  */
-export { default as earcut } from 'earcut';
+export { earcut };
