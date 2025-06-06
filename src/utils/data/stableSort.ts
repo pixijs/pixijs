@@ -1,9 +1,7 @@
-
 /**
  * Stable in-place array sort that preserves the original
  * order of equal elements. Useful for environments where
  * `Array.sort` is unstable.
- *
  * @example
  * ```ts
  * const items = [
@@ -14,7 +12,6 @@
  * stableSort(items, (a, b) => a.priority - b.priority);
  * console.log(items.map(i => i.id)); // ['a', 'b']
  * ```
- *
  * @param array - The array to sort.
  * @param compareFn - Comparison function.
  * @category utils
