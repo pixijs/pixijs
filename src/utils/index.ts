@@ -10,6 +10,7 @@ export * from './const';
 export * from './data/clean';
 export * from './data/removeItems';
 export * from './data/uid';
+export * from './data/stableSort';
 export * from './data/updateQuadBounds';
 export * from './data/ViewableBuffer';
 export * from './global/globalHooks';

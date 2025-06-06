@@ -1,3 +1,5 @@
+import { stableSort } from '../utils/data/stableSort';
+
 /**
  * Collection of valid extension types.
  * @category extensions
@@ -391,7 +393,7 @@ const extensions = {
                 if (index >= 0) return;
 
                 map.push({ name: extension.name, value: extension.ref });
-                map.sort((a, b) =>
+                stableSort(map, (a, b) =>
                     normalizeExtensionPriority(b.value, defaultPriority)
                     - normalizeExtensionPriority(a.value, defaultPriority));
             },
@@ -427,7 +429,7 @@ const extensions = {
                 }
 
                 list.push(extension.ref);
-                list.sort((a, b) =>
+                stableSort(list, (a, b) =>
                     normalizeExtensionPriority(b, defaultPriority) - normalizeExtensionPriority(a, defaultPriority));
             },
             (extension) =>
