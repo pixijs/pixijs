@@ -78,6 +78,16 @@ export type FilterWithShader = FilterOptions & IShaderWithResources;
 export type FilterAntialias = 'on' | 'off' | 'inherit';
 
 /**
+ * Clear mode
+ * - `blend` - (same as false) filter output already has something drawn, we have to blend it
+ * - `clear` - (same as true) filter output should be cleared fully
+ * - `auto` - depends on the platform, output can be cleared or just copied into
+ * @category filters
+ * @advanced
+ */
+export type FilterClearMode = 'blend' | 'clear' | 'auto' | false | true;
+
+/**
  * The Filter class is the base for all filter effects used in Pixi.js
  * As it extends a shader, it requires that a glProgram is parsed in to work with WebGL and a gpuProgram for WebGPU.
  * If you don't proved one, then the filter is skipped and just rendered as if it wasn't there for that renderer.
@@ -222,7 +232,7 @@ export class Filter extends Shader
         filterManager: FilterSystem,
         input: Texture,
         output: RenderSurface,
-        clearMode: boolean
+        clearMode: FilterClearMode
     ): void
     {
         filterManager.applyFilter(this, input, output, clearMode);

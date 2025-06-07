@@ -3,14 +3,13 @@ import { GlProgram } from '../../rendering/renderers/gl/shader/GlProgram';
 import { GpuProgram } from '../../rendering/renderers/gpu/shader/GpuProgram';
 import { UniformGroup } from '../../rendering/renderers/shared/shader/UniformGroup';
 import { TextureMatrix } from '../../rendering/renderers/shared/texture/TextureMatrix';
-import { Filter } from '../Filter';
+import { Filter, type FilterClearMode, type FilterOptions } from '../Filter';
 import fragment from './mask.frag';
 import vertex from './mask.vert';
 import source from './mask.wgsl';
 
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { Sprite } from '../../scene/sprite/Sprite';
-import type { FilterOptions } from '../Filter';
 import type { FilterSystem } from '../FilterSystem';
 
 /** @internal */
@@ -86,7 +85,7 @@ export class MaskFilter extends Filter
         filterManager: FilterSystem,
         input: Texture,
         output: Texture,
-        clearMode: boolean
+        clearMode: FilterClearMode
     ): void
     {
         // will trigger an update if the texture changed..
