@@ -1,6 +1,5 @@
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
-import { RendererType } from '../../../rendering/renderers/types';
-import { Filter } from '../../Filter';
+import { Filter, type FilterClearMode } from '../../Filter';
 import { generateBlurGlProgram } from './gl/generateBlurGlProgram';
 import { generateBlurProgram } from './gpu/generateBlurProgram';
 
@@ -102,7 +101,7 @@ export class BlurFilterPass extends Filter
         filterManager: FilterSystem,
         input: Texture,
         output: RenderSurface,
-        clearMode: boolean
+        clearMode: FilterClearMode
     ): void
     {
         this._uniforms.uStrength = this.strength / this.passes;
@@ -120,11 +119,9 @@ export class BlurFilterPass extends Filter
 
             this._state.blend = false;
 
-            const shouldClear = filterManager.renderer.type === RendererType.WEBGPU;
-
             for (let i = 0; i < this.passes - 1; i++)
             {
-                filterManager.applyFilter(this, flip, flop, i === 0 ? true : shouldClear);
+                filterManager.applyFilter(this, flip, flop, i === 0 ? 'clear' : 'auto');
 
                 const temp = flop;
 

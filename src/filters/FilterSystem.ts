@@ -10,6 +10,7 @@ import { TexturePool } from '../rendering/renderers/shared/texture/TexturePool';
 import { type Renderer, RendererType } from '../rendering/renderers/types';
 import { Bounds } from '../scene/container/bounds/Bounds';
 import { getGlobalRenderableBounds } from '../scene/container/bounds/getRenderableBounds';
+import { deprecation } from '../utils/logging/deprecation';
 import { warn } from '../utils/logging/warn';
 
 import type { WebGLRenderer } from '../rendering/renderers/gl/WebGLRenderer';
@@ -21,7 +22,7 @@ import type { RenderSurface } from '../rendering/renderers/shared/renderTarget/R
 import type { System } from '../rendering/renderers/shared/system/System';
 import type { Container } from '../scene/container/Container';
 import type { Sprite } from '../scene/sprite/Sprite';
-import type { Filter } from './Filter';
+import type { Filter, FilterClearMode } from './Filter';
 import type { FilterEffect } from './FilterEffect';
 
 const quadGeometry = new Geometry({
@@ -168,6 +169,8 @@ export class FilterSystem implements System
     private _filterStackIndex = 0;
     private _filterStack: FilterData[] = [];
 
+    public forceClear = true;
+
     private readonly _filterGlobalUniforms = new UniformGroup({
         uInputSize: { value: new Float32Array(4), type: 'vec4<f32>' },
         uInputPixel: { value: new Float32Array(4), type: 'vec4<f32>' },
@@ -183,6 +186,7 @@ export class FilterSystem implements System
     constructor(renderer: Renderer)
     {
         this.renderer = renderer;
+        this.forceClear = renderer.type === RendererType.WEBGPU;
     }
 
     /**
@@ -469,7 +473,7 @@ export class FilterSystem implements System
 
         this._activeFilterData = filterData;
 
-        this._applyFiltersToTexture(filterData, false);
+        this._applyFiltersToTexture(filterData, 'blend');
 
         // if we made a background texture, lets return that also
         if (filterData.blendRequired)
@@ -531,7 +535,7 @@ export class FilterSystem implements System
      * @param output - The output render surface.
      * @param clear - Whether to clear the output surface before applying the filter.
      */
-    public applyFilter(filter: Filter, input: Texture, output: RenderSurface, clear: boolean)
+    public applyFilter(filter: Filter, input: Texture, output: RenderSurface, clear: FilterClearMode)
     {
         const renderer = this.renderer;
 
@@ -591,7 +595,14 @@ export class FilterSystem implements System
         // set the output texture - this is where we are going to render to
         const renderTarget = this.renderer.renderTarget.getRenderTarget(output);
 
-        renderer.renderTarget.bind(output, !!clear);
+        if (clear === true || clear === false)
+        {
+            deprecation('8.10.2', 'Filters should use string values (FilterClearMode) instead of boolean');
+        }
+
+        const shouldClear = clear === true || clear === 'clear' || (clear === 'auto' && this.forceClear);
+
+        renderer.renderTarget.bind(output, shouldClear);
 
         if (output instanceof Texture)
         {
@@ -690,7 +701,7 @@ export class FilterSystem implements System
         // BOOM!
     }
 
-    private _applyFiltersToTexture(filterData: FilterData, clear: boolean)
+    private _applyFiltersToTexture(filterData: FilterData, clear: FilterClearMode)
     {
         const inputTexture = filterData.inputTexture;
 
@@ -732,7 +743,7 @@ export class FilterSystem implements System
             {
                 const filter = filters[i];
 
-                filter.apply(this, flip, flop, true);
+                filter.apply(this, flip, flop, 'clear');
                 const t = flip;
 
                 flip = flop;
