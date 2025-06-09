@@ -565,6 +565,14 @@ describe('CanvasTextMetrics', () =>
             expect(arr.length).toEqual(1);
         });
 
+        it('newline char: CRLF', () =>
+        {
+            const arr = CanvasTextMetrics['_tokenize']('\r\n');
+
+            expect(arr).toBeArray();
+            expect(arr.length).toEqual(1);
+        });
+
         it('breakingSpaces', () =>
         {
             const arr = CanvasTextMetrics['_tokenize'](breakingSpaces.join(''));
