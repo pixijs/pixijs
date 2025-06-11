@@ -318,6 +318,17 @@ export class Texture<TextureSourceType extends TextureSource = TextureSource> ex
         return this.orig.height;
     }
 
+    /**
+     * Used by Texture pools, for text
+     * @param orig
+     * @param trim
+     */
+    public setOrigTrim(orig: Rectangle = null, trim: Rectangle = null)
+    {
+        (this as any).orig = orig || this.frame;
+        (this as any).trim = trim;
+    }
+
     /** Call this function when you have modified the frame of this texture. */
     public updateUvs()
     {

@@ -1,9 +1,11 @@
+import { PaddingSides } from '../../../filters/PaddingSides';
 import { HTMLTextRenderData } from '../HTMLTextRenderData';
 
 import type { Size } from '../../../maths/misc/Size';
 import type { HTMLTextStyle } from '../HTMLTextStyle';
 
 let tempHTMLTextRenderData: HTMLTextRenderData;
+const tempPadding = new PaddingSides();
 
 /**
  * Measures the HTML text without actually generating an image.
@@ -42,11 +44,10 @@ export function measureHtmlText(
 
     svgRoot.remove();
 
-    // padding is included in the CSS calculation, so we need to remove it here
-    const doublePadding = style.padding * 2;
+    const padding = tempPadding.copyFrom(style.padding);
 
     return {
-        width: contentBounds.width - doublePadding,
-        height: contentBounds.height - doublePadding,
+        width: contentBounds.width - padding.horizontal,
+        height: contentBounds.height - padding.vertical,
     };
 }

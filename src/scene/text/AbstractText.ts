@@ -2,10 +2,8 @@ import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
 
-import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';
-import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
 import type { HTMLTextStyle, HTMLTextStyleOptions } from '../text-html/HTMLTextStyle';
 import type { TextStyle, TextStyleOptions } from './TextStyle';
@@ -476,124 +474,6 @@ export abstract class AbstractText<
 
         this._style.on('update', this.onViewUpdate, this);
         this.onViewUpdate();
-    }
-
-    /**
-     * The width of the sprite, setting this will actually modify the scale to achieve the value set.
-     * @example
-     * ```ts
-     * // Set width directly
-     * texture.width = 200;
-     * console.log(texture.scale.x); // Scale adjusted to match width
-     *
-     * // For better performance when setting both width and height
-     * texture.setSize(300, 400); // Avoids recalculating bounds twice
-     * ```
-     */
-    override get width(): number
-    {
-        return Math.abs(this.scale.x) * this.bounds.width;
-    }
-
-    override set width(value: number)
-    {
-        this._setWidth(value, this.bounds.width);
-    }
-
-    /**
-     * The height of the sprite, setting this will actually modify the scale to achieve the value set.
-     * @example
-     * ```ts
-     * // Set height directly
-     * texture.height = 200;
-     * console.log(texture.scale.y); // Scale adjusted to match height
-     *
-     * // For better performance when setting both width and height
-     * texture.setSize(300, 400); // Avoids recalculating bounds twice
-     * ```
-     */
-    override get height(): number
-    {
-        return Math.abs(this.scale.y) * this.bounds.height;
-    }
-
-    override set height(value: number)
-    {
-        this._setHeight(value, this.bounds.height);
-    }
-
-    /**
-     * Retrieves the size of the Text as a [Size]{@link Size} object based on the texture dimensions and scale.
-     * This is faster than getting width and height separately as it only calculates the bounds once.
-     * @example
-     * ```ts
-     * // Basic size retrieval
-     * const text = new Text({
-     *     text: 'Hello Pixi!',
-     *     style: { fontSize: 24 }
-     * });
-     * const size = text.getSize();
-     * console.log(`Size: ${size.width}x${size.height}`);
-     *
-     * // Reuse existing size object
-     * const reuseSize = { width: 0, height: 0 };
-     * text.getSize(reuseSize);
-     * ```
-     * @param out - Optional object to store the size in, to avoid allocating a new object
-     * @returns The size of the Sprite
-     * @see {@link Text#width} For getting just the width
-     * @see {@link Text#height} For getting just the height
-     * @see {@link Text#setSize} For setting both width and height
-     */
-    public override getSize(out?: Size): Size
-    {
-        out ||= {} as Size;
-        out.width = Math.abs(this.scale.x) * this.bounds.width;
-        out.height = Math.abs(this.scale.y) * this.bounds.height;
-
-        return out;
-    }
-
-    /**
-     * Sets the size of the Text to the specified width and height.
-     * This is faster than setting width and height separately as it only recalculates bounds once.
-     * @example
-     * ```ts
-     * // Basic size setting
-     * const text = new Text({
-     *    text: 'Hello Pixi!',
-     *    style: { fontSize: 24 }
-     * });
-     * text.setSize(100, 200); // Width: 100, Height: 200
-     *
-     * // Set uniform size
-     * text.setSize(100); // Sets both width and height to 100
-     *
-     * // Set size with object
-     * text.setSize({
-     *     width: 200,
-     *     height: 300
-     * });
-     * ```
-     * @param value - This can be either a number or a {@link Size} object
-     * @param height - The height to set. Defaults to the value of `width` if not provided
-     * @see {@link Text#width} For setting width only
-     * @see {@link Text#height} For setting height only
-     */
-    public override setSize(value: number | Optional<Size, 'height'>, height?: number)
-    {
-        if (typeof value === 'object')
-        {
-            height = value.height ?? value.width;
-            value = value.width;
-        }
-        else
-        {
-            height ??= value;
-        }
-
-        value !== undefined && this._setWidth(value, this.bounds.width);
-        height !== undefined && this._setHeight(height, this.bounds.height);
     }
 
     /**

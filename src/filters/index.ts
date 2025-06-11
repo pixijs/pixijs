@@ -18,6 +18,7 @@ export * from './FilterEffect';
 export * from './FilterPipe';
 export * from './FilterSystem';
 export * from './mask/MaskFilter';
+export * from './PaddingSides';
 /** @ignore */
 export { default as blendTemplateFrag } from './blend-modes/blend-template.frag';
 /** @ignore */

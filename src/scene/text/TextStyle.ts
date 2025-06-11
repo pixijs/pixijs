@@ -11,6 +11,7 @@ import {
 } from '../graphics/shared/utils/convertFillInputToFillStyle';
 import { generateTextStyleKey } from './utils/generateTextStyleKey';
 
+import type { IPaddingSidesLike } from '../../filters/PaddingSides';
 import type { TextureDestroyOptions, TypeOrBool } from '../container/destroyTypes';
 import type {
     ConvertedFillStyle,
@@ -601,7 +602,7 @@ export interface TextStyleOptions
      * Occasionally some fonts are cropped. Adding some padding will prevent this from
      * happening by adding padding to all sides of the text.
      */
-    padding?: number;
+    padding?: IPaddingSidesLike;
     /**
      * Stroke style for text outline.
      * @default null
@@ -784,7 +785,7 @@ export class TextStyle extends EventEmitter<{
     private _wordWrapWidth: number;
     private _filters: Filter[];
 
-    private _padding: number;
+    private _padding: IPaddingSidesLike;
 
     protected _styleKey: string;
     private _trim: boolean;
@@ -885,8 +886,8 @@ export class TextStyle extends EventEmitter<{
      * by adding padding to all sides of the text.
      * > [!NOTE] This will NOT affect the positioning or bounds of the text.
      */
-    get padding(): number { return this._padding; }
-    set padding(value: number) { this._padding = value; this.update(); }
+    get padding(): IPaddingSidesLike { return this._padding; }
+    set padding(value: IPaddingSidesLike) { this._padding = value; this.update(); }
     /**
      * An optional filter or array of filters to apply to the text, allowing for advanced visual effects.
      * These filters will be applied to the text as it is created, resulting in faster rendering for static text
@@ -1068,27 +1069,6 @@ export class TextStyle extends EventEmitter<{
             wordWrapWidth: this.wordWrapWidth,
             filters: this._filters ? [...this._filters] : undefined,
         });
-    }
-
-    /**
-     * Returns the final padding for the text style, taking into account any filters applied.
-     * Used internally for correct measurements
-     * @internal
-     * @returns {number} The final padding for the text style.
-     */
-    public _getFinalPadding(): number
-    {
-        let filterPadding = 0;
-
-        if (this._filters)
-        {
-            for (let i = 0; i < this._filters.length; i++)
-            {
-                filterPadding += this._filters[i].padding;
-            }
-        }
-
-        return Math.max(this._padding, filterPadding);
     }
 
     /**

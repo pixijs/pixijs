@@ -1,4 +1,5 @@
 import { DOMAdapter } from '../../../environment/adapter';
+import { type IPaddingSidesLike, PaddingSides } from '../../../filters/PaddingSides';
 import { fontStringFromTextStyle } from './utils/fontStringFromTextStyle';
 
 import type { ICanvas, ICanvasRenderingContext2DSettings } from '../../../environment/canvas/ICanvas';
@@ -93,6 +94,9 @@ export class CanvasTextMetrics
 
     /** The font properties object from TextMetrics.measureFont. */
     public fontProperties: FontMetrics;
+
+    /** padding values for texture []top right bottom left] */
+    public padding?: IPaddingSidesLike;
 
     /**
      * String used for calculate font metrics.
@@ -221,9 +225,10 @@ export class CanvasTextMetrics
      * @param lineHeight - the measured line height for this style
      * @param maxLineWidth - the maximum line width for all measured lines
      * @param {FontMetrics} fontProperties - the font properties object from TextMetrics.measureFont
+     * @param padding - four-side paddings, calculated from shadow and filters
      */
     constructor(text: string, style: TextStyle, width: number, height: number, lines: string[], lineWidths: number[],
-        lineHeight: number, maxLineWidth: number, fontProperties: FontMetrics)
+        lineHeight: number, maxLineWidth: number, fontProperties: FontMetrics, padding?: IPaddingSidesLike)
     {
         this.text = text;
         this.style = style;
@@ -234,6 +239,7 @@ export class CanvasTextMetrics
         this.lineHeight = lineHeight;
         this.maxLineWidth = maxLineWidth;
         this.fontProperties = fontProperties;
+        this.padding = padding;
     }
 
     /**
@@ -280,22 +286,20 @@ export class CanvasTextMetrics
 
         const strokeWidth = style._stroke?.width || 0;
 
-        let width = maxLineWidth + strokeWidth;
+        const width = maxLineWidth + strokeWidth;
+        let padding: IPaddingSidesLike = 0;
 
-        if (style.dropShadow)
+        const { dropShadow } = style;
+
+        if (dropShadow)
         {
-            width += style.dropShadow.distance;
+            padding = PaddingSides.fromDistanceRotation(dropShadow.distance, dropShadow.angle, dropShadow.blur || 0);
         }
 
         const lineHeight = style.lineHeight || fontProperties.fontSize;
 
-        let height = Math.max(lineHeight, fontProperties.fontSize + (strokeWidth))
+        const height = Math.max(lineHeight, fontProperties.fontSize + (strokeWidth))
             + ((lines.length - 1) * (lineHeight + style.leading));
-
-        if (style.dropShadow)
-        {
-            height += style.dropShadow.distance;
-        }
 
         const measurements = new CanvasTextMetrics(
             text,
@@ -306,7 +310,8 @@ export class CanvasTextMetrics
             lineWidths,
             lineHeight + style.leading,
             maxLineWidth,
-            fontProperties
+            fontProperties,
+            padding
         );
 
         return measurements;
