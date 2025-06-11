@@ -1,7 +1,10 @@
-import { updateQuadBounds } from '../../../utils/data/updateQuadBounds';
+import { type Texture } from '../../../rendering';
+import { getCanvasBoundingBox, updateQuadBounds } from '../../../utils';
 import { type BatchableSprite } from '../../sprite/BatchableSprite';
 import { type AbstractText } from '../AbstractText';
-import { type TextStyle, type TextStyleOptions } from '../TextStyle';
+
+import type { PaddingSides } from '../../../filters/PaddingSides';
+import type { Rectangle } from '../../../maths';
 
 /**
  * Updates the bounds of the given batchable sprite based on the provided text object.
@@ -13,24 +16,47 @@ import { type TextStyle, type TextStyleOptions } from '../TextStyle';
  * @param {AbstractText} text - The text object containing the texture and style information.
  * @internal
  */
-export function updateTextBounds(batchableSprite: BatchableSprite, text: AbstractText<TextStyle, TextStyleOptions>)
+export function updateTextBounds(batchableSprite: BatchableSprite, text: AbstractText)
 {
     const { texture, bounds } = batchableSprite;
 
     updateQuadBounds(bounds, text._anchor, texture);
+}
 
-    const padding = text._style._getFinalPadding();
+/**
+ * Updates the texture of sprite/text according to padding
+ * @param texture
+ * @param padding
+ * @param doTrim
+ * @internal
+ */
+export function adjustTextTexture(texture: Texture, padding: PaddingSides, doTrim = false)
+{
+    if (!padding && !doTrim)
+    {
+        return;
+    }
+    const orig = texture.frame.clone();
 
-    // When HTML text textures are created, they include the padding around the text content
-    // to prevent text clipping and provide a buffer zone. This padding is built into
-    // the texture itself. However, we don't want this padding to affect the text's
-    // actual position on screen.
-    // To compensate, we shift the render position back by the padding amount,
-    // ensuring the text appears exactly where intended while maintaining the
-    // buffer zone around it.
+    orig.width -= padding.vertical;
+    orig.height -= padding.horizontal;
 
-    bounds.minX -= padding;
-    bounds.minY -= padding;
-    bounds.maxX -= padding;
-    bounds.maxY -= padding;
+    if (doTrim)
+    {
+        const trimmed = getCanvasBoundingBox(texture.source.resource, texture.source.resolution);
+
+        texture.frame.copyFrom(trimmed);
+        texture.updateUvs();
+    }
+
+    let trim: Rectangle = texture.frame;
+
+    if (padding)
+    {
+        trim = trim.clone();
+        trim.x -= padding.left;
+        trim.y -= padding.top;
+    }
+
+    texture.setOrigTrim(orig, trim);
 }
