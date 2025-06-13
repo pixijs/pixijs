@@ -244,43 +244,17 @@ export class FilterSystem implements System
             offsetY = previousFilterData.bounds.minY;
         }
 
-        const globalFrame = filterData.globalFrame;
-
-        globalFrame.x = offsetX * globalResolution;
-        globalFrame.y = offsetY * globalResolution;
-        globalFrame.width = colorTextureSource.width * globalResolution;
-        globalFrame.height = colorTextureSource.height * globalResolution;
+        this._calculateGlobalFrame(
+            filterData,
+            offsetX, offsetY,
+            globalResolution,
+            colorTextureSource.width,
+            colorTextureSource.height
+        );
 
         // set all the filter data
 
-        filterData.backTexture = Texture.EMPTY;
-
-        if (filterData.blendRequired)
-        {
-            renderer.renderTarget.finishRenderPass();
-            // this actually forces the current commandQueue to render everything so far.
-            // if we don't do this, we won't be able to copy pixels for the background
-            const renderTarget = renderer.renderTarget.getRenderTarget(filterData.outputRenderSurface);
-
-            filterData.backTexture = this.getBackTexture(renderTarget, bounds, previousFilterData?.bounds);
-        }
-
-        /// ///
-        // bind...
-        // get a P02 texture from our pool...
-        filterData.inputTexture = TexturePool.getOptimalTexture(
-            bounds.width,
-            bounds.height,
-            filterData.resolution,
-            filterData.antialias,
-        );
-
-        renderer.renderTarget.bind(filterData.inputTexture, true);
-        // set the global uniforms to take into account the bounds offset required
-
-        renderer.globalUniforms.push({
-            offset: bounds,
-        });
+        this._setupFilterTextures(filterData, bounds, renderer, previousFilterData);
     }
 
     /**
@@ -353,12 +327,13 @@ export class FilterSystem implements System
         const offsetX = 0;
         const offsetY = 0;
 
-        const globalFrame = filterData.globalFrame;
-
-        globalFrame.x = offsetX * globalResolution;
-        globalFrame.y = offsetY * globalResolution;
-        globalFrame.width = colorTextureSource.width * globalResolution;
-        globalFrame.height = colorTextureSource.height * globalResolution;
+        this._calculateGlobalFrame(
+            filterData,
+            offsetX, offsetY,
+            globalResolution,
+            colorTextureSource.width,
+            colorTextureSource.height
+        );
 
         /// /////////
 
@@ -486,16 +461,6 @@ export class FilterSystem implements System
 
         const outputRenderSurface = filterData.outputRenderSurface;
 
-        const filterUniforms = this._filterGlobalUniforms;
-        const uniforms = filterUniforms.uniforms;
-
-        const outputFrame = uniforms.uOutputFrame;
-        const inputSize = uniforms.uInputSize;
-        const inputPixel = uniforms.uInputPixel;
-        const inputClamp = uniforms.uInputClamp;
-        const globalFrame = uniforms.uGlobalFrame;
-        const outputTexture = uniforms.uOutputTexture;
-
         const isFinalTarget = outputRenderSurface === output;
 
         // Find the correct resolution by looking back through the filter stack
@@ -514,100 +479,9 @@ export class FilterSystem implements System
             offsetY = offset.y;
         }
 
-        // are we rendering back to the original surface?
-        if (isFinalTarget)
-        {
-            outputFrame[0] = filterData.bounds.minX - offsetX;
-            outputFrame[1] = filterData.bounds.minY - offsetY;
-        }
-        else
-        {
-            outputFrame[0] = 0;
-            outputFrame[1] = 0;
-        }
+        this._updateFilterUniforms(input, output, filterData, offsetX, offsetY, resolution, isFinalTarget, clear);
 
-        outputFrame[2] = input.frame.width;
-        outputFrame[3] = input.frame.height;
-
-        inputSize[0] = input.source.width;
-        inputSize[1] = input.source.height;
-        inputSize[2] = 1 / inputSize[0];
-        inputSize[3] = 1 / inputSize[1];
-
-        inputPixel[0] = input.source.pixelWidth;
-        inputPixel[1] = input.source.pixelHeight;
-        inputPixel[2] = 1.0 / inputPixel[0];
-        inputPixel[3] = 1.0 / inputPixel[1];
-
-        inputClamp[0] = 0.5 * inputPixel[2];
-        inputClamp[1] = 0.5 * inputPixel[3];
-        inputClamp[2] = (input.frame.width * inputSize[2]) - (0.5 * inputPixel[2]);
-        inputClamp[3] = (input.frame.height * inputSize[3]) - (0.5 * inputPixel[3]);
-
-        const rootTexture = renderer.renderTarget.rootRenderTarget.colorTexture;
-
-        globalFrame[0] = offsetX * resolution;
-        globalFrame[1] = offsetY * resolution;
-        globalFrame[2] = rootTexture.source.width * resolution;
-        globalFrame[3] = rootTexture.source.height * resolution;
-
-        // we are going to overwrite resource we can set it to null!
-        if (output instanceof Texture) output.source.resource = null;
-
-        // set the output texture - this is where we are going to render to
-        const renderTarget = renderer.renderTarget.getRenderTarget(output);
-
-        renderer.renderTarget.bind(output, !!clear);
-
-        if (output instanceof Texture)
-        {
-            outputTexture[0] = output.frame.width;
-            outputTexture[1] = output.frame.height;
-        }
-        else
-        {
-            // this means a renderTarget was passed directly
-            outputTexture[0] = renderTarget.width;
-            outputTexture[1] = renderTarget.height;
-        }
-
-        outputTexture[2] = renderTarget.isRoot ? -1 : 1;
-
-        filterUniforms.update();
-
-        // TODO - should prolly use a adaptor...
-        if ((renderer as WebGPURenderer).renderPipes.uniformBatch)
-        {
-            const batchUniforms = (renderer as WebGPURenderer).renderPipes.uniformBatch
-                .getUboResource(filterUniforms);
-
-            this._globalFilterBindGroup.setResource(batchUniforms, 0);
-        }
-        else
-        {
-            this._globalFilterBindGroup.setResource(filterUniforms, 0);
-        }
-
-        // now lets update the output texture...
-
-        // set bind group..
-        this._globalFilterBindGroup.setResource(input.source, 1);
-        this._globalFilterBindGroup.setResource(input.source.style, 2);
-
-        filter.groups[0] = this._globalFilterBindGroup;
-
-        renderer.encoder.draw({
-            geometry: quadGeometry,
-            shader: filter,
-            state: filter._state,
-            topology: 'triangle-list'
-        });
-
-        // WebGPU blit's automatically, but WebGL does not!
-        if (renderer.type === RendererType.WEBGL)
-        {
-            renderer.renderTarget.finishRenderPass();
-        }
+        this._setupBindGroupsAndRender(filter, input, renderer);
     }
 
     /**
@@ -654,6 +528,212 @@ export class FilterSystem implements System
     public destroy(): void
     {
         // BOOM!
+    }
+
+    /**
+     * Sets up the bind groups and renders the filter.
+     * @param filter - The filter to apply
+     * @param input - The input texture
+     * @param renderer - The renderer instance
+     */
+    private _setupBindGroupsAndRender(filter: Filter, input: Texture, renderer: Renderer): void
+    {
+        // TODO - should prolly use a adaptor...
+        if ((renderer as WebGPURenderer).renderPipes.uniformBatch)
+        {
+            const batchUniforms = (renderer as WebGPURenderer).renderPipes.uniformBatch
+                .getUboResource(this._filterGlobalUniforms);
+
+            this._globalFilterBindGroup.setResource(batchUniforms, 0);
+        }
+        else
+        {
+            this._globalFilterBindGroup.setResource(this._filterGlobalUniforms, 0);
+        }
+
+        // now lets update the output texture...
+
+        // set bind group..
+        this._globalFilterBindGroup.setResource(input.source, 1);
+        this._globalFilterBindGroup.setResource(input.source.style, 2);
+
+        filter.groups[0] = this._globalFilterBindGroup;
+
+        renderer.encoder.draw({
+            geometry: quadGeometry,
+            shader: filter,
+            state: filter._state,
+            topology: 'triangle-list'
+        });
+
+        // WebGPU blit's automatically, but WebGL does not!
+        if (renderer.type === RendererType.WEBGL)
+        {
+            renderer.renderTarget.finishRenderPass();
+        }
+    }
+
+    /**
+     * Sets up the filter textures including input texture and back texture if needed.
+     * @param filterData - The filter data to update
+     * @param bounds - The bounds for the texture
+     * @param renderer - The renderer instance
+     * @param previousFilterData - The previous filter data for back texture calculation
+     */
+    private _setupFilterTextures(
+        filterData: FilterData,
+        bounds: Bounds,
+        renderer: Renderer,
+        previousFilterData: FilterData | null
+    ): void
+    {
+        // set all the filter data
+        filterData.backTexture = Texture.EMPTY;
+
+        if (filterData.blendRequired)
+        {
+            renderer.renderTarget.finishRenderPass();
+            // this actually forces the current commandQueue to render everything so far.
+            // if we don't do this, we won't be able to copy pixels for the background
+            const renderTarget = renderer.renderTarget.getRenderTarget(filterData.outputRenderSurface);
+
+            filterData.backTexture = this.getBackTexture(renderTarget, bounds, previousFilterData?.bounds);
+        }
+
+        /// ///
+        // bind...
+        // get a P02 texture from our pool...
+        filterData.inputTexture = TexturePool.getOptimalTexture(
+            bounds.width,
+            bounds.height,
+            filterData.resolution,
+            filterData.antialias,
+        );
+
+        renderer.renderTarget.bind(filterData.inputTexture, true);
+        // set the global uniforms to take into account the bounds offset required
+
+        renderer.globalUniforms.push({
+            offset: bounds,
+        });
+    }
+
+    /**
+     * Calculates and sets the global frame for the filter.
+     * @param filterData - The filter data to update
+     * @param offsetX - The X offset
+     * @param offsetY - The Y offset
+     * @param globalResolution - The global resolution
+     * @param sourceWidth - The source texture width
+     * @param sourceHeight - The source texture height
+     */
+    private _calculateGlobalFrame(
+        filterData: FilterData,
+        offsetX: number,
+        offsetY: number,
+        globalResolution: number,
+        sourceWidth: number,
+        sourceHeight: number
+    ): void
+    {
+        const globalFrame = filterData.globalFrame;
+
+        globalFrame.x = offsetX * globalResolution;
+        globalFrame.y = offsetY * globalResolution;
+        globalFrame.width = sourceWidth * globalResolution;
+        globalFrame.height = sourceHeight * globalResolution;
+    }
+
+    /**
+     * Updates the filter uniforms with the current filter state.
+     * @param input - The input texture
+     * @param output - The output render surface
+     * @param filterData - The current filter data
+     * @param offsetX - The X offset for positioning
+     * @param offsetY - The Y offset for positioning
+     * @param resolution - The current resolution
+     * @param isFinalTarget - Whether this is the final render target
+     * @param clear - Whether to clear the output surface
+     */
+    private _updateFilterUniforms(
+        input: Texture,
+        output: RenderSurface,
+        filterData: FilterData,
+        offsetX: number,
+        offsetY: number,
+        resolution: number,
+        isFinalTarget: boolean,
+        clear: boolean
+    ): void
+    {
+        const uniforms = this._filterGlobalUniforms.uniforms;
+        const outputFrame = uniforms.uOutputFrame;
+        const inputSize = uniforms.uInputSize;
+        const inputPixel = uniforms.uInputPixel;
+        const inputClamp = uniforms.uInputClamp;
+        const globalFrame = uniforms.uGlobalFrame;
+        const outputTexture = uniforms.uOutputTexture;
+
+        // are we rendering back to the original surface?
+        if (isFinalTarget)
+        {
+            outputFrame[0] = filterData.bounds.minX - offsetX;
+            outputFrame[1] = filterData.bounds.minY - offsetY;
+        }
+        else
+        {
+            outputFrame[0] = 0;
+            outputFrame[1] = 0;
+        }
+
+        outputFrame[2] = input.frame.width;
+        outputFrame[3] = input.frame.height;
+
+        inputSize[0] = input.source.width;
+        inputSize[1] = input.source.height;
+        inputSize[2] = 1 / inputSize[0];
+        inputSize[3] = 1 / inputSize[1];
+
+        inputPixel[0] = input.source.pixelWidth;
+        inputPixel[1] = input.source.pixelHeight;
+        inputPixel[2] = 1.0 / inputPixel[0];
+        inputPixel[3] = 1.0 / inputPixel[1];
+
+        inputClamp[0] = 0.5 * inputPixel[2];
+        inputClamp[1] = 0.5 * inputPixel[3];
+        inputClamp[2] = (input.frame.width * inputSize[2]) - (0.5 * inputPixel[2]);
+        inputClamp[3] = (input.frame.height * inputSize[3]) - (0.5 * inputPixel[3]);
+
+        const rootTexture = this.renderer.renderTarget.rootRenderTarget.colorTexture;
+
+        globalFrame[0] = offsetX * resolution;
+        globalFrame[1] = offsetY * resolution;
+        globalFrame[2] = rootTexture.source.width * resolution;
+        globalFrame[3] = rootTexture.source.height * resolution;
+
+        // we are going to overwrite resource we can set it to null!
+        if (output instanceof Texture) output.source.resource = null;
+
+        // set the output texture - this is where we are going to render to
+        const renderTarget = this.renderer.renderTarget.getRenderTarget(output);
+
+        this.renderer.renderTarget.bind(output, !!clear);
+
+        if (output instanceof Texture)
+        {
+            outputTexture[0] = output.frame.width;
+            outputTexture[1] = output.frame.height;
+        }
+        else
+        {
+            // this means a renderTarget was passed directly
+            outputTexture[0] = renderTarget.width;
+            outputTexture[1] = renderTarget.height;
+        }
+
+        outputTexture[2] = renderTarget.isRoot ? -1 : 1;
+
+        this._filterGlobalUniforms.update();
     }
 
     /**
