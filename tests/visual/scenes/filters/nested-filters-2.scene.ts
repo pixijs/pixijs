@@ -1,5 +1,5 @@
 import { Assets } from '~/assets';
-import { ColorMatrixFilter, NoiseFilter } from '~/filters';
+import { ColorMatrixFilter } from '~/filters';
 import { Container, Sprite } from '~/scene';
 
 import type { TestScene } from '../../types';
@@ -31,7 +31,10 @@ export const scene: TestScene = {
             // Half of the bunnies get a nested filter
             if (i % 2 === 0)
             {
-                subcont.filters = [new NoiseFilter({ noise: 1, seed: 1 })];
+                const nestedFilter = new ColorMatrixFilter();
+
+                nestedFilter.hue(90, true);
+                subcont.filters = [nestedFilter];
             }
         }
 
