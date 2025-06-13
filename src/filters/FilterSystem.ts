@@ -750,7 +750,7 @@ export class FilterSystem implements System
             --currentIndex;
         }
 
-        return currentIndex > 0
+        return currentIndex > 0 && this._filterStack[currentIndex].inputTexture
             ? this._filterStack[currentIndex].inputTexture.source._resolution
             : rootResolution;
     }
