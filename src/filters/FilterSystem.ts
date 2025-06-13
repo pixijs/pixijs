@@ -223,46 +223,7 @@ export class FilterSystem implements System
 
         const bounds = filterData.bounds;
 
-        // this path is used by the blend modes mostly!
-        // they collect all renderables and push them into a list.
-        // this list is then used to calculate the bounds of the filter area
-        if (instruction.renderables)
-        {
-            getGlobalRenderableBounds(instruction.renderables, bounds);
-        }
-        // if a filterArea is provided, we save our selves some measuring and just use that area supplied
-        else if (instruction.filterEffect.filterArea)
-        {
-            bounds.clear();
-
-            // transform the filterArea into global space..
-            bounds.addRect(instruction.filterEffect.filterArea);
-
-            // new for v8, we transform the bounds into the space of the container
-            bounds.applyMatrix(instruction.container.worldTransform);
-        }
-        // classic filter path, we get the bounds of the container and use it by recursively
-        // measuring.
-        else
-        {
-            // we want to factor render layers to get the real visual bounds of this container.
-            // so the last param is true..
-            instruction.container.getFastGlobalBounds(true, bounds);
-        }
-
-        if (instruction.container)
-        {
-            // When a container is cached as a texture, its filters need to be applied relative to its
-            // cached parent's coordinate space rather than world space. This transform adjustment ensures
-            // filters are applied in the correct coordinate system.
-            const renderGroup = instruction.container.renderGroup || instruction.container.parentRenderGroup;
-            const filterFrameTransform = renderGroup.cacheToLocalTransform;
-
-            if (filterFrameTransform)
-            {
-                bounds.applyMatrix(filterFrameTransform);
-            }
-        }
+        this._calculateFilterArea(instruction, bounds);
 
         this._calculateFilterBounds(filterData, renderer.renderTarget.rootViewPort, rootAntialias, rootResolution, 1);
 
@@ -714,6 +675,55 @@ export class FilterSystem implements System
     public destroy(): void
     {
         // BOOM!
+    }
+
+    /**
+     * Calculates the filter area bounds based on the instruction type.
+     * @param instruction - The filter instruction
+     * @param bounds - The bounds object to populate
+     */
+    private _calculateFilterArea(instruction: FilterInstruction, bounds: Bounds): void
+    {
+        // this path is used by the blend modes mostly!
+        // they collect all renderables and push them into a list.
+        // this list is then used to calculate the bounds of the filter area
+        if (instruction.renderables)
+        {
+            getGlobalRenderableBounds(instruction.renderables, bounds);
+        }
+        // if a filterArea is provided, we save our selves some measuring and just use that area supplied
+        else if (instruction.filterEffect.filterArea)
+        {
+            bounds.clear();
+
+            // transform the filterArea into global space..
+            bounds.addRect(instruction.filterEffect.filterArea);
+
+            // new for v8, we transform the bounds into the space of the container
+            bounds.applyMatrix(instruction.container.worldTransform);
+        }
+        // classic filter path, we get the bounds of the container and use it by recursively
+        // measuring.
+        else
+        {
+            // we want to factor render layers to get the real visual bounds of this container.
+            // so the last param is true..
+            instruction.container.getFastGlobalBounds(true, bounds);
+        }
+
+        if (instruction.container)
+        {
+            // When a container is cached as a texture, its filters need to be applied relative to its
+            // cached parent's coordinate space rather than world space. This transform adjustment ensures
+            // filters are applied in the correct coordinate system.
+            const renderGroup = instruction.container.renderGroup || instruction.container.parentRenderGroup;
+            const filterFrameTransform = renderGroup.cacheToLocalTransform;
+
+            if (filterFrameTransform)
+            {
+                bounds.applyMatrix(filterFrameTransform);
+            }
+        }
     }
 
     private _applyFiltersToTexture(filterData: FilterData, clear: boolean)
