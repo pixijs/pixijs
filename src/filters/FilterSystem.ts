@@ -519,20 +519,10 @@ export class FilterSystem implements System
 
         if (isFinalTarget)
         {
-            let lastIndex = this._filterStackIndex;
+            const offset = this._findPreviousFilterOffset();
 
-            while (lastIndex > 0)
-            {
-                lastIndex--;
-                const prevFilterData = this._filterStack[lastIndex];
-
-                if (!prevFilterData.skip)
-                {
-                    offsetX = prevFilterData.bounds.minX;
-                    offsetY = prevFilterData.bounds.minY;
-                    break;
-                }
-            }
+            offsetX = offset.x;
+            offsetY = offset.y;
         }
 
         // are we rendering back to the original surface?
@@ -675,6 +665,32 @@ export class FilterSystem implements System
     public destroy(): void
     {
         // BOOM!
+    }
+
+    /**
+     * Finds the offset from the previous non-skipped filter in the stack.
+     * @returns The offset coordinates from the previous filter
+     */
+    private _findPreviousFilterOffset(): { x: number, y: number }
+    {
+        let offsetX = 0;
+        let offsetY = 0;
+        let lastIndex = this._filterStackIndex;
+
+        while (lastIndex > 0)
+        {
+            lastIndex--;
+            const prevFilterData = this._filterStack[lastIndex];
+
+            if (!prevFilterData.skip)
+            {
+                offsetX = prevFilterData.bounds.minX;
+                offsetY = prevFilterData.bounds.minY;
+                break;
+            }
+        }
+
+        return { x: offsetX, y: offsetY };
     }
 
     /**
