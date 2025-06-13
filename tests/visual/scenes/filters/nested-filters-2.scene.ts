@@ -31,7 +31,7 @@ export const scene: TestScene = {
             // Half of the bunnies get a nested filter
             if (i % 2 === 0)
             {
-                subcont.filters = [new NoiseFilter({ noise: 1 })];
+                subcont.filters = [new NoiseFilter({ noise: 1, seed: 1 })];
             }
         }
 
