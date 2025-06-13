@@ -24,10 +24,12 @@ export const scene: TestScene = {
                 padding: 25,
                 letterSpacing: 2,
             },
+            anchor: { x: 0.5, y: 0.5 },
         });
 
         scene.addChild(text);
-        text.position.x = 10;
+        text.position.x = 10 + (text.width / 2);
+        text.position.y = (text.height / 2);
 
         const tb = text.getBounds();
         const textRect = new Graphics();
