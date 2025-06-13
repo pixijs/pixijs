@@ -234,7 +234,7 @@ export class FilterSystem implements System
 
         const previousFilterData = this._getPreviousFilterData();
 
-        let globalResolution = rootResolution;
+        const globalResolution = this._findFilterResolution(rootResolution);
         let offsetX = 0;
         let offsetY = 0;
 
@@ -242,7 +242,6 @@ export class FilterSystem implements System
         {
             offsetX = previousFilterData.bounds.minX;
             offsetY = previousFilterData.bounds.minY;
-            globalResolution = previousFilterData.inputTexture.source._resolution;
         }
 
         const globalFrame = filterData.globalFrame;
@@ -500,18 +499,8 @@ export class FilterSystem implements System
         const isFinalTarget = outputRenderSurface === output;
 
         // Find the correct resolution by looking back through the filter stack
-        let resolution = renderer.renderTarget.rootRenderTarget.colorTexture.source._resolution;
-        let currentIndex = this._filterStackIndex - 1;
-
-        while (currentIndex > 0 && this._filterStack[currentIndex].skip)
-        {
-            --currentIndex;
-        }
-
-        if (currentIndex > 0)
-        {
-            resolution = this._filterStack[currentIndex].inputTexture.source._resolution;
-        }
+        const rootResolution = renderer.renderTarget.rootRenderTarget.colorTexture.source._resolution;
+        const resolution = this._findFilterResolution(rootResolution);
 
         // Calculate the offset for both outputFrame and globalFrame
         let offsetX = 0;
@@ -665,6 +654,25 @@ export class FilterSystem implements System
     public destroy(): void
     {
         // BOOM!
+    }
+
+    /**
+     * Finds the correct resolution by looking back through the filter stack.
+     * @param rootResolution - The fallback root resolution to use
+     * @returns The resolution from the previous filter or root resolution
+     */
+    private _findFilterResolution(rootResolution: number): number
+    {
+        let currentIndex = this._filterStackIndex - 1;
+
+        while (currentIndex > 0 && this._filterStack[currentIndex].skip)
+        {
+            --currentIndex;
+        }
+
+        return currentIndex > 0
+            ? this._filterStack[currentIndex].inputTexture.source._resolution
+            : rootResolution;
     }
 
     /**
