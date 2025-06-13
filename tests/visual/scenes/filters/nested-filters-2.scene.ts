@@ -20,7 +20,6 @@ export const scene: TestScene = {
             const bunny = new Sprite(texture);
             const subcont = new Container();
 
-            // Scale down the bunnies to fit in 128x128
             bunny.scale.set(1);
             bunny.x = (i % 5) * 20;
             bunny.y = Math.floor(i / 5) * 20;
