@@ -1,6 +1,5 @@
 import { ExtensionType } from '../extensions/Extensions';
 import { Matrix } from '../maths/matrix/Matrix';
-import { type PointData } from '../maths/point/PointData';
 import { type Rectangle } from '../maths/shapes/Rectangle';
 import { BindGroup } from '../rendering/renderers/gpu/shader/BindGroup';
 import { Geometry } from '../rendering/renderers/shared/geometry/Geometry';
@@ -121,12 +120,6 @@ class FilterData
      * @type {RenderSurface}
      */
     public outputRenderSurface: RenderSurface = null;
-
-    /**
-     * The offset of the output render surface.
-     * @type {PointData}
-     */
-    public outputOffset: PointData = { x: 0, y: 0 };
 
     /**
      * The global frame of the filter area.
@@ -291,9 +284,6 @@ export class FilterSystem implements System
             globalResolution = previousFilterData.inputTexture.source._resolution;
         }
 
-        filterData.outputOffset.x = bounds.minX - offsetX;
-        filterData.outputOffset.y = bounds.minY - offsetY;
-
         const globalFrame = filterData.globalFrame;
 
         globalFrame.x = offsetX * globalResolution;
@@ -402,9 +392,6 @@ export class FilterSystem implements System
         const globalResolution = rootResolution;
         const offsetX = 0;
         const offsetY = 0;
-
-        filterData.outputOffset.x = -bounds.minX;
-        filterData.outputOffset.y = -bounds.minY;
 
         const globalFrame = filterData.globalFrame;
 
@@ -549,11 +536,49 @@ export class FilterSystem implements System
         const globalFrame = uniforms.uGlobalFrame;
         const outputTexture = uniforms.uOutputTexture;
 
-        // are we rendering back to the original surface?
-        if (outputRenderSurface === output)
+        const isFinalTarget = outputRenderSurface === output;
+
+        // Find the correct resolution by looking back through the filter stack
+        let resolution = renderer.renderTarget.rootRenderTarget.colorTexture.source._resolution;
+        let currentIndex = this._filterStackIndex - 1;
+
+        while (currentIndex > 0 && this._filterStack[currentIndex].skip)
         {
-            outputFrame[0] = filterData.outputOffset.x;
-            outputFrame[1] = filterData.outputOffset.y;
+            --currentIndex;
+        }
+
+        if (currentIndex > 0)
+        {
+            resolution = this._filterStack[currentIndex].inputTexture.source._resolution;
+        }
+
+        // Calculate the offset for both outputFrame and globalFrame
+        let offsetX = 0;
+        let offsetY = 0;
+
+        if (isFinalTarget)
+        {
+            let lastIndex = this._filterStackIndex;
+
+            while (lastIndex > 0)
+            {
+                lastIndex--;
+                const prevFilterData = this._filterStack[lastIndex];
+
+                if (!prevFilterData.skip)
+                {
+                    offsetX = prevFilterData.bounds.minX;
+                    offsetY = prevFilterData.bounds.minY;
+                    break;
+                }
+            }
+        }
+
+        // are we rendering back to the original surface?
+        if (isFinalTarget)
+        {
+            outputFrame[0] = filterData.bounds.minX - offsetX;
+            outputFrame[1] = filterData.bounds.minY - offsetY;
         }
         else
         {
@@ -579,17 +604,18 @@ export class FilterSystem implements System
         inputClamp[2] = (input.frame.width * inputSize[2]) - (0.5 * inputPixel[2]);
         inputClamp[3] = (input.frame.height * inputSize[3]) - (0.5 * inputPixel[3]);
 
-        globalFrame[0] = filterData.globalFrame.x;
-        globalFrame[1] = filterData.globalFrame.y;
+        const rootTexture = renderer.renderTarget.rootRenderTarget.colorTexture;
 
-        globalFrame[2] = filterData.globalFrame.width;
-        globalFrame[3] = filterData.globalFrame.height;
+        globalFrame[0] = offsetX * resolution;
+        globalFrame[1] = offsetY * resolution;
+        globalFrame[2] = rootTexture.source.width * resolution;
+        globalFrame[3] = rootTexture.source.height * resolution;
 
         // we are going to overwrite resource we can set it to null!
         if (output instanceof Texture) output.source.resource = null;
 
         // set the output texture - this is where we are going to render to
-        const renderTarget = this.renderer.renderTarget.getRenderTarget(output);
+        const renderTarget = renderer.renderTarget.getRenderTarget(output);
 
         renderer.renderTarget.bind(output, !!clear);
 
