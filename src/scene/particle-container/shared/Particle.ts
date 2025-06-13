@@ -391,14 +391,7 @@ export class Particle implements IParticle
 
     set tint(value: ColorSource)
     {
-        if (typeof value === 'number')
-        {
-            this._tint = value;
-        }
-        else
-        {
-            this._tint = Color.shared.setValue(value ?? 0xFFFFFF).toBgrNumber();
-        }
+        this._tint = Color.shared.setValue(value ?? 0xFFFFFF).toBgrNumber();
 
         this._updateColor();
     }
