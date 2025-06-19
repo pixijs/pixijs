@@ -1,9 +1,14 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 
-import type { ShaderSystem } from '../../shared/shader/ShaderSystem';
 import type { GPU } from '../GpuDeviceSystem';
 import type { GpuProgram } from './GpuProgram';
 
+/**
+ * Data structure for GPU program layout.
+ * Contains bind group layouts and pipeline layout.
+ * @category rendering
+ * @advanced
+ */
 export interface GPUProgramData
 {
     bindGroups: GPUBindGroupLayout[]
@@ -12,9 +17,10 @@ export interface GPUProgramData
 
 /**
  * A system that manages the rendering of GpuPrograms.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
-export class GpuShaderSystem implements ShaderSystem
+export class GpuShaderSystem
 {
     /** @ignore */
     public static extension = {
@@ -24,8 +30,6 @@ export class GpuShaderSystem implements ShaderSystem
         name: 'shader',
     } as const;
 
-    public maxTextures: number;
-
     private _gpu: GPU;
 
     private readonly _gpuProgramData: Record<number, GPUProgramData> = Object.create(null);
@@ -33,8 +37,6 @@ export class GpuShaderSystem implements ShaderSystem
     protected contextChange(gpu: GPU): void
     {
         this._gpu = gpu;
-
-        this.maxTextures = gpu.device.limits.maxSampledTexturesPerShaderStage;
     }
 
     public getProgramData(program: GpuProgram)

@@ -21,7 +21,7 @@ import type { PointLike } from '../../../../../maths/point/PointLike';
 import type { Rectangle } from '../../../../../maths/shapes/Rectangle';
 import type { UNIFORM_TYPES, UniformData } from '../types';
 
-export interface UniformParserDefinition
+interface UniformParserDefinition
 {
     type: UNIFORM_TYPES;
     test(data: UniformData): boolean;
@@ -31,6 +31,7 @@ export interface UniformParserDefinition
     uniform?: string;
 }
 
+/** @internal */
 export const uniformParsers: UniformParserDefinition[] = [
     // uploading pixi matrix object to mat3
     {

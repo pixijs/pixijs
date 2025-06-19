@@ -77,7 +77,8 @@ type PipeHash = Record<number, GPURenderPipeline>;
  * using getStateKey for global state and getGraphicsStateKey for draw-specific settings. These keys are
  * then then used to caching the pipe. The next time we need a pipe we can check
  * the cache by first looking at the state cache and then the pipe cache.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class PipelineSystem implements System
 {

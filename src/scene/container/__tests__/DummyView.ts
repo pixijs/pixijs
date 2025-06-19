@@ -21,6 +21,7 @@ const defaultOptions: DummyViewOptions = {
     height: 100,
 };
 
+/** @internal */
 export class DummyView extends Container implements View
 {
     public owner: ViewObserver;

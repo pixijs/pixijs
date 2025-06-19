@@ -6,12 +6,11 @@
 <br/>
 <p align="center">
   <a href="https://npmjs.com/package/pixi.js"><img src="https://img.shields.io/npm/v/pixi.js.svg" alt="npm package"></a>
-  <a href="https://github.com/pixijs/pixijs/actions/workflows/release.yml"><img src="https://github.com/pixijs/pixijs/actions/workflows/release.yml/badge.svg" alt="build status"></a>
-  <a href="https://opencollective.com/pixijs/tiers/badge.svg"><img src="https://opencollective.com/pixijs/tiers/badge.svg" alt="Start new PR in StackBlitz Codeflow"></a>
-  <a href="https://discord.gg/QrnxmQUPGV"><img src="https://img.shields.io/badge/chat-discord-blue?style=flat&logo=discord" alt="discord chat"></a>
+  <a href="https://npmjs.com/package/pixi.js"><img src="https://img.shields.io/npm/dm/pixi.js" alt="npm downloads"></a>
+  <a href="https://opencollective.com/pixijs"><img src="https://opencollective.com/pixijs/tiers/badge.svg" alt="open collective"></a>
 </p>
 <p align="center">
- <a href="https://pixijs.com/8.x/examples">Examples</a> | <a href="https://pixijs.com/8.x/guides">Getting Started</a> | <a href="https://pixijs.download/release/docs/index.html">Documentation</a>  | <a href="https://discord.gg/QrnxmQUPGV">Discord</a>
+ <a href="https://pixijs.com/8.x/guides">Guides</a> | <a href="https://pixijs.com/8.x/tutorials">Tutorials</a> | <a href="https://pixijs.com/8.x/examples">Examples</a> | <a href="https://pixijs.download/release/docs/index.html">API Docs</a> | <a href="https://discord.gg/QrnxmQUPGV">Discord</a> | <a href="https://bsky.app/profile/pixijs.com">Bluesky</a> | <a href="https://x.com/pixijs">𝕏</a>
 </p>
 
 # PixiJS ⚡️

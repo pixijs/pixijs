@@ -14,6 +14,7 @@ type LoadImageBitmapResult = {
     id: string,
 };
 
+/** @internal */
 class WorkerManagerClass
 {
     public worker: Worker;
@@ -160,6 +161,7 @@ class WorkerManagerClass
     }
 }
 
+/** @internal */
 const WorkerManager = new WorkerManagerClass();
 
 export {

@@ -21,11 +21,12 @@ const WINDING = 4;
 const DEPTH_MASK = 5;
 
 /**
- * This is a WebGL state, and is is passed to {@link StateSystem}.
+ * This is a WebGL state, and is is passed to {@link GlStateSystem}.
  *
  * Each mesh rendered may require WebGL to be in a different state.
  * For example you may want different blend mode or to enable polygon offsets
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class State
 {
@@ -35,6 +36,7 @@ export class State
      * at all the individual settings.
      */
     public data: number;
+    /** @internal */
     public _blendModeId: number;
     private _blendMode: BLEND_MODES;
     private _polygonOffset: number;

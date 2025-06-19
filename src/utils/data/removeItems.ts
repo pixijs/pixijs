@@ -1,7 +1,8 @@
 /**
  * Remove items from a javascript array without generating garbage
  * @function removeItems
- * @memberof utils
+ * @category utils
+ * @internal
  * @param {Array<any>} arr - Array to remove elements from
  * @param {number} startIdx - starting index
  * @param {number} removeCount - how many to remove

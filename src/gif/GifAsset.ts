@@ -9,7 +9,8 @@ import type { AssetExtension } from '../assets/AssetExtension';
  * Handle the loading of GIF images. Registering this loader plugin will
  * load all `.gif` images as an ArrayBuffer and transform into an
  * GifSource object.
- * @memberof gif
+ * @category gif
+ * @advanced
  */
 const GifAsset = {
     extension: ExtensionType.Asset,

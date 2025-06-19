@@ -5,14 +5,14 @@ import type { Ellipse } from '../../../../maths/shapes/Ellipse';
 import type { RoundedRectangle } from '../../../../maths/shapes/RoundedRectangle';
 import type { ShapeBuildCommand } from './ShapeBuildCommand';
 
+/** @internal */
 type RoundedShape = Circle | Ellipse | RoundedRectangle;
 
 /**
  * Builds a rectangle to draw
  *
  * Ignored from docs since it is not directly exposed.
- * @ignore
- * @private
+ * @internal
  */
 export const buildCircle: ShapeBuildCommand<RoundedShape> = {
     extension: {
@@ -20,7 +20,7 @@ export const buildCircle: ShapeBuildCommand<RoundedShape> = {
         name: 'circle',
     },
 
-    build(shape: RoundedShape, points: number[])
+    build(shape: RoundedShape, points: number[]): boolean
     {
         let x;
         let y;
@@ -34,9 +34,13 @@ export const buildCircle: ShapeBuildCommand<RoundedShape> = {
         {
             const circle = shape as Circle;
 
+            rx = ry = circle.radius;
+            if (rx <= 0)
+            {
+                return false;
+            }
             x = circle.x;
             y = circle.y;
-            rx = ry = circle.radius;
             dx = dy = 0;
         }
 
@@ -44,10 +48,14 @@ export const buildCircle: ShapeBuildCommand<RoundedShape> = {
         {
             const ellipse = shape as Ellipse;
 
-            x = ellipse.x;
-            y = ellipse.y;
             rx = ellipse.halfWidth;
             ry = ellipse.halfHeight;
+            if (rx <= 0 || ry <= 0)
+            { // skip zero ellipse
+                return false;
+            }
+            x = ellipse.x;
+            y = ellipse.y;
             dx = dy = 0;
         }
         else
@@ -63,9 +71,9 @@ export const buildCircle: ShapeBuildCommand<RoundedShape> = {
             dy = halfHeight - ry;
         }
 
-        if (!(rx >= 0 && ry >= 0 && dx >= 0 && dy >= 0))
+        if (dx < 0 || dy < 0)
         {
-            return points;
+            return false;
         }
 
         // Choose a number of segments such that the maximum absolute deviation from the circle is approximately 0.029
@@ -74,7 +82,7 @@ export const buildCircle: ShapeBuildCommand<RoundedShape> = {
 
         if (m === 0)
         {
-            return points;
+            return false;
         }
 
         if (n === 0)
@@ -84,7 +92,7 @@ export const buildCircle: ShapeBuildCommand<RoundedShape> = {
             points[2] = points[4] = x - dx;
             points[5] = points[7] = y - dy;
 
-            return points;
+            return true;
         }
 
         let j1 = 0;
@@ -153,7 +161,7 @@ export const buildCircle: ShapeBuildCommand<RoundedShape> = {
             points[--j4] = x2;
         }
 
-        return points;
+        return true;
     },
 
     triangulate(points, vertices, verticesStride, verticesOffset, indices, indicesOffset)
@@ -205,5 +213,7 @@ export const buildCircle: ShapeBuildCommand<RoundedShape> = {
 
 };
 
+/** @internal */
 export const buildEllipse = { ...buildCircle, extension: { ...buildCircle.extension, name: 'ellipse' } };
+/** @internal */
 export const buildRoundedRectangle = { ...buildCircle, extension: { ...buildCircle.extension, name: 'roundedRectangle' } };

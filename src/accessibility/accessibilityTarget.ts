@@ -2,19 +2,8 @@ import type { Container } from '../scene/container/Container';
 
 /**
  * The type of the pointer event to listen for.
- * Can be any of the following:
- * - `auto`
- * - `none`
- * - `visiblePainted`
- * - `visibleFill`
- * - `visibleStroke`
- * - `visible`
- * - `painted`
- * - `fill`
- * - `stroke`
- * - `all`
- * - `inherit`
- * @memberof accessibility
+ * @category accessibility
+ * @standard
  * @see https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events
  */
 export type PointerEvents = 'auto'
@@ -31,7 +20,14 @@ export type PointerEvents = 'auto'
 
 /**
  * When `accessible` is enabled on any display object, these properties will affect its accessibility.
- * @memberof accessibility
+ * @example
+ * const container = new Container();
+ * container.accessible = true;
+ * container.accessibleTitle = 'My Container';
+ * container.accessibleHint = 'This is a container';
+ * container.tabIndex = 0;
+ * @category accessibility
+ * @standard
  */
 export interface AccessibleOptions
 {
@@ -39,41 +35,108 @@ export interface AccessibleOptions
      * Flag for if the object is accessible. If true AccessibilityManager will overlay a
      * shadow div with attributes set
      * @default false
+     * @example
+     * ```js
+     * const container = new Container();
+     * container.accessible = true;
+     * ```
      */
     accessible: boolean;
     /**
      * Sets the title attribute of the shadow div
      * If accessibleTitle AND accessibleHint has not been this will default to 'container [tabIndex]'
-     * @member {string}
+     * @type {string}
+     * @default null
+     * @example
+     * ```js
+     * const container = new Container();
+     * container.accessible = true;
+     * container.accessibleTitle = 'My Container';
+     * ```
      */
     accessibleTitle: string | null;
-    /** Sets the aria-label attribute of the shadow div */
+    /**
+     * Sets the aria-label attribute of the shadow div
+     * @default null
+     * @advanced
+     * @example
+     * ```js
+     * const container = new Container();
+     * container.accessible = true;
+     * container.accessibleHint = 'This is a container';
+     * ```
+     */
     accessibleHint: string | null;
     /**
+     * Sets the tabIndex of the shadow div. You can use this to set the order of the
+     * elements when using the tab key to navigate.
      * @default 0
+     * @example
+     * ```js
+     * const container = new Container();
+     * container.accessible = true;
+     * container.tabIndex = 0;
+     *
+     * const sprite = new Sprite(texture);
+     * sprite.accessible = true;
+     * sprite.tabIndex = 1;
+     * ```
      */
     tabIndex: number;
     /**
      * Specify the type of div the accessible layer is. Screen readers treat the element differently
      * depending on this type. Defaults to button.
      * @default 'button'
+     * @type {string}
+     * @advanced
+     * @example
+     * ```js
+     * const container = new Container();
+     * container.accessible = true;
+     * container.accessibleType = 'button'; // or 'link', 'checkbox', etc.
+     * ```
      */
     accessibleType: keyof HTMLElementTagNameMap;
     /**
      * Specify the pointer-events the accessible div will use
      * Defaults to auto.
      * @default 'auto'
-     * @type {accessibility.PointerEvents}
+     * @type {PointerEvents}
+     * @advanced
+     * @example
+     * ```js
+     * const container = new Container();
+     * container.accessible = true;
+     * container.accessiblePointerEvents = 'none'; // or 'auto', 'visiblePainted', etc.
+     * ```
      */
+    accessiblePointerEvents: PointerEvents;
 
-    /** Sets the text content of the shadow div */
+    /**
+     * Sets the text content of the shadow
+     * @default null
+     * @example
+     * ```js
+     * const container = new Container();
+     * container.accessible = true;
+     * container.accessibleText = 'This is a container';
+     * ```
+     */
     accessibleText: string | null;
 
-    accessiblePointerEvents: PointerEvents;
     /**
      * Setting to false will prevent any children inside this container to
      * be accessible. Defaults to true.
      * @default true
+     * @example
+     * ```js
+     * const container = new Container();
+     * container.accessible = true;
+     * container.accessibleChildren = false; // This will prevent any children from being accessible
+     *
+     * const sprite = new Sprite(texture);
+     * sprite.accessible = true; // This will not work since accessibleChildren is false
+     * ```
      */
     accessibleChildren: boolean;
 }
@@ -84,11 +147,15 @@ export interface AccessibleOptions
  */
 export interface AccessibleTarget extends AccessibleOptions
 {
+    /** @private */
     _accessibleActive: boolean;
+    /** @private */
     _accessibleDiv: AccessibleHTMLElement | null;
+    /** @private */
     _renderId: number;
 }
 
+/** @internal */
 export interface AccessibleHTMLElement extends HTMLElement
 {
     type?: string;
@@ -98,7 +165,7 @@ export interface AccessibleHTMLElement extends HTMLElement
 /**
  * Default property values of accessible objects
  * used by {@link AccessibilitySystem}.
- * @private
+ * @internal
  * @example
  * import { accessibleTarget } from 'pixi.js';
  *
@@ -106,87 +173,15 @@ export interface AccessibleHTMLElement extends HTMLElement
  * Object.assign(MyObject.prototype, accessibleTarget);
  */
 export const accessibilityTarget: AccessibleTarget = {
-    /**
-     * Flag for if the object is accessible. If true AccessibilityManager will overlay a
-     * shadow div with attributes set
-     * @member {boolean}
-     * @memberof scene.Container#
-     */
     accessible: false,
-
-    /**
-     * Sets the title attribute of the shadow div
-     * If accessibleTitle AND accessibleHint has not been this will default to 'container [tabIndex]'
-     * @member {string}
-     * @memberof scene.Container#
-     */
     accessibleTitle: null,
-
-    /**
-     * Sets the aria-label attribute of the shadow div
-     * @member {string}
-     * @memberof scene.Container#
-     */
     accessibleHint: null,
-
-    /**
-     * @member {number}
-     * @memberof scene.Container#
-     * @todo Needs docs.
-     */
     tabIndex: 0,
-
-    /**
-     * @member {boolean}
-     * @memberof scene.Container#
-     * @private
-     */
-    _accessibleActive: false,
-
-    /**
-     * @memberof scene.Container#
-     * @private
-     */
-    _accessibleDiv: null,
-
-    /**
-     * Specify the type of div the accessible layer is. Screen readers treat the element differently
-     * depending on this type. Defaults to button.
-     * @member {string}
-     * @memberof scene.Container#
-     * @default 'button'
-     */
     accessibleType: 'button',
-
-    /**
-     * Sets the text content of the shadow div
-     * @member {string}
-     * @memberof scene.Container#
-     */
     accessibleText: null,
-
-    /**
-     * Specify the pointer-events the accessible div will use
-     * Defaults to auto.
-     * @type {PointerEvents}
-     * @memberof scene.Container#
-     * @default 'auto'
-     */
     accessiblePointerEvents: 'auto',
-
-    /**
-     * Setting to false will prevent any children inside this container to
-     * be accessible. Defaults to true.
-     * @member {boolean}
-     * @memberof scene.Container#
-     * @default true
-     */
     accessibleChildren: true,
-
-    /**
-     * @member {number}
-     * @memberof scene.Container#
-     * @private
-     */
+    _accessibleActive: false,
+    _accessibleDiv: null,
     _renderId: -1,
 };

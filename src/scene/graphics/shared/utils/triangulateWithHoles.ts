@@ -1,5 +1,15 @@
-import { default as earcut } from 'earcut';
+import { earcut } from '../../../../utils/utils';
 
+/**
+ * @param points
+ * @param holes
+ * @param vertices
+ * @param verticesStride
+ * @param verticesOffset
+ * @param indices
+ * @param indicesOffset
+ * @internal
+ */
 export function triangulateWithHoles(
     points: number[],
     holes: number[],

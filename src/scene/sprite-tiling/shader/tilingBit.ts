@@ -1,3 +1,4 @@
+/** @internal */
 export const tilingBit = {
     name: 'tiling-bit',
     vertex: {
@@ -47,7 +48,7 @@ export const tilingBit = {
             if(unclamped.x == coord.x && unclamped.y == coord.y)
             {
                 bias = -32.;
-            } 
+            }
 
             outColor = textureSampleBias(uTexture, uSampler, coord, bias);
         `
@@ -55,13 +56,14 @@ export const tilingBit = {
 
 };
 
+/** @internal */
 export const tilingBitGl = {
     name: 'tiling-bit',
     vertex: {
         header: /* glsl */`
             uniform mat3 uTextureTransform;
             uniform vec4 uSizeAnchor;
-        
+
         `,
         main: /* glsl */`
             uv = (uTextureTransform * vec3(aUV, 1.0)).xy;
@@ -83,9 +85,9 @@ export const tilingBitGl = {
         coord = (uMapCoord * vec3(coord, 1.0)).xy;
         vec2 unclamped = coord;
         coord = clamp(coord, uClampFrame.xy, uClampFrame.zw);
-        
+
         outColor = texture(uTexture, coord, unclamped == coord ? 0.0 : -32.0);// lod-bias very negative to force lod 0
-    
+
         `
     }
 

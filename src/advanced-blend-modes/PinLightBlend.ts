@@ -5,6 +5,7 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
 
 /**
  * Replaces colors based on the blend color.
+ *
  * Available as `container.blendMode = 'pin-light'` after importing `pixi.js/advanced-blend-modes`.
  * @example
  * import 'pixi.js/advanced-blend-modes';
@@ -12,7 +13,8 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  *
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'pin-light'
- * @memberof filters
+ * @category filters
+ * @noInheritDoc
  */
 export class PinLightBlend extends BlendModeFilter
 {

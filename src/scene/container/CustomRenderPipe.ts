@@ -16,7 +16,8 @@ import type { RenderContainer } from './RenderContainer';
  *       clearColor: 'green', // clear the screen to green when rendering this item
  *     });
  * })
- * @memberof rendering
+ * @category rendering
+ * @internal
  */
 export class CustomRenderPipe implements InstructionPipe<RenderContainer>, RenderPipe<RenderContainer>
 {

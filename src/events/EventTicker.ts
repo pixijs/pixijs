@@ -3,14 +3,7 @@ import { Ticker } from '../ticker/Ticker';
 
 import type { EventSystem } from './EventSystem';
 
-/**
- * This class handles automatic firing of PointerEvents
- * in the case where the pointer is stationary for too long.
- * This is to ensure that hit-tests are still run on moving objects.
- * @since 7.2.0
- * @memberof events
- * @class EventsTicker
- */
+/** @advanced */
 class EventsTickerClass
 {
     /** The event system. */
@@ -107,11 +100,14 @@ class EventsTickerClass
             return;
         }
 
-        globalThis.document.dispatchEvent(new PointerEvent('pointermove', {
+        globalThis.document.dispatchEvent(this.events.supportsPointerEvents ? new PointerEvent('pointermove', {
             clientX: rootPointerEvent.clientX,
             clientY: rootPointerEvent.clientY,
             pointerType: rootPointerEvent.pointerType,
             pointerId: rootPointerEvent.pointerId,
+        }) : new MouseEvent('mousemove', {
+            clientX: rootPointerEvent.clientX,
+            clientY: rootPointerEvent.clientY,
         }));
     }
 
@@ -137,4 +133,13 @@ class EventsTickerClass
     }
 }
 
+/**
+ * This class handles automatic firing of PointerEvents
+ * in the case where the pointer is stationary for too long.
+ * This is to ensure that hit-tests are still run on moving objects.
+ * @since 7.2.0
+ * @category events
+ * @class
+ * @advanced
+ */
 export const EventsTicker = new EventsTickerClass();

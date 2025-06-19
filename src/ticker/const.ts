@@ -1,10 +1,10 @@
 /**
  * Represents the update priorities used by internal Pixi classes when registered with
- * the {@link ticker.Ticker} object. Higher priority items are updated first and lower
+ * the {@link Ticker} object. Higher priority items are updated first and lower
  * priority items, such as render, should go later.
- * @static
  * @enum {number}
- * @memberof ticker
+ * @category ticker
+ * @standard
  */
 export enum UPDATE_PRIORITY
 {
@@ -29,7 +29,7 @@ export enum UPDATE_PRIORITY
      */
     LOW = -25,
     /**
-     * Lowest priority used for {@link BasePrepare} utility.
+     * Lowest priority used for {@link PrepareBase} utility.
      * @default -50
      */
     UTILITY = -50,

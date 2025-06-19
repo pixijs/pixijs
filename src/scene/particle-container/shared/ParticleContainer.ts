@@ -1,6 +1,7 @@
 import { Bounds } from '../../container/bounds/Bounds';
 import { type IRenderLayer } from '../../layers/RenderLayer';
 import { ViewContainer, type ViewContainerOptions } from '../../view/ViewContainer';
+import { type ParticleBuffer } from './ParticleBuffer';
 import { particleData } from './particleData';
 
 import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
@@ -14,42 +15,132 @@ import type { ParticleRendererProperty } from './particleData';
 const emptyBounds = new Bounds(0, 0, 0, 0);
 
 /**
- * Represents the properties of a particle that can be dynamically updated.
- * @property {boolean} [vertices] - Indicates if vertices are dynamic.
- * @property {boolean} [position] - Indicates if position is dynamic.
- * @property {boolean} [rotation] - Indicates if rotation is dynamic.
- * @property {boolean} [uvs] - Indicates if UVs are dynamic.
- * @property {boolean} [color] - Indicates if color is dynamic.
- * @memberof scene
+ * Represents the properties of a particle that can be dynamically updated each frame.
+ * These properties control which aspects of particles are recalculated during rendering.
+ * Setting a property to true enables per-frame updates, while false only updates when manually triggered.
+ * @example
+ * ```ts
+ * // Create a particle container with dynamic position and rotation
+ * const container = new ParticleContainer({
+ *     dynamicProperties: {
+ *         position: true,  // Update positions each frame
+ *         rotation: true,  // Update rotations each frame
+ *         vertex: false,   // Static vertices
+ *         uvs: false,     // Static texture coordinates
+ *         color: false     // Static colors
+ *     }
+ * });
+ *
+ * // Create a fully dynamic particle container
+ * const dynamicContainer = new ParticleContainer({
+ *     dynamicProperties: {
+ *         vertex: true,    // Dynamic mesh deformation
+ *         position: true,  // Dynamic movement
+ *         rotation: true,  // Dynamic spinning
+ *         uvs: true,      // Dynamic texture animation
+ *         color: true     // Dynamic coloring
+ *     }
+ * });
+ * ```
+ * @see {@link ParticleContainer} For the main particle container class
+ * @see {@link ParticleContainerOptions} For all container configuration options
+ * @category scene
+ * @standard
  */
 export interface ParticleProperties
 {
+    /**
+     * When true, vertex positions are updated each frame.
+     * Useful for mesh deformation effects.
+     * @default false
+     */
     vertex?: boolean;
+
+    /**
+     * When true, particle positions are updated each frame.
+     * Essential for moving particles.
+     * @default true
+     */
     position?: boolean;
+
+    /**
+     * When true, rotation values are updated each frame.
+     * Needed for spinning particles.
+     * @default false
+     */
     rotation?: boolean;
+
+    /**
+     * When true, texture coordinates are updated each frame.
+     * Required for texture animation.
+     * @default false
+     */
     uvs?: boolean;
+
+    /**
+     * When true, color values are updated each frame.
+     * Enables color transitions and alpha changes.
+     * @default false
+     */
     color?: boolean;
 }
 
 /**
- * Options for the ParticleContainer constructor.
- * @extends ContainerOptions
- * @property {Record<string, boolean>} dynamicProperties - Specifies which properties are dynamic.
- * @property {Shader} shader - The shader to use for rendering.
- * @property {boolean} roundPixels - Indicates if pixels should be rounded.
- * @property {Texture} texture - The texture to use for rendering - if not provided the texture of the first child is used.
- * @property {IParticle[]} particles - An array of particles to add to the container.
- * @memberof scene
+ * Options for configuring a ParticleContainer. Controls how particles are rendered, updated, and managed.
+ * @example
+ * ```ts
+ * // Create a basic particle container
+ * const container = new ParticleContainer({
+ *     texture: Texture.from('particle.png'),
+ *     particles: [
+ *         new Particle(texture),
+ *         new Particle(texture)
+ *     ],
+ *     dynamicProperties: {
+ *         position: true,  // Update positions each frame
+ *         rotation: true   // Update rotations each frame
+ *     }
+ * });
+ * ```
+ * @see {@link ParticleContainer} For the main particle container class
+ * @see {@link ParticleProperties} For dynamic property configuration
+ * @category scene
+ * @standard
+ * @noInheritDoc
  */
 export interface ParticleContainerOptions extends PixiMixins.ParticleContainerOptions, Omit<ViewContainerOptions, 'children'>
 {
-    dynamicProperties?: Record<string, boolean>;
+    /**
+     * Specifies which particle properties should update each frame.
+     * Set properties to true for per-frame updates, false for static values.
+     * @default { position: true, rotation: false, vertex: false, uvs: false, color: false }
+     */
+    dynamicProperties?: ParticleProperties & Record<string, boolean>;
+
+    /**
+     * Custom shader for rendering particles. Allows for custom visual effects.
+     * @advanced
+     */
     shader?: Shader;
+
+    /**
+     * When true, particle positions are rounded to the nearest pixel.
+     * Helps achieve crisp rendering at the cost of smooth motion.
+     * @default false
+     */
     roundPixels?: boolean;
+
+    /**
+     * The texture used for all particles in this container.
+     * If not provided, uses the texture of the first particle added.
+     */
     texture?: Texture;
+
+    /** Initial array of particles to add to the container. All particles must share the same base texture. */
     particles?: IParticle[];
 }
-export interface ParticleContainer extends PixiMixins.ParticleContainer, ViewContainer {}
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
+export interface ParticleContainer extends PixiMixins.ParticleContainer, ViewContainer<ParticleBuffer> {}
 
 /**
  * The ParticleContainer class is a highly optimized container that can render 1000s or particles at great speed.
@@ -90,6 +181,7 @@ export interface ParticleContainer extends PixiMixins.ParticleContainer, ViewCon
  *
  * --------------------------------
  * @example
+ * ```ts
  * import { ParticleContainer, Particle } from 'pixi.js';
  *
  * const container = new ParticleContainer();
@@ -99,29 +191,56 @@ export interface ParticleContainer extends PixiMixins.ParticleContainer, ViewCon
  *     let particle = new Particle(texture);
  *     container.addParticle(particle);
  * }
- * @memberof scene
+ * ```
+ * @category scene
+ * @standard
  */
-export class ParticleContainer extends ViewContainer implements Instruction
+export class ParticleContainer extends ViewContainer<ParticleBuffer> implements Instruction
 {
     /**
      * Defines the default options for creating a ParticleContainer.
+     * @example
+     * ```ts
+     * // Change defaults globally
+     * ParticleContainer.defaultOptions = {
+     *     dynamicProperties: {
+     *         position: true,  // Update positions each frame
+     *         rotation: true,  // Update rotations each frame
+     *         vertex: false,   // Static vertices
+     *         uvs: false,      // Static texture coordinates
+     *         color: false     // Static colors
+     *     },
+     *     roundPixels: true // Enable pixel rounding for crisp rendering
+     * };
+     * ```
      * @property {Record<string, boolean>} dynamicProperties - Specifies which properties are dynamic.
      * @property {boolean} roundPixels - Indicates if pixels should be  rounded.
      */
     public static defaultOptions: ParticleContainerOptions = {
+        /** Specifies which properties are dynamic. */
         dynamicProperties: {
-            vertex: false, // Indicates if vertex positions are dynamic.
-            position: true, // Indicates if particle positions are dynamic.
-            rotation: false, // Indicates if particle rotations are dynamic.
-            uvs: false, // Indicates if UV coordinates are dynamic.
-            color: false, // Indicates if particle colors are dynamic.
+            /** Indicates if vertex positions are dynamic. */
+            vertex: false,
+            /** Indicates if particle positions are dynamic. */
+            position: true,
+            /** Indicates if particle rotations are dynamic. */
+            rotation: false,
+            /** Indicates if UV coordinates are dynamic. */
+            uvs: false,
+            /** Indicates if particle colors are dynamic. */
+            color: false,
         },
-        roundPixels: false, // Indicates if pixels should be rounded for rendering.
+        /** Indicates if pixels should be rounded for rendering. */
+        roundPixels: false
     };
 
-    /** The unique identifier for the render pipe of this ParticleContainer. */
+    /**
+     * The unique identifier for the render pipe of this ParticleContainer.
+     * @internal
+     */
     public override readonly renderPipeId: string = 'particle';
 
+    /** @internal */
     public batched = false;
 
     /**
@@ -130,22 +249,69 @@ export class ParticleContainer extends ViewContainer implements Instruction
      */
     public _properties: Record<string, ParticleRendererProperty>;
 
-    /** Indicates if the children of this ParticleContainer have changed and need to be updated. */
+    /**
+     * Indicates if the children of this ParticleContainer have changed and need to be updated.
+     * @internal
+     */
     public _childrenDirty = false;
 
     /**
      * An array of particles that are children of this ParticleContainer.
-     * it can be modified directly, after which the 'update' method must be called.
-     * to ensure the container is rendered correctly.
+     * This array can be modified directly for performance, but the 'update' method
+     * must be called afterwards to ensure the container is rendered correctly.
+     * @example
+     * ```ts
+     * const container = new ParticleContainer();
+     *
+     * // Add particles directly to the array
+     * container.particleChildren.push(
+     *     new Particle(texture),
+     *     new Particle(texture)
+     * );
+     * container.update(); // Required after direct modification
+     *
+     * // Modify existing particles
+     * container.particleChildren.forEach(particle => {
+     *     particle.position.x += 10;
+     * });
+     *
+     * // Remove particles
+     * container.particleChildren.length = 0; // Clear all
+     * container.update();
+     * ```
+     * @see {@link ParticleContainer#update} For updating after modifications
+     * @see {@link ParticleContainer#addParticle} For a safer way to add particles
+     * @see {@link ParticleContainer#removeParticle} For a safer way to remove particles
      */
     public particleChildren: IParticle[];
 
-    /** The shader used for rendering particles in this ParticleContainer. */
+    /**
+     * The shader used for rendering particles in this ParticleContainer.
+     * @advanced
+     */
     public shader: Shader;
 
     /**
-     * The texture used for rendering particles in this ParticleContainer.
-     * Defaults to the first childs texture if not set
+     * The texture used for rendering particles in this ParticleContainer. All particles
+     * must share the same base texture for optimal performance.
+     *
+     * > [!NOTE]
+     * > If not set, the texture of the first particle added to this container will be used.
+     * @example
+     * ```ts
+     * const container = new ParticleContainer();
+     * // Set texture for all particles
+     * container.texture = Texture.from('particle.png');
+     *
+     * // Create particles using container's texture
+     * for (let i = 0; i < 100; i++) {
+     *     const particle = new Particle(container.texture);
+     *     container.addParticle(particle); // Will use the particles texture if not set
+     * }
+     * ```
+     * @default null
+     * @see {@link ParticleContainerOptions#texture} For setting texture via constructor
+     * @see {@link Particle} For creating particles with textures
      */
     public texture: Texture;
 
@@ -194,11 +360,29 @@ export class ParticleContainer extends ViewContainer implements Instruction
     }
 
     /**
-     * Adds one or more particles to the container.
+     * Adds one or more particles to the container. The particles will be rendered using the container's shared texture
+     * and properties. When adding multiple particles, they must all share the same base texture.
+     * @example
+     * ```ts
+     * const container = new ParticleContainer();
      *
-     * Multiple items can be added like so: `myContainer.addParticle(thingOne, thingTwo, thingThree)`
-     * @param {...IParticle} children - The Particle(s) to add to the container
-     * @returns {IParticle} - The first child that was added.
+     * // Add a single particle
+     * const particle = new Particle(Assets.get('particleTexture'));
+     * container.addParticle(particle);
+     *
+     * // Add multiple particles at once
+     * const particles = [
+     *     new Particle(Assets.get('particleTexture')),
+     *     new Particle(Assets.get('particleTexture')),
+     *     new Particle(Assets.get('particleTexture'))
+     * ];
+     *
+     * container.addParticle(...particles);
+     * ```
+     * @param children - The Particle(s) to add to the container
+     * @returns The first particle that was added, for method chaining
+     * @see {@link ParticleContainer#texture} For setting the shared texture
+     * @see {@link ParticleContainer#update} For updating after modifications
      */
     public addParticle(...children: IParticle[]): IParticle
     {
@@ -213,9 +397,21 @@ export class ParticleContainer extends ViewContainer implements Instruction
     }
 
     /**
-     * Removes one or more particles from the container.
-     * @param {...IParticle} children - The Particle(s) to remove
-     * @returns {IParticle} The first child that was removed.
+     * Removes one or more particles from the container. The particles must already be children
+     * of this container to be removed.
+     * @example
+     * ```ts
+     * // Remove a single particle
+     * container.removeParticle(particle1);
+     *
+     * // Remove multiple particles at once
+     * container.removeParticle(particle2, particle3);
+     * ```
+     * @param children - The Particle(s) to remove from the container
+     * @returns The first particle that was removed, for method chaining
+     * @see {@link ParticleContainer#particleChildren} For accessing all particles
+     * @see {@link ParticleContainer#removeParticles} For removing particles by index
+     * @see {@link ParticleContainer#removeParticleAt} For removing a particle at a specific index
      */
     public removeParticle(...children: IParticle[]): IParticle
     {
@@ -238,9 +434,25 @@ export class ParticleContainer extends ViewContainer implements Instruction
     }
 
     /**
-     * Updates the particle container.
-     * Please call this when you modify the particleChildren array.
-     * or any static properties of the particles.
+     * Updates the particle container's internal state. Call this method after manually modifying
+     * the particleChildren array or when changing static properties of particles.
+     * @example
+     * ```ts
+     * // Batch modify particles
+     * container.particleChildren.push(...particles);
+     * container.update(); // Required after direct array modification
+     *
+     * // Update static properties
+     * container.particleChildren.forEach(particle => {
+     *     particle.position.set(
+     *         Math.random() * 800,
+     *         Math.random() * 600
+     *     );
+     * });
+     * container.update(); // Required after changing static positions
+     * ```
+     * @see {@link ParticleProperties} For configuring dynamic vs static properties
+     * @see {@link ParticleContainer#particleChildren} For direct array access
      */
     public update()
     {
@@ -254,8 +466,29 @@ export class ParticleContainer extends ViewContainer implements Instruction
     }
 
     /**
-     * ParticleContainer does not calculated bounds as it would slow things down,
-     * its up to you to set this via the boundsArea property
+     * Returns a static empty bounds object since ParticleContainer does not calculate bounds automatically
+     * for performance reasons. Use the `boundsArea` property to manually set container bounds.
+     * @example
+     * ```ts
+     * const container = new ParticleContainer({
+     *     texture: Texture.from('particle.png')
+     * });
+     *
+     * // Default bounds are empty
+     * console.log(container.bounds); // Bounds(0, 0, 0, 0)
+     *
+     * // Set manual bounds for the particle area
+     * container.boundsArea = {
+     *     minX: 0,
+     *     minY: 0,
+     *     maxX: 800,
+     *     maxY: 600
+     * };
+     * ```
+     * @readonly
+     * @returns {Bounds} An empty bounds object (0,0,0,0)
+     * @see {@link Container#boundsArea} For manually setting container bounds
+     * @see {@link Bounds} For bounds object structure
      */
     public get bounds()
     {
@@ -269,8 +502,10 @@ export class ParticleContainer extends ViewContainer implements Instruction
      * Destroys this sprite renderable and optionally its texture.
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
-     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
-     * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
+     * @example
+     * particleContainer.destroy();
+     * particleContainer.destroy(true);
+     * particleContainer.destroy({ texture: true, textureSource: true, children: true });
      */
     public override destroy(options: DestroyOptions = false)
     {
@@ -302,7 +537,14 @@ export class ParticleContainer extends ViewContainer implements Instruction
      */
     public removeParticles(beginIndex?: number, endIndex?: number)
     {
-        const children = this.particleChildren.splice(beginIndex, endIndex);
+        beginIndex ??= 0;
+        endIndex ??= this.particleChildren.length;
+
+        // Remove the correct range
+        const children = this.particleChildren.splice(
+            beginIndex,
+            endIndex - beginIndex
+        );
 
         this.onViewUpdate();
 
@@ -345,6 +587,7 @@ export class ParticleContainer extends ViewContainer implements Instruction
      * Calling this method will throw an error. Please use `ParticleContainer.addParticle()` instead.
      * @param {...any} _children
      * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
      */
     public override addChild<U extends(ContainerChild | IRenderLayer)[]>(..._children: U): U[0]
     {
@@ -357,6 +600,7 @@ export class ParticleContainer extends ViewContainer implements Instruction
      * Calling this method will throw an error. Please use `ParticleContainer.removeParticle()` instead.
      * @param {...any} _children
      * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
      */
     public override removeChild<U extends(ContainerChild | IRenderLayer)[]>(..._children: U): U[0]
     {
@@ -371,6 +615,7 @@ export class ParticleContainer extends ViewContainer implements Instruction
      * @param {number} [_beginIndex]
      * @param {number} [_endIndex]
      * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
      */
     public override removeChildren(_beginIndex?: number, _endIndex?: number): ContainerChild[]
     {
@@ -384,6 +629,7 @@ export class ParticleContainer extends ViewContainer implements Instruction
      * Calling this method will throw an error. Please use `ParticleContainer.removeParticleAt()` instead.
      * @param {number} _index
      * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
      */
     public override removeChildAt<U extends(ContainerChild | IRenderLayer)>(_index: number): U
     {
@@ -397,6 +643,7 @@ export class ParticleContainer extends ViewContainer implements Instruction
      * Calling this method will throw an error. Please use `ParticleContainer.getParticleAt()` instead.
      * @param {number} _index
      * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
      */
     public override getChildAt<U extends(ContainerChild | IRenderLayer)>(_index: number): U
     {
@@ -411,6 +658,7 @@ export class ParticleContainer extends ViewContainer implements Instruction
      * @param {ContainerChild} _child
      * @param {number} _index
      * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
      */
     public override setChildIndex(_child: ContainerChild, _index: number): void
     {
@@ -424,6 +672,7 @@ export class ParticleContainer extends ViewContainer implements Instruction
      * Calling this method will throw an error. Please use `ParticleContainer.getParticleIndex()` instead.
      * @param {ContainerChild} _child
      * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
      */
     public override getChildIndex(_child: ContainerChild): number
     {
@@ -438,6 +687,7 @@ export class ParticleContainer extends ViewContainer implements Instruction
      * @param {ContainerChild} _child
      * @param {number} _index
      * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
      */
     public override addChildAt<U extends(ContainerChild | IRenderLayer)>(_child: U, _index: number): U
     {
@@ -451,6 +701,7 @@ export class ParticleContainer extends ViewContainer implements Instruction
      * Calling this method will throw an error. Please use `ParticleContainer.swapParticles()` instead.
      * @param {ContainerChild} _child
      * @param {ContainerChild} _child2
+     * @ignore
      */
     public override swapChildren<U extends(ContainerChild | IRenderLayer)>(_child: U, _child2: U): void
     {
@@ -465,6 +716,7 @@ export class ParticleContainer extends ViewContainer implements Instruction
      * Calling this method will throw an error.
      * @param _child - The child to reparent
      * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
      */
     public override reparentChild(..._child: ContainerChild[]): any
     {
@@ -478,6 +730,7 @@ export class ParticleContainer extends ViewContainer implements Instruction
      * @param _child - The child to reparent
      * @param _index - The index to reparent the child to
      * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
      */
     public override reparentChildAt(_child: ContainerChild, _index: number): any
     {

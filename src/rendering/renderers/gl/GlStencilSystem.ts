@@ -8,7 +8,8 @@ import type { WebGLRenderer } from './WebGLRenderer';
 
 /**
  * This manages the stencil buffer. Used primarily for masking
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class GlStencilSystem implements System
 {

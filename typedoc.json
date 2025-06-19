@@ -1,0 +1,91 @@
+{
+    "$schema": "https://typedoc.org/schema.json",
+    "entryPoints": ["./src/index.docs.ts"],
+    "tsconfig": "tsconfig.json",
+    "out": ".s3_uploads/docs",
+    "gaID": "G-ZXJM5CB1QM",
+    "disableSources": true,
+    "navigation": {
+        "includeCategories": true,
+        "includeGroups": true,
+        "excludeReferences": false,
+        "includeFolders": true
+    },
+    "excludePrivate": true,
+    "excludeInternal": true,
+    "excludeProtected": true,
+    "excludeExternals": true,
+    "customCss": "./scripts/plugins/typedoc-custom.css",
+    "router": "pixi",
+    "plugin": [
+        "typedoc-plugin-ga",
+        "typedoc-plugin-mdn-links",
+        "typedoc-plugin-no-inherit",
+        "./scripts/plugins/typedoc-plugin-remove-standard-tag.mjs",
+        "./scripts/plugins/typedoc-plugin-router.mjs"
+    ],
+    "customJs": "./scripts/plugins/typedoc-custom.mjs",
+    "lightHighlightTheme": "github-light-default",
+    "darkHighlightTheme": "github-dark-default",
+    "kindSortOrder": [
+        "Document",
+        "Reference",
+        "Project",
+        "Module",
+        "Namespace",
+        "Class",
+        "Constructor",
+        "Variable",
+        "Function",
+        "Property",
+        "Accessor",
+        "Method",
+        "Parameter",
+        "TypeParameter",
+        "TypeLiteral",
+        "CallSignature",
+        "ConstructorSignature",
+        "IndexSignature",
+        "GetSignature",
+        "SetSignature",
+        "Enum",
+        "EnumMember",
+        "Interface",
+        "TypeAlias"
+    ],
+    "categoryOrder": [
+        "accessibility",
+        "app",
+        "assets",
+        "color",
+        "environment",
+        "events",
+        "extensions",
+        "filters",
+        "maths",
+        "rendering",
+        "scene",
+        "text",
+        "gif",
+        "ticker",
+        "utils",
+        "*"
+    ],
+    "navigationLinks": {
+        "Website": "https://pixijs.com",
+        "GitHub": "https://github.com/pixijs/pixijs",
+        "Discord": "https://discord.gg/QrnxmQUPGV"
+    },
+    "hideGenerator": true,
+    "visibilityFilters": {
+        "inherited": true,
+        "@advanced": false
+    },
+    "validation": {
+        "notExported": false,
+        "invalidLink": true,
+        "rewrittenLink": true,
+        "notDocumented": false,
+        "unusedMergeModuleWith": true
+    }
+}

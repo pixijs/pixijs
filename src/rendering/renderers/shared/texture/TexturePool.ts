@@ -1,6 +1,7 @@
 import { nextPow2 } from '../../../../maths/misc/pow2';
 import { TextureSource } from './sources/TextureSource';
 import { Texture } from './Texture';
+import { TextureStyle } from './TextureStyle';
 
 import type { TextureSourceOptions } from './sources/TextureSource';
 
@@ -13,13 +14,16 @@ let count = 0;
  *
  * If you use custom RenderTexturePool for your filters, you can use methods
  * `getFilterTexture` and `returnFilterTexture` same as in default pool
- * @memberof rendering
- * @name TexturePool
+ * @category rendering
+ * @advanced
  */
 export class TexturePoolClass
 {
     /** The default options for texture pool */
     public textureOptions: TextureSourceOptions;
+
+    /** The default texture style for the pool */
+    public textureStyle: TextureStyle;
 
     /**
      * Allow renderTextures of the same size as screen, not just pow2
@@ -41,6 +45,7 @@ export class TexturePoolClass
         this._texturePool = {};
         this.textureOptions = textureOptions || {};
         this.enableFullScreen = false;
+        this.textureStyle = new TextureStyle(this.textureOptions);
     }
 
     /**
@@ -130,12 +135,20 @@ export class TexturePoolClass
     }
 
     /**
-     * Place a render texture back into the pool.
+     * Place a render texture back into the pool. Optionally reset the style of the texture to the default texture style.
+     * useful if you modified the style of the texture after getting it from the pool.
      * @param renderTexture - The renderTexture to free
+     * @param resetStyle - Whether to reset the style of the texture to the default texture style
      */
-    public returnTexture(renderTexture: Texture): void
+    public returnTexture(renderTexture: Texture, resetStyle = false): void
     {
         const key = this._poolKeyHash[renderTexture.uid];
+
+        // we can skip the copy if we don't need to reset the style
+        if (resetStyle)
+        {
+            renderTexture.source.style = this.textureStyle;
+        }
 
         this._texturePool[key].push(renderTexture);
     }
@@ -167,4 +180,9 @@ export class TexturePoolClass
     }
 }
 
+/**
+ * The default texture pool instance.
+ * @category rendering
+ * @advanced
+ */
 export const TexturePool = new TexturePoolClass();

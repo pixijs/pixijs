@@ -23,7 +23,8 @@ import type { WebGLRenderer } from '../WebGLRenderer';
  * them. With this system, you never need to work directly with GPU buffers, but instead work with
  * the Buffer class.
  * @class
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class GlBufferSystem implements System
 {
@@ -58,9 +59,7 @@ export class GlBufferSystem implements System
         this._renderer.renderableGC.addManagedHash(this, '_gpuBuffers');
     }
 
-    /**
-     * @ignore
-     */
+    /** @ignore */
     public destroy(): void
     {
         this._renderer = null;
@@ -72,10 +71,10 @@ export class GlBufferSystem implements System
     /** Sets up the renderer context and necessary buffers. */
     protected contextChange(): void
     {
-        const gl = this._gl = this._renderer.gl;
+        this._gl = this._renderer.gl;
 
         this._gpuBuffers = Object.create(null);
-        this._maxBindings = gl.MAX_UNIFORM_BUFFER_BINDINGS ? gl.getParameter(gl.MAX_UNIFORM_BUFFER_BINDINGS) : 0;
+        this._maxBindings = this._renderer.limits.maxUniformBindings;
     }
 
     public getGlBuffer(buffer: Buffer): GlBuffer

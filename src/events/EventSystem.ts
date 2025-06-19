@@ -21,70 +21,215 @@ const TOUCH_TO_POINTER: Record<string, string> = {
     touchcancel: 'pointercancel',
 };
 
-/** @ignore */
+/**
+ * Options for configuring the PixiJS event system. These options control how the event system
+ * handles different types of interactions and event propagation.
+ * @example
+ * ```ts
+ * // Basic event system configuration
+ * const app = new Application();
+ * await app.init({
+ *     // Configure default interaction mode
+ *     eventMode: 'static',
+ *
+ *     // Configure event features
+ *     eventFeatures: {
+ *         move: true,           // Enable pointer movement events
+ *         globalMove: false,    // Disable global move events
+ *         click: true,          // Enable click events
+ *         wheel: true          // Enable wheel/scroll events
+ *     }
+ * });
+ *
+ * // Access event system after initialization
+ * const eventSystem = app.renderer.events;
+ * console.log(eventSystem.features); // Check enabled features
+ * ```
+ * @see {@link EventSystem} For the main event system implementation
+ * @see {@link EventMode} For interaction mode details
+ * @see {@link EventSystemFeatures} For all available feature options
+ * @advanced
+ * @category events
+ */
 export interface EventSystemOptions
 {
     /**
-     * The default event mode mode for all display objects.
-     * (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
+     * The default event mode for all display objects.
+     * Controls how objects respond to interaction events.
+     *
+     * Possible values:
+     * - `'none'`: No interaction events
+     * - `'passive'`: Only container's children receive events (default)
+     * - `'auto'`: Receives events when parent is interactive
+     * - `'static'`: Standard interaction events
+     * - `'dynamic'`: Like static but with additional synthetic events
+     * @default 'passive'
      */
     eventMode?: EventMode;
 
     /**
-     * The event features that are enabled by the EventSystem
-     * (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
+     * Configuration for enabling/disabling specific event features.
+     * Use this to optimize performance by turning off unused functionality.
      * @example
-     * const app = new Application({
-     *   view: canvas,
-     *   events: {
-     *     move: true,
-     *     globalMove: false,
-     *     click: true,
-     *     wheel: true,
-     *   },
+     * ```ts
+     * const app = new Application();
+     * await app.init({
+     *     eventFeatures: {
+     *         // Core interaction events
+     *         move: true,        // Pointer/mouse/touch movement
+     *         click: true,       // Click/tap events
+     *         wheel: true,       // Mouse wheel/scroll events
+     *         // Global tracking
+     *         globalMove: false  // Global pointer movement
+     *     }
      * });
+     * ```
      */
-    eventFeatures?: Partial<EventSystemFeatures>
+    eventFeatures?: Partial<EventSystemFeatures>;
 }
 
 /**
- * The event features that are enabled by the EventSystem
- * (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
+ * The event features that are enabled by the EventSystem. These features control
+ * different types of interaction events in your PixiJS application.
+ * @example
+ * ```ts
+ * // Configure features during application initialization
+ * const app = new Application();
+ * await app.init({
+ *     eventFeatures: {
+ *         // Basic interaction events
+ *         move: true,        // Enable pointer movement tracking
+ *         click: true,       // Enable click/tap events
+ *         wheel: true,       // Enable mouse wheel/scroll events
+ *         // Advanced features
+ *         globalMove: false  // Disable global move tracking for performance
+ *     }
+ * });
+ *
+ * // Or configure after initialization
+ * app.renderer.events.features.move = false;      // Disable movement events
+ * app.renderer.events.features.globalMove = true; // Enable global tracking
+ * ```
  * @since 7.2.0
- * @memberof events
+ * @category events
+ * @advanced
  */
 export interface EventSystemFeatures
 {
     /**
-     * Enables pointer events associated with pointer movement:
+     * Enables pointer events associated with pointer movement.
+     *
+     * When enabled, these events will fire:
      * - `pointermove` / `mousemove` / `touchmove`
      * - `pointerout` / `mouseout`
      * - `pointerover` / `mouseover`
+     * @example
+     * ```ts
+     * // Enable movement events
+     * app.renderer.events.features.move = true;
+     *
+     * // Listen for movement
+     * sprite.on('pointermove', (event) => {
+     *     console.log('Pointer position:', event.global.x, event.global.y);
+     * });
+     * ```
+     * @default true
      */
     move: boolean;
-    // eslint-disable-next-line jsdoc/multiline-blocks
+
     /**
-     * Enables global pointer move events:
+     * Enables global pointer move events that fire regardless of target.
+     *
+     * When enabled, these events will fire:
      * - `globalpointermove`
      * - `globalmousemove`
-     * - `globaltouchemove`
+     * - `globaltouchmove`
+     * @example
+     * ```ts
+     * // Enable global tracking
+     * app.renderer.events.features.globalMove = true;
+     *
+     * // Track pointer globally
+     * sprite.on('globalpointermove', (event) => {
+     *     // Fires even when pointer is not over sprite
+     *     console.log('Global position:', event.global.x, event.global.y);
+     * });
+     * ```
+     * @default true
      */
     globalMove: boolean;
     /**
-     * Enables pointer events associated with clicking:
-     * - `pointerup` / `mouseup` / `touchend` / 'rightup'
-     * - `pointerupoutside` / `mouseupoutside` / `touchendoutside` / 'rightupoutside'
-     * - `pointerdown` / 'mousedown' / `touchstart` / 'rightdown'
+     * Enables pointer events associated with clicking/tapping.
+     *
+     * When enabled, these events will fire:
+     * - `pointerdown` / `mousedown` / `touchstart` / `rightdown`
+     * - `pointerup` / `mouseup` / `touchend` / `rightup`
+     * - `pointerupoutside` / `mouseupoutside` / `touchendoutside` / `rightupoutside`
      * - `click` / `tap`
+     * @example
+     * ```ts
+     * // Enable click events
+     * app.renderer.events.features.click = true;
+     *
+     * // Handle clicks
+     * sprite.on('click', (event) => {
+     *     console.log('Clicked at:', event.global.x, event.global.y);
+     * });
+     * ```
+     * @default true
      */
     click: boolean;
-    /** - Enables wheel events. */
+    /**
+     * Enables mouse wheel/scroll events.
+     * @example
+     * ```ts
+     * // Enable wheel events
+     * app.renderer.events.features.wheel = true;
+     *
+     * // Handle scrolling
+     * sprite.on('wheel', (event) => {
+     *     // Zoom based on scroll direction
+     *     const scale = 1 + (event.deltaY / 1000);
+     *     sprite.scale.set(sprite.scale.x * scale);
+     * });
+     * ```
+     * @default true
+     */
     wheel: boolean;
 }
 
 /**
- * The system for handling UI events.
- * @memberof events
+ * The system for handling UI events in PixiJS applications. This class manages mouse, touch, and pointer events,
+ * normalizing them into a consistent event model.
+ * @example
+ * ```ts
+ * // Access event system through renderer
+ * const eventSystem = app.renderer.events;
+ *
+ * // Configure event features
+ * eventSystem.features.globalMove = false;  // Disable global move events
+ * eventSystem.features.click = true;        // Enable click events
+ *
+ * // Set custom cursor styles
+ * eventSystem.cursorStyles.default = 'pointer';
+ * eventSystem.cursorStyles.grab = 'grab';
+ *
+ * // Get current pointer position
+ * const pointer = eventSystem.pointer;
+ * console.log(pointer.global.x, pointer.global.y);
+ * ```
+ *
+ * Features:
+ * - Normalizes browser events into consistent format
+ * - Supports mouse, touch, and pointer events
+ * - Handles event delegation and bubbling
+ * - Provides cursor management
+ * - Configurable event features
+ * @see {@link EventBoundary} For event propagation and handling
+ * @see {@link FederatedEvent} For the base event class
+ * @see {@link EventMode} For interaction modes
+ * @category events
+ * @standard
  */
 export class EventSystem implements System<EventSystemOptions>
 {
@@ -101,8 +246,22 @@ export class EventSystem implements System<EventSystemOptions>
 
     /**
      * The event features that are enabled by the EventSystem
-     * (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
      * @since 7.2.0
+     * @example
+     * ```ts
+     * import { EventSystem, EventSystemFeatures } from 'pixi.js';
+     * // Access the default event features
+     * EventSystem.defaultEventFeatures = {
+     *     // Enable pointer movement events
+     *     move: true,
+     *     // Enable global pointer move events
+     *     globalMove: true,
+     *     // Enable click events
+     *     click: true,
+     *     // Enable wheel events
+     *     wheel: true,
+     * };
+     * ```
      */
     public static defaultEventFeatures: EventSystemFeatures = {
         /** Enables pointer events associated with pointer movement. */
@@ -138,29 +297,104 @@ export class EventSystem implements System<EventSystemOptions>
      *
      * The root boundary should only be changed during initialization. Otherwise, any state held by the
      * event boundary may be lost (like hovered & pressed Containers).
+     * @advanced
      */
     public readonly rootBoundary: EventBoundary;
 
-    /** Does the device support touch events https://www.w3.org/TR/touch-events/ */
+    /**
+     * Indicates whether the current device supports touch events according to the W3C Touch Events spec.
+     * This is used to determine the appropriate event handling strategy.
+     * @see {@link https://www.w3.org/TR/touch-events/} W3C Touch Events Specification
+     * @readonly
+     * @default 'ontouchstart' in globalThis
+     */
     public readonly supportsTouchEvents = 'ontouchstart' in globalThis;
 
-    /** Does the device support pointer events https://www.w3.org/Submission/pointer-events/ */
+    /**
+     * Indicates whether the current device supports pointer events according to the W3C Pointer Events spec.
+     * Used to optimize event handling and provide more consistent cross-device interaction.
+     * @see {@link https://www.w3.org/TR/pointerevents/} W3C Pointer Events Specification
+     * @readonly
+     * @default !!globalThis.PointerEvent
+     */
     public readonly supportsPointerEvents = !!globalThis.PointerEvent;
 
     /**
-     * Should default browser actions automatically be prevented.
-     * Does not apply to pointer events for backwards compatibility
-     * preventDefault on pointer events stops mouse events from firing
-     * Thus, for every pointer event, there will always be either a mouse of touch event alongside it.
+     * Controls whether default browser actions are automatically prevented on pointer events.
+     * When true, prevents default browser actions from occurring on pointer events.
+     * @remarks
+     * - Does not apply to pointer events for backwards compatibility
+     * - preventDefault on pointer events stops mouse events from firing
+     * - For every pointer event, there will always be either a mouse or touch event alongside it
+     * - Setting this to false allows default browser actions (text selection, dragging images, etc.)
+     * @example
+     * ```ts
+     * // Allow default browser actions
+     * app.renderer.events.autoPreventDefault = false;
+     *
+     * // Block default actions (default)
+     * app.renderer.events.autoPreventDefault = true;
+     *
+     * // Example with text selection
+     * const text = new Text('Selectable text');
+     * text.eventMode = 'static';
+     * app.renderer.events.autoPreventDefault = false; // Allow text selection
+     * ```
      * @default true
      */
     public autoPreventDefault: boolean;
 
     /**
-     * Dictionary of how different cursor modes are handled. Strings are handled as CSS cursor
-     * values, objects are handled as dictionaries of CSS values for {@code domElement},
-     * and functions are called instead of changing the CSS.
-     * Default CSS cursor values are provided for 'default' and 'pointer' modes.
+     * Dictionary of custom cursor styles that can be used across the application.
+     * Used to define how different cursor modes are handled when interacting with display objects.
+     * @example
+     * ```ts
+     * // Access event system through renderer
+     * const eventSystem = app.renderer.events;
+     *
+     * // Set string-based cursor styles
+     * eventSystem.cursorStyles.default = 'pointer';
+     * eventSystem.cursorStyles.hover = 'grab';
+     * eventSystem.cursorStyles.drag = 'grabbing';
+     *
+     * // Use CSS object for complex styling
+     * eventSystem.cursorStyles.custom = {
+     *     cursor: 'url("custom.png") 2 2, auto',
+     *     userSelect: 'none'
+     * };
+     *
+     * // Use a url for custom cursors
+     * const defaultIcon = 'url(\'https://pixijs.com/assets/bunny.png\'),auto';
+     * eventSystem.cursorStyles.icon = defaultIcon;
+     *
+     * // Use callback function for dynamic cursors
+     * eventSystem.cursorStyles.dynamic = (mode) => {
+     *     // Update cursor based on mode
+     *     document.body.style.cursor = mode === 'hover'
+     *         ? 'pointer'
+     *         : 'default';
+     * };
+     *
+     * // Apply cursor style to a sprite
+     * sprite.cursor = 'hover'; // Will use the hover style defined above
+     * sprite.cursor = 'icon'; // Will apply the icon cursor
+     * sprite.cursor = 'custom'; // Will apply the custom CSS styles
+     * sprite.cursor = 'drag'; // Will apply the grabbing cursor
+     * sprite.cursor = 'default'; // Will apply the default pointer cursor
+     * sprite.cursor = 'dynamic'; // Will call the dynamic function
+     * ```
+     * @remarks
+     * - Strings are treated as CSS cursor values
+     * - Objects are applied as CSS styles to the DOM element
+     * - Functions are called directly for custom cursor handling
+     * - Default styles for 'default' and 'pointer' are provided
+     * @default
+     * ```ts
+     * {
+     *     default: 'inherit',
+     *     pointer: 'pointer' // Default cursor styles
+     * }
+     * ```
      */
     public cursorStyles: Record<string, string | ((mode: string) => void) | CSSStyleDeclaration>;
 
@@ -178,7 +412,6 @@ export class EventSystem implements System<EventSystemOptions>
 
     /**
      * The event features that are enabled by the EventSystem
-     * (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
      * @since 7.2.0
      * @example
      * const app = new Application()
@@ -273,7 +506,34 @@ export class EventSystem implements System<EventSystemOptions>
 
     /**
      * Sets the current cursor mode, handling any callbacks or CSS style changes.
-     * @param mode - cursor mode, a key from the cursorStyles dictionary
+     * The cursor can be a CSS cursor string, a custom callback function, or a key from the cursorStyles dictionary.
+     * @param mode - Cursor mode to set. Can be:
+     * - A CSS cursor string (e.g., 'pointer', 'grab')
+     * - A key from the cursorStyles dictionary
+     * - null/undefined to reset to default
+     * @example
+     * ```ts
+     * // Using predefined cursor styles
+     * app.renderer.events.setCursor('pointer');    // Set standard pointer cursor
+     * app.renderer.events.setCursor('grab');       // Set grab cursor
+     * app.renderer.events.setCursor(null);         // Reset to default
+     *
+     * // Using custom cursor styles
+     * app.renderer.events.cursorStyles.custom = 'url("cursor.png"), auto';
+     * app.renderer.events.setCursor('custom');     // Apply custom cursor
+     *
+     * // Using callback-based cursor
+     * app.renderer.events.cursorStyles.dynamic = (mode) => {
+     *     document.body.style.cursor = mode === 'hover' ? 'pointer' : 'default';
+     * };
+     * app.renderer.events.setCursor('dynamic');    // Trigger cursor callback
+     * ```
+     * @remarks
+     * - Has no effect on OffscreenCanvas except for callback-based cursors
+     * - Caches current cursor to avoid unnecessary DOM updates
+     * - Supports CSS cursor values, style objects, and callback functions
+     * @see {@link EventSystem.cursorStyles} For defining custom cursor styles
+     * @see {@link https://developer.mozilla.org/en-US/docs/Web/CSS/cursor} MDN Cursor Reference
      */
     public setCursor(mode: string): void
     {
@@ -329,9 +589,27 @@ export class EventSystem implements System<EventSystemOptions>
     }
 
     /**
-     * The global pointer event.
-     * Useful for getting the pointer position without listening to events.
+     * The global pointer event instance containing the most recent pointer state.
+     * This is useful for accessing pointer information without listening to events.
+     * @example
+     * ```ts
+     * // Access current pointer position at any time
+     * const eventSystem = app.renderer.events;
+     * const pointer = eventSystem.pointer;
+     *
+     * // Get global coordinates
+     * console.log('Position:', pointer.global.x, pointer.global.y);
+     *
+     * // Check button state
+     * console.log('Buttons pressed:', pointer.buttons);
+     *
+     * // Get pointer type and pressure
+     * console.log('Type:', pointer.pointerType);
+     * console.log('Pressure:', pointer.pressure);
+     * ```
+     * @readonly
      * @since 7.2.0
+     * @see {@link FederatedPointerEvent} For all available pointer properties
      */
     public get pointer(): Readonly<FederatedPointerEvent>
     {
@@ -469,9 +747,30 @@ export class EventSystem implements System<EventSystemOptions>
 
     /**
      * Sets the {@link EventSystem#domElement domElement} and binds event listeners.
+     * This method manages the DOM event bindings for the event system, allowing you to
+     * change or remove the target element that receives input events.
+     * > [!IMPORTANT] This will default to the canvas element of the renderer, so you
+     * > should not need to call this unless you are using a custom element.
+     * @param element - The new DOM element to bind events to, or null to remove all event bindings
+     * @example
+     * ```ts
+     * // Set a new canvas element as the target
+     * const canvas = document.createElement('canvas');
+     * app.renderer.events.setTargetElement(canvas);
      *
-     * To deregister the current DOM element without setting a new one, pass {@code null}.
-     * @param element - The new DOM element.
+     * // Remove all event bindings
+     * app.renderer.events.setTargetElement(null);
+     *
+     * // Switch to a different canvas
+     * const newCanvas = document.querySelector('#game-canvas');
+     * app.renderer.events.setTargetElement(newCanvas);
+     * ```
+     * @remarks
+     * - Automatically removes event listeners from previous element
+     * - Required for the event system to function
+     * - Safe to call multiple times
+     * @see {@link EventSystem#domElement} The current DOM element
+     * @see {@link EventsTicker} For the ticker system that tracks pointer movement
      */
     public setTargetElement(element: HTMLElement): void
     {
@@ -606,12 +905,35 @@ export class EventSystem implements System<EventSystemOptions>
     }
 
     /**
-     * Maps x and y coords from a DOM object and maps them correctly to the PixiJS view. The
-     * resulting value is stored in the point. This takes into account the fact that the DOM
-     * element could be scaled and positioned anywhere on the screen.
-     * @param  {PointData} point - the point that the result will be stored in
-     * @param  {number} x - the x coord of the position to map
-     * @param  {number} y - the y coord of the position to map
+     * Maps coordinates from DOM/screen space into PixiJS normalized coordinates.
+     * This takes into account the current scale, position, and resolution of the DOM element.
+     * @param point - The point to store the mapped coordinates in
+     * @param x - The x coordinate in DOM/client space
+     * @param y - The y coordinate in DOM/client space
+     * @example
+     * ```ts
+     * // Map mouse coordinates to PixiJS space
+     * const point = new Point();
+     * app.renderer.events.mapPositionToPoint(
+     *     point,
+     *     event.clientX,
+     *     event.clientY
+     * );
+     * console.log('Mapped position:', point.x, point.y);
+     *
+     * // Using with pointer events
+     * sprite.on('pointermove', (event) => {
+     *     // event.global already contains mapped coordinates
+     *     console.log('Global:', event.global.x, event.global.y);
+     *
+     *     // Map to local coordinates
+     *     const local = event.getLocalPosition(sprite);
+     *     console.log('Local:', local.x, local.y);
+     * });
+     * ```
+     * @remarks
+     * - Accounts for element scaling and positioning
+     * - Adjusts for device pixel ratio/resolution
      */
     public mapPositionToPoint(point: PointData, x: number, y: number): void
     {
@@ -787,7 +1109,7 @@ export class EventSystem implements System<EventSystemOptions>
     }
 
     /**
-     * Transfers base & mouse event data from the {@code nativeEvent} to the federated event.
+     * Transfers base & mouse event data from the `nativeEvent` to the federated event.
      * @param event
      * @param nativeEvent
      */

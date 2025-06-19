@@ -7,6 +7,17 @@ import {
 
 import type { TextureStyle } from '../../../shared/texture/TextureStyle';
 
+/**
+ * @param style
+ * @param gl
+ * @param mipmaps
+ * @param anisotropicExt
+ * @param glFunctionName
+ * @param firstParam
+ * @param forceClamp
+ * @param firstCreation
+ * @internal
+ */
 export function applyStyleParams(
     style: TextureStyle,
     gl: WebGL2RenderingContext,

@@ -46,5 +46,17 @@ describe('ObservablePoint', () =>
         p1.copyFrom(p3);
         expect(p1.y).toEqual(p3.y);
     });
+
+    it('should produce a debug string with coordinates', () =>
+    {
+        const cb = { _onUpdate: jest.fn() };
+        const pt = new ObservablePoint(cb, 3, 4);
+
+        expect(pt.toString()).toBe('[pixi.js/math:ObservablePoint x=3 y=4 scope=[object Object]]');
+
+        pt.set(5, 1);
+
+        expect(pt.toString()).toBe('[pixi.js/math:ObservablePoint x=5 y=1 scope=[object Object]]');
+    });
 });
 

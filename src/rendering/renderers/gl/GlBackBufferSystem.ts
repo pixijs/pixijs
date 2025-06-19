@@ -23,16 +23,16 @@ const bigTriangleGeometry = new Geometry({
 
 /**
  * The options for the back buffer system.
- * @memberof rendering
+ * @category rendering
  * @property {boolean} [useBackBuffer=false] - if true will use the back buffer where required
  * @property {boolean} [antialias=false] - if true will ensure the texture is antialiased
+ * @advanced
  */
 export interface GlBackBufferOptions
 {
     /**
      * if true will use the back buffer where required
      * @default false
-     * @memberof rendering.WebGLOptions
      */
     useBackBuffer?: boolean;
     /** if true will ensure the texture is antialiased */
@@ -52,7 +52,8 @@ export interface GlBackBufferOptions
  * You only need to activate this back buffer if you are using a blend mode that requires it.
  *
  * to activate is simple, you pass `useBackBuffer:true` to your render options
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class GlBackBufferSystem implements System<GlBackBufferOptions>
 {

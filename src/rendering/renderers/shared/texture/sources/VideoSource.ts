@@ -10,11 +10,18 @@ import type { Dict } from '../../../../../utils/types';
 import type { ALPHA_MODES } from '../const';
 import type { TextureSourceOptions } from './TextureSource';
 
-type VideoResource = HTMLVideoElement;
+/**
+ * The type of resource used for video textures.
+ * This is typically an HTMLVideoElement.
+ * @category rendering
+ * @advanced
+ */
+export type VideoResource = HTMLVideoElement;
 
 /**
  * Options for video sources.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export interface VideoSourceOptions extends TextureSourceOptions<VideoResource>
 {
@@ -40,15 +47,14 @@ export interface VideoSourceOptions extends TextureSourceOptions<VideoResource>
     alphaMode?: ALPHA_MODES;
 }
 
-export interface VideoResourceOptionsElement
-{
-    src: string;
-    mime: string;
-}
-
 /**
- * A source for video-based textures.
- * @memberof rendering
+ * A texture source that uses a video as its resource.
+ * It automatically resizes the texture based on the video dimensions.
+ * It also provides methods to control playback and handle video events.
+ * This class supports automatic loading, playback, and frame updates.
+ * It can also handle cross-origin videos and provides options for looping, muting, and inline playback.
+ * @category rendering
+ * @advanced
  */
 export class VideoSource extends TextureSource<VideoResource>
 {

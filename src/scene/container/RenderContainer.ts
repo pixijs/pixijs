@@ -6,11 +6,32 @@ import type { Renderer } from '../../rendering/renderers/types';
 import type { Bounds, BoundsData } from './bounds/Bounds';
 import type { ContainerOptions } from './Container';
 
-type RenderFunction = (renderer: Renderer) => void;
+/**
+ * A function that takes a renderer and does the custom rendering logic.
+ * This is the function that will be called each frame.
+ * @param renderer - The current renderer
+ * @example
+ * ```js
+ * import { RenderContainer } from 'pixi.js';
+ *
+ * // create a new render container
+ * const renderContainer = new RenderContainer((renderer) => {
+ *     // custom render logic here
+ *     renderer.clear({
+ *         clearColor: 'green', // clear the screen to green when rendering this item
+ *     });
+ * });
+ * ```
+ * @category scene
+ * @advanced
+ */
+export type RenderFunction = (renderer: Renderer) => void;
 
 /**
- * Options for the {@link scene.RenderContainer} constructor.
- * @memberof scene
+ * Options for the {@link RenderContainer} constructor.
+ * @category scene
+ * @advanced
+ * @noInheritDoc
  */
 export interface RenderContainerOptions extends ContainerOptions
 {
@@ -52,12 +73,14 @@ export interface RenderContainerOptions extends ContainerOptions
  *     });
  * })
  * ```
- * @memberof scene
- * @extends scene.Container
+ * @category scene
+ * @advanced
  */
 export class RenderContainer extends ViewContainer implements Instruction
 {
+    /** @internal */
     public override readonly renderPipeId: string = 'customRender';
+    /** @internal */
     public batched = false;
 
     /**

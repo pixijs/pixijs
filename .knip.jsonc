@@ -2,6 +2,7 @@
     "entry": [
         // Bundle entry points
         "src/index.ts",
+        "src/index.docs.ts",
         "src/bundle.*.ts",
         "src/*/index.ts",
         // Sub-module exports
@@ -25,8 +26,6 @@
         "types/**/*.d.ts"
     ],
     "ignoreDependencies": [
-        // Not detected in webdoc.config.js
-        "@pixi/webdoc-template",
         // Not detected in jest setup
         "http-server",
         // Used internaly as dependences like "node:*" or "worker:*"

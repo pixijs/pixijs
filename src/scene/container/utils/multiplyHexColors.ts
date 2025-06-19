@@ -1,3 +1,8 @@
+/**
+ * @param color1
+ * @param color2
+ * @internal
+ */
 export function multiplyHexColors(color1: number, color2: number): number
 {
     if (color1 === 0xFFFFFF || !color2) return color2;

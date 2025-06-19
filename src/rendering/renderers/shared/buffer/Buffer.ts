@@ -4,11 +4,24 @@ import { BufferUsage } from './const';
 
 import type { BindResource } from '../../gpu/shader/BindResource';
 
-/** All the various typed arrays that exist in js */
+/**
+ * All the various typed arrays that exist in js
+ * @category rendering
+ * @advanced
+ */
 // eslint-disable-next-line max-len
 export type TypedArray = Int8Array | Uint8Array | Int16Array | Uint16Array | Int32Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array;
 
-/** Options for creating a buffer */
+/**
+ * Options for creating a buffer
+ *
+ * This interface defines the options that can be passed to the Buffer constructor.
+ * It includes the data to initialize the buffer with, the size of the buffer,
+ * the usage of the buffer, a label for debugging, and whether the buffer should shrink to fit
+ * when the data becomes smaller.
+ * @category rendering
+ * @advanced
+ */
 export interface BufferOptions
 {
     /**
@@ -18,7 +31,7 @@ export interface BufferOptions
     data?: TypedArray | number[];
     /** the size of the buffer in bytes, if not supplied, it will be inferred from the data */
     size?: number;
-    /** the usage of the buffer, see {@link rendering.BufferUsage} */
+    /** the usage of the buffer, see {@link BufferUsage} */
     usage: number;
     /** a label for the buffer, this is useful for debugging */
     label?: string;
@@ -33,6 +46,7 @@ export interface BufferOptions
     shrinkToFit?: boolean;
 }
 
+/** @internal */
 export interface BufferDescriptor
 {
     label?: string;
@@ -70,7 +84,8 @@ export interface BufferDescriptor
  *     data: new Float32Array([1, 2, 3, 4]),
  *     usage: BufferUsage.VERTEX,
  * });
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class Buffer extends EventEmitter<{
     change: BindResource,
@@ -101,41 +116,31 @@ export class Buffer extends EventEmitter<{
     /**
      * a resource type, used to identify how to handle it when its in a bind group / shader resource
      * @internal
-     * @ignore
      */
     public readonly _resourceType = 'buffer';
 
     /**
      * the resource id used internally by the renderer to build bind group keys
      * @internal
-     * @ignore
      */
     public _resourceId = uid('resource');
 
     /**
      * used internally to know if a uniform group was used in the last render pass
      * @internal
-     * @ignore
      */
     public _touched = 0;
 
     /**
      * a description of the buffer and how it should be set up on the GPU
      * @internal
-     * @ignore
      */
     public readonly descriptor: BufferDescriptor;
 
-    /**
-     * @internal
-     * @ignore
-     */
+    /** @internal */
     public _updateID = 1;
 
-    /**
-     * @internal
-     * @ignore
-     */
+    /** @internal */
     public _updateSize: number;
 
     private _data: TypedArray;

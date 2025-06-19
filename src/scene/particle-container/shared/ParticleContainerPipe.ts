@@ -10,9 +10,9 @@ import type { InstructionSet } from '../../../rendering/renderers/shared/instruc
 import type { RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import type { Renderer } from '../../../rendering/renderers/types';
-import type { Container } from '../../container/Container';
 import type { ParticleContainer } from './ParticleContainer';
 
+/** @internal */
 export interface ParticleContainerAdaptor
 {
     execute(particleContainerPop: ParticleContainerPipe, container: ParticleContainer): void;
@@ -20,21 +20,22 @@ export interface ParticleContainerAdaptor
 
 /**
  * Renderer for Particles that is designer for speed over feature set.
- * @memberof scene
+ * @category scene
+ * @internal
  */
 export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
 {
     /** The default shader that is used if a sprite doesn't have a more specific one. */
     public defaultShader: Shader;
 
+    /** @internal */
     public adaptor: ParticleContainerAdaptor;
+    /** @internal */
     public readonly state = State.for2d();
+    /** @internal */
     public readonly renderer: Renderer;
 
-    private _gpuBufferHash: Record<number, ParticleBuffer> = Object.create(null);
-    // eslint-disable-next-line max-len
-    private readonly _destroyRenderableBound = this.destroyRenderable.bind(this) as unknown as (renderable: Container) => void;
-
+    /** Local uniforms that are used for rendering particles. */
     public readonly localUniforms = new UniformGroup({
         uTranslationMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
         uColor: { value: new Float32Array(4), type: 'vec4<f32>' },
@@ -71,36 +72,23 @@ export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
 
     public getBuffers(renderable: ParticleContainer): ParticleBuffer
     {
-        return this._gpuBufferHash[renderable.uid] || this._initBuffer(renderable);
+        return renderable._gpuData[this.renderer.uid] || this._initBuffer(renderable);
     }
 
     private _initBuffer(renderable: ParticleContainer): ParticleBuffer
     {
-        this._gpuBufferHash[renderable.uid] = new ParticleBuffer({
+        renderable._gpuData[this.renderer.uid] = new ParticleBuffer({
             size: renderable.particleChildren.length,
             properties: renderable._properties,
         });
 
-        renderable.on('destroyed', this._destroyRenderableBound);
-
-        return this._gpuBufferHash[renderable.uid];
+        return renderable._gpuData[this.renderer.uid];
     }
 
     public updateRenderable(_renderable: ParticleContainer)
     {
         // nothing to be done here!
 
-    }
-
-    public destroyRenderable(renderable: ParticleContainer)
-    {
-        const buffer = this._gpuBufferHash[renderable.uid];
-
-        buffer.destroy();
-
-        this._gpuBufferHash[renderable.uid] = null;
-
-        renderable.off('destroyed', this._destroyRenderableBound);
     }
 
     public execute(container: ParticleContainer): void

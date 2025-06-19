@@ -8,7 +8,8 @@ import type { BatchMode } from '../../graphics/shared/GraphicsContext';
 
 /**
  * Options for the mesh geometry.
- * @memberof scene
+ * @category scene
+ * @advanced
  */
 export interface MeshGeometryOptions
 {
@@ -26,7 +27,8 @@ export interface MeshGeometryOptions
 
 /**
  * A geometry used to batch multiple meshes with the same texture.
- * @memberof scene
+ * @category scene
+ * @advanced
  */
 export class MeshGeometry extends Geometry
 {
@@ -38,7 +40,7 @@ export class MeshGeometry extends Geometry
     public batchMode: BatchMode = 'auto';
 
     /**
-     * @param {scene.MeshGeometryOptions} options - The options of the mesh geometry.
+     * @param {MeshGeometryOptions} options - The options of the mesh geometry.
      */
     constructor(options: MeshGeometryOptions);
     /** @deprecated since 8.0.0 */

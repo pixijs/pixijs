@@ -2,7 +2,8 @@ import type { System } from '../system/System';
 
 /**
  * System plugin to the renderer to manage the shaders.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export interface ShaderSystem extends System
 {

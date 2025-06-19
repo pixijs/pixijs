@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "8.9.2",
+  "version": "8.10.1",
   "author": "PixiJS Team",
   "homepage": "http://pixijs.com/",
   "bugs": "https://github.com/pixijs/pixijs/issues",
@@ -8,6 +8,10 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/pixijs/pixijs.git"
+  },
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/pixijs"
   },
   "main": "lib/index.js",
   "module": "lib/index.mjs",
@@ -43,9 +47,8 @@
     "test:scene:debug": "cross-env DEBUG_MODE=1 npx jest --testPathPattern=tests/visual",
     "test:types": "tsc --noEmit",
     "test:index": "ts-node --transpile-only ./scripts/index/index.ts --check",
-    "docs": "mkdirp out && npm run docs:webdoc",
-    "docs:webdoc": "webdoc -R README.md",
-    "docs:watch": "nodemon --watch \"./src/*\" --exec \"npm run docs\" -e ts",
+    "docs": "mkdirp out && npx typedoc",
+    "docs:watch": "nodemon --watch \"./src/*\" --exec \"rimraf .s3_uploads/docs && npm run docs\" -e ts,md",
     "lint": "eslint ./ --cache --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "codesandbox-ci": "run-s build",
@@ -61,19 +64,20 @@
   "dependencies": {
     "@pixi/colord": "^2.9.6",
     "@types/css-font-loading-module": "^0.0.12",
-    "@types/earcut": "^2.1.4",
+    "@types/earcut": "^3.0.0",
     "@webgpu/types": "^0.1.40",
     "@xmldom/xmldom": "^0.8.10",
-    "earcut": "^2.2.4",
+    "earcut": "^3.0.1",
     "eventemitter3": "^5.0.1",
     "gifuct-js": "^2.1.2",
     "ismobilejs": "^1.1.1",
     "parse-svg-path": "^0.1.2"
   },
   "devDependencies": {
+    "@babel/core": "7.22",
+    "@babel/plugin-transform-modules-commonjs": "^7.26.3",
     "@pixi/eslint-config": "^6.0.0",
     "@pixi/jest-electron": "^26.1.0",
-    "@pixi/webdoc-template": "^2.2.3",
     "@pixi/webworker-plugins": "^0.3.0",
     "@rollup/plugin-alias": "^5.1.1",
     "@rollup/plugin-commonjs": "^25.0.0",
@@ -86,8 +90,8 @@
     "@types/pixelmatch": "^5.2.4",
     "@types/pngjs": "^6.0.2",
     "@types/semver": "^7.5.8",
-    "@webdoc/cli": "^2.2.0",
     "@xmldom/xmldom": "^0.8.10",
+    "babel-jest": "^26.0.0",
     "copyfiles": "^2.4.1",
     "cross-env": "^7.0.3",
     "dts-bundle-generator": "^9.5.1",
@@ -123,6 +127,10 @@
     "ts-jest": "^26.0.0",
     "ts-node": "^9.0.0",
     "tsc-silent": "^1.2.2",
+    "typedoc": "^0.28.4",
+    "typedoc-plugin-ga": "^1.0.5",
+    "typedoc-plugin-mdn-links": "^5.0.2",
+    "typedoc-plugin-no-inherit": "^1.6.1",
     "typescript": "^5.0.4",
     "typescript-eslint": "^8.17.0"
   },

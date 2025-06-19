@@ -28,11 +28,12 @@ interface IIntl
 
 /**
  * A number, or a string containing a number.
- * @memberof text
+ * @category text
  * @typedef {object} FontMetrics
  * @property {number} ascent - Font ascent
  * @property {number} descent - Font descent
  * @property {number} fontSize - Font size
+ * @advanced
  */
 export interface FontMetrics
 {
@@ -61,7 +62,8 @@ const contextSettings: ICanvasRenderingContext2DSettings = {
  *     align: 'center',
  * });
  * const textMetrics = CanvasTextMetrics.measureText('Your text', style);
- * @memberof text
+ * @category text
+ * @advanced
  */
 export class CanvasTextMetrics
 {
@@ -124,7 +126,20 @@ export class CanvasTextMetrics
         {
             const segmenter = new (Intl as IIntl).Segmenter();
 
-            return (s: string) => [...segmenter.segment(s)].map((x) => x.segment);
+            return (s: string) =>
+            {
+                const segments = segmenter.segment(s);
+                const result = [];
+
+                let i = 0;
+
+                for (const segment of segments)
+                {
+                    result[i++] = (segment.segment);
+                }
+
+                return result;
+            };
         }
 
         return (s: string) => [...s];
@@ -144,7 +159,7 @@ export class CanvasTextMetrics
     {
         let result = CanvasTextMetrics._experimentalLetterSpacingSupported;
 
-        if (result !== undefined)
+        if (result === undefined)
         {
             const proto = DOMAdapter.get().getCanvasRenderingContext2D().prototype;
 
@@ -164,7 +179,7 @@ export class CanvasTextMetrics
      */
     public static experimentalLetterSpacing = false;
 
-    /** Cache of {@see TextMetrics.FontMetrics} objects. */
+    /** Cache of {@link TextMetrics.FontMetrics} objects. */
     private static _fonts: Record<string, FontMetrics> = {};
 
     /** Cache of new line chars. */
@@ -195,8 +210,6 @@ export class CanvasTextMetrics
     private static __canvas: ICanvas;
     // eslint-disable-next-line @typescript-eslint/naming-convention
     private static __context: ICanvasRenderingContext2D;
-
-    private static readonly _measurementCache: Record<string, CanvasTextMetrics> = {};
 
     /**
      * @param text - the text that was measured
@@ -238,13 +251,6 @@ export class CanvasTextMetrics
         wordWrap: boolean = style.wordWrap,
     ): CanvasTextMetrics
     {
-        const textKey = `${text}:${style.styleKey}`;
-
-        // TODO - if we find this starts to go nuts with memory, we can remove the cache
-        // or instead just stick a usage tick that we increment each time we return it.
-        // if some are not used, we can just tidy them up!
-        if (CanvasTextMetrics._measurementCache[textKey]) return CanvasTextMetrics._measurementCache[textKey];
-
         const font = fontStringFromTextStyle(style);
         const fontProperties = CanvasTextMetrics.measureFont(font);
 
@@ -302,8 +308,6 @@ export class CanvasTextMetrics
             maxLineWidth,
             fontProperties
         );
-
-        // CanvasTextMetrics._measurementCache[textKey] = measurements;
 
         return measurements;
     }

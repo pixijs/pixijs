@@ -7,7 +7,8 @@ import type { Matrix } from '../../../../../maths/matrix/Matrix';
  * @param offset - the offset of the vertices (defaults to 0)
  * @param stride - the stride of the vertices (defaults to 2)
  * @param size - the size of the vertices (defaults to vertices.length / stride - offset)
- * @memberof rendering
+ * @category rendering
+ * @internal
  */
 export function transformVertices(vertices: number[], m: Matrix, offset?: number, stride?: number, size?: number)
 {

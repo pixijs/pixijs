@@ -15,7 +15,8 @@ import type { Rectangle } from '../../../../maths/shapes/Rectangle';
  * | Bottom-Right | `(x2,y2)`   |
  * | Bottom-Left  | `(x3,y3)`   |
  * @protected
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class TextureUvs
 {

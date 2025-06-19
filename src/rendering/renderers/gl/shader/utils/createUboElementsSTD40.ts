@@ -1,5 +1,6 @@
 import type { UboElement, UboLayout, UniformData } from '../../../shared/shader/types';
 
+/** @internal */
 export const WGSL_TO_STD40_SIZE: Record<string, number> = {
     f32: 4,
     i32: 4,
@@ -36,6 +37,10 @@ export const WGSL_TO_STD40_SIZE: Record<string, number> = {
     // mat4:     16 * 4,
 };
 
+/**
+ * @param uniformData
+ * @internal
+ */
 export function createUboElementsSTD40(uniformData: UniformData[]): UboLayout
 {
     const uboElements: UboElement[] = uniformData.map((data: UniformData) =>

@@ -6,6 +6,12 @@ import type { Matrix } from '../../../maths/matrix/Matrix';
 import type { Bounds } from '../../../scene/container/bounds/Bounds';
 import type { Container } from '../../../scene/container/Container';
 
+/**
+ * @param mask
+ * @param bounds
+ * @param localRoot
+ * @internal
+ */
 export function addMaskLocalBounds(mask: Container, bounds: Bounds, localRoot: Container): void
 {
     const boundsToMask = boundsPool.get();
@@ -26,7 +32,7 @@ export function addMaskLocalBounds(mask: Container, bounds: Bounds, localRoot: C
     boundsPool.return(boundsToMask);
 }
 
-export function getMatrixRelativeToParent(target: Container, root: Container, matrix: Matrix): Matrix
+function getMatrixRelativeToParent(target: Container, root: Container, matrix: Matrix): Matrix
 {
     if (!target)
     {

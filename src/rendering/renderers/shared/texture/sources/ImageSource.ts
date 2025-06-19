@@ -1,12 +1,22 @@
-import { DOMAdapter } from '../../../../../environment/adapter';
 import { ExtensionType } from '../../../../../extensions/Extensions';
-import { warn } from '../../../../../utils/logging/warn';
 import { TextureSource } from './TextureSource';
 
 import type { ICanvas } from '../../../../../environment/canvas/ICanvas';
 import type { ExtensionMetadata } from '../../../../../extensions/Extensions';
 import type { TextureSourceOptions } from './TextureSource';
 
+/**
+ * The type of image-like resource that can be used as a texture source.
+ *
+ * - `ImageBitmap` is used for bitmap images.
+ * - `HTMLCanvasElement` and `OffscreenCanvas` are used for canvas elements.
+ * - `ICanvas` is an interface for canvas-like objects.
+ * - `VideoFrame` is used for video frames.
+ * - `HTMLImageElement` is used for HTML image elements.
+ * - `HTMLVideoElement` is used for HTML video elements.
+ * @category rendering
+ * @advanced
+ */
 export type ImageResource =
 ImageBitmap
 | HTMLCanvasElement
@@ -16,6 +26,13 @@ ImageBitmap
 | HTMLImageElement
 | HTMLVideoElement;
 
+/**
+ * A texture source that uses an image-like resource as its resource.
+ * It can handle HTMLImageElement, ImageBitmap, VideoFrame, and HTMLVideoElement.
+ * It is used for textures that can be uploaded to the GPU.
+ * @category rendering
+ * @advanced
+ */
 export class ImageSource extends TextureSource<ImageResource>
 {
     public static extension: ExtensionMetadata = ExtensionType.TextureSource;
@@ -23,19 +40,6 @@ export class ImageSource extends TextureSource<ImageResource>
 
     constructor(options: TextureSourceOptions<ImageResource>)
     {
-        if (options.resource && (globalThis.HTMLImageElement && options.resource instanceof HTMLImageElement))
-        {
-            const canvas = DOMAdapter.get().createCanvas(options.resource.width, options.resource.height);
-            const context = canvas.getContext('2d');
-
-            context.drawImage(options.resource, 0, 0, options.resource.width, options.resource.height);
-            options.resource = canvas;
-
-            // #if _DEBUG
-            warn('ImageSource: Image element passed, converting to canvas. Use CanvasSource instead.');
-            // #endif
-        }
-
         super(options);
 
         this.autoGarbageCollect = true;

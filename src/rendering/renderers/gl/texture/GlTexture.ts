@@ -2,7 +2,7 @@ import { GL_FORMATS, GL_TARGETS, GL_TYPES } from './const';
 
 /**
  * Internal texture for WebGL context
- * @memberof rendering
+ * @category rendering
  * @ignore
  */
 export class GlTexture

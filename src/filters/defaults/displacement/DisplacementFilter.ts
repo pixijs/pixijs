@@ -16,39 +16,98 @@ import type { FilterOptions } from '../../Filter';
 import type { FilterSystem } from '../../FilterSystem';
 
 /**
- * Options for DisplacementFilter
- * @memberof filters
+ * Configuration options for the DisplacementFilter.
+ *
+ * A displacement filter uses a sprite's texture as a displacement map,
+ * moving pixels of the target based on the color values of corresponding
+ * pixels in the displacement sprite.
+ * @example
+ * ```ts
+ * const options: DisplacementFilterOptions = {
+ *     sprite: displacementSprite,
+ *     scale: { x: 20, y: 20 }
+ * };
+ *
+ * const filter = new DisplacementFilter(options);
+ * ```
+ * @category filters
+ * @standard
  */
 export interface DisplacementFilterOptions extends FilterOptions
 {
-    /** The texture used for the displacement map. */
-    sprite: Sprite,
-    /** The scale of the displacement. */
-    scale?: number | PointData,
+    /**
+     * The sprite whose texture will be used as the displacement map.
+     * Red channel = horizontal displacement
+     * Green channel = vertical displacement
+     * @example
+     * ```ts
+     * const displacementSprite = new Sprite(texture);
+     * const filter = new DisplacementFilter({ sprite: displacementSprite });
+     * ```
+     */
+    sprite: Sprite;
+
+    /**
+     * The scale of the displacement effect. Can be a single number for uniform
+     * scaling or a point-like object for separate x/y scaling.
+     * @default 20
+     * @example
+     * ```ts
+     * // Uniform scaling
+     * new DisplacementFilter({ sprite, scale: 20 });
+     * // Separate scaling
+     * new DisplacementFilter({ sprite, scale: { x: 10, y: 15 } });
+     * ```
+     */
+    scale?: number | PointData;
 }
 
 /**
- * A Noise effect filter.
+ * A filter that applies a displacement map effect using a sprite's texture.
  *
- * original filter: https://github.com/evanw/glfx.js/blob/master/src/filters/adjust/noise.js
- * @memberof filters
- * @author Vico @vicocotea
+ * The DisplacementFilter uses another texture (from a sprite) as a displacement map,
+ * where the red and green channels of each pixel in the map determine how the corresponding
+ * pixel in the filtered object should be offset:
+ * - Red channel controls horizontal displacement
+ * - Green channel controls vertical displacement
+ *
+ * Common use cases:
+ * - Creating ripple or wave effects
+ * - Distorting images dynamically
+ * - Implementing heat haze effects
+ * - Creating transition effects
+ * @example
+ * ```ts
+ * import { Sprite, DisplacementFilter } from 'pixi.js';
+ *
+ * // Create a sprite to use as the displacement map
+ * const displacementSprite = Sprite.from('displacement-map.png');
+ *
+ * // Create and configure the filter
+ * const displacementFilter = new DisplacementFilter({
+ *     sprite: displacementSprite,
+ *     scale: { x: 20, y: 20 }
+ * });
+ *
+ * // Apply to any display object
+ * container.filters = [displacementFilter];
+ * ```
+ * @category filters
+ * @author Vico: vicocotea
+ * @standard
+ * @noInheritDoc
  */
 export class DisplacementFilter extends Filter
 {
     private readonly _sprite: Sprite;
 
     /**
-     * **Note:** Our docs parser struggles to properly understand the constructor signature.
-     * This is the correct signature.
-     * ```ts
-     * new DisplacementFilter(options?: DisplacementFilterOptions);
-     * ```
-     * @param options - The options for the filter.
-     * @param options.sprite - The texture used for the displacement map.
-     * @param options.scale - The scale of the displacement.
+     * @param {Sprite | DisplacementFilterOptions} options - The sprite or options object.
+     * @param {Sprite} options.sprite - The texture used for the displacement map.
+     * @param {number | PointData} options.scale - The scale of the displacement.
      */
     constructor(options: Sprite | DisplacementFilterOptions);
+    /** @deprecated since 8.0.0 */
     constructor(sprite: Sprite, scale?: number | PointData);
     constructor(...args: [Sprite | DisplacementFilterOptions] | [Sprite, (number | PointData)?])
     {
@@ -122,6 +181,7 @@ export class DisplacementFilter extends Filter
      * @param input - The input target.
      * @param output - The output target.
      * @param clearMode - clearMode.
+     * @advanced
      */
     public apply(
         filterManager: FilterSystem,
@@ -155,7 +215,25 @@ export class DisplacementFilter extends Filter
         filterManager.applyFilter(this, input, output, clearMode);
     }
 
-    /** scaleX, scaleY for displacements */
+    /**
+     * The scale of the displacement effect.
+     *
+     * Gets the current x and y scaling values used for the displacement mapping.
+     * - x: Horizontal displacement scale
+     * - y: Vertical displacement scale
+     * @returns {Point} The current scale as a Point object
+     * @example
+     * ```ts
+     * const filter = new DisplacementFilter({ sprite });
+     *
+     * // Get current scale
+     * console.log(filter.scale.x, filter.scale.y);
+     *
+     * // Update scale
+     * filter.scale.x = 100;
+     * filter.scale.y = 50;
+     * ```
+     */
     get scale(): Point
     {
         return this.resources.filterUniforms.uniforms.uScale as Point;
