@@ -85,7 +85,7 @@ export interface DOMContainerOptions extends ViewContainerOptions
  * @category scene
  * @standard
  */
-export class DOMContainer extends ViewContainer<null>
+export class DOMContainer extends ViewContainer<never>
 {
     /** @internal */
     public override readonly renderPipeId: string = 'dom';
