@@ -85,6 +85,8 @@ const sideEffects = [
     './lib/rendering/init.*',
     './lib/spritesheet/init.*',
     './lib/rendering/renderers/shared/texture/utils/textureFrom.*',
+    './lib/scene/text/utils/text-split/canvasTextSplit.*',
+    './lib/scene/text-bitmap/utils/bitmapTextSplit.*',
     './lib/gif/init.*',
 ];
 

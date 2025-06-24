@@ -1,0 +1,33 @@
+import { Assets } from '~/assets';
+import { Text } from '~/scene';
+
+import type { TestScene } from '../../types';
+import type { Container } from '~/scene';
+
+export const scene: TestScene = {
+    it: 'should render a split text correctly',
+    create: async (scene: Container) =>
+    {
+        await Assets.load('fonts/outfit.woff2');
+
+        const textBitmap = new Text({
+            text: 'Canvas',
+            style: {
+                fontFamily: 'Outfit',
+                fontSize: 35,
+            },
+        });
+
+        scene.addChild(textBitmap);
+
+        // Split the text into characters and words
+        const splitResult = Text.split(textBitmap);
+        // move each character to a fixed y position
+
+        splitResult.chars.forEach((char, i) =>
+        {
+            char.y = 10 + (i * 10);
+            scene.addChild(char);
+        });
+    },
+};
