@@ -1,5 +1,6 @@
 import { Assets } from '~/assets';
 import { BitmapFont, BitmapText } from '~/scene';
+import { SegmentedBitmapText } from '~/scene/text-segmented/SegmentedBitmapText';
 
 import type { TestScene } from '../../types';
 import type { Container } from '~/scene';
@@ -33,12 +34,11 @@ export const scene: TestScene = {
             },
         });
 
-        scene.addChild(textBitmap);
-
         // Split the text into characters and words
-        const splitResult = BitmapText.split(textBitmap);
-        // move each character to a fixed y position
+        const splitResult = SegmentedBitmapText.from(textBitmap);
 
+        scene.addChild(splitResult);
+        // move each character to a fixed y position
         splitResult.chars.forEach((char, i) =>
         {
             char.y = 10 + (i * 10);

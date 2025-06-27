@@ -1,13 +1,8 @@
 import { Container } from '../../container/Container';
 import { CanvasTextMetrics } from '../../text/canvas/CanvasTextMetrics';
-import { TextStyle } from '../../text/TextStyle';
-import {
-    type InstancedTextSplitConfig,
-    type RawTextSplitConfig,
-    splitText,
-    type TextSplitOutput,
-    type TextSplitResult,
-} from '../../text/utils/text-split/sharedTextSplit';
+import { type TextStyle } from '../../text/TextStyle';
+import { type SegmentedOptions } from '../../text-segmented/SegmentedText';
+import { type TextSplitOutput } from '../../text-segmented/types';
 import { BitmapFontManager } from '../BitmapFontManager';
 import { BitmapText } from '../BitmapText';
 import { getBitmapTextLayout } from './getBitmapTextLayout';
@@ -19,24 +14,23 @@ import { getBitmapTextLayout } from './getBitmapTextLayout';
  * This function handles word wrapping, alignment, and letter spacing,
  * ensuring that each segment is rendered correctly according to the original text's style.
  * @param options - Configuration options for the text split operation.
- * @param TextClass - The Text class to use for creating split text instances.
  * @returns An array of Text objects representing the split segments.
  * @internal
  */
-export function bitmapTextSplit(options: RawTextSplitConfig, TextClass: typeof BitmapText): TextSplitOutput<BitmapText>
+export function bitmapTextSplit(
+    options: Pick<SegmentedOptions, 'text' | 'style'> & { chars: BitmapText[] },
+): TextSplitOutput<BitmapText>
 {
-    const { string, style, anchor } = options as RawTextSplitConfig;
-    const textStyle = new TextStyle(style);
-    const font = BitmapFontManager.getFont(string, textStyle);
+    const { text, style, chars: existingChars } = options;
+    const textStyle = style as TextStyle;
+    const font = BitmapFontManager.getFont(text, textStyle);
 
-    const segments = CanvasTextMetrics.graphemeSegmenter(string);
+    const segments = CanvasTextMetrics.graphemeSegmenter(text);
     const layout = getBitmapTextLayout(segments, textStyle, font, true);
     const scale = layout.scale;
     const chars: BitmapText[] = [];
     const words: Container[] = [];
     const lines: Container[] = [];
-    // Normalize anchor to { x, y } object
-    const normalizedAnchor = typeof anchor === 'number' ? { x: anchor, y: anchor } : { x: anchor!.x, y: anchor!.y };
 
     let yOffset = 0;
 
@@ -66,27 +60,32 @@ export function bitmapTextSplit(options: RawTextSplitConfig, TextClass: typeof B
             const isSpace = char === ' ';
             const isLastChar = i === line.chars.length - 1;
 
-            // Create sprite for the character
-            const bitmapText = new TextClass({
-                text: char,
-                style: textStyle,
-                label: `char-${char}`,
-                x: (line.charPositions[i]! * scale) - (line.charPositions[currentWordStartIndex]! * scale)
-            });
+            let charInstance: BitmapText;
 
-            // Handle anchoring
-            if (normalizedAnchor)
+            if (existingChars.length > 0)
             {
-                bitmapText.anchor.set(normalizedAnchor.x, normalizedAnchor.y);
-                bitmapText.x += bitmapText.width * normalizedAnchor.x;
-                bitmapText.y += bitmapText.height * normalizedAnchor.y;
+                charInstance = existingChars.shift();
+                charInstance.text = char;
+                charInstance.style = textStyle;
+                charInstance.label = `char-${char}`;
+                charInstance.x = (line.charPositions[i]! * scale) - (line.charPositions[currentWordStartIndex]! * scale);
+            }
+            else
+            {
+                // Create a new BitmapText instance if no existing one is available
+                charInstance = new BitmapText({
+                    text: char,
+                    style: textStyle,
+                    label: `char-${char}`,
+                    x: (line.charPositions[i]! * scale) - (line.charPositions[currentWordStartIndex]! * scale),
+                });
             }
 
             if (!isSpace)
             {
-                chars.push(bitmapText);
+                chars.push(charInstance);
                 // Add to word container
-                currentWordContainer.addChild(bitmapText);
+                currentWordContainer.addChild(charInstance);
             }
 
             // Handle word breaks
@@ -110,14 +109,3 @@ export function bitmapTextSplit(options: RawTextSplitConfig, TextClass: typeof B
 
     return { chars, lines, words };
 }
-
-// eslint-disable-next-line func-names
-BitmapText.split = function (
-    this: typeof BitmapText,
-    text: BitmapText | InstancedTextSplitConfig<BitmapText> | RawTextSplitConfig,
-): TextSplitResult<BitmapText>
-{
-    const res = splitText<BitmapText, typeof this>(text, this, bitmapTextSplit);
-
-    return res;
-};

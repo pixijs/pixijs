@@ -70,6 +70,11 @@ declare global
         interface HTMLText {}
         interface HTMLTextOptions {}
 
+        interface SegmentedText {}
+        interface SegmentedTextOptions {}
+        interface SegmentedBitmapText {}
+        interface SegmentedBitmapTextOptions {}
+
     }
 }
 

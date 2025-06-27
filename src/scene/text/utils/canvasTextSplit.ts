@@ -1,15 +1,11 @@
-import { Container } from '../../../../scene/container/Container';
-import { type ConvertedStrokeStyle } from '../../../../scene/graphics/shared/FillTypes';
-import { CanvasTextMetrics } from '../../canvas/CanvasTextMetrics';
-import { Text } from '../../Text';
-import { TextStyle } from '../../TextStyle';
-import {
-    type InstancedTextSplitConfig,
-    type RawTextSplitConfig,
-    splitText,
-    type TextSplitOutput,
-    type TextSplitResult
-} from './sharedTextSplit';
+import { Matrix } from '../../../maths/matrix/Matrix';
+import { Container } from '../../container/Container';
+import { type ConvertedStrokeStyle } from '../../graphics/shared/FillTypes';
+import { type SegmentedOptions } from '../../text-segmented/SegmentedText';
+import { type TextSplitOutput } from '../../text-segmented/types';
+import { CanvasTextMetrics } from '../canvas/CanvasTextMetrics';
+import { Text } from '../Text';
+import { type TextStyle } from '../TextStyle';
 
 interface Segment
 {
@@ -108,21 +104,22 @@ function groupTextSegments(
  * ensuring that each segment is rendered correctly according to the original text's style.
  * It uses the CanvasTextMetrics to measure text dimensions and segment the text into lines.
  * @param options - Configuration options for the text split operation.
- * @param TextClass - The Text class to use for creating split text instances.
  * @returns An array of Text objects representing the split segments.
  * @internal
  */
-export function canvasTextSplit(options: RawTextSplitConfig, TextClass: typeof Text): TextSplitOutput<Text>
+export function canvasTextSplit(
+    options: Pick<SegmentedOptions, 'text' | 'style'> & { chars: Text[] },
+): TextSplitOutput<Text>
 {
-    const { string, style, anchor } = options;
-    const textStyle = new TextStyle(style);
+    const { text, style, chars: existingChars } = options;
+    const textStyle = style as TextStyle;
 
     // measure the entire text to get the layout
-    const measuredText = CanvasTextMetrics.measureText(string, textStyle);
+    const measuredText = CanvasTextMetrics.measureText(text, textStyle);
     // split the text into segments
-    const segments = CanvasTextMetrics.graphemeSegmenter(string);
+    const segments = CanvasTextMetrics.graphemeSegmenter(text);
     // now group the segments into lines based on measured lines
-    const groupedSegments: GroupedSegment[] = groupTextSegments(segments, measuredText, textStyle);
+    const groupedSegments: GroupedSegment[] = groupTextSegments(segments, measuredText, textStyle.clone());
 
     const alignment = textStyle.align;
     const largestLine = measuredText.lineWidths.reduce((max, line) => Math.max(max, line), 0);
@@ -134,9 +131,6 @@ export function canvasTextSplit(options: RawTextSplitConfig, TextClass: typeof T
     let yOffset = 0;
     const strokeWidth = (textStyle.stroke as ConvertedStrokeStyle)?.width || 0;
     const dropShadowDistance = textStyle.dropShadow?.distance || 0;
-
-    // Normalize anchor to { x, y } object
-    const normalizedAnchor = typeof anchor === 'number' ? { x: anchor, y: anchor } : { x: anchor.x, y: anchor.y };
 
     groupedSegments.forEach((group, i) =>
     {
@@ -182,22 +176,29 @@ export function canvasTextSplit(options: RawTextSplitConfig, TextClass: typeof T
             }
             else
             {
-                const newText = new TextClass({
-                    text: segment.char,
-                    style: textStyle,
-                    x: xOffset - currentWordContainer.x - (dropShadowDistance * i),
-                });
+                // if there are existing characters, reuse them
+                let char: Text;
 
-                if (normalizedAnchor)
+                if (existingChars.length > 0)
                 {
-                    newText.anchor.set(normalizedAnchor.x, normalizedAnchor.y);
-                    // Adjust position to compensate for anchor change
-                    newText.x += newText.width * normalizedAnchor.x;
-                    newText.y += newText.height * normalizedAnchor.y;
+                    char = existingChars.shift();
+
+                    char.text = segment.char;
+                    char.style = textStyle;
+                    char.setFromMatrix(Matrix.IDENTITY);
+                    char.x = xOffset - currentWordContainer.x - (dropShadowDistance * i);
+                }
+                else
+                {
+                    char = new Text({
+                        text: segment.char,
+                        style: textStyle,
+                        x: xOffset - currentWordContainer.x - (dropShadowDistance * i),
+                    });
                 }
 
-                chars.push(newText);
-                currentWordContainer.addChild(newText);
+                chars.push(char);
+                currentWordContainer.addChild(char);
                 xOffset += segment.metric.width + textStyle.letterSpacing - strokeWidth;
             }
         });
@@ -214,12 +215,3 @@ export function canvasTextSplit(options: RawTextSplitConfig, TextClass: typeof T
 
     return { chars, lines: lineContainers, words: wordContainers };
 }
-
-// eslint-disable-next-line func-names
-Text.split = function (
-    this: typeof Text,
-    text: Text | InstancedTextSplitConfig<Text> | RawTextSplitConfig,
-): TextSplitResult<Text>
-{
-    return splitText(text, this, canvasTextSplit);
-};
