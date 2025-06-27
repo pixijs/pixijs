@@ -1799,8 +1799,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         lt.c = this._cy * sy;
         lt.d = this._sy * sy;
 
-        // lt.tx = position._x - ((px * lt.a) + (py * lt.c));
-        // lt.ty = position._y - ((px * lt.b) + (py * lt.d));
         lt.tx = position._x - ((px * lt.a) + (py * lt.c)) // Pivot offset
             + ((ox * lt.a) + (oy * lt.c)) // Origin offset for rotation
             - ox; // Subtract origin to maintain position
