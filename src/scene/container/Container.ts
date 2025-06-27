@@ -1818,11 +1818,11 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         lt.d = this._sy * sy;
 
         lt.tx = position._x - ((px * lt.a) + (py * lt.c)) // Pivot offset
-            + ((ox * lt.a) + (oy * lt.c)) // Origin offset for rotation
-            - ox; // Subtract origin to maintain position
+            + ((ox * lt.a) + (oy * lt.c)) // Origin offset for rotation and scaling
+            - (ox * sx); // Remove unscaled origin to maintain position
         lt.ty = position._y - ((px * lt.b) + (py * lt.d)) // Pivot offset
-            + ((ox * lt.b) + (oy * lt.d)) // Origin offset for rotation
-            - oy; // Subtract origin to maintain position
+            + ((ox * lt.b) + (oy * lt.d)) // Origin offset for rotation and scaling
+            - (oy * sy); // Remove unscaled origin to maintain position
     }
 
     // / ///// color related stuff
