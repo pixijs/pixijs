@@ -128,6 +128,11 @@ export function getBitmapTextLayout(
     const adjustedLetterSpacing = style.letterSpacing * scale;
     const adjustedWordWrapWidth = style.wordWrapWidth * scale;
 
+    const breakWords = style.wordWrap && style.breakWords;
+
+    const checkIsOverflow = (lineWidth: number) =>
+        lineWidth - adjustedLetterSpacing > adjustedWordWrapWidth;
+
     // loop an extra time to force a line break..
     for (let i = 0; i < chars.length + 1; i++)
     {
@@ -150,9 +155,7 @@ export function getBitmapTextLayout(
 
         if (isWordBreak)
         {
-            const addWordToNextLine = !firstWord
-                && style.wordWrap
-                && (currentLine.width + currentWord.width - adjustedLetterSpacing) > adjustedWordWrapWidth;
+            const addWordToNextLine = !firstWord && style.wordWrap && checkIsOverflow(currentLine.width + currentWord.width);
 
             if (addWordToNextLine)
             {
@@ -202,6 +205,14 @@ export function getBitmapTextLayout(
             const kerning = charData.kerning[previousChar] || 0;
 
             const nextCharWidth = charData.xAdvance + kerning + adjustedLetterSpacing;
+
+            const addWordToNextLine = breakWords && checkIsOverflow(currentLine.width + currentWord.width + nextCharWidth);
+
+            if (addWordToNextLine)
+            {
+                nextWord(currentWord);
+                nextLine();
+            }
 
             currentWord.positions[currentWord.index++] = currentWord.width + kerning;
             currentWord.chars.push(char);
