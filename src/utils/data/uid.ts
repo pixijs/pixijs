@@ -31,7 +31,9 @@ export type UIDNames =
     | 'textView' //
     | 'tilingSpriteView' //
     | 'shader' //
-    | 'renderer';
+    | 'renderer' //
+    | 'textStyle'
+    | (string & {});
 
 /**
  * Gets the next unique identifier

@@ -29,7 +29,16 @@ export class CanvasTextPipe implements RenderPipe<Text>
 
     public validateRenderable(text: Text): boolean
     {
-        return text._didTextUpdate;
+        const gpuText = this._getGpuText(text);
+
+        const newKey = text.styleKey();
+
+        if (gpuText.currentKey !== newKey)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public addRenderable(text: Text, instructionSet: InstructionSet)
@@ -38,7 +47,10 @@ export class CanvasTextPipe implements RenderPipe<Text>
 
         if (text._didTextUpdate)
         {
-            this._updateGpuText(text);
+            if (batchableText.currentKey !== text.styleKey())
+            {
+                this._updateGpuText(text);
+            }
             text._didTextUpdate = false;
         }
 
@@ -58,12 +70,13 @@ export class CanvasTextPipe implements RenderPipe<Text>
 
         if (batchableText.texture)
         {
-            this._renderer.canvasText.returnTexture(batchableText.texture);
+            this._renderer.canvasText.decreaseReferenceCount(batchableText.currentKey);
         }
 
         text._resolution = text._autoResolution ? this._renderer.resolution : text.resolution;
 
-        batchableText.texture = batchableText.texture = this._renderer.canvasText.getTexture(text);
+        batchableText.texture = batchableText.texture = this._renderer.canvasText.getManagedTexture(text);
+        batchableText.currentKey = text.styleKey();
 
         updateTextBounds(batchableText, text);
     }
@@ -77,6 +90,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
     {
         const batchableText = new BatchableText(this._renderer);
 
+        batchableText.currentKey = '--';
         batchableText.renderable = text;
         batchableText.transform = text.groupTransform;
         batchableText.bounds = { minX: 0, maxX: 1, minY: 0, maxY: 0 };

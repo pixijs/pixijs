@@ -241,14 +241,14 @@ class BitmapFontManagerClass
         // assuming there is no texture we can use a tint!
         if (style._fill.fill && !style._stroke)
         {
-            fontFamilyKey += style._fill.fill.styleKey;
+            fontFamilyKey += style._fill.fill.styleKey();
             overrideFill = false;
         }
         else if (style._stroke || style.dropShadow)
         {
             // if there is a stoke, we need to use the style key as this the font generated cannot be tinted
             // due to the fact the font has at least two colors.
-            let key = style.styleKey;
+            let key = style.styleKey();
 
             // remove the font size..
             key = key.substring(0, key.lastIndexOf('-'));
