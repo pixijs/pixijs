@@ -6,6 +6,7 @@ import { deprecation } from '../../../utils/logging/deprecation';
 import { type CanvasTextOptions } from '../Text';
 import { TextStyle } from '../TextStyle';
 import { getPo2TextureFromSource } from '../utils/getPo2TextureFromSource';
+import { adjustTextTexture } from '../utils/updateTextBounds';
 import { CanvasTextGenerator } from './CanvasTextGenerator';
 
 import type { System } from '../../../rendering/renderers/shared/system/System';
@@ -87,23 +88,17 @@ export class CanvasTextSystem implements System
 
         const resolution = options.resolution ?? this._renderer.resolution;
 
-        const { frame, canvasAndContext } = CanvasTextGenerator.getCanvasAndContext({
+        const { padding, width, height, canvasAndContext } = CanvasTextGenerator.getCanvasAndContext({
             text: text as string,
             style: style as TextStyle,
             resolution,
         });
 
-        const texture = getPo2TextureFromSource(canvasAndContext.canvas, frame.width, frame.height, resolution);
+        const texture = getPo2TextureFromSource(canvasAndContext.canvas, width, height, resolution);
+
+        adjustTextTexture(texture, padding, style.trim);
 
         if (textureStyle) texture.source.style = textureStyle as TextureStyle;
-
-        if (style.trim)
-        {
-            // reapply the padding to the frame
-            frame.pad(style.padding);
-            texture.frame.copyFrom(frame);
-            texture.updateUvs();
-        }
 
         if (style.filters)
         {

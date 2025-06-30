@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../extensions/Extensions';
+import { PaddingSides } from '../../filters/PaddingSides';
 import { type CanvasAndContext, CanvasPool } from '../../rendering/renderers/shared/texture/CanvasPool';
 import { TexturePool } from '../../rendering/renderers/shared/texture/TexturePool';
 import { type TextureStyle } from '../../rendering/renderers/shared/texture/TextureStyle';
@@ -7,6 +8,7 @@ import { isSafari } from '../../utils/browser/isSafari';
 import { warn } from '../../utils/logging/warn';
 import { BigPool } from '../../utils/pool/PoolGroup';
 import { getPo2TextureFromSource } from '../text/utils/getPo2TextureFromSource';
+import { adjustTextTexture } from '../text/utils/updateTextBounds';
 import { HTMLTextRenderData } from './HTMLTextRenderData';
 import { HTMLTextStyle } from './HTMLTextStyle';
 import { extractFontFamilies } from './utils/extractFontFamilies';
@@ -20,6 +22,8 @@ import type { System } from '../../rendering/renderers/shared/system/System';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { PoolItem } from '../../utils/pool/Pool';
 import type { HTMLTextOptions } from './HTMLText';
+
+const tempPad = new PaddingSides();
 
 /**
  * System plugin to the renderer to manage HTMLText
@@ -83,9 +87,9 @@ export class HTMLTextSystem implements System
             HTMLTextStyle.defaultTextStyle as {fontWeight: string, fontStyle: string}
         );
         const measured = measureHtmlText(text, style, fontCSS, htmlTextData);
-
-        const width = Math.ceil(Math.ceil((Math.max(1, measured.width) + (style.padding * 2))) * resolution);
-        const height = Math.ceil(Math.ceil((Math.max(1, measured.height) + (style.padding * 2))) * resolution);
+        const padding = tempPad.copyFrom(style.padding);
+        const width = Math.ceil(Math.ceil((Math.max(1, measured.width) + padding.horizontal)) * resolution);
+        const height = Math.ceil(Math.ceil((Math.max(1, measured.height) + padding.vertical)) * resolution);
 
         const image = htmlTextData.image;
 
@@ -114,6 +118,7 @@ export class HTMLTextSystem implements System
             resolution
         );
 
+        adjustTextTexture(texture, padding);
         if (textureStyle) texture.source.style = textureStyle;
 
         if (this._createCanvas)

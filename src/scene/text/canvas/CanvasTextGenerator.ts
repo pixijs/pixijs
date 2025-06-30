@@ -1,17 +1,11 @@
 import { Color } from '../../../color/Color';
-import { Rectangle } from '../../../maths/shapes/Rectangle';
+import { PaddingSides } from '../../../filters/PaddingSides';
 import { type CanvasAndContext, CanvasPool } from '../../../rendering/renderers/shared/texture/CanvasPool';
-import { getCanvasBoundingBox } from '../../../utils/canvas/getCanvasBoundingBox';
-import { type TextStyle } from '../TextStyle';
 import { CanvasTextMetrics } from './CanvasTextMetrics';
 import { fontStringFromTextStyle } from './utils/fontStringFromTextStyle';
 import { getCanvasFillStyle } from './utils/getCanvasFillStyle';
 
-/**
- * Temporary rectangle for getting the bounding box of the text.
- * @internal
- */
-const tempRect = new Rectangle();
+import type { TextStyle } from '../TextStyle';
 
 /**
  * Utility for generating and managing canvas-based text rendering.
@@ -55,7 +49,7 @@ class CanvasTextGeneratorClass
      * Creates a canvas with the specified text rendered to it.
      *
      * Generates a canvas of appropriate size, renders the text with the provided style,
-     * and returns both the canvas/context and a Rectangle representing the text bounds.
+     * and returns both the canvas/context and dimensions: width, height and padding
      *
      * When trim is enabled in the style, the frame will represent the bounds of the
      * non-transparent pixels, which can be smaller than the full canvas.
@@ -63,32 +57,25 @@ class CanvasTextGeneratorClass
      * @param options.text - The text to render
      * @param options.style - The style to apply to the text
      * @param options.resolution - The resolution of the canvas (defaults to 1)
-     * @param options.padding
      * @returns An object containing the canvas/context and the frame (bounds) of the text
      */
-    public getCanvasAndContext(options: {text: string, style: TextStyle, resolution?: number, padding?: number})
+    public getCanvasAndContext(options: {text: string, style: TextStyle, resolution?: number})
     {
         const { text, style, resolution = 1 } = options;
 
-        const padding = (style as TextStyle)._getFinalPadding();
-
         // create a canvas with the word hello on it
         const measured = CanvasTextMetrics.measureText(text || ' ', style);
-
-        const width = Math.ceil(Math.ceil((Math.max(1, measured.width) + (padding * 2))) * resolution);
-        const height = Math.ceil(Math.ceil((Math.max(1, measured.height) + (padding * 2))) * resolution);
+        const padding = new PaddingSides().copyFrom(measured.padding).unite(style.padding).ceil();
+        const width = Math.ceil(Math.ceil((Math.max(1, measured.width) + padding.horizontal)) * resolution);
+        const height = Math.ceil(Math.ceil((Math.max(1, measured.height) + padding.vertical)) * resolution);
 
         const canvasAndContext = CanvasPool.getOptimalCanvasAndContext(width, height);
 
         this._renderTextToCanvas(text, style, padding, resolution, canvasAndContext);
 
-        const frame = style.trim
-            ? getCanvasBoundingBox({ canvas: canvasAndContext.canvas, width, height, resolution: 1, output: tempRect })
-            : tempRect.set(0, 0, width, height);
-
         return {
             canvasAndContext,
-            frame
+            width, height, padding
         };
     }
 
@@ -115,7 +102,7 @@ class CanvasTextGeneratorClass
     private _renderTextToCanvas(
         text: string,
         style: TextStyle,
-        padding: number,
+        padding: PaddingSides,
         resolution: number,
         canvasAndContext: CanvasAndContext
     ): void
@@ -174,7 +161,7 @@ class CanvasTextGeneratorClass
         {
             const isShadowPass = style.dropShadow && i === 0;
             // we only want the drop shadow, so put text way off-screen
-            const dsOffsetText = isShadowPass ? Math.ceil(Math.max(1, height) + (padding * 2)) : 0;
+            const dsOffsetText = isShadowPass ? Math.ceil(Math.max(1, height) + padding.vertical) : 0;
             const dsOffsetShadow = dsOffsetText * resolution;
 
             if (isShadowPass)
@@ -246,8 +233,8 @@ class CanvasTextGeneratorClass
                         lines[i],
                         style,
                         canvasAndContext,
-                        linePositionX + padding,
-                        linePositionY + padding - dsOffsetText,
+                        linePositionX + padding.left,
+                        linePositionY + padding.top - dsOffsetText,
                         true
                     );
                 }
@@ -258,8 +245,8 @@ class CanvasTextGeneratorClass
                         lines[i],
                         style,
                         canvasAndContext,
-                        linePositionX + padding,
-                        linePositionY + padding - dsOffsetText
+                        linePositionX + padding.left,
+                        linePositionY + padding.top - dsOffsetText,
                     );
                 }
             }
