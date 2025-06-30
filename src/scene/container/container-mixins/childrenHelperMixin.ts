@@ -243,6 +243,12 @@ export interface ChildrenHelperMixin<C = ContainerChild>
      * @see {@link Container#addChildAt} For simple indexed parenting
      */
     reparentChildAt<U extends C>(child: U, index: number): U;
+    /**
+     * Replace a child in the container with a new child. Copying the local transform from the old child to the new one.
+     * @param {Container} oldChild - The child to replace.
+     * @param {Container} newChild - The new child to add.
+     */
+    replaceChild<U extends(C), T extends(C)>(oldChild: U, newChild: T): void;
 }
 
 /** @internal */
@@ -466,5 +472,15 @@ export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
         child.setFromMatrix(childMat);
 
         return child;
-    }
+    },
+
+    replaceChild<U extends(ContainerChild), T extends(ContainerChild)>(oldChild: U, newChild: T)
+    {
+        oldChild.updateLocalTransform();
+        this.addChildAt(newChild, this.getChildIndex(oldChild));
+
+        newChild.setFromMatrix(oldChild.localTransform);
+        newChild.updateLocalTransform();
+        this.removeChild(oldChild);
+    },
 } as Container;
