@@ -1,3 +1,4 @@
+import { deprecation } from '../../utils/logging/deprecation';
 import { squaredDistanceToLineSegment } from '../misc/squaredDistanceToLineSegment';
 import { Rectangle } from './Rectangle';
 
@@ -481,20 +482,66 @@ export class Polygon implements ShapePrimitive
     }
 
     /**
-     * Get the first X coordinate of the polygon
+     * Get the last X coordinate of the polygon.
      * @readonly
+     * @deprecated since 8.11.0, use {@link Polygon.lastX} instead.
      */
     get x(): number
     {
+        // #if _DEBUG
+        deprecation('8.11.0', 'Polygon.lastX is deprecated, please use Polygon.lastX instead.');
+        // #endif
+
         return this.points[this.points.length - 2];
     }
+
     /**
-     * Get the first Y coordinate of the polygon
+     * Get the last Y coordinate of the polygon.
      * @readonly
+     * @deprecated since 8.11.0, use {@link Polygon.lastY} instead.
      */
     get y(): number
     {
+        // #if _DEBUG
+        deprecation('8.11.0', 'Polygon.y is deprecated, please use Polygon.lastY instead.');
+        // #endif
+
         return this.points[this.points.length - 1];
+    }
+    /**
+     * Get the first X coordinate of the polygon.
+     * @example
+     * ```ts
+     * // Basic coordinate access
+     * const polygon = new Polygon([0, 0, 100, 200, 300, 400]);
+     * console.log(polygon.x); // 0
+     * ```
+     * @readonly
+     * @returns The x-coordinate of the first vertex
+     * @see {@link Polygon.startY} For first Y coordinate
+     * @see {@link Polygon.points} For raw points array
+     */
+    get startX(): number
+    {
+        return this.points[0];
+    }
+
+    /**
+     * Get the first Y coordinate of the polygon.
+     * @example
+     * ```ts
+     * // Basic coordinate access
+     * const polygon = new Polygon([0, 0, 100, 200, 300, 400]);
+     * console.log(polygon.y); // 0
+     * ```
+     * @readonly
+     * @returns The y-coordinate of the first vertex
+     * @see {@link Polygon.startX} For first X coordinate
+     * @see {@link Polygon.points} For raw points array
+     */
+    get startY(): number
+    {
+        return this.points[1];
     }
 }
 
