@@ -6,12 +6,14 @@ import type { PoolItem, PoolItemConstructor } from './Pool';
  * A type alias for a constructor of a Pool.
  * @template T The type of items in the pool. Must extend PoolItem.
  * @category utils
+ * @advanced
  */
 export type PoolConstructor<T extends PoolItem> = new () => Pool<T>;
 
 /**
  * A group of pools that can be used to store objects of different types.
  * @category utils
+ * @advanced
  */
 export class PoolGroupClass
 {

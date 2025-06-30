@@ -9,6 +9,7 @@ let uid = 1;
 /**
  * The SchedulerSystem manages scheduled tasks with specific intervals.
  * @category rendering
+ * @advanced
  */
 export class SchedulerSystem implements System<null>
 {

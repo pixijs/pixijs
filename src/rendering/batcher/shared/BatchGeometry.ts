@@ -9,6 +9,7 @@ const placeHolderIndexData = new Uint32Array(1);
  * This class represents a geometry used for batching in the rendering system.
  * It defines the structure of vertex attributes and index buffers for batched rendering.
  * @category rendering
+ * @advanced
  */
 export class BatchGeometry extends Geometry
 {

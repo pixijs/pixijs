@@ -7,6 +7,7 @@ import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
  * - `premultiply-alpha-on-upload`: Premultiplies alpha on texture upload.
  * - `premultiplied-alpha`: Assumes the texture is already in premultiplied alpha format.
  * @category rendering
+ * @advanced
  */
 export type ALPHA_MODES =
     'no-premultiply-alpha' |
@@ -19,6 +20,7 @@ export type ALPHA_MODES =
  * These formats are used to specify the format of textures in WebGPU and WebGL.
  * They include various uncompressed, compressed, and depth/stencil formats.
  * @category rendering
+ * @advanced
  */
 export type TEXTURE_FORMATS =
     // 8-bit formats
@@ -146,6 +148,7 @@ export type TEXTURE_FORMATS =
  * - `2d` is a two-dimensional texture, which is commonly used for images and textures.
  * - `3d` is a three-dimensional texture, which is used for volumetric data or 3D textures.
  * @category rendering
+ * @advanced
  */
 export type TEXTURE_DIMENSIONS =
     | '1d'
@@ -160,6 +163,7 @@ export type TEXTURE_DIMENSIONS =
  * - `repeat` allows the texture to repeat in both u and v directions.
  * - `mirror-repeat` allows the texture to repeat in both u and v directions, but mirrors the texture on every other repeat.
  * @category rendering
+ * @standard
  */
 export type WRAP_MODE =
     | 'clamp-to-edge'
@@ -181,6 +185,7 @@ export enum DEPRECATED_WRAP_MODES
  * @deprecated since 8.0.0
  * @category rendering
  * @see WRAP_MODE
+ * @advanced
  */
 export const WRAP_MODES = new Proxy(DEPRECATED_WRAP_MODES, {
     get(target, prop: keyof typeof DEPRECATED_WRAP_MODES)
@@ -202,6 +207,7 @@ export const WRAP_MODES = new Proxy(DEPRECATED_WRAP_MODES, {
  * - `nearest` is a pixelating scaling mode, which does not interpolate pixels.
  * - `linear` is a smooth scaling mode, which interpolates pixels for smoother results.
  * @category rendering
+ * @standard
  */
 export type SCALE_MODE = | 'nearest' | 'linear';
 
@@ -217,6 +223,7 @@ export enum DEPRECATED_SCALE_MODES
  * @deprecated since 8.0.0
  * @category rendering
  * @see SCALE_MODE
+ * @advanced
  */
 export const SCALE_MODES = new Proxy(DEPRECATED_SCALE_MODES, {
     get(target, prop: keyof typeof DEPRECATED_SCALE_MODES)
@@ -232,6 +239,7 @@ export const SCALE_MODES = new Proxy(DEPRECATED_SCALE_MODES, {
 /**
  * The compare function types used for comparing values in various operations.
  * @category rendering
+ * @advanced
  */
 export type COMPARE_FUNCTION =
     | 'never'

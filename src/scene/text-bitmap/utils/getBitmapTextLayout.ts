@@ -6,6 +6,7 @@ import type { AbstractBitmapFont } from '../AbstractBitmapFont';
  * This contains the width, height, scale, offsetY and lines of text.
  * Each line contains its width, character positions, characters, space width and spaces index.
  * @category text
+ * @internal
  */
 export interface BitmapTextLayoutData
 {

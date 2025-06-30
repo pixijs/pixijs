@@ -17,6 +17,7 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'color'
  * @category filters
+ * @noInheritDoc
  */
 export class ColorBlend extends BlendModeFilter
 {

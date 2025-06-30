@@ -61,7 +61,9 @@ extensions.add(...DefaultWebGLSystems, ...DefaultWebGLPipes, ...DefaultWebGLAdap
 
 /**
  * The default WebGL renderer, uses WebGL2 contexts.
- * @internal
+ * @category rendering
+ * @standard
+ * @interface
  */
 export type WebGLSystems = ExtractSystemTypes<typeof DefaultWebGLSystems>
 & PixiMixins.RendererSystems & PixiMixins.WebGLSystems;
@@ -75,6 +77,7 @@ export type WebGLPipes = ExtractSystemTypes<typeof DefaultWebGLPipes> & PixiMixi
 /**
  * Options for WebGLRenderer.
  * @category rendering
+ * @standard
  */
 export interface WebGLOptions
     extends
@@ -85,6 +88,7 @@ export interface WebGLOptions
 /**
  * The default WebGL renderer, uses WebGL2 contexts.
  * @category rendering
+ * @standard
  */
 export interface WebGLRenderer<T extends ICanvas = HTMLCanvasElement>
     extends AbstractRenderer<WebGLPipes, WebGLOptions, T>,
@@ -155,6 +159,7 @@ export interface WebGLRenderer<T extends ICanvas = HTMLCanvasElement>
  * @property {GlStencilSystem} stencil - StencilSystem instance.
  * @property {GlColorMaskSystem} colorMask - ColorMaskSystem instance.
  * @extends AbstractRenderer
+ * @standard
  */
 export class WebGLRenderer<T extends ICanvas = HTMLCanvasElement>
     extends AbstractRenderer<WebGLPipes, WebGLOptions, T>

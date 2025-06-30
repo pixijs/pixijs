@@ -27,6 +27,7 @@ const BYTES_PER_PIXEL = 4;
 /**
  * The system for managing textures in WebGL.
  * @category rendering
+ * @advanced
  */
 export class GlTextureSystem implements System, CanvasGenerator
 {

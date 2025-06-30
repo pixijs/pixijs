@@ -12,6 +12,7 @@ const validJSONMIME = 'application/json';
 /**
  * A simple loader plugin for loading json data
  * @category assets
+ * @advanced
  */
 export const loadJson = {
     extension: {

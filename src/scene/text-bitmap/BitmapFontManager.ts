@@ -15,48 +15,179 @@ import type { BitmapTextLayoutData } from './utils/getBitmapTextLayout';
 let fontCount = 0;
 
 /**
+ * The options for installing a new BitmapFont. Once installed, the font will be available
+ * for use in BitmapText objects through the fontFamily property of TextStyle.
+ * @example
+ * ```ts
+ * import { BitmapFont, BitmapText } from 'pixi.js';
  *
- * The options for installing a new BitmapFont. Once installed the font will be available for use in the BitmapText.
- * It can be accessed by the `fontFamily` property of the TextStyle.
+ * // Basic font installation
+ * BitmapFont.install({
+ *     name: 'BasicFont',
+ *     style: {
+ *         fontFamily: 'Arial',
+ *         fontSize: 24,
+ *         fill: '#ffffff'
+ *     }
+ * });
  *
- * Install a new BitmapFont will create the characters provided for the font and store them in the cache.
- * But don't worry, if a character is requested that hasn't been generated yet, it will be created on the fly.
+ * // Advanced font installation
+ * BitmapFont.install({
+ *     name: 'AdvancedFont',
+ *     style: {
+ *         fontFamily: 'Arial',
+ *         fontSize: 32,
+ *         fill: '#ff0000',
+ *         stroke: { color: '#000000', width: 2 }
+ *     },
+ *     // Include specific character ranges
+ *     chars: [
+ *         ['a', 'z'],           // lowercase letters
+ *         ['A', 'Z'],           // uppercase letters
+ *         ['0', '9'],           // numbers
+ *         '!@#$%^&*()_+-=[]{}' // symbols
+ *     ],
+ *     resolution: 2,            // High-DPI support
+ *     padding: 4,              // Glyph padding
+ *     skipKerning: false,      // Enable kerning
+ *     textureStyle: {
+ *         scaleMode: 'linear',
+ *         premultiplyAlpha: true
+ *     }
+ * });
+ *
+ * // Using the installed font
+ * const text = new BitmapText({
+ *     text: 'Hello World',
+ *     style: {
+ *         fontFamily: 'AdvancedFont',
+ *         fontSize: 48
+ *     }
+ * });
+ * ```
  * @category text
+ * @standard
  */
 export interface BitmapFontInstallOptions
 {
-    /** the name of the font, this will be the name you use in the fontFamily of text style to access this font */
-    name?: string;
     /**
-     * Characters included in the font set. You can also use ranges.
-     * For example, `[['a', 'z'], ['A', 'Z'], "!@#$%^&*()~{}[] "]`.
+     * The name of the font. This will be used as the fontFamily in text styles to access this font.
+     * Must be unique across all installed bitmap fonts.
+     * @example
+     * ```ts
+     * BitmapFont.install({
+     *     name: 'MyCustomFont',
+     *     style: { fontFamily: 'Arial' }
+     * });
+     * ```
+     */
+    name?: string;
+
+    /**
+     * Characters included in the font set. You can specify individual characters or ranges.
      * Don't forget to include spaces ' ' in your character set!
      * @default BitmapFont.ALPHANUMERIC
+     * @example
+     * ```ts
+     * // Different ways to specify characters
+     * BitmapFont.install({
+     *     name: 'RangeFont',
+     *     chars: [
+     *         ['a', 'z'],              // Range of characters
+     *         '0123456789',            // String of characters
+     *         [['0', '9'], ['A', 'Z']] // Multiple ranges
+     *     ]
+     * });
+     * ```
      */
     chars?: string | (string | string[])[];
+
     /**
-     * Render resolution for glyphs.
+     * Render resolution for glyphs. Higher values create sharper text at the cost of memory.
+     * Useful for supporting high-DPI displays.
      * @default 1
+     * @example
+     * ```ts
+     * BitmapFont.install({
+     *     name: 'HiDPIFont',
+     *     resolution: window.devicePixelRatio || 2
+     * });
+     * ```
      */
     resolution?: number;
+
     /**
-     * Padding between glyphs on texture atlas. Lower values could mean more visual artifacts
-     * and bleeding from other glyphs, larger values increase the space required on the texture.
+     * Padding between glyphs on texture atlas. Balances visual quality with texture space.
+     * - Lower values: More compact, but may have visual artifacts
+     * - Higher values: Better quality, but uses more texture space
      * @default 4
+     * @example
+     * ```ts
+     * BitmapFont.install({
+     *     name: 'PaddedFont',
+     *     padding: 8 // More padding for better quality
+     * });
+     * ```
      */
     padding?: number;
+
     /**
      * Skip generation of kerning information for the BitmapFont.
-     * If true, this could potentially increase the performance, but may impact the rendered text appearance.
+     * - true: Faster generation, but text may have inconsistent spacing
+     * - false: Better text appearance, but slower generation
      * @default false
+     * @example
+     * ```ts
+     * BitmapFont.install({
+     *     name: 'FastFont',
+     *     skipKerning: true // Prioritize performance
+     * });
+     * ```
      */
     skipKerning?: boolean;
-    /** Style options to render with BitmapFont. */
+
+    /**
+     * Style options to render the BitmapFont with.
+     * Supports all TextStyle properties including fill, stroke, and shadow effects.
+     * @example
+     * ```ts
+     * BitmapFont.install({
+     *     name: 'StyledFont',
+     *     style: {
+     *         fontFamily: 'Arial',
+     *         fontSize: 32,
+     *         fill: ['#ff0000', '#00ff00'], // Gradient
+     *         stroke: { color: '#000000', width: 2 },
+     *         dropShadow: {
+     *             color: '#000000',
+     *             blur: 2,
+     *             distance: 3
+     *         }
+     *     }
+     * });
+     * ```
+     */
     style?: TextStyle | TextStyleOptions;
-    /** Optional texture style to use when creating the font textures. */
+
+    /**
+     * Optional texture style to use when creating the font textures.
+     * Controls how the font textures are rendered and filtered.
+     * @example
+     * ```ts
+     * BitmapFont.install({
+     *     name: 'CrispFont',
+     *     textureStyle: {
+     *         scaleMode: 'nearest',
+     *         resolution: 2,
+     *         format: 'rgba8unorm'
+     *     }
+     * });
+     * ```
+     */
     textureStyle?: TextureStyle | TextureStyleOptions;
 }
 
+/** @advanced */
 class BitmapFontManagerClass
 {
     /**
@@ -289,6 +420,7 @@ class BitmapFontManagerClass
  * The BitmapFontManager is a helper that exists to install and uninstall fonts
  * into the cache for BitmapText objects.
  * @category text
+ * @advanced
  * @class
  * @example
  * import { BitmapFontManager, BitmapText } from 'pixi.js';

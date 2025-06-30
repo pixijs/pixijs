@@ -14,6 +14,7 @@ type LoadImageBitmapResult = {
     id: string,
 };
 
+/** @internal */
 class WorkerManagerClass
 {
     public worker: Worker;

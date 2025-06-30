@@ -3,6 +3,7 @@ import type { BindGroup } from './BindGroup';
 /**
  * an interface that allows a resource to be bound to the gpu in a bind group
  * @category rendering
+ * @advanced
  */
 export interface BindResource
 {

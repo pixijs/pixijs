@@ -25,6 +25,7 @@ extensions.handleByList(ExtensionType.TextureSource, sources);
  * The type of resource or options that can be used to create a texture source.
  * This includes ImageResource, TextureSourceOptions, BufferSourceOptions, and CanvasSourceOptions.
  * @category rendering
+ * @advanced
  */
 export type TextureResourceOrOptions =
   ImageResource
@@ -37,6 +38,7 @@ export type TextureResourceOrOptions =
  * @deprecated since v8.2.0
  * @see TextureSource.from
  * @category rendering
+ * @internal
  */
 export function autoDetectSource(options: TextureResourceOrOptions = {}): TextureSource
 {
@@ -110,6 +112,7 @@ export function resourceToTexture(
  * @param skipCache - Skip adding the texture to the cache
  * @returns The texture based on the Id provided
  * @category utils
+ * @internal
  */
 export function textureFrom(id: TextureSourceLike, skipCache = false): Texture
 {

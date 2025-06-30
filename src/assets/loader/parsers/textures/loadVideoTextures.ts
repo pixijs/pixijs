@@ -21,6 +21,7 @@ const validVideoMIMEs = validVideoExtensions.map((ext) => `video/${ext.substring
  * @param url - URL to check
  * @param crossorigin - Cross origin value to use
  * @category assets
+ * @advanced
  */
 export function crossOrigin(element: HTMLImageElement | HTMLVideoElement, url: string, crossorigin?: boolean | string): void
 {
@@ -117,6 +118,7 @@ export function determineCrossOrigin(url: string, loc: Location = globalThis.loc
  * });
  * ```
  * @category assets
+ * @advanced
  */
 export const loadVideoTextures = {
 

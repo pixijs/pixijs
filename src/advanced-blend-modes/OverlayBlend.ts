@@ -15,6 +15,7 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'overlay'
  * @category filters
+ * @noInheritDoc
  */
 export class OverlayBlend extends BlendModeFilter
 {

@@ -5,6 +5,7 @@ import type { EventMode, FederatedOptions } from './FederatedEventTarget';
  * A simplified shape of an interactive object for the `eventTarget` property of a {@link FederatedEvent}
  * @category events
  * @deprecated since 8.1.4
+ * @internal
  */
 export interface FederatedEventTarget extends EventEmitter, EventTarget, Required<FederatedOptions>
 {

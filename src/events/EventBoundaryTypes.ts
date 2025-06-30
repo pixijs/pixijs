@@ -22,6 +22,7 @@ import type { Container } from '../scene/container/Container';
  * @property {Record.<number, object>} clicksByButton - Holds clicking data for each button of the pointer.
  * @property {Container[]} overTargets - The Container propagation path over which the pointer is hovering.
  * @category events
+ * @internal
  */
 export type TrackingData = {
     pressTargetsByButton: {

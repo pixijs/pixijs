@@ -23,6 +23,7 @@ export interface BlurFilterPassOptions extends BlurFilterOptions
 /**
  * The BlurFilterPass applies a horizontal or vertical Gaussian blur to an object.
  * @category filters
+ * @advanced
  * @example
  * import { BlurFilterPass } from 'pixi.js';
  *

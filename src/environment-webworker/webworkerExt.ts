@@ -3,6 +3,7 @@ import { ExtensionType } from '../extensions/Extensions';
 /**
  * Extension for the webworker environment.
  * @category environment
+ * @internal
  */
 export const webworkerExt = {
     extension: {

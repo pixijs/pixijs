@@ -20,6 +20,7 @@ import type { DestroyOptions } from '../../container/destroyTypes';
  * This is the default shader used by `Mesh` when no shader is provided.
  * It is a simple shader that samples a texture and applies it to the geometry.
  * @category scene
+ * @advanced
  */
 export interface TextureShader extends Shader
 {
@@ -41,7 +42,12 @@ export interface TextureShader extends Shader
  * @category scene
  */
 
-/** @category scene */
+/**
+ * Options for creating a Mesh instance.
+ * @category scene
+ * @advanced
+ * @noInheritDoc
+ */
 export interface MeshOptions<
     GEOMETRY extends Geometry = MeshGeometry,
     SHADER extends Shader = TextureShader
@@ -65,7 +71,7 @@ export interface MeshOptions<
     /** Whether or not to round the x/y position. */
     roundPixels?: boolean;
 }
-// eslint-disable-next-line requireExport/require-export-jsdoc
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface Mesh extends PixiMixins.Mesh, ViewContainer<MeshGpuData> {}
 
 /**
@@ -82,12 +88,14 @@ export interface Mesh extends PixiMixins.Mesh, ViewContainer<MeshGpuData> {}
  *
  * Through a combination of the above elements you can render anything you want, 2D or 3D!
  * @category scene
+ * @advanced
  */
 export class Mesh<
     GEOMETRY extends Geometry = MeshGeometry,
     SHADER extends Shader = TextureShader
 > extends ViewContainer<MeshGpuData> implements View, Instruction
 {
+    /** @internal */
     public override readonly renderPipeId: string = 'mesh';
     public state: State;
 

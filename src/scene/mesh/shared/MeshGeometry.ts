@@ -9,6 +9,7 @@ import type { BatchMode } from '../../graphics/shared/GraphicsContext';
 /**
  * Options for the mesh geometry.
  * @category scene
+ * @advanced
  */
 export interface MeshGeometryOptions
 {
@@ -27,6 +28,7 @@ export interface MeshGeometryOptions
 /**
  * A geometry used to batch multiple meshes with the same texture.
  * @category scene
+ * @advanced
  */
 export class MeshGeometry extends Geometry
 {

@@ -26,6 +26,7 @@ const DEPTH_MASK = 5;
  * Each mesh rendered may require WebGL to be in a different state.
  * For example you may want different blend mode or to enable polygon offsets
  * @category rendering
+ * @advanced
  */
 export class State
 {

@@ -1,8 +1,50 @@
 import { FederatedMouseEvent } from './FederatedMouseEvent';
 
 /**
- * A {@link FederatedEvent} for pointer events.
+ * A specialized event class for pointer interactions in PixiJS applications.
+ * Extends {@link FederatedMouseEvent} to provide advanced pointer-specific features
+ * while maintaining compatibility with the DOM PointerEvent interface.
+ *
+ * Key features:
+ * - Supports multi-touch interactions
+ * - Provides pressure sensitivity
+ * - Handles stylus input
+ * - Tracks pointer dimensions
+ * - Supports tilt detection
+ * @example
+ * ```ts
+ * // Basic pointer event handling
+ * sprite.on('pointerdown', (event: FederatedPointerEvent) => {
+ *     // Access pointer information
+ *     console.log('Pointer ID:', event.pointerId);
+ *     console.log('Pointer Type:', event.pointerType);
+ *     console.log('Is Primary:', event.isPrimary);
+ *
+ *     // Get pressure and tilt data
+ *     console.log('Pressure:', event.pressure);
+ *     console.log('Tilt:', event.tiltX, event.tiltY);
+ *
+ *     // Access contact geometry
+ *     console.log('Size:', event.width, event.height);
+ * });
+ *
+ * // Handle stylus-specific features
+ * sprite.on('pointermove', (event: FederatedPointerEvent) => {
+ *     if (event.pointerType === 'pen') {
+ *         // Handle stylus tilt
+ *         const tiltAngle = Math.atan2(event.tiltY, event.tiltX);
+ *         console.log('Tilt angle:', tiltAngle);
+ *
+ *         // Use barrel button pressure
+ *         console.log('Tangential pressure:', event.tangentialPressure);
+ *     }
+ * });
+ * ```
+ * @see {@link FederatedMouseEvent} For base mouse event functionality
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent} DOM PointerEvent Interface
+ * @see {@link EventSystem} For the event management system
  * @category events
+ * @standard
  */
 export class FederatedPointerEvent extends FederatedMouseEvent implements PointerEvent
 {
@@ -89,7 +131,10 @@ export class FederatedPointerEvent extends FederatedMouseEvent implements Pointe
     /** This is the number of clicks that occurs in 200ms/click of each other. */
     public detail: number;
 
-    // Only included for completeness for now
+    /**
+     * Only included for completeness for now
+     * @ignore
+     */
     public getCoalescedEvents(): PointerEvent[]
     {
         if (this.type === 'pointermove' || this.type === 'mousemove' || this.type === 'touchmove')
@@ -100,7 +145,10 @@ export class FederatedPointerEvent extends FederatedMouseEvent implements Pointe
         return [];
     }
 
-    // Only included for completeness for now
+    /**
+     * Only included for completeness for now
+     * @ignore
+     */
     public getPredictedEvents(): PointerEvent[]
     {
         throw new Error('getPredictedEvents is not supported!');

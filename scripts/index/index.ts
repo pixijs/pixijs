@@ -23,7 +23,9 @@ directories.forEach((directory) =>
             // Ignore circular imports
             '**/index.ts',
             // Tests
-            '**/__tests__/**'
+            '**/__tests__/**',
+            // ignore documents
+            '**/_documents/*.md',
         ],
     });
 
@@ -45,7 +47,7 @@ directories.forEach((directory) =>
 
         shortName += ext.charAt(0).toUpperCase() + ext.slice(1);
 
-        return `export { default as ${shortName} } from './${file}';`;
+        return `/** @ignore */\nexport { default as ${shortName} } from './${file}';`;
     });
 
     // Combine the export statements into one file
@@ -53,6 +55,11 @@ directories.forEach((directory) =>
 
     // Write the export statements to the index.ts file
     const filePath = path.join(directory, 'index.ts');
+
+    if (!fs.existsSync(filePath))
+    {
+        return;
+    }
 
     const localFile = path.relative(process.cwd(), filePath);
     const command = process.argv[2];

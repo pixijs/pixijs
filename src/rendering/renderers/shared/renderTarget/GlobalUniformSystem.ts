@@ -17,6 +17,7 @@ import type { System } from '../system/System';
  * Type definition for the global uniforms used in the renderer.
  * This includes projection matrix, world transform matrix, world color, and resolution.
  * @category rendering
+ * @advanced
  */
 export type GlobalUniformGroup = UniformGroup<{
     uProjectionMatrix: { value: Matrix; type: 'mat3x3<f32>' }
@@ -29,6 +30,7 @@ export type GlobalUniformGroup = UniformGroup<{
  * Options for the global uniforms system.
  * This includes size, projection matrix, world transform matrix, world color, and offset.
  * @category rendering
+ * @advanced
  */
 export interface GlobalUniformOptions
 {
@@ -43,6 +45,7 @@ export interface GlobalUniformOptions
  * Data structure for the global uniforms used in the renderer.
  * This includes the projection matrix, world transform matrix, world color, resolution, and bind group.
  * @category rendering
+ * @advanced
  */
 export interface GlobalUniformData
 {
@@ -66,6 +69,7 @@ export interface GlobalUniformRenderer
 /**
  * System plugin to the renderer to manage global uniforms for the renderer.
  * @category rendering
+ * @advanced
  */
 export class GlobalUniformSystem implements System
 {

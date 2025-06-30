@@ -60,6 +60,7 @@ export interface MeshAdaptor
  * It manages the batching of meshes, updates their GPU data, and executes the rendering instructions.
  * It also handles the local uniforms for each mesh, such as transformation matrices and colors.
  * @category scene
+ * @internal
  */
 export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
 {

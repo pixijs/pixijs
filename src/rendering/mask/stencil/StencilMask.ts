@@ -15,6 +15,7 @@ import type { PoolItem } from '../../../utils/pool/Pool';
  * It is more performant than using a `Graphics` mask, but requires WebGL support.
  * It is also useful for masking with `Container` objects that have complex shapes.
  * @category rendering
+ * @advanced
  */
 export class StencilMask implements Effect, PoolItem
 {

@@ -1,17 +1,12 @@
-import { Color } from '../../../color/Color';
 import { ExtensionType } from '../../../extensions/Extensions';
 import { type Filter } from '../../../filters/Filter';
-import { type CanvasAndContext, CanvasPool } from '../../../rendering/renderers/shared/texture/CanvasPool';
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
 import { TextureStyle } from '../../../rendering/renderers/shared/texture/TextureStyle';
-import { getCanvasBoundingBox } from '../../../utils/canvas/getCanvasBoundingBox';
 import { deprecation } from '../../../utils/logging/deprecation';
 import { type CanvasTextOptions } from '../Text';
 import { TextStyle } from '../TextStyle';
 import { getPo2TextureFromSource } from '../utils/getPo2TextureFromSource';
-import { CanvasTextMetrics } from './CanvasTextMetrics';
-import { fontStringFromTextStyle } from './utils/fontStringFromTextStyle';
-import { getCanvasFillStyle } from './utils/getCanvasFillStyle';
+import { CanvasTextGenerator } from './CanvasTextGenerator';
 
 import type { System } from '../../../rendering/renderers/shared/system/System';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
@@ -20,6 +15,7 @@ import type { Renderer } from '../../../rendering/renderers/types';
 /**
  * System plugin to the renderer to manage canvas text.
  * @category rendering
+ * @advanced
  */
 export class CanvasTextSystem implements System
 {
@@ -40,6 +36,8 @@ export class CanvasTextSystem implements System
         this._renderer = _renderer;
     }
 
+    /** @deprecated since 8.0.0 */
+    public getTexture(text: string, resolution: number, style: TextStyle, textKey: string): Texture;
     /**
      * This is a function that will create a texture from a text string, style and resolution.
      * Useful if you want to make a texture of your text and use if for various other pixi things!
@@ -49,13 +47,11 @@ export class CanvasTextSystem implements System
      * @param options.resolution - the resolution of the texture
      * @returns the newly created texture
      */
-    /** @deprecated since 8.0.0 */
-    public getTexture(text: string, resolution: number, style: TextStyle, textKey: string): Texture;
     public getTexture(options: CanvasTextOptions): Texture;
     public getTexture(
         options: CanvasTextOptions | string,
-        resolution?: number,
-        style?: TextStyle,
+        _resolution?: number,
+        _style?: TextStyle,
         _textKey?: string
     ): Texture
     {
@@ -67,8 +63,8 @@ export class CanvasTextSystem implements System
 
             options = {
                 text: options,
-                style,
-                resolution,
+                style: _style,
+                resolution: _resolution,
             };
         }
 
@@ -87,59 +83,25 @@ export class CanvasTextSystem implements System
             options.text = options.text.toString();
         }
 
-        const { texture, canvasAndContext } = this.createTextureAndCanvas(
-            options as { text: string, style: TextStyle, resolution?: number, textureStyle?: TextureStyle }
-        );
-
-        CanvasPool.returnCanvasAndContext(canvasAndContext);
-
-        return texture;
-    }
-
-    /**
-     * @param options - The options of the text that will be used to generate the texture.
-     * @param options.text - the text to render
-     * @param options.style - the style of the text
-     * @param options.resolution - the resolution of the texture
-     * @param options.textureStyle - the style of the texture
-     * @internal
-     */
-    protected createTextureAndCanvas(options: {
-        text: string,
-        style: TextStyle,
-        resolution?: number,
-        textureStyle?: TextureStyle
-    })
-    {
         const { text, style, textureStyle } = options;
-
-        const padding = style._getFinalPadding();
 
         const resolution = options.resolution ?? this._renderer.resolution;
 
-        // create a canvas with the word hello on it
-        const measured = CanvasTextMetrics.measureText(text || ' ', style);
+        const { frame, canvasAndContext } = CanvasTextGenerator.getCanvasAndContext({
+            text: text as string,
+            style: style as TextStyle,
+            resolution,
+        });
 
-        const width = Math.ceil(Math.ceil((Math.max(1, measured.width) + (padding * 2))) * resolution);
-        const height = Math.ceil(Math.ceil((Math.max(1, measured.height) + (padding * 2))) * resolution);
+        const texture = getPo2TextureFromSource(canvasAndContext.canvas, frame.width, frame.height, resolution);
 
-        const canvasAndContext = CanvasPool.getOptimalCanvasAndContext(width, height);
-
-        // create a texture from the canvas
-        const { canvas } = canvasAndContext;
-
-        this._renderTextToCanvas(text, style, padding, resolution, canvasAndContext);
-
-        const texture = getPo2TextureFromSource(canvas, width, height, resolution);
-
-        if (textureStyle) texture.source.style = textureStyle;
+        if (textureStyle) texture.source.style = textureStyle as TextureStyle;
 
         if (style.trim)
         {
-            const trimmed = getCanvasBoundingBox(canvas, resolution);
-
-            texture.frame.copyFrom(trimmed);
-
+            // reapply the padding to the frame
+            frame.pad(style.padding);
+            texture.frame.copyFrom(frame);
             texture.updateUvs();
         }
 
@@ -152,13 +114,17 @@ export class CanvasTextSystem implements System
             // return the original texture to the pool so we can reuse the next frame
             this.returnTexture(texture);
 
+            CanvasTextGenerator.returnCanvasAndContext(canvasAndContext);
+
             // return the new texture with the filters applied
-            return { texture: filteredTexture, canvasAndContext };
+            return filteredTexture;
         }
 
         this._renderer.texture.initSource(texture._source);
 
-        return { texture, canvasAndContext };
+        CanvasTextGenerator.returnCanvasAndContext(canvasAndContext);
+
+        return texture;
     }
 
     /**
@@ -179,270 +145,16 @@ export class CanvasTextSystem implements System
 
     /**
      * Renders text to its canvas, and updates its texture.
-     * @param text - The text to render
-     * @param style - The style of the text
-     * @param resolution - The resolution of the text
-     * @param canvasAndContext - The canvas and context to render the text to
-     * @param padding - The padding of the text
-     * @deprecated since 8.8.0
+     * @deprecated since 8.10.0
      */
-    public renderTextToCanvas(
-        text: string,
-        style: TextStyle,
-        resolution: number,
-        canvasAndContext: CanvasAndContext,
-        padding: number,
-    ): void
+    public renderTextToCanvas(): void
     {
-        deprecation('8.8.0', 'CanvasTextSystem.renderTextToCanvas: is now private');
-
-        this._renderTextToCanvas(text, style, padding, resolution, canvasAndContext);
-    }
-
-    /**
-     * Renders text to its canvas, and updates its texture.
-     * @param text - The text to render
-     * @param style - The style of the text
-     * @param padding - The padding of the text
-     * @param resolution - The resolution of the text
-     * @param canvasAndContext - The canvas and context to render the text to
-     */
-    private _renderTextToCanvas(
-        text: string,
-        style: TextStyle,
-        padding: number,
-        resolution: number,
-        canvasAndContext: CanvasAndContext
-    ): void
-    {
-        const { canvas, context } = canvasAndContext;
-
-        const font = fontStringFromTextStyle(style);
-
-        const measured = CanvasTextMetrics.measureText(text || ' ', style);// , canvas);
-        const lines = measured.lines;
-        const lineHeight = measured.lineHeight;
-        const lineWidths = measured.lineWidths;
-        const maxLineWidth = measured.maxLineWidth;
-        const fontProperties = measured.fontProperties;
-
-        const height = canvas.height;
-
-        context.resetTransform();
-        context.scale(resolution, resolution);
-        context.textBaseline = style.textBaseline;
-
-        // set stroke styles..
-
-        if (style._stroke?.width)
-        {
-            const strokeStyle = style._stroke;
-
-            context.lineWidth = strokeStyle.width;
-
-            context.miterLimit = strokeStyle.miterLimit;
-            context.lineJoin = strokeStyle.join;
-            context.lineCap = strokeStyle.cap;
-        }
-
-        // return;
-        context.font = font;
-
-        let linePositionX: number;
-        let linePositionY: number;
-
-        // require 2 passes if a shadow; the first to draw the drop shadow, the second to draw the text
-        const passesCount = style.dropShadow ? 2 : 1;
-
-        // For v4, we drew text at the colours of the drop shadow underneath the normal text. This gave the correct zIndex,
-        // but features such as alpha and shadowblur did not look right at all, since we were using actual text as a shadow.
-        //
-        // For v5.0.0, we moved over to just use the canvas API for drop shadows, which made them look much nicer and more
-        // visually please, but now because the stroke is drawn and then the fill, drop shadows would appear on both the fill
-        // and the stroke; and fill drop shadows would appear over the top of the stroke.
-        //
-        // For v5.1.1, the new route is to revert to v4 style of drawing text first to get the drop shadows underneath normal
-        // text, but instead drawing text in the correct location, we'll draw it off screen (-paddingY), and then adjust the
-        // drop shadow so only that appears on screen (+paddingY). Now we'll have the correct draw order of the shadow
-        // beneath the text, whilst also having the proper text shadow styling.
-        for (let i = 0; i < passesCount; ++i)
-        {
-            const isShadowPass = style.dropShadow && i === 0;
-            // we only want the drop shadow, so put text way off-screen
-            const dsOffsetText = isShadowPass ? Math.ceil(Math.max(1, height) + (padding * 2)) : 0;
-            const dsOffsetShadow = dsOffsetText * resolution;
-
-            if (isShadowPass)
-            {
-                // On Safari, text with gradient and drop shadows together do not position correctly
-                // if the scale of the canvas is not 1: https://bugs.webkit.org/show_bug.cgi?id=197689
-                // Therefore we'll set the styles to be a plain black whilst generating this drop shadow
-                context.fillStyle = 'black';
-                context.strokeStyle = 'black';
-
-                const shadowOptions = style.dropShadow;
-
-                const dropShadowColor = shadowOptions.color;
-                const dropShadowAlpha = shadowOptions.alpha;
-
-                context.shadowColor = Color.shared
-                    .setValue(dropShadowColor)
-                    .setAlpha(dropShadowAlpha)
-                    .toRgbaString();
-
-                const dropShadowBlur = shadowOptions.blur * resolution;
-                const dropShadowDistance = shadowOptions.distance * resolution;
-
-                context.shadowBlur = dropShadowBlur;
-                context.shadowOffsetX = Math.cos(shadowOptions.angle) * dropShadowDistance;
-                context.shadowOffsetY = (Math.sin(shadowOptions.angle) * dropShadowDistance) + dsOffsetShadow;
-            }
-            else
-            {
-                context.fillStyle = style._fill ? getCanvasFillStyle(style._fill, context, measured) : null;
-
-                if (style._stroke?.width)
-                {
-                    const padding = style._stroke.width * style._stroke.alignment;
-
-                    context.strokeStyle = getCanvasFillStyle(style._stroke, context, measured, padding);
-                }
-
-                context.shadowColor = 'black';
-            }
-
-            let linePositionYShift = (lineHeight - fontProperties.fontSize) / 2;
-
-            if (lineHeight - fontProperties.fontSize < 0)
-            {
-                linePositionYShift = 0;
-            }
-
-            const strokeWidth = style._stroke?.width ?? 0;
-
-            // draw lines line by line
-            for (let i = 0; i < lines.length; i++)
-            {
-                linePositionX = strokeWidth / 2;
-                linePositionY = ((strokeWidth / 2) + (i * lineHeight)) + fontProperties.ascent + linePositionYShift;
-
-                if (style.align === 'right')
-                {
-                    linePositionX += maxLineWidth - lineWidths[i];
-                }
-                else if (style.align === 'center')
-                {
-                    linePositionX += (maxLineWidth - lineWidths[i]) / 2;
-                }
-
-                if (style._stroke?.width)
-                {
-                    this._drawLetterSpacing(
-                        lines[i],
-                        style,
-                        canvasAndContext,
-                        linePositionX + padding,
-                        linePositionY + padding - dsOffsetText,
-                        true
-                    );
-                }
-
-                if (style._fill !== undefined)
-                {
-                    this._drawLetterSpacing(
-                        lines[i],
-                        style,
-                        canvasAndContext,
-                        linePositionX + padding,
-                        linePositionY + padding - dsOffsetText
-                    );
-                }
-            }
-        }
-    }
-
-    /**
-     * Render the text with letter-spacing.
-     * @param text - The text to draw
-     * @param style
-     * @param canvasAndContext
-     * @param x - Horizontal position to draw the text
-     * @param y - Vertical position to draw the text
-     * @param isStroke - Is this drawing for the outside stroke of the
-     *  text? If not, it's for the inside fill
-     */
-    private _drawLetterSpacing(
-        text: string,
-        style: TextStyle,
-        canvasAndContext: CanvasAndContext,
-        x: number, y: number,
-        isStroke = false
-    ): void
-    {
-        const { context } = canvasAndContext;
-
-        // letterSpacing of 0 means normal
-        const letterSpacing = style.letterSpacing;
-
-        let useExperimentalLetterSpacing = false;
-
-        if (CanvasTextMetrics.experimentalLetterSpacingSupported)
-        {
-            if (CanvasTextMetrics.experimentalLetterSpacing)
-            {
-                context.letterSpacing = `${letterSpacing}px`;
-                context.textLetterSpacing = `${letterSpacing}px`;
-                useExperimentalLetterSpacing = true;
-            }
-            else
-            {
-                context.letterSpacing = '0px';
-                context.textLetterSpacing = '0px';
-            }
-        }
-
-        if (letterSpacing === 0 || useExperimentalLetterSpacing)
-        {
-            if (isStroke)
-            {
-                context.strokeText(text, x, y);
-            }
-            else
-            {
-                context.fillText(text, x, y);
-            }
-
-            return;
-        }
-
-        let currentPosition = x;
-
-        const stringArray = CanvasTextMetrics.graphemeSegmenter(text);
-        let previousWidth = context.measureText(text).width;
-        let currentWidth = 0;
-
-        for (let i = 0; i < stringArray.length; ++i)
-        {
-            const currentChar = stringArray[i];
-
-            if (isStroke)
-            {
-                context.strokeText(currentChar, currentPosition, y);
-            }
-            else
-            {
-                context.fillText(currentChar, currentPosition, y);
-            }
-            let textStr = '';
-
-            for (let j = i + 1; j < stringArray.length; ++j)
-            {
-                textStr += stringArray[j];
-            }
-            currentWidth = context.measureText(textStr).width;
-            currentPosition += previousWidth - currentWidth + letterSpacing;
-            previousWidth = currentWidth;
-        }
+        // #if _DEBUG
+        deprecation(
+            '8.10.0',
+            'CanvasTextSystem.renderTextToCanvas: no longer supported, use CanvasTextSystem.getTexture instead'
+        );
+        // #endif
     }
 
     /**

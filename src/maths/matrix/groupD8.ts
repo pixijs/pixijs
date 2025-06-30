@@ -96,6 +96,7 @@ type GD8Symmetry = number;
  * @author Ivan: ivanpopelyshev
  * @groupDescription groupD8
  * @category maths
+ * @advanced
  */
 export const groupD8 = {
     /**

@@ -33,6 +33,7 @@ interface IIntl
  * @property {number} ascent - Font ascent
  * @property {number} descent - Font descent
  * @property {number} fontSize - Font size
+ * @advanced
  */
 export interface FontMetrics
 {
@@ -62,6 +63,7 @@ const contextSettings: ICanvasRenderingContext2DSettings = {
  * });
  * const textMetrics = CanvasTextMetrics.measureText('Your text', style);
  * @category text
+ * @advanced
  */
 export class CanvasTextMetrics
 {

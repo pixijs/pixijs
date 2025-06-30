@@ -12,6 +12,7 @@ const tempMatrix = new Matrix();
  * Interface for the GetFastGlobalBoundsMixin, which provides methods to compute
  * an approximate global bounding box for a container and its children.
  * @category scene
+ * @advanced
  */
 export interface GetFastGlobalBoundsMixin
 {
@@ -25,6 +26,7 @@ export interface GetFastGlobalBoundsMixin
      * @param {boolean} [factorRenderLayers] - A flag indicating whether to consider render layers in the calculation.
      * @param {Bounds} [bounds] - The output bounds object to store the result. If not provided, a new one is created.
      * @returns {Bounds} The computed bounds.
+     * @advanced
      */
     getFastGlobalBounds(factorRenderLayers?: boolean, bounds?: Bounds): Bounds;
 

@@ -26,6 +26,7 @@ const validImageMIMEs = [
  * Configuration for the [loadTextures]{@link loadTextures} plugin.
  * @see loadTextures
  * @category assets
+ * @advanced
  */
 export interface LoadTextureConfig
 {
@@ -96,6 +97,7 @@ export async function loadImageBitmap(url: string, asset?: ResolvedAsset<Texture
  * };
  * ```
  * @category assets
+ * @advanced
  */
 export const loadTextures: LoaderParser<Texture, TextureSourceOptions, LoadTextureConfig> = {
 

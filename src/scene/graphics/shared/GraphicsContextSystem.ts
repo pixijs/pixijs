@@ -75,6 +75,7 @@ export class GraphicsContextRenderData
 /**
  * Options for the GraphicsContextSystem.
  * @category rendering
+ * @advanced
  */
 export interface GraphicsContextSystemOptions
 {
@@ -85,6 +86,7 @@ export interface GraphicsContextSystemOptions
 /**
  * A system that manages the rendering of GraphicsContexts.
  * @category rendering
+ * @advanced
  */
 export class GraphicsContextSystem implements System<GraphicsContextSystemOptions>
 {
@@ -131,12 +133,23 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
             ?? GraphicsContextSystem.defaultOptions.bezierSmoothness;
     }
 
+    /**
+     * Returns the render data for a given GraphicsContext.
+     * @param context - The GraphicsContext to get the render data for.
+     * @internal
+     */
     public getContextRenderData(context: GraphicsContext): GraphicsContextRenderData
     {
         return this._graphicsDataContextHash[context.uid] || this._initContextRenderData(context);
     }
 
-    // Context management functions
+    /**
+     * Updates the GPU context for a given GraphicsContext.
+     * If the context is dirty, it will rebuild the batches and geometry data.
+     * @param context - The GraphicsContext to update.
+     * @returns The updated GpuGraphicsContext.
+     * @internal
+     */
     public updateGpuContext(context: GraphicsContext)
     {
         let gpuContext: GpuGraphicsContext = this._gpuContextHash[context.uid]
@@ -177,6 +190,13 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
         return gpuContext;
     }
 
+    /**
+     * Returns the GpuGraphicsContext for a given GraphicsContext.
+     * If it does not exist, it will initialize a new one.
+     * @param context - The GraphicsContext to get the GpuGraphicsContext for.
+     * @returns The GpuGraphicsContext for the given GraphicsContext.
+     * @internal
+     */
     public getGpuContext(context: GraphicsContext): GpuGraphicsContext
     {
         return this._gpuContextHash[context.uid] || this._initContext(context);

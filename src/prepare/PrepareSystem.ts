@@ -33,6 +33,7 @@ import type { System } from '../rendering/renderers/shared/system/System';
  *     app.start();
  * });
  * @category rendering
+ * @advanced
  */
 export class PrepareSystem extends PrepareUpload implements System
 {

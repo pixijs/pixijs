@@ -8,16 +8,37 @@ import type { FederatedPointerEvent } from './FederatedPointerEvent';
 import type { FederatedWheelEvent } from './FederatedWheelEvent';
 
 /**
- * The type of cursor to use when the mouse pointer is hovering over.
- * @see https://developer.mozilla.org/en-US/docs/Web/CSS/cursor
+ * The type of cursor to use when the mouse pointer is hovering over an interactive element.
+ * Accepts any valid CSS cursor value.
+ * @example
+ * ```ts
+ * // Basic cursor types
+ * sprite.cursor = 'pointer';    // Hand cursor for clickable elements
+ * sprite.cursor = 'grab';       // Grab cursor for draggable elements
+ * sprite.cursor = 'crosshair';  // Precise cursor for selection
  *
- * Can be any valid CSS cursor value:
- * `auto`, `default`, `none`, `context-menu`, `help`, `pointer`, `progress`,
- * `wait`, `cell`, `crosshair`, `text`, `verticaltext`, `alias`, `copy`, `move`,
- * `nodrop`, `notallowed`, `eresize`, `nresize`, `neresize`, `nwresize`, `sresize`,
- *  `seresize`, `swresize`, `wresize`, `nsresize`, `ewresize`, `neswresize`, `colresize`,
- *  `nwseresize`, `rowresize`, `allscroll`, `zoomin`, `zoomout`, `grab`, `grabbing`
+ * // Direction cursors
+ * sprite.cursor = 'n-resize';   // North resize
+ * sprite.cursor = 'ew-resize';  // East-west resize
+ * sprite.cursor = 'nesw-resize';// Northeast-southwest resize
+ *
+ * // Custom cursor with fallback
+ * sprite.cursor = 'url("custom.png"), auto';
+ * ```
+ *
+ * Common cursor values:
+ * - Basic: `auto`, `default`, `none`, `pointer`, `wait`
+ * - Text: `text`, `vertical-text`
+ * - Links: `alias`, `copy`, `move`
+ * - Selection: `cell`, `crosshair`
+ * - Drag: `grab`, `grabbing`
+ * - Disabled: `not-allowed`, `no-drop`
+ * - Resize: `n-resize`, `e-resize`, `s-resize`, `w-resize`
+ * - Bidirectional: `ns-resize`, `ew-resize`, `nesw-resize`, `nwse-resize`
+ * - Other: `help`, `progress`
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/CSS/cursor} MDN Cursor Documentation
  * @category events
+ * @standard
  */
 export type Cursor = 'auto'
 | 'default'
@@ -57,14 +78,41 @@ export type Cursor = 'auto'
 | 'grabbing';
 
 /**
- * The hit area specifies the area for which pointer events should be captured by this event target.
+ * Interface defining a hit area for pointer interaction. The hit area specifies
+ * the region in which pointer events should be captured by a display object.
+ * @example
+ * ```ts
+ * // Create a rectangular hit area
+ * sprite.hitArea = new Rectangle(0, 0, 100, 100);
+ *
+ * // Create a circular hit area
+ * sprite.hitArea = new Circle(50, 50, 50);
+ *
+ * // Custom hit area implementation
+ * sprite.hitArea = {
+ *     contains(x: number, y: number) {
+ *         // Custom hit testing logic
+ *         return x >= 0 && x <= 100 && y >= 0 && y <= 100;
+ *     }
+ * };
+ * ```
+ * @remarks
+ * - Hit areas override the default bounds-based hit testing
+ * - Can improve performance by simplifying hit tests
+ * - Useful for irregular shapes or precise interaction areas
+ * - Common implementations include Rectangle, Circle, Polygon
+ * @see {@link Container.eventMode} For enabling interactivity
+ * @see {@link Container.interactive} For backwards compatibility
  * @category events
+ * @standard
  */
 export interface IHitArea
 {
     /**
-     * Checks if the x and y coordinates given are contained within this hit area.
-     * @returns Whether the x and y coordinates are contained within this hit area.
+     * Checks if the given coordinates are inside this hit area.
+     * @param {number} x - The x coordinate to check
+     * @param {number} y - The y coordinate to check
+     * @returns True if the coordinates are inside the hit area
      */
     contains(x: number, y: number): boolean;
 }
@@ -72,405 +120,949 @@ export interface IHitArea
 /**
  * Function type for handlers, e.g., onclick
  * @category events
+ * @advanced
  */
 export type FederatedEventHandler<T = FederatedPointerEvent> = (event: T) => void;
 
 /**
- * The type of interaction a Container can be.
- * This is the {@link Container#eventMode|Container.eventMode} property of any {@link Container}.
+ * The type of interaction behavior for a Container. This is set via the {@link Container#eventMode} property.
+ * @example
+ * ```ts
+ * // Basic event mode setup
+ * const sprite = new Sprite(texture);
+ * sprite.eventMode = 'static';    // Enable standard interaction
+ * sprite.on('pointerdown', () => { console.log('clicked!'); });
  *
- * Can be one of the following:
- * - `'none'`: Ignores all interaction events, even on its children.
- * - `'passive'`: **(default)** Does not emit events and ignores all hit testing on itself and non-interactive children.
+ * // Different event modes
+ * sprite.eventMode = 'none';      // Disable all interaction
+ * sprite.eventMode = 'passive';   // Only allow interaction on children
+ * sprite.eventMode = 'auto';      // Like DOM pointer-events: auto
+ * sprite.eventMode = 'dynamic';   // For moving/animated objects
+ * ```
+ *
+ * Available modes:
+ * - `'none'`: Ignores all interaction events, even on its children
+ * - `'passive'`: **(default)** Does not emit events and ignores hit testing on itself and non-interactive children.
  * Interactive children will still emit events.
  * - `'auto'`: Does not emit events but is hit tested if parent is interactive. Same as `interactive = false` in v7
- * - `'static'`: Emit events and is hit tested. Same as `interaction = true` in v7
- * - `'dynamic'`: Emits events and is hit tested but will also receive mock interaction events fired from a ticker to
- * allow for interaction when the mouse isn't moving
+ * - `'static'`: Emit events and is hit tested. Same as `interactive = true` in v7
+ * - `'dynamic'`: Emits events and is hit tested but will also receive mock interaction events fired from
+ * a ticker to allow for interaction when the mouse isn't moving
  *
- * `none` and `passive` are useful for optimizing interaction events on objects as it reduces the number of hit tests
- * PixiJS has to do. `auto` is useful for when you want to recreate how the DOM handles interaction events with
- * `pointer-events: auto`.
+ * Performance tips:
+ * - Use `'none'` for pure visual elements
+ * - Use `'passive'` for containers with some interactive children
+ * - Use `'static'` for standard buttons/controls
+ * - Use `'dynamic'` only for moving/animated interactive elements
  * @since 7.2.0
  * @category events
+ * @standard
  */
 export type EventMode = 'none' | 'passive' | 'auto' | 'static' | 'dynamic';
 
 /**
- * The properties available for any interactive object.
+ * The properties available for any interactive object. This interface defines the core interaction
+ * properties and event handlers that can be set on any Container in PixiJS.
+ * @example
+ * ```ts
+ * // Basic interactive setup
+ * const sprite = new Sprite(texture);
+ * sprite.eventMode = 'static';
+ * sprite.cursor = 'pointer';
+ *
+ * // Using event handlers
+ * sprite.on('click', (event) => console.log('Sprite clicked!', event));
+ * sprite.on('pointerdown', (event) => console.log('Pointer down!', event));
+ *
+ * // Using property-based event handlers
+ * sprite.onclick = (event) => console.log('Clicked!');
+ * sprite.onpointerenter = () => sprite.alpha = 0.7;
+ * sprite.onpointerleave = () => sprite.alpha = 1.0;
+ *
+ * // Custom hit area
+ * sprite.hitArea = new Rectangle(0, 0, 100, 100);
+ * ```
+ *
+ * Core Properties:
+ * - `eventMode`: Controls how the object handles interaction events
+ * - `cursor`: Sets the mouse cursor when hovering
+ * - `hitArea`: Defines custom hit testing area
+ * - `interactive`: Alias for `eventMode` to enable interaction with "static" or "passive" modes
+ * - `interactiveChildren`: Controls hit testing on children
+ *
+ * Event Handlers:
+ * - Mouse: click, mousedown, mouseup, mousemove, mouseenter, mouseleave
+ * - Touch: touchstart, touchend, touchmove, tap
+ * - Pointer: pointerdown, pointerup, pointermove, pointerover
+ * - Global: globalpointermove, globalmousemove, globaltouchmove
+ * > [!IMPORTANT] Global events are fired when the pointer moves even if it is outside the bounds of the Container.
+ * @see {@link EventMode} For interaction mode details
+ * @see {@link Cursor} For cursor style options
+ * @see {@link IHitArea} For hit area implementation
  * @category events
+ * @standard
  */
 export interface FederatedOptions
 {
-    /** The cursor preferred when the mouse pointer is hovering over. */
+    /**
+     * The cursor style to display when the mouse pointer is hovering over the object.
+     * Accepts any valid CSS cursor value or custom cursor URL.
+     * @example
+     * ```ts
+     * // Common cursor types
+     * sprite.cursor = 'pointer';     // Hand cursor for clickable elements
+     * sprite.cursor = 'grab';        // Grab cursor for draggable elements
+     * sprite.cursor = 'crosshair';   // Precise cursor for selection
+     * sprite.cursor = 'not-allowed'; // Indicate disabled state
+     *
+     * // Direction cursors
+     * sprite.cursor = 'n-resize';    // North resize
+     * sprite.cursor = 'ew-resize';   // East-west resize
+     * sprite.cursor = 'nesw-resize'; // Northeast-southwest resize
+     *
+     * // Custom cursor with fallback
+     * sprite.cursor = 'url("custom.png"), auto';
+     * sprite.cursor = 'url("cursor.cur") 2 2, pointer'; // With hotspot offset
+     * ```
+     * @type {Cursor | string}
+     * @default undefined
+     * @see {@link EventSystem.cursorStyles} For setting global cursor styles
+     * @see {@link https://developer.mozilla.org/en-US/docs/Web/CSS/cursor} MDN Cursor Documentation
+     */
     cursor?: Cursor | (string & {});
     /**
-     * Enable interaction events for the Container. Touch, pointer and mouse.
-     * There are 5 types of interaction settings:
-     * - `'none'`: Ignores all interaction events, even on its children.
-     * - `'passive'`: **(default)** Does not emit events and ignores all hit testing on itself and non-interactive children.
-     * Interactive children will still emit events.
-     * - `'auto'`: Does not emit events but is hit tested if parent is interactive. Same as `interactive = false` in v7
-     * - `'static'`: Emit events and is hit tested. Same as `interaction = true` in v7
-     * - `'dynamic'`: Emits events and is hit tested but will also receive mock interaction events fired from a ticker to
-     * allow for interaction when the mouse isn't moving
+     * Enable interaction events for the Container. Touch, pointer and mouse events are supported.
      * @example
-     * import { Sprite } from 'pixi.js';
-     *
+     * ```ts
      * const sprite = new Sprite(texture);
+     *
+     * // Enable standard interaction (like buttons)
      * sprite.eventMode = 'static';
-     * sprite.on('tap', (event) => {
-     *     // Handle event
-     * });
+     * sprite.on('pointerdown', () => console.log('clicked!'));
+     *
+     * // Enable for moving objects
+     * sprite.eventMode = 'dynamic';
+     * sprite.on('pointermove', () => updatePosition());
+     *
+     * // Disable all interaction
+     * sprite.eventMode = 'none';
+     *
+     * // Only allow child interactions
+     * sprite.eventMode = 'passive';
+     * ```
+     *
+     * Available modes:
+     *
+     * - `'none'`: Ignores all interaction events, even on its children. Best for pure visuals.
+     * - `'passive'`: **(default)** Does not emit events and ignores hit testing on itself and non-interactive
+     * children. Interactive children will still emit events.
+     * - `'auto'`: Does not emit events but is hit tested if parent is interactive. Same as `interactive = false` in v7.
+     * - `'static'`: Emit events and is hit tested. Same as `interactive = true` in v7. Best for buttons/UI.
+     * - `'dynamic'`: Like static but also receives synthetic events when pointer is idle. Best for moving objects.
+     *
+     * Performance tips:
+     * - Use `'none'` for pure visual elements
+     * - Use `'passive'` for containers with some interactive children
+     * - Use `'static'` for standard UI elements
+     * - Use `'dynamic'` only when needed for moving/animated elements
      * @since 7.2.0
      */
     eventMode?: EventMode;
-    /** Whether this event target should fire UI events. */
+    /**
+     * Whether this object should fire UI events. This is an alias for `eventMode` set to `'static'` or `'passive'`.
+     * Setting this to true will enable interaction events like `pointerdown`, `click`, etc.
+     * Setting it to false will disable all interaction events on this object.
+     * @see {@link Container.eventMode}
+     * @example
+     * ```ts
+     * // Enable interaction events
+     * sprite.interactive = true;  // Sets eventMode = 'static'
+     * sprite.interactive = false; // Sets eventMode = 'passive'
+     * ```
+     */
     interactive?: boolean
     /**
-     * Determines if the children to the container can be clicked/touched
-     * Setting this to false allows PixiJS to bypass a recursive `hitTest` function
+     * Controls whether children of this container can receive pointer events.
+     *
+     * Setting this to false allows PixiJS to skip hit testing on all children,
+     * improving performance for containers with many non-interactive children.
+     * @default true
+     * @example
+     * ```ts
+     * // Container with many visual-only children
+     * const container = new Container();
+     * container.interactiveChildren = false; // Skip hit testing children
+     *
+     * // Menu with interactive buttons
+     * const menu = new Container();
+     * menu.interactiveChildren = true; // Test all children
+     * menu.addChild(button1, button2, button3);
+     *
+     * // Performance optimization
+     * background.interactiveChildren = false;
+     * foreground.interactiveChildren = true;
+     * ```
      */
     interactiveChildren?: boolean;
     /**
-     * Interaction shape. Children will be hit first, then this shape will be checked.
-     * Setting this will cause this shape to be checked in hit tests rather than the container's bounds.
+     * Defines a custom hit area for pointer interaction testing. When set, this shape will be used
+     * for hit testing instead of the container's standard bounds.
      * @example
-     * import { Rectangle, Sprite } from 'pixi.js';
+     * ```ts
+     * import { Rectangle, Circle, Sprite } from 'pixi.js';
      *
-     * const sprite = new Sprite(texture);
-     * sprite.interactive = true;
-     * sprite.hitArea = new Rectangle(0, 0, 100, 100);
+     * // Rectangular hit area
+     * const button = new Sprite(texture);
+     * button.eventMode = 'static';
+     * button.hitArea = new Rectangle(0, 0, 100, 50);
+     *
+     * // Circular hit area
+     * const icon = new Sprite(texture);
+     * icon.eventMode = 'static';
+     * icon.hitArea = new Circle(32, 32, 32);
+     *
+     * // Custom hit area with polygon
+     * const custom = new Sprite(texture);
+     * custom.eventMode = 'static';
+     * custom.hitArea = new Polygon([0,0, 100,0, 100,100, 0,100]);
+     *
+     * // Custom hit testing logic
+     * sprite.hitArea = {
+     *     contains(x: number, y: number) {
+     *         // Custom collision detection
+     *         return x >= 0 && x <= width && y >= 0 && y <= height;
+     *     }
+     * };
+     * ```
+     * @remarks
+     * - Takes precedence over the container's bounds for hit testing
+     * - Can improve performance by simplifying collision checks
+     * - Useful for irregular shapes or precise click areas
      */
     hitArea?: IHitArea | null;
 
     /**
-     * Property-based event handler for the `click` event.#
-     * @default null
+     * Property-based event handler for the `click` event.
+     * Fired when a pointer device (mouse, touch, etc.) completes a click action.
      * @example
-     * this.onclick = (event) => {
-     *  //some function here that happens on click
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('click', (event) => {
+     *    console.log('Sprite clicked at:', event.global.x, event.global.y);
+     * });
+     * // Using property-based handler
+     * sprite.onclick = (event) => {
+     *     console.log('Clicked at:', event.global.x, event.global.y);
+     * };
+     * ```
+     * @default null
      */
     onclick?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `mousedown` event.#
-     * @default null
+     * Property-based event handler for the `mousedown` event.
+     * Fired when a mouse button is pressed while the pointer is over the object.
      * @example
-     * this.onmousedown = (event) => {
-     *  //some function here that happens on mousedown
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('mousedown', (event) => {
+     *    sprite.alpha = 0.5; // Visual feedback
+     *    console.log('Mouse button:', event.button);
+     * });
+     * // Using property-based handler
+     * sprite.onmousedown = (event) => {
+     *     sprite.alpha = 0.5; // Visual feedback
+     *     console.log('Mouse button:', event.button);
+     * };
+     * ```
+     * @default null
      */
     onmousedown?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `mouseenter` event.#
-     * @default null
+     * Property-based event handler for the `mouseenter` event.
+     * Fired when the mouse pointer enters the bounds of the object. Does not bubble.
      * @example
-     * this.onmouseenter = (event) => {
-     *  //some function here that happens on mouseenter
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('mouseenter', (event) => {
+     *     sprite.scale.set(1.1);
+     * });
+     * // Using property-based handler
+     * sprite.onmouseenter = (event) => {
+     *     sprite.scale.set(1.1);
+     * };
+     * ```
+     * @default null
      */
     onmouseenter?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `mouseleave` event.#
-     * @default null
+     * Property-based event handler for the `mouseleave` event.
+     * Fired when the pointer leaves the bounds of the display object. Does not bubble.
      * @example
-     * this.onmouseleave = (event) => {
-     *  //some function here that happens on mouseleave
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('mouseleave', (event) => {
+     *    sprite.scale.set(1.0);
+     * });
+     * // Using property-based handler
+     * sprite.onmouseleave = (event) => {
+     *     sprite.scale.set(1.0);
+     * };
+     * ```
+     * @default null
      */
     onmouseleave?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `mousemove` event.#
-     * @default null
+     * Property-based event handler for the `mousemove` event.
+     * Fired when the pointer moves while over the display object.
      * @example
-     * this.onmousemove = (event) => {
-     *  //some function here that happens on mousemove
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('mousemove', (event) => {
+     *    // Get coordinates relative to the sprite
+     *   console.log('Local:', event.getLocalPosition(sprite));
+     * });
+     * // Using property-based handler
+     * sprite.onmousemove = (event) => {
+     *     // Get coordinates relative to the sprite
+     *     console.log('Local:', event.getLocalPosition(sprite));
+     * };
+     * ```
+     * @default null
      */
     onmousemove?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `globalmousemove` event.#
-     * @default null
+     * Property-based event handler for the `globalmousemove` event.
+     *
+     * Fired when the mouse moves anywhere, regardless of whether the pointer is over this object.
+     * The object must have `eventMode` set to 'static' or 'dynamic' to receive this event.
      * @example
-     * this.onglobalmousemove = (event) => {
-     *  //some function here that happens on globalmousemove
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('globalmousemove', (event) => {
+     *     // Move sprite to mouse position
+     *     sprite.position.copyFrom(event.global);
+     * });
+     * // Using property-based handler
+     * sprite.onglobalmousemove = (event) => {
+     *     // Move sprite to mouse position
+     *     sprite.position.copyFrom(event.global);
+     * };
+     * ```
+     * @default null
+     * @remarks
+     * - Fires even when the mouse is outside the object's bounds
+     * - Useful for drag operations or global mouse tracking
+     * - Must have `eventMode` set appropriately to receive events
+     * - Part of the global move events family along with `globalpointermove` and `globaltouchmove`
      */
     onglobalmousemove?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `mouseout` event.#
-     * @default null
+     * Property-based event handler for the `mouseout` event.
+     * Fired when the pointer moves out of the bounds of the display object.
      * @example
-     * this.onmouseout = (event) => {
-     *  //some function here that happens on mouseout
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('mouseout', (event) => {
+     *    sprite.scale.set(1.0);
+     * });
+     * // Using property-based handler
+     * sprite.onmouseout = (event) => {
+     *     sprite.scale.set(1.0);
+     * };
+     * ```
+     * @default null
      */
     onmouseout?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `mouseover` event.#
-     * @default null
+     * Property-based event handler for the `mouseover` event.
+     * Fired when the pointer moves onto the bounds of the display object.
      * @example
-     * this.onmouseover = (event) => {
-     *  //some function here that happens on mouseover
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('mouseover', (event) => {
+     *      sprite.scale.set(1.1);
+     * });
+     * // Using property-based handler
+     * sprite.onmouseover = (event) => {
+     *     sprite.scale.set(1.1);
+     * };
+     * ```
+     * @default null
      */
     onmouseover?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `mouseup` event.#
-     * @default null
+     * Property-based event handler for the `mouseup` event.
+     * Fired when a mouse button is released over the display object.
      * @example
-     * this.onmouseup = (event) => {
-     *  //some function here that happens on mouseup
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('mouseup', (event) => {
+     *     sprite.scale.set(1.0);
+     * });
+     * // Using property-based handler
+     * sprite.onmouseup = (event) => {
+     *      sprite.scale.set(1.0);
+     * };
+     * ```
+     * @default null
      */
     onmouseup?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `mouseupoutside` event.#
-     * @default null
+     * Property-based event handler for the `mouseupoutside` event.
+     * Fired when a mouse button is released outside the display object that initially
+     * registered a mousedown.
      * @example
-     * this.onmouseupoutside = (event) => {
-     *  //some function here that happens on mouseupoutside
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('mouseupoutside', (event) => {
+     *     sprite.scale.set(1.0);
+     * });
+     * // Using property-based handler
+     * sprite.onmouseupoutside = (event) => {
+     *     sprite.scale.set(1.0);
+     * };
+     * ```
+     * @default null
      */
     onmouseupoutside?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `pointercancel` event.#
-     * @default null
+     * Property-based event handler for the `pointercancel` event.
+     * Fired when a pointer device interaction is canceled or lost.
      * @example
-     * this.onpointercancel = (event) => {
-     *  //some function here that happens on pointercancel
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('pointercancel', (event) => {
+     *     sprite.scale.set(1.0);
+     * });
+     * // Using property-based handler
+     * sprite.onpointercancel = (event) => {
+     *     sprite.scale.set(1.0);
+     * };
+     * ```
+     * @default null
      */
     onpointercancel?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `pointerdown` event.#
-     * @default null
+     * Property-based event handler for the `pointerdown` event.
+     * Fired when a pointer device button (mouse, touch, pen, etc.) is pressed.
      * @example
-     * this.onpointerdown = (event) => {
-     *  //some function here that happens on pointerdown
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('pointerdown', (event) => {
+     *     sprite.position.set(event.global.x, event.global.y);
+     * });
+     * // Using property-based handler
+     * sprite.onpointerdown = (event) => {
+     *     sprite.position.set(event.global.x, event.global.y);
+     * };
+     * ```
+     * @default null
      */
     onpointerdown?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `pointerenter` event.#
-     * @default null
+     * Property-based event handler for the `pointerenter` event.
+     * Fired when a pointer device enters the bounds of the display object. Does not bubble.
      * @example
-     * this.onpointerenter = (event) => {
-     *  //some function here that happens on pointerenter
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('pointerenter', (event) => {
+     *     sprite.scale.set(1.2);
+     * });
+     * // Using property-based handler
+     * sprite.onpointerenter = (event) => {
+     *     sprite.scale.set(1.2);
+     * };
+     * ```
+     * @default null
      */
     onpointerenter?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `pointerleave` event.#
-     * @default null
+     * Property-based event handler for the `pointerleave` event.
+     * Fired when a pointer device leaves the bounds of the display object. Does not bubble.
      * @example
-     * this.onpointerleave = (event) => {
-     *  //some function here that happens on pointerleave
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     * // Using emitter handler
+     * sprite.on('pointerleave', (event) => {
+     *     sprite.scale.set(1.0);
+     * });
+     * // Using property-based handler
+     * sprite.onpointerleave = (event) => {
+     *     sprite.scale.set(1.0);
+     * };
+     * ```
+     * @default null
      */
     onpointerleave?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `pointermove` event.#
-     * @default null
+     * Property-based event handler for the `pointermove` event.
+     * Fired when a pointer device moves while over the display object.
      * @example
-     * this.onpointermove = (event) => {
-     *  //some function here that happens on pointermove
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('pointermove', (event) => {
+     *     sprite.position.set(event.global.x, event.global.y);
+     * });
+     * // Using property-based handler
+     * sprite.onpointermove = (event) => {
+     *     sprite.position.set(event.global.x, event.global.y);
+     * };
+     * ```
+     * @default null
      */
     onpointermove?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `globalpointermove` event.#
-     * @default null
+     * Property-based event handler for the `globalpointermove` event.
+     *
+     * Fired when the pointer moves anywhere, regardless of whether the pointer is over this object.
+     * The object must have `eventMode` set to 'static' or 'dynamic' to receive this event.
      * @example
-     * this.onglobalpointermove = (event) => {
-     *  //some function here that happens on globalpointermove
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('globalpointermove', (event) => {
+     *     sprite.position.set(event.global.x, event.global.y);
+     * });
+     * // Using property-based handler
+     * sprite.onglobalpointermove = (event) => {
+     *     sprite.position.set(event.global.x, event.global.y);
+     * };
+     * ```
+     * @default null
+     * @remarks
+     * - Fires even when the mouse is outside the object's bounds
+     * - Useful for drag operations or global mouse tracking
+     * - Must have `eventMode` set appropriately to receive events
+     * - Part of the global move events family along with `globalpointermove` and `globaltouchmove`
      */
     onglobalpointermove?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `pointerout` event.#
-     * @default null
+     * Property-based event handler for the `pointerout` event.
+     * Fired when the pointer moves out of the bounds of the display object.
      * @example
-     * this.onpointerout = (event) => {
-     *  //some function here that happens on pointerout
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('pointerout', (event) => {
+     *    sprite.scale.set(1.0);
+     * });
+     * // Using property-based handler
+     * sprite.onpointerout = (event) => {
+     *    sprite.scale.set(1.0);
+     * };
+     * ```
+     * @default null
      */
     onpointerout?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `pointerover` event.#
-     * @default null
+     * Property-based event handler for the `pointerover` event.
+     * Fired when the pointer moves over the bounds of the display object.
      * @example
-     * this.onpointerover = (event) => {
-     *  //some function here that happens on pointerover
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('pointerover', (event) => {
+     *     sprite.scale.set(1.2);
+     * });
+     * // Using property-based handler
+     * sprite.onpointerover = (event) => {
+     *     sprite.scale.set(1.2);
+     * };
+     * ```
+     * @default null
      */
     onpointerover?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `pointertap` event.#
-     * @default null
+     * Property-based event handler for the `pointertap` event.
+     * Fired when a pointer device completes a tap action (e.g., touch or mouse click).
      * @example
-     * this.onpointertap = (event) => {
-     *  //some function here that happens on pointertap
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('pointertap', (event) => {
+     *     console.log('Sprite tapped at:', event.global.x, event.global.y);
+     * });
+     * // Using property-based handler
+     * sprite.onpointertap = (event) => {
+     *     console.log('Sprite tapped at:', event.global.x, event.global.y);
+     * };
+     * ```
+     * @default null
      */
     onpointertap?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `pointerup` event.#
-     * @default null
+     * Property-based event handler for the `pointerup` event.
+     * Fired when a pointer device button (mouse, touch, pen, etc.) is released.
      * @example
-     * this.onpointerup = (event) => {
-     *  //some function here that happens on pointerup
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('pointerup', (event) => {
+     *     sprite.scale.set(1.0);
+     * });
+     * // Using property-based handler
+     * sprite.onpointerup = (event) => {
+     *     sprite.scale.set(1.0);
+     * };
+     * ```
+     * @default null
      */
     onpointerup?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `pointerupoutside` event.#
-     * @default null
+     * Property-based event handler for the `pointerupoutside` event.
+     * Fired when a pointer device button is released outside the bounds of the display object
+     * that initially registered a pointerdown.
      * @example
-     * this.onpointerupoutside = (event) => {
-     *  //some function here that happens on pointerupoutside
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('pointerupoutside', (event) => {
+     *     sprite.scale.set(1.0);
+     * });
+     * // Using property-based handler
+     * sprite.onpointerupoutside = (event) => {
+     *     sprite.scale.set(1.0);
+     * };
+     * ```
+     * @default null
      */
     onpointerupoutside?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `rightclick` event.#
-     * @default null
+     * Property-based event handler for the `rightclick` event.
+     * Fired when a right-click (context menu) action is performed on the object.
      * @example
-     * this.onrightclick = (event) => {
-     *  //some function here that happens on rightclick
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('rightclick', (event) => {
+     *     console.log('Right-clicked at:', event.global.x, event.global.y);
+     * });
+     * // Using property-based handler
+     * sprite.onrightclick = (event) => {
+     *     console.log('Right-clicked at:', event.global.x, event.global.y);
+     * };
+     * ```
+     * @default null
      */
     onrightclick?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `rightdown` event.#
-     * @default null
+     * Property-based event handler for the `rightdown` event.
+     * Fired when a right mouse button is pressed down over the display object.
      * @example
-     * this.onrightdown = (event) => {
-     *  //some function here that happens on rightdown
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('rightdown', (event) => {
+     *     sprite.scale.set(0.9);
+     * });
+     * // Using property-based handler
+     * sprite.onrightdown = (event) => {
+     *     sprite.scale.set(0.9);
+     * };
+     * ```
+     * @default null
      */
     onrightdown?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `rightup` event.#
-     * @default null
+     * Property-based event handler for the `rightup` event.
+     * Fired when a right mouse button is released over the display object.
      * @example
-     * this.onrightup = (event) => {
-     *  //some function here that happens on rightup
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('rightup', (event) => {
+     *     sprite.scale.set(1.0);
+     * });
+     * // Using property-based handler
+     * sprite.onrightup = (event) => {
+     *     sprite.scale.set(1.0);
+     * };
+     * ```
+     * @default null
      */
     onrightup?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `rightupoutside` event.#
-     * @default null
+     * Property-based event handler for the `rightupoutside` event.
+     * Fired when a right mouse button is released outside the bounds of the display object
+     * that initially registered a rightdown.
      * @example
-     * this.onrightupoutside = (event) => {
-     *  //some function here that happens on rightupoutside
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('rightupoutside', (event) => {
+     *     sprite.scale.set(1.0);
+     * });
+     * // Using property-based handler
+     * sprite.onrightupoutside = (event) => {
+     *     sprite.scale.set(1.0);
+     * };
+     * ```
+     * @default null
      */
     onrightupoutside?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `tap` event.#
-     * @default null
+     * Property-based event handler for the `tap` event.
+     * Fired when a tap action (touch) is completed on the object.
      * @example
-     * this.ontap = (event) => {
-     *  //some function here that happens on tap
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('tap', (event) => {
+     *     console.log('Sprite tapped at:', event.global.x, event.global.y);
+     * });
+     * // Using property-based handler
+     * sprite.ontap = (event) => {
+     *     console.log('Sprite tapped at:', event.global.x, event.global.y);
+     * };
+     * ```
+     * @default null
      */
     ontap?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `touchcancel` event.#
-     * @default null
+     * Property-based event handler for the `touchcancel` event.
+     * Fired when a touch interaction is canceled, such as when the touch is interrupted.
      * @example
-     * this.ontouchcancel = (event) => {
-     *  //some function here that happens on touchcancel
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('touchcancel', (event) => {
+     *     console.log('Touch canceled at:', event.global.x, event.global.y);
+     * });
+     * // Using property-based handler
+     * sprite.ontouchcancel = (event) => {
+     *     console.log('Touch canceled at:', event.global.x, event.global.y);
+     * };
+     * ```
+     * @default null
      */
     ontouchcancel?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `touchend` event.#
-     * @default null
+     * Property-based event handler for the `touchend` event.
+     * Fired when a touch interaction ends, such as when the finger is lifted from the screen.
      * @example
-     * this.ontouchend = (event) => {
-     *  //some function here that happens on touchend
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('touchend', (event) => {
+     *     sprite.scale.set(1.0);
+     * });
+     * // Using property-based handler
+     * sprite.ontouchend = (event) => {
+     *    sprite.scale.set(1.0);
+     * };
+     * ```
+     * @default null
      */
     ontouchend?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `touchendoutside` event.#
-     * @default null
+     * Property-based event handler for the `touchendoutside` event.
+     * Fired when a touch interaction ends outside the bounds of the display object
+     * that initially registered a touchstart.
      * @example
-     * this.ontouchendoutside = (event) => {
-     *  //some function here that happens on touchendoutside
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('touchendoutside', (event) => {
+     *     sprite.scale.set(1.0);
+     * });
+     * // Using property-based handler
+     * sprite.ontouchendoutside = (event) => {
+     *     sprite.scale.set(1.0);
+     * };
+     * ```
+     * @default null
      */
     ontouchendoutside?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `touchmove` event.#
-     * @default null
+     * Property-based event handler for the `touchmove` event.
+     * Fired when a touch interaction moves while over the display object.
      * @example
-     * this.ontouchmove = (event) => {
-     *  //some function here that happens on touchmove
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('touchmove', (event) => {
+     *     sprite.position.set(event.global.x, event.global.y);
+     * });
+     * // Using property-based handler
+     * sprite.ontouchmove = (event) => {
+     *     sprite.position.set(event.global.x, event.global.y);
+     * };
+     * ```
+     * @default null
      */
     ontouchmove?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `globaltouchmove` event.#
-     * @default null
+     * Property-based event handler for the `globaltouchmove` event.
+     *
+     * Fired when a touch interaction moves anywhere, regardless of whether the pointer is over this object.
+     * The object must have `eventMode` set to 'static' or 'dynamic' to receive this event.
      * @example
-     * this.onglobaltouchmove = (event) => {
-     *  //some function here that happens on globaltouchmove
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('globaltouchmove', (event) => {
+     *     sprite.position.set(event.global.x, event.global.y);
+     * });
+     * // Using property-based handler
+     * sprite.onglobaltouchmove = (event) => {
+     *     sprite.position.set(event.global.x, event.global.y);
+     * };
+     * ```
+     * @default null
+     * @remarks
+     * - Fires even when the touch is outside the object's bounds
+     * - Useful for drag operations or global touch tracking
+     * - Must have `eventMode` set appropriately to receive events
+     * - Part of the global move events family along with `globalpointermove` and `globalmousemove`
      */
     onglobaltouchmove?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `touchstart` event.#
-     * @default null
+     * Property-based event handler for the `touchstart` event.
+     * Fired when a touch interaction starts, such as when a finger touches the screen.
      * @example
-     * this.ontouchstart = (event) => {
-     *  //some function here that happens on touchstart
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('touchstart', (event) => {
+     *     sprite.scale.set(0.9);
+     * });
+     * // Using property-based handler
+     * sprite.ontouchstart = (event) => {
+     *     sprite.scale.set(0.9);
+     * };
+     * ```
+     * @default null
      */
     ontouchstart?: FederatedEventHandler | null;
 
     /**
-     * Property-based event handler for the `wheel` event.#
-     * @default null
+     * Property-based event handler for the `wheel` event.
+     * Fired when the mouse wheel is scrolled while over the display object.
      * @example
-     * this.onwheel = (event) => {
-     *  //some function here that happens on wheel
-     * }
+     * ```ts
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     *
+     * // Using emitter handler
+     * sprite.on('wheel', (event) => {
+     *     sprite.scale.x += event.deltaY * 0.01; // Zoom in/out
+     *     sprite.scale.y += event.deltaY * 0.01; // Zoom in/out
+     * });
+     * // Using property-based handler
+     * sprite.onwheel = (event) => {
+     *     sprite.scale.x += event.deltaY * 0.01; // Zoom in/out
+     *     sprite.scale.y += event.deltaY * 0.01; // Zoom in/out
+     * };
+     * ```
+     * @default null
      */
     onwheel?: FederatedEventHandler<FederatedWheelEvent> | null;
 }
@@ -479,18 +1071,21 @@ export interface FederatedOptions
  * The options for the `addEventListener` method.
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener}
  * @category events
+ * @advanced
  */
 export type AddListenerOptions = boolean | AddEventListenerOptions;
 /**
  * The options for the `removeEventListener` method.
  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/removeEventListener}
  * @category events
+ * @advanced
  */
 export type RemoveListenerOptions = boolean | EventListenerOptions;
 
 /**
  * Additional properties for a Container that is used for interaction events.
  * @category events
+ * @advanced
  */
 export interface IFederatedContainer extends FederatedOptions
 {

@@ -19,6 +19,7 @@ export type ExtractUniformObject<T = Record<string, UniformData>> = {
 /**
  * Uniform group options
  * @category rendering
+ * @advanced
  */
 export type UniformGroupOptions = {
     /**
@@ -59,7 +60,7 @@ export type UniformGroupOptions = {
  *
  Uniforms can be modified via the classes 'uniforms' property. It will contain all the uniforms declared in the constructor.
  *
- * ```
+ * ```ts
  * // UBO in shader:
  * uniform myCoolData { // Declaring a UBO...
  *     mat4 uCoolMatrix;
@@ -80,10 +81,9 @@ export type UniformGroupOptions = {
  * const shader = Shader.from(srcVert, srcFrag, {
  *     myCoolData // Name matches the UBO name in the shader. Will be processed accordingly.
  * })
- *
- *
- *  ```
+ * ```
  * @category rendering
+ * @advanced
  */
 export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any> implements BindResource
 {

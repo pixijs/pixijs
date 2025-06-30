@@ -4,32 +4,11 @@ import type { ICanvas } from './canvas/ICanvas';
 import type { ICanvasRenderingContext2D } from './canvas/ICanvasRenderingContext2D';
 
 /**
- * @module
- * @categoryDescription environment
- * PixiJS supports multiple environments including browsers, Web Workers, and Node.js.
- * The environment is auto-detected by default using the {@link autoDetectEnvironment} function.
- *
- * The {@link Adapter} interface provides a way to abstract away the differences between
- * these environments. PixiJS uses the {@link BrowserAdapter} by default.
- *
- * However you can manually set the environment using the {@link DOMAdapter} singleton, for example to
- * use Pixi within a WebWorker.
- * ```js
- * import { DOMAdapter, WebWorkerAdapter } from 'pixi.js';
- *
- * // WebWorkerAdapter is an implementation of the Adapter interface
- * DOMAdapter.set(WebWorkerAdapter);
- *
- * // use the adapter to create a canvas (in this case an OffscreenCanvas)
- * DOMAdapter.get().createCanvas(800, 600);
- * ```
- */
-
-/**
  * This interface describes all the DOM dependent calls that Pixi makes throughout its codebase.
  * Implementations of this interface can be used to make sure Pixi will work in any environment,
  * such as browser, Web Workers, and Node.js.
  * @category environment
+ * @advanced
  */
 export interface Adapter
 {
@@ -71,6 +50,7 @@ let currentAdapter: Adapter = BrowserAdapter;
  * // use the adapter to create a canvas (in this case an OffscreenCanvas)
  * DOMAdapter.get().createCanvas(800, 600);
  * @category environment
+ * @advanced
  */
 export const DOMAdapter = {
     /**
