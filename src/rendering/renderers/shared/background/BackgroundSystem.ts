@@ -1,9 +1,9 @@
 import { Color } from '../../../../color/Color';
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { warn } from '../../../../utils/logging/warn';
 
 import type { ColorSource, RgbaArray } from '../../../../color/Color';
 import type { System } from '../system/System';
-
 /**
  * Options for the background system.
  * @category rendering
@@ -115,12 +115,11 @@ export class BackgroundSystem implements System<BackgroundSystemOptions>
 
         if (incoming.alpha < 1 && this._backgroundColor.alpha === 1)
         {
-            console.warn(
-                '[PixiJS] ✨ Cannot set a transparent background on an opaque canvas. '
+            warn(
+                'Cannot set a transparent background on an opaque canvas. '
             + 'To enable transparency, set backgroundAlpha < 1 when initializing your Application.'
             );
         }
-
         this._backgroundColor.setValue(value);
     }
 
