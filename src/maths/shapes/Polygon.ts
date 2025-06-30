@@ -483,6 +483,7 @@ export class Polygon implements ShapePrimitive
 
     /**
      * Get the last X coordinate of the polygon.
+     * @readonly
      * @deprecated since 8.11.0, use {@link Polygon.lastX} instead.
      */
     get x(): number
@@ -496,6 +497,7 @@ export class Polygon implements ShapePrimitive
 
     /**
      * Get the last Y coordinate of the polygon.
+     * @readonly
      * @deprecated since 8.11.0, use {@link Polygon.lastY} instead.
      */
     get y(): number
