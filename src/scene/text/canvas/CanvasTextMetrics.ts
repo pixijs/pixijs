@@ -709,7 +709,16 @@ export class CanvasTextMetrics
                     token = '';
                 }
 
-                tokens.push(char);
+                // treat \r\n as a single new line token
+                if (char === '\r' && nextChar === '\n')
+                {
+                    tokens.push('\r\n');
+                    i++;
+                }
+                else
+                {
+                    tokens.push(char);
+                }
 
                 continue;
             }

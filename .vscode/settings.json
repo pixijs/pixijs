@@ -7,5 +7,6 @@
     ],
     "typescript.preferences.autoImportSpecifierExcludeRegexes": [
         "~/.*",
-    ]
+    ],
+    "jestrunner.jestCommand": "npx jest"
   }

@@ -7,6 +7,7 @@ import { DEG_TO_RAD, RAD_TO_DEG } from '../../maths/misc/const';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { uid } from '../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
+import { warn } from '../../utils/logging/warn';
 import { BigPool } from '../../utils/pool/PoolGroup';
 import { type IRenderLayer } from '../layers/RenderLayer';
 import { cacheAsTextureMixin } from './container-mixins/cacheAsTextureMixin';
@@ -1416,6 +1417,14 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         if (this._pivot === defaultPivot)
         {
             this._pivot = new ObservablePoint(this, 0, 0);
+
+            // #if _DEBUG
+            if (this._origin !== defaultOrigin)
+            {
+                // eslint-disable-next-line max-len
+                warn(`Setting both a pivot and origin on a Container is not recommended. This can lead to unexpected behavior if not handled carefully.`);
+            }
+            // #endif
         }
 
         typeof value === 'number' ? this._pivot.set(value) : this._pivot.copyFrom(value);
@@ -1511,6 +1520,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     }
 
     /**
+     * @experimental
      * The origin point around which the container rotates and scales without affecting its position.
      * Unlike pivot, changing the origin will not move the container's position.
      * @example
@@ -1538,6 +1548,14 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         if (this._origin === defaultOrigin)
         {
             this._origin = new ObservablePoint(this, 0, 0);
+
+            // #if _DEBUG
+            if (this._pivot !== defaultPivot)
+            {
+                // eslint-disable-next-line max-len
+                warn(`Setting both a pivot and origin on a Container is not recommended. This can lead to unexpected behavior if not handled carefully.`);
+            }
+            // #endif
         }
 
         typeof value === 'number' ? this._origin.set(value) : this._origin.copyFrom(value);
@@ -1800,11 +1818,11 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         lt.d = this._sy * sy;
 
         lt.tx = position._x - ((px * lt.a) + (py * lt.c)) // Pivot offset
-            + ((ox * lt.a) + (oy * lt.c)) // Origin offset for rotation
-            - ox; // Subtract origin to maintain position
+            + ((ox * lt.a) + (oy * lt.c)) // Origin offset for rotation and scaling
+            - (ox * sx); // Remove unscaled origin to maintain position
         lt.ty = position._y - ((px * lt.b) + (py * lt.d)) // Pivot offset
-            + ((ox * lt.b) + (oy * lt.d)) // Origin offset for rotation
-            - oy; // Subtract origin to maintain position
+            + ((ox * lt.b) + (oy * lt.d)) // Origin offset for rotation and scaling
+            - (oy * sy); // Remove unscaled origin to maintain position
     }
 
     // / ///// color related stuff
