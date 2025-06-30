@@ -111,6 +111,7 @@ export class BackgroundSystem implements System<BackgroundSystemOptions>
 
     set color(value: ColorSource)
     {
+        // #if _DEBUG
         const incoming = new Color(value);
 
         if (incoming.alpha < 1 && this._backgroundColor.alpha === 1)
@@ -120,6 +121,7 @@ export class BackgroundSystem implements System<BackgroundSystemOptions>
             + 'To enable transparency, set backgroundAlpha < 1 when initializing your Application.'
             );
         }
+        // #endif
         this._backgroundColor.setValue(value);
     }
 
