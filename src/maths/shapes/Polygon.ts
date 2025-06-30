@@ -1,3 +1,4 @@
+import { deprecation } from '../../utils/logging/deprecation';
 import { squaredDistanceToLineSegment } from '../misc/squaredDistanceToLineSegment';
 import { Rectangle } from './Rectangle';
 
@@ -322,6 +323,51 @@ export class Polygon implements ShapePrimitive
     }
 
     /**
+     * Get the last X coordinate of the polygon.
+     * @deprecated since 8.11.0, use {@link Polygon.lastX} instead.
+     * @example
+     * ```ts
+     * // Basic coordinate access
+     * const polygon = new Polygon([0, 0, 100, 200, 300, 400]);
+     * console.log(polygon.x); // 300
+     * ```
+     * @readonly
+     * @returns The x-coordinate of the last vertex
+     * @see {@link Polygon.y} For last Y coordinate
+     * @see {@link Polygon.points} For raw points array
+     */
+    get x(): number
+    {
+        // #if _DEBUG
+        deprecation('8.11.0', 'Polygon.lastX is deprecated, please use Polygon.lastX instead.');
+        // #endif
+
+        return this.points[this.points.length - 2];
+    }
+
+    /**
+     * Get the last Y coordinate of the polygon.
+     * @deprecated since 8.11.0, use {@link Polygon.lastY} instead.
+     * @example
+     * ```ts
+     * // Basic coordinate access
+     * const polygon = new Polygon([0, 0, 100, 200, 300, 400]);
+     * console.log(polygon.y); // 400
+     * ```
+     * @readonly
+     * @returns The y-coordinate of the last vertex
+     * @see {@link Polygon.x} For last X coordinate
+     * @see {@link Polygon.points} For raw points array
+     */
+    get y(): number
+    {
+        // #if _DEBUG
+        deprecation('8.11.0', 'Polygon.y is deprecated, please use Polygon.lastY instead.');
+        // #endif
+
+        return this.points[this.points.length - 1];
+    }
+    /**
      * Get the first X coordinate of the polygon.
      * @example
      * ```ts
@@ -331,10 +377,10 @@ export class Polygon implements ShapePrimitive
      * ```
      * @readonly
      * @returns The x-coordinate of the first vertex
-     * @see {@link Polygon.y} For first Y coordinate
+     * @see {@link Polygon.startY} For first Y coordinate
      * @see {@link Polygon.points} For raw points array
      */
-    get x(): number
+    get startX(): number
     {
         return this.points[0];
     }
@@ -349,10 +395,10 @@ export class Polygon implements ShapePrimitive
      * ```
      * @readonly
      * @returns The y-coordinate of the first vertex
-     * @see {@link Polygon.x} For first X coordinate
+     * @see {@link Polygon.startX} For first X coordinate
      * @see {@link Polygon.points} For raw points array
      */
-    get y(): number
+    get startY(): number
     {
         return this.points[1];
     }
