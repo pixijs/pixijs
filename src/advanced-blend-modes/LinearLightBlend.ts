@@ -14,6 +14,7 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'linear-light'
  * @category filters
+ * @noInheritDoc
  */
 export class LinearLightBlend extends BlendModeFilter
 {

@@ -13,7 +13,7 @@ import type { Container } from './Container';
 /**
  * Options for caching a container as a texture.
  * @category rendering
- * @see {@link RenderGroup#textureOptions}
+ * @advanced
  */
 export interface CacheAsTextureOptions
 {
@@ -34,6 +34,7 @@ export interface CacheAsTextureOptions
  * root container and its children. It also watches for any changes in that container or its children,
  * these changes are analysed and either the instruction set is rebuild or the instructions data is updated.
  * @category rendering
+ * @advanced
  */
 export class RenderGroup implements Instruction
 {

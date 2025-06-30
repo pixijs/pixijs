@@ -20,12 +20,14 @@ import type { TextureSpace } from '../FillTypes';
  * - 'linear': A linear gradient that transitions colors along a straight line.
  * - 'radial': A radial gradient that transitions colors in a circular pattern from an inner circle to an outer circle.
  * @category scene
+ * @standard
  */
 export type GradientType = 'linear' | 'radial';
 
 /**
  * Represents the style options for a linear gradient fill.
  * @category scene
+ * @standard
  */
 export interface BaseGradientOptions
 {
@@ -54,6 +56,7 @@ export interface BaseGradientOptions
  * Options specific to linear gradients.
  * A linear gradient creates a smooth transition between colors along a straight line defined by start and end points.
  * @category scene
+ * @standard
  */
 export interface LinearGradientOptions extends BaseGradientOptions
 {
@@ -82,6 +85,7 @@ export interface LinearGradientOptions extends BaseGradientOptions
  * A radial gradient creates a smooth transition between colors that radiates outward in a circular pattern.
  * The gradient is defined by inner and outer circles, each with their own radius.
  * @category scene
+ * @standard
  */
 export interface RadialGradientOptions extends BaseGradientOptions
 {
@@ -105,12 +109,12 @@ export interface RadialGradientOptions extends BaseGradientOptions
      * NOTE: Only applied to radial gradients used with Graphics.
      */
     rotation?: number;
-
 }
 
 /**
  * Options for creating a gradient fill.
  * @category scene
+ * @standard
  */
 export type GradientOptions = LinearGradientOptions | RadialGradientOptions;
 
@@ -198,6 +202,7 @@ const emptyColorStops: { offset: number, color: string }[] = [{ offset: 0, color
  * If you want to animate a gradient then it's best to modify and update an existing one
  * rather than creating a whole new one each time. That or use a custom shader.
  * @category scene
+ * @standard
  */
 export class FillGradient implements CanvasGradient
 {
@@ -225,7 +230,10 @@ export class FillGradient implements CanvasGradient
         wrapMode: 'clamp-to-edge'
     };
 
-    /** Unique identifier for this gradient instance */
+    /**
+     * Unique identifier for this gradient instance
+     * @internal
+     */
     public readonly uid: number = uid('fillGradient');
     /** Type of gradient - currently only supports 'linear' */
     public readonly type: GradientType = 'linear';
@@ -410,6 +418,11 @@ export class FillGradient implements CanvasGradient
         this.transform = m;
     }
 
+    /**
+     * Builds the internal texture and transform for the gradient.
+     * Called automatically when the gradient is first used.
+     * @internal
+     */
     public buildGradient(): void
     {
         if (this.type === 'linear')
@@ -421,6 +434,12 @@ export class FillGradient implements CanvasGradient
             this.buildRadialGradient();
         }
     }
+
+    /**
+     * Builds the internal texture and transform for the radial gradient.
+     * Called automatically when the gradient is first used.
+     * @internal
+     */
     public buildRadialGradient(): void
     {
         if (this.texture) return;

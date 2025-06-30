@@ -32,6 +32,7 @@ export interface GlUniformBlockData
 /**
  * The options for the gl program
  * @category rendering
+ * @advanced
  */
 export interface GlProgramOptions
 {
@@ -93,6 +94,7 @@ const programCache: Record<string, GlProgram> = Object.create(null);
  * You should use the {@link GlProgram.from} helper function to create programs.
  * @class
  * @category rendering
+ * @advanced
  */
 export class GlProgram
 {

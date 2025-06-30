@@ -15,6 +15,7 @@ import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 /**
  * Loads Basis textures using a web worker.
  * @category assets
+ * @advanced
  */
 export const loadBasis = {
     extension: {

@@ -15,6 +15,7 @@ import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 /**
  * Loads DDS textures.
  * @category assets
+ * @advanced
  */
 export const loadDDS = {
     extension: {

@@ -3,7 +3,8 @@ import jsdoc from 'eslint-plugin-jsdoc';
 import noMixed from 'eslint-plugin-no-mixed-operators';
 import tseslint from 'typescript-eslint';
 import config from '@pixi/eslint-config';
-import requireExport from './scripts/eslint-require-export.mjs';
+import requireExport from './scripts/plugins/eslint-require-export.mjs';
+import requireMemberAPI from './scripts/plugins/eslint-require-modifier.mjs';
 
 export default tseslint.config(
     ...config,
@@ -127,11 +128,14 @@ export default tseslint.config(
     },
     {
         files: ['src/**/*'],
+        ignores: ['**/*.test.ts'],
         plugins: {
             requireExport,
+            requireMemberAPI,
         },
         rules: {
             'requireExport/require-export-jsdoc': ['error'],
+            'requireMemberAPI/require-member-api-doc': ['error'],
 
         }
     },

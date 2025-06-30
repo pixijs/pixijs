@@ -10,6 +10,7 @@ import type { AssetExtension } from '../assets/AssetExtension';
  * load all `.gif` images as an ArrayBuffer and transform into an
  * GifSource object.
  * @category gif
+ * @advanced
  */
 const GifAsset = {
     extension: ExtensionType.Asset,

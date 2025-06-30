@@ -11,12 +11,14 @@ import type { Text } from '../scene/text/Text';
 /**
  * The accepted types to pass to the prepare system
  * @category rendering
+ * @advanced
  */
 export type PrepareSourceItem = Container | TextureSource | Texture | GraphicsContext;
 
 /**
  * The valid types resolved to the queue ready for upload
  * @category rendering
+ * @advanced
  */
 export type PrepareQueueItem = TextureSource | Text | GraphicsContext;
 
@@ -24,6 +26,7 @@ export type PrepareQueueItem = TextureSource | Text | GraphicsContext;
  * Part of the prepare system. Responsible for uploading all the items to the GPU.
  * This class provides the base functionality and handles processing the queue asynchronously.
  * @category rendering
+ * @advanced
  */
 export abstract class PrepareBase
 {

@@ -16,6 +16,7 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'divide'
  * @category filters
+ * @noInheritDoc
  */
 export class DivideBlend extends BlendModeFilter
 {

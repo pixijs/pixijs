@@ -14,6 +14,7 @@ import { DOMParser } from '@xmldom/xmldom';
  * @property {Function} fetch - Returns a Response object that has been fetched from the given URL.
  * @property {Function} parseXML - Returns Document object that has been parsed from the given XML string.
  * @category environment
+ * @advanced
  */
 export const WebWorkerAdapter = {
     createCanvas: (width?: number, height?: number) => new OffscreenCanvas(width ?? 0, height ?? 0),

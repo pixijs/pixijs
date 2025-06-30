@@ -20,6 +20,7 @@ const tempMatrix = new Matrix();
  * The view system manages the main canvas that is attached to the DOM.
  * This main role is to deal with how the holding the view reference and dealing with how it is resized.
  * @category rendering
+ * @internal
  */
 export class RenderGroupSystem implements System
 {

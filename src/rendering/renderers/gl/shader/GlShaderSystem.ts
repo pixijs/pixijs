@@ -29,6 +29,7 @@ const defaultSyncData: ShaderSyncData = {
 /**
  * System plugin to the renderer to manage the shaders for WebGL.
  * @category rendering
+ * @advanced
  */
 export class GlShaderSystem
 {
@@ -40,10 +41,7 @@ export class GlShaderSystem
         name: 'shader',
     } as const;
 
-    /**
-     * @internal
-     * @private
-     */
+    /** @internal */
     public _activeProgram: GlProgram = null;
 
     private _programDataHash: Record<string, GlProgramData> = Object.create(null);
@@ -173,7 +171,6 @@ export class GlShaderSystem
     /**
      * @param program - the program to get the data for
      * @internal
-     * @private
      */
     public _getProgramData(program: GlProgram): GlProgramData
     {

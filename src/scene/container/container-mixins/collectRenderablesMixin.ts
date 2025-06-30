@@ -10,6 +10,7 @@ import type { Container } from '../Container';
  * from a container and its children. These methods add the renderables to an instruction set,
  * which is used by the renderer to process and display the scene.
  * @category scene
+ * @internal
  */
 export interface CollectRenderablesMixin
 {

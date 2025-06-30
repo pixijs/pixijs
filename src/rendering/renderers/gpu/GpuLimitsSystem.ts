@@ -24,6 +24,7 @@ import { type WebGPURenderer } from './WebGPURenderer';
  * console.log(renderer.limits.maxBatchableTextures);
  * ```
  * @category rendering
+ * @advanced
  */
 export class GpuLimitsSystem implements System
 {

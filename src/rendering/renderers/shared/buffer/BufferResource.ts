@@ -23,6 +23,7 @@ import type { Buffer } from './Buffer';
  *    size: 100,
  * });
  * @category rendering
+ * @advanced
  */
 export class BufferResource extends EventEmitter<{
     change: BindResource,

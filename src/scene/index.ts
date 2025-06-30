@@ -147,6 +147,7 @@ export * from './text-html/utils/measureHtmlText';
 export * from './text-html/utils/textStyleToCSS';
 export * from './text/AbstractText';
 export * from './text/canvas/BatchableText';
+export * from './text/canvas/CanvasTextGenerator';
 export * from './text/canvas/CanvasTextMetrics';
 export * from './text/canvas/CanvasTextPipe';
 export * from './text/canvas/CanvasTextSystem';
@@ -161,6 +162,9 @@ export * from './text/utils/generateTextStyleKey';
 export * from './text/utils/getPo2TextureFromSource';
 export * from './text/utils/updateTextBounds';
 export * from './view/ViewContainer';
+/** @ignore */
 export { default as particlesFrag } from './particle-container/shared/shader/particles.frag';
+/** @ignore */
 export { default as particlesVert } from './particle-container/shared/shader/particles.vert';
+/** @ignore */
 export { default as particlesWgsl } from './particle-container/shared/shader/particles.wgsl';

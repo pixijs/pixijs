@@ -13,6 +13,7 @@ interface MaskConversionTest
 /**
  * Represents a mask effect that can be applied to a container.
  * @category rendering
+ * @advanced
  */
 export type MaskEffect = {mask: unknown} & Effect;
 
@@ -75,6 +76,7 @@ export class MaskEffectManagerClass
  * A class that manages the conversion of masks to mask effects.
  * @class
  * @category rendering
+ * @advanced
  */
 export const MaskEffectManager = new MaskEffectManagerClass();
 

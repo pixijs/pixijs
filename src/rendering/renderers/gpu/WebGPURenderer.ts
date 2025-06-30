@@ -57,7 +57,12 @@ extensions.handleByNamedList(ExtensionType.WebGPUPipesAdaptor, renderPipeAdaptor
 // add all the default systems as well as any user defined ones from the extensions
 extensions.add(...DefaultWebGPUSystems, ...DefaultWebGPUPipes, ...DefaultWebGPUAdapters);
 
-/** @internal */
+/**
+ * The default WebGPU systems. These are the systems that are added by default to the WebGPURenderer.
+ * @category rendering
+ * @standard
+ * @interface
+ */
 export type WebGPUSystems = ExtractSystemTypes<typeof DefaultWebGPUSystems> &
 PixiMixins.RendererSystems &
 PixiMixins.WebGPUSystems;
@@ -74,13 +79,14 @@ PixiMixins.WebGPUPipes;
 /**
  * Options for WebGPURenderer.
  * @category rendering
+ * @standard
  */
 export interface WebGPUOptions extends
     SharedRendererOptions,
     ExtractRendererOptions<typeof DefaultWebGPUSystems>,
     PixiMixins.WebGPUOptions{}
 
-// eslint-disable-next-line requireExport/require-export-jsdoc
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface WebGPURenderer<T extends ICanvas = HTMLCanvasElement>
     extends AbstractRenderer<WebGPUPipes, WebGPUOptions, T>,
     WebGPUSystems {}
@@ -131,6 +137,7 @@ export interface WebGPURenderer<T extends ICanvas = HTMLCanvasElement>
  *
  * The breadth of the API surface provided by the renderer is contained within these systems.
  * @category rendering
+ * @standard
  * @property {GpuUboSystem} ubo - UboSystem instance.
  * @property {GpuEncoderSystem} encoder - EncoderSystem instance.
  * @property {GpuDeviceSystem} device - DeviceSystem instance.

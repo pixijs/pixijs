@@ -5,6 +5,7 @@ import type { RendererDestroyOptions } from './AbstractRenderer';
  * A system is a generic interface for a renderer system.
  * It is used to define the methods that a system should implement.
  * @category rendering
+ * @advanced
  */
 export interface System<INIT_OPTIONS = null, DESTROY_OPTIONS = RendererDestroyOptions>
 {
@@ -17,6 +18,7 @@ export interface System<INIT_OPTIONS = null, DESTROY_OPTIONS = RendererDestroyOp
  * The constructor for a System.
  * It is used to create instances of systems that can be added to a renderer.
  * @category rendering
+ * @advanced
  */
 export interface SystemConstructor
 {

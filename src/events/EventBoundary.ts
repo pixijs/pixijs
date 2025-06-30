@@ -75,6 +75,7 @@ const tempLocalMapping = new Point();
  * }
  * ```
  * @category events
+ * @advanced
  */
 export class EventBoundary
 {

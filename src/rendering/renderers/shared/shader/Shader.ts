@@ -15,6 +15,7 @@ import type { GpuProgramOptions } from '../../gpu/shader/GpuProgram';
  *
  * `Record<number, BindGroup>`
  * @category rendering
+ * @advanced
  */
 export type ShaderGroups = Record<number, BindGroup>;
 
@@ -37,6 +38,7 @@ interface ShaderBase
 /**
  * A base interface for shaders that includes the common properties.
  * @category rendering
+ * @advanced
  */
 export interface GlShaderWith extends ShaderBase
 {
@@ -47,6 +49,7 @@ export interface GlShaderWith extends ShaderBase
 /**
  * A base interface for shaders that includes the common properties.
  * @category rendering
+ * @advanced
  */
 export interface GpuShaderWith extends ShaderBase
 {
@@ -58,6 +61,7 @@ export interface GpuShaderWith extends ShaderBase
  * A descriptor for a shader with groups.
  * This is used to define a shader that uses {@link BindGroup}'s.
  * @category rendering
+ * @advanced
  */
 export interface ShaderWithGroupsDescriptor
 {
@@ -88,12 +92,14 @@ interface GroupsData
 /**
  * A descriptor for a shader
  * @category rendering
+ * @advanced
  */
 export type ShaderWith = GlShaderWith | GpuShaderWith;
 
 /**
  * A descriptor for a shader with groups.
  * @category rendering
+ * @advanced
  */
 export type ShaderWithGroups = ShaderWithGroupsDescriptor & ShaderWith;
 
@@ -101,17 +107,20 @@ export type ShaderWithGroups = ShaderWithGroupsDescriptor & ShaderWith;
  * A descriptor for a shader with resources. This is an easier way to work with uniforms.
  * especially when you are not working with bind groups
  * @category rendering
+ * @advanced
  */
 export type ShaderWithResources = ShaderWithResourcesDescriptor & ShaderWith;
 /**
  * A shader that can be used with both WebGL and WebGPU.
  * @category rendering
+ * @advanced
  */
 export interface IShaderWithResources extends ShaderWithResourcesDescriptor, ShaderBase {}
 
 /**
  * A descriptor for a shader that can be used with both WebGL and WebGPU.
  * @category rendering
+ * @advanced
  */
 export type ShaderDescriptor = ShaderWithGroups & ShaderWithResources;
 
@@ -134,11 +143,13 @@ type GpuShaderFromWith = {
 /**
  * A descriptor for a shader that can be used with both WebGL and WebGPU.
  * @category rendering
+ * @advanced
  */
 export type ShaderFromGroups = (GlShaderFromWith | GpuShaderFromWith) & Omit<ShaderWithGroups, 'glProgram' | 'gpuProgram'>;
 /**
  * A descriptor for a shader that can be used with both WebGL and WebGPU.
  * @category rendering
+ * @advanced
  */
 export type ShaderFromResources = (GlShaderFromWith | GpuShaderFromWith)
 & Omit<ShaderWithResources, 'glProgram' | 'gpuProgram'>;
@@ -178,6 +189,7 @@ export type ShaderFromResources = (GlShaderFromWith | GpuShaderFromWith)
  * shader.resources.uTexture = texture2.source;
  * @class
  * @category rendering
+ * @advanced
  */
 export class Shader extends EventEmitter<{'destroy': Shader}>
 {

@@ -11,6 +11,7 @@ import type { InstructionSet } from './InstructionSet';
  * InstructionPipes are specifically  used to manage the state of the renderer.
  * For example, the BlendModePipe is used to set the blend mode of the renderer.
  * @category rendering
+ * @advanced
  */
 export interface InstructionPipe<INSTRUCTION extends Instruction>
 {
@@ -59,6 +60,7 @@ export interface InstructionPipe<INSTRUCTION extends Instruction>
  * An interface for a pipe that can be used to build instructions for the renderer.
  * RenderPipes are specifically used to render Renderables like a Mesh.
  * @category rendering
+ * @advanced
  */
 export interface RenderPipe<RENDERABLE = Renderable>
 {
@@ -101,6 +103,7 @@ export interface RenderPipe<RENDERABLE = Renderable>
  * An interface for a pipe that can be used to build instructions for the renderer.
  * BatchPipes are specifically used to build and render Batches.
  * @category rendering
+ * @advanced
  */
 export interface BatchPipe
 {
@@ -121,6 +124,7 @@ export interface BatchPipe
 /**
  * A helpful type that can be used to create a new RenderPipe, BatchPipe or InstructionPipe
  * @category rendering
+ * @advanced
  */
 export interface PipeConstructor
 {

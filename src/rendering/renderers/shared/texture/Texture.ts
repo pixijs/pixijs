@@ -13,6 +13,7 @@ import type { TextureResourceOrOptions } from './utils/textureFrom';
 /**
  * Stores the width of the non-scalable borders, for example when used with {@link NineSlicePlane} texture.
  * @category rendering
+ * @advanced
  */
 export interface TextureBorders
 {
@@ -29,6 +30,7 @@ export interface TextureBorders
 /**
  * The UVs data structure for a texture.
  * @category rendering
+ * @advanced
  */
 export type UVs = {
     x0: number;
@@ -44,6 +46,7 @@ export type UVs = {
 /**
  * The options that can be passed to a new Texture
  * @category rendering
+ * @standard
  */
 export interface TextureOptions<TextureSourceType extends TextureSource = TextureSource>
 {
@@ -79,6 +82,7 @@ export interface TextureOptions<TextureSourceType extends TextureSource = Textur
 /**
  * A texture that can be bound to a shader as it has a texture source.
  * @category rendering
+ * @advanced
  */
 export interface BindableTexture
 {
@@ -88,6 +92,7 @@ export interface BindableTexture
 /**
  * A texture source can be a string, an image, a video, a canvas, or a texture resource.
  * @category rendering
+ * @advanced
  * @see {@link TextureSource}
  * @see {@link TextureResourceOrOptions}
  * @see {@link Texture.from}
@@ -133,6 +138,7 @@ export type TextureSourceLike = TextureSource | TextureResourceOrOptions | strin
  * it subscribes on baseTexture events, it automatically resizes at the same time as baseTexture.
  * @category rendering
  * @class
+ * @standard
  */
 export class Texture<TextureSourceType extends TextureSource = TextureSource> extends EventEmitter<{
     update: Texture

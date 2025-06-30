@@ -5,11 +5,15 @@
     "tagDefinitions": [
         {
             "tagName": "@standard",
-            "syntaxKind": "modifier"
+            "syntaxKind": "block"
         },
         {
             "tagName": "@advanced",
             "syntaxKind": "modifier"
+        },
+        {
+            "tagName": "@noInheritDoc",
+            "syntaxKind": "block"
         }
     ]
 }

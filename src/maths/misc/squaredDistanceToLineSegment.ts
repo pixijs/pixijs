@@ -8,6 +8,7 @@
  * @param y2 - y coordinate of the second endpoint of the line segment
  * @returns The squared distance from the point to the line segment
  * @category maths
+ * @internal
  */
 export function squaredDistanceToLineSegment(
     x: number, y: number,

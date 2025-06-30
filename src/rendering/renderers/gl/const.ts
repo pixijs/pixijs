@@ -1,6 +1,7 @@
 /**
  * Constants used by the renderer for clearing the screen or render textures.
  * @category rendering
+ * @advanced
  */
 export enum CLEAR
 {
@@ -27,5 +28,6 @@ export enum CLEAR
 /**
  * Used for clearing render textures. true is the same as `ALL` false is the same as `NONE`
  * @category rendering
+ * @advanced
  */
 export type CLEAR_OR_BOOL = CLEAR | boolean;

@@ -12,17 +12,20 @@ import type { StructsAndGroups } from './utils/extractStructAndGroups';
  * a WebGPU descriptions of how the program is laid out
  * @see https://gpuweb.github.io/gpuweb/#gpupipelinelayout
  * @category rendering
+ * @advanced
  */
 export type ProgramPipelineLayoutDescription = GPUBindGroupLayoutEntry[][];
 /**
  * a map the maps names of uniforms to group indexes
  * @category rendering
+ * @advanced
  */
 export type ProgramLayout = Record<string, number>[];
 
 /**
  * the program source
  * @category rendering
+ * @advanced
  */
 export interface ProgramSource
 {
@@ -35,6 +38,7 @@ export interface ProgramSource
 /**
  * The options for the gpu program
  * @category rendering
+ * @advanced
  */
 export interface GpuProgramOptions
 {
@@ -89,6 +93,7 @@ const programCache: Record<string, GpuProgram> = Object.create(null);
  * WebGPU does not offer such a capability. Therefore, in the context of WebGPU, we're required
  * to manually extract the program layout information from the source code itself.
  * @category rendering
+ * @advanced
  */
 export class GpuProgram
 {

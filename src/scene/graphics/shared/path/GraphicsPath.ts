@@ -13,6 +13,7 @@ import type { RoundedPoint } from './roundShape';
  * Represents a single drawing instruction in a `GraphicsPath`.
  * Each instruction consists of an action type and associated data.
  * @category scene
+ * @advanced
  */
 export interface PathInstruction
 {
@@ -31,6 +32,7 @@ export interface PathInstruction
  * similar graphical context. It supports high-level drawing operations like lines, arcs, curves, and more, enabling
  * complex graphic constructions with relative ease.
  * @category scene
+ * @advanced
  */
 export class GraphicsPath
 {
