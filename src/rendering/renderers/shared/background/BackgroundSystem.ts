@@ -112,13 +112,15 @@ export class BackgroundSystem implements System<BackgroundSystemOptions>
     set color(value: ColorSource)
     {
         // #if _DEBUG
+        // Warn if transparency is being set after an opaque canvas was initialized.
+        // Canvas alpha settings can't be changed after creation, so this helps developers avoid confusion.
         const incoming = new Color(value);
 
         if (incoming.alpha < 1 && this._backgroundColor.alpha === 1)
         {
             warn(
                 'Cannot set a transparent background on an opaque canvas. '
-            + 'To enable transparency, set backgroundAlpha < 1 when initializing your Application.'
+                + 'To enable transparency, set backgroundAlpha < 1 when initializing your Application.'
             );
         }
         // #endif
