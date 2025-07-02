@@ -40,7 +40,6 @@ export interface Text extends PixiMixins.Text, AbstractText<
  *     },
  *     textureStyle: {
  *         scaleMode: 'nearest',
- *         resolution: 2
  *     }
  * });
  * ```
@@ -65,9 +64,6 @@ export interface CanvasTextOptions extends TextOptions
      *     text: 'Crisp Text',
      *     textureStyle: {
      *         scaleMode: 'nearest', // Pixel-perfect scaling
-     *         format: 'rgba',       // Include alpha channel
-     *         resolution: 2,        // Higher resolution
-     *         premultiplyAlpha: true
      *     }
      * });
      * ```
@@ -129,8 +125,6 @@ export interface CanvasTextOptions extends TextOptions
  *     },
  *     textureStyle: {
  *         scaleMode: 'nearest',
- *         resolution: 2,
- *         format: 'rgba',
  *     }
  * });
  *

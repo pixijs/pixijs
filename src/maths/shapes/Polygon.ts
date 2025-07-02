@@ -301,14 +301,14 @@ export class Polygon implements ShapePrimitive
      * const isOnStroke = polygon.strokeContains(25, 25, 4); // 4px line width
      *
      * // Check with different alignments
-     * const innerStroke = polygon.strokeContains(25, 25, 4, 0);   // Inside
+     * const innerStroke = polygon.strokeContains(25, 25, 4, 1);   // Inside
      * const centerStroke = polygon.strokeContains(25, 25, 4, 0.5); // Centered
-     * const outerStroke = polygon.strokeContains(25, 25, 4, 1);   // Outside
+     * const outerStroke = polygon.strokeContains(25, 25, 4, 0);   // Outside
      * ```
      * @param x - The X coordinate of the point to test
      * @param y - The Y coordinate of the point to test
      * @param strokeWidth - The width of the line to check
-     * @param alignment - The alignment of the stroke (0 = inner, 0.5 = centered, 1 = outer)
+     * @param alignment - The alignment of the stroke (1 = inner, 0.5 = centered, 0 = outer)
      * @returns Whether the x/y coordinates are within this polygon's stroke
      * @see {@link Polygon.contains} For checking fill containment
      * @see {@link Polygon.getBounds} For getting stroke bounds

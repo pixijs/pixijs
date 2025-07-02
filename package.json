@@ -127,7 +127,7 @@
     "ts-jest": "^26.0.0",
     "ts-node": "^9.0.0",
     "tsc-silent": "^1.2.2",
-    "typedoc": "^0.28.4",
+    "typedoc": "^0.28.7",
     "typedoc-plugin-ga": "^1.0.5",
     "typedoc-plugin-mdn-links": "^5.0.2",
     "typedoc-plugin-no-inherit": "^1.6.1",
