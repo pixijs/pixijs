@@ -20,6 +20,9 @@ export interface BackgroundSystemOptions
     background?: ColorSource
     /**
      * Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
+     * This value determines whether the canvas is initialized with alpha transparency support.
+     * Note: This cannot be changed after initialization. If set to `1`, the canvas will remain opaque,
+     * even if a transparent background color is set later.
      * @default 1
      */
     backgroundAlpha?: number;
@@ -112,8 +115,7 @@ export class BackgroundSystem implements System<BackgroundSystemOptions>
     set color(value: ColorSource)
     {
         // #if _DEBUG
-        // Warn if transparency is being set after an opaque canvas was initialized.
-        // Canvas alpha settings can't be changed after creation, so this helps developers avoid confusion.
+
         const incoming = new Color(value);
 
         if (incoming.alpha < 1 && this._backgroundColor.alpha === 1)
