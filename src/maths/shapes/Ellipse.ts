@@ -181,9 +181,9 @@ export class Ellipse implements ShapePrimitive
      * const isOnStroke = ellipse.strokeContains(150, 100, 4); // 4px line width
      *
      * // Check with different alignments
-     * const innerStroke = ellipse.strokeContains(150, 100, 4, 0);   // Inside
+     * const innerStroke = ellipse.strokeContains(150, 100, 4, 1);   // Inside
      * const centerStroke = ellipse.strokeContains(150, 100, 4, 0.5); // Centered
-     * const outerStroke = ellipse.strokeContains(150, 100, 4, 1);   // Outside
+     * const outerStroke = ellipse.strokeContains(150, 100, 4, 0);   // Outside
      * ```
      * @remarks
      * - Uses normalized ellipse equations
@@ -192,7 +192,7 @@ export class Ellipse implements ShapePrimitive
      * @param x - The X coordinate of the point to test
      * @param y - The Y coordinate of the point to test
      * @param strokeWidth - The width of the line to check
-     * @param alignment - The alignment of the stroke (0 = inner, 0.5 = centered, 1 = outer)
+     * @param alignment - The alignment of the stroke (1 = inner, 0.5 = centered, 0 = outer)
      * @returns Whether the x/y coords are within this ellipse's stroke
      * @see {@link Ellipse.contains} For checking fill containment
      * @see {@link Ellipse.getBounds} For getting stroke bounds
