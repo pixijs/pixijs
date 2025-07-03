@@ -1,8 +1,8 @@
 import { Text } from '../../text/Text';
 import { TextStyle } from '../../text/TextStyle';
 import { BitmapText } from '../../text-bitmap/BitmapText';
-import { SegmentedBitmapText } from '../SegmentedBitmapText';
-import { SegmentedText } from '../SegmentedText';
+import { SplitBitmapText } from '../SplitBitmapText';
+import { SplitText } from '../SplitText';
 
 describe('SegmentedText', () =>
 {
@@ -10,7 +10,7 @@ describe('SegmentedText', () =>
     {
         it('should create instance with default options', () =>
         {
-            const text = new SegmentedText({
+            const text = new SplitText({
                 text: 'Hello',
                 style: { fontSize: 24 },
             });
@@ -24,11 +24,11 @@ describe('SegmentedText', () =>
 
         it('should respect custom options', () =>
         {
-            const text = new SegmentedText({
+            const text = new SplitText({
                 text: 'Hello',
                 style: { fontSize: 24 },
 
-                autoSegment: false,
+                autoSplit: false,
                 lineAnchor: 0.5,
                 wordAnchor: { x: 0, y: 1 },
                 charAnchor: { x: 0.5, y: 0.5 },
@@ -49,11 +49,11 @@ describe('SegmentedText', () =>
                 style: { fontSize: 24 },
             });
 
-            const segmented = SegmentedText.from(sourceText, {
+            const segmented = SplitText.from(sourceText, {
                 lineAnchor: 0.5,
             });
 
-            expect(segmented).toBeInstanceOf(SegmentedText);
+            expect(segmented).toBeInstanceOf(SplitText);
             expect(segmented.text).toBe('Convert me');
             expect(segmented.lineAnchor).toEqual(0.5);
         });
@@ -65,9 +65,9 @@ describe('SegmentedText', () =>
                 style: { fontFamily: 'Arial' },
             });
 
-            const segmented = SegmentedBitmapText.from(bitmapText);
+            const segmented = SplitBitmapText.from(bitmapText);
 
-            expect(segmented).toBeInstanceOf(SegmentedBitmapText);
+            expect(segmented).toBeInstanceOf(SplitBitmapText);
             expect(segmented.text).toBe('Bitmap');
         });
     });
@@ -76,7 +76,7 @@ describe('SegmentedText', () =>
     {
         it('should segment text into chars, words, and lines', () =>
         {
-            const text = new SegmentedText({
+            const text = new SplitText({
                 text: 'Hello World',
                 style: { fontSize: 24 },
             });
@@ -88,7 +88,7 @@ describe('SegmentedText', () =>
 
         it('should handle multi-line text', () =>
         {
-            const text = new SegmentedText({
+            const text = new SplitText({
                 text: 'Hello\nWorld',
                 style: { fontSize: 24 },
             });
@@ -98,7 +98,7 @@ describe('SegmentedText', () =>
 
         it('should respect text alignment', () =>
         {
-            const text = new SegmentedBitmapText({
+            const text = new SplitBitmapText({
                 text: 'Right\nAligned',
                 style: {
                     align: 'right',
@@ -115,20 +115,20 @@ describe('SegmentedText', () =>
 
         it('should respect autoSegment option', () =>
         {
-            const text = new SegmentedText({
+            const text = new SplitText({
                 text: 'Hello',
                 style: { fontSize: 24 },
-                autoSegment: false,
+                autoSplit: false,
             });
 
             expect(text.chars.length).toBe(0); // No segmentation done
-            text.segment();
+            text.split();
             expect(text.chars.length).toBe(5); // Now segmented
 
             text.text = 'Changed';
             expect(text.chars.length).toBe(0); // Should not auto-segment
 
-            text.segment();
+            text.split();
             expect(text.chars[0].text).toBe('C'); // Now updated
         });
     });
@@ -137,7 +137,7 @@ describe('SegmentedText', () =>
     {
         it('should set numeric origins', () =>
         {
-            const text = new SegmentedText({
+            const text = new SplitText({
                 text: 'Test',
                 style: { fontSize: 24 },
             });
@@ -154,7 +154,7 @@ describe('SegmentedText', () =>
 
         it('should set point origins', () =>
         {
-            const text = new SegmentedText({
+            const text = new SplitText({
                 text: 'Test',
                 style: { fontSize: 24 },
             });
@@ -167,7 +167,7 @@ describe('SegmentedText', () =>
 
         it('should update origins after text changes', () =>
         {
-            const text = new SegmentedText({
+            const text = new SplitText({
                 text: 'Test',
                 style: { fontSize: 24 },
 
@@ -186,7 +186,7 @@ describe('SegmentedText', () =>
     {
         it('should update style properties', () =>
         {
-            const text = new SegmentedText({
+            const text = new SplitText({
                 text: 'Test',
                 style: { fontSize: 24 },
             });
@@ -197,7 +197,7 @@ describe('SegmentedText', () =>
 
         it('should trigger segmentation on style change', () =>
         {
-            const text = new SegmentedText({
+            const text = new SplitText({
                 text: 'Test',
                 style: { fontSize: 24 },
             });
@@ -218,7 +218,7 @@ describe('SegmentedText', () =>
     {
         it('should clean up resources', () =>
         {
-            const text = new SegmentedText({
+            const text = new SplitText({
                 text: 'Test',
                 style: { fontSize: 24 },
             });
@@ -233,7 +233,7 @@ describe('SegmentedText', () =>
 
         it('should handle partial cleanup', () =>
         {
-            const text = new SegmentedText({
+            const text = new SplitText({
                 text: 'Test',
                 style: { fontSize: 24 },
             });

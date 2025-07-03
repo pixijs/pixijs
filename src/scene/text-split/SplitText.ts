@@ -2,23 +2,23 @@ import { type ContainerOptions } from '../container/Container';
 import { type Text } from '../text/Text';
 import { TextStyle } from '../text/TextStyle';
 import { canvasTextSplit } from '../text/utils/canvasTextSplit';
-import { type AbstractSegmentedOptions, AbstractSegmentedText } from './AbstractSegmentedText';
+import { type AbstractSplitOptions, AbstractSplitText } from './AbstractSplitText';
 import { type TextSplitOutput } from './types';
 
 /**
- * Configuration options for Text segmentation.
+ * Configuration options for Text splitting.
  * @category text
  * @standard
  * @interface
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface SegmentedOptions extends AbstractSegmentedOptions {}
+export interface SplitOptions extends AbstractSplitOptions {}
 
 /**
- * Configuration options for SegmentedText, combining container properties with text segmentation settings.
+ * Configuration options for SplitText, combining container properties with text splitting settings.
  * @example Basic Usage
  * ```ts
- * const options: SegmentedTextOptions = {
+ * const options: SplitTextOptions = {
  *   text: 'Hello World',
  *   style: { fontSize: 32, fill: 0xffffff },
  *   // Transform origins
@@ -29,7 +29,7 @@ export interface SegmentedOptions extends AbstractSegmentedOptions {}
  * ```
  * @example Advanced Configuration
  * ```ts
- * const options: SegmentedTextOptions = {
+ * const options: SplitTextOptions = {
  *   // Text content and style
  *   text: 'Multi\nLine Text',
  *   style: new TextStyle({
@@ -43,8 +43,8 @@ export interface SegmentedOptions extends AbstractSegmentedOptions {}
  *   y: 100,
  *   alpha: 0.8,
  *
- *   // Segmentation settings
- *   autoSegment: true,
+ *   // Splitting settings
+ *   autoSplit: true,
  *
  *   // Transform origins (normalized 0-1)
  *   lineAnchor: { x: 1, y: 0 },    // Top-right
@@ -55,15 +55,15 @@ export interface SegmentedOptions extends AbstractSegmentedOptions {}
  *
  * Properties:
  * - Container options from {@link ContainerOptions}
- * - Text segment options from {@link SegmentedOptions}
- * - Additional PixiJS-specific options from PixiMixins.SegmentedText
- * @see {@link SegmentedText} For the main implementation
+ * - Text splitting options from {@link SplitOptions}
+ * - Additional PixiJS-specific options from PixiMixins.SplitText
+ * @see {@link SplitText} For the main implementation
  * @see {@link ContainerOptions} For base container properties
- * @see {@link SegmentedOptions} For text segmentation options
+ * @see {@link SplitOptions} For text splitting options
  * @category text
  * @standard
  */
-export interface SegmentedTextOptions extends PixiMixins.SegmentedText, ContainerOptions, SegmentedOptions {}
+export interface SplitTextOptions extends PixiMixins.SplitText, ContainerOptions, SplitOptions {}
 
 /**
  * @experimental
@@ -72,14 +72,14 @@ export interface SegmentedTextOptions extends PixiMixins.SegmentedText, Containe
  * Converts each segment into a separate Text object.
  * @example Basic Usage
  * ```ts
- * const text = new SegmentedText({
+ * const text = new SplitText({
  *   text: "Hello World",
  *   style: { fontSize: 24 },
  *   // Origin points for transformations (0-1 range)
  *   lineAnchor: 0.5,  // Center of each line
  *   wordAnchor: { x: 0, y: 0.5 },  // Left-center of each word
  *   charAnchor: { x: 0.5, y: 1 },  // Bottom-center of each character
- *   autoSegment: true  // Auto-update segments on text/style changes
+ *   autoSplit: true  // Auto-update segments on text/style changes
  * });
  * ```
  *
@@ -119,7 +119,7 @@ export interface SegmentedTextOptions extends PixiMixins.SegmentedText, Containe
  * Configuration Options:
  * - `text`: The string to render and segment
  * - `style`: TextStyle instance or configuration object
- * - `autoSegment`: Automatically update segments on changes (default: true)
+ * - `autoSplit`: Automatically update segments on changes (default: true)
  * - `lineAnchor`: Transform origin for lines (default: 0)
  * - `wordAnchor`: Transform origin for words (default: 0)
  * - `charAnchor`: Transform origin for characters (default: 0)
@@ -135,32 +135,32 @@ export interface SegmentedTextOptions extends PixiMixins.SegmentedText, Containe
  * @category text
  * @standard
  */
-export class SegmentedText extends AbstractSegmentedText<Text>
+export class SplitText extends AbstractSplitText<Text>
 {
     /**
-     * Default configuration options for SegmentedText instances.
+     * Default configuration options for SplitText instances.
      * @example
      * ```ts
      * // Override defaults globally
-     * SegmentedText.defaultOptions = {
-     *   autoSegment: false,
+     * SplitText.defaultOptions = {
+     *   autoSplit: false,
      *   lineAnchor: 0.5,  // Center alignment
      *   wordAnchor: { x: 0, y: 0.5 },  // Left-center
      *   charAnchor: { x: 0.5, y: 1 }   // Bottom-center
      * };
      * ```
      */
-    public static defaultOptions: Partial<SegmentedTextOptions> = {
-        autoSegment: true, // Auto-update on text/style changes
+    public static defaultOptions: Partial<SplitTextOptions> = {
+        autoSplit: true, // Auto-update on text/style changes
         lineAnchor: 0, // Top-left alignment
         wordAnchor: 0, // Top-left alignment
         charAnchor: 0, // Top-left alignment
-    } as Partial<SegmentedTextOptions>;
+    } as Partial<SplitTextOptions>;
 
-    constructor(config: SegmentedTextOptions)
+    constructor(config: SplitTextOptions)
     {
-        const completeOptions: SegmentedTextOptions = {
-            ...SegmentedText.defaultOptions,
+        const completeOptions: SplitTextOptions = {
+            ...SplitText.defaultOptions,
             ...config,
         };
 
@@ -168,11 +168,11 @@ export class SegmentedText extends AbstractSegmentedText<Text>
     }
 
     /**
-     * Creates a SegmentedText instance from an existing text object.
+     * Creates a SplitText instance from an existing text object.
      * Useful for converting standard Text or Text objects into segmented versions.
      * @param text - The source text object to convert
-     * @param options - Additional segmentation options
-     * @returns A new SegmentedText instance
+     * @param options - Additional splitting options
+     * @returns A new SplitText instance
      * @example
      * ```ts
      * const text = new Text({
@@ -180,31 +180,31 @@ export class SegmentedText extends AbstractSegmentedText<Text>
      *   style: { fontFamily: 'Arial' }
      * });
      *
-     * const segmented = SegmentedText.from(text);
+     * const segmented = SplitText.from(text);
      *
      * // with additional options
-     * const segmentedWithOptions = SegmentedText.from(text, {
-     *   autoSegment: false,
+     * const segmentedWithOptions = SplitText.from(text, {
+     *   autoSplit: false,
      *   lineAnchor: 0.5,
      *   wordAnchor: { x: 0, y: 0.5 },
      * })
      * ```
      */
-    public static from(text: Text, options?: Omit<SegmentedTextOptions, 'text' | 'style'>): SegmentedText
+    public static from(text: Text, options?: Omit<SplitTextOptions, 'text' | 'style'>): SplitText
     {
-        const completeOptions: SegmentedTextOptions = {
-            ...SegmentedText.defaultOptions,
+        const completeOptions: SplitTextOptions = {
+            ...SplitText.defaultOptions,
             ...options,
             text: text.text,
             style: new TextStyle(text.style),
         };
 
-        return new SegmentedText({
+        return new SplitText({
             ...completeOptions,
         });
     }
 
-    protected segmentFn(): TextSplitOutput<Text>
+    protected splitFn(): TextSplitOutput<Text>
     {
         return canvasTextSplit({
             text: this._originalText,

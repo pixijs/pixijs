@@ -1,8 +1,8 @@
 import { Container } from '../../container/Container';
 import { CanvasTextMetrics } from '../../text/canvas/CanvasTextMetrics';
 import { type TextStyle } from '../../text/TextStyle';
-import { type SegmentedOptions } from '../../text-segmented/SegmentedText';
-import { type TextSplitOutput } from '../../text-segmented/types';
+import { type SplitOptions } from '../../text-split/SplitText';
+import { type TextSplitOutput } from '../../text-split/types';
 import { BitmapFontManager } from '../BitmapFontManager';
 import { BitmapText } from '../BitmapText';
 import { getBitmapTextLayout } from './getBitmapTextLayout';
@@ -18,7 +18,7 @@ import { getBitmapTextLayout } from './getBitmapTextLayout';
  * @internal
  */
 export function bitmapTextSplit(
-    options: Pick<SegmentedOptions, 'text' | 'style'> & { chars: BitmapText[] },
+    options: Pick<SplitOptions, 'text' | 'style'> & { chars: BitmapText[] },
 ): TextSplitOutput<BitmapText>
 {
     const { text, style, chars: existingChars } = options;

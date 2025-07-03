@@ -5,23 +5,23 @@ import { TextStyle, type TextStyleOptions } from '../text/TextStyle';
 import { type SplitableTextObject, type TextSplitOutput } from './types';
 
 /**
- * Configuration options for text segmentation.
+ * Configuration options for text splitting.
  * @category text
  * @standard
  */
-export interface AbstractSegmentedOptions
+export interface AbstractSplitOptions
 {
-    /** Text content to be segmented */
+    /** Text content to be split */
     text: string;
 
     /** Text styling - accepts TextStyle instance or style object */
     style: TextStyle | Partial<TextStyleOptions>;
 
     /**
-     * Enables automatic segmentation on text/style changes
+     * Enables automatic splitting on text/style changes
      * @default true
      */
-    autoSegment?: boolean;
+    autoSplit?: boolean;
 
     /**
      * Transform origin for line segments. Range: [0-1]
@@ -59,10 +59,10 @@ export interface AbstractSegmentedOptions
 }
 
 /**
- * Configuration options for SegmentedText, combining container properties with text segmentation settings.
+ * Configuration options for SplitText, combining container properties with text splitting settings.
  * @example Basic Usage
  * ```ts
- * const options: SegmentedTextOptions = {
+ * const options: SplitTextOptions = {
  *   text: 'Hello World',
  *   style: { fontSize: 32, fill: 0xffffff },
  *   // Transform origins
@@ -73,7 +73,7 @@ export interface AbstractSegmentedOptions
  * ```
  * @example Advanced Configuration
  * ```ts
- * const options: SegmentedTextOptions = {
+ * const options: SplitTextOptions = {
  *   // Text content and style
  *   text: 'Multi\nLine Text',
  *   style: new TextStyle({
@@ -87,8 +87,8 @@ export interface AbstractSegmentedOptions
  *   y: 100,
  *   alpha: 0.8,
  *
- *   // Segmentation settings
- *   autoSegment: true,
+ *   // Splitting settings
+ *   autoSplit: true,
  *
  *   // Transform origins (normalized 0-1)
  *   lineAnchor: { x: 1, y: 0 },    // Top-right
@@ -99,14 +99,14 @@ export interface AbstractSegmentedOptions
  *
  * Properties:
  * - Container options from {@link ContainerOptions}
- * - Text segment options from {@link AbstractSegmentedOptions}
- * @see {@link AbstractSegmentedText} For the main implementation
+ * - Text split options from {@link AbstractSplitOptions}
+ * @see {@link AbstractSplitText} For the main implementation
  * @see {@link ContainerOptions} For base container properties
- * @see {@link AbstractSegmentedOptions} For text segmentation options
+ * @see {@link AbstractSplitOptions} For text splitting options
  * @category text
  * @standard
  */
-export interface AbstractSegmentedTextOptions extends ContainerOptions, AbstractSegmentedOptions {}
+export interface AbstractSplitTextOptions extends ContainerOptions, AbstractSplitOptions {}
 
 /**
  * @experimental
@@ -114,19 +114,19 @@ export interface AbstractSegmentedTextOptions extends ContainerOptions, Abstract
  * for advanced text effects and animations.
  * @example Basic Usage
  * ```ts
- * const text = new SegmentedText({
+ * const text = new SplitText({
  *   text: "Hello World",
  *   style: { fontSize: 24 },
  *   // Origin points for transformations (0-1 range)
  *   lineAnchor: 0.5,  // Center of each line
  *   wordAnchor: { x: 0, y: 0.5 },  // Left-center of each word
  *   charAnchor: { x: 0.5, y: 1 },  // Bottom-center of each character
- *   autoSegment: true  // Auto-update segments on text/style changes
+ *   autoSplit: true  // Auto-update segments on text/style changes
  * });
  * ```
  *
  * Features:
- * - Hierarchical text segmentation (lines → words → characters)
+ * - Hierarchical text splitting (lines → words → characters)
  * - Independent transformation origins for each segment level
  * - Automatic or manual segment updates
  * - Support for both canvas text and bitmap text
@@ -162,7 +162,7 @@ export interface AbstractSegmentedTextOptions extends ContainerOptions, Abstract
  * Configuration Options:
  * - `text`: The string to render and segment
  * - `style`: TextStyle instance or configuration object
- * - `autoSegment`: Automatically update segments on changes (default: true)
+ * - `autoSplit`: Automatically update segments on changes (default: true)
  * - `lineAnchor`: Transform origin for lines (default: 0)
  * - `wordAnchor`: Transform origin for words (default: 0)
  * - `charAnchor`: Transform origin for characters (default: 0)
@@ -178,7 +178,7 @@ export interface AbstractSegmentedTextOptions extends ContainerOptions, Abstract
  * @category text
  * @standard
  */
-export abstract class AbstractSegmentedText<T extends SplitableTextObject> extends Container
+export abstract class AbstractSplitText<T extends SplitableTextObject> extends Container
 {
     /**
      * Individual character segments of the text.
@@ -236,21 +236,21 @@ export abstract class AbstractSegmentedText<T extends SplitableTextObject> exten
     protected _lineAnchor: number | PointData;
     protected _wordAnchor: number | PointData;
     protected _charAnchor: number | PointData;
-    protected _autoSegment: boolean;
+    protected _autoSplit: boolean;
     protected _style: TextStyle;
 
     protected _dirty: boolean = false;
     protected _canReuseChars: boolean = false;
 
-    constructor(config: AbstractSegmentedTextOptions)
+    constructor(config: AbstractSplitTextOptions)
     {
         const {
             text,
             style,
-            autoSegment,
-            lineAnchor: lineOrigin,
-            wordAnchor: wordOrigin,
-            charAnchor: charOrigin,
+            autoSplit,
+            lineAnchor,
+            wordAnchor,
+            charAnchor,
             ...options
         } = config;
 
@@ -260,35 +260,35 @@ export abstract class AbstractSegmentedText<T extends SplitableTextObject> exten
         this.lines = [];
 
         this._originalText = text;
-        this._autoSegment = autoSegment;
-        this._lineAnchor = lineOrigin;
-        this._wordAnchor = wordOrigin;
-        this._charAnchor = charOrigin;
+        this._autoSplit = autoSplit;
+        this._lineAnchor = lineAnchor;
+        this._wordAnchor = wordAnchor;
+        this._charAnchor = charAnchor;
 
-        // setting the style will segment the text if autoSegment is true
-        this.style = new TextStyle(style);
+        // setting the style will segment the text if autoSplit is true
+        this.style = style;
     }
 
-    protected abstract segmentFn(): TextSplitOutput<T>;
+    protected abstract splitFn(): TextSplitOutput<T>;
 
     /**
-     * Segments the text into lines, words, and characters.
-     * Call this manually when autoSegment is false.
-     * @example Manual Segmentation
+     * Splits the text into lines, words, and characters.
+     * Call this manually when autoSplit is false.
+     * @example Manual Splitting
      * ```ts
-     * const text = new SegmentedText({
+     * const text = new SplitText({
      *   text: 'Manual Update',
-     *   autoSegment: false
+     *   autoSplit: false
      * });
      *
      * text.text = 'New Content';
      * text.style = { fontSize: 32 };
-     * text.segment(); // Apply changes
+     * text.split(); // Apply changes
      * ```
      */
-    public segment(): void
+    public split(): void
     {
-        const res: TextSplitOutput<T> = this.segmentFn();
+        const res: TextSplitOutput<T> = this.splitFn();
 
         this.chars = res.chars;
         this.words = res.words;
@@ -311,22 +311,22 @@ export abstract class AbstractSegmentedText<T extends SplitableTextObject> exten
     }
     /**
      * Gets or sets the text content.
-     * Setting new text triggers segmentation if autoSegment is true.
+     * Setting new text triggers splitting if autoSplit is true.
      * > [!NOTE] Setting this frequently can have a performance impact, especially with large texts and canvas text.
      * @example Dynamic Text Updates
      * ```ts
-     * const text = new SegmentedText({
+     * const text = new SplitText({
      *   text: 'Original',
-     *   autoSegment: true
+     *   autoSplit: true
      * });
      *
-     * // Auto-segments on change
+     * // Auto-splits on change
      * text.text = 'Updated Content';
      *
      * // Manual update
-     * text.autoSegment = false;
+     * text.autoSplit = false;
      * text.text = 'Manual Update';
-     * text.segment();
+     * text.split();
      * ```
      */
     set text(value: string)
@@ -502,6 +502,15 @@ export abstract class AbstractSegmentedText<T extends SplitableTextObject> exten
 
         this._style = new TextStyle(style);
 
+        // tidy up word/line containers, characters can be reused
+        this.words.forEach((word) => word.destroy());
+        this.words = [];
+
+        this.lines.forEach((line) => line.destroy());
+        this.lines = [];
+
+        this._canReuseChars = true;
+
         this.onTextUpdate();
     }
 
@@ -509,14 +518,14 @@ export abstract class AbstractSegmentedText<T extends SplitableTextObject> exten
     {
         this._dirty = true;
 
-        if (this._autoSegment)
+        if (this._autoSplit)
         {
-            this.segment();
+            this.split();
         }
     }
 
     /**
-     * Destroys the SegmentedText instance and all its resources.
+     * Destroys the SplitText instance and all its resources.
      * Cleans up all segment arrays, event listeners, and optionally the text style.
      * @param options - Destroy configuration options
      * @example

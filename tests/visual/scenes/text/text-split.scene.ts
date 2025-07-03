@@ -1,6 +1,6 @@
 import { Assets } from '~/assets';
 import { Text } from '~/scene';
-import { SegmentedText } from '~/scene/text-segmented/SegmentedText';
+import { SplitText } from '~/scene/text-split/SplitText';
 
 import type { TestScene } from '../../types';
 import type { Container } from '~/scene';
@@ -20,7 +20,7 @@ export const scene: TestScene = {
         });
 
         // Split the text into characters and words
-        const splitResult = SegmentedText.from(textBitmap);
+        const splitResult = SplitText.from(textBitmap);
 
         scene.addChild(splitResult);
 

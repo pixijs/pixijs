@@ -1,8 +1,8 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { Container } from '../../container/Container';
 import { type ConvertedStrokeStyle } from '../../graphics/shared/FillTypes';
-import { type SegmentedOptions } from '../../text-segmented/SegmentedText';
-import { type TextSplitOutput } from '../../text-segmented/types';
+import { type SplitOptions } from '../../text-split/SplitText';
+import { type TextSplitOutput } from '../../text-split/types';
 import { CanvasTextMetrics } from '../canvas/CanvasTextMetrics';
 import { Text } from '../Text';
 import { type TextStyle } from '../TextStyle';
@@ -108,7 +108,7 @@ function groupTextSegments(
  * @internal
  */
 export function canvasTextSplit(
-    options: Pick<SegmentedOptions, 'text' | 'style'> & { chars: Text[] },
+    options: Pick<SplitOptions, 'text' | 'style'> & { chars: Text[] },
 ): TextSplitOutput<Text>
 {
     const { text, style, chars: existingChars } = options;

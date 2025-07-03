@@ -3,25 +3,25 @@ import { TextStyle } from '../text/TextStyle';
 import { type BitmapText } from '../text-bitmap/BitmapText';
 import { bitmapTextSplit } from '../text-bitmap/utils/bitmapTextSplit';
 import {
-    type AbstractSegmentedOptions,
-    AbstractSegmentedText
-} from './AbstractSegmentedText';
+    type AbstractSplitOptions,
+    AbstractSplitText
+} from './AbstractSplitText';
 import { type TextSplitOutput } from './types';
 
 /**
- * Configuration options for BitmapText segmentation.
+ * Configuration options for BitmapText splitting.
  * @category text
  * @standard
  * @interface
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface SegmentedBitmapOptions extends AbstractSegmentedOptions {}
+export interface SplitBitmapOptions extends AbstractSplitOptions {}
 
 /**
- * Configuration options for SegmentedBitmapText, combining container properties with text segmentation settings.
+ * Configuration options for SplitBitmapText, combining container properties with text splitting settings.
  * @example Basic Usage
  * ```ts
- * const options: SegmentedBitmapTextOptions = {
+ * const options: SplitBitmapTextOptions = {
  *   text: 'Hello World',
  *   style: { fontSize: 32, fill: 0xffffff },
  *   // Transform origins
@@ -32,7 +32,7 @@ export interface SegmentedBitmapOptions extends AbstractSegmentedOptions {}
  * ```
  * @example Advanced Configuration
  * ```ts
- * const options: SegmentedBitmapTextOptions = {
+ * const options: SplitBitmapTextOptions = {
  *   // Text content and style
  *   text: 'Multi\nLine Text',
  *   style: new TextStyle({
@@ -46,8 +46,8 @@ export interface SegmentedBitmapOptions extends AbstractSegmentedOptions {}
  *   y: 100,
  *   alpha: 0.8,
  *
- *   // Segmentation settings
- *   autoSegment: true,
+ *   // Splitting settings
+ *   autoSplit: true,
  *
  *   // Transform origins (normalized 0-1)
  *   lineAnchor: { x: 1, y: 0 },    // Top-right
@@ -58,18 +58,18 @@ export interface SegmentedBitmapOptions extends AbstractSegmentedOptions {}
  *
  * Properties:
  * - Container options from {@link ContainerOptions}
- * - Text segment options from {@link SegmentedBitmapOptions}
- * - Additional PixiJS-specific options from PixiMixins.SegmentedBitmapText
- * @see {@link SegmentedBitmapText} For the main implementation
+ * - Text splitting options from {@link SplitBitmapOptions}
+ * - Additional PixiJS-specific options from PixiMixins.SplitBitmapText
+ * @see {@link SplitBitmapText} For the main implementation
  * @see {@link ContainerOptions} For base container properties
- * @see {@link SegmentedBitmapOptions} For text segmentation options
+ * @see {@link SplitBitmapOptions} For text splitting options
  * @category text
  * @standard
  */
-export interface SegmentedBitmapTextOptions
-    extends PixiMixins.SegmentedBitmapText,
+export interface SplitBitmapTextOptions
+    extends PixiMixins.SplitBitmapText,
     ContainerOptions,
-    SegmentedBitmapOptions {}
+    SplitBitmapOptions {}
 
 /**
  * @experimental
@@ -78,14 +78,14 @@ export interface SegmentedBitmapTextOptions
  * Converts each segment into a separate BitmapText object.
  * @example Basic Usage
  * ```ts
- * const text = new SegmentedBitmapText({
+ * const text = new SplitBitmapText({
  *   text: "Hello World",
  *   style: { fontSize: 24 },
  *   // Origin points for transformations (0-1 range)
  *   lineAnchor: 0.5,  // Center of each line
  *   wordAnchor: { x: 0, y: 0.5 },  // Left-center of each word
  *   charAnchor: { x: 0.5, y: 1 },  // Bottom-center of each character
- *   autoSegment: true  // Auto-update segments on text/style changes
+ *   autoSplit: true  // Auto-update segments on text/style changes
  * });
  * ```
  *
@@ -125,7 +125,7 @@ export interface SegmentedBitmapTextOptions
  * Configuration Options:
  * - `text`: The string to render and segment
  * - `style`: TextStyle instance or configuration object
- * - `autoSegment`: Automatically update segments on changes (default: true)
+ * - `autoSplit`: Automatically update segments on changes (default: true)
  * - `lineAnchor`: Transform origin for lines (default: 0)
  * - `wordAnchor`: Transform origin for words (default: 0)
  * - `charAnchor`: Transform origin for characters (default: 0)
@@ -141,32 +141,32 @@ export interface SegmentedBitmapTextOptions
  * @category text
  * @standard
  */
-export class SegmentedBitmapText extends AbstractSegmentedText<BitmapText>
+export class SplitBitmapText extends AbstractSplitText<BitmapText>
 {
     /**
-     * Default configuration options for SegmentedBitmapText instances.
+     * Default configuration options for SplitBitmapText instances.
      * @example
      * ```ts
      * // Override defaults globally
-     * SegmentedBitmapText.defaultOptions = {
-     *   autoSegment: false,
+     * SplitBitmapText.defaultOptions = {
+     *   autoSplit: false,
      *   lineAnchor: 0.5,  // Center alignment
      *   wordAnchor: { x: 0, y: 0.5 },  // Left-center
      *   charAnchor: { x: 0.5, y: 1 }   // Bottom-center
      * };
      * ```
      */
-    public static defaultOptions: Partial<SegmentedBitmapTextOptions> = {
-        autoSegment: true, // Auto-update on text/style changes
+    public static defaultOptions: Partial<SplitBitmapTextOptions> = {
+        autoSplit: true, // Auto-update on text/style changes
         lineAnchor: 0, // Top-left alignment
         wordAnchor: 0, // Top-left alignment
         charAnchor: 0, // Top-left alignment
-    } as Partial<SegmentedBitmapTextOptions>;
+    } as Partial<SplitBitmapTextOptions>;
 
-    constructor(config: SegmentedBitmapTextOptions)
+    constructor(config: SplitBitmapTextOptions)
     {
-        const completeOptions: SegmentedBitmapTextOptions = {
-            ...SegmentedBitmapText.defaultOptions,
+        const completeOptions: SplitBitmapTextOptions = {
+            ...SplitBitmapText.defaultOptions,
             ...config,
         };
 
@@ -174,11 +174,11 @@ export class SegmentedBitmapText extends AbstractSegmentedText<BitmapText>
     }
 
     /**
-     * Creates a SegmentedBitmapText instance from an existing text object.
+     * Creates a SplitBitmapText instance from an existing text object.
      * Useful for converting standard Text or BitmapText objects into segmented versions.
      * @param text - The source text object to convert
-     * @param options - Additional segmentation options
-     * @returns A new SegmentedBitmapText instance
+     * @param options - Additional splitting options
+     * @returns A new SplitBitmapText instance
      * @example
      * ```ts
      * const bitmapText = new BitmapText({
@@ -186,11 +186,11 @@ export class SegmentedBitmapText extends AbstractSegmentedText<BitmapText>
      *   style: { fontFamily: 'Arial' }
      * });
      *
-     * const segmented = SegmentedBitmapText.from(bitmapText);
+     * const segmented = SplitBitmapText.from(bitmapText);
      *
      * // with additional options
-     * const segmentedWithOptions = SegmentedBitmapText.from(bitmapText, {
-     *   autoSegment: false,
+     * const segmentedWithOptions = SplitBitmapText.from(bitmapText, {
+     *   autoSplit: false,
      *   lineAnchor: 0.5,
      *   wordAnchor: { x: 0, y: 0.5 },
      * })
@@ -198,22 +198,22 @@ export class SegmentedBitmapText extends AbstractSegmentedText<BitmapText>
      */
     public static from(
         text: BitmapText,
-        options?: Omit<SegmentedBitmapTextOptions, 'text' | 'style'>,
-    ): SegmentedBitmapText
+        options?: Omit<SplitBitmapTextOptions, 'text' | 'style'>,
+    ): SplitBitmapText
     {
-        const completeOptions: SegmentedBitmapTextOptions = {
-            ...SegmentedBitmapText.defaultOptions,
+        const completeOptions: SplitBitmapTextOptions = {
+            ...SplitBitmapText.defaultOptions,
             ...options,
             text: text.text,
             style: new TextStyle(text.style),
         };
 
-        return new SegmentedBitmapText({
+        return new SplitBitmapText({
             ...completeOptions,
         });
     }
 
-    protected segmentFn(): TextSplitOutput<BitmapText>
+    protected splitFn(): TextSplitOutput<BitmapText>
     {
         return bitmapTextSplit({
             text: this._originalText,
