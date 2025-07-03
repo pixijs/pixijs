@@ -177,14 +177,14 @@ export class Triangle implements ShapePrimitive
      * const isOnStroke = triangle.strokeContains(25, 25, 4); // 4px line width
      *
      * // Check with different alignments
-     * const innerStroke = triangle.strokeContains(25, 25, 4, 0);   // Inside
+     * const innerStroke = triangle.strokeContains(25, 25, 4, 1);   // Inside
      * const centerStroke = triangle.strokeContains(25, 25, 4, 0.5); // Centered
-     * const outerStroke = triangle.strokeContains(25, 25, 4, 1);   // Outside
+     * const outerStroke = triangle.strokeContains(25, 25, 4, 0);   // Outside
      * ```
      * @param pointX - The X coordinate of the point to test
      * @param pointY - The Y coordinate of the point to test
      * @param strokeWidth - The width of the line to check
-     * @param _alignment - The alignment of the stroke (0 = inner, 0.5 = centered, 1 = outer)
+     * @param _alignment - The alignment of the stroke (1 = inner, 0.5 = centered, 0 = outer)
      * @returns Whether the x/y coordinates are within this triangle's stroke
      * @see {@link Triangle.contains} For checking fill containment
      * @see {@link Triangle.getBounds} For getting stroke bounds

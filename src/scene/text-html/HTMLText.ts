@@ -40,7 +40,6 @@ import type { HTMLTextStyleOptions } from './HTMLTextStyle';
  *     }
  *     textureStyle: {
  *         scaleMode: 'linear',
- *         resolution: 2
  *     }
  * });
  * ```
@@ -64,9 +63,6 @@ export interface HTMLTextOptions extends TextOptions<HTMLTextStyle, HTMLTextStyl
      *     text: 'Crisp Text',
      *     textureStyle: {
      *         scaleMode: 'nearest', // Pixel-perfect scaling
-     *         format: 'rgba',       // Include alpha channel
-     *         resolution: 2,        // Higher resolution
-     *         premultiplyAlpha: true
      *     }
      * });
      * ```
@@ -142,7 +138,6 @@ export interface HTMLText extends PixiMixins.HTMLText, AbstractText<
  *     },
  *     textureStyle: {
  *         scaleMode: 'nearest',
- *         resolution: 2,
  *     }
  * });
  * ```

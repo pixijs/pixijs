@@ -393,4 +393,144 @@ describe('Container Hierarchy', () =>
         expect(child.worldTransform.a).toEqual(2);
         expect(child.worldTransform.d).toEqual(2);
     });
+
+    describe('Container replaceChild', () =>
+    {
+        let container: Container;
+        let oldChild: Container;
+        let newChild: Container;
+
+        beforeEach(() =>
+        {
+            container = new Container();
+            oldChild = new Container();
+            newChild = new Container();
+        });
+
+        it('should replace child at the same index', () =>
+        {
+            const child1 = new Container();
+            const child3 = new Container();
+
+            container.addChild(child1, oldChild, child3);
+
+            expect(container.children.length).toBe(3);
+            expect(container.getChildIndex(oldChild)).toBe(1);
+
+            container.replaceChild(oldChild, newChild);
+
+            expect(container.children.length).toBe(3);
+            expect(container.getChildIndex(newChild)).toBe(1);
+            expect(container.children[0]).toBe(child1);
+            expect(container.children[1]).toBe(newChild);
+            expect(container.children[2]).toBe(child3);
+        });
+
+        it('should remove old child from container', () =>
+        {
+            container.addChild(oldChild);
+
+            expect(container.children.includes(oldChild)).toBe(true);
+            expect(oldChild.parent).toBe(container);
+
+            container.replaceChild(oldChild, newChild);
+
+            expect(container.children.includes(oldChild)).toBe(false);
+            expect(oldChild.parent).toBe(null);
+        });
+
+        it('should add new child to container', () =>
+        {
+            container.addChild(oldChild);
+
+            expect(container.children.includes(newChild)).toBe(false);
+            expect(newChild.parent).toBe(null);
+
+            container.replaceChild(oldChild, newChild);
+
+            expect(container.children.includes(newChild)).toBe(true);
+            expect(newChild.parent).toBe(container);
+        });
+
+        it('should copy transform from old child to new child', async () =>
+        {
+            const renderer = await getWebGLRenderer();
+
+            // Set up transforms
+            oldChild.position.set(100, 50);
+            oldChild.rotation = Math.PI / 4;
+            oldChild.scale.set(2, 1.5);
+
+            container.addChild(oldChild);
+
+            // Render to update transforms
+            renderer.render(container);
+
+            const originalLocalTransform = oldChild.localTransform.clone();
+
+            container.replaceChild(oldChild, newChild);
+
+            // Check that new child has same local transform
+            expect(newChild.localTransform.a).toBeCloseTo(originalLocalTransform.a);
+            expect(newChild.localTransform.b).toBeCloseTo(originalLocalTransform.b);
+            expect(newChild.localTransform.c).toBeCloseTo(originalLocalTransform.c);
+            expect(newChild.localTransform.d).toBeCloseTo(originalLocalTransform.d);
+            expect(newChild.localTransform.tx).toBeCloseTo(originalLocalTransform.tx);
+            expect(newChild.localTransform.ty).toBeCloseTo(originalLocalTransform.ty);
+        });
+
+        it('should throw error if old child is not in container', () =>
+        {
+            const unrelatedChild = new Container();
+
+            container.addChild(new Container());
+
+            expect(() => container.replaceChild(unrelatedChild, newChild))
+                .toThrow('The supplied Container must be a child of the caller');
+        });
+
+        it('should handle case where new child already has a parent', () =>
+        {
+            const otherContainer = new Container();
+
+            container.addChild(oldChild);
+            otherContainer.addChild(newChild);
+
+            expect(newChild.parent).toBe(otherContainer);
+            expect(otherContainer.children.includes(newChild)).toBe(true);
+
+            container.replaceChild(oldChild, newChild);
+
+            expect(newChild.parent).toBe(container);
+            expect(otherContainer.children.includes(newChild)).toBe(false);
+            expect(container.children.includes(newChild)).toBe(true);
+        });
+
+        it('should update local transform before copying', () =>
+        {
+            const updateSpy = jest.spyOn(oldChild, 'updateLocalTransform');
+            const updateSpy2 = jest.spyOn(newChild, 'updateLocalTransform');
+
+            container.addChild(oldChild);
+            container.replaceChild(oldChild, newChild);
+
+            expect(updateSpy).toHaveBeenCalledTimes(1);
+            expect(updateSpy2).toHaveBeenCalledTimes(1);
+
+            updateSpy.mockRestore();
+        });
+
+        it('should call setFromMatrix on new child', () =>
+        {
+            const setFromMatrixSpy = jest.spyOn(newChild, 'setFromMatrix');
+
+            container.addChild(oldChild);
+            container.replaceChild(oldChild, newChild);
+
+            expect(setFromMatrixSpy).toHaveBeenCalledTimes(1);
+            expect(setFromMatrixSpy).toHaveBeenCalledWith(oldChild.localTransform);
+
+            setFromMatrixSpy.mockRestore();
+        });
+    });
 });

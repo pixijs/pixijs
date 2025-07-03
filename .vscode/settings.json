@@ -2,9 +2,11 @@
     "typescript.preferences.autoImportFileExcludePatterns": [
       "src/*/**/index.ts",
       "src/index.ts",
+      "src/index.docs.ts",
       "src/bundle.*.ts",
     ],
     "typescript.preferences.autoImportSpecifierExcludeRegexes": [
         "~/.*",
-    ]
+    ],
+    "jestrunner.jestCommand": "npx jest"
   }
