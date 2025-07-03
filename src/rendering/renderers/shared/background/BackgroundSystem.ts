@@ -116,7 +116,7 @@ export class BackgroundSystem implements System<BackgroundSystemOptions>
     {
         // #if _DEBUG
 
-        const incoming = new Color(value);
+        const incoming = Color.shared.setValue(value);
 
         if (incoming.alpha < 1 && this._backgroundColor.alpha === 1)
         {
