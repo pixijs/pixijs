@@ -235,4 +235,17 @@ describe('Container Visual', () =>
             expect(container.pivot.y).toEqual(2);
         });
     });
+
+    describe('origin', () =>
+    {
+        it('should set origin from a single value', () =>
+        {
+            const container = new Container();
+
+            container.origin.set(2);
+
+            expect(container.origin.x).toEqual(2);
+            expect(container.origin.y).toEqual(2);
+        });
+    });
 });

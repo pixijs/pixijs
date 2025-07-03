@@ -7,6 +7,7 @@ import { DEG_TO_RAD, RAD_TO_DEG } from '../../maths/misc/const';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { uid } from '../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
+import { warn } from '../../utils/logging/warn';
 import { BigPool } from '../../utils/pool/PoolGroup';
 import { type IRenderLayer } from '../layers/RenderLayer';
 import { cacheAsTextureMixin } from './container-mixins/cacheAsTextureMixin';
@@ -44,6 +45,7 @@ export type ContainerChild = Container;
 const defaultSkew = new ObservablePoint(null);
 const defaultPivot = new ObservablePoint(null);
 const defaultScale = new ObservablePoint(null, 1, 1);
+const defaultOrigin = new ObservablePoint(null);
 
 /**
  * Events that can be emitted by a Container. These events provide lifecycle hooks and notifications
@@ -200,6 +202,8 @@ export interface UpdateTransformOptions
     skewY: number;
     pivotX: number;
     pivotY: number;
+    originX: number;
+    originY: number;
 }
 
 /**
@@ -356,6 +360,17 @@ export interface ContainerOptions<C extends ContainerChild = ContainerChild> ext
      * ```
      */
     pivot?: PointData | number;
+    /**
+     * The origin point around which the container rotates and scales.
+     * Unlike pivot, changing origin will not move the container's position.
+     * @example
+     * ```ts
+     * new Container({ origin: new Point(100, 100) }); // Rotate around point (100,100)
+     * new Container({ origin: 50 }); // Rotate around point (50, 50)
+     * new Container({ origin: { x: 150, y: 150 } }); // Rotate around point (150, 150)
+     * ```
+     */
+    origin?: PointData | number;
     /**
      * The coordinate of the object relative to the local coordinates of the parent.
      * @example
@@ -798,6 +813,13 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * @internal
      */
     public _pivot: ObservablePoint = defaultPivot;
+
+    /**
+     * The origin point around which the container rotates and scales.
+     * Unlike pivot, changing origin will not move the container's position.
+     * @private
+     */
+    public _origin: ObservablePoint = defaultOrigin;
 
     /**
      * The skew amount, on the x and y axis.
@@ -1315,6 +1337,10 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * // Rotate around center
      * container.pivot.set(container.width / 2, container.height / 2);
      * container.rotation = Math.PI; // 180 degrees
+     *
+     * // Rotate around center with origin
+     * container.origin.set(container.width / 2, container.height / 2);
+     * container.rotation = Math.PI; // 180 degrees
      * ```
      */
     get rotation(): number
@@ -1343,6 +1369,10 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      *
      * // Rotate around center
      * sprite.pivot.set(sprite.width / 2, sprite.height / 2);
+     * sprite.angle = 180; // Half rotation
+     *
+     * // Rotate around center with origin
+     * sprite.origin.set(sprite.width / 2, sprite.height / 2);
      * sprite.angle = 180; // Half rotation
      *
      * // Reset rotation
@@ -1387,6 +1417,14 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         if (this._pivot === defaultPivot)
         {
             this._pivot = new ObservablePoint(this, 0, 0);
+
+            // #if _DEBUG
+            if (this._origin !== defaultOrigin)
+            {
+                // eslint-disable-next-line max-len
+                warn(`Setting both a pivot and origin on a Container is not recommended. This can lead to unexpected behavior if not handled carefully.`);
+            }
+            // #endif
         }
 
         typeof value === 'number' ? this._pivot.set(value) : this._pivot.copyFrom(value);
@@ -1466,14 +1504,61 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         return this._scale;
     }
 
-    set scale(value: PointData | number)
+    set scale(value: PointData | number | string)
     {
         if (this._scale === defaultScale)
         {
             this._scale = new ObservablePoint(this, 0, 0);
         }
 
+        if (typeof value === 'string')
+        {
+            value = parseFloat(value);
+        }
+
         typeof value === 'number' ? this._scale.set(value) : this._scale.copyFrom(value);
+    }
+
+    /**
+     * @experimental
+     * The origin point around which the container rotates and scales without affecting its position.
+     * Unlike pivot, changing the origin will not move the container's position.
+     * @example
+     * ```ts
+     * // Rotate around center point
+     * container.origin.set(container.width / 2, container.height / 2);
+     * container.rotation = Math.PI; // Rotates around center
+     *
+     * // Reset origin
+     * container.origin.set(0, 0);
+     * ```
+     */
+    get origin(): ObservablePoint
+    {
+        if (this._origin === defaultOrigin)
+        {
+            this._origin = new ObservablePoint(this, 0, 0);
+        }
+
+        return this._origin;
+    }
+
+    set origin(value: PointData | number)
+    {
+        if (this._origin === defaultOrigin)
+        {
+            this._origin = new ObservablePoint(this, 0, 0);
+
+            // #if _DEBUG
+            if (this._pivot !== defaultPivot)
+            {
+                // eslint-disable-next-line max-len
+                warn(`Setting both a pivot and origin on a Container is not recommended. This can lead to unexpected behavior if not handled carefully.`);
+            }
+            // #endif
+        }
+
+        typeof value === 'number' ? this._origin.set(value) : this._origin.copyFrom(value);
     }
 
     /**
@@ -1662,6 +1747,10 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             typeof opts.pivotX === 'number' ? opts.pivotX : this.pivot.x,
             typeof opts.pivotY === 'number' ? opts.pivotY : this.pivot.y
         );
+        this.origin.set(
+            typeof opts.originX === 'number' ? opts.originX : this.origin.x,
+            typeof opts.originY === 'number' ? opts.originY : this.origin.y
+        );
 
         return this;
     }
@@ -1706,11 +1795,11 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         if (this._didLocalTransformChangeId === localTransformChangeId) return;
 
         this._didLocalTransformChangeId = localTransformChangeId;
-        //   this.didChange = false;
 
         const lt = this.localTransform;
         const scale = this._scale;
         const pivot = this._pivot;
+        const origin = this._origin;
         const position = this._position;
 
         const sx = scale._x;
@@ -1719,14 +1808,21 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         const px = pivot._x;
         const py = pivot._y;
 
+        const ox = -origin._x;
+        const oy = -origin._y;
+
         // get the matrix values of the container based on its this properties..
         lt.a = this._cx * sx;
         lt.b = this._sx * sx;
         lt.c = this._cy * sy;
         lt.d = this._sy * sy;
 
-        lt.tx = position._x - ((px * lt.a) + (py * lt.c));
-        lt.ty = position._y - ((px * lt.b) + (py * lt.d));
+        lt.tx = position._x - ((px * lt.a) + (py * lt.c)) // Pivot offset
+            + ((ox * lt.a) + (oy * lt.c)) // Origin offset for rotation and scaling
+            - (ox * sx); // Remove unscaled origin to maintain position
+        lt.ty = position._y - ((px * lt.b) + (py * lt.d)) // Pivot offset
+            + ((ox * lt.b) + (oy * lt.d)) // Origin offset for rotation and scaling
+            - (oy * sy); // Remove unscaled origin to maintain position
     }
 
     // / ///// color related stuff
@@ -1991,6 +2087,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         this._position = null;
         this._scale = null;
         this._pivot = null;
+        this._origin = null;
         this._skew = null;
 
         this.emit('destroyed', this);
