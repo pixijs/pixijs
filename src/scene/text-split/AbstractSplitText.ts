@@ -333,9 +333,9 @@ export abstract class AbstractSplitText<T extends SplitableTextObject> extends C
     {
         this._originalText = value;
         this.lines.forEach((line) => line.destroy({ children: true }));
-        this.lines = [];
-        this.words = [];
-        this.chars = [];
+        this.lines.length = 0;
+        this.words.length = 0;
+        this.chars.length = 0;
         this._canReuseChars = false;
         // You can't reuse chars if the text changes
         this.onTextUpdate();
@@ -504,10 +504,10 @@ export abstract class AbstractSplitText<T extends SplitableTextObject> extends C
 
         // tidy up word/line containers, characters can be reused
         this.words.forEach((word) => word.destroy());
-        this.words = [];
+        this.words.length = 0;
 
         this.lines.forEach((line) => line.destroy());
-        this.lines = [];
+        this.lines.length = 0;
 
         this._canReuseChars = true;
 
