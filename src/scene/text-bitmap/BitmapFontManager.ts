@@ -52,7 +52,6 @@ let fontCount = 0;
  *     skipKerning: false,      // Enable kerning
  *     textureStyle: {
  *         scaleMode: 'linear',
- *         premultiplyAlpha: true
  *     }
  * });
  *
@@ -178,8 +177,6 @@ export interface BitmapFontInstallOptions
      *     name: 'CrispFont',
      *     textureStyle: {
      *         scaleMode: 'nearest',
-     *         resolution: 2,
-     *         format: 'rgba8unorm'
      *     }
      * });
      * ```

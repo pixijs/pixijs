@@ -184,9 +184,9 @@ export class Circle implements ShapePrimitive
      * const isOnStroke = circle.strokeContains(150, 100, 4); // 4px line width
      *
      * // Check with different alignments
-     * const innerStroke = circle.strokeContains(150, 100, 4, 0);   // Inside
+     * const innerStroke = circle.strokeContains(150, 100, 4, 1);   // Inside
      * const centerStroke = circle.strokeContains(150, 100, 4, 0.5); // Centered
-     * const outerStroke = circle.strokeContains(150, 100, 4, 1);   // Outside
+     * const outerStroke = circle.strokeContains(150, 100, 4, 0);   // Outside
      * ```
      * @param x - The X coordinate of the point to test
      * @param y - The Y coordinate of the point to test

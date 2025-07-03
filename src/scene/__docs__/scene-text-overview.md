@@ -126,7 +126,6 @@ const richText = new HTMLText({
     }
     textureStyle: {
         scaleMode: 'linear',
-        resolution: 2
     }
 });
 ```
