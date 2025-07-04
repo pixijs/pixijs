@@ -817,6 +817,7 @@ export class TextStyle extends EventEmitter<{
         }
 
         this.update();
+        this._tick = 0;
     }
 
     /**

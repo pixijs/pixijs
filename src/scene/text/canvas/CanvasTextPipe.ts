@@ -47,8 +47,11 @@ export class CanvasTextPipe implements RenderPipe<Text>
 
         if (text._didTextUpdate)
         {
-            if (batchableText.currentKey !== text.styleKey())
+            const resolution = text._autoResolution ? this._renderer.resolution : text.resolution;
+
+            if (batchableText.currentKey !== text.styleKey() || text.resolution !== resolution)
             {
+                // If the text has changed, we need to update the GPU text
                 this._updateGpuText(text);
             }
             text._didTextUpdate = false;
