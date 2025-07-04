@@ -432,14 +432,32 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         const descent = fontProperties.descent * fontScale;
         const lineHeight = metrics.lineHeight * fontScale;
 
+        let removeShadow = false;
+
         if (style.stroke && strokeThickness)
         {
+            removeShadow = true;
             context.strokeText(char, tx, ty + lineHeight - descent);
         }
 
+        const { shadowBlur, shadowOffsetX, shadowOffsetY } = context;
+
         if (style._fill)
         {
+            if (removeShadow)
+            {
+                context.shadowBlur = 0;
+                context.shadowOffsetX = 0;
+                context.shadowOffsetY = 0;
+            }
             context.fillText(char, tx, ty + lineHeight - descent);
+        }
+
+        if (removeShadow)
+        {
+            context.shadowBlur = shadowBlur;
+            context.shadowOffsetX = shadowOffsetX;
+            context.shadowOffsetY = shadowOffsetY;
         }
     }
 

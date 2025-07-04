@@ -101,6 +101,7 @@ export class CanvasPoolClass
 
         const key = (width << 17) + (height << 1);
 
+        canvasAndContext.context.resetTransform();
         canvasAndContext.context.clearRect(0, 0, width, height);
 
         this._canvasPool[key].push(canvasAndContext);
