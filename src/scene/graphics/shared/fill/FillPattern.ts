@@ -62,12 +62,16 @@ export class FillPattern implements CanvasPattern
      * @internal
      */
     public readonly uid: number = uid('fillPattern');
-    /** Internal texture used to render the gradient */
-    public texture: Texture;
+    /**
+     * Internal tick counter to track changes in the pattern.
+     * This is used to invalidate the pattern when the texture or transform changes.
+     * @internal
+     */
+    public _tick: number = 0;
+    /** @internal */
+    public _texture: Texture;
     /** The transform matrix applied to the pattern */
     public transform = new Matrix();
-
-    private _styleKey: string | null = null;
 
     constructor(texture: Texture, repetition?: PatternRepetition)
     {
@@ -102,20 +106,29 @@ export class FillPattern implements CanvasPattern
             1 / texture.frame.height
         );
 
-        this._styleKey = null;
+        this._tick++;
+    }
+
+    /** Internal texture used to render the gradient */
+    public get texture()
+    {
+        return this._texture;
+    }
+    public set texture(value: Texture)
+    {
+        if (this._texture === value) return;
+
+        this._texture = value;
+        this._tick++;
     }
 
     /**
-     * Gets a unique key representing the current state of the pattern.
-     * Used internally for caching.
-     * @returns Unique string key
+     * Returns a unique key for this instance.
+     * This key is used for caching.
+     * @returns {string} Unique key for the instance
      */
-    public get styleKey(): string
+    public styleKey(): string
     {
-        if (this._styleKey) return this._styleKey;
-
-        this._styleKey = `fill-pattern-${this.uid}-${this.texture.uid}-${this.transform.toArray().join('-')}`;
-
-        return this._styleKey;
+        return `fill-pattern-${this.uid}-${this._tick}`;
     }
 }

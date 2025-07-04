@@ -159,9 +159,14 @@ describe('Text', () =>
             container.addChild(text);
             renderer.render({ container });
 
+            const key = text.styleKey();
+
+            expect(renderer.canvasText['_activeTextures'][key].usageCount).toBe(1);
+
             text.destroy();
 
             expect(text._gpuData).toBeNull();
+            expect(renderer.canvasText['_activeTextures'][key]).toBeNull();
         });
 
         it('should destroy bitmap text correctly on the pipes and systems', async () =>

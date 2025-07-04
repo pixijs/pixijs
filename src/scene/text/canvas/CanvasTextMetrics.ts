@@ -1,3 +1,4 @@
+import { lru } from 'tiny-lru';
 import { DOMAdapter } from '../../../environment/adapter';
 import { fontStringFromTextStyle } from './utils/fontStringFromTextStyle';
 
@@ -211,6 +212,8 @@ export class CanvasTextMetrics
     // eslint-disable-next-line @typescript-eslint/naming-convention
     private static __context: ICanvasRenderingContext2D;
 
+    private static readonly _measurementCache = lru<CanvasTextMetrics>(1000);
+
     /**
      * @param text - the text that was measured
      * @param style - the style that was measured
@@ -251,6 +254,13 @@ export class CanvasTextMetrics
         wordWrap: boolean = style.wordWrap,
     ): CanvasTextMetrics
     {
+        const textKey = `${text}:${style.styleKey()}`;
+
+        // check if we have already measured this text with the same style
+        if (CanvasTextMetrics._measurementCache.has(textKey))
+        {
+            return CanvasTextMetrics._measurementCache.get(textKey);
+        }
         const font = fontStringFromTextStyle(style);
         const fontProperties = CanvasTextMetrics.measureFont(font);
 
@@ -308,6 +318,9 @@ export class CanvasTextMetrics
             maxLineWidth,
             fontProperties
         );
+
+        // cache the measurements
+        CanvasTextMetrics._measurementCache.set(textKey, measurements);
 
         return measurements;
     }
