@@ -3,8 +3,8 @@ import { BitmapFont } from '../BitmapFont';
 import { BitmapFontManager } from '../BitmapFontManager';
 import { Cache } from '~/assets';
 import { Rectangle } from '~/maths';
-import { Texture } from '~/rendering';
 import { groupD8 } from '~/maths/matrix/groupD8';
+import { Texture } from '~/rendering';
 
 describe('BitmapFont', () =>
 {

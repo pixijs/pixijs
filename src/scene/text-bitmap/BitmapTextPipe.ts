@@ -157,7 +157,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
                 if (charData?.texture)
                 {
-                    let texture = charData.texture;
+                    const texture = charData.texture;
 
                     context.texture(
                         texture,

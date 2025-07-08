@@ -1,3 +1,4 @@
+import { groupD8 } from '../../maths/matrix/groupD8';
 import { Rectangle } from '../../maths/shapes/Rectangle';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { AbstractBitmapFont } from './AbstractBitmapFont';
@@ -6,7 +7,6 @@ import { BitmapFontManager } from './BitmapFontManager';
 import type { FontMetrics } from '../text/canvas/CanvasTextMetrics';
 import type { BitmapFontData } from './AbstractBitmapFont';
 import type { BitmapFontInstallOptions } from './BitmapFontManager';
-import { groupD8 } from '../../maths/matrix/groupD8';
 
 /**
  * Options for creating a BitmapFont. Used when loading or creating bitmap fonts from existing textures and data.
@@ -161,7 +161,9 @@ export class BitmapFont extends AbstractBitmapFont<BitmapFont>
             } = textures[charData.page];
 
             let frameReal: Rectangle;
-            if(textureRotate === groupD8.S) { // example: rotated in the spritesheet by 90 degrees
+
+            if (textureRotate === groupD8.S)
+            { // example: rotated in the spritesheet by 90 degrees
                 frameReal = new Rectangle(
                     (textureFrame.width - charData.y - charData.height) + textureFrame.x,
                     charData.x + textureFrame.y,
@@ -169,7 +171,8 @@ export class BitmapFont extends AbstractBitmapFont<BitmapFont>
                     charData.width,
                 );
             }
-            else {
+            else
+            {
                 frameReal = new Rectangle(
                     charData.x + textureFrame.x,
                     charData.y + textureFrame.y,

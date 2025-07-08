@@ -8,8 +8,8 @@ export const scene: TestScene = {
     it: 'should orient the rotated BitmapFont texture from a spritesheet',
     create: async (scene: Container) =>
     {
-        let spritesheet = await Assets.load('fonts/font-spritesheet.json');
-        var font = new BitmapFont({
+        const spritesheet = await Assets.load('fonts/font-spritesheet.json');
+        const font = new BitmapFont({
             textures: [spritesheet.textures['fontsdf-copy.png']],
             data: {
                 pages: [{ id: 0, file: '' }],
@@ -41,7 +41,7 @@ export const scene: TestScene = {
 
         Cache.set('MyCustomFont', font);
 
-        let bitmapText = new BitmapText({
+        const bitmapText = new BitmapText({
             text: 'A',
             style: {
                 fill: 0xffffff,
