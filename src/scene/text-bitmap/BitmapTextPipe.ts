@@ -157,11 +157,15 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
                 if (charData?.texture)
                 {
+                    let texture = charData.texture;
+
                     context.texture(
-                        charData.texture,
+                        texture,
                         tint ? tint : 'black',
                         Math.round(line.charPositions[j] + charData.xOffset),
                         Math.round(currentY + charData.yOffset),
+                        texture.orig.width,
+                        texture.orig.height,
                     );
                 }
             }

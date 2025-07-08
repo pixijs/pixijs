@@ -4,6 +4,7 @@ import { BitmapFontManager } from '../BitmapFontManager';
 import { Cache } from '~/assets';
 import { Rectangle } from '~/maths';
 import { Texture } from '~/rendering';
+import { groupD8 } from '~/maths/matrix/groupD8';
 
 describe('BitmapFont', () =>
 {
@@ -138,6 +139,55 @@ describe('BitmapFont', () =>
 
             expect(font.chars.a.texture.frame.x).toBe(10);
             expect(font.chars.a.texture.frame.y).toBe(20);
+        });
+
+        it('should orient the texture in the BitmapFont', () =>
+        {
+            const frame = new Rectangle(10, 20, 100, 100);
+            const texture = new Texture({
+                frame,
+                rotate: groupD8.S,
+            });
+            const font = new BitmapFont({
+                textures: [texture],
+                data: {
+                    baseLineOffset: 0,
+                    chars: {
+                        a: {
+                            id: 65,
+                            page: 0,
+                            x: 11,
+                            y: 12,
+                            width: 21,
+                            height: 22,
+                            letter: 'a',
+                            xOffset: 0,
+                            yOffset: 0,
+                            kerning: {},
+                            xAdvance: 0,
+                        },
+                    },
+                    pages: [{ id: 0, file: '' }],
+                    lineHeight: 12,
+                    fontSize: 10,
+                    fontFamily: 'font',
+                }
+            });
+
+            // Make sure the character texture also has the correct rotation
+            expect(font.chars.a.texture.rotate).toBe(groupD8.S);
+
+            // Make sure the texture has the correct size (rotated, width => height, height => width)
+            expect(font.chars.a.texture.frame.width).toBe(22);
+            expect(font.chars.a.texture.frame.height).toBe(21);
+
+            // Make sure the texture coordinates calculations are correct
+            expect(font.chars.a.texture.frame.x).toBe((frame.width - 12 - 22) + frame.x);
+            expect(font.chars.a.texture.frame.y).toBe(11 + frame.y);
+
+            // This must be the original size of the sprite texture
+            expect(font.chars.a.texture.orig.width).toBe(21);
+            expect(font.chars.a.texture.orig.height).toBe(22);
         });
     });
 });
