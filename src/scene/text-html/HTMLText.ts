@@ -262,8 +262,8 @@ export class HTMLText extends AbstractText<
 
     private _removeInvalidHtmlTags(input: string): string
     {
-    // This regex finds "<" followed by anything except ">" until the next "<" or end-of-string
-    // i.e., it finds broken tags like "<br" or "<div id='x'" that never close
+        // This regex finds "<" followed by anything except ">" until the next "<" or end-of-string
+        // i.e., it finds broken tags like "<br" or "<div id='x'" that never close
         const brokenTagPattern = /<[^>]*?(?=<|$)/g;
 
         return input.replace(brokenTagPattern, '');
