@@ -254,9 +254,18 @@ export class HTMLText extends AbstractText<
      */
     private _sanitiseText(text: string): string
     {
-        return text
+        return this._removeInvalidHtmlTags(text
             .replace(/<br>/gi, '<br/>')
             .replace(/<hr>/gi, '<hr/>')
-            .replace(/&nbsp;/gi, '&#160;');
+            .replace(/&nbsp;/gi, '&#160;'));
+    }
+
+    private _removeInvalidHtmlTags(input: string): string
+    {
+    // This regex finds "<" followed by anything except ">" until the next "<" or end-of-string
+    // i.e., it finds broken tags like "<br" or "<div id='x'" that never close
+        const brokenTagPattern = /<[^>]*?(?=<|$)/g;
+
+        return input.replace(brokenTagPattern, '');
     }
 }
