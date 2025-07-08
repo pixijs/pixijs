@@ -375,7 +375,7 @@ class BitmapFontManagerClass
         const textStyle = options.style;
 
         const style = textStyle instanceof TextStyle ? textStyle : new TextStyle(textStyle);
-        const overrideFill = style._fill.fill !== null && style._fill.fill !== undefined;
+        const overrideFill = this._canUseTintForStyle(style);
         const font = new DynamicBitmapFont({
             style,
             overrideFill,
@@ -410,6 +410,37 @@ class BitmapFontManagerClass
         {
             font.destroy();
         }
+    }
+
+    /**
+     * Determines if a style can use tinting instead of baking colors into the bitmap.
+     * Tinting is more efficient as it allows reusing the same bitmap with different colors.
+     * @param style - The text style to evaluate
+     * @returns true if the style can use tinting, false if colors must be baked in
+     * @private
+     */
+    private _canUseTintForStyle(style: TextStyle): boolean
+    {
+        // If there's a stroke or drop shadow, we need multiple colors baked in so we can't tint
+        if (style._stroke || style.dropShadow)
+        {
+            return false;
+        }
+
+        // If there's a complex fill (gradient, pattern, etc.) we can't tint
+        if (style._fill.fill)
+        {
+            return false;
+        }
+
+        // If no fill or white fill, we can tint it
+        if (!style._fill.fill || style._fill.color === 0xFFFFFF)
+        {
+            return true;
+        }
+
+        // Simple solid color fill can't be tinted (color is baked in)
+        return false;
     }
 }
 
