@@ -85,11 +85,7 @@ export interface WebGLOptions
     ExtractRendererOptions<typeof DefaultWebGLSystems>,
     PixiMixins.WebGLOptions {}
 
-/**
- * The default WebGL renderer, uses WebGL2 contexts.
- * @category rendering
- * @standard
- */
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface WebGLRenderer<T extends ICanvas = HTMLCanvasElement>
     extends AbstractRenderer<WebGLPipes, WebGLOptions, T>,
     WebGLSystems {}

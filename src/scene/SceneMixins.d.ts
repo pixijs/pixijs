@@ -70,6 +70,11 @@ declare global
         interface HTMLText {}
         interface HTMLTextOptions {}
 
+        interface SplitText {}
+        interface SplitTextOptions {}
+        interface SplitBitmapText {}
+        interface SplitBitmapTextOptions {}
+
     }
 }
 
