@@ -257,8 +257,14 @@ class BitmapFontManagerClass
         // first get us the the right font...
         if (!Cache.has(fontFamilyKey))
         {
+            const styleCopy = Object.create(style);
+
+            // Override the lineHeight, let the BitmapFont pre-render and cache the font
+            // without applying a custom lineHeight style from BitmapText parameter
+            styleCopy.lineHeight = 0;
+
             const fnt = new DynamicBitmapFont({
-                style,
+                style: styleCopy,
                 overrideFill,
                 overrideSize: true,
                 ...this.defaultOptions,
