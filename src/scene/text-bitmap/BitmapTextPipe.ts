@@ -145,8 +145,15 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
         const tint = bitmapFont.applyFillAsTint ? style._fill.color : 0xFFFFFF;
 
-        const fontSize = style.fontSize / scale;
-        const lineHeight = style.lineHeight ? style.lineHeight / scale : bitmapFont.lineHeight;
+        let fontSize = bitmapFont.fontMetrics.fontSize;
+        let lineHeight = bitmapFont.lineHeight;
+
+        if (style.lineHeight)
+        {
+            fontSize = style.fontSize / scale;
+            lineHeight = style.lineHeight / scale;
+        }
+
         let linePositionYShift = (lineHeight - fontSize) / 2;
 
         if (lineHeight - fontSize < 0)
