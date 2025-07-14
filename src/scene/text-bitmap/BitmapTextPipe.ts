@@ -1,7 +1,7 @@
 import { Cache } from '../../assets/cache/Cache';
 import { ExtensionType } from '../../extensions/Extensions';
-import { BigPool } from '../../utils/pool/PoolGroup';
 import { Graphics } from '../graphics/shared/Graphics';
+import { CanvasTextMetrics } from '../text/canvas/CanvasTextMetrics';
 import { SdfShader } from '../text/sdfShader/SdfShader';
 import { BitmapFontManager } from './BitmapFontManager';
 import { getBitmapTextLayout } from './utils/getBitmapTextLayout';
@@ -10,10 +10,23 @@ import type { InstructionSet } from '../../rendering/renderers/shared/instructio
 import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderable } from '../../rendering/renderers/shared/Renderable';
 import type { Renderer } from '../../rendering/renderers/types';
-import type { PoolItem } from '../../utils/pool/Pool';
-import type { Container } from '../container/Container';
 import type { BitmapText } from './BitmapText';
 
+/** @internal */
+export class BitmapTextGraphics extends Graphics
+{
+    public destroy()
+    {
+        if (this.context.customShader)
+        {
+            this.context.customShader.destroy();
+        }
+
+        super.destroy();
+    }
+}
+
+/** @internal */
 export class BitmapTextPipe implements RenderPipe<BitmapText>
 {
     /** @ignore */
@@ -27,8 +40,6 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
     } as const;
 
     private _renderer: Renderer;
-    private _gpuBitmapText: Record<number, Graphics> = {};
-    private readonly _destroyRenderableBound = this.destroyRenderable.bind(this) as (renderable: Container) => void;
 
     constructor(renderer: Renderer)
     {
@@ -76,28 +87,6 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
         }
     }
 
-    public destroyRenderable(bitmapText: BitmapText)
-    {
-        bitmapText.off('destroyed', this._destroyRenderableBound);
-
-        this._destroyRenderableByUid(bitmapText.uid);
-    }
-
-    private _destroyRenderableByUid(renderableUid: number)
-    {
-        const context = this._gpuBitmapText[renderableUid].context;
-
-        if (context.customShader)
-        {
-            BigPool.return(context.customShader as PoolItem);
-
-            context.customShader = null;
-        }
-
-        BigPool.return(this._gpuBitmapText[renderableUid] as PoolItem);
-        this._gpuBitmapText[renderableUid] = null;
-    }
-
     public updateRenderable(bitmapText: BitmapText)
     {
         const graphicsRenderable = this._getGpuBitmapText(bitmapText);
@@ -125,19 +114,18 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
         {
             if (!context.customShader)
             {
-                context.customShader = BigPool.get(SdfShader);
+                // TODO: Check if this is a WebGL renderer before asserting type
+                context.customShader = new SdfShader(this._renderer.limits.maxBatchableTextures);
             }
         }
 
-        const chars = Array.from(bitmapText.text);
+        const chars = CanvasTextMetrics.graphemeSegmenter(bitmapText.text);
         const style = bitmapText._style;
 
         let currentY = bitmapFont.baseLineOffset;
 
         // measure our text...
         const bitmapTextLayout = getBitmapTextLayout(chars, style, bitmapFont, true);
-
-        let index = 0;
 
         const padding = style.padding;
         const scale = bitmapTextLayout.scale;
@@ -163,7 +151,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
             for (let j = 0; j < line.charPositions.length; j++)
             {
-                const char = chars[index++];
+                const char = line.chars[j];
 
                 const charData = bitmapFont.chars[char];
 
@@ -184,21 +172,19 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
     private _getGpuBitmapText(bitmapText: BitmapText)
     {
-        return this._gpuBitmapText[bitmapText.uid] || this.initGpuText(bitmapText);
+        return bitmapText._gpuData[this._renderer.uid] || this.initGpuText(bitmapText);
     }
 
     public initGpuText(bitmapText: BitmapText)
     {
         // TODO we could keep a bunch of contexts around and reuse one that has the same style!
-        const proxyRenderable = BigPool.get(Graphics);
+        const proxyRenderable = new BitmapTextGraphics();
 
-        this._gpuBitmapText[bitmapText.uid] = proxyRenderable;
+        bitmapText._gpuData[this._renderer.uid] = proxyRenderable;
 
         this._updateContext(bitmapText, proxyRenderable);
 
-        bitmapText.on('destroyed', this._destroyRenderableBound);
-
-        return this._gpuBitmapText[bitmapText.uid];
+        return proxyRenderable;
     }
 
     private _updateDistanceField(bitmapText: BitmapText)
@@ -224,13 +210,6 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
     public destroy()
     {
-        for (const uid in this._gpuBitmapText)
-        {
-            this._destroyRenderableByUid(uid as unknown as number);
-        }
-
-        this._gpuBitmapText = null;
-
         this._renderer = null;
     }
 }

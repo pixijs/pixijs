@@ -9,6 +9,12 @@ import type { PointData } from '../../../../maths/point/PointData';
 import type { Bounds } from '../../../container/bounds/Bounds';
 import type { RoundedPoint } from './roundShape';
 
+/**
+ * Represents a single drawing instruction in a `GraphicsPath`.
+ * Each instruction consists of an action type and associated data.
+ * @category scene
+ * @advanced
+ */
 export interface PathInstruction
 {
     action: 'moveTo' | 'lineTo' | 'quadraticCurveTo' |
@@ -25,7 +31,8 @@ export interface PathInstruction
  * This class serves as a collection of drawing commands that can be executed to render shapes and paths on a canvas or
  * similar graphical context. It supports high-level drawing operations like lines, arcs, curves, and more, enabling
  * complex graphic constructions with relative ease.
- * @memberof scene
+ * @category scene
+ * @advanced
  */
 export class GraphicsPath
 {
@@ -264,7 +271,7 @@ export class GraphicsPath
      * @param y - The y-coordinate of the center of the ellipse.
      * @param radiusX - The horizontal radius of the ellipse.
      * @param radiusY - The vertical radius of the ellipse.
-     * @param transform - An optional `Matrix` object to apply a transformation to the ellipse. This can include rotations.
+     * @param matrix - An optional `Matrix` object to apply a transformation to the ellipse. This can include rotations.
      * @returns The instance of the current object for chaining.
      */
     public ellipse(x: number, y: number, radiusX: number, radiusY: number, matrix?: Matrix): this;
@@ -312,8 +319,8 @@ export class GraphicsPath
     /**
      * Adds a quadratic curve to the path. It requires two points: the control point and the end point.
      * The starting point is the last point in the current path.
-     * @param cp1x - The x-coordinate of the control point.
-     * @param cp1y - The y-coordinate of the control point.
+     * @param cpx - The x-coordinate of the control point.
+     * @param cpy - The y-coordinate of the control point.
      * @param x - The x-coordinate of the end point.
      * @param y - The y-coordinate of the end point.
      * @param smoothness - Optional parameter to adjust the smoothness of the curve.

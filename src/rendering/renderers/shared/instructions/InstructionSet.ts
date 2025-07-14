@@ -11,7 +11,8 @@ import type { Instruction } from './Instruction';
  * Note:
  * InstructionSet.instructions contains all the instructions, but does not resize (for performance).
  * So for the true length of the instructions you need to use InstructionSet.instructionSize
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class InstructionSet
 {
@@ -46,7 +47,6 @@ export class InstructionSet
     /**
      * Log the instructions to the console (for debugging)
      * @internal
-     * @ignore
      */
     public log()
     {

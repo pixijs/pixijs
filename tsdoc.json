@@ -1,0 +1,19 @@
+{
+    "$schema": "https://developer.microsoft.com/en-us/json-schemas/tsdoc/v0/tsdoc.schema.json",
+    "extends": ["typedoc/tsdoc.json"],
+    "noStandardTags": false,
+    "tagDefinitions": [
+        {
+            "tagName": "@standard",
+            "syntaxKind": "block"
+        },
+        {
+            "tagName": "@advanced",
+            "syntaxKind": "modifier"
+        },
+        {
+            "tagName": "@noInheritDoc",
+            "syntaxKind": "block"
+        }
+    ]
+}

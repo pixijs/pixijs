@@ -49,6 +49,10 @@ const glFormatToGPUFormatMap: Record<number, COMPRESSED_TEXTURE_FORMATS> = {
     37808: 'astc-4x4-unorm'
 };
 
+/**
+ * @param glInternalFormat
+ * @internal
+ */
 export function glFormatToGPUFormat(glInternalFormat: number): COMPRESSED_TEXTURE_FORMATS
 {
     const format = glFormatToGPUFormatMap[glInternalFormat];

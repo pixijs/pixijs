@@ -2,7 +2,8 @@ import { ExtensionType } from '../extensions/Extensions';
 
 /**
  * Extension for the browser environment.
- * @memberof environment
+ * @category environment
+ * @internal
  */
 export const browserExt = {
     extension: {

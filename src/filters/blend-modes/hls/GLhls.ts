@@ -1,4 +1,7 @@
-/** A helper object containing the hsl shader code for both glsl */
+/**
+ * A helper object containing the hsl shader code for both glsl
+ * @internal
+ */
 export const hslgl = `
 	float getLuminosity(vec3 c) {
 		return 0.3 * c.r + 0.59 * c.g + 0.11 * c.b;

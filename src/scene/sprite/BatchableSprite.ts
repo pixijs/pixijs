@@ -8,7 +8,7 @@ import type { Container } from '../container/Container';
 
 /**
  * A batchable sprite object.
- * @ignore
+ * @internal
  */
 export class BatchableSprite implements DefaultBatchableQuadElement
 {
@@ -44,5 +44,10 @@ export class BatchableSprite implements DefaultBatchableQuadElement
         this._batcher = null;
         this._batch = null;
         this.bounds = null;
+    }
+
+    public destroy()
+    {
+        // BOOM!
     }
 }

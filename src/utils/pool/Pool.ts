@@ -1,10 +1,12 @@
 /**
  * A generic class for managing a pool of items.
- * @template T The type of items in the pool. Must implement {@link utils.PoolItem}.
- * @memberof utils
+ * @template T The type of items in the pool. Must implement {@link PoolItem}.
+ * @category utils
+ * @advanced
  */
 export class Pool<T extends PoolItem>
 {
+    /** @internal */
     public readonly _classType: PoolItemConstructor<T>;
     private readonly _pool: T[] = [];
     private _count = 0;
@@ -77,7 +79,6 @@ export class Pool<T extends PoolItem>
     /**
      * Gets the number of items in the pool.
      * @readonly
-     * @member {number}
      */
     get totalSize(): number
     {
@@ -87,7 +88,6 @@ export class Pool<T extends PoolItem>
     /**
      * Gets the number of items in the pool that are free to use without needing to create more.
      * @readonly
-     * @member {number}
      */
     get totalFree(): number
     {
@@ -97,7 +97,6 @@ export class Pool<T extends PoolItem>
     /**
      * Gets the number of items in the pool that are currently in use.
      * @readonly
-     * @member {number}
      */
     get totalUsed(): number
     {
@@ -113,8 +112,9 @@ export class Pool<T extends PoolItem>
 }
 
 /**
- * An object that can be stored in a {@link utils.Pool}.
- * @memberof utils
+ * An object that can be stored in a {@link Pool}.
+ * @category utils
+ * @advanced
  */
 export type PoolItem = {
     init?: (data?: any) => void;
@@ -123,8 +123,9 @@ export type PoolItem = {
 };
 
 /**
- * The constructor of an object that can be stored in a {@link utils.Pool}.
- * @typeParam K - The type of the object that can be stored in a {@link utils.Pool}.
- * @memberof utils
+ * The constructor of an object that can be stored in a {@link Pool}.
+ * @typeParam K - The type of the object that can be stored in a {@link Pool}.
+ * @category utils
+ * @advanced
  */
 export type PoolItemConstructor<K extends PoolItem> = new () => K;

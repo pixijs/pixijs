@@ -1,3 +1,9 @@
+/**
+ * @param src
+ * @param isES300
+ * @param isFragment
+ * @internal
+ */
 export function addProgramDefines(src: string, isES300: boolean, isFragment?: boolean)
 {
     if (isES300) return src;
@@ -7,7 +13,7 @@ export function addProgramDefines(src: string, isES300: boolean, isFragment?: bo
         src = src.replace('out vec4 finalColor;', '');
 
         return `
-        
+
         #ifdef GL_ES // This checks if it is WebGL1
         #define in varying
         #define finalColor gl_FragColor
@@ -18,7 +24,7 @@ export function addProgramDefines(src: string, isES300: boolean, isFragment?: bo
     }
 
     return `
-        
+
         #ifdef GL_ES // This checks if it is WebGL1
         #define in attribute
         #define out varying

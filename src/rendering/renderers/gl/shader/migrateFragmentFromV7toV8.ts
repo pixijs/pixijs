@@ -1,3 +1,7 @@
+/**
+ * @param fragmentShader
+ * @internal
+ */
 export function migrateFragmentFromV7toV8(fragmentShader: string): string
 {
     fragmentShader = fragmentShader

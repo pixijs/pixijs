@@ -33,6 +33,10 @@ const attributeFormatData = {
     sint32x4: { size: 4, stride: 16, normalised: false },
 };
 
+/**
+ * @param format
+ * @internal
+ */
 export function getAttributeInfoFromFormat(format: VertexFormat): { size: number; stride: number; normalised: boolean }
 {
     return attributeFormatData[format] ?? attributeFormatData.float32;

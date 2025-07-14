@@ -8,6 +8,7 @@ import type { UboElement } from '../../../shared/shader/types';
  * @param uboElement - the element to generate the array sync for
  * @param offsetToAdd - the offset to append at the start of the code
  * @returns - the generated code
+ * @internal
  */
 export function generateArraySyncWGSL(uboElement: UboElement, offsetToAdd: number): string
 {

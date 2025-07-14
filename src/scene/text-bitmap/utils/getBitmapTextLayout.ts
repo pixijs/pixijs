@@ -1,6 +1,13 @@
 import type { TextStyle } from '../../text/TextStyle';
 import type { AbstractBitmapFont } from '../AbstractBitmapFont';
 
+/**
+ * The layout data for a bitmap text.
+ * This contains the width, height, scale, offsetY and lines of text.
+ * Each line contains its width, character positions, characters, space width and spaces index.
+ * @category text
+ * @internal
+ */
 export interface BitmapTextLayoutData
 {
     width: number;
@@ -17,6 +24,13 @@ export interface BitmapTextLayoutData
     }[];
 }
 
+/**
+ * @param chars
+ * @param style
+ * @param font
+ * @param trimEnd
+ * @internal
+ */
 export function getBitmapTextLayout(
     chars: string[],
     style: TextStyle,
@@ -114,6 +128,11 @@ export function getBitmapTextLayout(
     const adjustedLetterSpacing = style.letterSpacing * scale;
     const adjustedWordWrapWidth = style.wordWrapWidth * scale;
 
+    const breakWords = style.wordWrap && style.breakWords;
+
+    const checkIsOverflow = (lineWidth: number) =>
+        lineWidth - adjustedLetterSpacing > adjustedWordWrapWidth;
+
     // loop an extra time to force a line break..
     for (let i = 0; i < chars.length + 1; i++)
     {
@@ -136,9 +155,7 @@ export function getBitmapTextLayout(
 
         if (isWordBreak)
         {
-            const addWordToNextLine = !firstWord
-                && style.wordWrap
-                && (currentLine.width + currentWord.width - adjustedLetterSpacing) > adjustedWordWrapWidth;
+            const addWordToNextLine = !firstWord && style.wordWrap && checkIsOverflow(currentLine.width + currentWord.width);
 
             if (addWordToNextLine)
             {
@@ -188,6 +205,14 @@ export function getBitmapTextLayout(
             const kerning = charData.kerning[previousChar] || 0;
 
             const nextCharWidth = charData.xAdvance + kerning + adjustedLetterSpacing;
+
+            const addWordToNextLine = breakWords && checkIsOverflow(currentLine.width + currentWord.width + nextCharWidth);
+
+            if (addWordToNextLine)
+            {
+                nextWord(currentWord);
+                nextLine();
+            }
 
             currentWord.positions[currentWord.index++] = currentWord.width + kerning;
             currentWord.chars.push(char);

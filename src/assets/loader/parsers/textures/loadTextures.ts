@@ -23,9 +23,10 @@ const validImageMIMEs = [
 ];
 
 /**
- * Configuration for the [loadTextures]{@link assets.loadTextures} plugin.
- * @see assets.loadTextures
- * @memberof assets
+ * Configuration for the [loadTextures]{@link loadTextures} plugin.
+ * @see loadTextures
+ * @category assets
+ * @advanced
  */
 export interface LoadTextureConfig
 {
@@ -81,7 +82,7 @@ export async function loadImageBitmap(url: string, asset?: ResolvedAsset<Texture
  * We can then use the `ImageBitmap` as a source for a Pixi texture
  *
  * You can customize the behavior of this loader by setting the `config` property.
- * Which can be found [here]{@link assets.LoadTextureConfig}
+ * Which can be found [here]{@link LoadTextureConfig}
  * ```js
  * // Set the config
  * import { loadTextures } from 'pixi.js';
@@ -95,7 +96,8 @@ export async function loadImageBitmap(url: string, asset?: ResolvedAsset<Texture
  *    crossOrigin: 'anonymous',
  * };
  * ```
- * @memberof assets
+ * @category assets
+ * @advanced
  */
 export const loadTextures: LoaderParser<Texture, TextureSourceOptions, LoadTextureConfig> = {
 

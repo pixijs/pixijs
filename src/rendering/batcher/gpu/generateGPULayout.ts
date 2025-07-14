@@ -1,3 +1,7 @@
+/**
+ * @param maxTextures
+ * @internal
+ */
 export function generateGPULayout(maxTextures: number): GPUBindGroupLayoutEntry[]
 {
     const gpuLayout: GPUBindGroupLayoutEntry[] = [];

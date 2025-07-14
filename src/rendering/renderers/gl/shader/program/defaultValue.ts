@@ -11,7 +11,6 @@ function booleanArray(size: number): Array<boolean>
 }
 
 /**
- * @method defaultValue
  * @param {string} type - Type of value
  * @param {number} size
  * @private

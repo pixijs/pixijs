@@ -62,6 +62,10 @@ function generateSampleSrc(maxTextures: number): string
     return src.join('\n');
 }
 
+/**
+ * @param maxTextures
+ * @internal
+ */
 export function generateTextureBatchBit(maxTextures: number): HighShaderBit
 {
     if (!textureBatchBitGpuCache[maxTextures])
@@ -133,6 +137,10 @@ function generateSampleGlSrc(maxTextures: number): string
     return src.join('\n');
 }
 
+/**
+ * @param maxTextures
+ * @internal
+ */
 export function generateTextureBatchBitGl(maxTextures: number): HighShaderBit
 {
     if (!textureBatchBitGlCache[maxTextures])

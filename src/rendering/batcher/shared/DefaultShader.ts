@@ -12,7 +12,8 @@ import { Shader } from '../../renderers/shared/shader/Shader';
  *
  * It is used by the default batcher
  * @extends Shader
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class DefaultShader extends Shader
 {

@@ -45,6 +45,7 @@ export interface BitmapFontRawData
     }[]
 }
 
+/** @internal */
 export const bitmapFontTextParser = {
     test(data: string | XMLDocument | BitmapFontData): boolean
     {

@@ -1,49 +1,42 @@
 import { Color } from '../../../../color/Color';
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { warn } from '../../../../utils/logging/warn';
 
 import type { ColorSource, RgbaArray } from '../../../../color/Color';
 import type { System } from '../system/System';
-
 /**
  * Options for the background system.
- * @property {ColorSource} [backgroundColor='black']
- * The background color used to clear the canvas. See {@link ColorSource} for accepted color values.
- * @property {ColorSource} [background] - Alias for backgroundColor
- * @property {number} [backgroundAlpha=1] -
- * Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
- * @property {boolean} [clearBeforeRender=true] - Whether to clear the canvas before new render passes.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export interface BackgroundSystemOptions
 {
     /**
      * The background color used to clear the canvas. See {@link ColorSource} for accepted color values.
-     * @memberof rendering.SharedRendererOptions
      * @default 'black'
      */
     backgroundColor: ColorSource;
-    /**
-     * Alias for backgroundColor
-     * @memberof rendering.SharedRendererOptions
-     */
+    /** Alias for `backgroundColor` */
     background?: ColorSource
     /**
      * Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
-     * @memberof rendering.SharedRendererOptions
+     * This value determines whether the canvas is initialized with alpha transparency support.
+     * Note: This cannot be changed after initialization. If set to `1`, the canvas will remain opaque,
+     * even if a transparent background color is set later.
      * @default 1
      */
-    backgroundAlpha: number;
+    backgroundAlpha?: number;
     /**
      * Whether to clear the canvas before new render passes.
-     * @memberof rendering.SharedRendererOptions
      * @default true
      */
-    clearBeforeRender: boolean;
+    clearBeforeRender?: boolean;
 }
 
 /**
  * The background system manages the background color and alpha of the main view.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class BackgroundSystem implements System<BackgroundSystemOptions>
 {
@@ -121,6 +114,18 @@ export class BackgroundSystem implements System<BackgroundSystemOptions>
 
     set color(value: ColorSource)
     {
+        // #if _DEBUG
+
+        const incoming = Color.shared.setValue(value);
+
+        if (incoming.alpha < 1 && this._backgroundColor.alpha === 1)
+        {
+            warn(
+                'Cannot set a transparent background on an opaque canvas. '
+                + 'To enable transparency, set backgroundAlpha < 1 when initializing your Application.'
+            );
+        }
+        // #endif
         this._backgroundColor.setValue(value);
     }
 
@@ -144,7 +149,6 @@ export class BackgroundSystem implements System<BackgroundSystemOptions>
     /**
      * destroys the background system
      * @internal
-     * @ignore
      */
     public destroy(): void
     {

@@ -2,7 +2,12 @@ const uidCache: Record<string, number> = {
     default: -1,
 };
 
-type UIDNames =
+/**
+ * The names of the unique identifiers. These are used to create unique identifiers for different types of objects.
+ * @category utils
+ * @internal
+ */
+export type UIDNames =
     | 'default'
     | 'resource'
     | 'texture'
@@ -25,14 +30,15 @@ type UIDNames =
     | 'spriteView' //
     | 'textView' //
     | 'tilingSpriteView' //
-    | 'shader';
+    | 'shader' //
+    | 'renderer';
 
 /**
  * Gets the next unique identifier
  * @param name - The name of the identifier.
- * @function uid
  * @returns {number} The next unique identifier to use.
- * @memberof utils
+ * @category utils
+ * @internal
  */
 export function uid(name: UIDNames = 'default'): number
 {
@@ -44,7 +50,10 @@ export function uid(name: UIDNames = 'default'): number
     return ++uidCache[name];
 }
 
-/** Resets the next unique identifier to 0. This is used for some tests, dont touch or things WILL explode :) */
+/**
+ * Resets the next unique identifier to 0. This is used for some tests, dont touch or things WILL explode :)
+ * @internal
+ */
 export function resetUids(): void
 {
     for (const key in uidCache)

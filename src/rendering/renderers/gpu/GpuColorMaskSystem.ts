@@ -5,7 +5,8 @@ import type { WebGPURenderer } from './WebGPURenderer';
 
 /**
  * The system that handles color masking for the GPU.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export class GpuColorMaskSystem implements System
 {

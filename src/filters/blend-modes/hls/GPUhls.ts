@@ -1,4 +1,7 @@
-/** A helper object containing the hsl shader code for wgsl */
+/**
+ * A helper object containing the hsl shader code for wgsl
+ * @internal
+ */
 export const hslgpu = `
 	fn getLuminosity(c: vec3<f32>) -> f32
 	{

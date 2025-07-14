@@ -1,8 +1,9 @@
 import { Matrix } from '../../../../maths/matrix/Matrix';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
+import { FillGradient } from '../fill/FillGradient';
 
 import type { ShapePrimitive } from '../../../../maths/shapes/ShapePrimitive';
-import type { FillStyle } from '../FillTypes';
+import type { FillStyle, StrokeStyle } from '../FillTypes';
 
 /**
  * Temporary matrix used for matrix calculations
@@ -33,8 +34,9 @@ const tempRect = new Rectangle();
  * const textureMatrix = generateTextureMatrix(matrix, fillStyle, shape);
  * // textureMatrix now contains the proper UV mapping for the texture
  * ```
+ * @internal
  */
-export function generateTextureMatrix(out: Matrix, style: FillStyle, shape: ShapePrimitive, matrix?: Matrix)
+export function generateTextureMatrix(out: Matrix, style: FillStyle | StrokeStyle, shape: ShapePrimitive, matrix?: Matrix)
 {
     // Start with either the style's matrix inverted, or identity matrix
     const textureMatrix = style.matrix
@@ -46,23 +48,45 @@ export function generateTextureMatrix(out: Matrix, style: FillStyle, shape: Shap
         // For local space, map texture to shape's bounds
         const bounds = shape.getBounds(tempRect);
 
-        textureMatrix.translate(-bounds.x, -bounds.y);
-        textureMatrix.scale(1 / bounds.width, 1 / bounds.height);
+        if ((style as StrokeStyle).width)
+        {
+            bounds.pad((style as StrokeStyle).width);
+        }
+
+        const { x: tx, y: ty } = bounds;
+        const sx = 1 / bounds.width;
+        const sy = 1 / bounds.height;
+
+        const mTx = -tx * sx;
+        const mTy = -ty * sy;
+
+        const a1 = textureMatrix.a;
+        const b1 = textureMatrix.b;
+        const c1 = textureMatrix.c;
+        const d1 = textureMatrix.d;
+
+        textureMatrix.a *= sx;
+        textureMatrix.b *= sx;
+        textureMatrix.c *= sy;
+        textureMatrix.d *= sy;
+
+        textureMatrix.tx = (mTx * a1) + (mTy * c1) + textureMatrix.tx;
+        textureMatrix.ty = (mTx * b1) + (mTy * d1) + textureMatrix.ty;
     }
     else
     {
         // For global space, use texture's own dimensions
         textureMatrix.translate(style.texture.frame.x, style.texture.frame.y);
-        textureMatrix.scale(1 / style.texture.source.width, 1 / style.texture.source.height);
+        textureMatrix.scale(1 / (style.texture.source.width), 1 / (style.texture.source.height));
+    }
 
-        const sourceStyle = style.texture.source.style;
+    const sourceStyle = style.texture.source.style;
 
-        // Ensure texture repeats properly
-        if (sourceStyle.addressMode === 'clamp-to-edge')
-        {
-            sourceStyle.addressMode = 'repeat';
-            sourceStyle.update();
-        }
+    // we don't want to set the address mode if the fill is a gradient as this handles its own address mode
+    if (!(style.fill instanceof FillGradient) && sourceStyle.addressMode === 'clamp-to-edge')
+    {
+        sourceStyle.addressMode = 'repeat';
+        sourceStyle.update();
     }
 
     // Apply any additional transform matrix

@@ -23,6 +23,7 @@ type MaskMode = 'pushMaskBegin' | 'pushMaskEnd' | 'popMaskBegin' | 'popMaskEnd';
 
 const tempBounds = new Bounds();
 
+/** @internal */
 class AlphaMaskEffect extends FilterEffect implements PoolItem
 {
     constructor()
@@ -60,6 +61,7 @@ class AlphaMaskEffect extends FilterEffect implements PoolItem
     public init: () => void;
 }
 
+/** @internal */
 export interface AlphaMaskInstruction extends Instruction
 {
     renderPipeId: 'alphaMask',
@@ -70,6 +72,7 @@ export interface AlphaMaskInstruction extends Instruction
     renderMask: boolean,
 }
 
+/** @internal */
 export interface AlphaMaskData
 {
     filterEffect: AlphaMaskEffect,
@@ -78,6 +81,7 @@ export interface AlphaMaskData
     filterTexture?: Texture,
 }
 
+/** @internal */
 export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
 {
     /** @ignore */

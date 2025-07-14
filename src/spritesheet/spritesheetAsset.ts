@@ -12,6 +12,15 @@ import type { ResolvedAsset } from '../assets/types';
 import type { TextureSourceOptions } from '../rendering/renderers/shared/texture/sources/TextureSource';
 import type { SpritesheetData } from './Spritesheet';
 
+/**
+ * Interface for the JSON data structure of a spritesheet.
+ * This is used to define the structure of the JSON file that describes a spritesheet.
+ * It includes metadata about the spritesheet and the frames it contains.
+ * @see {@link Spritesheet}
+ * @see {@link SpritesheetData}
+ * @category assets
+ * @advanced
+ */
 export interface SpriteSheetJson extends SpritesheetData
 {
     meta: {
@@ -35,7 +44,7 @@ function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack:
 
     Object.keys(asset.textures).forEach((key) =>
     {
-        out[key] = asset.textures[key];
+        out[`${asset.cachePrefix}${key}`] = asset.textures[key];
     });
 
     if (!ignoreMultiPack)
@@ -69,7 +78,8 @@ function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack:
  *     }
  * })
  * @type {AssetExtension}
- * @memberof assets
+ * @category assets
+ * @advanced
  */
 export const spritesheetAsset = {
     extension: ExtensionType.Asset,
@@ -130,7 +140,8 @@ export const spritesheetAsset = {
                 texture?: Texture,
                 imageFilename?: string,
                 ignoreMultiPack?: boolean,
-                textureOptions?: TextureSourceOptions
+                textureOptions?: TextureSourceOptions,
+                cachePrefix?: string,
             }>,
             loader?: Loader
         ): Promise<Spritesheet>
@@ -138,7 +149,8 @@ export const spritesheetAsset = {
             const {
                 texture: imageTexture, // if user need to use preloaded texture
                 imageFilename, // if user need to use custom filename (not from jsonFile.meta.image)
-                textureOptions // if user need to set texture options on texture
+                textureOptions, // if user need to set texture options on texture
+                cachePrefix, // if user need to use custom cache prefix
             } = options?.data ?? {};
 
             let basePath = path.dirname(options.src);
@@ -163,10 +175,11 @@ export const spritesheetAsset = {
                 texture = assets[imagePath];
             }
 
-            const spritesheet = new Spritesheet(
-                texture.source,
-                asset,
-            );
+            const spritesheet = new Spritesheet({
+                texture: texture.source,
+                data: asset,
+                cachePrefix
+            });
 
             await spritesheet.parse();
 

@@ -17,7 +17,8 @@ import type { PrepareQueueItem, PrepareSourceItem } from './PrepareBase';
 /**
  * Part of the prepare system. Responsible for uploading all the items to the GPU.
  * This class extends the base functionality and resolves given resource items ready for the queue.
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export abstract class PrepareQueue extends PrepareBase
 {

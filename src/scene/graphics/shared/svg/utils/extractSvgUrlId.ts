@@ -18,6 +18,7 @@
  * - closing parenthesis
  * @param url - The SVG url() string to parse
  * @returns The extracted ID string, or empty string if no valid ID found
+ * @internal
  */
 export function extractSvgUrlId(url: string): string
 {

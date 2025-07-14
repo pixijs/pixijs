@@ -1,6 +1,7 @@
 /**
  * An instruction that can be executed by the renderer
- * @memberof rendering
+ * @category rendering
+ * @advanced
  */
 export interface Instruction
 {

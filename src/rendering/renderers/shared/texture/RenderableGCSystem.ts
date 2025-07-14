@@ -13,30 +13,28 @@ let renderableGCTick = 0;
 
 /**
  * Options for the {@link RenderableGCSystem}.
- * @memberof rendering
+ * @category rendering
  * @property {boolean} [renderableGCActive=true] - If set to true, this will enable the garbage collector on the renderables.
  * @property {number} [renderableGCAMaxIdle=60000] -
  * The maximum idle frames before a texture is destroyed by garbage collection.
  * @property {number} [renderableGCCheckCountMax=60000] - time between two garbage collections.
+ * @advanced
  */
 export interface RenderableGCSystemOptions
 {
     /**
      * If set to true, this will enable the garbage collector on the GPU.
      * @default true
-     * @memberof rendering.SharedRendererOptions
      */
     renderableGCActive: boolean;
     /**
      * The maximum idle frames before a texture is destroyed by garbage collection.
      * @default 60 * 60
-     * @memberof rendering.SharedRendererOptions
      */
     renderableGCMaxUnusedTime: number;
     /**
      * Frames between two garbage collections.
      * @default 600
-     * @memberof rendering.SharedRendererOptions
      */
     renderableGCFrequency: number;
 }
@@ -59,8 +57,7 @@ export interface RenderableGCSystemOptions
  * - Always call destroy() explicitly when done with renderables (e.g. sprite.destroy())
  * - This system is a safety net, not a replacement for proper cleanup
  * - Adjust frequency and timeouts via options if needed
- *
- * Example:
+ * @example
  * ```js
  * // Sprite created but reference lost without destroy
  * let sprite = new Sprite(texture);
@@ -74,7 +71,8 @@ export interface RenderableGCSystemOptions
  * // - RenderableGC will clean up the sprite's GPU resources
  * // - JS garbage collector can then clean up the sprite itself
  * ```
- * @implements {System<RenderableGCSystemOptions>}
+ * @category rendering
+ * @advanced
  */
 export class RenderableGCSystem implements System<RenderableGCSystemOptions>
 {

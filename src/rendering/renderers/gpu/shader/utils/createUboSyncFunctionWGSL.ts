@@ -4,6 +4,10 @@ import { generateArraySyncWGSL } from './generateArraySyncWGSL';
 
 import type { UboElement, UniformsSyncCallback } from '../../../shared/shader/types';
 
+/**
+ * @param uboElements
+ * @internal
+ */
 export function createUboSyncFunctionWGSL(
     uboElements: UboElement[],
 ): UniformsSyncCallback

@@ -21,6 +21,11 @@ import type { RoundedPoint } from './roundShape';
 
 const tempRectangle = new Rectangle();
 
+/**
+ * A type representing a shape primitive with optional transformation and holes.
+ * @category scene
+ * @advanced
+ */
 export type ShapePrimitiveWithHoles = {
     shape: ShapePrimitive,
     transform?: Matrix,
@@ -35,7 +40,8 @@ export type ShapePrimitiveWithHoles = {
  * ends, and transformations for shapes.
  *
  * It is used internally by `GraphicsPath` to build up the path.
- * @memberof scene
+ * @category scene
+ * @advanced
  */
 export class ShapePath
 {

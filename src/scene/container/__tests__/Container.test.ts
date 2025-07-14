@@ -1,5 +1,7 @@
+import { RenderLayer } from '../../layers/RenderLayer';
 import { Container } from '../Container';
 import { updateRenderGroupTransforms } from '../utils/updateRenderGroupTransforms';
+import { Matrix } from '~/maths/matrix/Matrix';
 
 describe('Container', () =>
 {
@@ -32,6 +34,8 @@ describe('Container', () =>
                 skewY: 7,
                 pivotX: 8,
                 pivotY: 9,
+                originX: 8,
+                originY: 9,
             });
 
             expect(object.position.x).toEqual(1);
@@ -43,6 +47,8 @@ describe('Container', () =>
             expect(object.skew.y).toEqual(7);
             expect(object.pivot.x).toEqual(8);
             expect(object.pivot.y).toEqual(9);
+            expect(object.origin.x).toEqual(8);
+            expect(object.origin.y).toEqual(9);
         });
 
         it('should convert zero scale to one', () =>
@@ -688,6 +694,325 @@ describe('Container', () =>
             expect(renderGroup2.instructionSet).toBeNull();
             expect(renderGroup2.renderGroupChildren).toBeNull();
             expect(renderGroup2['_onRenderContainers']).toBeNull();
+        });
+
+        it('should destroy children if children option is true', () =>
+        {
+            const container = new Container();
+            const child = new Container();
+
+            container.addChild(child);
+            container.destroy({ children: true });
+
+            expect(container.children.length).toEqual(0);
+            expect(container.destroyed).toBeTrue();
+            expect(child.destroyed).toBeTrue();
+        });
+
+        it('should detach destroyed children from their render layer', () =>
+        {
+            const parent = new Container();
+            const child = new Container();
+            const layer = new RenderLayer();
+
+            // Add child to parent and attach to layer
+            parent.addChild(child);
+            layer.attach(child);
+
+            expect(layer.renderLayerChildren).toContain(child);
+            expect(child.parentRenderLayer).toBe(layer);
+
+            // Destroy parent, which should destroy child and detach it from the layer
+            parent.destroy({ children: false });
+
+            expect(parent.destroyed).toBe(true);
+            expect(layer.renderLayerChildren).not.toContain(child);
+            expect(child.parentRenderLayer).toBeNull();
+        });
+    });
+
+    describe('origin', () =>
+    {
+        describe('getter', () =>
+        {
+            it('should return default origin point (0, 0) initially', () =>
+            {
+                const container = new Container();
+                const origin = container.origin;
+
+                expect(origin.x).toBe(0);
+                expect(origin.y).toBe(0);
+            });
+
+            it('should create new ObservablePoint when accessed', () =>
+            {
+                const container1 = new Container();
+                const container2 = new Container();
+
+                const origin1 = container1.origin;
+                const origin2 = container2.origin;
+
+                expect(origin1).not.toBe(origin2); // Different instances
+            });
+        });
+
+        describe('setter', () =>
+        {
+            it('should set origin from number value', () =>
+            {
+                const container = new Container();
+
+                container.origin = 50;
+
+                expect(container.origin.x).toBe(50);
+                expect(container.origin.y).toBe(50);
+            });
+
+            it('should set origin from PointData object', () =>
+            {
+                const container = new Container();
+
+                container.origin = { x: 100, y: 200 };
+
+                expect(container.origin.x).toBe(100);
+                expect(container.origin.y).toBe(200);
+            });
+
+            it('should initialize ObservablePoint on first set', () =>
+            {
+                const temp = new Container();
+                const container = new Container();
+
+                // Access private property to check it's using default
+                expect(container._origin).toBe(temp._origin);
+
+                container.origin = { x: 10, y: 20 };
+
+                // Should now have its own ObservablePoint
+                expect(container._origin).not.toBe(temp._origin);
+            });
+
+            it('should trigger container update when origin changes', () =>
+            {
+                const container = new Container();
+                const updateSpy = jest.spyOn(container, '_onUpdate');
+
+                container.origin.set(25, 35);
+
+                expect(updateSpy).toHaveBeenCalled();
+            });
+        });
+
+        describe('debug warnings', () =>
+        {
+            let warnSpy: jest.SpyInstance;
+
+            beforeEach(() =>
+            {
+                warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+            });
+
+            afterEach(() =>
+            {
+                warnSpy.mockRestore();
+            });
+
+            it('should warn when setting origin after pivot is already set', () =>
+            {
+                const container = new Container();
+
+                // Set pivot first
+                container.pivot = { x: 10, y: 10 };
+
+                // Then set origin - should trigger warning
+                container.origin = { x: 20, y: 20 };
+
+                expect(warnSpy.mock.calls[0][1])
+                    // eslint-disable-next-line max-len
+                    .toEqual('Setting both a pivot and origin on a Container is not recommended. This can lead to unexpected behavior if not handled carefully.');
+            });
+
+            it('should warn when setting pivot after origin is already set', () =>
+            {
+                const container = new Container();
+
+                // Set origin first
+                container.origin = { x: 20, y: 20 };
+
+                // Then set pivot - should trigger warning
+                container.pivot = { x: 10, y: 10 };
+
+                expect(warnSpy.mock.calls[0][1])
+                    // eslint-disable-next-line max-len
+                    .toEqual('Setting both a pivot and origin on a Container is not recommended. This can lead to unexpected behavior if not handled carefully.');
+            });
+
+            it('should not warn when only origin is set', () =>
+            {
+                const container = new Container();
+
+                container.origin = { x: 20, y: 20 };
+
+                expect(warnSpy).not.toHaveBeenCalled();
+            });
+
+            it('should not warn when only pivot is set', () =>
+            {
+                const container = new Container();
+
+                container.pivot = { x: 10, y: 10 };
+
+                expect(warnSpy).not.toHaveBeenCalled();
+            });
+        });
+
+        describe('transform integration', () =>
+        {
+            it('should be included in updateTransform method', () =>
+            {
+                const container = new Container();
+
+                container.updateTransform({
+                    originX: 50,
+                    originY: 75
+                });
+
+                expect(container.origin.x).toBe(50);
+                expect(container.origin.y).toBe(75);
+            });
+
+            it('should preserve existing origin values when not specified in updateTransform', () =>
+            {
+                const container = new Container();
+
+                container.origin.set(30, 40);
+
+                container.updateTransform({
+                    x: 100,
+                    y: 200
+                });
+
+                expect(container.origin.x).toBe(30);
+                expect(container.origin.y).toBe(40);
+            });
+
+            it('should allow partial origin updates in updateTransform', () =>
+            {
+                const container = new Container();
+
+                container.origin.set(10, 20);
+
+                container.updateTransform({
+                    originX: 50
+                });
+
+                expect(container.origin.x).toBe(50);
+                expect(container.origin.y).toBe(20); // Preserved
+            });
+        });
+
+        describe('rotation around origin', () =>
+        {
+            it('should apply origin offset in local transform calculations', () =>
+            {
+                const container = new Container();
+
+                container.position.set(100, 100);
+                container.origin.set(25, 25);
+                container.rotation = Math.PI / 4; // 45 degrees
+
+                container.updateLocalTransform();
+
+                const transform = container.localTransform;
+
+                // The transform should include origin offset calculations
+                expect(transform.tx).not.toBe(100); // Position affected by origin
+                expect(transform.ty).not.toBe(100);
+
+                // Verify the transform matrix includes rotation
+                expect(Math.abs(transform.a - Math.cos(Math.PI / 4))).toBeLessThan(0.001);
+                expect(Math.abs(transform.b - Math.sin(Math.PI / 4))).toBeLessThan(0.001);
+            });
+        });
+
+        describe('constructor options', () =>
+        {
+            it('should accept origin in constructor options', () =>
+            {
+                const container = new Container({
+                    origin: { x: 60, y: 80 }
+                });
+
+                expect(container.origin.x).toBe(60);
+                expect(container.origin.y).toBe(80);
+            });
+
+            it('should accept numeric origin in constructor options', () =>
+            {
+                const container = new Container({
+                    origin: 45
+                });
+
+                expect(container.origin.x).toBe(45);
+                expect(container.origin.y).toBe(45);
+            });
+        });
+
+        describe('observable behavior', () =>
+        {
+            it('should trigger updates when origin ObservablePoint changes', () =>
+            {
+                const container = new Container();
+                const updateSpy = jest.spyOn(container, '_onUpdate');
+
+                // Access origin to initialize it
+                const origin = container.origin;
+
+                // Clear any calls from initialization
+                updateSpy.mockClear();
+
+                // Modify the origin point
+                origin.set(15, 25);
+
+                expect(updateSpy).toHaveBeenCalled();
+            });
+        });
+
+        describe('Matrix decomposition', () =>
+        {
+            it('should preserve origin when using setFromMatrix', () =>
+            {
+                const container = new Container();
+
+                container.origin.set(20, 30);
+
+                const matrix = new Matrix();
+
+                matrix.translate(100, 150);
+                matrix.rotate(Math.PI / 6);
+                matrix.scale(1.5, 1.5);
+
+                container.setFromMatrix(matrix);
+
+                // Origin should be preserved during matrix decomposition
+                expect(container.origin.x).toBe(20);
+                expect(container.origin.y).toBe(30);
+            });
+        });
+
+        describe('cleanup', () =>
+        {
+            it('should nullify origin on destroy', () =>
+            {
+                const container = new Container();
+
+                // Initialize origin
+                container.origin.set(10, 20);
+
+                container.destroy();
+
+                expect((container as any)._origin).toBeNull();
+            });
         });
     });
 

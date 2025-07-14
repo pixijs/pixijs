@@ -2,6 +2,7 @@ import { getSupportedCompressedTextureFormats } from './getSupportedCompressedTe
 
 import type { TEXTURE_FORMATS } from '../const';
 
+/** @internal */
 export const nonCompressedFormats: TEXTURE_FORMATS[] = [
     // 8-bit formats
     'r8unorm',
@@ -63,6 +64,7 @@ export const nonCompressedFormats: TEXTURE_FORMATS[] = [
 
 let supportedTextureFormats: TEXTURE_FORMATS[];
 
+/** @internal */
 export async function getSupportedTextureFormats(): Promise<TEXTURE_FORMATS[]>
 {
     if (supportedTextureFormats !== undefined) return supportedTextureFormats;

@@ -1,9 +1,29 @@
 import { loadFontAsBase64 } from './loadFontAsBase64';
 
+/**
+ * Options for the font CSS style
+ * @category text
+ * @internal
+ */
 export interface FontCSSStyleOptions
 {
+    /**
+     * The font family to use in the CSS
+     * @example
+     * 'Arial' or ['Arial', 'Helvetica']
+     */
     fontFamily: string | string[]
+    /**
+     * The font weight to use in the CSS
+     * @example
+     * 'normal', 'bold', '100', '200', etc.
+     */
     fontWeight: string
+    /**
+     * The font style to use in the CSS
+     * @example
+     * 'normal', 'italic', 'oblique'
+     */
     fontStyle: string
 }
 
@@ -13,6 +33,7 @@ export interface FontCSSStyleOptions
  * @param style - the style to generate the css for
  * @param url - The url to load the font from
  * @returns - The css string
+ * @internal
  */
 export async function loadFontCSS(style: FontCSSStyleOptions, url: string): Promise<string>
 {

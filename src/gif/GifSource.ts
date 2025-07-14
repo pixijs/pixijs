@@ -5,7 +5,8 @@ import { Texture } from '../rendering/renderers/shared/texture/Texture';
 
 /**
  * Represents a single frame of a GIF. Includes image and timing data.
- * @memberof gif
+ * @category gif
+ * @advanced
  */
 interface GifFrame
 {
@@ -19,7 +20,8 @@ interface GifFrame
 
 /**
  * Options when constructing from buffer
- * @memberof gif
+ * @category gif
+ * @advanced
  */
 interface GifBufferOptions
 {
@@ -31,7 +33,8 @@ interface GifBufferOptions
  * Resource provided to GifSprite instances. This is very similar to using a shared
  * Texture between Sprites. This source contains all the frames and animation needed
  * to support playback.
- * @memberof gif
+ * @category gif
+ * @advanced
  */
 class GifSource
 {

@@ -15,7 +15,8 @@ import type { PromiseAndParser } from './types';
  *
  * It is not intended that this class is created by developers - its part of the Asset class
  * This is the second major system of PixiJS' main Assets class
- * @memberof assets
+ * @category assets
+ * @advanced
  */
 export class Loader
 {

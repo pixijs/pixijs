@@ -1,3 +1,4 @@
+/** @internal */
 export class UboBatch
 {
     public data: Float32Array;

@@ -1,3 +1,4 @@
+/** @internal */
 export const localUniformBit = {
     name: 'local-uniform-bit',
     vertex: {
@@ -25,6 +26,7 @@ export const localUniformBit = {
 };
 
 // TODO this works, but i think down the road it will be better to manage groups automatically if there are clashes
+/** @internal */
 export const localUniformBitGroup2 = {
     ...localUniformBit,
     vertex: {
@@ -34,6 +36,7 @@ export const localUniformBitGroup2 = {
     }
 };
 
+/** @internal */
 export const localUniformBitGl = {
     name: 'local-uniform-bit',
     vertex: {

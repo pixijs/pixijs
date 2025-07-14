@@ -1,9 +1,10 @@
+import { type PointData } from '../../maths/point/PointData';
 import { PlaneGeometry } from '../mesh-plane/PlaneGeometry';
-import { type PointData } from '~/maths/point/PointData';
 
 /**
  * Options for the NineSliceGeometry.
- * @memberof scene
+ * @category scene
+ * @advanced
  */
 export interface NineSliceGeometryOptions
 {
@@ -31,7 +32,8 @@ export interface NineSliceGeometryOptions
 
 /**
  * The NineSliceGeometry class allows you to create a NineSlicePlane object.
- * @memberof scene
+ * @category scene
+ * @advanced
  */
 export class NineSliceGeometry extends PlaneGeometry
 {
@@ -56,9 +58,13 @@ export class NineSliceGeometry extends PlaneGeometry
         originalHeight: 100,
     };
 
+    /** @internal */
     public _leftWidth: number;
+    /** @internal */
     public _rightWidth: number;
+    /** @internal */
     public _topHeight: number;
+    /** @internal */
     public _bottomHeight: number;
 
     private _originalWidth: number;

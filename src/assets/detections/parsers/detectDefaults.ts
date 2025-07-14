@@ -6,7 +6,8 @@ const imageFormats = ['png', 'jpg', 'jpeg'];
 
 /**
  * Adds some default image formats to the detection parser
- * @memberof assets
+ * @category assets
+ * @internal
  */
 export const detectDefaults = {
     extension: {

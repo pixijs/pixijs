@@ -31,262 +31,254 @@ import type { BundleIdentifierOptions } from './resolver/Resolver';
 import type { ArrayOr, AssetsBundle, AssetsManifest, ResolvedAsset, UnresolvedAsset } from './types';
 
 /**
- * Callback for when progress on asset loading is made.
- * The function is passed a single parameter, `progress`, which represents the percentage (0.0 - 1.0)
- * of the assets loaded.
- * @memberof assets
- * @callback ProgressCallback
- * @param {number} progress - The percentage (0.0 - 1.0) of the assets loaded.
- * @returns {void}
+ * Callback function for tracking asset loading progress. The function is called repeatedly
+ * during the loading process with a progress value between 0.0 and 1.0.
+ * @param progress - The loading progress from 0.0 (started) to 1.0 (complete)
+ * @returns void
  * @example
- * (progress) => console.log(progress * 100 + '%')
+ * ```ts
+ * // Basic progress logging
+ * const onProgress = (progress: number) => {
+ *     console.log(`Loading: ${Math.round(progress * 100)}%`);
+ * };
+ *
+ * // Update loading bar
+ * const onProgress = (progress: number) => {
+ *     loadingBar.width = progress * 100;
+ *     loadingText.text = `${Math.round(progress * 100)}%`;
+ * };
+ *
+ * // Load assets with progress tracking
+ * await Assets.load(['sprite1.png', 'sprite2.png'], onProgress);
+ *
+ * // Load bundle with progress tracking
+ * await Assets.loadBundle('levelAssets', (progress) => {
+ *     // Progress is normalized (0.0 - 1.0)
+ *     updateLoadingScreen(progress);
+ * });
+ * ```
+ * > [!IMPORTANT] Do not rely on the progress callback to determine when all assets are loaded.
+ * > Use the returned promise from `Assets.load()` or `Assets.loadBundle()` to know when loading is complete.
+ * @category assets
+ * @standard
  */
 export type ProgressCallback = (progress: number) => void;
 
 /**
  * Extensible preferences that can be used, for instance, when configuring loaders.
  * @since 7.2.0
- * @memberof assets
+ * @advanced
+ * @category assets
  */
 export interface AssetsPreferences extends LoadTextureConfig, LoadSVGConfig, PixiMixins.AssetsPreferences {}
 
 /**
- * Initialization options object for the Assets Class.
- * @memberof assets
+ * Options for initializing the Assets class. These options configure how assets are loaded,
+ * resolved, and managed in your PixiJS application.
+ * @category assets
+ * @standard
  */
 export interface AssetInitOptions
 {
-    // basic...
-    /** a base path for any assets loaded */
+    /**
+     * Base path prepended to all asset URLs. Useful for CDN hosting.
+     * @example
+     * ```ts
+     * await Assets.init({
+     *     basePath: 'https://my-cdn.com/assets/'
+     * });
+     *
+     * // Now you can load assets like this:
+     * // Will load from: https://my-cdn.com/assets/images/sprite.png
+     * const texture = await Assets.load('images/sprite.png');
+     * ```
+     */
     basePath?: string;
 
-    /** a default URL parameter string to append to all assets loaded */
+    /**
+     * URL parameters to append to all asset URLs.
+     * Useful for cache-busting or version control.
+     * @example
+     * ```ts
+     * // As a string
+     * await Assets.init({
+     *     defaultSearchParams: 'version=1.0.0'
+     * });
+     *
+     * // As an object
+     * await Assets.init({
+     *     defaultSearchParams: {
+     *         version: '1.0.0',
+     *         t: Date.now()
+     *     }
+     * });
+     * ```
+     * @advanced
+     */
     defaultSearchParams?: string | Record<string, any>;
 
     /**
-     * a manifest to tell the asset loader upfront what all your assets are
-     * this can be the manifest object itself, or a URL to the manifest.
+     * A manifest defining all your application's assets.
+     * Can be a URL to a JSON file or a manifest object.
+     * @example
+     * ```ts
+     * // Using a manifest object
+     * await Assets.init({
+     *     manifest: {
+     *         bundles: [{
+     *             name: 'game-screen',
+     *             assets: [
+     *                 {
+     *                     alias: 'hero',
+     *                     src: 'hero.{png,webp}'
+     *                 },
+     *                 {
+     *                     alias: 'map',
+     *                     src: 'map.json'
+     *                 }
+     *             ]
+     *         }]
+     *     }
+     * });
+     *
+     * // Using a URL to manifest
+     * await Assets.init({
+     *     manifest: 'assets/manifest.json'
+     * });
+     *
+     * // loading a bundle from the manifest
+     * await Assets.loadBundle('game-screen');
+     *
+     * // load individual assets from the manifest
+     * const heroTexture = await Assets.load('hero');
+     * ```
      */
     manifest?: string | AssetsManifest;
     /**
-     * optional preferences for which textures preferences you have when resolving assets
-     * for example you might set the resolution to 0.5 if the user is on a rubbish old phone
-     * or you might set the resolution to 2 if the user is on a retina display
+     * Configure texture loading preferences.
+     * Useful for optimizing asset delivery based on device capabilities.
+     * @example
+     * ```ts
+     * await Assets.init({
+     *     texturePreference: {
+     *         // Prefer high-res textures on retina displays
+     *         resolution: window.devicePixelRatio,
+     *
+     *         // Prefer modern formats, fallback to traditional
+     *         format: ['avif', 'webp', 'png']
+     *     }
+     * });
+     * ```
      */
     texturePreference?: {
-        /** the resolution order you prefer, can be an array (priority order - first is preferred) or a single resolutions  */
+        /** Preferred texture resolution(s). Can be a single number or array of resolutions in order of preference. */
         resolution?: number | number[];
-        /**
-         * the formats you prefer, by default this will be:
-         * ['avif', 'webp', 'png', 'jpg', 'jpeg', 'webm', 'mp4', 'm4v', 'ogv']
-         */
+
+        /** Preferred texture formats in order of preference. Default: ['avif', 'webp', 'png', 'jpg', 'jpeg'] */
         format?: ArrayOr<string>;
     };
 
     /**
-     * If true, don't attempt to detect whether browser has preferred formats available.
-     * May result in increased performance as it skips detection step.
+     * Skip browser format detection for faster initialization.
+     * Only use if you know exactly what formats your target browsers support.
+     * @example
+     * ```ts
+     * await Assets.init({
+     *     skipDetections: true,
+     *     texturePreference: {
+     *         format: ['webp', 'png'] // Must explicitly set formats
+     *     }
+     * });
+     * ```
+     * @advanced
      */
     skipDetections?: boolean;
 
-    /** advanced - override how bundlesIds are generated */
+    /**
+     * Override how bundle IDs are generated and resolved.
+     *
+     * This allows you to customize how assets are grouped and accessed via bundles and allow for
+     * multiple bundles to share the same asset keys.
+     * @advanced
+     * @example
+     * ```ts
+     * const manifest = {
+     *     bundles: [
+     *         {
+     *             name: 'bunny1',
+     *             assets: [
+     *                 {
+     *                     alias: ['character', 'character2'],
+     *                     src: 'textures/bunny.png',
+     *                 },
+     *             ],
+     *         },
+     *         {
+     *             name: 'bunny2',
+     *             assets: [
+     *                 {
+     *                     alias: ['character', 'character2'],
+     *                     src: 'textures/bunny-2.png',
+     *                 },
+     *             ],
+     *         },
+     *     ]
+     * };
+     *
+     * const bundleIdentifier: BundleIdentifierOptions = {
+     *     connector: ':',
+     * };
+     *
+     * await Assets.init({ manifest, basePath, bundleIdentifier });
+     *
+     * const resources = await Assets.loadBundle('bunny1');
+     * const resources2 = await Assets.loadBundle('bunny2');
+     *
+     * console.log(resources.character === resources2.character); // false
+     * ```
+     */
     bundleIdentifier?: BundleIdentifierOptions;
 
-    /** Optional loader preferences */
+    /**
+     * Optional preferences for asset loading behavior.
+     * @example
+     * ```ts
+     * await Assets.init({
+     *     preferences: {
+     *         crossOrigin: 'anonymous',
+     *         parseAsGraphicsContext: false
+     *     }
+     * });
+     * ```
+     */
     preferences?: Partial<AssetsPreferences>;
 }
 
-/**
- * A one stop shop for all Pixi resource management!
- * Super modern and easy to use, with enough flexibility to customize and do what you need!
- * @namespace assets
- *
- * Use the singleton class [Assets]{@link assets.Assets} to easily load and manage all your assets.
- *
- * ```typescript
- * import { Assets, Texture } from 'pixi.js';
- *
- * const bunnyTexture = await Assets.load<Texture>('bunny.png');
- * const sprite = new Sprite(bunnyTexture);
- * ```
- *
- * Check out the sections below for more information on how to deal with assets.
- *
- * <details id="assets-loading">
- *
- * <summary>Asset Loading</summary>
- *
- * Do not be afraid to load things multiple times - under the hood, it will **NEVER** load anything more than once.
- *
- * *For example:*
- *
- * ```js
- * import { Assets } from 'pixi.js';
- *
- * promise1 = Assets.load('bunny.png')
- * promise2 = Assets.load('bunny.png')
- *
- * // promise1 === promise2
- * ```
- *
- * Here both promises will be the same. Once resolved... Forever resolved! It makes for really easy resource management!
- *
- * Out of the box Pixi supports the following files:
- * - Textures (**_avif_**, **_webp_**, **_png_**, **_jpg_**, **_gif_**, **_svg_**) via {@link assets.loadTextures}, {@link assets.loadSvg}
- * - Video Textures (**_mp4_**, **_m4v_**, **_webm_**, **_ogg_**, **_ogv_**, **_h264_**, **_avi_**, **_mov_**) via {@link assets.loadVideoTextures}
- * - Sprite sheets (**_json_**) via {@link assets.spritesheetAsset}
- * - Bitmap fonts (**_xml_**, **_fnt_**, **_txt_**) via {@link assets.loadBitmapFont}
- * - Web fonts (**_ttf_**, **_woff_**, **_woff2_**) via {@link assets.loadWebFont}
- * - JSON files (**_json_**) via {@link assets.loadJson}
- * - Text Files (**_txt_**) via {@link assets.loadTxt}
- * <br/>
- * More types can be added fairly easily by creating additional {@link assets.LoaderParser LoaderParsers}.
- * </details>
- *
- * <details id="textures">
- *
- * <summary>Textures</summary>
- *
- * - Textures are loaded as ImageBitmap on a worker thread where possible. Leading to much less janky load + parse times.
- * - By default, we will prefer to load AVIF and WebP image files if you specify them.
- * But if the browser doesn't support AVIF or WebP we will fall back to png and jpg.
- * - Textures can also be accessed via `Texture.from()` (see {@link core.from|Texture.from})
- * and now use this asset manager under the hood!
- * - Don't worry if you set preferences for textures that don't exist
- * (for example you prefer 2x resolutions images but only 1x is available for that texture,
- * the Assets manager will pick that up as a fallback automatically)
- *
- * #### Sprite sheets
- * - It's hard to know what resolution a sprite sheet is without loading it first, to address this
- * there is a naming convention we have added that will let Pixi understand the image format and resolution
- * of the spritesheet via its file name: `my-spritesheet{resolution}.{imageFormat}.json`
- * <br><br>For example:
- *   - `my-spritesheet@2x.webp.json`* // 2x resolution, WebP sprite sheet*
- *   - `my-spritesheet@0.5x.png.json`* // 0.5x resolution, png sprite sheet*
- * - This is optional! You can just load a sprite sheet as normal.
- * This is only useful if you have a bunch of different res / formatted spritesheets.
- * </details>
- *
- * <details id="fonts">
- *
- * <summary>Fonts</summary>
- *
- * Web fonts will be loaded with all weights.
- * It is possible to load only specific weights by doing the following:
- *
- * ```js
- * import { Assets } from 'pixi.js';
- *
- * // Load specific weights..
- * await Assets.load({
- *     data: {
- *         weights: ['normal'], // Only loads the weight
- *     },
- *     src: `outfit.woff2`,
- * });
- *
- * // Load everything...
- * await Assets.load(`outfit.woff2`);
- * ```
- * </details>
- *
- * <details id="background-loading">
- *
- * <summary>Background Loading</summary>
- *
- * Background loading will load stuff for you passively behind the scenes. To minimize jank,
- * it will only load one asset at a time. As soon as a developer calls `Assets.load(...)` the
- * background loader is paused and requested assets are loaded as a priority.
- * Don't worry if something is in there that's already loaded, it will just get skipped!
- *
- * You still need to call `Assets.load(...)` to get an asset that has been loaded in the background.
- * It's just that this promise will resolve instantly if the asset
- * has already been loaded.
- * </details>
- *
- * <details id="manifests-and-bundles">
- *
- * <summary>Manifest and Bundles</summary>
- *
- * - {@link assets.AssetsManifest Manifest} is a descriptor that contains a list of all assets and their properties.
- * - {@link assets.AssetsBundle Bundles} are a way to group assets together.
- *
- * ```js
- * import { Assets } from 'pixi.js';
- *
- * // Manifest Example
- * const manifest = {
- *     bundles: [
- *         {
- *             name: 'load-screen',
- *             assets: [
- *                 {
- *                     alias: 'background',
- *                     src: 'sunset.png',
- *                 },
- *                 {
- *                     alias: 'bar',
- *                     src: 'load-bar.{png,webp}',
- *                 },
- *             ],
- *         },
- *         {
- *             name: 'game-screen',
- *             assets: [
- *                 {
- *                     alias: 'character',
- *                     src: 'robot.png',
- *                 },
- *                 {
- *                     alias: 'enemy',
- *                     src: 'bad-guy.png',
- *                 },
- *             ],
- *         },
- *     ]
- * };
- *
- * await Assets.init({ manifest });
- *
- * // Load a bundle...
- * loadScreenAssets = await Assets.loadBundle('load-screen');
- * // Load another bundle...
- * gameScreenAssets = await Assets.loadBundle('game-screen');
- * ```
- * </details>
- */
-
-/**
- * The global Assets class, it's a singleton so you don't need to instantiate it.
- *
- * **The `Assets` class has four main responsibilities:**
- * 1. Allows users to map URLs to keys and resolve them according to the user's browser capabilities
- * 2. Loads the resources and transforms them into assets that developers understand.
- * 3. Caches the assets and provides a way to access them.
- * 4. Allow developers to unload assets and clear the cache.
- *
- *
- * **It also has a few advanced features:**
- * 1. Allows developers to provide a {@link assets.Manifest} upfront of all assets and help manage
- * them via {@link assets.AssetsBundles Bundles}.
- * 2. Allows users to background load assets. Shortening (or eliminating) load times and improving UX. With this feature,
- * in-game loading bars can be a thing of the past!
- * @example
- * import { Assets } from 'pixi.js';
- *
- * const bunny = await Assets.load('bunny.png');
- * @memberof assets
- * @class Assets
- */
+/** @internal */
 export class AssetsClass
 {
-    /** the resolver to map various urls */
+    /**
+     * The URL resolver for assets. Maps various asset keys and URLs to their final loadable form.
+     * @advanced
+     */
     public resolver: Resolver;
-    /** The loader, loads stuff! */
+    /**
+     *  The loader responsible for loading all assets. Handles different file types
+     * and transformations.
+     * @advanced
+     */
     public loader: Loader;
     /**
-     * The global cache of all assets within PixiJS
-     * @type {assets.Cache}
+     * The global cache for all loaded assets. Manages storage and retrieval of
+     * processed assets.
+     * @example
+     * ```ts
+     * // Check if an asset is cached
+     * if (Assets.cache.has('myTexture')) {
+     *     const texture = Assets.cache.get('myTexture');
+     * }
+     * ```
+     * @see {@link Cache} For detailed cache documentation
      */
     public cache: typeof Cache;
 
@@ -310,11 +302,58 @@ export class AssetsClass
     }
 
     /**
-     * Best practice is to call this function before any loading commences
-     * Initiating is the best time to add any customization to the way things are loaded.
+     * Initializes the Assets class with configuration options. While not required,
+     * calling this before loading assets is recommended to set up default behaviors.
+     * @param options - Configuration options for the Assets system
+     * @example
+     * ```ts
+     * // Basic initialization (optional as Assets.load will call this automatically)
+     * await Assets.init();
      *
-     * you do not need to call this for the Assets class to work, only if you want to set any initial properties
-     * @param options - options to initialize the Assets manager with
+     * // With CDN configuration
+     * await Assets.init({
+     *     basePath: 'https://my-cdn.com/assets/',
+     *     defaultSearchParams: { version: '1.0.0' }
+     * });
+     *
+     * // With manifest and preferences
+     * await Assets.init({
+     *     manifest: {
+     *         bundles: [{
+     *             name: 'game-screen',
+     *             assets: [
+     *                 {
+     *                     alias: 'hero',
+     *                     src: 'hero.{png,webp}',
+     *                     data: { scaleMode: SCALE_MODES.NEAREST }
+     *                 },
+     *                 {
+     *                     alias: 'map',
+     *                     src: 'map.json'
+     *                 }
+     *             ]
+     *         }]
+     *     },
+     *     // Optimize for device capabilities
+     *     texturePreference: {
+     *         resolution: window.devicePixelRatio,
+     *         format: ['webp', 'png']
+     *     },
+     *     // Set global preferences
+     *     preferences: {
+     *         crossOrigin: 'anonymous',
+     *     }
+     * });
+     *
+     * // Load assets after initialization
+     * const heroTexture = await Assets.load('hero');
+     * ```
+     * @remarks
+     * - Can be called only once; subsequent calls will be ignored with a warning
+     * - Format detection runs automatically unless `skipDetections` is true
+     * - The manifest can be a URL to a JSON file or an inline object
+     * @see {@link AssetInitOptions} For all available initialization options
+     * @see {@link AssetsManifest} For manifest format details
      */
     public async init(options: AssetInitOptions = {}): Promise<void>
     {
@@ -379,44 +418,58 @@ export class AssetsClass
     }
 
     /**
-     * Allows you to specify how to resolve any assets load requests.
-     * There are a few ways to add things here as shown below:
+     * Registers assets with the Assets resolver. This method maps keys (aliases) to asset sources,
+     * allowing you to load assets using friendly names instead of direct URLs.
+     * @param assets - The unresolved assets to add to the resolver
      * @example
-     * import { Assets } from 'pixi.js';
-     *
-     * // Simple
-     * Assets.add({alias: 'bunnyBooBoo', src: 'bunny.png'});
-     * const bunny = await Assets.load('bunnyBooBoo');
-     *
-     * // Multiple keys:
-     * Assets.add({alias: ['burger', 'chicken'], src: 'bunny.png'});
-     *
-     * const bunny = await Assets.load('burger');
-     * const bunny2 = await Assets.load('chicken');
-     *
-     * // passing options to to the object
+     * ```ts
+     * // Basic usage - single asset
      * Assets.add({
-     *     alias: 'bunnyBooBooSmooth',
-     *     src: 'bunny.{png,webp}',
-     *     data: { scaleMode: SCALE_MODES.NEAREST }, // Base texture options
+     *     alias: 'myTexture',
+     *     src: 'assets/texture.png'
+     * });
+     * const texture = await Assets.load('myTexture');
+     *
+     * // Multiple aliases for the same asset
+     * Assets.add({
+     *     alias: ['hero', 'player'],
+     *     src: 'hero.png'
+     * });
+     * const hero1 = await Assets.load('hero');
+     * const hero2 = await Assets.load('player'); // Same texture
+     *
+     * // Multiple format support
+     * Assets.add({
+     *     alias: 'character',
+     *     src: 'character.{webp,png}' // Will choose best format
+     * });
+     * Assets.add({
+     *     alias: 'character',
+     *     src: ['character.webp', 'character.png'], // Explicitly specify formats
      * });
      *
-     * // Multiple assets
-     *
-     * // The following all do the same thing:
-     *
-     * Assets.add({alias: 'bunnyBooBoo', src: 'bunny.{png,webp}'});
-     *
+     * // With texture options
      * Assets.add({
-     *     alias: 'bunnyBooBoo',
-     *     src: [
-     *         'bunny.png',
-     *         'bunny.webp',
-     *    ],
+     *     alias: 'sprite',
+     *     src: 'sprite.png',
+     *     data: { scaleMode: 'nearest' }
      * });
      *
-     * const bunny = await Assets.load('bunnyBooBoo'); // Will try to load WebP if available
-     * @param assets - the unresolved assets to add to the resolver
+     * // Multiple assets at once
+     * Assets.add([
+     *     { alias: 'bg', src: 'background.png' },
+     *     { alias: 'music', src: 'music.mp3' },
+     *     { alias: 'spritesheet', src: 'sheet.json', data: { ignoreMultiPack: false } }
+     * ]);
+     * ```
+     * @remarks
+     * - Assets are resolved when loaded, not when added
+     * - Multiple formats use the best available format for the browser
+     * - Adding with same alias overwrites previous definition
+     * - The `data` property is passed to the asset loader
+     * @see {@link Resolver} For details on asset resolution
+     * @see {@link LoaderParser} For asset-specific data options
+     * @advanced
      */
     public add(assets: (ArrayOr<UnresolvedAsset>)): void
     {
@@ -424,28 +477,65 @@ export class AssetsClass
     }
 
     /**
-     * Loads your assets! You pass in a key or URL and it will return a promise that
-     * resolves to the loaded asset. If multiple assets a requested, it will return a hash of assets.
-     *
-     * Don't worry about loading things multiple times, behind the scenes assets are only ever loaded
-     * once and the same promise reused behind the scenes so you can safely call this function multiple
-     * times with the same key and it will always return the same asset.
+     * Loads one or more assets and returns a promise that resolves with the loaded content.
+     * Assets are cached, so subsequent loads will return the same instance of the asset without re-fetching.
+     * @param urls - Single URL/alias or array of URLs/aliases to load
+     * @param onProgress - Optional callback for load progress (0.0 to 1.0)
+     * @returns Promise that resolves with loaded asset(s)
      * @example
-     * import { Assets } from 'pixi.js';
+     * ```ts
+     * // Load a single asset
+     * const texture = await Assets.load('images/sprite.png');
      *
-     * // Load a URL:
-     * const myImageTexture = await Assets.load('http://some.url.com/image.png'); // => returns a texture
+     * // Load using an alias
+     * const heroTexture = await Assets.load({ alias: 'hero', src: 'images/hero.png' });
      *
-     * Assets.add('thumper', 'bunny.png');
-     * Assets.add('chicko', 'chicken.png');
+     * // Load multiple assets
+     * const assets = await Assets.load([
+     *     'images/background.png',
+     *     'images/character.png',
+     *     'fonts/game.fnt'
+     * ]);
+     * console.log(assets['images/background.png']); // Access by URL
      *
-     * // Load multiple assets:
-     * const textures = await Assets.load(['thumper', 'chicko']); // => {thumper: Texture, chicko: Texture}
-     * @param urls - the urls to load
-     * @param onProgress - optional function that is called when progress on asset loading is made.
-     * The function is passed a single parameter, `progress`, which represents the percentage
-     * (0.0 - 1.0) of the assets loaded.
-     * @returns - the assets that were loaded, either a single asset or a hash of assets
+     * // Load with progress tracking
+     * const textures = await Assets.load(['sprite1.png', 'sprite2.png'],
+     *     (progress) => console.log(`Loading: ${Math.round(progress * 100)}%`)
+     * );
+     *
+     * // Load with format preference
+     * const characterTexture = await Assets.load({
+     *     alias: 'character',
+     *     src: 'character.{webp,png}' // Will choose best format
+     * });
+     *
+     * // Load with custom options
+     * const spriteTexture = await Assets.load({
+     *     alias: 'sprite',
+     *     src: 'sprite.png',
+     *     data: {
+     *         scaleMode: SCALE_MODES.NEAREST,
+     *         mipmap: MIPMAP_MODES.ON
+     *     }
+     * });
+     *
+     * // Load with a specific loader, can be useful if your asset does not have an extension
+     * const image = await Assets.load({
+     *    alias: 'imageWithoutExtension',
+     *    src: 'images/imageWithoutExtension',
+     *    loadParser: 'loadTextures' // Use the JSON loader
+     * });
+     * ```
+     * @remarks
+     * - Assets are cached automatically to prevent duplicate loading
+     * - URLs are resolved to the best format for the current browser
+     * - Asset types are detected automatically based on file extension
+     * - Progress callback receives values from 0.0 to 1.0
+     * - You can define with loader to use for an asset by specifying the `loadParser` property, which is useful for assets that do not have a file extension.
+     * @throws {Error} If the asset cannot be loaded or parsed
+     * @see {@link Assets.add} For registering assets with aliases
+     * @see {@link Assets.backgroundLoad} For loading assets in the background
+     * @see {@link Assets.unload} For releasing loaded assets
      */
     public async load<T = any>(
         urls: string | UnresolvedAsset,
@@ -498,26 +588,56 @@ export class AssetsClass
     }
 
     /**
-     * This adds a bundle of assets in one go so that you can load them as a group.
-     * For example you could add a bundle for each screen in you pixi app
+     * Registers a bundle of assets that can be loaded as a group. Bundles are useful for organizing
+     * assets into logical groups, such as game levels or UI screens.
+     * @param bundleId - Unique identifier for the bundle
+     * @param assets - Assets to include in the bundle
      * @example
-     * import { Assets } from 'pixi.js';
-     *
+     * ```ts
+     * // Add a bundle using array format
      * Assets.addBundle('animals', [
-     *  { alias: 'bunny', src: 'bunny.png' },
-     *  { alias: 'chicken', src: 'chicken.png' },
-     *  { alias: 'thumper', src: 'thumper.png' },
+     *     { alias: 'bunny', src: 'bunny.png' },
+     *     { alias: 'chicken', src: 'chicken.png' },
+     *     { alias: 'thumper', src: 'thumper.png' },
      * ]);
-     * // or
+     *
+     * // Add a bundle using object format
      * Assets.addBundle('animals', {
      *     bunny: 'bunny.png',
      *     chicken: 'chicken.png',
      *     thumper: 'thumper.png',
      * });
      *
-     * const assets = await Assets.loadBundle('animals');
-     * @param bundleId - the id of the bundle to add
-     * @param assets - a record of the asset or assets that will be chosen from when loading via the specified key
+     * // Add a bundle with advanced options
+     * Assets.addBundle('ui', [
+     *     {
+     *         alias: 'button',
+     *         src: 'button.{webp,png}',
+     *         data: { scaleMode: 'nearest' }
+     *     },
+     *     {
+     *         alias: ['logo', 'brand'],  // Multiple aliases
+     *         src: 'logo.svg',
+     *         data: { resolution: 2 }
+     *     }
+     * ]);
+     *
+     * // Load the bundle
+     * await Assets.loadBundle('animals');
+     *
+     * // Use the loaded assets
+     * const bunny = Sprite.from('bunny');
+     * const chicken = Sprite.from('chicken');
+     * ```
+     * @remarks
+     * - Bundle IDs must be unique
+     * - Assets in bundles are not loaded until `loadBundle` is called
+     * - Bundles can be background loaded using `backgroundLoadBundle`
+     * - Assets in bundles can be loaded individually using their aliases
+     * @see {@link Assets.loadBundle} For loading bundles
+     * @see {@link Assets.backgroundLoadBundle} For background loading bundles
+     * @see {@link Assets.unloadBundle} For unloading bundles
+     * @see {@link AssetsManifest} For manifest format details
      */
     public addBundle(bundleId: string, assets: AssetsBundle['assets']): void
     {
@@ -525,13 +645,14 @@ export class AssetsClass
     }
 
     /**
-     * Bundles are a way to load multiple assets at once.
-     * If a manifest has been provided to the init function then you can load a bundle, or bundles.
-     * you can also add bundles via `addBundle`
+     * Loads a bundle or multiple bundles of assets. Bundles are collections of related assets
+     * that can be loaded together.
+     * @param bundleIds - Single bundle ID or array of bundle IDs to load
+     * @param onProgress - Optional callback for load progress (0.0 to 1.0)
+     * @returns Promise that resolves with the loaded bundle assets
      * @example
-     * import { Assets } from 'pixi.js';
-     *
-     * // Manifest Example
+     * ```ts
+     * // Define bundles in your manifest
      * const manifest = {
      *     bundles: [
      *         {
@@ -543,7 +664,7 @@ export class AssetsClass
      *                 },
      *                 {
      *                     alias: 'bar',
-     *                     src: 'load-bar.{png,webp}',
+     *                     src: 'load-bar.{png,webp}', // use an array of individual assets
      *                 },
      *             ],
      *         },
@@ -563,18 +684,38 @@ export class AssetsClass
      *     ]
      * };
      *
+     * // Initialize with manifest
      * await Assets.init({ manifest });
      *
-     * // Load a bundle...
-     * loadScreenAssets = await Assets.loadBundle('load-screen');
-     * // Load another bundle...
-     * gameScreenAssets = await Assets.loadBundle('game-screen');
-     * @param bundleIds - the bundle id or ids to load
-     * @param onProgress - Optional function that is called when progress on asset loading is made.
-     * The function is passed a single parameter, `progress`, which represents the percentage (0.0 - 1.0)
-     * of the assets loaded. Do not use this function to detect when assets are complete and available,
-     * instead use the Promise returned by this function.
-     * @returns all the bundles assets or a hash of assets for each bundle specified
+     * // Or add bundles programmatically
+     * Assets.addBundle('load-screen', [...]);
+     * Assets.loadBundle('load-screen');
+     *
+     * // Load a single bundle
+     * await Assets.loadBundle('load-screen');
+     * const bg = Sprite.from('background'); // Uses alias from bundle
+     *
+     * // Load multiple bundles
+     * await Assets.loadBundle([
+     *     'load-screen',
+     *     'game-screen'
+     * ]);
+     *
+     * // Load with progress tracking
+     * await Assets.loadBundle('game-screen', (progress) => {
+     *     console.log(`Loading: ${Math.round(progress * 100)}%`);
+     * });
+     * ```
+     * @remarks
+     * - Bundle assets are cached automatically
+     * - Bundles can be pre-loaded using `backgroundLoadBundle`
+     * - Assets in bundles can be accessed by their aliases
+     * - Progress callback receives values from 0.0 to 1.0
+     * @throws {Error} If the bundle ID doesn't exist in the manifest
+     * @see {@link Assets.addBundle} For adding bundles programmatically
+     * @see {@link Assets.backgroundLoadBundle} For background loading bundles
+     * @see {@link Assets.unloadBundle} For unloading bundles
+     * @see {@link AssetsManifest} For manifest format details
      */
     public async loadBundle(bundleIds: ArrayOr<string>, onProgress?: ProgressCallback): Promise<any>
     {
@@ -621,20 +762,37 @@ export class AssetsClass
     }
 
     /**
-     * Initiate a background load of some assets. It will passively begin to load these assets in the background.
-     * So when you actually come to loading them you will get a promise that resolves to the loaded assets immediately
+     * Initiates background loading of assets. This allows assets to be loaded passively while other operations
+     * continue, making them instantly available when needed later.
      *
-     * An example of this might be that you would background load game assets after your initial load.
-     * then when you got to actually load your game screen assets when a player goes to the game - the loading
-     * would already have stared or may even be complete, saving you having to show an interim load bar.
+     * Background loading is useful for:
+     * - Preloading game levels while in a menu
+     * - Loading non-critical assets during gameplay
+     * - Reducing visible loading screens
+     * @param urls - Single URL/alias or array of URLs/aliases to load in the background
      * @example
-     * import { Assets } from 'pixi.js';
+     * ```ts
+     * // Basic background loading
+     * Assets.backgroundLoad('images/level2-assets.png');
      *
-     * Assets.backgroundLoad('bunny.png');
+     * // Background load multiple assets
+     * Assets.backgroundLoad([
+     *     'images/sprite1.png',
+     *     'images/sprite2.png',
+     *     'images/background.png'
+     * ]);
      *
-     * // later on in your app...
-     * await Assets.loadBundle('bunny.png'); // Will resolve quicker as loading may have completed!
-     * @param urls - the url / urls you want to background load
+     * // Later, when you need the assets
+     * const textures = await Assets.load([
+     *     'images/sprite1.png',
+     *     'images/sprite2.png'
+     * ]); // Resolves immediately if background loading completed
+     * ```
+     * @remarks
+     * - Background loading happens one asset at a time to avoid blocking the main thread
+     * - Loading can be interrupted safely by calling `Assets.load()`
+     * - Assets are cached as they complete loading
+     * - No progress tracking is available for background loading
      */
     public async backgroundLoad(urls: ArrayOr<string>): Promise<void>
     {
@@ -654,28 +812,69 @@ export class AssetsClass
     }
 
     /**
-     * Initiate a background of a bundle, works exactly like backgroundLoad but for bundles.
-     * this can only be used if the loader has been initiated with a manifest
-     * @example
-     * import { Assets } from 'pixi.js';
+     * Initiates background loading of asset bundles. Similar to backgroundLoad but works with
+     * predefined bundles of assets.
      *
+     * Perfect for:
+     * - Preloading level bundles during gameplay
+     * - Loading UI assets during splash screens
+     * - Preparing assets for upcoming game states
+     * @param bundleIds - Single bundle ID or array of bundle IDs to load in the background
+     * @example
+     * ```ts
+     * // Define bundles in your manifest
      * await Assets.init({
      *     manifest: {
      *         bundles: [
      *             {
-     *                 name: 'load-screen',
-     *                 assets: [...],
-     *             },
-     *             ...
-     *         ],
-     *     },
+     *               name: 'home',
+     *               assets: [
+     *                 {
+     *                     alias: 'background',
+     *                     src: 'images/home-bg.png',
+     *                 },
+     *                 {
+     *                     alias: 'logo',
+     *                     src: 'images/logo.png',
+     *                 }
+     *              ]
+     *            },
+     *            {
+     *             name: 'level-1',
+     *             assets: [
+     *                 {
+     *                     alias: 'background',
+     *                     src: 'images/level1/bg.png',
+     *                 },
+     *                 {
+     *                     alias: 'sprites',
+     *                     src: 'images/level1/sprites.json'
+     *                 }
+     *             ]
+     *         }]
+     *     }
      * });
      *
-     * Assets.backgroundLoadBundle('load-screen');
+     * // Load the home screen assets right away
+     * await Assets.loadBundle('home');
+     * showHomeScreen();
      *
-     * // Later on in your app...
-     * await Assets.loadBundle('load-screen'); // Will resolve quicker as loading may have completed!
-     * @param bundleIds - the bundleId / bundleIds you want to background load
+     * // Start background loading while showing home screen
+     * Assets.backgroundLoadBundle('level-1');
+     *
+     * // When player starts level, load completes faster
+     * await Assets.loadBundle('level-1');
+     * hideHomeScreen();
+     * startLevel();
+     * ```
+     * @remarks
+     * - Bundle assets are loaded one at a time
+     * - Loading can be interrupted safely by calling `Assets.loadBundle()`
+     * - Assets are cached as they complete loading
+     * - Requires bundles to be registered via manifest or `addBundle`
+     * @see {@link Assets.addBundle} For adding bundles programmatically
+     * @see {@link Assets.loadBundle} For immediate bundle loading
+     * @see {@link AssetsManifest} For manifest format details
      */
     public async backgroundLoadBundle(bundleIds: ArrayOr<string>): Promise<void>
     {
@@ -701,6 +900,7 @@ export class AssetsClass
      * Only intended for development purposes.
      * This will wipe the resolver and caches.
      * You will need to reinitialize the Asset
+     * @internal
      */
     public reset(): void
     {
@@ -712,11 +912,49 @@ export class AssetsClass
     }
 
     /**
-     * Instantly gets an asset already loaded from the cache. If the asset has not yet been loaded,
-     * it will return undefined. So it's on you! When in doubt just use `Assets.load` instead.
-     * (Remember, the loader will never load things more than once!)
-     * @param keys - The key or keys for the assets that you want to access
-     * @returns - The assets or hash of assets requested
+     * Instantly gets an asset already loaded from the cache. Returns undefined if the asset hasn't been loaded yet.
+     * @param keys - The key or keys for the assets to retrieve
+     * @returns The cached asset(s) or undefined if not loaded
+     * @example
+     * ```ts
+     * // Get a single cached asset
+     * const texture = Assets.get('hero');
+     * if (texture) {
+     *     const sprite = new Sprite(texture);
+     * }
+     *
+     * // Get multiple cached assets
+     * const textures = Assets.get([
+     *     'hero',
+     *     'background',
+     *     'enemy'
+     * ]);
+     *
+     * // Safe pattern with loading fallback
+     * let texture = Assets.get('hero');
+     * if (!texture) {
+     *     texture = await Assets.load('hero');
+     * }
+     *
+     * // Working with bundles
+     * await Assets.loadBundle('game-ui');
+     * const uiAssets = Assets.get([
+     *     'button',
+     *     'panel',
+     *     'icons'
+     * ]);
+     * ```
+     * @remarks
+     * - Returns undefined if asset isn't loaded
+     * - No automatic loading - use `Assets.load()` for that
+     * - Cached assets are shared instances
+     * - Faster than `load()` for already cached assets
+     *
+     * > [!TIP]
+     * > When in doubt, use `Assets.load()` instead. It will return cached
+     * > assets instantly if they're already loaded.
+     * @see {@link Assets.load} For loading assets that aren't cached
+     * @see {@link Assets.cache} For direct cache access
      */
     public get<T = any>(keys: string): T;
     public get<T = any>(keys: string[]): Record<string, T>;
@@ -784,27 +1022,35 @@ export class AssetsClass
     }
 
     /**
-     * Unload an asset or assets. As the Assets class is responsible for creating the assets via the `load` function
-     * this will make sure to destroy any assets and release them from memory.
-     * Once unloaded, you will need to load the asset again.
-     *
-     * Use this to help manage assets if you find that you have a large app and you want to free up memory.
-     *
-     * - it's up to you as the developer to make sure that textures are not actively being used when you unload them,
-     * Pixi won't break but you will end up with missing assets. Not a good look for the user!
+     * Unloads assets and releases them from memory. This method ensures proper cleanup of
+     * loaded assets when they're no longer needed.
+     * @param urls - Single URL/alias or array of URLs/aliases to unload
      * @example
-     * import { Assets } from 'pixi.js';
+     * ```ts
+     * // Unload a single asset
+     * await Assets.unload('images/sprite.png');
      *
-     * // Load a URL:
-     * const myImageTexture = await Assets.load('http://some.url.com/image.png'); // => returns a texture
+     * // Unload using an alias
+     * await Assets.unload('hero'); // Unloads the asset registered with 'hero' alias
      *
-     * await Assets.unload('http://some.url.com/image.png')
+     * // Unload multiple assets
+     * await Assets.unload([
+     *     'images/background.png',
+     *     'images/character.png',
+     *     'hero'
+     * ]);
      *
-     * // myImageTexture will be destroyed now.
-     *
-     * // Unload multiple assets:
-     * const textures = await Assets.unload(['thumper', 'chicko']);
-     * @param urls - the urls to unload
+     * // Unload and handle creation of new instances
+     * await Assets.unload('hero');
+     * const newHero = await Assets.load('hero'); // Will load fresh from source
+     * ```
+     * @remarks
+     * > [!WARNING]
+     * > Make sure assets aren't being used before unloading:
+     * > - Remove sprites using the texture
+     * > - Clear any references to the asset
+     * > - Textures will be destroyed and can't be used after unloading
+     * @throws {Error} If the asset is not found in cache
      */
     public async unload(
         urls: ArrayOr<string> | ResolvedAsset | ResolvedAsset[]
@@ -826,25 +1072,43 @@ export class AssetsClass
     }
 
     /**
-     * Bundles are a way to manage multiple assets at once.
-     * this will unload all files in a bundle.
-     *
-     * once a bundle has been unloaded, you need to load it again to have access to the assets.
+     * Unloads all assets in a bundle. Use this to free memory when a bundle's assets
+     * are no longer needed, such as when switching game levels.
+     * @param bundleIds - Single bundle ID or array of bundle IDs to unload
      * @example
-     * import { Assets } from 'pixi.js';
+     * ```ts
+     * // Define and load a bundle
+     * Assets.addBundle('level-1', {
+     *     background: 'level1/bg.png',
+     *     sprites: 'level1/sprites.json',
+     *     music: 'level1/music.mp3'
+     * });
      *
-     * Assets.addBundle({
-     *     'thumper': 'http://some.url.com/thumper.png',
-     * })
+     * // Load the bundle
+     * const level1 = await Assets.loadBundle('level-1');
      *
-     * const assets = await Assets.loadBundle('thumper');
+     * // Use the assets
+     * const background = Sprite.from(level1.background);
      *
-     * // Now to unload...
+     * // When done with the level, unload everything
+     * await Assets.unloadBundle('level-1');
+     * // background sprite is now invalid!
      *
-     * await Assets.unloadBundle('thumper');
-     *
-     * // All assets in the assets object will now have been destroyed and purged from the cache
-     * @param bundleIds - the bundle id or ids to unload
+     * // Unload multiple bundles
+     * await Assets.unloadBundle([
+     *     'level-1',
+     *     'level-2',
+     *     'ui-elements'
+     * ]);
+     * ```
+     * @remarks
+     * > [!WARNING]
+     * > - All assets in the bundle will be destroyed
+     * > - Bundle needs to be reloaded to use assets again
+     * > - Make sure no sprites or other objects are using the assets
+     * @throws {Error} If the bundle is not found
+     * @see {@link Assets.addBundle} For adding bundles
+     * @see {@link Assets.loadBundle} For loading bundles
      */
     public async unloadBundle(bundleIds: ArrayOr<string>): Promise<void>
     {
@@ -918,15 +1182,34 @@ export class AssetsClass
         return formats;
     }
 
-    /** All the detection parsers currently added to the Assets class. */
+    /**
+     * All the detection parsers currently added to the Assets class.
+     * @advanced
+     */
     public get detections(): FormatDetectionParser[]
     {
         return this._detections;
     }
 
     /**
-     * General setter for preferences. This is a helper function to set preferences on all parsers.
-     * @param preferences - the preferences to set
+     * Sets global preferences for asset loading behavior. This method configures how assets
+     * are loaded and processed across all parsers.
+     * @param preferences - Asset loading preferences
+     * @example
+     * ```ts
+     * // Basic preferences
+     * Assets.setPreferences({
+     *     crossOrigin: 'anonymous',
+     *     parseAsGraphicsContext: false
+     * });
+     * ```
+     * @remarks
+     * Preferences are applied to all compatible parsers and affect future asset loading.
+     * Common preferences include:
+     * - `crossOrigin`: CORS setting for loaded assets
+     * - `preferWorkers`: Whether to use web workers for loading textures
+     * - `preferCreateImageBitmap`: Use `createImageBitmap` for texture creation. Turning this off will use the `Image` constructor instead.
+     * @see {@link AssetsPreferences} For all available preferences
      */
     public setPreferences(preferences: Partial<AssetsPreferences>): void
     {
@@ -946,6 +1229,99 @@ export class AssetsClass
     }
 }
 
+/**
+ * The global Assets class is a singleton that manages loading, caching, and unloading of all resources
+ * in your PixiJS application.
+ *
+ * Key responsibilities:
+ * - **URL Resolution**: Maps URLs/keys to browser-compatible resources
+ * - **Resource Loading**: Handles loading and transformation of assets
+ * - **Asset Caching**: Manages a global cache to prevent duplicate loads
+ * - **Memory Management**: Provides unloading capabilities to free memory
+ *
+ * Advanced Features:
+ * - **Asset Bundles**: Group and manage related assets together
+ * - **Background Loading**: Load assets before they're needed over time
+ * - **Format Detection**: Automatically select optimal asset formats
+ *
+ * Supported Asset Types:
+ * | Type                | Extensions                                                       | Loaders                                                               |
+ * | ------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------- |
+ * | Textures            | `.png`, `.jpg`, `.gif`, `.webp`, `.avif`, `.svg`                 | {@link loadTextures}, {@link loadSvg}                                 |
+ * | Video Textures      | `.mp4`, `.m4v`, `.webm`, `.ogg`, `.ogv`, `.h264`, `.avi`, `.mov` | {@link loadVideoTextures}                                             |
+ * | Sprite Sheets       | `.json`                                                          | {@link spritesheetAsset}                                              |
+ * | Bitmap Fonts        | `.fnt`, `.xml`, `.txt`                                           | {@link loadBitmapFont}                                                |
+ * | Web Fonts           | `.ttf`, `.otf`, `.woff`, `.woff2`                                | {@link loadWebFont}                                                   |
+ * | JSON                | `.json`                                                          | {@link loadJson}                                                      |
+ * | Text                | `.txt`                                                           | {@link loadTxt}                                                       |
+ * | Compressed Textures | `.basis`, `.dds`, `.ktx`, `.ktx2`                                | {@link loadBasis}, {@link loadDDS}, {@link loadKTX}, {@link loadKTX2} |
+ * > [!NOTE] Some loaders allow for custom configuration, please refer to the specific loader documentation for details.
+ * @example
+ * ```typescript
+ * import { Assets } from 'pixi.js';
+ *
+ * // Initialize with options (optional). You can call Assets.load directly without init.
+ * await Assets.init({
+ *     // Base path for all asset URLs
+ *     basePath: 'https://my-cdn.com/assets/',
+ *     // Manifest object that defines all assets
+ *     manifest: {
+ *        bundles: [{ name: 'gameAssets', assets: [] }, ...],
+ *     }, *
+ *     // Preferred texture settings
+ *     texturePreference: {
+ *         resolution: window.devicePixelRatio,
+ *         format: ['avif', 'webp', 'png']
+ *     }
+ * });
+ *
+ * // Basic loading
+ * const texture = await Assets.load('images/sprite.png');
+ *
+ * // Load multiple assets
+ * const assets = await Assets.load([
+ *     'images/bg.png',
+ *     'images/character.png',
+ *     'fonts/game.fnt'
+ * ]);
+ *
+ * // Using aliases + multiple formats
+ * await Assets.load({ alias: 'hero', src: 'images/hero.{webp,png}' });
+ * const sprite = Sprite.from('hero'); // Uses the best available format
+ *
+ * // background loading
+ * Assets.backgroundLoad(['images/level1.json', 'images/level2.json']); // Loads in the background one at a time
+ *
+ * // Load a bundle of assets from the manifest
+ * const levelAssets = await Assets.loadBundle('gameAssets');
+ * // Background loading of a bundle. This will load assets in the background one at a time.
+ * // Can be interrupted at any time by calling Assets.loadBundle('gameAssets') again.
+ * Assets.backgroundLoadBundle('resultsAssets');
+ *
+ * // Memory management
+ * await Assets.unload('hero');
+ * await Assets.unloadBundle('levelOne');
+ * ```
+ * @remarks
+ * - Assets are cached automatically and only loaded once
+ * - Background loading helps eliminate loading screens
+ * - Format detection ensures optimal asset delivery
+ * - Bundle management simplifies resource organization
+ *
+ * > [!IMPORTANT]
+ * > When unloading assets, ensure they aren't being used elsewhere
+ * > in your application to prevent missing texture references.
+ * @see {@link AssetInitOptions} For initialization options
+ * @see {@link AssetsPreferences} For advanced preferences
+ * @see {@link BackgroundLoader} For background loading capabilities
+ * @see {@link AssetsManifest} For manifest-based asset management
+ * @see {@link Loader} For the underlying loading system
+ * @see {@link Cache} For the caching system
+ * @see {@link Resolver} For URL resolution details
+ * @category assets
+ * @class
+ * @standard
+ */
 export const Assets = new AssetsClass();
 
 // Handle registration of extensions
