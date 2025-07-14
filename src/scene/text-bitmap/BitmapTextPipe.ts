@@ -156,7 +156,9 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
         let linePositionYShift = (lineHeight - fontSize) / 2;
 
-        if (lineHeight - fontSize < 0)
+        // if `currentY` is no longer starts from `baseLineOffset`
+        // the `baseLineOffset` below may also need to be removed
+        if (linePositionYShift - bitmapFont.baseLineOffset < 0)
         {
             linePositionYShift = 0;
         }
