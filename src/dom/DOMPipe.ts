@@ -1,4 +1,5 @@
 import { ExtensionType } from '../extensions/Extensions';
+import { CanvasTransformSync } from './CanvasTransformSync';
 import { type DOMContainer } from './DOMContainer';
 
 import type { InstructionSet } from '../rendering/renderers/shared/instructions/InstructionSet';
@@ -31,6 +32,8 @@ export class DOMPipe implements RenderPipe<DOMContainer>
     private readonly _attachedDomElements: DOMContainer[] = [];
     /** The main DOM element that acts as a container for other DOM elements */
     private readonly _domElement: HTMLDivElement;
+    /** The CanvasTransformSync instance that keeps the DOM element in sync with the canvas */
+    private readonly _canvasTransformSync: CanvasTransformSync;
 
     /**
      * Constructor for the DOMPipe class.
@@ -51,6 +54,12 @@ export class DOMPipe implements RenderPipe<DOMContainer>
         this._domElement.style.left = '0';
         this._domElement.style.pointerEvents = 'none';
         this._domElement.style.zIndex = '1000';
+
+        // Initialize the CanvasTransformSync to keep the DOM element in sync with the canvas
+        this._canvasTransformSync = new CanvasTransformSync({
+            domElement: this._domElement,
+            renderer: this._renderer,
+        });
     }
 
     /**
@@ -97,18 +106,8 @@ export class DOMPipe implements RenderPipe<DOMContainer>
             return;
         }
 
-        const canvas = this._renderer.view.canvas as HTMLCanvasElement;
-
-        if (this._domElement.parentNode !== canvas.parentNode)
-        {
-            canvas.parentNode?.appendChild(this._domElement);
-        }
-
-        const sx = (parseFloat(canvas.style.width) / canvas.width) * this._renderer.resolution;
-        const sy = (parseFloat(canvas.style.height) / canvas.height) * this._renderer.resolution;
-        // scale according to the canvas scale and translate
-
-        this._domElement.style.transform = `translate(${canvas.offsetLeft}px, ${canvas.offsetTop}px) scale(${sx}, ${sy})`;
+        // Ensure the canvas is set
+        this._canvasTransformSync.canvas = this._renderer.view.canvas as HTMLCanvasElement;
 
         for (let i = 0; i < attachedDomElements.length; i++)
         {
@@ -156,6 +155,7 @@ export class DOMPipe implements RenderPipe<DOMContainer>
 
         this._attachedDomElements.length = 0;
         this._domElement.remove();
+        this._canvasTransformSync.destroy();
         this._renderer = null;
     }
 }
