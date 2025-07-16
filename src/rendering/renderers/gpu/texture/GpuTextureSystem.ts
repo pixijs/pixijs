@@ -70,6 +70,10 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
     public initSource(source: TextureSource): GPUTexture
     {
+        let gpuTexture = this._gpuSources[source.uid];
+
+        if (gpuTexture) return gpuTexture;
+
         if (source.autoGenerateMipmaps)
         {
             const biggestDimension = Math.max(source.pixelWidth, source.pixelHeight);
@@ -100,9 +104,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
             usage
         };
 
-        const gpuTexture = this._gpu.device.createTexture(textureDescriptor);
-
-        this._gpuSources[source.uid] = gpuTexture;
+        gpuTexture = this._gpuSources[source.uid] = this._gpu.device.createTexture(textureDescriptor);
 
         if (!this.managedTextures.includes(source))
         {
