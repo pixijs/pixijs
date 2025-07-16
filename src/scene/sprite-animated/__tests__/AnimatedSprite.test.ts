@@ -563,4 +563,37 @@ describe('AnimatedSprite', () =>
             expect(count).toBe(2);
         });
     });
+
+    describe('.destroy()', () =>
+    {
+        it('should destroy all textures', () =>
+        {
+            const sprite = new AnimatedSprite([new Texture(), new Texture()]);
+            const textures = sprite['_textures'];
+            const texture1 = textures[0];
+            const texture2 = textures[1];
+
+            expect(texture1.destroyed).toBe(false);
+            expect(texture2.destroyed).toBe(false);
+
+            sprite.destroy(true);
+
+            expect(texture1.destroyed).toBe(true);
+            expect(texture2.destroyed).toBe(true);
+        });
+
+        it('should destroy the current texture', () =>
+        {
+            const sprite = new AnimatedSprite([new Texture(), new Texture()]);
+
+            sprite.gotoAndPlay(0);
+            const texture = sprite.texture;
+
+            expect(texture.destroyed).toBe(false);
+
+            sprite.destroy(true);
+
+            expect(texture.destroyed).toBe(true);
+        });
+    });
 });

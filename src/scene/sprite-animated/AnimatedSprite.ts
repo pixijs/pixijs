@@ -1,6 +1,7 @@
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { UPDATE_PRIORITY } from '../../ticker/const';
 import { Ticker } from '../../ticker/Ticker';
+import { type DestroyOptions } from '../container/destroyTypes';
 import { Sprite } from '../sprite/Sprite';
 
 import type { SpriteOptions } from '../sprite/Sprite';
@@ -748,16 +749,39 @@ export class AnimatedSprite extends Sprite
 
     /**
      * Stops the AnimatedSprite and destroys it.
+     * This method stops the animation playback, removes it from the ticker,
+     * and cleans up any resources associated with the sprite.
+     * @param options - Options for destroying the sprite, such as whether to remove from parent
      * @example
      * ```ts
      * // Destroy the sprite when done
      * sprite.destroy();
+     * // Or with options
+     * sprite.destroy({ children: true, texture: true, textureSource: true });
      * ```
      */
-    public destroy(): void
+    public destroy(options: DestroyOptions = false): void
     {
+        const destroyTexture = typeof options === 'boolean' ? options : options?.texture;
+
+        if (destroyTexture)
+        {
+            const destroyTextureSource = typeof options === 'boolean' ? options : options?.textureSource;
+
+            this._textures.forEach((texture) =>
+            {
+                // the current texture will be destroyed by the base sprite class
+                if (this.texture !== texture)
+                {
+                    texture.destroy(destroyTextureSource);
+                }
+            });
+        }
+        this._textures = [];
+        this._durations = null;
+
         this.stop();
-        super.destroy();
+        super.destroy(options);
 
         this.onComplete = null;
         this.onFrameChange = null;
