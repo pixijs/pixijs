@@ -313,6 +313,13 @@ export class AbstractRenderer<
             const isRGBAArray = Array.isArray(options.clearColor) && options.clearColor.length === 4;
 
             options.clearColor = isRGBAArray ? options.clearColor : Color.shared.setValue(options.clearColor).toArray();
+
+            // if the alpha is 0, then the color should always be transparent black
+            // using any other color will cause the canvas to clear in an undefined way depending on the browser
+            if ((options.clearColor as RgbaArray)[3] === 0)
+            {
+                options.clearColor = [0, 0, 0, 0] as RgbaArray;
+            }
         }
 
         if (!options.transform)
@@ -371,7 +378,18 @@ export class AbstractRenderer<
 
         Color.shared.setValue(clearColor ?? this.background.colorRgba);
 
-        renderer.renderTarget.clear(target, clear, Color.shared.toArray() as RgbaArray);
+        const arrayValue = Color.shared.toArray() as RgbaArray;
+
+        // if the alpha is 0, then the color should always be transparent black
+        // using any other color will cause the canvas to clear in an undefined way depending on the browser
+        if (arrayValue[3] === 0)
+        {
+            arrayValue[0] = 0;
+            arrayValue[1] = 0;
+            arrayValue[2] = 0;
+        }
+
+        renderer.renderTarget.clear(target, clear, arrayValue);
     }
 
     /** The resolution / device pixel ratio of the renderer. */
