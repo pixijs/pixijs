@@ -6,6 +6,58 @@ import type { Renderer } from '../rendering/renderers/types';
 import type { Container } from '../scene/container/Container';
 
 /**
+ * Application options for the {@link CullerPlugin}.
+ * These options control how your application handles culling of display objects.
+ * @example
+ * ```ts
+ * import { Application } from 'pixi.js';
+ *
+ * // Create application
+ * const app = new Application();
+ * await app.init({
+ *     culler: {
+ *         skipUpdateTransform: true // Skip updating transforms for culled objects
+ *     }
+ * });
+ * ```
+ * @category app
+ * @standard
+ */
+export interface CullerPluginOptions
+{
+    /**
+     * Options for the culler behavior.
+     * @example
+     * ```ts
+     * // Basic culling options
+     * const app = new Application();
+     * await app.init({
+     *     culler: {...}
+     * });
+     * ```
+     */
+    culler?: {
+        /**
+         * Skip updating the transform of culled objects.
+         *
+         * > [!IMPORTANT] Keeping this as `true` can improve performance by avoiding unnecessary calculations,
+         * > however, the transform used for culling may not be up-to-date if the object has moved since the last render.
+         * @default true
+         * @example
+         * ```ts
+         * const app = new Application();
+         * await app.init({
+         *     culler: {
+         *         skipUpdateTransform: true // Skip updating transforms for culled objects
+         *     }
+         * });
+         * ```
+         */
+        skipUpdateTransform?: boolean;
+    };
+}
+
+/**
  * An {@link Application} plugin that automatically culls (hides) display objects that are outside
  * the visible screen area. This improves performance by not rendering objects that aren't visible.
  *
@@ -80,14 +132,18 @@ export class CullerPlugin
     public static render: () => void;
     private static _renderRef: () => void;
 
-    /** @internal */
-    public static init(): void
+    /**
+     * Initialize the plugin with scope of application instance
+     * @private
+     * @param {object} [options] - See application options
+     */
+    public static init(options?: PixiMixins.ApplicationOptions): void
     {
         this._renderRef = this.render.bind(this);
 
         this.render = (): void =>
         {
-            Culler.shared.cull(this.stage, this.renderer.screen);
+            Culler.shared.cull(this.stage, this.renderer.screen, options?.culler?.skipUpdateTransform ?? true);
             this.renderer.render({ container: this.stage });
         };
     }
