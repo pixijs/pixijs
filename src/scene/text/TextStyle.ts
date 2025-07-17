@@ -657,7 +657,7 @@ export interface TextStyleOptions
  * const richStyle = new TextStyle({
  *     fontFamily: 'Arial',
  *     fontSize: 32,
- *     fill: ['#FF0000', '#00FF00'], // Gradient fill
+ *     fill: 'white',
  *     stroke: {
  *         color: '#4a1850',
  *         width: 5
