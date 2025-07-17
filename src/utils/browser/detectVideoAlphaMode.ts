@@ -1,4 +1,5 @@
 import { DOMAdapter } from '../../environment/adapter';
+
 import type { ALPHA_MODES } from '../../rendering/renderers/shared/texture/const';
 
 let promise: Promise<ALPHA_MODES> | undefined;

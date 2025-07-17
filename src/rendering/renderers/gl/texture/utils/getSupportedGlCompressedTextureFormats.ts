@@ -1,4 +1,5 @@
 import { DOMAdapter } from '../../../../../environment/adapter';
+
 import type { TEXTURE_FORMATS } from '../../../shared/texture/const';
 
 let supportedGLCompressedTextureFormats: TEXTURE_FORMATS[];
