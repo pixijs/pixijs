@@ -121,7 +121,9 @@ export const spritesheetAsset = {
      * All textures in the sprite sheet are then added to the cache
      */
     loader: {
+        /** used for deprecation purposes */
         name: 'spritesheetLoader',
+        id: 'spritesheet',
 
         extension: {
             type: ExtensionType.LoadParser,

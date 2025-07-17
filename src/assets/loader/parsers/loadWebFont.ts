@@ -147,7 +147,9 @@ export const loadWebFont = {
         priority: LoaderParserPriority.Low,
     },
 
+    /** used for deprecation purposes */
     name: 'loadWebFont',
+    id: 'web-font',
 
     test(url: string): boolean
     {

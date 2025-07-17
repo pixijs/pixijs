@@ -6,15 +6,7 @@
 export type ArrayOr<T> = T | T[];
 
 /**
- * Names of the parsers that are built into PixiJS.
- * Can be any of the following defaults:
- * - `loadJson`
- * - `loadSvg`
- * - `loadTextures`
- * - `loadTxt`
- * - `loadVideo`
- * - `loadWebFont`
- * or a custom parser name.
+ * @deprecated Use {@link AssetParserName} instead.
  * @category assets
  * @advanced
  */
@@ -25,6 +17,33 @@ export type LoadParserName =
     | 'loadTxt'
     | 'loadVideo'
     | 'loadWebFont'
+    | (string & {});
+
+/**
+ * Names of the parsers that are built into PixiJS.
+ * @example
+ * ```ts
+ * Assets.load({
+ *     src: assetToLoad,
+ *     parser: 'json' // Use the built-in JSON parser
+ * });
+ * ```
+ * @category assets
+ * @advanced
+ */
+export type AssetParserName =
+    | 'json'
+    | 'svg'
+    | 'text'
+    | 'video'
+    | 'web-font'
+    | 'bitmap-font'
+    | 'spritesheet'
+    | 'texture'
+    | 'basis'
+    | 'dds'
+    | 'ktx2'
+    | 'ktx'
     | (string & {});
 
 /**
@@ -51,7 +70,7 @@ export type LoadParserName =
  *     alias: ['config'],
  *     src: 'data.txt',
  *     format: 'txt',
- *     loadParser: 'loadTxt'
+ *     parser: 'text'
  * };
  * ```
  * @category assets
@@ -70,8 +89,12 @@ export interface ResolvedAsset<T = any>
     data?: T;
     /** File format of the asset, usually the file extension. Used to determine which loader parser to use. */
     format?: string;
-    /** Override to specify which parser should load this asset. Useful when file extensions don't match the content type. */
+    /**
+     * @deprecated Use `parser` instead.
+     */
     loadParser?: LoadParserName;
+    /** Override to specify which parser should load this asset. Useful when file extensions don't match the content type. */
+    parser?: AssetParserName;
 }
 
 /**
@@ -96,7 +119,7 @@ export interface ResolvedAsset<T = any>
  * const src: ResolvedSrc = {
  *     src: 'data/config.txt',
  *     format: 'txt',
- *     loadParser: 'loadTxt',
+ *     parser: 'text',
  * };
  * ```
  * @remarks
@@ -110,7 +133,7 @@ export interface ResolvedAsset<T = any>
  * @advanced
  * @interface
  */
-export type ResolvedSrc = Pick<ResolvedAsset, 'src' | 'format' | 'loadParser' | 'data'>;
+export type ResolvedSrc = Pick<ResolvedAsset, 'src' | 'format' | 'loadParser' | 'parser' | 'data'>;
 
 /**
  * A valid asset source specification. This can be a URL string, a {@link ResolvedSrc},
@@ -130,7 +153,7 @@ export type ResolvedSrc = Pick<ResolvedAsset, 'src' | 'format' | 'loadParser' | 
  * const src: AssetSrc = {
  *     src: 'sprite.png',
  *     format: 'png',
- *     loadParser: 'loadTextures',
+ *     parser: 'texture',
  *     data: {
  *         scaleMode: 'nearest',
  *     }
@@ -195,7 +218,7 @@ export type AssetSrc = ArrayOr<string> | ArrayOr<ResolvedSrc> & { [key: string]:
  * const asset: UnresolvedAsset = {
  *     alias: 'config',
  *     src: 'data.txt',
- *     loadParser: 'loadTxt'
+ *     parser: 'text'
  * };
  * ```
  * @remarks
@@ -209,7 +232,7 @@ export type AssetSrc = ArrayOr<string> | ArrayOr<ResolvedSrc> & { [key: string]:
  * @standard
  * @interface
  */
-export type UnresolvedAsset<T=any> = Pick<ResolvedAsset<T>, 'data' | 'format' | 'loadParser'> &
+export type UnresolvedAsset<T=any> = Pick<ResolvedAsset<T>, 'data' | 'format' | 'loadParser' | 'parser'> &
 {
     /** Aliases associated with asset */
     alias?: ArrayOr<string>;

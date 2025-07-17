@@ -70,16 +70,18 @@ export class Loader
             let parser: LoaderParser = null;
 
             // first check to see if the user has specified a parser
-            if (data.loadParser)
+            if (data.parser || data.loadParser)
             {
                 // they have? lovely, lets use it
-                parser = this._parserHash[data.loadParser];
+                parser = this._parserHash[data.parser || data.loadParser];
 
                 if (!parser)
                 {
                     // #if _DEBUG
 
-                    warn(`[Assets] specified load parser "${data.loadParser}" not found while loading ${url}`);
+                    warn(
+                        `[Assets] specified load parser "${data.parser || data.loadParser}" not found while loading ${url}`
+                    );
                     // #endif
                 }
             }
@@ -264,23 +266,27 @@ export class Loader
         this._parsersValidated = true;
 
         this._parserHash = this._parsers
-            .filter((parser) => parser.name)
+            .filter((parser) => parser.name || parser.id)
             .reduce((hash, parser) =>
             {
-                if (!parser.name)
+                if (!parser.name && !parser.id)
                 {
                     // #if _DEBUG
-                    warn(`[Assets] loadParser should have a name`);
+                    warn(`[Assets] parser should have an id`);
                     // #endif
                 }
-                else if (hash[parser.name])
+                else if (hash[parser.name] || hash[parser.id])
                 {
                     // #if _DEBUG
-                    warn(`[Assets] loadParser name conflict "${parser.name}"`);
+                    warn(`[Assets] parser id conflict "${parser.id}"`);
                     // #endif
                 }
 
-                return { ...hash, [parser.name]: parser };
+                // add both name and id to the hash
+                hash[parser.name] = parser;
+                if (parser.id) hash[parser.id] = parser;
+
+                return hash;
             }, {} as Record<string, LoaderParser>);
     }
 }
