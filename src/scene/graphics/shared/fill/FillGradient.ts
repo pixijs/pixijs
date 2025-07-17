@@ -524,10 +524,17 @@ export class FillGradient implements CanvasGradient
         return this.uid;
     }
 
+    /** Destroys the gradient, releasing resources. This will also destroy the internal texture. */
     public destroy(): void
     {
         this.texture?.destroy(true);
         this.texture = null;
+        this.transform = null;
+        this.colorStops = [];
+        this.start = null;
+        this.end = null;
+        this.center = null;
+        this.outerCenter = null;
     }
 }
 
