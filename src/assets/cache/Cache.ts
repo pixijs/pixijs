@@ -53,7 +53,7 @@ class CacheClass
      * @param key - The key or keys to set
      * @param value - The value to store in the cache or from which cacheable assets will be derived.
      */
-    public set(key: any | any[], value: unknown): void
+    public set<T = any>(key: any | any[], value: T): void
     {
         const keys = convertToList<string>(key);
 

@@ -1,7 +1,6 @@
 import { Cache } from '../../../assets/cache/Cache';
+import { type FontFaceCache } from '../../../assets/loader/parsers/loadWebFont';
 import { loadFontCSS } from './loadFontCSS';
-
-import type { FontCSSStyleOptions } from './loadFontCSS';
 
 /** @internal */
 export const FontStylePromiseCache = new Map<string, Promise<string>>();
@@ -10,44 +9,47 @@ export const FontStylePromiseCache = new Map<string, Promise<string>>();
  * takes the font families and returns a css string that can be injected into a style tag
  * It will contain the font families and the font urls encoded as base64
  * @param fontFamilies - The font families to load
- * @param style - The FontCSSStyleOptions to load the font with (used for the first font family)
- * @param defaultOptions - The default options to load the font with (used for the rest of the font families)
- * @param defaultOptions.fontWeight - The default font weight
- * @param defaultOptions.fontStyle - The default font style
  * @returns - The css string
  * @internal
  */
 export async function getFontCss(
     fontFamilies: string[],
-    style: FontCSSStyleOptions,
-    defaultOptions: {fontWeight: string, fontStyle: string}
 )
 {
     const fontPromises = fontFamilies
         .filter((fontFamily) => Cache.has(`${fontFamily}-and-url`))
-        .map((fontFamily, i) =>
+        .map((fontFamily) =>
         {
             if (!FontStylePromiseCache.has(fontFamily))
             {
-                const { url } = Cache.get(`${fontFamily}-and-url`);
+                const { entries } = Cache.get<FontFaceCache>(`${fontFamily}-and-url`);
+                const promises: Promise<string>[] = [];
 
-                if (i === 0)
+                entries.forEach((entry) =>
                 {
-                    FontStylePromiseCache.set(fontFamily, loadFontCSS({
-                        fontWeight: style.fontWeight,
-                        fontStyle: style.fontStyle,
-                        fontFamily,
-                    }, url));
-                }
+                    const url = entry.url;
+                    const faces = entry.faces;
 
-                else
-                {
-                    FontStylePromiseCache.set(fontFamily, loadFontCSS({
-                        fontWeight: defaultOptions.fontWeight,
-                        fontStyle: defaultOptions.fontStyle,
-                        fontFamily,
-                    }, url));
-                }
+                    const out = faces.map((face) => ({ weight: face.weight, style: face.style }));
+
+                    // load each out font with the correct style
+                    promises.push(
+                        ...out.map((style) =>
+                            loadFontCSS(
+                                {
+                                    fontWeight: style.weight,
+                                    fontStyle: style.style,
+                                    fontFamily,
+                                },
+                                url,
+                            ),
+                        ),
+                    );
+                });
+                FontStylePromiseCache.set(
+                    fontFamily,
+                    Promise.all(promises).then((css) => css.join('\n')),
+                );
             }
 
             return FontStylePromiseCache.get(fontFamily);
