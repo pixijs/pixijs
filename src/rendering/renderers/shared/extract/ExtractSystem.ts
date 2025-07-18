@@ -1,3 +1,4 @@
+import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Container } from '../../../../scene/container/Container';
 import { Texture } from '../texture/Texture';
@@ -514,7 +515,7 @@ export class ExtractSystem implements System
      */
     public async image(options: ExtractImageOptions | Container | Texture): Promise<HTMLImageElement>
     {
-        const image = new Image();
+        const image = DOMAdapter.get().createImage();
 
         image.src = await this.base64(options);
 

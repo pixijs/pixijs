@@ -18,6 +18,7 @@ import { DOMParser } from '@xmldom/xmldom';
  */
 export const WebWorkerAdapter = {
     createCanvas: (width?: number, height?: number) => new OffscreenCanvas(width ?? 0, height ?? 0),
+    createImage: (): HTMLImageElement => new Image(),
     getCanvasRenderingContext2D: () => OffscreenCanvasRenderingContext2D,
     getWebGLRenderingContext: () => WebGLRenderingContext,
     getNavigator: () => navigator,

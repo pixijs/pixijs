@@ -139,7 +139,7 @@ export const loadTextures: LoaderParser<Texture, TextureSourceOptions, LoadTextu
         {
             src = await new Promise((resolve, reject) =>
             {
-                src = new Image();
+                src = DOMAdapter.get().createImage();
                 src.crossOrigin = this.config.crossOrigin;
 
                 src.src = url;

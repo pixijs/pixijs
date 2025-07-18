@@ -99,7 +99,7 @@ async function loadAsTexture(
 
     const blobUrl = URL.createObjectURL(blob);
 
-    const image = new Image();
+    const image = DOMAdapter.get().createImage();
 
     image.src = blobUrl;
     image.crossOrigin = crossOrigin;

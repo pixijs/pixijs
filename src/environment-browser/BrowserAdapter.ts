@@ -26,6 +26,7 @@ export const BrowserAdapter = {
 
         return canvas;
     },
+    createImage: (): HTMLImageElement => new Image(),
     getCanvasRenderingContext2D: () => CanvasRenderingContext2D,
     getWebGLRenderingContext: () => WebGLRenderingContext,
     getNavigator: () => navigator,
