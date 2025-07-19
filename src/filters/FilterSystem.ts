@@ -515,7 +515,6 @@ export class FilterSystem implements System
 
         worldTransform.invert();
         mappedMatrix.prepend(worldTransform);
-        // const width = sprite.texture.orig.width ||
         mappedMatrix.scale(
             1.0 / sprite.texture.orig.width,
             1.0 / sprite.texture.orig.height
