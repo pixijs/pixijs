@@ -28,6 +28,32 @@ describe('Assets', () =>
         expect(bunny2).toBeInstanceOf(Texture);
     });
 
+    it('should load assets with the correct progress', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        let progress = 0;
+        const progressMock = jest.fn((p) => { progress = p; });
+
+        const assets = [
+            {
+                src: 'textures/texture.{webp,png}',
+                alias: ['bunny-array', 'bunny-array2'],
+            },
+            'textures/bunny.png'
+        ];
+        const res = await Assets.load(assets, progressMock);
+
+        expect(progressMock).toHaveBeenCalledTimes(2);
+        expect(progress).toBe(1);
+
+        expect(res['bunny-array']).toBeInstanceOf(Texture);
+        expect(res['bunny-array2']).toBeInstanceOf(Texture);
+        expect(res['textures/bunny.png']).toBeInstanceOf(Texture);
+    });
+
     it('should load assets with resolver', async () =>
     {
         await Assets.init({
