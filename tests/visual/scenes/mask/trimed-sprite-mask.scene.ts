@@ -25,17 +25,17 @@ export const scene: TestScene = {
             orig: new Rectangle(0, 0, 400, 300),
             trim: new Rectangle(100, 100, 200, 200)
         });
-        const mask = new Sprite(trimedTexture);
+        const mask = new Sprite({
+            texture: trimedTexture,
+            width: 40,
+            height: 30,
+            anchor: 0.5,
+            x: 64,
+            y: 64,
+        });
 
-        mask.width = 40;
-        mask.height = 30;
-
-        mask.anchor.set(0.5);
-
-        mask.position.set(128 / 2);
-
-        rect.mask = mask;
         rect.setMask({
+            mask,
             inverse: true,
         });
 
