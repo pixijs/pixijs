@@ -21,4 +21,4 @@ jobs:
         run: npm run stackblitz-ci
 
       - name: Publish
-        run: npx pkg-pr-new@latest publish --compact --template .stackblitz/*
+        run: npx pkg-pr-new@latest publish './' --template '.stackblitz/*'
