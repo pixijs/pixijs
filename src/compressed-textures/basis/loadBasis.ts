@@ -24,7 +24,9 @@ export const loadBasis = {
         name: 'loadBasis',
     },
 
+    /** used for deprecation purposes */
     name: 'loadBasis',
+    id: 'basis',
 
     test(url: string): boolean
     {

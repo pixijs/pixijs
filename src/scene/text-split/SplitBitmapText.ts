@@ -37,7 +37,7 @@ export interface SplitBitmapOptions extends AbstractSplitOptions {}
  *   text: 'Multi\nLine Text',
  *   style: new TextStyle({
  *     fontSize: 24,
- *     fill: ['#FF0000', '#00FF00'], // Gradient
+ *     fill: 'white',
  *     strokeThickness: 2,
  *   }),
  *

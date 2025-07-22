@@ -472,6 +472,7 @@ describe('Resolver', () =>
                 src: 'out1.png',
                 format: 'png',
                 loadParser: undefined,
+                parser: undefined,
                 data: {}
             },
             test2: {
@@ -479,6 +480,7 @@ describe('Resolver', () =>
                 src: 'out2.png',
                 format: 'png',
                 loadParser: undefined,
+                parser: undefined,
                 data: {}
             },
             test3: {
@@ -486,6 +488,7 @@ describe('Resolver', () =>
                 src: 'out4.png',
                 format: 'png',
                 loadParser: undefined,
+                parser: undefined,
                 data: {}
             },
         });
@@ -519,6 +522,7 @@ describe('Resolver', () =>
                 src: 'out3.webm',
                 format: 'webm',
                 loadParser: undefined,
+                parser: undefined,
                 data: {}
             },
         });
@@ -582,6 +586,7 @@ describe('Resolver', () =>
                 format: 'png',
                 resolution: 1,
                 loadParser: undefined,
+                parser: undefined,
                 data: {}
             },
         });
@@ -593,6 +598,7 @@ describe('Resolver', () =>
                 resolution: 1,
                 src: 'my-sprite@2x.png',
                 loadParser: undefined,
+                parser: undefined,
                 data: {}
             },
             levelData: {
@@ -603,6 +609,7 @@ describe('Resolver', () =>
                 format: 'json',
                 src: 'levelData.json',
                 loadParser: undefined,
+                parser: undefined,
                 data: {}
             },
             spriteSheet1: {
@@ -611,6 +618,7 @@ describe('Resolver', () =>
                 resolution: 1,
                 src: 'my-sprite-sheet.json',
                 loadParser: undefined,
+                parser: undefined,
                 data: {}
             },
             spriteSheet2: {
@@ -619,6 +627,7 @@ describe('Resolver', () =>
                 resolution: 1,
                 src: 'my-sprite-sheet-2.json',
                 loadParser: undefined,
+                parser: undefined,
                 data: {}
             },
         });
