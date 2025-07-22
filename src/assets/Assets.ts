@@ -746,8 +746,10 @@ export class AssetsClass
         const promises = keys.map((bundleId) =>
         {
             const resolveResult = resolveResults[bundleId];
+            const values = Object.values(resolveResult);
+            const totalAssetsToLoad = [...new Set(values.flat())] as ResolvedAsset[];
 
-            total += Object.keys(resolveResult).length;
+            total += totalAssetsToLoad.length;
 
             return this._mapLoadToResolve(resolveResult, _onProgress)
                 .then((resolveResult) =>
