@@ -155,7 +155,7 @@ export interface BitmapFontInstallOptions
      *     style: {
      *         fontFamily: 'Arial',
      *         fontSize: 32,
-     *         fill: ['#ff0000', '#00ff00'], // Gradient
+     *         fill: 'white',
      *         stroke: { color: '#000000', width: 2 },
      *         dropShadow: {
      *             color: '#000000',
