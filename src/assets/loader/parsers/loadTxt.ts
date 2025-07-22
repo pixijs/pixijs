@@ -16,7 +16,9 @@ const validTXTMIME = 'text/plain';
  */
 export const loadTxt = {
 
+    /** used for deprecation purposes */
     name: 'loadTxt',
+    id: 'text',
 
     extension: {
         type: ExtensionType.LoadParser,
