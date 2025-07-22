@@ -1,9 +1,9 @@
 {
-    "name": "pixi.js-sandbox",
+    "name": "pixi.js-bunny-mark",
     "private": true,
     "main": "index.js",
     "dependencies": {
-        "pixi.js": "^7.2.1",
+        "pixi.js": "latest",
         "stats.js": "^0.17.0"
     }
 }

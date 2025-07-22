@@ -1,0 +1,8 @@
+{
+    "name": "pixi.js-base",
+    "private": true,
+    "main": "index.js",
+    "dependencies": {
+        "pixi.js": "latest"
+    }
+}
