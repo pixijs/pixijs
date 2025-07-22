@@ -75,10 +75,18 @@ export class Loader
                 // they have? lovely, lets use it
                 parser = this._parserHash[data.parser || data.loadParser];
 
+                // #if _DEBUG
+                if (data.loadParser)
+                {
+                    warn(
+                        `[Assets] "loadParser" is deprecated, use "parser" instead for ${url}`
+                    );
+                }
+                // #endif
+
                 if (!parser)
                 {
                     // #if _DEBUG
-
                     warn(
                         `[Assets] specified load parser "${data.parser || data.loadParser}" not found while loading ${url}`
                     );
