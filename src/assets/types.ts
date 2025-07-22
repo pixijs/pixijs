@@ -6,7 +6,7 @@
 export type ArrayOr<T> = T | T[];
 
 /**
- * @deprecated Use {@link AssetParserName} instead.
+ * @deprecated Use {@link AssetParser} instead.
  * @category assets
  * @advanced
  */
@@ -31,7 +31,7 @@ export type LoadParserName =
  * @category assets
  * @advanced
  */
-export type AssetParserName =
+export type AssetParser =
     | 'json'
     | 'svg'
     | 'text'
@@ -94,7 +94,7 @@ export interface ResolvedAsset<T = any>
      */
     loadParser?: LoadParserName;
     /** Override to specify which parser should load this asset. Useful when file extensions don't match the content type. */
-    parser?: AssetParserName;
+    parser?: AssetParser;
 }
 
 /**
