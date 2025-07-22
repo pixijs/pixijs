@@ -180,22 +180,56 @@ describe('DOMContainer', () =>
                 width: 100,
                 height: 100,
             });
-            const element = document.createElement('div');
 
-            Object.defineProperties(element, {
-                offsetWidth: { value: 100 },
-                offsetHeight: { value: 100 }
+            const canvas = app.renderer.canvas as HTMLCanvasElement;
+
+            canvas.style.position = 'absolute';
+            canvas.style.left = '0';
+            canvas.style.top = '0';
+            canvas.style.width = '200px';
+            canvas.style.height = '200px';
+            document.body.appendChild(canvas);
+
+            app.stage.addChild(domContainer);
+            app.renderer.render(app.stage);
+            document.body.removeChild(canvas);
+
+            expect(app.renderer.renderPipes.dom['_domElement'].style.transform).toBe(
+                `translate(0px, 0px) scale(2, 2)`,
+            );
+        });
+
+        it('should render the element with the correct transform when canvas is scaled by percentage', async () =>
+        {
+            const app = await getApp({
+                width: 100,
+                height: 100,
             });
 
             const canvas = app.renderer.canvas as HTMLCanvasElement;
 
-            canvas.style.width = '200px';
-            canvas.style.height = '200px';
+            // create a fixed div
+            const fixedDiv = document.createElement('div');
+
+            fixedDiv.style.position = 'absolute';
+            fixedDiv.style.left = '0';
+            fixedDiv.style.top = '0';
+            fixedDiv.style.width = '100px';
+            fixedDiv.style.height = '100px';
+            document.body.appendChild(fixedDiv);
+
+            canvas.style.width = '200%';
+            canvas.style.height = '200%';
+            fixedDiv.appendChild(canvas);
+            const bounds = canvas.getBoundingClientRect();
 
             app.stage.addChild(domContainer);
             app.renderer.render(app.stage);
+            document.body.removeChild(fixedDiv);
 
-            expect(app.renderer.renderPipes.dom['_domElement'].style.transform).toBe('translate(0px, 0px) scale(2, 2)');
+            expect(app.renderer.renderPipes.dom['_domElement'].style.transform).toBe(
+                `translate(${bounds.left}px, ${bounds.top}px) scale(2, 2)`,
+            );
         });
     });
 });

@@ -1,4 +1,5 @@
 import { Container } from '../../container/Container';
+import { FillGradient } from '../shared/fill/FillGradient';
 import { Graphics } from '../shared/Graphics';
 import { GraphicsContext } from '../shared/GraphicsContext';
 import '../init';
@@ -52,6 +53,40 @@ describe('Graphics Destroy', () =>
         expect(renderer.graphicsContext['_gpuContextHash'][context.uid]).toBeNull();
 
         expect(context.instructions).toBeNull();
+    });
+
+    it('should clean up its fill when destroyed', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+
+        const container = new Container();
+
+        const graphics = new Graphics();
+        const fill = new FillGradient({});
+
+        graphics.context.rect(0, 0, 100, 100).fill(fill);
+
+        container.addChild(graphics);
+
+        renderer.render({ container });
+
+        // we will lose this ref once its destroyed:
+        const context = graphics.context;
+
+        graphics.destroy({ context: false });
+
+        expect(fill.texture).not.toBeNull();
+        expect(fill.transform).not.toBeNull();
+
+        context.destroy(true);
+
+        expect(fill.texture).toBeNull();
+        expect(fill.transform).toBeNull();
+        expect(fill.colorStops).toEqual([]);
+        expect(fill.start).toBeNull();
+        expect(fill.end).toBeNull();
+        expect(fill.center).toBeNull();
+        expect(fill.outerCenter).toBeNull();
     });
 
     it('should destroy its own context', async () =>

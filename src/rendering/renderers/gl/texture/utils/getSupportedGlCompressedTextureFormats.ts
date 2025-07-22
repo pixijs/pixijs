@@ -1,3 +1,5 @@
+import { DOMAdapter } from '../../../../../environment/adapter';
+
 import type { TEXTURE_FORMATS } from '../../../shared/texture/const';
 
 let supportedGLCompressedTextureFormats: TEXTURE_FORMATS[];
@@ -8,7 +10,7 @@ export function getSupportedGlCompressedTextureFormats(): TEXTURE_FORMATS[]
     if (supportedGLCompressedTextureFormats) return supportedGLCompressedTextureFormats;
 
     // TODO: can we use already created context (webgl or webgl2)?
-    const canvas = document.createElement('canvas');
+    const canvas = DOMAdapter.get().createCanvas(1, 1);
     const gl = canvas.getContext('webgl');
 
     if (!gl)
