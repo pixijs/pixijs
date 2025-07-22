@@ -20,7 +20,9 @@ export const loadJson = {
         priority: LoaderParserPriority.Low,
     },
 
+    /** used for deprecation purposes */
     name: 'loadJson',
+    id: 'json',
 
     test(url: string): boolean
     {
