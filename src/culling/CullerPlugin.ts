@@ -16,7 +16,7 @@ import type { Container } from '../scene/container/Container';
  * const app = new Application();
  * await app.init({
  *     culler: {
- *         skipUpdateTransform: true // Skip updating transforms for culled objects
+ *         updateTransform: false // Skip updating transforms for culled objects
  *     }
  * });
  * ```
@@ -38,9 +38,9 @@ export interface CullerPluginOptions
      */
     culler?: {
         /**
-         * Skip updating the transform of culled objects.
+         * Update the transform of culled objects.
          *
-         * > [!IMPORTANT] Keeping this as `true` can improve performance by avoiding unnecessary calculations,
+         * > [!IMPORTANT] Keeping this as `false` can improve performance by avoiding unnecessary calculations,
          * > however, the transform used for culling may not be up-to-date if the object has moved since the last render.
          * @default true
          * @example
@@ -48,12 +48,12 @@ export interface CullerPluginOptions
          * const app = new Application();
          * await app.init({
          *     culler: {
-         *         skipUpdateTransform: true // Skip updating transforms for culled objects
+         *         updateTransform: false // Skip updating transforms for culled objects
          *     }
          * });
          * ```
          */
-        skipUpdateTransform?: boolean;
+        updateTransform?: boolean;
     };
 }
 
@@ -143,7 +143,10 @@ export class CullerPlugin
 
         this.render = (): void =>
         {
-            Culler.shared.cull(this.stage, this.renderer.screen, options?.culler?.skipUpdateTransform ?? true);
+            // default to true for updateTransform, unless specified otherwise
+            const updateTransform = options?.culler?.updateTransform !== true;
+
+            Culler.shared.cull(this.stage, this.renderer.screen, updateTransform);
             this.renderer.render({ container: this.stage });
         };
     }

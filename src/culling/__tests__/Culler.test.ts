@@ -234,7 +234,7 @@ describe('CullerPlugin', () =>
         extensions.remove(CullerPlugin);
     });
 
-    it('should use the correct options', async () =>
+    it('should use the correct options: true', async () =>
     {
         const spyInit = jest.spyOn(CullerPlugin, 'init');
         const spyCull = jest.spyOn(Culler.shared, 'cull');
@@ -244,19 +244,46 @@ describe('CullerPlugin', () =>
 
         await app.init({
             culler: {
-                skipUpdateTransform: false,
+                updateTransform: true,
             },
         });
 
         expect(spyInit).toHaveBeenCalledWith({
             culler: {
-                skipUpdateTransform: false,
+                updateTransform: true,
             },
         });
 
         app.render();
 
         expect(spyCull).toHaveBeenCalledWith(app.stage, app.renderer.screen, false);
+        app.destroy();
+        extensions.remove(CullerPlugin);
+    });
+
+    it('should use the correct options: false', async () =>
+    {
+        const spyInit = jest.spyOn(CullerPlugin, 'init');
+        const spyCull = jest.spyOn(Culler.shared, 'cull');
+
+        extensions.add(CullerPlugin);
+        const app = new Application();
+
+        await app.init({
+            culler: {
+                updateTransform: false,
+            },
+        });
+
+        expect(spyInit).toHaveBeenCalledWith({
+            culler: {
+                updateTransform: false,
+            },
+        });
+
+        app.render();
+
+        expect(spyCull).toHaveBeenCalledWith(app.stage, app.renderer.screen, true);
         app.destroy();
         extensions.remove(CullerPlugin);
     });
