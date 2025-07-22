@@ -1,3 +1,5 @@
+import { DOMAdapter } from '../../environment/adapter';
+
 import type { ALPHA_MODES } from '../../rendering/renderers/shared/texture/const';
 
 let promise: Promise<ALPHA_MODES> | undefined;
@@ -19,7 +21,7 @@ export async function detectVideoAlphaMode(): Promise<ALPHA_MODES>
 {
     promise ??= (async () =>
     {
-        const canvas = document.createElement('canvas');
+        const canvas = DOMAdapter.get().createCanvas(1, 1);
         const gl = canvas.getContext('webgl');
 
         if (!gl)

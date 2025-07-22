@@ -2,6 +2,7 @@ import EventEmitter from 'eventemitter3';
 import { Color, type ColorSource } from '../../color/Color';
 import { type Filter } from '../../filters/Filter';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
+import { warn } from '../../utils/logging/warn';
 import { FillGradient } from '../graphics/shared/fill/FillGradient';
 import { FillPattern } from '../graphics/shared/fill/FillPattern';
 import { GraphicsContext } from '../graphics/shared/GraphicsContext';
@@ -1225,36 +1226,31 @@ function convertV7Tov8Style(style: TextStyleOptions)
         deprecation(v8_0_0, 'gradient fill is now a fill pattern: `new FillGradient(...)`');
         // #endif
 
-        let fontSize: number;
+        if (!Array.isArray(oldStyle.fill) || oldStyle.fill.length === 0)
+        {
+            throw new Error('Invalid fill value. Expected an array of colors for gradient fill.');
+        }
 
-        // eslint-disable-next-line no-eq-null, eqeqeq
-        if (style.fontSize == null)
+        if (oldStyle.fill.length !== oldStyle.fillGradientStops.length)
         {
-            style.fontSize = TextStyle.defaultTextStyle.fontSize;
-        }
-        else if (typeof style.fontSize === 'string')
-        {
-            // eg '34px' to number
-            fontSize = parseInt(style.fontSize as string, 10);
-        }
-        else
-        {
-            fontSize = style.fontSize as number;
+            // #if _DEBUG
+            warn('The number of fill colors must match the number of fill gradient stops.');
+            // #endif
         }
 
         const gradientFill = new FillGradient({
             start: { x: 0, y: 0 },
-            end: { x: 0, y: (fontSize || 0) * 1.7 },
+            end: { x: 0, y: 1 },
+            textureSpace: 'local',
         });
 
-        const fills: number[] = oldStyle.fillGradientStops
+        const fillGradientStops = oldStyle.fillGradientStops.slice();
+        const fills: number[] = oldStyle.fill
             .map((color: ColorSource) => Color.shared.setValue(color).toNumber());
 
-        fills.forEach((number, index) =>
+        fillGradientStops.forEach((stop, index) =>
         {
-            const ratio = index / (fills.length - 1);
-
-            gradientFill.addColorStop(ratio, number);
+            gradientFill.addColorStop(stop, fills[index]);
         });
 
         style.fill = {

@@ -104,6 +104,10 @@ export function determineCrossOrigin(url: string, loc: Location = globalThis.loc
     return '';
 }
 
+type LoadVideoData = VideoSourceOptions & {
+    mime?: string;
+};
+
 /**
  * Get the supported video extensions and MIME types based on the browser's capabilities.
  * This function checks the potential video extensions against the browser's supported formats.
@@ -177,10 +181,10 @@ export const loadVideoTextures = {
         return isValidDataUrl || isValidExtension;
     },
 
-    async load(url: string, asset: ResolvedAsset<VideoSourceOptions>, loader: Loader): Promise<Texture>
+    async load(url: string, asset: ResolvedAsset<LoadVideoData>, loader: Loader): Promise<Texture>
     {
         // --- Merge default and provided options ---
-        const options: VideoSourceOptions = {
+        const options: LoadVideoData = {
             ...VideoSource.defaultOptions,
             resolution: asset.data?.resolution || getResolutionOfUrl(url),
             alphaMode: asset.data?.alphaMode || await detectVideoAlphaMode(),
@@ -220,7 +224,11 @@ export const loadVideoTextures = {
         // Determine MIME type
         let mime: string | undefined;
 
-        if (url.startsWith('data:'))
+        if (options.mime)
+        {
+            mime = options.mime;
+        }
+        else if (url.startsWith('data:'))
         {
             mime = url.slice(5, url.indexOf(';'));
         }
@@ -270,4 +278,4 @@ export const loadVideoTextures = {
     {
         texture.destroy(true);
     }
-} satisfies LoaderParser<Texture, VideoSourceOptions>;
+} satisfies LoaderParser<Texture, LoadVideoData>;

@@ -10,7 +10,7 @@ export const scene: TestScene = {
         const style = new TextStyle({
             fill: '#FFC700',
             fontSize: 32,
-            fontFamily: 'Poppins, Arial',
+            fontFamily: 'Arial',
             fontWeight: 'bold'
         });
 
