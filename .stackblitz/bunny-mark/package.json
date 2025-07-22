@@ -1,9 +1,17 @@
 {
-    "name": "pixi.js-bunny-mark",
-    "private": true,
-    "main": "index.js",
-    "dependencies": {
-        "pixi.js": "latest",
-        "stats.js": "^0.17.0"
-    }
+  "name": "pixi.js-bunny-mark",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "pixi.js": "latest",
+    "stats.js": "^0.17.0"
+  },
+  "devDependencies": {
+    "vite": "^7.0.4"
+  }
 }

@@ -1,8 +1,16 @@
 {
-    "name": "pixi.js-base",
-    "private": true,
-    "main": "index.js",
-    "dependencies": {
-        "pixi.js": "latest"
-    }
+  "name": "pixi.js-base",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "pixi.js": "latest"
+  },
+  "devDependencies": {
+    "vite": "^7.0.4"
+  }
 }
