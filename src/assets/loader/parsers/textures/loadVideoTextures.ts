@@ -159,7 +159,9 @@ function getBrowserSupportedVideoExtensions()
  */
 export const loadVideoTextures = {
 
+    /** used for deprecation purposes */
     name: 'loadVideo',
+    id: 'video',
 
     extension: {
         type: ExtensionType.LoadParser,

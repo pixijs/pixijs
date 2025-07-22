@@ -32,7 +32,7 @@ const styledText = new Text({
     style: {
         fontFamily: 'Arial',
         fontSize: 48,
-        fill: ['#ff0000', '#00ff00'], // Gradient
+        fill: 'white',
         stroke: { color: '#000000', width: 4 },
         dropShadow: {
             color: '#000000',
