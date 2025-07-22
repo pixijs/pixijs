@@ -1,30 +1,31 @@
+import { type Renderer } from '../rendering/renderers/types';
 import { UPDATE_PRIORITY } from '../ticker/const';
 import { Ticker } from '../ticker/Ticker';
 
 /**
- * CanvasTransformSync class synchronizes the DOM element's transform with the canvas size and position.
+ * CanvasTransformObserver class synchronizes the DOM element's transform with the canvas size and position.
  * It uses ResizeObserver for efficient updates and requestAnimationFrame for fallback.
  * This ensures that the DOM element is always correctly positioned and scaled relative to the canvas.
  * @internal
  */
-export class CanvasTransformSync
+export class CanvasTransformObserver
 {
     private _lastTransform = '';
     private _observer: ResizeObserver | null = null;
     private _canvas: HTMLCanvasElement;
     private readonly _domElement: HTMLElement;
-    private readonly _renderer: { resolution: number };
+    private readonly _renderer: Renderer;
     private _initialized = false;
     private _lastScaleX: number;
     private _lastScaleY: number;
 
-    constructor(options: { domElement: HTMLElement; renderer: { resolution: number } })
+    constructor(options: { domElement: HTMLElement; renderer: Renderer })
     {
         this._domElement = options.domElement;
         this._renderer = options.renderer;
     }
 
-    /** The canvas element that this CanvasTransformSync is associated with. */
+    /** The canvas element that this CanvasTransformObserver is associated with. */
     public get canvas(): HTMLCanvasElement
     {
         return this._canvas;
@@ -40,14 +41,14 @@ export class CanvasTransformSync
                 canvas.parentNode?.appendChild(this._domElement);
             }
 
-            // If the CanvasTransformSync is not initialized, we need to set it up
+            // If the CanvasTransformObserver is not initialized, we need to set it up
             if (!this._initialized)
             {
                 this._init();
             }
             else
             {
-                this.updateTransform();
+                this.updateTranslation();
             }
         }
     }
@@ -56,7 +57,7 @@ export class CanvasTransformSync
      * Updates the transform of the DOM element based on the canvas size and position.
      * This method calculates the scale and translation needed to keep the DOM element in sync with the canvas.
      */
-    public readonly updateTransform = () =>
+    public readonly updateTranslation = () =>
     {
         const rect = this._canvas.getBoundingClientRect(); // still needed for left/top
         const contentWidth = this._canvas.width;
@@ -77,7 +78,7 @@ export class CanvasTransformSync
     };
 
     /**
-     * Initializes the CanvasTransformSync instance.
+     * Initializes the CanvasTransformObserver instance.
      * Sets up a ResizeObserver if available, or falls back to Ticker for updates.
      * This ensures that the DOM element is kept in sync with the canvas size and position.
      */
@@ -105,7 +106,7 @@ export class CanvasTransformSync
 
                     if (needsUpdate)
                     {
-                        this.updateTransform(); // safely fetch `left` and `top` only when needed
+                        this.updateTranslation(); // safely fetch `left` and `top` only when needed
                         this._lastScaleX = sx;
                         this._lastScaleY = sy;
                     }
@@ -115,14 +116,14 @@ export class CanvasTransformSync
         }
         else
         {
-            Ticker.shared.add(this.updateTransform, undefined, UPDATE_PRIORITY.HIGH);
+            Ticker.shared.add(this.updateTranslation, undefined, UPDATE_PRIORITY.HIGH);
         }
 
         // Initial sync
-        this.updateTransform();
+        this.updateTranslation();
     }
 
-    /** Destroys the CanvasTransformSync instance, cleaning up observers and Ticker. */
+    /** Destroys the CanvasTransformObserver instance, cleaning up observers and Ticker. */
     public destroy()
     {
         if (this._observer)
@@ -132,7 +133,7 @@ export class CanvasTransformSync
         }
         else
         {
-            Ticker.shared.remove(this.updateTransform);
+            Ticker.shared.remove(this.updateTranslation);
         }
 
         (this._domElement as null) = null;

@@ -1,5 +1,5 @@
 import { ExtensionType } from '../extensions/Extensions';
-import { CanvasTransformSync } from './CanvasTransformSync';
+import { CanvasTransformObserver } from './CanvasTransformObserver';
 import { type DOMContainer } from './DOMContainer';
 
 import type { InstructionSet } from '../rendering/renderers/shared/instructions/InstructionSet';
@@ -33,7 +33,7 @@ export class DOMPipe implements RenderPipe<DOMContainer>
     /** The main DOM element that acts as a container for other DOM elements */
     private readonly _domElement: HTMLDivElement;
     /** The CanvasTransformSync instance that keeps the DOM element in sync with the canvas */
-    private readonly _canvasTransformSync: CanvasTransformSync;
+    private readonly _canvasTransformSync: CanvasTransformObserver;
 
     /**
      * Constructor for the DOMPipe class.
@@ -56,7 +56,7 @@ export class DOMPipe implements RenderPipe<DOMContainer>
         this._domElement.style.zIndex = '1000';
 
         // Initialize the CanvasTransformSync to keep the DOM element in sync with the canvas
-        this._canvasTransformSync = new CanvasTransformSync({
+        this._canvasTransformSync = new CanvasTransformObserver({
             domElement: this._domElement,
             renderer: this._renderer,
         });
