@@ -53,7 +53,9 @@ export const loadSvg: LoaderParser<Texture | GraphicsContext, TextureSourceOptio
         name: 'loadSVG',
     },
 
+    /** used for deprecation purposes */
     name: 'loadSVG',
+    id: 'svg',
 
     config: {
         crossOrigin: 'anonymous',
@@ -108,16 +110,11 @@ async function loadAsTexture(
     URL.revokeObjectURL(blobUrl);
 
     // convert to canvas...
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-
-    const resolution = asset.data?.resolution || getResolutionOfUrl(url);
-
     const width = asset.data?.width ?? image.width;
     const height = asset.data?.height ?? image.height;
-
-    canvas.width = width * resolution;
-    canvas.height = height * resolution;
+    const resolution = asset.data?.resolution || getResolutionOfUrl(url);
+    const canvas = DOMAdapter.get().createCanvas(width * resolution, height * resolution);
+    const context = canvas.getContext('2d');
 
     context.drawImage(image, 0, 0, width * resolution, height * resolution);
 
