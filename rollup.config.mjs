@@ -6,7 +6,7 @@ import sourcemaps from 'rollup-plugin-sourcemaps';
 import { string } from 'rollup-plugin-string';
 import { fileURLToPath } from 'url';
 import webworker from '@pixi/webworker-plugins/rollup-plugin';
-import repo from './package.json' assert { type: 'json' };
+import repo from './package.json' with { type: 'json' };
 import alias from '@rollup/plugin-alias';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
