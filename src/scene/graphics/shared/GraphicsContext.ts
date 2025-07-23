@@ -1215,12 +1215,16 @@ export class GraphicsContext extends EventEmitter<{
 
             if (this._fillStyle.texture)
             {
-                this._fillStyle.texture.destroy(destroyTextureSource);
+                this._fillStyle.fill && 'uid' in this._fillStyle.fill
+                    ? this._fillStyle.fill.destroy()
+                    : this._fillStyle.texture.destroy(destroyTextureSource);
             }
 
             if (this._strokeStyle.texture)
             {
-                this._strokeStyle.texture.destroy(destroyTextureSource);
+                this._strokeStyle.fill && 'uid' in this._strokeStyle.fill
+                    ? this._strokeStyle.fill.destroy()
+                    : this._strokeStyle.texture.destroy(destroyTextureSource);
             }
         }
 

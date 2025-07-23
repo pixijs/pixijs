@@ -204,13 +204,13 @@ class CanvasTextGeneratorClass
             }
             else
             {
-                context.fillStyle = style._fill ? getCanvasFillStyle(style._fill, context, measured) : null;
+                context.fillStyle = style._fill ? getCanvasFillStyle(style._fill, context, measured, padding * 2) : null;
 
                 if (style._stroke?.width)
                 {
-                    const padding = style._stroke.width * style._stroke.alignment;
+                    const strokePadding = (style._stroke.width * 0.5) + (padding * 2);
 
-                    context.strokeStyle = getCanvasFillStyle(style._stroke, context, measured, padding);
+                    context.strokeStyle = getCanvasFillStyle(style._stroke, context, measured, strokePadding);
                 }
 
                 context.shadowColor = 'black';

@@ -479,7 +479,7 @@ export class Resolver
         assetArray.forEach((asset) =>
         {
             const { src } = asset;
-            let { data, format, loadParser } = asset;
+            let { data, format, loadParser: userDefinedLoadParser, parser: userDefinedParser } = asset;
 
             // src can contain an unresolved asset itself
             // so we need to merge that data with the current asset
@@ -526,7 +526,11 @@ export class Resolver
                     {
                         data = src.data ?? data;
                         format = src.format ?? format;
-                        loadParser = src.loadParser ?? loadParser;
+                        if (src.loadParser || src.parser)
+                        {
+                            userDefinedLoadParser = src.loadParser ?? userDefinedLoadParser;
+                            userDefinedParser = src.parser ?? userDefinedParser;
+                        }
                         formattedAsset = {
                             ...formattedAsset,
                             ...src,
@@ -543,7 +547,8 @@ export class Resolver
                         aliases: aliasesToUse,
                         data,
                         format,
-                        loadParser,
+                        loadParser: userDefinedLoadParser,
+                        parser: userDefinedParser,
                     });
 
                     resolvedAssets.push(formattedAsset);
@@ -786,10 +791,11 @@ export class Resolver
         aliases?: string[],
         data?: Record<string, unknown>
         loadParser?: string,
+        parser?: string,
         format?: string,
     }): ResolvedAsset
     {
-        const { aliases, data: assetData, loadParser, format } = data;
+        const { aliases, data: assetData, loadParser, parser, format } = data;
 
         if (this._basePath || this._rootPath)
         {
@@ -800,6 +806,7 @@ export class Resolver
         formattedAsset.src = this._appendDefaultSearchParams(formattedAsset.src);
         formattedAsset.data = { ...assetData || {}, ...formattedAsset.data };
         formattedAsset.loadParser = loadParser ?? formattedAsset.loadParser;
+        formattedAsset.parser = parser ?? formattedAsset.parser;
         formattedAsset.format = format ?? formattedAsset.format ?? getUrlExtension(formattedAsset.src);
 
         return formattedAsset;

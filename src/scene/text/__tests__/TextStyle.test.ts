@@ -231,7 +231,8 @@ describe('TextStyle', () =>
     it('should convert fillGradientStops array to FillGradient', () =>
     {
         const style = {
-            fillGradientStops: [0x000000, 0xff0000, 0xFFFFFF],
+            fill: [0x000000, 0xff0000, 0xFFFFFF],
+            fillGradientStops: [0, 0.5, 1],
         };
 
         const textStyle = new TextStyle(style as TextStyleOptions);

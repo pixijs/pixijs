@@ -1,4 +1,6 @@
+import { Application } from '../../app/Application';
 import { Culler } from '../Culler';
+import { CullerPlugin } from '../CullerPlugin';
 import { basePath } from '@test-utils';
 import { Assets, loadTextures } from '~/assets';
 import { extensions } from '~/extensions';
@@ -211,5 +213,78 @@ describe('Culler', () =>
 
         expect(container.culled).toBe(true);
         expect(graphics.culled).toBe(false);
+    });
+});
+
+describe('CullerPlugin', () =>
+{
+    it('should use the correct default options', async () =>
+    {
+        const spyCull = jest.spyOn(Culler.shared, 'cull');
+
+        extensions.add(CullerPlugin);
+        const app = new Application();
+
+        await app.init();
+
+        app.render();
+
+        expect(spyCull).toHaveBeenCalledWith(app.stage, app.renderer.screen, true);
+        app.destroy();
+        extensions.remove(CullerPlugin);
+    });
+
+    it('should use the correct options: true', async () =>
+    {
+        const spyInit = jest.spyOn(CullerPlugin, 'init');
+        const spyCull = jest.spyOn(Culler.shared, 'cull');
+
+        extensions.add(CullerPlugin);
+        const app = new Application();
+
+        await app.init({
+            culler: {
+                updateTransform: true,
+            },
+        });
+
+        expect(spyInit).toHaveBeenCalledWith({
+            culler: {
+                updateTransform: true,
+            },
+        });
+
+        app.render();
+
+        expect(spyCull).toHaveBeenCalledWith(app.stage, app.renderer.screen, false);
+        app.destroy();
+        extensions.remove(CullerPlugin);
+    });
+
+    it('should use the correct options: false', async () =>
+    {
+        const spyInit = jest.spyOn(CullerPlugin, 'init');
+        const spyCull = jest.spyOn(Culler.shared, 'cull');
+
+        extensions.add(CullerPlugin);
+        const app = new Application();
+
+        await app.init({
+            culler: {
+                updateTransform: false,
+            },
+        });
+
+        expect(spyInit).toHaveBeenCalledWith({
+            culler: {
+                updateTransform: false,
+            },
+        });
+
+        app.render();
+
+        expect(spyCull).toHaveBeenCalledWith(app.stage, app.renderer.screen, true);
+        app.destroy();
+        extensions.remove(CullerPlugin);
     });
 });
