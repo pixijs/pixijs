@@ -160,29 +160,16 @@ export class BitmapFont extends AbstractBitmapFont<BitmapFont>
                 rotate: textureRotate,
             } = textures[charData.page];
 
-            let frameReal: Rectangle;
-
-            if (textureRotate === groupD8.S)
-            { // example: rotated in the spritesheet by 90 degrees
-                frameReal = new Rectangle(
-                    (textureFrame.width - charData.y - charData.height) + textureFrame.x,
-                    charData.x + textureFrame.y,
-                    charData.height,
-                    charData.width,
-                );
-            }
-            else
-            {
-                frameReal = new Rectangle(
-                    charData.x + textureFrame.x,
-                    charData.y + textureFrame.y,
-                    charData.width,
-                    charData.height,
-                );
-            }
+            // Transform character coordinates based on texture rotation
+            const frame = groupD8.transformRectCoords(
+                charData,
+                textureFrame,
+                textureRotate,
+                new Rectangle()
+            );
 
             const texture = new Texture({
-                frame: frameReal,
+                frame,
                 orig: new Rectangle(0, 0, charData.width, charData.height),
                 source: textureSource,
                 rotate: textureRotate,
