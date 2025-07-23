@@ -63,7 +63,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
 
         text._resolution = text._autoResolution ? this._renderer.resolution : text.resolution;
 
-        batchableText.texture = batchableText.texture = this._renderer.canvasText.getTexture(text);
+        batchableText.texture = this._renderer.canvasText.getTexture(text);
 
         updateTextBounds(batchableText, text);
     }

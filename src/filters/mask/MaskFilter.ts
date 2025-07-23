@@ -61,6 +61,7 @@ export class MaskFilter extends Filter
             ...rest,
             gpuProgram,
             glProgram,
+            clipToViewport: false,
             resources: {
                 filterUniforms,
                 uMaskTexture: sprite.texture.source,

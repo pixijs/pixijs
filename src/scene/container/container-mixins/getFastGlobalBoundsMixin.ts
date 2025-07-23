@@ -155,7 +155,6 @@ export const getFastGlobalBoundsMixin: Partial<Container> = {
             if (advanced)
             {
                 localBounds.applyMatrix(renderGroup.worldTransform.copyTo(tempMatrix).invert());
-                bounds.addBounds(localBounds, this.relativeGroupTransform);
             }
 
             // Add the local bounds to the final bounds and return the temporary bounds object.
