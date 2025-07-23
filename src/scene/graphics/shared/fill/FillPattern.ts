@@ -137,6 +137,5 @@ export class FillPattern implements CanvasPattern
     {
         this.texture.destroy(true);
         this.texture = null;
-        this._styleKey = null;
     }
 }
