@@ -2,6 +2,24 @@ import { Container } from '../Container';
 
 describe('getGlobalAlpha', () =>
 {
+    describe('with no arguments', () =>
+    {
+        it('should default to skipUpdate = false', () =>
+        {
+            const parent = new Container();
+
+            const container = new Container();
+
+            container.alpha = 0.5;
+
+            parent.addChild(container);
+
+            parent.alpha = 0.5;
+
+            expect(container.getGlobalAlpha()).toBe(0.25);
+        });
+    });
+
     describe('with skipUpdateTransform = false', () =>
     {
         it('should return container alpha when no parent exists', () =>

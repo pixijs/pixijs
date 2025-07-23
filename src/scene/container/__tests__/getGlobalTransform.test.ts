@@ -10,6 +10,37 @@ describe('getGlobalTransform', () =>
         outputMatrix = new Matrix();
     });
 
+    describe('with no arguments', () =>
+    {
+        it('should return a new Matrix instance', () =>
+        {
+            const container = new Container();
+
+            container.x = 100;
+            container.y = 100;
+
+            const result = container.getGlobalTransform();
+
+            expect(result).not.toBe(outputMatrix);
+            expect(result.tx).toBe(100);
+            expect(result.ty).toBe(100);
+        });
+
+        it('should return a new Matrix instance even if the first arugmnet is undefined', () =>
+        {
+            const container = new Container();
+
+            container.x = 100;
+            container.y = 100;
+
+            const result = container.getGlobalTransform(undefined);
+
+            expect(result).not.toBe(outputMatrix);
+            expect(result.tx).toBe(100);
+            expect(result.ty).toBe(100);
+        });
+    });
+
     describe('with skipUpdate = false', () =>
     {
         it('should return local transform when no parent exists', () =>
