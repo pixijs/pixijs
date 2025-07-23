@@ -51,13 +51,6 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
     {
         const graphicsRenderable = this._getGpuBitmapText(bitmapText);
 
-        if (bitmapText._didTextUpdate)
-        {
-            bitmapText._didTextUpdate = false;
-
-            this._updateContext(bitmapText, graphicsRenderable);
-        }
-
         return this._renderer.renderPipes.graphics.validateRenderable(graphicsRenderable);
 
         // TODO - need to shift all the verts in the graphicsData to the new anchor
