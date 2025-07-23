@@ -68,12 +68,23 @@ export class GpuTextureSystem implements System, CanvasGenerator
         this._gpu = gpu;
     }
 
+    /**
+     * Initializes a texture source, if it has already been initialized nothing will happen.
+     * @param source - The texture source to initialize.
+     * @returns The initialized texture source.
+     */
     public initSource(source: TextureSource): GPUTexture
     {
-        let gpuTexture = this._gpuSources[source.uid];
+        if (this._gpuSources[source.uid])
+        {
+            return this._gpuSources[source.uid];
+        }
 
-        if (gpuTexture) return gpuTexture;
+        return this._initSource(source);
+    }
 
+    private _initSource(source: TextureSource): GPUTexture
+    {
         if (source.autoGenerateMipmaps)
         {
             const biggestDimension = Math.max(source.pixelWidth, source.pixelHeight);
@@ -104,7 +115,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
             usage
         };
 
-        gpuTexture = this._gpuSources[source.uid] = this._gpu.device.createTexture(textureDescriptor);
+        const gpuTexture = this._gpuSources[source.uid] = this._gpu.device.createTexture(textureDescriptor);
 
         if (!this.managedTextures.includes(source))
         {
