@@ -8,7 +8,7 @@ import { warn } from '../../utils/logging/warn';
 import { BigPool } from '../../utils/pool/PoolGroup';
 import { getPo2TextureFromSource } from '../text/utils/getPo2TextureFromSource';
 import { HTMLTextRenderData } from './HTMLTextRenderData';
-import { HTMLTextStyle } from './HTMLTextStyle';
+import { type HTMLTextStyle } from './HTMLTextStyle';
 import { extractFontFamilies } from './utils/extractFontFamilies';
 import { getFontCss } from './utils/getFontCss';
 import { getSVGUrl } from './utils/getSVGUrl';
@@ -77,11 +77,7 @@ export class HTMLTextSystem implements System
 
         const htmlTextData = BigPool.get(HTMLTextRenderData);
         const fontFamilies = extractFontFamilies(text, style);
-        const fontCSS = await getFontCss(
-            fontFamilies,
-            style,
-            HTMLTextStyle.defaultTextStyle as {fontWeight: string, fontStyle: string}
-        );
+        const fontCSS = await getFontCss(fontFamilies);
         const measured = measureHtmlText(text, style, fontCSS, htmlTextData);
 
         const width = Math.ceil(Math.ceil((Math.max(1, measured.width) + (style.padding * 2))) * resolution);

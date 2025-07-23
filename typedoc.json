@@ -87,5 +87,8 @@
         "rewrittenLink": true,
         "notDocumented": false,
         "unusedMergeModuleWith": true
-    }
+    },
+    "searchGroupBoosts": {
+        "Classes": 1.5,
+    },
 }

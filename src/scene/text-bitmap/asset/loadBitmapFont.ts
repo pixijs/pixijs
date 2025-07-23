@@ -54,7 +54,9 @@ export const loadBitmapFont = {
         priority: LoaderParserPriority.Normal,
     },
 
+    /** used for deprecation purposes */
     name: 'loadBitmapFont',
+    id: 'bitmap-font',
 
     test(url: string): boolean
     {

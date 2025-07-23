@@ -206,4 +206,66 @@ export class HTMLText extends AbstractText<
         bounds.minY = (-anchor._y * height);
         bounds.maxY = bounds.minY + height;
     }
+
+    override get text(): string
+    {
+        return this._text;
+    }
+    /**
+     * The text content to display. Use '\n' for line breaks.
+     * Accepts strings, numbers, or objects with toString() method.
+     * @example
+     * ```ts
+     * const text = new HTMLText({
+     *     text: 'Hello Pixi!',
+     * });
+     * const multilineText = new HTMLText({
+     *     text: 'Line 1\nLine 2\nLine 3',
+     * });
+     * const numberText = new HTMLText({
+     *     text: 12345, // Will be converted to '12345'
+     * });
+     * const objectText = new HTMLText({
+     *     text: { toString: () => 'Object Text' }, // Custom toString
+     * });
+     *
+     * // Update text dynamically
+     * text.text = 'Updated Text'; // Re-renders with new text
+     * text.text = 67890; // Updates to '67890'
+     * text.text = { toString: () => 'Dynamic Text' }; // Uses custom toString method
+     * // Clear text
+     * text.text = ''; // Clears the text
+     * ```
+     * @default ''
+     */
+    override set text(text: TextString)
+    {
+        // Sanitise the text to ensure it is valid HTML
+        const sanitisedText = this._sanitiseText(text.toString());
+
+        // Call the parent class's text setter with the sanitised text
+        super.text = sanitisedText;
+    }
+
+    /**
+     * Sanitise text - replace `<br>` with `<br/>`, `&nbsp;` with `&#160;`
+     * @param text
+     * @see https://www.sitepoint.com/community/t/xhtml-1-0-transitional-xml-parsing-error-entity-nbsp-not-defined/3392/3
+     */
+    private _sanitiseText(text: string): string
+    {
+        return this._removeInvalidHtmlTags(text
+            .replace(/<br>/gi, '<br/>')
+            .replace(/<hr>/gi, '<hr/>')
+            .replace(/&nbsp;/gi, '&#160;'));
+    }
+
+    private _removeInvalidHtmlTags(input: string): string
+    {
+        // This regex finds "<" followed by anything except ">" until the next "<" or end-of-string
+        // i.e., it finds broken tags like "<br" or "<div id='x'" that never close
+        const brokenTagPattern = /<[^>]*?(?=<|$)/g;
+
+        return input.replace(brokenTagPattern, '');
+    }
 }

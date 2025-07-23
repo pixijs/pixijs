@@ -151,7 +151,7 @@ describe('Loader', () =>
         const loader = new Loader();
 
         loader['_parsers'].push({
-            name: 'test',
+            id: 'test',
             test: () => true,
             load: async (url, options) =>
                 url + options.data.whatever,
@@ -215,7 +215,7 @@ describe('Loader', () =>
 
         await loader.load({
             src: `${basePath}textures/bunny.png`,
-            loadParser: 'chicken'
+            parser: 'chicken'
         });
 
         // eslint-disable-next-line max-len
@@ -235,10 +235,10 @@ describe('Loader', () =>
 
         await loader.load({
             src: `${basePath}textures/bunny.other`,
-            loadParser: 'loadTextures'
+            parser: 'texture'
         });
 
-        expect(spy.mock.calls[0][1]).toBe('[Assets] loadParser name conflict "loadTextures"');
+        expect(spy.mock.calls[0][1]).toBe('[Assets] parser id conflict "texture"');
 
         spy.mockRestore();
     });

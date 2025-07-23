@@ -24,7 +24,9 @@ export const loadDDS = {
         name: 'loadDDS',
     },
 
+    /** used for deprecation purposes */
     name: 'loadDDS',
+    id: 'dds',
 
     test(url: string): boolean
     {
