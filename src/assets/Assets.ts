@@ -523,7 +523,7 @@ export class AssetsClass
      * const image = await Assets.load({
      *    alias: 'imageWithoutExtension',
      *    src: 'images/imageWithoutExtension',
-     *    loadParser: 'loadTextures' // Use the JSON loader
+     *    parser: 'texture' // Use the JSON loader
      * });
      * ```
      * @remarks
@@ -531,7 +531,7 @@ export class AssetsClass
      * - URLs are resolved to the best format for the current browser
      * - Asset types are detected automatically based on file extension
      * - Progress callback receives values from 0.0 to 1.0
-     * - You can define with loader to use for an asset by specifying the `loadParser` property, which is useful for assets that do not have a file extension.
+     * - You can define with loader to use for an asset by specifying the `parser` property, which is useful for assets that do not have a file extension.
      * @throws {Error} If the asset cannot be loaded or parsed
      * @see {@link Assets.add} For registering assets with aliases
      * @see {@link Assets.backgroundLoad} For loading assets in the background
@@ -746,8 +746,10 @@ export class AssetsClass
         const promises = keys.map((bundleId) =>
         {
             const resolveResult = resolveResults[bundleId];
+            const values = Object.values(resolveResult);
+            const totalAssetsToLoad = [...new Set(values.flat())] as ResolvedAsset[];
 
-            total += Object.keys(resolveResult).length;
+            total += totalAssetsToLoad.length;
 
             return this._mapLoadToResolve(resolveResult, _onProgress)
                 .then((resolveResult) =>

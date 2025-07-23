@@ -26,7 +26,9 @@ export const loadKTX2 = {
         name: 'loadKTX2',
     },
 
+    /** used for deprecation purposes */
     name: 'loadKTX2',
+    id: 'ktx2',
 
     test(url: string): boolean
     {

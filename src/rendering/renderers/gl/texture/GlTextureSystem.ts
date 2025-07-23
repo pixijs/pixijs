@@ -98,6 +98,11 @@ export class GlTextureSystem implements System, CanvasGenerator
         }
     }
 
+    /**
+     * Initializes a texture source, if it has already been initialized nothing will happen.
+     * @param source - The texture source to initialize.
+     * @returns The initialized texture source.
+     */
     public initSource(source: TextureSource)
     {
         this.bind(source);
