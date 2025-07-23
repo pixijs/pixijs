@@ -720,7 +720,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * @see {@link Container#addChild} For adding to a parent
      * @see {@link Container#removeChild} For removing from parent
      */
-    public parent: Container = null;
+    public parent: Container | null = null;
 
     // used internally for changing up the render order.. mainly for masks and filters
     // TODO setting this should cause a rebuild??
