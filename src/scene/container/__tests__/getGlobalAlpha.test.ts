@@ -100,8 +100,6 @@ describe('getGlobalAlpha', () =>
                 current = parent;
             }
 
-            container.alpha = 0.9;
-
             current.addChild(container);
 
             const expectedAlpha = Math.pow(0.9, 11);
