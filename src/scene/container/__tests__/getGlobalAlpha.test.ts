@@ -27,21 +27,16 @@ describe('getGlobalAlpha', () =>
         it('should multiply alpha with single parent', () =>
         {
             const parent = new Container({ alpha: 0.5 });
-            const container = new Container({ alpha: 0.5 });
-
-            container.parent = parent;
+            const container = new Container({ alpha: 0.5, parent });
 
             expect(container.getGlobalAlpha(false)).toBe(0.25); // 0.5 * 0.5
         });
 
         it('should multiply alpha through multiple parents', () =>
         {
-            const container = new Container({ alpha: 0.5 });
             const grandParent = new Container({ alpha: 0.5 });
-            const parent = new Container({ alpha: 0.5 });
-
-            parent.parent = grandParent;
-            container.parent = parent;
+            const parent = new Container({ alpha: 0.5, parent: grandParent });
+            const container = new Container({ alpha: 0.5, parent });
 
             expect(container.getGlobalAlpha(false)).toBe(0.125); // 0.5 * 0.5 * 0.5
         });

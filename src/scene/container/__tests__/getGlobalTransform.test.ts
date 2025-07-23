@@ -63,10 +63,9 @@ describe('getGlobalTransform', () =>
         it('should combine transforms through multiple parents', () =>
         {
             const grandParent = new Container({ x: 100 });
-            const parent = new Container({ x: 100 });
+            const parent = new Container({ x: 100, parent: grandParent });
             const container = new Container({ x: 100 });
 
-            parent.parent = grandParent;
             grandParent.addChild(parent);
             parent.addChild(container);
 
