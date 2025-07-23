@@ -14,10 +14,7 @@ describe('getGlobalTransform', () =>
     {
         it('should return a new Matrix instance', () =>
         {
-            const container = new Container();
-
-            container.x = 100;
-            container.y = 100;
+            const container = new Container({ x: 100, y: 100 });
 
             const result = container.getGlobalTransform();
 
@@ -28,10 +25,7 @@ describe('getGlobalTransform', () =>
 
         it('should return a new Matrix instance even if the first arugmnet is undefined', () =>
         {
-            const container = new Container();
-
-            container.x = 100;
-            container.y = 100;
+            const container = new Container({ x: 100, y: 100 });
 
             const result = container.getGlobalTransform(undefined);
 
@@ -45,10 +39,7 @@ describe('getGlobalTransform', () =>
     {
         it('should return local transform when no parent exists', () =>
         {
-            const container = new Container();
-
-            container.x = 100;
-            container.y = 100;
+            const container = new Container({ x: 100, y: 100 });
 
             const result = container.getGlobalTransform(outputMatrix, false);
 
@@ -59,11 +50,8 @@ describe('getGlobalTransform', () =>
 
         it('should combine transforms with single parent', () =>
         {
-            const parent = new Container();
-            const container = new Container();
-
-            parent.x = 100;
-            container.x = 50;
+            const parent = new Container({ x: 100 });
+            const container = new Container({ x: 50 });
 
             parent.addChild(container);
 
@@ -74,13 +62,9 @@ describe('getGlobalTransform', () =>
 
         it('should combine transforms through multiple parents', () =>
         {
-            const grandParent = new Container();
-            const parent = new Container();
-            const container = new Container();
-
-            grandParent.x = 100;
-            parent.x = 100;
-            container.x = 100;
+            const grandParent = new Container({ x: 100 });
+            const parent = new Container({ x: 100 });
+            const container = new Container({ x: 100 });
 
             parent.parent = grandParent;
             grandParent.addChild(parent);
@@ -93,11 +77,10 @@ describe('getGlobalTransform', () =>
 
         it('should handle rotation', () =>
         {
-            const parent = new Container();
-            const container = new Container();
-
-            parent.rotation = Math.PI / 2; // 90 degrees
-            container.x = 100;
+            const parent = new Container({
+                rotation: Math.PI / 2 // 90 degrees
+            });
+            const container = new Container({ x: 100 });
 
             parent.addChild(container);
 
@@ -117,10 +100,7 @@ describe('getGlobalTransform', () =>
         it('should handle scale', () =>
         {
             const parent = new Container();
-            const container = new Container();
-
-            container.scale.x = 2;
-            container.scale.y = 3;
+            const container = new Container({ scale: { x: 2, y: 3 } });
 
             container.addChild(parent);
 
@@ -177,10 +157,7 @@ describe('getGlobalTransform', () =>
 
         it('should handle scale of 0', () =>
         {
-            const container = new Container();
-
-            container.scale.x = 0;
-            container.scale.y = 0;
+            const container = new Container({ scale: { x: 0, y: 0 } });
 
             const result = container.getGlobalTransform(outputMatrix, false);
 
@@ -196,9 +173,8 @@ describe('getGlobalTransform', () =>
             // Create a chain of 10 containers
             for (let i = 0; i < 10; i++)
             {
-                const parent = new Container();
+                const parent = new Container({ x: 10 }); // Each adds 10 to x
 
-                parent.x = 10; // Each adds 10 to x
                 parent.addChild(current);
                 current = parent;
             }
