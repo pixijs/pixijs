@@ -28,8 +28,8 @@ body:
         To help us fix your bug quickly, please provide a minimal code example that demonstrates the issue.
 
         **Recommended platforms:**
-        - [PixiPlayground](https://www.pixiplayground.com/) - Perfect for most bug reproductions
-        - [StackBlitz](https://stackblitz.com/edit/pixijs-v8) - Use when you need a full build setup
+        - [StackBlitz](https://stackblitz.com/edit/pixijs-v8)
+        - [JSFiddle](https://jsfiddle.net/yavg3stL/)
 
         **Keep it minimal:** Include only the essential code needed to reproduce the bug. Check our [Bug Reproduction Guidelines](https://github.com/pixijs/pixijs/tree/dev/.github/bug-repro-guidelines.md) for best practices.
 

@@ -30,5 +30,5 @@ Please don't link to your entire project and ask us to find the bug. Here's why:
 
 Choose the platform that best fits your needs:
 
-- **[PixiPlayground](https://www.pixiplayground.com/)** - Perfect for most bug reproductions
-- **[StackBlitz](https://stackblitz.com/edit/pixijs-v8)** - Use when you need a full build setup
+- **[StackBlitz](https://stackblitz.com/edit/pixijs-v8)**
+- **[JSFiddle](https://jsfiddle.net/yavg3stL/)**
