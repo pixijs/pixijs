@@ -101,7 +101,9 @@ export async function loadImageBitmap(url: string, asset?: ResolvedAsset<Texture
  */
 export const loadTextures: LoaderParser<Texture, TextureSourceOptions, LoadTextureConfig> = {
 
+    /** used for deprecation purposes */
     name: 'loadTextures',
+    id: 'texture',
 
     extension: {
         type: ExtensionType.LoadParser,

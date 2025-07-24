@@ -53,7 +53,9 @@ export const loadSvg: LoaderParser<Texture | GraphicsContext, TextureSourceOptio
         name: 'loadSVG',
     },
 
+    /** used for deprecation purposes */
     name: 'loadSVG',
+    id: 'svg',
 
     config: {
         crossOrigin: 'anonymous',
