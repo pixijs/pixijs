@@ -1,0 +1,24 @@
+name: Issue Labeled
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  reply-labeled:
+    if: github.repository == 'pixijs/pixijs'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write # for actions-cool/issues-helper to update issues
+      pull-requests: write # for actions-cool/issues-helper to update PRs
+    steps:
+      - name: needs reproduction
+        if: github.event.label.name == 'Needs Reproduction'
+        uses: actions-cool/issues-helper@a610082f8ac0cf03e357eb8dd0d5e2ba075e017e # v3
+        with:
+          actions: "create-comment, remove-labels"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            Hello @${{ github.event.issue.user.login }}. Please provide a [minimal reproduction](https://stackoverflow.com/help/minimal-reproducible-example) using a [PixiPlayground](https://www.pixiplayground.com/) or [StackBlitz](https://stackblitz.com/edit/pixijs-v8). Issues marked with `Needs Reproduction` will be closed if they have no activity within 7 days.
+          labels: "Pending Triage"
