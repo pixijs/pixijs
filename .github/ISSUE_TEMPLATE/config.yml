@@ -1,8 +1,14 @@
 blank_issues_enabled: false
 contact_links:
-  - name: '💬 Discussions'
+  - name: Discord Chat
+    url: https://discord.gg/CPTjeb28nH
+    about: Ask questions and discuss with other PixiJS users in real time.
+  - name: Questions & Discussions
     url: https://github.com/pixijs/pixijs/discussions
-    about: Ask everything about PixiJS.
-  - name: '📦 Strange problems when upgrading PixiJS'
+    about: Use GitHub discussions for message-board style questions and discussions.
+  - name: 'Strange problems when upgrading PixiJS'
     url: https://github.com/pixijs/pixijs/wiki/Upgrading-PixiJS
     about: You may need to reinstall PixiJS when upgrading it.
+  - name: Open Collective
+    url: https://opencollective.com/pixijs/donate
+    about: Love PixiJS? Please consider supporting us via Open Collective.
