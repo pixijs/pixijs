@@ -139,14 +139,16 @@ export class RenderGroupSystem implements System
                 const renderer = this._renderer;
                 const resolution = renderGroup.textureOptions.resolution || renderer.view.resolution;
                 const antialias = renderGroup.textureOptions.antialias ?? renderer.view.antialias;
-
-                renderGroup.texture = TexturePool.getOptimalTexture(
+                const scaleMode = renderGroup.textureOptions.scaleMode ?? 'linear';
+                const texture = TexturePool.getOptimalTexture(
                     bounds.width,
                     bounds.height,
                     resolution,
                     antialias
                 );
 
+                texture._source.scaleMode = scaleMode;
+                renderGroup.texture = texture;
                 renderGroup._textureBounds ||= new Bounds();
                 renderGroup._textureBounds.copyFrom(bounds);
 
