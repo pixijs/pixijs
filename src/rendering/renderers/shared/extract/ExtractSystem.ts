@@ -519,7 +519,7 @@ export class ExtractSystem implements System
 
         image.src = await this.base64(options);
 
-        return image;
+        return image as HTMLImageElement;
     }
 
     /**

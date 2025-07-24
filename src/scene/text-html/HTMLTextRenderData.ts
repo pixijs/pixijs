@@ -31,6 +31,6 @@ export class HTMLTextRenderData
         foreignObject.appendChild(styleElement);
         foreignObject.appendChild(domElement);
 
-        this.image = DOMAdapter.get().createImage();
+        this.image = DOMAdapter.get().createImage() as HTMLImageElement;
     }
 }

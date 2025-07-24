@@ -116,7 +116,7 @@ async function loadAsTexture(
     const canvas = DOMAdapter.get().createCanvas(width * resolution, height * resolution);
     const context = canvas.getContext('2d');
 
-    context.drawImage(image, 0, 0, width * resolution, height * resolution);
+    context.drawImage(image as CanvasImageSource, 0, 0, width * resolution, height * resolution);
 
     const { parseAsGraphicsContext: _p, ...rest } = asset.data ?? {};
     const base = new ImageSource({
