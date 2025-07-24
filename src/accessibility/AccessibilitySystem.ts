@@ -1,3 +1,4 @@
+import { CanvasObserver } from '../dom/CanvasObserver';
 import { FederatedEvent } from '../events/FederatedEvent';
 import { ExtensionType } from '../extensions/Extensions';
 import { isMobile } from '../utils/browser/isMobile';
@@ -173,6 +174,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
 
     /**  The frequency to update the div elements. */
     private readonly _androidUpdateFrequency = 500; // 2fps
+    private _canvasObserver: CanvasObserver;
 
     // eslint-disable-next-line jsdoc/require-param
     /**
@@ -279,13 +281,17 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         if (!this._div)
         {
             this._div = document.createElement('div');
-            this._div.style.width = `${DIV_TOUCH_SIZE}px`;
-            this._div.style.height = `${DIV_TOUCH_SIZE}px`;
             this._div.style.position = 'absolute';
             this._div.style.top = `${DIV_TOUCH_POS_X}px`;
             this._div.style.left = `${DIV_TOUCH_POS_Y}px`;
-            this._div.style.zIndex = DIV_TOUCH_ZINDEX.toString();
             this._div.style.pointerEvents = 'none';
+            this._div.style.zIndex = DIV_TOUCH_ZINDEX.toString();
+
+            // Initialize the CanvasTransformSync to keep the DOM element in sync with the canvas
+            this._canvasObserver = new CanvasObserver({
+                domElement: this._div,
+                renderer: this._renderer,
+            });
         }
 
         // Bind event handlers and add listeners when activating
@@ -310,9 +316,10 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
             {
                 if (canvas.parentNode)
                 {
-                    canvas.parentNode.appendChild(this._div);
                     observer.disconnect();
 
+                    // Add to DOM
+                    this._canvasObserver.ensureAttached();
                     // Only start the postrender runner after div is ready
                     this._initAccessibilitySetup();
                 }
@@ -323,8 +330,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         else
         {
             // Add to DOM
-            canvas.parentNode.appendChild(this._div);
-
+            this._canvasObserver.ensureAttached();
             // Div is ready, initialize accessibility
             this._initAccessibilitySetup();
         }
@@ -529,13 +535,8 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         // Update root div dimensions if needed
         if (this._renderer.renderingToScreen)
         {
-            const { x, y, width: viewWidth, height: viewHeight } = this._renderer.screen;
-            const div = this._div;
-
-            div.style.left = `${x}px`;
-            div.style.top = `${y}px`;
-            div.style.width = `${viewWidth}px`;
-            div.style.height = `${viewHeight}px`;
+            // Ensure the main DOM element is attached to the same parent as the canvas
+            this._canvasObserver.ensureAttached();
         }
 
         // Update positions of existing divs
@@ -555,24 +556,19 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
             if (child.hitArea)
             {
                 const wt = child.worldTransform;
-                const sx = this._renderer.resolution;
-                const sy = this._renderer.resolution;
 
-                div.style.left = `${(wt.tx + (hitArea.x * wt.a)) * sx}px`;
-                div.style.top = `${(wt.ty + (hitArea.y * wt.d)) * sy}px`;
-                div.style.width = `${hitArea.width * wt.a * sx}px`;
-                div.style.height = `${hitArea.height * wt.d * sy}px`;
+                div.style.left = `${(wt.tx + (hitArea.x * wt.a))}px`;
+                div.style.top = `${(wt.ty + (hitArea.y * wt.d))}px`;
+                div.style.width = `${hitArea.width * wt.a}px`;
+                div.style.height = `${hitArea.height * wt.d}px`;
             }
             else
             {
                 this._capHitArea(hitArea);
-                const sx = this._renderer.resolution;
-                const sy = this._renderer.resolution;
-
-                div.style.left = `${hitArea.x * sx}px`;
-                div.style.top = `${hitArea.y * sy}px`;
-                div.style.width = `${hitArea.width * sx}px`;
-                div.style.height = `${hitArea.height * sy}px`;
+                div.style.left = `${hitArea.x}px`;
+                div.style.top = `${hitArea.y}px`;
+                div.style.width = `${hitArea.width}px`;
+                div.style.height = `${hitArea.height}px`;
             }
         }
 
