@@ -768,7 +768,7 @@ export abstract class Batcher
 
         for (let i = 0; i < this._elements.length; i++)
         {
-            this._elements[i]._batch = null;
+            if (this._elements[i]) this._elements[i]._batch = null;
         }
 
         this._elements = null;

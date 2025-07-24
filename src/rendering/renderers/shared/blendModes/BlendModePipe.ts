@@ -71,6 +71,7 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
     {
         this._renderer = renderer;
         this._renderer.runners.prerender.add(this);
+        this._renderer.runners.destroy.add(this);
     }
 
     public prerender()

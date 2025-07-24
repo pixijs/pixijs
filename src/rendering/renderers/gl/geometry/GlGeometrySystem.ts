@@ -65,6 +65,7 @@ export class GlGeometrySystem implements System
         this.hasInstance = true;
 
         this._renderer.renderableGC.addManagedHash(this, '_geometryVaoHash');
+        this._renderer.runners.destroy.add(this);
     }
 
     /** Sets up the renderer context and necessary buffers. */
@@ -486,5 +487,6 @@ export class GlGeometrySystem implements System
         this.gl = null;
         this._activeVao = null;
         this._activeGeometry = null;
+        this._geometryVaoHash = null;
     }
 }

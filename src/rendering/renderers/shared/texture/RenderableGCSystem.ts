@@ -330,6 +330,14 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
     {
         this.enabled = false;
         this._renderer = null as any as Renderer;
+        for (const hash of this._managedHashes)
+        {
+            hash.context[hash.hash] = {};
+        }
+        for (const array of this._managedArrays)
+        {
+            array.context[array.hash].length = 0;
+        }
         this._managedRenderables.length = 0;
         this._managedHashes.length = 0;
         this._managedArrays.length = 0;

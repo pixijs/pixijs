@@ -50,6 +50,7 @@ export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
     constructor(renderer: Renderer, adaptor: ParticleContainerAdaptor)
     {
         this.renderer = renderer;
+        this.renderer.runners.destroy.add(this);
 
         this.adaptor = adaptor;
 
@@ -135,6 +136,7 @@ export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
     /** Destroys the ParticleRenderer. */
     public destroy(): void
     {
+        (this.renderer as null) = null;
         if (this.defaultShader)
         {
             this.defaultShader.destroy();

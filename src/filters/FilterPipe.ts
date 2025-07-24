@@ -24,6 +24,7 @@ export class FilterPipe implements InstructionPipe<FilterInstruction>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        this._renderer.runners.destroy.add(this);
     }
 
     public push(filterEffect: Effect, container: Container, instructionSet: InstructionSet): void
