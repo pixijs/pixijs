@@ -823,6 +823,9 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         this._deactivate();
         this._destroyTouchHook();
 
+        this._canvasObserver?.destroy();
+        this._canvasObserver = null;
+
         this._div = null;
         this._pool = null;
         this._children = null;
