@@ -1,4 +1,4 @@
-import { deprecation } from '../../../../utils/logging/deprecation';
+import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 
 /**
  * Specifies the alpha composition mode for textures.
@@ -191,7 +191,7 @@ export const WRAP_MODES = new Proxy(DEPRECATED_WRAP_MODES, {
     get(target, prop: keyof typeof DEPRECATED_WRAP_MODES)
     {
         // #if _DEBUG
-        deprecation('8.0.0', `DRAW_MODES.${prop} is deprecated, use '${DEPRECATED_WRAP_MODES[prop]}' instead`);
+        deprecation(v8_0_0, `DRAW_MODES.${prop} is deprecated, use '${DEPRECATED_WRAP_MODES[prop]}' instead`);
         // #endif
 
         return target[prop];
@@ -229,7 +229,7 @@ export const SCALE_MODES = new Proxy(DEPRECATED_SCALE_MODES, {
     get(target, prop: keyof typeof DEPRECATED_SCALE_MODES)
     {
         // #if _DEBUG
-        deprecation('8.0.0', `DRAW_MODES.${prop} is deprecated, use '${DEPRECATED_SCALE_MODES[prop]}' instead`);
+        deprecation(v8_0_0, `DRAW_MODES.${prop} is deprecated, use '${DEPRECATED_SCALE_MODES[prop]}' instead`);
         // #endif
 
         return target[prop];

@@ -1,6 +1,6 @@
 import { Cache } from '../../assets/cache/Cache';
 import { type TextureStyle, type TextureStyleOptions } from '../../rendering/renderers/shared/texture/TextureStyle';
-import { deprecation } from '../../utils/logging/deprecation';
+import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { warn } from '../../utils/logging/warn';
 import { CanvasTextMetrics } from '../text/canvas/CanvasTextMetrics';
 import { TextStyle } from '../text/TextStyle';
@@ -359,7 +359,7 @@ class BitmapFontManagerClass
 
             // #if _DEBUG
             // eslint-disable-next-line max-len
-            deprecation('8.0.0', 'BitmapFontManager.install(name, style, options) is deprecated, use BitmapFontManager.install({name, style, ...options})');
+            deprecation(v8_0_0, 'BitmapFontManager.install(name, style, options) is deprecated, use BitmapFontManager.install({name, style, ...options})');
             // #endif
         }
 

@@ -1,5 +1,5 @@
 import { removeItems } from '../../../utils/data/removeItems';
-import { deprecation } from '../../../utils/logging/deprecation';
+import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 
 import type { IRenderLayer } from '../../layers/RenderLayer';
 import type { Container, ContainerChild } from '../Container';
@@ -352,7 +352,7 @@ export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
         // #if _DEBUG
         if (!this.allowChildren)
         {
-            deprecation('8.0.0', 'addChildAt: Only Containers will be allowed to add children in v8.0.0');
+            deprecation(v8_0_0, 'addChildAt: Only Containers will be allowed to add children in v8.0.0');
         }
         // #endif
 

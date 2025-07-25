@@ -1,7 +1,7 @@
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { type PointData } from '../../maths/point/PointData';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
-import { deprecation } from '../../utils/logging/deprecation';
+import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
 import { NineSliceGeometry } from './NineSliceGeometry';
 import { type NineSliceSpriteGpuData } from './NineSliceSpritePipe';
@@ -709,7 +709,7 @@ export class NineSlicePlane extends NineSliceSprite
         {
             // #if _DEBUG
             // eslint-disable-next-line max-len
-            deprecation('8.0.0', 'NineSlicePlane now uses the options object {texture, leftWidth, rightWidth, topHeight, bottomHeight}');
+            deprecation(v8_0_0, 'NineSlicePlane now uses the options object {texture, leftWidth, rightWidth, topHeight, bottomHeight}');
             // #endif
 
             options = {
@@ -722,7 +722,7 @@ export class NineSlicePlane extends NineSliceSprite
         }
 
         // #if _DEBUG
-        deprecation('8.0.0', 'NineSlicePlane is deprecated. Use NineSliceSprite instead.');
+        deprecation(v8_0_0, 'NineSlicePlane is deprecated. Use NineSliceSprite instead.');
         // #endif
 
         super(options);

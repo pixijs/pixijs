@@ -1,7 +1,7 @@
 import { Buffer } from '../../../rendering/renderers/shared/buffer/Buffer';
 import { BufferUsage } from '../../../rendering/renderers/shared/buffer/const';
 import { Geometry } from '../../../rendering/renderers/shared/geometry/Geometry';
-import { deprecation } from '../../../utils/logging/deprecation';
+import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 
 import type { Topology } from '../../../rendering/renderers/shared/geometry/const';
 import type { BatchMode } from '../../graphics/shared/GraphicsContext';
@@ -52,7 +52,7 @@ export class MeshGeometry extends Geometry
         if (options instanceof Float32Array)
         {
             // #if _DEBUG
-            deprecation('8.0.0', 'use new MeshGeometry({ positions, uvs, indices }) instead');
+            deprecation(v8_0_0, 'use new MeshGeometry({ positions, uvs, indices }) instead');
             // #endif
 
             options = {

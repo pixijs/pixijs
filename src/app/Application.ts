@@ -2,7 +2,7 @@ import { extensions, ExtensionType } from '../extensions/Extensions';
 import { autoDetectRenderer } from '../rendering/renderers/autoDetectRenderer';
 import { Container } from '../scene/container/Container';
 import { ApplicationInitHook } from '../utils/global/globalHooks';
-import { deprecation } from '../utils/logging/deprecation';
+import { deprecation, v8_0_0 } from '../utils/logging/deprecation';
 
 import type { Rectangle } from '../maths/shapes/Rectangle';
 import type { AutoDetectOptions } from '../rendering/renderers/autoDetectRenderer';
@@ -221,7 +221,7 @@ export class Application<R extends Renderer = Renderer>
         // #if _DEBUG
         if (args[0] !== undefined)
         {
-            deprecation('8.0.0', 'Application constructor options are deprecated, please use Application.init() instead.');
+            deprecation(v8_0_0, 'Application constructor options are deprecated, please use Application.init() instead.');
         }
         // #endif
     }
@@ -322,7 +322,7 @@ export class Application<R extends Renderer = Renderer>
     get view(): R['canvas']
     {
         // #if _DEBUG
-        deprecation('8.0.0', 'Application.view is deprecated, please use Application.canvas instead.');
+        deprecation(v8_0_0, 'Application.view is deprecated, please use Application.canvas instead.');
         // #endif
 
         return this.renderer.canvas as R['canvas'];

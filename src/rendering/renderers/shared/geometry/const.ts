@@ -1,4 +1,4 @@
-import { deprecation } from '../../../../utils/logging/deprecation';
+import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 
 /**
  * The different topology types supported by the renderer used to describe how the geometry should be renderer
@@ -29,7 +29,7 @@ export const DRAW_MODES = new Proxy(DEPRECATED_DRAW_MODES, {
     get(target, prop: keyof typeof DEPRECATED_DRAW_MODES)
     {
         // #if _DEBUG
-        deprecation('8.0.0', `DRAW_MODES.${prop} is deprecated, use '${DEPRECATED_DRAW_MODES[prop]}' instead`);
+        deprecation(v8_0_0, `DRAW_MODES.${prop} is deprecated, use '${DEPRECATED_DRAW_MODES[prop]}' instead`);
         // #endif
 
         return target[prop];

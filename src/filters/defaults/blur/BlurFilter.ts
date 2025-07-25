@@ -1,6 +1,6 @@
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
 import { RendererType } from '../../../rendering/renderers/types';
-import { deprecation } from '../../../utils/logging/deprecation';
+import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import { Filter } from '../../Filter';
 import { BlurFilterPass } from './BlurFilterPass';
 
@@ -178,7 +178,7 @@ export class BlurFilter extends Filter
         {
             // #if _DEBUG
             // eslint-disable-next-line max-len
-            deprecation('8.0.0', 'BlurFilter constructor params are now options object. See params: { strength, quality, resolution, kernelSize }');
+            deprecation(v8_0_0, 'BlurFilter constructor params are now options object. See params: { strength, quality, resolution, kernelSize }');
             // #endif
 
             options = { strength: options };

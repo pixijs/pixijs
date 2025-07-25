@@ -1,7 +1,7 @@
 import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
-import { deprecation } from '../../../../utils/logging/deprecation';
+import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { type RendererOptions } from '../../types';
 import { RenderTarget } from '../renderTarget/RenderTarget';
 import { getCanvasTexture } from '../texture/utils/getCanvasTexture';
@@ -166,7 +166,7 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
         if (options.view)
         {
             // #if _DEBUG
-            deprecation('8.0.0', 'ViewSystem.view has been renamed to ViewSystem.canvas');
+            deprecation(v8_0_0, 'ViewSystem.view has been renamed to ViewSystem.canvas');
             // #endif
 
             options.canvas = options.view;

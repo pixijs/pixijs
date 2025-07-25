@@ -1,7 +1,7 @@
 import { Cache } from '../../assets/cache/Cache';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
-import { deprecation } from '../../utils/logging/deprecation';
+import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { warn } from '../../utils/logging/warn';
 import { Transform } from '../../utils/misc/Transform';
 import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
@@ -349,7 +349,7 @@ export class TilingSprite extends ViewContainer<TilingSpriteGpuData> implements 
         if (args.length > 1)
         {
             // #if _DEBUG
-            deprecation('8.0.0', 'use new TilingSprite({ texture, width:100, height:100 }) instead');
+            deprecation(v8_0_0, 'use new TilingSprite({ texture, width:100, height:100 }) instead');
             // #endif
 
             options.width = args[1];

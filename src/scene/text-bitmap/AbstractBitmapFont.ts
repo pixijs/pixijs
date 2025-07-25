@@ -1,5 +1,5 @@
 import EventEmitter from 'eventemitter3';
-import { deprecation } from '../../utils/logging/deprecation';
+import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { FontMetrics } from '../text/canvas/CanvasTextMetrics';
@@ -131,7 +131,7 @@ export abstract class AbstractBitmapFont<FontType>
     public get font(): BitmapFontData['fontFamily']
     {
         // #if _DEBUG
-        deprecation('8.0.0', 'BitmapFont.font is deprecated, please use BitmapFont.fontFamily instead.');
+        deprecation(v8_0_0, 'BitmapFont.font is deprecated, please use BitmapFont.fontFamily instead.');
         // #endif
 
         return this.fontFamily;
@@ -144,7 +144,7 @@ export abstract class AbstractBitmapFont<FontType>
     public get pageTextures(): AbstractBitmapFont<FontType>['pages']
     {
         // #if _DEBUG
-        deprecation('8.0.0', 'BitmapFont.pageTextures is deprecated, please use BitmapFont.pages instead.');
+        deprecation(v8_0_0, 'BitmapFont.pageTextures is deprecated, please use BitmapFont.pages instead.');
         // #endif
 
         return this.pages;
@@ -157,7 +157,7 @@ export abstract class AbstractBitmapFont<FontType>
     public get size(): BitmapFontData['fontSize']
     {
         // #if _DEBUG
-        deprecation('8.0.0', 'BitmapFont.size is deprecated, please use BitmapFont.fontMetrics.fontSize instead.');
+        deprecation(v8_0_0, 'BitmapFont.size is deprecated, please use BitmapFont.fontMetrics.fontSize instead.');
         // #endif
 
         return this.fontMetrics.fontSize;
@@ -171,7 +171,7 @@ export abstract class AbstractBitmapFont<FontType>
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('8.0.0', 'BitmapFont.distanceFieldRange is deprecated, please use BitmapFont.distanceField.range instead.');
+        deprecation(v8_0_0, 'BitmapFont.distanceFieldRange is deprecated, please use BitmapFont.distanceField.range instead.');
         // #endif
 
         return this.distanceField.range;
@@ -184,8 +184,7 @@ export abstract class AbstractBitmapFont<FontType>
     public get distanceFieldType(): NonNullable<BitmapFontData['distanceField']>['type']
     {
         // #if _DEBUG
-        // eslint-disable-next-line max-len
-        deprecation('8.0.0', 'BitmapFont.distanceFieldType is deprecated, please use BitmapFont.distanceField.type instead.');
+        deprecation(v8_0_0, 'BitmapFont.distanceFieldType is deprecated, please use BitmapFont.distanceField.type instead.');
         // #endif
 
         return this.distanceField.type;
