@@ -164,7 +164,7 @@ export class RenderGroup implements Instruction
         this.isCachedAsTexture = false;
         if (this.texture)
         {
-            TexturePool.returnTexture(this.texture);
+            TexturePool.returnTexture(this.texture, true);
             this.texture = null;
         }
     }
