@@ -4,6 +4,7 @@ import { Container } from '../../../../scene/container/Container';
 import { unsafeEvalSupported } from '../../../../utils/browser/unsafeEvalSupported';
 import { uid } from '../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
+import { PoolCollector } from '../../../../utils/pool/PoolCollector';
 import { EventEmitter } from '../../../../utils/utils';
 import { CLEAR } from '../../gl/const';
 import { SystemRunner } from './SystemRunner';
@@ -77,7 +78,10 @@ export interface ClearOptions
  * @category rendering
  * @standard
  */
-export type RendererDestroyOptions = TypeOrBool<ViewSystemDestroyOptions>;
+export type RendererDestroyOptions = TypeOrBool<ViewSystemDestroyOptions & {
+    /** Whether to clean up the pools/caches */
+    fullCleanup?: boolean;
+}>;
 
 const defaultRunners = [
     'init',
@@ -535,6 +539,11 @@ export class AbstractRenderer<
         {
             runner.destroy();
         });
+
+        if (options === true || (typeof options === 'object' && options.fullCleanup))
+        {
+            PoolCollector.clearAll();
+        }
 
         this._systemsHash = null;
 

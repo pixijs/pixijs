@@ -1,6 +1,7 @@
 import { uid } from '../../../utils/data/uid';
 import { ViewableBuffer } from '../../../utils/data/ViewableBuffer';
 import { deprecation } from '../../../utils/logging/deprecation';
+import { PoolCollector } from '../../../utils/pool/PoolCollector';
 import { fastCopy } from '../../renderers/shared/buffer/utils/fastCopy';
 import { type BLEND_MODES } from '../../renderers/shared/state/const';
 import { getAdjustedBlendModeBlend } from '../../renderers/shared/state/getAdjustedBlendModeBlend';
@@ -74,6 +75,9 @@ export class Batch implements Instruction
 // inlined pool for SPEEEEEEEEEED :D
 const batchPool: Batch[] = [];
 let batchPoolIndex = 0;
+
+// register the batch pool with the PoolCollector
+PoolCollector.registerArray(batchPool);
 
 function getBatchFromPool()
 {
@@ -759,6 +763,8 @@ export abstract class Batcher
 
     public destroy()
     {
+        if (this.batches === null) return;
+
         for (let i = 0; i < this.batches.length; i++)
         {
             returnBatchToPool(this.batches[i]);

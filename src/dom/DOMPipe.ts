@@ -49,6 +49,7 @@ export class DOMPipe implements RenderPipe<DOMContainer>
 
         // add DOMPipe to init runners
         this._renderer.runners.init.add(this);
+        this._renderer.runners.destroy.add(this);
 
         // Create a main DOM element to contain other DOM elements
         this._domElement = document.createElement('div');
