@@ -27,33 +27,6 @@ export const PoolCollector = {
     },
 
     /**
-     * Registers an array of cleanable objects for cleanup.
-     * @param {any[]} arr - The array of cleanable objects to register.
-     * @example
-     * PoolCollector.registerArray([{}, {}, {}]); // where each object has a destroy() method
-     */
-    registerArray(arr: any[]): void
-    {
-        this._registeredPools.add({
-            clear: () =>
-            {
-                // check if the first element has a destroy method
-                if (arr.length > 0 && typeof arr[0] === 'object' && 'destroy' in arr[0])
-                {
-                    for (const item of arr)
-                    {
-                        if (typeof item.destroy === 'function')
-                        {
-                            item.destroy();
-                        }
-                    }
-                }
-                arr.length = 0; // clear the array
-            }
-        });
-    },
-
-    /**
      * Unregisters a pool or cleanable object from cleanup.
      * @param {Cleanable} pool - The pool or object to unregister.
      */

@@ -76,8 +76,21 @@ export class Batch implements Instruction
 const batchPool: Batch[] = [];
 let batchPoolIndex = 0;
 
-// register the batch pool with the PoolCollector
-PoolCollector.registerArray(batchPool);
+PoolCollector.register({
+    clear: () =>
+    {
+        // check if the first element has a destroy method
+        if (batchPool.length > 0)
+        {
+            for (const item of batchPool)
+            {
+                if (item) item.destroy();
+            }
+        }
+        batchPool.length = 0; // clear the array
+        batchPoolIndex = 0;
+    },
+});
 
 function getBatchFromPool()
 {
