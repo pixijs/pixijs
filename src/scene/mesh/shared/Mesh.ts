@@ -2,7 +2,7 @@ import { pointInTriangle } from '../../../maths/point/pointInTriangle';
 import { Geometry } from '../../../rendering/renderers/shared/geometry/Geometry';
 import { State } from '../../../rendering/renderers/shared/state/State';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
+import { deprecation } from '../../../utils/logging/deprecation';
 import { ViewContainer } from '../../view/ViewContainer';
 import { MeshGeometry } from './MeshGeometry';
 import { type MeshGpuData } from './MeshPipe';
@@ -118,7 +118,7 @@ export class Mesh<
         if (options instanceof Geometry)
         {
             // #if _DEBUG
-            deprecation(v8_0_0, 'Mesh: use new Mesh({ geometry, shader }) instead');
+            deprecation('8.0.0', 'Mesh: use new Mesh({ geometry, shader }) instead');
             // #endif
 
             options = {
@@ -129,7 +129,7 @@ export class Mesh<
             if (args[3])
             {
                 // #if _DEBUG
-                deprecation(v8_0_0, 'Mesh: drawMode argument has been removed, use geometry.topology instead');
+                deprecation('8.0.0', 'Mesh: drawMode argument has been removed, use geometry.topology instead');
                 // #endif
 
                 options.geometry.topology = args[3];
@@ -159,7 +159,7 @@ export class Mesh<
     get material()
     {
         // #if _DEBUG
-        deprecation(v8_0_0, 'mesh.material property has been removed, use mesh.shader instead');
+        deprecation('8.0.0', 'mesh.material property has been removed, use mesh.shader instead');
         // #endif
 
         return this._shader;

@@ -6,7 +6,7 @@ import { Matrix } from '../../maths/matrix/Matrix';
 import { DEG_TO_RAD, RAD_TO_DEG } from '../../maths/misc/const';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { uid } from '../../utils/data/uid';
-import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
+import { deprecation } from '../../utils/logging/deprecation';
 import { warn } from '../../utils/logging/warn';
 import { BigPool } from '../../utils/pool/PoolGroup';
 import { type IRenderLayer } from '../layers/RenderLayer';
@@ -995,7 +995,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         // #if _DEBUG
         if (!this.allowChildren)
         {
-            deprecation(v8_0_0, 'addChild: Only Containers will be allowed to add children in v8.0.0');
+            deprecation('8.0.0', 'addChild: Only Containers will be allowed to add children in v8.0.0');
         }
         // #endif
 

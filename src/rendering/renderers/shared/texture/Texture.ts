@@ -2,7 +2,7 @@ import EventEmitter from 'eventemitter3';
 import { groupD8 } from '../../../../maths/matrix/groupD8';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { uid } from '../../../../utils/data/uid';
-import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
+import { deprecation } from '../../../../utils/logging/deprecation';
 import { NOOP } from '../../../../utils/misc/NOOP';
 import { BufferImageSource } from './sources/BufferImageSource';
 import { TextureSource } from './sources/TextureSource';
@@ -414,7 +414,7 @@ export class Texture<TextureSourceType extends TextureSource = TextureSource> ex
     get baseTexture(): TextureSource
     {
         // #if _DEBUG
-        deprecation(v8_0_0, 'Texture.baseTexture is now Texture.source');
+        deprecation('8.0.0', 'Texture.baseTexture is now Texture.source');
         // #endif
 
         return this._source;

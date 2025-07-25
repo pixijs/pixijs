@@ -1,4 +1,4 @@
-import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
+import { deprecation } from '../../utils/logging/deprecation';
 import { MeshGeometry } from '../mesh/shared/MeshGeometry';
 
 import type { MeshGeometryOptions } from '../mesh/shared/MeshGeometry';
@@ -68,7 +68,7 @@ export class PlaneGeometry extends MeshGeometry
         {
             // #if _DEBUG
             // eslint-disable-next-line max-len
-            deprecation(v8_0_0, 'PlaneGeometry constructor changed please use { width, height, verticesX, verticesY } instead');
+            deprecation('8.0.0', 'PlaneGeometry constructor changed please use { width, height, verticesX, verticesY } instead');
             // #endif
 
             options = {

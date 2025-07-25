@@ -1,7 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import { Color, type ColorSource } from '../../color/Color';
 import { type Filter } from '../../filters/Filter';
-import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
+import { deprecation } from '../../utils/logging/deprecation';
 import { warn } from '../../utils/logging/warn';
 import { FillGradient } from '../graphics/shared/fill/FillGradient';
 import { FillPattern } from '../graphics/shared/fill/FillPattern';
@@ -1188,7 +1188,7 @@ function convertV7Tov8Style(style: TextStyleOptions)
     if (oldStyle.strokeThickness !== undefined)
     {
         // #if _DEBUG
-        deprecation(v8_0_0, 'strokeThickness is now a part of stroke');
+        deprecation('8.0.0', 'strokeThickness is now a part of stroke');
         // #endif
 
         const color = oldStyle.stroke;
@@ -1223,7 +1223,7 @@ function convertV7Tov8Style(style: TextStyleOptions)
     if (Array.isArray(oldStyle.fillGradientStops))
     {
         // #if _DEBUG
-        deprecation(v8_0_0, 'gradient fill is now a fill pattern: `new FillGradient(...)`');
+        deprecation('8.0.0', 'gradient fill is now a fill pattern: `new FillGradient(...)`');
         // #endif
 
         if (!Array.isArray(oldStyle.fill) || oldStyle.fill.length === 0)

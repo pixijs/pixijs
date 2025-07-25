@@ -4,7 +4,7 @@ import { CanvasPool } from '../../rendering/renderers/shared/texture/CanvasPool'
 import { ImageSource } from '../../rendering/renderers/shared/texture/sources/ImageSource';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { TextureStyle, type TextureStyleOptions } from '../../rendering/renderers/shared/texture/TextureStyle';
-import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
+import { deprecation } from '../../utils/logging/deprecation';
 import { CanvasTextMetrics } from '../text/canvas/CanvasTextMetrics';
 import { fontStringFromTextStyle } from '../text/canvas/utils/fontStringFromTextStyle';
 import { getCanvasFillStyle } from '../text/canvas/utils/getCanvasFillStyle';
@@ -275,7 +275,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
     public override get pageTextures(): DynamicBitmapFont['pages']
     {
         // #if _DEBUG
-        deprecation(v8_0_0, 'BitmapFont.pageTextures is deprecated, please use BitmapFont.pages instead.');
+        deprecation('8.0.0', 'BitmapFont.pageTextures is deprecated, please use BitmapFont.pages instead.');
         // #endif
 
         return this.pages;

@@ -4,7 +4,7 @@ import { GlProgram } from '../../../rendering/renderers/gl/shader/GlProgram';
 import { GpuProgram } from '../../../rendering/renderers/gpu/shader/GpuProgram';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
 import { Sprite } from '../../../scene/sprite/Sprite';
-import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
+import { deprecation } from '../../../utils/logging/deprecation';
 import { Filter } from '../../Filter';
 import fragment from './displacement.frag';
 import vertex from './displacement.vert';
@@ -118,7 +118,7 @@ export class DisplacementFilter extends Filter
             // #if _DEBUG
             if (args[1])
             {
-                deprecation(v8_0_0, 'DisplacementFilter now uses options object instead of params. {sprite, scale}');
+                deprecation('8.0.0', 'DisplacementFilter now uses options object instead of params. {sprite, scale}');
             }
             // #endif
 

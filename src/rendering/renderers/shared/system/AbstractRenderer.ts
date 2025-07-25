@@ -3,7 +3,7 @@ import { loadEnvironmentExtensions } from '../../../../environment/autoDetectEnv
 import { Container } from '../../../../scene/container/Container';
 import { unsafeEvalSupported } from '../../../../utils/browser/unsafeEvalSupported';
 import { uid } from '../../../../utils/data/uid';
-import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
+import { deprecation } from '../../../../utils/logging/deprecation';
 import { EventEmitter } from '../../../../utils/utils';
 import { CLEAR } from '../../gl/const';
 import { SystemRunner } from './SystemRunner';
@@ -289,7 +289,7 @@ export class AbstractRenderer<
             if (deprecated)
             {
                 // #if _DEBUG
-                deprecation(v8_0_0, 'passing a second argument is deprecated, please use render options instead');
+                deprecation('8.0.0', 'passing a second argument is deprecated, please use render options instead');
                 // #endif
 
                 options.target = deprecated.renderTexture;

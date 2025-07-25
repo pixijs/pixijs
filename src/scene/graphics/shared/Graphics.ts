@@ -1,4 +1,4 @@
-import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
+import { deprecation } from '../../../utils/logging/deprecation';
 import { ViewContainer, type ViewContainerOptions } from '../../view/ViewContainer';
 import { GraphicsContext } from './GraphicsContext';
 import { type GraphicsGpuData } from './GraphicsPipe';
@@ -1891,7 +1891,7 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
     public lineStyle(width?: number, color?: ColorSource, alpha?: number): this
     {
         // #if _DEBUG
-        deprecation(v8_0_0, 'Graphics#lineStyle is no longer needed. Use Graphics#setStrokeStyle to set the stroke style.');
+        deprecation('8.0.0', 'Graphics#lineStyle is no longer needed. Use Graphics#setStrokeStyle to set the stroke style.');
         // #endif
 
         const strokeStyle: Partial<StrokeStyle> = {};
@@ -1915,7 +1915,7 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation(v8_0_0, 'Graphics#beginFill is no longer needed. Use Graphics#fill to fill the shape with the desired style.');
+        deprecation('8.0.0', 'Graphics#beginFill is no longer needed. Use Graphics#fill to fill the shape with the desired style.');
         // #endif
 
         const fillStyle: Partial<FillStyle> = {};
@@ -1936,7 +1936,7 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation(v8_0_0, 'Graphics#endFill is no longer needed. Use Graphics#fill to fill the shape with the desired style.');
+        deprecation('8.0.0', 'Graphics#endFill is no longer needed. Use Graphics#fill to fill the shape with the desired style.');
         // #endif
 
         this.context.fill();
@@ -1959,7 +1959,7 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
     public drawCircle(...args: Parameters<GraphicsContext['circle']>): this
     {
         // #if _DEBUG
-        deprecation(v8_0_0, 'Graphics#drawCircle has been renamed to Graphics#circle');
+        deprecation('8.0.0', 'Graphics#drawCircle has been renamed to Graphics#circle');
         // #endif
 
         return this._callContextMethod('circle', args);
@@ -1972,7 +1972,7 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
     public drawEllipse(...args: Parameters<GraphicsContext['ellipse']>): this
     {
         // #if _DEBUG
-        deprecation(v8_0_0, 'Graphics#drawEllipse has been renamed to Graphics#ellipse');
+        deprecation('8.0.0', 'Graphics#drawEllipse has been renamed to Graphics#ellipse');
         // #endif
 
         return this._callContextMethod('ellipse', args);
@@ -1985,7 +1985,7 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
     public drawPolygon(...args: Parameters<GraphicsContext['poly']>): this
     {
         // #if _DEBUG
-        deprecation(v8_0_0, 'Graphics#drawPolygon has been renamed to Graphics#poly');
+        deprecation('8.0.0', 'Graphics#drawPolygon has been renamed to Graphics#poly');
         // #endif
 
         return this._callContextMethod('poly', args);
@@ -1998,7 +1998,7 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
     public drawRect(...args: Parameters<GraphicsContext['rect']>): this
     {
         // #if _DEBUG
-        deprecation(v8_0_0, 'Graphics#drawRect has been renamed to Graphics#rect');
+        deprecation('8.0.0', 'Graphics#drawRect has been renamed to Graphics#rect');
         // #endif
 
         return this._callContextMethod('rect', args);
@@ -2011,7 +2011,7 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
     public drawRoundedRect(...args: Parameters<GraphicsContext['roundRect']>): this
     {
         // #if _DEBUG
-        deprecation(v8_0_0, 'Graphics#drawRoundedRect has been renamed to Graphics#roundRect');
+        deprecation('8.0.0', 'Graphics#drawRoundedRect has been renamed to Graphics#roundRect');
         // #endif
 
         return this._callContextMethod('roundRect', args);
@@ -2024,7 +2024,7 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
     public drawStar(...args: Parameters<GraphicsContext['star']>): this
     {
         // #if _DEBUG
-        deprecation(v8_0_0, 'Graphics#drawStar has been renamed to Graphics#star');
+        deprecation('8.0.0', 'Graphics#drawStar has been renamed to Graphics#star');
         // #endif
 
         return this._callContextMethod('star', args);

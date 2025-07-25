@@ -1,4 +1,4 @@
-import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
+import { deprecation } from '../../../utils/logging/deprecation';
 
 import type { Container } from '../Container';
 
@@ -87,7 +87,7 @@ export const findMixin: Partial<Container> = {
     get name(): string
     {
         // #if _DEBUG
-        deprecation(v8_0_0, 'Container.name property has been removed, use Container.label instead');
+        deprecation('8.0.0', 'Container.name property has been removed, use Container.label instead');
         // #endif
 
         return this.label;
@@ -95,7 +95,7 @@ export const findMixin: Partial<Container> = {
     set name(value: string)
     {
         // #if _DEBUG
-        deprecation(v8_0_0, 'Container.name property has been removed, use Container.label instead');
+        deprecation('8.0.0', 'Container.name property has been removed, use Container.label instead');
         // #endif
 
         this.label = value;

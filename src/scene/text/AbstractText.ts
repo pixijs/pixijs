@@ -1,5 +1,5 @@
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
-import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
+import { deprecation } from '../../utils/logging/deprecation';
 import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
 
 import type { Size } from '../../maths/misc/Size';
@@ -694,7 +694,7 @@ export function ensureTextOptions<
     if (typeof options === 'string' || args[1])
     {
         // #if _DEBUG
-        deprecation(v8_0_0, `use new ${name}({ text: "hi!", style }) instead`);
+        deprecation('8.0.0', `use new ${name}({ text: "hi!", style }) instead`);
         // #endif
 
         options = {
