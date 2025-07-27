@@ -96,7 +96,8 @@ export const loadBitmapFont = {
 
             textureUrls.push({
                 src: imagePath,
-                data: textureOptions
+                data: textureOptions,
+                parser: imagePath.startsWith('blob:') ? 'texture' : undefined
             });
         }
 
