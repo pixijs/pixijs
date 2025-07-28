@@ -274,5 +274,14 @@ export class CanvasTextSystem implements System
     public destroy(): void
     {
         (this._renderer as null) = null;
+        // Clean up active textures
+        for (const key in this._activeTextures)
+        {
+            if (this._activeTextures[key])
+            {
+                this.returnTexture(this._activeTextures[key].texture);
+            }
+        }
+        (this._activeTextures as null) = null;
     }
 }
