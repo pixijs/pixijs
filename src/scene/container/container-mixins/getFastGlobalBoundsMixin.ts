@@ -96,7 +96,7 @@ export const getFastGlobalBoundsMixin: Partial<Container> = {
         const manageEffects = !!this.effects.length;
 
         // Use a temporary bounds object if the container is a render group or has effects.
-        if (this.renderGroup || manageEffects)
+        if (this.renderGroup)
         {
             localBounds = boundsPool.get().clear();
         }
@@ -104,7 +104,7 @@ export const getFastGlobalBoundsMixin: Partial<Container> = {
         // Add the container's own bounds area to the bounds if it exists.
         if (this.boundsArea)
         {
-            bounds.addRect(this.boundsArea, this.worldTransform);
+            localBounds.addRect(this.boundsArea, this.groupTransform);
         }
         else
         {
@@ -161,7 +161,8 @@ export const getFastGlobalBoundsMixin: Partial<Container> = {
             bounds.addBounds(localBounds);
             boundsPool.return(localBounds);
         }
-        else if (this.renderGroup)
+
+        if (this.renderGroup)
         {
             // If the container is a render group, add its local bounds to the final bounds.
             bounds.addBounds(localBounds, this.relativeGroupTransform);
