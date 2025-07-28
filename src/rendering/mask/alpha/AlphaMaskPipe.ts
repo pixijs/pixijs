@@ -180,6 +180,13 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
 
                 instruction.mask.mask.measurable = false;
 
+                const renderGroup = instruction.mask.mask.renderGroup || instruction.mask.mask.parentRenderGroup;
+
+                if (renderGroup.cacheToLocalTransform)
+                {
+                    bounds.applyMatrix(renderGroup.cacheToLocalTransform);
+                }
+
                 bounds.ceil();
 
                 const colorTextureSource = renderer.renderTarget.renderTarget.colorTexture.source;
