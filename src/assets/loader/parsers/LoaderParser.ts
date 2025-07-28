@@ -38,8 +38,12 @@ export interface LoaderParserAdvanced<
     /** A config to adjust the parser */
     config?: CONFIG;
 
-    /** The name of the parser (this can be used when specifying loadParser in a ResolvedAsset) */
-    name: string;
+    /**
+     * @deprecated Use `id` instead.
+     */
+    name?: string;
+    /** The name of the parser (this can be used when specifying parser in a ResolvedAsset) */
+    id: string;
 
     /**
      * Each URL to load will be tested here,

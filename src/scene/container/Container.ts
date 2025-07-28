@@ -720,7 +720,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * @see {@link Container#addChild} For adding to a parent
      * @see {@link Container#removeChild} For removing from parent
      */
-    public parent: Container = null;
+    public parent: Container | null = null;
 
     // used internally for changing up the render order.. mainly for masks and filters
     // TODO setting this should cause a rebuild??
@@ -1819,10 +1819,10 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         lt.tx = position._x - ((px * lt.a) + (py * lt.c)) // Pivot offset
             + ((ox * lt.a) + (oy * lt.c)) // Origin offset for rotation and scaling
-            - (ox * sx); // Remove unscaled origin to maintain position
+            - ox; // Remove origin to maintain position
         lt.ty = position._y - ((px * lt.b) + (py * lt.d)) // Pivot offset
             + ((ox * lt.b) + (oy * lt.d)) // Origin offset for rotation and scaling
-            - (oy * sy); // Remove unscaled origin to maintain position
+            - oy; // Remove origin to maintain position
     }
 
     // / ///// color related stuff

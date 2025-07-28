@@ -676,6 +676,34 @@ export class Rectangle implements ShapePrimitive
     }
 
     /**
+     * Scales the rectangle's dimensions and position by the specified factors.
+     * @example
+     * ```ts
+     * const rect = new Rectangle(50, 50, 100, 100);
+     *
+     * // Scale uniformly
+     * rect.scale(0.5, 0.5);
+     * // rect is now: x=25, y=25, width=50, height=50
+     *
+     * // non-uniformly
+     * rect.scale(0.5, 1);
+     * // rect is now: x=25, y=50, width=50, height=100
+     * ```
+     * @param x - The factor by which to scale the horizontal properties (x, width).
+     * @param y - The factor by which to scale the vertical properties (y, height).
+     * @returns Returns itself
+     */
+    public scale(x: number, y: number = x): this
+    {
+        this.x *= x;
+        this.y *= y;
+        this.width *= x;
+        this.height *= y;
+
+        return this;
+    }
+
+    /**
      * Enlarges this rectangle to include the passed rectangle.
      * @example
      * ```ts

@@ -37,6 +37,28 @@ describe('Assets bundles', () =>
         expect(assets.spritesheet).toBeInstanceOf(Spritesheet);
     });
 
+    it('should give a correct progress update', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        Assets.addBundle('testBundle', [
+            { alias: ['bunny', 'b'], src: 'textures/bunny.{png,webp}' },
+            { alias: 'spritesheet', src: 'spritesheet/spritesheet.json' },
+        ]);
+
+        let progress = 0;
+        const progressMock = jest.fn((p) => { progress = p; });
+        const assets = await Assets.loadBundle('testBundle', progressMock);
+
+        expect(progressMock).toHaveBeenCalledTimes(2);
+        expect(progress).toBe(1);
+
+        expect(assets.bunny).toBeInstanceOf(Texture);
+        expect(assets.spritesheet).toBeInstanceOf(Spritesheet);
+    });
+
     it('should add and load bundle object', async () =>
     {
         await Assets.init({

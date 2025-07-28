@@ -20,7 +20,9 @@ const GifAsset = {
         remove: async (formats) => formats.filter((format) => format !== 'gif'),
     },
     loader: {
+        /** used for deprecation purposes */
         name: 'gifLoader',
+        id: 'gif',
         test: (url) => path.extname(url) === '.gif' || url.startsWith('data:image/gif'),
         load: async (url, asset) =>
         {
