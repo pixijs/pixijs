@@ -133,7 +133,7 @@ export class Filter extends Shader
     /** The default filter settings */
     public static defaultOptions: FilterOptions = {
         blendMode: 'normal',
-        resolution: 'inherit',
+        resolution: 1,
         padding: 0,
         antialias: 'off',
         blendRequired: false,
