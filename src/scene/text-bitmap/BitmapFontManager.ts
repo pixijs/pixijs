@@ -182,6 +182,80 @@ export interface BitmapFontInstallOptions
      * ```
      */
     textureStyle?: TextureStyle | TextureStyleOptions;
+
+    /**
+     * Whether to allow overriding the fill color with a tint at runtime.
+     *
+     * When enabled, the font can be dynamically tinted using the `tint` property of BitmapText,
+     * allowing a single font to display multiple colors without creating separate font textures.
+     * This is memory efficient but requires the font to be rendered with white fill color.
+     *
+     * When disabled, the fill color is permanently baked into the font texture. This allows
+     * any fill color but prevents runtime tinting - each color variation requires a separate font.
+     * @default false (automatically determined based on style)
+     *
+     * **Requirements for tinting:**
+     * - Fill color must be white (`0xFFFFFF` or `'#ffffff'`)
+     * - No stroke effects
+     * - No drop shadows (or only black shadows)
+     * - No gradient or pattern fills
+     *
+     * **Performance considerations:**
+     * - ✅ Enabled: One font texture, multiple colors via tinting (memory efficient)
+     * - ❌ Disabled: Separate font texture per color (higher memory usage)
+     * @example
+     * ```ts
+     * // Correct usage - white fill with tinting enabled
+     * BitmapFont.install({
+     *     name: 'TintableFont',
+     *     style: {
+     *         fontFamily: 'Arial',
+     *         fontSize: 24,
+     *         fill: 0xFFFFFF  // Must be white for tinting
+     *     },
+     *     allowFillOverride: true
+     * });
+     *
+     * // Use the font with different colors via tinting
+     * const redText = new BitmapText({
+     *     text: 'Red Text',
+     *     style: { fontFamily: 'TintableFont', fill: 'red }, // Red tint
+     * });
+     *
+     * const blueText = new BitmapText({
+     *     text: 'Blue Text',
+     *     style: { fontFamily: 'TintableFont', fill: 'blue' }, // Blue tint
+     * });
+     * ```
+     * @example
+     * ```ts
+     * // Incorrect usage - colored fill with tinting enabled
+     * BitmapFont.install({
+     *     name: 'BadTintFont',
+     *     style: {
+     *         fontFamily: 'Arial',
+     *         fontSize: 24,
+     *         fill: 0xFF0000  // ❌ Red fill won't tint properly
+     *     },
+     *     allowFillOverride: true  // ❌ Will not work as expected
+     * });
+     * ```
+     * @example
+     * ```ts
+     * // Alternative - baked colors (no tinting)
+     * BitmapFont.install({
+     *     name: 'BakedColorFont',
+     *     style: {
+     *         fontFamily: 'Arial',
+     *         fontSize: 24,
+     *         fill: 0xFF0000,  // Any color works
+     *         stroke: { color: 0x000000, width: 2 }  // Strokes allowed
+     *     },
+     *     allowFillOverride: false  // Color is baked in
+     * });
+     * ```
+     */
+    allowFillOverride?: boolean;
 }
 
 /** @advanced */
@@ -375,7 +449,7 @@ class BitmapFontManagerClass
         const textStyle = options.style;
 
         const style = textStyle instanceof TextStyle ? textStyle : new TextStyle(textStyle);
-        const overrideFill = this._canUseTintForStyle(style);
+        const overrideFill = options.allowFillOverride ?? this._canUseTintForStyle(style);
         const font = new DynamicBitmapFont({
             style,
             overrideFill,
@@ -421,26 +495,13 @@ class BitmapFontManagerClass
      */
     private _canUseTintForStyle(style: TextStyle): boolean
     {
-        // If there's a stroke or drop shadow, we need multiple colors baked in so we can't tint
-        if (style._stroke || style.dropShadow)
-        {
-            return false;
-        }
-
-        // If there's a complex fill (gradient, pattern, etc.) we can't tint
-        if (style._fill.fill)
-        {
-            return false;
-        }
-
-        // If no fill or white fill, we can tint it
-        if (!style._fill.fill || style._fill.color === 0xFFFFFF)
-        {
-            return true;
-        }
-
-        // Simple solid color fill can't be tinted (color is baked in)
-        return false;
+        // Exclude strokes, non black shadows and ensure
+        // we have a non gradient or pattern fill,
+        // and the fill color is white
+        return !style._stroke
+            && (!style.dropShadow || style.dropShadow.color === 0x000000)
+            && !style._fill.fill
+            && style._fill.color === 0xFFFFFF;
     }
 }
 
