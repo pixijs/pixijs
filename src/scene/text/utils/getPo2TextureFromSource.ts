@@ -1,3 +1,4 @@
+import { type IImage } from '../../../environment/IImage';
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
 import { Bounds } from '../../container/bounds/Bounds';
 
@@ -17,7 +18,7 @@ const tempBounds = new Bounds();
  * @internal
  */
 export function getPo2TextureFromSource(
-    image: HTMLImageElement | HTMLCanvasElement | ICanvas,
+    image: IImage | HTMLCanvasElement | ICanvas,
     width: number,
     height: number,
     resolution: number

@@ -1,3 +1,4 @@
+import { type IImage } from '../../../../environment/IImage';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { VideoSource } from '../../../../rendering/renderers/shared/texture/sources/VideoSource';
 import { detectVideoAlphaMode } from '../../../../utils/browser/detectVideoAlphaMode';
@@ -23,7 +24,7 @@ const validVideoMIMEs = validVideoExtensions.map((ext) => `video/${ext.substring
  * @category assets
  * @advanced
  */
-export function crossOrigin(element: HTMLImageElement | HTMLVideoElement, url: string, crossorigin?: boolean | string): void
+export function crossOrigin(element: IImage | HTMLVideoElement, url: string, crossorigin?: boolean | string): void
 {
     if (crossorigin === undefined && !url.startsWith('data:'))
     {

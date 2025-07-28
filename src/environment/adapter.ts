@@ -15,7 +15,7 @@ export interface Adapter
 {
     /** Returns a canvas object that can be used to create a webgl context. */
     createCanvas: (width?: number, height?: number) => ICanvas;
-    /** Returns an HTMLImageElement that can be used to create a texture. */
+    /** Returns an IImage (HTMLImageElement) that can be used to create a texture. */
     createImage: () => IImage;
     /** Returns a 2D rendering context. */
     getCanvasRenderingContext2D: () => { prototype: ICanvasRenderingContext2D; };

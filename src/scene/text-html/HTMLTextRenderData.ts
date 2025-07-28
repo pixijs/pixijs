@@ -1,4 +1,5 @@
 import { DOMAdapter } from '../../environment/adapter';
+import { type IImage } from '../../environment/IImage';
 
 import type { CanvasAndContext } from '../../rendering/renderers/shared/texture/CanvasPool';
 
@@ -14,7 +15,7 @@ export class HTMLTextRenderData
     public foreignObject = document.createElementNS(nssvg, 'foreignObject');
     public domElement = document.createElementNS(nsxhtml, 'div');
     public styleElement = document.createElementNS(nsxhtml, 'style');
-    public image: HTMLImageElement;
+    public image: IImage;
     public canvasAndContext?: CanvasAndContext;
 
     constructor()
@@ -31,6 +32,6 @@ export class HTMLTextRenderData
         foreignObject.appendChild(styleElement);
         foreignObject.appendChild(domElement);
 
-        this.image = DOMAdapter.get().createImage() as HTMLImageElement;
+        this.image = DOMAdapter.get().createImage();
     }
 }

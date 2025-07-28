@@ -1,3 +1,5 @@
+import { type IImage } from '../IImage';
+
 import type { ICanvas } from './ICanvas';
 
 /**
@@ -23,12 +25,12 @@ export interface ICanvasRenderingContext2D extends
     CanvasPath
 {
     /** creates a pattern using the specified image and repetition. */
-    createPattern(image: CanvasImageSource | ICanvas, repetition: string | null): CanvasPattern | null;
+    createPattern(image: CanvasImageSource | ICanvas | IImage, repetition: string | null): CanvasPattern | null;
 
     /** provides different ways to draw an image onto the canvas */
-    drawImage(image: CanvasImageSource | ICanvas, dx: number, dy: number): void;
-    drawImage(image: CanvasImageSource | ICanvas, dx: number, dy: number, dw: number, dh: number): void;
-    drawImage(image: CanvasImageSource | ICanvas, sx: number, sy: number, sw: number, sh: number,
+    drawImage(image: CanvasImageSource | ICanvas | IImage, dx: number, dy: number): void;
+    drawImage(image: CanvasImageSource | ICanvas | IImage, dx: number, dy: number, dw: number, dh: number): void;
+    drawImage(image: CanvasImageSource | ICanvas | IImage, sx: number, sy: number, sw: number, sh: number,
         dx: number, dy: number, dw: number, dh: number): void;
 
     /** sets the horizontal spacing behavior between text characters. */

@@ -1,4 +1,5 @@
 import { DOMAdapter } from '../../../../environment/adapter';
+import { type IImage } from '../../../../environment/IImage';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Container } from '../../../../scene/container/Container';
 import { Texture } from '../texture/Texture';
@@ -381,7 +382,7 @@ export type ExtractOptions = BaseExtractOptions | ExtractImageOptions | ExtractD
  *     .fill(0xFF0000);
  *
  * // Basic extraction examples
- * const image = await app.renderer.extract.image(graphics);    // As HTMLImageElement
+ * const image = await app.renderer.extract.image(graphics);    // As IImage (HTMLImageElement)
  * const canvas = app.renderer.extract.canvas(graphics);        // As Canvas
  * const pixels = app.renderer.extract.pixels(graphics);        // As pixel data
  * const base64 = await app.renderer.extract.base64(graphics); // As base64 string
@@ -483,9 +484,9 @@ export class ExtractSystem implements System
     }
 
     /**
-     * Creates an HTMLImageElement from a display object or texture.
+     * Creates an IImage from a display object or texture.
      * @param options - Options for creating the image, or the target to extract
-     * @returns Promise that resolves with the generated HTMLImageElement
+     * @returns Promise that resolves with the generated IImage
      * @example
      * ```ts
      * // Basic usage with a sprite
@@ -511,15 +512,16 @@ export class ExtractSystem implements System
      * @see {@link ExtractImageOptions} For detailed options
      * @see {@link ExtractSystem.base64} For base64 string output
      * @see {@link ExtractSystem.canvas} For canvas output
+     * @see {@link IImage} For the image interface
      * @category rendering
      */
-    public async image(options: ExtractImageOptions | Container | Texture): Promise<HTMLImageElement>
+    public async image(options: ExtractImageOptions | Container | Texture): Promise<IImage>
     {
         const image = DOMAdapter.get().createImage();
 
         image.src = await this.base64(options);
 
-        return image as HTMLImageElement;
+        return image;
     }
 
     /**
