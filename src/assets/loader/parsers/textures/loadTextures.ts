@@ -1,5 +1,5 @@
 import { DOMAdapter } from '../../../../environment/adapter';
-import { type IImage } from '../../../../environment/IImage';
+import { type ImageLike } from '../../../../environment/ImageLike';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { ImageSource } from '../../../../rendering/renderers/shared/texture/sources/ImageSource';
 import { getResolutionOfUrl } from '../../../../utils/network/getResolutionOfUrl';
@@ -49,7 +49,7 @@ export interface LoadTextureConfig
      * The crossOrigin value to use for images when `preferCreateImageBitmap` is `false`.
      * @default 'anonymous'
      */
-    crossOrigin: IImage['crossOrigin'];
+    crossOrigin: ImageLike['crossOrigin'];
 }
 
 /**

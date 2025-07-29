@@ -3,4 +3,4 @@ export * from './adapter';
 export * from './autoDetectEnvironment';
 export * from './canvas/ICanvas';
 export * from './canvas/ICanvasRenderingContext2D';
-export * from './IImage';
+export * from './ImageLike';

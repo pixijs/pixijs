@@ -1,4 +1,4 @@
-import { type IImage } from '../../../environment/IImage';
+import { type ImageLike } from '../../../environment/ImageLike';
 import { CanvasPool } from '../../../rendering/renderers/shared/texture/CanvasPool';
 
 import type { CanvasAndContext } from '../../../rendering/renderers/shared/texture/CanvasPool';
@@ -15,7 +15,7 @@ import type { CanvasAndContext } from '../../../rendering/renderers/shared/textu
  * @param resolution - The resolution of the canvas.
  * @internal
  */
-export function getTemporaryCanvasFromImage(image: IImage, resolution: number): CanvasAndContext
+export function getTemporaryCanvasFromImage(image: ImageLike, resolution: number): CanvasAndContext
 {
     // Get an optimal canvas and context from the CanvasPool, based on the
     // dimensions of the image and the desired resolution.

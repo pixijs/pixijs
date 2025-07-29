@@ -1,5 +1,5 @@
 import { DOMAdapter } from '../../environment/adapter';
-import { type IImage } from '../../environment/IImage';
+import { type ImageLike } from '../../environment/ImageLike';
 
 import type { CanvasAndContext } from '../../rendering/renderers/shared/texture/CanvasPool';
 
@@ -15,7 +15,7 @@ export class HTMLTextRenderData
     public foreignObject = document.createElementNS(nssvg, 'foreignObject');
     public domElement = document.createElementNS(nsxhtml, 'div');
     public styleElement = document.createElementNS(nsxhtml, 'style');
-    public image: IImage;
+    public image: ImageLike;
     public canvasAndContext?: CanvasAndContext;
 
     constructor()

@@ -1,5 +1,5 @@
 import { type Adapter } from '../environment/adapter';
-import { type IImage } from '../environment/IImage';
+import { type ImageLike } from '../environment/ImageLike';
 import { DOMParser } from '@xmldom/xmldom';
 
 /**
@@ -19,7 +19,7 @@ import { DOMParser } from '@xmldom/xmldom';
  */
 export const WebWorkerAdapter = {
     createCanvas: (width?: number, height?: number) => new OffscreenCanvas(width ?? 0, height ?? 0),
-    createImage: (): IImage => new Image(),
+    createImage: (): ImageLike => new Image(),
     getCanvasRenderingContext2D: () => OffscreenCanvasRenderingContext2D,
     getWebGLRenderingContext: () => WebGLRenderingContext,
     getNavigator: () => navigator,

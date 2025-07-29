@@ -3,7 +3,7 @@
  * @category environment
  * @advanced
  */
-export interface IImage extends EventTarget
+export interface ImageLike extends EventTarget
 {
     /** Whether or not the image has completely loaded. */
     readonly complete: boolean;

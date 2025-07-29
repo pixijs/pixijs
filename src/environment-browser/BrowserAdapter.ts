@@ -1,5 +1,5 @@
 import { type Adapter } from '../environment/adapter';
-import { type IImage } from '../environment/IImage';
+import { type ImageLike } from '../environment/ImageLike';
 
 /**
  * This is an implementation of the {@link Adapter} interface.
@@ -27,7 +27,7 @@ export const BrowserAdapter = {
 
         return canvas;
     },
-    createImage: (): IImage => new Image(),
+    createImage: (): ImageLike => new Image(),
     getCanvasRenderingContext2D: () => CanvasRenderingContext2D,
     getWebGLRenderingContext: () => WebGLRenderingContext,
     getNavigator: () => navigator,

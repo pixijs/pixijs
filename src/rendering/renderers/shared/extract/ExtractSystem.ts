@@ -1,5 +1,5 @@
 import { DOMAdapter } from '../../../../environment/adapter';
-import { type IImage } from '../../../../environment/IImage';
+import { type ImageLike } from '../../../../environment/ImageLike';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Container } from '../../../../scene/container/Container';
 import { Texture } from '../texture/Texture';
@@ -512,10 +512,10 @@ export class ExtractSystem implements System
      * @see {@link ExtractImageOptions} For detailed options
      * @see {@link ExtractSystem.base64} For base64 string output
      * @see {@link ExtractSystem.canvas} For canvas output
-     * @see {@link IImage} For the image interface
+     * @see {@link ImageLike} For the image interface
      * @category rendering
      */
-    public async image(options: ExtractImageOptions | Container | Texture): Promise<IImage>
+    public async image(options: ExtractImageOptions | Container | Texture): Promise<ImageLike>
     {
         const image = DOMAdapter.get().createImage();
 

@@ -1,5 +1,5 @@
 import { DOMAdapter } from '../../../../environment/adapter';
-import { type IImage } from '../../../../environment/IImage';
+import { type ImageLike } from '../../../../environment/ImageLike';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { ImageSource } from '../../../../rendering/renderers/shared/texture/sources/ImageSource';
 import { GraphicsContext } from '../../../../scene/graphics/shared/GraphicsContext';
@@ -26,7 +26,7 @@ export interface LoadSVGConfig
      * The crossOrigin value to use for loading the SVG as an image.
      * @default 'anonymous'
      */
-    crossOrigin: IImage['crossOrigin'];
+    crossOrigin: ImageLike['crossOrigin'];
     /**
      * When set to `true`, loading and decoding images will happen with `new Image()`,
      * @default false
@@ -93,7 +93,7 @@ async function loadAsTexture(
     url: string,
     asset: ResolvedAsset<TextureSourceOptions & LoadSVGConfig>,
     loader: Loader,
-    crossOrigin: IImage['crossOrigin']
+    crossOrigin: ImageLike['crossOrigin']
 ): Promise<Texture>
 {
     const response = await DOMAdapter.get().fetch(url);

@@ -1,4 +1,4 @@
-import { type IImage } from '../../../environment/IImage';
+import { type ImageLike } from '../../../environment/ImageLike';
 
 /**
  * This function loads an SVG image into an IImage element.
@@ -11,7 +11,7 @@ import { type IImage } from '../../../environment/IImage';
  * @returns - A promise that resolves when the image has loaded
  * @internal
  */
-export function loadSVGImage(image: IImage, url: string, delay: boolean)
+export function loadSVGImage(image: ImageLike, url: string, delay: boolean)
 {
     return new Promise<void>(async (resolve) =>
     {
