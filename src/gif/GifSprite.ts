@@ -386,7 +386,6 @@ class GifSprite extends Sprite
      */
     constructor(options: GifSpriteOptions);
 
-    /** @ignore */
     constructor(...args: [GifSource] | [GifSpriteOptions])
     {
         const options = args[0] instanceof GifSource ? { source: args[0] } : args[0];
