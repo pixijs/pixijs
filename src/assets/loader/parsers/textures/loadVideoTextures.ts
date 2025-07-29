@@ -1,3 +1,4 @@
+import { type ImageLike } from '../../../../environment/ImageLike';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { VideoSource } from '../../../../rendering/renderers/shared/texture/sources/VideoSource';
 import { detectVideoAlphaMode } from '../../../../utils/browser/detectVideoAlphaMode';
@@ -25,7 +26,7 @@ let validVideoMIMEs: string[];
  * @category assets
  * @advanced
  */
-export function crossOrigin(element: HTMLImageElement | HTMLVideoElement, url: string, crossorigin?: boolean | string): void
+export function crossOrigin(element: ImageLike | HTMLVideoElement, url: string, crossorigin?: boolean | string): void
 {
     if (crossorigin === undefined && !url.startsWith('data:'))
     {

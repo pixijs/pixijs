@@ -1,4 +1,5 @@
 import { BrowserAdapter } from '../environment-browser/BrowserAdapter';
+import { type ImageLike } from './ImageLike';
 
 import type { ICanvas } from './canvas/ICanvas';
 import type { ICanvasRenderingContext2D } from './canvas/ICanvasRenderingContext2D';
@@ -14,6 +15,8 @@ export interface Adapter
 {
     /** Returns a canvas object that can be used to create a webgl context. */
     createCanvas: (width?: number, height?: number) => ICanvas;
+    /** Returns an IImage (HTMLImageElement) that can be used to create a texture. */
+    createImage: () => ImageLike;
     /** Returns a 2D rendering context. */
     getCanvasRenderingContext2D: () => { prototype: ICanvasRenderingContext2D; };
     /** Returns a WebGL rendering context. */
