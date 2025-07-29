@@ -102,6 +102,11 @@ export class CanvasTextSystem implements System
             // reapply the padding to the frame
             frame.pad(style.padding);
             texture.frame.copyFrom(frame);
+
+            // We initially increased the frame size by a resolution factor
+            // to achieve a crisper display. Now we need to scale down the already
+            // trimmed frame to render the texture in the expected size.
+            texture.frame.scale(1 / resolution);
             texture.updateUvs();
         }
 

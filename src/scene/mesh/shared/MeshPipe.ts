@@ -144,9 +144,15 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
     {
         const batcher = this.renderer.renderPipes.batch;
 
-        const { batched } = this._getMeshData(mesh);
+        const meshData = this._getMeshData(mesh);
 
-        if (batched)
+        if (mesh.didViewUpdate)
+        {
+            meshData.indexSize = mesh._geometry.indices?.length;
+            meshData.vertexSize = mesh._geometry.positions?.length;
+        }
+
+        if (meshData.batched)
         {
             const gpuBatchableMesh = this._getBatchableMesh(mesh);
 
@@ -209,8 +215,8 @@ export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
     {
         mesh._gpuData[this.renderer.uid].meshData = {
             batched: mesh.batched,
-            indexSize: mesh._geometry.indices?.length,
-            vertexSize: mesh._geometry.positions?.length,
+            indexSize: 0,
+            vertexSize: 0,
         };
 
         return mesh._gpuData[this.renderer.uid].meshData;

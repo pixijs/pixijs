@@ -1,3 +1,4 @@
+import { groupD8 } from '../../maths/matrix/groupD8';
 import { Rectangle } from '../../maths/shapes/Rectangle';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { AbstractBitmapFont } from './AbstractBitmapFont';
@@ -156,18 +157,22 @@ export class BitmapFont extends AbstractBitmapFont<BitmapFont>
             const {
                 frame: textureFrame,
                 source: textureSource,
+                rotate: textureRotate,
             } = textures[charData.page];
 
-            const frameReal = new Rectangle(
-                charData.x + textureFrame.x,
-                charData.y + textureFrame.y,
-                charData.width,
-                charData.height,
+            // Transform character coordinates based on texture rotation
+            const frame = groupD8.transformRectCoords(
+                charData,
+                textureFrame,
+                textureRotate,
+                new Rectangle()
             );
 
             const texture = new Texture({
+                frame,
+                orig: new Rectangle(0, 0, charData.width, charData.height),
                 source: textureSource,
-                frame: frameReal
+                rotate: textureRotate,
             });
 
             this.chars[key] = {

@@ -52,7 +52,6 @@ let fontCount = 0;
  *     skipKerning: false,      // Enable kerning
  *     textureStyle: {
  *         scaleMode: 'linear',
- *         premultiplyAlpha: true
  *     }
  * });
  *
@@ -156,7 +155,7 @@ export interface BitmapFontInstallOptions
      *     style: {
      *         fontFamily: 'Arial',
      *         fontSize: 32,
-     *         fill: ['#ff0000', '#00ff00'], // Gradient
+     *         fill: 'white',
      *         stroke: { color: '#000000', width: 2 },
      *         dropShadow: {
      *             color: '#000000',
@@ -178,8 +177,6 @@ export interface BitmapFontInstallOptions
      *     name: 'CrispFont',
      *     textureStyle: {
      *         scaleMode: 'nearest',
-     *         resolution: 2,
-     *         format: 'rgba8unorm'
      *     }
      * });
      * ```

@@ -70,6 +70,9 @@ interface AssetExtensionAdvanced<
  *    async parse(asset: any, options: ResolvedAsset, loader: Loader) {
  *       // Gets called on the asset it testParse passes. Useful to convert a raw asset into something more useful
  *    },
+ *    async load(url: string, options: ResolvedAsset, loader: Loader) {
+ *       // This is the promise that loads the URL provided
+ *    },
  *    unload(item: any) {
  *       // If an asset is parsed using this parser, the unload function will be called when the user requests an asset
  *       // to be unloaded. This is useful for things like sounds or textures that can be unloaded from memory

@@ -215,7 +215,7 @@ export interface FillStyle
  *     color: 0x0000ff, // Or use a Color object
  *     join: 'miter',
  *     miterLimit: 3,   // Limit how far miter extends
- *     alignment: 1     // Outside alignment
+ *     alignment: 0     // Outside alignment
  * });
  *
  * // Pixel-perfect line
@@ -245,17 +245,17 @@ export interface StrokeAttributes
 
     /**
      * The alignment of the stroke relative to the path.
-     * - 0: Inside the shape
+     * - 1: Inside the shape
      * - 0.5: Centered on the path (default)
-     * - 1: Outside the shape
+     * - 0: Outside the shape
      * @example
      * ```ts
      * // Inside alignment
-     * const stroke = { alignment: 0 };
+     * const stroke = { alignment: 1 };
      * // Centered alignment
      * const stroke = { alignment: 0.5 };
      * // Outside alignment
-     * const stroke = { alignment: 1 };
+     * const stroke = { alignment: 0 };
      * ```
      * @default 0.5
      */
@@ -366,7 +366,7 @@ export interface StrokeAttributes
  *     stroke: {
  *         width: 4,
  *         color: 0x000000,
- *         alignment: 1  // Outside stroke
+ *         alignment: 0  // Outside stroke
  *     }
  * });
  *

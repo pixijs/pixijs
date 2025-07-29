@@ -118,4 +118,12 @@ export class FillPattern implements CanvasPattern
 
         return this._styleKey;
     }
+
+    /** Destroys the fill pattern, releasing resources. This will also destroy the internal texture. */
+    public destroy(): void
+    {
+        this.texture.destroy(true);
+        this.texture = null;
+        this._styleKey = null;
+    }
 }
