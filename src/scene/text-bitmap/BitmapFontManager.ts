@@ -1,3 +1,4 @@
+import { lru } from 'tiny-lru';
 import { Cache } from '../../assets/cache/Cache';
 import { type TextureStyle, type TextureStyleOptions } from '../../rendering/renderers/shared/texture/TextureStyle';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
@@ -225,6 +226,9 @@ class BitmapFontManagerClass
         textureStyle: null,
     };
 
+    /** Cache for measured text layouts to avoid recalculating them multiple times. */
+    public readonly measureCache = lru<BitmapTextLayoutData>(1000);
+
     /**
      * Get a font for the specified text and style.
      * @param text - The text to get the font for
@@ -302,9 +306,22 @@ class BitmapFontManagerClass
     {
         const bitmapFont = this.getFont(text, style);
 
+        const id = `${bitmapFont.uid}-${text}-${style.styleKey()}-${trimEnd}`;
+
+        // Check if we have a cached layout
+        if (this.measureCache.has(id))
+        {
+            return this.measureCache.get(id);
+        }
+
         const segments = CanvasTextMetrics.graphemeSegmenter(text);
 
-        return getBitmapTextLayout(segments, style, bitmapFont, trimEnd);
+        // Generate the layout data
+        const layoutData = getBitmapTextLayout(segments, style, bitmapFont, trimEnd);
+
+        this.measureCache.set(id, layoutData);
+
+        return layoutData;
     }
 
     /**
