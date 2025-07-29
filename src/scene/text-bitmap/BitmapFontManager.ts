@@ -213,7 +213,7 @@ export interface BitmapFontInstallOptions
      *         fontSize: 24,
      *         fill: 0xFFFFFF  // Must be white for tinting
      *     },
-     *     allowFillOverride: true
+     *     dynamicFill: true
      * });
      *
      * // Use the font with different colors via tinting
@@ -237,7 +237,7 @@ export interface BitmapFontInstallOptions
      *         fontSize: 24,
      *         fill: 0xFF0000  // ❌ Red fill won't tint properly
      *     },
-     *     allowFillOverride: true  // ❌ Will not work as expected
+     *     dynamicFill: true  // ❌ Will not work as expected
      * });
      * ```
      * @example
@@ -251,11 +251,11 @@ export interface BitmapFontInstallOptions
      *         fill: 0xFF0000,  // Any color works
      *         stroke: { color: 0x000000, width: 2 }  // Strokes allowed
      *     },
-     *     allowFillOverride: false  // Color is baked in
+     *     dynamicFill: false  // Color is baked in
      * });
      * ```
      */
-    allowFillOverride?: boolean;
+    dynamicFill?: boolean;
 }
 
 /** @advanced */
@@ -449,7 +449,7 @@ class BitmapFontManagerClass
         const textStyle = options.style;
 
         const style = textStyle instanceof TextStyle ? textStyle : new TextStyle(textStyle);
-        const overrideFill = options.allowFillOverride ?? this._canUseTintForStyle(style);
+        const overrideFill = options.dynamicFill ?? this._canUseTintForStyle(style);
         const font = new DynamicBitmapFont({
             style,
             overrideFill,
