@@ -143,7 +143,7 @@ function getBrowserSupportedVideoExtensions()
  * A simple plugin to load video textures.
  *
  * You can pass VideoSource options to the loader via the .data property of the asset descriptor
- * when using Asset.load().
+ * when using Assets.load().
  * ```js
  * // Set the data
  * const texture = await Assets.load({
