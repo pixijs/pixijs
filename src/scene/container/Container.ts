@@ -1041,7 +1041,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         child.didChange = true;
 
-        // TODO - OPtimise this? could check what the parent has set?
+        // TODO - Optimise this? could check what the parent has set?
         child._updateFlags = 0b1111;
 
         if (renderGroup)
