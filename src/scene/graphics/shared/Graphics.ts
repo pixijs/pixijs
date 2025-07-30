@@ -171,6 +171,7 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
      *     .rect(0, 0, 100, 100)
      *     .fill({ color: 0xff0000 });
      * ```
+     * @returns The graphics context instance
      * @see {@link GraphicsContext} For drawing operations
      * @see {@link GraphicsOptions} For context configuration
      */
