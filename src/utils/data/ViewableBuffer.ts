@@ -59,10 +59,7 @@ export class ViewableBuffer
         this.size = this.rawBinaryData.byteLength;
     }
 
-    /**
-     * View on the raw binary data as a `Int8Array`.
-     * @returns The `Int8Array` view.
-     */
+    /** View on the raw binary data as a `Int8Array`. */
     get int8View(): Int8Array
     {
         if (!this._int8View)
@@ -73,10 +70,7 @@ export class ViewableBuffer
         return this._int8View;
     }
 
-    /**
-     * View on the raw binary data as a `Uint8Array`.
-     * @returns The `Uint8Array` view.
-     */
+    /** View on the raw binary data as a `Uint8Array`. */
     get uint8View(): Uint8Array
     {
         if (!this._uint8View)
@@ -87,10 +81,7 @@ export class ViewableBuffer
         return this._uint8View;
     }
 
-    /**
-     * View on the raw binary data as a `Int16Array`.
-     * @returns The `Int16Array` view.
-     */
+    /**  View on the raw binary data as a `Int16Array`. */
     get int16View(): Int16Array
     {
         if (!this._int16View)
@@ -101,10 +92,7 @@ export class ViewableBuffer
         return this._int16View;
     }
 
-    /**
-     * View on the raw binary data as a `Int32Array`.
-     * @returns The `Int32Array` view.
-     */
+    /** View on the raw binary data as a `Int32Array`. */
     get int32View(): Int32Array
     {
         if (!this._int32View)
@@ -115,10 +103,7 @@ export class ViewableBuffer
         return this._int32View;
     }
 
-    /**
-     * View on the raw binary data as a `Float64Array`.
-     * @returns The `Float64Array` view.
-     */
+    /** View on the raw binary data as a `Float64Array`. */
     get float64View(): Float64Array
     {
         if (!this._float64Array)
@@ -129,10 +114,7 @@ export class ViewableBuffer
         return this._float64Array;
     }
 
-    /**
-     * View on the raw binary data as a `BigUint64Array`.
-     * @returns The `BigUint64Array` view.
-     */
+    /** View on the raw binary data as a `BigUint64Array`. */
     get bigUint64View(): BigUint64Array
     {
         if (!this._bigUint64Array)
