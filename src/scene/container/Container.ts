@@ -277,7 +277,7 @@ export interface ContainerOptions<C extends ContainerChild = ContainerChild> ext
      *
      * > [!NOTE] 'rotation' and 'angle' have the same effect on a display object;
      * > rotation is in radians, angle is in degrees.
-     @example
+     * @example
      * ```ts
      * new Container({ angle: 45 }); // Rotate 45 degrees
      * new Container({ angle: 90 }); // Rotate 90 degrees
@@ -1169,7 +1169,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     /**
      * Returns true if this container is a render group.
      * This means that it will be rendered as a separate pass, with its own set of instructions
-     * @returns True if this container is a render group
      * @advanced
      */
     get isRenderGroup(): boolean
@@ -1240,7 +1239,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * const worldPos = container.worldTransform;
      * console.log(`World position: (${worldPos.tx}, ${worldPos.ty})`);
      * ```
-     * @returns The world transformation matrix
      * @readonly
      * @see {@link Container#localTransform} For local space transform
      */
@@ -1269,7 +1267,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * // Basic position
      * container.x = 100;
      * ```
-     * @returns The x coordinate
      */
     get x(): number
     {
@@ -1290,7 +1287,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * // Basic position
      * container.y = 200;
      * ```
-     * @returns The y coordinate
      */
     get y(): number
     {
@@ -1312,7 +1308,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * // Using point data
      * container.position = { x: 50, y: 75 };
      * ```
-     * @returns The position as an ObservablePoint
      * @since 4.0.0
      */
     get position(): ObservablePoint
@@ -1347,7 +1342,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * container.origin.set(container.width / 2, container.height / 2);
      * container.rotation = Math.PI; // 180 degrees
      * ```
-     * @returns The rotation in radians
      */
     get rotation(): number
     {
@@ -1384,7 +1378,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * // Reset rotation
      * sprite.angle = 0;
      * ```
-     * @returns The angle in degrees
      */
     get angle(): number
     {
@@ -1407,7 +1400,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * container.pivot.set(container.width / 2, container.height / 2);
      * container.rotation = Math.PI; // Rotates around center
      * ```
-     * @returns The pivot point as an ObservablePoint
      * @since 4.0.0
      */
     get pivot(): ObservablePoint
@@ -1463,7 +1455,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * container.rotation = Math.PI / 4; // 45 degrees
      * container.skew.set(0.2, 0.2); // Skew the rotated object
      * ```
-     * @returns The skew factors as an ObservablePoint
      * @since 4.0.0
      * @type {ObservablePoint} Point-like object with x/y properties in radians
      * @default {x: 0, y: 0}
@@ -1501,7 +1492,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * // Scale to a specific width and height
      * container.setSize(200, 100); // Sets width to 200 and height to 100
      * ```
-     * @returns The scale factors as an ObservablePoint
      * @since 4.0.0
      */
     get scale(): ObservablePoint
@@ -1542,7 +1532,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * // Reset origin
      * container.origin.set(0, 0);
      * ```
-     * @returns The origin point as an ObservablePoint
      */
     get origin(): ObservablePoint
     {
@@ -1577,14 +1566,13 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * > [!NOTE] Changing the width will adjust the scale.x property of the container while maintaining its aspect ratio.
      * > [!NOTE] If you want to set both width and height at the same time, use {@link Container#setSize}
      * as it is more optimized by not recalculating the local bounds twice.
-     *  @example
+     * @example
      * ```ts
      * // Basic width setting
      * container.width = 100;
      * // Optimized width setting
      * container.setSize(100, 100);
      * ```
-     * @returns The width of the container
      */
     get width(): number
     {
@@ -1610,7 +1598,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * // Optimized height setting
      * container.setSize(100, 200);
      * ```
-     * @returns The height of the container
      */
     get height(): number
     {
@@ -1639,7 +1626,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * container.getSize(reuseSize);
      * ```
      * @param out - Optional object to store the size in.
-     * @returns The size of the container
+     * @returns The size of the container.
      */
     public getSize(out?: Size): Size
     {
@@ -1866,7 +1853,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * container.addChild(child);
      * // child's effective opacity is 0.25 (0.5 * 0.5)
      * ```
-     * @returns The alpha value from 0 to 1
      * @default 1
      * @see {@link Container#visible} For toggling visibility
      * @see {@link Container#renderable} For render control
@@ -1906,7 +1892,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * container.tint = 0xffffff; // White = no tint
      * container.tint = null;     // Also removes tint
      * ```
-     * @returns The tint color as a number
      * @default 0xFFFFFF
      * @see {@link Container#alpha} For transparency
      * @see {@link Container#visible} For visibility control
@@ -1949,7 +1934,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * // Reset blend mode
      * sprite.blendMode = 'normal';     // Normal blending
      * ```
-     * @returns The current blend mode
      * @default 'normal'
      * @see {@link Container#alpha} For transparency
      * @see {@link Container#tint} For color adjustments
@@ -1970,7 +1954,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * sprite.visible = false; // Hide sprite
      * sprite.visible = true;  // Show sprite
      * ```
-     * @returns Whether the object is visible
      * @default true
      * @see {@link Container#renderable} For render-only control
      * @see {@link Container#alpha} For transparency
@@ -2032,7 +2015,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * sprite.renderable = false; // Skip rendering
      * sprite.renderable = true;  // Enable rendering
      * ```
-     * @returns Whether the object can be rendered
      * @default true
      * @see {@link Container#visible} For skipping transform updates
      * @see {@link Container#alpha} For transparency
@@ -2061,7 +2043,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
     /**
      * Whether or not the object should be rendered.
-     * @returns True if the object should be rendered
      * @advanced
      */
     get isRenderable(): boolean
