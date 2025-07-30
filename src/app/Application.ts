@@ -306,7 +306,6 @@ export class Application<R extends Renderer = Renderer>
      * // Access the canvas directly
      * console.log(app.canvas); // HTMLCanvasElement
      * ```
-     * @returns The canvas element.
      */
     get canvas(): R['canvas']
     {
@@ -318,7 +317,6 @@ export class Application<R extends Renderer = Renderer>
      * @type {HTMLCanvasElement}
      * @deprecated since 8.0.0
      * @see {@link Application#canvas}
-     * @returns The canvas element.
      */
     get view(): R['canvas']
     {
@@ -351,7 +349,6 @@ export class Application<R extends Renderer = Renderer>
      * console.log(app.screen.width, app.screen.height);
      * ```
      * @see {@link Rectangle} For all available properties and methods
-     * @returns The screen rectangle.
      */
     get screen(): Rectangle
     {
