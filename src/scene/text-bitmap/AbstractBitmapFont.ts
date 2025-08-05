@@ -1,4 +1,5 @@
 import EventEmitter from 'eventemitter3';
+import { uid } from '../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
@@ -92,6 +93,7 @@ export abstract class AbstractBitmapFont<FontType>
     extends EventEmitter<BitmapFontEvents<FontType>>
     implements Omit<BitmapFontData, 'chars' | 'pages' | 'fontSize'>
 {
+    public uid = uid('bitmapFont');
     /** The map of characters by character code. */
     public readonly chars: Record<string, CharData> = Object.create(null);
 

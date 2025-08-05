@@ -7,6 +7,7 @@ import type { Text } from '../Text';
 export class BatchableText extends BatchableSprite
 {
     private readonly _renderer: Renderer;
+    public currentKey: string;
 
     constructor(renderer: Renderer)
     {
@@ -32,6 +33,7 @@ export class BatchableText extends BatchableSprite
     public destroy()
     {
         this._renderer.canvasText.returnTexture(this.texture);
+        this._renderer.canvasText.decreaseReferenceCount(this.currentKey);
 
         (this._renderer as null) = null;
     }

@@ -14,6 +14,7 @@ export class BatchableHTMLText extends BatchableSprite
     private readonly _renderer: Renderer;
     public texturePromise: Promise<Texture>;
     public generatingTexture = false;
+    public currentKey: string = '--';
 
     /**
      * Creates an instance of BatchableHTMLText.
