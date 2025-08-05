@@ -1,4 +1,5 @@
 import { DOMAdapter } from '../../../../environment/adapter';
+import { type ImageLike } from '../../../../environment/ImageLike';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { ImageSource } from '../../../../rendering/renderers/shared/texture/sources/ImageSource';
 import { GraphicsContext } from '../../../../scene/graphics/shared/GraphicsContext';
@@ -25,7 +26,7 @@ export interface LoadSVGConfig
      * The crossOrigin value to use for loading the SVG as an image.
      * @default 'anonymous'
      */
-    crossOrigin: HTMLImageElement['crossOrigin'];
+    crossOrigin: ImageLike['crossOrigin'];
     /**
      * When set to `true`, loading and decoding images will happen with `new Image()`,
      * @default false
@@ -92,7 +93,7 @@ async function loadAsTexture(
     url: string,
     asset: ResolvedAsset<TextureSourceOptions & LoadSVGConfig>,
     loader: Loader,
-    crossOrigin: HTMLImageElement['crossOrigin']
+    crossOrigin: ImageLike['crossOrigin']
 ): Promise<Texture>
 {
     const response = await DOMAdapter.get().fetch(url);
@@ -101,7 +102,7 @@ async function loadAsTexture(
 
     const blobUrl = URL.createObjectURL(blob);
 
-    const image = new Image();
+    const image = DOMAdapter.get().createImage();
 
     image.src = blobUrl;
     image.crossOrigin = crossOrigin;
@@ -116,7 +117,7 @@ async function loadAsTexture(
     const canvas = DOMAdapter.get().createCanvas(width * resolution, height * resolution);
     const context = canvas.getContext('2d');
 
-    context.drawImage(image, 0, 0, width * resolution, height * resolution);
+    context.drawImage(image as CanvasImageSource, 0, 0, width * resolution, height * resolution);
 
     const { parseAsGraphicsContext: _p, ...rest } = asset.data ?? {};
     const base = new ImageSource({

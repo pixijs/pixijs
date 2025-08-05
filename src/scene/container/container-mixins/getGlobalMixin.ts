@@ -1,8 +1,8 @@
+import { Matrix } from '../../../maths/matrix/Matrix';
 import { updateTransformBackwards } from '../bounds/getGlobalBounds';
 import { matrixPool } from '../bounds/utils/matrixAndBoundsPool';
 import { multiplyColors } from '../utils/multiplyColors';
 
-import type { Matrix } from '../../../maths/matrix/Matrix';
 import type { Container } from '../Container';
 
 /**
@@ -42,7 +42,7 @@ export interface GetGlobalMixin
      * const cachedAlpha = container.getGlobalAlpha(true);
      * ```
      */
-    getGlobalAlpha(skipUpdate: boolean): number;
+    getGlobalAlpha(skipUpdate?: boolean): number;
     /**
      * Returns the global transform matrix of the container within the scene.
      * @param {Matrix} matrix - Optional matrix to store the result. If not provided, a new Matrix will be created.
@@ -63,7 +63,7 @@ export interface GetGlobalMixin
      * container.getGlobalTransform(existingMatrix);
      * ```
      */
-    getGlobalTransform(matrix: Matrix, skipUpdate: boolean): Matrix;
+    getGlobalTransform(matrix?: Matrix, skipUpdate?: boolean): Matrix;
     /**
      * Returns the global (compound) tint color of the container within the scene.
      * @param {boolean} skipUpdate - Performance optimization flag:
@@ -84,7 +84,7 @@ export interface GetGlobalMixin
 
 /** @internal */
 export const getGlobalMixin: Partial<Container> = {
-    getGlobalAlpha(skipUpdate: boolean): number
+    getGlobalAlpha(skipUpdate?: boolean): number
     {
         if (skipUpdate)
         {
@@ -112,7 +112,7 @@ export const getGlobalMixin: Partial<Container> = {
 
         return alpha;
     },
-    getGlobalTransform(matrix: Matrix, skipUpdate: boolean): Matrix
+    getGlobalTransform(matrix = new Matrix(), skipUpdate?: boolean): Matrix
     {
         if (skipUpdate)
         {
