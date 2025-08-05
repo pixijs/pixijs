@@ -433,6 +433,7 @@ export class GlGeometrySystem implements System
      *  drawing will start from the first vertex.
      * @param instanceCount - The number of instances of the set of elements to execute. If not specified,
      *  all instances will be drawn.
+     * @returns This instance of the geometry system.
      */
     public draw(topology?: Topology, size?: number, start?: number, instanceCount?: number): this
     {
