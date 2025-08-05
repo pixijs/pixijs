@@ -60,4 +60,15 @@ describe('RenderGroupSystem', () =>
 
         expect(child.onRender).toHaveBeenCalledTimes(1);
     });
+
+    it('should correctly set scaleMode for render group texture source during rendering', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const container = new Container();
+
+        container.cacheAsTexture({ scaleMode: 'nearest' });
+        renderer.render(container);
+
+        expect(container.renderGroup.texture._source.scaleMode).toEqual('nearest');
+    });
 });
