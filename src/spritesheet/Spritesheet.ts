@@ -293,7 +293,7 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
      * @param {object} data - Spritesheet image data.
      */
     constructor(texture: BindableTexture, data: S);
-    /** @ignore */
+
     constructor(optionsOrTexture: SpritesheetOptions<S> | BindableTexture, arg1?: S)
     {
         let options = optionsOrTexture as SpritesheetOptions<S>;

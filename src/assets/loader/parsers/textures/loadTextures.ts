@@ -1,4 +1,5 @@
 import { DOMAdapter } from '../../../../environment/adapter';
+import { type ImageLike } from '../../../../environment/ImageLike';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { ImageSource } from '../../../../rendering/renderers/shared/texture/sources/ImageSource';
 import { getResolutionOfUrl } from '../../../../utils/network/getResolutionOfUrl';
@@ -48,7 +49,7 @@ export interface LoadTextureConfig
      * The crossOrigin value to use for images when `preferCreateImageBitmap` is `false`.
      * @default 'anonymous'
      */
-    crossOrigin: HTMLImageElement['crossOrigin'];
+    crossOrigin: ImageLike['crossOrigin'];
 }
 
 /**
@@ -141,7 +142,7 @@ export const loadTextures: LoaderParser<Texture, TextureSourceOptions, LoadTextu
         {
             src = await new Promise((resolve, reject) =>
             {
-                src = new Image();
+                src = DOMAdapter.get().createImage();
                 src.crossOrigin = this.config.crossOrigin;
 
                 src.src = url;
