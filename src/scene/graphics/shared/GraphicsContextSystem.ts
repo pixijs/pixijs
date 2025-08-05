@@ -70,6 +70,15 @@ export class GraphicsContextRenderData
 
         return this.batcher.geometry;
     }
+
+    public destroy()
+    {
+        this.batcher.destroy();
+        this.instructions.destroy();
+
+        this.batcher = null;
+        this.instructions = null;
+    }
 }
 
 /**

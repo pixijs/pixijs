@@ -65,6 +65,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        this._renderer.runners.destroy.add(this);
     }
 
     public validateRenderable(renderable: TilingSprite): boolean

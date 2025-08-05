@@ -36,6 +36,19 @@ export class InstructionSet
     }
 
     /**
+     * Destroy the instruction set, clearing the instructions and renderables.
+     * @internal
+     */
+    public destroy()
+    {
+        this.instructions.length = 0;
+        this.renderables.length = 0;
+
+        this.renderPipes = null;
+        this.gcTick = 0;
+    }
+
+    /**
      * Add an instruction to the set
      * @param instruction - add an instruction to the set
      */

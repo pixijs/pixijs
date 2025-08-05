@@ -1,4 +1,5 @@
 import { Pool } from './Pool';
+import { PoolCollector } from './PoolCollector';
 
 import type { PoolItem, PoolItemConstructor } from './Pool';
 
@@ -97,6 +98,13 @@ export class PoolGroupClass
 
         return stats;
     }
+
+    /** Clears all pools in the group. This will reset all pools and free their resources. */
+    public clear(): void
+    {
+        this._poolsByClass.forEach((pool) => pool.clear());
+        this._poolsByClass.clear();
+    }
 }
 
 /**
@@ -104,3 +112,4 @@ export class PoolGroupClass
  * @internal
  */
 export const BigPool = new PoolGroupClass();
+PoolCollector.register(BigPool);

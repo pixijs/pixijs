@@ -245,5 +245,11 @@ export class GlobalUniformSystem implements System
     public destroy()
     {
         (this._renderer as null) = null;
+        this._globalUniformDataStack.length = 0;
+        this._uniformsPool.length = 0;
+        this._activeUniforms.length = 0;
+        this._bindGroupPool.length = 0;
+        this._activeBindGroups.length = 0;
+        this._currentGlobalUniformData = null;
     }
 }

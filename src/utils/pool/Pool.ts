@@ -106,6 +106,13 @@ export class Pool<T extends PoolItem>
     /** clears the pool - mainly used for debugging! */
     public clear()
     {
+        if (this._pool.length > 0 && this._pool[0].destroy)
+        {
+            for (let i = 0; i < this._index; i++)
+            {
+                this._pool[i].destroy();
+            }
+        }
         this._pool.length = 0;
         this._index = 0;
     }
@@ -119,6 +126,7 @@ export class Pool<T extends PoolItem>
 export type PoolItem = {
     init?: (data?: any) => void;
     reset?: () => void;
+    destroy?: () => void;
     [key: string]: any;
 };
 

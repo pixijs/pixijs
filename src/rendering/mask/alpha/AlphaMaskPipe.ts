@@ -100,6 +100,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        this._renderer.runners.destroy.add(this);
     }
 
     public push(mask: Effect, maskedContainer: Container, instructionSet: InstructionSet): void

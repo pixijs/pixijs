@@ -22,6 +22,7 @@ export * from './misc/Transform';
 export * from './network/getResolutionOfUrl';
 export * from './path';
 export * from './pool/Pool';
+export * from './pool/PoolCollector';
 export * from './pool/PoolGroup';
 export * from './sayHello';
 export * from './types';

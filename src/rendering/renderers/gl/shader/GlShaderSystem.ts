@@ -54,6 +54,7 @@ export class GlShaderSystem
     {
         this._renderer = renderer;
         this._renderer.renderableGC.addManagedHash(this, '_programDataHash');
+        this._renderer.runners.destroy.add(this);
     }
 
     protected contextChange(gl: GlRenderingContext): void
@@ -197,6 +198,10 @@ export class GlShaderSystem
         }
 
         this._programDataHash = null;
+        this._shaderSyncFunctions = null;
+        this._activeProgram = null;
+        (this._renderer as null) = null;
+        this._gl = null;
     }
 
     /**

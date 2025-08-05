@@ -131,6 +131,18 @@ class EventsTickerClass
 
         this._update();
     }
+
+    /** Destroys the event ticker. */
+    public destroy(): void
+    {
+        this.removeTickerListener();
+        this.events = null;
+        this.domElement = null;
+        this._deltaTime = 0;
+        this._didMove = false;
+        this._tickerAdded = false;
+        this._pauseUpdate = true;
+    }
 }
 
 /**
