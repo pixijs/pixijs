@@ -137,6 +137,14 @@ export default tseslint.config(
             'requireExport/require-export-jsdoc': ['error'],
             'requireMemberAPI/require-member-api-doc': ['error'],
 
+            'no-restricted-properties': [
+                'warn',
+                {
+                    object: 'URL',
+                    property: 'createObjectURL',
+                    message: 'Avoid using URL.createObjectURL. See https://github.com/pixijs/pixijs/pull/11599.'
+                }
+            ]
         }
     },
 );

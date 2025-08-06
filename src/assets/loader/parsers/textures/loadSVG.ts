@@ -98,17 +98,11 @@ async function loadAsTexture(
 {
     const response = await DOMAdapter.get().fetch(url);
 
-    const blob = await response.blob();
-
-    const blobUrl = URL.createObjectURL(blob);
-
     const image = DOMAdapter.get().createImage();
 
-    image.src = blobUrl;
+    image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(await response.text())}`;
     image.crossOrigin = crossOrigin;
     await image.decode();
-
-    URL.revokeObjectURL(blobUrl);
 
     // convert to canvas...
     const width = asset.data?.width ?? image.width;
