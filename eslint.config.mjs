@@ -142,6 +142,10 @@ export default tseslint.config(
                 {
                     name: 'document',
                     message: 'Do not use document. Use DOMAdapter instead.'
+                },
+                {
+                    name: 'Image',
+                    message: 'Do not use Image. Use DOMAdapter instead.'
                 }
             ]
         }
