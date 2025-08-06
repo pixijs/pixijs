@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import { ExtensionType } from '../extensions/Extensions';
 import { CanvasObserver } from './CanvasObserver';
 import { type DOMContainer } from './DOMContainer';

@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import { CanvasObserver } from '../dom/CanvasObserver';
 import { FederatedEvent } from '../events/FederatedEvent';
 import { ExtensionType } from '../extensions/Extensions';

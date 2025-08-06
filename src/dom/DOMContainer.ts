@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import { Point } from '../maths/point/Point';
 import { ViewContainer, type ViewContainerOptions } from '../scene/view/ViewContainer';
 

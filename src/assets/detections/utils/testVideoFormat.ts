@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 const inWorker = 'WorkerGlobalScope' in globalThis
     && globalThis instanceof (globalThis as any).WorkerGlobalScope;
 

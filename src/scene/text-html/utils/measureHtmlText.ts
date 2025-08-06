@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import { HTMLTextRenderData } from '../HTMLTextRenderData';
 
 import type { Size } from '../../../maths/misc/Size';

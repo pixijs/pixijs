@@ -822,6 +822,7 @@ export class ExtractSystem implements System
      */
     public download(options: ExtractDownloadOptions | Container | Texture)
     {
+        /* eslint-disable no-restricted-globals */
         options = this._normalizeOptions<ExtractDownloadOptions>(options);
 
         const canvas = this.canvas(options);
@@ -833,6 +834,7 @@ export class ExtractSystem implements System
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        /* eslint-enable no-restricted-globals */
     }
 
     /**
