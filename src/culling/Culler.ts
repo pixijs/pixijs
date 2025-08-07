@@ -1,3 +1,4 @@
+import { Point } from '..';
 import { Bounds } from '../scene/container/bounds/Bounds';
 import { getGlobalBounds } from '../scene/container/bounds/getGlobalBounds';
 
@@ -96,7 +97,34 @@ export class Culler
     {
         if (container.cullable && container.measurable && container.includeInBuild)
         {
-            const bounds = container.cullArea ?? getGlobalBounds(container, skipUpdateTransform, tempBounds);
+            let bounds = new Bounds();
+
+            if (container.cullArea)
+            {
+                const globalTL = container.toGlobal(
+                    {
+                        x: container.cullArea.x,
+                        y: container.cullArea.y
+                    },
+                    new Point(),
+                    skipUpdateTransform
+                );
+
+                const globalBR = container.toGlobal(
+                    {
+                        x: container.cullArea.x + container.cullArea.width,
+                        y: container.cullArea.y + container.cullArea.height
+                    },
+                    new Point(),
+                    skipUpdateTransform
+                );
+
+                bounds = new Bounds(globalTL.x, globalTL.y, globalBR.x, globalBR.y);
+            }
+            else
+            {
+                bounds = getGlobalBounds(container, skipUpdateTransform, tempBounds);
+            }
 
             // check view intersection..
             container.culled = bounds.x >= view.x + view.width
