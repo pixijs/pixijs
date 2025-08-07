@@ -69,7 +69,7 @@ Tips for a faster workflow:
 
 #### Visual Regression Testing
 
-PIxiJS uses a custom visual tester that allows you to create pixi scenes and compare them to a reference image.
+PixiJS uses a custom visual tester that allows you to create pixi scenes and compare them to a reference image.
 These tests can be found [here](../tests/visual/scenes/). To run these tests, run `npm run test:scene` from the command line, or run `npm run test:scene:debug` to use headful DevTools to debug or develop tests.
 
 All visual tests must end with `.scene.ts` and follows this format:

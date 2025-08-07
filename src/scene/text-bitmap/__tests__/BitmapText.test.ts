@@ -1,13 +1,12 @@
 import { Text } from '../../text/Text';
 import { loadBitmapFont } from '../asset/loadBitmapFont';
+import { type BitmapFont } from '../BitmapFont';
 import { BitmapText } from '../BitmapText';
 import '../../text/init';
 import '../init';
 import '../../graphics/init';
 import { basePath, getWebGLRenderer } from '@test-utils';
 import { Cache, Loader, loadTextures, loadTxt } from '~/assets';
-
-import type { BitmapFont } from '../BitmapFont';
 
 describe('BitmapText', () =>
 {
@@ -243,5 +242,29 @@ describe('BitmapText', () =>
 
         expect(boundsNoPadding.width).toBe(bounds.width);
         expect(boundsNoPadding.height).toBe(bounds.height);
+    });
+
+    it('should have correct bounds when using custom lineHeight', async () =>
+    {
+        const refText = new Text({
+            text: 'Lorem ipsum\nHello\nHello',
+            style: {
+                fontFamily: 'Arial',
+                fontSize: 32,
+                lineHeight: 200,
+            },
+        });
+
+        const bmpText = new BitmapText({
+            text: 'Lorem ipsum\nHello\nHello',
+            style: {
+                fontFamily: 'Arial',
+                fontSize: 32,
+                lineHeight: 200,
+            },
+        });
+
+        expect(bmpText.width).toBe(refText.width);
+        expect(bmpText.height).toBe(refText.height);
     });
 });

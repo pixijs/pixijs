@@ -138,6 +138,24 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
         const tint = bitmapFont.applyFillAsTint ? style._fill.color : 0xFFFFFF;
 
+        let fontSize = bitmapFont.fontMetrics.fontSize;
+        let lineHeight = bitmapFont.lineHeight;
+
+        if (style.lineHeight)
+        {
+            fontSize = style.fontSize / scale;
+            lineHeight = style.lineHeight / scale;
+        }
+
+        let linePositionYShift = (lineHeight - fontSize) / 2;
+
+        // if `currentY` is no longer starts from `baseLineOffset`
+        // the `baseLineOffset` below may also need to be removed
+        if (linePositionYShift - bitmapFont.baseLineOffset < 0)
+        {
+            linePositionYShift = 0;
+        }
+
         for (let i = 0; i < bitmapTextLayout.lines.length; i++)
         {
             const line = bitmapTextLayout.lines[i];
@@ -145,7 +163,6 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
             for (let j = 0; j < line.charPositions.length; j++)
             {
                 const char = line.chars[j];
-
                 const charData = bitmapFont.chars[char];
 
                 if (charData?.texture)
@@ -156,14 +173,14 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
                         texture,
                         tint ? tint : 'black',
                         Math.round(line.charPositions[j] + charData.xOffset),
-                        Math.round(currentY + charData.yOffset),
+                        Math.round(currentY + charData.yOffset + linePositionYShift),
                         texture.orig.width,
                         texture.orig.height,
                     );
                 }
             }
 
-            currentY += bitmapFont.lineHeight;
+            currentY += lineHeight;
         }
     }
 

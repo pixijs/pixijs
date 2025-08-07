@@ -1,6 +1,7 @@
 import { ExtensionType } from '../../extensions/Extensions';
 import { Matrix } from '../../maths/matrix/Matrix';
 import { TexturePool } from '../../rendering/renderers/shared/texture/TexturePool';
+import { TextureStyle } from '../../rendering/renderers/shared/texture/TextureStyle';
 import { Bounds } from './bounds/Bounds';
 import { clearList } from './utils/clearList';
 import { executeInstructions } from './utils/executeInstructions';
@@ -133,20 +134,22 @@ export class RenderGroupSystem implements System
 
                 if (renderGroup.texture)
                 {
-                    TexturePool.returnTexture(renderGroup.texture);
+                    TexturePool.returnTexture(renderGroup.texture, true);
                 }
 
                 const renderer = this._renderer;
                 const resolution = renderGroup.textureOptions.resolution || renderer.view.resolution;
                 const antialias = renderGroup.textureOptions.antialias ?? renderer.view.antialias;
-
-                renderGroup.texture = TexturePool.getOptimalTexture(
+                const scaleMode = renderGroup.textureOptions.scaleMode ?? 'linear';
+                const texture = TexturePool.getOptimalTexture(
                     bounds.width,
                     bounds.height,
                     resolution,
                     antialias
                 );
 
+                texture._source.style = new TextureStyle({ scaleMode });
+                renderGroup.texture = texture;
                 renderGroup._textureBounds ||= new Bounds();
                 renderGroup._textureBounds.copyFrom(bounds);
 
@@ -161,7 +164,7 @@ export class RenderGroupSystem implements System
         }
         else if (renderGroup.texture)
         {
-            TexturePool.returnTexture(renderGroup.texture);
+            TexturePool.returnTexture(renderGroup.texture, true);
             renderGroup.texture = null;
         }
     }
