@@ -3,9 +3,15 @@ import { TickerListener } from './TickerListener';
 
 /**
  * A callback which can be added to a ticker.
- * ```js
- * ticker.add(() => {
- *    // do something every frame
+ * The callback receives the Ticker instance as its parameter, providing access to timing properties.
+ * @example
+ * ```ts
+ * ticker.add((ticker) => {
+ *    // Access deltaTime (dimensionless scalar ~1.0 at 60fps)
+ *    sprite.rotation += 0.1 * ticker.deltaTime;
+ *
+ *    // Access deltaMS (milliseconds elapsed)
+ *    const progress = ticker.deltaMS / animationDuration;
  * });
  * ```
  * @category ticker
@@ -20,15 +26,24 @@ export type TickerCallback<T> = (this: T, ticker: Ticker) => any;
  * It provides a way to add listeners that will be called on each frame,
  * allowing for smooth animations and updates.
  *
+ * ## Time Units
+ * - `deltaTime`: Dimensionless scalar (typically ~1.0 at 60 FPS) for frame-independent animations
+ * - `deltaMS`: Milliseconds elapsed (capped and speed-scaled) for time-based calculations
+ * - `elapsedMS`: Raw milliseconds elapsed (uncapped, unscaled) for measurements
+ * - `lastTime`: Timestamp in milliseconds since epoch (performance.now() format)
+ *
  * Animation frames are requested
  * only when necessary, e.g., when the ticker is started and the emitter has listeners.
  * @example
  * ```ts
- * // Basic ticker usage
+ * // Basic ticker usage with different time units
  * const ticker = new Ticker();
  * ticker.add((ticker) => {
- *     // Update every frame
+ *     // Frame-independent animation using dimensionless deltaTime
  *     sprite.rotation += 0.1 * ticker.deltaTime;
+ *
+ *     // Time-based animation using deltaMS (milliseconds)
+ *     sprite.x += (100 / 1000) * ticker.deltaMS; // 100 pixels per second
  * });
  * ticker.start();
  *
@@ -109,22 +124,23 @@ export class Ticker
      */
     public autoStart = false;
     /**
-     * Scalar time value from last frame to this frame.
-     * Used for frame-based animations and updates.
+     * Scalar representing the delta time factor.
+     * This is a dimensionless value representing the fraction of a frame at the target framerate.
+     * At 60 FPS, this value is typically around 1.0.
      *
-     * This value is capped by setting {@link Ticker#minFPS|minFPS}
-     * and is scaled with {@link Ticker#speed|speed}.
-     * > [!NOTE] The cap may be exceeded by scaling.
+     * This is NOT in milliseconds - it's a scalar multiplier for frame-independent animations.
+     * For actual milliseconds, use {@link Ticker#deltaMS}.
+     * @member {number}
      * @example
      * ```ts
-     * // Basic animation
+     * // Frame-independent animation using deltaTime scalar
      * ticker.add((ticker) => {
      *     // Rotate sprite by 0.1 radians per frame, scaled by deltaTime
      *     sprite.rotation += 0.1 * ticker.deltaTime;
      * });
      * ```
      */
-    public deltaTime = 1;
+    public deltaTime: number = 1;
     /**
      * Scalar time elapsed in milliseconds from last frame to this frame.
      * Provides precise timing for animations and updates.
@@ -151,45 +167,35 @@ export class Ticker
      */
     public deltaMS: number;
     /**
-     * Time elapsed in milliseconds from last frame to this frame.
-     * Provides raw timing information without modifications.
+     * Time elapsed in milliseconds from the last frame to this frame.
+     * This value is not capped or scaled and provides raw timing information.
      *
-     * Opposed to what the scalar {@link Ticker#deltaTime|deltaTime}
-     * is based, this value is neither capped nor scaled.
-     *
-     * If the platform supports DOMHighResTimeStamp,
-     * this value will have a precision of 1 µs.
-     *
-     * Defaults to target frame time
+     * Unlike {@link Ticker#deltaMS}, this value is unmodified by speed scaling or FPS capping.
+     * @member {number}
      * @example
      * ```ts
-     * // Basic timing information
      * ticker.add((ticker) => {
      *     console.log(`Raw frame time: ${ticker.elapsedMS}ms`);
      * });
      * ```
-     * @default 16.66
      */
     public elapsedMS: number;
     /**
-     * The last time {@link Ticker#update|update} was invoked.
-     * Used for calculating time deltas between frames.
+     * The last time update was invoked, in milliseconds since epoch.
+     * Similar to performance.now() timestamp format.
      *
-     * This value is also reset internally outside of invoking
-     * update, but only when a new animation frame is requested.
-     *
-     * If the platform supports DOMHighResTimeStamp,
-     * this value will have a precision of 1 µs.
+     * Used internally for calculating time deltas between frames.
+     * @member {number}
      * @example
      * ```ts
-     * // Basic timing check
-     * ticker.add(() => {
-     *     const timeSinceStart = performance.now() - ticker.lastTime;
-     *     console.log(`Time running: ${timeSinceStart}ms`);
+     * ticker.add((ticker) => {
+     *     const currentTime = performance.now();
+     *     const timeSinceLastFrame = currentTime - ticker.lastTime;
+     *     console.log(`Time since last frame: ${timeSinceLastFrame}ms`);
      * });
      * ```
      */
-    public lastTime = -1;
+    public lastTime: number = -1;
     /**
      * Factor of current {@link Ticker#deltaTime|deltaTime}.
      * Used to scale time for slow motion or fast-forward effects.
@@ -331,40 +337,24 @@ export class Ticker
     }
 
     /**
-     * Register a handler for tick events. Calls continuously unless
-     * it is removed or the ticker is stopped.
+     * Register a handler for tick events.
+     * @param fn - The listener function to add. Receives the Ticker instance as parameter
+     * @param context - The context for the listener
+     * @param priority - The priority of the listener
      * @example
      * ```ts
-     * // Basic update handler
+     * // Access time properties through the ticker parameter
      * ticker.add((ticker) => {
-     *     // Update every frame
+     *     // Use deltaTime (dimensionless scalar) for frame-independent animations
      *     sprite.rotation += 0.1 * ticker.deltaTime;
+     *
+     *     // Use deltaMS (milliseconds) for time-based calculations
+     *     const progress = ticker.deltaMS / animationDuration;
+     *
+     *     // Use elapsedMS for raw timing measurements
+     *     console.log(`Raw frame time: ${ticker.elapsedMS}ms`);
      * });
-     *
-     * // With specific context
-     * const game = {
-     *     update(ticker) {
-     *         this.physics.update(ticker.deltaTime);
-     *     }
-     * };
-     * ticker.add(game.update, game);
-     *
-     * // With priority
-     * ticker.add(
-     *     (ticker) => {
-     *         // Runs before normal priority updates
-     *         physics.update(ticker.deltaTime);
-     *     },
-     *     undefined,
-     *     UPDATE_PRIORITY.HIGH
-     * );
      * ```
-     * @param fn - The listener function to be added for updates
-     * @param context - The listener context
-     * @param priority - The priority for emitting (default: UPDATE_PRIORITY.NORMAL)
-     * @returns This instance of a ticker
-     * @see {@link Ticker#addOnce} For one-time handlers
-     * @see {@link Ticker#remove} For removing handlers
      */
     public add<T = any>(fn: TickerCallback<T>, context?: T, priority: number = UPDATE_PRIORITY.NORMAL): this
     {
