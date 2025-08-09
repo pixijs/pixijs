@@ -164,6 +164,17 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
 
             if (!UNIFORM_TYPES_MAP[uniformData.type])
             {
+                const arrayMatch = uniformData.type.match(/^array<(\w+(?:<\w+>)?),\s*(\d+)>$/);
+
+                if (arrayMatch)
+                {
+                    const [, innerType, size] = arrayMatch;
+
+                    throw new Error(
+                        `Uniform type ${uniformData.type} is not supported. Use type: '${innerType}', size: ${size} instead.`
+                    );
+                }
+
                 // eslint-disable-next-line max-len
                 throw new Error(`Uniform type ${uniformData.type} is not supported. Supported uniform types are: ${UNIFORM_TYPES_VALUES.join(', ')}`);
             }
