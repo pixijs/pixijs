@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+    <path d="
+    M 100 20
+    L 120 80
+    L 180 80
+    L 135 120
+    L 155 180
+    L 100 145
+    L 45 180
+    L 65 120
+    L 20 80
+    L 80 80
+    Z
+  " fill-rule="nonzero" fill="purple" />
+</svg>
