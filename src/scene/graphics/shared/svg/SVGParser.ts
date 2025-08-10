@@ -385,13 +385,15 @@ function checkForNestedPattern(subpathsWithArea: Array<{path: string, area: numb
 
     const areas = subpathsWithArea.map((s) => s.area).sort((a, b) => b - a);
 
-    const largestArea = areas[0];
-    const secondArea = areas[1];
+    const [largestArea, secondArea] = areas;
     const smallestArea = areas[areas.length - 1];
 
     const largestToSecondRatio = largestArea / secondArea;
     const secondToSmallestRatio = secondArea / smallestArea;
 
+    // If the largest shape is significantly bigger than the second (3x+)
+    // AND the smaller shapes are similar in size (2x or less difference),
+    // it suggests multiple holes pattern rather than nested shapes
     if (largestToSecondRatio > 3 && secondToSmallestRatio < 2)
     {
         return false; // Multiple holes
