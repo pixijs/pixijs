@@ -183,10 +183,7 @@ export function getBitmapTextLayout(
 
             if (char === '\r' || char === '\n')
             {
-                if (currentLine.width !== 0)
-                {
-                    nextLine();
-                }
+                nextLine();
             }
             else if (!isEnd)
             {
