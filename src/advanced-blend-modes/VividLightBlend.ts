@@ -3,6 +3,8 @@ import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
+const typeSymbol = Symbol.for('pixijs.VividLightBlend');
+
 /**
  * Darkens values darker than 50% gray and lightens those brighter than 50% gray, creating a dramatic effect.
  * It's essentially an extreme version of the Overlay mode, with a significant impact on midtones
@@ -19,6 +21,22 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  */
 export class VividLightBlend extends BlendModeFilter
 {
+    /**
+     * Type symbol used to identify instances of VividLightBlend.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a VividLightBlend.
+     * @param obj - The object to check.
+     * @returns True if the object is a VividLightBlend, false otherwise.
+     */
+    public static isVividLightBlend(obj: any): obj is VividLightBlend
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = {
         name: 'vivid-light',

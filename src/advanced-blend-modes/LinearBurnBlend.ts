@@ -3,6 +3,8 @@ import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
+const typeSymbol = Symbol.for('pixijs.LinearBurnBlend');
+
 /**
  * Looks at the color information in each channel and darkens the base color to
  * reflect the blend color by increasing the contrast between the two.
@@ -19,6 +21,22 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  */
 export class LinearBurnBlend extends BlendModeFilter
 {
+    /**
+     * Type symbol used to identify instances of LinearBurnBlend.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a LinearBurnBlend.
+     * @param obj - The object to check.
+     * @returns True if the object is a LinearBurnBlend, false otherwise.
+     */
+    public static isLinearBurnBlend(obj: any): obj is LinearBurnBlend
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = {
         name: 'linear-burn',

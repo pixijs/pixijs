@@ -5,6 +5,8 @@ import { assignWithIgnore } from '../../container/utils/assignWithIgnore';
 
 import type { ColorSource } from '../../../color/Color';
 
+const typeSymbol = Symbol.for('pixi.Particle');
+
 /**
  * Represents a particle with properties for position, scale, rotation, color, and texture.
  * Particles are lightweight alternatives to sprites, optimized for use in particle systems.
@@ -154,6 +156,22 @@ export type ParticleOptions = Omit<Partial<IParticle>, 'color'> & {
  */
 export class Particle implements IParticle
 {
+    /**
+     * Type symbol used to identify instances of Particle.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Particle.
+     * @param obj - The object to check.
+     * @returns True if the object is a Particle, false otherwise.
+     */
+    public static isParticle(obj: any): obj is Particle
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Default options used when creating new particles. These values are applied when specific
      * options aren't provided in the constructor.

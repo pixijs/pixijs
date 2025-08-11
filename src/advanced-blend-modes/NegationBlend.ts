@@ -3,6 +3,8 @@ import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
+const typeSymbol = Symbol.for('pixijs.NegationBlend');
+
 /**
  * Implements the Negation blend mode which creates an inverted effect based on the brightness values.
  *
@@ -18,6 +20,22 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  */
 export class NegationBlend extends BlendModeFilter
 {
+    /**
+     * Type symbol used to identify instances of NegationBlend.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a NegationBlend.
+     * @param obj - The object to check.
+     * @returns True if the object is a NegationBlend, false otherwise.
+     */
+    public static isNegationBlend(obj: any): obj is NegationBlend
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = {
         name: 'negation',

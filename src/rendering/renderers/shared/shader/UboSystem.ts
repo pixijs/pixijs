@@ -6,6 +6,8 @@ import type { System } from '../system/System';
 import type { UboElement, UboLayout, UniformData, UniformsSyncCallback } from './types';
 import type { UniformGroup } from './UniformGroup';
 
+const typeSymbol = Symbol.for('pixijs.UboSystem');
+
 /** @internal */
 export interface UboAdaptor
 {
@@ -20,6 +22,22 @@ export interface UboAdaptor
  */
 export class UboSystem implements System
 {
+    /**
+     * Type symbol used to identify instances of UboSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a UboSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a UboSystem, false otherwise.
+     */
+    public static isUboSystem(obj: any): obj is UboSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** Cache of uniform buffer layouts and sync functions, so we don't have to re-create them */
     private _syncFunctionHash: Record<string, {
         layout: UboLayout,

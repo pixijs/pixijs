@@ -1,5 +1,7 @@
 import type { BLEND_MODES, CULL_MODES } from './const';
 
+const typeSymbol = Symbol.for('pixijs.State');
+
 const blendModeIds = {
     normal: 0,
     add: 1,
@@ -30,6 +32,22 @@ const DEPTH_MASK = 5;
  */
 export class State
 {
+    /**
+     * Type symbol used to identify instances of State.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a State.
+     * @param obj - The object to check.
+     * @returns True if the object is a State, false otherwise.
+     */
+    public static isState(obj: any): obj is State
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * The data is a unique number based on the states settings.
      * This lets us quickly compare states with a single number rather than looking

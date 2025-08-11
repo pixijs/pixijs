@@ -16,6 +16,9 @@ import type { InstructionSet } from '../../renderers/shared/instructions/Instruc
 import type { Shader } from '../../renderers/shared/shader/Shader';
 import type { Texture } from '../../renderers/shared/texture/Texture';
 
+const typeSymbolBatch = Symbol.for('pixijs.Batch');
+const typeSymbolBatcher = Symbol.for('pixijs.Batcher');
+
 /**
  * The action types for a batch.
  * @category rendering
@@ -30,6 +33,22 @@ export type BatchAction = 'startBatch' | 'renderBatch';
  */
 export class Batch implements Instruction
 {
+    /**
+     * Type symbol used to identify instances of Batch.
+     * @internal
+     */
+    public readonly [typeSymbolBatch] = true;
+
+    /**
+     * Checks if the given object is a Batch.
+     * @param obj - The object to check.
+     * @returns True if the object is a Batch, false otherwise.
+     */
+    public static isBatch(obj: any): obj is Batch
+    {
+        return !!obj && !!obj[typeSymbolBatch];
+    }
+
     public renderPipeId = 'batch';
     public action: BatchAction = 'startBatch';
 
@@ -275,6 +294,22 @@ export interface BatcherOptions
  */
 export abstract class Batcher
 {
+    /**
+     * Type symbol used to identify instances of Batcher.
+     * @internal
+     */
+    public readonly [typeSymbolBatcher] = true;
+
+    /**
+     * Checks if the given object is a Batcher.
+     * @param obj - The object to check.
+     * @returns True if the object is a Batcher, false otherwise.
+     */
+    public static isBatcher(obj: any): obj is Batcher
+    {
+        return !!obj && !!obj[typeSymbolBatcher];
+    }
+
     public static defaultOptions: Partial<BatcherOptions> = {
         maxTextures: null,
         attributesInitialSize: 4,

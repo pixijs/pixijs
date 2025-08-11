@@ -5,6 +5,8 @@ import { TextureStyle } from './TextureStyle';
 
 import type { TextureSourceOptions } from './sources/TextureSource';
 
+const typeSymbol = Symbol.for('pixijs.TexturePoolClass');
+
 let count = 0;
 
 /**
@@ -19,6 +21,22 @@ let count = 0;
  */
 export class TexturePoolClass
 {
+    /**
+     * Type symbol used to identify instances of TexturePoolClass.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a TexturePoolClass.
+     * @param obj - The object to check.
+     * @returns True if the object is a TexturePoolClass, false otherwise.
+     */
+    public static isTexturePoolClass(obj: any): obj is TexturePoolClass
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** The default options for texture pool */
     public textureOptions: TextureSourceOptions;
 

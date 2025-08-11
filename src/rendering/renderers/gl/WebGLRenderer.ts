@@ -27,6 +27,8 @@ import type { SystemConstructor } from '../shared/system/System';
 import type { ExtractRendererOptions, ExtractSystemTypes } from '../shared/system/utils/typeUtils';
 import type { GlRenderingContext } from './context/GlRenderingContext';
 
+const typeSymbol = Symbol.for('pixijs.WebGLRenderer');
+
 const DefaultWebGLSystems = [
     ...SharedSystems,
     GlUboSystem,
@@ -161,6 +163,22 @@ export class WebGLRenderer<T extends ICanvas = HTMLCanvasElement>
     extends AbstractRenderer<WebGLPipes, WebGLOptions, T>
     implements WebGLSystems
 {
+    /**
+     * Type symbol used to identify instances of WebGLRenderer.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a WebGLRenderer.
+     * @param obj - The object to check.
+     * @returns True if the object is a WebGLRenderer, false otherwise.
+     */
+    public static isWebGLRenderer(obj: any): obj is WebGLRenderer
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public gl: GlRenderingContext;
 
     constructor()

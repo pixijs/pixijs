@@ -14,6 +14,8 @@ import type {
     Cursor, EventMode, FederatedEventHandler,
 } from './FederatedEventTarget';
 
+const typeSymbol = Symbol.for('pixijs.EventBoundary');
+
 // The maximum iterations used in propagation. This prevent infinite loops.
 const PROPAGATION_LIMIT = 2048;
 
@@ -79,6 +81,22 @@ const tempLocalMapping = new Point();
  */
 export class EventBoundary
 {
+    /**
+     * Type symbol used to identify instances of EventBoundary.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a EventBoundary.
+     * @param obj - The object to check.
+     * @returns True if the object is a EventBoundary, false otherwise.
+     */
+    public static isEventBoundary(obj: any): obj is EventBoundary
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * The root event-target residing below the event boundary.
      * All events are dispatched trickling down and bubbling up to this `rootTarget`.

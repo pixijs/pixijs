@@ -4,6 +4,8 @@ import LoadImageBitmapWorker from 'worker:./loadImageBitmap.worker.ts';
 import type { TextureSourceOptions } from '../../../rendering/renderers/shared/texture/sources/TextureSource';
 import type { ResolvedAsset } from '../../types';
 
+const typeSymbol = Symbol.for('pixijs.WorkerManagerClass');
+
 let UUID = 0;
 let MAX_WORKERS: number;
 
@@ -17,6 +19,22 @@ type LoadImageBitmapResult = {
 /** @internal */
 class WorkerManagerClass
 {
+    /**
+     * Type symbol used to identify instances of WorkerManagerClass.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a WorkerManagerClass.
+     * @param obj - The object to check.
+     * @returns True if the object is a WorkerManagerClass, false otherwise.
+     */
+    public static isWorkerManagerClass(obj: any): obj is WorkerManagerClass
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Hash map storing resolve/reject functions for pending worker requests.
      * Keyed by UUID to match responses with their corresponding promises.

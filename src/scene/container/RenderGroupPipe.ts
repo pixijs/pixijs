@@ -9,6 +9,8 @@ import type { InstructionPipe } from '../../rendering/renderers/shared/instructi
 import type { Renderer } from '../../rendering/renderers/types';
 import type { RenderGroup } from './RenderGroup';
 
+const typeSymbol = Symbol.for('pixijs.RenderGroupPipe');
+
 const tempMatrix = new Matrix();
 
 /**
@@ -17,6 +19,22 @@ const tempMatrix = new Matrix();
  */
 export class RenderGroupPipe implements InstructionPipe<RenderGroup>
 {
+    /**
+     * Type symbol used to identify instances of RenderGroupPipe.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a RenderGroupPipe.
+     * @param obj - The object to check.
+     * @returns True if the object is a RenderGroupPipe, false otherwise.
+     */
+    public static isRenderGroupPipe(obj: any): obj is RenderGroupPipe
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public static extension = {
         type: [
             ExtensionType.WebGLPipes,

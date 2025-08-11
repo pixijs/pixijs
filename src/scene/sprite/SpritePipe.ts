@@ -6,9 +6,27 @@ import type { RenderPipe } from '../../rendering/renderers/shared/instructions/R
 import type { Renderer } from '../../rendering/renderers/types';
 import type { Sprite } from './Sprite';
 
+const typeSymbol = Symbol.for('pixijs.SpritePipe');
+
 /** @internal */
 export class SpritePipe implements RenderPipe<Sprite>
 {
+    /**
+     * Type symbol used to identify instances of SpritePipe.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a SpritePipe.
+     * @param obj - The object to check.
+     * @returns True if the object is a SpritePipe, false otherwise.
+     */
+    public static isSpritePipe(obj: any): obj is SpritePipe
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

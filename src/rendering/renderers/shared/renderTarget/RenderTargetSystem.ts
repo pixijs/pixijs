@@ -19,6 +19,8 @@ import type { Renderer } from '../../types';
 import type { System } from '../system/System';
 import type { BindableTexture } from '../texture/Texture';
 
+const typeSymbol = Symbol.for('pixijs.RenderTargetSystem');
+
 /**
  * A render surface is a texture, canvas, or render target
  * @category rendering
@@ -152,6 +154,22 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends GlRenderTarget | GpuR
  */
 export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRenderTarget> implements System
 {
+    /**
+     * Type symbol used to identify instances of RenderTargetSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a RenderTargetSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a RenderTargetSystem, false otherwise.
+     */
+    public static isRenderTargetSystem(obj: any): obj is RenderTargetSystem<GlRenderTarget | GpuRenderTarget>
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** When rendering of a scene begins, this is where the root render surface is stored */
     public rootRenderTarget: RenderTarget;
     /** This is the root viewport for the render pass*/

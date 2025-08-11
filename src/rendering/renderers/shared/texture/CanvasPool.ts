@@ -4,6 +4,8 @@ import { nextPow2 } from '../../../../maths/misc/pow2';
 import type { ICanvas, ICanvasRenderingContext2DSettings } from '../../../../environment/canvas/ICanvas';
 import type { ICanvasRenderingContext2D } from '../../../../environment/canvas/ICanvasRenderingContext2D';
 
+const typeSymbol = Symbol.for('pixijs.CanvasPoolClass');
+
 /**
  * A utility type that represents a canvas and its rendering context.
  * @category rendering
@@ -34,6 +36,22 @@ export class CanvasPoolClass
      */
     public enableFullScreen: boolean;
     private _canvasPool: {[x in string | number]: CanvasAndContext[]};
+
+    /**
+     * Type symbol used to identify instances of CanvasPoolClass.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a CanvasPoolClass.
+     * @param obj - The object to check.
+     * @returns True if the object is a CanvasPoolClass, false otherwise.
+     */
+    public static isCanvasPoolClass(obj: any): obj is CanvasPoolClass
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
 
     constructor(canvasOptions?: ICanvasRenderingContext2DSettings)
     {

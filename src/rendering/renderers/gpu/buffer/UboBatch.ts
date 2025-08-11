@@ -1,6 +1,24 @@
+const typeSymbol = Symbol.for('pixijs.UboBatch');
+
 /** @internal */
 export class UboBatch
 {
+    /**
+     * Type symbol used to identify instances of UboBatch.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a UboBatch.
+     * @param obj - The object to check.
+     * @returns True if the object is a UboBatch, false otherwise.
+     */
+    public static isUboBatch(obj: any): obj is UboBatch
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public data: Float32Array;
     private readonly _minUniformOffsetAlignment: number = 256;
 

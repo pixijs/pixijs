@@ -11,6 +11,8 @@ import type { RenderOptions } from '../shared/system/AbstractRenderer';
 import type { System } from '../shared/system/System';
 import type { WebGLRenderer } from './WebGLRenderer';
 
+const typeSymbol = Symbol.for('pixijs.GlBackBufferSystem');
+
 const bigTriangleGeometry = new Geometry({
     attributes: {
         aPosition: [
@@ -57,6 +59,22 @@ export interface GlBackBufferOptions
  */
 export class GlBackBufferSystem implements System<GlBackBufferOptions>
 {
+    /**
+     * Type symbol used to identify instances of GlBackBufferSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GlBackBufferSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a GlBackBufferSystem, false otherwise.
+     */
+    public static isGlBackBufferSystem(obj: any): obj is GlBackBufferSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

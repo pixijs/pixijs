@@ -1,6 +1,8 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { Rectangle } from '../../../maths/shapes/Rectangle';
 
+const typeSymbol = Symbol.for('pixijs.Bounds');
+
 /**
  * A simple axis-aligned bounding box (AABB) data structure used to define rectangular boundaries.
  * Provides a clearer alternative to array-based bounds representation [minX, minY, maxX, maxY].
@@ -74,6 +76,22 @@ const defaultMatrix = new Matrix();
  */
 export class Bounds
 {
+    /**
+     * Type symbol used to identify instances of Bounds.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Bounds.
+     * @param obj - The object to check.
+     * @returns True if the object is a Bounds, false otherwise.
+     */
+    public static isBounds(obj: any): obj is Bounds
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * The minimum X coordinate of the bounds.
      * Represents the leftmost edge of the bounding box.

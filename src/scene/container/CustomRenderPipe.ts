@@ -5,6 +5,8 @@ import type { InstructionPipe, RenderPipe } from '../../rendering/renderers/shar
 import type { Renderer } from '../../rendering/renderers/types';
 import type { RenderContainer } from './RenderContainer';
 
+const typeSymbol = Symbol.for('pixijs.CustomRenderPipe');
+
 /**
  * The CustomRenderPipe is a render pipe that allows for custom rendering logic for your renderable objects.
  * @example
@@ -21,6 +23,22 @@ import type { RenderContainer } from './RenderContainer';
  */
 export class CustomRenderPipe implements InstructionPipe<RenderContainer>, RenderPipe<RenderContainer>
 {
+    /**
+     * Type symbol used to identify instances of CustomRenderPipe.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a CustomRenderPipe.
+     * @param obj - The object to check.
+     * @returns True if the object is a CustomRenderPipe, false otherwise.
+     */
+    public static isCustomRenderPipe(obj: any): obj is CustomRenderPipe
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public static extension = {
         type: [
             ExtensionType.WebGLPipes,

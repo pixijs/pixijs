@@ -7,6 +7,8 @@ import type { Matrix } from '../../../maths/matrix/Matrix';
 import type { Shader } from '../../renderers/shared/shader/Shader';
 import type { BatchableMeshElement, BatchableQuadElement, BatcherOptions } from './Batcher';
 
+const typeSymbol = Symbol.for('pixijs.DefaultBatcher');
+
 let defaultShader: Shader = null;
 
 /**
@@ -64,6 +66,22 @@ export interface DefaultBatchableMeshElement extends BatchableMeshElement, Defau
  */
 export class DefaultBatcher extends Batcher
 {
+    /**
+     * Type symbol used to identify instances of DefaultBatcher.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a DefaultBatcher.
+     * @param obj - The object to check.
+     * @returns True if the object is a DefaultBatcher, false otherwise.
+     */
+    public static isDefaultBatcher(obj: any): obj is DefaultBatcher
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

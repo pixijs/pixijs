@@ -8,6 +8,8 @@ import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from '../text/AbstractText';
 import type { HTMLTextStyleOptions } from './HTMLTextStyle';
 
+const typeSymbol = Symbol.for('pixijs.HTMLText');
+
 /**
  * Constructor options used for `HTMLText` instances. Extends the base text options
  * with HTML-specific features and texture styling capabilities.
@@ -160,6 +162,22 @@ export class HTMLText extends AbstractText<
     BatchableHTMLText
 > implements View
 {
+    /**
+     * Type symbol used to identify instances of HTMLText.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a HTMLText.
+     * @param obj - The object to check.
+     * @returns True if the object is a HTMLText, false otherwise.
+     */
+    public static isHTMLText(obj: any): obj is HTMLText
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @internal */
     public override readonly renderPipeId: string = 'htmlText';
 

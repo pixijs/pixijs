@@ -9,6 +9,8 @@ import type { Bounds } from '../../../scene/container/bounds/Bounds';
 import type { Effect } from '../../../scene/container/Effect';
 import type { PoolItem } from '../../../utils/pool/Pool';
 
+const typeSymbol = Symbol.for('pixijs.StencilMask');
+
 /**
  * A mask that uses the stencil buffer to clip the rendering of a container.
  * This is useful for complex masks that cannot be achieved with simple shapes.
@@ -19,6 +21,22 @@ import type { PoolItem } from '../../../utils/pool/Pool';
  */
 export class StencilMask implements Effect, PoolItem
 {
+    /**
+     * Type symbol used to identify instances of StencilMask.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a StencilMask.
+     * @param obj - The object to check.
+     * @returns True if the object is a StencilMask, false otherwise.
+     */
+    public static isStencilMask(obj: any): obj is StencilMask
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public static extension: ExtensionMetadata = ExtensionType.MaskEffect;
 
     public priority = 0;

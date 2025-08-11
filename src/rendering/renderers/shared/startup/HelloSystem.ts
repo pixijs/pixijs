@@ -5,6 +5,8 @@ import { type Renderer, RendererType } from '../../types';
 import type { WebGLRenderer } from '../../gl/WebGLRenderer';
 import type { System } from '../system/System';
 
+const typeSymbol = Symbol.for('pixijs.HelloSystem');
+
 /**
  * Options for the startup system.
  * @property {boolean} [hello=false] - Whether to log the version and type information of renderer to console.
@@ -27,6 +29,22 @@ export interface HelloSystemOptions
  */
 export class HelloSystem implements System<HelloSystemOptions>
 {
+    /**
+     * Type symbol used to identify instances of HelloSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a HelloSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a HelloSystem, false otherwise.
+     */
+    public static isHelloSystem(obj: any): obj is HelloSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

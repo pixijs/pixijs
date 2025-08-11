@@ -15,6 +15,8 @@ import type { View } from '../../../rendering/renderers/shared/view/View';
 import type { ContainerOptions } from '../../container/Container';
 import type { DestroyOptions } from '../../container/destroyTypes';
 
+const typeSymbol = Symbol.for('pixi.Mesh');
+
 /**
  * Shader that uses a texture.
  * This is the default shader used by `Mesh` when no shader is provided.
@@ -95,6 +97,22 @@ export class Mesh<
     SHADER extends Shader = TextureShader
 > extends ViewContainer<MeshGpuData> implements View, Instruction
 {
+    /**
+     * Type symbol used to identify instances of Mesh.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Mesh.
+     * @param obj - The object to check.
+     * @returns True if the object is a Mesh, false otherwise.
+     */
+    public static isMesh(obj: any): obj is Mesh<GEOMETRY, SHADER>
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @internal */
     public override readonly renderPipeId: string = 'mesh';
     public state: State;

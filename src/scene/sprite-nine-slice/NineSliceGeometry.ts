@@ -1,6 +1,8 @@
 import { type PointData } from '../../maths/point/PointData';
 import { PlaneGeometry } from '../mesh-plane/PlaneGeometry';
 
+const typeSymbol = Symbol.for('pixi.NineSliceGeometry');
+
 /**
  * Options for the NineSliceGeometry.
  * @category scene
@@ -37,6 +39,22 @@ export interface NineSliceGeometryOptions
  */
 export class NineSliceGeometry extends PlaneGeometry
 {
+    /**
+     * Type symbol used to identify instances of NineSliceGeometry.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a NineSliceGeometry.
+     * @param obj - The object to check.
+     * @returns True if the object is a NineSliceGeometry, false otherwise.
+     */
+    public static isNineSliceGeometry(obj: any): obj is NineSliceGeometry
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** The default options for the NineSliceGeometry. */
     public static defaultOptions: NineSliceGeometryOptions = {
         /** The width of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane. */

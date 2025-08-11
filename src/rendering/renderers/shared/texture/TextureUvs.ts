@@ -3,6 +3,8 @@ import { groupD8 } from '../../../../maths/matrix/groupD8';
 import type { Size } from '../../../../maths/misc/Size';
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
 
+const typeSymbol = Symbol.for('pixijs.TextureUvs');
+
 /**
  * Stores a texture's frame in UV coordinates, in
  * which everything lies in the rectangle `[(0,0), (1,0),
@@ -20,6 +22,22 @@ import type { Rectangle } from '../../../../maths/shapes/Rectangle';
  */
 export class TextureUvs
 {
+    /**
+     * Type symbol used to identify instances of TextureUvs.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a TextureUvs.
+     * @param obj - The object to check.
+     * @returns True if the object is a TextureUvs, false otherwise.
+     */
+    public static isTextureUvs(obj: any): obj is TextureUvs
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** X-component of top-left corner `(x0,y0)`. */
     public x0: number;
 

@@ -5,6 +5,8 @@ import { hslgpu } from '../filters/blend-modes/hls/GPUhls';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
+const typeSymbol = Symbol.for('pixijs.SaturationBlend');
+
 /**
  * The final color has the saturation of the top color, while using the hue and luminosity of the bottom color.
  * A pure gray backdrop, having no saturation, will have no effect.
@@ -21,6 +23,22 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  */
 export class SaturationBlend extends BlendModeFilter
 {
+    /**
+     * Type symbol used to identify instances of SaturationBlend.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a SaturationBlend.
+     * @param obj - The object to check.
+     * @returns True if the object is a SaturationBlend, false otherwise.
+     */
+    public static isSaturationBlend(obj: any): obj is SaturationBlend
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = {
         name: 'saturation',

@@ -15,11 +15,30 @@ import type { InstructionSet } from '../../rendering/renderers/shared/instructio
 import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
 import type { TilingSprite } from './TilingSprite';
 
+const typeSymbolTilingSpriteGpuData = Symbol.for('pixi.TilingSpriteGpuData');
+const typeSymbolTilingSpritePipe = Symbol.for('pixi.TilingSpritePipe');
+
 const sharedQuad = new QuadGeometry();
 
 /** @internal */
 export class TilingSpriteGpuData
 {
+    /**
+     * Type symbol used to identify instances of TilingSpriteGpuData.
+     * @internal
+     */
+    public readonly [typeSymbolTilingSpriteGpuData] = true;
+
+    /**
+     * Checks if the given object is a TilingSpriteGpuData.
+     * @param obj - The object to check.
+     * @returns True if the object is a TilingSpriteGpuData, false otherwise.
+     */
+    public static isTilingSpriteGpuData(obj: any): obj is TilingSpriteGpuData
+    {
+        return !!obj && !!obj[typeSymbolTilingSpriteGpuData];
+    }
+
     public canBatch: boolean = true;
     public renderable: TilingSprite;
     public batchableMesh?: BatchableMesh;
@@ -49,6 +68,22 @@ export class TilingSpriteGpuData
  */
 export class TilingSpritePipe implements RenderPipe<TilingSprite>
 {
+    /**
+     * Type symbol used to identify instances of TilingSpritePipe.
+     * @internal
+     */
+    public readonly [typeSymbolTilingSpritePipe] = true;
+
+    /**
+     * Checks if the given object is a TilingSpritePipe.
+     * @param obj - The object to check.
+     * @returns True if the object is a TilingSpritePipe, false otherwise.
+     */
+    public static isTilingSpritePipe(obj: any): obj is TilingSpritePipe
+    {
+        return !!obj && !!obj[typeSymbolTilingSpritePipe];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

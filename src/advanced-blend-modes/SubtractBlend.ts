@@ -3,6 +3,8 @@ import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
+const typeSymbol = Symbol.for('pixijs.SubtractBlend');
+
 /**
  * Subtracts the blend from the base color using each color channel
  *
@@ -18,6 +20,22 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  */
 export class SubtractBlend extends BlendModeFilter
 {
+    /**
+     * Type symbol used to identify instances of SubtractBlend.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a SubtractBlend.
+     * @param obj - The object to check.
+     * @returns True if the object is a SubtractBlend, false otherwise.
+     */
+    public static isSubtractBlend(obj: any): obj is SubtractBlend
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = {
         name: 'subtract',

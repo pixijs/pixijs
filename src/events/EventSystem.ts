@@ -12,6 +12,8 @@ import type { PixiTouch } from './FederatedEvent';
 import type { EventMode } from './FederatedEventTarget';
 import type { FederatedMouseEvent } from './FederatedMouseEvent';
 
+const typeSymbol = Symbol.for('pixijs.EventSystem');
+
 const MOUSE_POINTER_ID = 1;
 const TOUCH_TO_POINTER: Record<string, string> = {
     touchstart: 'pointerdown',
@@ -233,6 +235,22 @@ export interface EventSystemFeatures
  */
 export class EventSystem implements System<EventSystemOptions>
 {
+    /**
+     * Type symbol used to identify instances of EventSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a EventSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a EventSystem, false otherwise.
+     */
+    public static isEventSystem(obj: any): obj is EventSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = {
         name: 'events',

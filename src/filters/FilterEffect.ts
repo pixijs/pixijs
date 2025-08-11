@@ -2,6 +2,8 @@ import type { Rectangle } from '../maths/shapes/Rectangle';
 import type { Effect } from '../scene/container/Effect';
 import type { Filter } from './Filter';
 
+const typeSymbol = Symbol.for('pixijs.FilterEffect');
+
 /**
  * A filter effect is an effect that can be applied to a container that involves applying special pixel effects
  * to that container as it is rendered. Used internally when the filters property is modified on a container.
@@ -9,6 +11,22 @@ import type { Filter } from './Filter';
  */
 export class FilterEffect implements Effect
 {
+    /**
+     * Type symbol used to identify instances of FilterEffect.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a FilterEffect.
+     * @param obj - The object to check.
+     * @returns True if the object is a FilterEffect, false otherwise.
+     */
+    public static isFilterEffect(obj: any): obj is FilterEffect
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** read only filters array - to modify, set it again! */
     public filters: readonly Filter[];
     /**

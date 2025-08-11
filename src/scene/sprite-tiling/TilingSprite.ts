@@ -14,6 +14,8 @@ import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
 
+const typeSymbol = Symbol.for('pixijs.TilingSprite');
+
 /**
  * Constructor options used for creating a TilingSprite instance.
  * Defines the texture, tiling behavior, and rendering properties of the sprite.
@@ -204,6 +206,22 @@ export interface TilingSprite extends PixiMixins.TilingSprite, ViewContainer<Til
  */
 export class TilingSprite extends ViewContainer<TilingSpriteGpuData> implements View, Instruction
 {
+    /**
+     * Type symbol used to identify instances of TilingSprite.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a TilingSprite.
+     * @param obj - The object to check.
+     * @returns True if the object is a TilingSprite, false otherwise.
+     */
+    public static isTilingSprite(obj: any): obj is TilingSprite
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Creates a new tiling sprite based on a source texture or image path.
      * This is a convenience method that automatically creates and manages textures.

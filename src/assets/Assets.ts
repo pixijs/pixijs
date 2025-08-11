@@ -30,6 +30,8 @@ import type { LoadSVGConfig } from './loader/parsers/textures/loadSVG';
 import type { BundleIdentifierOptions } from './resolver/Resolver';
 import type { ArrayOr, AssetsBundle, AssetsManifest, ResolvedAsset, UnresolvedAsset } from './types';
 
+const typeSymbol = Symbol.for('pixijs.AssetsClass');
+
 /**
  * Callback function for tracking asset loading progress. The function is called repeatedly
  * during the loading process with a progress value between 0.0 and 1.0.
@@ -257,6 +259,22 @@ export interface AssetInitOptions
 /** @internal */
 export class AssetsClass
 {
+    /**
+     * Type symbol used to identify instances of AssetsClass.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a AssetsClass.
+     * @param obj - The object to check.
+     * @returns True if the object is a AssetsClass, false otherwise.
+     */
+    public static isAssetsClass(obj: any): obj is AssetsClass
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * The URL resolver for assets. Maps various asset keys and URLs to their final loadable form.
      * @advanced

@@ -3,6 +3,8 @@ import { Point } from '../maths/point/Point';
 import type { Container } from '../scene/container/Container';
 import type { EventBoundary } from './EventBoundary';
 
+const typeSymbol = Symbol.for('pixijs.FederatedEvent');
+
 /**
  * A PixiJS compatible touch event interface that extends the standard DOM Touch interface.
  * Provides additional properties to normalize touch input with mouse/pointer events.
@@ -117,6 +119,22 @@ export interface PixiTouch extends Touch
  */
 export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch> implements UIEvent
 {
+    /**
+     * Type symbol used to identify instances of FederatedEvent.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a FederatedEvent.
+     * @param obj - The object to check.
+     * @returns True if the object is a FederatedEvent, false otherwise.
+     */
+    public static isFederatedEvent(obj: any): obj is FederatedEvent
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** Flags whether this event bubbles. This will take effect only if it is set before propagation. */
     public bubbles = true;
 

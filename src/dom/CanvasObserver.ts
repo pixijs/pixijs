@@ -2,6 +2,8 @@ import { type Renderer } from '../rendering/renderers/types';
 import { UPDATE_PRIORITY } from '../ticker/const';
 import { Ticker } from '../ticker/Ticker';
 
+const typeSymbol = Symbol.for('pixijs.CanvasObserver');
+
 /**
  * CanvasObserver class synchronizes the DOM element's transform with the canvas size and position.
  * It uses ResizeObserver for efficient updates and requestAnimationFrame for fallback.
@@ -10,6 +12,22 @@ import { Ticker } from '../ticker/Ticker';
  */
 export class CanvasObserver
 {
+    /**
+     * Type symbol used to identify instances of CanvasObserver.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a CanvasObserver.
+     * @param obj - The object to check.
+     * @returns True if the object is a CanvasObserver, false otherwise.
+     */
+    public static isCanvasObserver(obj: any): obj is CanvasObserver
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** A cached value of the last transform applied to the DOM element. */
     private _lastTransform = '';
     /** A ResizeObserver instance to observe changes in the canvas size. */

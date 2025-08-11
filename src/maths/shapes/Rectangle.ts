@@ -6,6 +6,8 @@ import type { Matrix } from '../matrix/Matrix';
 import type { SHAPE_PRIMITIVE } from '../misc/const';
 import type { ShapePrimitive } from './ShapePrimitive';
 
+const typeSymbol = Symbol.for('pixijs.Rectangle');
+
 const tempPoints = [new Point(), new Point(), new Point(), new Point()];
 
 // eslint-disable-next-line max-len
@@ -43,6 +45,22 @@ export interface Rectangle extends PixiMixins.Rectangle { }
  */
 export class Rectangle implements ShapePrimitive
 {
+    /**
+     * Type symbol used to identify instances of Rectangle.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Rectangle.
+     * @param obj - The object to check.
+     * @returns True if the object is a Rectangle, false otherwise.
+     */
+    public static isRectangle(obj: any): obj is Rectangle
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * The type of the object, mainly used to avoid `instanceof` checks
      * @example

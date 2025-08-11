@@ -5,6 +5,8 @@ import { canvasTextSplit } from '../text/utils/canvasTextSplit';
 import { type AbstractSplitOptions, AbstractSplitText } from './AbstractSplitText';
 import { type TextSplitOutput } from './types';
 
+const typeSymbol = Symbol.for('pixijs.SplitText');
+
 /**
  * Configuration options for Text splitting.
  * @category text
@@ -137,6 +139,22 @@ export interface SplitTextOptions extends PixiMixins.SplitText, ContainerOptions
  */
 export class SplitText extends AbstractSplitText<Text>
 {
+    /**
+     * Type symbol used to identify instances of SplitText.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a SplitText.
+     * @param obj - The object to check.
+     * @returns True if the object is a SplitText, false otherwise.
+     */
+    public static isSplitText(obj: any): obj is SplitText
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Default configuration options for SplitText instances.
      * @example

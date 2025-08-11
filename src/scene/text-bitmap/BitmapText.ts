@@ -8,6 +8,8 @@ import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from '../text/AbstractText';
 import type { TextStyleOptions } from '../text/TextStyle';
 
+const typeSymbol = Symbol.for('pixijs.BitmapText');
+
 // eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface BitmapText extends PixiMixins.BitmapText, AbstractText<
     TextStyle,
@@ -126,6 +128,22 @@ export class BitmapText extends AbstractText<
     BitmapTextGraphics
 > implements View
 {
+    /**
+     * Type symbol used to identify instances of BitmapText.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a BitmapText.
+     * @param obj - The object to check.
+     * @returns True if the object is a BitmapText, false otherwise.
+     */
+    public static isBitmapText(obj: any): obj is BitmapText
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @internal */
     public override readonly renderPipeId: string = 'bitmapText';
 

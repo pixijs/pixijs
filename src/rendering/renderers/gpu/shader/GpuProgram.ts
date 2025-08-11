@@ -8,6 +8,8 @@ import { removeStructAndGroupDuplicates } from './utils/removeStructAndGroupDupl
 import type { ExtractedAttributeData } from '../../gl/shader/program/extractAttributesFromGlProgram';
 import type { StructsAndGroups } from './utils/extractStructAndGroups';
 
+const typeSymbol = Symbol.for('pixijs.GpuProgram');
+
 /**
  * a WebGPU descriptions of how the program is laid out
  * @see https://gpuweb.github.io/gpuweb/#gpupipelinelayout
@@ -97,6 +99,22 @@ const programCache: Record<string, GpuProgram> = Object.create(null);
  */
 export class GpuProgram
 {
+    /**
+     * Type symbol used to identify instances of GpuProgram.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GpuProgram.
+     * @param obj - The object to check.
+     * @returns True if the object is a GpuProgram, false otherwise.
+     */
+    public static isGpuProgram(obj: any): obj is GpuProgram
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** The fragment glsl shader source. */
     public readonly fragment?: ProgramSource;
     /** The vertex glsl shader source */

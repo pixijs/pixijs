@@ -12,6 +12,8 @@ import type { DestroyOptions } from '../../container/destroyTypes';
 import type { IParticle } from './Particle';
 import type { ParticleRendererProperty } from './particleData';
 
+const typeSymbol = Symbol.for('pixijs.ParticleContainer');
+
 const emptyBounds = new Bounds(0, 0, 0, 0);
 
 /**
@@ -197,6 +199,22 @@ export interface ParticleContainer extends PixiMixins.ParticleContainer, ViewCon
  */
 export class ParticleContainer extends ViewContainer<ParticleBuffer> implements Instruction
 {
+    /**
+     * Type symbol used to identify instances of ParticleContainer.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a ParticleContainer.
+     * @param obj - The object to check.
+     * @returns True if the object is a ParticleContainer, false otherwise.
+     */
+    public static isParticleContainer(obj: any): obj is ParticleContainer
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Defines the default options for creating a ParticleContainer.
      * @example

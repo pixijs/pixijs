@@ -3,6 +3,8 @@ import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
+const typeSymbol = Symbol.for('pixijs.OverlayBlend');
+
 /**
  * The final color is the result of multiply if the bottom color is darker, or screen if the bottom color is lighter.
  * This blend mode is equivalent to hard-light but with the layers swapped.
@@ -19,6 +21,22 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  */
 export class OverlayBlend extends BlendModeFilter
 {
+    /**
+     * Type symbol used to identify instances of OverlayBlend.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a OverlayBlend.
+     * @param obj - The object to check.
+     * @returns True if the object is a OverlayBlend, false otherwise.
+     */
+    public static isOverlayBlend(obj: any): obj is OverlayBlend
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = {
         name: 'overlay',

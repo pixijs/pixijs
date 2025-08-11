@@ -9,6 +9,8 @@ import type { PointData } from '../../../../maths/point/PointData';
 import type { Bounds } from '../../../container/bounds/Bounds';
 import type { RoundedPoint } from './roundShape';
 
+const typeSymbol = Symbol.for('pixijs.GraphicsPath');
+
 /**
  * Represents a single drawing instruction in a `GraphicsPath`.
  * Each instruction consists of an action type and associated data.
@@ -36,6 +38,22 @@ export interface PathInstruction
  */
 export class GraphicsPath
 {
+    /**
+     * Type symbol used to identify instances of GraphicsPath.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GraphicsPath.
+     * @param obj - The object to check.
+     * @returns True if the object is a GraphicsPath, false otherwise.
+     */
+    public static isGraphicsPath(obj: any): obj is GraphicsPath
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public instructions: PathInstruction[] = [];
 
     /** unique id for this graphics path */

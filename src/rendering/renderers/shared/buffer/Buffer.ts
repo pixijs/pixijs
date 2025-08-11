@@ -4,6 +4,8 @@ import { BufferUsage } from './const';
 
 import type { BindResource } from '../../gpu/shader/BindResource';
 
+const typeSymbol = Symbol.for('pixijs.Buffer');
+
 /**
  * All the various typed arrays that exist in js
  * @category rendering
@@ -93,6 +95,22 @@ export class Buffer extends EventEmitter<{
     destroy: Buffer,
 }> implements BindResource
 {
+    /**
+     * Type symbol used to identify instances of Buffer.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Buffer.
+     * @param obj - The object to check.
+     * @returns True if the object is a Buffer, false otherwise.
+     */
+    public static isBuffer(obj: any): obj is Buffer
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * emits when the underlying buffer has changed shape (i.e. resized)
      * letting the renderer know that it needs to discard the old buffer on the GPU and create a new one

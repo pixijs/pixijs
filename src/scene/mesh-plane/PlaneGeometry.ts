@@ -3,6 +3,8 @@ import { MeshGeometry } from '../mesh/shared/MeshGeometry';
 
 import type { MeshGeometryOptions } from '../mesh/shared/MeshGeometry';
 
+const typeSymbol = Symbol.for('pixijs.PlaneGeometry');
+
 /**
  * Constructor options used for `PlaneGeometry` instances.
  * ```js
@@ -36,6 +38,22 @@ export interface PlaneGeometryOptions
  */
 export class PlaneGeometry extends MeshGeometry
 {
+    /**
+     * Type symbol used to identify instances of PlaneGeometry.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a PlaneGeometry.
+     * @param obj - The object to check.
+     * @returns True if the object is a PlaneGeometry, false otherwise.
+     */
+    public static isPlaneGeometry(obj: any): obj is PlaneGeometry
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public static defaultOptions: PlaneGeometryOptions & MeshGeometryOptions = {
         width: 100,
         height: 100,

@@ -6,6 +6,8 @@ import type { SHAPE_PRIMITIVE } from '../misc/const';
 import type { PointData } from '../point/PointData';
 import type { ShapePrimitive } from './ShapePrimitive';
 
+const typeSymbol = Symbol.for('pixijs.Polygon');
+
 let tempRect: Rectangle;
 let tempRect2: Rectangle;
 
@@ -43,6 +45,22 @@ let tempRect2: Rectangle;
  */
 export class Polygon implements ShapePrimitive
 {
+    /**
+     * Type symbol used to identify instances of Polygon.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Polygon.
+     * @param obj - The object to check.
+     * @returns True if the object is a Polygon, false otherwise.
+     */
+    public static isPolygon(obj: any): obj is Polygon
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * An array of the points of this polygon stored as a flat array of numbers.
      * @example

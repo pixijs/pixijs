@@ -12,6 +12,8 @@ import type { System } from '../../../rendering/renderers/shared/system/System';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { Renderer } from '../../../rendering/renderers/types';
 
+const typeSymbol = Symbol.for('pixijs.CanvasTextSystem');
+
 /**
  * System plugin to the renderer to manage canvas text.
  * @category rendering
@@ -19,6 +21,22 @@ import type { Renderer } from '../../../rendering/renderers/types';
  */
 export class CanvasTextSystem implements System
 {
+    /**
+     * Type symbol used to identify instances of CanvasTextSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a CanvasTextSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a CanvasTextSystem, false otherwise.
+     */
+    public static isCanvasTextSystem(obj: any): obj is CanvasTextSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

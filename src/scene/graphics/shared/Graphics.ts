@@ -14,6 +14,8 @@ import type { FillInput, FillStyle, StrokeStyle } from './FillTypes';
 import type { GraphicsPath } from './path/GraphicsPath';
 import type { RoundedPoint } from './path/roundShape';
 
+const typeSymbol = Symbol.for('pixijs.Graphics');
+
 /**
  * Constructor options used for Graphics instances.
  * Configures the initial state and behavior of a Graphics object.
@@ -93,6 +95,22 @@ export interface Graphics extends PixiMixins.Graphics, ViewContainer<GraphicsGpu
  */
 export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruction
 {
+    /**
+     * Type symbol used to identify instances of Graphics.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Graphics.
+     * @param obj - The object to check.
+     * @returns True if the object is a Graphics, false otherwise.
+     */
+    public static isGraphics(obj: any): obj is Graphics
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @internal */
     public override readonly renderPipeId: string = 'graphics';
     /** @internal */

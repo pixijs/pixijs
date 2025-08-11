@@ -11,6 +11,8 @@ import type { Renderer } from '../../types';
 import type { System } from '../system/System';
 import type { TextureSourceOptions } from '../texture/sources/TextureSource';
 
+const typeSymbol = Symbol.for('pixijs.GenerateTextureSystem');
+
 /**
  * Options for generating a texture source.
  * @category rendering
@@ -217,6 +219,22 @@ const noColor: ColorSource = [0, 0, 0, 0];
  */
 export class GenerateTextureSystem implements System
 {
+    /**
+     * Type symbol used to identify instances of GenerateTextureSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GenerateTextureSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a GenerateTextureSystem, false otherwise.
+     */
+    public static isGenerateTextureSystem(obj: any): obj is GenerateTextureSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

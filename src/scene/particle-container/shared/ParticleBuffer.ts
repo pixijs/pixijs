@@ -11,6 +11,8 @@ import type { IParticle } from './Particle';
 import type { ParticleRendererProperty } from './particleData';
 import type { ParticleUpdateFunction } from './utils/generateParticleUpdateFunction';
 
+const typeSymbol = Symbol.for('pixijs.ParticleBuffer');
+
 /**
  * Options for creating a ParticleBuffer.
  * @internal
@@ -30,6 +32,22 @@ export interface ParticleBufferOptions
  */
 export class ParticleBuffer
 {
+    /**
+     * Type symbol used to identify instances of ParticleBuffer.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a ParticleBuffer.
+     * @param obj - The object to check.
+     * @returns True if the object is a ParticleBuffer, false otherwise.
+     */
+    public static isParticleBuffer(obj: any): obj is ParticleBuffer
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** The buffer containing static attribute data for all elements in the batch. */
     public staticAttributeBuffer: ViewableBuffer;
     /** The buffer containing dynamic attribute data for all elements in the batch. */

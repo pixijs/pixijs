@@ -5,6 +5,9 @@ import { type Bounds } from '../container/bounds/Bounds';
 import { Container } from '../container/Container';
 
 import type EventEmitter from 'eventemitter3';
+
+const typeSymbol = Symbol.for('pixijs.RenderLayer');
+
 // TODO make it clear render layer cannot have 'filters'
 
 /**
@@ -97,6 +100,22 @@ export type IRenderLayer = Omit<RenderLayerClass, PartialContainerKeys>;
 /** @standard */
 class RenderLayerClass extends Container
 {
+    /**
+     * Type symbol used to identify instances of RenderLayer.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a RenderLayer.
+     * @param obj - The object to check.
+     * @returns True if the object is a RenderLayer, false otherwise.
+     */
+    public static isRenderLayer(obj: any): obj is RenderLayerClass
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Default options for RenderLayer instances. These options control the sorting behavior
      * of objects within the render layer.

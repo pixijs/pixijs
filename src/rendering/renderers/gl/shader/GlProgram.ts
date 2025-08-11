@@ -9,6 +9,8 @@ import { stripVersion } from './program/preprocessors/stripVersion';
 import type { TypedArray } from '../../shared/buffer/Buffer';
 import type { ExtractedAttributeData } from './program/extractAttributesFromGlProgram';
 
+const typeSymbol = Symbol.for('pixijs.GlProgram');
+
 /** @internal */
 export interface GlUniformData
 {
@@ -98,6 +100,22 @@ const programCache: Record<string, GlProgram> = Object.create(null);
  */
 export class GlProgram
 {
+    /**
+     * Type symbol used to identify instances of GlProgram.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GlProgram.
+     * @param obj - The object to check.
+     * @returns True if the object is a GlProgram, false otherwise.
+     */
+    public static isGlProgram(obj: any): obj is GlProgram
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** The default options used by the program. */
     public static defaultOptions: Partial<GlProgramOptions> = {
         preferredVertexPrecision: 'highp',

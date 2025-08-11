@@ -15,6 +15,8 @@ import type { Texture } from '../../../rendering/renderers/shared/texture/Textur
 import type { FilterOptions } from '../../Filter';
 import type { FilterSystem } from '../../FilterSystem';
 
+const typeSymbol = Symbol.for('pixijs.DisplacementFilter');
+
 /**
  * Configuration options for the DisplacementFilter.
  *
@@ -99,6 +101,22 @@ export interface DisplacementFilterOptions extends FilterOptions
  */
 export class DisplacementFilter extends Filter
 {
+    /**
+     * Type symbol used to identify instances of DisplacementFilter.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a DisplacementFilter.
+     * @param obj - The object to check.
+     * @returns True if the object is a DisplacementFilter, false otherwise.
+     */
+    public static isDisplacementFilter(obj: any): obj is DisplacementFilter
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     private readonly _sprite: Sprite;
 
     /**

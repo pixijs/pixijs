@@ -5,6 +5,8 @@ import type { AnyColor, HslaColor, HslColor, HsvaColor, HsvColor, RgbaColor, Rgb
 
 extend([namesPlugin]);
 
+const typeSymbol = Symbol.for('pixijs.Color');
+
 /**
  * Array of RGBA color components, where each component is a number between 0 and 1.
  * The array must contain exactly 4 numbers in the order: red, green, blue, alpha.
@@ -163,6 +165,22 @@ type ColorSourceTypedArray = Float32Array | Uint8Array | Uint8ClampedArray;
  */
 export class Color
 {
+    /**
+     * Type symbol used to identify instances of Color.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Color.
+     * @param obj - The object to check.
+     * @returns True if the object is a Color, false otherwise.
+     */
+    public static isColor(obj: any): obj is Color
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Static shared Color instance used for utility operations. This is a singleton color object
      * that can be reused to avoid creating unnecessary Color instances.

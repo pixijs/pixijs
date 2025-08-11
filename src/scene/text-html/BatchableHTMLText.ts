@@ -4,6 +4,8 @@ import { BatchableSprite } from '../sprite/BatchableSprite';
 import type { Renderer } from '../../rendering/renderers/types';
 import type { HTMLText } from './HTMLText';
 
+const typeSymbol = Symbol.for('pixijs.BatchableHTMLText');
+
 /**
  * The BatchableHTMLText class extends the BatchableSprite class and is used to handle HTML text rendering.
  * It includes a promise for the texture as generating the HTML texture takes some time.
@@ -11,6 +13,22 @@ import type { HTMLText } from './HTMLText';
  */
 export class BatchableHTMLText extends BatchableSprite
 {
+    /**
+     * Type symbol used to identify instances of BatchableHTMLText.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a BatchableHTMLText.
+     * @param obj - The object to check.
+     * @returns True if the object is a BatchableHTMLText, false otherwise.
+     */
+    public static isBatchableHTMLText(obj: any): obj is BatchableHTMLText
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     private readonly _renderer: Renderer;
     public texturePromise: Promise<Texture>;
     public generatingTexture = false;

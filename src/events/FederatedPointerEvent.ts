@@ -1,5 +1,7 @@
 import { FederatedMouseEvent } from './FederatedMouseEvent';
 
+const typeSymbol = Symbol.for('pixijs.FederatedPointerEvent');
+
 /**
  * A specialized event class for pointer interactions in PixiJS applications.
  * Extends {@link FederatedMouseEvent} to provide advanced pointer-specific features
@@ -48,6 +50,22 @@ import { FederatedMouseEvent } from './FederatedMouseEvent';
  */
 export class FederatedPointerEvent extends FederatedMouseEvent implements PointerEvent
 {
+    /**
+     * Type symbol used to identify instances of FederatedPointerEvent.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a FederatedPointerEvent.
+     * @param obj - The object to check.
+     * @returns True if the object is a FederatedPointerEvent, false otherwise.
+     */
+    public static isFederatedPointerEvent(obj: any): obj is FederatedPointerEvent
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * The unique identifier of the pointer.
      * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/pointerId}

@@ -6,6 +6,8 @@ import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { DestroyOptions } from '../container/destroyTypes';
 import type { MeshOptions } from '../mesh/shared/Mesh';
 
+const typeSymbol = Symbol.for('pixijs.MeshPlane');
+
 /**
  * Constructor options used for `MeshPlane` instances. Defines how a texture is mapped
  * onto a plane with configurable vertex density.
@@ -82,6 +84,22 @@ export interface MeshPlaneOptions extends Omit<MeshOptions, 'geometry'>
  */
 export class MeshPlane extends Mesh
 {
+    /**
+     * Type symbol used to identify instances of MeshPlane.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a MeshPlane.
+     * @param obj - The object to check.
+     * @returns True if the object is a MeshPlane, false otherwise.
+     */
+    public static isMeshPlane(obj: any): obj is MeshPlane
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Controls whether the mesh geometry automatically updates when the texture dimensions change.
      * When true, the mesh will resize to match any texture updates. When false, the mesh maintains

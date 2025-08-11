@@ -2,6 +2,8 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import { type System } from '../shared/system/System';
 import { type WebGPURenderer } from './WebGPURenderer';
 
+const typeSymbol = Symbol.for('pixijs.GpuLimitsSystem');
+
 /**
  * The GpuLimitsSystem provides information about the capabilities and limitations of the underlying GPU.
  * These limits, such as the maximum number of textures that can be used in a shader
@@ -28,6 +30,22 @@ import { type WebGPURenderer } from './WebGPURenderer';
  */
 export class GpuLimitsSystem implements System
 {
+    /**
+     * Type symbol used to identify instances of GpuLimitsSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GpuLimitsSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a GpuLimitsSystem, false otherwise.
+     */
+    public static isGpuLimitsSystem(obj: any): obj is GpuLimitsSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

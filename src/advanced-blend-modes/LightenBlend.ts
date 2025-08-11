@@ -3,6 +3,8 @@ import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
+const typeSymbol = Symbol.for('pixijs.LightenBlend');
+
 /**
  * The final color is composed of the lightest values of each color channel.
  *
@@ -18,6 +20,22 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  */
 export class LightenBlend extends BlendModeFilter
 {
+    /**
+     * Type symbol used to identify instances of LightenBlend.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a LightenBlend.
+     * @param obj - The object to check.
+     * @returns True if the object is a LightenBlend, false otherwise.
+     */
+    public static isLightenBlend(obj: any): obj is LightenBlend
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = {
         name: 'lighten',

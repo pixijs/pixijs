@@ -1,5 +1,7 @@
 import type { Ticker, TickerCallback } from './Ticker';
 
+const typeSymbol = Symbol.for('TickerListener');
+
 /**
  * Internal class for handling the priority sorting of ticker handlers.
  * @private
@@ -7,6 +9,22 @@ import type { Ticker, TickerCallback } from './Ticker';
  */
 export class TickerListener<T = any>
 {
+    /**
+     * Type symbol used to identify instances of TickerListener.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a TickerListener.
+     * @param obj - The object to check.
+     * @returns True if the object is a TickerListener, false otherwise.
+     */
+    public static isTickerListener(obj: any): obj is TickerListener
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** The current priority. */
     public priority: number;
     /** The next item in chain. */

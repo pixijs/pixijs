@@ -22,6 +22,8 @@ import type {
     StrokeStyle
 } from '../graphics/shared/FillTypes';
 
+const typeSymbol = Symbol.for('pixi.TextStyle');
+
 /**
  * The alignment of the text.
  *
@@ -704,6 +706,22 @@ export class TextStyle extends EventEmitter<{
     update: TextDropShadow
 }>
 {
+    /**
+     * Type symbol used to identify instances of TextStyle.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a TextStyle.
+     * @param obj - The object to check.
+     * @returns True if the object is a TextStyle, false otherwise.
+     */
+    public static isTextStyle(obj: any): obj is TextStyle
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Default drop shadow settings used when enabling drop shadows on text.
      * These values are used as the base configuration when drop shadows are enabled without specific settings.

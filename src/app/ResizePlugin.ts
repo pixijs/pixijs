@@ -3,6 +3,8 @@ import { ExtensionType } from '../extensions/Extensions';
 import type { ExtensionMetadata } from '../extensions/Extensions';
 import type { Renderer } from '../rendering/renderers/types';
 
+const typeSymbol = Symbol.for('pixijs.ResizePlugin');
+
 type ResizeableRenderer = Pick<Renderer, 'resize'>;
 
 /**
@@ -71,6 +73,22 @@ export interface ResizePluginOptions
  */
 export class ResizePlugin
 {
+    /**
+     * Type symbol used to identify instances of ResizePlugin.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a ResizePlugin.
+     * @param obj - The object to check.
+     * @returns True if the object is a ResizePlugin, false otherwise.
+     */
+    public static isResizePlugin(obj: any): obj is ResizePlugin
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = ExtensionType.Application;
     /** @internal */

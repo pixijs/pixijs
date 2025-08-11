@@ -6,6 +6,8 @@ import { Texture } from '../texture/Texture';
 
 import type { BindableTexture } from '../texture/Texture';
 
+const typeSymbol = Symbol.for('pixijs.RenderTarget');
+
 /**
  * Options for creating a render target.
  * @category rendering
@@ -45,6 +47,22 @@ export interface RenderTargetOptions
  */
 export class RenderTarget
 {
+    /**
+     * Type symbol used to identify instances of RenderTarget.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a RenderTarget.
+     * @param obj - The object to check.
+     * @returns True if the object is a RenderTarget, false otherwise.
+     */
+    public static isRenderTarget(obj: any): obj is RenderTarget
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** The default options for a render target */
     public static defaultOptions: RenderTargetOptions = {
         /** the width of the RenderTarget */

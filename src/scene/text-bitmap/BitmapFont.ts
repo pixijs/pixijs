@@ -8,6 +8,8 @@ import type { FontMetrics } from '../text/canvas/CanvasTextMetrics';
 import type { BitmapFontData } from './AbstractBitmapFont';
 import type { BitmapFontInstallOptions } from './BitmapFontManager';
 
+const typeSymbol = Symbol.for('pixi.BitmapFont');
+
 /**
  * Options for creating a BitmapFont. Used when loading or creating bitmap fonts from existing textures and data.
  * @example
@@ -126,6 +128,22 @@ export interface BitmapFontOptions
  */
 export class BitmapFont extends AbstractBitmapFont<BitmapFont>
 {
+    /**
+     * Type symbol used to identify instances of BitmapFont.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a BitmapFont.
+     * @param obj - The object to check.
+     * @returns True if the object is a BitmapFont, false otherwise.
+     */
+    public static isBitmapFont(obj: any): obj is BitmapFont
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * The URL from which the font was loaded, if applicable.
      * This is useful for tracking font sources and reloading.

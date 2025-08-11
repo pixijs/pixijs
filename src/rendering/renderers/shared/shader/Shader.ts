@@ -10,6 +10,8 @@ import type { GlProgramOptions } from '../../gl/shader/GlProgram';
 import type { BindResource } from '../../gpu/shader/BindResource';
 import type { GpuProgramOptions } from '../../gpu/shader/GpuProgram';
 
+const typeSymbol = Symbol.for('pixijs.Shader');
+
 /**
  * A record of {@link BindGroup}'s used by the shader.
  *
@@ -193,6 +195,22 @@ export type ShaderFromResources = (GlShaderFromWith | GpuShaderFromWith)
  */
 export class Shader extends EventEmitter<{'destroy': Shader}>
 {
+    /**
+     * Type symbol used to identify instances of Shader.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Shader.
+     * @param obj - The object to check.
+     * @returns True if the object is a Shader, false otherwise.
+     */
+    public static isShader(obj: any): obj is Shader
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** A unique identifier for the shader */
     public readonly uid: number = uid('shader');
     /** An instance of the GPU program used by the WebGPU renderer */

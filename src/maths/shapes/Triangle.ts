@@ -4,6 +4,8 @@ import { Rectangle } from './Rectangle';
 import type { SHAPE_PRIMITIVE } from '../misc/const';
 import type { ShapePrimitive } from './ShapePrimitive';
 
+const typeSymbol = Symbol.for('pixijs.Triangle');
+
 /**
  * A class to define a shape of a triangle via user defined coordinates.
  *
@@ -28,6 +30,22 @@ import type { ShapePrimitive } from './ShapePrimitive';
  */
 export class Triangle implements ShapePrimitive
 {
+    /**
+     * Type symbol used to identify instances of Triangle.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Triangle.
+     * @param obj - The object to check.
+     * @returns True if the object is a Triangle, false otherwise.
+     */
+    public static isTriangle(obj: any): obj is Triangle
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * The type of the object, mainly used to avoid `instanceof` checks
      * @example

@@ -11,6 +11,8 @@ import type { Texture } from '../../shared/texture/Texture';
 import type { CLEAR_OR_BOOL } from '../const';
 import type { WebGLRenderer } from '../WebGLRenderer';
 
+const typeSymbol = Symbol.for('pixijs.GlRenderTargetAdaptor');
+
 /**
  * The WebGL adaptor for the render target system. Allows the Render Target System to be used with the WebGL renderer
  * @category rendering
@@ -18,6 +20,22 @@ import type { WebGLRenderer } from '../WebGLRenderer';
  */
 export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget>
 {
+    /**
+     * Type symbol used to identify instances of GlRenderTargetAdaptor.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GlRenderTargetAdaptor.
+     * @param obj - The object to check.
+     * @returns True if the object is a GlRenderTargetAdaptor, false otherwise.
+     */
+    public static isGlRenderTargetAdaptor(obj: any): obj is GlRenderTargetAdaptor
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     private _renderTargetSystem: RenderTargetSystem<GlRenderTarget>;
     private _renderer: WebGLRenderer<HTMLCanvasElement>;
     private _clearColorCache: RgbaArray = [0, 0, 0, 0];

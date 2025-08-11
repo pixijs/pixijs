@@ -7,6 +7,8 @@ import type { RenderPipe } from '../../rendering/renderers/shared/instructions/R
 import type { Renderer } from '../../rendering/renderers/types';
 import type { NineSliceSprite } from './NineSliceSprite';
 
+const typeSymbol = Symbol.for('pixijs.NineSliceSpritePipe');
+
 /**
  * GPU data for NineSliceSprite.
  * @internal
@@ -31,6 +33,22 @@ export class NineSliceSpriteGpuData extends BatchableMesh
  */
 export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
 {
+    /**
+     * Type symbol used to identify instances of NineSliceSpritePipe.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a NineSliceSpritePipe.
+     * @param obj - The object to check.
+     * @returns True if the object is a NineSliceSpritePipe, false otherwise.
+     */
+    public static isNineSliceSpritePipe(obj: any): obj is NineSliceSpritePipe
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

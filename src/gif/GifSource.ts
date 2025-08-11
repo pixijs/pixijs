@@ -3,6 +3,8 @@ import { DOMAdapter } from '../environment/adapter';
 import { CanvasSource } from '../rendering/renderers/shared/texture/sources/CanvasSource';
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 
+const typeSymbol = Symbol.for('pixijs.GifSource');
+
 /**
  * Represents a single frame of a GIF. Includes image and timing data.
  * @category gif
@@ -38,6 +40,22 @@ interface GifBufferOptions
  */
 class GifSource
 {
+    /**
+     * Type symbol used to identify instances of GifSource.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GifSource.
+     * @param obj - The object to check.
+     * @returns True if the object is a GifSource, false otherwise.
+     */
+    public static isGifSource(obj: any): obj is GifSource
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** Width of the animation */
     public readonly width: number;
 

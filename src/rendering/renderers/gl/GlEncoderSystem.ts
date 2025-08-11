@@ -7,6 +7,8 @@ import type { State } from '../shared/state/State';
 import type { System } from '../shared/system/System';
 import type { WebGLRenderer } from './WebGLRenderer';
 
+const typeSymbol = Symbol.for('pixijs.GlEncoderSystem');
+
 /**
  * The system that handles encoding commands for the WebGL.
  * @category rendering
@@ -14,6 +16,22 @@ import type { WebGLRenderer } from './WebGLRenderer';
  */
 export class GlEncoderSystem implements System
 {
+    /**
+     * Type symbol used to identify instances of GlEncoderSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GlEncoderSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a GlEncoderSystem, false otherwise.
+     */
+    public static isGlEncoderSystem(obj: any): obj is GlEncoderSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

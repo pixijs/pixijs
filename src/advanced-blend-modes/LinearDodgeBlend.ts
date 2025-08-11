@@ -5,6 +5,8 @@ import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
+const typeSymbol = Symbol.for('pixijs.LinearDodgeBlend');
+
 /**
  * Looks at the color information in each channel and brightens the base color to reflect the blend color by decreasing contrast between the two.
  *
@@ -20,6 +22,22 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  */
 export class LinearDodgeBlend extends BlendModeFilter
 {
+    /**
+     * Type symbol used to identify instances of LinearDodgeBlend.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a LinearDodgeBlend.
+     * @param obj - The object to check.
+     * @returns True if the object is a LinearDodgeBlend, false otherwise.
+     */
+    public static isLinearDodgeBlend(obj: any): obj is LinearDodgeBlend
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = {
         name: 'linear-dodge',

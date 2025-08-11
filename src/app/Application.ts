@@ -10,6 +10,8 @@ import type { RendererDestroyOptions } from '../rendering/renderers/shared/syste
 import type { Renderer } from '../rendering/renderers/types';
 import type { DestroyOptions } from '../scene/container/destroyTypes';
 
+const typeSymbol = Symbol.for('pixijs.Application');
+
 /**
  * Interface for creating Application plugins. Any plugin that's usable for Application must implement these methods.
  *
@@ -166,6 +168,22 @@ export interface Application extends PixiMixins.Application { }
  */
 export class Application<R extends Renderer = Renderer>
 {
+    /**
+     * Type symbol used to identify instances of Application.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is an Application.
+     * @param obj - The object to check.
+     * @returns True if the object is an Application, false otherwise.
+     */
+    public static isApplication(obj: any): obj is Application
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Collection of installed plugins.
      * @internal

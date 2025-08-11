@@ -7,6 +7,8 @@ import type { Shader } from '../../renderers/shared/shader/Shader';
 import type { Batch } from '../shared/Batcher';
 import type { BatcherAdaptor, BatcherPipe } from '../shared/BatcherPipe';
 
+const typeSymbol = Symbol.for('pixijs.GlBatchAdaptor');
+
 /**
  * A BatcherAdaptor that uses WebGL to render batches.
  * @category rendering
@@ -14,6 +16,22 @@ import type { BatcherAdaptor, BatcherPipe } from '../shared/BatcherPipe';
  */
 export class GlBatchAdaptor implements BatcherAdaptor
 {
+    /**
+     * Type symbol used to identify instances of GlBatchAdaptor.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GlBatchAdaptor.
+     * @param obj - The object to check.
+     * @returns True if the object is a GlBatchAdaptor, false otherwise.
+     */
+    public static isGlBatchAdaptor(obj: any): obj is GlBatchAdaptor
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

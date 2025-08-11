@@ -3,6 +3,8 @@ import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
+const typeSymbol = Symbol.for('pixijs.HardLightBlend');
+
 /**
  * The final color is the result of multiply if the top color is darker, or screen if the top color is lighter.
  * This blend mode is equivalent to overlay but with the layers swapped.
@@ -20,6 +22,22 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  */
 export class HardLightBlend extends BlendModeFilter
 {
+    /**
+     * Type symbol used to identify instances of HardLightBlend.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a HardLightBlend.
+     * @param obj - The object to check.
+     * @returns True if the object is a HardLightBlend, false otherwise.
+     */
+    public static isHardLightBlend(obj: any): obj is HardLightBlend
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = {
         name: 'hard-light',

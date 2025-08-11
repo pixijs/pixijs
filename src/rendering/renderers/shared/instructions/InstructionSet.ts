@@ -3,6 +3,8 @@ import { uid } from '../../../../utils/data/uid';
 import type { Renderable } from '../Renderable';
 import type { Instruction } from './Instruction';
 
+const typeSymbol = Symbol.for('pixijs.InstructionSet');
+
 /**
  * A set of instructions that can be executed by the renderer.
  * Basically wraps an array, but with some extra properties that help the renderer
@@ -16,6 +18,22 @@ import type { Instruction } from './Instruction';
  */
 export class InstructionSet
 {
+    /**
+     * Type symbol used to identify instances of InstructionSet.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a InstructionSet.
+     * @param obj - The object to check.
+     * @returns True if the object is a InstructionSet, false otherwise.
+     */
+    public static isInstructionSet(obj: any): obj is InstructionSet
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** a unique id for this instruction set used through the renderer */
     public readonly uid: number = uid('instructionSet');
     /** the array of instructions */

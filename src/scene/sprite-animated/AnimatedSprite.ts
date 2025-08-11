@@ -6,6 +6,8 @@ import { Sprite } from '../sprite/Sprite';
 
 import type { SpriteOptions } from '../sprite/Sprite';
 
+const typeSymbol = Symbol.for('pixi.AnimatedSprite');
+
 /**
  * A collection of textures or frame objects that can be used to create an `AnimatedSprite`.
  * @see {@link AnimatedSprite}
@@ -260,6 +262,22 @@ export interface AnimatedSprite extends PixiMixins.AnimatedSprite, Sprite {}
  */
 export class AnimatedSprite extends Sprite
 {
+    /**
+     * Type symbol used to identify instances of AnimatedSprite.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is an AnimatedSprite.
+     * @param obj - The object to check.
+     * @returns True if the object is an AnimatedSprite, false otherwise.
+     */
+    public static isAnimatedSprite(obj: any): obj is AnimatedSprite
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * The speed that the AnimatedSprite will play at. Higher is faster, lower is slower.
      * @example

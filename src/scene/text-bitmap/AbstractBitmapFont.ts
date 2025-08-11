@@ -4,6 +4,8 @@ import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { FontMetrics } from '../text/canvas/CanvasTextMetrics';
 
+const typeSymbol = Symbol.for('pixijs.AbstractBitmapFont');
+
 /**
  * @category text
  * @advanced
@@ -92,6 +94,22 @@ export abstract class AbstractBitmapFont<FontType>
     extends EventEmitter<BitmapFontEvents<FontType>>
     implements Omit<BitmapFontData, 'chars' | 'pages' | 'fontSize'>
 {
+    /**
+     * Type symbol used to identify instances of AbstractBitmapFont.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a AbstractBitmapFont.
+     * @param obj - The object to check.
+     * @returns True if the object is a AbstractBitmapFont, false otherwise.
+     */
+    public static isAbstractBitmapFont(obj: any): obj is AbstractBitmapFont<any>
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** The map of characters by character code. */
     public readonly chars: Record<string, CharData> = Object.create(null);
 

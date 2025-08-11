@@ -6,6 +6,8 @@ import type { Bounds } from '../../../scene/container/bounds/Bounds';
 import type { Container } from '../../../scene/container/Container';
 import type { Effect } from '../../../scene/container/Effect';
 
+const typeSymbol = Symbol.for('pixijs.ScissorMask');
+
 /**
  * ScissorMask is an effect that applies a scissor mask to a container.
  * It restricts rendering to the area defined by the mask.
@@ -17,6 +19,22 @@ import type { Effect } from '../../../scene/container/Effect';
  */
 export class ScissorMask implements Effect
 {
+    /**
+     * Type symbol used to identify instances of ScissorMask.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a ScissorMask.
+     * @param obj - The object to check.
+     * @returns True if the object is a ScissorMask, false otherwise.
+     */
+    public static isScissorMask(obj: any): obj is ScissorMask
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public priority = 0;
     public mask: Container;
     public pipe = 'scissorMask';

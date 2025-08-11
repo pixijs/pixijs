@@ -7,9 +7,27 @@ import type { Container } from '../scene/container/Container';
 import type { Effect } from '../scene/container/Effect';
 import type { FilterInstruction } from './FilterSystem';
 
+const typeSymbol = Symbol.for('pixijs.FilterPipe');
+
 /** @internal */
 export class FilterPipe implements InstructionPipe<FilterInstruction>
 {
+    /**
+     * Type symbol used to identify instances of FilterPipe.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a FilterPipe.
+     * @param obj - The object to check.
+     * @returns True if the object is a FilterPipe, false otherwise.
+     */
+    public static isFilterPipe(obj: any): obj is FilterPipe
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public static extension = {
         type: [
             ExtensionType.WebGLPipes,

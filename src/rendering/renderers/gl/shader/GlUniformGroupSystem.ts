@@ -8,6 +8,8 @@ import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
 import type { GlProgram, GlUniformData } from './GlProgram';
 
+const typeSymbol = Symbol.for('pixijs.GlUniformGroupSystem');
+
 /**
  * System plugin to the renderer to manage shaders.
  * @category rendering
@@ -15,6 +17,22 @@ import type { GlProgram, GlUniformData } from './GlProgram';
  */
 export class GlUniformGroupSystem implements System
 {
+    /**
+     * Type symbol used to identify instances of GlUniformGroupSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GlUniformGroupSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a GlUniformGroupSystem, false otherwise.
+     */
+    public static isGlUniformGroupSystem(obj: any): obj is GlUniformGroupSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

@@ -5,6 +5,8 @@ import { hslgpu } from '../filters/blend-modes/hls/GPUhls';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
+const typeSymbol = Symbol.for('pixijs.LuminosityBlend');
+
 /**
  * The final color has the luminosity of the top color, while using the hue and saturation of the bottom color.
  * This blend mode is equivalent to color, but with the layers swapped.
@@ -21,6 +23,22 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  */
 export class LuminosityBlend extends BlendModeFilter
 {
+    /**
+     * Type symbol used to identify instances of LuminosityBlend.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a LuminosityBlend.
+     * @param obj - The object to check.
+     * @returns True if the object is a LuminosityBlend, false otherwise.
+     */
+    public static isLuminosityBlend(obj: any): obj is LuminosityBlend
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = {
         name: 'luminosity',

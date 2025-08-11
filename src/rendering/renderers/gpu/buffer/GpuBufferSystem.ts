@@ -6,6 +6,8 @@ import type { System } from '../../shared/system/System';
 import type { GPU } from '../GpuDeviceSystem';
 import type { WebGPURenderer } from '../WebGPURenderer';
 
+const typeSymbol = Symbol.for('pixijs.GpuBufferSystem');
+
 /**
  * System plugin to the renderer to manage buffers.
  * @category rendering
@@ -13,6 +15,22 @@ import type { WebGPURenderer } from '../WebGPURenderer';
  */
 export class GpuBufferSystem implements System
 {
+    /**
+     * Type symbol used to identify instances of GpuBufferSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GpuBufferSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a GpuBufferSystem, false otherwise.
+     */
+    public static isGpuBufferSystem(obj: any): obj is GpuBufferSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

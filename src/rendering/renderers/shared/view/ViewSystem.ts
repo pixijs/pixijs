@@ -12,6 +12,8 @@ import type { System } from '../system/System';
 import type { CanvasSource } from '../texture/sources/CanvasSource';
 import type { Texture } from '../texture/Texture';
 
+const typeSymbol = Symbol.for('pixijs.ViewSystem');
+
 /**
  * Options passed to the ViewSystem
  * @category rendering
@@ -70,6 +72,22 @@ export interface ViewSystemDestroyOptions
  */
 export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSystemDestroyOptions> >
 {
+    /**
+     * Type symbol used to identify instances of ViewSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a ViewSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a ViewSystem, false otherwise.
+     */
+    public static isViewSystem(obj: any): obj is ViewSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

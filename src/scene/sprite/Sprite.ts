@@ -12,6 +12,8 @@ import type { BoundsData } from '../container/bounds/Bounds';
 import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
 
+const typeSymbol = Symbol.for('pixijs.Sprite');
+
 /**
  * Options for configuring a Sprite instance. Defines the texture, anchor point, and rendering behavior.
  * @example
@@ -133,6 +135,22 @@ export interface Sprite extends PixiMixins.Sprite, ViewContainer<BatchableSprite
  */
 export class Sprite extends ViewContainer<BatchableSprite>
 {
+    /**
+     * Type symbol used to identify instances of Sprite.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Sprite.
+     * @param obj - The object to check.
+     * @returns True if the object is a Sprite, false otherwise.
+     */
+    public static isSprite(obj: any): obj is Sprite
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Creates a new sprite based on a source texture, image, video, or canvas element.
      * This is a convenience method that automatically creates and manages textures.

@@ -3,6 +3,8 @@ import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
+const typeSymbol = Symbol.for('pixijs.HardMixBlend');
+
 /**
  * Hard defines each of the color channel values of the blend color to the RGB values of the base color.
  * If the sum of a channel is 255, it receives a value of 255; if less than 255, a value of 0.
@@ -19,6 +21,22 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  */
 export class HardMixBlend extends BlendModeFilter
 {
+    /**
+     * Type symbol used to identify instances of HardMixBlend.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a HardMixBlend.
+     * @param obj - The object to check.
+     * @returns True if the object is a HardMixBlend, false otherwise.
+     */
+    public static isHardMixBlend(obj: any): obj is HardMixBlend
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = {
         name: 'hard-mix',

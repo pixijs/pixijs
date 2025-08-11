@@ -15,6 +15,8 @@ import type { ViewContainer } from '../view/ViewContainer';
 import type { Container } from './Container';
 import type { RenderGroup } from './RenderGroup';
 
+const typeSymbol = Symbol.for('pixijs.RenderGroupSystem');
+
 const tempMatrix = new Matrix();
 
 /**
@@ -25,6 +27,22 @@ const tempMatrix = new Matrix();
  */
 export class RenderGroupSystem implements System
 {
+    /**
+     * Type symbol used to identify instances of RenderGroupSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a RenderGroupSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a RenderGroupSystem, false otherwise.
+     */
+    public static isRenderGroupSystem(obj: any): obj is RenderGroupSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

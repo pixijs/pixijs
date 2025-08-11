@@ -6,6 +6,8 @@ import type { Renderer } from '../../rendering/renderers/types';
 import type { Bounds, BoundsData } from './bounds/Bounds';
 import type { ContainerOptions } from './Container';
 
+const typeSymbol = Symbol.for('pixijs.RenderContainer');
+
 /**
  * A function that takes a renderer and does the custom rendering logic.
  * This is the function that will be called each frame.
@@ -78,6 +80,22 @@ export interface RenderContainerOptions extends ContainerOptions
  */
 export class RenderContainer extends ViewContainer implements Instruction
 {
+    /**
+     * Type symbol used to identify instances of RenderContainer.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a RenderContainer.
+     * @param obj - The object to check.
+     * @returns True if the object is a RenderContainer, false otherwise.
+     */
+    public static isRenderContainer(obj: any): obj is RenderContainer
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @internal */
     public override readonly renderPipeId: string = 'customRender';
     /** @internal */

@@ -12,9 +12,28 @@ import type { Renderable } from '../../rendering/renderers/shared/Renderable';
 import type { Renderer } from '../../rendering/renderers/types';
 import type { BitmapText } from './BitmapText';
 
+const typeSymbolBitmapTextGraphics = Symbol.for('pixijs.BitmapTextGraphics');
+const typeSymbolBitmapTextPipe = Symbol.for('pixijs.BitmapTextPipe');
+
 /** @internal */
 export class BitmapTextGraphics extends Graphics
 {
+    /**
+     * Type symbol used to identify instances of BitmapTextGraphics.
+     * @internal
+     */
+    public readonly [typeSymbolBitmapTextGraphics] = true;
+
+    /**
+     * Checks if the given object is a BitmapTextGraphics.
+     * @param obj - The object to check.
+     * @returns True if the object is a BitmapTextGraphics, false otherwise.
+     */
+    public static isBitmapTextGraphics(obj: any): obj is BitmapTextGraphics
+    {
+        return !!obj && !!obj[typeSymbolBitmapTextGraphics];
+    }
+
     public destroy()
     {
         if (this.context.customShader)
@@ -29,6 +48,22 @@ export class BitmapTextGraphics extends Graphics
 /** @internal */
 export class BitmapTextPipe implements RenderPipe<BitmapText>
 {
+    /**
+     * Type symbol used to identify instances of BitmapTextPipe.
+     * @internal
+     */
+    public readonly [typeSymbolBitmapTextPipe] = true;
+
+    /**
+     * Checks if the given object is a BitmapTextPipe.
+     * @param obj - The object to check.
+     * @returns True if the object is a BitmapTextPipe, false otherwise.
+     */
+    public static isBitmapTextPipe(obj: any): obj is BitmapTextPipe
+    {
+        return !!obj && !!obj[typeSymbolBitmapTextPipe];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

@@ -8,6 +8,8 @@ import type { Renderer } from '../rendering/renderers/types';
 import type { GraphicsContext } from '../scene/graphics/shared/GraphicsContext';
 import type { Text } from '../scene/text/Text';
 
+const typeSymbol = Symbol.for('pixijs.PrepareBase');
+
 /**
  * The accepted types to pass to the prepare system
  * @category rendering
@@ -30,6 +32,22 @@ export type PrepareQueueItem = TextureSource | Text | GraphicsContext;
  */
 export abstract class PrepareBase
 {
+    /**
+     * Type symbol used to identify instances of PrepareBase.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a PrepareBase.
+     * @param obj - The object to check.
+     * @returns True if the object is a PrepareBase, false otherwise.
+     */
+    public static isPrepareBase(obj: any): obj is PrepareBase
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** The number of uploads to process per frame */
     public static uploadsPerFrame = 4;
 

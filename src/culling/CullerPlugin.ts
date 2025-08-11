@@ -5,6 +5,8 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
 import type { Renderer } from '../rendering/renderers/types';
 import type { Container } from '../scene/container/Container';
 
+const typeSymbol = Symbol.for('pixijs.CullerPlugin');
+
 /**
  * Application options for the {@link CullerPlugin}.
  * These options control how your application handles culling of display objects.
@@ -117,6 +119,22 @@ export interface CullerPluginOptions
  */
 export class CullerPlugin
 {
+    /**
+     * Type symbol used to identify instances of CullerPlugin.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a CullerPlugin.
+     * @param obj - The object to check.
+     * @returns True if the object is a CullerPlugin, false otherwise.
+     */
+    public static isCullerPlugin(obj: any): obj is CullerPlugin
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = {
         priority: 10,

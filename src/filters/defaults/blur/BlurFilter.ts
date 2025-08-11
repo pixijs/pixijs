@@ -9,6 +9,8 @@ import type { Texture } from '../../../rendering/renderers/shared/texture/Textur
 import type { FilterOptions } from '../../Filter';
 import type { FilterSystem } from '../../FilterSystem';
 
+const typeSymbol = Symbol.for('pixijs.BlurFilter');
+
 /**
  * Configuration options for the BlurFilter.
  * Controls how the Gaussian blur effect is applied.
@@ -121,6 +123,22 @@ export interface BlurFilterOptions extends FilterOptions
  */
 export class BlurFilter extends Filter
 {
+    /**
+     * Type symbol used to identify instances of BlurFilter.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a BlurFilter.
+     * @param obj - The object to check.
+     * @returns True if the object is a BlurFilter, false otherwise.
+     */
+    public static isBlurFilter(obj: any): obj is BlurFilter
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Default blur filter options
      * @example

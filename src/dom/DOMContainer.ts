@@ -3,6 +3,8 @@ import { ViewContainer, type ViewContainerOptions } from '../scene/view/ViewCont
 
 import type { PointData } from '../maths/point/PointData';
 
+const typeSymbol = Symbol.for('pixijs.DOMContainer');
+
 /**
  * Options for configuring a {@link DOMContainer}.
  * Controls how DOM elements are integrated into the PixiJS scene graph.
@@ -87,6 +89,22 @@ export interface DOMContainerOptions extends ViewContainerOptions
  */
 export class DOMContainer extends ViewContainer<never>
 {
+    /**
+     * Type symbol used to identify instances of DOMContainer.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a DOMContainer.
+     * @param obj - The object to check.
+     * @returns True if the object is a DOMContainer, false otherwise.
+     */
+    public static isDOMContainer(obj: any): obj is DOMContainer
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @internal */
     public override readonly renderPipeId: string = 'dom';
 

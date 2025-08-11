@@ -6,6 +6,8 @@ import type { PointData } from '../../maths/point/PointData';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { MeshOptions } from '../mesh/shared/Mesh';
 
+const typeSymbol = Symbol.for('pixijs.MeshRope');
+
 /**
  * Constructor options used for `MeshRope` instances. Allows configuration of a rope-like mesh
  * that follows a series of points with a texture applied.
@@ -91,6 +93,22 @@ export interface MeshRopeOptions extends Omit<MeshOptions, 'geometry'>
  */
 export class MeshRope extends Mesh
 {
+    /**
+     * Type symbol used to identify instances of MeshRope.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a MeshRope.
+     * @param obj - The object to check.
+     * @returns True if the object is a MeshRope, false otherwise.
+     */
+    public static isMeshRope(obj: any): obj is MeshRope
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Default options for creating a MeshRope instance. These values are used when specific
      * options aren't provided in the constructor.

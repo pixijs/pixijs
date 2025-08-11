@@ -6,6 +6,8 @@ import { textStyleToCSS } from './utils/textStyleToCSS';
 import type { FillInput, StrokeInput } from '../graphics/shared/FillTypes';
 import type { TextStyleOptions } from '../text/TextStyle';
 
+const typeSymbol = Symbol.for('pixijs.HTMLTextStyle');
+
 /**
  * Options for HTML text style, extends standard text styling with HTML-specific capabilities.
  * Omits certain base text properties that don't apply to HTML rendering.
@@ -86,6 +88,22 @@ export interface HTMLTextStyleOptions extends Omit<TextStyleOptions, 'leading' |
  */
 export class HTMLTextStyle extends TextStyle
 {
+    /**
+     * Type symbol used to identify instances of HTMLTextStyle.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a HTMLTextStyle.
+     * @param obj - The object to check.
+     * @returns True if the object is a HTMLTextStyle, false otherwise.
+     */
+    public static isHTMLTextStyle(obj: any): obj is HTMLTextStyle
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     private _cssOverrides: string[] = [];
     private _cssStyle: string;
     /**

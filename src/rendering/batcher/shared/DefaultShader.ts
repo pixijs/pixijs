@@ -5,6 +5,8 @@ import { roundPixelsBit, roundPixelsBitGl } from '../../high-shader/shader-bits/
 import { getBatchSamplersUniformGroup } from '../../renderers/gl/shader/getBatchSamplersUniformGroup';
 import { Shader } from '../../renderers/shared/shader/Shader';
 
+const typeSymbol = Symbol.for('pixijs.DefaultShader');
+
 /**
  * DefaultShader is a specialized shader class designed for batch rendering.
  * It extends the base Shader class and provides functionality for handling
@@ -17,6 +19,22 @@ import { Shader } from '../../renderers/shared/shader/Shader';
  */
 export class DefaultShader extends Shader
 {
+    /**
+     * Type symbol used to identify instances of DefaultShader.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a DefaultShader.
+     * @param obj - The object to check.
+     * @returns True if the object is a DefaultShader, false otherwise.
+     */
+    public static isDefaultShader(obj: any): obj is DefaultShader
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     constructor(maxTextures: number)
     {
         const glProgram = compileHighShaderGlProgram({

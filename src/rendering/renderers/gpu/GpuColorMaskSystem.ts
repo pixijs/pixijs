@@ -3,6 +3,8 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import type { System } from '../shared/system/System';
 import type { WebGPURenderer } from './WebGPURenderer';
 
+const typeSymbol = Symbol.for('pixijs.GpuColorMaskSystem');
+
 /**
  * The system that handles color masking for the GPU.
  * @category rendering
@@ -10,6 +12,22 @@ import type { WebGPURenderer } from './WebGPURenderer';
  */
 export class GpuColorMaskSystem implements System
 {
+    /**
+     * Type symbol used to identify instances of GpuColorMaskSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GpuColorMaskSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a GpuColorMaskSystem, false otherwise.
+     */
+    public static isGpuColorMaskSystem(obj: any): obj is GpuColorMaskSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

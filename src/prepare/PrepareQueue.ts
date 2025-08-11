@@ -14,6 +14,8 @@ import type { FillInstruction, TextureInstruction } from '../scene/graphics/shar
 import type { FrameObject } from '../scene/sprite-animated/AnimatedSprite';
 import type { PrepareQueueItem, PrepareSourceItem } from './PrepareBase';
 
+const typeSymbol = Symbol.for('pixijs.PrepareQueue');
+
 /**
  * Part of the prepare system. Responsible for uploading all the items to the GPU.
  * This class extends the base functionality and resolves given resource items ready for the queue.
@@ -22,6 +24,22 @@ import type { PrepareQueueItem, PrepareSourceItem } from './PrepareBase';
  */
 export abstract class PrepareQueue extends PrepareBase
 {
+    /**
+     * Type symbol used to identify instances of PrepareQueue.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a PrepareQueue.
+     * @param obj - The object to check.
+     * @returns True if the object is a PrepareQueue, false otherwise.
+     */
+    public static isPrepareQueue(obj: any): obj is PrepareQueue
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Resolve the given resource type and return an item for the queue
      * @param source

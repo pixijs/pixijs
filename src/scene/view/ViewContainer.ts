@@ -9,6 +9,8 @@ import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { DestroyOptions } from '../container/destroyTypes';
 
+const typeSymbol = Symbol.for('pixi.ViewContainer');
+
 /** @internal */
 export interface GPUData
 {
@@ -37,6 +39,22 @@ export interface ViewContainer<GPU_DATA extends GPUData = any> extends PixiMixin
  */
 export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Container implements View
 {
+    /**
+     * Type symbol used to identify instances of ViewContainer.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a ViewContainer.
+     * @param obj - The object to check.
+     * @returns True if the object is a ViewContainer, false otherwise.
+     */
+    public static isViewContainer(obj: any): obj is ViewContainer<any>
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @internal */
     public override readonly renderPipeId: string;
     /** @internal */

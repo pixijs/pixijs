@@ -10,6 +10,8 @@ import type { Container } from '../../../scene/container/Container';
 import type { Effect } from '../../../scene/container/Effect';
 import type { PoolItem } from '../../../utils/pool/Pool';
 
+const typeSymbol = Symbol.for('pixijs.AlphaMask');
+
 /**
  * AlphaMask is an effect that applies a mask to a container using the alpha channel of a sprite.
  * It can be used to create complex masking effects by using a sprite as the mask.
@@ -19,6 +21,22 @@ import type { PoolItem } from '../../../utils/pool/Pool';
  */
 export class AlphaMask implements Effect, PoolItem
 {
+    /**
+     * Type symbol used to identify instances of AlphaMask.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a AlphaMask.
+     * @param obj - The object to check.
+     * @returns True if the object is a AlphaMask, false otherwise.
+     */
+    public static isAlphaMask(obj: any): obj is AlphaMask
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public static extension: ExtensionMetadata = ExtensionType.MaskEffect;
 
     public priority = 0;

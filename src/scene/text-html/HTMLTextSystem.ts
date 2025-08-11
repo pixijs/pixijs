@@ -22,6 +22,8 @@ import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { PoolItem } from '../../utils/pool/Pool';
 import type { HTMLTextOptions } from './HTMLText';
 
+const typeSymbol = Symbol.for('pixi.HTMLTextSystem');
+
 /**
  * System plugin to the renderer to manage HTMLText
  * @category rendering
@@ -29,6 +31,22 @@ import type { HTMLTextOptions } from './HTMLText';
  */
 export class HTMLTextSystem implements System
 {
+    /**
+     * Type symbol used to identify instances of HTMLTextSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a HTMLTextSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a HTMLTextSystem, false otherwise.
+     */
+    public static isHTMLTextSystem(obj: any): obj is HTMLTextSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

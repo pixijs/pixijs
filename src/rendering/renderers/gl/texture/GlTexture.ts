@@ -1,5 +1,7 @@
 import { GL_FORMATS, GL_TARGETS, GL_TYPES } from './const';
 
+const typeSymbol = Symbol.for('pixijs.GlTexture');
+
 /**
  * Internal texture for WebGL context
  * @category rendering
@@ -7,6 +9,22 @@ import { GL_FORMATS, GL_TARGETS, GL_TYPES } from './const';
  */
 export class GlTexture
 {
+    /**
+     * Type symbol used to identify instances of GlTexture.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GlTexture.
+     * @param obj - The object to check.
+     * @returns True if the object is a GlTexture, false otherwise.
+     */
+    public static isGlTexture(obj: any): obj is GlTexture
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public target: GL_TARGETS = GL_TARGETS.TEXTURE_2D;
 
     /** The WebGL texture. */

@@ -10,6 +10,8 @@ import type { Dict } from '../../../../../utils/types';
 import type { ALPHA_MODES } from '../const';
 import type { TextureSourceOptions } from './TextureSource';
 
+const typeSymbol = Symbol.for('pixijs.VideoSource');
+
 /**
  * The type of resource used for video textures.
  * This is typically an HTMLVideoElement.
@@ -58,6 +60,22 @@ export interface VideoSourceOptions extends TextureSourceOptions<VideoResource>
  */
 export class VideoSource extends TextureSource<VideoResource>
 {
+    /**
+     * Type symbol used to identify instances of VideoSource.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a VideoSource.
+     * @param obj - The object to check.
+     * @returns True if the object is a VideoSource, false otherwise.
+     */
+    public static isVideoSource(obj: any): obj is VideoSource
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public static extension: ExtensionMetadata = ExtensionType.TextureSource;
 
     /** The default options for video sources. */

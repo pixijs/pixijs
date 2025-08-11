@@ -3,6 +3,8 @@ import { Rectangle } from './Rectangle';
 import type { SHAPE_PRIMITIVE } from '../misc/const';
 import type { ShapePrimitive } from './ShapePrimitive';
 
+const typeSymbol = Symbol.for('pixijs.Circle');
+
 /**
  * The Circle object represents a circle shape in a two-dimensional coordinate system.
  * Used for drawing graphics and specifying hit areas for containers.
@@ -30,6 +32,22 @@ import type { ShapePrimitive } from './ShapePrimitive';
  */
 export class Circle implements ShapePrimitive
 {
+    /**
+     * Type symbol used to identify instances of Circle.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Circle.
+     * @param obj - The object to check.
+     * @returns True if the object is a Circle, false otherwise.
+     */
+    public static isCircle(obj: any): obj is Circle
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * The X coordinate of the center of this circle
      * @example

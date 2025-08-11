@@ -2,9 +2,27 @@ import type { WebGLRenderer } from '../../../rendering/renderers/gl/WebGLRendere
 import type { ParticleContainer } from '../shared/ParticleContainer';
 import type { ParticleContainerAdaptor, ParticleContainerPipe } from '../shared/ParticleContainerPipe';
 
+const typeSymbol = Symbol.for('GlParticleContainerAdaptor');
+
 /** @internal */
 export class GlParticleContainerAdaptor implements ParticleContainerAdaptor
 {
+    /**
+     * Type symbol used to identify instances of GlParticleContainerAdaptor.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GlParticleContainerAdaptor.
+     * @param obj - The object to check.
+     * @returns True if the object is a GlParticleContainerAdaptor, false otherwise.
+     */
+    public static isGlParticleContainerAdaptor(obj: any): obj is GlParticleContainerAdaptor
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public execute(particleContainerPipe: ParticleContainerPipe, container: ParticleContainer)
     {
         const state = particleContainerPipe.state;

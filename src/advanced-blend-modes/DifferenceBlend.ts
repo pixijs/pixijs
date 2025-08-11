@@ -3,6 +3,8 @@ import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
+const typeSymbol = Symbol.for('pixijs.DifferenceBlend');
+
 /**
  * The final color is the result of subtracting the darker of the two colors from the lighter one.
  * black layer has no effect, while a white layer inverts the other layer's color.
@@ -19,6 +21,22 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  */
 export class DifferenceBlend extends BlendModeFilter
 {
+    /**
+     * Type symbol used to identify instances of DifferenceBlend.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a DifferenceBlend.
+     * @param obj - The object to check.
+     * @returns True if the object is a DifferenceBlend, false otherwise.
+     */
+    public static isDifferenceBlend(obj: any): obj is DifferenceBlend
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = {
         name: 'difference',

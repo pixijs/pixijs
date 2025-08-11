@@ -17,6 +17,8 @@ import type { Topology } from '../../../rendering/renderers/shared/geometry/cons
 import type { Graphics } from '../shared/Graphics';
 import type { GraphicsAdaptor, GraphicsPipe } from '../shared/GraphicsPipe';
 
+const typeSymbol = Symbol.for('pixijs.GpuGraphicsAdaptor');
+
 /**
  * A GraphicsAdaptor that uses the GPU to render graphics.
  * @category rendering
@@ -24,6 +26,22 @@ import type { GraphicsAdaptor, GraphicsPipe } from '../shared/GraphicsPipe';
  */
 export class GpuGraphicsAdaptor implements GraphicsAdaptor
 {
+    /**
+     * Type symbol used to identify instances of GpuGraphicsAdaptor.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GpuGraphicsAdaptor.
+     * @param obj - The object to check.
+     * @returns True if the object is a GpuGraphicsAdaptor, false otherwise.
+     */
+    public static isGpuGraphicsAdaptor(obj: any): obj is GpuGraphicsAdaptor
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

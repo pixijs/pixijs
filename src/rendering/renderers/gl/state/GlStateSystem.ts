@@ -8,6 +8,8 @@ import type { BLEND_MODES } from '../../shared/state/const';
 import type { System } from '../../shared/system/System';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 
+const typeSymbol = Symbol.for('pixijs.GlStateSystem');
+
 const BLEND = 0;
 const OFFSET = 1;
 const CULLING = 2;
@@ -22,6 +24,22 @@ const DEPTH_MASK = 5;
  */
 export class GlStateSystem implements System
 {
+    /**
+     * Type symbol used to identify instances of GlStateSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GlStateSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a GlStateSystem, false otherwise.
+     */
+    public static isGlStateSystem(obj: any): obj is GlStateSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

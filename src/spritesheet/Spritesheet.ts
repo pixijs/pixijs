@@ -6,6 +6,8 @@ import type { PointData } from '../maths/point/PointData';
 import type { BindableTexture, TextureBorders } from '../rendering/renderers/shared/texture/Texture';
 import type { Dict } from '../utils/types';
 
+const typeSymbol = Symbol.for('pixi.Spritesheet');
+
 /**
  * Represents the JSON data for a spritesheet atlas.
  * @category assets
@@ -214,6 +216,22 @@ export interface SpritesheetOptions<S extends SpritesheetData = SpritesheetData>
  */
 export class Spritesheet<S extends SpritesheetData = SpritesheetData>
 {
+    /**
+     * Type symbol used to identify instances of Spritesheet.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Spritesheet.
+     * @param obj - The object to check.
+     * @returns True if the object is a Spritesheet, false otherwise.
+     */
+    public static isSpritesheet(obj: any): obj is Spritesheet<S>
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * The maximum number of Textures to build per process.
      * @advanced

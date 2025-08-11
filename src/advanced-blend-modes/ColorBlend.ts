@@ -5,6 +5,8 @@ import { hslgpu } from '../filters/blend-modes/hls/GPUhls';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
+const typeSymbol = Symbol.for('pixijs.ColorBlend');
+
 /**
  * The final color has the hue and saturation of the top color, while using the luminosity of the bottom color.
  * The effect preserves gray levels and can be used to colorize the foreground.
@@ -21,6 +23,22 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  */
 export class ColorBlend extends BlendModeFilter
 {
+    /**
+     * Type symbol used to identify instances of ColorBlend.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a ColorBlend.
+     * @param obj - The object to check.
+     * @returns True if the object is a ColorBlend, false otherwise.
+     */
+    public static isColorBlend(obj: any): obj is ColorBlend
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = {
         name: 'color',

@@ -5,6 +5,8 @@ import { compute2DProjection } from './utils/compute2DProjections';
 import type { ArrayFixed } from '../../utils/types';
 import type { PlaneGeometryOptions } from '../mesh-plane/PlaneGeometry';
 
+const typeSymbol = Symbol.for('pixi.PerspectivePlaneGeometry');
+
 /**
  * Constructor options used for `PerspectivePlaneGeometry` instances.
  * @category scene
@@ -38,6 +40,22 @@ export interface PerspectivePlaneGeometryOptions extends PlaneGeometryOptions
  */
 export class PerspectivePlaneGeometry extends PlaneGeometry
 {
+    /**
+     * Type symbol used to identify instances of PerspectivePlaneGeometry.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a PerspectivePlaneGeometry.
+     * @param obj - The object to check.
+     * @returns True if the object is a PerspectivePlaneGeometry, false otherwise.
+     */
+    public static isPerspectivePlaneGeometry(obj: any): obj is PerspectivePlaneGeometry
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** The corner points of the quad you can modify these directly, if you do make sure to call `updateProjection` */
     public corners: [number, number, number, number, number, number, number, number];
     private readonly _projectionMatrix: ArrayFixed<number, 9> = [0, 0, 0, 0, 0, 0, 0, 0, 0];

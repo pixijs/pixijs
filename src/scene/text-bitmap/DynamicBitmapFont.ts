@@ -15,6 +15,8 @@ import type { ICanvasRenderingContext2D } from '../../environment/canvas/ICanvas
 import type { CanvasAndContext } from '../../rendering/renderers/shared/texture/CanvasPool';
 import type { FontMetrics } from '../text/canvas/CanvasTextMetrics';
 
+const typeSymbol = Symbol.for('pixijs.DynamicBitmapFont');
+
 /** @internal */
 export interface DynamicBitmapFontOptions
 {
@@ -36,6 +38,22 @@ export interface DynamicBitmapFontOptions
  */
 export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
 {
+    /**
+     * Type symbol used to identify instances of DynamicBitmapFont.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a DynamicBitmapFont.
+     * @param obj - The object to check.
+     * @returns True if the object is a DynamicBitmapFont, false otherwise.
+     */
+    public static isDynamicBitmapFont(obj: any): obj is DynamicBitmapFont
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public static defaultOptions: DynamicBitmapFontOptions = {
         textureSize: 512,
         style: new TextStyle(),

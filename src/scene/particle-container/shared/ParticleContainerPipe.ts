@@ -12,6 +12,8 @@ import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import type { Renderer } from '../../../rendering/renderers/types';
 import type { ParticleContainer } from './ParticleContainer';
 
+const typeSymbol = Symbol.for('pixijs.ParticleContainerPipe');
+
 /** @internal */
 export interface ParticleContainerAdaptor
 {
@@ -25,6 +27,22 @@ export interface ParticleContainerAdaptor
  */
 export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
 {
+    /**
+     * Type symbol used to identify instances of ParticleContainerPipe.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a ParticleContainerPipe.
+     * @param obj - The object to check.
+     * @returns True if the object is a ParticleContainerPipe, false otherwise.
+     */
+    public static isParticleContainerPipe(obj: any): obj is ParticleContainerPipe
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** The default shader that is used if a sprite doesn't have a more specific one. */
     public defaultShader: Shader;
 

@@ -12,6 +12,9 @@ import type { PoolItem } from '../../../utils/pool/Pool';
 import type { Graphics } from './Graphics';
 import type { GpuGraphicsContext } from './GraphicsContextSystem';
 
+const typeSymbolGraphicsGpuData = Symbol.for('pixijs.GraphicsGpuData');
+const typeSymbolGraphicsPipe = Symbol.for('pixijs.GraphicsPipe');
+
 /** @internal */
 export interface GraphicsAdaptor
 {
@@ -24,6 +27,22 @@ export interface GraphicsAdaptor
 /** @internal */
 export class GraphicsGpuData
 {
+    /**
+     * Type symbol used to identify instances of GraphicsGpuData.
+     * @internal
+     */
+    public readonly [typeSymbolGraphicsGpuData] = true;
+
+    /**
+     * Checks if the given object is a GraphicsGpuData.
+     * @param obj - The object to check.
+     * @returns True if the object is a GraphicsGpuData, false otherwise.
+     */
+    public static isGraphicsGpuData(obj: any): obj is GraphicsGpuData
+    {
+        return !!obj && !!obj[typeSymbolGraphicsGpuData];
+    }
+
     public batches: BatchableGraphics[] = [];
     public batched = false;
     public destroy()
@@ -40,6 +59,22 @@ export class GraphicsGpuData
 /** @internal */
 export class GraphicsPipe implements RenderPipe<Graphics>
 {
+    /**
+     * Type symbol used to identify instances of GraphicsPipe.
+     * @internal
+     */
+    public readonly [typeSymbolGraphicsPipe] = true;
+
+    /**
+     * Checks if the given object is a GraphicsPipe.
+     * @param obj - The object to check.
+     * @returns True if the object is a GraphicsPipe, false otherwise.
+     */
+    public static isGraphicsPipe(obj: any): obj is GraphicsPipe
+    {
+        return !!obj && !!obj[typeSymbolGraphicsPipe];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

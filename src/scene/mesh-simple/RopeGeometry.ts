@@ -3,6 +3,8 @@ import { MeshGeometry } from '../mesh/shared/MeshGeometry';
 import type { PointData } from '../../maths/point/PointData';
 import type { MeshGeometryOptions } from '../mesh/shared/MeshGeometry';
 
+const typeSymbol = Symbol.for('pixi.RopeGeometry');
+
 /**
  * Constructor options used for `RopeGeometry` instances.
  * ```js
@@ -49,6 +51,22 @@ export interface RopeGeometryOptions
  */
 export class RopeGeometry extends MeshGeometry
 {
+    /**
+     * Type symbol used to identify instances of RopeGeometry.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a RopeGeometry.
+     * @param obj - The object to check.
+     * @returns True if the object is a RopeGeometry, false otherwise.
+     */
+    public static isRopeGeometry(obj: any): obj is RopeGeometry
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** Default options for RopeGeometry constructor. */
     public static defaultOptions: RopeGeometryOptions & MeshGeometryOptions = {
         /** The width (i.e., thickness) of the rope. */

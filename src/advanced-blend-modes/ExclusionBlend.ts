@@ -3,6 +3,8 @@ import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
+const typeSymbol = Symbol.for('pixijs.ExclusionBlend');
+
 /**
  * The final color is similar to difference, but with less contrast.
  * As with difference, a black layer has no effect, while a white layer inverts the other layer's color.
@@ -19,6 +21,22 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  */
 export class ExclusionBlend extends BlendModeFilter
 {
+    /**
+     * Type symbol used to identify instances of ExclusionBlend.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a ExclusionBlend.
+     * @param obj - The object to check.
+     * @returns True if the object is a ExclusionBlend, false otherwise.
+     */
+    public static isExclusionBlend(obj: any): obj is ExclusionBlend
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = {
         name: 'exclusion',

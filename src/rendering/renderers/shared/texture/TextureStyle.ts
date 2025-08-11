@@ -5,6 +5,8 @@ import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import type { BindResource } from '../../gpu/shader/BindResource';
 import type { COMPARE_FUNCTION, SCALE_MODE, WRAP_MODE } from './const';
 
+const typeSymbol = Symbol.for('pixijs.TextureStyle');
+
 const idHash: Record<string, number> = Object.create(null);
 
 /**
@@ -84,6 +86,22 @@ export class TextureStyle extends EventEmitter<{
     destroy: TextureStyle,
 }> implements BindResource
 {
+    /**
+     * Type symbol used to identify instances of TextureStyle.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a TextureStyle.
+     * @param obj - The object to check.
+     * @returns True if the object is a TextureStyle, false otherwise.
+     */
+    public static isTextureStyle(obj: any): obj is TextureStyle
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @internal */
     public _resourceType = 'textureSampler';
     /** @internal */

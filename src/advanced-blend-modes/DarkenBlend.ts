@@ -3,6 +3,8 @@ import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
+const typeSymbol = Symbol.for('pixijs.DarkenBlend');
+
 /**
  * The final color is composed of the darkest values of each color channel.
  *
@@ -18,6 +20,22 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  */
 export class DarkenBlend extends BlendModeFilter
 {
+    /**
+     * Type symbol used to identify instances of DarkenBlend.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a DarkenBlend.
+     * @param obj - The object to check.
+     * @returns True if the object is a DarkenBlend, false otherwise.
+     */
+    public static isDarkenBlend(obj: any): obj is DarkenBlend
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = {
         name: 'darken',

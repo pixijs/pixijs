@@ -9,6 +9,8 @@ import type { Texture } from '../../../rendering/renderers/shared/texture/Textur
 import type { FilterSystem } from '../../FilterSystem';
 import type { BlurFilterOptions } from './BlurFilter';
 
+const typeSymbol = Symbol.for('pixijs.BlurFilterPass');
+
 /**
  * Options for BlurFilterPass
  * @category filters
@@ -35,6 +37,22 @@ export interface BlurFilterPassOptions extends BlurFilterOptions
  */
 export class BlurFilterPass extends Filter
 {
+    /**
+     * Type symbol used to identify instances of BlurFilterPass.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a BlurFilterPass.
+     * @param obj - The object to check.
+     * @returns True if the object is a BlurFilterPass, false otherwise.
+     */
+    public static isBlurFilterPass(obj: any): obj is BlurFilterPass
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** Default blur filter pass options */
     public static defaultOptions: Partial<BlurFilterPassOptions> = {
         /** The strength of the blur filter. */

@@ -10,6 +10,8 @@ import { TextureMatrix } from './TextureMatrix';
 
 import type { TextureResourceOrOptions } from './utils/textureFrom';
 
+const typeSymbol = Symbol.for('pixijs.Texture');
+
 /**
  * Stores the width of the non-scalable borders, for example when used with {@link NineSlicePlane} texture.
  * @category rendering
@@ -145,6 +147,22 @@ export class Texture<TextureSourceType extends TextureSource = TextureSource> ex
     destroy: Texture
 }> implements BindableTexture
 {
+    /**
+     * Type symbol used to identify instances of Texture.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Texture.
+     * @param obj - The object to check.
+     * @returns True if the object is a Texture, false otherwise.
+     */
+    public static isTexture(obj: any): obj is Texture
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Helper function that creates a returns Texture based on the source you provide.
      * The source should be loaded and ready to go. If not its best to grab the asset using Assets.

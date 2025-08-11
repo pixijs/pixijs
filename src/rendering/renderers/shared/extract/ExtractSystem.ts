@@ -12,6 +12,8 @@ import type { System } from '../system/System';
 import type { GetPixelsOutput } from '../texture/GenerateCanvas';
 import type { GenerateTextureOptions } from './GenerateTextureSystem';
 
+const typeSymbol = Symbol.for('pixijs.ExtractSystem');
+
 const imageTypes = {
     png: 'image/png',
     jpg: 'image/jpeg',
@@ -430,6 +432,22 @@ export type ExtractOptions = BaseExtractOptions | ExtractImageOptions | ExtractD
  */
 export class ExtractSystem implements System
 {
+    /**
+     * Type symbol used to identify instances of ExtractSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a ExtractSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a ExtractSystem, false otherwise.
+     */
+    public static isExtractSystem(obj: any): obj is ExtractSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

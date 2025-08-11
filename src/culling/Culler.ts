@@ -3,6 +3,8 @@ import { getGlobalBounds } from '../scene/container/bounds/getGlobalBounds';
 
 import type { Container } from '../scene/container/Container';
 
+const typeSymbol = Symbol.for('pixijs.Culler');
+
 const tempBounds = new Bounds();
 
 /**
@@ -60,6 +62,22 @@ export type RectangleLike = {x: number, y: number, width: number, height: number
  */
 export class Culler
 {
+    /**
+     * Type symbol used to identify instances of Culler.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Culler.
+     * @param obj - The object to check.
+     * @returns True if the object is a Culler, false otherwise.
+     */
+    public static isCuller(obj: any): obj is Culler
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Culls the children of a specific container based on the given view rectangle.
      * This determines which objects should be rendered and which can be skipped.

@@ -8,6 +8,8 @@ import type { System } from '../../shared/system/System';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
 
+const typeSymbol = Symbol.for('pixijs.GlBufferSystem');
+
 /**
  * System plugin to the renderer to manage buffers.
  *
@@ -28,6 +30,22 @@ import type { WebGLRenderer } from '../WebGLRenderer';
  */
 export class GlBufferSystem implements System
 {
+    /**
+     * Type symbol used to identify instances of GlBufferSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GlBufferSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a GlBufferSystem, false otherwise.
+     */
+    public static isGlBufferSystem(obj: any): obj is GlBufferSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

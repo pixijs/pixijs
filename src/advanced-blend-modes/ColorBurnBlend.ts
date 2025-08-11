@@ -3,6 +3,8 @@ import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
+const typeSymbol = Symbol.for('pixijs.ColorBurnBlend');
+
 /**
  * The final color is the result of inverting the bottom color, dividing the value by the top color,
  * and inverting that value. A white foreground leads to no change.
@@ -22,6 +24,22 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  */
 export class ColorBurnBlend extends BlendModeFilter
 {
+    /**
+     * Type symbol used to identify instances of ColorBurnBlend.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a ColorBurnBlend.
+     * @param obj - The object to check.
+     * @returns True if the object is a ColorBurnBlend, false otherwise.
+     */
+    public static isColorBurnBlend(obj: any): obj is ColorBurnBlend
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = {
         name: 'color-burn',

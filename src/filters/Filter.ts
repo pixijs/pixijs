@@ -13,6 +13,8 @@ import type { BLEND_MODES } from '../rendering/renderers/shared/state/const';
 import type { Texture } from '../rendering/renderers/shared/texture/Texture';
 import type { FilterSystem } from './FilterSystem';
 
+const typeSymbol = Symbol.for('pixijs.Filter');
+
 /**
  * The options to use when creating a new filter.
  * @category filters
@@ -130,6 +132,22 @@ export type FilterAntialias = 'on' | 'off' | 'inherit';
  */
 export class Filter extends Shader
 {
+    /**
+     * Type symbol used to identify instances of Filter.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Filter.
+     * @param obj - The object to check.
+     * @returns True if the object is a Filter, false otherwise.
+     */
+    public static isFilter(obj: any): obj is Filter
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** The default filter settings */
     public static defaultOptions: FilterOptions = {
         blendMode: 'normal',

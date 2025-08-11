@@ -9,6 +9,8 @@ import type { View } from '../../rendering/renderers/shared/view/View';
 import type { TextOptions, TextString } from './AbstractText';
 import type { TextStyleOptions } from './TextStyle';
 
+const typeSymbol = Symbol.for('pixi.Text');
+
 // eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface Text extends PixiMixins.Text, AbstractText<
     TextStyle,
@@ -155,6 +157,22 @@ export class Text
     extends AbstractText<TextStyle, TextStyleOptions, CanvasTextOptions, BatchableText>
     implements View
 {
+    /**
+     * Type symbol used to identify instances of Text.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Text.
+     * @param obj - The object to check.
+     * @returns True if the object is a Text, false otherwise.
+     */
+    public static isText(obj: any): obj is Text
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @internal */
     public override readonly renderPipeId: string = 'text';
 

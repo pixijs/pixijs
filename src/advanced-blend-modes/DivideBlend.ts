@@ -3,6 +3,8 @@ import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
+const typeSymbol = Symbol.for('pixijs.DivideBlend');
+
 /**
  * The Divide blend mode divides the RGB channel values of the bottom layer by those of the top layer.
  * The darker the top layer, the brighter the bottom layer will appear.
@@ -20,6 +22,22 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  */
 export class DivideBlend extends BlendModeFilter
 {
+    /**
+     * Type symbol used to identify instances of DivideBlend.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a DivideBlend.
+     * @param obj - The object to check.
+     * @returns True if the object is a DivideBlend, false otherwise.
+     */
+    public static isDivideBlend(obj: any): obj is DivideBlend
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = {
         name: 'divide',

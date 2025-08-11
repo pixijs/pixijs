@@ -11,6 +11,8 @@ import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
 
+const typeSymbol = Symbol.for('pixijs.NineSliceSprite');
+
 /**
  * Constructor options used for `NineSliceSprite` instances.
  * Defines how the sprite's texture is divided and scaled in nine sections.
@@ -212,6 +214,22 @@ export interface NineSliceSprite extends PixiMixins.NineSliceSprite, ViewContain
  */
 export class NineSliceSprite extends ViewContainer<NineSliceSpriteGpuData> implements View
 {
+    /**
+     * Type symbol used to identify instances of NineSliceSprite.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a NineSliceSprite.
+     * @param obj - The object to check.
+     * @returns True if the object is a NineSliceSprite, false otherwise.
+     */
+    public static isNineSliceSprite(obj: any): obj is NineSliceSprite
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * The default options used to override initial values of any options passed in the constructor.
      * These values are used as fallbacks when specific options are not provided.

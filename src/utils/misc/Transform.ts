@@ -3,6 +3,8 @@ import { ObservablePoint } from '../../maths/point/ObservablePoint';
 
 import type { Observer } from '../../maths/point/ObservablePoint';
 
+const typeSymbol = Symbol.for('pixijs.Transform');
+
 /**
  * Options for the {@link Transform} constructor.
  * @category utils
@@ -51,6 +53,22 @@ export interface TransformOptions
  */
 export class Transform
 {
+    /**
+     * Type symbol used to identify instances of Transform.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Transform.
+     * @param obj - The object to check.
+     * @returns True if the object is a Transform, false otherwise.
+     */
+    public static isTransform(obj: any): obj is Transform
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * The local transformation matrix.
      * @internal

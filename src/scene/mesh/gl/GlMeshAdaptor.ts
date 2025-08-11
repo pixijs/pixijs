@@ -11,6 +11,8 @@ import { warn } from '../../../utils/logging/warn';
 import type { Mesh } from '../shared/Mesh';
 import type { MeshAdaptor, MeshPipe } from '../shared/MeshPipe';
 
+const typeSymbol = Symbol.for('pixijs.GlMeshAdaptor');
+
 /**
  * A MeshAdaptor that uses the WebGL to render meshes.
  * @category rendering
@@ -18,6 +20,22 @@ import type { MeshAdaptor, MeshPipe } from '../shared/MeshPipe';
  */
 export class GlMeshAdaptor implements MeshAdaptor
 {
+    /**
+     * Type symbol used to identify instances of GlMeshAdaptor.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GlMeshAdaptor.
+     * @param obj - The object to check.
+     * @returns True if the object is a GlMeshAdaptor, false otherwise.
+     */
+    public static isGlMeshAdaptor(obj: any): obj is GlMeshAdaptor
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public static extension = {
         type: [
             ExtensionType.WebGLPipesAdaptor,

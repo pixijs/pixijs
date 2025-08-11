@@ -12,6 +12,8 @@ import type { BindResource } from './shader/BindResource';
 import type { GpuProgram } from './shader/GpuProgram';
 import type { WebGPURenderer } from './WebGPURenderer';
 
+const typeSymbol = Symbol.for('pixijs.BindGroupSystem');
+
 /**
  * This manages the WebGPU bind groups. this is how data is bound to a shader when rendering
  * @category rendering
@@ -20,6 +22,22 @@ import type { WebGPURenderer } from './WebGPURenderer';
 export class BindGroupSystem implements System
 {
     /** @ignore */
+    /**
+     * Type symbol used to identify instances of BindGroupSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a BindGroupSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a BindGroupSystem, false otherwise.
+     */
+    public static isBindGroupSystem(obj: any): obj is BindGroupSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public static extension = {
         type: [
             ExtensionType.WebGPUSystem,

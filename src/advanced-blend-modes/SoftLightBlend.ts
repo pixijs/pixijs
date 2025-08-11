@@ -5,6 +5,8 @@ import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
+const typeSymbol = Symbol.for('pixijs.SoftLightBlend');
+
 /**
  * The final color is similar to hard-light, but softer. This blend mode behaves similar to hard-light.
  * The effect is similar to shining a diffused spotlight on the backdrop.
@@ -21,6 +23,22 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  */
 export class SoftLightBlend extends BlendModeFilter
 {
+    /**
+     * Type symbol used to identify instances of SoftLightBlend.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a SoftLightBlend.
+     * @param obj - The object to check.
+     * @returns True if the object is a SoftLightBlend, false otherwise.
+     */
+    public static isSoftLightBlend(obj: any): obj is SoftLightBlend
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = {
         name: 'soft-light',
