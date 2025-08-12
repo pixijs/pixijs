@@ -172,6 +172,15 @@ export class RenderGroup implements Instruction
     public updateCacheTexture(): void
     {
         this.textureNeedsUpdate = true;
+
+        const cachedParent = this._parentCacheAsTextureRenderGroup;
+
+        // It's worth going bottom-up and notify all parents cached as texture
+        // that cached child was updated.
+        if (cachedParent && !cachedParent.textureNeedsUpdate)
+        {
+            cachedParent.updateCacheTexture();
+        }
     }
 
     public reset()
