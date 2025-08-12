@@ -116,6 +116,7 @@ export class RenderGroupPipe implements InstructionPipe<RenderGroup>
             this._renderer.globalUniforms.push({
                 worldTransformMatrix,
                 worldColor: 0xFFFFFFFF,
+                offset: { x: 0, y: 0 },
             });
 
             executeInstructions(renderGroup, this._renderer.renderPipes);
