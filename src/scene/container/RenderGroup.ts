@@ -172,6 +172,15 @@ export class RenderGroup implements Instruction
     public updateCacheTexture(): void
     {
         this.textureNeedsUpdate = true;
+
+        const cachedParent = this._parentCacheAsTextureRenderGroup;
+
+        // It's worth going bottom-up and notify all parents cached as texture
+        // that cached child was updated.
+        if (cachedParent && !cachedParent.textureNeedsUpdate)
+        {
+            cachedParent.updateCacheTexture();
+        }
     }
 
     public reset()
@@ -485,6 +494,11 @@ export class RenderGroup implements Instruction
      */
     public get cacheToLocalTransform()
     {
+        if (this.isCachedAsTexture)
+        {
+            return this.textureOffsetInverseTransform;
+        }
+
         if (!this._parentCacheAsTextureRenderGroup) return null;
 
         return this._parentCacheAsTextureRenderGroup.textureOffsetInverseTransform;
