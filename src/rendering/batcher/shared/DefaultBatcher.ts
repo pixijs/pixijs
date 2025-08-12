@@ -4,12 +4,11 @@ import { BatchGeometry } from './BatchGeometry';
 import { DefaultShader } from './DefaultShader';
 
 import type { Matrix } from '../../../maths/matrix/Matrix';
-import type { Shader } from '../../renderers/shared/shader/Shader';
 import type { BatchableMeshElement, BatchableQuadElement, BatcherOptions } from './Batcher';
 
 const typeSymbol = Symbol.for('pixijs.DefaultBatcher');
 
-let defaultShader: Shader = null;
+let defaultShader: DefaultShader = null;
 
 /**
  * Represents the common elements for default batch rendering.

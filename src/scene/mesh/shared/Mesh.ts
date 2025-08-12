@@ -108,7 +108,7 @@ export class Mesh<
      * @param obj - The object to check.
      * @returns True if the object is a Mesh, false otherwise.
      */
-    public static isMesh(obj: any): obj is Mesh<GEOMETRY, SHADER>
+    public static isMesh(obj: any): obj is Mesh<any, any>
     {
         return !!obj && !!obj[typeSymbol];
     }

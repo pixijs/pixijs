@@ -162,7 +162,7 @@ export class AbstractRenderer<
      * @param obj - The object to check.
      * @returns True if the object is a AbstractRenderer, false otherwise.
      */
-    public static isAbstractRenderer(obj: any): obj is AbstractRenderer
+    public static isAbstractRenderer(obj: any): obj is AbstractRenderer<any, any, any>
     {
         return !!obj && !!obj[typeSymbol];
     }

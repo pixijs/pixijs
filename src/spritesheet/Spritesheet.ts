@@ -227,7 +227,7 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
      * @param obj - The object to check.
      * @returns True if the object is a Spritesheet, false otherwise.
      */
-    public static isSpritesheet(obj: any): obj is Spritesheet<S>
+    public static isSpritesheet(obj: any): obj is Spritesheet<any>
     {
         return !!obj && !!obj[typeSymbol];
     }
