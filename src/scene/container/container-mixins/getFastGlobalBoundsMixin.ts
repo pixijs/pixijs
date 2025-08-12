@@ -59,7 +59,6 @@ export const getFastGlobalBoundsMixin: Partial<Container> = {
         bounds.clear();
 
         // Calculate bounds recursively, starting from the current container.
-        // Bounds are already aligned with the worldTransform.
         this._getGlobalBoundsRecursive(!!factorRenderLayers, bounds, this.parentRenderLayer);
 
         // Validate the calculated bounds, resetting if invalid.
@@ -67,6 +66,11 @@ export const getFastGlobalBoundsMixin: Partial<Container> = {
         {
             bounds.set(0, 0, 0, 0);
         }
+
+        // Apply the world transformation to the bounds.
+        const renderGroup = this.renderGroup || this.parentRenderGroup;
+
+        bounds.applyMatrix(renderGroup.worldTransform);
 
         return bounds;
     },
