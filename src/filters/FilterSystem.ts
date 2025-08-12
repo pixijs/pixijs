@@ -1030,7 +1030,7 @@ export class FilterSystem implements System
 
         let index = this._filterStackIndex - 1;
 
-        while (index > 1)
+        while (index > 0)
         {
             index--;
             previousFilterData = this._filterStack[index];
