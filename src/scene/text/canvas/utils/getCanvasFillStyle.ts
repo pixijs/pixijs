@@ -46,7 +46,7 @@ export function getCanvasFillStyle(
         return pattern;
     }
     // Pattern fill
-    else if (fillStyle.fill instanceof FillPattern)
+    else if (FillPattern.isFillPattern(fillStyle.fill))
     {
         const fillPattern = fillStyle.fill;
         const pattern = context.createPattern(fillPattern.texture.source.resource, 'repeat');
@@ -62,7 +62,7 @@ export function getCanvasFillStyle(
         return pattern;
     }
     // Gradient fill
-    else if (fillStyle.fill instanceof FillGradient)
+    else if (FillGradient.isFillGradient(fillStyle.fill))
     {
         const fillGradient = fillStyle.fill;
 

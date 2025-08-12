@@ -134,7 +134,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
 
         if (dynamicOptions.textureStyle)
         {
-            this._textureStyle = dynamicOptions.textureStyle instanceof TextureStyle
+            this._textureStyle = TextureStyle.isTextureStyle(dynamicOptions.textureStyle)
                 ? dynamicOptions.textureStyle
                 : new TextureStyle(dynamicOptions.textureStyle);
         }

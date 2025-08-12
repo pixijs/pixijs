@@ -694,7 +694,7 @@ export class EventBoundary
      */
     protected mapPointerDown(from: FederatedEvent): void
     {
-        if (!(from instanceof FederatedPointerEvent))
+        if (!FederatedPointerEvent.isFederatedPointerEvent(from))
         {
             // #if _DEBUG
             warn('EventBoundary cannot map a non-pointer event as a pointer event');
@@ -734,7 +734,7 @@ export class EventBoundary
      */
     protected mapPointerMove(from: FederatedEvent): void
     {
-        if (!(from instanceof FederatedPointerEvent))
+        if (!FederatedPointerEvent.isFederatedPointerEvent(from))
         {
             // #if _DEBUG
             warn('EventBoundary cannot map a non-pointer event as a pointer event');
@@ -875,7 +875,7 @@ export class EventBoundary
      */
     protected mapPointerOver(from: FederatedEvent): void
     {
-        if (!(from instanceof FederatedPointerEvent))
+        if (!FederatedPointerEvent.isFederatedPointerEvent(from))
         {
             // #if _DEBUG
             warn('EventBoundary cannot map a non-pointer event as a pointer event');
@@ -921,7 +921,7 @@ export class EventBoundary
      */
     protected mapPointerOut(from: FederatedEvent): void
     {
-        if (!(from instanceof FederatedPointerEvent))
+        if (!FederatedPointerEvent.isFederatedPointerEvent(from))
         {
             // #if _DEBUG
             warn('EventBoundary cannot map a non-pointer event as a pointer event');
@@ -980,7 +980,7 @@ export class EventBoundary
      */
     protected mapPointerUp(from: FederatedEvent): void
     {
-        if (!(from instanceof FederatedPointerEvent))
+        if (!FederatedPointerEvent.isFederatedPointerEvent(from))
         {
             // #if _DEBUG
             warn('EventBoundary cannot map a non-pointer event as a pointer event');
@@ -1109,7 +1109,7 @@ export class EventBoundary
      */
     protected mapPointerUpOutside(from: FederatedEvent): void
     {
-        if (!(from instanceof FederatedPointerEvent))
+        if (!FederatedPointerEvent.isFederatedPointerEvent(from))
         {
             // #if _DEBUG
             warn('EventBoundary cannot map a non-pointer event as a pointer event');
@@ -1156,7 +1156,7 @@ export class EventBoundary
      */
     protected mapWheel(from: FederatedEvent): void
     {
-        if (!(from instanceof FederatedWheelEvent))
+        if (!FederatedWheelEvent.isFederatedWheelEvent(from))
         {
             // #if _DEBUG
             warn('EventBoundary cannot map a non-wheel event as a wheel event');
@@ -1323,7 +1323,10 @@ export class EventBoundary
      */
     protected copyPointerData(from: FederatedEvent, to: FederatedEvent): void
     {
-        if (!(from instanceof FederatedPointerEvent && to instanceof FederatedPointerEvent)) return;
+        if (
+            !(FederatedPointerEvent.isFederatedPointerEvent(from)
+            && FederatedPointerEvent.isFederatedPointerEvent(to))
+        ) return;
 
         to.pointerId = from.pointerId;
         to.width = from.width;
@@ -1361,7 +1364,10 @@ export class EventBoundary
      */
     protected copyMouseData(from: FederatedEvent, to: FederatedEvent): void
     {
-        if (!(from instanceof FederatedMouseEvent && to instanceof FederatedMouseEvent)) return;
+        if (
+            !(FederatedMouseEvent.isFederatedMouseEvent(from)
+            && FederatedMouseEvent.isFederatedMouseEvent(to))
+        ) return;
 
         to.altKey = from.altKey;
         to.button = from.button;

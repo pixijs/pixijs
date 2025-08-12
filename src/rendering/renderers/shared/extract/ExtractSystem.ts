@@ -487,7 +487,7 @@ export class ExtractSystem implements System
         defaults: Partial<T> = {},
     ): T
     {
-        if (options instanceof Container || options instanceof Texture)
+        if (Container.isContainer(options) || Texture.isTexture(options))
         {
             return {
                 target: options,
@@ -676,7 +676,7 @@ export class ExtractSystem implements System
 
         const renderer = this._renderer;
 
-        if (target instanceof Texture)
+        if (Texture.isTexture(target))
         {
             return renderer.texture.generateCanvas(target);
         }
@@ -727,13 +727,13 @@ export class ExtractSystem implements System
         const target = options.target;
 
         const renderer = this._renderer;
-        const texture = target instanceof Texture
+        const texture = Texture.isTexture(target)
             ? target
             : renderer.textureGenerator.generateTexture(options as GenerateTextureOptions);
 
         const pixelInfo = renderer.texture.getPixels(texture);
 
-        if (target instanceof Container)
+        if (Container.isContainer(target))
         {
             // destroy generated texture
             texture.destroy(true);
@@ -789,7 +789,7 @@ export class ExtractSystem implements System
     {
         options = this._normalizeOptions(options);
 
-        if (options.target instanceof Texture) return options.target;
+        if (Texture.isTexture(options.target)) return options.target;
 
         return this._renderer.textureGenerator.generateTexture(options as GenerateTextureOptions);
     }

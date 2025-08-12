@@ -97,7 +97,7 @@ export abstract class PrepareBase
         for (const resourceItem of resourceArray)
         {
             // handle containers and their children
-            if (resourceItem instanceof Container)
+            if (Container.isContainer(resourceItem))
             {
                 this._addContainer(resourceItem);
             }

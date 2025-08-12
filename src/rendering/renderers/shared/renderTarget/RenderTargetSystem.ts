@@ -307,7 +307,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
         const pixelWidth = source.pixelWidth;
         const pixelHeight = source.pixelHeight;
 
-        if (!frame && renderSurface instanceof Texture)
+        if (!frame && Texture.isTexture(renderSurface))
         {
             frame = renderSurface.frame;
         }
@@ -543,17 +543,17 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
             renderSurface = getCanvasTexture(renderSurface as ICanvas).source;
         }
 
-        if (renderSurface instanceof RenderTarget)
+        if (RenderTarget.isRenderTarget(renderSurface))
         {
             renderTarget = renderSurface;
         }
-        else if (renderSurface instanceof TextureSource)
+        else if (TextureSource.isTextureSource(renderSurface))
         {
             renderTarget = new RenderTarget({
                 colorTextures: [renderSurface],
             });
 
-            if (renderSurface.source instanceof CanvasSource)
+            if (CanvasSource.isCanvasSource(renderSurface.source))
             {
                 renderTarget.isRoot = true;
             }

@@ -263,7 +263,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         // is a canvas...
         renderTarget.colorTextures.forEach((colorTexture, i) =>
         {
-            if (colorTexture instanceof CanvasSource)
+            if (CanvasSource.isCanvasSource(colorTexture))
             {
                 const context = colorTexture.resource.getContext(
                     'webgpu'

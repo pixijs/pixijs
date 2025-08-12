@@ -448,7 +448,7 @@ export class AnimatedSprite extends Sprite
 
         super({
             ...rest,
-            texture: firstFrame instanceof Texture ? firstFrame : firstFrame.texture,
+            texture: Texture.isTexture(firstFrame) ? firstFrame : firstFrame.texture,
         });
 
         this._textures = null;
@@ -933,7 +933,7 @@ export class AnimatedSprite extends Sprite
 
     set textures(value: AnimatedSpriteFrames)
     {
-        if (value[0] instanceof Texture)
+        if (Texture.isTexture(value[0]))
         {
             this._textures = value as Texture[];
             this._durations = null;

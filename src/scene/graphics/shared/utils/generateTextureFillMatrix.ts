@@ -83,7 +83,7 @@ export function generateTextureMatrix(out: Matrix, style: FillStyle | StrokeStyl
     const sourceStyle = style.texture.source.style;
 
     // we don't want to set the address mode if the fill is a gradient as this handles its own address mode
-    if (!(style.fill instanceof FillGradient) && sourceStyle.addressMode === 'clamp-to-edge')
+    if (!FillGradient.isFillGradient(style.fill) && sourceStyle.addressMode === 'clamp-to-edge')
     {
         sourceStyle.addressMode = 'repeat';
         sourceStyle.update();

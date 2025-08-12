@@ -747,14 +747,14 @@ export class FilterSystem implements System
         globalFrame[3] = rootTexture.source.height * resolution;
 
         // we are going to overwrite resource we can set it to null!
-        if (output instanceof Texture) output.source.resource = null;
+        if (Texture.isTexture(output)) output.source.resource = null;
 
         // set the output texture - this is where we are going to render to
         const renderTarget = this.renderer.renderTarget.getRenderTarget(output);
 
         this.renderer.renderTarget.bind(output, !!clear);
 
-        if (output instanceof Texture)
+        if (Texture.isTexture(output))
         {
             outputTexture[0] = output.frame.width;
             outputTexture[1] = output.frame.height;

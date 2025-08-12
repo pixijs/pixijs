@@ -399,7 +399,7 @@ export class Color
     set value(value: ColorSource | null)
     {
         // Support copying from other Color objects
-        if (value instanceof Color)
+        if (Color.isColor(value))
         {
             this._value = this._cloneSource(value._value);
             this._int = value._int;
@@ -1180,7 +1180,7 @@ export class Color
             typeof value === 'number'
             || typeof value === 'string'
             || value instanceof Number
-            || value instanceof Color
+            || Color.isColor(value)
             || Array.isArray(value)
             || value instanceof Uint8Array
             || value instanceof Uint8ClampedArray

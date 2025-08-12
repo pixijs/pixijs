@@ -316,7 +316,7 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
     {
         let options = optionsOrTexture as SpritesheetOptions<S>;
 
-        if ((optionsOrTexture as BindableTexture)?.source instanceof TextureSource)
+        if (TextureSource.isTextureSource((optionsOrTexture as BindableTexture)?.source))
         {
             options = {
                 texture: optionsOrTexture as BindableTexture,
@@ -326,7 +326,7 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
         const { texture, data, cachePrefix = '' } = options;
 
         this.cachePrefix = cachePrefix;
-        this._texture = texture instanceof Texture ? texture : null;
+        this._texture = Texture.isTexture(texture) ? texture : null;
         this.textureSource = texture.source;
         this.textures = {} as Record<keyof S['frames'], Texture>;
         this.animations = {} as Record<keyof NonNullable<S['animations']>, Texture[]>;

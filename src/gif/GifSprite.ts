@@ -406,7 +406,7 @@ class GifSprite extends Sprite
 
     constructor(...args: [GifSource] | [GifSpriteOptions])
     {
-        const options = args[0] instanceof GifSource ? { source: args[0] } : args[0];
+        const options = GifSource.isGifSource(args[0]) ? { source: args[0] } : args[0];
 
         // Get the options, apply defaults
         const {

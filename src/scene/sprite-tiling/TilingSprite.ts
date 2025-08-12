@@ -359,7 +359,7 @@ export class TilingSprite extends ViewContainer<TilingSpriteGpuData> implements 
     {
         let options = args[0] || {};
 
-        if (options instanceof Texture)
+        if (Texture.isTexture(options))
         {
             options = { texture: options };
         }

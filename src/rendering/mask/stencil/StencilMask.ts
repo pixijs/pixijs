@@ -90,6 +90,6 @@ export class StencilMask implements Effect, PoolItem
 
     public static test(mask: any): boolean
     {
-        return mask instanceof Container;
+        return Container.isContainer(mask);
     }
 }

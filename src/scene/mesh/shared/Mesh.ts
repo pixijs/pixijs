@@ -133,7 +133,7 @@ export class Mesh<
     {
         let options = args[0];
 
-        if (options instanceof Geometry)
+        if (Geometry.isGeometry(options))
         {
             // #if _DEBUG
             deprecation(v8_0_0, 'Mesh: use new Mesh({ geometry, shader }) instead');
@@ -255,7 +255,7 @@ export class Mesh<
         // It isn't compatible if depth test or culling is enabled.
         if ((this.state.data & 0b001100) !== 0) return false;
 
-        if (this._geometry instanceof MeshGeometry)
+        if (MeshGeometry.isMeshGeometry(this._geometry))
         {
             if (this._geometry.batchMode === 'auto')
             {

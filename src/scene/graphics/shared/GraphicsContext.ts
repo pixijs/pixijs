@@ -1001,7 +1001,7 @@ export class GraphicsContext extends EventEmitter<{
     public setTransform(a: number, b: number, c: number, d: number, dx: number, dy: number): this;
     public setTransform(a: number | Matrix, b?: number, c?: number, d?: number, dx?: number, dy?: number): this
     {
-        if (a instanceof Matrix)
+        if (Matrix.isMatrix(a))
         {
             this._transform.set(a.a, a.b, a.c, a.d, a.tx, a.ty);
 
@@ -1034,7 +1034,7 @@ export class GraphicsContext extends EventEmitter<{
     public transform(a: number, b: number, c: number, d: number, dx: number, dy: number): this;
     public transform(a: number | Matrix, b?: number, c?: number, d?: number, dx?: number, dy?: number): this
     {
-        if (a instanceof Matrix)
+        if (Matrix.isMatrix(a))
         {
             this._transform.append(a);
 

@@ -49,7 +49,7 @@ export function generateShaderSyncCode(shader: Shader, shaderSystem: GlShaderSys
         {
             const resource = group.resources[j];
 
-            if (resource instanceof UniformGroup)
+            if (UniformGroup.isUniformGroup(resource))
             {
                 if (resource.ubo)
                 {
@@ -70,7 +70,7 @@ export function generateShaderSyncCode(shader: Shader, shaderSystem: GlShaderSys
                     `);
                 }
             }
-            else if (resource instanceof BufferResource)
+            else if (BufferResource.isBufferResource(resource))
             {
                 const resName = shader._uniformBindMap[i][Number(j)];
 
@@ -82,7 +82,7 @@ export function generateShaderSyncCode(shader: Shader, shaderSystem: GlShaderSys
                     );
                 `);
             }
-            else if (resource instanceof TextureSource)
+            else if (TextureSource.isTextureSource(resource))
             {
                 const uniformName = shader._uniformBindMap[i as unknown as number][j as unknown as number];
 

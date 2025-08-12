@@ -1303,7 +1303,7 @@ export const FederatedContainer: IFederatedContainer = {
     },
     dispatchEvent(e: Event): boolean
     {
-        if (!(e instanceof FederatedEvent))
+        if (!FederatedEvent.isFederatedEvent(e))
         {
             throw new Error('Container cannot propagate events outside of the Federated Events API');
         }

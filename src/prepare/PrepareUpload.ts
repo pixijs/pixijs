@@ -40,23 +40,23 @@ export abstract class PrepareUpload extends PrepareQueue
      */
     protected uploadQueueItem(item: PrepareQueueItem): void
     {
-        if (item instanceof TextureSource)
+        if (TextureSource.isTextureSource(item))
         {
             this.uploadTextureSource(item);
         }
-        else if (item instanceof Text)
+        else if (Text.isText(item))
         {
             this.uploadText(item);
         }
-        else if (item instanceof HTMLText)
+        else if (HTMLText.isHTMLText(item))
         {
             this.uploadHTMLText(item);
         }
-        else if (item instanceof BitmapText)
+        else if (BitmapText.isBitmapText(item))
         {
             this.uploadBitmapText(item);
         }
-        else if (item instanceof GraphicsContext)
+        else if (GraphicsContext.isGraphicsContext(item))
         {
             this.uploadGraphicsContext(item);
         }

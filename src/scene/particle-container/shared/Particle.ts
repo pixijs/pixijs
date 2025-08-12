@@ -313,7 +313,7 @@ export class Particle implements IParticle
 
     constructor(options: Texture | ParticleOptions)
     {
-        if (options instanceof Texture)
+        if (Texture.isTexture(options))
         {
             this.texture = options;
             assignWithIgnore(this, Particle.defaultOptions, {});

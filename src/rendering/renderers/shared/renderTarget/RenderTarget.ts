@@ -148,8 +148,8 @@ export class RenderTarget
         if (descriptor.depthStencilTexture || this.stencil)
         {
             // TODO add a test
-            if (descriptor.depthStencilTexture instanceof Texture
-                || descriptor.depthStencilTexture instanceof TextureSource)
+            if (Texture.isTexture(descriptor.depthStencilTexture)
+                || TextureSource.isTextureSource(descriptor.depthStencilTexture))
             {
                 this.depthStencilTexture = descriptor.depthStencilTexture.source;
             }

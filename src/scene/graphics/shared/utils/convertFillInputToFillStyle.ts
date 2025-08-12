@@ -19,17 +19,17 @@ function isColorLike(value: unknown): value is ColorSource
 
 function isFillPattern(value: unknown): value is FillPattern
 {
-    return value instanceof FillPattern;
+    return FillPattern.isFillPattern(value);
 }
 
 function isFillGradient(value: unknown): value is FillGradient
 {
-    return value instanceof FillGradient;
+    return FillGradient.isFillGradient(value);
 }
 
 function isTexture(value: unknown): value is Texture
 {
-    return value instanceof Texture;
+    return Texture.isTexture(value);
 }
 
 /**

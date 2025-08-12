@@ -289,7 +289,7 @@ export class GenerateTextureSystem implements System
      */
     public generateTexture(options: GenerateTextureOptions | Container): RenderTexture
     {
-        if (options instanceof Container)
+        if (Container.isContainer(options))
         {
             options = {
                 target: options,

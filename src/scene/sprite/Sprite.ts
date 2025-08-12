@@ -175,7 +175,7 @@ export class Sprite extends ViewContainer<BatchableSprite>
      */
     public static from(source: Texture | TextureSourceLike, skipCache = false): Sprite
     {
-        if (source instanceof Texture)
+        if (Texture.isTexture(source))
         {
             return new Sprite(source);
         }
@@ -204,7 +204,7 @@ export class Sprite extends ViewContainer<BatchableSprite>
      */
     constructor(options: SpriteOptions | Texture = Texture.EMPTY)
     {
-        if (options instanceof Texture)
+        if (Texture.isTexture(options))
         {
             options = { texture: options };
         }

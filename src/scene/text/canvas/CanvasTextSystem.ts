@@ -86,12 +86,12 @@ export class CanvasTextSystem implements System
             };
         }
 
-        if (!(options.style instanceof TextStyle))
+        if (!TextStyle.isTextStyle(options.style))
         {
             options.style = new TextStyle(options.style);
         }
 
-        if (!(options.textureStyle instanceof TextureStyle))
+        if (!TextureStyle.isTextureStyle(options.textureStyle))
         {
             options.textureStyle = new TextureStyle(options.textureStyle);
         }

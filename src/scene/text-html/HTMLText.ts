@@ -203,7 +203,7 @@ export class HTMLText extends AbstractText<
 
         if (options.textureStyle)
         {
-            this.textureStyle = options.textureStyle instanceof TextureStyle
+            this.textureStyle = TextureStyle.isTextureStyle(options.textureStyle)
                 ? options.textureStyle
                 : new TextureStyle(options.textureStyle);
         }

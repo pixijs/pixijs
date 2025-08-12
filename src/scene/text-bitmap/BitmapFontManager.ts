@@ -455,7 +455,7 @@ class BitmapFontManagerClass
 
         const textStyle = options.style;
 
-        const style = textStyle instanceof TextStyle ? textStyle : new TextStyle(textStyle);
+        const style = TextStyle.isTextStyle(textStyle) ? textStyle : new TextStyle(textStyle);
         const overrideFill = options.dynamicFill ?? this._canUseTintForStyle(style);
         const font = new DynamicBitmapFont({
             style,

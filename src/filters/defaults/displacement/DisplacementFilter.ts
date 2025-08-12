@@ -131,7 +131,7 @@ export class DisplacementFilter extends Filter
     {
         let options = args[0];
 
-        if (options instanceof Sprite)
+        if (Sprite.isSprite(options))
         {
             // #if _DEBUG
             if (args[1])

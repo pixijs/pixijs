@@ -47,15 +47,15 @@ export abstract class PrepareQueue extends PrepareBase
      */
     protected resolveQueueItem(source: PrepareSourceItem, queue: PrepareQueueItem[]): void
     {
-        if (source instanceof Container)
+        if (Container.isContainer(source))
         {
             this.resolveContainerQueueItem(source, queue);
         }
-        else if (source instanceof TextureSource || source instanceof Texture)
+        else if (TextureSource.isTextureSource(source) || Texture.isTexture(source))
         {
             queue.push(source.source);
         }
-        else if (source instanceof GraphicsContext)
+        else if (GraphicsContext.isGraphicsContext(source))
         {
             queue.push(source);
         }
@@ -74,19 +74,19 @@ export abstract class PrepareQueue extends PrepareBase
         // Note: we are just concerned with the given view.
         // Children are handled by the recursive call of the base class
 
-        if (container instanceof Sprite || container instanceof TilingSprite || container instanceof Mesh)
+        if (Sprite.isSprite(container) || TilingSprite.isTilingSprite(container) || Mesh.isMesh(container))
         {
             queue.push(container.texture.source);
         }
-        else if (container instanceof Text)
+        else if (Text.isText(container))
         {
             queue.push(container);
         }
-        else if (container instanceof Graphics)
+        else if (Graphics.isGraphics(container))
         {
             queue.push(container.context);
         }
-        else if (container instanceof AnimatedSprite)
+        else if (AnimatedSprite.isAnimatedSprite(container))
         {
             container.textures.forEach((textureOrFrame) =>
             {

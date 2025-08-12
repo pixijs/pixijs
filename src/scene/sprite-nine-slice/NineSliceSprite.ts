@@ -270,7 +270,7 @@ export class NineSliceSprite extends ViewContainer<NineSliceSpriteGpuData> imple
 
     constructor(options: NineSliceSpriteOptions | Texture)
     {
-        if ((options instanceof Texture))
+        if (Texture.isTexture(options))
         {
             options = { texture: options };
         }
@@ -723,7 +723,7 @@ export class NineSlicePlane extends NineSliceSprite
     {
         let options = args[0];
 
-        if (options instanceof Texture)
+        if (Texture.isTexture(options))
         {
             // #if _DEBUG
             // eslint-disable-next-line max-len

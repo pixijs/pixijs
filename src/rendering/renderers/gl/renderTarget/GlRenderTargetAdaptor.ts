@@ -183,7 +183,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         // we are rendering to the main canvas..
         const colorTexture = renderTarget.colorTexture;
 
-        if (colorTexture instanceof CanvasSource)
+        if (CanvasSource.isCanvasSource(colorTexture))
         {
             this._renderer.context.ensureCanvasSize(renderTarget.colorTexture.resource);
 

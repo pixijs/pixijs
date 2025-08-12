@@ -300,7 +300,7 @@ export class AbstractRenderer<
     {
         let options = args;
 
-        if (options instanceof Container)
+        if (Container.isContainer(options))
         {
             options = { container: options };
 

@@ -120,7 +120,7 @@ export function textureFrom(id: TextureSourceLike, skipCache = false): Texture
     {
         return Cache.get(id);
     }
-    else if (id instanceof TextureSource)
+    else if (TextureSource.isTextureSource(id))
     {
         return new Texture({ source: id });
     }

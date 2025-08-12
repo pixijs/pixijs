@@ -1174,7 +1174,7 @@ export class TextStyle extends EventEmitter<{
     private _isFillStyle(value: FillInput): value is FillStyle
     {
         return ((value ?? null) !== null
-            && !(Color.isColorLike(value) || value instanceof FillGradient || value instanceof FillPattern));
+            && !(Color.isColorLike(value) || FillGradient.isFillGradient(value) || FillPattern.isFillPattern(value)));
     }
 }
 
@@ -1218,7 +1218,7 @@ function convertV7Tov8Style(style: TextStyleOptions)
             obj.color = color as ColorSource;
         }
         // handles stroke: new FillGradient()
-        else if (color instanceof FillGradient || color instanceof FillPattern)
+        else if (FillGradient.isFillGradient(color) || FillPattern.isFillPattern(color))
         {
             obj.fill = color as FillGradient | FillPattern;
         }

@@ -125,7 +125,7 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
      */
     constructor(options?: GraphicsOptions | GraphicsContext)
     {
-        if (options instanceof GraphicsContext)
+        if (GraphicsContext.isGraphicsContext(options))
         {
             options = { context: options };
         }

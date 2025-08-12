@@ -59,7 +59,7 @@ export class AlphaMask implements Effect, PoolItem
 
         // TODO - might want to change this to adjust on the fly
         // user may add children to the sprite..
-        this.renderMaskToTexture = !(mask instanceof Sprite);
+        this.renderMaskToTexture = !Sprite.isSprite(mask);
 
         this.mask.renderable = this.renderMaskToTexture;
         this.mask.includeInBuild = !this.renderMaskToTexture;
@@ -101,6 +101,6 @@ export class AlphaMask implements Effect, PoolItem
 
     public static test(mask: any): boolean
     {
-        return mask instanceof Sprite;
+        return Sprite.isSprite(mask);
     }
 }

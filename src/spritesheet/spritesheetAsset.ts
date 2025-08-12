@@ -85,7 +85,7 @@ export const spritesheetAsset = {
     extension: ExtensionType.Asset,
     /** Handle the caching of the related Spritesheet Textures */
     cache: {
-        test: (asset: Spritesheet) => asset instanceof Spritesheet,
+        test: (asset: Spritesheet) => Spritesheet.isSpritesheet(asset),
         getCacheableAssets: (keys: string[], asset: Spritesheet) => getCacheableAssets(keys, asset, false),
     },
     /** Resolve the resolution of the asset. */
@@ -164,7 +164,7 @@ export const spritesheetAsset = {
 
             let texture: Texture;
 
-            if (imageTexture instanceof Texture)
+            if (Texture.isTexture(imageTexture))
             {
                 texture = imageTexture;
             }
