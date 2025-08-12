@@ -67,6 +67,7 @@ export class RenderGroupPipe implements InstructionPipe<RenderGroup>
     private _addRenderableDirect(renderGroup: RenderGroup, instructionSet: InstructionSet): void
     {
         this._renderer.renderPipes.batch.break(instructionSet);
+        this._renderer.renderPipes.blendMode.pushBlendMode(renderGroup, renderGroup.root.groupBlendMode, instructionSet);
 
         if (renderGroup._batchableRenderGroup)
         {
@@ -75,6 +76,7 @@ export class RenderGroupPipe implements InstructionPipe<RenderGroup>
         }
 
         instructionSet.add(renderGroup);
+        this._renderer.renderPipes.blendMode.popBlendMode(instructionSet);
     }
 
     private _addRenderableCacheAsTexture(renderGroup: RenderGroup, instructionSet: InstructionSet): void
@@ -86,8 +88,14 @@ export class RenderGroupPipe implements InstructionPipe<RenderGroup>
         batchableRenderGroup.texture = renderGroup.texture;
         batchableRenderGroup.bounds = renderGroup._textureBounds;
 
+        // We have to reset advanced blend mode for the rendering group cached as texture
+        // and apply blend mode later for the result only.
+        this._renderer.renderPipes.blendMode.reset(instructionSet);
         instructionSet.add(renderGroup);
+
+        this._renderer.renderPipes.blendMode.pushBlendMode(renderGroup, renderGroup.root.groupBlendMode, instructionSet);
         this._renderer.renderPipes.batch.addToBatch(batchableRenderGroup, instructionSet);
+        this._renderer.renderPipes.blendMode.popBlendMode(instructionSet);
     }
 
     private _executeCacheAsTexture(renderGroup: RenderGroup): void
