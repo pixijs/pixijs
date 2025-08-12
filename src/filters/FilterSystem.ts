@@ -388,6 +388,7 @@ export class FilterSystem implements System
         renderer.globalUniforms.pop();
 
         renderer.renderTarget.finishRenderPass();
+        renderer.renderTarget.pop();
 
         this._activeFilterData = filterData;
 
@@ -590,16 +591,6 @@ export class FilterSystem implements System
         // set all the filter data
         filterData.backTexture = Texture.EMPTY;
 
-        if (filterData.blendRequired)
-        {
-            renderer.renderTarget.finishRenderPass();
-            // this actually forces the current commandQueue to render everything so far.
-            // if we don't do this, we won't be able to copy pixels for the background
-            const renderTarget = renderer.renderTarget.getRenderTarget(filterData.outputRenderSurface);
-
-            filterData.backTexture = this.getBackTexture(renderTarget, bounds, previousFilterData?.bounds);
-        }
-
         /// ///
         // bind...
         // get a P02 texture from our pool...
@@ -610,9 +601,26 @@ export class FilterSystem implements System
             filterData.antialias,
         );
 
-        renderer.renderTarget.bind(filterData.inputTexture, true);
-        // set the global uniforms to take into account the bounds offset required
+        // Very cryptic, but important(!) moment.
+        //
+        // If we try to pull texture from the pool for backTexture before inputTexture,
+        // it will be unbounded later by startRenderPass. It happens because in such a case - the current backTexture
+        // is actually inputTexture from the previous filter application (check `pop` method).
+        //
+        // So maintaining the order (inputTexture -> backTexture) helps us to prevent unwanted texture unbinding.
+        if (filterData.blendRequired)
+        {
+            renderer.renderTarget.finishRenderPass();
+            // this actually forces the current commandQueue to render everything so far.
+            // if we don't do this, we won't be able to copy pixels for the background
+            const renderTarget = renderer.renderTarget.getRenderTarget(filterData.outputRenderSurface);
 
+            filterData.backTexture = this.getBackTexture(renderTarget, bounds, previousFilterData?.bounds);
+        }
+
+        renderer.renderTarget.push(filterData.inputTexture, true);
+
+        // set the global uniforms to take into account the bounds offset required
         renderer.globalUniforms.push({
             offset: bounds,
         });
