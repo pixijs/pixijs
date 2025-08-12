@@ -55,11 +55,11 @@ export class RenderGroupSystem implements System
         const renderer = this._renderer;
 
         // collect all the renderGroups in the scene and then render them one by one..
-        let originalLocalTransform: Matrix = tempMatrix;
+        const originalLocalTransform: Matrix = tempMatrix;
 
         if (transform)
         {
-            originalLocalTransform = originalLocalTransform.copyFrom(container.renderGroup.localTransform);
+            originalLocalTransform.copyFrom(container.renderGroup.localTransform);
             container.renderGroup.localTransform.copyFrom(transform);
         }
 
