@@ -494,6 +494,11 @@ export class RenderGroup implements Instruction
      */
     public get cacheToLocalTransform()
     {
+        if (this.isCachedAsTexture)
+        {
+            return this.textureOffsetInverseTransform;
+        }
+
         if (!this._parentCacheAsTextureRenderGroup) return null;
 
         return this._parentCacheAsTextureRenderGroup.textureOffsetInverseTransform;
