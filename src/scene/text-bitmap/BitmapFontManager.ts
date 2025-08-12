@@ -418,11 +418,12 @@ class BitmapFontManagerClass
      *
      * const title = new BitmapText({ text: 'This is the title', fontFamily: 'TitleFont' });
      */
-    public install(options: BitmapFontInstallOptions): BitmapFont;
+    public install(options: BitmapFontInstallOptions): DynamicBitmapFont;
     /** @deprecated since 7.0.0 */
-    public install(name: string, style?: TextStyle | TextStyleOptions, options?: BitmapFontInstallOptions): BitmapFont;
     // eslint-disable-next-line max-len
-    public install(...args: [string | BitmapFontInstallOptions, (TextStyle | TextStyleOptions)?, BitmapFontInstallOptions?]): BitmapFont
+    public install(name: string, style?: TextStyle | TextStyleOptions, options?: BitmapFontInstallOptions): DynamicBitmapFont;
+    // eslint-disable-next-line max-len
+    public install(...args: [string | BitmapFontInstallOptions, (TextStyle | TextStyleOptions)?, BitmapFontInstallOptions?]): DynamicBitmapFont
     {
         let options = args[0] as BitmapFontInstallOptions;
 
@@ -484,7 +485,7 @@ class BitmapFontManagerClass
     public uninstall(name: string)
     {
         const cacheKey = `${name}-bitmap`;
-        const font = Cache.get<BitmapFont>(cacheKey);
+        const font = Cache.get<DynamicBitmapFont>(cacheKey);
 
         if (font)
         {
