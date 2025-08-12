@@ -88,9 +88,6 @@ export class RenderGroupPipe implements InstructionPipe<RenderGroup>
         batchableRenderGroup.texture = renderGroup.texture;
         batchableRenderGroup.bounds = renderGroup._textureBounds;
 
-        // We have to reset advanced blend mode for the rendering group cached as texture
-        // and apply blend mode later for the result only.
-        this._renderer.renderPipes.blendMode.reset(instructionSet);
         instructionSet.add(renderGroup);
 
         this._renderer.renderPipes.blendMode.pushBlendMode(renderGroup, renderGroup.root.groupBlendMode, instructionSet);

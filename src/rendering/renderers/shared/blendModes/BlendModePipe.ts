@@ -102,7 +102,8 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
      */
     public popBlendMode(instructionSet: InstructionSet): void
     {
-        const blendMode = this._blendModeStack.pop() ?? 'normal';
+        this._blendModeStack.pop();
+        const blendMode = this._blendModeStack[this._activeBlendMode.length - 1] ?? 'normal';
 
         this.setBlendMode(null, blendMode, instructionSet);
     }
@@ -125,9 +126,9 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
 
         if (this._activeBlendMode === blendMode)
         {
-            if (this._isAdvanced && renderable !== null && !isRenderGroup)
+            if (this._isAdvanced && renderable && !isRenderGroup)
             {
-                this._renderableList.push(renderable);
+                this._renderableList?.push(renderable);
             }
 
             return;
@@ -136,6 +137,9 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
         if (this._isAdvanced) this._endAdvancedBlendMode(instructionSet);
 
         this._activeBlendMode = blendMode;
+
+        if (!renderable) return;
+
         this._isAdvanced = !!BLEND_MODE_FILTERS[blendMode];
 
         if (this._isAdvanced) this._beginAdvancedBlendMode(renderable, instructionSet);
@@ -188,6 +192,7 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
 
     private _endAdvancedBlendMode(instructionSet: InstructionSet)
     {
+        this._isAdvanced = false;
         this._renderableList = null;
         this._renderer.renderPipes.batch.break(instructionSet);
 
@@ -217,20 +222,6 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
     {
         if (!this._isAdvanced) return;
 
-        this._endAdvancedBlendMode(instructionSet);
-    }
-
-    /**
-     * Resets the blending state by ending the advanced blending mode if it's enabled.
-     * @param instructionSet - The instruction set we are adding to
-     * @internal
-     */
-    public reset(instructionSet: InstructionSet): void
-    {
-        if (!this._isAdvanced) return;
-
-        this._isAdvanced = false;
-        this._activeBlendMode = 'normal';
         this._endAdvancedBlendMode(instructionSet);
     }
 
