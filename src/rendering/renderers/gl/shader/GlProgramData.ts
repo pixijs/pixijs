@@ -1,8 +1,10 @@
+const typeSymbol = Symbol.for('pixijs.GlProgramData');
+
 /** @private */
-export class IGLUniformData
+export interface IGLUniformData
 {
-    public location: WebGLUniformLocation;
-    public value: number | boolean | Float32Array | Int32Array | Uint32Array | boolean[];
+    location: WebGLUniformLocation;
+    value: number | boolean | Float32Array | Int32Array | Uint32Array | boolean[];
 }
 
 /**
@@ -11,6 +13,22 @@ export class IGLUniformData
  */
 export class GlProgramData
 {
+    /**
+     * Type symbol used to identify instances of GlProgramData.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GlProgramData.
+     * @param obj - The object to check.
+     * @returns True if the object is a GlProgramData, false otherwise.
+     */
+    public static isGlProgramData(obj: any): obj is GlProgramData
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** The shader program. */
     public program: WebGLProgram;
 

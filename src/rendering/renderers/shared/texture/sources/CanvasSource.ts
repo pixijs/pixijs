@@ -6,6 +6,8 @@ import type { ICanvas } from '../../../../../environment/canvas/ICanvas';
 import type { ExtensionMetadata } from '../../../../../extensions/Extensions';
 import type { TextureSourceOptions } from './TextureSource';
 
+const typeSymbol = Symbol.for('pixijs.CanvasSource');
+
 /**
  * Options for creating a CanvasSource.
  * @category rendering
@@ -32,6 +34,22 @@ export interface CanvasSourceOptions extends TextureSourceOptions<ICanvas>
  */
 export class CanvasSource extends TextureSource<ICanvas>
 {
+    /**
+     * Type symbol used to identify instances of CanvasSource.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a CanvasSource.
+     * @param obj - The object to check.
+     * @returns True if the object is a CanvasSource, false otherwise.
+     */
+    public static isCanvasSource(obj: any): obj is CanvasSource
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public static extension: ExtensionMetadata = ExtensionType.TextureSource;
 
     public uploadMethodId = 'image';

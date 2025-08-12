@@ -8,6 +8,8 @@ import type { System } from '../../shared/system/System';
 import type { WebGLRenderer } from '../WebGLRenderer';
 import type { WebGLExtensions } from './WebGLExtensions';
 
+const typeSymbol = Symbol.for('pixijs.GlContextSystem');
+
 /**
  * Options for the context system.
  * @category rendering
@@ -76,6 +78,22 @@ export interface ContextSystemOptions
  */
 export class GlContextSystem implements System<ContextSystemOptions>
 {
+    /**
+     * Type symbol used to identify instances of GlContextSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GlContextSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a GlContextSystem, false otherwise.
+     */
+    public static isGlContextSystem(obj: any): obj is GlContextSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

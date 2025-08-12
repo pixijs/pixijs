@@ -24,6 +24,8 @@ import type { ViewSystem, ViewSystemDestroyOptions } from '../view/ViewSystem';
 import type { SharedRendererOptions } from './SharedSystems';
 import type { System, SystemConstructor } from './System';
 
+const typeSymbol = Symbol.for('pixijs.AbstractRenderer');
+
 /**
  * The configuration for the renderer.
  * This is used to define the systems and render pipes that will be used by the renderer.
@@ -149,6 +151,22 @@ export class AbstractRenderer<
     PIPES, OPTIONS extends SharedRendererOptions, CANVAS extends ICanvas = HTMLCanvasElement
 > extends EventEmitter<{resize: [screenWidth: number, screenHeight: number, resolution: number]}>
 {
+    /**
+     * Type symbol used to identify instances of AbstractRenderer.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a AbstractRenderer.
+     * @param obj - The object to check.
+     * @returns True if the object is a AbstractRenderer, false otherwise.
+     */
+    public static isAbstractRenderer(obj: any): obj is AbstractRenderer<any, any, any>
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** The default options for the renderer. */
     public static defaultOptions = {
         /**
@@ -282,7 +300,7 @@ export class AbstractRenderer<
     {
         let options = args;
 
-        if (options instanceof Container)
+        if (Container.isContainer(options))
         {
             options = { container: options };
 

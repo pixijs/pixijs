@@ -5,6 +5,8 @@ import type { ICanvas, ICanvasRenderingContext2DSettings } from '../../../enviro
 import type { ICanvasRenderingContext2D } from '../../../environment/canvas/ICanvasRenderingContext2D';
 import type { TextStyle, TextStyleWhiteSpace } from '../TextStyle';
 
+const typeSymbol = Symbol.for('pixijs.CanvasTextMetrics');
+
 // The type for Intl.Segmenter is only available since TypeScript 4.7.2, so let's make a polyfill for it.
 interface ISegmentData
 {
@@ -71,6 +73,22 @@ const contextSettings: ICanvasRenderingContext2DSettings = {
  */
 export class CanvasTextMetrics
 {
+    /**
+     * Type symbol used to identify instances of CanvasTextMetrics.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a CanvasTextMetrics.
+     * @param obj - The object to check.
+     * @returns True if the object is a CanvasTextMetrics, false otherwise.
+     */
+    public static isCanvasTextMetrics(obj: any): obj is CanvasTextMetrics
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** The text that was measured. */
     public text: string;
 

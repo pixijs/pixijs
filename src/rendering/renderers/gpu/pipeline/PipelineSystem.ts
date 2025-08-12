@@ -15,6 +15,8 @@ import type { GpuProgram } from '../shader/GpuProgram';
 import type { StencilState } from '../state/GpuStencilModesToPixi';
 import type { WebGPURenderer } from '../WebGPURenderer';
 
+const typeSymbol = Symbol.for('pixijs.PipelineSystem');
+
 const topologyStringToId = {
     'point-list': 0,
     'line-list': 1,
@@ -82,6 +84,22 @@ type PipeHash = Record<number, GPURenderPipeline>;
  */
 export class PipelineSystem implements System
 {
+    /**
+     * Type symbol used to identify instances of PipelineSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a PipelineSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a PipelineSystem, false otherwise.
+     */
+    public static isPipelineSystem(obj: any): obj is PipelineSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [ExtensionType.WebGPUSystem],

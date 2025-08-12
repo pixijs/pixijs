@@ -9,6 +9,8 @@ import type { RenderPipe } from '../instructions/RenderPipe';
 import type { Renderable } from '../Renderable';
 import type { System } from '../system/System';
 
+const typeSymbol = Symbol.for('pixijs.RenderableGCSystem');
+
 let renderableGCTick = 0;
 
 /**
@@ -76,6 +78,22 @@ export interface RenderableGCSystemOptions
  */
 export class RenderableGCSystem implements System<RenderableGCSystemOptions>
 {
+    /**
+     * Type symbol used to identify instances of RenderableGCSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a RenderableGCSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a RenderableGCSystem, false otherwise.
+     */
+    public static isRenderableGCSystem(obj: any): obj is RenderableGCSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Extension metadata for registering this system with the renderer.
      * @ignore

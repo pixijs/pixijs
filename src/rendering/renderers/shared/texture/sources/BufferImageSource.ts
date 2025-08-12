@@ -5,6 +5,8 @@ import type { ExtensionMetadata } from '../../../../../extensions/Extensions';
 import type { TypedArray } from '../../buffer/Buffer';
 import type { TextureSourceOptions } from './TextureSource';
 
+const typeSymbol = Symbol.for('pixijs.BufferImageSource');
+
 /**
  * Options for creating a BufferImageSource.
  * @category rendering
@@ -24,6 +26,22 @@ export interface BufferSourceOptions extends TextureSourceOptions<TypedArray | A
  */
 export class BufferImageSource extends TextureSource<TypedArray | ArrayBuffer>
 {
+    /**
+     * Type symbol used to identify instances of BufferImageSource.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a BufferImageSource.
+     * @param obj - The object to check.
+     * @returns True if the object is a BufferImageSource, false otherwise.
+     */
+    public static isBufferImageSource(obj: any): obj is BufferImageSource
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public static extension: ExtensionMetadata = ExtensionType.TextureSource;
 
     public uploadMethodId = 'buffer';

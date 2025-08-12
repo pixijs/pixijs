@@ -1,5 +1,7 @@
 import { type TypedArray } from '../../rendering/renderers/shared/buffer/Buffer';
 
+const typeSymbol = Symbol.for('pixijs.ViewableBuffer');
+
 /**
  * Flexible wrapper around `ArrayBuffer` that also provides typed array views on demand.
  * @category utils
@@ -7,6 +9,22 @@ import { type TypedArray } from '../../rendering/renderers/shared/buffer/Buffer'
  */
 export class ViewableBuffer
 {
+    /**
+     * Type symbol used to identify instances of ViewableBuffer.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a ViewableBuffer.
+     * @param obj - The object to check.
+     * @returns True if the object is a ViewableBuffer, false otherwise.
+     */
+    public static isViewableBuffer(obj: any): obj is ViewableBuffer
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** The size of the buffer in bytes. */
     public size: number;
 

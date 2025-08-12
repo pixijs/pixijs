@@ -4,6 +4,8 @@ import { uid } from '../../../../utils/data/uid';
 import type { WRAP_MODE } from '../../../../rendering/renderers/shared/texture/const';
 import type { Texture } from '../../../../rendering/renderers/shared/texture/Texture';
 
+const typeSymbol = Symbol.for('pixijs.FillPattern');
+
 /**
  * Defines the repetition modes for fill patterns.
  *
@@ -57,6 +59,22 @@ const repetitionMap = {
  */
 export class FillPattern implements CanvasPattern
 {
+    /**
+     * Type symbol used to identify instances of FillPattern.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a FillPattern.
+     * @param obj - The object to check.
+     * @returns True if the object is a FillPattern, false otherwise.
+     */
+    public static isFillPattern(obj: any): obj is FillPattern
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * unique id for this fill pattern
      * @internal

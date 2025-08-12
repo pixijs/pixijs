@@ -13,6 +13,8 @@ import type { WebGPURenderer } from '../../gpu/WebGPURenderer';
 import type { UboSystem } from '../shader/UboSystem';
 import type { System } from '../system/System';
 
+const typeSymbol = Symbol.for('pixijs.GlobalUniformSystem');
+
 /**
  * Type definition for the global uniforms used in the renderer.
  * This includes projection matrix, world transform matrix, world color, and resolution.
@@ -73,6 +75,22 @@ export interface GlobalUniformRenderer
  */
 export class GlobalUniformSystem implements System
 {
+    /**
+     * Type symbol used to identify instances of GlobalUniformSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GlobalUniformSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a GlobalUniformSystem, false otherwise.
+     */
+    public static isGlobalUniformSystem(obj: any): obj is GlobalUniformSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

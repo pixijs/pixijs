@@ -11,6 +11,8 @@ import type { Renderer } from '../rendering/renderers/types';
 import type { Container } from '../scene/container/Container';
 import type { isMobileResult } from '../utils/browser/isMobile';
 
+const typeSymbol = Symbol.for('pixijs.AccessibilitySystem');
+
 /** @ignore */
 const KEY_CODE_TAB = 9;
 
@@ -88,6 +90,22 @@ export interface AccessibilityOptions
  */
 export class AccessibilitySystem implements System<AccessibilitySystemOptions>
 {
+    /**
+     * Type symbol used to identify instances of AccessibilitySystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a AccessibilitySystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a AccessibilitySystem, false otherwise.
+     */
+    public static isAccessibilitySystem(obj: any): obj is AccessibilitySystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

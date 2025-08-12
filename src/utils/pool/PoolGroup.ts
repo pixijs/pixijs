@@ -2,6 +2,8 @@ import { Pool } from './Pool';
 
 import type { PoolItem, PoolItemConstructor } from './Pool';
 
+const typeSymbol = Symbol.for('PoolGroupClass');
+
 /**
  * A type alias for a constructor of a Pool.
  * @template T The type of items in the pool. Must extend PoolItem.
@@ -17,6 +19,22 @@ export type PoolConstructor<T extends PoolItem> = new () => Pool<T>;
  */
 export class PoolGroupClass
 {
+    /**
+     * Type symbol used to identify instances of PoolGroupClass.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a PoolGroupClass.
+     * @param obj - The object to check.
+     * @returns True if the object is a PoolGroupClass, false otherwise.
+     */
+    public static isPoolGroupClass(obj: any): obj is PoolGroupClass
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * A map to store the pools by their class type.
      * @private

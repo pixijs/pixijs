@@ -7,6 +7,8 @@ import type { ResolvedAsset } from '../types';
 import type { LoaderParser } from './parsers/LoaderParser';
 import type { PromiseAndParser } from './types';
 
+const typeSymbol = Symbol.for('pixijs.Loader');
+
 /**
  * The Loader is responsible for loading all assets, such as images, spritesheets, audio files, etc.
  * It does not do anything clever with URLs - it just loads stuff!
@@ -20,6 +22,22 @@ import type { PromiseAndParser } from './types';
  */
 export class Loader
 {
+    /**
+     * Type symbol used to identify instances of Loader.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Loader.
+     * @param obj - The object to check.
+     * @returns True if the object is a Loader, false otherwise.
+     */
+    public static isLoader(obj: any): obj is Loader
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     private readonly _parsers: LoaderParser[] = [];
     private _parserHash: Record<string, LoaderParser>;
 

@@ -4,6 +4,8 @@ import { uid } from '../../../../utils/data/uid';
 import type { BindResource } from '../../gpu/shader/BindResource';
 import type { Buffer } from './Buffer';
 
+const typeSymbol = Symbol.for('pixijs.BufferResource');
+
 /**
  * A resource that can be bound to a bind group and used in a shader.
  * Whilst a buffer can be used as a resource, this class allows you to specify an offset and size of the buffer to use.
@@ -29,6 +31,22 @@ export class BufferResource extends EventEmitter<{
     change: BindResource,
 }> implements BindResource
 {
+    /**
+     * Type symbol used to identify instances of BufferResource.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a BufferResource.
+     * @param obj - The object to check.
+     * @returns True if the object is a BufferResource, false otherwise.
+     */
+    public static isBufferResource(obj: any): obj is BufferResource
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * emits when the underlying buffer has changed shape (i.e. resized)
      * letting the renderer know that it needs to discard the old buffer on the GPU and create a new one

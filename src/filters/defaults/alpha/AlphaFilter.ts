@@ -8,6 +8,8 @@ import source from './alpha.wgsl';
 
 import type { FilterOptions } from '../../Filter';
 
+const typeSymbol = Symbol.for('pixijs.AlphaFilter');
+
 /**
  * Options for AlphaFilter
  * @category filters
@@ -48,6 +50,22 @@ export interface AlphaFilterOptions extends FilterOptions
  */
 export class AlphaFilter extends Filter
 {
+    /**
+     * Type symbol used to identify instances of AlphaFilter.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a AlphaFilter.
+     * @param obj - The object to check.
+     * @returns True if the object is a AlphaFilter, false otherwise.
+     */
+    public static isAlphaFilter(obj: any): obj is AlphaFilter
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Default options for the AlphaFilter.
      * @example

@@ -31,7 +31,7 @@ export function generateUniformsSync(group: UniformGroup, uniformData: Record<st
     {
         if (!uniformData[i])
         {
-            if (group.uniforms[i] instanceof UniformGroup)
+            if (UniformGroup.isUniformGroup(group.uniforms[i]))
             {
                 if ((group.uniforms[i] as UniformGroup).ubo)
                 {
@@ -46,7 +46,7 @@ export function generateUniformsSync(group: UniformGroup, uniformData: Record<st
                     `);
                 }
             }
-            else if (group.uniforms[i] instanceof BufferResource)
+            else if (BufferResource.isBufferResource(group.uniforms[i]))
             {
                 funcFragments.push(`
                         renderer.shader.bindBufferResource(uv.${i}, "${i}");

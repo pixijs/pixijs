@@ -6,6 +6,8 @@ import type { BLEND_MODES } from '../../shared/state/const';
 import type { System } from '../../shared/system/System';
 import type { GPU } from '../GpuDeviceSystem';
 
+const typeSymbol = Symbol.for('pixijs.GpuStateSystem');
+
 /**
  * System plugin to the renderer to manage WebGL state machines.
  * @category rendering
@@ -13,6 +15,22 @@ import type { GPU } from '../GpuDeviceSystem';
  */
 export class GpuStateSystem implements System
 {
+    /**
+     * Type symbol used to identify instances of GpuStateSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GpuStateSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a GpuStateSystem, false otherwise.
+     */
+    public static isGpuStateSystem(obj: any): obj is GpuStateSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

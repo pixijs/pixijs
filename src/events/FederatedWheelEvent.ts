@@ -1,5 +1,7 @@
 import { FederatedMouseEvent } from './FederatedMouseEvent';
 
+const typeSymbol = Symbol.for('pixijs.FederatedWheelEvent');
+
 /**
  * A specialized event class for wheel/scroll interactions in PixiJS applications.
  * Extends {@link FederatedMouseEvent} to provide wheel-specific properties while
@@ -49,6 +51,22 @@ import { FederatedMouseEvent } from './FederatedMouseEvent';
  */
 export class FederatedWheelEvent extends FederatedMouseEvent implements WheelEvent
 {
+    /**
+     * Type symbol used to identify instances of FederatedWheelEvent.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a FederatedWheelEvent.
+     * @param obj - The object to check.
+     * @returns True if the object is a FederatedWheelEvent, false otherwise.
+     */
+    public static isFederatedWheelEvent(obj: any): obj is FederatedWheelEvent
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * The units of `deltaX`, `deltaY`, and `deltaZ`. This is one of `DOM_DELTA_LINE`,
      * `DOM_DELTA_PAGE`, `DOM_DELTA_PIXEL`.

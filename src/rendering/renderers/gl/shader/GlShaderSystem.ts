@@ -10,6 +10,8 @@ import type { WebGLRenderer } from '../WebGLRenderer';
 import type { GlProgram } from './GlProgram';
 import type { GlProgramData } from './GlProgramData';
 
+const typeSymbol = Symbol.for('pixijs.GlShaderSystem');
+
 /** @internal */
 export interface ShaderSyncData
 {
@@ -33,6 +35,22 @@ const defaultSyncData: ShaderSyncData = {
  */
 export class GlShaderSystem
 {
+    /**
+     * Type symbol used to identify instances of GlShaderSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GlShaderSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a GlShaderSystem, false otherwise.
+     */
+    public static isGlShaderSystem(obj: any): obj is GlShaderSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

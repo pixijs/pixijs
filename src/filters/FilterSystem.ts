@@ -23,6 +23,9 @@ import type { Sprite } from '../scene/sprite/Sprite';
 import type { Filter } from './Filter';
 import type { FilterEffect } from './FilterEffect';
 
+const typeSymbolFilterData = Symbol.for('pixijs.FilterData');
+const typeSymbolFilterSystem = Symbol.for('pixijs.FilterSystem');
+
 const quadGeometry = new Geometry({
     attributes: {
         aPosition: {
@@ -73,6 +76,22 @@ export interface FilterInstruction extends Instruction
  */
 class FilterData
 {
+    /**
+     * Type symbol used to identify instances of FilterData.
+     * @internal
+     */
+    public readonly [typeSymbolFilterData] = true;
+
+    /**
+     * Checks if the given object is a FilterData.
+     * @param obj - The object to check.
+     * @returns True if the object is a FilterData, false otherwise.
+     */
+    public static isFilterData(obj: any): obj is FilterData
+    {
+        return !!obj && !!obj[typeSymbolFilterData];
+    }
+
     /**
      * Indicates whether the filter should be skipped.
      * @type {boolean}
@@ -147,6 +166,22 @@ class FilterData
  */
 export class FilterSystem implements System
 {
+    /**
+     * Type symbol used to identify instances of FilterSystem.
+     * @internal
+     */
+    public readonly [typeSymbolFilterSystem] = true;
+
+    /**
+     * Checks if the given object is a FilterSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a FilterSystem, false otherwise.
+     */
+    public static isFilterSystem(obj: any): obj is FilterSystem
+    {
+        return !!obj && !!obj[typeSymbolFilterSystem];
+    }
+
     /** @ignore */
     public static extension = {
         type: [
@@ -712,14 +747,14 @@ export class FilterSystem implements System
         globalFrame[3] = rootTexture.source.height * resolution;
 
         // we are going to overwrite resource we can set it to null!
-        if (output instanceof Texture) output.source.resource = null;
+        if (Texture.isTexture(output)) output.source.resource = null;
 
         // set the output texture - this is where we are going to render to
         const renderTarget = this.renderer.renderTarget.getRenderTarget(output);
 
         this.renderer.renderTarget.bind(output, !!clear);
 
-        if (output instanceof Texture)
+        if (Texture.isTexture(output))
         {
             outputTexture[0] = output.frame.width;
             outputTexture[1] = output.frame.height;

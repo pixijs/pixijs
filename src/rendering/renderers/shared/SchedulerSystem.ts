@@ -3,6 +3,8 @@ import { Ticker } from '../../../ticker/Ticker';
 
 import type { System } from './system/System';
 
+const typeSymbol = Symbol.for('pixijs.SchedulerSystem');
+
 // start at one too keep it positive!
 let uid = 1;
 
@@ -13,6 +15,22 @@ let uid = 1;
  */
 export class SchedulerSystem implements System<null>
 {
+    /**
+     * Type symbol used to identify instances of SchedulerSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a SchedulerSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a SchedulerSystem, false otherwise.
+     */
+    public static isSchedulerSystem(obj: any): obj is SchedulerSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

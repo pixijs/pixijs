@@ -9,6 +9,8 @@ import type { Shader } from '../../renderers/shared/shader/Shader';
 import type { Batch } from '../shared/Batcher';
 import type { BatcherAdaptor, BatcherPipe } from '../shared/BatcherPipe';
 
+const typeSymbol = Symbol.for('pixijs.GpuBatchAdaptor');
+
 const tempState = State.for2d();
 
 /**
@@ -18,6 +20,22 @@ const tempState = State.for2d();
  */
 export class GpuBatchAdaptor implements BatcherAdaptor
 {
+    /**
+     * Type symbol used to identify instances of GpuBatchAdaptor.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GpuBatchAdaptor.
+     * @param obj - The object to check.
+     * @returns True if the object is a GpuBatchAdaptor, false otherwise.
+     */
+    public static isGpuBatchAdaptor(obj: any): obj is GpuBatchAdaptor
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

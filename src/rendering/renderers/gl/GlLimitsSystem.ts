@@ -3,6 +3,9 @@ import { checkMaxIfStatementsInShader } from '../../batcher/gl/utils/checkMaxIfS
 import { type System } from '../shared/system/System';
 
 import type { WebGLRenderer } from './WebGLRenderer';
+
+const typeSymbol = Symbol.for('pixijs.GlLimitsSystem');
+
 /**
  * The GpuLimitsSystem provides information about the capabilities and limitations of the underlying GPU.
  * These limits, such as the maximum number of textures that can be used in a shader
@@ -28,6 +31,22 @@ import type { WebGLRenderer } from './WebGLRenderer';
  */
 export class GlLimitsSystem implements System
 {
+    /**
+     * Type symbol used to identify instances of GlLimitsSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GlLimitsSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a GlLimitsSystem, false otherwise.
+     */
+    public static isGlLimitsSystem(obj: any): obj is GlLimitsSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

@@ -11,6 +11,8 @@ import type { Renderable } from '../../renderers/shared/Renderable';
 import type { Renderer } from '../../renderers/types';
 import type { StencilMask } from './StencilMask';
 
+const typeSymbol = Symbol.for('pixijs.StencilMaskPipe');
+
 /** @internal */
 type MaskMode = 'pushMaskBegin' | 'pushMaskEnd' | 'popMaskBegin' | 'popMaskEnd';
 
@@ -26,6 +28,22 @@ export interface StencilMaskInstruction extends Instruction
 /** @internal */
 export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
 {
+    /**
+     * Type symbol used to identify instances of StencilMaskPipe.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a StencilMaskPipe.
+     * @param obj - The object to check.
+     * @returns True if the object is a StencilMaskPipe, false otherwise.
+     */
+    public static isStencilMaskPipe(obj: any): obj is StencilMaskPipe
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public static extension = {
         type: [
             ExtensionType.WebGLPipes,

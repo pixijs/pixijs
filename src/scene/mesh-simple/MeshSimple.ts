@@ -7,6 +7,8 @@ import type { Topology } from '../../rendering/renderers/shared/geometry/const';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { MeshOptions } from '../mesh/shared/Mesh';
 
+const typeSymbol = Symbol.for('pixi.MeshSimple');
+
 /**
  * Options for creating a SimpleMesh instance. Defines the texture, geometry data, and rendering topology
  * for a basic mesh with direct vertex manipulation capabilities.
@@ -135,6 +137,22 @@ export interface SimpleMeshOptions extends Omit<MeshOptions, 'geometry'>
  */
 export class MeshSimple extends Mesh
 {
+    /**
+     * Type symbol used to identify instances of MeshSimple.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a MeshSimple.
+     * @param obj - The object to check.
+     * @returns True if the object is a MeshSimple, false otherwise.
+     */
+    public static isMeshSimple(obj: any): obj is MeshSimple
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Controls whether the mesh's vertex buffer is automatically updated each frame.
      * When true, vertex changes will be reflected immediately. When false, manual updates are required.

@@ -19,6 +19,8 @@ import type { GPU } from '../GpuDeviceSystem';
 import type { WebGPURenderer } from '../WebGPURenderer';
 import type { GpuTextureUploader } from './uploaders/GpuTextureUploader';
 
+const typeSymbol = Symbol.for('pixijs.GpuTextureSystem');
+
 /**
  * The system that handles textures for the GPU.
  * @category rendering
@@ -26,6 +28,22 @@ import type { GpuTextureUploader } from './uploaders/GpuTextureUploader';
  */
 export class GpuTextureSystem implements System, CanvasGenerator
 {
+    /**
+     * Type symbol used to identify instances of GpuTextureSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GpuTextureSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a GpuTextureSystem, false otherwise.
+     */
+    public static isGpuTextureSystem(obj: any): obj is GpuTextureSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

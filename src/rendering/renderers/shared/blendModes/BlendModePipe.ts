@@ -11,6 +11,8 @@ import type { InstructionPipe } from '../instructions/RenderPipe';
 import type { Renderable } from '../Renderable';
 import type { BLEND_MODES } from '../state/const';
 
+const typeSymbol = Symbol.for('pixijs.BlendModePipe');
+
 interface AdvancedBlendInstruction extends Instruction
 {
     renderPipeId: 'blendMode',
@@ -48,6 +50,22 @@ extensions.handle(ExtensionType.BlendMode, (value) =>
  */
 export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
 {
+    /**
+     * Type symbol used to identify instances of BlendModePipe.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a BlendModePipe.
+     * @param obj - The object to check.
+     * @returns True if the object is a BlendModePipe, false otherwise.
+     */
+    public static isBlendModePipe(obj: any): obj is BlendModePipe
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

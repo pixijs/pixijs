@@ -3,6 +3,8 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import type { System } from '../shared/system/System';
 import type { WebGLRenderer } from './WebGLRenderer';
 
+const typeSymbol = Symbol.for('pixijs.GlColorMaskSystem');
+
 /**
  * The system that handles color masking for the WebGL.
  * @category rendering
@@ -10,6 +12,22 @@ import type { WebGLRenderer } from './WebGLRenderer';
  */
 export class GlColorMaskSystem implements System
 {
+    /**
+     * Type symbol used to identify instances of GlColorMaskSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GlColorMaskSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a GlColorMaskSystem, false otherwise.
+     */
+    public static isGlColorMaskSystem(obj: any): obj is GlColorMaskSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

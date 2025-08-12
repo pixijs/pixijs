@@ -3,9 +3,27 @@ import { Ticker } from '../ticker/Ticker';
 
 import type { EventSystem } from './EventSystem';
 
+const typeSymbol = Symbol.for('pixijs.EventsTickerClass');
+
 /** @advanced */
 class EventsTickerClass
 {
+    /**
+     * Type symbol used to identify instances of EventsTickerClass.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a EventsTickerClass.
+     * @param obj - The object to check.
+     * @returns True if the object is a EventsTickerClass, false otherwise.
+     */
+    public static isEventsTickerClass(obj: any): obj is EventsTickerClass
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** The event system. */
     public events: EventSystem;
     /** The DOM element to listen to events on. */

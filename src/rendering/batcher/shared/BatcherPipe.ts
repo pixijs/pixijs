@@ -9,6 +9,8 @@ import type { Shader } from '../../renderers/shared/shader/Shader';
 import type { Renderer } from '../../renderers/types';
 import type { Batch, BatchableElement, Batcher } from './Batcher';
 
+const typeSymbol = Symbol.for('pixijs.BatcherPipe');
+
 /** @internal */
 export interface BatcherAdaptor
 {
@@ -28,6 +30,22 @@ export interface BatcherAdaptor
  */
 export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
 {
+    /**
+     * Type symbol used to identify instances of BatcherPipe.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a BatcherPipe.
+     * @param obj - The object to check.
+     * @returns True if the object is a BatcherPipe, false otherwise.
+     */
+    public static isBatcherPipe(obj: any): obj is BatcherPipe
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

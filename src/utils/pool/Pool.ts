@@ -1,3 +1,5 @@
+const typeSymbol = Symbol.for('Pool');
+
 /**
  * A generic class for managing a pool of items.
  * @template T The type of items in the pool. Must implement {@link PoolItem}.
@@ -6,6 +8,22 @@
  */
 export class Pool<T extends PoolItem>
 {
+    /**
+     * Type symbol used to identify instances of Pool.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Pool.
+     * @param obj - The object to check.
+     * @returns True if the object is a Pool, false otherwise.
+     */
+    public static isPool(obj: any): obj is Pool<any>
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @internal */
     public readonly _classType: PoolItemConstructor<T>;
     private readonly _pool: T[] = [];

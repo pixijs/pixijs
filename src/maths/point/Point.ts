@@ -2,6 +2,8 @@
 import type { PointData } from './PointData';
 import type { PointLike } from './PointLike';
 
+const typeSymbol = Symbol.for('pixijs.Point');
+
 // eslint-disable-next-line max-len
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type, requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface Point extends PixiMixins.Point { }
@@ -37,6 +39,22 @@ export interface Point extends PixiMixins.Point { }
  */
 export class Point implements PointLike
 {
+    /**
+     * Type symbol used to identify instances of Point.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Point.
+     * @param obj - The object to check.
+     * @returns True if the object is a Point, false otherwise.
+     */
+    public static isPoint(obj: any): obj is Point
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Position of the point on the x axis
      * @example

@@ -13,6 +13,8 @@ import type { Sprite } from '../../scene/sprite/Sprite';
 import type { FilterOptions } from '../Filter';
 import type { FilterSystem } from '../FilterSystem';
 
+const typeSymbol = Symbol.for('pixijs.MaskFilter');
+
 /** @internal */
 export interface MaskFilterOptions extends FilterOptions
 {
@@ -24,6 +26,22 @@ export interface MaskFilterOptions extends FilterOptions
 /** @internal */
 export class MaskFilter extends Filter
 {
+    /**
+     * Type symbol used to identify instances of MaskFilter.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a MaskFilter.
+     * @param obj - The object to check.
+     * @returns True if the object is a MaskFilter, false otherwise.
+     */
+    public static isMaskFilter(obj: any): obj is MaskFilter
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public sprite: Sprite;
     private readonly _textureMatrix: TextureMatrix;
 

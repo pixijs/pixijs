@@ -12,6 +12,8 @@ import type { WebGPURenderer } from '../../../rendering/renderers/gpu/WebGPURend
 import type { Mesh } from '../shared/Mesh';
 import type { MeshAdaptor, MeshPipe } from '../shared/MeshPipe';
 
+const typeSymbol = Symbol.for('pixi.GpuMeshAdapter');
+
 /**
  * The WebGL adaptor for the mesh system. Allows the Mesh System to be used with the WebGl renderer
  * @category rendering
@@ -19,6 +21,22 @@ import type { MeshAdaptor, MeshPipe } from '../shared/MeshPipe';
  */
 export class GpuMeshAdapter implements MeshAdaptor
 {
+    /**
+     * Type symbol used to identify instances of GpuMeshAdapter.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GpuMeshAdapter.
+     * @param obj - The object to check.
+     * @returns True if the object is a GpuMeshAdapter, false otherwise.
+     */
+    public static isGpuMeshAdapter(obj: any): obj is GpuMeshAdapter
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

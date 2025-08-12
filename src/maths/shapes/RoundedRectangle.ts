@@ -3,6 +3,8 @@ import { Rectangle } from './Rectangle';
 
 import type { ShapePrimitive } from './ShapePrimitive';
 
+const typeSymbol = Symbol.for('pixijs.RoundedRectangle');
+
 const isCornerWithinStroke = (
     pX: number,
     pY: number,
@@ -44,6 +46,22 @@ const isCornerWithinStroke = (
  */
 export class RoundedRectangle implements ShapePrimitive
 {
+    /**
+     * Type symbol used to identify instances of RoundedRectangle.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a RoundedRectangle.
+     * @param obj - The object to check.
+     * @returns True if the object is a RoundedRectangle, false otherwise.
+     */
+    public static isRoundedRectangle(obj: any): obj is RoundedRectangle
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * The X coordinate of the upper-left corner of the rounded rectangle
      * @example

@@ -5,6 +5,8 @@ import type { RenderTarget } from '../shared/renderTarget/RenderTarget';
 import type { System } from '../shared/system/System';
 import type { WebGPURenderer } from './WebGPURenderer';
 
+const typeSymbol = Symbol.for('pixijs.GpuStencilSystem');
+
 /**
  * This manages the stencil buffer. Used primarily for masking
  * @category rendering
@@ -12,6 +14,22 @@ import type { WebGPURenderer } from './WebGPURenderer';
  */
 export class GpuStencilSystem implements System
 {
+    /**
+     * Type symbol used to identify instances of GpuStencilSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GpuStencilSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a GpuStencilSystem, false otherwise.
+     */
+    public static isGpuStencilSystem(obj: any): obj is GpuStencilSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

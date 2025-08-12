@@ -6,6 +6,8 @@ import type { PointData } from '../maths/point/PointData';
 import type { BindableTexture, TextureBorders } from '../rendering/renderers/shared/texture/Texture';
 import type { Dict } from '../utils/types';
 
+const typeSymbol = Symbol.for('pixi.Spritesheet');
+
 /**
  * Represents the JSON data for a spritesheet atlas.
  * @category assets
@@ -215,6 +217,22 @@ export interface SpritesheetOptions<S extends SpritesheetData = SpritesheetData>
 export class Spritesheet<S extends SpritesheetData = SpritesheetData>
 {
     /**
+     * Type symbol used to identify instances of Spritesheet.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Spritesheet.
+     * @param obj - The object to check.
+     * @returns True if the object is a Spritesheet, false otherwise.
+     */
+    public static isSpritesheet(obj: any): obj is Spritesheet<any>
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
+    /**
      * The maximum number of Textures to build per process.
      * @advanced
      */
@@ -298,7 +316,7 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
     {
         let options = optionsOrTexture as SpritesheetOptions<S>;
 
-        if ((optionsOrTexture as BindableTexture)?.source instanceof TextureSource)
+        if (TextureSource.isTextureSource((optionsOrTexture as BindableTexture)?.source))
         {
             options = {
                 texture: optionsOrTexture as BindableTexture,
@@ -308,7 +326,7 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
         const { texture, data, cachePrefix = '' } = options;
 
         this.cachePrefix = cachePrefix;
-        this._texture = texture instanceof Texture ? texture : null;
+        this._texture = Texture.isTexture(texture) ? texture : null;
         this.textureSource = texture.source;
         this.textures = {} as Record<keyof S['frames'], Texture>;
         this.animations = {} as Record<keyof NonNullable<S['animations']>, Texture[]>;

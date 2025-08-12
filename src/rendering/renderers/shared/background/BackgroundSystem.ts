@@ -4,6 +4,9 @@ import { warn } from '../../../../utils/logging/warn';
 
 import type { ColorSource, RgbaArray } from '../../../../color/Color';
 import type { System } from '../system/System';
+
+const typeSymbol = Symbol.for('pixijs.BackgroundSystem');
+
 /**
  * Options for the background system.
  * @category rendering
@@ -40,6 +43,22 @@ export interface BackgroundSystemOptions
  */
 export class BackgroundSystem implements System<BackgroundSystemOptions>
 {
+    /**
+     * Type symbol used to identify instances of BackgroundSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a BackgroundSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a BackgroundSystem, false otherwise.
+     */
+    public static isBackgroundSystem(obj: any): obj is BackgroundSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

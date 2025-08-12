@@ -13,6 +13,8 @@ import { tilingBit, tilingBitGl } from './tilingBit';
 import type { GlProgram } from '../../../rendering/renderers/gl/shader/GlProgram';
 import type { GpuProgram } from '../../../rendering/renderers/gpu/shader/GpuProgram';
 
+const typeSymbol = Symbol.for('pixi.TilingSpriteShader');
+
 let gpuProgram: GpuProgram;
 let glProgram: GlProgram;
 
@@ -22,6 +24,22 @@ let glProgram: GlProgram;
  */
 export class TilingSpriteShader extends Shader
 {
+    /**
+     * Type symbol used to identify instances of TilingSpriteShader.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a TilingSpriteShader.
+     * @param obj - The object to check.
+     * @returns True if the object is a TilingSpriteShader, false otherwise.
+     */
+    public static isTilingSpriteShader(obj: any): obj is TilingSpriteShader
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     constructor()
     {
         gpuProgram ??= compileHighShaderGpuProgram({

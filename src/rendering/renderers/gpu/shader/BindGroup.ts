@@ -1,5 +1,7 @@
 import type { BindResource } from './BindResource';
 
+const typeSymbol = Symbol.for('pixijs.BindGroup');
+
 /**
  * A bind group is a collection of resources that are bound together for use by a shader.
  * They are essentially a wrapper for the WebGPU BindGroup class. But with the added bonus
@@ -29,6 +31,22 @@ import type { BindResource } from './BindResource';
  */
 export class BindGroup
 {
+    /**
+     * Type symbol used to identify instances of BindGroup.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a BindGroup.
+     * @param obj - The object to check.
+     * @returns True if the object is a BindGroup, false otherwise.
+     */
+    public static isBindGroup(obj: any): obj is BindGroup
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** The resources that are bound together for use by a shader. */
     public resources: Record<string, BindResource> = Object.create(null);
     /**

@@ -7,6 +7,8 @@ import { CanvasTextMetrics } from './CanvasTextMetrics';
 import { fontStringFromTextStyle } from './utils/fontStringFromTextStyle';
 import { getCanvasFillStyle } from './utils/getCanvasFillStyle';
 
+const typeSymbol = Symbol.for('pixijs.CanvasTextGenerator');
+
 /**
  * Temporary rectangle for getting the bounding box of the text.
  * @internal
@@ -51,6 +53,22 @@ const tempRect = new Rectangle();
  */
 class CanvasTextGeneratorClass
 {
+    /**
+     * Type symbol used to identify instances of CanvasTextGenerator.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a CanvasTextGenerator.
+     * @param obj - The object to check.
+     * @returns True if the object is a CanvasTextGenerator, false otherwise.
+     */
+    public static isCanvasTextGenerator(obj: any): obj is CanvasTextGeneratorClass
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Creates a canvas with the specified text rendered to it.
      *

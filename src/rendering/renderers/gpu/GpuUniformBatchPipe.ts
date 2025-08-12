@@ -8,11 +8,29 @@ import { BindGroup } from './shader/BindGroup';
 import type { UniformGroup } from '../shared/shader/UniformGroup';
 import type { WebGPURenderer } from './WebGPURenderer';
 
+const typeSymbol = Symbol.for('pixijs.GpuUniformBatchPipe');
+
 const minUniformOffsetAlignment = 128;// 256 / 2;
 
 /** @internal */
 export class GpuUniformBatchPipe
 {
+    /**
+     * Type symbol used to identify instances of GpuUniformBatchPipe.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GpuUniformBatchPipe.
+     * @param obj - The object to check.
+     * @returns True if the object is a GpuUniformBatchPipe, false otherwise.
+     */
+    public static isGpuUniformBatchPipe(obj: any): obj is GpuUniformBatchPipe
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

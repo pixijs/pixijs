@@ -13,6 +13,8 @@ import type { PointData } from '../../../../maths/point/PointData';
 import type { CanvasAndContext } from '../../../../rendering/renderers/shared/texture/CanvasPool';
 import type { TextureSpace } from '../FillTypes';
 
+const typeSymbol = Symbol.for('pixijs.FillGradient');
+
 /**
  * Defines the type of gradient to create.
  *
@@ -206,6 +208,22 @@ const emptyColorStops: { offset: number, color: string }[] = [{ offset: 0, color
  */
 export class FillGradient implements CanvasGradient
 {
+    /**
+     * Type symbol used to identify instances of FillGradient.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a FillGradient.
+     * @param obj - The object to check.
+     * @returns True if the object is a FillGradient, false otherwise.
+     */
+    public static isFillGradient(obj: any): obj is FillGradient
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** Default options for creating a gradient fill */
     public static readonly defaultLinearOptions: LinearGradientOptions = {
         start: { x: 0, y: 0 },

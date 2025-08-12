@@ -8,6 +8,8 @@ import source from './noise.wgsl';
 
 import type { FilterOptions } from '../../Filter';
 
+const typeSymbol = Symbol.for('pixijs.NoiseFilter');
+
 /**
  * Configuration options for the NoiseFilter.
  *
@@ -86,6 +88,22 @@ export interface NoiseFilterOptions extends FilterOptions
  */
 export class NoiseFilter extends Filter
 {
+    /**
+     * Type symbol used to identify instances of NoiseFilter.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a NoiseFilter.
+     * @param obj - The object to check.
+     * @returns True if the object is a NoiseFilter, false otherwise.
+     */
+    public static isNoiseFilter(obj: any): obj is NoiseFilter
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * The default configuration options for the NoiseFilter.
      *

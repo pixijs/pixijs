@@ -5,6 +5,8 @@ import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
+const typeSymbol = Symbol.for('pixijs.ColorDodgeBlend');
+
 /**
  * The final color is the result of dividing the bottom color by the inverse of the top color.
  * A black foreground leads to no change.
@@ -20,9 +22,26 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  * sprite.blendMode = 'color-dodge'
  * @category filters
  * @noInheritDoc
+ * @standard
  */
 export class ColorDodgeBlend extends BlendModeFilter
 {
+    /**
+     * Type symbol used to identify instances of ColorDodgeBlend.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a ColorDodgeBlend.
+     * @param obj - The object to check.
+     * @returns True if the object is a ColorDodgeBlend, false otherwise.
+     */
+    public static isColorDodgeBlend(obj: any): obj is ColorDodgeBlend
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = {
         name: 'color-dodge',

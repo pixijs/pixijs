@@ -6,6 +6,8 @@ import { getDefaultUniformValue } from './utils/getDefaultUniformValue';
 import type { BindResource } from '../../gpu/shader/BindResource';
 import type { Buffer } from '../buffer/Buffer';
 
+const typeSymbol = Symbol.for('pixijs.UniformGroup');
+
 type FLOPS<T = UniformData> = T extends { value: infer V } ? V : never;
 
 /**
@@ -87,6 +89,22 @@ export type UniformGroupOptions = {
  */
 export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any> implements BindResource
 {
+    /**
+     * Type symbol used to identify instances of UniformGroup.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a UniformGroup.
+     * @param obj - The object to check.
+     * @returns True if the object is a UniformGroup, false otherwise.
+     */
+    public static isUniformGroup(obj: any): obj is UniformGroup
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** The default options used by the uniform group. */
     public static defaultOptions: UniformGroupOptions = {
         /** if true the UniformGroup is handled as an Uniform buffer object. */

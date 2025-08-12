@@ -8,6 +8,8 @@ import { getGeometryBounds } from './utils/getGeometryBounds';
 import type { TypedArray } from '../buffer/Buffer';
 import type { Topology, VertexFormat } from './const';
 
+const typeSymbol = Symbol.for('pixijs.Geometry');
+
 /**
  * The index buffer array type used in geometries.
  * @category rendering
@@ -133,6 +135,22 @@ export class Geometry extends EventEmitter<{
     destroy: Geometry,
 }>
 {
+    /**
+     * Type symbol used to identify instances of Geometry.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Geometry.
+     * @param obj - The object to check.
+     * @returns True if the object is a Geometry, false otherwise.
+     */
+    public static isGeometry(obj: any): obj is Geometry
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** The topology of the geometry. */
     public topology: Topology;
     /** The unique id of the geometry. */

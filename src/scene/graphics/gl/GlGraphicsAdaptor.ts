@@ -15,6 +15,8 @@ import type { WebGLRenderer } from '../../../rendering/renderers/gl/WebGLRendere
 import type { Graphics } from '../shared/Graphics';
 import type { GraphicsAdaptor, GraphicsPipe } from '../shared/GraphicsPipe';
 
+const typeSymbol = Symbol.for('pixijs.GlGraphicsAdaptor');
+
 /**
  * A GraphicsAdaptor that uses WebGL to render graphics.
  * @category rendering
@@ -22,6 +24,22 @@ import type { GraphicsAdaptor, GraphicsPipe } from '../shared/GraphicsPipe';
  */
 export class GlGraphicsAdaptor implements GraphicsAdaptor
 {
+    /**
+     * Type symbol used to identify instances of GlGraphicsAdaptor.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GlGraphicsAdaptor.
+     * @param obj - The object to check.
+     * @returns True if the object is a GlGraphicsAdaptor, false otherwise.
+     */
+    public static isGlGraphicsAdaptor(obj: any): obj is GlGraphicsAdaptor
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

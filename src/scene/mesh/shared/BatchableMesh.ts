@@ -6,12 +6,30 @@ import type { Texture } from '../../../rendering/renderers/shared/texture/Textur
 import type { ViewContainer } from '../../view/ViewContainer';
 import type { MeshGeometry } from './MeshGeometry';
 
+const typeSymbol = Symbol.for('pixijs.BatchableMesh');
+
 /**
  * A batchable mesh object.
  * @ignore
  */
 export class BatchableMesh implements DefaultBatchableMeshElement
 {
+    /**
+     * Type symbol used to identify instances of BatchableMesh.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a BatchableMesh.
+     * @param obj - The object to check.
+     * @returns True if the object is a BatchableMesh, false otherwise.
+     */
+    public static isBatchableMesh(obj: any): obj is BatchableMesh
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public batcherName = 'default';
 
     public _topology: Topology;

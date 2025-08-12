@@ -1,5 +1,7 @@
 import type { TextureSource } from '../../renderers/shared/texture/sources/TextureSource';
 
+const typeSymbol = Symbol.for('pixijs.BatchTextureArray');
+
 /**
  * Used by the batcher to build texture batches. Holds list of textures and their respective locations.
  * @category rendering
@@ -7,6 +9,22 @@ import type { TextureSource } from '../../renderers/shared/texture/sources/Textu
  */
 export class BatchTextureArray
 {
+    /**
+     * Type symbol used to identify instances of BatchTextureArray.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a BatchTextureArray.
+     * @param obj - The object to check.
+     * @returns True if the object is a BatchTextureArray, false otherwise.
+     */
+    public static isBatchTextureArray(obj: any): obj is BatchTextureArray
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** Inside textures array. */
     public textures: TextureSource[];
 

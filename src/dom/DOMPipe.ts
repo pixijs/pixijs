@@ -6,6 +6,8 @@ import type { InstructionSet } from '../rendering/renderers/shared/instructions/
 import type { RenderPipe } from '../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../rendering/renderers/types';
 
+const typeSymbol = Symbol.for('pixijs.DOMPipe');
+
 /**
  * The DOMPipe class is responsible for managing and rendering DOM elements within a PixiJS scene.
  * It maps dom elements to the canvas and ensures they are correctly positioned and visible.
@@ -25,6 +27,22 @@ export class DOMPipe implements RenderPipe<DOMContainer>
         ],
         name: 'dom',
     } as const;
+
+    /**
+     * Type symbol used to identify instances of DOMPipe.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a DOMPipe.
+     * @param obj - The object to check.
+     * @returns True if the object is a DOMPipe, false otherwise.
+     */
+    public static isDOMPipe(obj: any): obj is DOMPipe
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
 
     private _renderer: Renderer;
 

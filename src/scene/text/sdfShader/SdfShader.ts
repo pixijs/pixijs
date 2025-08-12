@@ -18,12 +18,30 @@ import { mSDFBit, mSDFBitGl } from './shader-bits/mSDFBit';
 import type { GlProgram } from '../../../rendering/renderers/gl/shader/GlProgram';
 import type { GpuProgram } from '../../../rendering/renderers/gpu/shader/GpuProgram';
 
+const typeSymbol = Symbol.for('pixijs.SdfShader');
+
 let gpuProgram: GpuProgram;
 let glProgram: GlProgram;
 
 /** @internal */
 export class SdfShader extends Shader
 {
+    /**
+     * Type symbol used to identify instances of SdfShader.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a SdfShader.
+     * @param obj - The object to check.
+     * @returns True if the object is a SdfShader, false otherwise.
+     */
+    public static isSdfShader(obj: any): obj is SdfShader
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     constructor(maxTextures: number)
     {
         const uniforms = new UniformGroup({

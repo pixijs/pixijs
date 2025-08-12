@@ -4,6 +4,8 @@ import { type DestroyOptions } from '../container/destroyTypes';
 import { TextStyle, type TextStyleOptions } from '../text/TextStyle';
 import { type SplitableTextObject, type TextSplitOutput } from './types';
 
+const typeSymbol = Symbol.for('pixi.AbstractSplitText');
+
 /**
  * Configuration options for text splitting.
  * @category text
@@ -180,6 +182,22 @@ export interface AbstractSplitTextOptions extends ContainerOptions, AbstractSpli
  */
 export abstract class AbstractSplitText<T extends SplitableTextObject> extends Container
 {
+    /**
+     * Type symbol used to identify instances of AbstractSplitText.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a AbstractSplitText.
+     * @param obj - The object to check.
+     * @returns True if the object is a AbstractSplitText, false otherwise.
+     */
+    public static isAbstractSplitText(obj: any): obj is AbstractSplitText<any>
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Individual character segments of the text.
      * @example

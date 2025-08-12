@@ -1,6 +1,8 @@
 import type { Loader } from './loader/Loader';
 import type { ResolvedAsset } from './types';
 
+const typeSymbol = Symbol.for('pixijs.BackgroundLoader');
+
 /**
  * The BackgroundLoader handles loading assets passively in the background to prepare them for future use.
  * It loads one asset at a time to minimize impact on application performance.
@@ -45,6 +47,22 @@ import type { ResolvedAsset } from './types';
  */
 export class BackgroundLoader
 {
+    /**
+     * Type symbol used to identify instances of BackgroundLoader.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a BackgroundLoader.
+     * @param obj - The object to check.
+     * @returns True if the object is a BackgroundLoader, false otherwise.
+     */
+    public static isBackgroundLoader(obj: any): obj is BackgroundLoader
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** Whether or not the loader should continue loading. */
     private _isActive: boolean;
 

@@ -10,6 +10,8 @@ import type { DestroyOptions } from '../container/destroyTypes';
 import type { HTMLTextStyle, HTMLTextStyleOptions } from '../text-html/HTMLTextStyle';
 import type { TextStyle, TextStyleOptions } from './TextStyle';
 
+const typeSymbol = Symbol.for('pixijs.AbstractText');
+
 /**
  * A string or number that can be used as text.
  * @example
@@ -246,6 +248,22 @@ export abstract class AbstractText<
     GPU_DATA extends { destroy: () => void } = any
 > extends ViewContainer<GPU_DATA> implements View
 {
+    /**
+     * Type symbol used to identify instances of AbstractText.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is an AbstractText.
+     * @param obj - The object to check.
+     * @returns True if the object is an AbstractText, false otherwise.
+     */
+    public static isAbstractText(obj: any): obj is AbstractText
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @internal */
     public batched = true;
     /** @internal */

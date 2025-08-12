@@ -12,6 +12,9 @@ import type { PoolItem } from '../../../utils/pool/Pool';
 import type { BatchableGraphics } from './BatchableGraphics';
 import type { GraphicsContext } from './GraphicsContext';
 
+const typeSymbolGpuGraphicsContext = Symbol.for('pixijs.GpuGraphicsContext');
+const typeSymbolGraphicsContextRenderData = Symbol.for('pixijs.GraphicsContextRenderData');
+
 interface GeometryData
 {
     vertices: number[];
@@ -26,6 +29,22 @@ interface GeometryData
  */
 export class GpuGraphicsContext
 {
+    /**
+     * Type symbol used to identify instances of GpuGraphicsContext.
+     * @internal
+     */
+    public readonly [typeSymbolGpuGraphicsContext] = true;
+
+    /**
+     * Checks if the given object is a GpuGraphicsContext.
+     * @param obj - The object to check.
+     * @returns True if the object is a GpuGraphicsContext, false otherwise.
+     */
+    public static isGpuGraphicsContext(obj: any): obj is GpuGraphicsContext
+    {
+        return !!obj && !!obj[typeSymbolGpuGraphicsContext];
+    }
+
     public isBatchable: boolean;
     public context: GraphicsContext;
 
@@ -45,6 +64,22 @@ export class GpuGraphicsContext
  */
 export class GraphicsContextRenderData
 {
+    /**
+     * Type symbol used to identify instances of GraphicsContextRenderData.
+     * @internal
+     */
+    public readonly [typeSymbolGraphicsContextRenderData] = true;
+
+    /**
+     * Checks if the given object is a GraphicsContextRenderData.
+     * @param obj - The object to check.
+     * @returns True if the object is a GraphicsContextRenderData, false otherwise.
+     */
+    public static isGraphicsContextRenderData(obj: any): obj is GraphicsContextRenderData
+    {
+        return !!obj && !!obj[typeSymbolGraphicsContextRenderData];
+    }
+
     public batcher: DefaultBatcher;
     public instructions = new InstructionSet();
 

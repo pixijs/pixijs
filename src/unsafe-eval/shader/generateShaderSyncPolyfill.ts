@@ -28,7 +28,7 @@ function syncShader(renderer: WebGLRenderer, shader: Shader, syncData: ShaderSyn
         {
             const resource = bindGroup.resources[j];
 
-            if (resource instanceof UniformGroup)
+            if (UniformGroup.isUniformGroup(resource))
             {
                 if (resource.ubo)
                 {
@@ -43,7 +43,7 @@ function syncShader(renderer: WebGLRenderer, shader: Shader, syncData: ShaderSyn
                     shaderSystem.updateUniformGroup(resource);
                 }
             }
-            else if (resource instanceof BufferResource)
+            else if (BufferResource.isBufferResource(resource))
             {
                 shaderSystem.bindUniformBlock(
                     resource,
@@ -51,7 +51,7 @@ function syncShader(renderer: WebGLRenderer, shader: Shader, syncData: ShaderSyn
                     syncData.blockIndex++
                 );
             }
-            else if (resource instanceof TextureSource)
+            else if (TextureSource.isTextureSource(resource))
             {
                 // TODO really we should not be binding the sampler here too
                 renderer.texture.bind(resource, syncData.textureCount);
@@ -70,7 +70,7 @@ function syncShader(renderer: WebGLRenderer, shader: Shader, syncData: ShaderSyn
                     syncData.textureCount++;
                 }
             }
-            else if (resource instanceof TextureStyle)
+            else if (TextureStyle.isTextureStyle(resource))
             {
                 // TODO not doing anything here works is assuming that textures are bound with the style they own.
                 // this.renderer.texture.bindSampler(resource, syncData.textureCount);

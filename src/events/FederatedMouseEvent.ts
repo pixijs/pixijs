@@ -5,6 +5,8 @@ import type { PointData } from '../maths/point/PointData';
 import type { Container } from '../scene/container/Container';
 import type { PixiTouch } from './FederatedEvent';
 
+const typeSymbol = Symbol.for('pixijs.FederatedMouseEvent');
+
 /**
  * A specialized event class for mouse interactions in PixiJS applications.
  * Extends {@link FederatedEvent} to provide mouse-specific properties and methods
@@ -49,6 +51,22 @@ export class FederatedMouseEvent extends FederatedEvent<
 MouseEvent | PointerEvent | PixiTouch
 > implements MouseEvent
 {
+    /**
+     * Type symbol used to identify instances of FederatedMouseEvent.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a FederatedMouseEvent.
+     * @param obj - The object to check.
+     * @returns True if the object is a FederatedMouseEvent, false otherwise.
+     */
+    public static isFederatedMouseEvent(obj: any): obj is FederatedMouseEvent
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** Whether the "alt" key was pressed when this mouse event occurred. */
     public altKey: boolean;
 

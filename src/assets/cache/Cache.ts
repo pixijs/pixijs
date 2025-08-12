@@ -3,9 +3,27 @@ import { convertToList } from '../utils/convertToList';
 
 import type { CacheParser } from './CacheParser';
 
+const typeSymbol = Symbol.for('pixijs.CacheClass');
+
 /** @internal */
 class CacheClass
 {
+    /**
+     * Type symbol used to identify instances of CacheClass.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a CacheClass.
+     * @param obj - The object to check.
+     * @returns True if the object is a CacheClass, false otherwise.
+     */
+    public static isCacheClass(obj: any): obj is CacheClass
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     private readonly _parsers: CacheParser[] = [];
 
     private readonly _cache: Map<any, any> = new Map();

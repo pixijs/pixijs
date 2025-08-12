@@ -2,6 +2,7 @@ import { Matrix } from '../../../../maths/matrix/Matrix';
 
 import type { Texture } from './Texture';
 
+const typeSymbol = Symbol.for('pixijs.TextureMatrix');
 const tempMat = new Matrix();
 
 /**
@@ -22,6 +23,22 @@ const tempMat = new Matrix();
  */
 export class TextureMatrix
 {
+    /**
+     * Type symbol used to identify instances of TextureMatrix.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a TextureMatrix.
+     * @param obj - The object to check.
+     * @returns True if the object is a TextureMatrix, false otherwise.
+     */
+    public static isTextureMatrix(obj: any): obj is TextureMatrix
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Matrix operation that converts texture region coords to texture coords
      * @readonly

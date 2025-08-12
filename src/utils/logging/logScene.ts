@@ -44,7 +44,7 @@ export function logScene(container: Container, depth = 0, data: {color?: string}
 
     let label = container.label;
 
-    if (!label && container instanceof Sprite)
+    if (!label && Sprite.isSprite(container))
     {
         label = `sprite:${container.texture.label}`;
     }

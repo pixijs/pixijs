@@ -11,6 +11,8 @@ import type { ViewContainer } from '../view/ViewContainer';
 import type { Bounds } from './bounds/Bounds';
 import type { Container } from './Container';
 
+const typeSymbol = Symbol.for('pixijs.RenderGroup');
+
 /**
  * Options for caching a container as a texture.
  * @category rendering
@@ -51,6 +53,22 @@ export interface CacheAsTextureOptions
  */
 export class RenderGroup implements Instruction
 {
+    /**
+     * Type symbol used to identify instances of RenderGroup.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a RenderGroup.
+     * @param obj - The object to check.
+     * @returns True if the object is a RenderGroup, false otherwise.
+     */
+    public static isRenderGroup(obj: any): obj is RenderGroup
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public renderPipeId = 'renderGroup';
     public root: Container = null;
 

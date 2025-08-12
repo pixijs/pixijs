@@ -2,9 +2,27 @@ import type { WebGPURenderer } from '../../../rendering/renderers/gpu/WebGPURend
 import type { ParticleContainer } from '../shared/ParticleContainer';
 import type { ParticleContainerAdaptor, ParticleContainerPipe } from '../shared/ParticleContainerPipe';
 
+const typeSymbol = Symbol.for('pixijs.GpuParticleContainerAdaptor');
+
 /** @internal */
 export class GpuParticleContainerAdaptor implements ParticleContainerAdaptor
 {
+    /**
+     * Type symbol used to identify instances of GpuParticleContainerAdaptor.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GpuParticleContainerAdaptor.
+     * @param obj - The object to check.
+     * @returns True if the object is a GpuParticleContainerAdaptor, false otherwise.
+     */
+    public static isGpuParticleContainerAdaptor(obj: any): obj is GpuParticleContainerAdaptor
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public execute(particleContainerPipe: ParticleContainerPipe, container: ParticleContainer)
     {
         const renderer = particleContainerPipe.renderer as WebGPURenderer;

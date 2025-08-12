@@ -5,6 +5,9 @@ import type { Application } from '../../app/Application';
 import type { System } from '../../rendering/renderers/shared/system/System';
 import type { Renderer } from '../../rendering/renderers/types';
 
+const typeSymbolApplicationInitHook = Symbol.for('pixijs.ApplicationInitHook');
+const typeSymbolRendererInitHook = Symbol.for('pixijs.RendererInitHook');
+
 declare global
 {
     /* eslint-disable no-var */
@@ -20,6 +23,22 @@ declare global
  */
 export class ApplicationInitHook
 {
+    /**
+     * Type symbol used to identify instances of ApplicationInitHook.
+     * @internal
+     */
+    public readonly [typeSymbolApplicationInitHook] = true;
+
+    /**
+     * Checks if the given object is a ApplicationInitHook.
+     * @param obj - The object to check.
+     * @returns True if the object is a ApplicationInitHook, false otherwise.
+     */
+    public static isApplicationInitHook(obj: any): obj is ApplicationInitHook
+    {
+        return !!obj && !!obj[typeSymbolApplicationInitHook];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = ExtensionType.Application;
     public static init(): void
@@ -39,6 +58,22 @@ export class ApplicationInitHook
  */
 export class RendererInitHook implements System
 {
+    /**
+     * Type symbol used to identify instances of RendererInitHook.
+     * @internal
+     */
+    public readonly [typeSymbolRendererInitHook] = true;
+
+    /**
+     * Checks if the given object is a RendererInitHook.
+     * @param obj - The object to check.
+     * @returns True if the object is a RendererInitHook, false otherwise.
+     */
+    public static isRendererInitHook(obj: any): obj is RendererInitHook
+    {
+        return !!obj && !!obj[typeSymbolRendererInitHook];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

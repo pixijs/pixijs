@@ -17,6 +17,8 @@ import type { TextureDestroyOptions, TypeOrBool } from '../../container/destroyT
 import type { ConvertedFillStyle, ConvertedStrokeStyle, FillInput, StrokeInput } from './FillTypes';
 import type { RoundedPoint } from './path/roundShape';
 
+const typeSymbol = Symbol.for('pixijs.GraphicsContext');
+
 const tmpPoint = new Point();
 
 /**
@@ -83,6 +85,22 @@ export class GraphicsContext extends EventEmitter<{
     destroy: GraphicsContext
 }>
 {
+    /**
+     * Type symbol used to identify instances of GraphicsContext.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GraphicsContext.
+     * @param obj - The object to check.
+     * @returns True if the object is a GraphicsContext, false otherwise.
+     */
+    public static isGraphicsContext(obj: any): obj is GraphicsContext
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** The default fill style to use when none is provided. */
     public static defaultFillStyle: ConvertedFillStyle = {
         /** The color to use for the fill. */
@@ -983,7 +1001,7 @@ export class GraphicsContext extends EventEmitter<{
     public setTransform(a: number, b: number, c: number, d: number, dx: number, dy: number): this;
     public setTransform(a: number | Matrix, b?: number, c?: number, d?: number, dx?: number, dy?: number): this
     {
-        if (a instanceof Matrix)
+        if (Matrix.isMatrix(a))
         {
             this._transform.set(a.a, a.b, a.c, a.d, a.tx, a.ty);
 
@@ -1016,7 +1034,7 @@ export class GraphicsContext extends EventEmitter<{
     public transform(a: number, b: number, c: number, d: number, dx: number, dy: number): this;
     public transform(a: number | Matrix, b?: number, c?: number, d?: number, dx?: number, dy?: number): this
     {
-        if (a instanceof Matrix)
+        if (Matrix.isMatrix(a))
         {
             this._transform.append(a);
 

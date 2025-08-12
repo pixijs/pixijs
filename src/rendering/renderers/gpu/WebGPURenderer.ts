@@ -26,6 +26,8 @@ import type { SharedRendererOptions } from '../shared/system/SharedSystems';
 import type { SystemConstructor } from '../shared/system/System';
 import type { ExtractRendererOptions, ExtractSystemTypes } from '../shared/system/utils/typeUtils';
 
+const typeSymbol = Symbol.for('pixijs.WebGPURenderer');
+
 const DefaultWebGPUSystems = [
     ...SharedSystems,
     GpuUboSystem,
@@ -156,6 +158,22 @@ export class WebGPURenderer<T extends ICanvas = HTMLCanvasElement>
     extends AbstractRenderer<WebGPUPipes, WebGPUOptions, T>
     implements WebGPUSystems
 {
+    /**
+     * Type symbol used to identify instances of WebGPURenderer.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a WebGPURenderer.
+     * @param obj - The object to check.
+     * @returns True if the object is a WebGPURenderer, false otherwise.
+     */
+    public static isWebGPURenderer(obj: any): obj is WebGPURenderer
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** The WebGPU Device. */
     public gpu: GPU;
 

@@ -11,6 +11,8 @@ import type { ColorSource } from '../../../color/Color';
 import type { ArrayFixed } from '../../../utils/types';
 import type { FilterOptions } from '../../Filter';
 
+const typeSymbol = Symbol.for('pixijs.ColorMatrixFilter');
+
 /**
  * 5x4 matrix for transforming RGBA color and alpha
  * @category filters
@@ -57,6 +59,22 @@ export type ColorMatrix = ArrayFixed<number, 20>;
  */
 export class ColorMatrixFilter extends Filter
 {
+    /**
+     * Type symbol used to identify instances of ColorMatrixFilter.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a ColorMatrixFilter.
+     * @param obj - The object to check.
+     * @returns True if the object is a ColorMatrixFilter, false otherwise.
+     */
+    public static isColorMatrixFilter(obj: any): obj is ColorMatrixFilter
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     constructor(options: FilterOptions = {})
     {
         const colorMatrixUniforms = new UniformGroup({

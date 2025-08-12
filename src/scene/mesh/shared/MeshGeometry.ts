@@ -6,6 +6,8 @@ import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import type { Topology } from '../../../rendering/renderers/shared/geometry/const';
 import type { BatchMode } from '../../graphics/shared/GraphicsContext';
 
+const typeSymbol = Symbol.for('pixi.MeshGeometry');
+
 /**
  * Options for the mesh geometry.
  * @category scene
@@ -32,6 +34,22 @@ export interface MeshGeometryOptions
  */
 export class MeshGeometry extends Geometry
 {
+    /**
+     * Type symbol used to identify instances of MeshGeometry.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a MeshGeometry.
+     * @param obj - The object to check.
+     * @returns True if the object is a MeshGeometry, false otherwise.
+     */
+    public static isMeshGeometry(obj: any): obj is MeshGeometry
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public static defaultOptions: MeshGeometryOptions = {
         topology: 'triangle-list',
         shrinkBuffersToFit: false,

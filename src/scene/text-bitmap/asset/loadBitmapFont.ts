@@ -25,7 +25,7 @@ export const bitmapFontCachePlugin = {
         type: ExtensionType.CacheParser,
         name: 'cacheBitmapFont',
     },
-    test: (asset: BitmapFont) => asset instanceof BitmapFont,
+    test: (asset: BitmapFont) => BitmapFont.isBitmapFont(asset),
     getCacheableAssets(keys: string[], asset: BitmapFont)
     {
         const out: Record<string, BitmapFont> = {};

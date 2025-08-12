@@ -14,6 +14,8 @@ import type { FillInstruction, TextureInstruction } from '../scene/graphics/shar
 import type { FrameObject } from '../scene/sprite-animated/AnimatedSprite';
 import type { PrepareQueueItem, PrepareSourceItem } from './PrepareBase';
 
+const typeSymbol = Symbol.for('pixijs.PrepareQueue');
+
 /**
  * Part of the prepare system. Responsible for uploading all the items to the GPU.
  * This class extends the base functionality and resolves given resource items ready for the queue.
@@ -23,21 +25,37 @@ import type { PrepareQueueItem, PrepareSourceItem } from './PrepareBase';
 export abstract class PrepareQueue extends PrepareBase
 {
     /**
+     * Type symbol used to identify instances of PrepareQueue.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a PrepareQueue.
+     * @param obj - The object to check.
+     * @returns True if the object is a PrepareQueue, false otherwise.
+     */
+    public static isPrepareQueue(obj: any): obj is PrepareQueue
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
+    /**
      * Resolve the given resource type and return an item for the queue
      * @param source
      * @param queue
      */
     protected resolveQueueItem(source: PrepareSourceItem, queue: PrepareQueueItem[]): void
     {
-        if (source instanceof Container)
+        if (Container.isContainer(source))
         {
             this.resolveContainerQueueItem(source, queue);
         }
-        else if (source instanceof TextureSource || source instanceof Texture)
+        else if (TextureSource.isTextureSource(source) || Texture.isTexture(source))
         {
             queue.push(source.source);
         }
-        else if (source instanceof GraphicsContext)
+        else if (GraphicsContext.isGraphicsContext(source))
         {
             queue.push(source);
         }
@@ -56,19 +74,19 @@ export abstract class PrepareQueue extends PrepareBase
         // Note: we are just concerned with the given view.
         // Children are handled by the recursive call of the base class
 
-        if (container instanceof Sprite || container instanceof TilingSprite || container instanceof Mesh)
+        if (Sprite.isSprite(container) || TilingSprite.isTilingSprite(container) || Mesh.isMesh(container))
         {
             queue.push(container.texture.source);
         }
-        else if (container instanceof Text)
+        else if (Text.isText(container))
         {
             queue.push(container);
         }
-        else if (container instanceof Graphics)
+        else if (Graphics.isGraphics(container))
         {
             queue.push(container.context);
         }
-        else if (container instanceof AnimatedSprite)
+        else if (AnimatedSprite.isAnimatedSprite(container))
         {
             container.textures.forEach((textureOrFrame) =>
             {

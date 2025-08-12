@@ -9,9 +9,27 @@ import fragment from './particles.frag';
 import vertex from './particles.vert';
 import wgsl from './particles.wgsl';
 
+const typeSymbol = Symbol.for('pixijs.ParticleShader');
+
 /** @internal */
 export class ParticleShader extends Shader
 {
+    /**
+     * Type symbol used to identify instances of ParticleShader.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a ParticleShader.
+     * @param obj - The object to check.
+     * @returns True if the object is a ParticleShader, false otherwise.
+     */
+    public static isParticleShader(obj: any): obj is ParticleShader
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     constructor()
     {
         const glProgram = GlProgram.from({

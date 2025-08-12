@@ -1,6 +1,7 @@
 import { RenderLayer } from '../../layers/RenderLayer';
 import { Container } from '../Container';
 import { updateRenderGroupTransforms } from '../utils/updateRenderGroupTransforms';
+import { Point } from '~/maths';
 import { Matrix } from '~/maths/matrix/Matrix';
 
 describe('Container', () =>
@@ -112,7 +113,7 @@ describe('Container', () =>
         container.position.set(10, 10);
         child.position.set(10, 10);
 
-        expect(child.toGlobal({ x: 0, y: 0 })).toEqual({ x: 20, y: 20 });
+        expect(child.toGlobal({ x: 0, y: 0 })).toEqual(new Point(20, 20));
         //   expect(container.getBounds()).toEqual({ x: 10, y: 10, width: 0, height: 0 });
     });
 
@@ -139,12 +140,12 @@ describe('Container', () =>
         child.position.set(10, 10);
 
         // wrong!
-        expect(child.toGlobal({ x: 0, y: 0 }, null, true)).toEqual({ x: 0, y: 0 });
+        expect(child.toGlobal({ x: 0, y: 0 }, null, true)).toEqual(new Point(0, 0));
 
         updateRenderGroupTransforms(container.parentRenderGroup, true);
 
         // right!!
-        expect(child.toGlobal({ x: 0, y: 0 }, null, true)).toEqual({ x: 20, y: 20 });
+        expect(child.toGlobal({ x: 0, y: 0 }, null, true)).toEqual(new Point(20, 20));
     });
 
     it('should a local position correctly', async () =>
@@ -155,7 +156,7 @@ describe('Container', () =>
 
         child.position.set(10, 10);
 
-        expect(child.toLocal({ x: 0, y: 0 })).toEqual({ x: -10, y: -10 });
+        expect(child.toLocal({ x: 0, y: 0 })).toEqual(new Point(-10, -10));
     });
 
     it('should a local position correctly when nested', async () =>
@@ -185,7 +186,7 @@ describe('Container', () =>
         container.position.set(10, 10);
         child.position.set(10, 10);
 
-        expect(child.toLocal({ x: 0, y: 0 }, otherContainer)).toEqual({ x: -20, y: -20 });
+        expect(child.toLocal({ x: 0, y: 0 }, otherContainer)).toEqual(new Point(-20, -20));
 
         //   expect(container.getBounds()).toEqual({ x: 10, y: 10, width: 0, height: 0 });
     });
@@ -217,12 +218,12 @@ describe('Container', () =>
         child.position.set(10, 10);
 
         // wrong!
-        expect(child.toLocal({ x: 0, y: 0 }, otherContainer, null, true)).toEqual({ x: 0, y: 0 });
+        expect(child.toLocal({ x: 0, y: 0 }, otherContainer, null, true)).toEqual(new Point(0, 0));
 
         updateRenderGroupTransforms(container.parentRenderGroup, true);
 
         // right!
-        expect(child.toLocal({ x: 0, y: 0 }, otherContainer, null, true)).toEqual({ x: -20, y: -20 });
+        expect(child.toLocal({ x: 0, y: 0 }, otherContainer, null, true)).toEqual(new Point(-20, -20));
         //   expect(container.getBounds()).toEqual({ x: 10, y: 10, width: 0, height: 0 });
     });
 

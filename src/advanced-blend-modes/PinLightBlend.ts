@@ -3,6 +3,8 @@ import { BlendModeFilter } from '../filters/blend-modes/BlendModeFilter';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
+const typeSymbol = Symbol.for('pixijs.PinLightBlend');
+
 /**
  * Replaces colors based on the blend color.
  *
@@ -15,9 +17,26 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  * sprite.blendMode = 'pin-light'
  * @category filters
  * @noInheritDoc
+ * @standard
  */
 export class PinLightBlend extends BlendModeFilter
 {
+    /**
+     * Type symbol used to identify instances of PinLightBlend.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a PinLightBlend.
+     * @param obj - The object to check.
+     * @returns True if the object is a PinLightBlend, false otherwise.
+     */
+    public static isPinLightBlend(obj: any): obj is PinLightBlend
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = {
         name: 'pin-light',

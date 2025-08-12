@@ -6,6 +6,8 @@ import type { RenderTarget } from '../shared/renderTarget/RenderTarget';
 import type { System } from '../shared/system/System';
 import type { WebGLRenderer } from './WebGLRenderer';
 
+const typeSymbol = Symbol.for('pixijs.GlStencilSystem');
+
 /**
  * This manages the stencil buffer. Used primarily for masking
  * @category rendering
@@ -13,6 +15,22 @@ import type { WebGLRenderer } from './WebGLRenderer';
  */
 export class GlStencilSystem implements System
 {
+    /**
+     * Type symbol used to identify instances of GlStencilSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GlStencilSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a GlStencilSystem, false otherwise.
+     */
+    public static isGlStencilSystem(obj: any): obj is GlStencilSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

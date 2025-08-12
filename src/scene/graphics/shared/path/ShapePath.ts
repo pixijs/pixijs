@@ -19,6 +19,8 @@ import type { ShapePrimitive } from '../../../../maths/shapes/ShapePrimitive';
 import type { GraphicsPath } from './GraphicsPath';
 import type { RoundedPoint } from './roundShape';
 
+const typeSymbol = Symbol.for('pixijs.ShapePath');
+
 const tempRectangle = new Rectangle();
 
 /**
@@ -45,6 +47,22 @@ export type ShapePrimitiveWithHoles = {
  */
 export class ShapePath
 {
+    /**
+     * Type symbol used to identify instances of ShapePath.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a ShapePath.
+     * @param obj - The object to check.
+     * @returns True if the object is a ShapePath, false otherwise.
+     */
+    public static isShapePath(obj: any): obj is ShapePath
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** The list of shape primitives that make up the path. */
     public shapePrimitives: ShapePrimitiveWithHoles[] = [];
     private _currentPoly: Polygon | null = null;

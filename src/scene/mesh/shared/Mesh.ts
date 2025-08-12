@@ -15,6 +15,8 @@ import type { View } from '../../../rendering/renderers/shared/view/View';
 import type { ContainerOptions } from '../../container/Container';
 import type { DestroyOptions } from '../../container/destroyTypes';
 
+const typeSymbol = Symbol.for('pixi.Mesh');
+
 /**
  * Shader that uses a texture.
  * This is the default shader used by `Mesh` when no shader is provided.
@@ -95,6 +97,22 @@ export class Mesh<
     SHADER extends Shader = TextureShader
 > extends ViewContainer<MeshGpuData> implements View, Instruction
 {
+    /**
+     * Type symbol used to identify instances of Mesh.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Mesh.
+     * @param obj - The object to check.
+     * @returns True if the object is a Mesh, false otherwise.
+     */
+    public static isMesh(obj: any): obj is Mesh<any, any>
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @internal */
     public override readonly renderPipeId: string = 'mesh';
     public state: State;
@@ -115,7 +133,7 @@ export class Mesh<
     {
         let options = args[0];
 
-        if (options instanceof Geometry)
+        if (Geometry.isGeometry(options))
         {
             // #if _DEBUG
             deprecation(v8_0_0, 'Mesh: use new Mesh({ geometry, shader }) instead');
@@ -237,7 +255,7 @@ export class Mesh<
         // It isn't compatible if depth test or culling is enabled.
         if ((this.state.data & 0b001100) !== 0) return false;
 
-        if (this._geometry instanceof MeshGeometry)
+        if (MeshGeometry.isMeshGeometry(this._geometry))
         {
             if (this._geometry.batchMode === 'auto')
             {

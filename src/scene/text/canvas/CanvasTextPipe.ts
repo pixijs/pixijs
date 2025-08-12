@@ -7,9 +7,27 @@ import type { RenderPipe } from '../../../rendering/renderers/shared/instruction
 import type { Renderer } from '../../../rendering/renderers/types';
 import type { Text } from '../Text';
 
+const typeSymbol = Symbol.for('pixijs.CanvasTextPipe');
+
 /** @internal */
 export class CanvasTextPipe implements RenderPipe<Text>
 {
+    /**
+     * Type symbol used to identify instances of CanvasTextPipe.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a CanvasTextPipe.
+     * @param obj - The object to check.
+     * @returns True if the object is a CanvasTextPipe, false otherwise.
+     */
+    public static isCanvasTextPipe(obj: any): obj is CanvasTextPipe
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

@@ -1,6 +1,8 @@
 import { UPDATE_PRIORITY } from './const';
 import { TickerListener } from './TickerListener';
 
+const typeSymbol = Symbol.for('pixijs.Ticker');
+
 /**
  * A callback which can be added to a ticker.
  * ```js
@@ -55,6 +57,22 @@ export type TickerCallback<T> = (this: T, ticker: Ticker) => any;
  */
 export class Ticker
 {
+    /**
+     * Type symbol used to identify instances of Ticker.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Ticker.
+     * @param obj - The object to check.
+     * @returns True if the object is a Ticker, false otherwise.
+     */
+    public static isTicker(obj: any): obj is Ticker
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Target frame rate in frames per millisecond.
      * Used for converting deltaTime to a scalar time delta.

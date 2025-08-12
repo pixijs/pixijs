@@ -6,12 +6,30 @@ import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { BoundsData } from '../container/bounds/Bounds';
 import type { Container } from '../container/Container';
 
+const typeSymbol = Symbol.for('pixijs.BatchableSprite');
+
 /**
  * A batchable sprite object.
  * @internal
  */
 export class BatchableSprite implements DefaultBatchableQuadElement
 {
+    /**
+     * Type symbol used to identify instances of BatchableSprite.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a BatchableSprite.
+     * @param obj - The object to check.
+     * @returns True if the object is a BatchableSprite, false otherwise.
+     */
+    public static isBatchableSprite(obj: any): obj is BatchableSprite
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public batcherName = 'default';
     public topology: Topology = 'triangle-list';
 

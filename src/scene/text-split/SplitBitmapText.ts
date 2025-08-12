@@ -8,6 +8,8 @@ import {
 } from './AbstractSplitText';
 import { type TextSplitOutput } from './types';
 
+const typeSymbol = Symbol.for('pixijs.SplitBitmapText');
+
 /**
  * Configuration options for BitmapText splitting.
  * @category text
@@ -143,6 +145,22 @@ export interface SplitBitmapTextOptions
  */
 export class SplitBitmapText extends AbstractSplitText<BitmapText>
 {
+    /**
+     * Type symbol used to identify instances of SplitBitmapText.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a SplitBitmapText.
+     * @param obj - The object to check.
+     * @returns True if the object is a SplitBitmapText, false otherwise.
+     */
+    public static isSplitBitmapText(obj: any): obj is SplitBitmapText
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Default configuration options for SplitBitmapText instances.
      * @example

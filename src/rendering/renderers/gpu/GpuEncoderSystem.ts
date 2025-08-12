@@ -15,6 +15,8 @@ import type { BindGroup } from './shader/BindGroup';
 import type { GpuProgram } from './shader/GpuProgram';
 import type { WebGPURenderer } from './WebGPURenderer';
 
+const typeSymbol = Symbol.for('pixijs.GpuEncoderSystem');
+
 /**
  * The system that handles encoding commands for the GPU.
  * @category rendering
@@ -22,6 +24,22 @@ import type { WebGPURenderer } from './WebGPURenderer';
  */
 export class GpuEncoderSystem implements System
 {
+    /**
+     * Type symbol used to identify instances of GpuEncoderSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GpuEncoderSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a GpuEncoderSystem, false otherwise.
+     */
+    public static isGpuEncoderSystem(obj: any): obj is GpuEncoderSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [ExtensionType.WebGPUSystem],

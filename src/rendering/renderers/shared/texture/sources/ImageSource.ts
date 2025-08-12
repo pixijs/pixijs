@@ -5,6 +5,8 @@ import type { ICanvas } from '../../../../../environment/canvas/ICanvas';
 import type { ExtensionMetadata } from '../../../../../extensions/Extensions';
 import type { TextureSourceOptions } from './TextureSource';
 
+const typeSymbol = Symbol.for('pixijs.ImageSource');
+
 /**
  * The type of image-like resource that can be used as a texture source.
  *
@@ -35,6 +37,22 @@ ImageBitmap
  */
 export class ImageSource extends TextureSource<ImageResource>
 {
+    /**
+     * Type symbol used to identify instances of ImageSource.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a ImageSource.
+     * @param obj - The object to check.
+     * @returns True if the object is a ImageSource, false otherwise.
+     */
+    public static isImageSource(obj: any): obj is ImageSource
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public static extension: ExtensionMetadata = ExtensionType.TextureSource;
     public uploadMethodId = 'image';
 

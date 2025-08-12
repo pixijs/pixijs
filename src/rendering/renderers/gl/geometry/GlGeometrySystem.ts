@@ -10,6 +10,8 @@ import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { GlProgram } from '../shader/GlProgram';
 import type { WebGLRenderer } from '../WebGLRenderer';
 
+const typeSymbol = Symbol.for('pixijs.GlGeometrySystem');
+
 const topologyToGlMap = {
     'point-list': 0x0000,
     'line-list': 0x0001,
@@ -25,6 +27,22 @@ const topologyToGlMap = {
  */
 export class GlGeometrySystem implements System
 {
+    /**
+     * Type symbol used to identify instances of GlGeometrySystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GlGeometrySystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a GlGeometrySystem, false otherwise.
+     */
+    public static isGlGeometrySystem(obj: any): obj is GlGeometrySystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

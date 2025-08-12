@@ -9,6 +9,8 @@ import type { ALPHA_MODES, SCALE_MODE, TEXTURE_DIMENSIONS, TEXTURE_FORMATS, WRAP
 import type { TextureStyleOptions } from '../TextureStyle';
 import type { TextureResourceOrOptions } from '../utils/textureFrom';
 
+const typeSymbol = Symbol.for('pixijs.TextureSource');
+
 /**
  * options for creating a new TextureSource
  * @category rendering
@@ -82,6 +84,22 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     error: Error;
 }> implements BindResource
 {
+    /**
+     * Type symbol used to identify instances of TextureSource.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a TextureSource.
+     * @param obj - The object to check.
+     * @returns True if the object is a TextureSource, false otherwise.
+     */
+    public static isTextureSource(obj: any): obj is TextureSource
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** The default options used when creating a new TextureSource. override these to add your own defaults */
     public static defaultOptions: TextureSourceOptions = {
         resolution: 1,

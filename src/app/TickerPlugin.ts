@@ -4,6 +4,8 @@ import { Ticker } from '../ticker/Ticker';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 
+const typeSymbol = Symbol.for('pixijs.TickerPlugin');
+
 /**
  * Application options for the {@link TickerPlugin}.
  * These options control the animation loop and update cycle of your PixiJS application.
@@ -138,6 +140,22 @@ export interface TickerPluginOptions
  */
 export class TickerPlugin
 {
+    /**
+     * Type symbol used to identify instances of TickerPlugin.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a TickerPlugin.
+     * @param obj - The object to check.
+     * @returns True if the object is a TickerPlugin, false otherwise.
+     */
+    public static isTickerPlugin(obj: any): obj is TickerPlugin
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension: ExtensionMetadata = ExtensionType.Application;
 

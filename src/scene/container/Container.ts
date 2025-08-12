@@ -32,6 +32,8 @@ import type { Dict } from '../../utils/types';
 import type { Optional } from './container-mixins/measureMixin';
 import type { DestroyOptions } from './destroyTypes';
 
+const typeSymbol = Symbol.for('pixijs.Container');
+
 /**
  * The type of child that can be added to a {@link Container}.
  * This is a generic type that extends the {@link Container} class.
@@ -640,6 +642,22 @@ export interface Container<C extends ContainerChild>
  */
 export class Container<C extends ContainerChild = ContainerChild> extends EventEmitter<ContainerEvents<C> & AnyEvent>
 {
+    /**
+     * Type symbol used to identify instances of Container.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Container.
+     * @param obj - The object to check.
+     * @returns True if the object is a Container, false otherwise.
+     */
+    public static isContainer(obj: any): obj is Container
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Mixes all enumerable properties and methods from a source object to Container.
      * @param source - The source of properties and methods to mix in.

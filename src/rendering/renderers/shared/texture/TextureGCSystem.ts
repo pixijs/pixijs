@@ -3,6 +3,8 @@ import { ExtensionType } from '../../../../extensions/Extensions';
 import type { Renderer } from '../../types';
 import type { System } from '../system/System';
 
+const typeSymbol = Symbol.for('pixijs.TextureGCSystem');
+
 /**
  * Options for the {@link TextureGCSystem}.
  * @category rendering
@@ -39,6 +41,22 @@ export interface TextureGCSystemOptions
  */
 export class TextureGCSystem implements System<TextureGCSystemOptions>
 {
+    /**
+     * Type symbol used to identify instances of TextureGCSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a TextureGCSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a TextureGCSystem, false otherwise.
+     */
+    public static isTextureGCSystem(obj: any): obj is TextureGCSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

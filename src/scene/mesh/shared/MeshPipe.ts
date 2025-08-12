@@ -15,6 +15,8 @@ import type {
 import type { Renderer } from '../../../rendering/renderers/types';
 import type { Mesh } from './Mesh';
 
+const typeSymbol = Symbol.for('pixi.MeshPipe');
+
 // TODO Record mode is a P2, will get back to this as it's not a priority
 // const recordMode = true;
 
@@ -64,6 +66,22 @@ export interface MeshAdaptor
  */
 export class MeshPipe implements RenderPipe<Mesh>, InstructionPipe<Mesh>
 {
+    /**
+     * Type symbol used to identify instances of MeshPipe.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a MeshPipe.
+     * @param obj - The object to check.
+     * @returns True if the object is a MeshPipe, false otherwise.
+     */
+    public static isMeshPipe(obj: any): obj is MeshPipe
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

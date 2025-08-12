@@ -8,6 +8,8 @@ import type { InstructionPipe } from '../../renderers/shared/instructions/Render
 import type { Renderer } from '../../renderers/types';
 import type { ColorMask } from './ColorMask';
 
+const typeSymbol = Symbol.for('pixijs.ColorMaskPipe');
+
 /** @internal */
 export interface ColorMaskInstruction extends Instruction
 {
@@ -18,6 +20,22 @@ export interface ColorMaskInstruction extends Instruction
 /** @internal */
 export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
 {
+    /**
+     * Type symbol used to identify instances of ColorMaskPipe.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a ColorMaskPipe.
+     * @param obj - The object to check.
+     * @returns True if the object is a ColorMaskPipe, false otherwise.
+     */
+    public static isColorMaskPipe(obj: any): obj is ColorMaskPipe
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

@@ -22,6 +22,8 @@ import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
 import type { GLTextureUploader } from './uploaders/GLTextureUploader';
 
+const typeSymbol = Symbol.for('pixijs.GlTextureSystem');
+
 const BYTES_PER_PIXEL = 4;
 
 /**
@@ -31,6 +33,22 @@ const BYTES_PER_PIXEL = 4;
  */
 export class GlTextureSystem implements System, CanvasGenerator
 {
+    /**
+     * Type symbol used to identify instances of GlTextureSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GlTextureSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a GlTextureSystem, false otherwise.
+     */
+    public static isGlTextureSystem(obj: any): obj is GlTextureSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

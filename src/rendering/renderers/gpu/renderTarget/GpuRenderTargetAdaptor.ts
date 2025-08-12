@@ -11,6 +11,8 @@ import type { RenderTargetAdaptor, RenderTargetSystem } from '../../shared/rende
 import type { Texture } from '../../shared/texture/Texture';
 import type { WebGPURenderer } from '../WebGPURenderer';
 
+const typeSymbol = Symbol.for('pixijs.GpuRenderTargetAdaptor');
+
 /**
  * The WebGPU adaptor for the render target system. Allows the Render Target System to
  * be used with the WebGPU renderer
@@ -19,6 +21,22 @@ import type { WebGPURenderer } from '../WebGPURenderer';
  */
 export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarget>
 {
+    /**
+     * Type symbol used to identify instances of GpuRenderTargetAdaptor.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GpuRenderTargetAdaptor.
+     * @param obj - The object to check.
+     * @returns True if the object is a GpuRenderTargetAdaptor, false otherwise.
+     */
+    public static isGpuRenderTargetAdaptor(obj: any): obj is GpuRenderTargetAdaptor
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     private _renderTargetSystem: RenderTargetSystem<GpuRenderTarget>;
     private _renderer: WebGPURenderer<HTMLCanvasElement>;
 
@@ -245,7 +263,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         // is a canvas...
         renderTarget.colorTextures.forEach((colorTexture, i) =>
         {
-            if (colorTexture instanceof CanvasSource)
+            if (CanvasSource.isCanvasSource(colorTexture))
             {
                 const context = colorTexture.resource.getContext(
                     'webgpu'

@@ -8,6 +8,8 @@ import { PrepareQueue } from './PrepareQueue';
 import type { FillInstruction, TextureInstruction } from '../scene/graphics/shared/GraphicsContext';
 import type { PrepareQueueItem } from './PrepareBase';
 
+const typeSymbol = Symbol.for('pixijs.PrepareUpload');
+
 /**
  * @advanced
  * Part of the prepare system. Responsible for uploading all the items to the GPU.
@@ -17,28 +19,44 @@ import type { PrepareQueueItem } from './PrepareBase';
 export abstract class PrepareUpload extends PrepareQueue
 {
     /**
+     * Type symbol used to identify instances of PrepareUpload.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a PrepareUpload.
+     * @param obj - The object to check.
+     * @returns True if the object is a PrepareUpload, false otherwise.
+     */
+    public static isPrepareUpload(obj: any): obj is PrepareUpload
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
+    /**
      * Upload the given queue item
      * @param item
      */
     protected uploadQueueItem(item: PrepareQueueItem): void
     {
-        if (item instanceof TextureSource)
+        if (TextureSource.isTextureSource(item))
         {
             this.uploadTextureSource(item);
         }
-        else if (item instanceof Text)
+        else if (Text.isText(item))
         {
             this.uploadText(item);
         }
-        else if (item instanceof HTMLText)
+        else if (HTMLText.isHTMLText(item))
         {
             this.uploadHTMLText(item);
         }
-        else if (item instanceof BitmapText)
+        else if (BitmapText.isBitmapText(item))
         {
             this.uploadBitmapText(item);
         }
-        else if (item instanceof GraphicsContext)
+        else if (GraphicsContext.isGraphicsContext(item))
         {
             this.uploadGraphicsContext(item);
         }

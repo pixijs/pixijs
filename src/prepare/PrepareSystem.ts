@@ -3,6 +3,8 @@ import { PrepareUpload } from './PrepareUpload';
 
 import type { System } from '../rendering/renderers/shared/system/System';
 
+const typeSymbol = Symbol.for('pixijs.PrepareSystem');
+
 /**
  * The prepare system provides renderer-specific plugins for pre-rendering DisplayObjects. This is useful for
  * asynchronously preparing and uploading to the GPU assets, textures, graphics waiting to be displayed.
@@ -37,6 +39,22 @@ import type { System } from '../rendering/renderers/shared/system/System';
  */
 export class PrepareSystem extends PrepareUpload implements System
 {
+    /**
+     * Type symbol used to identify instances of PrepareSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a PrepareSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a PrepareSystem, false otherwise.
+     */
+    public static isPrepareSystem(obj: any): obj is PrepareSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

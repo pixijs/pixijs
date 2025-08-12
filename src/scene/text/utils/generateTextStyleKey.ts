@@ -5,7 +5,7 @@ import type { ConvertedFillStyle, ConvertedStrokeStyle } from '../../graphics/sh
 import type { HTMLTextStyle } from '../../text-html/HTMLTextStyle';
 import type { TextStyle } from '../TextStyle';
 
-const valuesToIterateForKeys: Partial<keyof TextStyle | keyof HTMLTextStyle>[] = [
+const valuesToIterateForKeys = [
     'align',
     'breakWords',
     'cssOverrides',
@@ -23,7 +23,7 @@ const valuesToIterateForKeys: Partial<keyof TextStyle | keyof HTMLTextStyle>[] =
     'fontFamily',
     'fontStyle',
     'fontSize',
-] as const;
+] as const satisfies Partial<keyof TextStyle | keyof HTMLTextStyle>[];
 
 /**
  * Generates a unique key for the text style.

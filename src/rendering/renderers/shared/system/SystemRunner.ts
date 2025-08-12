@@ -1,3 +1,5 @@
+const typeSymbol = Symbol.for('pixijs.SystemRunner');
+
 /**
  * SystemRunner is used internally by the renderers as an efficient way for systems to
  * be notified about what the renderer is up to during the rendering phase.
@@ -43,6 +45,22 @@
  */
 export class SystemRunner
 {
+    /**
+     * Type symbol used to identify instances of SystemRunner.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a SystemRunner.
+     * @param obj - The object to check.
+     * @returns True if the object is a SystemRunner, false otherwise.
+     */
+    public static isSystemRunner(obj: any): obj is SystemRunner
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public items: any[];
     private _name: string;
 

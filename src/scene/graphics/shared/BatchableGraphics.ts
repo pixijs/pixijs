@@ -7,6 +7,7 @@ import type { Topology } from '../../../rendering/renderers/shared/geometry/cons
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { Graphics } from './Graphics';
 
+const typeSymbol = Symbol.for('pixijs.BatchableGraphics');
 const identityMatrix = new Matrix();
 
 /**
@@ -15,6 +16,22 @@ const identityMatrix = new Matrix();
  */
 export class BatchableGraphics implements DefaultBatchableMeshElement
 {
+    /**
+     * Type symbol used to identify instances of BatchableGraphics.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a BatchableGraphics.
+     * @param obj - The object to check.
+     * @returns True if the object is a BatchableGraphics, false otherwise.
+     */
+    public static isBatchableGraphics(obj: any): obj is BatchableGraphics
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public readonly packAsQuad = false;
     public batcherName = 'default';
 

@@ -19,6 +19,9 @@ import type { RenderTarget } from '../../renderers/shared/renderTarget/RenderTar
 import type { Renderer } from '../../renderers/types';
 import type { AlphaMask } from './AlphaMask';
 
+const typeSymbolAlphaMaskEffect = Symbol.for('pixijs.AlphaMaskEffect');
+const typeSymbolAlphaMaskPipe = Symbol.for('pixijs.AlphaMaskPipe');
+
 type MaskMode = 'pushMaskBegin' | 'pushMaskEnd' | 'popMaskBegin' | 'popMaskEnd';
 
 const tempBounds = new Bounds();
@@ -26,6 +29,22 @@ const tempBounds = new Bounds();
 /** @internal */
 class AlphaMaskEffect extends FilterEffect implements PoolItem
 {
+    /**
+     * Type symbol used to identify instances of AlphaMaskEffect.
+     * @internal
+     */
+    public readonly [typeSymbolAlphaMaskEffect] = true;
+
+    /**
+     * Checks if the given object is a AlphaMaskEffect.
+     * @param obj - The object to check.
+     * @returns True if the object is a AlphaMaskEffect, false otherwise.
+     */
+    public static isAlphaMaskEffect(obj: any): obj is AlphaMaskEffect
+    {
+        return !!obj && !!obj[typeSymbolAlphaMaskEffect];
+    }
+
     constructor()
     {
         super();
@@ -84,6 +103,22 @@ export interface AlphaMaskData
 /** @internal */
 export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
 {
+    /**
+     * Type symbol used to identify instances of AlphaMaskPipe.
+     * @internal
+     */
+    public readonly [typeSymbolAlphaMaskPipe] = true;
+
+    /**
+     * Checks if the given object is a AlphaMaskPipe.
+     * @param obj - The object to check.
+     * @returns True if the object is a AlphaMaskPipe, false otherwise.
+     */
+    public static isAlphaMaskPipe(obj: any): obj is AlphaMaskPipe
+    {
+        return !!obj && !!obj[typeSymbolAlphaMaskPipe];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

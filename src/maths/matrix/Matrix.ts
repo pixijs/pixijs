@@ -4,6 +4,8 @@ import { Point } from '../point/Point';
 
 import type { PointData } from '../point/PointData';
 
+const typeSymbol = Symbol.for('pixijs.Matrix');
+
 /**
  * The data structure that contains the position, scale, pivot, skew and rotation of an object.
  * This is used by the {@link Matrix} class to decompose the matrix into its components.
@@ -61,6 +63,22 @@ export interface TransformableObject
  */
 export class Matrix
 {
+    /**
+     * Type symbol used to identify instances of Matrix.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Matrix.
+     * @param obj - The object to check.
+     * @returns True if the object is a Matrix, false otherwise.
+     */
+    public static isMatrix(obj: any): obj is Matrix
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Scale on the x axis.
      * @default 1

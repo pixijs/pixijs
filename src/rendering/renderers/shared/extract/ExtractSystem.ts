@@ -12,6 +12,8 @@ import type { System } from '../system/System';
 import type { GetPixelsOutput } from '../texture/GenerateCanvas';
 import type { GenerateTextureOptions } from './GenerateTextureSystem';
 
+const typeSymbol = Symbol.for('pixijs.ExtractSystem');
+
 const imageTypes = {
     png: 'image/png',
     jpg: 'image/jpeg',
@@ -430,6 +432,22 @@ export type ExtractOptions = BaseExtractOptions | ExtractImageOptions | ExtractD
  */
 export class ExtractSystem implements System
 {
+    /**
+     * Type symbol used to identify instances of ExtractSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a ExtractSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a ExtractSystem, false otherwise.
+     */
+    public static isExtractSystem(obj: any): obj is ExtractSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [
@@ -469,7 +487,7 @@ export class ExtractSystem implements System
         defaults: Partial<T> = {},
     ): T
     {
-        if (options instanceof Container || options instanceof Texture)
+        if (Container.isContainer(options) || Texture.isTexture(options))
         {
             return {
                 target: options,
@@ -658,7 +676,7 @@ export class ExtractSystem implements System
 
         const renderer = this._renderer;
 
-        if (target instanceof Texture)
+        if (Texture.isTexture(target))
         {
             return renderer.texture.generateCanvas(target);
         }
@@ -709,13 +727,13 @@ export class ExtractSystem implements System
         const target = options.target;
 
         const renderer = this._renderer;
-        const texture = target instanceof Texture
+        const texture = Texture.isTexture(target)
             ? target
             : renderer.textureGenerator.generateTexture(options as GenerateTextureOptions);
 
         const pixelInfo = renderer.texture.getPixels(texture);
 
-        if (target instanceof Container)
+        if (Container.isContainer(target))
         {
             // destroy generated texture
             texture.destroy(true);
@@ -771,7 +789,7 @@ export class ExtractSystem implements System
     {
         options = this._normalizeOptions(options);
 
-        if (options.target instanceof Texture) return options.target;
+        if (Texture.isTexture(options.target)) return options.target;
 
         return this._renderer.textureGenerator.generateTexture(options as GenerateTextureOptions);
     }

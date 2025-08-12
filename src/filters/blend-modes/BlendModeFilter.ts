@@ -7,6 +7,8 @@ import blendTemplateFrag from './blend-template.frag';
 import blendTemplateVert from './blend-template.vert';
 import blendTemplate from './blend-template.wgsl';
 
+const typeSymbol = Symbol.for('pixijs.BlendModeFilter');
+
 /** @internal */
 export interface BlendModeFilterOptions
 {
@@ -24,6 +26,22 @@ export interface BlendModeFilterOptions
 /** @internal */
 export class BlendModeFilter extends Filter
 {
+    /**
+     * Type symbol used to identify instances of BlendModeFilter.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a BlendModeFilter.
+     * @param obj - The object to check.
+     * @returns True if the object is a BlendModeFilter, false otherwise.
+     */
+    public static isBlendModeFilter(obj: any): obj is BlendModeFilter
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     constructor(options: BlendModeFilterOptions)
     {
         const gpuOptions = options.gpu;

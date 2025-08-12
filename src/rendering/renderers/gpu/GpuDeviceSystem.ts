@@ -5,6 +5,8 @@ import type { System } from '../shared/system/System';
 import type { GpuPowerPreference } from '../types';
 import type { WebGPURenderer } from './WebGPURenderer';
 
+const typeSymbol = Symbol.for('pixijs.GpuDeviceSystem');
+
 /**
  * The GPU object.
  * Contains the GPU adapter and device.
@@ -56,6 +58,22 @@ export interface GpuContextOptions
  */
 export class GpuDeviceSystem implements System<GpuContextOptions>
 {
+    /**
+     * Type symbol used to identify instances of GpuDeviceSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GpuDeviceSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a GpuDeviceSystem, false otherwise.
+     */
+    public static isGpuDeviceSystem(obj: any): obj is GpuDeviceSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

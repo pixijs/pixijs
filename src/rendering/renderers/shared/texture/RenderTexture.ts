@@ -3,6 +3,8 @@ import { Texture } from './Texture';
 
 import type { TextureSourceOptions } from './sources/TextureSource';
 
+const typeSymbol = Symbol.for('pixijs.RenderTexture');
+
 /**
  * A render texture, extends `Texture`.
  * @see {@link Texture}
@@ -11,6 +13,22 @@ import type { TextureSourceOptions } from './sources/TextureSource';
  */
 export class RenderTexture extends Texture
 {
+    /**
+     * Type symbol used to identify instances of RenderTexture.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a RenderTexture.
+     * @param obj - The object to check.
+     * @returns True if the object is a RenderTexture, false otherwise.
+     */
+    public static isRenderTexture(obj: any): obj is RenderTexture
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public static create(options: TextureSourceOptions): RenderTexture
     {
         return new RenderTexture({

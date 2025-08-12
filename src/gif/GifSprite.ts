@@ -6,6 +6,8 @@ import { GifSource } from './GifSource';
 
 import type { SCALE_MODE } from '../rendering/renderers/shared/texture/const';
 
+const typeSymbol = Symbol.for('pixijs.GifSprite');
+
 /**
  * Configuration options for creating a GifSprite instance.
  *
@@ -213,6 +215,22 @@ interface GifSpriteOptions extends Omit<SpriteOptions, 'texture'>
 class GifSprite extends Sprite
 {
     /**
+     * Type symbol used to identify instances of GifSprite.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GifSprite.
+     * @param obj - The object to check.
+     * @returns True if the object is a GifSprite, false otherwise.
+     */
+    public static isGifSprite(obj: any): obj is GifSprite
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
+    /**
      * Default configuration options for GifSprite instances.
      *
      * These values are used when specific options are not provided to the constructor.
@@ -388,7 +406,7 @@ class GifSprite extends Sprite
 
     constructor(...args: [GifSource] | [GifSpriteOptions])
     {
-        const options = args[0] instanceof GifSource ? { source: args[0] } : args[0];
+        const options = GifSource.isGifSource(args[0]) ? { source: args[0] } : args[0];
 
         // Get the options, apply defaults
         const {

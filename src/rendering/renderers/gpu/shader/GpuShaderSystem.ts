@@ -3,6 +3,8 @@ import { ExtensionType } from '../../../../extensions/Extensions';
 import type { GPU } from '../GpuDeviceSystem';
 import type { GpuProgram } from './GpuProgram';
 
+const typeSymbol = Symbol.for('pixijs.GpuShaderSystem');
+
 /**
  * Data structure for GPU program layout.
  * Contains bind group layouts and pipeline layout.
@@ -22,6 +24,22 @@ export interface GPUProgramData
  */
 export class GpuShaderSystem
 {
+    /**
+     * Type symbol used to identify instances of GpuShaderSystem.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GpuShaderSystem.
+     * @param obj - The object to check.
+     * @returns True if the object is a GpuShaderSystem, false otherwise.
+     */
+    public static isGpuShaderSystem(obj: any): obj is GpuShaderSystem
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

@@ -4,6 +4,8 @@ import { BigPool } from '../../utils/pool/PoolGroup';
 import type { Effect, EffectConstructor } from '../../scene/container/Effect';
 import type { PoolItem, PoolItemConstructor } from '../../utils/pool/Pool';
 
+const typeSymbol = Symbol.for('pixijs.MaskEffectManagerClass');
+
 interface MaskConversionTest
 {
     test: (item: any) => boolean;
@@ -24,6 +26,22 @@ export type MaskEffect = {mask: unknown} & Effect;
  */
 export class MaskEffectManagerClass
 {
+    /**
+     * Type symbol used to identify instances of MaskEffectManagerClass.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a MaskEffectManagerClass.
+     * @param obj - The object to check.
+     * @returns True if the object is a MaskEffectManagerClass, false otherwise.
+     */
+    public static isMaskEffectManagerClass(obj: any): obj is MaskEffectManagerClass
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @private */
     public readonly _effectClasses: EffectConstructor[] = [];
     private readonly _tests: MaskConversionTest[] = [];

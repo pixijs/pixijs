@@ -15,6 +15,8 @@ import type {
 } from '../types';
 import type { PreferOrder, ResolveURLParser } from './types';
 
+const typeSymbol = Symbol.for('pixi.Resolver');
+
 /**
  * Options for how the resolver deals with generating bundle ids
  * @category assets
@@ -77,6 +79,22 @@ export interface BundleIdentifierOptions
  */
 export class Resolver
 {
+    /**
+     * Type symbol used to identify instances of Resolver.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a Resolver.
+     * @param obj - The object to check.
+     * @returns True if the object is a Resolver, false otherwise.
+     */
+    public static isResolver(obj: any): obj is Resolver
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * The prefix that denotes a URL is for a retina asset.
      * @default /@([0-9\.]+)x/

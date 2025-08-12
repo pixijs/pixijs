@@ -8,12 +8,30 @@ import type { RenderPipe } from '../../rendering/renderers/shared/instructions/R
 import type { Renderer } from '../../rendering/renderers/types';
 import type { HTMLText } from './HTMLText';
 
+const typeSymbol = Symbol.for('pixi.HTMLTextPipe');
+
 /**
  * The HTMLTextPipe class is responsible for rendering HTML text.
  * @internal
  */
 export class HTMLTextPipe implements RenderPipe<HTMLText>
 {
+    /**
+     * Type symbol used to identify instances of HTMLTextPipe.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a HTMLTextPipe.
+     * @param obj - The object to check.
+     * @returns True if the object is a HTMLTextPipe, false otherwise.
+     */
+    public static isHTMLTextPipe(obj: any): obj is HTMLTextPipe
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /** @ignore */
     public static extension = {
         type: [

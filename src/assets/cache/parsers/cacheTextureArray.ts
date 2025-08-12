@@ -14,7 +14,7 @@ export const cacheTextureArray: CacheParser<Texture[]> = {
         name: 'cacheTextureArray',
     },
 
-    test: (asset: any[]) => Array.isArray(asset) && asset.every((t) => t instanceof Texture),
+    test: (asset: any[]) => Array.isArray(asset) && asset.every((t) => Texture.isTexture(t)),
 
     getCacheableAssets: (keys: string[], asset: Texture[]) =>
     {

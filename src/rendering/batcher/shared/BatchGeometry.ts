@@ -5,6 +5,8 @@ import { Geometry } from '../../renderers/shared/geometry/Geometry';
 const placeHolderBufferData = new Float32Array(1);
 const placeHolderIndexData = new Uint32Array(1);
 
+const typeSymbol = Symbol.for('pixijs.BatchGeometry');
+
 /**
  * This class represents a geometry used for batching in the rendering system.
  * It defines the structure of vertex attributes and index buffers for batched rendering.
@@ -13,6 +15,22 @@ const placeHolderIndexData = new Uint32Array(1);
  */
 export class BatchGeometry extends Geometry
 {
+    /**
+     * Type symbol used to identify instances of BatchGeometry.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a BatchGeometry.
+     * @param obj - The object to check.
+     * @returns True if the object is a BatchGeometry, false otherwise.
+     */
+    public static isBatchGeometry(obj: any): obj is BatchGeometry
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     constructor()
     {
         const vertexSize = 6;

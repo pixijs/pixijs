@@ -1,3 +1,5 @@
+const typeSymbol = Symbol.for('pixijs.GpuMipmapGenerator');
+
 /**
  * A class which generates mipmaps for a GPUTexture.
  * Thanks to toji for the original implementation
@@ -7,6 +9,22 @@
  */
 export class GpuMipmapGenerator
 {
+    /**
+     * Type symbol used to identify instances of GpuMipmapGenerator.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a GpuMipmapGenerator.
+     * @param obj - The object to check.
+     * @returns True if the object is a GpuMipmapGenerator, false otherwise.
+     */
+    public static isGpuMipmapGenerator(obj: any): obj is GpuMipmapGenerator
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     public device: GPUDevice;
     public sampler: GPUSampler;
     public pipelines: Record<string, GPURenderPipeline>;

@@ -5,6 +5,8 @@ import { PerspectivePlaneGeometry } from './PerspectivePlaneGeometry';
 
 import type { MeshPlaneOptions } from '../mesh-plane/MeshPlane';
 
+const typeSymbol = Symbol.for('pixijs.PerspectiveMesh');
+
 /**
  * Constructor options used for `PerspectiveMesh` instances. Defines the geometry and appearance
  * of a 2D mesh with perspective projection.
@@ -89,6 +91,22 @@ export interface PerspectivePlaneOptions extends MeshPlaneOptions
  */
 export class PerspectiveMesh extends Mesh<PerspectivePlaneGeometry>
 {
+    /**
+     * Type symbol used to identify instances of PerspectiveMesh.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is a PerspectiveMesh.
+     * @param obj - The object to check.
+     * @returns True if the object is a PerspectiveMesh, false otherwise.
+     */
+    public static isPerspectiveMesh(obj: any): obj is PerspectiveMesh
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * Default options for creating a PerspectiveMesh instance.
      *

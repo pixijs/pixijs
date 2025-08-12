@@ -2,6 +2,8 @@ import { Rectangle } from './Rectangle';
 
 import type { ShapePrimitive } from './ShapePrimitive';
 
+const typeSymbol = Symbol.for('pixijs.Ellipse');
+
 /**
  * The Ellipse object is used to help draw graphics and can also be used to specify a hit area for containers.
  * @example
@@ -29,6 +31,22 @@ import type { ShapePrimitive } from './ShapePrimitive';
  */
 export class Ellipse implements ShapePrimitive
 {
+    /**
+     * Type symbol used to identify instances of Ellipse.
+     * @internal
+     */
+    public readonly [typeSymbol] = true;
+
+    /**
+     * Checks if the given object is an Ellipse.
+     * @param obj - The object to check.
+     * @returns True if the object is an Ellipse, false otherwise.
+     */
+    public static isEllipse(obj: any): obj is Ellipse
+    {
+        return !!obj && !!obj[typeSymbol];
+    }
+
     /**
      * The X coordinate of the center of this ellipse
      * @example
