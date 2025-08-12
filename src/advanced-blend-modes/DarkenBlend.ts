@@ -17,6 +17,7 @@ const typeSymbol = Symbol.for('pixijs.DarkenBlend');
  * sprite.blendMode = 'darken'
  * @category filters
  * @noInheritDoc
+ * @standard
  */
 export class DarkenBlend extends BlendModeFilter
 {

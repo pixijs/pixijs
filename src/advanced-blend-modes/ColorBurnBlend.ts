@@ -21,6 +21,7 @@ const typeSymbol = Symbol.for('pixijs.ColorBurnBlend');
  * sprite.blendMode = 'color-burn'
  * @category filters
  * @noInheritDoc
+ * @standard
  */
 export class ColorBurnBlend extends BlendModeFilter
 {

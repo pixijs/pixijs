@@ -85,6 +85,7 @@ export interface HTMLTextStyleOptions extends Omit<TextStyleOptions, 'leading' |
 /**
  * A TextStyle object rendered by the HTMLTextSystem.
  * @category text
+ * @standard
  */
 export class HTMLTextStyle extends TextStyle
 {

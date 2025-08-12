@@ -17,6 +17,7 @@ const typeSymbol = Symbol.for('pixijs.SubtractBlend');
  * sprite.blendMode = 'subtract'
  * @category filters
  * @noInheritDoc
+ * @standard
  */
 export class SubtractBlend extends BlendModeFilter
 {

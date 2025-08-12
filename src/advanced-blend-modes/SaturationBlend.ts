@@ -20,6 +20,7 @@ const typeSymbol = Symbol.for('pixijs.SaturationBlend');
  * sprite.blendMode = 'saturation'
  * @category filters
  * @noInheritDoc
+ * @standard
  */
 export class SaturationBlend extends BlendModeFilter
 {

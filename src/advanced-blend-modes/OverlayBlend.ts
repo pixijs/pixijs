@@ -18,6 +18,7 @@ const typeSymbol = Symbol.for('pixijs.OverlayBlend');
  * sprite.blendMode = 'overlay'
  * @category filters
  * @noInheritDoc
+ * @standard
  */
 export class OverlayBlend extends BlendModeFilter
 {

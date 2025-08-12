@@ -18,6 +18,7 @@ const typeSymbol = Symbol.for('pixijs.LinearBurnBlend');
  * sprite.blendMode = 'linear-burn'
  * @category filters
  * @noInheritDoc
+ * @standard
  */
 export class LinearBurnBlend extends BlendModeFilter
 {

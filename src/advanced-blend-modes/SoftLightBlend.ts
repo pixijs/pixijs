@@ -20,6 +20,7 @@ const typeSymbol = Symbol.for('pixijs.SoftLightBlend');
  * sprite.blendMode = 'soft-light'
  * @category filters
  * @noInheritDoc
+ * @standard
  */
 export class SoftLightBlend extends BlendModeFilter
 {

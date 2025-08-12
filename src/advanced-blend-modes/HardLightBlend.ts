@@ -19,6 +19,7 @@ const typeSymbol = Symbol.for('pixijs.HardLightBlend');
  * sprite.blendMode = 'hard-light'
  * @category filters
  * @noInheritDoc
+ * @standard
  */
 export class HardLightBlend extends BlendModeFilter
 {

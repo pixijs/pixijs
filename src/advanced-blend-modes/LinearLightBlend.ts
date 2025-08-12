@@ -17,6 +17,7 @@ const typeSymbol = Symbol.for('pixijs.LinearLightBlend');
  * sprite.blendMode = 'linear-light'
  * @category filters
  * @noInheritDoc
+ * @standard
  */
 export class LinearLightBlend extends BlendModeFilter
 {

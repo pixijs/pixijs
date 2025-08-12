@@ -19,6 +19,7 @@ const typeSymbol = Symbol.for('pixijs.DivideBlend');
  * sprite.blendMode = 'divide'
  * @category filters
  * @noInheritDoc
+ * @standard
  */
 export class DivideBlend extends BlendModeFilter
 {

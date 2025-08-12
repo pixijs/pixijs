@@ -18,6 +18,7 @@ const typeSymbol = Symbol.for('pixijs.ExclusionBlend');
  * sprite.blendMode = 'exclusion'
  * @category filters
  * @noInheritDoc
+ * @standard
  */
 export class ExclusionBlend extends BlendModeFilter
 {

@@ -18,6 +18,7 @@ const typeSymbol = Symbol.for('pixijs.VividLightBlend');
  * sprite.blendMode = 'vivid-light'
  * @category filters
  * @noInheritDoc
+ * @standard
  */
 export class VividLightBlend extends BlendModeFilter
 {

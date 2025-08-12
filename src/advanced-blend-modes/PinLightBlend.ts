@@ -17,6 +17,7 @@ const typeSymbol = Symbol.for('pixijs.PinLightBlend');
  * sprite.blendMode = 'pin-light'
  * @category filters
  * @noInheritDoc
+ * @standard
  */
 export class PinLightBlend extends BlendModeFilter
 {

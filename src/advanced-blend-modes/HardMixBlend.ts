@@ -18,6 +18,7 @@ const typeSymbol = Symbol.for('pixijs.HardMixBlend');
  * sprite.blendMode = 'hard-mix'
  * @category filters
  * @noInheritDoc
+ * @standard
  */
 export class HardMixBlend extends BlendModeFilter
 {

@@ -20,6 +20,7 @@ const typeSymbol = Symbol.for('pixijs.LuminosityBlend');
  * sprite.blendMode = 'luminosity'
  * @category filters
  * @noInheritDoc
+ * @standard
  */
 export class LuminosityBlend extends BlendModeFilter
 {

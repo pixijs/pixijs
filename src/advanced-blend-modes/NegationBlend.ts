@@ -17,6 +17,7 @@ const typeSymbol = Symbol.for('pixijs.NegationBlend');
  * sprite.blendMode = 'negation'
  * @category filters
  * @noInheritDoc
+ * @standard
  */
 export class NegationBlend extends BlendModeFilter
 {

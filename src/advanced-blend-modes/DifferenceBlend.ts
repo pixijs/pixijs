@@ -18,6 +18,7 @@ const typeSymbol = Symbol.for('pixijs.DifferenceBlend');
  * sprite.blendMode = 'difference'
  * @category filters
  * @noInheritDoc
+ * @standard
  */
 export class DifferenceBlend extends BlendModeFilter
 {

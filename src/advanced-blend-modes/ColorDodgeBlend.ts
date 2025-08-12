@@ -22,6 +22,7 @@ const typeSymbol = Symbol.for('pixijs.ColorDodgeBlend');
  * sprite.blendMode = 'color-dodge'
  * @category filters
  * @noInheritDoc
+ * @standard
  */
 export class ColorDodgeBlend extends BlendModeFilter
 {

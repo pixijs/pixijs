@@ -20,6 +20,7 @@ const typeSymbol = Symbol.for('pixijs.ColorBlend');
  * sprite.blendMode = 'color'
  * @category filters
  * @noInheritDoc
+ * @standard
  */
 export class ColorBlend extends BlendModeFilter
 {

@@ -19,6 +19,7 @@ const typeSymbol = Symbol.for('pixijs.LinearDodgeBlend');
  * sprite.blendMode = 'linear-dodge'
  * @category filters
  * @noInheritDoc
+ * @standard
  */
 export class LinearDodgeBlend extends BlendModeFilter
 {
