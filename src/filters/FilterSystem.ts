@@ -388,7 +388,6 @@ export class FilterSystem implements System
         renderer.globalUniforms.pop();
 
         renderer.renderTarget.finishRenderPass();
-        renderer.renderTarget.pop();
 
         this._activeFilterData = filterData;
 
@@ -618,7 +617,7 @@ export class FilterSystem implements System
             filterData.backTexture = this.getBackTexture(renderTarget, bounds, previousFilterData?.bounds);
         }
 
-        renderer.renderTarget.push(filterData.inputTexture, true);
+        renderer.renderTarget.bind(filterData.inputTexture, true);
 
         // set the global uniforms to take into account the bounds offset required
         renderer.globalUniforms.push({
