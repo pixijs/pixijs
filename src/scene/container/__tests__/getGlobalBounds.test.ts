@@ -6,6 +6,7 @@ import { DummyEffect } from './DummyEffect';
 import { DummyView } from './DummyView';
 import { Rectangle } from '~/maths';
 import { addMaskBounds } from '~/rendering';
+import { Graphics } from '~/scene';
 
 describe('getGlobalBounds', () =>
 {
@@ -275,5 +276,22 @@ describe('getGlobalBounds', () =>
         const bounds = getGlobalBounds(container, false, new Bounds());
 
         expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 500 / 2, maxY: 500 / 2 });
+    });
+
+    it('should get global bounds correctly if a container has renderables with empty bounds', () =>
+    {
+        const container = new Container({ label: 'container' });
+
+        const child1 = new Graphics({ label: 'child1' }).rect(0, 0, 10, 10).fill();
+        const child2 = new Graphics({ label: 'child2' });
+
+        container.addChild(child1, child2);
+
+        const bounds = getGlobalBounds(container, false, new Bounds());
+
+        expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 10, maxY: 10 });
+
+        container.rotation = Math.PI / 2;
+        expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 10, maxY: 10 });
     });
 });
