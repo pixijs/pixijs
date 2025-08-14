@@ -1072,6 +1072,8 @@ export class GraphicsContext extends EventEmitter<{
     {
         if (!this._boundsDirty) return this._bounds;
 
+        this._boundsDirty = false;
+
         // TODO switch to idy dirty with tick..
         const bounds = this._bounds;
 
