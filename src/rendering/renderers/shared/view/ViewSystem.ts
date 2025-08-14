@@ -217,6 +217,8 @@ export class ViewSystem implements System<ViewSystemOptions, TypeOrBool<ViewSyst
             this.canvas.parentNode.removeChild(this.canvas);
         }
 
+        this.texture.destroy();
+
         // note: don't nullify the element
         //       other systems may need to unbind from it during the destroy iteration (eg. GLContextSystem)
     }
