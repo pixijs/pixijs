@@ -42,7 +42,7 @@ export type DeprecationFn = ((version: string, message: string, ignoreDepth?: nu
 
 const deprecationState: DeprecationOptions = {
     quiet: false,
-    noColor: true
+    noColor: false
 };
 
 /**
@@ -75,7 +75,7 @@ export const deprecation: DeprecationFn = ((version: string, message: string, ig
     let stack = new Error().stack;
 
     const deprecationMessage = `${message}\nDeprecated since v${version}`;
-    const useGroup = typeof console.groupCollapsed === 'function' && deprecationState.noColor;
+    const useGroup = typeof console.groupCollapsed === 'function' && !deprecationState.noColor;
 
     // Handle IE < 10 and Safari < 6
     if (typeof stack === 'undefined')
