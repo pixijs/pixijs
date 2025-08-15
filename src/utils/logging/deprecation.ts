@@ -56,7 +56,7 @@ const deprecationState: DeprecationOptions = {
  * deprecation.quiet = true;
  *
  * // Put plain text to console instead of colorful messages
- * deprecation.colorful = false;
+ * deprecation.noColor = true;
  * ```
  * @category utils
  * @ignore
