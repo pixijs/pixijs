@@ -32,7 +32,7 @@ interface DeprecationOptions
      * @default true
      * @standard
      */
-    colorful: boolean;
+    noColor: boolean;
 }
 
 /** @internal */
@@ -40,7 +40,7 @@ export type DeprecationFn = ((version: string, message: string, ignoreDepth?: nu
 
 const deprecationState: DeprecationOptions = {
     quiet: false,
-    colorful: true
+    noColor: true
 };
 
 /**
@@ -73,7 +73,7 @@ export const deprecation: DeprecationFn = ((version: string, message: string, ig
     let stack = new Error().stack;
 
     const deprecationMessage = `${message}\nDeprecated since v${version}`;
-    const useGroup = typeof console.groupCollapsed === 'function' && deprecationState.colorful;
+    const useGroup = typeof console.groupCollapsed === 'function' && deprecationState.noColor;
 
     // Handle IE < 10 and Safari < 6
     if (typeof stack === 'undefined')
@@ -117,13 +117,13 @@ Object.defineProperties(deprecation, {
         enumerable: true,
         configurable: false
     },
-    colorful: {
-        get: () => deprecationState.colorful,
+    noColor: {
+        get: () => deprecationState.noColor,
         set: (value: boolean) =>
         {
-            deprecationState.colorful = value;
+            deprecationState.noColor = value;
         },
         enumerable: true,
         configurable: false
     }
-});
+} satisfies {[key in keyof DeprecationOptions]: PropertyDescriptor});
