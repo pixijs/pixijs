@@ -22,14 +22,16 @@ export const v8_3_4 = '8.3.4';
 interface DeprecationOptions
 {
     /**
-     * Indicates whether deprecation messages must be suppressed.
+     * When set to true, all deprecation warning messages will be hidden.
+     * Use this if you want to silence deprecation notifications.
      * @default false
      * @standard
      */
     quiet: boolean;
     /**
-     * Indicates whether deprecation messages should be formatted with colors or as plain text.
-     * @default true
+     * When set to true, deprecation messages will be displayed as plain text without color formatting.
+     * Use this if you want to disable colored console output for deprecation warnings.
+     * @default false
      * @standard
      */
     noColor: boolean;
