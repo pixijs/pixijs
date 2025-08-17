@@ -1,6 +1,8 @@
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
+import { CanvasTextMetrics } from './canvas/CanvasTextMetrics';
+import { fontStringFromTextStyle } from './canvas/utils/fontStringFromTextStyle';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
@@ -9,9 +11,6 @@ import type { Optional } from '../container/container-mixins/measureMixin';
 import type { DestroyOptions } from '../container/destroyTypes';
 import type { HTMLTextStyle, HTMLTextStyleOptions } from '../text-html/HTMLTextStyle';
 import type { TextStyle, TextStyleOptions } from './TextStyle';
-import { CanvasTextMetrics } from './canvas/CanvasTextMetrics';
-import { fontStringFromTextStyle } from './canvas/utils/fontStringFromTextStyle';
-
 
 /**
  * A string or number that can be used as text.
@@ -658,7 +657,7 @@ export abstract class AbstractText<
 
         if (typeof options === 'boolean' ? options : options?.style)
         {
-            CanvasTextMetrics.clearMetrics(fontStringFromTextStyle(this._style))
+            CanvasTextMetrics.clearMetrics(fontStringFromTextStyle(this._style));
             this._style.destroy(options);
         }
 
