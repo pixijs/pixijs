@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import { type Adapter } from '../environment/adapter';
 import { type ImageLike } from '../environment/ImageLike';
 
