@@ -1090,7 +1090,7 @@ export type RemoveListenerOptions = boolean | EventListenerOptions;
 export interface IFederatedContainer extends FederatedOptions
 {
     /** The parent of this event target. */
-    readonly parent?: Container;
+    readonly parent?: Container | null;
 
     /** The children of this event target. */
     readonly children?: ReadonlyArray<Container>;
