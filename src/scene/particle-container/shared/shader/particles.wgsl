@@ -1,8 +1,8 @@
 
 struct ParticleUniforms {
-  uProjectionMatrix:mat3x3<f32>,
+  uTranslationMatrix:mat3x3<f32>,
   uColor:vec4<f32>,
-  uRoundPixels:f32,
+  uRound:f32,
   uResolution:vec2<f32>,
 };
 
@@ -35,9 +35,9 @@ fn mainVertex(
        aVertex.x * sin(aRotation) + aVertex.y * cos(aRotation)
    ) + aPosition;
 
-   var position = vec4((uniforms.uProjectionMatrix * vec3(v, 1.0)).xy, 0.0, 1.0);
+   var position = vec4((uniforms.uTranslationMatrix * vec3(v, 1.0)).xy, 0.0, 1.0);
 
-   if(uniforms.uRoundPixels == 1) {
+   if(uniforms.uRound == 1.0) {
        position = vec4(roundPixels(position.xy, uniforms.uResolution), position.zw);
    }
 
