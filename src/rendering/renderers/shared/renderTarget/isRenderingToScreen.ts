@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import type { RenderTarget } from './RenderTarget';
 
 /**
