@@ -321,6 +321,12 @@ export class AbstractRenderer<
             options.transform = options.container.localTransform;
         }
 
+        // Check if the container is visible before proceeding with rendering
+        if (!options.container.visible)
+        {
+            return;
+        }
+
         // lets ensure this object is a render group so we can render it!
         // the renderer only likes to render - render groups.
         options.container.enableRenderGroup();
