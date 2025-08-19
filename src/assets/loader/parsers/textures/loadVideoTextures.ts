@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import { type ImageLike } from '../../../../environment/ImageLike';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { VideoSource } from '../../../../rendering/renderers/shared/texture/sources/VideoSource';
