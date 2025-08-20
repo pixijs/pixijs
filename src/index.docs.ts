@@ -15,6 +15,7 @@
  * @document scene/__docs__/scene-text-overview.md
  * @document ticker/__docs__/ticker-overview.md
  * @document utils/__docs__/utils-overview.md
+ * @document gl2d/__docs__/gl2D-spec.md
  */
 
 export * from './accessibility';

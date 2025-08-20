@@ -1,7 +1,11 @@
 import EventEmitter from 'eventemitter3';
+import { type PixiGl2DTextureSource } from '../../../../../gl2d/extensions/resources';
+import { type ToGl2DOptions } from '../../../../../gl2d/serialize/serialize';
 import { isPow2 } from '../../../../../maths/misc/pow2';
+import { Rectangle } from '../../../../../maths/shapes/Rectangle';
 import { definedProps } from '../../../../../scene/container/utils/definedProps';
 import { uid } from '../../../../../utils/data/uid';
+import { type Texture } from '../Texture';
 import { TextureStyle } from '../TextureStyle';
 
 import type { BindResource } from '../../../gpu/shader/BindResource';
@@ -16,6 +20,8 @@ import type { TextureResourceOrOptions } from '../utils/textureFrom';
  */
 export interface TextureSourceOptions<T extends Record<string, any> = any> extends TextureStyleOptions
 {
+    /** The URI of the texture source. */
+    uri?: string;
     /**
      * the resource that will be uploaded to the GPU. This is where we get our pixels from
      * eg an ImageBimt / Canvas / Video etc
@@ -99,6 +105,9 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     public readonly uid: number = uid('textureSource');
     /** optional label, can be used for debugging */
     public label: string;
+
+    /** The URI of the texture source. */
+    public uri?: string;
 
     /**
      * The resource type used by this TextureSource. This is used by the bind groups to determine
@@ -244,6 +253,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
             this.pixelHeight = this.resource ? (this.resourceHeight ?? 1) : 1;
         }
 
+        this.uri = options.uri;
         this.width = this.pixelWidth / this._resolution;
         this.height = this.pixelHeight / this._resolution;
 
@@ -549,6 +559,66 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     protected _refreshPOT(): void
     {
         this.isPowerOfTwo = isPow2(this.pixelWidth) && isPow2(this.pixelHeight);
+    }
+
+    /**
+     * Serializes the texture source to a GL2D-compatible format.
+     * @param options - The options for serialization.
+     * @returns The serialized GL2D representation of the texture source.
+     */
+    public async serialize(options: ToGl2DOptions): Promise<ToGl2DOptions>
+    {
+        const { gl2D, renderer } = options;
+        // check if the source is already serialized
+        const sourceIndex = gl2D.resources.findIndex(
+            (texture) => texture.uid === `texture_source_${this.uid}`);
+
+        if (sourceIndex !== -1)
+        {
+            return options;
+        }
+
+        // If not serialized, add it to the GL2D instance
+        const data: PixiGl2DTextureSource<'texture_source'> = {
+            uid: `texture_source_${this.uid}`,
+            type: 'texture_source',
+            // TODO: fix ugly type hack
+            uri: this.uri
+                ?? (await renderer.extract.base64({
+                    isTexture: true,
+                    source: this,
+                    frame: new Rectangle(0, 0, this.width, this.height),
+                } as unknown as Texture)),
+            width: this.pixelWidth,
+            height: this.pixelHeight,
+            resolution: this._resolution,
+            format: this.format,
+            antialias: this.antialias,
+            alphaMode: this.alphaMode,
+            addressModeU: this._style.addressModeU,
+            addressModeV: this._style.addressModeV,
+            addressModeW: this._style.addressModeW,
+            magFilter: this._style.magFilter,
+            minFilter: this._style.minFilter,
+            mipmapFilter: this._style.mipmapFilter,
+            lodMinClamp: this._style.lodMinClamp,
+            lodMaxClamp: this._style.lodMaxClamp,
+            extensions: {
+                pixi_texture_source_resource: {
+                    autoGarbageCollect: this.autoGarbageCollect,
+                    mipLevelCount: this.mipLevelCount,
+                    maxAnisotropy: this._style.maxAnisotropy,
+                    dimensions: this.dimension,
+                    compare: this._style.compare,
+                    autoGenerateMipmaps: this.autoGenerateMipmaps,
+                }
+            }
+        };
+
+        gl2D.resources.push(data);
+        gl2D.extensionsUsed.push('pixi_texture_source_resource');
+
+        return options;
     }
 
     public static test(_resource: any): any

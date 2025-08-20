@@ -1,4 +1,7 @@
 import EventEmitter from 'eventemitter3';
+import { type PixiGl2DTexture } from '../../../../gl2d/extensions/resources';
+import { type Gl2DTexture } from '../../../../gl2d/resources';
+import { type ToGl2DOptions } from '../../../../gl2d/serialize/serialize';
 import { groupD8 } from '../../../../maths/matrix/groupD8';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { uid } from '../../../../utils/data/uid';
@@ -418,6 +421,64 @@ export class Texture<TextureSourceType extends TextureSource = TextureSource> ex
         // #endif
 
         return this._source;
+    }
+
+    /**
+     * Serializes the texture to a gl2D-compatible format.
+     * @param options - The serialization options.
+     * @returns The updated gl2D instance.
+     */
+    public async serialize(options: ToGl2DOptions): Promise<ToGl2DOptions>
+    {
+        const { gl2D } = options;
+        // see if the texture already exists in the resource cache
+        const textureData = gl2D.resources.find((res) =>
+        {
+            const tex = res as Gl2DTexture;
+
+            return tex.uid === `texture_${this.uid}`;
+        });
+
+        if (textureData)
+        {
+            return options;
+        }
+
+        // if not, create a new entry
+        await this.source.serialize(options);
+        const sourceIndex = gl2D.resources.findIndex((res) => res.uid === `texture_source_${this.source.uid}`);
+
+        const newTextureData: PixiGl2DTexture = {
+            type: 'texture',
+            uid: `texture_${this.uid}`,
+            name: this.label,
+            frame: this.frame ? [this.frame.x, this.frame.y, this.frame.width, this.frame.height] : undefined,
+            source: sourceIndex,
+            extensions: {
+                pixi_texture_resource: {
+                    orig: this.orig ? [this.orig.x, this.orig.y, this.orig.width, this.orig.height] : null,
+                    trim: this.trim ? [this.trim.x, this.trim.y, this.trim.width, this.trim.height] : null,
+                    defaultAnchor: this.defaultAnchor
+                        ? [this.defaultAnchor.x, this.defaultAnchor.y]
+                        : undefined,
+                    defaultBorders: this.defaultBorders
+                        ? [
+                            this.defaultBorders.left,
+                            this.defaultBorders.top,
+                            this.defaultBorders.right,
+                            this.defaultBorders.bottom,
+                        ]
+                        : undefined,
+                    rotate: this.rotate,
+                    dynamic: this.dynamic,
+                },
+            }
+        };
+
+        gl2D.resources.push(newTextureData);
+        gl2D.extensionsUsed.push('pixi_texture_resource');
+
+        return options;
     }
 
     /** an Empty Texture used internally by the engine */

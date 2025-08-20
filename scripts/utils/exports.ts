@@ -77,6 +77,16 @@ const exportFields: Record<string, ExportField> = {
             default: './lib/gif/init.js',
         },
     },
+    './gl2d': {
+        import: {
+            types: './lib/gl2d/init.d.ts',
+            default: './lib/gl2d/init.mjs',
+        },
+        require: {
+            types: './lib/gl2d/init.d.ts',
+            default: './lib/gl2d/init.js',
+        },
+    },
 };
 const sideEffects = [
     './lib/environment-browser/browserAll.*',
@@ -86,6 +96,7 @@ const sideEffects = [
     './lib/spritesheet/init.*',
     './lib/rendering/renderers/shared/texture/utils/textureFrom.*',
     './lib/gif/init.*',
+    './lib/gl2d/init.*',
 ];
 
 for (const [name, path] of subImports)

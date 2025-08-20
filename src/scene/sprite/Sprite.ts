@@ -1,3 +1,5 @@
+import { type PixiGl2DSprite } from '../../gl2d/extensions/nodes';
+import { type ToGl2DOptions } from '../../gl2d/serialize/serialize';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { updateQuadBounds } from '../../utils/data/updateQuadBounds';
@@ -540,5 +542,48 @@ export class Sprite extends ViewContainer<BatchableSprite>
 
         value !== undefined && this._setWidth(value, this._texture.orig.width);
         height !== undefined && this._setHeight(height, this._texture.orig.height);
+    }
+
+    /**
+     * Serializes the sprite into a GL2D-compatible format.
+     * @param options - The serialization options
+     * @returns The updated GL2D serialization context.
+     */
+    public override async serialize(options: ToGl2DOptions): Promise<ToGl2DOptions>
+    {
+        const { gl2D } = options;
+
+        await super.serialize(options);
+        const sprite = gl2D.nodes.find((node) => node.uid === `container_${this.uid}`);
+
+        if (!sprite)
+        {
+            throw new Error(`Sprite with uid ${this.uid} not found in GL2D nodes.`);
+        }
+
+        await this.texture.serialize(options);
+        const textureIndex = options.gl2D.resources.findIndex((res) => res.uid === `texture_${this.texture.uid}`);
+
+        const fullSprite: PixiGl2DSprite = {
+            ...sprite,
+            type: 'sprite',
+            texture: textureIndex,
+            extensions: {
+                pixi_container_node: {
+                    ...sprite.extensions.pixi_container_node,
+                    anchor: [this.anchor.x, this.anchor.y]
+                },
+                pixi_sprite_node: {
+                    roundPixels: this.roundPixels
+                }
+            }
+        };
+
+        // Assign the full sprite back to the original sprite
+        Object.assign(sprite, fullSprite);
+
+        gl2D.extensionsUsed.push('pixi_sprite_node');
+
+        return options;
     }
 }

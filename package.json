@@ -197,6 +197,7 @@
     "./lib/spritesheet/init.*",
     "./lib/rendering/renderers/shared/texture/utils/textureFrom.*",
     "./lib/gif/init.*",
+    "./lib/gl2d/init.*",
     "./lib/accessibility/init.*",
     "./lib/advanced-blend-modes/init.*",
     "./lib/app/init.*",
@@ -254,6 +255,16 @@
       "require": {
         "types": "./lib/gif/init.d.ts",
         "default": "./lib/gif/init.js"
+      }
+    },
+    "./gl2d": {
+      "import": {
+        "types": "./lib/gl2d/init.d.ts",
+        "default": "./lib/gl2d/init.mjs"
+      },
+      "require": {
+        "types": "./lib/gl2d/init.d.ts",
+        "default": "./lib/gl2d/init.js"
       }
     },
     "./accessibility": {
