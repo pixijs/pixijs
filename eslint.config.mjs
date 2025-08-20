@@ -136,7 +136,25 @@ export default tseslint.config(
         rules: {
             'requireExport/require-export-jsdoc': ['error'],
             'requireMemberAPI/require-member-api-doc': ['error'],
-
+            'no-restricted-globals': [
+                'warn',
+                {
+                    name: 'document',
+                    message: 'Do not use document. Use DOMAdapter instead.'
+                },
+                {
+                    name: 'Image',
+                    message: 'Do not use Image. Use DOMAdapter instead.'
+                },
+            ],
+            'no-restricted-properties': [
+                'warn',
+                {
+                    object: 'URL',
+                    property: 'createObjectURL',
+                    message: 'Avoid using URL.createObjectURL. See https://github.com/pixijs/pixijs/pull/11599.'
+                }
+            ]
         }
     },
 );
