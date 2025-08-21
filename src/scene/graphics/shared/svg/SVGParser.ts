@@ -40,6 +40,7 @@ export function SVGParser(
     // Convert string input to SVG element
     if (typeof svg === 'string')
     {
+        // eslint-disable-next-line no-restricted-globals
         const div = document.createElement('div');
 
         div.innerHTML = svg.trim();
