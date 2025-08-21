@@ -3,7 +3,7 @@ import { Color, type ColorSource } from '../../color/Color';
 import { cullingMixin } from '../../culling/cullingMixin';
 import { extensions } from '../../extensions/Extensions';
 import { type PixiGL2DContainer } from '../../gl2d/extensions/nodes';
-import { type ToGL2DOptions } from '../../gl2d/serialize/serialize';
+import { type ToGL2DOptions } from '../../gl2d/GL2Df';
 import { Matrix } from '../../maths/matrix/Matrix';
 import { DEG_TO_RAD, RAD_TO_DEG } from '../../maths/misc/const';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
