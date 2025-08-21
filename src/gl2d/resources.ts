@@ -4,15 +4,15 @@ import {
     type TEXTURE_FORMATS,
     type WRAP_MODE,
 } from '../rendering/renderers/shared/texture/const';
-import { type Gl2DExtension } from './file';
+import { type GL2DExtension } from './file';
 
 /**
  * Represents a resource used in a GL2D file, such as textures, fonts, audio, etc.
  * @category gl2d
  * @standard
  */
-export interface Gl2DResource<T extends string = string, K extends Record<string, any> = Record<string, any>>
-    extends Gl2DExtension<K>
+export interface GL2DResource<T extends string = string, K extends Record<string, any> = Record<string, any>>
+    extends GL2DExtension<K>
 {
     /**
      * Discriminator indicating the kind of resource (e.g., "texture", "font", "audio", "gradient").
@@ -35,7 +35,7 @@ export interface Gl2DResource<T extends string = string, K extends Record<string
  * @category gl2d
  * @standard
  */
-export interface Gl2DTexture<K extends Record<string, any> = Record<string, any>> extends Gl2DResource<'texture', K>
+export interface GL2DTexture<K extends Record<string, any> = Record<string, any>> extends GL2DResource<'texture', K>
 {
     /** The location of the source resource in the gl2D file */
     source: number;
@@ -48,8 +48,8 @@ export interface Gl2DTexture<K extends Record<string, any> = Record<string, any>
  * @category gl2d
  * @standard
  */
-export interface Gl2DTextureSource<T extends string = string, K extends Record<string, any> = Record<string, any>>
-    extends Gl2DResource<T, K>
+export interface GL2DTextureSource<T extends string = string, K extends Record<string, any> = Record<string, any>>
+    extends GL2DResource<T, K>
 {
     /** the pixel width of this texture source. This is the REAL pure number, not accounting resolution */
     width?: number;
@@ -100,16 +100,16 @@ export interface Gl2DTextureSource<T extends string = string, K extends Record<s
  * @standard
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface Gl2DImageSource<K extends Record<string, any> = Record<string, any>>
-    extends Gl2DTextureSource<'image_source', K> {}
+export interface GL2DImageSource<K extends Record<string, any> = Record<string, any>>
+    extends GL2DTextureSource<'image_source', K> {}
 
 /**
  * Represents an video source resource in a GL2D file such as a bitmap or a video.
  * @category gl2d
  * @standard
  */
-export interface Gl2DVideoSource<K extends Record<string, any> = Record<string, any>>
-    extends Gl2DTextureSource<'video_source', K>
+export interface GL2DVideoSource<K extends Record<string, any> = Record<string, any>>
+    extends GL2DTextureSource<'video_source', K>
 {
     /** If true, the video will start loading immediately. */
     autoLoad?: boolean;

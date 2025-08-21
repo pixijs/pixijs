@@ -2,8 +2,8 @@ import EventEmitter from 'eventemitter3';
 import { Color, type ColorSource } from '../../color/Color';
 import { cullingMixin } from '../../culling/cullingMixin';
 import { extensions } from '../../extensions/Extensions';
-import { type PixiGl2DContainer } from '../../gl2d/extensions/nodes';
-import { type ToGl2DOptions } from '../../gl2d/serialize/serialize';
+import { type PixiGL2DContainer } from '../../gl2d/extensions/nodes';
+import { type ToGL2DOptions } from '../../gl2d/serialize/serialize';
 import { Matrix } from '../../maths/matrix/Matrix';
 import { DEG_TO_RAD, RAD_TO_DEG } from '../../maths/misc/const';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
@@ -2115,9 +2115,9 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * @param gl2DOptions - The gl2D serialization context and options.
      * @returns The updated gl2D serialization context.
      */
-    public async serialize(gl2DOptions: ToGl2DOptions): Promise<ToGl2DOptions>
+    public async serialize(gl2DOptions: ToGL2DOptions): Promise<ToGL2DOptions>
     {
-        const node: PixiGl2DContainer = {
+        const node: PixiGL2DContainer = {
             name: this.label ?? undefined,
             type: 'container',
             uid: `container_${this.uid}`,
@@ -2126,6 +2126,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             visible: this.visible,
             tint: this.tint,
             blendMode: this.blendMode,
+            matrix: Array.from(this.localTransform.toArray()) as [number, number, number, number, number, number],
             extensions: {
                 pixi_container_node: {
                     skew: [this.skew.x, this.skew.y],

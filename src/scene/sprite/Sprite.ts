@@ -1,5 +1,5 @@
-import { type PixiGl2DSprite } from '../../gl2d/extensions/nodes';
-import { type ToGl2DOptions } from '../../gl2d/serialize/serialize';
+import { type PixiGL2DSprite } from '../../gl2d/extensions/nodes';
+import { type ToGL2DOptions } from '../../gl2d/serialize/serialize';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { updateQuadBounds } from '../../utils/data/updateQuadBounds';
@@ -549,7 +549,7 @@ export class Sprite extends ViewContainer<BatchableSprite>
      * @param options - The serialization options
      * @returns The updated GL2D serialization context.
      */
-    public override async serialize(options: ToGl2DOptions): Promise<ToGl2DOptions>
+    public override async serialize(options: ToGL2DOptions): Promise<ToGL2DOptions>
     {
         const { gl2D } = options;
 
@@ -564,7 +564,7 @@ export class Sprite extends ViewContainer<BatchableSprite>
         await this.texture.serialize(options);
         const textureIndex = options.gl2D.resources.findIndex((res) => res.uid === `texture_${this.texture.uid}`);
 
-        const fullSprite: PixiGl2DSprite = {
+        const fullSprite: PixiGL2DSprite = {
             ...sprite,
             type: 'sprite',
             texture: textureIndex,

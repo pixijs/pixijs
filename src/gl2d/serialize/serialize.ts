@@ -1,6 +1,6 @@
 import { type Renderer } from '../../rendering/renderers/types';
 import { type Container } from '../../scene/container/Container';
-import { type Gl2DFile, type ToGl2D } from '../file';
+import { type GL2DFile, type ToGL2D } from '../file';
 import { deepRemoveUndefined } from '../utils/deepRemoveUndefined';
 
 /**
@@ -8,9 +8,9 @@ import { deepRemoveUndefined } from '../utils/deepRemoveUndefined';
  * @category gl2d
  * @standard
  */
-export interface ToGl2DOptions
+export interface ToGL2DOptions
 {
-    gl2D?: ToGl2D;
+    gl2D?: ToGL2D;
     renderer: Renderer;
 }
 
@@ -23,11 +23,11 @@ export interface ToGl2DOptions
  * @category gl2d
  * @standard
  */
-export async function serializeGl2D(options: { root: Container, renderer: Renderer }): Promise<Gl2DFile>
+export async function serializeGL2D(options: { root: Container, renderer: Renderer }): Promise<GL2DFile>
 {
     const { root, renderer } = options;
 
-    const gl2D: Gl2DFile = {
+    const gl2D: GL2DFile = {
         asset: {
             generator: 'PixiJS',
             version: '1.0'

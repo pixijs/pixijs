@@ -1,7 +1,7 @@
 import EventEmitter from 'eventemitter3';
-import { type PixiGl2DTexture } from '../../../../gl2d/extensions/resources';
-import { type Gl2DTexture } from '../../../../gl2d/resources';
-import { type ToGl2DOptions } from '../../../../gl2d/serialize/serialize';
+import { type PixiGL2DTexture } from '../../../../gl2d/extensions/resources';
+import { type GL2DTexture } from '../../../../gl2d/resources';
+import { type ToGL2DOptions } from '../../../../gl2d/serialize/serialize';
 import { groupD8 } from '../../../../maths/matrix/groupD8';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { uid } from '../../../../utils/data/uid';
@@ -428,13 +428,13 @@ export class Texture<TextureSourceType extends TextureSource = TextureSource> ex
      * @param options - The serialization options.
      * @returns The updated gl2D instance.
      */
-    public async serialize(options: ToGl2DOptions): Promise<ToGl2DOptions>
+    public async serialize(options: ToGL2DOptions): Promise<ToGL2DOptions>
     {
         const { gl2D } = options;
         // see if the texture already exists in the resource cache
         const textureData = gl2D.resources.find((res) =>
         {
-            const tex = res as Gl2DTexture;
+            const tex = res as GL2DTexture;
 
             return tex.uid === `texture_${this.uid}`;
         });
@@ -448,7 +448,7 @@ export class Texture<TextureSourceType extends TextureSource = TextureSource> ex
         await this.source.serialize(options);
         const sourceIndex = gl2D.resources.findIndex((res) => res.uid === `texture_source_${this.source.uid}`);
 
-        const newTextureData: PixiGl2DTexture = {
+        const newTextureData: PixiGL2DTexture = {
             type: 'texture',
             uid: `texture_${this.uid}`,
             name: this.label,

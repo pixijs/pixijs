@@ -1,13 +1,13 @@
 // VideoSource.ts
 
 import { ExtensionType } from '../../../../../extensions/Extensions';
-import { type ToGl2DOptions } from '../../../../../gl2d/serialize/serialize';
+import { type ToGL2DOptions } from '../../../../../gl2d/serialize/serialize';
 import { Ticker } from '../../../../../ticker/Ticker';
 import { detectVideoAlphaMode } from '../../../../../utils/browser/detectVideoAlphaMode';
 import { TextureSource } from './TextureSource';
 
 import type { ExtensionMetadata } from '../../../../../extensions/Extensions';
-import type { PixiGl2DVideoSource } from '../../../../../gl2d/extensions/resources';
+import type { PixiGL2DVideoSource } from '../../../../../gl2d/extensions/resources';
 import type { Dict } from '../../../../../utils/types';
 import type { ALPHA_MODES } from '../const';
 import type { TextureSourceOptions } from './TextureSource';
@@ -563,14 +563,14 @@ export class VideoSource extends TextureSource<VideoResource>
      * @param options - The options to use for serialization.
      * @returns The serialized texture source.
      */
-    public override async serialize(options: ToGl2DOptions): Promise<ToGl2DOptions>
+    public override async serialize(options: ToGL2DOptions): Promise<ToGL2DOptions>
     {
         await super.serialize(options);
         const { gl2D } = options;
 
         // find the resource
         const source = gl2D.resources.find(
-            (texture) => texture.uid === `texture_source_${this.uid}`) as PixiGl2DVideoSource;
+            (texture) => texture.uid === `texture_source_${this.uid}`) as PixiGL2DVideoSource;
 
         if (!source)
         {
@@ -578,7 +578,7 @@ export class VideoSource extends TextureSource<VideoResource>
         }
 
         const sourceOptions = this.options as VideoSourceOptions;
-        const fullVideo: PixiGl2DVideoSource = {
+        const fullVideo: PixiGL2DVideoSource = {
             ...source,
             type: 'video_source',
             autoLoad: sourceOptions.autoLoad,

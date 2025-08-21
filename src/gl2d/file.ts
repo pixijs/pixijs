@@ -1,15 +1,15 @@
-import { type Gl2DNode } from './node';
-import { type Gl2DResource } from './resources';
+import { type GL2DNode } from './node';
+import { type GL2DResource } from './resources';
 
 /**
- * Represents the root file structure for a GL2D scene.
+ * Represents the root file structure for a gl2D scene.
  *
- * This is the top-level container that defines a complete GL2D scene file,
+ * This is the top-level container that defines a complete gl2D scene file,
  * including metadata, scene definitions, node hierarchy, and all resources
  * required for rendering.
  * @example
  * ```typescript
- * const sceneFile: Gl2DFile = {
+ * const sceneFile: GL2DFile = {
  *   asset: {
  *     version: "1.0",
  *     generator: "gl2d-example-generator"
@@ -37,16 +37,16 @@ import { type Gl2DResource } from './resources';
  * @category gl2d
  * @standard
  */
-export interface Gl2DFile extends Gl2DExtension
+export interface GL2DFile extends GL2DExtension
 {
     /** Asset metadata including version and generator information */
-    asset: Gl2DAsset;
+    asset: GL2DAsset;
 
     /** The index of the default scene */
     scene?: number;
 
     /** Array of scene definitions, each containing references to nodes */
-    scenes?: Gl2DScene[];
+    scenes?: GL2DScene[];
 
     /** Names of gl2D extensions used in this asset. */
     extensionsUsed?: string[];
@@ -54,10 +54,10 @@ export interface Gl2DFile extends Gl2DExtension
     extensionsRequired?: string[];
 
     /** Flat array of all nodes in the file, referenced by index from scenes */
-    nodes: Gl2DNode[];
+    nodes: GL2DNode[];
 
     /** Array of all resources (textures, audio, fonts, etc.) used by the scene */
-    resources: Gl2DResource[];
+    resources: GL2DResource[];
 }
 
 /**
@@ -65,7 +65,7 @@ export interface Gl2DFile extends Gl2DExtension
  * @category gl2d
  * @standard
  */
-export interface Gl2DExtension<T extends Record<string, any> = Record<string, any>>
+export interface GL2DExtension<T extends Record<string, any> = Record<string, any>>
 {
     /** JSON object with extension-specific objects. */
     extensions?: T
@@ -86,7 +86,7 @@ export interface Gl2DExtension<T extends Record<string, any> = Record<string, an
  * @category gl2d
  * @standard
  */
-export interface Gl2DAsset extends Gl2DExtension
+export interface GL2DAsset extends GL2DExtension
 {
     /** The version of the GL2D file format in the form <major>.<minor> that this asset targets */
     version: string;
@@ -106,18 +106,18 @@ export interface Gl2DAsset extends Gl2DExtension
  * for different game states, levels, or UI screens.
  * @example
  * ```typescript
- * const mainScene: Gl2DScene = {
+ * const mainScene: GL2DScene = {
  *   name: "MainGameplay",
  *   nodes: [0, 1, 2] // References nodes at indices 0, 1, and 2
  * };
  *
- * const menuScene: Gl2DScene = {
+ * const menuScene: GL2DScene = {
  *   name: "MainMenu",
  *   nodes: [3, 4] // References different nodes for menu UI
  * };
  *
  * // In the complete file structure:
- * const sceneFile: Gl2DFile = {
+ * const sceneFile: GL2DFile = {
  *   scene: 0, // MainGameplay scene is active
  *   scenes: [mainScene, menuScene],
  *   nodes: [
@@ -134,7 +134,7 @@ export interface Gl2DAsset extends Gl2DExtension
  * @category gl2d
  * @standard
  */
-export interface Gl2DScene extends Gl2DExtension
+export interface GL2DScene extends GL2DExtension
 {
     /** human-readable name for the scene (e.g., "MainMenu", "Level1") */
     name: string;
@@ -148,4 +148,4 @@ export interface Gl2DScene extends Gl2DExtension
  * @category gl2d
  * @standard
  */
-export type ToGl2D = Pick<Gl2DFile, 'resources' | 'nodes' | 'extensionsRequired' | 'extensionsUsed'>;
+export type ToGL2D = Pick<GL2DFile, 'resources' | 'nodes' | 'extensionsRequired' | 'extensionsUsed'>;
