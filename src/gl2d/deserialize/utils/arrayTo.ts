@@ -7,7 +7,7 @@ import { Rectangle } from '../../../maths/shapes/Rectangle';
  * @returns A Rectangle object or undefined if the input is invalid.
  * @internal
  */
-export function toRectangle(data: [number, number, number, number]): Rectangle | undefined
+export function toRectangle(data: [number, number, number, number] | undefined): Rectangle | undefined
 {
     if (!data) return undefined;
 
@@ -22,7 +22,7 @@ export function toRectangle(data: [number, number, number, number]): Rectangle |
  * @returns A PointData object or undefined if the input is invalid.
  * @internal
  */
-export function toPointData(data: [number, number]): PointData | undefined
+export function toPointData(data: [number, number] | undefined): PointData | undefined
 {
     if (!data) return undefined;
 

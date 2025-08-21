@@ -65,13 +65,13 @@ export const gl2DTextureParser: GL2DResourceParser<any> = {
         const textureData: TextureOptions = {
             source: (existingSource as Texture).source,
             frame,
-            trim: toRectangle(data.extensions.pixi_texture_resource.trim),
-            defaultAnchor: toPointData(data.extensions.pixi_texture_resource.defaultAnchor),
-            defaultBorders: toRectangle(data.extensions.pixi_texture_resource.defaultBorders),
-            rotate: data.extensions.pixi_texture_resource.rotate,
-            orig: toRectangle(data.extensions.pixi_texture_resource.orig),
+            trim: toRectangle(data.extensions?.pixi_texture_resource?.trim),
+            defaultAnchor: toPointData(data.extensions?.pixi_texture_resource?.defaultAnchor),
+            defaultBorders: toRectangle(data.extensions?.pixi_texture_resource?.defaultBorders),
+            rotate: data.extensions?.pixi_texture_resource?.rotate,
+            orig: toRectangle(data.extensions?.pixi_texture_resource?.orig),
             label: data.name,
-            dynamic: data.extensions.pixi_texture_resource.dynamic,
+            dynamic: data.extensions?.pixi_texture_resource?.dynamic,
         };
 
         return new Texture(textureData);

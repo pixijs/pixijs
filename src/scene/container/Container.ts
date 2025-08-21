@@ -2136,9 +2136,9 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             ],
             extensions: {
                 pixi_container_node: {
-                    skew: [this.skew.x, this.skew.y],
-                    pivot: [this.pivot.x, this.pivot.y],
-                    origin: [this.origin.x, this.origin.y],
+                    skew: this._skew !== defaultSkew ? [this.skew.x, this.skew.y] : undefined,
+                    pivot: this._pivot !== defaultPivot ? [this.pivot.x, this.pivot.y] : undefined,
+                    origin: this._origin !== defaultOrigin ? [this.origin.x, this.origin.y] : undefined,
                     boundsArea: this.boundsArea
                         ? [this.boundsArea.x, this.boundsArea.y, this.boundsArea.width, this.boundsArea.height]
                         : undefined,

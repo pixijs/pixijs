@@ -1,26 +1,92 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/matrix/Matrix';
-import { Container } from '../../../scene/container/Container';
+import { Container, type ContainerOptions } from '../../../scene/container/Container';
 import { type PixiGL2DContainer } from '../../extensions/nodes';
 import { type GL2DNode } from '../../node';
+import { deepRemoveUndefinedOrNull } from '../../utils/deepRemoveUndefinedOrNull';
 import { type GL2DNodeParser } from '../parsers';
-import { toRectangle } from '../utils/arrayTo';
+import { toPointData, toRectangle } from '../utils/arrayTo';
 
 /**
- * Applies base properties from a GL2D container node to a PixiJS container.
- * @param container - The PixiJS container to modify.
- * @param data - The GL2D container node data.
+ * A type representing the options for a container created from a GL2D container.
+ * It omits transform-related properties as these are handled separately.
+ */
+type ContainerOptionsFromGL2D = Omit<
+    Required<ContainerOptions>,
+    | 'position'
+    | 'scale'
+    | 'rotation'
+    | 'x'
+    | 'y'
+    | 'sortDirty'
+    | 'interactive'
+    | 'parent'
+    | 'angle'
+    | 'children'
+    | 'setMask'
+    | `on${string}`
+>;
+
+/**
+ * Create container options from a GL2D container.
+ * @param data
+ * @returns container options
  * @internal
  */
-export function applyBaseNodeProperties(container: Container, data: Omit<PixiGL2DContainer, 'type'>): void
+export function createContainerOptionsFromGl2D(data: Omit<PixiGL2DContainer, 'type'>): ContainerOptions
 {
-    if (data.name) container.label = data.name;
-    if (data.alpha !== undefined) container.alpha = data.alpha;
-    if (data.visible !== undefined) container.visible = data.visible;
-    if (data.tint !== undefined) container.tint = data.tint;
-    if (data.blendMode) container.blendMode = data.blendMode;
+    const properties: Required<ContainerOptionsFromGL2D> = deepRemoveUndefinedOrNull(
+        {
+            label: data.name,
+            alpha: data.alpha,
+            visible: data.visible,
+            tint: data.tint,
+            blendMode: data.blendMode,
+            width: data.width,
+            height: data.height,
+            skew: toPointData(data.extensions?.pixi_container_node?.skew),
+            pivot: toPointData(data.extensions?.pixi_container_node?.pivot),
+            origin: toPointData(data.extensions?.pixi_container_node?.origin),
+            boundsArea: toRectangle(data.extensions?.pixi_container_node?.boundsArea),
+            isRenderGroup: data.extensions?.pixi_container_node?.isRenderGroup,
+            zIndex: data.extensions?.pixi_container_node?.zIndex ?? 0,
+            sortableChildren: data.extensions?.pixi_container_node?.sortableChildren,
+            renderable: data.extensions?.pixi_container_node?.renderable ?? true,
+            // TODO: Remaining properties to support
+            tabIndex: undefined,
+            interactive: undefined,
+            interactiveChildren: undefined,
+            eventMode: undefined,
+            cursor: undefined,
+            filters: undefined,
+            mask: undefined,
+            hitArea: undefined,
+            accessible: undefined,
+            accessibleChildren: undefined,
+            accessibleHint: undefined,
+            accessiblePointerEvents: undefined,
+            accessibleText: undefined,
+            accessibleTitle: undefined,
+            accessibleType: undefined,
+            cullArea: undefined,
+            cullableChildren: undefined,
+            cullable: undefined,
+            cacheAsTexture: undefined,
+        },
+        1,
+    );
 
-    // Apply transform
+    return properties;
+}
+
+/**
+ * Set the transform properties of a container from a GL2D container.
+ * @param container - The container to set the transform properties on.
+ * @param data - The GL2D container data.
+ * @internal
+ */
+export function setContainerTransformFromGL2D(container: Container, data: GL2DNode): void
+{
     if (data.matrix)
     {
         const matrix = new Matrix(...data.matrix);
@@ -29,43 +95,9 @@ export function applyBaseNodeProperties(container: Container, data: Omit<PixiGL2
     }
     else
     {
-        if (data.translation)
-        {
-            container.position.set(data.translation[0], data.translation[1]);
-        }
-
-        if (data.scale)
-        {
-            container.scale.set(data.scale[0], data.scale[1]);
-        }
-
-        if (data.rotation !== undefined)
-        {
-            container.rotation = data.rotation;
-        }
-    }
-
-    // Apply explicit size if provided
-    if (data.width !== undefined || data.height !== undefined)
-    {
-        container.setSize(data.width ?? container.width, data.height ?? container.height);
-    }
-
-    // Apply container-specific properties
-    const extension = data.extensions?.pixi_container_node;
-
-    if (extension)
-    {
-        container.skew.set(extension.skew[0], extension.skew[1]);
-        container.pivot.set(extension.pivot[0], extension.pivot[1]);
-        container.origin.set(extension.origin[0], extension.origin[1]);
-
-        container.boundsArea = toRectangle(extension.boundsArea);
-
-        container.isRenderGroup = extension.isRenderGroup ?? false;
-        container.zIndex = extension.zIndex ?? 0;
-        container.sortableChildren = extension.sortableChildren ?? false;
-        container.renderable = extension.renderable ?? true;
+        data.translation && container.position.set(data.translation[0], data.translation[1]);
+        data.scale && container.scale.set(data.scale[0], data.scale[1]);
+        data.rotation !== undefined && (container.rotation = data.rotation);
     }
 }
 
@@ -83,11 +115,10 @@ export const gl2DContainerNodeParser: GL2DNodeParser<PixiGL2DContainer> = {
 
     async parse(data: PixiGL2DContainer): Promise<Container>
     {
-        const container = new Container();
+        const container = new Container(createContainerOptionsFromGl2D(data));
 
-        // Apply base node properties
-        applyBaseNodeProperties(container, data);
+        setContainerTransformFromGL2D(container, data);
 
         return container;
-    }
+    },
 };

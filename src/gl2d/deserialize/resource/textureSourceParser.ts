@@ -58,12 +58,12 @@ export const gl2DTextureSourceParser: GL2DResourceParser<TextureSourceType> = {
             mipmapFilter: data.mipmapFilter,
             lodMinClamp: data.lodMinClamp,
             lodMaxClamp: data.lodMaxClamp,
-            mipLevelCount: data.extensions.pixi_texture_source_resource.mipLevelCount,
-            maxAnisotropy: data.extensions.pixi_texture_source_resource.maxAnisotropy,
-            dimensions: data.extensions.pixi_texture_source_resource.dimensions,
-            compare: data.extensions.pixi_texture_source_resource.compare,
-            autoGenerateMipmaps: data.extensions.pixi_texture_source_resource.autoGenerateMipmaps,
-            autoGarbageCollect: data.extensions.pixi_texture_source_resource.autoGarbageCollect,
+            mipLevelCount: data.extensions?.pixi_texture_source_resource?.mipLevelCount,
+            maxAnisotropy: data.extensions?.pixi_texture_source_resource?.maxAnisotropy,
+            dimensions: data.extensions?.pixi_texture_source_resource?.dimensions,
+            compare: data.extensions?.pixi_texture_source_resource?.compare,
+            autoGenerateMipmaps: data.extensions?.pixi_texture_source_resource?.autoGenerateMipmaps,
+            autoGarbageCollect: data.extensions?.pixi_texture_source_resource?.autoGarbageCollect,
             label: data.name || '',
         };
 

@@ -636,6 +636,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
                 }
             };
 
+            gl2D.extensionsUsed.push('pixi_spritesheet_resource');
             gl2D.resources.push(spritesheetResource);
         }
 
