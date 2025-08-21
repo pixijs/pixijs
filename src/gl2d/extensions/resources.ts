@@ -1,6 +1,6 @@
 import {
     type GL2DImageSource,
-    type Gl2DSpritesheetSource,
+    type GL2DSpritesheetSource,
     type GL2DTexture,
     type GL2DTextureSource,
     type GL2DVideoSource,
@@ -126,14 +126,14 @@ export interface PixiGL2DVideoSourceExtension extends PixiGL2DTextureSourceExten
  * @category gl2d
  * @standard
  */
-export type PixiGl2DSpritesheetSource = Gl2DSpritesheetSource<PixiGl2DSpritesheetExtension>;
+export type PixiGL2DSpritesheetSource = GL2DSpritesheetSource<PixiGL2DSpritesheetExtension>;
 
 /**
  * Extension properties for PixiJS spriteSheet nodes.
  * @category gl2d
  * @standard
  */
-export interface PixiGl2DSpritesheetExtension
+export interface PixiGL2DSpritesheetExtension
 {
     pixi_spritesheet_resource: {
         /** The cache prefix for the spritesheet */

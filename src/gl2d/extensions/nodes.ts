@@ -45,7 +45,7 @@ export interface PixiGL2DContainerExtension
         renderable: boolean;
 
         /** Cached bounds area for optimization purposes */
-        boundsArea: number[];
+        boundsArea?: [number, number, number, number];
 
         /** Whether to automatically sort child nodes by their zIndex values */
         sortableChildren: boolean;

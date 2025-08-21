@@ -2126,7 +2126,14 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             visible: this.visible,
             tint: this.tint,
             blendMode: this.blendMode,
-            matrix: Array.from(this.localTransform.toArray()) as [number, number, number, number, number, number],
+            matrix: [
+                this.localTransform.a,
+                this.localTransform.b,
+                this.localTransform.c,
+                this.localTransform.d,
+                this.localTransform.tx,
+                this.localTransform.ty
+            ],
             extensions: {
                 pixi_container_node: {
                     skew: [this.skew.x, this.skew.y],

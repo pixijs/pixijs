@@ -1,5 +1,5 @@
 import EventEmitter from 'eventemitter3';
-import { type PixiGl2DSpritesheetSource, type PixiGL2DTextureSource } from '../../../../../gl2d/extensions/resources';
+import { type PixiGL2DSpritesheetSource, type PixiGL2DTextureSource } from '../../../../../gl2d/extensions/resources';
 import { type ToGL2DOptions } from '../../../../../gl2d/GL2D';
 import { isSpritesheetTexture } from '../../../../../gl2d/utils/isSpritesheetTexture';
 import { isPow2 } from '../../../../../maths/misc/pow2';
@@ -624,7 +624,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
         if (spritesheetSource)
         {
-            const spritesheetResource: PixiGl2DSpritesheetSource = {
+            const spritesheetResource: PixiGL2DSpritesheetSource = {
                 uid: `spritesheet_${spritesheetSource.uid}`,
                 type: 'spritesheet',
                 uri: spritesheetSource.uri,

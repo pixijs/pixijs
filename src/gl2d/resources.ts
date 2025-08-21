@@ -7,7 +7,19 @@ import {
 import { type GL2DExtension } from './file';
 
 /**
- * Represents a resource used in a GL2D file, such as textures, fonts, audio, etc.
+ * Represents a GL2D resource within a GL2D file.
+ *
+ * Resources are reusable assets such as textures, audio files, fonts,
+ * and other media that can be referenced by nodes in the scene graph.
+ * @example
+ * ```typescript
+ * const textureResource: GL2DResource = {
+ *   type: "texture",
+ *   uri: "/assets/player.png",
+ *   width: 64,
+ *   height: 64
+ * };
+ * ```
  * @category gl2d
  * @standard
  */
@@ -130,8 +142,8 @@ export interface GL2DVideoSource<K extends Record<string, any> = Record<string, 
  * @category gl2d
  * @standard
  */
-export interface Gl2DSpritesheetSource<K extends Record<string, any> = Record<string, any>>
-    extends Gl2DResource<'spritesheet', K>
+export interface GL2DSpritesheetSource<K extends Record<string, any> = Record<string, any>>
+    extends GL2DResource<'spritesheet', K>
 {
     /** The location of the texture source in the gl2D resources array */
     source: number;

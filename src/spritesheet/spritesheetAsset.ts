@@ -2,7 +2,7 @@ import { LoaderParserPriority } from '../assets/loader/parsers/LoaderParser';
 import { Resolver } from '../assets/resolver/Resolver';
 import { copySearchParams } from '../assets/utils/copySearchParams';
 import { ExtensionType } from '../extensions/Extensions';
-import { Texture } from '../rendering/renderers/shared/texture/Texture';
+import { type Texture } from '../rendering/renderers/shared/texture/Texture';
 import { path } from '../utils/path';
 import { Spritesheet } from './Spritesheet';
 
@@ -172,7 +172,7 @@ export const spritesheetAsset = {
 
             let texture: Texture;
 
-            if (imageTexture instanceof Texture)
+            if (imageTexture?.isTexture)
             {
                 texture = imageTexture;
             }

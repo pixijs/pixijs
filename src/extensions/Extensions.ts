@@ -57,6 +57,11 @@ enum ExtensionType
 
     /** A type of extension for creating custom batchers used in rendering. */
     Batcher = 'batcher',
+
+    /** A type of extension for parsing 2D resources in the gl2D format */
+    GL2DResourceParser = 'gl2d-resource-parser',
+    /** A type of extension for parsing 2D nodes in the gl2D format */
+    GL2DNodeParser = 'gl2d-node-parser',
 }
 
 /**
