@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import { type PixiGl2DTexture } from '../../../../gl2d/extensions/resources';
+import { isSpritesheetTexture } from '../../../../gl2d/init';
 import { type Gl2DTexture } from '../../../../gl2d/resources';
 import { type ToGl2DOptions } from '../../../../gl2d/serialize/serialize';
 import { groupD8 } from '../../../../maths/matrix/groupD8';
@@ -446,7 +447,19 @@ export class Texture<TextureSourceType extends TextureSource = TextureSource> ex
 
         // if not, create a new entry
         await this.source.serialize(options);
-        const sourceIndex = gl2D.resources.findIndex((res) => res.uid === `texture_source_${this.source.uid}`);
+        const spritesheetSource = isSpritesheetTexture(this.source);
+
+        let sourceIndex: number;
+
+        if (spritesheetSource)
+        {
+            // find the spritesheet resource
+            sourceIndex = gl2D.resources.findIndex((res) => res.uid === `spritesheet_${spritesheetSource.uid}`);
+        }
+        else
+        {
+            sourceIndex = gl2D.resources.findIndex((res) => res.uid === `texture_source_${this.source.uid}`);
+        }
 
         const newTextureData: PixiGl2DTexture = {
             type: 'texture',

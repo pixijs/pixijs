@@ -30,6 +30,20 @@ export interface SpriteSheetJson extends SpritesheetData
     };
 }
 
+/**
+ * Options for parsing a spritesheet.
+ * @category assets
+ * @advanced
+ */
+export interface SpriteSheetParseOptions
+{
+    texture?: Texture,
+    imageFilename?: string,
+    ignoreMultiPack?: boolean,
+    textureOptions?: TextureSourceOptions,
+    cachePrefix?: string,
+}
+
 const validImages = ['jpg', 'png', 'jpeg', 'avif', 'webp',
     'basis', 'etc2', 'bc7', 'bc6h', 'bc5', 'bc4', 'bc3', 'bc2', 'bc1', 'eac', 'astc'];
 
@@ -138,13 +152,7 @@ export const spritesheetAsset = {
 
         async parse(
             asset: SpriteSheetJson,
-            options: ResolvedAsset<{
-                texture?: Texture,
-                imageFilename?: string,
-                ignoreMultiPack?: boolean,
-                textureOptions?: TextureSourceOptions,
-                cachePrefix?: string,
-            }>,
+            options: ResolvedAsset<SpriteSheetParseOptions>,
             loader?: Loader
         ): Promise<Spritesheet>
         {
@@ -178,6 +186,7 @@ export const spritesheetAsset = {
             }
 
             const spritesheet = new Spritesheet({
+                uri: options.src,
                 texture: texture.source,
                 data: asset,
                 cachePrefix

@@ -6,3 +6,4 @@ export * from './node';
 export * from './resources';
 export * from './serialize/serialize';
 export * from './utils/deepRemoveUndefined';
+export * from './utils/isSpritesheetTexture';

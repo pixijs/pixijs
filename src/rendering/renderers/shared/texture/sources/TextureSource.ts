@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3';
-import { type PixiGl2DTextureSource } from '../../../../../gl2d/extensions/resources';
+import { type PixiGl2DSpritesheetSource, type PixiGl2DTextureSource } from '../../../../../gl2d/extensions/resources';
+import { isSpritesheetTexture } from '../../../../../gl2d/init';
 import { type ToGl2DOptions } from '../../../../../gl2d/serialize/serialize';
 import { isPow2 } from '../../../../../maths/misc/pow2';
 import { Rectangle } from '../../../../../maths/shapes/Rectangle';
@@ -617,6 +618,26 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
         gl2D.resources.push(data);
         gl2D.extensionsUsed.push('pixi_texture_source_resource');
+
+        // we need to know if this source is part of a spritesheet
+        const spritesheetSource = isSpritesheetTexture(this);
+
+        if (spritesheetSource)
+        {
+            const spritesheetResource: PixiGl2DSpritesheetSource = {
+                uid: `spritesheet_${spritesheetSource.uid}`,
+                type: 'spritesheet',
+                uri: spritesheetSource.uri,
+                source: gl2D.resources.length - 1,
+                extensions: {
+                    pixi_spritesheet_resource: {
+                        cachePrefix: spritesheetSource.cachePrefix
+                    }
+                }
+            };
+
+            gl2D.resources.push(spritesheetResource);
+        }
 
         return options;
     }

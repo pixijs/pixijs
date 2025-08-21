@@ -37,7 +37,7 @@ export interface Gl2DResource<T extends string = string, K extends Record<string
  */
 export interface Gl2DTexture<K extends Record<string, any> = Record<string, any>> extends Gl2DResource<'texture', K>
 {
-    /** The location of the source resource in the gl2D file */
+    /** The location of the source resource in the gl2D resources array */
     source: number;
     /** The rectangle frame of the texture to show */
     frame?: [number, number, number, number];
@@ -123,4 +123,16 @@ export interface Gl2DVideoSource<K extends Record<string, any> = Record<string, 
     muted?: boolean;
     /** If true, the video will play inline. */
     playsinline?: boolean;
+}
+
+/**
+ * Represents a spritesheet resource in a GL2D file.
+ * @category gl2d
+ * @standard
+ */
+export interface Gl2DSpritesheetSource<K extends Record<string, any> = Record<string, any>>
+    extends Gl2DResource<'spritesheet', K>
+{
+    /** The location of the texture source in the gl2D resources array */
+    source: number;
 }
