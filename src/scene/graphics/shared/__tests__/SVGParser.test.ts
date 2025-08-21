@@ -1,4 +1,5 @@
-import { getFillInstructionData, SVGParser } from '../../../graphics/shared/svg/SVGParser';
+import { SVGParser } from '../../../graphics/shared/svg/SVGParser';
+import { getFillInstructionData } from '../../../graphics/shared/svg/utils/fillOperations';
 import { GraphicsContext } from '../GraphicsContext';
 
 describe('SVGParser Fill Rule', () =>

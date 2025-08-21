@@ -3,11 +3,12 @@ import { GraphicsPath } from '../path/GraphicsPath';
 import { parseSVGDefinitions } from './parseSVGDefinitions';
 import { parseSVGFloatAttribute } from './parseSVGFloatAttribute';
 import { parseSVGStyle } from './parseSVGStyle';
+import { checkForNestedPattern } from './utils/fillOperations';
+import { appendSVGPath, calculatePathArea, extractSubpaths } from './utils/pathOperations';
 
 import type { FillGradient } from '../fill/FillGradient';
 import type { FillStyle, StrokeStyle } from '../FillTypes';
 import type {
-    FillInstruction,
     GraphicsContext,
 } from '../GraphicsContext';
 
@@ -171,7 +172,7 @@ function renderChildren(svg: SVGElement, session: Session, fillStyle: FillStyle,
                         session.context.beginPath();
                         const newPath = new GraphicsPath(undefined, true); // Always use evenodd for hole processing
 
-                        parseSVGPath(subpath.path, newPath);
+                        appendSVGPath(subpath.path, newPath);
                         session.context.path(newPath);
 
                         if (isMainShape)
@@ -196,7 +197,7 @@ function renderChildren(svg: SVGElement, session: Session, fillStyle: FillStyle,
                         session.context.beginPath();
                         const newPath = new GraphicsPath(undefined, true); // Always use evenodd for hole processing
 
-                        parseSVGPath(subpath.path, newPath);
+                        appendSVGPath(subpath.path, newPath);
                         session.context.path(newPath);
 
                         if (isHole)
@@ -316,125 +317,4 @@ function renderChildren(svg: SVGElement, session: Session, fillStyle: FillStyle,
     {
         renderChildren(children[i] as SVGElement, session, fillStyle, strokeStyle);
     }
-}
-
-/**
- * Extracts individual subpaths from a SVG path data string.
- * Splits the path data by Move commands (M or m) to get separate subpaths.
- * @param pathData - The SVG path data string
- * @returns An array of subpath strings
- */
-function extractSubpaths(pathData: string): string[]
-{
-    // Split on Move commands (M or m) to get individual subpaths
-    const parts = pathData.split(/(?=[Mm])/);
-    const subpaths = parts.filter((part) => part.trim().length > 0);
-
-    return subpaths;
-}
-
-/**
- * Calculates the area of a path defined by its SVG path data.
- * Uses a simple bounding box approach to estimate the area.
- * @param pathData - The SVG path data string
- * @returns The estimated area of the path
- */
-function calculatePathArea(pathData: string): number
-{
-    const coords = pathData.match(/[-+]?[0-9]*\.?[0-9]+/g);
-
-    if (!coords || coords.length < 4) return 0;
-
-    const numbers = coords.map(Number);
-    const xs = [];
-    const ys = [];
-
-    for (let i = 0; i < numbers.length; i += 2)
-    {
-        if (i + 1 < numbers.length)
-        {
-            xs.push(numbers[i]);
-            ys.push(numbers[i + 1]);
-        }
-    }
-
-    if (xs.length === 0 || ys.length === 0) return 0;
-
-    const minX = Math.min(...xs);
-    const maxX = Math.max(...xs);
-    const minY = Math.min(...ys);
-    const maxY = Math.max(...ys);
-
-    const area = (maxX - minX) * (maxY - minY);
-
-    return area;
-}
-
-/**
- * Checks if the subpaths represent a nested pattern or multiple holes.
- * Uses area comparison to determine if shapes are nested or similar-sized.
- * @param subpathsWithArea - Array of subpaths with their calculated areas
- * @returns True if nested, false if multiple holes
- */
-function checkForNestedPattern(subpathsWithArea: Array<{path: string, area: number}>): boolean
-{
-    if (subpathsWithArea.length <= 2)
-    {
-        return true;
-    }
-
-    const areas = subpathsWithArea.map((s) => s.area).sort((a, b) => b - a);
-
-    const [largestArea, secondArea] = areas;
-    const smallestArea = areas[areas.length - 1];
-
-    const largestToSecondRatio = largestArea / secondArea;
-    const secondToSmallestRatio = secondArea / smallestArea;
-
-    // If the largest shape is significantly bigger than the second (3x+)
-    // AND the smaller shapes are similar in size (2x or less difference),
-    // it suggests multiple holes pattern rather than nested shapes
-    if (largestToSecondRatio > 3 && secondToSmallestRatio < 2)
-    {
-        return false; // Multiple holes
-    }
-
-    return true; // Default to nested
-}
-
-/**
- * Parses an SVG path data string and appends the instructions to the provided GraphicsPath.
- * Uses the existing GraphicsPath string parsing capability.
- * @param pathData - The SVG path data string
- * @param graphicsPath - The GraphicsPath to append instructions to
- * @internal
- */
-function parseSVGPath(pathData: string, graphicsPath: GraphicsPath): void
-{
-    const tempPath = new GraphicsPath(pathData, false);
-
-    for (const instruction of tempPath.instructions)
-    {
-        graphicsPath.instructions.push(instruction);
-    }
-}
-
-/**
- * Safely retrieves fill instruction data from the graphics context.
- * @param context - The graphics context containing instructions
- * @param index - Optional index to get a specific fill instruction
- * @returns The fill instruction data
- * @throws Error if the instruction at the given index is not a fill instruction
- * @internal
- */
-export function getFillInstructionData(context: GraphicsContext, index: number = 0)
-{
-    const instruction = context.instructions[index];
-
-    if (!instruction || instruction.action !== 'fill')
-    {
-        throw new Error(`Expected fill instruction at index ${index}, got ${instruction?.action || 'undefined'}`);
-    }
-
-    return (instruction as FillInstruction).data;
 }
