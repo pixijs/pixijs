@@ -554,7 +554,7 @@ export class Sprite extends ViewContainer<BatchableSprite>
         const { gl2D } = options;
 
         await super.serialize(options);
-        const sprite = gl2D.nodes.find((node) => node.uid === `container_${this.uid}`);
+        const sprite = gl2D.nodes.find((node) => node.uid === `${this.uid}`);
 
         if (!sprite)
         {

@@ -2120,7 +2120,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         const node: PixiGL2DContainer = {
             name: this.label ?? undefined,
             type: 'container',
-            uid: `container_${this.uid}`,
+            uid: `${this.uid}`,
             children: [],
             alpha: this.alpha,
             visible: this.visible,
@@ -2153,12 +2153,12 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         for (const child of this.children)
         {
             // check if child already exists in gl2d
-            const existingChildIndex = gl2D.nodes.findIndex((node) => node.uid === `container_${child.uid}`);
+            const existingChildIndex = gl2D.nodes.findIndex((node) => node.uid === `${child.uid}`);
 
             if (existingChildIndex === -1)
             {
                 await child.serialize(gl2DOptions);
-                const childIndex = gl2D.nodes.findIndex((node) => node.uid === `container_${child.uid}`);
+                const childIndex = gl2D.nodes.findIndex((node) => node.uid === `${child.uid}`);
 
                 node.children.push(childIndex);
             }
