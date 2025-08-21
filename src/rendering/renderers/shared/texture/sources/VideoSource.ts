@@ -1,7 +1,7 @@
 // VideoSource.ts
 
 import { ExtensionType } from '../../../../../extensions/Extensions';
-import { type ToGL2DOptions } from '../../../../../gl2d/GL2Df';
+import { type ToGL2DOptions } from '../../../../../gl2d/GL2D';
 import { Ticker } from '../../../../../ticker/Ticker';
 import { detectVideoAlphaMode } from '../../../../../utils/browser/detectVideoAlphaMode';
 import { TextureSource } from './TextureSource';

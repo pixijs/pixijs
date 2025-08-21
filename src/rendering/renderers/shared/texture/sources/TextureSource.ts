@@ -1,6 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import { type PixiGL2DTextureSource } from '../../../../../gl2d/extensions/resources';
-import { type ToGL2DOptions } from '../../../../../gl2d/GL2Df';
+import { type ToGL2DOptions } from '../../../../../gl2d/GL2D';
 import { isPow2 } from '../../../../../maths/misc/pow2';
 import { Rectangle } from '../../../../../maths/shapes/Rectangle';
 import { definedProps } from '../../../../../scene/container/utils/definedProps';
