@@ -69,6 +69,8 @@ export * from './graphics/shared/svg/parseSVGPath';
 export * from './graphics/shared/svg/parseSVGStyle';
 export * from './graphics/shared/svg/SVGParser';
 export * from './graphics/shared/svg/utils/extractSvgUrlId';
+export * from './graphics/shared/svg/utils/fillOperations';
+export * from './graphics/shared/svg/utils/pathOperations';
 export * from './graphics/shared/utils/buildContextBatches';
 export * from './graphics/shared/utils/convertFillInputToFillStyle';
 export * from './graphics/shared/utils/generateTextureFillMatrix';
