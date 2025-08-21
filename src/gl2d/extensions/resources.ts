@@ -1,9 +1,9 @@
 import {
-    type Gl2DImageSource,
+    type GL2DImageSource,
     type Gl2DSpritesheetSource,
-    type Gl2DTexture,
-    type Gl2DTextureSource,
-    type Gl2DVideoSource,
+    type GL2DTexture,
+    type GL2DTextureSource,
+    type GL2DVideoSource,
 } from '../resources';
 
 import type { ALPHA_MODES, COMPARE_FUNCTION, TEXTURE_DIMENSIONS } from '../../rendering/renderers/shared/texture/const';
@@ -15,14 +15,14 @@ import type { ALPHA_MODES, COMPARE_FUNCTION, TEXTURE_DIMENSIONS } from '../../re
  * @category gl2d
  * @standard
  */
-export type PixiGl2DTexture = Gl2DTexture<PixiGl2DTextureExtension>;
+export type PixiGL2DTexture = GL2DTexture<PixiGL2DTextureExtension>;
 
 /**
  * Extension properties for PixiJS textureResource nodes.
  * @category gl2d
  * @standard
  */
-export interface PixiGl2DTextureExtension
+export interface PixiGL2DTextureExtension
 {
     /** Unique identifier for the PixiJS textureResource node */
     pixi_texture_resource: {
@@ -55,14 +55,14 @@ export interface PixiGl2DTextureExtension
  * @category gl2d
  * @standard
  */
-export type PixiGl2DTextureSource<T extends string> = Gl2DTextureSource<T, PixiGl2DTextureSourceExtension>;
+export type PixiGL2DTextureSource<T extends string> = GL2DTextureSource<T, PixiGL2DTextureSourceExtension>;
 
 /**
  * Extension properties for PixiJS textureSource nodes.
  * @category gl2d
  * @standard
  */
-export interface PixiGl2DTextureSourceExtension
+export interface PixiGL2DTextureSourceExtension
 {
     /** Unique identifier for the PixiJS textureResource node */
     pixi_texture_source_resource: {
@@ -86,28 +86,28 @@ export interface PixiGl2DTextureSourceExtension
  * @category gl2d
  * @standard
  */
-export type PixiGl2DImageSource = Gl2DImageSource<PixiGl2DImageSourceExtension>;
+export type PixiGL2DImageSource = GL2DImageSource<PixiGL2DImageSourceExtension>;
 
 /**
  * Extension properties for PixiJS imageSource nodes.
  * @category gl2d
  * @standard
  */
-export type PixiGl2DImageSourceExtension = PixiGl2DTextureSourceExtension;
+export type PixiGL2DImageSourceExtension = PixiGL2DTextureSourceExtension;
 
 /**
  * Represents a PixiJS video source within a GL2D file through an extension.
  * @category gl2d
  * @standard
  */
-export type PixiGl2DVideoSource = Gl2DVideoSource<PixiGl2DVideoSourceExtension>;
+export type PixiGL2DVideoSource = GL2DVideoSource<PixiGL2DVideoSourceExtension>;
 
 /**
  * Extension properties for PixiJS videoSource nodes.
  * @category gl2d
  * @standard
  */
-export interface PixiGl2DVideoSourceExtension extends PixiGl2DTextureSourceExtension
+export interface PixiGL2DVideoSourceExtension extends PixiGL2DTextureSourceExtension
 {
     pixi_video_source_resource: {
         /** The number of times a second to update the texture from the video. Leave at 0 to update at every render. */

@@ -1,7 +1,7 @@
 import EventEmitter from 'eventemitter3';
-import { type PixiGl2DSpritesheetSource, type PixiGl2DTextureSource } from '../../../../../gl2d/extensions/resources';
-import { isSpritesheetTexture } from '../../../../../gl2d/init';
-import { type ToGl2DOptions } from '../../../../../gl2d/serialize/serialize';
+import { type PixiGl2DSpritesheetSource, type PixiGL2DTextureSource } from '../../../../../gl2d/extensions/resources';
+import { type ToGL2DOptions } from '../../../../../gl2d/serialize/serialize';
+import { isSpritesheetTexture } from '../../../../../gl2d/utils/isSpritesheetTexture';
 import { isPow2 } from '../../../../../maths/misc/pow2';
 import { Rectangle } from '../../../../../maths/shapes/Rectangle';
 import { definedProps } from '../../../../../scene/container/utils/definedProps';
@@ -567,7 +567,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      * @param options - The options for serialization.
      * @returns The serialized GL2D representation of the texture source.
      */
-    public async serialize(options: ToGl2DOptions): Promise<ToGl2DOptions>
+    public async serialize(options: ToGL2DOptions): Promise<ToGL2DOptions>
     {
         const { gl2D, renderer } = options;
         // check if the source is already serialized
@@ -580,7 +580,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         }
 
         // If not serialized, add it to the GL2D instance
-        const data: PixiGl2DTextureSource<'texture_source'> = {
+        const data: PixiGL2DTextureSource<'texture_source'> = {
             uid: `texture_source_${this.uid}`,
             type: 'texture_source',
             // TODO: fix ugly type hack

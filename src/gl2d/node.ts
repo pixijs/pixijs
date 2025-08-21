@@ -1,5 +1,5 @@
 import { type BLEND_MODES } from '../rendering/renderers/shared/state/const';
-import { type Gl2DExtension } from './file';
+import { type GL2DExtension } from './file';
 
 /**
  * Represents a GL2D node within a GL2D file.
@@ -10,7 +10,7 @@ import { type Gl2DExtension } from './file';
  * other properties.
  * @example
  * ```typescript
- * const playerNode: Gl2DNode = {
+ * const playerNode: GL2DNode = {
  *   type: "container",
  *   name: "Player",
  *   transform: { position: [100, 200], scale: [1, 1] },
@@ -20,8 +20,8 @@ import { type Gl2DExtension } from './file';
  * @category gl2d
  * @standard
  */
-export interface Gl2DNode<T extends string = string, K extends Record<string, any> = Record<string, any>>
-    extends Gl2DExtension<K>
+export interface GL2DNode<T extends string = string, K extends Record<string, any> = Record<string, any>>
+    extends GL2DExtension<K>
 {
     /** The type of the node (e.g., "sprite", "container") */
     type: T;
@@ -68,8 +68,8 @@ export interface Gl2DNode<T extends string = string, K extends Record<string, an
  * @category gl2d
  * @standard
  */
-export interface Gl2DSprite<K extends Record<string, any> = Record<string, any>> extends Gl2DNode<'sprite', K>
+export interface GL2DSprite<K extends Record<string, any> = Record<string, any>> extends GL2DNode<'sprite', K>
 {
-    /** The index of the texture used by the sprite in the gl2d resource array */
+    /** The index of the texture used by the sprite in the gl2D resource array */
     texture: number;
 }

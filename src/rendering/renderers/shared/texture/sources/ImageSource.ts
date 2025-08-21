@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../../../../extensions/Extensions';
-import { type PixiGl2DImageSource } from '../../../../../gl2d/extensions/resources';
-import { type ToGl2DOptions } from '../../../../../gl2d/serialize/serialize';
+import { type PixiGL2DImageSource } from '../../../../../gl2d/extensions/resources';
+import { type ToGL2DOptions } from '../../../../../gl2d/serialize/serialize';
 import { TextureSource } from './TextureSource';
 
 import type { ICanvas } from '../../../../../environment/canvas/ICanvas';
@@ -59,14 +59,14 @@ export class ImageSource extends TextureSource<ImageResource>
      * @param options - The options to use for serialization.
      * @returns The serialized texture source.
      */
-    public override async serialize(options: ToGl2DOptions): Promise<ToGl2DOptions>
+    public override async serialize(options: ToGL2DOptions): Promise<ToGL2DOptions>
     {
         await super.serialize(options);
         const { gl2D } = options;
 
         // find the resource
         const source = gl2D.resources.find(
-            (texture) => texture.uid === `texture_source_${this.uid}`) as PixiGl2DImageSource;
+            (texture) => texture.uid === `texture_source_${this.uid}`) as PixiGL2DImageSource;
 
         if (!source)
         {

@@ -1,4 +1,4 @@
-import { type Gl2DNode, type Gl2DSprite } from '../node';
+import { type GL2DNode, type GL2DSprite } from '../node';
 
 /**
  * Represents a PixiJS container node within a GL2D file through an extension.
@@ -8,14 +8,14 @@ import { type Gl2DNode, type Gl2DSprite } from '../node';
  * @category gl2d
  * @standard
  */
-export type PixiGl2DContainer = Gl2DNode<'container', PixiGl2DContainerExtension>;
+export type PixiGL2DContainer = GL2DNode<'container', PixiGL2DContainerExtension>;
 
 /**
  * Extension properties for PixiJS container nodes.
  * @category gl2d
  * @standard
  */
-export interface PixiGl2DContainerExtension
+export interface PixiGL2DContainerExtension
 {
     /** Unique identifier for the PixiJS container node */
     pixi_container_node: {
@@ -57,14 +57,14 @@ export interface PixiGl2DContainerExtension
  * @category gl2d
  * @standard
  */
-export type PixiGl2DSprite = Gl2DSprite<PixiGl2DSpriteExtension>;
+export type PixiGL2DSprite = GL2DSprite<PixiGL2DSpriteExtension>;
 
 /**
  * Extension properties for PixiJS sprite nodes.
  * @category gl2d
  * @standard
  */
-export interface PixiGl2DSpriteExtension extends PixiGl2DContainerExtension
+export interface PixiGL2DSpriteExtension extends PixiGL2DContainerExtension
 {
     pixi_sprite_node?: {
         /** Whether to round pixel values for crisp rendering */
