@@ -1,10 +1,10 @@
 /**
- * Recursively remove all undefined values from an object or array.
+ * Recursively remove all undefined/null values from an object or array.
  * @param value - The value to clean
  * @returns The cleaned value
  * @internal
  */
-export function deepRemoveUndefined<T>(value: T): T
+export function deepRemoveUndefinedOrNull<T>(value: T): T
 {
     if (Array.isArray(value))
     {
@@ -13,13 +13,13 @@ export function deepRemoveUndefined<T>(value: T): T
         {
             const item = value[i];
 
-            if (item === undefined)
+            if (item === undefined || item === null)
             {
                 value.splice(i, 1);
             }
             else
             {
-                deepRemoveUndefined(item);
+                deepRemoveUndefinedOrNull(item);
             }
         }
 
@@ -32,13 +32,13 @@ export function deepRemoveUndefined<T>(value: T): T
         {
             const val = (value as Record<string, unknown>)[key];
 
-            if (val === undefined)
+            if (val === undefined || val === null)
             {
                 delete (value as Record<string, unknown>)[key];
             }
             else
             {
-                deepRemoveUndefined(val);
+                deepRemoveUndefinedOrNull(val);
             }
         }
 

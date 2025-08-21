@@ -142,10 +142,3 @@ export interface GL2DScene extends GL2DExtension
     /** The indices of each root node. */
     nodes: number[];
 }
-
-/**
- * Represents the nodes and resources of a GL2D file for JSON serialization.
- * @category gl2d
- * @standard
- */
-export type ToGL2D = Pick<GL2DFile, 'resources' | 'nodes' | 'extensionsRequired' | 'extensionsUsed'>;
