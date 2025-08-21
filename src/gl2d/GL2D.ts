@@ -111,7 +111,6 @@ export class GL2DClass
      * Parse resources array.
      * @param resources - Array of GL2D resources
      * @param serializedAssets - Array of serialized assets
-     * @private
      */
     private async _parseResources(resources: GL2DResource[], serializedAssets: any[]): Promise<void>
     {
@@ -162,7 +161,6 @@ export class GL2DClass
      * @param nodes - Array of GL2D nodes
      * @param serializedAssets
      * @param serializedNodes
-     * @private
      */
     private async _parseNodes(
         nodes: GL2DNode[],
@@ -215,7 +213,6 @@ export class GL2DClass
      * Parse a scene definition.
      * @param scene - The GL2D scene data
      * @param nodeCache
-     * @private
      */
     private async _parseScene(scene: GL2DScene, nodeCache: Map<number, Container>): Promise<Container>
     {

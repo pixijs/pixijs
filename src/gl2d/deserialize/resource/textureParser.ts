@@ -26,7 +26,7 @@ function frameEqual(frameA: Rectangle, frameB: Rectangle): boolean
 
 /**
  * Parser for GL2D texture resources.
- * @private
+ * @internal
  */
 export const gl2DTextureParser: GL2DResourceParser<any> = {
     extension: ExtensionType.GL2DResourceParser,

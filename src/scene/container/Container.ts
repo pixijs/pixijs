@@ -2145,7 +2145,24 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
                     isRenderGroup: this.isRenderGroup,
                     zIndex: this.zIndex,
                     sortableChildren: this.sortableChildren,
-                    renderable: this.renderable
+                    renderable: this.renderable,
+                    tabIndex: this.tabIndex,
+                    interactiveChildren: this.interactiveChildren,
+                    interactive: this.interactive,
+                    eventMode: this.eventMode,
+                    cursor: this.cursor,
+                    cullArea: this.cullArea
+                        ? [this.cullArea.x, this.cullArea.y, this.cullArea.width, this.cullArea.height]
+                        : undefined,
+                    cullableChildren: this.cullableChildren,
+                    cullable: this.cullable,
+                    accessibleType: this.accessibleType,
+                    accessibleTitle: this.accessibleTitle,
+                    accessibleText: this.accessibleText,
+                    accessiblePointerEvents: this.accessiblePointerEvents,
+                    accessibleHint: this.accessibleHint,
+                    accessibleChildren: this.accessibleChildren,
+                    accessible: this.accessible,
                 }
             }
         };

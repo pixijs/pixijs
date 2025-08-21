@@ -21,7 +21,7 @@ type TextureSourceType = PixiGL2DTextureSource<'texture_source'> | PixiGL2DImage
 
 /**
  * Parser for GL2D texture source resources.
- * @private
+ * @internal
  */
 export const gl2DTextureSourceParser: GL2DResourceParser<TextureSourceType> = {
     extension: ExtensionType.GL2DResourceParser,

@@ -16,7 +16,7 @@ import { type GL2DResourceParser } from '../parsers';
 
 /**
  * Parser for GL2D spritesheet resources.
- * @private
+ * @internal
  */
 export const gl2DSpritesheetParser: GL2DResourceParser<PixiGL2DSpritesheetSource> = {
     extension: ExtensionType.GL2DResourceParser,
