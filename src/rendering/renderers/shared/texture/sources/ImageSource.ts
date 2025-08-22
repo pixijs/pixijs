@@ -1,6 +1,4 @@
 import { ExtensionType } from '../../../../../extensions/Extensions';
-import { type PixiGL2DImageSource } from '../../../../../gl2d/extensions/resources';
-import { type ToGL2DOptions } from '../../../../../gl2d/GL2D';
 import { TextureSource } from './TextureSource';
 
 import type { ICanvas } from '../../../../../environment/canvas/ICanvas';
@@ -28,6 +26,9 @@ ImageBitmap
 | HTMLImageElement
 | HTMLVideoElement;
 
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
+export interface ImageSource extends PixiMixins.ImageSource, TextureSource<ImageResource> {}
+
 /**
  * A texture source that uses an image-like resource as its resource.
  * It can handle HTMLImageElement, ImageBitmap, VideoFrame, and HTMLVideoElement.
@@ -52,29 +53,5 @@ export class ImageSource extends TextureSource<ImageResource>
         return (globalThis.HTMLImageElement && resource instanceof HTMLImageElement)
         || (typeof ImageBitmap !== 'undefined' && resource instanceof ImageBitmap)
         || (globalThis.VideoFrame && resource instanceof VideoFrame);
-    }
-
-    /**
-     * Serializes the texture source to a format suitable for the GL2D renderer.
-     * @param options - The options to use for serialization.
-     * @returns The serialized texture source.
-     */
-    public override async serialize(options: ToGL2DOptions): Promise<ToGL2DOptions>
-    {
-        await super.serialize(options);
-        const { gl2D } = options;
-
-        // find the resource
-        const source = gl2D.resources.find(
-            (texture) => texture.uid === `texture_source_${this.uid}`) as PixiGL2DImageSource;
-
-        if (!source)
-        {
-            throw new Error(`ImageSource: Texture source with uid ${this.uid} not found.`);
-        }
-
-        source.type = 'image_source';
-
-        return options;
     }
 }

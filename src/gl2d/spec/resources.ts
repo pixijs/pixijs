@@ -3,7 +3,7 @@ import {
     type SCALE_MODE,
     type TEXTURE_FORMATS,
     type WRAP_MODE,
-} from '../rendering/renderers/shared/texture/const';
+} from '../../rendering/renderers/shared/texture/const';
 import { type GL2DExtension } from './file';
 
 /**

@@ -1,4 +1,4 @@
-import { type GL2DFile } from './file';
+import { type GL2DFile } from './spec/file';
 import { deepRemoveUndefinedOrNull } from './utils/deepRemoveUndefinedOrNull';
 
 import type { Renderer } from '../rendering/renderers/types';

@@ -1,13 +1,11 @@
 // VideoSource.ts
 
 import { ExtensionType } from '../../../../../extensions/Extensions';
-import { type ToGL2DOptions } from '../../../../../gl2d/GL2D';
 import { Ticker } from '../../../../../ticker/Ticker';
 import { detectVideoAlphaMode } from '../../../../../utils/browser/detectVideoAlphaMode';
 import { TextureSource } from './TextureSource';
 
 import type { ExtensionMetadata } from '../../../../../extensions/Extensions';
-import type { PixiGL2DVideoSource } from '../../../../../gl2d/extensions/resources';
 import type { Dict } from '../../../../../utils/types';
 import type { ALPHA_MODES } from '../const';
 import type { TextureSourceOptions } from './TextureSource';
@@ -48,6 +46,9 @@ export interface VideoSourceOptions extends TextureSourceOptions<VideoResource>
     /** The alpha mode of the video. */
     alphaMode?: ALPHA_MODES;
 }
+
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
+export interface VideoSource extends PixiMixins.VideoSource, TextureSource<VideoResource> {}
 
 /**
  * A texture source that uses a video as its resource.
@@ -556,55 +557,6 @@ export class VideoSource extends TextureSource<VideoResource>
                 this._msToNextUpdate = 0;
             }
         }
-    }
-
-    /**
-     * Serializes the texture source to a format suitable for the GL2D renderer.
-     * @param options - The options to use for serialization.
-     * @returns The serialized texture source.
-     */
-    public override async serialize(options: ToGL2DOptions): Promise<ToGL2DOptions>
-    {
-        await super.serialize(options);
-        const { gl2D } = options;
-
-        // find the resource
-        const source = gl2D.resources.find(
-            (texture) => texture.uid === `texture_source_${this.uid}`) as PixiGL2DVideoSource;
-
-        if (!source)
-        {
-            throw new Error(`ImageSource: Texture source with uid ${this.uid} not found.`);
-        }
-
-        const sourceOptions = this.options as VideoSourceOptions;
-        const fullVideo: PixiGL2DVideoSource = {
-            ...source,
-            type: 'video_source',
-            autoLoad: sourceOptions.autoLoad,
-            autoPlay: sourceOptions.autoPlay,
-            crossorigin: sourceOptions.crossorigin,
-            loop: sourceOptions.loop,
-            muted: sourceOptions.muted,
-            playsinline: sourceOptions.playsinline,
-            extensions: {
-                pixi_texture_source_resource: source.extensions.pixi_texture_source_resource,
-                pixi_video_source_resource: {
-                    updateFPS: this._updateFPS,
-                    alphaMode: this.alphaMode,
-                    preload: sourceOptions.preload,
-                    preloadTimeoutMs: sourceOptions.preloadTimeoutMs,
-                }
-            }
-        };
-
-        // Assign the full video back to the original video
-        Object.assign(source, fullVideo);
-
-        gl2D.extensionsUsed.push('pixi_video_source_resource');
-        gl2D.extensionsRequired.push('pixi_video_source_resource');
-
-        return options;
     }
 
     /**

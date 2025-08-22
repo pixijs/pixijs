@@ -26,6 +26,9 @@ const subImports = [
     ['./unsafe-eval', './lib/unsafe-eval'],
     ['./sprite-nine-slice', './lib/scene/sprite-nine-slice'],
     ['./particle-container', './lib/scene/particle-container'],
+    ['./gl2d', './lib/gl2d'],
+    ['./gl2d/serialize', './lib/gl2d/serialize'],
+    ['./gl2d/deserialize', './lib/gl2d/deserialize'],
 ];
 
 interface ExportField
@@ -77,16 +80,6 @@ const exportFields: Record<string, ExportField> = {
             default: './lib/gif/init.js',
         },
     },
-    './gl2d': {
-        import: {
-            types: './lib/gl2d/init.d.ts',
-            default: './lib/gl2d/init.mjs',
-        },
-        require: {
-            types: './lib/gl2d/init.d.ts',
-            default: './lib/gl2d/init.js',
-        },
-    },
 };
 const sideEffects = [
     './lib/environment-browser/browserAll.*',
@@ -96,7 +89,6 @@ const sideEffects = [
     './lib/spritesheet/init.*',
     './lib/rendering/renderers/shared/texture/utils/textureFrom.*',
     './lib/gif/init.*',
-    './lib/gl2d/init.*',
 ];
 
 for (const [name, path] of subImports)
