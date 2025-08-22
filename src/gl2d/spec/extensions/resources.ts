@@ -6,7 +6,7 @@ import {
     type GL2DVideoSource,
 } from '../resources';
 
-import type { ALPHA_MODES, COMPARE_FUNCTION, TEXTURE_DIMENSIONS } from '../../rendering/renderers/shared/texture/const';
+import type { ALPHA_MODES, COMPARE_FUNCTION, TEXTURE_DIMENSIONS } from '../../../rendering/renderers/shared/texture/const';
 
 /**
  * Represents a PixiJS textureResource node within a GL2D file through an extension.

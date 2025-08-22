@@ -1,5 +1,5 @@
-import { type PointerEvents } from '../../accessibility/accessibilityTarget';
-import { type EventMode } from '../../events/FederatedEventTarget';
+import { type PointerEvents } from '../../../accessibility/accessibilityTarget';
+import { type EventMode } from '../../../events/FederatedEventTarget';
 import { type GL2DNode, type GL2DSprite } from '../node';
 
 /**

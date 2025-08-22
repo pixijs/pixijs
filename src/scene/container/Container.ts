@@ -2,8 +2,6 @@ import EventEmitter from 'eventemitter3';
 import { Color, type ColorSource } from '../../color/Color';
 import { cullingMixin } from '../../culling/cullingMixin';
 import { extensions } from '../../extensions/Extensions';
-import { type PixiGL2DContainer } from '../../gl2d/extensions/nodes';
-import { type ToGL2DOptions } from '../../gl2d/GL2D';
 import { Matrix } from '../../maths/matrix/Matrix';
 import { DEG_TO_RAD, RAD_TO_DEG } from '../../maths/misc/const';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
@@ -2108,91 +2106,6 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         this.renderGroup?.destroy();
         this.renderGroup = null;
-    }
-
-    /**
-     * Serializes the container and its children into a gl2D-compatible format.
-     * @param gl2DOptions - The gl2D serialization context and options.
-     * @returns The updated gl2D serialization context.
-     */
-    public async serialize(gl2DOptions: ToGL2DOptions): Promise<ToGL2DOptions>
-    {
-        const node: PixiGL2DContainer = {
-            name: this.label ?? undefined,
-            type: 'container',
-            uid: `${this.uid}`,
-            children: [],
-            alpha: this.alpha,
-            visible: this.visible,
-            tint: this.tint,
-            blendMode: this.blendMode,
-            matrix: [
-                this.localTransform.a,
-                this.localTransform.b,
-                this.localTransform.c,
-                this.localTransform.d,
-                this.localTransform.tx,
-                this.localTransform.ty
-            ],
-            extensions: {
-                pixi_container_node: {
-                    skew: this._skew !== defaultSkew ? [this.skew.x, this.skew.y] : undefined,
-                    pivot: this._pivot !== defaultPivot ? [this.pivot.x, this.pivot.y] : undefined,
-                    origin: this._origin !== defaultOrigin ? [this.origin.x, this.origin.y] : undefined,
-                    boundsArea: this.boundsArea
-                        ? [this.boundsArea.x, this.boundsArea.y, this.boundsArea.width, this.boundsArea.height]
-                        : undefined,
-                    isRenderGroup: this.isRenderGroup,
-                    zIndex: this.zIndex,
-                    sortableChildren: this.sortableChildren,
-                    renderable: this.renderable,
-                    tabIndex: this.tabIndex,
-                    interactiveChildren: this.interactiveChildren,
-                    interactive: this.interactive,
-                    eventMode: this.eventMode,
-                    cursor: this.cursor,
-                    cullArea: this.cullArea
-                        ? [this.cullArea.x, this.cullArea.y, this.cullArea.width, this.cullArea.height]
-                        : undefined,
-                    cullableChildren: this.cullableChildren,
-                    cullable: this.cullable,
-                    accessibleType: this.accessibleType,
-                    accessibleTitle: this.accessibleTitle,
-                    accessibleText: this.accessibleText,
-                    accessiblePointerEvents: this.accessiblePointerEvents,
-                    accessibleHint: this.accessibleHint,
-                    accessibleChildren: this.accessibleChildren,
-                    accessible: this.accessible,
-                }
-            }
-        };
-
-        const { gl2D } = gl2DOptions;
-
-        gl2D.nodes.push(node);
-        gl2D.extensionsRequired.push('pixi_container_node');
-        gl2D.extensionsUsed.push('pixi_container_node');
-
-        // loop through children and serialize them
-        for (const child of this.children)
-        {
-            // check if child already exists in gl2d
-            const existingChildIndex = gl2D.nodes.findIndex((node) => node.uid === `${child.uid}`);
-
-            if (existingChildIndex === -1)
-            {
-                await child.serialize(gl2DOptions);
-                const childIndex = gl2D.nodes.findIndex((node) => node.uid === `${child.uid}`);
-
-                node.children.push(childIndex);
-            }
-            else
-            {
-                node.children.push(existingChildIndex);
-            }
-        }
-
-        return gl2DOptions;
     }
 }
 

@@ -1,4 +1,4 @@
-import { type BLEND_MODES } from '../rendering/renderers/shared/state/const';
+import { type BLEND_MODES } from '../../rendering/renderers/shared/state/const';
 import { type GL2DExtension } from './file';
 
 /**

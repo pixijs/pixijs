@@ -1,7 +1,7 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Sprite, type SpriteOptions } from '../../../scene/sprite/Sprite';
-import { type PixiGL2DSprite } from '../../extensions/nodes';
-import { type GL2DNode } from '../../node';
+import { type PixiGL2DSprite } from '../../spec/extensions/nodes';
+import { type GL2DNode } from '../../spec/node';
 import { deepRemoveUndefinedOrNull } from '../../utils/deepRemoveUndefinedOrNull';
 import { type GL2DNodeParser } from '../parsers';
 import { toPointData } from '../utils/arrayTo';

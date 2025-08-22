@@ -1,8 +1,8 @@
 import { Container } from '../scene/container/Container';
 import { type GL2DNodeParser, type GL2DResourceParser } from './deserialize/parsers';
-import { type GL2DFile, type GL2DScene } from './file';
-import { type GL2DNode } from './node';
-import { type GL2DResource } from './resources';
+import { type GL2DFile, type GL2DScene } from './spec/file';
+import { type GL2DNode } from './spec/node';
+import { type GL2DResource } from './spec/resources';
 import { deepRemoveUndefinedOrNull } from './utils/deepRemoveUndefinedOrNull';
 
 import type { Renderer } from '../rendering/renderers/types';
@@ -61,7 +61,7 @@ export class GL2DClass
         await root.serialize({ gl2D, renderer });
         gl2D.scenes.push({
             name: gl2D.nodes[0].name,
-            nodes: gl2D.nodes[0].children
+            nodes: gl2D.nodes[0].children,
         });
 
         // Ensure no duplicates if serializers pushed extensions multiple times

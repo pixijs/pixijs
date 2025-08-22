@@ -1,17 +1,13 @@
 import { Assets } from '../../../assets/Assets';
 import { Cache } from '../../../assets/cache/Cache';
 import { ExtensionType } from '../../../extensions/Extensions';
-import {
-    type TextureSource
-} from '../../../rendering/renderers/shared/texture/sources/TextureSource';
+import { type TextureSource } from '../../../rendering/renderers/shared/texture/sources/TextureSource';
 import { type Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { type Spritesheet } from '../../../spritesheet/Spritesheet';
 import { type SpriteSheetParseOptions } from '../../../spritesheet/spritesheetAsset';
-import {
-    type PixiGL2DSpritesheetSource
-} from '../../extensions/resources';
 import { GL2D } from '../../GL2D';
-import { type GL2DResource } from '../../resources';
+import { type PixiGL2DSpritesheetSource } from '../../spec/extensions/resources';
+import { type GL2DResource } from '../../spec/resources';
 import { type GL2DResourceParser } from '../parsers';
 
 /**
@@ -52,6 +48,6 @@ export const gl2DSpritesheetParser: GL2DResourceParser<PixiGL2DSpritesheetSource
             cachePrefix: data.extensions?.pixi_spritesheet_resource?.cachePrefix,
         };
 
-        return (await Assets.load<Spritesheet>({ src: uri, data: formattedData }));
+        return await Assets.load<Spritesheet>({ src: uri, data: formattedData });
     },
 };

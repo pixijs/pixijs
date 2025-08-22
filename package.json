@@ -197,7 +197,6 @@
     "./lib/spritesheet/init.*",
     "./lib/rendering/renderers/shared/texture/utils/textureFrom.*",
     "./lib/gif/init.*",
-    "./lib/gl2d/init.*",
     "./lib/accessibility/init.*",
     "./lib/advanced-blend-modes/init.*",
     "./lib/app/init.*",
@@ -218,7 +217,10 @@
     "./lib/prepare/init.*",
     "./lib/unsafe-eval/init.*",
     "./lib/scene/sprite-nine-slice/init.*",
-    "./lib/scene/particle-container/init.*"
+    "./lib/scene/particle-container/init.*",
+    "./lib/gl2d/init.*",
+    "./lib/gl2d/serialize/init.*",
+    "./lib/gl2d/deserialize/init.*"
   ],
   "exports": {
     ".": {
@@ -255,16 +257,6 @@
       "require": {
         "types": "./lib/gif/init.d.ts",
         "default": "./lib/gif/init.js"
-      }
-    },
-    "./gl2d": {
-      "import": {
-        "types": "./lib/gl2d/init.d.ts",
-        "default": "./lib/gl2d/init.mjs"
-      },
-      "require": {
-        "types": "./lib/gl2d/init.d.ts",
-        "default": "./lib/gl2d/init.js"
       }
     },
     "./accessibility": {
@@ -433,6 +425,30 @@
       },
       "require": {
         "default": "./lib/scene/particle-container/init.js"
+      }
+    },
+    "./gl2d": {
+      "import": {
+        "default": "./lib/gl2d/init.mjs"
+      },
+      "require": {
+        "default": "./lib/gl2d/init.js"
+      }
+    },
+    "./gl2d/serialize": {
+      "import": {
+        "default": "./lib/gl2d/serialize/init.mjs"
+      },
+      "require": {
+        "default": "./lib/gl2d/serialize/init.js"
+      }
+    },
+    "./gl2d/deserialize": {
+      "import": {
+        "default": "./lib/gl2d/deserialize/init.mjs"
+      },
+      "require": {
+        "default": "./lib/gl2d/deserialize/init.js"
       }
     }
   }

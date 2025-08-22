@@ -1,6 +1,6 @@
 import { type ExtensionMetadata } from '../../extensions/Extensions';
-import { type GL2DNode } from '../node';
-import { type GL2DResource } from '../resources';
+import { type GL2DNode } from '../spec/node';
+import { type GL2DResource } from '../spec/resources';
 
 /**
  * Interface for parsing GL2D nodes.

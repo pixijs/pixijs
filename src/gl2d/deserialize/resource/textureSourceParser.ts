@@ -3,18 +3,16 @@ import { Cache } from '../../../assets/cache/Cache';
 import { ExtensionType } from '../../../extensions/Extensions';
 import {
     type TextureSource,
-    type TextureSourceOptions
+    type TextureSourceOptions,
 } from '../../../rendering/renderers/shared/texture/sources/TextureSource';
-import {
-    type VideoSourceOptions
-} from '../../../rendering/renderers/shared/texture/sources/VideoSource';
+import { type VideoSourceOptions } from '../../../rendering/renderers/shared/texture/sources/VideoSource';
 import { type Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import {
     type PixiGL2DImageSource,
     type PixiGL2DTextureSource,
     type PixiGL2DVideoSource,
-} from '../../extensions/resources';
-import { type GL2DResource } from '../../resources';
+} from '../../spec/extensions/resources';
+import { type GL2DResource } from '../../spec/resources';
 import { type GL2DResourceParser } from '../parsers';
 
 type TextureSourceType = PixiGL2DTextureSource<'texture_source'> | PixiGL2DImageSource | PixiGL2DVideoSource;

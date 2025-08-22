@@ -2,9 +2,9 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import { type Rectangle } from '../../../maths/shapes/Rectangle';
 import { Texture, type TextureOptions } from '../../../rendering/renderers/shared/texture/Texture';
 import { type Spritesheet } from '../../../spritesheet/Spritesheet';
-import { type PixiGL2DTexture } from '../../extensions/resources';
 import { GL2D } from '../../GL2D';
-import { type GL2DResource } from '../../resources';
+import { type PixiGL2DTexture } from '../../spec/extensions/resources';
+import { type GL2DResource } from '../../spec/resources';
 import { type GL2DResourceParser } from '../parsers';
 import { toPointData, toRectangle } from '../utils/arrayTo';
 
@@ -17,10 +17,10 @@ function frameEqual(frameA: Rectangle, frameB: Rectangle): boolean
 
     return (
         frameB
-            && frameA.x === frameB.x
-            && frameA.y === frameB.y
-            && frameA.width === frameB.width
-            && frameA.height === frameB.height
+        && frameA.x === frameB.x
+        && frameA.y === frameB.y
+        && frameA.width === frameB.width
+        && frameA.height === frameB.height
     );
 }
 

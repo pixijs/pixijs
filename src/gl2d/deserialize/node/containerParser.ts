@@ -1,8 +1,8 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { Container, type ContainerOptions } from '../../../scene/container/Container';
-import { type PixiGL2DContainer } from '../../extensions/nodes';
-import { type GL2DNode } from '../../node';
+import { type PixiGL2DContainer } from '../../spec/extensions/nodes';
+import { type GL2DNode } from '../../spec/node';
 import { deepRemoveUndefinedOrNull } from '../../utils/deepRemoveUndefinedOrNull';
 import { type GL2DNodeParser } from '../parsers';
 import { toPointData, toRectangle } from '../utils/arrayTo';
