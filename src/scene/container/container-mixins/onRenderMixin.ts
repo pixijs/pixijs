@@ -24,7 +24,7 @@ export interface OnRenderMixinConstructor
      * @param renderer - The renderer instance
      * @see {@link Renderer} For renderer capabilities
      */
-    onRender?: ((renderer: Renderer) => void | null);
+    onRender?: ((renderer: Renderer) => void) | null;
 }
 
 /**
