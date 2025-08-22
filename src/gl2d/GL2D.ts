@@ -1,3 +1,4 @@
+import { extensions, ExtensionType } from '../extensions/Extensions';
 import { Container } from '../scene/container/Container';
 import { type GL2DNodeParser, type GL2DResourceParser } from './deserialize/parsers';
 import { type GL2DFile, type GL2DScene } from './spec/file';
@@ -247,3 +248,6 @@ export class GL2DClass
  * @standard
  */
 export const GL2D = new GL2DClass();
+
+extensions.handleByList(ExtensionType.GL2DNodeParser, GL2D.nodeParsers);
+extensions.handleByList(ExtensionType.GL2DResourceParser, GL2D.resourceParsers);
