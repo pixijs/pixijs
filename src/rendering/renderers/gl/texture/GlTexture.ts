@@ -10,7 +10,7 @@ export class GlTexture
     public target: GL_TARGETS = GL_TARGETS.TEXTURE_2D;
 
     /** The WebGL texture. */
-    public texture: WebGLTexture;
+    public readonly texture: WebGLTexture;
 
     /** Width of texture that was used in texImage2D. */
     public width: number;
