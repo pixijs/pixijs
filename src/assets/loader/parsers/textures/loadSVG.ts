@@ -115,10 +115,9 @@ async function loadAsTexture(
     const height = asset.data?.height ?? image.height;
     const resolution = asset.data?.resolution || getResolutionOfUrl(url);
 
-    // Only apply ceiling and padding for decimal resolutions to avoid affecting integer resolutions
-    const hasDecimalResolution = resolution % 1 !== 0;
-    const canvasWidth = hasDecimalResolution ? Math.ceil(width * resolution) : width * resolution;
-    const canvasHeight = hasDecimalResolution ? Math.ceil(height * resolution) : height * resolution;
+    // Ensure canvas dimensions are integers to prevent edge trimming
+    const canvasWidth = Math.ceil(width * resolution);
+    const canvasHeight = Math.ceil(height * resolution);
 
     const canvas = DOMAdapter.get().createCanvas(canvasWidth, canvasHeight);
     const context = canvas.getContext('2d');
