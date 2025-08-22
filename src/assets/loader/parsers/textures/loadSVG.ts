@@ -114,9 +114,20 @@ async function loadAsTexture(
     const width = asset.data?.width ?? image.width;
     const height = asset.data?.height ?? image.height;
     const resolution = asset.data?.resolution || getResolutionOfUrl(url);
-    const canvas = DOMAdapter.get().createCanvas(width * resolution, height * resolution);
+
+    // Only apply ceiling and padding for decimal resolutions to avoid affecting integer resolutions
+    const hasDecimalResolution = resolution % 1 !== 0;
+    const canvasWidth = hasDecimalResolution ? Math.ceil(width * resolution) : width * resolution;
+    const canvasHeight = hasDecimalResolution ? Math.ceil(height * resolution) : height * resolution;
+
+    const canvas = DOMAdapter.get().createCanvas(canvasWidth, canvasHeight);
     const context = canvas.getContext('2d');
 
+    // Improve rendering quality for decimal resolutions
+    context.imageSmoothingEnabled = true;
+    context.imageSmoothingQuality = 'high';
+
+    // Draw image with exact scaled dimensions to prevent trimming
     context.drawImage(image as CanvasImageSource, 0, 0, width * resolution, height * resolution);
 
     const { parseAsGraphicsContext: _p, ...rest } = asset.data ?? {};
