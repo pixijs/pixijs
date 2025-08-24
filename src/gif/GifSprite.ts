@@ -19,20 +19,19 @@ import type { SCALE_MODE } from '../rendering/renderers/shared/texture/const';
  * const source = await Assets.load({
  *   src: 'animation.gif',
  *   data: {
- *     scaleMode: 'nearest'      // Pixelated scaling
+ *     scaleMode: 'nearest'  // Pixelated scaling
  *   }
  * });
- * const options: GifSpriteOptions = {
- *     source,                   // GIF data source
- *     animationSpeed: 1.5,      // 50% faster than normal
- *     loop: true,               // Loop the animation
- *     autoPlay: true,           // Start playing immediately
- *     onComplete: () => {       // Called when non-looping animation ends
- *         console.log('Animation complete!');
- *     }
- * };
  *
- * const animation = new GifSprite(options);
+ * const animation = new GifSprite({
+ *   source,                 // GIF data source
+ *   animationSpeed: 1.5,    // 50% faster than normal
+ *   loop: true,             // Loop the animation
+ *   autoPlay: true,         // Start playing immediately
+ *   onComplete() {          // Called when non-looping animation ends
+ *     console.log('Animation complete!');
+ *   }
+ * });
  * ```
  * @category gif
  * @standard
