@@ -11,11 +11,21 @@ import type { SCALE_MODE } from '../rendering/renderers/shared/texture/const';
  *
  * These options control both the visual appearance and playback behavior
  * of animated GIFs.
- * @example
+ * @example Minimal Usage
  * ```ts
- * import { GifSprite, Assets } from 'pixi.js';
+ * import { Assets } from 'pixi.js';
+ * import { GifSprite } from 'pixi.js/gif';
  *
- * // Create with options
+ * // Simple usage, minimal options
+ * const source = await Assets.load('animation.gif');
+ * const animation = new GifSprite(source);
+ * ```
+ * @example Advanced Options
+ * ```ts
+ * import { Assets } from 'pixi.js';
+ * import { GifSprite } from 'pixi.js/gif';
+ *
+ * // Advanced usage with options
  * const source = await Assets.load({
  *   src: 'animation.gif',
  *   data: {
