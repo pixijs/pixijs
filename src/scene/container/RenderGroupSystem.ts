@@ -55,11 +55,11 @@ export class RenderGroupSystem implements System
         const renderer = this._renderer;
 
         // collect all the renderGroups in the scene and then render them one by one..
-        let originalLocalTransform: Matrix = tempMatrix;
+        const originalLocalTransform: Matrix = tempMatrix;
 
         if (transform)
         {
-            originalLocalTransform = originalLocalTransform.copyFrom(container.renderGroup.localTransform);
+            originalLocalTransform.copyFrom(container.renderGroup.localTransform);
             container.renderGroup.localTransform.copyFrom(transform);
         }
 
@@ -100,17 +100,17 @@ export class RenderGroupSystem implements System
 
     private _updateCachedRenderGroups(renderGroup: RenderGroup, closestCacheAsTexture: RenderGroup | null): void
     {
+        renderGroup._parentCacheAsTextureRenderGroup = closestCacheAsTexture;
+
         if (renderGroup.isCachedAsTexture)
         {
-            // early out as nothing further needs to be updated!
-            if (!renderGroup.updateCacheTexture) return;
+            // Early out as nothing further needs to be updated!
+            if (!renderGroup.textureNeedsUpdate) return;
 
             closestCacheAsTexture = renderGroup;
         }
 
-        renderGroup._parentCacheAsTextureRenderGroup = closestCacheAsTexture;
-
-        // now check the cacheAsTexture stuff...
+        // Update the closest cache reference for children if this render group is cached as texture
         for (let i = renderGroup.renderGroupChildren.length - 1; i >= 0; i--)
         {
             this._updateCachedRenderGroups(renderGroup.renderGroupChildren[i], closestCacheAsTexture);
