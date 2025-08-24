@@ -92,11 +92,13 @@ function _getGlobalBounds(
     }
     else
     {
-        if ((target as Renderable).bounds)
+        const renderableBounds = (target as Renderable).bounds;
+
+        if (renderableBounds && !renderableBounds.isEmpty())
         {
             // save a copy
             bounds.matrix = worldTransform;
-            bounds.addBounds((target as Renderable).bounds);
+            bounds.addBounds(renderableBounds);
         }
 
         for (let i = 0; i < target.children.length; i++)
