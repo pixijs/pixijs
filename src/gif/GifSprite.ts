@@ -16,9 +16,14 @@ import type { SCALE_MODE } from '../rendering/renderers/shared/texture/const';
  * import { GifSprite, Assets } from 'pixi.js';
  *
  * // Create with options
- * const source = await Assets.load('animation.gif');
+ * const source = await Assets.load({
+ *   src: 'animation.gif',
+ *   data: {
+ *     scaleMode: 'nearest'      // Pixelated scaling
+ *   }
+ * });
  * const options: GifSpriteOptions = {
- *     source,                    // GIF data source
+ *     source,                   // GIF data source
  *     animationSpeed: 1.5,      // 50% faster than normal
  *     loop: true,               // Loop the animation
  *     autoPlay: true,           // Start playing immediately
