@@ -1,23 +1,10 @@
 import { buildSimpleUvs, buildUvs } from '../../../../rendering/renderers/shared/geometry/utils/buildUvs';
 import { transformVertices } from '../../../../rendering/renderers/shared/geometry/utils/transformVertices';
 import { MeshGeometry } from '../../../mesh/shared/MeshGeometry';
-import { buildCircle } from '../buildCommands/buildCircle';
-import { buildPolygon } from '../buildCommands/buildPolygon';
-import { buildRectangle } from '../buildCommands/buildRectangle';
-import { buildTriangle } from '../buildCommands/buildTriangle';
 import { GraphicsPath } from '../path/GraphicsPath';
+import { shapeBuilders } from './buildContextBatches';
 
 import type { Matrix } from '../../../../maths/matrix/Matrix';
-import type { ShapeBuildCommand } from '../buildCommands/ShapeBuildCommand';
-
-const buildMap: Record<string, ShapeBuildCommand> = {
-    rectangle: buildRectangle,
-    polygon: buildPolygon,
-    triangle: buildTriangle,
-    circle: buildCircle,
-    ellipse: buildCircle,
-    roundedRectangle: buildCircle,
-};
 
 /**
  * Options for building geometry from a graphics path.
@@ -96,7 +83,7 @@ export function buildGeometryFromPath(options: GraphicsPath | GeometryPathOption
 
         const points: number[] = [];
 
-        const build = buildMap[shape.type];
+        const build = shapeBuilders[shape.type];
 
         build.build(shape, points);
 
