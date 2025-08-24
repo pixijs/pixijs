@@ -4,8 +4,6 @@ import { UPDATE_PRIORITY } from '../ticker/const';
 import { Ticker } from '../ticker/Ticker';
 import { GifSource } from './GifSource';
 
-import type { SCALE_MODE } from '../rendering/renderers/shared/texture/const';
-
 /**
  * Configuration options for creating a GifSprite instance.
  *
@@ -22,7 +20,6 @@ import type { SCALE_MODE } from '../rendering/renderers/shared/texture/const';
  *     animationSpeed: 1.5,      // 50% faster than normal
  *     loop: true,               // Loop the animation
  *     autoPlay: true,           // Start playing immediately
- *     scaleMode: 'nearest',     // Pixel art style scaling
  *     onComplete: () => {       // Called when non-looping animation ends
  *         console.log('Animation complete!');
  *     }
@@ -56,17 +53,6 @@ interface GifSpriteOptions extends Omit<SpriteOptions, 'texture'>
      * @see {@link GifSprite.play}
      */
     autoPlay?: boolean;
-    /**
-     * Scale Mode to use for the texture
-     * @type {SCALE_MODE}
-     * @default 'linear'
-     * @example
-     * ```ts
-     * const animation = new GifSprite({ source, scaleMode: 'nearest' });
-     * ```
-     * @see {@link SCALE_MODE}
-     */
-    scaleMode?: SCALE_MODE;
     /**
      * Whether to loop the animation.
      * If `false`, the animation will stop after the last frame.
@@ -226,7 +212,6 @@ class GifSprite extends Sprite
      * ```
      */
     public static defaultOptions: Omit<GifSpriteOptions, 'source'> = {
-        scaleMode: 'linear',
         fps: 30,
         loop: true,
         animationSpeed: 1,
@@ -392,7 +377,6 @@ class GifSprite extends Sprite
 
         // Get the options, apply defaults
         const {
-            scaleMode,
             source,
             fps,
             loop,
@@ -876,7 +860,6 @@ class GifSprite extends Sprite
             autoUpdate: this._autoUpdate,
             loop: this.loop,
             autoPlay: this.autoPlay,
-            scaleMode: this.texture.source.scaleMode,
             animationSpeed: this.animationSpeed,
             onComplete: this.onComplete,
             onFrameChange: this.onFrameChange,
