@@ -1,8 +1,6 @@
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { ViewContainer, type ViewContainerOptions } from '../view/ViewContainer';
-import { CanvasTextMetrics } from './canvas/CanvasTextMetrics';
-import { fontStringFromTextStyle } from './canvas/utils/fontStringFromTextStyle';
 
 import type { Size } from '../../maths/misc/Size';
 import type { PointData } from '../../maths/point/PointData';
@@ -657,7 +655,6 @@ export abstract class AbstractText<
 
         if (typeof options === 'boolean' ? options : options?.style)
         {
-            CanvasTextMetrics.clearMetrics(fontStringFromTextStyle(this._style));
             this._style.destroy(options);
         }
 
