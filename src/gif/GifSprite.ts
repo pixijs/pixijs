@@ -4,6 +4,8 @@ import { UPDATE_PRIORITY } from '../ticker/const';
 import { Ticker } from '../ticker/Ticker';
 import { GifSource } from './GifSource';
 
+import type { SCALE_MODE } from '../rendering/renderers/shared/texture/const';
+
 /**
  * Configuration options for creating a GifSprite instance.
  *
@@ -53,6 +55,14 @@ interface GifSpriteOptions extends Omit<SpriteOptions, 'texture'>
      * @see {@link GifSprite.play}
      */
     autoPlay?: boolean;
+    /**
+     * This is not implemented and you should, instead, use `scaleMode`
+     * when loading the Asset as an option for the UnresolvedAsset's `data`.
+     * @type {SCALE_MODE}
+     * @default 'linear'
+     * @deprecated since 8.13.0
+     */
+    scaleMode?: SCALE_MODE;
     /**
      * Whether to loop the animation.
      * If `false`, the animation will stop after the last frame.
