@@ -449,7 +449,7 @@ export class GlGeometrySystem implements System
             const byteSize = geometry.indexBuffer.data.BYTES_PER_ELEMENT;
             const glType = byteSize === 2 ? gl.UNSIGNED_SHORT : gl.UNSIGNED_INT;
 
-            if (instanceCount > 1)
+            if (instanceCount !== 1)
             {
                 /* eslint-disable max-len */
                 gl.drawElementsInstanced(glTopology, size || geometry.indexBuffer.data.length, glType, (start || 0) * byteSize, instanceCount);
@@ -460,7 +460,7 @@ export class GlGeometrySystem implements System
                 gl.drawElements(glTopology, size || geometry.indexBuffer.data.length, glType, (start || 0) * byteSize);
             }
         }
-        else if (instanceCount > 1)
+        else if (instanceCount !== 1)
         {
             // TODO need a better way to calculate size..
             gl.drawArraysInstanced(glTopology, start || 0, size || geometry.getSize(), instanceCount);
