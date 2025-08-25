@@ -355,6 +355,53 @@ describe('GenerateTexture', () =>
         sprite.destroy();
     });
 
+    it('should properly resize render texture and extract correct dimensions', async () =>
+    {
+        const renderer = (await getWebGLRenderer()) as WebGLRenderer;
+        const renderTexture = RenderTexture.create({ width: 50, height: 50 });
+
+        // Render red graphics to initial texture
+        const redGraphics = new Graphics();
+
+        redGraphics.rect(0, 0, 50, 50).fill(0xFF0000);
+        renderer.render({ container: redGraphics, target: renderTexture, clear: true });
+
+        // Extract initial pixels
+        const initialPixels = renderer.extract.pixels(renderTexture);
+
+        expect(initialPixels.width).toBe(50);
+        expect(initialPixels.height).toBe(50);
+        expect(initialPixels.pixels.length).toBe(50 * 50 * 4);
+
+        // Resize texture to larger dimensions
+        renderTexture.resize(100, 100);
+
+        // Render blue graphics to resized texture
+        const blueGraphics = new Graphics();
+
+        blueGraphics.rect(0, 0, 100, 100).fill(0x0000FF);
+        renderer.render({ container: blueGraphics, target: renderTexture, clear: true });
+
+        // Extract resized pixels
+        const resizedPixels = renderer.extract.pixels(renderTexture);
+
+        expect(resizedPixels.width).toBe(100);
+        expect(resizedPixels.height).toBe(100);
+        expect(resizedPixels.pixels.length).toBe(100 * 100 * 4);
+
+        // Verify the texture actually contains the expected pixel data
+        const hasBluePixels = resizedPixels.pixels.some((value, index) =>
+            index % 4 === 2 && value > 200 // Check blue channel
+        );
+
+        expect(hasBluePixels).toBe(true);
+
+        renderer.destroy();
+        renderTexture.destroy();
+        redGraphics.destroy();
+        blueGraphics.destroy();
+    });
+
     it('should extract with multisample', async () =>
     {
         const renderer = (await getWebGLRenderer({ antialias: true })) as WebGLRenderer;
