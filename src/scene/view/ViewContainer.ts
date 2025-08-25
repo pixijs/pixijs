@@ -183,8 +183,7 @@ export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Cont
     {
         const { renderPipes } = renderer;
 
-        // TODO add blends in
-        renderPipes.blendMode.setBlendMode(this, this.groupBlendMode, instructionSet);
+        renderPipes.blendMode.pushBlendMode(this, this.groupBlendMode, instructionSet);
 
         const rp = renderPipes as unknown as Record<string, RenderPipe>;
 
@@ -199,5 +198,6 @@ export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Cont
         {
             children[i].collectRenderables(instructionSet, renderer, currentLayer);
         }
+        renderPipes.blendMode.popBlendMode(instructionSet);
     }
 }
