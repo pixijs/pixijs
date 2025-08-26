@@ -1,5 +1,6 @@
 import { Matrix } from '../../maths/matrix/Matrix';
 import { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
+import { type SCALE_MODE } from '../../rendering/renderers/shared/texture/const';
 import { TexturePool } from '../../rendering/renderers/shared/texture/TexturePool';
 import { type Renderer } from '../../rendering/renderers/types';
 
@@ -27,6 +28,18 @@ export interface CacheAsTextureOptions
      * By default the resolution is 1 which is the same as the rendererers resolution.
      */
     resolution?: number;
+    /**
+     * Scale Mode to use for the cached texture
+     * @type {SCALE_MODE}
+     * @default 'linear'
+     * @example
+     * ```ts
+     * const container = new Container();
+     * container.cacheAsTexture({ scaleMode: 'nearest' });
+     * ```
+     * @see {@link SCALE_MODE}
+     */
+    scaleMode?: SCALE_MODE;
 }
 
 /**
@@ -151,7 +164,7 @@ export class RenderGroup implements Instruction
         this.isCachedAsTexture = false;
         if (this.texture)
         {
-            TexturePool.returnTexture(this.texture);
+            TexturePool.returnTexture(this.texture, true);
             this.texture = null;
         }
     }
@@ -159,6 +172,15 @@ export class RenderGroup implements Instruction
     public updateCacheTexture(): void
     {
         this.textureNeedsUpdate = true;
+
+        const cachedParent = this._parentCacheAsTextureRenderGroup;
+
+        // It's worth going bottom-up and notify all parents cached as texture
+        // that cached child was updated.
+        if (cachedParent && !cachedParent.textureNeedsUpdate)
+        {
+            cachedParent.updateCacheTexture();
+        }
     }
 
     public reset()
@@ -472,6 +494,11 @@ export class RenderGroup implements Instruction
      */
     public get cacheToLocalTransform()
     {
+        if (this.isCachedAsTexture)
+        {
+            return this.textureOffsetInverseTransform;
+        }
+
         if (!this._parentCacheAsTextureRenderGroup) return null;
 
         return this._parentCacheAsTextureRenderGroup.textureOffsetInverseTransform;

@@ -386,7 +386,6 @@ class GifSprite extends Sprite
      */
     constructor(options: GifSpriteOptions);
 
-    /** @ignore */
     constructor(...args: [GifSource] | [GifSpriteOptions])
     {
         const options = args[0] instanceof GifSource ? { source: args[0] } : args[0];
@@ -527,7 +526,7 @@ class GifSprite extends Sprite
             this._isConnectedToTicker = true;
         }
 
-        // If were on the last frame and stopped, play should resume from beginning
+        // If we're on the last frame and stopped, play should resume from beginning
         if (!this.loop && this.currentFrame === this._source.frames.length - 1)
         {
             this._currentTime = 0;

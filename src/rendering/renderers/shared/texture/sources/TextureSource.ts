@@ -285,7 +285,18 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this._onStyleChange();
     }
 
-    /** setting this will set wrapModeU,wrapModeV and wrapModeW all at once! */
+    /** Specifies the maximum anisotropy value clamp used by the sampler. */
+    set maxAnisotropy(value: number)
+    {
+        this._style.maxAnisotropy = value;
+    }
+
+    get maxAnisotropy(): number
+    {
+        return this._style.maxAnisotropy;
+    }
+
+    /** setting this will set wrapModeU, wrapModeV and wrapModeW all at once! */
     get addressMode(): WRAP_MODE
     {
         return this._style.addressMode;
@@ -296,7 +307,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this._style.addressMode = value;
     }
 
-    /** setting this will set wrapModeU,wrapModeV and wrapModeW all at once! */
+    /** setting this will set wrapModeU, wrapModeV and wrapModeW all at once! */
     get repeatMode(): WRAP_MODE
     {
         return this._style.addressMode;

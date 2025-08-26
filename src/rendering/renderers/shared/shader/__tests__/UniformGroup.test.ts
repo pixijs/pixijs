@@ -31,4 +31,47 @@ describe('UniformGroup', () =>
             0, 0, 1]
         ));
     });
+
+    it('should provide helpful error message for array syntax', () =>
+    {
+        expect(() =>
+        {
+            const uniformGroup = new UniformGroup({
+                uActions: {
+                    value: [1, 2, 3],
+                    type: 'array<i32, 3>'
+                }
+            });
+
+            return uniformGroup;
+        }).toThrow(/Use type: 'i32', size: 3 instead/);
+    });
+
+    it('should provide helpful error message for array syntax with f32', () =>
+    {
+        expect(() =>
+        {
+            const uniformGroup = new UniformGroup({
+                uFloats: {
+                    value: [1.0, 2.0, 3.0, 4.0],
+                    type: 'array<f32, 4>'
+                }
+            });
+
+            return uniformGroup;
+        }).toThrow(/Use type: 'f32', size: 4 instead/);
+    });
+
+    it('should work with correct array syntax using size property', () =>
+    {
+        const uniformGroup = new UniformGroup({
+            uActions: {
+                value: [1, 2, 3],
+                type: 'i32',
+                size: 3
+            }
+        });
+
+        expect(uniformGroup.uniforms.uActions).toEqual([1, 2, 3]);
+    });
 });

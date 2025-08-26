@@ -22,6 +22,10 @@ interface IIntl
 {
     Segmenter?: {
         prototype: ISegmenter;
+        /**
+         * Creates a new Intl.Segmenter object.
+         * @returns A new Intl.Segmenter object.
+         */
         new(): ISegmenter;
     };
 }

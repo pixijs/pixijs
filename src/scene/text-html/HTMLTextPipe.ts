@@ -70,17 +70,27 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
 
         if (batchableHTMLText.generatingTexture) return;
 
-        if (batchableHTMLText.texturePromise)
-        {
-            this._renderer.htmlText.returnTexturePromise(batchableHTMLText.texturePromise);
-            batchableHTMLText.texturePromise = null;
-        }
+        // We need to preserve the current texture and don't release it until the new texture is generated.
+        // It's necessary to ensure that the texture won't be captured by another field and overwritten with their
+        // content, while our texture is still in progress.
+        const oldTexturePromise = batchableHTMLText.texturePromise;
+
+        batchableHTMLText.texturePromise = null;
 
         batchableHTMLText.generatingTexture = true;
 
         htmlText._resolution = htmlText._autoResolution ? this._renderer.resolution : htmlText.resolution;
 
-        const texturePromise = this._renderer.htmlText.getTexturePromise(htmlText);
+        let texturePromise = this._renderer.htmlText.getTexturePromise(htmlText);
+
+        if (oldTexturePromise)
+        {
+            // Release old texture after new one is generated.
+            texturePromise = texturePromise.finally(() =>
+            {
+                this._renderer.htmlText.returnTexturePromise(oldTexturePromise);
+            });
+        }
 
         batchableHTMLText.texturePromise = texturePromise;
 

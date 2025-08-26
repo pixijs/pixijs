@@ -8,6 +8,8 @@ concurrency:
 
 jobs:
   build:
+    if: github.repository == 'pixijs/pixijs'
+
     runs-on: ubuntu-latest
 
     steps:

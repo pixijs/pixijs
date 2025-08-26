@@ -1406,6 +1406,7 @@ export class EventBoundary
      * This allocation is constructor-agnostic, as long as it only takes one argument - this event
      * boundary.
      * @param constructor - The event's constructor.
+     * @returns An event of the given type.
      */
     protected allocateEvent<T extends FederatedEvent>(
         constructor: { new(boundary: EventBoundary): T }

@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import { DOMAdapter } from '../../environment/adapter';
 
 import type { ALPHA_MODES } from '../../rendering/renderers/shared/texture/const';
