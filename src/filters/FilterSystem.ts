@@ -1,6 +1,5 @@
 import { ExtensionType } from '../extensions/Extensions';
 import { Matrix } from '../maths/matrix/Matrix';
-import { isPow2 } from '../maths/misc/pow2';
 import { type Rectangle } from '../maths/shapes/Rectangle';
 import { BindGroup } from '../rendering/renderers/gpu/shader/BindGroup';
 import { Geometry } from '../rendering/renderers/shared/geometry/Geometry';
@@ -591,8 +590,6 @@ export class FilterSystem implements System
         // set all the filter data
         filterData.backTexture = Texture.EMPTY;
 
-        let filterResolution = filterData.resolution;
-
         if (filterData.blendRequired)
         {
             renderer.renderTarget.finishRenderPass();
@@ -601,19 +598,6 @@ export class FilterSystem implements System
             const renderTarget = renderer.renderTarget.getRenderTarget(filterData.outputRenderSurface);
 
             filterData.backTexture = this.getBackTexture(renderTarget, bounds, previousFilterData?.bounds);
-
-            const textureResolution = filterData.backTexture.source.resolution;
-
-            // if the back texture resolution is not a power of two
-            // divide the resolution by 2 or 4 (which are powers of two) so it don't exceed 1 as the filter resolution value.
-            // this ensures correct pixel alignment between the filter and back texture.
-            // otherwise, we can use the default filter resolution (default: 1)
-            if (!Number.isInteger(textureResolution) || !isPow2(textureResolution))
-            {
-                const divideBy = textureResolution > 2 ? 4 : 2; // this need to be a power of two
-
-                filterResolution = textureResolution / divideBy;
-            }
         }
 
         /// ///
@@ -622,7 +606,7 @@ export class FilterSystem implements System
         filterData.inputTexture = TexturePool.getOptimalTexture(
             bounds.width,
             bounds.height,
-            filterResolution,
+            filterData.resolution,
             filterData.antialias,
         );
 

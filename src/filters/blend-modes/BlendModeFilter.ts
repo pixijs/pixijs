@@ -61,7 +61,6 @@ export class BlendModeFilter extends Filter
             gpuProgram,
             glProgram,
             blendRequired: true,
-            // resolution: 'inherit',
             resources: {
                 blendUniforms: uniformGroup,
                 uBackTexture: Texture.EMPTY
