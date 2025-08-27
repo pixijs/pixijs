@@ -1,6 +1,6 @@
 import { type PointerEvents } from '../../../accessibility/accessibilityTarget';
 import { type EventMode } from '../../../events/FederatedEventTarget';
-import { type GL2DNode, type GL2DSprite } from '../node';
+import { type GL2DNineSliceSprite, type GL2DNode, type GL2DSprite, type GL2DTilingSprite } from '../node';
 
 /**
  * Represents a PixiJS container node within a GL2D file through an extension.
@@ -106,3 +106,83 @@ export interface PixiGL2DSpriteExtension extends PixiGL2DContainerExtension
         roundPixels: boolean;
     };
 }
+
+/**
+ * Represents a PixiJS tiling sprite node within a GL2D file through an extension.
+ * @category gl2d
+ * @standard
+ */
+export type PixiGL2DTilingSprite = GL2DTilingSprite<PixiGL2DTilingSpriteExtension>;
+
+/**
+ * Extension properties for PixiJS tiling sprite nodes.
+ * @category gl2d
+ * @standard
+ */
+export interface PixiGL2DTilingSpriteExtension extends PixiGL2DContainerExtension
+{
+    pixi_tiling_sprite_node?: {
+        /** Whether to round pixel values for crisp rendering */
+        roundPixels: boolean;
+        /** Whether the tiling pattern should originate from the origin instead of the top-left corner in local space */
+        applyAnchorToTexture?: boolean;
+    };
+}
+
+/**
+ * Represents a PixiJS NineSlice sprite node within a GL2D file through an extension.
+ * @category gl2d
+ * @standard
+ */
+export type PixiGL2DNineSliceSprite = GL2DNineSliceSprite<PixiGL2DNineSliceSpriteExtension>;
+
+/**
+ * Extension properties for PixiJS NineSlice sprite nodes.
+ * @category gl2d
+ * @standard
+ */
+export interface PixiGL2DNineSliceSpriteExtension extends PixiGL2DContainerExtension
+{
+    pixi_nine_slice_sprite_node?: {
+        /** Whether to round pixel values for crisp rendering */
+        roundPixels: boolean;
+    };
+}
+
+/**
+ * Represents a PixiJS Animated sprite node within a GL2D file through an extension.
+ * @category gl2d
+ * @standard
+ */
+export type PixiGL2DAnimatedSprite = GL2DNode<
+    'pixi_animated_sprite',
+    PixiGL2DContainerExtension & PixiGL2DAnimatedSpriteExtension
+>;
+
+/**
+ * Extension properties for PixiJS Animated sprite nodes.
+ * @category gl2d
+ * @standard
+ */
+export interface PixiGL2DAnimatedSpriteExtension extends PixiGL2DContainerExtension
+{
+    pixi_animated_sprite_node?: {
+        /** Whether to round pixel values for crisp rendering */
+        roundPixels?: boolean;
+        /** The speed of the animation */
+        animationSpeed?: number;
+        /** Whether the animation should play automatically */
+        autoPlay?: boolean;
+        /** Whether the animation should update automatically */
+        autoUpdate?: boolean;
+        /** Whether the animation should loop */
+        loop?: boolean;
+        /** The textures used by the animation */
+        textures?: number[];
+        /** The frame durations used by the animation */
+        durations?: number[];
+        /** Whether to update the anchor point of the animation */
+        updateAnchor?: boolean;
+    };
+}
+

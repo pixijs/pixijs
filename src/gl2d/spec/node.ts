@@ -73,3 +73,44 @@ export interface GL2DSprite<K extends Record<string, any> = Record<string, any>>
     /** The index of the texture used by the sprite in the gl2D resource array */
     texture: number;
 }
+
+/**
+ * Represents a GL2D tiling sprite node within a GL2D file.
+ * @category gl2d
+ * @standard
+ */
+export interface GL2DTilingSprite<K extends Record<string, any> = Record<string, any>>
+    extends GL2DNode<'tiling_sprite', K>
+{
+    /** The index of the texture used by the sprite in the gl2D resource array */
+    texture: number;
+    /** The scale of the tiling texture */
+    tileScale?: [number, number];
+    /** The position of the tiling texture */
+    tilePosition?: [number, number];
+    /** The rotation of the tiling texture */
+    tileRotation?: number;
+}
+
+/**
+ * Represents a GL2D nine slice sprite node within a GL2D file.
+ * @category gl2d
+ * @standard
+ */
+export interface GL2DNineSliceSprite<K extends Record<string, any> = Record<string, any>>
+    extends GL2DNode<'nine_slice_sprite', K>
+{
+    /** The index of the texture used by the sprite in the gl2D resource array */
+    texture: number;
+    /** The 9-slice scaling values `[left, top, right, bottom]` */
+    slice9?: [number, number, number, number];
+    /** Width of the left vertical bar (A). Controls the size of the left edge that remains unscaled */
+    leftWidth?: number;
+    /** Height of the top horizontal bar (C). Controls the size of the top edge that remains unscaled */
+    topHeight?: number;
+    /** Width of the right vertical bar (B). Controls the size of the right edge that remains unscaled */
+    rightWidth?: number;
+    /** Height of the bottom horizontal bar (D). Controls the size of the bottom edge that remains unscaled */
+    bottomHeight?: number;
+}
+

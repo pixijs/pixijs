@@ -30,15 +30,14 @@ export const gl2DSpriteNodeParser: GL2DNodeParser<PixiGL2DSprite> = {
             throw new Error(`Texture at index ${data.texture} not found`);
         }
 
-        const properties: Required<Omit<SpriteOptions, keyof ContainerOptions>> = deepRemoveUndefinedOrNull(
-            {
-                ...createContainerOptionsFromGl2D(data),
+        const properties: Required<Omit<SpriteOptions, keyof ContainerOptions>> = {
+            ...createContainerOptionsFromGl2D(data),
+            ...deepRemoveUndefinedOrNull({
                 texture,
                 anchor: toPointData(data.extensions?.pixi_container_node?.anchor),
                 roundPixels: data.extensions?.pixi_sprite_node?.roundPixels,
-            },
-            1,
-        );
+            }, 1)
+        };
 
         const sprite = new Sprite(properties);
 

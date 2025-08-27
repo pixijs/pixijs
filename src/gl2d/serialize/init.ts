@@ -5,8 +5,12 @@ import { VideoSource } from '../../rendering/renderers/shared/texture/sources/Vi
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { Container } from '../../scene/container/Container';
 import { Sprite } from '../../scene/sprite/Sprite';
+import { NineSliceSprite } from '../../scene/sprite-nine-slice/NineSliceSprite';
+import { TilingSprite } from '../../scene/sprite-tiling/TilingSprite';
 import { serializeContainerMixin } from './nodes/serializeContainer';
+import { serializeNineSliceSpriteMixin } from './nodes/serializeNineSliceSprite';
 import { serializeSpriteMixin } from './nodes/serializeSprite';
+import { serializeTilingSpriteMixin } from './nodes/serializeTilingSprite';
 import { serializeImageSourceMixin } from './resources/serializeImageSource';
 import { serializeTextureMixin } from './resources/serializeTexture';
 import { serializeTextureSourceMixin } from './resources/serializeTextureSource';
@@ -14,6 +18,8 @@ import { serializeVideoSourceMixin } from './resources/serializeVideoSource';
 
 extensions.mixin(Container, serializeContainerMixin);
 extensions.mixin(Sprite, serializeSpriteMixin);
+extensions.mixin(TilingSprite, serializeTilingSpriteMixin);
+extensions.mixin(NineSliceSprite, serializeNineSliceSpriteMixin);
 extensions.mixin(Texture, serializeTextureMixin);
 extensions.mixin(TextureSource, serializeTextureSourceMixin);
 extensions.mixin(ImageSource, serializeImageSourceMixin);

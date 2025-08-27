@@ -184,6 +184,102 @@ Represents a texture based drawable element.
 
 ---
 
+### 5.3 Tiling Sprite Node
+
+A **tiling sprite** is a special type of sprite that repeats (tiles) its texture to fill the node’s width and height.
+This is useful for backgrounds, patterns, and infinite scrolling textures.
+
+```json
+{
+    "type": "tiling_sprite",
+    "texture": 0,
+    "tileScale": [1, 1],
+    "tilePosition": [0, 0],
+    "tileRotation": 0
+}
+```
+
+| Name         | Type             | Description                                               | Required |
+| ------------ | ---------------- | --------------------------------------------------------- | -------- |
+| type         | "tiling_sprite"  | Node type "tiling_sprite"                                 | ✅ Yes   |
+| texture      | number           | Indices of the texture resource in the resources array    | ✅ Yes   |
+| width        | number           | Width of the tiling sprite (area to be filled by tiling)  | No       |
+| height       | number           | Height of the tiling sprite (area to be filled by tiling) | No       |
+| tileScale    | [number, number] | Scale of the tiles `[x, y]`                               | No       |
+| tilePosition | [number, number] | Position of the tiles `[x, y]`                            | No       |
+| tileRotation | number           | Rotation of the tiles in radians                          | No       |
+
+#### PixiJS Tiling Sprite Extension
+
+```json
+{
+    "extensions": {
+        "pixi_tiling_sprite_node": {
+            "roundPixels": true,
+            "applyAnchorToTexture": true
+        }
+    }
+}
+```
+
+| Name                 | Type    | Description                                      | Required |
+| -------------------- | ------- | ------------------------------------------------ | -------- |
+| roundPixels          | boolean | Whether to round pixel values for rendering      | No       |
+| applyAnchorToTexture | boolean | Whether to apply the anchor point to the texture | No       |
+
+---
+
+### 5.4 Nine Slice Sprite Node
+
+A **nine slice sprite** is a special type of sprite that allows for scaling of the sprite's texture while preserving the corners and edges.
+
+```json
+{
+    "type": "nine_slice_sprite",
+    "texture": 0,
+    "slice9": [10, 10, 10, 10]
+},
+{
+    "type": "nine_slice_sprite",
+    "texture": 0,
+    "leftWidth": 10,
+    "topHeight": 10,
+    "rightWidth": 10,
+    "bottomHeight": 10
+}
+```
+
+| Name         | Type                             | Description                                             | Required |
+| ------------ | -------------------------------- | ------------------------------------------------------- | -------- |
+| type         | "nine_slice_sprite"              | Node type "nine_slice_sprite"                           | ✅ Yes   |
+| texture      | number                           | Indices of the texture resource in the resources array  | ✅ Yes   |
+| width        | number                           | Width of the nine-slice sprite                          | No       |
+| height       | number                           | Height of the nine-slice sprite                         | No       |
+| slice9       | [number, number, number, number] | The 9-slice scaling values `[left, top, right, bottom]` | No       |
+| leftWidth    | number                           | Width of the left vertical bar                          | No       |
+| topHeight    | number                           | Height of the top horizontal bar                        | No       |
+| rightWidth   | number                           | Width of the right vertical bar                         | No       |
+| bottomHeight | number                           | Height of the bottom horizontal bar                     | No       |
+
+#### PixiJS Nine Slice Sprite Extension
+
+```json
+{
+    "extensions": {
+        "pixi_nine_slice_sprite_node": {
+            "roundPixels": true,
+            "applyAnchorToTexture": true
+        }
+    }
+}
+```
+
+| Name                 | Type    | Description                                      | Required |
+| -------------------- | ------- | ------------------------------------------------ | -------- |
+| roundPixels          | boolean | Whether to round pixel values for rendering      | No       |
+
+---
+
 ## 6. Resources
 
 Resources define **textures, images, videos, and other assets**.
