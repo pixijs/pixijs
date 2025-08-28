@@ -783,7 +783,7 @@ export class TextStyle extends EventEmitter<{
     private _whiteSpace: TextStyleWhiteSpace;
     private _wordWrap: boolean;
     private _wordWrapWidth: number;
-    private _filters: Filter[];
+    private _filters: readonly Filter[];
 
     private _padding: number;
 
@@ -894,8 +894,8 @@ export class TextStyle extends EventEmitter<{
      * compared to applying the filter directly to the text object (which would be applied at run time).
      * @default null
      */
-    get filters(): Filter[] { return this._filters; }
-    set filters(value: Filter[]) { this._filters = value; this.update(); }
+    get filters(): readonly Filter[] { return this._filters; }
+    set filters(value: Filter[]) { this._filters = Object.freeze(value); this.update(); }
 
     /**
      * Trim transparent borders from the text texture.
