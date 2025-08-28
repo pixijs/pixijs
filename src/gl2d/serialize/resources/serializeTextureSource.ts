@@ -3,7 +3,7 @@ import { Rectangle } from '../../../maths/shapes/Rectangle';
 import { type TextureSource } from '../../../rendering/renderers/shared/texture/sources/TextureSource';
 import { type Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { type ToGL2DOptions } from '../../GL2D';
-import { type PixiGL2DSpritesheetSource, type PixiGL2DTextureSource } from '../../spec/extensions/resources';
+import { type PixiGL2DSpritesheet, type PixiGL2DTextureSource } from '../../spec/extensions/resources';
 import { isSpritesheetTexture } from '../../utils/isSpritesheetTexture';
 
 /**
@@ -69,7 +69,7 @@ export async function serializeTextureSource(instance: TextureSource, options: T
 
     if (spritesheetSource)
     {
-        const spritesheetResource: PixiGL2DSpritesheetSource = {
+        const spritesheetResource: PixiGL2DSpritesheet = {
             uid: `spritesheet_${spritesheetSource.uid}`,
             type: 'spritesheet',
             uri: spritesheetSource.uri,

@@ -124,6 +124,9 @@ export type GradientOptions = LinearGradientOptions | RadialGradientOptions;
  */
 const emptyColorStops: { offset: number, color: string }[] = [{ offset: 0, color: 'white' }, { offset: 1, color: 'black' }];
 
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
+export interface FillGradient extends PixiMixins.FillGradient, CanvasGradient {}
+
 /**
  * Class representing a gradient fill that can be used to fill shapes and text.
  * Supports both linear and radial gradients with multiple color stops.

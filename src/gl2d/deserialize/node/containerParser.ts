@@ -108,7 +108,7 @@ export function setContainerTransformFromGL2D(container: Container, data: GL2DNo
 export const gl2DContainerNodeParser: GL2DNodeParser<PixiGL2DContainer> = {
     extension: ExtensionType.GL2DNodeParser,
 
-    async test(data: GL2DNode): Promise<boolean>
+    async test(data: PixiGL2DContainer): Promise<boolean>
     {
         return data.type === 'container';
     },

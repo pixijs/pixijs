@@ -39,8 +39,8 @@ export const gl2DNineSliceSpriteNodeParser: GL2DNodeParser<PixiGL2DNineSliceSpri
         const properties: Required<Omit<NineSliceSpriteOptions, keyof ContainerOptions>>
             = {
                 ...createContainerOptionsFromGl2D(data),
+                texture,
                 ...deepRemoveUndefinedOrNull({
-                    texture,
                     anchor: toPointData(data.extensions?.pixi_container_node?.anchor),
                     roundPixels: data.extensions?.pixi_nine_slice_sprite_node?.roundPixels,
                     leftWidth,

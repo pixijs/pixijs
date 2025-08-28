@@ -33,8 +33,8 @@ export const gl2DTilingSpriteNodeParser: GL2DNodeParser<PixiGL2DTilingSprite> = 
 
         const properties: Required<Omit<TilingSpriteOptions, keyof ContainerOptions>> = {
             ...createContainerOptionsFromGl2D(data),
+            texture,
             ...deepRemoveUndefinedOrNull({
-                texture,
                 anchor: toPointData(data.extensions?.pixi_container_node?.anchor),
                 tilePosition: toPointData(data.tilePosition),
                 tileScale: toPointData(data.tileScale),

@@ -1,6 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import { Color, type ColorSource } from '../../color/Color';
 import { type Filter } from '../../filters/Filter';
+import { uid } from '../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { warn } from '../../utils/logging/warn';
 import { FillGradient } from '../graphics/shared/fill/FillGradient';
@@ -640,6 +641,12 @@ export interface TextStyleOptions
     filters?: Filter[];
 }
 
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
+export interface TextStyle extends PixiMixins.TextStyle, EventEmitter<{
+    // eslint-disable-next-line requireMemberAPI/require-member-api-doc
+    update: TextDropShadow
+}> {}
+
 /**
  * A TextStyle Object contains information to decorate Text objects.
  * An instance can be shared between multiple Text objects; then changing the style will update all text objects using it.
@@ -756,6 +763,9 @@ export class TextStyle extends EventEmitter<{
         wordWrapWidth: 100,
     };
 
+    /** Unique identifier for the text style instance. */
+    public uid: number;
+
     // colors!!
     /** @internal */
     public _fill: ConvertedFillStyle;
@@ -805,6 +815,7 @@ export class TextStyle extends EventEmitter<{
             this[thisKey] = fullStyle[key as keyof TextStyleOptions] as any;
         }
 
+        this.uid = uid('textStyle');
         this.update();
     }
 

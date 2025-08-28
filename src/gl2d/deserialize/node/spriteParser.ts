@@ -1,7 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Sprite, type SpriteOptions } from '../../../scene/sprite/Sprite';
 import { type PixiGL2DSprite } from '../../spec/extensions/nodes';
-import { type GL2DNode } from '../../spec/node';
 import { deepRemoveUndefinedOrNull } from '../../utils/deepRemoveUndefinedOrNull';
 import { type GL2DNodeParser } from '../parsers';
 import { toPointData } from '../utils/arrayTo';
@@ -16,7 +15,7 @@ import type { ContainerOptions } from '../../../scene/container/Container';
 export const gl2DSpriteNodeParser: GL2DNodeParser<PixiGL2DSprite> = {
     extension: ExtensionType.GL2DNodeParser,
 
-    async test(data: GL2DNode): Promise<boolean>
+    async test(data: PixiGL2DSprite): Promise<boolean>
     {
         return data.type === 'sprite';
     },
@@ -32,8 +31,8 @@ export const gl2DSpriteNodeParser: GL2DNodeParser<PixiGL2DSprite> = {
 
         const properties: Required<Omit<SpriteOptions, keyof ContainerOptions>> = {
             ...createContainerOptionsFromGl2D(data),
+            texture,
             ...deepRemoveUndefinedOrNull({
-                texture,
                 anchor: toPointData(data.extensions?.pixi_container_node?.anchor),
                 roundPixels: data.extensions?.pixi_sprite_node?.roundPixels,
             }, 1)

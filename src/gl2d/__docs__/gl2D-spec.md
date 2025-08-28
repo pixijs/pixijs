@@ -274,9 +274,97 @@ A **nine slice sprite** is a special type of sprite that allows for scaling of t
 }
 ```
 
-| Name                 | Type    | Description                                      | Required |
-| -------------------- | ------- | ------------------------------------------------ | -------- |
-| roundPixels          | boolean | Whether to round pixel values for rendering      | No       |
+| Name        | Type    | Description                                 | Required |
+| ----------- | ------- | ------------------------------------------- | -------- |
+| roundPixels | boolean | Whether to round pixel values for rendering | No       |
+
+---
+
+### 5.5 Text Node
+
+A **text node** renders text content using a specified text style and optional web font.
+
+```json
+{
+    "type": "text",
+    "text": "Hello World!",
+    "style": 0,
+    "resolution": 1,
+    "webFont": 0
+}
+```
+
+| Name       | Type   | Description                                             | Required |
+| ---------- | ------ | ------------------------------------------------------- | -------- |
+| type       | "text" | Node type "text"                                        | ✅ Yes   |
+| text       | string | The text content to display                             | ✅ Yes   |
+| style      | number | Index of the text style resource in the resources array | ✅ Yes   |
+| resolution | number | The resolution of the text rendering                    | No       |
+| webFont    | number | Index of the web font resource in the resources array   | No       |
+
+#### PixiJS Text Extension
+
+```json
+{
+    "extensions": {
+        "pixi_text_node": {
+            "roundPixels": true,
+            "textureStyle": {
+                "scaleMode": "linear"
+            }
+        }
+    }
+}
+```
+
+| Name         | Type                | Description                                 | Required |
+| ------------ | ------------------- | ------------------------------------------- | -------- |
+| roundPixels  | boolean             | Whether to round pixel values for rendering | No       |
+| textureStyle | TextureStyleOptions | Texture style options for the text          | No       |
+
+---
+
+### 5.6 Bitmap Text Node
+
+A **bitmap text node** renders text using a pre-rendered bitmap font atlas for improved performance.
+
+```json
+{
+    "type": "bitmap_text",
+    "text": "Score: 1000",
+    "style": 1,
+    "resolution": 1,
+    "bitmapFont": 0
+}
+```
+
+| Name       | Type          | Description                                              | Required |
+| ---------- | ------------- | -------------------------------------------------------- | -------- |
+| type       | "bitmap_text" | Node type "bitmap_text"                                  | ✅ Yes   |
+| text       | string        | The text content to display                              | ✅ Yes   |
+| style      | number        | Index of the text style resource in the resources array  | ✅ Yes   |
+| resolution | number        | The resolution of the text rendering                     | No       |
+| bitmapFont | number        | Index of the bitmap font resource in the resources array | No       |
+
+#### PixiJS Bitmap Text Extension
+
+```json
+{
+    "extensions": {
+        "pixi_text_node": {
+            "roundPixels": true,
+            "textureStyle": {
+                "scaleMode": "nearest"
+            }
+        }
+    }
+}
+```
+
+| Name         | Type                | Description                                 | Required |
+| ------------ | ------------------- | ------------------------------------------- | -------- |
+| roundPixels  | boolean             | Whether to round pixel values for rendering | No       |
+| textureStyle | TextureStyleOptions | Texture style options for the text          | No       |
 
 ---
 
@@ -682,6 +770,260 @@ A **spritesheet resource** represents the JSON data for a collection of 2D image
 | Name        | Type   | Description                              | Required |
 | ----------- | ------ | ---------------------------------------- | -------- |
 | cachePrefix | string | Prefix for spritesheet when being loaded | No       |
+
+---
+
+### 6.5 Text Style Resource
+
+A **text style resource** defines reusable styling configurations for text rendering, including typography, colors, effects, and layout properties.
+
+```json
+{
+    "type": "text_style",
+    "name": "Heading Style",
+    "fontFamily": ["Arial", "Helvetica", "sans-serif"],
+    "fontSize": 24,
+    "fill": "#ffffff",
+    "align": "center",
+    "fontWeight": "bold",
+    "stroke": {
+        "fill": "#000000",
+        "width": 2,
+        "alignment": 0.5
+    },
+    "shadow": {
+        "color": "#000000",
+        "offsetX": 2,
+        "offsetY": 2,
+        "blur": 4,
+        "alpha": 0.5
+    },
+    "wordWrap": {
+        "enabled": true,
+        "width": 400
+    }
+}
+```
+
+| Name          | Type                             | Description                                           | Required |
+| ------------- | -------------------------------- | ----------------------------------------------------- | -------- |
+| type          | "text_style"                     | Resource type "text_style"                            | ✅ Yes   |
+| fontFamily    | string \| string[]               | Font family name(s) in priority order                 | ✅ Yes   |
+| align         | string                           | Text alignment ("left", "center", "right", "justify") | No       |
+| fontSize      | number                           | Font size in pixels                                   | No       |
+| fontStyle     | string                           | Font style ("normal", "italic", "oblique")            | No       |
+| fontVariant   | string                           | Font variant ("normal", "small-caps")                 | No       |
+| fontWeight    | string \| number                 | Font weight ("normal", "bold", 100-900)               | No       |
+| fill          | string \| number                 | Fill color/pattern (color string or resource index)   | No       |
+| letterSpacing | number                           | Additional character spacing in pixels                | No       |
+| padding       | [number, number, number, number] | Text padding [top, right, bottom, left]               | No       |
+| stroke        | object                           | Stroke configuration for text outline                 | No       |
+| shadow        | object                           | Drop shadow configuration                             | No       |
+| textBaseline  | string                           | Vertical alignment baseline                           | No       |
+| wordWrap      | object                           | Word wrapping configuration                           | No       |
+
+#### Stroke Configuration
+
+| Name       | Type             | Description                                   | Required |
+| ---------- | ---------------- | --------------------------------------------- | -------- |
+| fill       | string \| number | Stroke color (color string or resource index) | ✅ Yes   |
+| width      | number           | Stroke width in pixels                        | No       |
+| alignment  | number           | Stroke alignment (0.0-1.0)                    | No       |
+| cap        | string           | Line cap style ("butt", "round", "square")    | No       |
+| join       | string           | Line join style ("miter", "round", "bevel")   | No       |
+| miterLimit | number           | Miter limit for sharp joins                   | No       |
+
+#### Shadow Configuration
+
+| Name    | Type   | Description                        | Required |
+| ------- | ------ | ---------------------------------- | -------- |
+| color   | string | Shadow color (CSS color string)    | No       |
+| offsetX | number | Horizontal shadow offset in pixels | No       |
+| offsetY | number | Vertical shadow offset in pixels   | No       |
+| blur    | number | Shadow blur radius in pixels       | No       |
+| alpha   | number | Shadow opacity (0.0-1.0)           | No       |
+
+#### Word Wrap Configuration
+
+| Name    | Type    | Description                     | Required |
+| ------- | ------- | ------------------------------- | -------- |
+| enabled | boolean | Whether to enable word wrapping | ✅ Yes   |
+| width   | number  | Maximum width before wrapping   | No       |
+
+#### PixiJS Text Style Extension
+
+```json
+{
+    "extensions": {
+        "pixi_text_style_resource": {
+            "filters": ["blur", "glow"],
+            "trim": true,
+            "leading": 4,
+            "lineHeight": 28
+        },
+        "pixi_wrap_mode": {
+            "breakWords": false,
+            "whiteSpace": "normal"
+        }
+    }
+}
+```
+
+| Name       | Type     | Description                                    | Required |
+| ---------- | -------- | ---------------------------------------------- | -------- |
+| filters    | string[] | Array of filter names to apply to text         | No       |
+| trim       | boolean  | Auto-trim transparent pixels from text texture | No       |
+| leading    | number   | Additional spacing between lines in pixels     | No       |
+| lineHeight | number   | Explicit line height in pixels                 | No       |
+| breakWords | boolean  | Allow breaking within words                    | No       |
+| whiteSpace | string   | CSS-style whitespace handling                  | No       |
+
+---
+
+### 6.6 Canvas Gradient Resource
+
+A **canvas gradient resource** defines linear or radial color gradients for use in fills and strokes.
+
+```json
+{
+    "type": "canvas_gradient",
+    "name": "Hero Glow",
+    "gradientType": "radial",
+    "gradientUnits": "local",
+    "radial": {
+        "outerCircle": [0.5, 0.5, 0.8],
+        "innerCircle": [0.5, 0.5, 0.2]
+    },
+    "stops": [0.0, "#ffffff", 0.5, "#ffff00", 1.0, "#ff0000"]
+}
+```
+
+| Name          | Type              | Description                                                 | Required |
+| ------------- | ----------------- | ----------------------------------------------------------- | -------- |
+| type          | "canvas_gradient" | Resource type "canvas_gradient"                             | ✅ Yes   |
+| gradientType  | string            | Gradient geometry ("linear", "radial")                      | ✅ Yes   |
+| gradientUnits | string            | Coordinate system ("local", "global")                       | ✅ Yes   |
+| stops         | [number, string]  | Color stops defining the gradient progression               | ✅ Yes   |
+| linear        | object            | Linear gradient configuration (if gradientType is "linear") | No       |
+| radial        | object            | Radial gradient configuration (if gradientType is "radial") | No       |
+
+#### Linear Gradient Configuration
+
+| Name  | Type             | Description                       | Required |
+| ----- | ---------------- | --------------------------------- | -------- |
+| start | [number, number] | Starting point [x, y] coordinates | ✅ Yes   |
+| end   | [number, number] | Ending point [x, y] coordinates   | ✅ Yes   |
+
+#### Radial Gradient Configuration
+
+| Name        | Type                     | Description                             | Required |
+| ----------- | ------------------------ | --------------------------------------- | -------- |
+| outerCircle | [number, number, number] | Outer circle [centerX, centerY, radius] | ✅ Yes   |
+| innerCircle | [number, number, number] | Inner circle [centerX, centerY, radius] | ✅ Yes   |
+
+#### PixiJS Canvas Gradient Extension
+
+```json
+{
+    "extensions": {
+        "pixi_canvas_gradient": {
+            "textureSize": 256,
+            "wrapMode": "clamp-to-edge",
+            "scale": 1.5,
+            "rotation": 0.785
+        }
+    }
+}
+```
+
+| Name        | Type   | Description                                    | Required |
+| ----------- | ------ | ---------------------------------------------- | -------- |
+| textureSize | number | Size of texture for gradient rendering         | No       |
+| wrapMode    | string | Gradient wrap mode ("clamp-to-edge", "repeat") | No       |
+| scale       | number | Y-scale for elliptical radial gradients        | No       |
+| rotation    | number | Rotation in radians for elliptical gradients   | No       |
+
+---
+
+### 6.7 Canvas Pattern Resource
+
+A **canvas pattern resource** defines repeating texture patterns for use in fills and strokes.
+
+```json
+{
+    "type": "canvas_pattern",
+    "name": "Brick Pattern",
+    "source": 0,
+    "repeat": "repeat",
+    "transform": [1, 0, 0, 1, 0, 0]
+}
+```
+
+| Name      | Type                                             | Description                      | Required |
+| --------- | ------------------------------------------------ | -------------------------------- | -------- |
+| type      | "canvas_pattern"                                 | Resource type "canvas_pattern"   | ✅ Yes   |
+| source    | number                                           | Index of texture resource to use | ✅ Yes   |
+| repeat    | string                                           | Repetition behavior              | No       |
+| transform | [number, number, number, number, number, number] | 2D transformation matrix         | No       |
+
+#### Repeat Values
+
+| Value       | Description                         |
+| ----------- | ----------------------------------- |
+| "repeat"    | Repeat in both directions (default) |
+| "repeat-x"  | Repeat horizontally only            |
+| "repeat-y"  | Repeat vertically only              |
+| "no-repeat" | No repetition                       |
+
+---
+
+### 6.8 Web Font Resource
+
+A **web font resource** defines a web font for use in text rendering.
+
+```json
+{
+    "type": "web_font",
+    "name": "Custom Font",
+    "uri": "/fonts/custom-font.woff2",
+    "family": "CustomFont",
+    "weights": ["400", "700"],
+    "style": "normal",
+    "display": "swap"
+}
+```
+
+| Name            | Type       | Description                          | Required |
+| --------------- | ---------- | ------------------------------------ | -------- |
+| type            | "web_font" | Resource type "web_font"             | ✅ Yes   |
+| family          | string     | Font family name                     | ✅ Yes   |
+| weights         | string[]   | Available font weights               | No       |
+| style           | string     | Font style descriptor                | No       |
+| display         | string     | Font display behavior during loading | No       |
+| stretch         | string     | Font stretch descriptor              | No       |
+| unicodeRange    | string     | Unicode range for font               | No       |
+| variant         | string     | Font variant descriptor              | No       |
+| featureSettings | string     | Font feature settings                | No       |
+
+---
+
+### 6.9 Bitmap Font Resource
+
+A **bitmap font resource** defines a pre-rendered bitmap font atlas for high-performance text rendering.
+
+```json
+{
+    "type": "bitmap_font",
+    "name": "Game UI Font",
+    "uri": "/fonts/game-ui.fnt",
+    "fontFamily": "GameUI"
+}
+```
+
+| Name       | Type          | Description                 | Required |
+| ---------- | ------------- | --------------------------- | -------- |
+| type       | "bitmap_font" | Resource type "bitmap_font" | ✅ Yes   |
+| fontFamily | string        | Font family name            | ✅ Yes   |
 
 ---
 

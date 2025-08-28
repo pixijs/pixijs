@@ -114,3 +114,36 @@ export interface GL2DNineSliceSprite<K extends Record<string, any> = Record<stri
     bottomHeight?: number;
 }
 
+/**
+ * Represents a GL2D text node within a GL2D file.
+ * @category gl2d
+ * @standard
+ */
+export interface GL2DText<K extends Record<string, any> = Record<string, any>> extends GL2DNode<'text', K>
+{
+    /** The text content to display */
+    text: string;
+    /** The resolution of the text */
+    resolution?: number;
+    /** The indices of the text style in the resources array */
+    style: number;
+    /** The index of the web font used for the text */
+    webFont?: number;
+}
+
+/**
+ * Represents a GL2D bitmap text node within a GL2D file.
+ * @category gl2d
+ * @standard
+ */
+export interface GL2DBitmapText<K extends Record<string, any> = Record<string, any>> extends GL2DNode<'bitmap_text', K>
+{
+    /** The text content to display */
+    text: string;
+    /** The resolution of the text */
+    resolution?: number;
+    /** The indices of the text style in the resources array */
+    style: number;
+    /** The index of the bitmap font used for the text */
+    bitmapFont?: number;
+}

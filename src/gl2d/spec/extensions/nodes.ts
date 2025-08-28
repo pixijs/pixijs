@@ -1,6 +1,14 @@
 import { type PointerEvents } from '../../../accessibility/accessibilityTarget';
 import { type EventMode } from '../../../events/FederatedEventTarget';
-import { type GL2DNineSliceSprite, type GL2DNode, type GL2DSprite, type GL2DTilingSprite } from '../node';
+import { type TextureStyleOptions } from '../../../rendering/renderers/shared/texture/TextureStyle';
+import {
+    type GL2DBitmapText,
+    type GL2DNineSliceSprite,
+    type GL2DNode,
+    type GL2DSprite,
+    type GL2DText,
+    type GL2DTilingSprite,
+} from '../node';
 
 /**
  * Represents a PixiJS container node within a GL2D file through an extension.
@@ -150,39 +158,29 @@ export interface PixiGL2DNineSliceSpriteExtension extends PixiGL2DContainerExten
 }
 
 /**
- * Represents a PixiJS Animated sprite node within a GL2D file through an extension.
+ * Represents a PixiJS Text node within a GL2D file through an extension.
  * @category gl2d
  * @standard
  */
-export type PixiGL2DAnimatedSprite = GL2DNode<
-    'pixi_animated_sprite',
-    PixiGL2DContainerExtension & PixiGL2DAnimatedSpriteExtension
->;
+export type PixiGL2DText = GL2DText<PixiGL2DTextExtension>;
+/**
+ * Represents a PixiJS BitmapText node within a GL2D file through an extension.
+ * @category gl2d
+ * @standard
+ */
+export type PixiGL2DBitmapText = GL2DBitmapText<PixiGL2DTextExtension>;
 
 /**
- * Extension properties for PixiJS Animated sprite nodes.
+ * Extension properties for PixiJS Text nodes.
  * @category gl2d
  * @standard
  */
-export interface PixiGL2DAnimatedSpriteExtension extends PixiGL2DContainerExtension
+export interface PixiGL2DTextExtension extends PixiGL2DContainerExtension
 {
-    pixi_animated_sprite_node?: {
+    pixi_text_node?: {
         /** Whether to round pixel values for crisp rendering */
-        roundPixels?: boolean;
-        /** The speed of the animation */
-        animationSpeed?: number;
-        /** Whether the animation should play automatically */
-        autoPlay?: boolean;
-        /** Whether the animation should update automatically */
-        autoUpdate?: boolean;
-        /** Whether the animation should loop */
-        loop?: boolean;
-        /** The textures used by the animation */
-        textures?: number[];
-        /** The frame durations used by the animation */
-        durations?: number[];
-        /** Whether to update the anchor point of the animation */
-        updateAnchor?: boolean;
+        roundPixels: boolean;
+        /** The texture style options for the text */
+        textureStyle?: TextureStyleOptions;
     };
 }
-
