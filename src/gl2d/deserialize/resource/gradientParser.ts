@@ -51,7 +51,7 @@ export const gl2DGradientParser: GL2DResourceParser<PixiGL2DCanvasGradient | Pix
         if (!existingSource)
         {
             // load the resource we need as it is not already loaded due to being later on in the array
-            await GL2D.parseResource(resources[data.source], resources, serializedAssets);
+            await GL2D.parseResource(resources[data.source], data.source, resources, serializedAssets);
         }
 
         existingSource = serializedAssets[data.source];

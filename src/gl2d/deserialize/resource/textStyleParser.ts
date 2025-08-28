@@ -47,7 +47,7 @@ async function convertFill(
     if (!existingSource)
     {
         // load the resource we need as it is not already loaded due to being later on in the array
-        await GL2D.parseResource(resources[fill], resources, serializedAssets);
+        await GL2D.parseResource(resources[fill], fill, resources, serializedAssets);
     }
 
     existingSource = serializedAssets[fill];

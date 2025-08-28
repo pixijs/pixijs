@@ -100,7 +100,11 @@ Groups other nodes, applies hierarchical transforms.
     "rotation": 0.5,
     "scale": [1, 1],
     "alpha": 1,
-    "visible": true
+    "visible": true,
+    "mask": {
+        "source": 0,
+        "inverse": false
+    }
 }
 ```
 
@@ -120,6 +124,14 @@ Groups other nodes, applies hierarchical transforms.
 | tint        | number                                           | Color tint (0xRRGGBB)                       | No       |
 | alpha       | number                                           | Opacity (0.0–1.0)                           | No       |
 | visible     | boolean                                          | Whether the node is visible                 | No       |
+| mask        |                                                  | Masking options                             | No       |
+
+#### Masking Options
+
+| Name    | Type    | Description                  | Required |
+| ------- | ------- | ---------------------------- | -------- |
+| node    | number  | Index of the mask node       | ✅ Yes   |
+| inverse | boolean | Whether the mask is inverted | No       |
 
 #### PixiJS Container Extension
 

@@ -61,6 +61,9 @@ export interface GL2DNode<T extends string = string, K extends Record<string, an
 
     /** Whether the node and its children are visible */
     visible?: boolean;
+
+    /** The index of the mask node used by this node in the GL2D file nodes array */
+    mask?: { node: number, inverse?: boolean } & GL2DExtension;
 }
 
 /**

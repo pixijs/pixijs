@@ -23,6 +23,7 @@ type ContainerOptionsFromGL2D = Omit<
     | 'parent'
     | 'angle'
     | 'children'
+    | 'mask'
     | 'setMask'
     | `on${string}`
 >;
@@ -69,7 +70,6 @@ export function createContainerOptionsFromGl2D(data: Omit<PixiGL2DContainer, 'ty
             cullable: data.extensions?.pixi_container_node?.cullable,
             // TODO: Remaining properties to support
             filters: undefined,
-            mask: undefined,
             hitArea: undefined,
             cacheAsTexture: undefined,
         },

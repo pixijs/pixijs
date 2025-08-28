@@ -70,6 +70,21 @@ export async function serializeContainer(instance: Container, gl2DOptions: ToGL2
 
     const { gl2D } = gl2DOptions;
 
+    if (instance.mask !== undefined)
+    {
+        const mask = instance.mask as Container;
+        let existingMaskIndex = gl2D.nodes.findIndex((node) => node.uid === `${mask.uid}`);
+
+        if (existingMaskIndex === -1)
+        {
+            await mask.serialize(gl2DOptions);
+            existingMaskIndex = gl2D.nodes.findIndex((node) => node.uid === `${mask.uid}`);
+        }
+
+        // eslint-disable-next-line dot-notation
+        node.mask = { node: existingMaskIndex, inverse: instance['_maskOptions'].inverse };
+    }
+
     gl2D.nodes.push(node);
     gl2D.extensionsRequired.push('pixi_container_node');
     gl2D.extensionsUsed.push('pixi_container_node');
