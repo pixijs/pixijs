@@ -76,7 +76,7 @@ export class GL2DClass
     {
         // Deserialization logic for gl2D assets
         const serializedAssets: any[] = Array(data.resources.length).fill(null);
-        const serializedNodes = new Map<number, Container>();
+        const serializedNodes: Container[] = Array(data.nodes.length).fill(null);
 
         await this._parseResources(data.resources, serializedAssets);
         await this._parseNodes(data.nodes, serializedAssets, serializedNodes);
@@ -97,7 +97,7 @@ export class GL2DClass
 
         for (let i = 0; i < data.nodes.length; i++)
         {
-            const node = serializedNodes.get(i);
+            const node = serializedNodes[i];
 
             if (node && !node.parent)
             {
@@ -125,18 +125,19 @@ export class GL2DClass
                 continue;
             }
 
-            serializedAssets[i] = await this.parseResource(resource, resources, serializedAssets);
+            await this.parseResource(resource, i, resources, serializedAssets);
         }
     }
 
     /**
      * Parse a GL2D resource into a resource that can be used by the renderer.
      * @param resource - The GL2D resource to parse
+     * @param index
      * @param resources - The array of all GL2D resources
      * @param serializedAssets - The array of serialized assets
      * @returns The parsed resource
      */
-    public async parseResource(resource: GL2DResource, resources: GL2DResource[], serializedAssets: any[])
+    public async parseResource(resource: GL2DResource, index: number, resources: GL2DResource[], serializedAssets: any[])
     {
         let parsed = null;
 
@@ -154,6 +155,8 @@ export class GL2DClass
             throw new Error(`Failed to parse resource: ${resource.type}`);
         }
 
+        serializedAssets[index] = parsed;
+
         return parsed;
     }
 
@@ -166,40 +169,42 @@ export class GL2DClass
     private async _parseNodes(
         nodes: GL2DNode[],
         serializedAssets: any[],
-        serializedNodes: Map<number, Container>,
+        serializedNodes: Container[],
     ): Promise<void>
     {
         for (let i = 0; i < nodes.length; i++)
         {
             const nodeData = nodes[i];
-            let parsed = null;
 
-            for (const parser of this.nodeParsers)
+            if (serializedNodes[i] !== null)
             {
-                if (await parser.test(nodeData))
-                {
-                    parsed = await parser.parse(nodeData, serializedAssets);
-                    break;
-                }
+                // we have already loaded it
+                continue;
             }
 
-            if (parsed)
-            {
-                serializedNodes.set(i, parsed);
-            }
+            await this.parseNode(nodeData, i, serializedAssets, serializedNodes);
         }
 
         // Second pass: setup children relationships
         for (let i = 0; i < nodes.length; i++)
         {
             const nodeData = nodes[i];
-            const parentNode = serializedNodes.get(i);
+            const parentNode = serializedNodes[i];
+
+            // if there is a mask applied to the parent node
+            if (parentNode && nodeData.mask)
+            {
+                parentNode.setMask({
+                    mask: serializedNodes[nodeData.mask.node],
+                    inverse: nodeData.mask.inverse
+                });
+            }
 
             if (parentNode && nodeData.children)
             {
                 for (const childIndex of nodeData.children)
                 {
-                    const childNode = serializedNodes.get(childIndex);
+                    const childNode = serializedNodes[childIndex];
 
                     if (childNode)
                     {
@@ -210,12 +215,35 @@ export class GL2DClass
         }
     }
 
+    public async parseNode(
+        nodeData: GL2DNode,
+        index: number,
+        serializedAssets: any[],
+        serializedNodes: Container[]
+    ): Promise<Container | null>
+    {
+        let parsed = null;
+
+        for (const parser of this.nodeParsers)
+        {
+            if (await parser.test(nodeData))
+            {
+                parsed = await parser.parse(nodeData, serializedAssets);
+                break;
+            }
+        }
+
+        serializedNodes[index] = parsed;
+
+        return parsed;
+    }
+
     /**
      * Parse a scene definition.
      * @param scene - The GL2D scene data
      * @param nodeCache
      */
-    private async _parseScene(scene: GL2DScene, nodeCache: Map<number, Container>): Promise<Container>
+    private async _parseScene(scene: GL2DScene, nodeCache: Container[]): Promise<Container>
     {
         const sceneContainer = new Container();
 
@@ -223,7 +251,7 @@ export class GL2DClass
 
         for (const nodeIndex of scene.nodes)
         {
-            const node = nodeCache.get(nodeIndex);
+            const node = nodeCache[nodeIndex];
 
             if (node)
             {

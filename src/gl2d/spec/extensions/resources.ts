@@ -1,12 +1,21 @@
 import {
+    type GL2DCanvasGradient,
+    type GL2DCanvasPattern,
     type GL2DImageSource,
-    type GL2DSpritesheetSource,
+    type GL2DSpritesheet,
+    type GL2DStroke,
+    type GL2DTextStyle,
     type GL2DTexture,
     type GL2DTextureSource,
     type GL2DVideoSource,
 } from '../resources';
 
-import type { ALPHA_MODES, COMPARE_FUNCTION, TEXTURE_DIMENSIONS } from '../../../rendering/renderers/shared/texture/const';
+import type {
+    ALPHA_MODES,
+    COMPARE_FUNCTION,
+    TEXTURE_DIMENSIONS,
+} from '../../../rendering/renderers/shared/texture/const';
+import type { TextStyleWhiteSpace } from '../../../scene/text/TextStyle';
 
 /**
  * Represents a PixiJS textureResource node within a GL2D file through an extension.
@@ -126,7 +135,7 @@ export interface PixiGL2DVideoSourceExtension extends PixiGL2DTextureSourceExten
  * @category gl2d
  * @standard
  */
-export type PixiGL2DSpritesheetSource = GL2DSpritesheetSource<PixiGL2DSpritesheetExtension>;
+export type PixiGL2DSpritesheet = GL2DSpritesheet<PixiGL2DSpritesheetExtension>;
 
 /**
  * Extension properties for PixiJS spriteSheet nodes.
@@ -140,3 +149,127 @@ export interface PixiGL2DSpritesheetExtension
         cachePrefix: string;
     };
 }
+
+/**
+ * Represents a PixiJS stroke style within a GL2D file through an extension.
+ * @category gl2d
+ * @standard
+ */
+export type PixiGL2DStroke = GL2DStroke<PixiGL2DStrokeExtension>;
+
+/**
+ * Extension properties for PixiJS stroke styles.
+ * @category gl2d
+ * @standard
+ */
+export interface PixiGL2DStrokeExtension
+{
+    pixi_stroke: {
+        /** Whether the stroke is a pixel line, only used by Graphics */
+        pixelLine?: boolean;
+    };
+}
+
+/** Helper type to extract specific extension properties from an extension interface */
+type Picker<T, K extends keyof T> = Pick<T, K>;
+
+/**
+ * Represents a PixiJS text style within a GL2D file through an extension.
+ * @category gl2d
+ * @standard
+ */
+export type PixiGL2DTextStyle = GL2DTextStyle<
+    {
+        extensions: Picker<PixiGL2DTextStyleExtension, 'pixi_text_style_resource'>,
+        wordWrap: Picker<PixiGL2DTextStyleExtension, 'pixi_wrap_mode'>,
+        stroke: Picker<PixiGL2DStrokeExtension, 'pixi_stroke'>,
+    }
+>;
+
+/**
+ * Extension properties for PixiJS text styles.
+ * @category gl2d
+ * @standard
+ */
+export interface PixiGL2DTextStyleExtension
+{
+    pixi_text_style_resource: {
+        /** An array of filter names to apply to the text. */
+        filters?: string[];
+        /** Whether to automatically trim transparent pixels from the rendered text texture. */
+        trim?: boolean;
+        /**
+         * Additional spacing between lines of text, in pixels.
+         * This is added to the natural line height calculated from the font.
+         */
+        leading?: number;
+        /**
+         * Explicit line height in pixels.
+         * If not specified, line height is calculated automatically from the font.
+         * Setting this provides precise control over vertical text spacing.
+         */
+        lineHeight?: number;
+    };
+    pixi_wrap_mode: {
+        /**
+         * Whether to allow line breaks within individual words.
+         *
+         * **Behavior:**
+         * - `false`: Break only at word boundaries (spaces, hyphens)
+         * - `true`: Break anywhere within a word if necessary
+         *
+         * Useful for handling very long words or narrow text areas.
+         */
+        breakWords?: boolean;
+        /**
+         * CSS-style white space handling strategy.
+         *
+         * **Options:**
+         * - `"normal"`: Collapse whitespace, wrap as needed
+         * - `"nowrap"`: Collapse whitespace, no wrapping
+         * - `"pre"`: Preserve whitespace, no wrapping
+         * - `"pre-wrap"`: Preserve whitespace, wrap as needed
+         * - `"pre-line"`: Collapse spaces, preserve line breaks, wrap as needed
+         */
+        whiteSpace?: TextStyleWhiteSpace;
+    };
+}
+
+/**
+ * Represents a PixiJS fill gradient within a GL2D file through an extension.
+ * @category gl2d
+ * @standard
+ */
+export type PixiGL2DCanvasGradient = GL2DCanvasGradient<PixiGL2DCanvasGradientExtension>;
+
+/**
+ * Extension properties for PixiJS fill gradients.
+ * @category gl2d
+ * @standard
+ */
+export interface PixiGL2DCanvasGradientExtension
+{
+    pixi_canvas_gradient: {
+        /** The size of the texture to use for the gradient */
+        textureSize?: number;
+        /** The wrap mode of the gradient. */
+        wrapMode?: 'clamp-to-edge' | 'repeat';
+        /**
+         * The y scale of the gradient, use this to make the gradient elliptical.
+         * NOTE: Only applied to radial gradients used with Graphics.
+         */
+        scale?: number;
+        /**
+         * The rotation of the gradient in radians, useful for making the gradient elliptical.
+         * NOTE: Only applied to radial gradients used with Graphics.
+         */
+        rotation?: number;
+    };
+}
+
+/**
+ * Represents a PixiJS fill patterns within a GL2D file through an extension.
+ * @category gl2d
+ * @standard
+ */
+export type PixiGL2DCanvasPattern = GL2DCanvasPattern;

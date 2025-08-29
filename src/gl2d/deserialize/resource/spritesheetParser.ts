@@ -6,7 +6,7 @@ import { type Texture } from '../../../rendering/renderers/shared/texture/Textur
 import { type Spritesheet } from '../../../spritesheet/Spritesheet';
 import { type SpriteSheetParseOptions } from '../../../spritesheet/spritesheetAsset';
 import { GL2D } from '../../GL2D';
-import { type PixiGL2DSpritesheetSource } from '../../spec/extensions/resources';
+import { type PixiGL2DSpritesheet } from '../../spec/extensions/resources';
 import { type GL2DResource } from '../../spec/resources';
 import { type GL2DResourceParser } from '../parsers';
 
@@ -14,15 +14,15 @@ import { type GL2DResourceParser } from '../parsers';
  * Parser for GL2D spritesheet resources.
  * @internal
  */
-export const gl2DSpritesheetParser: GL2DResourceParser<PixiGL2DSpritesheetSource> = {
+export const gl2DSpritesheetParser: GL2DResourceParser<PixiGL2DSpritesheet> = {
     extension: ExtensionType.GL2DResourceParser,
 
-    async test(data: PixiGL2DSpritesheetSource): Promise<boolean>
+    async test(data: PixiGL2DSpritesheet): Promise<boolean>
     {
         return data.type === 'spritesheet';
     },
 
-    async parse(data: PixiGL2DSpritesheetSource, resources: GL2DResource[], serializedAssets): Promise<Spritesheet>
+    async parse(data: PixiGL2DSpritesheet, resources: GL2DResource[], serializedAssets): Promise<Spritesheet>
     {
         const uri = data.uri;
 
@@ -37,7 +37,7 @@ export const gl2DSpritesheetParser: GL2DResourceParser<PixiGL2DSpritesheetSource
         if (!existingSource)
         {
             // load the resource we need as it is not already loaded due to being later on in the array
-            await GL2D.parseResource(resources[data.source], resources, serializedAssets);
+            await GL2D.parseResource(resources[data.source], data.source, resources, serializedAssets);
         }
 
         existingSource = serializedAssets[data.source];

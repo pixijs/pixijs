@@ -13,6 +13,7 @@ import {
     type PixiGL2DVideoSource,
 } from '../../spec/extensions/resources';
 import { type GL2DResource } from '../../spec/resources';
+import { deepRemoveUndefinedOrNull } from '../../utils/deepRemoveUndefinedOrNull';
 import { type GL2DResourceParser } from '../parsers';
 
 type TextureSourceType = PixiGL2DTextureSource<'texture_source'> | PixiGL2DImageSource | PixiGL2DVideoSource;
@@ -82,9 +83,9 @@ export const gl2DTextureSourceParser: GL2DResourceParser<TextureSourceType> = {
                     preloadTimeoutMs: data.extensions.pixi_video_source_resource.preloadTimeoutMs,
                 };
 
-            return (await Assets.load<Texture>({ src: uri, data: videoSourceData })).source;
+            return (await Assets.load<Texture>({ src: uri, data: deepRemoveUndefinedOrNull(videoSourceData) })).source;
         }
 
-        return (await Assets.load<Texture>({ src: uri, data: formattedData })).source;
+        return (await Assets.load<Texture>({ src: uri, data: deepRemoveUndefinedOrNull(formattedData) })).source;
     },
 };
