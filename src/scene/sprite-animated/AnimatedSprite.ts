@@ -401,7 +401,7 @@ export class AnimatedSprite extends Sprite
      * @param options - The options for the AnimatedSprite.
      */
     constructor(options: AnimatedSpriteOptions);
-    /** @ignore */
+
     constructor(...args: [AnimatedSpriteOptions?] | [AnimatedSpriteFrames?] | [AnimatedSpriteFrames?, boolean?])
     {
         let options = args[0] as AnimatedSpriteOptions;

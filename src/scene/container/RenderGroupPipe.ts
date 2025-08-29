@@ -88,7 +88,10 @@ export class RenderGroupPipe implements InstructionPipe<RenderGroup>
         batchableRenderGroup.bounds = renderGroup._textureBounds;
 
         instructionSet.add(renderGroup);
+
+        this._renderer.renderPipes.blendMode.pushBlendMode(renderGroup, renderGroup.root.groupBlendMode, instructionSet);
         this._renderer.renderPipes.batch.addToBatch(batchableRenderGroup, instructionSet);
+        this._renderer.renderPipes.blendMode.popBlendMode(instructionSet);
     }
 
     private _executeCacheAsTexture(renderGroup: RenderGroup): void
@@ -109,6 +112,7 @@ export class RenderGroupPipe implements InstructionPipe<RenderGroup>
             this._renderer.globalUniforms.push({
                 worldTransformMatrix,
                 worldColor: 0xFFFFFFFF,
+                offset: { x: 0, y: 0 },
             });
 
             executeInstructions(renderGroup, this._renderer.renderPipes);

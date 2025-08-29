@@ -1,4 +1,6 @@
+/* eslint-disable no-restricted-globals */
 import { type Adapter } from '../environment/adapter';
+import { type ImageLike } from '../environment/ImageLike';
 
 /**
  * This is an implementation of the {@link Adapter} interface.
@@ -26,6 +28,7 @@ export const BrowserAdapter = {
 
         return canvas;
     },
+    createImage: (): ImageLike => new Image(),
     getCanvasRenderingContext2D: () => CanvasRenderingContext2D,
     getWebGLRenderingContext: () => WebGLRenderingContext,
     getNavigator: () => navigator,

@@ -1,5 +1,7 @@
+import { type ImageLike } from '../../../environment/ImageLike';
+
 /**
- * This function loads an SVG image into an HTMLImageElement.
+ * This function loads an SVG image into an IImage element.
  * The image can then be uploaded as texture to the GPU.
  * iOS has a bug where embedded fonts are not available immediately after the image loads,
  * so we wait an arbitrary amount of time before resolving the promise.
@@ -9,7 +11,7 @@
  * @returns - A promise that resolves when the image has loaded
  * @internal
  */
-export function loadSVGImage(image: HTMLImageElement, url: string, delay: boolean)
+export function loadSVGImage(image: ImageLike, url: string, delay: boolean)
 {
     return new Promise<void>(async (resolve) =>
     {

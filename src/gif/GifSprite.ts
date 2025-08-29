@@ -11,24 +11,37 @@ import type { SCALE_MODE } from '../rendering/renderers/shared/texture/const';
  *
  * These options control both the visual appearance and playback behavior
  * of animated GIFs.
- * @example
+ * @example Minimal Usage
  * ```ts
- * import { GifSprite, Assets } from 'pixi.js';
+ * import { Assets } from 'pixi.js';
+ * import { GifSprite } from 'pixi.js/gif';
  *
- * // Create with options
+ * // Simple usage, minimal options
  * const source = await Assets.load('animation.gif');
- * const options: GifSpriteOptions = {
- *     source,                    // GIF data source
- *     animationSpeed: 1.5,      // 50% faster than normal
- *     loop: true,               // Loop the animation
- *     autoPlay: true,           // Start playing immediately
- *     scaleMode: 'nearest',     // Pixel art style scaling
- *     onComplete: () => {       // Called when non-looping animation ends
- *         console.log('Animation complete!');
- *     }
- * };
+ * const animation = new GifSprite(source);
+ * ```
+ * @example Advanced Options
+ * ```ts
+ * import { Assets } from 'pixi.js';
+ * import { GifSprite } from 'pixi.js/gif';
  *
- * const animation = new GifSprite(options);
+ * // Advanced usage with options
+ * const source = await Assets.load({
+ *   src: 'animation.gif',
+ *   data: {
+ *     scaleMode: 'nearest'  // Pixelated scaling
+ *   }
+ * });
+ *
+ * const animation = new GifSprite({
+ *   source,                 // GIF data source
+ *   animationSpeed: 1.5,    // 50% faster than normal
+ *   loop: true,             // Loop the animation
+ *   autoPlay: true,         // Start playing immediately
+ *   onComplete() {          // Called when non-looping animation ends
+ *     console.log('Animation complete!');
+ *   }
+ * });
  * ```
  * @category gif
  * @standard
@@ -57,14 +70,11 @@ interface GifSpriteOptions extends Omit<SpriteOptions, 'texture'>
      */
     autoPlay?: boolean;
     /**
-     * Scale Mode to use for the texture
+     * This is not implemented and you should, instead, use `scaleMode`
+     * when loading the Asset as an option for the UnresolvedAsset's `data`.
      * @type {SCALE_MODE}
      * @default 'linear'
-     * @example
-     * ```ts
-     * const animation = new GifSprite({ source, scaleMode: 'nearest' });
-     * ```
-     * @see {@link SCALE_MODE}
+     * @deprecated since 8.13.0
      */
     scaleMode?: SCALE_MODE;
     /**
@@ -226,7 +236,6 @@ class GifSprite extends Sprite
      * ```
      */
     public static defaultOptions: Omit<GifSpriteOptions, 'source'> = {
-        scaleMode: 'linear',
         fps: 30,
         loop: true,
         animationSpeed: 1,
@@ -386,14 +395,12 @@ class GifSprite extends Sprite
      */
     constructor(options: GifSpriteOptions);
 
-    /** @ignore */
     constructor(...args: [GifSource] | [GifSpriteOptions])
     {
         const options = args[0] instanceof GifSource ? { source: args[0] } : args[0];
 
         // Get the options, apply defaults
         const {
-            scaleMode,
             source,
             fps,
             loop,
@@ -527,7 +534,7 @@ class GifSprite extends Sprite
             this._isConnectedToTicker = true;
         }
 
-        // If were on the last frame and stopped, play should resume from beginning
+        // If we're on the last frame and stopped, play should resume from beginning
         if (!this.loop && this.currentFrame === this._source.frames.length - 1)
         {
             this._currentTime = 0;
@@ -877,7 +884,6 @@ class GifSprite extends Sprite
             autoUpdate: this._autoUpdate,
             loop: this.loop,
             autoPlay: this.autoPlay,
-            scaleMode: this.texture.source.scaleMode,
             animationSpeed: this.animationSpeed,
             onComplete: this.onComplete,
             onFrameChange: this.onFrameChange,

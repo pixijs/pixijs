@@ -1,5 +1,6 @@
 import { extensions, ExtensionType } from '../../../../extensions/Extensions';
 import { FilterEffect } from '../../../../filters/FilterEffect';
+import { RenderGroup } from '../../../../scene/container/RenderGroup';
 import { warn } from '../../../../utils/logging/warn';
 
 import type { BlendModeFilter } from '../../../../filters/blend-modes/BlendModeFilter';
@@ -60,8 +61,9 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
 
     private _renderer: Renderer;
 
-    private _renderableList: Renderable[];
+    private _renderableList?: Renderable[];
     private _activeBlendMode: BLEND_MODES;
+    private readonly _blendModeStack: BLEND_MODES[] = [];
 
     private _isAdvanced = false;
 
@@ -83,77 +85,115 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
     }
 
     /**
-     * This ensures that a blendMode switch is added to the instruction set if the blend mode has changed.
-     * @param renderable - The renderable we are adding to the instruction set
-     * @param blendMode - The blend mode of the renderable
-     * @param instructionSet - The instruction set we are adding to
+     * Push a blend mode onto the internal stack and apply it to the instruction set if needed.
+     * @param renderable - The renderable or {@link RenderGroup} associated with the change.
+     * @param blendMode - The blend mode to activate.
+     * @param instructionSet - The instruction set being built.
      */
-    public setBlendMode(renderable: Renderable, blendMode: BLEND_MODES, instructionSet: InstructionSet)
+    public pushBlendMode(renderable: Renderable | RenderGroup, blendMode: BLEND_MODES, instructionSet: InstructionSet): void
     {
+        this._blendModeStack.push(blendMode);
+
+        this.setBlendMode(renderable, blendMode, instructionSet);
+    }
+
+    /**
+     * Pop the last blend mode from the stack and apply the new top-of-stack mode.
+     * @param instructionSet - The instruction set being built.
+     */
+    public popBlendMode(instructionSet: InstructionSet): void
+    {
+        this._blendModeStack.pop();
+        const blendMode = this._blendModeStack[this._activeBlendMode.length - 1] ?? 'normal';
+
+        this.setBlendMode(null, blendMode, instructionSet);
+    }
+
+    /**
+     * Ensure a blend mode switch is added to the instruction set when the mode changes.
+     * If an advanced blend mode is active, subsequent renderables will be collected so they can be
+     * rendered within a single filter pass.
+     * @param renderable - The renderable or {@link RenderGroup} to associate with the change, or null when unwinding.
+     * @param blendMode - The target blend mode.
+     * @param instructionSet - The instruction set being built.
+     */
+    public setBlendMode(
+        renderable: Renderable | RenderGroup | null,
+        blendMode: BLEND_MODES,
+        instructionSet: InstructionSet
+    )
+    {
+        const isRenderGroup = renderable instanceof RenderGroup;
+
         if (this._activeBlendMode === blendMode)
         {
-            if (this._isAdvanced) this._renderableList.push(renderable);
+            if (this._isAdvanced && renderable && !isRenderGroup)
+            {
+                this._renderableList?.push(renderable);
+            }
 
             return;
         }
 
+        if (this._isAdvanced) this._endAdvancedBlendMode(instructionSet);
+
         this._activeBlendMode = blendMode;
 
-        if (this._isAdvanced)
-        {
-            this._endAdvancedBlendMode(instructionSet);
-        }
+        if (!renderable) return;
 
         this._isAdvanced = !!BLEND_MODE_FILTERS[blendMode];
 
-        if (this._isAdvanced)
-        {
-            this._beginAdvancedBlendMode(instructionSet);
-
-            this._renderableList.push(renderable);
-        }
+        if (this._isAdvanced) this._beginAdvancedBlendMode(renderable, instructionSet);
     }
 
-    private _beginAdvancedBlendMode(instructionSet: InstructionSet)
+    private _beginAdvancedBlendMode(renderable: Renderable | RenderGroup, instructionSet: InstructionSet)
     {
         this._renderer.renderPipes.batch.break(instructionSet);
 
         const blendMode = this._activeBlendMode;
 
-        if (!BLEND_MODE_FILTERS[blendMode as keyof typeof BLEND_MODE_FILTERS])
+        if (!BLEND_MODE_FILTERS[blendMode])
         {
             // #if _DEBUG
             warn(`Unable to assign BlendMode: '${blendMode}'. `
-            + `You may want to include: import 'pixi.js/advanced-blend-modes'`);
+                + `You may want to include: import 'pixi.js/advanced-blend-modes'`);
             // #endif
 
             return;
         }
 
-        let filterEffect = this._filterHash[blendMode];
-
-        // this does need an execute?
-        if (!filterEffect)
-        {
-            filterEffect = this._filterHash[blendMode] = new FilterEffect();
-
-            filterEffect.filters = [new BLEND_MODE_FILTERS[blendMode as keyof typeof BLEND_MODE_FILTERS]()];
-        }
-
+        const filterEffect = this._ensureFilterEffect(blendMode);
+        const isRenderGroup = renderable instanceof RenderGroup;
         const instruction: FilterInstruction = {
             renderPipeId: 'filter',
             action: 'pushFilter',
-            renderables: [],
             filterEffect,
-            canBundle: false,
+            renderables: isRenderGroup ? null : [renderable],
+            container: isRenderGroup ? renderable.root : null,
+            canBundle: false
         };
 
         this._renderableList = instruction.renderables;
+
         instructionSet.add(instruction);
+    }
+
+    private _ensureFilterEffect(blendMode: BLEND_MODES): FilterEffect
+    {
+        let filterEffect: FilterEffect = this._filterHash[blendMode];
+
+        if (!filterEffect)
+        {
+            filterEffect = this._filterHash[blendMode] = new FilterEffect();
+            filterEffect.filters = [new BLEND_MODE_FILTERS[blendMode as keyof typeof BLEND_MODE_FILTERS]()];
+        }
+
+        return filterEffect;
     }
 
     private _endAdvancedBlendMode(instructionSet: InstructionSet)
     {
+        this._isAdvanced = false;
         this._renderableList = null;
         this._renderer.renderPipes.batch.break(instructionSet);
 
@@ -181,10 +221,9 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
      */
     public buildEnd(instructionSet: InstructionSet)
     {
-        if (this._isAdvanced)
-        {
-            this._endAdvancedBlendMode(instructionSet);
-        }
+        if (!this._isAdvanced) return;
+
+        this._endAdvancedBlendMode(instructionSet);
     }
 
     /** @internal */

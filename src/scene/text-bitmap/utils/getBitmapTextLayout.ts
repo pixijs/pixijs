@@ -69,6 +69,14 @@ export function getBitmapTextLayout(
         chars: [] as string[],
     };
 
+    const scale = font.baseMeasurementFontSize / style.fontSize;
+
+    const adjustedLetterSpacing = style.letterSpacing * scale;
+    const adjustedWordWrapWidth = style.wordWrapWidth * scale;
+    const adjustedLineHeight = style.lineHeight ? style.lineHeight * scale : font.lineHeight;
+
+    const breakWords = style.wordWrap && style.breakWords;
+
     const nextWord = (word: typeof currentWord) =>
     {
         const start = currentLine.width;
@@ -120,15 +128,8 @@ export function getBitmapTextLayout(
 
         firstWord = true;
         layoutData.lines.push(currentLine);
-        layoutData.height += font.lineHeight;
+        layoutData.height += adjustedLineHeight;
     };
-
-    const scale = font.baseMeasurementFontSize / style.fontSize;
-
-    const adjustedLetterSpacing = style.letterSpacing * scale;
-    const adjustedWordWrapWidth = style.wordWrapWidth * scale;
-
-    const breakWords = style.wordWrap && style.breakWords;
 
     const checkIsOverflow = (lineWidth: number) =>
         lineWidth - adjustedLetterSpacing > adjustedWordWrapWidth;
@@ -182,10 +183,7 @@ export function getBitmapTextLayout(
 
             if (char === '\r' || char === '\n')
             {
-                if (currentLine.width !== 0)
-                {
-                    nextLine();
-                }
+                nextLine();
             }
             else if (!isEnd)
             {
