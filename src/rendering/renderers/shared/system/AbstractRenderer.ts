@@ -79,8 +79,8 @@ export interface ClearOptions
  * @standard
  */
 export type RendererDestroyOptions = TypeOrBool<ViewSystemDestroyOptions & {
-    /** Whether to clean up the pools/caches */
-    fullCleanup?: boolean;
+    /** Whether to clean up global resource pools/caches */
+    releaseGlobalResources?: boolean;
 }>;
 
 const defaultRunners = [
@@ -548,7 +548,7 @@ export class AbstractRenderer<
             runner.destroy();
         });
 
-        if (options === true || (typeof options === 'object' && options.fullCleanup))
+        if (options === true || (typeof options === 'object' && options.releaseGlobalResources))
         {
             GlobalResourceRegistry.release();
         }
