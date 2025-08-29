@@ -35,7 +35,6 @@ export class CustomRenderPipe implements InstructionPipe<RenderContainer>, Rende
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
-        this._renderer.runners.destroy.add(this);
     }
 
     public updateRenderable() { /** empty */ }

@@ -44,7 +44,6 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
-        this._renderer.runners.destroy.add(this);
     }
 
     public validateRenderable(bitmapText: BitmapText): boolean

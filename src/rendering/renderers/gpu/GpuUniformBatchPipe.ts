@@ -36,7 +36,6 @@ export class GpuUniformBatchPipe
     {
         this._renderer = renderer;
         this._renderer.renderableGC.addManagedHash(this, '_bindGroupHash');
-        this._renderer.runners.destroy.add(this);
 
         this._batchBuffer = new UboBatch({ minUniformOffsetAlignment });
 

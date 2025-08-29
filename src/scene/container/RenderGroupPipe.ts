@@ -31,7 +31,6 @@ export class RenderGroupPipe implements InstructionPipe<RenderGroup>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
-        this._renderer.runners.destroy.add(this);
     }
 
     public addRenderGroup(renderGroup: RenderGroup, instructionSet: InstructionSet): void

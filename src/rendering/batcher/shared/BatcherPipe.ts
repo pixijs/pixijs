@@ -64,7 +64,6 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
         this._adaptor = adaptor;
 
         this._adaptor.init?.(this);
-        this.renderer.runners.destroy.add(this);
     }
 
     public buildStart(instructionSet: InstructionSet)

@@ -50,7 +50,6 @@ export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
     constructor(renderer: Renderer, adaptor: ParticleContainerAdaptor)
     {
         this.renderer = renderer;
-        this.renderer.runners.destroy.add(this);
 
         this.adaptor = adaptor;
 

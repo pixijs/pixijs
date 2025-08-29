@@ -532,6 +532,8 @@ export class AbstractRenderer<
                 this as unknown as Renderer,
                 Adaptor ? new Adaptor() : null
             );
+
+            this.runners.destroy.add((this.renderPipes as any)[name]);
         });
     }
 

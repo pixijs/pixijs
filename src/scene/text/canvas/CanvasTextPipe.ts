@@ -25,7 +25,6 @@ export class CanvasTextPipe implements RenderPipe<Text>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
-        this._renderer.runners.destroy.add(this);
     }
 
     public validateRenderable(text: Text): boolean

@@ -36,7 +36,6 @@ export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
-        this._renderer.runners.destroy.add(this);
     }
 
     public buildStart()

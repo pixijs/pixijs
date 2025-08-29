@@ -131,6 +131,8 @@ export class GpuProgram
 
     /** @internal */
     public _layoutKey = 0;
+    /** @internal */
+    public _cacheKey: string;
 
     /** @internal */
     public _attributeLocationsKey = 0;
@@ -214,6 +216,7 @@ export class GpuProgram
         (this.structsAndGroups as null) = null;
         (this.fragment as null) = null;
         (this.vertex as null) = null;
+        programCache[this._cacheKey] = null;
     }
 
     /**
@@ -231,6 +234,7 @@ export class GpuProgram
         if (!programCache[key])
         {
             programCache[key] = new GpuProgram(options);
+            programCache[key]._cacheKey = key;
         }
 
         return programCache[key];

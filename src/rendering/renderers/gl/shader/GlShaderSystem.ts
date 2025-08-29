@@ -54,7 +54,6 @@ export class GlShaderSystem
     {
         this._renderer = renderer;
         this._renderer.renderableGC.addManagedHash(this, '_programDataHash');
-        this._renderer.runners.destroy.add(this);
     }
 
     protected contextChange(gl: GlRenderingContext): void
