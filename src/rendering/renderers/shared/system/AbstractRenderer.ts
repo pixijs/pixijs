@@ -4,7 +4,7 @@ import { Container } from '../../../../scene/container/Container';
 import { unsafeEvalSupported } from '../../../../utils/browser/unsafeEvalSupported';
 import { uid } from '../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
-import { PoolCollector } from '../../../../utils/pool/PoolCollector';
+import { GlobalResourceRegistry } from '../../../../utils/pool/GlobalResourceRegistry';
 import { EventEmitter } from '../../../../utils/utils';
 import { CLEAR } from '../../gl/const';
 import { SystemRunner } from './SystemRunner';
@@ -550,7 +550,7 @@ export class AbstractRenderer<
 
         if (options === true || (typeof options === 'object' && options.fullCleanup))
         {
-            PoolCollector.clearAll();
+            GlobalResourceRegistry.release();
         }
 
         this._systemsHash = null;

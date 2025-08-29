@@ -10,12 +10,12 @@ interface Cleanable
  * @category utils
  * @internal
  */
-export const PoolCollector = {
+export const GlobalResourceRegistry = {
     /**
      * Set of registered pools and cleanable objects.
      * @private
      */
-    _registeredPools: new Set<Cleanable>(),
+    _registeredResources: new Set<Cleanable>(),
 
     /**
      * Registers a pool or cleanable object for cleanup.
@@ -23,7 +23,7 @@ export const PoolCollector = {
      */
     register(pool: Cleanable): void
     {
-        this._registeredPools.add(pool);
+        this._registeredResources.add(pool);
     },
 
     /**
@@ -32,13 +32,13 @@ export const PoolCollector = {
      */
     unregister(pool: Cleanable): void
     {
-        this._registeredPools.delete(pool);
+        this._registeredResources.delete(pool);
     },
 
     /** Clears all registered pools and cleanable objects. This will call clear() on each registered item. */
-    clearAll(): void
+    release(): void
     {
-        this._registeredPools.forEach((pool) => pool.clear());
+        this._registeredResources.forEach((pool) => pool.clear());
     },
 
     /**
@@ -47,7 +47,7 @@ export const PoolCollector = {
      */
     get registeredCount(): number
     {
-        return this._registeredPools.size;
+        return this._registeredResources.size;
     },
 
     /**
@@ -57,7 +57,7 @@ export const PoolCollector = {
      */
     isRegistered(pool: Cleanable): boolean
     {
-        return this._registeredPools.has(pool);
+        return this._registeredResources.has(pool);
     },
 
     /**
@@ -66,6 +66,6 @@ export const PoolCollector = {
      */
     reset(): void
     {
-        this._registeredPools.clear();
+        this._registeredResources.clear();
     }
 };

@@ -1,5 +1,5 @@
 import { nextPow2 } from '../../../../maths/misc/pow2';
-import { PoolCollector } from '../../../../utils/pool/PoolCollector';
+import { GlobalResourceRegistry } from '../../../../utils/pool/GlobalResourceRegistry';
 import { TextureSource } from './sources/TextureSource';
 import { Texture } from './Texture';
 import { TextureStyle } from './TextureStyle';
@@ -187,4 +187,4 @@ export class TexturePoolClass
  * @advanced
  */
 export const TexturePool = new TexturePoolClass();
-PoolCollector.register(TexturePool);
+GlobalResourceRegistry.register(TexturePool);

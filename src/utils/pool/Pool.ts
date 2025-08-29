@@ -103,7 +103,7 @@ export class Pool<T extends PoolItem>
         return this._count - this._index;
     }
 
-    /** clears the pool - mainly used for debugging! */
+    /** clears the pool */
     public clear()
     {
         if (this._pool.length > 0 && this._pool[0].destroy)
@@ -114,6 +114,7 @@ export class Pool<T extends PoolItem>
             }
         }
         this._pool.length = 0;
+        this._count = 0;
         this._index = 0;
     }
 }

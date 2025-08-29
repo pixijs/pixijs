@@ -1,7 +1,7 @@
 import { uid } from '../../../utils/data/uid';
 import { ViewableBuffer } from '../../../utils/data/ViewableBuffer';
 import { deprecation } from '../../../utils/logging/deprecation';
-import { PoolCollector } from '../../../utils/pool/PoolCollector';
+import { GlobalResourceRegistry } from '../../../utils/pool/GlobalResourceRegistry';
 import { fastCopy } from '../../renderers/shared/buffer/utils/fastCopy';
 import { type BLEND_MODES } from '../../renderers/shared/state/const';
 import { getAdjustedBlendModeBlend } from '../../renderers/shared/state/getAdjustedBlendModeBlend';
@@ -76,7 +76,7 @@ export class Batch implements Instruction
 const batchPool: Batch[] = [];
 let batchPoolIndex = 0;
 
-PoolCollector.register({
+GlobalResourceRegistry.register({
     clear: () =>
     {
         // check if the first element has a destroy method

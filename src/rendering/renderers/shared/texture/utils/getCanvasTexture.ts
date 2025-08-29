@@ -1,4 +1,4 @@
-import { PoolCollector } from '../../../../../utils/pool/PoolCollector';
+import { GlobalResourceRegistry } from '../../../../../utils/pool/GlobalResourceRegistry';
 import { CanvasSource } from '../sources/CanvasSource';
 import { Texture } from '../Texture';
 
@@ -7,7 +7,7 @@ import type { CanvasSourceOptions } from '../sources/CanvasSource';
 
 const canvasCache: Map<ICanvas, Texture<CanvasSource>> = new Map();
 
-PoolCollector.register({
+GlobalResourceRegistry.register({
     clear: () =>
     {
         canvasCache.clear();

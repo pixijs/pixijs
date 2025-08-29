@@ -1,5 +1,5 @@
+import { GlobalResourceRegistry } from './GlobalResourceRegistry';
 import { Pool } from './Pool';
-import { PoolCollector } from './PoolCollector';
 
 import type { PoolItem, PoolItemConstructor } from './Pool';
 
@@ -112,4 +112,4 @@ export class PoolGroupClass
  * @internal
  */
 export const BigPool = new PoolGroupClass();
-PoolCollector.register(BigPool);
+GlobalResourceRegistry.register(BigPool);

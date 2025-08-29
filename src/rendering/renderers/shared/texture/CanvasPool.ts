@@ -1,6 +1,6 @@
 import { DOMAdapter } from '../../../../environment/adapter';
 import { nextPow2 } from '../../../../maths/misc/pow2';
-import { PoolCollector } from '../../../../utils/pool/PoolCollector';
+import { GlobalResourceRegistry } from '../../../../utils/pool/GlobalResourceRegistry';
 
 import type { ICanvas, ICanvasRenderingContext2DSettings } from '../../../../environment/canvas/ICanvas';
 import type { ICanvasRenderingContext2D } from '../../../../environment/canvas/ICanvasRenderingContext2D';
@@ -120,4 +120,4 @@ export class CanvasPoolClass
  * @internal
  */
 export const CanvasPool = new CanvasPoolClass();
-PoolCollector.register(CanvasPool);
+GlobalResourceRegistry.register(CanvasPool);
