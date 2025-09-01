@@ -209,7 +209,14 @@ Resources define **textures, images, videos, and other assets**.
 ### 6.2 Texture
 
 A texture resource is a specialized type of resource that represents a portion of a texture source.
-Therefore all texture resources must have a `source` assigned to them, which can be loaded by the engine.
+A texture’s `source` can point to either:
+
+- A **TextureSource** (e.g., `image_source`, `video_source`)
+- A **Spritesheet resource** (`spritesheet`)
+
+This allows textures to be defined directly from standalone images or as frames within a spritesheet.
+
+NOTE: It is only required to define a spritesheet resource if the texture has underlying data such as animations which are defined in the spritesheet data.
 
 ```json
 {
@@ -219,11 +226,32 @@ Therefore all texture resources must have a `source` assigned to them, which can
 }
 ```
 
-| Name   | Type      | Description                                 | Required |
-| ------ | --------- | ------------------------------------------- | -------- |
-| type   | string    | `"texture"`                                 | ✅ Yes   |
-| source | number    | Index into `resources[]` for texture source | ✅ Yes   |
-| frame  | [x,y,w,h] | Rectangle frame of the texture              | No       |
+| Name   | Type      | Description                                                       | Required |
+| ------ | --------- | ----------------------------------------------------------------- | -------- |
+| type   | string    | `"texture"`                                                       | ✅ Yes   |
+| source | number    | Index into `resources[]` for texture source or spritesheet source | ✅ Yes   |
+| frame  | [x,y,w,h] | Rectangle frame of the texture                                    | No       |
+
+```mermaid
+graph TD
+
+    NodeSprite["Sprite Node (type: sprite)"]
+    TextureHero["Texture Resource"]
+
+    subgraph Resources["resources[]"]
+        Spritesheet["Spritesheet"]
+        ImageSource["ImageSource"]
+        TextureSource["TextureSource"]
+    end
+
+    %% Path 1: Sprite using a texture from a spritesheet
+    NodeSprite --> TextureHero
+    TextureHero --> Spritesheet
+    Spritesheet --> ImageSource
+
+    %% Path 2: Sprite using a texture from a standalone texture source
+    NodeSprite -. alternative .-> TextureSource
+```
 
 #### PixiJS Texture Extension
 
@@ -483,7 +511,7 @@ An image source represents a 2D image that can be used as a texture.
 ```json
 {
     "type": "image_source",
-    "uri": "/textures/hero.png",
+    "uri": "/textures/hero.png"
 }
 ```
 
@@ -516,6 +544,48 @@ A video source represents a 2D video that can be used as a texture.
 | loop        | boolean        | Whether video loops        | No       |
 | muted       | boolean        | Whether video is muted     | No       |
 | playsinline | boolean        | Whether video plays inline | No       |
+
+---
+
+### 6.4 Spritesheet Resource
+
+A **spritesheet resource** represents the JSON data for a collection of 2D images (sprites) packed into a single texture atlas.
+
+```json
+{
+    "type": "spritesheet",
+    "name": "atlasMeta",
+    "uri": "/spritesheets/atlasMeta.json",
+    "source": 0
+}
+```
+
+| Name   | Type   | Description                                                        | Required |
+| ------ | ------ | ------------------------------------------------------------------ | -------- |
+| type   | string | `"spritesheet"`                                                    | ✅ Yes   |
+| source | number | Index into `resources[]` pointing to the underlying `image_source` | ✅ Yes   |
+| uri    | string | Path/URL to the spritesheet JSON file                              | ✅ Yes   |
+| uid    | string | Unique identifier for the resource                                 | No       |
+| name   | string | Human-readable name                                                | No       |
+
+#### PixiJS Spritesheet Extension
+
+```json
+{
+    "type": "spritesheet",
+    "uri": "/spritesheets/atlasMeta.json",
+    "source": 0,
+    "extensions": {
+        "pixi_spritesheet": {
+            "cachePrefix": "atlas_"
+        }
+    }
+}
+```
+
+| Name        | Type   | Description                              | Required |
+| ----------- | ------ | ---------------------------------------- | -------- |
+| cachePrefix | string | Prefix for spritesheet when being loaded | No       |
 
 ---
 
@@ -585,7 +655,7 @@ Example:
         },
         {
             "type": "image_source",
-            "uri": "/textures/hero.png",
+            "uri": "/textures/hero.png"
         }
     ],
     "extensionsUsed": ["pixi_sprite_node", "pixi_texture_resource"]

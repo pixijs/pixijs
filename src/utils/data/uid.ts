@@ -12,26 +12,21 @@ export type UIDNames =
     | 'resource'
     | 'texture'
     | 'textureSource'
-    | 'textureResource'
     | 'batcher' //
     | 'graphicsContext' //
-    | 'graphicsView' //
     | 'graphicsPath' //
     | 'fillGradient' //
     | 'fillPattern' //
-    | 'meshView' //
     | 'renderable' //
     | 'buffer' //
-    | 'bufferResource' //
     | 'geometry'
     | 'instructionSet' //
     | 'renderTarget' //
     | 'uniform' //
-    | 'spriteView' //
-    | 'textView' //
-    | 'tilingSpriteView' //
     | 'shader' //
-    | 'renderer';
+    | 'renderer'
+    | 'spritesheet'
+    | (string & {});
 
 /**
  * Gets the next unique identifier

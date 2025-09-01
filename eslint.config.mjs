@@ -40,6 +40,7 @@ export default tseslint.config(
                         'pixi_texture_resource',
                         'pixi_texture_source_resource',
                         'pixi_video_source_resource',
+                        'pixi_spritesheet_resource',
                         'v8_0_0',
                         'v8_3_4'
                     ],

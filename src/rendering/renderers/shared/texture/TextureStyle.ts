@@ -31,7 +31,7 @@ function createResourceIdFromString(value: string): number
  * @category rendering
  * @advanced
  */
-export interface TextureStyleOptions extends Partial<TextureStyle>
+export interface TextureStyleOptions
 {
     /** setting this will set wrapModeU,wrapModeV and wrapModeW all at once! */
     addressMode?: WRAP_MODE;

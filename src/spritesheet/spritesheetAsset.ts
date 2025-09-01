@@ -2,7 +2,7 @@ import { LoaderParserPriority } from '../assets/loader/parsers/LoaderParser';
 import { Resolver } from '../assets/resolver/Resolver';
 import { copySearchParams } from '../assets/utils/copySearchParams';
 import { ExtensionType } from '../extensions/Extensions';
-import { Texture } from '../rendering/renderers/shared/texture/Texture';
+import { type Texture } from '../rendering/renderers/shared/texture/Texture';
 import { path } from '../utils/path';
 import { Spritesheet } from './Spritesheet';
 
@@ -28,6 +28,20 @@ export interface SpriteSheetJson extends SpritesheetData
         scale: string;
         related_multi_packs?: string[];
     };
+}
+
+/**
+ * Options for parsing a spritesheet.
+ * @category assets
+ * @advanced
+ */
+export interface SpriteSheetParseOptions
+{
+    texture?: Texture,
+    imageFilename?: string,
+    ignoreMultiPack?: boolean,
+    textureOptions?: TextureSourceOptions,
+    cachePrefix?: string,
 }
 
 const validImages = ['jpg', 'png', 'jpeg', 'avif', 'webp',
@@ -138,13 +152,7 @@ export const spritesheetAsset = {
 
         async parse(
             asset: SpriteSheetJson,
-            options: ResolvedAsset<{
-                texture?: Texture,
-                imageFilename?: string,
-                ignoreMultiPack?: boolean,
-                textureOptions?: TextureSourceOptions,
-                cachePrefix?: string,
-            }>,
+            options: ResolvedAsset<SpriteSheetParseOptions>,
             loader?: Loader
         ): Promise<Spritesheet>
         {
@@ -164,7 +172,7 @@ export const spritesheetAsset = {
 
             let texture: Texture;
 
-            if (imageTexture instanceof Texture)
+            if (imageTexture?.isTexture)
             {
                 texture = imageTexture;
             }
@@ -178,6 +186,7 @@ export const spritesheetAsset = {
             }
 
             const spritesheet = new Spritesheet({
+                uri: options.src,
                 texture: texture.source,
                 data: asset,
                 cachePrefix

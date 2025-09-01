@@ -1,6 +1,7 @@
 import { Rectangle } from '../maths/shapes/Rectangle';
 import { TextureSource } from '../rendering/renderers/shared/texture/sources/TextureSource';
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
+import { uid } from '../utils/data/uid';
 
 import type { PointData } from '../maths/point/PointData';
 import type { BindableTexture, TextureBorders } from '../rendering/renderers/shared/texture/Texture';
@@ -111,6 +112,8 @@ export interface SpritesheetOptions<S extends SpritesheetData = SpritesheetData>
      * that share texture names and you need to disambiguate them.
      */
     cachePrefix?: string;
+    /** The URI of the spritesheet. */
+    uri?: string;
 }
 
 /**
@@ -223,6 +226,12 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
     /** For multi-packed spritesheets, this contains a reference to all the other spritesheets it depends on. */
     public linkedSheets: Spritesheet<S>[] = [];
 
+    /** unique id for this spritesheet */
+    public uid = uid('spritesheet');
+
+    /** The URI of the spritesheet. */
+    public uri: string;
+
     /** Reference to the source texture. */
     public textureSource: TextureSource;
 
@@ -307,6 +316,7 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
         }
         const { texture, data, cachePrefix = '' } = options;
 
+        this.uri = options.uri;
         this.cachePrefix = cachePrefix;
         this._texture = texture instanceof Texture ? texture : null;
         this.textureSource = texture.source;

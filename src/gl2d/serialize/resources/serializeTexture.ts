@@ -2,6 +2,7 @@ import { type Texture } from '../../../rendering/renderers/shared/texture/Textur
 import { type ToGL2DOptions } from '../../GL2D';
 import { type PixiGL2DTexture } from '../../spec/extensions/resources';
 import { type GL2DTexture } from '../../spec/resources';
+import { isSpritesheetTexture } from '../../utils/isSpritesheetTexture';
 
 /**
  * Serializes the texture to a gl2D-compatible format.
@@ -27,7 +28,19 @@ export async function serializeTexture(instance: Texture, options: ToGL2DOptions
 
     // if not, create a new entry
     await instance.source.serialize(options);
-    const sourceIndex = gl2D.resources.findIndex((res) => res.uid === `texture_source_${instance.source.uid}`);
+    const spritesheetSource = isSpritesheetTexture(instance.source);
+
+    let sourceIndex: number;
+
+    if (spritesheetSource)
+    {
+        // find the spritesheet resource
+        sourceIndex = gl2D.resources.findIndex((res) => res.uid === `spritesheet_${spritesheetSource.uid}`);
+    }
+    else
+    {
+        sourceIndex = gl2D.resources.findIndex((res) => res.uid === `texture_source_${instance.source.uid}`);
+    }
 
     const newTextureData: PixiGL2DTexture = {
         type: 'texture',

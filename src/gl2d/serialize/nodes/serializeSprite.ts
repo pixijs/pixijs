@@ -33,12 +33,12 @@ export async function serializeSprite(instance: Sprite, options: ToGL2DOptions):
         extensions: {
             pixi_container_node: {
                 ...sprite.extensions.pixi_container_node,
-                anchor: [instance.anchor.x, instance.anchor.y],
+                anchor: [instance.anchor.x, instance.anchor.y]
             },
             pixi_sprite_node: {
-                roundPixels: instance.roundPixels,
-            },
-        },
+                roundPixels: instance.roundPixels
+            }
+        }
     };
 
     // Assign the full sprite back to the original sprite

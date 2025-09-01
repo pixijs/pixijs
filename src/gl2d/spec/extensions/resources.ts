@@ -1,4 +1,10 @@
-import { type GL2DImageSource, type GL2DTexture, type GL2DTextureSource, type GL2DVideoSource } from '../resources';
+import {
+    type GL2DImageSource,
+    type GL2DSpritesheetSource,
+    type GL2DTexture,
+    type GL2DTextureSource,
+    type GL2DVideoSource,
+} from '../resources';
 
 import type { ALPHA_MODES, COMPARE_FUNCTION, TEXTURE_DIMENSIONS } from '../../../rendering/renderers/shared/texture/const';
 
@@ -112,5 +118,25 @@ export interface PixiGL2DVideoSourceExtension extends PixiGL2DTextureSourceExten
         preloadTimeoutMs: number;
         /** The alpha mode of the video. */
         alphaMode: ALPHA_MODES;
+    };
+}
+
+/**
+ * Represents a PixiJS sprite sheet within a GL2D file through an extension.
+ * @category gl2d
+ * @standard
+ */
+export type PixiGL2DSpritesheetSource = GL2DSpritesheetSource<PixiGL2DSpritesheetExtension>;
+
+/**
+ * Extension properties for PixiJS spriteSheet nodes.
+ * @category gl2d
+ * @standard
+ */
+export interface PixiGL2DSpritesheetExtension
+{
+    pixi_spritesheet_resource: {
+        /** The cache prefix for the spritesheet */
+        cachePrefix: string;
     };
 }
