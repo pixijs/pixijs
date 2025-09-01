@@ -127,7 +127,7 @@ export class FillPattern implements CanvasPattern
      * This key is used for caching.
      * @returns {string} Unique key for the instance
      */
-    public styleKey(): string
+    public get styleKey(): string
     {
         return `fill-pattern-${this.uid}-${this._tick}`;
     }

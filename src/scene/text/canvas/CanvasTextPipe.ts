@@ -31,7 +31,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
     {
         const gpuText = this._getGpuText(text);
 
-        const newKey = text.styleKey();
+        const newKey = text.styleKey;
 
         if (gpuText.currentKey !== newKey)
         {
@@ -49,7 +49,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
         {
             const resolution = text._autoResolution ? this._renderer.resolution : text.resolution;
 
-            if (batchableText.currentKey !== text.styleKey() || text.resolution !== resolution)
+            if (batchableText.currentKey !== text.styleKey || text.resolution !== resolution)
             {
                 // If the text has changed, we need to update the GPU text
                 this._updateGpuText(text);
@@ -79,7 +79,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
         text._resolution = text._autoResolution ? this._renderer.resolution : text.resolution;
 
         batchableText.texture = this._renderer.canvasText.getManagedTexture(text);
-        batchableText.currentKey = text.styleKey();
+        batchableText.currentKey = text.styleKey;
 
         updateTextBounds(batchableText, text);
     }

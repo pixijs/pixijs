@@ -667,9 +667,9 @@ export abstract class AbstractText<
      * This key is used for caching.
      * @returns {string} Unique key for the instance
      */
-    public styleKey(): string
+    public get styleKey(): string
     {
-        return `${this._text}:${this._style.styleKey()}:${this._resolution}`;
+        return `${this._text}:${this._style.styleKey}:${this._resolution}`;
     }
 }
 

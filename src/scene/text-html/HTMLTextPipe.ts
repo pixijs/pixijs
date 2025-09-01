@@ -35,7 +35,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
     {
         const gpuText = this._getGpuText(htmlText);
 
-        const newKey = htmlText.styleKey();
+        const newKey = htmlText.styleKey;
 
         if (gpuText.currentKey !== newKey)
         {
@@ -53,7 +53,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
         {
             const resolution = htmlText._autoResolution ? this._renderer.resolution : htmlText.resolution;
 
-            if (batchableHTMLText.currentKey !== htmlText.styleKey() || htmlText.resolution !== resolution)
+            if (batchableHTMLText.currentKey !== htmlText.styleKey || htmlText.resolution !== resolution)
             {
                 // If the text has changed, we need to update the GPU text
                 this._updateGpuText(htmlText).catch((e) =>
@@ -108,7 +108,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
         }
 
         batchableHTMLText.texturePromise = texturePromise;
-        batchableHTMLText.currentKey = htmlText.styleKey();
+        batchableHTMLText.currentKey = htmlText.styleKey;
 
         batchableHTMLText.texture = await texturePromise;
 

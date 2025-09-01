@@ -159,7 +159,7 @@ describe('Text', () =>
             container.addChild(text);
             renderer.render({ container });
 
-            const key = text.styleKey();
+            const key = text.styleKey;
 
             expect(renderer.canvasText['_activeTextures'][key].usageCount).toBe(1);
 

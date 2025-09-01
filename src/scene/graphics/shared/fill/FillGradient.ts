@@ -539,7 +539,7 @@ export class FillGradient implements CanvasGradient
      * This key is used for caching and texture management.
      * @returns {string} Unique key for the gradient
      */
-    public styleKey(): string
+    public get styleKey(): string
     {
         return `fill-gradient-${this.uid}-${this._tick}`;
     }

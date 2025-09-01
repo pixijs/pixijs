@@ -1047,7 +1047,7 @@ export class TextStyle extends EventEmitter<{
      * This key is used for caching.
      * @returns {string} Unique key for the instance
      */
-    public styleKey(): string
+    public get styleKey(): string
     {
         return `${this.uid}-${this._tick}`;
     }

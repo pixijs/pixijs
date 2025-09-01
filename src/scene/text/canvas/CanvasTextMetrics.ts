@@ -259,7 +259,7 @@ export class CanvasTextMetrics
         wordWrap: boolean = style.wordWrap,
     ): CanvasTextMetrics
     {
-        const textKey = `${text}-${style.styleKey()}-wordWrap-${wordWrap}`;
+        const textKey = `${text}-${style.styleKey}-wordWrap-${wordWrap}`;
 
         // check if we have already measured this text with the same style
         if (CanvasTextMetrics._measurementCache.has(textKey))

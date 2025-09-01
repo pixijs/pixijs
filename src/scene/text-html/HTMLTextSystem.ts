@@ -77,7 +77,7 @@ export class HTMLTextSystem implements System
      */
     public getManagedTexture(text: HTMLText): Promise<Texture>
     {
-        const textKey = text.styleKey();
+        const textKey = text.styleKey;
 
         if (this._activeTextures[textKey])
         {

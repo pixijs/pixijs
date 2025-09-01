@@ -181,7 +181,7 @@ export class CanvasTextSystem implements System
     public getManagedTexture(text: Text)
     {
         text._resolution = text._autoResolution ? this._renderer.resolution : text.resolution;
-        const textKey = text.styleKey();
+        const textKey = text.styleKey;
 
         if (this._activeTextures[textKey])
         {
