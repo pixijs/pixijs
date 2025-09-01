@@ -11,10 +11,11 @@ type ParticleUpdateFunction = (ps: IParticle[], f32v: Float32Array, u32v: Uint32
  * @param properties
  * @internal
  */
-export function generateParticleUpdatePolyfill(properties: ParticleRendererProperty[])
+export function generateParticleUpdatePolyfill(properties: Record<string, ParticleRendererProperty>)
 {
-    const dynamicProperties = properties.filter((p) => p.dynamic);
-    const staticProperties = properties.filter((p) => !p.dynamic);
+    const allProperties = Object.values(properties);
+    const dynamicProperties = allProperties.filter((p) => p.dynamic);
+    const staticProperties = allProperties.filter((p) => !p.dynamic);
 
     return {
         dynamicUpdate: generateUpdateFunction(dynamicProperties),

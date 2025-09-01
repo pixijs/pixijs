@@ -17,6 +17,8 @@ describe('GifSource', () =>
             expect(data.duration).toBeGreaterThan(0);
             expect(data.frames).toBeDefined();
             expect(data.textures).toBeDefined();
+            expect(data.textures.every((texture) => texture.source.scaleMode === 'linear')).toBe(true);
+            expect(data.textures.every((texture) => texture.source.resolution === 1)).toBe(true);
 
             data.destroy();
 
@@ -34,6 +36,20 @@ describe('GifSource', () =>
             expect(() => (GifSource as any).from()).toThrow();
             // eslint-disable-next-line jest/expect-expect
             expect(() => (GifSource as any).from(new ArrayBuffer(0))).toThrow();
+        });
+
+        it('should support non-default canvas options', () =>
+        {
+            const arrayBuffer = toArrayBuffer('gif/example.gif');
+            const data = GifSource.from(arrayBuffer, {
+                scaleMode: 'nearest',
+                resolution: 2,
+            });
+
+            expect(data.textures.every((texture) => texture.source.scaleMode === 'nearest')).toBe(true);
+            expect(data.textures.every((texture) => texture.source.resolution === 2)).toBe(true);
+
+            data.destroy();
         });
     });
 });
