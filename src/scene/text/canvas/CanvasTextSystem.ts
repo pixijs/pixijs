@@ -114,7 +114,7 @@ export class CanvasTextSystem implements System
         {
             // apply the filters to the texture if required..
             // this returns a new texture with the filters applied
-            const filteredTexture = this._applyFilters(texture, style.filters);
+            const filteredTexture = this._applyFilters(texture, style.filters as Filter[]);
 
             // return the original texture to the pool so we can reuse the next frame
             this.returnTexture(texture);
