@@ -46,7 +46,7 @@ export class BatchableHTMLText extends BatchableSprite
     public destroy()
     {
         this._renderer.htmlText.returnTexturePromise(this.texturePromise);
-
+        this._renderer.runners.resolutionChange.remove(this);
         this.texturePromise = null;
         (this._renderer as null) = null;
     }

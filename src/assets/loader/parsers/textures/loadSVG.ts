@@ -1,4 +1,5 @@
 import { DOMAdapter } from '../../../../environment/adapter';
+import { type ImageLike } from '../../../../environment/ImageLike';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { ImageSource } from '../../../../rendering/renderers/shared/texture/sources/ImageSource';
 import { GraphicsContext } from '../../../../scene/graphics/shared/GraphicsContext';
@@ -25,7 +26,7 @@ export interface LoadSVGConfig
      * The crossOrigin value to use for loading the SVG as an image.
      * @default 'anonymous'
      */
-    crossOrigin: HTMLImageElement['crossOrigin'];
+    crossOrigin: ImageLike['crossOrigin'];
     /**
      * When set to `true`, loading and decoding images will happen with `new Image()`,
      * @default false
@@ -92,31 +93,35 @@ async function loadAsTexture(
     url: string,
     asset: ResolvedAsset<TextureSourceOptions & LoadSVGConfig>,
     loader: Loader,
-    crossOrigin: HTMLImageElement['crossOrigin']
+    crossOrigin: ImageLike['crossOrigin']
 ): Promise<Texture>
 {
     const response = await DOMAdapter.get().fetch(url);
 
-    const blob = await response.blob();
+    const image = DOMAdapter.get().createImage();
 
-    const blobUrl = URL.createObjectURL(blob);
-
-    const image = new Image();
-
-    image.src = blobUrl;
+    image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(await response.text())}`;
     image.crossOrigin = crossOrigin;
     await image.decode();
-
-    URL.revokeObjectURL(blobUrl);
 
     // convert to canvas...
     const width = asset.data?.width ?? image.width;
     const height = asset.data?.height ?? image.height;
     const resolution = asset.data?.resolution || getResolutionOfUrl(url);
-    const canvas = DOMAdapter.get().createCanvas(width * resolution, height * resolution);
+
+    // Ensure canvas dimensions are integers to prevent edge trimming
+    const canvasWidth = Math.ceil(width * resolution);
+    const canvasHeight = Math.ceil(height * resolution);
+
+    const canvas = DOMAdapter.get().createCanvas(canvasWidth, canvasHeight);
     const context = canvas.getContext('2d');
 
-    context.drawImage(image, 0, 0, width * resolution, height * resolution);
+    // Improve rendering quality for decimal resolutions
+    context.imageSmoothingEnabled = true;
+    context.imageSmoothingQuality = 'high';
+
+    // Draw image with exact scaled dimensions to prevent trimming
+    context.drawImage(image as CanvasImageSource, 0, 0, width * resolution, height * resolution);
 
     const { parseAsGraphicsContext: _p, ...rest } = asset.data ?? {};
     const base = new ImageSource({

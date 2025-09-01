@@ -215,7 +215,6 @@ export class Application<R extends Renderer = Renderer>
     /** @deprecated since 8.0.0 */
     constructor(options?: Partial<ApplicationOptions>);
 
-    /** @ignore */
     constructor(...args: [Partial<ApplicationOptions>] | [])
     {
         // #if _DEBUG

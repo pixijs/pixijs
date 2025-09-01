@@ -277,7 +277,7 @@ export interface ContainerOptions<C extends ContainerChild = ContainerChild> ext
      *
      * > [!NOTE] 'rotation' and 'angle' have the same effect on a display object;
      * > rotation is in radians, angle is in degrees.
-     @example
+     * @example
      * ```ts
      * new Container({ angle: 45 }); // Rotate 45 degrees
      * new Container({ angle: 90 }); // Rotate 90 degrees
@@ -1041,7 +1041,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         child.didChange = true;
 
-        // TODO - OPtimise this? could check what the parent has set?
+        // TODO - Optimise this? could check what the parent has set?
         child._updateFlags = 0b1111;
 
         if (renderGroup)
@@ -1362,7 +1362,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      *
      * > [!NOTE] 'rotation' and 'angle' have the same effect on a display object;
      * > rotation is in radians, angle is in degrees.
-     @example
+     * @example
      * ```ts
      * // Basic angle rotation
      * sprite.angle = 45; // 45 degrees
@@ -1566,7 +1566,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * > [!NOTE] Changing the width will adjust the scale.x property of the container while maintaining its aspect ratio.
      * > [!NOTE] If you want to set both width and height at the same time, use {@link Container#setSize}
      * as it is more optimized by not recalculating the local bounds twice.
-     *  @example
+     * @example
      * ```ts
      * // Basic width setting
      * container.width = 100;
@@ -1626,7 +1626,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * container.getSize(reuseSize);
      * ```
      * @param out - Optional object to store the size in.
-     * @returns - The size of the container.
+     * @returns The size of the container.
      */
     public getSize(out?: Size): Size
     {

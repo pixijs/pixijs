@@ -637,7 +637,7 @@ export interface TextStyleOptions
      * compared to applying the filter directly to the text object (which would be applied at run time).
      * @default undefined
      */
-    filters?: readonly Filter[];
+    filters?: Filter[] | readonly Filter[];
 }
 
 /**

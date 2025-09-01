@@ -23,6 +23,10 @@ interface IIntl
 {
     Segmenter?: {
         prototype: ISegmenter;
+        /**
+         * Creates a new Intl.Segmenter object.
+         * @returns A new Intl.Segmenter object.
+         */
         new(): ISegmenter;
     };
 }
@@ -212,6 +216,7 @@ export class CanvasTextMetrics
     // eslint-disable-next-line @typescript-eslint/naming-convention
     private static __context: ICanvasRenderingContext2D;
 
+    /** Cache for measured text metrics */
     private static readonly _measurementCache = lru<CanvasTextMetrics>(1000);
 
     /**
@@ -254,13 +259,14 @@ export class CanvasTextMetrics
         wordWrap: boolean = style.wordWrap,
     ): CanvasTextMetrics
     {
-        const textKey = `${text}:${style.styleKey()}`;
+        const textKey = `${text}-${style.styleKey()}-wordWrap-${wordWrap}`;
 
         // check if we have already measured this text with the same style
         if (CanvasTextMetrics._measurementCache.has(textKey))
         {
             return CanvasTextMetrics._measurementCache.get(textKey);
         }
+
         const font = fontStringFromTextStyle(style);
         const fontProperties = CanvasTextMetrics.measureFont(font);
 

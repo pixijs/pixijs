@@ -1,3 +1,5 @@
+/* eslint-disable no-restricted-globals */
+import { type ImageLike } from '../../../../environment/ImageLike';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { VideoSource } from '../../../../rendering/renderers/shared/texture/sources/VideoSource';
 import { detectVideoAlphaMode } from '../../../../utils/browser/detectVideoAlphaMode';
@@ -25,7 +27,7 @@ let validVideoMIMEs: string[];
  * @category assets
  * @advanced
  */
-export function crossOrigin(element: HTMLImageElement | HTMLVideoElement, url: string, crossorigin?: boolean | string): void
+export function crossOrigin(element: ImageLike | HTMLVideoElement, url: string, crossorigin?: boolean | string): void
 {
     if (crossorigin === undefined && !url.startsWith('data:'))
     {
@@ -143,7 +145,7 @@ function getBrowserSupportedVideoExtensions()
  * A simple plugin to load video textures.
  *
  * You can pass VideoSource options to the loader via the .data property of the asset descriptor
- * when using Asset.load().
+ * when using Assets.load().
  * ```js
  * // Set the data
  * const texture = await Assets.load({

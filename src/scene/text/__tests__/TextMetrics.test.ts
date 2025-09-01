@@ -3,6 +3,7 @@
  * widths or breaking of words may not be cross-platform
  */
 
+import { lru } from 'tiny-lru';
 import { CanvasTextMetrics } from '../canvas/CanvasTextMetrics';
 import { TextStyle } from '../TextStyle';
 
@@ -729,6 +730,76 @@ describe('CanvasTextMetrics', () =>
 
             expect(metrics.lines[0]).toEqual('-------0000,1111,');
             expect(metrics.lines[1]).toEqual('9999------');
+        });
+    });
+
+    describe('measurement cache', () =>
+    {
+        const baseStyle = new TextStyle({
+            fontFamily: 'Arial',
+            fontSize: 20,
+            fontWeight: '400',
+            wordWrap: true,
+            wordWrapWidth: 250,
+            breakWords: true,
+            letterSpacing: 1,
+        });
+
+        it('returns the exact same cached object on repeated measureText calls', () =>
+        {
+            const metrics1 = CanvasTextMetrics.measureText('Cache Test', baseStyle);
+            const metrics2 = CanvasTextMetrics.measureText('Cache Test', baseStyle);
+
+            expect(metrics1).toBe(metrics2);
+        });
+
+        it('evicts least recently used entry when capacity is exceeded', () =>
+        {
+            // Save original cache (private)
+            const originalCache = (CanvasTextMetrics as any)._measurementCache;
+
+            try
+            {
+                // Replace with very small LRU to force eviction quickly
+                (CanvasTextMetrics as any)._measurementCache = lru(2);
+
+                const cache = (CanvasTextMetrics as any)._measurementCache;
+
+                const textA = 'AAAA';
+                const textB = 'BBBB';
+                const textC = 'CCCC';
+
+                const keyA = `${textA}-${baseStyle.styleKey}-wordWrap-${baseStyle.wordWrap}`;
+                const keyB = `${textB}-${baseStyle.styleKey}-wordWrap-${baseStyle.wordWrap}`;
+                const keyC = `${textC}-${baseStyle.styleKey}-wordWrap-${baseStyle.wordWrap}`;
+
+                // Fill cache with A and B
+                const metricsA1 = CanvasTextMetrics.measureText(textA, baseStyle);
+
+                CanvasTextMetrics.measureText(textB, baseStyle);
+
+                expect(cache.has(keyA)).toBe(true);
+                expect(cache.has(keyB)).toBe(true);
+
+                // Access A again so B becomes the least recently used
+                const metricsA2 = CanvasTextMetrics.measureText(textA, baseStyle);
+
+                expect(metricsA2).toBe(metricsA1);
+
+                // Insert C -> should evict B
+                const metricsC = CanvasTextMetrics.measureText(textC, baseStyle);
+
+                expect(metricsC.text).toBe(textC);
+
+                expect(cache.has(keyA)).toBe(true);
+                expect(cache.has(keyC)).toBe(true);
+                expect(cache.has(keyB)).toBe(false);
+            }
+            finally
+            {
+                // Restore original cache
+                (CanvasTextMetrics as any)._measurementCache = originalCache;
+            }
         });
     });
 });

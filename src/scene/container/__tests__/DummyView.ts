@@ -1,9 +1,8 @@
-import { Rectangle } from '../../../maths/shapes/Rectangle';
+import { Bounds } from '../../../scene/container/bounds/Bounds';
 import { Container } from '../Container';
 
 import type { Point } from '../../../maths/point/Point';
 import type { View, ViewObserver } from '../../../rendering/renderers/shared/view/View';
-import type { Bounds } from '../../../scene/container/bounds/Bounds';
 import type { ContainerOptions } from '../Container';
 
 interface DummyViewOptions extends ContainerOptions
@@ -33,20 +32,11 @@ export class DummyView extends Container implements View
     public _lastUsed = -1;
 
     public _onUpdate: () => void;
-    public get bounds()
-    {
-        return {
-            minX: this.size.x,
-            minY: this.size.y,
-            maxX: this.size.x + this.size.width,
-            maxY: this.size.y + this.size.height,
-        } as Bounds;
-    }
     public updateBounds: () => void;
 
     public containsPoint: (point: Point) => boolean;
     public destroy: () => void;
-    public size: Rectangle;
+    public bounds: Bounds;
     constructor(options: DummyViewOptions = {})
     {
         options = { ...defaultOptions, ...options };
@@ -55,7 +45,7 @@ export class DummyView extends Container implements View
 
         super(rest);
 
-        this.size = new Rectangle(x, y, width, height);
+        this.bounds = new Bounds(x, y, x + width, y + height);
     }
 
     public onViewUpdate(): void

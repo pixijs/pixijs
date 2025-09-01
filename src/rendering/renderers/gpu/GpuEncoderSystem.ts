@@ -156,7 +156,7 @@ export class GpuEncoderSystem implements System
 
         for (const i in buffersToBind)
         {
-            this._setVertexBuffer(i as any as number, geometry.attributes[buffersToBind[i]].buffer);
+            this._setVertexBuffer(parseInt(i, 10), geometry.attributes[buffersToBind[i]].buffer);
         }
 
         if (geometry.indexBuffer)

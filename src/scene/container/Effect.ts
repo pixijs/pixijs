@@ -21,6 +21,8 @@ export interface Effect
 /**
  * The constructor for an Effect.
  * It is used to create instances of effects that can be applied to containers.
+ * @param options - The options for the effect.
+ * @returns A new instance of the effect.
  * @category rendering
  * @advanced
  */

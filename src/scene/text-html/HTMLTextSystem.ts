@@ -1,3 +1,4 @@
+import { type ImageLike } from '../../environment/ImageLike';
 import { ExtensionType } from '../../extensions/Extensions';
 import { type CanvasAndContext, CanvasPool } from '../../rendering/renderers/shared/texture/CanvasPool';
 import { TexturePool } from '../../rendering/renderers/shared/texture/TexturePool';
@@ -185,7 +186,7 @@ export class HTMLTextSystem implements System
 
         await loadSVGImage(image, svgURL, isSafari() && fontFamilies.length > 0);
 
-        const resource: HTMLImageElement | HTMLCanvasElement = image;
+        const resource: ImageLike | HTMLCanvasElement = image;
         let canvasAndContext: CanvasAndContext;
 
         if (this._createCanvas)
