@@ -224,7 +224,7 @@ export class GlTextureSystem implements System, CanvasGenerator
         if (!this.managedTextures.includes(source))
         {
             source.on('update', this.onSourceUpdate, this);
-            source.on('resize', this.onSourceResize, this);
+            source.on('resize', this.onSourceUpdate, this);
             source.on('styleChange', this.onStyleChange, this);
             source.on('destroy', this.onSourceDestroy, this);
             source.on('unload', this.onSourceUnload, this);
@@ -322,27 +322,11 @@ export class GlTextureSystem implements System, CanvasGenerator
         this._gl.generateMipmap(glTexture.target);
     }
 
-    protected onSourceResize(source: TextureSource): void
-    {
-        const glTexture = this._glTextures[source.uid];
-
-        if (!glTexture)
-        {
-            this._initSource(source);
-        }
-        else
-        {
-            // Force texture reallocation by calling onSourceUpdate
-            // The gl.texImage2D call in onSourceUpdate should handle the resize
-            this.onSourceUpdate(source);
-        }
-    }
-
     protected onSourceDestroy(source: TextureSource): void
     {
         source.off('destroy', this.onSourceDestroy, this);
         source.off('update', this.onSourceUpdate, this);
-        source.off('resize', this.onSourceResize, this);
+        source.off('resize', this.onSourceUpdate, this);
         source.off('unload', this.onSourceUnload, this);
         source.off('styleChange', this.onStyleChange, this);
         source.off('updateMipmaps', this.onUpdateMipmaps, this);
