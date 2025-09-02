@@ -323,12 +323,7 @@ class BitmapFontManagerClass
         {
             // if there is a stoke, we need to use the style key as this the font generated cannot be tinted
             // due to the fact the font has at least two colors.
-            let key = style.styleKey;
-
-            // remove the font size..
-            key = key.substring(0, key.lastIndexOf('-'));
-
-            fontFamilyKey = `${key}-bitmap`;
+            fontFamilyKey = `${style.styleKey}-bitmap`;
             overrideFill = false;
         }
 
