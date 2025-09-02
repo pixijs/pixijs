@@ -7,12 +7,7 @@ import type { CanvasSourceOptions } from '../sources/CanvasSource';
 
 const canvasCache: Map<ICanvas, Texture<CanvasSource>> = new Map();
 
-GlobalResourceRegistry.register({
-    clear: () =>
-    {
-        canvasCache.clear();
-    },
-});
+GlobalResourceRegistry.register(canvasCache);
 
 /**
  * @param canvas
