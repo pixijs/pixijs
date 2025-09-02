@@ -33,12 +33,9 @@ export class CanvasTextPipe implements RenderPipe<Text>
 
         const newKey = text.styleKey;
 
-        if (gpuText.currentKey !== newKey)
-        {
-            return true;
-        }
+        if (gpuText.currentKey !== newKey) return true;
 
-        return false;
+        return text._didTextUpdate;
     }
 
     public addRenderable(text: Text, instructionSet: InstructionSet)

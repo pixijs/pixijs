@@ -33,7 +33,6 @@ export type UIDNames =
     | 'shader' //
     | 'renderer' //
     | 'textStyle'
-    | 'bitmapFont'
     | (string & {});
 
 /**

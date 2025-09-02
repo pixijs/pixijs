@@ -277,10 +277,7 @@ export class CanvasTextSystem implements System
         // Clean up active textures
         for (const key in this._activeTextures)
         {
-            if (this._activeTextures[key])
-            {
-                this.returnTexture(this._activeTextures[key].texture);
-            }
+            if (this._activeTextures[key]) this.returnTexture(this._activeTextures[key].texture);
         }
         (this._activeTextures as null) = null;
     }

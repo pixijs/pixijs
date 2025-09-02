@@ -22,13 +22,6 @@ import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { PoolItem } from '../../utils/pool/Pool';
 import type { HTMLText, HTMLTextOptions } from './HTMLText';
 
-interface HTMLTextTexture
-{
-    texture: Texture,
-    usageCount: number,
-    promise: Promise<Texture>,
-}
-
 /**
  * System plugin to the renderer to manage HTMLText
  * @category rendering
@@ -54,7 +47,11 @@ export class HTMLTextSystem implements System
     private readonly _createCanvas: boolean;
     private readonly _renderer: Renderer;
 
-    private readonly _activeTextures: Record<string, HTMLTextTexture> = {};
+    private readonly _activeTextures: Record<string, {
+        texture: Texture,
+        usageCount: number,
+        promise: Promise<Texture>,
+    }> = {};
 
     constructor(renderer: Renderer)
     {
@@ -240,10 +237,7 @@ export class HTMLTextSystem implements System
         (this._renderer as null) = null;
         for (const key in this._activeTextures)
         {
-            if (this._activeTextures[key])
-            {
-                this.returnTexturePromise(this._activeTextures[key].promise);
-            }
+            if (this._activeTextures[key]) this.returnTexturePromise(this._activeTextures[key].promise);
         }
         (this._activeTextures as null) = null;
     }
