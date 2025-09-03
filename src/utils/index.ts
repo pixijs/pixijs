@@ -21,6 +21,7 @@ export * from './misc/NOOP';
 export * from './misc/Transform';
 export * from './network/getResolutionOfUrl';
 export * from './path';
+export * from './pool/GlobalResourceRegistry';
 export * from './pool/Pool';
 export * from './pool/PoolGroup';
 export * from './sayHello';

@@ -35,4 +35,21 @@ export class HTMLTextRenderData
 
         this.image = DOMAdapter.get().createImage();
     }
+
+    public destroy(): void
+    {
+        this.svgRoot.remove();
+        this.foreignObject.remove();
+        this.styleElement.remove();
+        this.domElement.remove();
+        this.image.src = '';
+        this.image.remove();
+
+        this.svgRoot = null;
+        this.foreignObject = null;
+        this.styleElement = null;
+        this.domElement = null;
+        this.image = null;
+        this.canvasAndContext = null;
+    }
 }

@@ -197,6 +197,10 @@ export class GlShaderSystem
         }
 
         this._programDataHash = null;
+        this._shaderSyncFunctions = null;
+        this._activeProgram = null;
+        (this._renderer as null) = null;
+        this._gl = null;
     }
 
     /**

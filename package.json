@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "8.12.0",
+  "version": "8.13.0",
   "author": "PixiJS Team",
   "homepage": "http://pixijs.com/",
   "bugs": "https://github.com/pixijs/pixijs/issues",
@@ -71,7 +71,8 @@
     "eventemitter3": "^5.0.1",
     "gifuct-js": "^2.1.2",
     "ismobilejs": "^1.1.1",
-    "parse-svg-path": "^0.1.2"
+    "parse-svg-path": "^0.1.2",
+    "tiny-lru": "^11.4.5"
   },
   "devDependencies": {
     "@babel/core": "7.22",

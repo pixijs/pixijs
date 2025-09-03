@@ -20,7 +20,7 @@ import { measureHtmlText } from './utils/measureHtmlText';
 import type { System } from '../../rendering/renderers/shared/system/System';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { PoolItem } from '../../utils/pool/Pool';
-import type { HTMLTextOptions } from './HTMLText';
+import type { HTMLText, HTMLTextOptions } from './HTMLText';
 
 /**
  * System plugin to the renderer to manage HTMLText
@@ -47,6 +47,12 @@ export class HTMLTextSystem implements System
     private readonly _createCanvas: boolean;
     private readonly _renderer: Renderer;
 
+    private readonly _activeTextures: Record<string, {
+        texture: Texture,
+        usageCount: number,
+        promise: Promise<Texture>,
+    }> = {};
+
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
@@ -62,6 +68,87 @@ export class HTMLTextSystem implements System
         return this.getTexturePromise(options);
     }
 
+    /**
+     * Increases the reference count for a texture.
+     * @param text - The HTMLText instance associated with the texture.
+     */
+    public getManagedTexture(text: HTMLText): Promise<Texture>
+    {
+        const textKey = text.styleKey;
+
+        if (this._activeTextures[textKey])
+        {
+            this._increaseReferenceCount(textKey);
+
+            return this._activeTextures[textKey].promise;
+        }
+
+        const promise = this._buildTexturePromise(text)
+            .then((texture) =>
+            {
+                this._activeTextures[textKey].texture = texture;
+
+                return texture;
+            });
+
+        this._activeTextures[textKey] = {
+            texture: null,
+            promise,
+            usageCount: 1,
+        };
+
+        return promise;
+    }
+
+    private _increaseReferenceCount(textKey: string)
+    {
+        this._activeTextures[textKey].usageCount++;
+    }
+
+    /**
+     * Decreases the reference count for a texture.
+     * If the count reaches zero, the texture is cleaned up.
+     * @param textKey - The key associated with the HTMLText instance.
+     */
+    public decreaseReferenceCount(textKey: string)
+    {
+        const activeTexture = this._activeTextures[textKey];
+
+        if (!activeTexture) return;
+
+        activeTexture.usageCount--;
+
+        if (activeTexture.usageCount === 0)
+        {
+            if (activeTexture.texture)
+            {
+                this._cleanUp(activeTexture.texture);
+            }
+            else
+            {
+                // we did not resolve...
+                activeTexture.promise.then((texture) =>
+                {
+                    activeTexture.texture = texture;
+
+                    this._cleanUp(activeTexture.texture);
+                }).catch(() =>
+                {
+                    // #if _DEBUG
+                    warn('HTMLTextSystem: Failed to clean texture');
+                    // #endif
+                });
+            }
+
+            this._activeTextures[textKey] = null;
+        }
+    }
+
+    /**
+     * Returns a promise that resolves to a texture for the given HTMLText options.
+     * @param options - The options for the HTMLText.
+     * @returns A promise that resolves to a Texture.
+     */
     public getTexturePromise(options: HTMLTextOptions): Promise<Texture>
     {
         return this._buildTexturePromise(options);
@@ -148,5 +235,10 @@ export class HTMLTextSystem implements System
     {
         // BOOM!
         (this._renderer as null) = null;
+        for (const key in this._activeTextures)
+        {
+            if (this._activeTextures[key]) this.returnTexturePromise(this._activeTextures[key].promise);
+        }
+        (this._activeTextures as null) = null;
     }
 }

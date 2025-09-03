@@ -1,6 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import { Color, type ColorSource } from '../../color/Color';
 import { type Filter } from '../../filters/Filter';
+import { uid } from '../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { warn } from '../../utils/logging/warn';
 import { FillGradient } from '../graphics/shared/fill/FillGradient';
@@ -10,7 +11,6 @@ import {
     toFillStyle,
     toStrokeStyle
 } from '../graphics/shared/utils/convertFillInputToFillStyle';
-import { generateTextStyleKey } from './utils/generateTextStyleKey';
 
 import type { TextureDestroyOptions, TypeOrBool } from '../container/destroyTypes';
 import type {
@@ -637,7 +637,7 @@ export interface TextStyleOptions
      * compared to applying the filter directly to the text object (which would be applied at run time).
      * @default undefined
      */
-    filters?: Filter[];
+    filters?: Filter[] | readonly Filter[];
 }
 
 /**
@@ -724,6 +724,19 @@ export class TextStyle extends EventEmitter<{
     };
 
     /**
+     * Unique identifier for the TextStyle class.
+     * This is used to track instances and ensure uniqueness.
+     * @internal
+     */
+    public uid = uid('textStyle');
+    /**
+     * Internal tick counter used to track updates and changes.
+     * This is incremented whenever the style is modified, allowing for efficient change detection.
+     * @internal
+     */
+    public _tick = 0;
+
+    /**
      * Default text style settings used when creating new text objects.
      * These values serve as the base configuration and can be customized globally.
      * @example
@@ -783,11 +796,10 @@ export class TextStyle extends EventEmitter<{
     private _whiteSpace: TextStyleWhiteSpace;
     private _wordWrap: boolean;
     private _wordWrapWidth: number;
-    private _filters: Filter[];
+    private _filters: readonly Filter[];
 
     private _padding: number;
 
-    protected _styleKey: string;
     private _trim: boolean;
 
     constructor(style: Partial<TextStyleOptions> = {})
@@ -806,6 +818,7 @@ export class TextStyle extends EventEmitter<{
         }
 
         this.update();
+        this._tick = 0;
     }
 
     /**
@@ -894,8 +907,8 @@ export class TextStyle extends EventEmitter<{
      * compared to applying the filter directly to the text object (which would be applied at run time).
      * @default null
      */
-    get filters(): Filter[] { return this._filters; }
-    set filters(value: Filter[]) { this._filters = value; this.update(); }
+    get filters(): readonly Filter[] { return this._filters; }
+    set filters(value: Filter[]) { this._filters = Object.freeze(value); this.update(); }
 
     /**
      * Trim transparent borders from the text texture.
@@ -1012,16 +1025,9 @@ export class TextStyle extends EventEmitter<{
         this.update();
     }
 
-    protected _generateKey(): string
-    {
-        this._styleKey = generateTextStyleKey(this);
-
-        return this._styleKey;
-    }
-
     public update()
     {
-        this._styleKey = null;
+        this._tick++;
         this.emit('update', this);
     }
 
@@ -1036,10 +1042,14 @@ export class TextStyle extends EventEmitter<{
         }
     }
 
-    /** @internal */
-    get styleKey()
+    /**
+     * Returns a unique key for this instance.
+     * This key is used for caching.
+     * @returns {string} Unique key for the instance
+     */
+    public get styleKey(): string
     {
-        return this._styleKey || this._generateKey();
+        return `${this.uid}-${this._tick}`;
     }
 
     /**
