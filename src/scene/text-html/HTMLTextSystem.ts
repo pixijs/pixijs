@@ -100,6 +100,16 @@ export class HTMLTextSystem implements System
         return promise;
     }
 
+    /**
+     * Gets the current reference count for a texture associated with a text key.
+     * @param textKey - The unique key identifying the text style configuration
+     * @returns The number of Text instances currently using this texture
+     */
+    public getReferenceCount(textKey: string)
+    {
+        return this._activeTextures[textKey]?.usageCount ?? null;
+    }
+
     private _increaseReferenceCount(textKey: string)
     {
         this._activeTextures[textKey].usageCount++;

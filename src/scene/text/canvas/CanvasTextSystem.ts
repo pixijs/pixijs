@@ -233,7 +233,7 @@ export class CanvasTextSystem implements System
      */
     public getReferenceCount(textKey: string)
     {
-        return this._activeTextures[textKey].usageCount;
+        return this._activeTextures[textKey]?.usageCount ?? null;
     }
 
     private _increaseReferenceCount(textKey: string)
