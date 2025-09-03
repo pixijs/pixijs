@@ -32,8 +32,9 @@ export class BatchableText extends BatchableSprite
 
     public destroy()
     {
-        this._renderer.canvasText.returnTexture(this.texture);
-        this._renderer.canvasText.decreaseReferenceCount(this.currentKey);
+        this._renderer.canvasText.getReferenceCount(this.currentKey) === null
+            ? this._renderer.canvasText.returnTexture(this.texture)
+            : this._renderer.canvasText.decreaseReferenceCount(this.currentKey);
         this._renderer.runners.resolutionChange.remove(this);
         (this._renderer as null) = null;
     }
