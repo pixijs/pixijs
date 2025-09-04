@@ -1,3 +1,8 @@
+import { Texture } from '../../rendering/renderers/shared/texture/Texture';
+import { Graphics } from '../../scene/graphics/shared/Graphics';
+import { Sprite } from '../../scene/sprite/Sprite';
+import { Text } from '../../scene/text/Text';
+import { GlobalResourceRegistry } from '../../utils/pool/GlobalResourceRegistry';
 import { Application } from '../Application';
 import { getApp, nextTick } from '@test-utils';
 import { extensions, ExtensionType } from '~/extensions';
@@ -78,6 +83,29 @@ describe('Application', () =>
 
             app.destroy(true, true);
             expect(child.destroyed).toBeTrue();
+        });
+
+        it('should destroy all children when option passed', async () =>
+        {
+            const app = await getApp();
+            const stage = app.stage;
+            const child = new Container();
+            const graphics = new Graphics().rect(0, 0, 10, 10).fill('red');
+            const sprite = new Sprite(Texture.WHITE);
+            const text = new Text({ text: 'Hello, world!' });
+
+            stage.addChild(child, graphics, sprite, text);
+
+            const spy = jest.spyOn(GlobalResourceRegistry, 'release');
+
+            app.render();
+
+            app.destroy(true, true);
+            expect(child.destroyed).toBeTrue();
+            expect(graphics.destroyed).toBeTrue();
+            expect(sprite.destroyed).toBeTrue();
+            expect(text.destroyed).toBeTrue();
+            expect(spy).toHaveBeenCalled();
         });
     });
 
