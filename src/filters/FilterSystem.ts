@@ -1057,4 +1057,3 @@ export class FilterSystem implements System
         return filterData;
     }
 }
-
