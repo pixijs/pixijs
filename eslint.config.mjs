@@ -29,6 +29,22 @@ export default tseslint.config(
             },
         },
         rules: {
+            camelcase: [
+                'error',
+                {
+                    ignoreDestructuring: true,
+                    ignoreImports: true,
+                    allow: [
+                        'pixi_container_node',
+                        'pixi_sprite_node',
+                        'pixi_texture_resource',
+                        'pixi_texture_source_resource',
+                        'pixi_video_source_resource',
+                        'v8_0_0',
+                        'v8_3_4'
+                    ],
+                },
+            ],
             'no-mixed-operators': 'off',
             'no-mixed-operators/no-mixed-operators': 1,
 

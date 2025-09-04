@@ -256,7 +256,7 @@ export const loadVideoTextures = {
         {
             const onCanPlay = async () =>
             {
-                const base = new VideoSource({ ...options, resource: videoElement });
+                const base = new VideoSource({ ...options, resource: videoElement, uri: asset.src });
 
                 videoElement.removeEventListener('canplay', onCanPlay);
 

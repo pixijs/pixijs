@@ -163,6 +163,7 @@ export const loadTextures: LoaderParser<Texture, TextureSourceOptions, LoadTextu
 
         const base = new ImageSource({
             resource: src,
+            uri: asset.src,
             alphaMode: 'premultiply-alpha-on-upload',
             resolution: asset.data?.resolution || getResolutionOfUrl(url),
             ...asset.data,

@@ -1,0 +1,20 @@
+import { extensions } from '../../extensions/Extensions';
+import { ImageSource } from '../../rendering/renderers/shared/texture/sources/ImageSource';
+import { TextureSource } from '../../rendering/renderers/shared/texture/sources/TextureSource';
+import { VideoSource } from '../../rendering/renderers/shared/texture/sources/VideoSource';
+import { Texture } from '../../rendering/renderers/shared/texture/Texture';
+import { Container } from '../../scene/container/Container';
+import { Sprite } from '../../scene/sprite/Sprite';
+import { serializeContainerMixin } from './nodes/serializeContainer';
+import { serializeSpriteMixin } from './nodes/serializeSprite';
+import { serializeImageSourceMixin } from './resources/serializeImageSource';
+import { serializeTextureMixin } from './resources/serializeTexture';
+import { serializeTextureSourceMixin } from './resources/serializeTextureSource';
+import { serializeVideoSourceMixin } from './resources/serializeVideoSource';
+
+extensions.mixin(Container, serializeContainerMixin);
+extensions.mixin(Sprite, serializeSpriteMixin);
+extensions.mixin(Texture, serializeTextureMixin);
+extensions.mixin(TextureSource, serializeTextureSourceMixin);
+extensions.mixin(ImageSource, serializeImageSourceMixin);
+extensions.mixin(VideoSource, serializeVideoSourceMixin);

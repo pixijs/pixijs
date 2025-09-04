@@ -469,7 +469,7 @@ export class ExtractSystem implements System
         defaults: Partial<T> = {},
     ): T
     {
-        if (options instanceof Container || options instanceof Texture)
+        if (options instanceof Container || (options as Texture).isTexture)
         {
             return {
                 target: options,
@@ -658,9 +658,9 @@ export class ExtractSystem implements System
 
         const renderer = this._renderer;
 
-        if (target instanceof Texture)
+        if ((target as Texture).isTexture)
         {
-            return renderer.texture.generateCanvas(target);
+            return renderer.texture.generateCanvas(target as Texture);
         }
 
         const texture = renderer.textureGenerator.generateTexture(options as GenerateTextureOptions);
