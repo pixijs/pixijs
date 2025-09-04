@@ -1,12 +1,9 @@
-import { Texture } from '../../rendering/renderers/shared/texture/Texture';
-import { Graphics } from '../../scene/graphics/shared/Graphics';
-import { Sprite } from '../../scene/sprite/Sprite';
-import { Text } from '../../scene/text/Text';
-import { GlobalResourceRegistry } from '../../utils/pool/GlobalResourceRegistry';
 import { Application } from '../Application';
-import { getApp, nextTick } from '@test-utils';
+import { basePath, getApp, nextTick } from '@test-utils';
+import { Assets } from '~/assets';
 import { extensions, ExtensionType } from '~/extensions';
-import { Container } from '~/scene';
+import { Container, Graphics, Sprite, Text } from '~/scene';
+import { GlobalResourceRegistry } from '~/utils';
 
 import type { ApplicationOptions } from '../Application';
 
@@ -88,13 +85,19 @@ describe('Application', () =>
         it('should destroy all children when option passed', async () =>
         {
             const app = await getApp();
+
+            await Assets.init({ basePath });
+            const bunny = await Assets.load('textures/bunny.png');
             const stage = app.stage;
             const child = new Container();
             const graphics = new Graphics().rect(0, 0, 10, 10).fill('red');
-            const sprite = new Sprite(Texture.WHITE);
+            const graphics2 = new Graphics().rect(0, 0, 10, 10).fill('red');
+            const sprite = new Sprite(bunny);
             const text = new Text({ text: 'Hello, world!' });
 
-            stage.addChild(child, graphics, sprite, text);
+            graphics.mask = sprite;
+
+            stage.addChild(child, graphics, graphics2, sprite, text);
 
             const spy = jest.spyOn(GlobalResourceRegistry, 'release');
 
@@ -106,6 +109,7 @@ describe('Application', () =>
             expect(sprite.destroyed).toBeTrue();
             expect(text.destroyed).toBeTrue();
             expect(spy).toHaveBeenCalled();
+            Assets.reset();
         });
     });
 
