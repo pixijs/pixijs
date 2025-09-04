@@ -75,7 +75,7 @@ export interface BitmapFontData
         type: 'sdf' | 'msdf' | 'none';
         /** Range of the distance field in pixels */
         range: number;
-    };
+    } | undefined;
 }
 
 interface BitmapFontEvents<Type>
