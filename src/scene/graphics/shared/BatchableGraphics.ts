@@ -114,9 +114,15 @@ export class BatchableGraphics implements DefaultBatchableMeshElement
         this.texture = null;
         this.geometryData = null;
 
-        this._batcher.destroy();
-        this._batcher = null;
-        this._batch.destroy();
-        this._batch = null;
+        if (this._batcher)
+        {
+            this._batcher.destroy();
+            this._batcher = null;
+        }
+        if (this._batch)
+        {
+            this._batch.destroy();
+            this._batch = null;
+        }
     }
 }
