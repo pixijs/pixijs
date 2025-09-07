@@ -13,10 +13,10 @@ import type { TextStyle } from '../../text/TextStyle';
  * - hanging: approximated as ~0.2 * lineHeight
  *
  * If ascent/descent are missing, falls back to centering using lineHeight/2.
- * @param style
- * @param lineHeight
- * @param ascent
- * @param descent
+ * @param style - Text style containing `textBaseline`.
+ * @param lineHeight - The height of the line box.
+ * @param ascent - Distance from top to alphabetic baseline.
+ * @param descent - Distance from alphabetic baseline to bottom.
  * @category text
  * @returns The baseline offset in line box units.
  * @internal
@@ -24,17 +24,20 @@ import type { TextStyle } from '../../text/TextStyle';
 export function getBaselineOffset(
     style: TextStyle,
     lineHeight: number,
-    ascent: number | undefined,
-    descent: number | undefined
+    ascent?: number,
+    descent?: number
 ): number
 {
-    const baseline = style.textBaseline || 'alphabetic';
+    const baseline = style.textBaseline ?? 'alphabetic';
 
-    const hasMetrics = typeof ascent === 'number' && typeof descent === 'number'
-        && !Number.isNaN(ascent) && !Number.isNaN(descent);
+    let safeAscent = lineHeight / 2;
+    let safeDescent = lineHeight / 2;
 
-    const safeAscent = hasMetrics ? ascent! : lineHeight / 2;
-    const safeDescent = hasMetrics ? descent! : lineHeight / 2;
+    if (Number.isFinite(ascent) && Number.isFinite(descent))
+    {
+        safeAscent = ascent;
+        safeDescent = descent;
+    }
 
     switch (baseline)
     {
