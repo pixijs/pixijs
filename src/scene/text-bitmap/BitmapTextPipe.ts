@@ -44,6 +44,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        this._renderer.renderableGC.addManagedHash(this, '_gpuBitmapText');
     }
 
     public validateRenderable(bitmapText: BitmapText): boolean
@@ -114,7 +115,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
         const chars = CanvasTextMetrics.graphemeSegmenter(bitmapText.text);
         const style = bitmapText._style;
 
-        let currentY = bitmapFont.baseLineOffset;
+        let currentY = 0;
 
         // measure our text...
         const bitmapTextLayout = getBitmapTextLayout(chars, style, bitmapFont, true);
@@ -146,14 +147,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
             lineHeight = style.lineHeight / scale;
         }
 
-        let linePositionYShift = (lineHeight - fontSize) / 2;
-
-        // if `currentY` is no longer starts from `baseLineOffset`
-        // the `baseLineOffset` below may also need to be removed
-        if (linePositionYShift - bitmapFont.baseLineOffset < 0)
-        {
-            linePositionYShift = 0;
-        }
+        const linePositionYShift = Math.max(0, (lineHeight - fontSize) / 2);
 
         for (let i = 0; i < bitmapTextLayout.lines.length; i++)
         {
@@ -171,8 +165,8 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
                     context.texture(
                         texture,
                         tint ? tint : 'black',
-                        Math.round(line.charPositions[j] + charData.xOffset),
-                        Math.round(currentY + charData.yOffset + linePositionYShift),
+                        (line.charPositions[j] + charData.xOffset),
+                        (currentY + charData.yOffset + linePositionYShift),
                         texture.orig.width,
                         texture.orig.height,
                     );
