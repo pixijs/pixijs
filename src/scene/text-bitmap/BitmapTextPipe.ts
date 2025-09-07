@@ -4,6 +4,7 @@ import { Graphics } from '../graphics/shared/Graphics';
 import { CanvasTextMetrics } from '../text/canvas/CanvasTextMetrics';
 import { SdfShader } from '../text/sdfShader/SdfShader';
 import { BitmapFontManager } from './BitmapFontManager';
+import { getBaselineOffset } from './utils/getBaselineOffset';
 import { getBitmapTextLayout } from './utils/getBitmapTextLayout';
 
 import type { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
@@ -124,7 +125,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
         const scale = bitmapTextLayout.scale;
 
         let tx = bitmapTextLayout.width;
-        let ty = bitmapTextLayout.height + bitmapTextLayout.offsetY;
+        let ty = bitmapTextLayout.height;
 
         if (style._stroke)
         {
@@ -138,16 +139,25 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
         const tint = bitmapFont.applyFillAsTint ? style._fill.color : 0xFFFFFF;
 
-        let fontSize = bitmapFont.fontMetrics.fontSize;
         let lineHeight = bitmapFont.lineHeight;
 
         if (style.lineHeight)
         {
-            fontSize = style.fontSize / scale;
             lineHeight = style.lineHeight / scale;
         }
 
-        const linePositionYShift = Math.max(0, (lineHeight - fontSize) / 2);
+        // Compute baseline offset from top of the line box
+        const ascent = bitmapFont.fontMetrics.ascent;
+        const descent = bitmapFont.fontMetrics.descent;
+        const baselineFromTop = getBaselineOffset(style, lineHeight, ascent, descent);
+        // Place glyph quads so that alphabetic baseline aligns when baseline is 'alphabetic'
+        // y for glyphs is: current line top + (baselineFromTop - ascent)
+        let baselineDelta = baselineFromTop - ascent;
+
+        if (bitmapFont.distanceField?.type && bitmapFont.distanceField.type !== 'none')
+        {
+            baselineDelta -= bitmapFont.distanceField.range;
+        }
 
         for (let i = 0; i < bitmapTextLayout.lines.length; i++)
         {
@@ -166,7 +176,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
                         texture,
                         tint ? tint : 'black',
                         (line.charPositions[j] + charData.xOffset),
-                        (currentY + charData.yOffset + linePositionYShift),
+                        (currentY + charData.yOffset + baselineDelta),
                         texture.orig.width,
                         texture.orig.height,
                     );

@@ -158,7 +158,6 @@ export class BitmapText extends AbstractText<
 
         const bitmapMeasurement = BitmapFontManager.measureText(this.text, this._style);
         const scale = bitmapMeasurement.scale;
-        const offset = bitmapMeasurement.offsetY * scale;
 
         let width = bitmapMeasurement.width * scale;
         let height = bitmapMeasurement.height * scale;
@@ -173,7 +172,7 @@ export class BitmapText extends AbstractText<
 
         bounds.minX = (-anchor._x * width);
         bounds.maxX = bounds.minX + width;
-        bounds.minY = (-anchor._y * (height + offset));
+        bounds.minY = (-anchor._y * height);
         bounds.maxY = bounds.minY + height;
     }
 
