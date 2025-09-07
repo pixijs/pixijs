@@ -45,7 +45,6 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
-        this._renderer.renderableGC.addManagedHash(this, '_gpuBitmapText');
     }
 
     public validateRenderable(bitmapText: BitmapText): boolean
