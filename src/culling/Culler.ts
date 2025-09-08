@@ -1,4 +1,3 @@
-import { Matrix } from '../maths/matrix/Matrix';
 import { Rectangle } from '../maths/shapes/Rectangle';
 import { Bounds } from '../scene/container/bounds/Bounds';
 import { getGlobalBounds } from '../scene/container/bounds/getGlobalBounds';
@@ -108,7 +107,7 @@ export class Culler
 
                 container.culled = !tempRectangle.intersects(
                     container.cullArea,
-                    container.getGlobalTransform(Matrix.shared, skipUpdateTransform)
+                    container.worldTransform
                 );
             }
             else
