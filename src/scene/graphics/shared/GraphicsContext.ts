@@ -133,7 +133,7 @@ export class GraphicsContext extends EventEmitter<{
      */
     public readonly uid: number = uid('graphicsContext');
     /** @internal */
-    public dirty = true;
+    public gpuContextDirty = true;
     /** The batch mode for this graphics context. It can be 'auto', 'batch', or 'no-batch'. */
     public batchMode: BatchMode = 'auto';
     /** @internal */
@@ -1060,11 +1060,15 @@ export class GraphicsContext extends EventEmitter<{
 
     protected onUpdate(): void
     {
-        if (this.dirty) return;
-
-        this.emit('update', this, 0x10);
-        this.dirty = true;
+        // Every time the content is updated - we must invalidate bounds, despite the GPU context update.
+        // Bounds can be read multiple times per frame.
         this._boundsDirty = true;
+
+        // GPU context needs an update only once per frame.
+        // There is no need to dispatch an `update` in if it was already dispatched this frame.
+        if (this.gpuContextDirty) return;
+        this.emit('update', this, 0x10);
+        this.gpuContextDirty = true;
     }
 
     /** The bounds of the graphic shape. */
