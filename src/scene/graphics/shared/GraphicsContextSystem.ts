@@ -165,7 +165,7 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
 
             || this._initContext(context);
 
-        if (context.gpuContextDirty)
+        if (context.dirty)
         {
             if (gpuContext)
             {
@@ -193,7 +193,7 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
                 gpuContext.isBatchable = true;
             }
 
-            context.gpuContextDirty = false;
+            context.dirty = false;
         }
 
         return gpuContext;

@@ -91,11 +91,11 @@ describe('GraphicsContextSystem', () =>
             const gpuContext = system.updateGpuContext(context);
 
             expect(gpuContext.isBatchable).toEqual(true);
-            context.gpuContextDirty = true;
+            context.dirty = true;
             context.batchMode = 'no-batch';
             system.updateGpuContext(context);
             expect(gpuContext.isBatchable).toEqual(false);
-            context.gpuContextDirty = true;
+            context.dirty = true;
             context.batchMode = 'auto';
             system.updateGpuContext(context);
             expect(gpuContext.isBatchable).toEqual(true);
