@@ -440,40 +440,23 @@ class BitmapFontManagerClass
 
         const lineHeight = effectiveLineHeight ?? font.lineHeight;
 
-        let distanceFieldOffset = 0;
-
-        if (font.distanceField?.type && font.distanceField.type !== 'none')
-        {
-            distanceFieldOffset = font.distanceField.range / 2;
-        }
-
-        let result: number;
-
         switch (style.textBaseline)
         {
             case 'top':
-                result = 0;
-                break;
+                return 0;
             case 'bottom':
-                result = lineHeight;
-                break;
+                return lineHeight;
             case 'middle':
-                result = lineHeight / 2;
-                break;
+                return lineHeight / 2;
             case 'ideographic':
-                result = lineHeight - font.fontMetrics.descent;
-                break;
+                return lineHeight - font.fontMetrics.descent;
             case 'hanging':
                 // No direct metric; approximate at ~20% of line height from top
-                result = Math.max(0, Math.min(lineHeight, lineHeight * 0.2));
-                break;
+                return Math.max(0, Math.min(lineHeight, lineHeight * 0.2));
             case 'alphabetic':
             default:
-                result = font.fontMetrics.ascent;
-                break;
+                return font.fontMetrics.ascent;
         }
-
-        return result - distanceFieldOffset;
     }
 
     /**
