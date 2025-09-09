@@ -188,4 +188,13 @@ describe('PrepareSystem', () =>
             });
         });
     });
+
+    it('should not throw when destroying prepared but not rendered text', async () =>
+    {
+        const text = new Text({ text: 'text' });
+
+        await prepare.upload(text);
+
+        expect(() => text.destroy()).not.toThrow();
+    });
 });
