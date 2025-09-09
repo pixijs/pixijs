@@ -132,6 +132,7 @@ export * from './text-bitmap/BitmapText';
 export * from './text-bitmap/BitmapTextPipe';
 export * from './text-bitmap/DynamicBitmapFont';
 export * from './text-bitmap/utils/bitmapTextSplit';
+export * from './text-bitmap/utils/getBaselineOffset';
 export * from './text-bitmap/utils/getBitmapTextLayout';
 export * from './text-bitmap/utils/resolveCharacters';
 export * from './text-html/BatchableHTMLText';
