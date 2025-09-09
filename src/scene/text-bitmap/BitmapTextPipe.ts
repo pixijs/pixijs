@@ -4,7 +4,6 @@ import { Graphics } from '../graphics/shared/Graphics';
 import { CanvasTextMetrics } from '../text/canvas/CanvasTextMetrics';
 import { SdfShader } from '../text/sdfShader/SdfShader';
 import { BitmapFontManager } from './BitmapFontManager';
-import { getBaselineOffset } from './utils/getBaselineOffset';
 import { getBitmapTextLayout } from './utils/getBitmapTextLayout';
 
 import type { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
@@ -147,7 +146,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
         // Compute baseline offset from top of the line box
         const ascent = bitmapFont.fontMetrics.ascent;
-        const baselineFromTop = getBaselineOffset(bitmapText.text, bitmapText.style, lineHeight);
+        const baselineFromTop = BitmapFontManager.getBaselineOffset(bitmapText.text, bitmapText.style, lineHeight);
         // Place glyph quads so that alphabetic baseline aligns when baseline is 'alphabetic'
         // y for glyphs is: current line top + (baselineFromTop - ascent)
         let baselineDelta = baselineFromTop - ascent;

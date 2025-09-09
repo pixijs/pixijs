@@ -1,7 +1,6 @@
 import { Assets } from '~/assets';
 import { BitmapText, Graphics } from '~/scene';
 import { BitmapFontManager } from '~/scene/text-bitmap/BitmapFontManager';
-import { getBaselineOffset } from '~/scene/text-bitmap/utils/getBaselineOffset';
 
 import type { TestScene } from '../../types';
 import type { Bounds, Container } from '~/scene';
@@ -82,7 +81,7 @@ export const scene: TestScene = {
             : font.lineHeight;
 
         // Pixel offset of alphabetic baseline from line top
-        const alphabeticUnits = getBaselineOffset(tempText.text, tempText.style, lineHeightUnits);
+        const alphabeticUnits = BitmapFontManager.getBaselineOffset(tempText.text, tempText.style, lineHeightUnits);
         const alphabeticPixels = alphabeticUnits * scale;
 
         CONFIG.BASELINES.forEach((baseline, index) =>
@@ -114,7 +113,7 @@ export const scene: TestScene = {
                 text: CONFIG.TEST_TEXT,
                 style: { ...baseStyle, textBaseline: baseline },
             });
-            const baselineUnits = getBaselineOffset(variantText.text, variantText.style, lineHeightUnits);
+            const baselineUnits = BitmapFontManager.getBaselineOffset(variantText.text, variantText.style, lineHeightUnits);
             const baselinePixels = baselineUnits * scale;
 
             const g = new Graphics();
