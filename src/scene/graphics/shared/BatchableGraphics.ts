@@ -113,5 +113,7 @@ export class BatchableGraphics implements DefaultBatchableMeshElement
         this.renderable = null;
         this.texture = null;
         this.geometryData = null;
+        this._batcher = null;
+        this._batch = null;
     }
 }
