@@ -147,8 +147,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
         // Compute baseline offset from top of the line box
         const ascent = bitmapFont.fontMetrics.ascent;
-        const descent = bitmapFont.fontMetrics.descent;
-        const baselineFromTop = getBaselineOffset(style, lineHeight, ascent, descent);
+        const baselineFromTop = getBaselineOffset(bitmapText.text, bitmapText.style, lineHeight);
         // Place glyph quads so that alphabetic baseline aligns when baseline is 'alphabetic'
         // y for glyphs is: current line top + (baselineFromTop - ascent)
         let baselineDelta = baselineFromTop - ascent;

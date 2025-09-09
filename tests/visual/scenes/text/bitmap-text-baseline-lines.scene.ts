@@ -77,15 +77,12 @@ export const scene: TestScene = {
         const layout = BitmapFontManager.getLayout(CONFIG.TEST_TEXT, tempText.style, true);
         const scale = layout.scale;
         const font = BitmapFontManager.getFont(CONFIG.TEST_TEXT, tempText.style);
-
-        const ascent = font.fontMetrics.ascent;
-        const descent = font.fontMetrics.descent;
         const lineHeightUnits = baseStyle.lineHeight
             ? baseStyle.lineHeight / scale
             : font.lineHeight;
 
         // Pixel offset of alphabetic baseline from line top
-        const alphabeticUnits = getBaselineOffset(tempText.style, lineHeightUnits, ascent, descent);
+        const alphabeticUnits = getBaselineOffset(tempText.text, tempText.style, lineHeightUnits);
         const alphabeticPixels = alphabeticUnits * scale;
 
         CONFIG.BASELINES.forEach((baseline, index) =>
@@ -117,7 +114,7 @@ export const scene: TestScene = {
                 text: CONFIG.TEST_TEXT,
                 style: { ...baseStyle, textBaseline: baseline },
             });
-            const baselineUnits = getBaselineOffset(variantText.style, lineHeightUnits, ascent, descent);
+            const baselineUnits = getBaselineOffset(variantText.text, variantText.style, lineHeightUnits);
             const baselinePixels = baselineUnits * scale;
 
             const g = new Graphics();

@@ -1,3 +1,5 @@
+import { BitmapFontManager } from '../BitmapFontManager';
+
 import type { TextStyle } from '../../text/TextStyle';
 
 /**
@@ -11,50 +13,56 @@ import type { TextStyle } from '../../text/TextStyle';
  * - middle: lineHeight / 2
  * - ideographic: lineHeight - descent
  * - hanging: approximated as ~0.2 * lineHeight
- *
- * If ascent/descent are missing, falls back to centering using lineHeight/2.
+ * @param text - The text to get the baseline offset for.
  * @param style - Text style containing `textBaseline`.
- * @param lineHeight - The height of the line box.
- * @param ascent - Distance from top to alphabetic baseline.
- * @param descent - Distance from alphabetic baseline to bottom.
+ * @param effectiveLineHeight - Optional. The line height to use. Falls back to the default font's line height.
  * @category text
  * @returns The baseline offset in line box units.
  * @internal
  */
 export function getBaselineOffset(
+    text: string,
     style: TextStyle,
-    lineHeight: number,
-    ascent?: number,
-    descent?: number
+    effectiveLineHeight?: number
 ): number
 {
-    const baseline = style.textBaseline ?? 'alphabetic';
+    const font = BitmapFontManager.getFont(text, style);
 
-    let safeAscent = lineHeight / 2;
-    let safeDescent = lineHeight / 2;
+    const lineHeight = effectiveLineHeight ?? font.lineHeight;
 
-    if (Number.isFinite(ascent) && Number.isFinite(descent))
+    let distanceFieldOffset = 0;
+
+    if (font.distanceField?.type && font.distanceField.type !== 'none')
     {
-        safeAscent = ascent;
-        safeDescent = descent;
+        distanceFieldOffset = font.distanceField.range / 2;
     }
 
-    switch (baseline)
+    let result;
+
+    switch (style.textBaseline)
     {
         case 'top':
-            return 0;
+            result = 0;
+            break;
         case 'bottom':
-            return lineHeight;
+            result = lineHeight;
+            break;
         case 'middle':
-            return lineHeight / 2;
+            result = lineHeight / 2;
+            break;
         case 'ideographic':
-            return lineHeight - safeDescent;
+            result = lineHeight - font.fontMetrics.descent;
+            break;
         case 'hanging':
             // No direct metric; approximate at ~20% of line height from top
-            return Math.max(0, Math.min(lineHeight, lineHeight * 0.2));
+            result = Math.max(0, Math.min(lineHeight, lineHeight * 0.2));
+            break;
         case 'alphabetic':
         default:
-            return safeAscent;
+            result = font.fontMetrics.ascent;
+            break;
     }
+
+    return result - distanceFieldOffset;
 }
 
