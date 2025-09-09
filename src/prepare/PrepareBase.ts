@@ -170,7 +170,7 @@ export abstract class PrepareBase
     /** called per frame by the ticker, defer processing to next tick */
     private readonly _tick = () =>
     {
-        if (!this._destroyed) return;
+        if (this._destroyed) return;
 
         this.timeout = setTimeout(this._processQueue, 0) as unknown as number;
     };
@@ -178,7 +178,7 @@ export abstract class PrepareBase
     /** process the queue up to max item limit per frame */
     private readonly _processQueue = () =>
     {
-        if (!this._destroyed) return;
+        if (this._destroyed) return;
 
         const { queue } = this;
         let itemsProcessed = 0;
