@@ -222,7 +222,7 @@ export class FilterSystem implements System
         const rootAntialias = colorTextureSource.antialias;
 
         // if there are no filters, or all of them disabled, we skip the pass
-        if (filters.length === 0 || !filters.every((filter) => filter.enabled))
+        if (filters.length === 0 || filters.every((filter) => !filter.enabled))
         {
             filterData.skip = true;
 
@@ -309,7 +309,7 @@ export class FilterSystem implements System
         const rootAntialias = colorTextureSource.antialias;
 
         // if there are no filters, or all of them disabled, we skip the pass
-        if (filters.length === 0 || !filters.every((filter) => filter.enabled))
+        if (filters.length === 0 || filters.every((filter) => !filter.enabled))
         {
             filterData.skip = true;
 
