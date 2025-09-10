@@ -1,4 +1,5 @@
 import { ExtensionType } from '../extensions/Extensions';
+import { PassthroughFilter } from '../filters/defaults/passthrough/PassthroughFilter';
 import { Matrix } from '../maths/matrix/Matrix';
 import { type Rectangle } from '../maths/shapes/Rectangle';
 import { BindGroup } from '../rendering/renderers/gpu/shader/BindGroup';
@@ -138,6 +139,12 @@ class FilterData
      * @type {number}
      */
     public resolution: number;
+
+    /** The first enabled filter index in the current filter list. */
+    public firstEnabledIndex = -1;
+
+    /** The last enabled filter index in the current filter list. */
+    public lastEnabledIndex = -1;
 }
 
 /**
@@ -172,6 +179,7 @@ export class FilterSystem implements System
 
     private readonly _globalFilterBindGroup: BindGroup = new BindGroup({});
     private _activeFilterData: FilterData;
+    private _passthroughFilter: Filter;
 
     constructor(renderer: Renderer)
     {
@@ -213,8 +221,8 @@ export class FilterSystem implements System
         const rootResolution = colorTextureSource.resolution;
         const rootAntialias = colorTextureSource.antialias;
 
-        // if there are no filters, we skip the pass
-        if (filters.length === 0)
+        // if there are no filters, or all of them disabled, we skip the pass
+        if (filters.every((filter) => !filter.enabled))
         {
             filterData.skip = true;
 
@@ -300,8 +308,8 @@ export class FilterSystem implements System
         const rootResolution = colorTextureSource.resolution;
         const rootAntialias = colorTextureSource.antialias;
 
-        // if there are no filters, we skip the pass
-        if (filters.length === 0)
+        // if there are no filters, or all of them disabled, we skip the pass
+        if (filters.every((filter) => !filter.enabled))
         {
             filterData.skip = true;
 
@@ -481,7 +489,13 @@ export class FilterSystem implements System
 
         this._updateFilterUniforms(input, output, filterData, offsetX, offsetY, resolution, isFinalTarget, clear);
 
-        this._setupBindGroupsAndRender(filter, input, renderer);
+        // If the filter is disabled, we still need to write something into the output surface.
+        // Render a pass-through (copy) so the pipeline remains intact.
+        const filterToApply = filter.enabled
+            ? filter
+            : this._getPassthroughFilter();
+
+        this._setupBindGroupsAndRender(filterToApply, input, renderer);
     }
 
     /**
@@ -527,7 +541,15 @@ export class FilterSystem implements System
 
     public destroy(): void
     {
-        // BOOM!
+        this._passthroughFilter?.destroy(true);
+        (this._passthroughFilter as null) = null;
+    }
+
+    private _getPassthroughFilter(): Filter
+    {
+        this._passthroughFilter ??= new PassthroughFilter();
+
+        return this._passthroughFilter;
     }
 
     /**
@@ -844,19 +866,20 @@ export class FilterSystem implements System
         const bounds = filterData.bounds;
 
         const filters = filterData.filters;
+        const firstEnabled = filterData.firstEnabledIndex;
+        const lastEnabled = filterData.lastEnabledIndex;
 
         // get a BufferResource from the uniformBatch.
         // this will batch the shader uniform data and give us a buffer resource we can
         // set on our globalUniform Bind Group
-
         // update the resources on the bind group...
         this._globalFilterBindGroup.setResource(inputTexture.source.style, 2);
         this._globalFilterBindGroup.setResource(filterData.backTexture.source, 3);
 
-        if (filters.length === 1)
+        if (firstEnabled === lastEnabled)
         {
             // render a single filter...
-            filters[0].apply(this, inputTexture, filterData.outputRenderSurface, clear);
+            filters[firstEnabled].apply(this, inputTexture, filterData.outputRenderSurface, clear);
         }
         else
         {
@@ -872,12 +895,12 @@ export class FilterSystem implements System
             // get another texture that we will render the next filter too
             let flop = tempTexture;
 
-            let i = 0;
-
             // loop and apply the filters, omitting the last one as we will render that to the final target
-            for (i = 0; i < filters.length - 1; ++i)
+            for (let i = firstEnabled; i < lastEnabled; i++)
             {
                 const filter = filters[i];
+
+                if (!filter.enabled) continue;
 
                 filter.apply(this, flip, flop, true);
                 const t = flip;
@@ -885,8 +908,8 @@ export class FilterSystem implements System
                 flip = flop;
                 flop = t;
             }
-
-            filters[i].apply(this, flip, filterData.outputRenderSurface, clear);
+            // apply the last enabled filter to the output
+            filters[lastEnabled].apply(this, flip, filterData.outputRenderSurface, clear);
 
             // return those textures for later!
             TexturePool.returnTexture(tempTexture);
@@ -925,11 +948,19 @@ export class FilterSystem implements System
         let enabled = false;
         // false if any filter in the list has false
         let clipToViewport = true;
+        // cache first/last enabled indices for later passes
+        let firstEnabledIndex = -1;
+        let lastEnabledIndex = -1;
 
         for (let i = 0; i < filters.length; i++)
         {
             const filter = filters[i];
 
+            // Only enabled filters should influence pipeline characteristics
+            if (!filter.enabled) continue;
+
+            if (firstEnabledIndex === -1) firstEnabledIndex = i;
+            lastEnabledIndex = i;
             resolution = Math.min(resolution, filter.resolution === 'inherit'
                 ? rootResolution : filter.resolution);
             padding += filter.padding;
@@ -967,7 +998,7 @@ export class FilterSystem implements System
                 break;
             }
 
-            enabled = filter.enabled || enabled;
+            enabled = true;
             blendRequired ||= filter.blendRequired;
         }
 
@@ -1014,6 +1045,8 @@ export class FilterSystem implements System
         filterData.antialias = antialias;
         filterData.resolution = resolution;
         filterData.blendRequired = blendRequired;
+        filterData.firstEnabledIndex = firstEnabledIndex;
+        filterData.lastEnabledIndex = lastEnabledIndex;
     }
 
     private _popFilterData(): FilterData
@@ -1057,4 +1090,3 @@ export class FilterSystem implements System
         return filterData;
     }
 }
-

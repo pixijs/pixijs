@@ -13,6 +13,7 @@ export * from './defaults/blur/gpu/generateBlurProgram';
 export * from './defaults/color-matrix/ColorMatrixFilter';
 export * from './defaults/displacement/DisplacementFilter';
 export * from './defaults/noise/NoiseFilter';
+export * from './defaults/passthrough/PassthroughFilter';
 export * from './Filter';
 export * from './FilterEffect';
 export * from './FilterPipe';
@@ -48,6 +49,10 @@ export { default as displacementWgsl } from './defaults/displacement/displacemen
 export { default as noiseFrag } from './defaults/noise/noise.frag';
 /** @ignore */
 export { default as noiseWgsl } from './defaults/noise/noise.wgsl';
+/** @ignore */
+export { default as passthroughFrag } from './defaults/passthrough/passthrough.frag';
+/** @ignore */
+export { default as passthroughWgsl } from './defaults/passthrough/passthrough.wgsl';
 /** @ignore */
 export { default as maskFrag } from './mask/mask.frag';
 /** @ignore */
