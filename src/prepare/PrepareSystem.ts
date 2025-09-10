@@ -49,6 +49,8 @@ export class PrepareSystem extends PrepareUpload implements System
     /** Destroys the plugin, don't use after this. */
     public destroy(): void
     {
+        super.destroy();
+
         clearTimeout(this.timeout);
         this.renderer = null;
         this.queue = null;
