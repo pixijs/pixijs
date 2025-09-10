@@ -9,6 +9,7 @@ export class Pool<T extends PoolItem>
     /** @internal */
     public readonly _classType: PoolItemConstructor<T>;
     private readonly _pool: T[] = [];
+    private _inPoolSet: WeakSet<T> = new WeakSet();
     private _count = 0;
     private _index = 0;
 
@@ -35,7 +36,10 @@ export class Pool<T extends PoolItem>
     {
         for (let i = 0; i < total; i++)
         {
-            this._pool[this._index++] = new this._classType();
+            const item = new this._classType();
+
+            this._pool[this._index++] = item;
+            this._inPoolSet.add(item);
         }
 
         this._count += total;
@@ -49,15 +53,18 @@ export class Pool<T extends PoolItem>
      */
     public get(data?: unknown): T
     {
-        let item;
+        let item: T;
 
         if (this._index > 0)
         {
             item = this._pool[--this._index];
+            this._pool[this._index] = null;
+            this._inPoolSet.delete(item);
         }
         else
         {
             item = new this._classType();
+            this._count++;
         }
 
         item.init?.(data);
@@ -71,9 +78,12 @@ export class Pool<T extends PoolItem>
      */
     public return(item: T): void
     {
-        item.reset?.();
-
-        this._pool[this._index++] = item;
+        if (!this._inPoolSet.has(item))
+        {
+            item.reset?.();
+            this._pool[this._index++] = item;
+            this._inPoolSet.add(item);
+        }
     }
 
     /**
@@ -116,6 +126,7 @@ export class Pool<T extends PoolItem>
         this._pool.length = 0;
         this._count = 0;
         this._index = 0;
+        this._inPoolSet = new WeakSet();
     }
 }
 
