@@ -45,6 +45,8 @@ export abstract class PrepareBase
     /** Timeout id for next processing call */
     protected timeout?: number;
 
+    private _destroyed: boolean;
+
     /**
      * @param {Renderer} renderer - A reference to the current renderer
      */
@@ -159,15 +161,25 @@ export abstract class PrepareBase
         this.queue.length = nextUnique;
     }
 
+    public destroy(): void
+    {
+        this._destroyed = true;
+        clearTimeout(this.timeout);
+    }
+
     /** called per frame by the ticker, defer processing to next tick */
     private readonly _tick = () =>
     {
+        if (this._destroyed) return;
+
         this.timeout = setTimeout(this._processQueue, 0) as unknown as number;
     };
 
     /** process the queue up to max item limit per frame */
     private readonly _processQueue = () =>
     {
+        if (this._destroyed) return;
+
         const { queue } = this;
         let itemsProcessed = 0;
 

@@ -139,7 +139,7 @@ export class BindGroup
         {
             const resource = resources[i];
 
-            resource.off?.('change', this.onResourceChange, this);
+            resource?.off?.('change', this.onResourceChange, this);
         }
 
         this.resources = null;

@@ -3,33 +3,38 @@ import '~/scene/text-bitmap/init';
 import '~/scene/text-html/init';
 import { PrepareSystem } from '../PrepareSystem';
 import { getWebGLRenderer } from '@test-utils';
-import { Texture, TextureSource } from '~/rendering';
+import { type Renderer, Texture, TextureSource } from '~/rendering';
 import { Container, Graphics, Sprite, Text } from '~/scene';
+
+let renderer: Renderer;
+let prepare: PrepareSystem;
+
+beforeEach(async () =>
+{
+    renderer = await getWebGLRenderer();
+    prepare = new PrepareSystem(renderer);
+});
+
+afterEach(() =>
+{
+    prepare.destroy();
+    renderer.destroy();
+});
 
 describe('PrepareSystem', () =>
 {
-    const setup = async () =>
-    {
-        const renderer = await getWebGLRenderer();
-        const prepare = new PrepareSystem(renderer);
-
-        return { renderer, prepare };
-    };
-
     describe('Adding to the queue', () =>
     {
-        it('should add a texture source to the queue', async () =>
+        it('should add a texture source to the queue', () =>
         {
-            const { prepare } = await setup();
             const textureSource = new TextureSource();
 
             prepare.add(textureSource);
             expect(prepare.getQueue()).toEqual([textureSource]);
         });
 
-        it('should add a container to the queue', async () =>
+        it('should add a container to the queue', () =>
         {
-            const { prepare } = await setup();
             const container = new Graphics();
 
             prepare.add(container);
@@ -37,9 +42,8 @@ describe('PrepareSystem', () =>
             expect(prepare.getQueue()).toEqual([container.context]);
         });
 
-        it('should add a container and all its children to the queue', async () =>
+        it('should add a container and all its children to the queue', () =>
         {
-            const { prepare } = await setup();
             const container = new Container();
             const child1 = new Sprite();
             const child2 = new Graphics();
@@ -50,18 +54,16 @@ describe('PrepareSystem', () =>
             expect(prepare.getQueue()).toEqual([child1.texture.source, child2.context]);
         });
 
-        it('should add a texture to the queue', async () =>
+        it('should add a texture to the queue', () =>
         {
-            const { prepare } = await setup();
             const texture = new Texture();
 
             prepare.add(texture);
             expect(prepare.getQueue()).toEqual([texture.source]);
         });
 
-        it('should add a graphics context to the queue', async () =>
+        it('should add a graphics context to the queue', () =>
         {
-            const { prepare } = await setup();
             const graphics = new Graphics();
 
             prepare.add(graphics);
@@ -71,9 +73,8 @@ describe('PrepareSystem', () =>
 
     describe('Uploading the queue', () =>
     {
-        it('should dedupe the queue', async () =>
+        it('should dedupe the queue', () =>
         {
-            const { prepare } = await setup();
             const textureSource = new TextureSource();
 
             prepare.add(textureSource);
@@ -88,8 +89,6 @@ describe('PrepareSystem', () =>
 
         it('should upload a graphics correctly', async () =>
         {
-            const { prepare } = await setup();
-
             const graphics = new Graphics();
             const spy = jest.spyOn(prepare as any, 'uploadGraphicsContext');
 
@@ -101,7 +100,6 @@ describe('PrepareSystem', () =>
 
         it('should upload a texture source', async () =>
         {
-            const { prepare } = await setup();
             const textureSource = new TextureSource();
 
             const spy = jest.spyOn(prepare as any, 'uploadTextureSource');
@@ -114,7 +112,6 @@ describe('PrepareSystem', () =>
 
         it('should upload a text view', async () =>
         {
-            const { prepare } = await setup();
             const text = new Text({
                 text: 'foo'
             });
@@ -129,8 +126,6 @@ describe('PrepareSystem', () =>
 
         it('should respected maximum number of uploads per frame', async () =>
         {
-            const { prepare } = await setup();
-
             const uploadSpy = jest.spyOn(prepare as any, 'uploadTextureSource');
             const tickSpy = jest.spyOn(prepare as any, '_tick');
 
@@ -152,8 +147,6 @@ describe('PrepareSystem', () =>
 
         it('should resolve when all uploads done', async () =>
         {
-            const { prepare } = await setup();
-
             const uploadSpy = jest.spyOn(prepare as any, 'uploadTextureSource');
 
             const batches = 3;
@@ -177,8 +170,6 @@ describe('PrepareSystem', () =>
 
         it('should resolve when all uploads done even if more added', async () =>
         {
-            const { prepare } = await setup();
-
             const uploadCount = 10;
             const promises = [];
 
@@ -191,10 +182,19 @@ describe('PrepareSystem', () =>
 
             expect(prepare.getQueue()).toHaveLength(uploadCount);
 
-            void Promise.all(promises).then(() =>
+            await Promise.all(promises).then(() =>
             {
                 expect(prepare.getQueue()).toHaveLength(0);
             });
         });
+    });
+
+    it('should not throw when destroying prepared but not rendered text', async () =>
+    {
+        const text = new Text({ text: 'text' });
+
+        await prepare.upload(text);
+
+        expect(() => text.destroy()).not.toThrow();
     });
 });
