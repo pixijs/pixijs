@@ -49,7 +49,7 @@ export class GlGeometrySystem implements System
     protected _activeGeometry: Geometry;
     protected _activeVao: WebGLVertexArrayObject;
 
-    protected _geometryVaoHash: Record<number, Record<string, WebGLVertexArrayObject>> = Object.create(null);
+    protected _geometryVaoHash: WeakMap<Geometry, Record<string, WebGLVertexArrayObject>> = new WeakMap();
 
     /** Renderer that owns this {@link GeometrySystem}. */
     private _renderer: WebGLRenderer;
@@ -111,7 +111,7 @@ export class GlGeometrySystem implements System
 
         this._activeGeometry = null;
         this._activeVao = null;
-        this._geometryVaoHash = Object.create(null);
+        this._geometryVaoHash = new WeakMap();
     }
 
     /**
@@ -206,7 +206,7 @@ export class GlGeometrySystem implements System
 
     protected getVao(geometry: Geometry, program: GlProgram): WebGLVertexArrayObject
     {
-        return this._geometryVaoHash[geometry.uid]?.[program._key] || this.initGeometryVao(geometry, program);
+        return this._geometryVaoHash.get(geometry)?.[program._key] || this.initGeometryVao(geometry, program);
     }
 
     /**
@@ -229,14 +229,15 @@ export class GlGeometrySystem implements System
 
         const signature = this.getSignature(geometry, program);
 
-        if (!this._geometryVaoHash[geometry.uid])
+        let vaoObjectHash = this._geometryVaoHash.get(geometry);
+
+        if (!vaoObjectHash)
         {
-            this._geometryVaoHash[geometry.uid] = Object.create(null);
+            vaoObjectHash = Object.create(null);
+            this._geometryVaoHash.set(geometry, vaoObjectHash);
 
             geometry.on('destroy', this.onGeometryDestroy, this);
         }
-
-        const vaoObjectHash = this._geometryVaoHash[geometry.uid];
 
         let vao = vaoObjectHash[signature];
 
@@ -287,7 +288,7 @@ export class GlGeometrySystem implements System
      */
     protected onGeometryDestroy(geometry: Geometry, contextLost?: boolean): void
     {
-        const vaoObjectHash = this._geometryVaoHash[geometry.uid];
+        const vaoObjectHash = this._geometryVaoHash.get(geometry);
 
         const gl = this.gl;
 
@@ -306,37 +307,17 @@ export class GlGeometrySystem implements System
                 }
             }
 
-            this._geometryVaoHash[geometry.uid] = null;
+            this._geometryVaoHash.delete(geometry);
         }
     }
 
-    /**
-     * Dispose all WebGL resources of all managed geometries.
-     * @param [contextLost=false] - If context was lost, we suppress `gl.delete` calls
-     */
-    public destroyAll(contextLost = false): void
+    /** Dispose all WebGL resources of all managed geometries. */
+    public destroyAll(): void
     {
-        const gl = this.gl;
-
-        for (const i in this._geometryVaoHash)
-        {
-            if (contextLost)
-            {
-                for (const j in this._geometryVaoHash[i])
-                {
-                    const vaoObjectHash = this._geometryVaoHash[i];
-
-                    if (this._activeVao !== vaoObjectHash)
-                    {
-                        this.unbind();
-                    }
-
-                    gl.deleteVertexArray(vaoObjectHash[j]);
-                }
-            }
-
-            this._geometryVaoHash[i] = null;
-        }
+        this.unbind();
+        // Garbage collector will take care of any just-released buffers
+        // See: https://registry.khronos.org/webgl/specs/latest/2.0/#3.7.17
+        this._geometryVaoHash = new WeakMap();
     }
 
     /**

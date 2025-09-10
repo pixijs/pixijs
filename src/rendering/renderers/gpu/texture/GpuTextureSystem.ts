@@ -37,7 +37,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
     public readonly managedTextures: TextureSource[] = [];
 
     protected CONTEXT_UID: number;
-    private _gpuSources: Record<number, GPUTexture> = Object.create(null);
+    private _gpuSources: WeakMap<TextureSource, GPUTexture> = new WeakMap();
     private _gpuSamplers: Record<string, GPUSampler> = Object.create(null);
     private _bindGroupHash: Record<string, BindGroup> = Object.create(null);
     private _textureViewHash: Record<string, GPUTextureView> = Object.create(null);
@@ -75,9 +75,11 @@ export class GpuTextureSystem implements System, CanvasGenerator
      */
     public initSource(source: TextureSource): GPUTexture
     {
-        if (this._gpuSources[source.uid])
+        const gpuTexture = this._gpuSources.get(source);
+
+        if (gpuTexture)
         {
-            return this._gpuSources[source.uid];
+            return gpuTexture;
         }
 
         return this._initSource(source);
@@ -115,7 +117,9 @@ export class GpuTextureSystem implements System, CanvasGenerator
             usage
         };
 
-        const gpuTexture = this._gpuSources[source.uid] = this._gpu.device.createTexture(textureDescriptor);
+        const gpuTexture = this._gpu.device.createTexture(textureDescriptor);
+
+        this._gpuSources.set(source, gpuTexture);
 
         if (!this.managedTextures.includes(source))
         {
@@ -153,11 +157,11 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
     protected onSourceUnload(source: TextureSource): void
     {
-        const gpuTexture = this._gpuSources[source.uid];
+        const gpuTexture = this._gpuSources.get(source);
 
         if (gpuTexture)
         {
-            this._gpuSources[source.uid] = null;
+            this._gpuSources.delete(source);
 
             gpuTexture.destroy();
         }
@@ -190,7 +194,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
     protected onSourceResize(source: TextureSource): void
     {
-        const gpuTexture = this._gpuSources[source.uid];
+        const gpuTexture = this._gpuSources.get(source);
 
         if (!gpuTexture)
         {
@@ -220,7 +224,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
     public getGpuSource(source: TextureSource): GPUTexture
     {
-        return this._gpuSources[source.uid] || this.initSource(source);
+        return this._gpuSources.get(source) || this.initSource(source);
     }
 
     /**
