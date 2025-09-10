@@ -541,7 +541,8 @@ export class FilterSystem implements System
 
     public destroy(): void
     {
-        // BOOM!
+        this._passthroughFilter.destroy(true);
+        (this._passthroughFilter as null) = null;
     }
 
     private _getPassthroughFilter(): Filter
