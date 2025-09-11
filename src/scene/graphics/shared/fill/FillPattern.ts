@@ -35,6 +35,9 @@ const repetitionMap = {
     },
 };
 
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
+export interface FillPattern extends PixiMixins.FillPattern, CanvasGradient {}
+
 /**
  * A class that represents a fill pattern for use in Text and Graphics fills.
  * It allows for textures to be used as patterns, with optional repetition modes.
@@ -72,6 +75,11 @@ export class FillPattern implements CanvasPattern
     public _texture: Texture;
     /** The transform matrix applied to the pattern */
     public transform = new Matrix();
+    /**
+     * The repetition mode for the pattern
+     * @internal
+     */
+    public _repeat: PatternRepetition | null = null;
 
     constructor(texture: Texture, repetition?: PatternRepetition)
     {

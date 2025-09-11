@@ -640,6 +640,12 @@ export interface TextStyleOptions
     filters?: Filter[] | readonly Filter[];
 }
 
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
+export interface TextStyle extends PixiMixins.TextStyle, EventEmitter<{
+    // eslint-disable-next-line requireMemberAPI/require-member-api-doc
+    update: TextDropShadow
+}> {}
+
 /**
  * A TextStyle Object contains information to decorate Text objects.
  * An instance can be shared between multiple Text objects; then changing the style will update all text objects using it.
@@ -728,7 +734,7 @@ export class TextStyle extends EventEmitter<{
      * This is used to track instances and ensure uniqueness.
      * @internal
      */
-    public uid = uid('textStyle');
+    public uid: number;
     /**
      * Internal tick counter used to track updates and changes.
      * This is incremented whenever the style is modified, allowing for efficient change detection.
@@ -817,6 +823,7 @@ export class TextStyle extends EventEmitter<{
             this[thisKey] = fullStyle[key as keyof TextStyleOptions] as any;
         }
 
+        this.uid = uid('textStyle');
         this.update();
         this._tick = 0;
     }

@@ -37,10 +37,16 @@ export default tseslint.config(
                     allow: [
                         'pixi_container_node',
                         'pixi_sprite_node',
+                        'pixi_tiling_sprite_node',
+                        'pixi_nine_slice_sprite_node',
+                        'pixi_text_node',
                         'pixi_texture_resource',
                         'pixi_texture_source_resource',
                         'pixi_video_source_resource',
                         'pixi_spritesheet_resource',
+                        'pixi_text_style_resource',
+                        'pixi_wrap_mode',
+                        'pixi_canvas_gradient',
                         'v8_0_0',
                         'v8_3_4'
                     ],

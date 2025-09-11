@@ -27,6 +27,7 @@ export type UIDNames =
     | 'renderer'
     | 'spritesheet'
     | 'textStyle'
+    | 'bitmapFont'
     | (string & {});
 
 /**

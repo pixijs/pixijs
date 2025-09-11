@@ -64,11 +64,15 @@ declare global
         interface TilingSpriteOptions {}
 
         interface Text {}
+        interface TextStyle {}
         interface BitmapText {}
         interface TextOptions {}
 
         interface HTMLText {}
         interface HTMLTextOptions {}
+
+        interface FillGradient {}
+        interface FillPattern {}
 
         interface SplitText {}
         interface SplitTextOptions {}

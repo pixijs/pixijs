@@ -1,6 +1,14 @@
 import { type PointerEvents } from '../../../accessibility/accessibilityTarget';
 import { type EventMode } from '../../../events/FederatedEventTarget';
-import { type GL2DNode, type GL2DSprite } from '../node';
+import { type TextureStyleOptions } from '../../../rendering/renderers/shared/texture/TextureStyle';
+import {
+    type GL2DBitmapText,
+    type GL2DNineSliceSprite,
+    type GL2DNode,
+    type GL2DSprite,
+    type GL2DText,
+    type GL2DTilingSprite,
+} from '../node';
 
 /**
  * Represents a PixiJS container node within a GL2D file through an extension.
@@ -104,5 +112,75 @@ export interface PixiGL2DSpriteExtension extends PixiGL2DContainerExtension
     pixi_sprite_node?: {
         /** Whether to round pixel values for crisp rendering */
         roundPixels: boolean;
+    };
+}
+
+/**
+ * Represents a PixiJS tiling sprite node within a GL2D file through an extension.
+ * @category gl2d
+ * @standard
+ */
+export type PixiGL2DTilingSprite = GL2DTilingSprite<PixiGL2DTilingSpriteExtension>;
+
+/**
+ * Extension properties for PixiJS tiling sprite nodes.
+ * @category gl2d
+ * @standard
+ */
+export interface PixiGL2DTilingSpriteExtension extends PixiGL2DContainerExtension
+{
+    pixi_tiling_sprite_node?: {
+        /** Whether to round pixel values for crisp rendering */
+        roundPixels: boolean;
+        /** Whether the tiling pattern should originate from the origin instead of the top-left corner in local space */
+        applyAnchorToTexture?: boolean;
+    };
+}
+
+/**
+ * Represents a PixiJS NineSlice sprite node within a GL2D file through an extension.
+ * @category gl2d
+ * @standard
+ */
+export type PixiGL2DNineSliceSprite = GL2DNineSliceSprite<PixiGL2DNineSliceSpriteExtension>;
+
+/**
+ * Extension properties for PixiJS NineSlice sprite nodes.
+ * @category gl2d
+ * @standard
+ */
+export interface PixiGL2DNineSliceSpriteExtension extends PixiGL2DContainerExtension
+{
+    pixi_nine_slice_sprite_node?: {
+        /** Whether to round pixel values for crisp rendering */
+        roundPixels: boolean;
+    };
+}
+
+/**
+ * Represents a PixiJS Text node within a GL2D file through an extension.
+ * @category gl2d
+ * @standard
+ */
+export type PixiGL2DText = GL2DText<PixiGL2DTextExtension>;
+/**
+ * Represents a PixiJS BitmapText node within a GL2D file through an extension.
+ * @category gl2d
+ * @standard
+ */
+export type PixiGL2DBitmapText = GL2DBitmapText<PixiGL2DTextExtension>;
+
+/**
+ * Extension properties for PixiJS Text nodes.
+ * @category gl2d
+ * @standard
+ */
+export interface PixiGL2DTextExtension extends PixiGL2DContainerExtension
+{
+    pixi_text_node?: {
+        /** Whether to round pixel values for crisp rendering */
+        roundPixels: boolean;
+        /** The texture style options for the text */
+        textureStyle?: TextureStyleOptions;
     };
 }
