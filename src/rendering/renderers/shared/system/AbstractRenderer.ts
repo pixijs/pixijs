@@ -4,6 +4,7 @@ import { Container } from '../../../../scene/container/Container';
 import { unsafeEvalSupported } from '../../../../utils/browser/unsafeEvalSupported';
 import { uid } from '../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
+import { GlobalResourceRegistry } from '../../../../utils/pool/GlobalResourceRegistry';
 import { EventEmitter } from '../../../../utils/utils';
 import { CLEAR } from '../../gl/const';
 import { SystemRunner } from './SystemRunner';
@@ -77,7 +78,10 @@ export interface ClearOptions
  * @category rendering
  * @standard
  */
-export type RendererDestroyOptions = TypeOrBool<ViewSystemDestroyOptions>;
+export type RendererDestroyOptions = TypeOrBool<ViewSystemDestroyOptions & {
+    /** Whether to clean up global resource pools/caches */
+    releaseGlobalResources?: boolean;
+}>;
 
 const defaultRunners = [
     'init',
@@ -528,6 +532,8 @@ export class AbstractRenderer<
                 this as unknown as Renderer,
                 Adaptor ? new Adaptor() : null
             );
+
+            this.runners.destroy.add((this.renderPipes as any)[name]);
         });
     }
 
@@ -541,6 +547,11 @@ export class AbstractRenderer<
         {
             runner.destroy();
         });
+
+        if (options === true || (typeof options === 'object' && options.releaseGlobalResources))
+        {
+            GlobalResourceRegistry.release();
+        }
 
         this._systemsHash = null;
 

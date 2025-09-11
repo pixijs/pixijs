@@ -26,6 +26,7 @@ export type UIDNames =
     | 'shader' //
     | 'renderer'
     | 'spritesheet'
+    | 'textStyle'
     | (string & {});
 
 /**
