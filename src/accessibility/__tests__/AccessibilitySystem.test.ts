@@ -103,4 +103,63 @@ describe('AccessibilitySystem', () =>
 
         renderer.destroy();
     });
+
+    it('should render the correct type, title and tabIndex metadata in the debug div', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const system = new AccessibilitySystem(renderer);
+
+        system.init({
+            accessibilityOptions: {
+                enabledByDefault: true,
+                debug: true
+            }
+        });
+
+        const container = new Container();
+
+        container.accessibleType = 'button';
+        container.accessibleTitle = 'myCustomTitle';
+        container.accessibleHint = 'myCustomHint';
+        container.interactive = true;
+        container.tabIndex = 2;
+
+        system['_addChild'](container);
+
+        const expectedInnerHTML = `type: button<br> title : myCustomTitle<br> tabIndex: 2`;
+
+        expect(container._accessibleDiv.innerHTML).toBe(expectedInnerHTML);
+
+        renderer.destroy();
+    });
+
+    it('should apply the correct accessibility properties to the debug div', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+        const system = new AccessibilitySystem(renderer);
+
+        system.init({
+            accessibilityOptions: {
+                enabledByDefault: true,
+                debug: true
+            }
+        });
+
+        const container = new Container();
+
+        container.accessibleType = 'button';
+        container.accessibleTitle = 'myCustomTitle';
+        container.accessibleHint = 'myCustomHint';
+        container.interactive = true;
+        container.tabIndex = 2;
+
+        system['_addChild'](container);
+
+        expect(container._accessibleDiv.tabIndex).toBe(2);
+        expect(container._accessibleDiv.type).toBe('button');
+        expect(container._accessibleDiv.title).toBe('myCustomTitle');
+        expect(container._accessibleDiv.getAttribute('aria-label')).toBe('myCustomHint');
+
+        renderer.destroy();
+    });
 });

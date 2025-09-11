@@ -711,6 +711,16 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
             div.setAttribute('aria-label', container.accessibleHint);
         }
 
+        if (container.interactive)
+        {
+            div.tabIndex = container.tabIndex;
+        }
+        else
+        {
+            // reset tabIndex back to 0 in case this div instance was pulled from the pool and already had a value
+            div.tabIndex = 0;
+        }
+
         if (this.debug)
         {
             this._updateDebugHTML(div);
@@ -722,10 +732,6 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
 
         this._children.push(container);
         this._div.appendChild(container._accessibleDiv);
-        if (container.interactive)
-        {
-            container._accessibleDiv.tabIndex = container.tabIndex;
-        }
     }
 
     /**

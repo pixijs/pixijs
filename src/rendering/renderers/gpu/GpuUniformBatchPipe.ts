@@ -182,7 +182,7 @@ export class GpuUniformBatchPipe
     {
         for (let i = 0; i < this._bindGroups.length; i++)
         {
-            this._bindGroups[i].destroy();
+            this._bindGroups[i]?.destroy();
         }
 
         this._bindGroups = null;

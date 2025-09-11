@@ -3,7 +3,7 @@ import { type Filter } from '../../../filters/Filter';
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
 import { TextureStyle } from '../../../rendering/renderers/shared/texture/TextureStyle';
 import { deprecation } from '../../../utils/logging/deprecation';
-import { type CanvasTextOptions } from '../Text';
+import { type CanvasTextOptions, type Text } from '../Text';
 import { TextStyle } from '../TextStyle';
 import { getPo2TextureFromSource } from '../utils/getPo2TextureFromSource';
 import { CanvasTextGenerator } from './CanvasTextGenerator';
@@ -30,6 +30,11 @@ export class CanvasTextSystem implements System
     } as const;
 
     private readonly _renderer: Renderer;
+
+    private readonly _activeTextures: Record<string, {
+        texture: Texture,
+        usageCount: number,
+    }> = {};
 
     constructor(_renderer: Renderer)
     {
@@ -163,6 +168,80 @@ export class CanvasTextSystem implements System
     }
 
     /**
+     * Gets or creates a managed texture for a Text object. This method handles texture reuse and reference counting.
+     * @param text - The Text object that needs a texture
+     * @returns A Texture instance that represents the rendered text
+     * @remarks
+     * This method performs the following:
+     * 1. Sets the appropriate resolution based on auto-resolution settings
+     * 2. Checks if a texture already exists for the text's style
+     * 3. Creates a new texture if needed or returns an existing one
+     * 4. Manages reference counting for texture reuse
+     */
+    public getManagedTexture(text: Text)
+    {
+        text._resolution = text._autoResolution ? this._renderer.resolution : text.resolution;
+        const textKey = text.styleKey;
+
+        if (this._activeTextures[textKey])
+        {
+            this._increaseReferenceCount(textKey);
+
+            return this._activeTextures[textKey].texture;
+        }
+
+        const texture = this.getTexture({
+            text: text.text,
+            style: text.style,
+            resolution: text._resolution,
+            textureStyle: text.textureStyle,
+        });
+
+        this._activeTextures[textKey] = {
+            texture,
+            usageCount: 1,
+        };
+
+        return texture;
+    }
+
+    /**
+     * Decreases the reference count for a texture associated with a text key.
+     * When the reference count reaches zero, the texture is returned to the pool.
+     * @param textKey - The unique key identifying the text style configuration
+     * @remarks
+     * This method is crucial for memory management, ensuring textures are properly
+     * cleaned up when they are no longer needed by any Text instances.
+     */
+    public decreaseReferenceCount(textKey: string)
+    {
+        const activeTexture = this._activeTextures[textKey];
+
+        activeTexture.usageCount--;
+
+        if (activeTexture.usageCount === 0)
+        {
+            this.returnTexture(activeTexture.texture);
+            this._activeTextures[textKey] = null;
+        }
+    }
+
+    /**
+     * Gets the current reference count for a texture associated with a text key.
+     * @param textKey - The unique key identifying the text style configuration
+     * @returns The number of Text instances currently using this texture
+     */
+    public getReferenceCount(textKey: string)
+    {
+        return this._activeTextures[textKey]?.usageCount ?? 0;
+    }
+
+    private _increaseReferenceCount(textKey: string)
+    {
+        this._activeTextures[textKey].usageCount++;
+    }
+
+    /**
      * Applies the specified filters to the given texture.
      *
      * This method takes a texture and a list of filters, applies the filters to the texture,
@@ -195,5 +274,11 @@ export class CanvasTextSystem implements System
     public destroy(): void
     {
         (this._renderer as null) = null;
+        // Clean up active textures
+        for (const key in this._activeTextures)
+        {
+            if (this._activeTextures[key]) this.returnTexture(this._activeTextures[key].texture);
+        }
+        (this._activeTextures as null) = null;
     }
 }

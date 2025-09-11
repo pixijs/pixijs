@@ -7,6 +7,7 @@ import type { Text } from '../Text';
 export class BatchableText extends BatchableSprite
 {
     private readonly _renderer: Renderer;
+    public currentKey: string;
 
     constructor(renderer: Renderer)
     {
@@ -31,7 +32,18 @@ export class BatchableText extends BatchableSprite
 
     public destroy()
     {
-        this._renderer.canvasText.returnTexture(this.texture);
+        const { canvasText } = this._renderer;
+        const refCount = canvasText.getReferenceCount(this.currentKey);
+
+        if (refCount > 0)
+        {
+            canvasText.decreaseReferenceCount(this.currentKey);
+        }
+        else if (this.texture)
+        {
+            canvasText.returnTexture(this.texture);
+        }
+
         this._renderer.runners.resolutionChange.remove(this);
         (this._renderer as null) = null;
     }

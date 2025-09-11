@@ -26,6 +26,9 @@ export interface ImageLike extends EventTarget
     /** Returns a Promise that resolves once the image is decoded. */
     decode(): Promise<void>;
 
+    /** Removes the image from the DOM and cleans up resources. */
+    remove(): void;
+
     onload: ((this: GlobalEventHandlers, ev: Event) => any) | null;
     onerror: ((this: GlobalEventHandlers, ev: Event) => any) | null;
 }

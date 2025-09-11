@@ -1,5 +1,5 @@
 import { Matrix } from '../../../../maths/matrix/Matrix';
-import { Pool } from '../../../../utils/pool/Pool';
+import { BigPool } from '../../../../utils/pool/PoolGroup';
 import { Bounds } from '../Bounds';
 
 import type { PoolItem } from '../../../../utils/pool/Pool';
@@ -7,6 +7,6 @@ import type { PoolItem } from '../../../../utils/pool/Pool';
 type MatrixPoolItem = Matrix & PoolItem;
 type BoundsPoolItem = Bounds & PoolItem;
 /** @internal */
-export const matrixPool = new Pool<MatrixPoolItem>(Matrix);
+export const matrixPool = BigPool.getPool<MatrixPoolItem>(Matrix);
 /** @internal */
-export const boundsPool = new Pool<BoundsPoolItem>(Bounds);
+export const boundsPool = BigPool.getPool<BoundsPoolItem>(Bounds);
