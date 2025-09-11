@@ -1,3 +1,5 @@
+import { type PointerEvents } from '../../../accessibility/accessibilityTarget';
+import { type EventMode } from '../../../events/FederatedEventTarget';
 import { type GL2DNode, type GL2DSprite } from '../node';
 
 /**
@@ -45,10 +47,43 @@ export interface PixiGL2DContainerExtension
         renderable: boolean;
 
         /** Cached bounds area for optimization purposes */
-        boundsArea: number[];
+        boundsArea?: [number, number, number, number];
 
         /** Whether to automatically sort child nodes by their zIndex values */
         sortableChildren: boolean;
+
+        /** Whether the node should be interactive */
+        interactive?: boolean;
+        /** Whether the nodes children should be interactive */
+        interactiveChildren?: boolean;
+        /** The event mode for the interactive element*/
+        eventMode?: EventMode;
+        /** The cursor type for the interactive element */
+        cursor?: string;
+
+        /** Whether this node is accessible for assistive technologies. */
+        accessible?: boolean;
+        /** Whether this node's children are accessible for assistive technologies. */
+        accessibleChildren?: boolean;
+        /** Hint text for assistive technologies. */
+        accessibleHint?: string;
+        /** The pointer-events the accessible div will use */
+        accessiblePointerEvents?: PointerEvents;
+        /** The text content of the shadow div */
+        accessibleText?: string;
+        /** The title attribute of the shadow div */
+        accessibleTitle?: string;
+        /** The type of the shadow div */
+        accessibleType?: keyof HTMLElementTagNameMap;
+        /** Tab index for keyboard navigation */
+        tabIndex?: number;
+
+        /** The area that should be used for culling calculations */
+        cullArea?: [number, number, number, number];
+        /** Whether the children of this node should be culled */
+        cullableChildren?: boolean;
+        /** Whether this node should be culled */
+        cullable?: boolean;
     };
 }
 

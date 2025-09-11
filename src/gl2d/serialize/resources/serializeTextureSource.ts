@@ -3,7 +3,8 @@ import { Rectangle } from '../../../maths/shapes/Rectangle';
 import { type TextureSource } from '../../../rendering/renderers/shared/texture/sources/TextureSource';
 import { type Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { type ToGL2DOptions } from '../../GL2D';
-import { type PixiGL2DTextureSource } from '../../spec/extensions/resources';
+import { type PixiGL2DSpritesheetSource, type PixiGL2DTextureSource } from '../../spec/extensions/resources';
+import { isSpritesheetTexture } from '../../utils/isSpritesheetTexture';
 
 /**
  * Serializes the texture source to a gl2D-compatible format.
@@ -62,6 +63,27 @@ export async function serializeTextureSource(instance: TextureSource, options: T
 
     gl2D.resources.push(data);
     gl2D.extensionsUsed.push('pixi_texture_source_resource');
+
+    // we need to know if this source is part of a spritesheet
+    const spritesheetSource = isSpritesheetTexture(instance);
+
+    if (spritesheetSource)
+    {
+        const spritesheetResource: PixiGL2DSpritesheetSource = {
+            uid: `spritesheet_${spritesheetSource.uid}`,
+            type: 'spritesheet',
+            uri: spritesheetSource.uri,
+            source: gl2D.resources.length - 1,
+            extensions: {
+                pixi_spritesheet_resource: {
+                    cachePrefix: spritesheetSource.cachePrefix
+                }
+            }
+        };
+
+        gl2D.extensionsUsed.push('pixi_spritesheet_resource');
+        gl2D.resources.push(spritesheetResource);
+    }
 
     return options;
 }

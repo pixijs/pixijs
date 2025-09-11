@@ -1,14 +1,17 @@
 /**
  * Recursively remove all undefined/null values from an object or array.
  * @param value - The value to clean
+ * @param depth - Maximum recursion depth. If 0, no recursion is performed. Defaults to Infinity for unlimited depth.
  * @returns The cleaned value
  * @internal
  */
-export function deepRemoveUndefinedOrNull<T>(value: T): T
+export function deepRemoveUndefinedOrNull<T>(value: T, depth: number = Infinity): T
 {
+    if (depth === 0) return value;
+
     if (Array.isArray(value))
     {
-    // Iterate backwards so we can safely splice while iterating
+        // Iterate backwards so we can safely splice while iterating
         for (let i = value.length - 1; i >= 0; i--)
         {
             const item = value[i];
@@ -19,7 +22,7 @@ export function deepRemoveUndefinedOrNull<T>(value: T): T
             }
             else
             {
-                deepRemoveUndefinedOrNull(item);
+                deepRemoveUndefinedOrNull(item, depth - 1);
             }
         }
 
@@ -38,7 +41,7 @@ export function deepRemoveUndefinedOrNull<T>(value: T): T
             }
             else
             {
-                deepRemoveUndefinedOrNull(val);
+                deepRemoveUndefinedOrNull(val, depth - 1);
             }
         }
 
