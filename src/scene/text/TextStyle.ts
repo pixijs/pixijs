@@ -734,7 +734,7 @@ export class TextStyle extends EventEmitter<{
      * This is used to track instances and ensure uniqueness.
      * @internal
      */
-    public uid = uid('textStyle');
+    public uid: number;
     /**
      * Internal tick counter used to track updates and changes.
      * This is incremented whenever the style is modified, allowing for efficient change detection.
@@ -774,9 +774,6 @@ export class TextStyle extends EventEmitter<{
         wordWrap: false,
         wordWrapWidth: 100,
     };
-
-    /** Unique identifier for the text style instance. */
-    public uid: number;
 
     // colors!!
     /** @internal */
