@@ -130,6 +130,11 @@ export class GlProgram
      * @internal
      */
     public readonly _key: number;
+    /**
+     * A cache key used to identify the program instance.
+     * @internal
+     */
+    public _cacheKey: string;
 
     /**
      * Creates a shiny new GlProgram. Used by WebGL renderer.
@@ -188,6 +193,8 @@ export class GlProgram
         this._uniformBlockData = null;
 
         this.transformFeedbackVaryings = null;
+
+        programCache[this._cacheKey] = null;
     }
 
     /**
@@ -204,6 +211,7 @@ export class GlProgram
         if (!programCache[key])
         {
             programCache[key] = new GlProgram(options);
+            programCache[key]._cacheKey = key;
         }
 
         return programCache[key];

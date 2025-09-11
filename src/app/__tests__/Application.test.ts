@@ -1,7 +1,9 @@
 import { Application } from '../Application';
-import { getApp, nextTick } from '@test-utils';
+import { basePath, getApp, nextTick } from '@test-utils';
+import { Assets } from '~/assets';
 import { extensions, ExtensionType } from '~/extensions';
-import { Container } from '~/scene';
+import { Container, Graphics, Sprite, Text } from '~/scene';
+import { GlobalResourceRegistry } from '~/utils';
 
 import type { ApplicationOptions } from '../Application';
 
@@ -78,6 +80,36 @@ describe('Application', () =>
 
             app.destroy(true, true);
             expect(child.destroyed).toBeTrue();
+        });
+
+        it('should destroy all children when option passed', async () =>
+        {
+            const app = await getApp();
+
+            await Assets.init({ basePath });
+            const bunny = await Assets.load('textures/bunny.png');
+            const stage = app.stage;
+            const child = new Container();
+            const graphics = new Graphics().rect(0, 0, 10, 10).fill('red');
+            const graphics2 = new Graphics().rect(0, 0, 10, 10).fill('red');
+            const sprite = new Sprite(bunny);
+            const text = new Text({ text: 'Hello, world!' });
+
+            graphics.mask = sprite;
+
+            stage.addChild(child, graphics, graphics2, sprite, text);
+
+            const spy = jest.spyOn(GlobalResourceRegistry, 'release');
+
+            app.render();
+
+            app.destroy(true, true);
+            expect(child.destroyed).toBeTrue();
+            expect(graphics.destroyed).toBeTrue();
+            expect(sprite.destroyed).toBeTrue();
+            expect(text.destroyed).toBeTrue();
+            expect(spy).toHaveBeenCalled();
+            Assets.reset();
         });
     });
 

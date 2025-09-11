@@ -16,6 +16,7 @@
     "excludeProtected": true,
     "excludeExternals": true,
     "customCss": "./scripts/plugins/typedoc-custom.css",
+    "favicon": "./scripts/resources/favicon.svg",
     "router": "pixi",
     "plugin": [
         "typedoc-plugin-ga",

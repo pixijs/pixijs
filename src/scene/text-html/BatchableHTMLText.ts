@@ -14,6 +14,7 @@ export class BatchableHTMLText extends BatchableSprite
     private readonly _renderer: Renderer;
     public texturePromise: Promise<Texture>;
     public generatingTexture = false;
+    public currentKey: string = '--';
 
     /**
      * Creates an instance of BatchableHTMLText.
@@ -44,8 +45,12 @@ export class BatchableHTMLText extends BatchableSprite
     /** Destroys the BatchableHTMLText instance. Returns the texture promise to the renderer and cleans up references. */
     public destroy()
     {
-        this._renderer.htmlText.returnTexturePromise(this.texturePromise);
+        const { htmlText } = this._renderer;
 
+        htmlText.getReferenceCount(this.currentKey) === null
+            ? htmlText.returnTexturePromise(this.texturePromise)
+            : htmlText.decreaseReferenceCount(this.currentKey);
+        this._renderer.runners.resolutionChange.remove(this);
         this.texturePromise = null;
         (this._renderer as null) = null;
     }

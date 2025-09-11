@@ -238,6 +238,12 @@ export class FillGradient implements CanvasGradient
      * @internal
      */
     public readonly uid: number = uid('fillGradient');
+    /**
+     * Internal tick counter to track changes in the gradient.
+     * This is used to invalidate the gradient when the texture changes.
+     * @internal
+     */
+    public _tick: number = 0;
     /** Type of gradient - currently only supports 'linear' */
     public readonly type: GradientType = 'linear';
 
@@ -428,6 +434,7 @@ export class FillGradient implements CanvasGradient
      */
     public buildGradient(): void
     {
+        if (!this.texture) this._tick++;
         if (this.type === 'linear')
         {
             this.buildLinearGradient();
@@ -517,16 +524,6 @@ export class FillGradient implements CanvasGradient
         this.transform = m;
     }
 
-    /**
-     * Gets a unique key representing the current state of the gradient.
-     * Used internally for caching.
-     * @returns Unique string key
-     */
-    public get styleKey(): number
-    {
-        return this.uid;
-    }
-
     /** Destroys the gradient, releasing resources. This will also destroy the internal texture. */
     public destroy(): void
     {
@@ -538,6 +535,16 @@ export class FillGradient implements CanvasGradient
         this.end = null;
         this.center = null;
         this.outerCenter = null;
+    }
+
+    /**
+     * Returns a unique key for this gradient instance.
+     * This key is used for caching and texture management.
+     * @returns {string} Unique key for the gradient
+     */
+    public get styleKey(): string
+    {
+        return `fill-gradient-${this.uid}-${this._tick}`;
     }
 }
 

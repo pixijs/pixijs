@@ -90,6 +90,7 @@ interface AssetExtensionAdvanced<
  * @advanced
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-interface AssetExtension<ASSET = any, META_DATA = any> extends AssetExtensionAdvanced<ASSET, META_DATA>{}
+interface AssetExtension<ASSET = any, META_DATA = any>
+    extends AssetExtensionAdvanced<ASSET, ASSET, ASSET, ASSET, META_DATA>{}
 
 export type { AssetExtension, AssetExtensionAdvanced };
