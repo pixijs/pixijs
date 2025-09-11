@@ -4,11 +4,15 @@ declare global
     {
 
         // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-        interface ICanvas
-        {
-
-        }
-
+        interface Texture {}
+        // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+        interface ImageSource {}
+        // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+        interface TextureSource {}
+        // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+        interface VideoSource {}
+        // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+        interface ICanvas {}
         interface RendererOptions
         {
             resolution?: number;
@@ -17,64 +21,25 @@ declare global
         }
 
         // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-        interface WebGLOptions
-        {
-
-        }
-
+        interface WebGLOptions {}
         // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-        interface WebGPUOptions
-        {
-
-        }
-
+        interface WebGPUOptions {}
         // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-        interface RendererSystems
-        {
-
-        }
-
+        interface RendererSystems {}
         // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-        interface WebGLSystems
-        {
-
-        }
-
+        interface WebGLSystems {}
         // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-        interface WebGPUSystems
-        {
-
-        }
-
+        interface WebGPUSystems {}
         // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-        interface CanvasSystems
-        {
-
-        }
-
+        interface CanvasSystems {}
         // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-        interface RendererPipes
-        {
-
-        }
-
+        interface RendererPipes {}
         // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-        interface WebGLPipes
-        {
-
-        }
-
+        interface WebGLPipes {}
         // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-        interface WebGPUPipes
-        {
-
-        }
-
+        interface WebGPUPipes {}
         // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-        interface CanvasPipes
-        {
-
-        }
+        interface CanvasPipes {}
     }
 }
 

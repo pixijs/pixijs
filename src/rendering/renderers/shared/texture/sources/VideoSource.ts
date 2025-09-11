@@ -47,6 +47,9 @@ export interface VideoSourceOptions extends TextureSourceOptions<VideoResource>
     alphaMode?: ALPHA_MODES;
 }
 
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
+export interface VideoSource extends PixiMixins.VideoSource, TextureSource<VideoResource> {}
+
 /**
  * A texture source that uses a video as its resource.
  * It automatically resizes the texture based on the video dimensions.
