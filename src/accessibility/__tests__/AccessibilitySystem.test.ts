@@ -162,4 +162,128 @@ describe('AccessibilitySystem', () =>
 
         renderer.destroy();
     });
+
+    it('uses the correct HTMLElement type when recycling divs from the pool', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+
+        const system = new AccessibilitySystem(renderer);
+
+        system.init({
+            accessibilityOptions: {
+                enabledByDefault: true,
+                debug: true
+            }
+        });
+
+        system['_isRunningTests'] = true;
+
+        const stage = new Container();
+
+        // Create an accessible button
+        const myButton = new Container();
+
+        myButton.accessible = true;
+        myButton.accessibleType = 'button';
+        myButton.accessibleTitle = 'myButtonTitle';
+        myButton.accessibleHint = 'myButtonHint';
+        myButton.interactive = true;
+        myButton.tabIndex = 2;
+        stage.addChild(myButton);
+
+        renderer.render(stage);
+        system.postrender();
+
+        expect(myButton._accessibleDiv.tagName).toBe('BUTTON');
+        expect(myButton._accessibleDiv.type).toBe('button');
+        expect(myButton._accessibleDiv.tabIndex).toBe(2);
+        expect(myButton._accessibleDiv.getAttribute('aria-label')).toBe('myButtonHint');
+
+        // Disable the button's accessibility behaviour
+        myButton.accessible = false;
+        renderer.render(stage);
+        system.postrender();
+
+        // Create a H1 accessible element in a later frame
+        const myHeading = new Container();
+
+        myHeading.accessible = true;
+        myHeading.accessibleType = 'h1';
+        myHeading.interactive = false;
+        stage.addChild(myHeading);
+
+        renderer.render(stage);
+        system.postrender();
+
+        // Assert that it did not reuse the <button> and instead created a <h1>
+        expect(myHeading._accessibleDiv.tagName).toBe('H1');
+        expect(myHeading._accessibleDiv.type).toBe('h1');
+        expect(myHeading._accessibleDiv.tabIndex).toBe(0);
+        expect(myHeading._accessibleDiv.hasAttribute('aria-label')).toBe(false);
+
+        renderer.destroy();
+    });
+
+    it('recycled divs do not carry over metadata from the last use', async () =>
+    {
+        const renderer = await getWebGLRenderer();
+
+        const system = new AccessibilitySystem(renderer);
+
+        system.init({
+            accessibilityOptions: {
+                enabledByDefault: true,
+                debug: true
+            }
+        });
+
+        system['_isRunningTests'] = true;
+
+        const stage = new Container();
+
+        // Create an accessible button
+        const myButton1 = new Container();
+
+        myButton1.accessible = true;
+        myButton1.accessibleType = 'button';
+        myButton1.accessibleTitle = 'myButton1Title';
+        myButton1.accessibleHint = 'myButton1Hint';
+        myButton1.interactive = true;
+        myButton1.tabIndex = 2;
+        stage.addChild(myButton1);
+
+        renderer.render(stage);
+        system.postrender();
+
+        expect(myButton1._accessibleDiv.tabIndex).toBe(2);
+        expect(myButton1._accessibleDiv.getAttribute('title')).toBe('myButton1Title');
+        expect(myButton1._accessibleDiv.getAttribute('aria-label')).toBe('myButton1Hint');
+
+        // Disable the button's accessibility behaviour
+        myButton1.accessible = false;
+        renderer.render(stage);
+        system.postrender();
+
+        // Create a new accessible button with different metadata
+        const myButton2 = new Container();
+
+        myButton2.accessible = true;
+        myButton2.accessibleType = 'button';
+        myButton2.interactive = false; // Don't make this one interactive
+        // This time don't set accessibleTitle, accessibleHint or tabIndex
+        stage.addChild(myButton2);
+
+        renderer.render(stage);
+        system.postrender();
+
+        // Assert that we don't carry over metadata from myButton1
+        // It was possible to end up with:
+        // - the old tabIndex if container.interactive is false
+        // - the old aria-label if container.accessibleHint is not set
+        expect(myButton2._accessibleDiv.tabIndex).toBe(0);
+        expect(myButton2._accessibleDiv.title).toBe('container 0');
+        expect(myButton2._accessibleDiv.hasAttribute('aria-label')).toBe(false);
+
+        renderer.destroy();
+    });
 });
