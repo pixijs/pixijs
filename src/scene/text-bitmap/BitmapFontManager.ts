@@ -427,7 +427,7 @@ class BitmapFontManagerClass
      * - hanging: approximated as ~0.2 * lineHeight
      * @param text - The text to get the baseline offset for.
      * @param style - Text style containing `textBaseline`.
-     * @param effectiveLineHeight - Optional. The line height to use. Falls back to the default font's line height.
+     * @param effectiveLineHeight - Optional. The line height in line box units or default font's line height if omitted.
      * @returns The baseline offset in line box units.
      */
     public getBaselineOffset(
@@ -440,22 +440,24 @@ class BitmapFontManagerClass
 
         const lineHeight = effectiveLineHeight ?? font.lineHeight;
 
+        const extraLineHeight = lineHeight - font.lineHeight;
+        const lineHightAdjustment = extraLineHeight > 0 ? extraLineHeight / 2 : 0;
+
         switch (style.textBaseline)
         {
             case 'top':
-                return 0;
+                return lineHightAdjustment;
             case 'bottom':
-                return lineHeight;
+                return font.fontMetrics.fontSize + lineHightAdjustment;
             case 'middle':
-                return lineHeight / 2;
+                return (font.fontMetrics.fontSize / 2) + lineHightAdjustment;
             case 'ideographic':
-                return lineHeight - font.fontMetrics.descent;
+                return lineHeight - font.fontMetrics.descent + lineHightAdjustment;
             case 'hanging':
-                // No direct metric; approximate at ~20% of line height from top
-                return Math.max(0, Math.min(lineHeight, lineHeight * 0.2));
+                return Math.max(0, lineHeight * 0.2) + lineHightAdjustment;
             case 'alphabetic':
             default:
-                return font.fontMetrics.ascent;
+                return font.fontMetrics.ascent + lineHightAdjustment;
         }
     }
 

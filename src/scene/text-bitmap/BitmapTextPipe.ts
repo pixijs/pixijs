@@ -114,8 +114,6 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
         const chars = CanvasTextMetrics.graphemeSegmenter(bitmapText.text);
         const style = bitmapText._style;
 
-        let currentY = 0;
-
         // measure our text...
         const bitmapTextLayout = getBitmapTextLayout(chars, style, bitmapFont, true);
 
@@ -155,6 +153,8 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
         {
             baselineDelta -= bitmapFont.distanceField.range;
         }
+
+        let currentY = 0;
 
         for (let i = 0; i < bitmapTextLayout.lines.length; i++)
         {
