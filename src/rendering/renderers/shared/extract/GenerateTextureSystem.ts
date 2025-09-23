@@ -141,7 +141,6 @@ export type GenerateTextureOptions = {
      *     target: sprite,
      *     textureSourceOptions: {
      *         scaleMode: 'linear',
-     *         multisample: 4
      *     }
      * });
      * ```
