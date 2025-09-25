@@ -700,7 +700,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * @see {@link Container#addChild} For adding children
      * @see {@link Container#removeChild} For removing children
      */
-    public children: (C | IRenderLayer)[] = [];
+    public children: C[] = [];
     /**
      * The display object container that contains this display object.
      * This represents the parent-child relationship in the display tree.

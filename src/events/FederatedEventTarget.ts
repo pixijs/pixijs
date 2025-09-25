@@ -1,4 +1,3 @@
-import { type IRenderLayer } from '../scene/layers/RenderLayer.js';
 import { EventSystem } from './EventSystem';
 import { FederatedEvent } from './FederatedEvent';
 
@@ -1094,7 +1093,7 @@ export interface IFederatedContainer extends FederatedOptions
     readonly parent?: Container | null;
 
     /** The children of this event target. */
-    readonly children?: ReadonlyArray<Container | IRenderLayer>;
+    readonly children?: ReadonlyArray<Container>;
 
     /** @private */
     _internalEventMode: EventMode;
