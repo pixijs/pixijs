@@ -28,6 +28,51 @@ describe('Assets', () =>
         expect(bunny2).toBeInstanceOf(Texture);
     });
 
+    it('should set default load options', async () =>
+    {
+        await Assets.init({
+            basePath,
+            loadOptions: {
+                retryCount: 5,
+                retryDelay: 100,
+                onProgress: () => { /** empty */ },
+            }
+        });
+
+        const bunny = await Assets.load('textures/bunny.png');
+        const bunny2 = await Assets.load({
+            src: 'textures/bunny.png'
+        });
+
+        expect(bunny).toBeInstanceOf(Texture);
+        expect(bunny2).toBeInstanceOf(Texture);
+        expect(Assets.loader.loadOptions.retryCount).toBe(5);
+        expect(Assets.loader.loadOptions.retryDelay).toBe(100);
+        expect(Assets.loader.loadOptions.onProgress).toBeInstanceOf(Function);
+    });
+
+    it('should set load options when passed directly', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        const bunny = await Assets.load('textures/bunny.png');
+        const bunny2 = await Assets.load({
+            src: 'textures/bunny.png'
+        }, {
+            retryCount: 5,
+            retryDelay: 100,
+            onProgress: () => { /** empty */ },
+        });
+
+        expect(bunny).toBeInstanceOf(Texture);
+        expect(bunny2).toBeInstanceOf(Texture);
+        expect(Assets.loader.loadOptions.retryCount).toBe(5);
+        expect(Assets.loader.loadOptions.retryDelay).toBe(100);
+        expect(Assets.loader.loadOptions.onProgress).toBeInstanceOf(Function);
+    });
+
     it('should load assets with the correct progress', async () =>
     {
         await Assets.init({
