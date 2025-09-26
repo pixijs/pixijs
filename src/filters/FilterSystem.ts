@@ -230,11 +230,13 @@ export class FilterSystem implements System
         if (instruction.container)
         {
             const renderGroup = instruction.container.renderGroup || instruction.container.parentRenderGroup;
+            const closestCacheAsTexture = renderGroup.isCachedAsTexture
+                ? renderGroup : renderGroup._parentCacheAsTextureRenderGroup;
 
-            if (renderGroup._parentCacheAsTextureRenderGroup)
+            if (closestCacheAsTexture)
             {
-                const frame = renderGroup._parentCacheAsTextureRenderGroup.texture.frame;
-                const resolution = renderGroup._parentCacheAsTextureRenderGroup.texture._source._resolution;
+                const frame = closestCacheAsTexture.texture.frame;
+                const resolution = closestCacheAsTexture.texture._source._resolution;
 
                 viewport = new Rectangle();
                 viewport.x = ((frame.x * resolution) + 0.5) | 0;
