@@ -479,10 +479,6 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         {
             this._activate();
         }
-        else if (this._activateOnTab)
-        {
-            globalThis.addEventListener('keydown', this._boundOnKeyDown, false);
-        }
 
         this._renderer.runners.postrender.remove(this);
     }
