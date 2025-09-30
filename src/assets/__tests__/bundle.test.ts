@@ -354,4 +354,68 @@ describe('Assets bundles', () =>
 
         expect(bundle.character.data).toEqual({ otherData: 'thing' });
     });
+
+    it('should use the throw loading strategy by default', async () =>
+    {
+        let count = 0;
+
+        await Assets.init({
+            basePath,
+            loadOptions: { onError: () => count++ },
+        });
+
+        Assets.addBundle('testBundle', [
+            { alias: 'bunny', src: 'textures/bunny_no_img.png' },
+            { alias: 'bunny2', src: 'textures/bunny.png' },
+        ]);
+
+        await Assets.loadBundle('testBundle').catch(
+            (e) => expect(e).toBeInstanceOf(Error)
+        );
+
+        expect(Assets.loader.loadOptions.strategy).toBe('throw');
+        expect(count).toBe(1);
+    });
+
+    it('should use the retry loading strategy when set', async () =>
+    {
+        let count = 0;
+
+        await Assets.init({
+            basePath,
+            loadOptions: { strategy: 'retry', onError: () => count++ },
+        });
+
+        Assets.addBundle('testBundle', [
+            { alias: 'bunny', src: 'textures/bunny_no_img.png' },
+            { alias: 'bunny2', src: 'textures/bunny.png' },
+        ]);
+
+        await Assets.loadBundle('testBundle').catch(
+            (e) => expect(e).toBeInstanceOf(Error)
+        );
+
+        expect(count).toBe(4); // 1 initial try + 3 retries
+    }, 5000);
+
+    it('should use the skip loading strategy when set', async () =>
+    {
+        let count = 0;
+
+        await Assets.init({
+            basePath,
+            loadOptions: { strategy: 'skip', onError: () => count++ },
+        });
+
+        Assets.addBundle('testBundle', [
+            { alias: 'bunny', src: 'textures/bunny_no_img.png' },
+            { alias: 'bunny2', src: 'textures/bunny.png' },
+        ]);
+
+        const assets = await Assets.loadBundle('testBundle');
+
+        expect(assets.bunny).toBeUndefined();
+        expect(assets.bunny2).toBeDefined();
+        expect(count).toBe(1);
+    });
 });

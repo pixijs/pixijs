@@ -62,6 +62,48 @@ Supported Asset Types:
 | Text | `.txt` | {@link loadTxt} |
 | Compressed Textures | `.basis`, `.dds`, `.ktx`, `.ktx2` | {@link loadBasis}, {@link loadDDS}, {@link loadKTX}, {@link loadKTX2} |
 
+### Load Options & Strategies
+
+Asset loading can fail for many reasons (network issues, corrupt files, unsupported formats). The loader provides configurable behavior through `LoadOptions`. These options can be supplied per call or globally (via `Assets.init` or by mutating `Loader.defaultOptions` / `loader.loadOptions`).
+
+Supported options:
+
+- `onProgress(progress: number)`: Called as each asset completes (0.0–1.0)
+- `onError(error: Error, asset)`: Called whenever an individual asset fails
+- `strategy`: 'throw' | 'skip' | 'retry'
+- `retryCount`: Number of retry attempts when strategy is 'retry' (default 3)
+- `retryDelay`: Delay in ms between retries (default 250)
+
+#### Strategies
+
+| Strategy | Behavior                                                                  | Error propagation         | Use when                          |
+| -------- | ------------------------------------------------------------------------- | ------------------------- | --------------------------------- |
+| throw    | First failure rejects the load promise                                    | Yes (immediate)           | Critical assets must all succeed  |
+| skip     | Failed assets are ignored; others continue                                | No (but onError fires)    | Optional / best-effort assets     |
+| retry    | Retries each failing asset up to retryCount, then throws if still failing | Yes (after final attempt) | Transient network/CDN instability |
+
+#### Load Options Examples
+
+```ts
+await Assets.init({
+    loadOptions: {
+        strategy: 'retry',
+        retryCount: 4,
+        retryDelay: 400,
+        onError: (err, asset) => console.debug('Retrying:', asset.src),
+    },
+});
+
+// Later calls inherit these unless overridden
+await Assets.load('critical.json');
+
+// Skip missing optional texture
+const tex = await Assets.load('optional.png', {
+    strategy: 'skip',
+    onError: (err, asset) => console.warn('Skipped:', asset, err.message),
+});
+```
+
 ### Asset Bundles
 
 Group related assets into bundles for organized loading:

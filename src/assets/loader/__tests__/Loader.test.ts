@@ -272,4 +272,73 @@ describe('Loader', () =>
         );
         config.preferCreateImageBitmap = defValue;
     });
+
+    it('should use the throw loading strategy by default', async () =>
+    {
+        let count = 0;
+        const loader = new Loader();
+
+        loader['_parsers'].push(loadTextures);
+        loader.loadOptions.onError = () => count++;
+
+        expect(loader.loadOptions.strategy).toBe('throw');
+        expect(Loader.defaultOptions.strategy).toBe('throw');
+
+        await loader.load(`${basePath}textures/bunny_no_img.png`).catch(
+            (e) => expect(e).toBeInstanceOf(Error)
+        );
+        expect(count).toBe(1);
+    });
+
+    it('should use the retry loading strategy when set', async () =>
+    {
+        let count = 0;
+        const loader = new Loader();
+
+        loader['_parsers'].push(loadTextures);
+        loader.loadOptions.strategy = 'retry';
+        loader.loadOptions.onError = () => count++;
+
+        await loader.load(`${basePath}textures/bunny_no_img.png`).catch(
+            (e) => expect(e).toBeInstanceOf(Error)
+        );
+
+        expect(count).toBe(4); // 1 initial try + 3 retries
+    }, 5000);
+
+    it('should use the skip loading strategy when set', async () =>
+    {
+        let count = 0;
+        const loader = new Loader();
+
+        loader['_parsers'].push(loadTextures);
+        loader.loadOptions.strategy = 'skip';
+        loader.loadOptions.onError = () => count++;
+
+        const result = await loader.load(`${basePath}textures/bunny_no_img.png`);
+
+        expect(result).toBeUndefined();
+        expect(count).toBe(1);
+    });
+
+    it('should use custom load options when provided', async () =>
+    {
+        let errorCount = 0;
+        let progressCount = 0;
+        const loader = new Loader();
+
+        loader['_parsers'].push(loadTextures);
+
+        const result = await loader.load(`${basePath}textures/bunny_no_img.png`, {
+            strategy: 'skip',
+            onError: () => errorCount++,
+            onProgress: () => progressCount++,
+        });
+
+        expect(result).toBeUndefined();
+        expect(errorCount).toBe(1);
+        expect(progressCount).toBe(1);
+        expect(loader.loadOptions.strategy).toBe('throw');
+        expect(Loader.defaultOptions.strategy).toBe('throw');
+    });
 });
