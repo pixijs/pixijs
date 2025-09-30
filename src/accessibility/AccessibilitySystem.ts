@@ -180,6 +180,10 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
     // eslint-disable-next-line @typescript-eslint/prefer-readonly
     private _isRunningTests: boolean = false;
 
+    /** Bound function references for proper event listener removal */
+    private _boundOnKeyDown: (e: KeyboardEvent) => void = this._onKeyDown.bind(this);
+    private _boundOnMouseMove: (e: MouseEvent) => void = this._onMouseMove.bind(this);
+
     // eslint-disable-next-line jsdoc/require-param
     /**
      * @param {WebGLRenderer|WebGPURenderer} renderer - A reference to the current renderer
@@ -307,17 +311,15 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
             });
         }
 
-        // Bind event handlers and add listeners when activating
+        // Add listeners using the stored bound references
         if (this._activateOnTab)
         {
-            this._onKeyDown = this._onKeyDown.bind(this);
-            globalThis.addEventListener('keydown', this._onKeyDown, false);
+            globalThis.addEventListener('keydown', this._boundOnKeyDown, false);
         }
 
         if (this._deactivateOnMouseMove)
         {
-            this._onMouseMove = this._onMouseMove.bind(this);
-            globalThis.document.addEventListener('mousemove', this._onMouseMove, true);
+            globalThis.document.addEventListener('mousemove', this._boundOnMouseMove, true);
         }
 
         // Check if canvas is in DOM
@@ -376,10 +378,10 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         this._isActive = false;
 
         // Switch listeners
-        globalThis.document.removeEventListener('mousemove', this._onMouseMove, true);
+        globalThis.document.removeEventListener('mousemove', this._boundOnMouseMove, true);
         if (this._activateOnTab)
         {
-            globalThis.addEventListener('keydown', this._onKeyDown, false);
+            globalThis.addEventListener('keydown', this._boundOnKeyDown, false);
         }
 
         this._renderer.runners.postrender.remove(this);
@@ -479,8 +481,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         }
         else if (this._activateOnTab)
         {
-            this._onKeyDown = this._onKeyDown.bind(this);
-            globalThis.addEventListener('keydown', this._onKeyDown, false);
+            globalThis.addEventListener('keydown', this._boundOnKeyDown, false);
         }
 
         this._renderer.runners.postrender.remove(this);
@@ -873,11 +874,13 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         this._pools = null;
         this._children = null;
         this._renderer = null;
+        this._hookDiv = null;
 
-        if (this._activateOnTab)
-        {
-            globalThis.removeEventListener('keydown', this._onKeyDown);
-        }
+        // Remove listeners using the stored bound references
+        globalThis.removeEventListener('keydown', this._boundOnKeyDown);
+        this._boundOnKeyDown = null;
+        globalThis.document.removeEventListener('mousemove', this._boundOnMouseMove, true);
+        this._boundOnMouseMove = null;
     }
 
     /**
