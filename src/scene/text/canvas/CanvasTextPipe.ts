@@ -51,7 +51,10 @@ export class CanvasTextPipe implements RenderPipe<Text>
                 // If the text has changed, we need to update the GPU text
                 this._updateGpuText(text);
             }
+
             text._didTextUpdate = false;
+
+            updateTextBounds(batchableText, text);
         }
 
         this._renderer.renderPipes.batch.addToBatch(batchableText, instructionSet);
@@ -77,8 +80,6 @@ export class CanvasTextPipe implements RenderPipe<Text>
 
         batchableText.texture = this._renderer.canvasText.getManagedTexture(text);
         batchableText.currentKey = text.styleKey;
-
-        updateTextBounds(batchableText, text);
     }
 
     private _getGpuText(text: Text)
