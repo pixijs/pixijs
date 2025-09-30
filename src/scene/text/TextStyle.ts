@@ -7,10 +7,7 @@ import { warn } from '../../utils/logging/warn';
 import { FillGradient } from '../graphics/shared/fill/FillGradient';
 import { FillPattern } from '../graphics/shared/fill/FillPattern';
 import { GraphicsContext } from '../graphics/shared/GraphicsContext';
-import {
-    toFillStyle,
-    toStrokeStyle
-} from '../graphics/shared/utils/convertFillInputToFillStyle';
+import { toFillStyle, toStrokeStyle } from '../graphics/shared/utils/convertFillInputToFillStyle';
 
 import type { TextureDestroyOptions, TypeOrBool } from '../container/destroyTypes';
 import type {
@@ -720,7 +717,7 @@ export class TextStyle extends EventEmitter<{
         angle: Math.PI / 6,
         blur: 0,
         color: 'black',
-        distance: 5,
+        distance: 5
     };
 
     /**
@@ -750,7 +747,7 @@ export class TextStyle extends EventEmitter<{
     public static defaultTextStyle: TextStyleOptions = {
         align: 'left',
         breakWords: false,
-        dropShadow:  null,
+        dropShadow: null,
         fill: 'black',
         fontFamily: 'Arial',
         fontSize: 26,
@@ -766,7 +763,7 @@ export class TextStyle extends EventEmitter<{
         trim: false,
         whiteSpace: 'pre',
         wordWrap: false,
-        wordWrapWidth: 100,
+        wordWrapWidth: 100
     };
 
     // colors!!
@@ -826,14 +823,33 @@ export class TextStyle extends EventEmitter<{
      * @type {'left'|'center'|'right'|'justify'}
      */
     get align(): TextStyleAlign { return this._align; }
-    set align(value: TextStyleAlign) { this._align = value; this.update(); }
+
+    set align(value: TextStyleAlign)
+    {
+        if (this._align === value) return;
+
+        this._align = value;
+        this.update();
+    }
+
     /** Indicates if lines can be wrapped within words, it needs wordWrap to be set to true. */
     get breakWords(): boolean { return this._breakWords; }
-    set breakWords(value: boolean) { this._breakWords = value; this.update(); }
+
+    set breakWords(value: boolean)
+    {
+        if (this._breakWords === value) return;
+
+        this._breakWords = value;
+        this.update();
+    }
+
     /** Set a drop shadow for the text. */
     get dropShadow(): TextDropShadow { return this._dropShadow; }
+
     set dropShadow(value: boolean | TextDropShadow)
     {
+        if (this._dropShadow === value) return;
+
         if (value !== null && typeof value === 'object')
         {
             this._dropShadow = this._createProxy({ ...TextStyle.defaultDropShadow, ...value });
@@ -845,13 +861,25 @@ export class TextStyle extends EventEmitter<{
 
         this.update();
     }
+
     /** The font family, can be a single font name, or a list of names where the first is the preferred font. */
     get fontFamily(): string | string[] { return this._fontFamily; }
-    set fontFamily(value: string | string[]) { this._fontFamily = value; this.update(); }
+
+    set fontFamily(value: string | string[])
+    {
+        if (this._fontFamily === value) return;
+
+        this._fontFamily = value;
+        this.update();
+    }
+
     /** The font size (as a number it converts to px, but as a string, equivalents are '26px','20pt','160%' or '1.6em') */
     get fontSize(): number { return this._fontSize; }
+
     set fontSize(value: string | number)
     {
+        if (this._fontSize === value) return;
+
         if (typeof value === 'string')
         {
             // eg '34px' to number
@@ -863,44 +891,97 @@ export class TextStyle extends EventEmitter<{
         }
         this.update();
     }
+
     /**
      * The font style.
      * @type {'normal'|'italic'|'oblique'}
      */
     get fontStyle(): TextStyleFontStyle { return this._fontStyle; }
+
     set fontStyle(value: TextStyleFontStyle)
     {
+        if (this._fontStyle === value) return;
+
         this._fontStyle = value.toLowerCase() as TextStyleFontStyle;
         this.update();
     }
+
     /**
      * The font variant.
      * @type {'normal'|'small-caps'}
      */
     get fontVariant(): TextStyleFontVariant { return this._fontVariant; }
-    set fontVariant(value: TextStyleFontVariant) { this._fontVariant = value; this.update(); }
+
+    set fontVariant(value: TextStyleFontVariant)
+    {
+        if (this._fontVariant === value) return;
+
+        this._fontVariant = value;
+        this.update();
+    }
+
     /**
      * The font weight.
      * @type {'normal'|'bold'|'bolder'|'lighter'|'100'|'200'|'300'|'400'|'500'|'600'|'700'|'800'|'900'}
      */
     get fontWeight(): TextStyleFontWeight { return this._fontWeight; }
-    set fontWeight(value: TextStyleFontWeight) { this._fontWeight = value; this.update(); }
+
+    set fontWeight(value: TextStyleFontWeight)
+    {
+        if (this._fontWeight === value) return;
+
+        this._fontWeight = value;
+        this.update();
+    }
+
     /** The space between lines. */
     get leading(): number { return this._leading; }
-    set leading(value: number) { this._leading = value; this.update(); }
+
+    set leading(value: number)
+    {
+        if (this._leading === value) return;
+
+        this._leading = value;
+        this.update();
+    }
+
     /** The amount of spacing between letters, default is 0. */
     get letterSpacing(): number { return this._letterSpacing; }
-    set letterSpacing(value: number) { this._letterSpacing = value; this.update(); }
+
+    set letterSpacing(value: number)
+    {
+        if (this._letterSpacing === value) return;
+
+        this._letterSpacing = value;
+        this.update();
+    }
+
     /** The line height, a number that represents the vertical space that a letter uses. */
     get lineHeight(): number { return this._lineHeight; }
-    set lineHeight(value: number) { this._lineHeight = value; this.update(); }
+
+    set lineHeight(value: number)
+    {
+        if (this._lineHeight === value) return;
+
+        this._lineHeight = value;
+        this.update();
+    }
+
     /**
      * Occasionally some fonts are cropped. Adding some padding will prevent this from happening
      * by adding padding to all sides of the text.
      * > [!NOTE] This will NOT affect the positioning or bounds of the text.
      */
     get padding(): number { return this._padding; }
-    set padding(value: number) { this._padding = value; this.update(); }
+
+    set padding(value: number)
+    {
+        if (this._padding === value) return;
+
+        this._padding = value;
+        this.update();
+    }
+
     /**
      * An optional filter or array of filters to apply to the text, allowing for advanced visual effects.
      * These filters will be applied to the text as it is created, resulting in faster rendering for static text
@@ -908,7 +989,14 @@ export class TextStyle extends EventEmitter<{
      * @default null
      */
     get filters(): readonly Filter[] { return this._filters; }
-    set filters(value: Filter[]) { this._filters = Object.freeze(value); this.update(); }
+
+    set filters(value: Filter[])
+    {
+        if (this._filters === value) return;
+
+        this._filters = Object.freeze(value);
+        this.update();
+    }
 
     /**
      * Trim transparent borders from the text texture.
@@ -917,13 +1005,29 @@ export class TextStyle extends EventEmitter<{
      * > Avoid using `trim: true` for dynamic text, as it could significantly impact performance.
      */
     get trim(): boolean { return this._trim; }
-    set trim(value: boolean) { this._trim = value; this.update(); }
+
+    set trim(value: boolean)
+    {
+        if (this._trim === value) return;
+
+        this._trim = value;
+        this.update();
+    }
+
     /**
      * The baseline of the text that is rendered.
      * @type {'alphabetic'|'top'|'hanging'|'middle'|'ideographic'|'bottom'}
      */
     get textBaseline(): TextStyleTextBaseline { return this._textBaseline; }
-    set textBaseline(value: TextStyleTextBaseline) { this._textBaseline = value; this.update(); }
+
+    set textBaseline(value: TextStyleTextBaseline)
+    {
+        if (this._textBaseline === value) return;
+
+        this._textBaseline = value;
+        this.update();
+    }
+
     /**
      * How newlines and spaces should be handled.
      * Default is 'pre' (preserve, preserve).
@@ -936,13 +1040,36 @@ export class TextStyle extends EventEmitter<{
      * @type {'normal'|'pre'|'pre-line'}
      */
     get whiteSpace(): TextStyleWhiteSpace { return this._whiteSpace; }
-    set whiteSpace(value: TextStyleWhiteSpace) { this._whiteSpace = value; this.update(); }
+
+    set whiteSpace(value: TextStyleWhiteSpace)
+    {
+        if (this._whiteSpace === value) return;
+
+        this._whiteSpace = value;
+        this.update();
+    }
+
     /** Indicates if word wrap should be used. */
     get wordWrap(): boolean { return this._wordWrap; }
-    set wordWrap(value: boolean) { this._wordWrap = value; this.update(); }
+
+    set wordWrap(value: boolean)
+    {
+        if (this._wordWrap === value) return;
+
+        this._wordWrap = value;
+        this.update();
+    }
+
     /** The width at which text will wrap, it needs wordWrap to be set to true. */
     get wordWrapWidth(): number { return this._wordWrapWidth; }
-    set wordWrapWidth(value: number) { this._wordWrapWidth = value; this.update(); }
+
+    set wordWrapWidth(value: number)
+    {
+        if (this._wordWrapWidth === value) return;
+
+        this._wordWrapWidth = value;
+        this.update();
+    }
 
     /**
      * The fill style that will be used to color the text.
@@ -1077,7 +1204,7 @@ export class TextStyle extends EventEmitter<{
             whiteSpace: this.whiteSpace,
             wordWrap: this.wordWrap,
             wordWrapWidth: this.wordWrapWidth,
-            filters: this._filters ? [...this._filters] : undefined,
+            filters: this._filters ? [...this._filters] : undefined
         });
     }
 
@@ -1154,6 +1281,8 @@ export class TextStyle extends EventEmitter<{
         return new Proxy<T>(value, {
             set: (target, property, newValue) =>
             {
+                if (target[property as keyof T] === newValue) return true;
+
                 target[property as keyof T] = newValue;
                 cb?.(property as string, newValue);
                 this.update();
@@ -1191,7 +1320,7 @@ function convertV7Tov8Style(style: TextStyleOptions)
             angle: oldStyle.dropShadowAngle ?? defaults.angle,
             blur: oldStyle.dropShadowBlur ?? defaults.blur,
             color: oldStyle.dropShadowColor ?? defaults.color,
-            distance:   oldStyle.dropShadowDistance ?? defaults.distance,
+            distance: oldStyle.dropShadowDistance ?? defaults.distance
         };
     }
 
@@ -1251,7 +1380,7 @@ function convertV7Tov8Style(style: TextStyleOptions)
         const gradientFill = new FillGradient({
             start: { x: 0, y: 0 },
             end: { x: 0, y: 1 },
-            textureSpace: 'local',
+            textureSpace: 'local'
         });
 
         const fillGradientStops = oldStyle.fillGradientStops.slice();
