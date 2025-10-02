@@ -1,6 +1,6 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { type Renderable } from '../../../rendering/renderers/shared/Renderable';
-import { type IRenderLayer } from '../../layers/RenderLayer';
+import { type RenderLayer } from '../../layers/RenderLayer';
 import { Bounds } from '../bounds/Bounds';
 import { boundsPool } from '../bounds/utils/matrixAndBoundsPool';
 
@@ -35,13 +35,13 @@ export interface GetFastGlobalBoundsMixin
      * This method is used internally by getFastGlobalBounds to traverse the scene graph.
      * @param {boolean} factorRenderLayers - A flag indicating whether to consider render layers in the calculation.
      * @param {Bounds} bounds - The bounds object to update with the calculated values.
-     * @param {IRenderLayer} currentLayer - The current render layer being processed.
+     * @param {RenderLayer} currentLayer - The current render layer being processed.
      * @internal
      */
     _getGlobalBoundsRecursive(
         factorRenderLayers: boolean,
         bounds: Bounds,
-        currentLayer: IRenderLayer,
+        currentLayer: RenderLayer,
     ): void;
 }
 
@@ -78,7 +78,7 @@ export const getFastGlobalBoundsMixin: Partial<Container> = {
     _getGlobalBoundsRecursive(
         factorRenderLayers: boolean,
         bounds: Bounds,
-        currentLayer: IRenderLayer,
+        currentLayer: RenderLayer,
     )
     {
         let localBounds = bounds;
