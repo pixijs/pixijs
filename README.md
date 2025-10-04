@@ -88,6 +88,15 @@ import { Application, Assets, Sprite } from 'pixi.js';
     });
 })();
 ```
+
+### How does `pixijs` work?
+
+Check out this interactive walkthrough of the `pixijs` codebase on CodeCanvas [here](https://www.code-canvas.com/?session=unauthenticatedGithub&repo=pixijs&owner=pixijs&branch=dev&OnboardingTutorial=true).
+
+To update the diagram, follow the quick tutorial [here](https://docs.code-canvas.com/updating-diagram).
+
+<img width="1916" alt="CodeCanvas Screenshot" src="https://codecanvas-media-public.s3.amazonaws.com/images/codecanvas-readme-screenshot.png" />
+
 ### Contribute
 
 Want to be part of the PixiJS project? Great! All are welcome! We will get there quicker
