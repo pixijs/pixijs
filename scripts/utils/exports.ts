@@ -26,6 +26,9 @@ const subImports = [
     ['./unsafe-eval', './lib/unsafe-eval'],
     ['./sprite-nine-slice', './lib/scene/sprite-nine-slice'],
     ['./particle-container', './lib/scene/particle-container'],
+    ['./gl2d', './lib/gl2d'],
+    ['./gl2d/serialize', './lib/gl2d/serialize'],
+    ['./gl2d/deserialize', './lib/gl2d/deserialize'],
 ];
 
 interface ExportField
