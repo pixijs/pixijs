@@ -78,4 +78,15 @@ describe('Pool', () =>
 
         expect(item3).toBe(item1);
     });
+
+    it('should ignore duplicate returns of the same item', () =>
+    {
+        const pool = new Pool(TestItem);
+        const item1 = pool.get(10);
+
+        pool.return(item1);
+        pool.return(item1);
+
+        expect(pool['_pool']).toHaveLength(1);
+    });
 });
