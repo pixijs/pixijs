@@ -485,7 +485,6 @@ export class Resolver
                 loadParser: userDefinedLoadParser,
                 parser: userDefinedParser,
             } = asset;
-            const userDefinedProgressSize = asset.progressSize;
 
             // src can contain an unresolved asset itself
             // so we need to merge that data with the current asset
@@ -555,7 +554,7 @@ export class Resolver
                         format,
                         loadParser: userDefinedLoadParser,
                         parser: userDefinedParser,
-                        progressSize: userDefinedProgressSize,
+                        progressSize: asset.progressSize,
                     });
 
                     resolvedAssets.push(formattedAsset);
