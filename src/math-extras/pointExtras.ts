@@ -118,10 +118,7 @@ export const pointExtraMixins: any = {
     },
     rotate<T extends PointData>(radians: number, outPoint?: T): T
     {
-        if (!outPoint)
-        {
-            outPoint = new Point() as PointData as T;
-        }
+        outPoint ??= new Point() as PointData as T;
 
         const cosTheta = Math.cos(radians);
         const sinTheta = Math.sin(radians);
