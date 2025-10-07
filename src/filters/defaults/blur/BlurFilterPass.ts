@@ -1,5 +1,6 @@
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
 import { RendererType } from '../../../rendering/renderers/types';
+import { deprecation, v8_12_0 } from '../../../utils/logging/deprecation';
 import { Filter } from '../../Filter';
 import { generateBlurGlProgram } from './gl/generateBlurGlProgram';
 import { generateBlurProgram } from './gpu/generateBlurProgram';
@@ -45,6 +46,17 @@ export class BlurFilterPass extends Filter
         kernelSize: 5,
     };
 
+    /**
+     * Make the actual strength of one pass inversely proportional to the square root of the number of passes
+     * instead of being inversely proportional to the number of passes.
+     * Setting to `false` is the legacy behavior, which is mathematically incorrect
+     * but matches the behavior of older versions.
+     * It will be true by default in the future.
+     */
+    public static sqrtScaledStrength = false;
+
+    private static _sqrtScaledStrengthWarningEmitted = false;
+
     /** Do pass along the x-axis (`true`) or y-axis (`false`). */
     public horizontal: boolean;
     /** The number of passes to run the filter. */
@@ -54,6 +66,7 @@ export class BlurFilterPass extends Filter
 
     private _quality: number;
     private readonly _uniforms: any;
+    private readonly _kernelSize: number;
 
     /**
      * @param options
@@ -64,10 +77,19 @@ export class BlurFilterPass extends Filter
      */
     constructor(options: BlurFilterPassOptions)
     {
+        if (!BlurFilterPass._sqrtScaledStrengthWarningEmitted && !BlurFilterPass.sqrtScaledStrength)
+        {
+            // #if _DEBUG
+            // eslint-disable-next-line max-len
+            deprecation(v8_12_0, 'Set BlurFilterPass.sqrtScaledStrength = true to enable the new mathematically correct behavior of BlurFilterPass.');
+            // #endif
+            BlurFilterPass._sqrtScaledStrengthWarningEmitted = true;
+        }
+
         options = { ...BlurFilterPass.defaultOptions, ...options };
 
-        const glProgram = generateBlurGlProgram(options.horizontal, options.kernelSize);
-        const gpuProgram = generateBlurProgram(options.horizontal, options.kernelSize);
+        const glProgram = generateBlurGlProgram(options.horizontal, options.kernelSize, BlurFilterPass.sqrtScaledStrength);
+        const gpuProgram = generateBlurProgram(options.horizontal, options.kernelSize, BlurFilterPass.sqrtScaledStrength);
 
         super({
             glProgram,
@@ -89,6 +111,8 @@ export class BlurFilterPass extends Filter
         this.blur = options.strength;
 
         this._uniforms = this.resources.blurUniforms.uniforms;
+
+        this._kernelSize = options.kernelSize;
     }
 
     /**
@@ -105,7 +129,14 @@ export class BlurFilterPass extends Filter
         clearMode: boolean
     ): void
     {
-        this._uniforms.uStrength = this.strength / this.passes;
+        if (BlurFilterPass.sqrtScaledStrength)
+        {
+            this._uniforms.uStrength = this.strength / Math.sqrt(this.passes * (this._kernelSize - 1));
+        }
+        else
+        {
+            this._uniforms.uStrength = this.strength / this.passes;
+        }
 
         if (this.passes === 1)
         {
