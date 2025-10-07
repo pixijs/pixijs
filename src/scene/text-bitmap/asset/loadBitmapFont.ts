@@ -18,6 +18,7 @@ const validExtensions = ['.xml', '.fnt'];
 /**
  * simple loader plugin for loading in bitmap fonts!
  * @category assets
+ * @internal
  */
 export const bitmapFontCachePlugin = {
     extension: {
@@ -45,6 +46,7 @@ export const bitmapFontCachePlugin = {
  * Loader plugin for loading bitmap fonts.
  * It supports both XML and text formats, and can handle distance field fonts.
  * @category assets
+ * @advanced
  */
 export const loadBitmapFont = {
     extension: {
@@ -52,7 +54,9 @@ export const loadBitmapFont = {
         priority: LoaderParserPriority.Normal,
     },
 
+    /** used for deprecation purposes */
     name: 'loadBitmapFont',
+    id: 'bitmap-font',
 
     test(url: string): boolean
     {

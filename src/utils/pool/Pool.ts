@@ -2,6 +2,7 @@
  * A generic class for managing a pool of items.
  * @template T The type of items in the pool. Must implement {@link PoolItem}.
  * @category utils
+ * @advanced
  */
 export class Pool<T extends PoolItem>
 {
@@ -102,10 +103,18 @@ export class Pool<T extends PoolItem>
         return this._count - this._index;
     }
 
-    /** clears the pool - mainly used for debugging! */
+    /** clears the pool */
     public clear()
     {
+        if (this._pool.length > 0 && this._pool[0].destroy)
+        {
+            for (let i = 0; i < this._index; i++)
+            {
+                this._pool[i].destroy();
+            }
+        }
         this._pool.length = 0;
+        this._count = 0;
         this._index = 0;
     }
 }
@@ -113,10 +122,12 @@ export class Pool<T extends PoolItem>
 /**
  * An object that can be stored in a {@link Pool}.
  * @category utils
+ * @advanced
  */
 export type PoolItem = {
     init?: (data?: any) => void;
     reset?: () => void;
+    destroy?: () => void;
     [key: string]: any;
 };
 
@@ -124,5 +135,6 @@ export type PoolItem = {
  * The constructor of an object that can be stored in a {@link Pool}.
  * @typeParam K - The type of the object that can be stored in a {@link Pool}.
  * @category utils
+ * @advanced
  */
 export type PoolItemConstructor<K extends PoolItem> = new () => K;

@@ -44,19 +44,11 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
-        this._renderer.renderableGC.addManagedHash(this, '_gpuBitmapText');
     }
 
     public validateRenderable(bitmapText: BitmapText): boolean
     {
         const graphicsRenderable = this._getGpuBitmapText(bitmapText);
-
-        if (bitmapText._didTextUpdate)
-        {
-            bitmapText._didTextUpdate = false;
-
-            this._updateContext(bitmapText, graphicsRenderable);
-        }
 
         return this._renderer.renderPipes.graphics.validateRenderable(graphicsRenderable);
 
@@ -127,8 +119,6 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
         // measure our text...
         const bitmapTextLayout = getBitmapTextLayout(chars, style, bitmapFont, true);
 
-        let index = 0;
-
         const padding = style.padding;
         const scale = bitmapTextLayout.scale;
 
@@ -147,28 +137,49 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
         const tint = bitmapFont.applyFillAsTint ? style._fill.color : 0xFFFFFF;
 
+        let fontSize = bitmapFont.fontMetrics.fontSize;
+        let lineHeight = bitmapFont.lineHeight;
+
+        if (style.lineHeight)
+        {
+            fontSize = style.fontSize / scale;
+            lineHeight = style.lineHeight / scale;
+        }
+
+        let linePositionYShift = (lineHeight - fontSize) / 2;
+
+        // if `currentY` is no longer starts from `baseLineOffset`
+        // the `baseLineOffset` below may also need to be removed
+        if (linePositionYShift - bitmapFont.baseLineOffset < 0)
+        {
+            linePositionYShift = 0;
+        }
+
         for (let i = 0; i < bitmapTextLayout.lines.length; i++)
         {
             const line = bitmapTextLayout.lines[i];
 
             for (let j = 0; j < line.charPositions.length; j++)
             {
-                const char = chars[index++];
-
+                const char = line.chars[j];
                 const charData = bitmapFont.chars[char];
 
                 if (charData?.texture)
                 {
+                    const texture = charData.texture;
+
                     context.texture(
-                        charData.texture,
+                        texture,
                         tint ? tint : 'black',
                         Math.round(line.charPositions[j] + charData.xOffset),
-                        Math.round(currentY + charData.yOffset),
+                        Math.round(currentY + charData.yOffset + linePositionYShift),
+                        texture.orig.width,
+                        texture.orig.height,
                     );
                 }
             }
 
-            currentY += bitmapFont.lineHeight;
+            currentY += lineHeight;
         }
     }
 

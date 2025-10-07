@@ -66,6 +66,9 @@ export const uboSyncFunctionsSTD40: Record<UNIFORM_TYPES_SINGLE, string> = {
     'mat4x3<f32>': loopMatrix(4, 3),
     'mat2x4<f32>': loopMatrix(2, 4),
     'mat3x4<f32>': loopMatrix(3, 4),
+    sampler2D: `data[offset] = v;`,
+    samplerCube: `data[offset] = v;`,
+    sampler2DArray: `data[offset] = v;`,
 };
 
 /** @internal */

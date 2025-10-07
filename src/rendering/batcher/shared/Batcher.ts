@@ -1,6 +1,7 @@
 import { uid } from '../../../utils/data/uid';
 import { ViewableBuffer } from '../../../utils/data/ViewableBuffer';
 import { deprecation } from '../../../utils/logging/deprecation';
+import { GlobalResourceRegistry } from '../../../utils/pool/GlobalResourceRegistry';
 import { fastCopy } from '../../renderers/shared/buffer/utils/fastCopy';
 import { type BLEND_MODES } from '../../renderers/shared/state/const';
 import { getAdjustedBlendModeBlend } from '../../renderers/shared/state/getAdjustedBlendModeBlend';
@@ -19,12 +20,14 @@ import type { Texture } from '../../renderers/shared/texture/Texture';
 /**
  * The action types for a batch.
  * @category rendering
+ * @advanced
  */
 export type BatchAction = 'startBatch' | 'renderBatch';
 
 /**
  * A batch pool is used to store batches when they are not currently in use.
  * @category rendering
+ * @advanced
  */
 export class Batch implements Instruction
 {
@@ -73,6 +76,22 @@ export class Batch implements Instruction
 const batchPool: Batch[] = [];
 let batchPoolIndex = 0;
 
+GlobalResourceRegistry.register({
+    clear: () =>
+    {
+        // check if the first element has a destroy method
+        if (batchPool.length > 0)
+        {
+            for (const item of batchPool)
+            {
+                if (item) item.destroy();
+            }
+        }
+        batchPool.length = 0; // clear the array
+        batchPoolIndex = 0;
+    },
+});
+
 function getBatchFromPool()
 {
     return batchPoolIndex > 0 ? batchPool[--batchPoolIndex] : new Batch();
@@ -87,6 +106,7 @@ function returnBatchToPool(batch: Batch)
  * Represents an element that can be batched for rendering.
  * @interface
  * @category rendering
+ * @advanced
  */
 export interface BatchableElement
 {
@@ -173,6 +193,7 @@ export interface BatchableElement
  * Represents a batchable quad element.
  * @extends BatchableElement
  * @category rendering
+ * @advanced
  */
 export interface BatchableQuadElement extends BatchableElement
 {
@@ -205,6 +226,7 @@ export interface BatchableQuadElement extends BatchableElement
  * Represents a batchable mesh element.
  * @extends BatchableElement
  * @category rendering
+ * @advanced
  */
 export interface BatchableMeshElement extends BatchableElement
 {
@@ -250,6 +272,7 @@ let BATCH_TICK = 0;
 /**
  * The options for the batcher.
  * @category rendering
+ * @advanced
  */
 export interface BatcherOptions
 {
@@ -265,6 +288,7 @@ export interface BatcherOptions
  * A batcher is used to batch together objects with the same texture.
  * It is an abstract class that must be extended. see DefaultBatcher for an example.
  * @category rendering
+ * @advanced
  */
 export abstract class Batcher
 {
@@ -752,6 +776,8 @@ export abstract class Batcher
 
     public destroy()
     {
+        if (this.batches === null) return;
+
         for (let i = 0; i < this.batches.length; i++)
         {
             returnBatchToPool(this.batches[i]);
@@ -761,7 +787,7 @@ export abstract class Batcher
 
         for (let i = 0; i < this._elements.length; i++)
         {
-            this._elements[i]._batch = null;
+            if (this._elements[i]) this._elements[i]._batch = null;
         }
 
         this._elements = null;

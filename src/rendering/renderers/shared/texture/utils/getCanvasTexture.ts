@@ -1,3 +1,4 @@
+import { GlobalResourceRegistry } from '../../../../../utils/pool/GlobalResourceRegistry';
 import { CanvasSource } from '../sources/CanvasSource';
 import { Texture } from '../Texture';
 
@@ -5,6 +6,8 @@ import type { ICanvas } from '../../../../../environment/canvas/ICanvas';
 import type { CanvasSourceOptions } from '../sources/CanvasSource';
 
 const canvasCache: Map<ICanvas, Texture<CanvasSource>> = new Map();
+
+GlobalResourceRegistry.register(canvasCache);
 
 /**
  * @param canvas

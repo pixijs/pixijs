@@ -24,6 +24,7 @@ import type { WebGLRenderer } from '../WebGLRenderer';
  * the Buffer class.
  * @class
  * @category rendering
+ * @advanced
  */
 export class GlBufferSystem implements System
 {

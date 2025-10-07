@@ -15,6 +15,7 @@ import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 /**
  * Loads KTX textures.
  * @category assets
+ * @advanced
  */
 export const loadKTX = {
     extension: {
@@ -23,7 +24,9 @@ export const loadKTX = {
         name: 'loadKTX',
     },
 
+    /** used for deprecation purposes */
     name: 'loadKTX',
+    id: 'ktx',
 
     test(url: string): boolean
     {

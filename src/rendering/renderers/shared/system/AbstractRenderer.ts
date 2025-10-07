@@ -4,6 +4,7 @@ import { Container } from '../../../../scene/container/Container';
 import { unsafeEvalSupported } from '../../../../utils/browser/unsafeEvalSupported';
 import { uid } from '../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
+import { GlobalResourceRegistry } from '../../../../utils/pool/GlobalResourceRegistry';
 import { EventEmitter } from '../../../../utils/utils';
 import { CLEAR } from '../../gl/const';
 import { SystemRunner } from './SystemRunner';
@@ -28,6 +29,7 @@ import type { System, SystemConstructor } from './System';
  * The configuration for the renderer.
  * This is used to define the systems and render pipes that will be used by the renderer.
  * @category rendering
+ * @advanced
  */
 export interface RendererConfig
 {
@@ -42,6 +44,7 @@ export interface RendererConfig
 /**
  * The options for rendering a view.
  * @category rendering
+ * @standard
  */
 export interface RenderOptions extends ClearOptions
 {
@@ -54,6 +57,7 @@ export interface RenderOptions extends ClearOptions
 /**
  * The options for clearing the render target.
  * @category rendering
+ * @advanced
  */
 export interface ClearOptions
 {
@@ -71,11 +75,13 @@ export interface ClearOptions
 /**
  * Options for destroying the renderer.
  * This can be a boolean or an object.
- * @see {@link ViewSystemDestroyOptions}
- * @see {@link TypeOrBool}
  * @category rendering
+ * @standard
  */
-export type RendererDestroyOptions = TypeOrBool<ViewSystemDestroyOptions>;
+export type RendererDestroyOptions = TypeOrBool<ViewSystemDestroyOptions & {
+    /** Whether to clean up global resource pools/caches */
+    releaseGlobalResources?: boolean;
+}>;
 
 const defaultRunners = [
     'init',
@@ -118,7 +124,6 @@ type Runners = {[key in DefaultRunners]: SystemRunner} & {
  *
  * | Core Systems                   | Provide an optimised, easy to use API to work with WebGL/WebGPU               |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
- * | {@link RenderGroupSystem} | This manages the what what we are rendering to (eg - canvas or texture)   |
  * | {@link GlobalUniformSystem} | This manages shaders, programs that run on the GPU to calculate 'em pixels.   |
  * | {@link TextureGCSystem}     | This will automatically remove textures from the GPU if they are not used.    |
  *
@@ -133,8 +138,8 @@ type Runners = {[key in DefaultRunners]: SystemRunner} & {
  * The breadth of the API surface provided by the renderer is contained within these systems.
  * @abstract
  * @category rendering
+ * @advanced
  * @property {HelloSystem} hello - HelloSystem instance.
- * @property {RenderGroupSystem} renderGroup - RenderGroupSystem instance.
  * @property {TextureGCSystem} textureGC - TextureGCSystem instance.
  * @property {FilterSystem} filter - FilterSystem instance.
  * @property {GlobalUniformSystem} globalUniforms - GlobalUniformSystem instance.
@@ -190,6 +195,7 @@ export class AbstractRenderer<
     /** The name of the renderer. */
     public readonly name: string;
 
+    /** @internal */
     public readonly uid = uid('renderer');
 
     /** @internal */
@@ -197,6 +203,7 @@ export class AbstractRenderer<
 
     /** @internal */
     public readonly runners: Runners = Object.create(null) as Runners;
+    /** @internal */
     public readonly renderPipes = Object.create(null) as PIPES;
     /** The view system manages the main canvas that is attached to the DOM */
     public view!: ViewSystem;
@@ -318,6 +325,12 @@ export class AbstractRenderer<
             options.transform = options.container.localTransform;
         }
 
+        // Check if the container is visible before proceeding with rendering
+        if (!options.container.visible)
+        {
+            return;
+        }
+
         // lets ensure this object is a render group so we can render it!
         // the renderer only likes to render - render groups.
         options.container.enableRenderGroup();
@@ -347,6 +360,14 @@ export class AbstractRenderer<
         }
     }
 
+    /**
+     * Clears the render target.
+     * @param options - The options to use when clearing the render target.
+     * @param options.target - The render target to clear.
+     * @param options.clearColor - The color to clear with.
+     * @param options.clear - The clear mode to use.
+     * @advanced
+     */
     public clear(options: ClearOptions = {}): void
     {
         // override!
@@ -511,6 +532,8 @@ export class AbstractRenderer<
                 this as unknown as Renderer,
                 Adaptor ? new Adaptor() : null
             );
+
+            this.runners.destroy.add((this.renderPipes as any)[name]);
         });
     }
 
@@ -524,6 +547,11 @@ export class AbstractRenderer<
         {
             runner.destroy();
         });
+
+        if (options === true || (typeof options === 'object' && options.releaseGlobalResources))
+        {
+            GlobalResourceRegistry.release();
+        }
 
         this._systemsHash = null;
 
@@ -584,6 +612,7 @@ export class AbstractRenderer<
      * // Now render Pixi content
      * pixiRenderer.render(pixiScene);
      * ```
+     * @advanced
      */
     public resetState(): void
     {

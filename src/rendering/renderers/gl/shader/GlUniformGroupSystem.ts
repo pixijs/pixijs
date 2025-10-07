@@ -11,6 +11,7 @@ import type { GlProgram, GlUniformData } from './GlProgram';
 /**
  * System plugin to the renderer to manage shaders.
  * @category rendering
+ * @advanced
  */
 export class GlUniformGroupSystem implements System
 {
@@ -76,14 +77,14 @@ export class GlUniformGroupSystem implements System
      */
     private _getUniformSyncFunction(group: UniformGroup, program: GlProgram): UniformsSyncCallback
     {
-        return this._uniformGroupSyncHash[group._signature]?.[program._key]
+        return this._uniformGroupSyncHash[group.signature]?.[program._key]
             || this._createUniformSyncFunction(group, program);
     }
 
     private _createUniformSyncFunction(group: UniformGroup, program: GlProgram): UniformsSyncCallback
     {
-        const uniformGroupSyncHash = this._uniformGroupSyncHash[group._signature]
-            || (this._uniformGroupSyncHash[group._signature] = {});
+        const uniformGroupSyncHash = this._uniformGroupSyncHash[group.signature]
+            || (this._uniformGroupSyncHash[group.signature] = {});
 
         const id = this._getSignature(group, program._uniformData, 'u');
 

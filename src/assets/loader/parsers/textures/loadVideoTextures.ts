@@ -1,7 +1,10 @@
+/* eslint-disable no-restricted-globals */
+import { type ImageLike } from '../../../../environment/ImageLike';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { VideoSource } from '../../../../rendering/renderers/shared/texture/sources/VideoSource';
 import { detectVideoAlphaMode } from '../../../../utils/browser/detectVideoAlphaMode';
 import { getResolutionOfUrl } from '../../../../utils/network/getResolutionOfUrl';
+import { testVideoFormat } from '../../../detections/utils/testVideoFormat';
 import { checkDataUrl } from '../../../utils/checkDataUrl';
 import { checkExtension } from '../../../utils/checkExtension';
 import { createTexture } from './utils/createTexture';
@@ -12,8 +15,9 @@ import type { ResolvedAsset } from '../../../types';
 import type { Loader } from '../../Loader';
 import type { LoaderParser } from '../LoaderParser';
 
-const validVideoExtensions = ['.mp4', '.m4v', '.webm', '.ogg', '.ogv', '.h264', '.avi', '.mov'];
-const validVideoMIMEs = validVideoExtensions.map((ext) => `video/${ext.substring(1)}`);
+const potentialVideoExtensions = ['.mp4', '.m4v', '.webm', '.ogg', '.ogv', '.h264', '.avi', '.mov'];
+let validVideoExtensions: string[];
+let validVideoMIMEs: string[];
 
 /**
  * Set cross origin based detecting the url and the crossorigin
@@ -21,8 +25,9 @@ const validVideoMIMEs = validVideoExtensions.map((ext) => `video/${ext.substring
  * @param url - URL to check
  * @param crossorigin - Cross origin value to use
  * @category assets
+ * @advanced
  */
-export function crossOrigin(element: HTMLImageElement | HTMLVideoElement, url: string, crossorigin?: boolean | string): void
+export function crossOrigin(element: ImageLike | HTMLVideoElement, url: string, crossorigin?: boolean | string): void
 {
     if (crossorigin === undefined && !url.startsWith('data:'))
     {
@@ -101,11 +106,46 @@ export function determineCrossOrigin(url: string, loc: Location = globalThis.loc
     return '';
 }
 
+type LoadVideoData = VideoSourceOptions & {
+    mime?: string;
+};
+
+/**
+ * Get the supported video extensions and MIME types based on the browser's capabilities.
+ * This function checks the potential video extensions against the browser's supported formats.
+ * @returns An object containing valid video extensions and MIME types.
+ * @internal
+ */
+function getBrowserSupportedVideoExtensions()
+{
+    const supportedExtensions: string[] = [];
+    const supportedMimes: string[] = [];
+
+    for (const ext of potentialVideoExtensions)
+    {
+        const mimeType = VideoSource.MIME_TYPES[ext.substring(1)] || `video/${ext.substring(1)}`;
+
+        if (testVideoFormat(mimeType))
+        {
+            supportedExtensions.push(ext);
+            if (!supportedMimes.includes(mimeType))
+            {
+                supportedMimes.push(mimeType);
+            }
+        }
+    }
+
+    return {
+        validVideoExtensions: supportedExtensions,
+        validVideoMime: supportedMimes
+    };
+}
+
 /**
  * A simple plugin to load video textures.
  *
  * You can pass VideoSource options to the loader via the .data property of the asset descriptor
- * when using Asset.load().
+ * when using Assets.load().
  * ```js
  * // Set the data
  * const texture = await Assets.load({
@@ -117,10 +157,13 @@ export function determineCrossOrigin(url: string, loc: Location = globalThis.loc
  * });
  * ```
  * @category assets
+ * @advanced
  */
 export const loadVideoTextures = {
 
+    /** used for deprecation purposes */
     name: 'loadVideo',
+    id: 'video',
 
     extension: {
         type: ExtensionType.LoadParser,
@@ -129,16 +172,23 @@ export const loadVideoTextures = {
 
     test(url: string): boolean
     {
+        if (!validVideoExtensions || !validVideoMIMEs)
+        {
+            const { validVideoExtensions: ve, validVideoMime: vm } = getBrowserSupportedVideoExtensions();
+
+            validVideoExtensions = ve;
+            validVideoMIMEs = vm;
+        }
         const isValidDataUrl = checkDataUrl(url, validVideoMIMEs);
         const isValidExtension = checkExtension(url, validVideoExtensions);
 
         return isValidDataUrl || isValidExtension;
     },
 
-    async load(url: string, asset: ResolvedAsset<VideoSourceOptions>, loader: Loader): Promise<Texture>
+    async load(url: string, asset: ResolvedAsset<LoadVideoData>, loader: Loader): Promise<Texture>
     {
         // --- Merge default and provided options ---
-        const options: VideoSourceOptions = {
+        const options: LoadVideoData = {
             ...VideoSource.defaultOptions,
             resolution: asset.data?.resolution || getResolutionOfUrl(url),
             alphaMode: asset.data?.alphaMode || await detectVideoAlphaMode(),
@@ -178,7 +228,11 @@ export const loadVideoTextures = {
         // Determine MIME type
         let mime: string | undefined;
 
-        if (url.startsWith('data:'))
+        if (options.mime)
+        {
+            mime = options.mime;
+        }
+        else if (url.startsWith('data:'))
         {
             mime = url.slice(5, url.indexOf(';'));
         }
@@ -214,6 +268,11 @@ export const loadVideoTextures = {
                 resolve(createTexture(base, loader, url));
             };
 
+            if (options.preload && !options.autoPlay)
+            {
+                videoElement.load();
+            }
+
             videoElement.addEventListener('canplay', onCanPlay);
             videoElement.appendChild(sourceElement);
         });
@@ -223,4 +282,4 @@ export const loadVideoTextures = {
     {
         texture.destroy(true);
     }
-} satisfies LoaderParser<Texture, VideoSourceOptions>;
+} satisfies LoaderParser<Texture, LoadVideoData>;

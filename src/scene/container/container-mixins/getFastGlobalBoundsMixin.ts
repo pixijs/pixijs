@@ -1,6 +1,6 @@
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { type Renderable } from '../../../rendering/renderers/shared/Renderable';
-import { type IRenderLayer } from '../../layers/RenderLayer';
+import { type RenderLayer } from '../../layers/RenderLayer';
 import { Bounds } from '../bounds/Bounds';
 import { boundsPool } from '../bounds/utils/matrixAndBoundsPool';
 
@@ -12,6 +12,7 @@ const tempMatrix = new Matrix();
  * Interface for the GetFastGlobalBoundsMixin, which provides methods to compute
  * an approximate global bounding box for a container and its children.
  * @category scene
+ * @advanced
  */
 export interface GetFastGlobalBoundsMixin
 {
@@ -25,6 +26,7 @@ export interface GetFastGlobalBoundsMixin
      * @param {boolean} [factorRenderLayers] - A flag indicating whether to consider render layers in the calculation.
      * @param {Bounds} [bounds] - The output bounds object to store the result. If not provided, a new one is created.
      * @returns {Bounds} The computed bounds.
+     * @advanced
      */
     getFastGlobalBounds(factorRenderLayers?: boolean, bounds?: Bounds): Bounds;
 
@@ -33,13 +35,13 @@ export interface GetFastGlobalBoundsMixin
      * This method is used internally by getFastGlobalBounds to traverse the scene graph.
      * @param {boolean} factorRenderLayers - A flag indicating whether to consider render layers in the calculation.
      * @param {Bounds} bounds - The bounds object to update with the calculated values.
-     * @param {IRenderLayer} currentLayer - The current render layer being processed.
+     * @param {RenderLayer} currentLayer - The current render layer being processed.
      * @internal
      */
     _getGlobalBoundsRecursive(
         factorRenderLayers: boolean,
         bounds: Bounds,
-        currentLayer: IRenderLayer,
+        currentLayer: RenderLayer,
     ): void;
 }
 
@@ -76,7 +78,7 @@ export const getFastGlobalBoundsMixin: Partial<Container> = {
     _getGlobalBoundsRecursive(
         factorRenderLayers: boolean,
         bounds: Bounds,
-        currentLayer: IRenderLayer,
+        currentLayer: RenderLayer,
     )
     {
         let localBounds = bounds;
@@ -153,7 +155,6 @@ export const getFastGlobalBoundsMixin: Partial<Container> = {
             if (advanced)
             {
                 localBounds.applyMatrix(renderGroup.worldTransform.copyTo(tempMatrix).invert());
-                bounds.addBounds(localBounds, this.relativeGroupTransform);
             }
 
             // Add the local bounds to the final bounds and return the temporary bounds object.

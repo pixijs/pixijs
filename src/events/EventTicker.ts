@@ -3,6 +3,7 @@ import { Ticker } from '../ticker/Ticker';
 
 import type { EventSystem } from './EventSystem';
 
+/** @advanced */
 class EventsTickerClass
 {
     /** The event system. */
@@ -99,11 +100,14 @@ class EventsTickerClass
             return;
         }
 
-        globalThis.document.dispatchEvent(new PointerEvent('pointermove', {
+        globalThis.document.dispatchEvent(this.events.supportsPointerEvents ? new PointerEvent('pointermove', {
             clientX: rootPointerEvent.clientX,
             clientY: rootPointerEvent.clientY,
             pointerType: rootPointerEvent.pointerType,
             pointerId: rootPointerEvent.pointerId,
+        }) : new MouseEvent('mousemove', {
+            clientX: rootPointerEvent.clientX,
+            clientY: rootPointerEvent.clientY,
         }));
     }
 
@@ -127,6 +131,18 @@ class EventsTickerClass
 
         this._update();
     }
+
+    /** Destroys the event ticker. */
+    public destroy(): void
+    {
+        this.removeTickerListener();
+        this.events = null;
+        this.domElement = null;
+        this._deltaTime = 0;
+        this._didMove = false;
+        this._tickerAdded = false;
+        this._pauseUpdate = true;
+    }
 }
 
 /**
@@ -136,5 +152,6 @@ class EventsTickerClass
  * @since 7.2.0
  * @category events
  * @class
+ * @advanced
  */
 export const EventsTicker = new EventsTickerClass();

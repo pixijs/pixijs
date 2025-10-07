@@ -1,5 +1,6 @@
 import { DOMAdapter } from '../../../../environment/adapter';
 import { nextPow2 } from '../../../../maths/misc/pow2';
+import { GlobalResourceRegistry } from '../../../../utils/pool/GlobalResourceRegistry';
 
 import type { ICanvas, ICanvasRenderingContext2DSettings } from '../../../../environment/canvas/ICanvas';
 import type { ICanvasRenderingContext2D } from '../../../../environment/canvas/ICanvasRenderingContext2D';
@@ -7,6 +8,7 @@ import type { ICanvasRenderingContext2D } from '../../../../environment/canvas/I
 /**
  * A utility type that represents a canvas and its rendering context.
  * @category rendering
+ * @internal
  */
 export interface CanvasAndContext
 {
@@ -100,6 +102,7 @@ export class CanvasPoolClass
 
         const key = (width << 17) + (height << 1);
 
+        canvasAndContext.context.resetTransform();
         canvasAndContext.context.clearRect(0, 0, width, height);
 
         this._canvasPool[key].push(canvasAndContext);
@@ -114,5 +117,7 @@ export class CanvasPoolClass
 /**
  * CanvasPool is a utility class that manages a pool of reusable canvas elements
  * @category rendering
+ * @internal
  */
 export const CanvasPool = new CanvasPoolClass();
+GlobalResourceRegistry.register(CanvasPool);

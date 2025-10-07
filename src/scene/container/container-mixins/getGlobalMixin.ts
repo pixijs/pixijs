@@ -1,8 +1,8 @@
+import { Matrix } from '../../../maths/matrix/Matrix';
 import { updateTransformBackwards } from '../bounds/getGlobalBounds';
 import { matrixPool } from '../bounds/utils/matrixAndBoundsPool';
 import { multiplyColors } from '../utils/multiplyColors';
 
-import type { Matrix } from '../../../maths/matrix/Matrix';
 import type { Container } from '../Container';
 
 /**
@@ -10,6 +10,7 @@ import type { Container } from '../Container';
  * @param color - The color in BGR format (0xBBGGRR).
  * @returns The color in RGB format (0xRRGGBB).
  * @category utils
+ * @internal
  */
 export function bgr2rgb(color: number): number
 {
@@ -22,6 +23,7 @@ export function bgr2rgb(color: number): number
  * taking into account its parent containers and render groups.
  * It includes methods to optimize performance by using cached values when available.
  * @category scene
+ * @advanced
  */
 export interface GetGlobalMixin
 {
@@ -32,13 +34,15 @@ export interface GetGlobalMixin
      *   - If true: Uses cached worldAlpha from the last render pass for better performance
      * @returns The resulting alpha value (between 0 and 1)
      * @example
+     * ```ts
      * // Accurate but slower - recalculates entire alpha chain
      * const preciseAlpha = container.getGlobalAlpha();
      *
      * // Faster but may be outdated - uses cached alpha
      * const cachedAlpha = container.getGlobalAlpha(true);
+     * ```
      */
-    getGlobalAlpha(skipUpdate: boolean): number;
+    getGlobalAlpha(skipUpdate?: boolean): number;
     /**
      * Returns the global transform matrix of the container within the scene.
      * @param {Matrix} matrix - Optional matrix to store the result. If not provided, a new Matrix will be created.
@@ -47,6 +51,7 @@ export interface GetGlobalMixin
      *   - If true: Uses cached worldTransform from the last render pass for better performance
      * @returns The resulting transformation matrix (either the input matrix or a new one)
      * @example
+     * ```ts
      * // Accurate but slower - recalculates entire transform chain
      * const preciseTransform = container.getGlobalTransform();
      *
@@ -56,8 +61,9 @@ export interface GetGlobalMixin
      * // Reuse existing matrix
      * const existingMatrix = new Matrix();
      * container.getGlobalTransform(existingMatrix);
+     * ```
      */
-    getGlobalTransform(matrix: Matrix, skipUpdate: boolean): Matrix;
+    getGlobalTransform(matrix?: Matrix, skipUpdate?: boolean): Matrix;
     /**
      * Returns the global (compound) tint color of the container within the scene.
      * @param {boolean} skipUpdate - Performance optimization flag:
@@ -65,18 +71,20 @@ export interface GetGlobalMixin
      *   - If true: Uses cached worldColor from the last render pass for better performance
      * @returns The resulting tint color as a 24-bit RGB number (0xRRGGBB)
      * @example
+     * ```ts
      * // Accurate but slower - recalculates entire tint chain
      * const preciseTint = container.getGlobalTint();
      *
      * // Faster but may be outdated - uses cached tint
      * const cachedTint = container.getGlobalTint(true);
+     * ```
      */
     getGlobalTint(skipUpdate?: boolean): number;
 }
 
 /** @internal */
 export const getGlobalMixin: Partial<Container> = {
-    getGlobalAlpha(skipUpdate: boolean): number
+    getGlobalAlpha(skipUpdate?: boolean): number
     {
         if (skipUpdate)
         {
@@ -104,7 +112,7 @@ export const getGlobalMixin: Partial<Container> = {
 
         return alpha;
     },
-    getGlobalTransform(matrix: Matrix, skipUpdate: boolean): Matrix
+    getGlobalTransform(matrix = new Matrix(), skipUpdate?: boolean): Matrix
     {
         if (skipUpdate)
         {

@@ -103,6 +103,7 @@ export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
 
     public destroy()
     {
+        (this._renderer as null) = null;
         this._colorStack = null;
     }
 }

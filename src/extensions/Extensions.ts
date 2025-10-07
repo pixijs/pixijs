@@ -1,42 +1,7 @@
 /**
- * @module
- * @categoryDescription extensions
- * `extensions` is a global object that holds all the extensions registered with PixiJS.
- * PixiJS uses a this extensions architecture a lot to make the library more modular and
- * flexible.
- *
- * For example, if you want to add load a new type of asset, you can register a new
- * {@link LoaderParser} with the `extensions` object.
- *
- * ```js
- * import { extensions, ExtensionType } from 'pixi.js';
- *
- * // create a custom asset loader
- * const customAssetLoader = {
- *    extension: {
- *        type: ExtensionType.LoadParser,
- *        name: 'custom-asset-loader',
- *    },
- *    test(url) {
- *       // check if this new loader should be used...
- *    },
- *    load(url) {
- *        // load the asset...
- *    },
- * };
- *
- * // add the custom asset loader to pixi
- * extensions.add(customAssetLoader);
- * ```
- *
- * This would add the `customAssetLoader` to the list of available loaders that PixiJS can use.
- *
- * There are many different types of extensions, which are listed in {@link ExtensionType}.
- */
-
-/**
  * Collection of valid extension types.
  * @category extensions
+ * @advanced
  */
 enum ExtensionType
 {
@@ -112,6 +77,7 @@ interface ExtensionMetadataDetails
 /**
  * The metadata for an extension.
  * @category extensions
+ * @advanced
  */
 type ExtensionMetadata = ExtensionType | ExtensionMetadataDetails;
 
@@ -120,6 +86,7 @@ type ExtensionMetadata = ExtensionType | ExtensionMetadataDetails;
  * should have these values as `extension` static property,
  * but you can override name or type by providing an object.
  * @category extensions
+ * @advanced
  */
 interface ExtensionFormat
 {
@@ -144,6 +111,11 @@ interface StrictExtensionFormat extends ExtensionFormat
     type: ExtensionType[];
 }
 
+/**
+ * The function that is called when an extension is added or removed.
+ * @category extensions
+ * @ignore
+ */
 type ExtensionHandler = (extension: StrictExtensionFormat) => void;
 
 /**
@@ -196,22 +168,53 @@ export const normalizeExtensionPriority = (ext: ExtensionFormat | any, defaultPr
     normalizeExtension(ext).priority ?? defaultPriority;
 
 /**
- * Global registration of all PixiJS extensions. One-stop-shop for extensibility.
+ * Global registration system for all PixiJS extensions. Provides a centralized way to add, remove,
+ * and manage functionality across the engine.
  *
- * Import the `extensions` object and use it to register new functionality via the described methods below.
- * ```js
- * import { extensions } from 'pixi.js';
+ * Features:
+ * - Register custom extensions and plugins
+ * - Handle multiple extension types
+ * - Priority-based ordering
+ * @example
+ * ```ts
+ * import { extensions, ExtensionType } from 'pixi.js';
  *
- * // register a new extension
- * extensions.add(myExtension);
+ * // Register a simple object extension
+ * extensions.add({
+ *   extension: {
+ *       type: ExtensionType.LoadParser,
+ *       name: 'my-loader',
+ *       priority: 100, // Optional priority for ordering
+ *   },
+ *   // add load parser functions
+ * });
+ *
+ * // Register a class-based extension
+ * class MyRendererPlugin {
+ *     static extension = {
+ *         type: [ExtensionType.WebGLSystem, ExtensionType.WebGPUSystem],
+ *         name: 'myRendererPlugin'
+ *     };
+ *
+ *    // add renderer plugin methods
+ * }
+ * extensions.add(MyRendererPlugin);
+ *
+ * // Remove extensions
+ * extensions.remove(MyRendererPlugin);
  * ```
- * @property {Function} remove - Remove extensions from PixiJS.
- * @property {Function} add - Register new extensions with PixiJS.
- * @property {Function} handle - Internal method to handle extensions by name.
- * @property {Function} handleByMap - Handle a type, but using a map by `name` property.
- * @property {Function} handleByNamedList - Handle a type, but using a list of extensions with a `name` property.
- * @property {Function} handleByList - Handle a type, but using a list of extensions.
+ * @remarks
+ * - Extensions must have a type from {@link ExtensionType}
+ * - Can be registered before or after their handlers
+ * - Supports priority-based ordering
+ * - Automatically normalizes extension formats
+ * @see {@link ExtensionType} For all available extension types
+ * @see {@link ExtensionFormat} For extension registration format
+ * @see {@link Application} For application plugin system
+ * @see {@link LoaderParser} For asset loading extensions
  * @category extensions
+ * @standard
+ * @class
  */
 const extensions = {
 
@@ -226,8 +229,24 @@ const extensions = {
 
     /**
      * Remove extensions from PixiJS.
-     * @param extensions - Extensions to be removed.
-     * @returns {extensions} For chaining.
+     * @param extensions - Extensions to be removed. Can be:
+     * - Extension class with static `extension` property
+     * - Extension format object with `type` and `ref`
+     * - Multiple extensions as separate arguments
+     * @returns {extensions} this for chaining
+     * @example
+     * ```ts
+     * // Remove a single extension
+     * extensions.remove(MyRendererPlugin);
+     *
+     * // Remove multiple extensions
+     * extensions.remove(
+     *     MyRendererPlugin,
+     *     MySystemPlugin
+     * );
+     * ```
+     * @see {@link ExtensionType} For available extension types
+     * @see {@link ExtensionFormat} For extension format details
      */
     remove(...extensions: Array<ExtensionFormat | any>)
     {
@@ -240,9 +259,29 @@ const extensions = {
     },
 
     /**
-     * Register new extensions with PixiJS.
-     * @param extensions - The spread of extensions to add to PixiJS.
-     * @returns {extensions} For chaining.
+     * Register new extensions with PixiJS. Extensions can be registered in multiple formats:
+     * - As a class with a static `extension` property
+     * - As an extension format object
+     * - As multiple extensions passed as separate arguments
+     * @param extensions - Extensions to add to PixiJS. Each can be:
+     * - A class with static `extension` property
+     * - An extension format object with `type` and `ref`
+     * - Multiple extensions as separate arguments
+     * @returns This extensions instance for chaining
+     * @example
+     * ```ts
+     * // Register a simple extension
+     * extensions.add(MyRendererPlugin);
+     *
+     * // Register multiple extensions
+     * extensions.add(
+     *     MyRendererPlugin,
+     *     MySystemPlugin,
+     * });
+     * ```
+     * @see {@link ExtensionType} For available extension types
+     * @see {@link ExtensionFormat} For extension format details
+     * @see {@link extensions.remove} For removing registered extensions
      */
     add(...extensions: Array<ExtensionFormat | any>)
     {
@@ -274,8 +313,9 @@ const extensions = {
      * @param type - The extension type.
      * @param onAdd  - Function handler when extensions are added/registered {@link StrictExtensionFormat}.
      * @param onRemove  - Function handler when extensions are removed/unregistered {@link StrictExtensionFormat}.
-     * @returns {extensions} For chaining.
+     * @returns this for chaining.
      * @internal
+     * @ignore
      */
     handle(type: ExtensionType, onAdd: ExtensionHandler, onRemove: ExtensionHandler)
     {
@@ -309,7 +349,8 @@ const extensions = {
      * Handle a type, but using a map by `name` property.
      * @param type - Type of extension to handle.
      * @param map - The object map of named extensions.
-     * @returns {extensions} For chaining.
+     * @returns this for chaining.
+     * @ignore
      */
     handleByMap(type: ExtensionType, map: Record<string, any>)
     {
@@ -336,7 +377,8 @@ const extensions = {
      * @param type - Type of extension to handle.
      * @param map - The array of named extensions.
      * @param defaultPriority - Fallback priority if none is defined.
-     * @returns {extensions} For chaining.
+     * @returns this for chaining.
+     * @ignore
      */
     handleByNamedList(type: ExtensionType, map: {name: string, value: any}[], defaultPriority = -1)
     {
@@ -370,7 +412,8 @@ const extensions = {
      * @param type - Type of extension to handle.
      * @param list - The list of extensions.
      * @param defaultPriority - The default priority to use if none is specified.
-     * @returns {extensions} For chaining.
+     * @returns this for chaining.
+     * @ignore
      */
     handleByList(type: ExtensionType, list: any[], defaultPriority = -1)
     {
@@ -400,9 +443,44 @@ const extensions = {
     },
 
     /**
-     * Mixin the source object into the target object.
-     * @param Target - The target object to mix into.
-     * @param sources - The source(s) object to mix from
+     * Mixin the source object(s) properties into the target class's prototype.
+     * Copies all property descriptors from source objects to the target's prototype.
+     * @param Target - The target class to mix properties into
+     * @param sources - One or more source objects containing properties to mix in
+     * @example
+     * ```ts
+     * // Create a mixin with shared properties
+     * const moveable = {
+     *     x: 0,
+     *     y: 0,
+     *     move(x: number, y: number) {
+     *         this.x += x;
+     *         this.y += y;
+     *     }
+     * };
+     *
+     * // Create a mixin with computed properties
+     * const scalable = {
+     *     scale: 1,
+     *     get scaled() {
+     *         return this.scale > 1;
+     *     }
+     * };
+     *
+     * // Apply mixins to a class
+     * extensions.mixin(Sprite, moveable, scalable);
+     *
+     * // Use mixed-in properties
+     * const sprite = new Sprite();
+     * sprite.move(10, 20);
+     * console.log(sprite.x, sprite.y); // 10, 20
+     * ```
+     * @remarks
+     * - Copies all properties including getters/setters
+     * - Does not modify source objects
+     * - Preserves property descriptors
+     * @see {@link Object.defineProperties} For details on property descriptors
+     * @see {@link Object.getOwnPropertyDescriptors} For details on property copying
      */
     mixin(Target: any, ...sources: Parameters<typeof Object.getOwnPropertyDescriptors>[0][])
     {

@@ -1,4 +1,6 @@
+/* eslint-disable no-restricted-globals */
 import { ExtensionType } from '../extensions/Extensions';
+import { CanvasObserver } from './CanvasObserver';
 import { type DOMContainer } from './DOMContainer';
 
 import type { InstructionSet } from '../rendering/renderers/shared/instructions/InstructionSet';
@@ -31,6 +33,8 @@ export class DOMPipe implements RenderPipe<DOMContainer>
     private readonly _attachedDomElements: DOMContainer[] = [];
     /** The main DOM element that acts as a container for other DOM elements */
     private readonly _domElement: HTMLDivElement;
+    /** The CanvasTransformSync instance that keeps the DOM element in sync with the canvas */
+    private _canvasObserver: CanvasObserver;
 
     /**
      * Constructor for the DOMPipe class.
@@ -44,6 +48,9 @@ export class DOMPipe implements RenderPipe<DOMContainer>
         // we want to dom elements are calculated after all things have been rendered
         this._renderer.runners.postrender.add(this);
 
+        // add DOMPipe to init runners
+        this._renderer.runners.init.add(this);
+
         // Create a main DOM element to contain other DOM elements
         this._domElement = document.createElement('div');
         this._domElement.style.position = 'absolute';
@@ -51,6 +58,16 @@ export class DOMPipe implements RenderPipe<DOMContainer>
         this._domElement.style.left = '0';
         this._domElement.style.pointerEvents = 'none';
         this._domElement.style.zIndex = '1000';
+    }
+
+    /** Initializes the DOMPipe, setting up the main DOM element and adding it to the document body. */
+    public init(): void
+    {
+        // Initialize the CanvasTransformSync to keep the DOM element in sync with the canvas
+        this._canvasObserver = new CanvasObserver({
+            domElement: this._domElement,
+            renderer: this._renderer,
+        });
     }
 
     /**
@@ -97,18 +114,8 @@ export class DOMPipe implements RenderPipe<DOMContainer>
             return;
         }
 
-        const canvas = this._renderer.view.canvas as HTMLCanvasElement;
-
-        if (this._domElement.parentNode !== canvas.parentNode)
-        {
-            canvas.parentNode?.appendChild(this._domElement);
-        }
-
-        const sx = (parseFloat(canvas.style.width) / canvas.width) * this._renderer.resolution;
-        const sy = (parseFloat(canvas.style.height) / canvas.height) * this._renderer.resolution;
-        // scale according to the canvas scale and translate
-
-        this._domElement.style.transform = `translate(${canvas.offsetLeft}px, ${canvas.offsetTop}px) scale(${sx}, ${sy})`;
+        // Ensure the main DOM element is attached to the same parent as the canvas
+        this._canvasObserver.ensureAttached();
 
         for (let i = 0; i < attachedDomElements.length; i++)
         {
@@ -156,6 +163,7 @@ export class DOMPipe implements RenderPipe<DOMContainer>
 
         this._attachedDomElements.length = 0;
         this._domElement.remove();
+        this._canvasObserver.destroy();
         this._renderer = null;
     }
 }

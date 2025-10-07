@@ -14,12 +14,14 @@ import type { TextureSourceOptions } from './TextureSource';
  * The type of resource used for video textures.
  * This is typically an HTMLVideoElement.
  * @category rendering
+ * @advanced
  */
 export type VideoResource = HTMLVideoElement;
 
 /**
  * Options for video sources.
  * @category rendering
+ * @advanced
  */
 export interface VideoSourceOptions extends TextureSourceOptions<VideoResource>
 {
@@ -52,6 +54,7 @@ export interface VideoSourceOptions extends TextureSourceOptions<VideoResource>
  * This class supports automatic loading, playback, and frame updates.
  * It can also handle cross-origin videos and provides options for looping, muting, and inline playback.
  * @category rendering
+ * @advanced
  */
 export class VideoSource extends TextureSource<VideoResource>
 {

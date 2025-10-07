@@ -18,6 +18,7 @@ import type { WebGPURenderer } from './WebGPURenderer';
 /**
  * The system that handles encoding commands for the GPU.
  * @category rendering
+ * @advanced
  */
 export class GpuEncoderSystem implements System
 {
@@ -155,7 +156,7 @@ export class GpuEncoderSystem implements System
 
         for (const i in buffersToBind)
         {
-            this._setVertexBuffer(i as any as number, geometry.attributes[buffersToBind[i]].buffer);
+            this._setVertexBuffer(parseInt(i, 10), geometry.attributes[buffersToBind[i]].buffer);
         }
 
         if (geometry.indexBuffer)

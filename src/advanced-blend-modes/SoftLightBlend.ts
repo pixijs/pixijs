@@ -17,6 +17,7 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
  * const sprite = Sprite.from('something.png');
  * sprite.blendMode = 'soft-light'
  * @category filters
+ * @noInheritDoc
  */
 export class SoftLightBlend extends BlendModeFilter
 {

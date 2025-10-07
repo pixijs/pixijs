@@ -22,6 +22,7 @@ import type { GpuTextureUploader } from './uploaders/GpuTextureUploader';
 /**
  * The system that handles textures for the GPU.
  * @category rendering
+ * @advanced
  */
 export class GpuTextureSystem implements System, CanvasGenerator
 {
@@ -67,7 +68,22 @@ export class GpuTextureSystem implements System, CanvasGenerator
         this._gpu = gpu;
     }
 
+    /**
+     * Initializes a texture source, if it has already been initialized nothing will happen.
+     * @param source - The texture source to initialize.
+     * @returns The initialized texture source.
+     */
     public initSource(source: TextureSource): GPUTexture
+    {
+        if (this._gpuSources[source.uid])
+        {
+            return this._gpuSources[source.uid];
+        }
+
+        return this._initSource(source);
+    }
+
+    private _initSource(source: TextureSource): GPUTexture
     {
         if (source.autoGenerateMipmaps)
         {
@@ -99,9 +115,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
             usage
         };
 
-        const gpuTexture = this._gpu.device.createTexture(textureDescriptor);
-
-        this._gpuSources[source.uid] = gpuTexture;
+        const gpuTexture = this._gpuSources[source.uid] = this._gpu.device.createTexture(textureDescriptor);
 
         if (!this.managedTextures.includes(source))
         {

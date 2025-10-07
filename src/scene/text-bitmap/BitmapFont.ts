@@ -1,3 +1,4 @@
+import { groupD8 } from '../../maths/matrix/groupD8';
 import { Rectangle } from '../../maths/shapes/Rectangle';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { AbstractBitmapFont } from './AbstractBitmapFont';
@@ -8,22 +9,131 @@ import type { BitmapFontData } from './AbstractBitmapFont';
 import type { BitmapFontInstallOptions } from './BitmapFontManager';
 
 /**
- * Options for creating a BitmapFont.
+ * Options for creating a BitmapFont. Used when loading or creating bitmap fonts from existing textures and data.
+ * @example
+ * ```ts
+ * import { BitmapFont, Texture } from 'pixi.js';
+ *
+ * // Create a bitmap font from loaded textures and data
+ * const font = new BitmapFont({
+ *     // Font data containing character metrics and layout info
+ *     data: {
+ *         pages: [{ id: 0, file: 'font.png' }],
+ *         chars: {
+ *             '65': { // 'A'
+ *                 id: 65,
+ *                 page: 0,
+ *                 x: 0,
+ *                 y: 0,
+ *                 width: 32,
+ *                 height: 32,
+ *                 xOffset: 0,
+ *                 yOffset: 0,
+ *                 xAdvance: 32,
+ *                 letter: 'A'
+ *             }
+ *             // ... other characters
+ *         },
+ *         fontSize: 32,
+ *         lineHeight: 36,
+ *         baseLineOffset: 26,
+ *         fontFamily: 'MyFont',
+ *         // Optional distance field info for MSDF/SDF fonts
+ *         distanceField: {
+ *             type: 'msdf',
+ *             range: 4
+ *         }
+ *     },
+ *     // Array of textures containing the font glyphs
+ *     textures: [
+ *         Texture.from('font.png')
+ *     ]
+ * });
+ * ```
  * @category text
+ * @standard
  */
 export interface BitmapFontOptions
 {
-    data: BitmapFontData
-    textures: Texture[]
+    /**
+     * The bitmap font data containing character metrics, layout information,
+     * and font properties. This includes character positions, dimensions,
+     * kerning data, and general font settings.
+     */
+    data: BitmapFontData;
+
+    /**
+     * Array of textures containing the font glyphs. Each texture corresponds
+     * to a page in the font data. For simple fonts this is typically just
+     * one texture, but complex fonts may split glyphs across multiple textures.
+     */
+    textures: Texture[];
 }
 
 /**
  * A BitmapFont object represents a particular font face, size, and style.
+ * This class handles both pre-loaded bitmap fonts and dynamically generated ones.
+ * @example
+ * ```ts
+ * import { BitmapFont, Texture } from 'pixi.js';
+ *
+ * // Create a bitmap font from loaded textures and data
+ * const font = new BitmapFont({
+ *     data: {
+ *         pages: [{ id: 0, file: 'font.png' }],
+ *         chars: {
+ *             '65': { // 'A'
+ *                 id: 65,
+ *                 page: 0,
+ *                 x: 0,
+ *                 y: 0,
+ *                 width: 32,
+ *                 height: 32,
+ *                 xOffset: 0,
+ *                 yOffset: 0,
+ *                 xAdvance: 32,
+ *                 letter: 'A'
+ *             }
+ *         },
+ *         fontSize: 32,
+ *         lineHeight: 36,
+ *         baseLineOffset: 26,
+ *         fontFamily: 'MyFont',
+ *         distanceField: {
+ *             type: 'msdf',
+ *             range: 4
+ *         }
+ *     },
+ *     textures: [Texture.from('font.png')]
+ * });
+ *
+ * // Install a font for global use
+ * BitmapFont.install({
+ *     name: 'MyCustomFont',
+ *     style: {
+ *         fontFamily: 'Arial',
+ *         fontSize: 32,
+ *         fill: '#ffffff',
+ *         stroke: { color: '#000000', width: 2 }
+ *     }
+ * });
+ *
+ * // Uninstall when no longer needed
+ * BitmapFont.uninstall('MyCustomFont');
+ * ```
  * @category text
+ * @standard
  */
 export class BitmapFont extends AbstractBitmapFont<BitmapFont>
 {
-    /** the url of the font */
+    /**
+     * The URL from which the font was loaded, if applicable.
+     * This is useful for tracking font sources and reloading.
+     * @example
+     * ```ts
+     * console.log(font.url); // 'fonts/myFont.fnt'
+     * ```
+     */
     public url?: string;
 
     constructor(options: BitmapFontOptions, url?: string)
@@ -47,18 +157,22 @@ export class BitmapFont extends AbstractBitmapFont<BitmapFont>
             const {
                 frame: textureFrame,
                 source: textureSource,
+                rotate: textureRotate,
             } = textures[charData.page];
 
-            const frameReal = new Rectangle(
-                charData.x + textureFrame.x,
-                charData.y + textureFrame.y,
-                charData.width,
-                charData.height,
+            // Transform character coordinates based on texture rotation
+            const frame = groupD8.transformRectCoords(
+                charData,
+                textureFrame,
+                textureRotate,
+                new Rectangle()
             );
 
             const texture = new Texture({
+                frame,
+                orig: new Rectangle(0, 0, charData.width, charData.height),
                 source: textureSource,
-                frame: frameReal
+                rotate: textureRotate,
             });
 
             this.chars[key] = {
@@ -106,23 +220,39 @@ export class BitmapFont extends AbstractBitmapFont<BitmapFont>
     }
 
     /**
-     * Generates a bitmap-font for the given style and character set
-     * @param options - Setup options for font generation.
-     * @returns Font generated by style options.
+     * Generates and installs a bitmap font with the specified options.
+     * The font will be cached and available for use in BitmapText objects.
+     * @param options - Setup options for font generation
+     * @returns Installed font instance
      * @example
-     * import { BitmapFont, BitmapText } from 'pixi.js';
-     *
+     * ```ts
+     * // Install a basic font
      * BitmapFont.install({
-     *     name: 'TitleFont',
+     *     name: 'Title',
      *     style: {
      *         fontFamily: 'Arial',
-     *         fontSize: 12,
-     *         strokeThickness: 2,
-     *         fill: 'purple',
+     *         fontSize: 32,
+     *         fill: '#ffffff'
      *     }
      * });
      *
-     * const title = new BitmapText({ text: 'This is the title', fontFamily: 'TitleFont' });
+     * // Install with advanced options
+     * BitmapFont.install({
+     *     name: 'Custom',
+     *     style: {
+     *         fontFamily: 'Arial',
+     *         fontSize: 24,
+     *         fill: '#00ff00',
+     *         stroke: { color: '#000000', width: 2 }
+     *     },
+     *     chars: [['a', 'z'], ['A', 'Z'], ['0', '9']],
+     *     resolution: 2,
+     *     padding: 4,
+     *     textureStyle: {
+     *         scaleMode: 'nearest'
+     *     }
+     * });
+     * ```
      */
     public static install(options: BitmapFontInstallOptions)
     {
@@ -130,7 +260,16 @@ export class BitmapFont extends AbstractBitmapFont<BitmapFont>
     }
     /**
      * Uninstalls a bitmap font from the cache.
-     * @param {string} name - The name of the bitmap font to uninstall.
+     * This frees up memory and resources associated with the font.
+     * @param name - The name of the bitmap font to uninstall
+     * @example
+     * ```ts
+     * // Remove a font when it's no longer needed
+     * BitmapFont.uninstall('MyCustomFont');
+     *
+     * // Clear multiple fonts
+     * ['Title', 'Heading', 'Body'].forEach(BitmapFont.uninstall);
+     * ```
      */
     public static uninstall(name: string)
     {

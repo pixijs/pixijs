@@ -13,26 +13,49 @@ export * from './defaults/blur/gpu/generateBlurProgram';
 export * from './defaults/color-matrix/ColorMatrixFilter';
 export * from './defaults/displacement/DisplacementFilter';
 export * from './defaults/noise/NoiseFilter';
+export * from './defaults/passthrough/PassthroughFilter';
 export * from './Filter';
 export * from './FilterEffect';
 export * from './FilterPipe';
 export * from './FilterSystem';
 export * from './mask/MaskFilter';
+/** @ignore */
 export { default as blendTemplateFrag } from './blend-modes/blend-template.frag';
+/** @ignore */
 export { default as blendTemplateVert } from './blend-modes/blend-template.vert';
+/** @ignore */
 export { default as blendTemplateWgsl } from './blend-modes/blend-template.wgsl';
+/** @ignore */
 export { default as hslWgsl } from './blend-modes/hsl.wgsl';
+/** @ignore */
 export { default as alphaFrag } from './defaults/alpha/alpha.frag';
+/** @ignore */
 export { default as alphaWgsl } from './defaults/alpha/alpha.wgsl';
+/** @ignore */
 export { default as blurTemplateWgsl } from './defaults/blur/gpu/blur-template.wgsl';
+/** @ignore */
 export { default as colorMatrixFilterFrag } from './defaults/color-matrix/colorMatrixFilter.frag';
+/** @ignore */
 export { default as colorMatrixFilterWgsl } from './defaults/color-matrix/colorMatrixFilter.wgsl';
+/** @ignore */
 export { default as defaultFilterVert } from './defaults/defaultFilter.vert';
+/** @ignore */
 export { default as displacementFrag } from './defaults/displacement/displacement.frag';
+/** @ignore */
 export { default as displacementVert } from './defaults/displacement/displacement.vert';
+/** @ignore */
 export { default as displacementWgsl } from './defaults/displacement/displacement.wgsl';
+/** @ignore */
 export { default as noiseFrag } from './defaults/noise/noise.frag';
+/** @ignore */
 export { default as noiseWgsl } from './defaults/noise/noise.wgsl';
+/** @ignore */
+export { default as passthroughFrag } from './defaults/passthrough/passthrough.frag';
+/** @ignore */
+export { default as passthroughWgsl } from './defaults/passthrough/passthrough.wgsl';
+/** @ignore */
 export { default as maskFrag } from './mask/mask.frag';
+/** @ignore */
 export { default as maskVert } from './mask/mask.vert';
+/** @ignore */
 export { default as maskWgsl } from './mask/mask.wgsl';

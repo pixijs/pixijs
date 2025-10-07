@@ -1,0 +1,12 @@
+TODO
+- [x] check if resolutions work with filters
+- [x] check if antialiasing works - or disable it for the text
+- [x] add a textures
+- [x] add a test
+- [x] WebGPU
+/// 
+- [ ] remove the key stuff
+- [ ] remove the references stuff.
+
+// 
+- [ ] support for bitmap text filters

@@ -41,7 +41,7 @@ export const scene: TestScene = {
         addSprite(asCanvas, scene, { x: 0, y: 0 });
 
         // should generate image from Container (also tests base64 conversion, used by extract.image())
-        const image = await renderer.extract.image(container);
+        const image = await renderer.extract.image(container) as HTMLImageElement;
         const asImage = new Sprite(new Texture(new ImageSource({ resource: image })));
 
         addSprite(asImage, scene, { x: cellSize, y: 0 });

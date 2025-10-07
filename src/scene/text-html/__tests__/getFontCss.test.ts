@@ -1,4 +1,3 @@
-import { HTMLTextStyle } from '../HTMLTextStyle';
 import { getFontCss } from '../utils/getFontCss';
 import { basePath, getApp } from '@test-utils';
 import { Assets } from '~/assets';
@@ -15,13 +14,8 @@ describe('getFontCss', () =>
     it('should load a font and return css string', async () =>
     {
         const fontFamily = ['Outfit'];
-        const style = new HTMLTextStyle({
-            fontFamily,
-        });
         const css = await getFontCss(
             fontFamily,
-            style,
-            HTMLTextStyle.defaultTextStyle as {fontWeight: string, fontStyle: string}
         );
 
         expect(css).toContain('@font-face');

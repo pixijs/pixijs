@@ -24,6 +24,7 @@ import type { WebGLRenderer } from './WebGLRenderer';
  * console.log(renderer.limits.maxTextures);
  * ```
  * @category rendering
+ * @advanced
  */
 export class GlLimitsSystem implements System
 {
@@ -60,7 +61,13 @@ export class GlLimitsSystem implements System
         // step 2: check the maximum number of if statements the shader can have too..
         this.maxBatchableTextures = checkMaxIfStatementsInShader(this.maxTextures, gl);
 
-        this.maxUniformBindings = gl.getParameter(gl.MAX_UNIFORM_BUFFER_BINDINGS);
+        // step 3: check the limit of uniform buffer bindings.
+        // UBs are available only in WebGL2 context, requesting within WebGL1 produces a warning.
+        const isWebGl2 = this._renderer.context.webGLVersion === 2;
+
+        this.maxUniformBindings = isWebGl2
+            ? gl.getParameter(gl.MAX_UNIFORM_BUFFER_BINDINGS)
+            : 0;
     }
 
     public destroy(): void

@@ -3,7 +3,7 @@ import { type RenderPipe } from '../../rendering/renderers/shared/instructions/R
 import { type Renderer } from '../../rendering/renderers/types';
 import { Bounds } from '../container/bounds/Bounds';
 import { Container, type ContainerOptions } from '../container/Container';
-import { type IRenderLayer } from '../layers/RenderLayer';
+import { type RenderLayer } from '../layers/RenderLayer';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';
@@ -18,11 +18,13 @@ export interface GPUData
 /**
  * Options for the construction of a ViewContainer.
  * @category scene
+ * @advanced
  */
 export interface ViewContainerOptions extends ContainerOptions, PixiMixins.ViewContainerOptions {}
-// eslint-disable-next-line requireExport/require-export-jsdoc
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface ViewContainer<GPU_DATA extends GPUData = any> extends PixiMixins.ViewContainer, Container
 {
+    // eslint-disable-next-line requireMemberAPI/require-member-api-doc
     _gpuData: Record<number, GPU_DATA>;
 }
 
@@ -31,6 +33,7 @@ export interface ViewContainer<GPU_DATA extends GPUData = any> extends PixiMixin
  * This view can be a Sprite, a Graphics object, or any other object that can be rendered.
  * This class is abstract and should not be used directly.
  * @category scene
+ * @advanced
  */
 export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Container implements View
 {
@@ -53,8 +56,17 @@ export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Cont
     protected _boundsDirty = true;
 
     /**
-     * The local bounds of the view.
-     * @type {Bounds}
+     * The local bounds of the view in its own coordinate space.
+     * Bounds are automatically updated when the view's content changes.
+     * @example
+     * ```ts
+     * // Get bounds dimensions
+     * const bounds = view.bounds;
+     * console.log(`Width: ${bounds.maxX - bounds.minX}`);
+     * console.log(`Height: ${bounds.maxY - bounds.minY}`);
+     * ```
+     * @returns The rectangular bounds of the view
+     * @see {@link Bounds} For bounds operations
      */
     public get bounds()
     {
@@ -72,7 +84,12 @@ export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Cont
 
     /**
      * Whether or not to round the x/y position of the sprite.
-     * @type {boolean}
+     * @example
+     * ```ts
+     * // Enable pixel rounding for crisp rendering
+     * view.roundPixels = true;
+     * ```
+     * @default false
      */
     get roundPixels()
     {
@@ -91,8 +108,19 @@ export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Cont
     }
 
     /**
-     * Checks if the object contains the given point.
-     * @param point - The point to check
+     * Checks if the object contains the given point in local coordinates.
+     * Uses the view's bounds for hit testing.
+     * @example
+     * ```ts
+     * // Basic point check
+     * const localPoint = { x: 50, y: 25 };
+     * const contains = view.containsPoint(localPoint);
+     * console.log('Point is inside:', contains);
+     * ```
+     * @param point - The point to check in local coordinates
+     * @returns True if the point is within the view's bounds
+     * @see {@link ViewContainer#bounds} For the bounds used in hit testing
+     * @see {@link Container#toLocal} For converting global coordinates to local
      */
     public containsPoint(point: PointData)
     {
@@ -140,16 +168,22 @@ export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Cont
         this._gpuData = null;
     }
 
+    /**
+     * Collects renderables for the view container.
+     * @param instructionSet - The instruction set to collect renderables for.
+     * @param renderer - The renderer to collect renderables for.
+     * @param currentLayer - The current render layer.
+     * @internal
+     */
     public override collectRenderablesSimple(
         instructionSet: InstructionSet,
         renderer: Renderer,
-        currentLayer: IRenderLayer,
+        currentLayer: RenderLayer,
     ): void
     {
         const { renderPipes } = renderer;
 
-        // TODO add blends in
-        renderPipes.blendMode.setBlendMode(this, this.groupBlendMode, instructionSet);
+        renderPipes.blendMode.pushBlendMode(this, this.groupBlendMode, instructionSet);
 
         const rp = renderPipes as unknown as Record<string, RenderPipe>;
 
@@ -164,5 +198,6 @@ export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Cont
         {
             children[i].collectRenderables(instructionSet, renderer, currentLayer);
         }
+        renderPipes.blendMode.popBlendMode(instructionSet);
     }
 }

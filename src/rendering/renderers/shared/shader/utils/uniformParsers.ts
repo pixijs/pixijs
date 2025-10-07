@@ -148,4 +148,24 @@ export const uniformParsers: UniformParserDefinition[] = [
             }
         `
     },
+    {
+        type: 'sampler2D' || 'samplerCube' || 'sampler2DArray',
+        test: (data: UniformData): boolean =>
+            // eslint-disable-next-line max-len,no-eq-null,eqeqeq
+            (data.type === 'sampler2D' || data.type === 'samplerCube' || data.type === 'sampler2DArray') && data.size === 1 && (data.value == null || (data.value as any).source !== undefined),
+        uniform: `
+            t = syncData.textureCount++;
+          
+            cv = ud[name].value;
+            v = uv[name];
+
+            renderer.texture.bind(v, t);
+
+            if(cv.value !== t)
+            {
+                ud[name].value = t;
+                gl.uniform1i(ud[name].location, t);
+            }
+        `,
+    },
 ];

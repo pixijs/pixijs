@@ -1,6 +1,7 @@
 /**
  * Constants for various buffer types in Pixi
  * @category rendering
+ * @advanced
  */
 export enum BUFFER_TYPE
 {

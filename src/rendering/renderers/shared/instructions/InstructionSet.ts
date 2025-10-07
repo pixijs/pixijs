@@ -12,6 +12,7 @@ import type { Instruction } from './Instruction';
  * InstructionSet.instructions contains all the instructions, but does not resize (for performance).
  * So for the true length of the instructions you need to use InstructionSet.instructionSize
  * @category rendering
+ * @advanced
  */
 export class InstructionSet
 {
@@ -32,6 +33,19 @@ export class InstructionSet
     public reset()
     {
         this.instructionSize = 0;
+    }
+
+    /**
+     * Destroy the instruction set, clearing the instructions and renderables.
+     * @internal
+     */
+    public destroy()
+    {
+        this.instructions.length = 0;
+        this.renderables.length = 0;
+
+        this.renderPipes = null;
+        this.gcTick = 0;
     }
 
     /**

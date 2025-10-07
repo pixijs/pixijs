@@ -12,6 +12,7 @@ import type { TextureResourceOrOptions } from '../utils/textureFrom';
 /**
  * options for creating a new TextureSource
  * @category rendering
+ * @advanced
  */
 export interface TextureSourceOptions<T extends Record<string, any> = any> extends TextureStyleOptions
 {
@@ -68,7 +69,7 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
  * This is an class is extended depending on the source of the texture.
  * Eg if you are using an an image as your resource, then an ImageSource is used.
  * @category rendering
- * @typeParam T - The TextureSource's Resource type.
+ * @advanced
  */
 export class TextureSource<T extends Record<string, any> = any> extends EventEmitter<{
     change: BindResource;
@@ -284,7 +285,18 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this._onStyleChange();
     }
 
-    /** setting this will set wrapModeU,wrapModeV and wrapModeW all at once! */
+    /** Specifies the maximum anisotropy value clamp used by the sampler. */
+    set maxAnisotropy(value: number)
+    {
+        this._style.maxAnisotropy = value;
+    }
+
+    get maxAnisotropy(): number
+    {
+        return this._style.maxAnisotropy;
+    }
+
+    /** setting this will set wrapModeU, wrapModeV and wrapModeW all at once! */
     get addressMode(): WRAP_MODE
     {
         return this._style.addressMode;
@@ -295,7 +307,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this._style.addressMode = value;
     }
 
-    /** setting this will set wrapModeU,wrapModeV and wrapModeW all at once! */
+    /** setting this will set wrapModeU, wrapModeV and wrapModeW all at once! */
     get repeatMode(): WRAP_MODE
     {
         return this._style.addressMode;

@@ -27,6 +27,7 @@ const tmpPoint = new Point();
  * - 'batch': Forces batching of all instructions.
  * - 'no-batch': Disables batching, processing each instruction individually.
  * @category scene
+ * @advanced
  */
 export type BatchMode = 'auto' | 'batch' | 'no-batch';
 
@@ -75,6 +76,7 @@ const tempMatrix = new Matrix();
  * This sharing of a `GraphicsContext` means that the intensive task of converting graphics instructions into GPU-ready geometry is done once, and the results are reused,
  * much like sprites reusing textures.
  * @category scene
+ * @standard
  */
 export class GraphicsContext extends EventEmitter<{
     update: GraphicsContext
@@ -125,12 +127,24 @@ export class GraphicsContext extends EventEmitter<{
         pixelLine: false,
     };
 
-    /** unique id for this graphics context */
+    /**
+     * unique id for this graphics context
+     * @internal
+     */
     public readonly uid: number = uid('graphicsContext');
+    /**
+     * Indicates whether content is updated and have to be re-rendered.
+     * @internal
+     */
     public dirty = true;
+    /** The batch mode for this graphics context. It can be 'auto', 'batch', or 'no-batch'. */
     public batchMode: BatchMode = 'auto';
     /** @internal */
     public instructions: GraphicsInstructions[] = [];
+    /**
+     * Custom shader to apply to the graphics when rendering.
+     * @advanced
+     */
     public customShader?: Shader;
 
     private _activePath: GraphicsPath = new GraphicsPath();
@@ -1049,17 +1063,23 @@ export class GraphicsContext extends EventEmitter<{
 
     protected onUpdate(): void
     {
-        if (this.dirty) return;
+        // Every time the content is updated - we must invalidate bounds, regardless rendering `dirty` state.
+        // Bounds can be read multiple times per frame.
+        this._boundsDirty = true;
 
+        // Visual updates happen only once per frame.
+        // There is no need to dispatch an `update` in if it was already dispatched this frame.
+        if (this.dirty) return;
         this.emit('update', this, 0x10);
         this.dirty = true;
-        this._boundsDirty = true;
     }
 
     /** The bounds of the graphic shape. */
     get bounds(): Bounds
     {
         if (!this._boundsDirty) return this._bounds;
+
+        this._boundsDirty = false;
 
         // TODO switch to idy dirty with tick..
         const bounds = this._bounds;
@@ -1204,12 +1224,16 @@ export class GraphicsContext extends EventEmitter<{
 
             if (this._fillStyle.texture)
             {
-                this._fillStyle.texture.destroy(destroyTextureSource);
+                this._fillStyle.fill && 'uid' in this._fillStyle.fill
+                    ? this._fillStyle.fill.destroy()
+                    : this._fillStyle.texture.destroy(destroyTextureSource);
             }
 
             if (this._strokeStyle.texture)
             {
-                this._strokeStyle.texture.destroy(destroyTextureSource);
+                this._strokeStyle.fill && 'uid' in this._strokeStyle.fill
+                    ? this._strokeStyle.fill.destroy()
+                    : this._strokeStyle.texture.destroy(destroyTextureSource);
             }
         }
 

@@ -3,6 +3,8 @@ import { GraphicsPath } from '../path/GraphicsPath';
 import { parseSVGDefinitions } from './parseSVGDefinitions';
 import { parseSVGFloatAttribute } from './parseSVGFloatAttribute';
 import { parseSVGStyle } from './parseSVGStyle';
+import { checkForNestedPattern } from './utils/fillOperations';
+import { appendSVGPath, calculatePathArea, extractSubpaths } from './utils/pathOperations';
 
 import type { FillGradient } from '../fill/FillGradient';
 import type { FillStyle, StrokeStyle } from '../FillTypes';
@@ -40,6 +42,7 @@ export function SVGParser(
     // Convert string input to SVG element
     if (typeof svg === 'string')
     {
+        // eslint-disable-next-line no-restricted-globals
         const div = document.createElement('div');
 
         div.innerHTML = svg.trim();
@@ -136,20 +139,91 @@ function renderChildren(svg: SVGElement, session: Session, fillStyle: FillStyle,
     switch (svg.nodeName.toLowerCase())
     {
         case 'path':
+        {
             d = svg.getAttribute('d') as string;
 
-            if (svg.getAttribute('fill-rule') as string === 'evenodd')
-            {
-                // #if _DEBUG
-                warn('SVG Evenodd fill rule not supported, your svg may render incorrectly');
-                // #endif
-            }
+            const fillRule = svg.getAttribute('fill-rule') as string;
 
-            graphicsPath = new GraphicsPath(d, true);
-            session.context.path(graphicsPath);
-            if (fillStyle) session.context.fill(fillStyle);
-            if (strokeStyle) session.context.stroke(strokeStyle);
+            const subpaths = extractSubpaths(d);
+            const hasExplicitEvenodd = fillRule === 'evenodd';
+            const hasMultipleSubpaths = subpaths.length > 1;
+
+            const shouldProcessHoles = hasExplicitEvenodd && hasMultipleSubpaths;
+
+            if (shouldProcessHoles)
+            {
+                const subpathsWithArea = subpaths.map((subpath) => ({
+                    path: subpath,
+                    area: calculatePathArea(subpath)
+                }));
+
+                subpathsWithArea.sort((a, b) => b.area - a.area);
+
+                // For complex cases, prefer multiple holes approach
+                const useMultipleHolesApproach = subpaths.length > 3 || !checkForNestedPattern(subpathsWithArea);
+
+                if (useMultipleHolesApproach)
+                {
+                    // Multiple holes approach: first (largest) is fill, rest are holes
+                    for (let i = 0; i < subpathsWithArea.length; i++)
+                    {
+                        const subpath = subpathsWithArea[i];
+                        const isMainShape = i === 0;
+
+                        session.context.beginPath();
+                        const newPath = new GraphicsPath(undefined, true); // Always use evenodd for hole processing
+
+                        appendSVGPath(subpath.path, newPath);
+                        session.context.path(newPath);
+
+                        if (isMainShape)
+                        {
+                            if (fillStyle) session.context.fill(fillStyle);
+                            if (strokeStyle) session.context.stroke(strokeStyle);
+                        }
+                        else
+                        {
+                            session.context.cut();
+                        }
+                    }
+                }
+                else
+                {
+                    // Nested holes approach: alternate between fill and cut
+                    for (let i = 0; i < subpathsWithArea.length; i++)
+                    {
+                        const subpath = subpathsWithArea[i];
+                        const isHole = i % 2 === 1; // Odd indices are holes
+
+                        session.context.beginPath();
+                        const newPath = new GraphicsPath(undefined, true); // Always use evenodd for hole processing
+
+                        appendSVGPath(subpath.path, newPath);
+                        session.context.path(newPath);
+
+                        if (isHole)
+                        {
+                            session.context.cut();
+                        }
+                        else
+                        {
+                            if (fillStyle) session.context.fill(fillStyle);
+                            if (strokeStyle) session.context.stroke(strokeStyle);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                const useEvenoddForGraphicsPath = fillRule ? (fillRule === 'evenodd') : true;
+
+                graphicsPath = new GraphicsPath(d, useEvenoddForGraphicsPath);
+                session.context.path(graphicsPath);
+                if (fillStyle) session.context.fill(fillStyle);
+                if (strokeStyle) session.context.stroke(strokeStyle);
+            }
             break;
+        }
 
         case 'circle':
             cx = parseSVGFloatAttribute(svg, 'cx', 0);

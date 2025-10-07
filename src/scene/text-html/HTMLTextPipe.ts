@@ -33,7 +33,16 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
 
     public validateRenderable(htmlText: HTMLText): boolean
     {
-        return htmlText._didTextUpdate;
+        const gpuText = this._getGpuText(htmlText);
+
+        const newKey = htmlText.styleKey;
+
+        if (gpuText.currentKey !== newKey)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public addRenderable(htmlText: HTMLText, instructionSet: InstructionSet)
@@ -42,10 +51,16 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
 
         if (htmlText._didTextUpdate)
         {
-            this._updateGpuText(htmlText).catch((e) =>
+            const resolution = htmlText._autoResolution ? this._renderer.resolution : htmlText.resolution;
+
+            if (batchableHTMLText.currentKey !== htmlText.styleKey || htmlText.resolution !== resolution)
             {
-                console.error(e);
-            });
+                // If the text has changed, we need to update the GPU text
+                this._updateGpuText(htmlText).catch((e) =>
+                {
+                    console.error(e);
+                });
+            }
 
             htmlText._didTextUpdate = false;
 
@@ -65,24 +80,35 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
     private async _updateGpuText(htmlText: HTMLText)
     {
         htmlText._didTextUpdate = false;
-
         const batchableHTMLText = this._getGpuText(htmlText);
 
         if (batchableHTMLText.generatingTexture) return;
 
-        if (batchableHTMLText.texturePromise)
-        {
-            this._renderer.htmlText.returnTexturePromise(batchableHTMLText.texturePromise);
-            batchableHTMLText.texturePromise = null;
-        }
+        // We need to preserve the current texture and don't release it until the new texture is generated.
+        // It's necessary to ensure that the texture won't be captured by another field and overwritten with their
+        // content, while our texture is still in progress.
+        const oldTexturePromise = batchableHTMLText.texturePromise;
+
+        batchableHTMLText.texturePromise = null;
 
         batchableHTMLText.generatingTexture = true;
 
         htmlText._resolution = htmlText._autoResolution ? this._renderer.resolution : htmlText.resolution;
 
-        const texturePromise = this._renderer.htmlText.getTexturePromise(htmlText);
+        let texturePromise = this._renderer.htmlText.getTexturePromise(htmlText);
+
+        if (oldTexturePromise)
+        {
+            // Release old texture after new one is generated.
+            texturePromise = texturePromise.finally(() =>
+            {
+                this._renderer.htmlText.decreaseReferenceCount(batchableHTMLText.currentKey);
+                this._renderer.htmlText.returnTexturePromise(oldTexturePromise);
+            });
+        }
 
         batchableHTMLText.texturePromise = texturePromise;
+        batchableHTMLText.currentKey = htmlText.styleKey;
 
         batchableHTMLText.texture = await texturePromise;
 

@@ -1,3 +1,4 @@
+import { type ImageLike } from '../../environment/ImageLike';
 import { ExtensionType } from '../../extensions/Extensions';
 import { type CanvasAndContext, CanvasPool } from '../../rendering/renderers/shared/texture/CanvasPool';
 import { TexturePool } from '../../rendering/renderers/shared/texture/TexturePool';
@@ -8,7 +9,7 @@ import { warn } from '../../utils/logging/warn';
 import { BigPool } from '../../utils/pool/PoolGroup';
 import { getPo2TextureFromSource } from '../text/utils/getPo2TextureFromSource';
 import { HTMLTextRenderData } from './HTMLTextRenderData';
-import { HTMLTextStyle } from './HTMLTextStyle';
+import { type HTMLTextStyle } from './HTMLTextStyle';
 import { extractFontFamilies } from './utils/extractFontFamilies';
 import { getFontCss } from './utils/getFontCss';
 import { getSVGUrl } from './utils/getSVGUrl';
@@ -19,12 +20,12 @@ import { measureHtmlText } from './utils/measureHtmlText';
 import type { System } from '../../rendering/renderers/shared/system/System';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import type { PoolItem } from '../../utils/pool/Pool';
-import type { HTMLTextOptions } from './HTMLText';
-import type { FontCSSStyleOptions } from './utils/loadFontCSS';
+import type { HTMLText, HTMLTextOptions } from './HTMLText';
 
 /**
  * System plugin to the renderer to manage HTMLText
  * @category rendering
+ * @advanced
  */
 export class HTMLTextSystem implements System
 {
@@ -38,12 +39,6 @@ export class HTMLTextSystem implements System
         name: 'htmlText',
     } as const;
 
-    public static defaultFontOptions: FontCSSStyleOptions = {
-        fontFamily: 'Arial',
-        fontStyle: 'normal',
-        fontWeight: 'normal',
-    };
-
     /**
      * WebGPU has a cors issue when uploading an image that is an SVGImage
      * To get around this we need to create a canvas draw the image to it and upload that instead.
@@ -51,6 +46,12 @@ export class HTMLTextSystem implements System
      */
     private readonly _createCanvas: boolean;
     private readonly _renderer: Renderer;
+
+    private readonly _activeTextures: Record<string, {
+        texture: Texture,
+        usageCount: number,
+        promise: Promise<Texture>,
+    }> = {};
 
     constructor(renderer: Renderer)
     {
@@ -67,6 +68,97 @@ export class HTMLTextSystem implements System
         return this.getTexturePromise(options);
     }
 
+    /**
+     * Increases the reference count for a texture.
+     * @param text - The HTMLText instance associated with the texture.
+     */
+    public getManagedTexture(text: HTMLText): Promise<Texture>
+    {
+        const textKey = text.styleKey;
+
+        if (this._activeTextures[textKey])
+        {
+            this._increaseReferenceCount(textKey);
+
+            return this._activeTextures[textKey].promise;
+        }
+
+        const promise = this._buildTexturePromise(text)
+            .then((texture) =>
+            {
+                this._activeTextures[textKey].texture = texture;
+
+                return texture;
+            });
+
+        this._activeTextures[textKey] = {
+            texture: null,
+            promise,
+            usageCount: 1,
+        };
+
+        return promise;
+    }
+
+    /**
+     * Gets the current reference count for a texture associated with a text key.
+     * @param textKey - The unique key identifying the text style configuration
+     * @returns The number of Text instances currently using this texture
+     */
+    public getReferenceCount(textKey: string)
+    {
+        return this._activeTextures[textKey]?.usageCount ?? null;
+    }
+
+    private _increaseReferenceCount(textKey: string)
+    {
+        this._activeTextures[textKey].usageCount++;
+    }
+
+    /**
+     * Decreases the reference count for a texture.
+     * If the count reaches zero, the texture is cleaned up.
+     * @param textKey - The key associated with the HTMLText instance.
+     */
+    public decreaseReferenceCount(textKey: string)
+    {
+        const activeTexture = this._activeTextures[textKey];
+
+        if (!activeTexture) return;
+
+        activeTexture.usageCount--;
+
+        if (activeTexture.usageCount === 0)
+        {
+            if (activeTexture.texture)
+            {
+                this._cleanUp(activeTexture.texture);
+            }
+            else
+            {
+                // we did not resolve...
+                activeTexture.promise.then((texture) =>
+                {
+                    activeTexture.texture = texture;
+
+                    this._cleanUp(activeTexture.texture);
+                }).catch(() =>
+                {
+                    // #if _DEBUG
+                    warn('HTMLTextSystem: Failed to clean texture');
+                    // #endif
+                });
+            }
+
+            this._activeTextures[textKey] = null;
+        }
+    }
+
+    /**
+     * Returns a promise that resolves to a texture for the given HTMLText options.
+     * @param options - The options for the HTMLText.
+     * @returns A promise that resolves to a Texture.
+     */
     public getTexturePromise(options: HTMLTextOptions): Promise<Texture>
     {
         return this._buildTexturePromise(options);
@@ -83,11 +175,7 @@ export class HTMLTextSystem implements System
 
         const htmlTextData = BigPool.get(HTMLTextRenderData);
         const fontFamilies = extractFontFamilies(text, style);
-        const fontCSS = await getFontCss(
-            fontFamilies,
-            style,
-            HTMLTextStyle.defaultTextStyle as {fontWeight: string, fontStyle: string}
-        );
+        const fontCSS = await getFontCss(fontFamilies);
         const measured = measureHtmlText(text, style, fontCSS, htmlTextData);
 
         const width = Math.ceil(Math.ceil((Math.max(1, measured.width) + (style.padding * 2))) * resolution);
@@ -105,7 +193,7 @@ export class HTMLTextSystem implements System
 
         await loadSVGImage(image, svgURL, isSafari() && fontFamilies.length > 0);
 
-        const resource: HTMLImageElement | HTMLCanvasElement = image;
+        const resource: ImageLike | HTMLCanvasElement = image;
         let canvasAndContext: CanvasAndContext;
 
         if (this._createCanvas)
@@ -157,5 +245,10 @@ export class HTMLTextSystem implements System
     {
         // BOOM!
         (this._renderer as null) = null;
+        for (const key in this._activeTextures)
+        {
+            if (this._activeTextures[key]) this.returnTexturePromise(this._activeTextures[key].promise);
+        }
+        (this._activeTextures as null) = null;
     }
 }

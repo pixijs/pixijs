@@ -15,6 +15,7 @@ import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
 /**
  * Loads DDS textures.
  * @category assets
+ * @advanced
  */
 export const loadDDS = {
     extension: {
@@ -23,7 +24,9 @@ export const loadDDS = {
         name: 'loadDDS',
     },
 
+    /** used for deprecation purposes */
     name: 'loadDDS',
+    id: 'dds',
 
     test(url: string): boolean
     {

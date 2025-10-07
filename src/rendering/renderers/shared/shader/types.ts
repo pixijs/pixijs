@@ -18,6 +18,9 @@ export const UNIFORM_TYPES_VALUES = [
     'vec2<i32>',
     'vec3<i32>',
     'vec4<i32>',
+    'sampler2D',
+    'samplerCube',
+    'sampler2DArray'
 ] as const;
 
 /**
@@ -40,11 +43,15 @@ type OPTIONAL_SPACE = ' ' | '';
 export type UNIFORM_TYPES_ARRAY = `array<${UNIFORM_TYPES_SINGLE},${OPTIONAL_SPACE}${number}>`;
 
 /** @internal */
-export type UNIFORM_TYPES = UNIFORM_TYPES_SINGLE | UNIFORM_TYPES_ARRAY;
+export type UNIFORM_TYPES_SAMPLE = 'sampler2D' | 'samplerCube' | 'sampler2DArray';
+
+/** @internal */
+export type UNIFORM_TYPES = UNIFORM_TYPES_SINGLE | UNIFORM_TYPES_ARRAY | UNIFORM_TYPES_SAMPLE;
 
 /**
  * This is the type of the uniform structures that are used in the UniformGroup.
  * @category rendering
+ * @advanced
  */
 export interface UniformData
 {

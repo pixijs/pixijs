@@ -7,11 +7,13 @@ import type { WebGPUOptions, WebGPUPipes, WebGPURenderer } from './gpu/WebGPURen
  * @category rendering
  * @extends WebGLRenderer
  * @extends WebGPURenderer
+ * @standard
  */
 export type Renderer<T extends ICanvas = HTMLCanvasElement> = WebGLRenderer<T> | WebGPURenderer<T>;
 /**
  * Generic pipes for the renderer.
  * @category rendering
+ * @advanced
  */
 export type RenderPipes = WebGLPipes | WebGPUPipes;
 /**
@@ -19,6 +21,7 @@ export type RenderPipes = WebGLPipes | WebGPUPipes;
  * @extends WebGLOptions
  * @extends WebGPUOptions
  * @category rendering
+ * @standard
  */
 export interface RendererOptions extends WebGLOptions, WebGPUOptions {}
 
@@ -30,6 +33,7 @@ export interface RendererOptions extends WebGLOptions, WebGPUOptions {}
  * So internally if it works with both we set filter.compatibleRenderers = RendererType.WEBGL | RendererType.WEBGPU
  * if it only works with webgl we set filter.compatibleRenderers = RendererType.WEBGL
  * @category rendering
+ * @internal
  */
 export enum RendererType
 {
@@ -48,5 +52,6 @@ export enum RendererType
  * - `'high-performance'` will prioritize rendering performance over power consumption,
  * - `'low-power'` will prioritize power saving over rendering performance.
  * @category rendering
+ * @advanced
  */
 export type GpuPowerPreference = 'low-power' | 'high-performance';

@@ -1,4 +1,5 @@
 import { nextPow2 } from '../../../../maths/misc/pow2';
+import { GlobalResourceRegistry } from '../../../../utils/pool/GlobalResourceRegistry';
 import { TextureSource } from './sources/TextureSource';
 import { Texture } from './Texture';
 import { TextureStyle } from './TextureStyle';
@@ -15,6 +16,7 @@ let count = 0;
  * If you use custom RenderTexturePool for your filters, you can use methods
  * `getFilterTexture` and `returnFilterTexture` same as in default pool
  * @category rendering
+ * @advanced
  */
 export class TexturePoolClass
 {
@@ -182,5 +184,7 @@ export class TexturePoolClass
 /**
  * The default texture pool instance.
  * @category rendering
+ * @advanced
  */
 export const TexturePool = new TexturePoolClass();
+GlobalResourceRegistry.register(TexturePool);

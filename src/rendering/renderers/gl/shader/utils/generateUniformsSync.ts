@@ -87,6 +87,8 @@ export function generateUniformsSync(group: UniformGroup, uniformData: Record<st
         }
     }
 
+    // console.log(funcFragments.join('\n'));
+    //
     /*
      * the introduction of syncData is to solve an issue where textures in uniform groups are not set correctly
      * the texture count was always starting from 0 in each group. This needs to increment each time a texture is used

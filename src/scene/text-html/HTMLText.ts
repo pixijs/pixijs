@@ -9,18 +9,69 @@ import type { TextOptions, TextString } from '../text/AbstractText';
 import type { HTMLTextStyleOptions } from './HTMLTextStyle';
 
 /**
- * Constructor options used for `HTMLText` instances.
- * @property {string} [text=''] - The string that you would like the text to display.
- * @property {HTMLTextStyle | HTMLTextStyleOptions} [style] - The style of the text.
+ * Constructor options used for `HTMLText` instances. Extends the base text options
+ * with HTML-specific features and texture styling capabilities.
+ * @example
+ * ```ts
+ * // Basic HTML text
+ * const basicText = new HTMLText({
+ *     text: '<b>Bold</b> and <i>Italic</i> text',
+ *     style: {
+ *         fontSize: 24,
+ *         fill: 0xff1010
+ *     }
+ * });
+ *
+ * // Rich HTML text with styling
+ * const richText = new HTMLText({
+ *     text: '<custom>Custom Tag</custom>',
+ *     style: {
+ *         fontFamily: 'Arial',
+ *         fontSize: 32,
+ *         fill: 0x4a4a4a,
+ *         align: 'center',
+ *         tagStyles: {
+ *             custom: {
+ *                 fontSize: 32,
+ *                 fill: '#00ff00',
+ *                 fontStyle: 'italic'
+ *             }
+ *         }
+ *     }
+ *     textureStyle: {
+ *         scaleMode: 'linear',
+ *     }
+ * });
+ * ```
  * @category text
+ * @standard
  */
 export interface HTMLTextOptions extends TextOptions<HTMLTextStyle, HTMLTextStyleOptions>, PixiMixins.HTMLTextOptions
 {
-    /** optional texture style to use for the text. */
+    /**
+     * Optional texture style to use for the text texture. This allows fine control over
+     * how the text is rendered to a texture before being displayed.
+     *
+     * The texture style can affect:
+     * - Scale mode (nearest/linear)
+     * - Resolution
+     * - Format (rgb/rgba)
+     * - Alpha handling
+     * @example
+     * ```ts
+     * const text = new HTMLText({
+     *     text: 'Crisp Text',
+     *     textureStyle: {
+     *         scaleMode: 'nearest', // Pixel-perfect scaling
+     *     }
+     * });
+     * ```
+     * @advanced
+     */
     textureStyle?: TextureStyle | TextureStyleOptions;
 }
 
-// eslint-disable-next-line requireExport/require-export-jsdoc
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface HTMLText extends PixiMixins.HTMLText, AbstractText<
     HTMLTextStyle,
     HTMLTextStyleOptions,
@@ -29,35 +80,22 @@ export interface HTMLText extends PixiMixins.HTMLText, AbstractText<
 > {}
 
 /**
- * A HTMLText Object will create a line or multiple lines of text.
+ * A HTMLText object creates text using HTML/CSS rendering with SVG foreignObject.
+ * This allows for rich text formatting using standard HTML tags and CSS styling.
  *
- * To split a line you can use '\n' in your text string, or, on the `style` object,
- * change its `wordWrap` property to true and and give the `wordWrapWidth` property a value.
- *
- * HTMLText uses an svg foreignObject to render HTML text.
- *
- *
- * The primary advantages of this render mode are:
- *
- *  - Supports [HTML tags](https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML/HTML_text_fundamentals)
- * for styling such as `<strong>`, or `<em>`, as well as `<span style="">`
- *
- *       - Better support for emojis and other HTML layout features, better compatibility with CSS
- *     line-height and letter-spacing.
- *
- *
- * The primary disadvantages are:
- *   - Unlike `text`, `html` rendering will vary slightly between platforms and browsers.
- * `html` uses SVG/DOM to render text and not Context2D's fillText like `text`.
- *
- *   - Performance and memory usage is on-par with `text` (that is to say, slow and heavy)
- *
- *   - Only works with browsers that support <foreignObject>.
+ * Key features:
+ * - HTML tag support (<strong>, <em>, etc.)
+ * - CSS styling and custom style overrides
+ * - Emoji and special character support
+ * - Line breaking and word wrapping
+ * - SVG-based rendering
  * @example
+ * ```ts
  * import { HTMLText } from 'pixi.js';
  *
+ * // Basic HTML text with tags
  * const text = new HTMLText({
- *     text: 'Hello Pixi!',
+ *     text: '<h1>Title</h1><p>This is a <strong>bold</strong> and <em>italic</em> text.</p>',
  *     style: {
  *         fontFamily: 'Arial',
  *         fontSize: 24,
@@ -66,20 +104,54 @@ export interface HTMLText extends PixiMixins.HTMLText, AbstractText<
  *     }
  * });
  *
- * If you would like to use a different texture style for the text, you can do so by passing a `textureStyle` object.
- * An example might be to use a different scale mode for the text.
- * @example
- * const text = new HTMLText({
- *     text: 'Hello Pixi!',
+ * // Rich HTML text with custom styling
+ * const richText = new HTMLText({
+ *     text: `
+ *         <div class="title">Welcome</div>
+ *         <div class="content">
+ *             This text supports:
+ *             <ul>
+ *                 <li>✨ Emojis</li>
+ *                 <li>🎨 Custom CSS</li>
+ *                 <li>📏 Auto-sizing</li>
+ *             </ul>
+ *         </div>
+ *     `,
  *     style: {
- *         fontFamily: 'Arial',
  *         fontSize: 24,
+ *         fill: '#334455',
+ *         cssOverrides: [
+ *             '.title { font-size: 32px; color: red; }',
+ *             '.content { line-height: 1.5; }'
+ *         ],
+ *         wordWrap: true,
+ *         wordWrapWidth: 300,
+ *     }
+ * });
+ *
+ * // Text with custom texture settings
+ * const crispText = new HTMLText({
+ *     text: '<div style="padding: 10px">High Quality Text</div>',
+ *     style: {
+ *         fontSize: 24,
+ *         fill: '#4a4a4a',
  *     },
  *     textureStyle: {
  *         scaleMode: 'nearest',
  *     }
  * });
- * @category scene
+ * ```
+ *
+ * Platform Considerations:
+ * - Rendering may vary slightly between browsers
+ * - Requires browser support for foreignObject
+ * - Performance similar to Canvas text
+ * - Memory usage comparable to Canvas text
+ * @category text
+ * @standard
+ * @see {@link HTMLTextStyle} For detailed style options
+ * @see {@link Text} For canvas-based text rendering
+ * @see {@link BitmapText} For high-performance static text
  */
 export class HTMLText extends AbstractText<
     HTMLTextStyle,
@@ -88,12 +160,14 @@ export class HTMLText extends AbstractText<
     BatchableHTMLText
 > implements View
 {
+    /** @internal */
     public override readonly renderPipeId: string = 'htmlText';
 
     /**
-     * optional texture style to use for the text.
-     * NOTE: HTMLText is not updated when this property is updated,
-     * you must update the text manually by calling `text.onViewUpdate()`
+     * Optional texture style to use for the text.
+     * > [!NOTE] HTMLText is not updated when this property is updated,
+     * > you must update the text manually by calling `text.onViewUpdate()`
+     * @advanced
      */
     public textureStyle?: TextureStyle;
 
@@ -131,5 +205,67 @@ export class HTMLText extends AbstractText<
         bounds.maxX = bounds.minX + width;
         bounds.minY = (-anchor._y * height);
         bounds.maxY = bounds.minY + height;
+    }
+
+    override get text(): string
+    {
+        return this._text;
+    }
+    /**
+     * The text content to display. Use '\n' for line breaks.
+     * Accepts strings, numbers, or objects with toString() method.
+     * @example
+     * ```ts
+     * const text = new HTMLText({
+     *     text: 'Hello Pixi!',
+     * });
+     * const multilineText = new HTMLText({
+     *     text: 'Line 1\nLine 2\nLine 3',
+     * });
+     * const numberText = new HTMLText({
+     *     text: 12345, // Will be converted to '12345'
+     * });
+     * const objectText = new HTMLText({
+     *     text: { toString: () => 'Object Text' }, // Custom toString
+     * });
+     *
+     * // Update text dynamically
+     * text.text = 'Updated Text'; // Re-renders with new text
+     * text.text = 67890; // Updates to '67890'
+     * text.text = { toString: () => 'Dynamic Text' }; // Uses custom toString method
+     * // Clear text
+     * text.text = ''; // Clears the text
+     * ```
+     * @default ''
+     */
+    override set text(text: TextString)
+    {
+        // Sanitise the text to ensure it is valid HTML
+        const sanitisedText = this._sanitiseText(text.toString());
+
+        // Call the parent class's text setter with the sanitised text
+        super.text = sanitisedText;
+    }
+
+    /**
+     * Sanitise text - replace `<br>` with `<br/>`, `&nbsp;` with `&#160;`
+     * @param text
+     * @see https://www.sitepoint.com/community/t/xhtml-1-0-transitional-xml-parsing-error-entity-nbsp-not-defined/3392/3
+     */
+    private _sanitiseText(text: string): string
+    {
+        return this._removeInvalidHtmlTags(text
+            .replace(/<br>/gi, '<br/>')
+            .replace(/<hr>/gi, '<hr/>')
+            .replace(/&nbsp;/gi, '&#160;'));
+    }
+
+    private _removeInvalidHtmlTags(input: string): string
+    {
+        // This regex finds "<" followed by anything except ">" until the next "<" or end-of-string
+        // i.e., it finds broken tags like "<br" or "<div id='x'" that never close
+        const brokenTagPattern = /<[^>]*?(?=<|$)/g;
+
+        return input.replace(brokenTagPattern, '');
     }
 }

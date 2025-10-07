@@ -21,6 +21,7 @@ export interface ParticleContainerAdaptor
 /**
  * Renderer for Particles that is designer for speed over feature set.
  * @category scene
+ * @internal
  */
 export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
 {
@@ -134,6 +135,7 @@ export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
     /** Destroys the ParticleRenderer. */
     public destroy(): void
     {
+        (this.renderer as null) = null;
         if (this.defaultShader)
         {
             this.defaultShader.destroy();

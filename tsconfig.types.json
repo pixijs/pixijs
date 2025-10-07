@@ -3,6 +3,7 @@
     "compilerOptions": {
         "declaration": true,
         "emitDeclarationOnly": true,
+        "noEmitOnError": false,
         "outDir": "lib"
     },
     "include": [

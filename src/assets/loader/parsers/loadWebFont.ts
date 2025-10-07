@@ -23,8 +23,18 @@ const validFontMIMEs = [
 ];
 
 /**
+ * Cache for font faces
+ * @internal
+ */
+export interface FontFaceCache
+{
+    entries: {url: string, faces: FontFace[]}[]
+}
+
+/**
  * Data for loading a font
  * @category assets
+ * @advanced
  */
 export type LoadFontData = {
     /** Font family name */
@@ -62,6 +72,7 @@ const CSS_IDENT_TOKEN_REGEX = /^(--|-?[A-Z_])[0-9A-Z_-]*$/i;
  * Ex.: 'fonts/titan-one.woff' turns into 'Titan One'
  * @param url - File url
  * @category assets
+ * @internal
  */
 export function getFontFamilyName(url: string): string
 {
@@ -128,6 +139,7 @@ function encodeURIWhenNeeded(uri: string)
  *   }
  * })
  * @category assets
+ * @advanced
  */
 export const loadWebFont = {
     extension: {
@@ -135,7 +147,9 @@ export const loadWebFont = {
         priority: LoaderParserPriority.Low,
     },
 
+    /** used for deprecation purposes */
     name: 'loadWebFont',
+    id: 'web-font',
 
     test(url: string): boolean
     {
@@ -169,10 +183,19 @@ export const loadWebFont = {
                 fontFaces.push(font);
             }
 
-            Cache.set(`${name}-and-url`, {
-                url,
-                fontFaces,
-            });
+            if (Cache.has(`${name}-and-url`))
+            {
+                const cached = Cache.get<FontFaceCache>(`${name}-and-url`);
+
+                // If the URL is already cached, we just add the new font faces to the existing cache
+                cached.entries.push({ url, faces: fontFaces });
+            }
+            else
+            {
+                Cache.set<FontFaceCache>(`${name}-and-url`, {
+                    entries: [{ url, faces: fontFaces }],
+                });
+            }
 
             return fontFaces.length === 1 ? fontFaces[0] : fontFaces;
         }
@@ -186,11 +209,34 @@ export const loadWebFont = {
 
     unload(font: FontFace | FontFace[]): void
     {
-        (Array.isArray(font) ? font : [font])
-            .forEach((t) =>
-            {
-                Cache.remove(`${t.family}-and-url`);
-                DOMAdapter.get().getFontFaceSet().delete(t);
-            });
+        const fonts = Array.isArray(font) ? font : [font];
+
+        // you can only load 1 family at a time, so we can use the first one
+        const fontFamily = fonts[0].family;
+        const cached = Cache.get<FontFaceCache>(`${fontFamily}-and-url`);
+
+        // find the entry that contains the font faces we want to remove
+        const entry = cached.entries.find((f) => f.faces.some((t) => fonts.indexOf(t) !== -1));
+
+        // remove the font faces from the cache
+        entry.faces = entry.faces.filter((f) => fonts.indexOf(f) === -1);
+
+        // if faces are empty, remove the entry
+        if (entry.faces.length === 0)
+        {
+            cached.entries = cached.entries.filter((f) => f !== entry);
+        }
+
+        // finally remove the font faces from the FontFaceSet
+        fonts.forEach((t) =>
+        {
+            DOMAdapter.get().getFontFaceSet().delete(t);
+        });
+
+        // Clean up cache if no entries remain
+        if (cached.entries.length === 0)
+        {
+            Cache.remove(`${fontFamily}-and-url`);
+        }
     }
 } satisfies LoaderParser<FontFace | FontFace[]>;

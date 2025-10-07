@@ -7,6 +7,7 @@ import type { BindResource } from '../../gpu/shader/BindResource';
 /**
  * All the various typed arrays that exist in js
  * @category rendering
+ * @advanced
  */
 // eslint-disable-next-line max-len
 export type TypedArray = Int8Array | Uint8Array | Int16Array | Uint16Array | Int32Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array;
@@ -19,6 +20,7 @@ export type TypedArray = Int8Array | Uint8Array | Int16Array | Uint16Array | Int
  * the usage of the buffer, a label for debugging, and whether the buffer should shrink to fit
  * when the data becomes smaller.
  * @category rendering
+ * @advanced
  */
 export interface BufferOptions
 {
@@ -29,8 +31,8 @@ export interface BufferOptions
     data?: TypedArray | number[];
     /** the size of the buffer in bytes, if not supplied, it will be inferred from the data */
     size?: number;
-    /** the usage of the buffer, see {@link BufferUsage} */
-    usage: number;
+    /** the usage of the buffer, see {@link rendering.BufferUsage} defaults to attribute */
+    usage?: number;
     /** a label for the buffer, this is useful for debugging */
     label?: string;
     /**
@@ -83,6 +85,7 @@ export interface BufferDescriptor
  *     usage: BufferUsage.VERTEX,
  * });
  * @category rendering
+ * @advanced
  */
 export class Buffer extends EventEmitter<{
     change: BindResource,

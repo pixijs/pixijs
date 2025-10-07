@@ -1,3 +1,5 @@
+/* eslint-disable no-restricted-globals */
+import { CanvasObserver } from '../dom/CanvasObserver';
 import { FederatedEvent } from '../events/FederatedEvent';
 import { ExtensionType } from '../extensions/Extensions';
 import { isMobile } from '../utils/browser/isMobile';
@@ -26,6 +28,7 @@ const DIV_HOOK_ZINDEX = 2;
 /**
  * Initialisation options for the accessibility system when used with an Application.
  * @category accessibility
+ * @advanced
  */
 export interface AccessibilitySystemOptions
 {
@@ -36,6 +39,7 @@ export interface AccessibilitySystemOptions
 /**
  * The options for the accessibility system.
  * @category accessibility
+ * @advanced
  */
 export interface AccessibilityOptions
 {
@@ -57,15 +61,19 @@ export interface AccessibilityOptions
  * ```js
  * const app = new Application({
  *     accessibilityOptions: {
- *         enabledByDefault: true,    // Enable immediately instead of waiting for tab
- *         activateOnTab: false,      // Disable tab key activation
- *         debug: false,               // Show/hide accessibility divs
- *         deactivateOnMouseMove: false, // Prevent accessibility from being deactivated when mouse moves
- *     }
+ *     // Enable immediately instead of waiting for tab
+ *     enabledByDefault: true,
+ *     // Disable tab key activation
+ *     activateOnTab: false,
+ *     // Show/hide accessibility divs
+ *     debug: false,
+ *     // Prevent accessibility from being deactivated when mouse moves
+ *     deactivateOnMouseMove: false,
+ * }
  * });
  * ```
  *
- * The system can also be controlled programmatically:
+ * The system can also be controlled programmatically by accessing the `renderer.accessibility` property:
  * ```js
  * app.renderer.accessibility.setAccessibilityEnabled(true);
  * ```
@@ -74,9 +82,10 @@ export interface AccessibilityOptions
  * ```js
  * container.accessible = true;
  * ```
- *
- * An instance of this class is automatically created at `renderer.accessibility`
+ * There are several properties that can be set on a Container to control its accessibility which can
+ * be found here: {@link AccessibleOptions}.
  * @category accessibility
+ * @standard
  */
 export class AccessibilitySystem implements System<AccessibilitySystemOptions>
 {
@@ -89,7 +98,19 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         name: 'accessibility',
     } as const;
 
-    /** default options used by the system */
+    /**
+     * The default options used by the system.
+     * You can set these before initializing the {@link Application} to change the default behavior.
+     * @example
+     * ```js
+     * import { AccessibilitySystem } from 'pixi.js';
+     *
+     * AccessibilitySystem.defaultOptions.enabledByDefault = true;
+     *
+     * const app = new Application()
+     * app.init()
+     * ```
+     */
     public static defaultOptions: AccessibilityOptions = {
         /**
          * Whether to enable accessibility features on initialization
@@ -141,7 +162,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
     private _div: HTMLElement | null = null;
 
     /** A simple pool for storing divs. */
-    private _pool: AccessibleHTMLElement[] = [];
+    private _pools: Record<string, AccessibleHTMLElement[]> = {};
 
     /** This is a tick used to check if an object is no longer being rendered. */
     private _renderId = 0;
@@ -154,6 +175,14 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
 
     /**  The frequency to update the div elements. */
     private readonly _androidUpdateFrequency = 500; // 2fps
+    private _canvasObserver: CanvasObserver;
+
+    // eslint-disable-next-line @typescript-eslint/prefer-readonly
+    private _isRunningTests: boolean = false;
+
+    /** Bound function references for proper event listener removal */
+    private _boundOnKeyDown: (e: KeyboardEvent) => void = this._onKeyDown.bind(this);
+    private _boundOnMouseMove: (e: MouseEvent) => void = this._onMouseMove.bind(this);
 
     // eslint-disable-next-line jsdoc/require-param
     /**
@@ -192,12 +221,21 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
     }
 
     /**
-     * The DOM element that will sit over the PixiJS element. This is where the div overlays will go.
+     * Button element for handling touch hooks.
      * @readonly
      */
     get hookDiv()
     {
         return this._hookDiv;
+    }
+
+    /**
+     * The DOM element that will sit over the PixiJS element. This is where the div overlays will go.
+     * @readonly
+     */
+    get div()
+    {
+        return this._div;
     }
 
     /**
@@ -260,26 +298,28 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         if (!this._div)
         {
             this._div = document.createElement('div');
-            this._div.style.width = `${DIV_TOUCH_SIZE}px`;
-            this._div.style.height = `${DIV_TOUCH_SIZE}px`;
             this._div.style.position = 'absolute';
             this._div.style.top = `${DIV_TOUCH_POS_X}px`;
             this._div.style.left = `${DIV_TOUCH_POS_Y}px`;
-            this._div.style.zIndex = DIV_TOUCH_ZINDEX.toString();
             this._div.style.pointerEvents = 'none';
+            this._div.style.zIndex = DIV_TOUCH_ZINDEX.toString();
+
+            // Initialize the CanvasTransformSync to keep the DOM element in sync with the canvas
+            this._canvasObserver = new CanvasObserver({
+                domElement: this._div,
+                renderer: this._renderer,
+            });
         }
 
-        // Bind event handlers and add listeners when activating
+        // Add listeners using the stored bound references
         if (this._activateOnTab)
         {
-            this._onKeyDown = this._onKeyDown.bind(this);
-            globalThis.addEventListener('keydown', this._onKeyDown, false);
+            globalThis.addEventListener('keydown', this._boundOnKeyDown, false);
         }
 
         if (this._deactivateOnMouseMove)
         {
-            this._onMouseMove = this._onMouseMove.bind(this);
-            globalThis.document.addEventListener('mousemove', this._onMouseMove, true);
+            globalThis.document.addEventListener('mousemove', this._boundOnMouseMove, true);
         }
 
         // Check if canvas is in DOM
@@ -291,9 +331,10 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
             {
                 if (canvas.parentNode)
                 {
-                    canvas.parentNode.appendChild(this._div);
                     observer.disconnect();
 
+                    // Add to DOM
+                    this._canvasObserver.ensureAttached();
                     // Only start the postrender runner after div is ready
                     this._initAccessibilitySetup();
                 }
@@ -304,8 +345,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         else
         {
             // Add to DOM
-            canvas.parentNode.appendChild(this._div);
-
+            this._canvasObserver.ensureAttached();
             // Div is ready, initialize accessibility
             this._initAccessibilitySetup();
         }
@@ -338,10 +378,10 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         this._isActive = false;
 
         // Switch listeners
-        globalThis.document.removeEventListener('mousemove', this._onMouseMove, true);
+        globalThis.document.removeEventListener('mousemove', this._boundOnMouseMove, true);
         if (this._activateOnTab)
         {
-            globalThis.addEventListener('keydown', this._onKeyDown, false);
+            globalThis.addEventListener('keydown', this._boundOnKeyDown, false);
         }
 
         this._renderer.runners.postrender.remove(this);
@@ -358,13 +398,19 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         }
 
         // Clear the pool of divs
-        this._pool.forEach((div) =>
+        for (const accessibleType in this._pools)
         {
-            if (div.parentNode)
+            const pool = this._pools[accessibleType];
+
+            pool.forEach((div) =>
             {
-                div.parentNode.removeChild(div);
-            }
-        });
+                if (div.parentNode)
+                {
+                    div.parentNode.removeChild(div);
+                }
+            });
+            delete this._pools[accessibleType];
+        }
 
         // Remove parent div from DOM
         if (this._div && this._div.parentNode)
@@ -372,7 +418,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
             this._div.parentNode.removeChild(this._div);
         }
 
-        this._pool = [];
+        this._pools = {};
         this._children = [];
     }
 
@@ -433,11 +479,6 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         {
             this._activate();
         }
-        else if (this._activateOnTab)
-        {
-            this._onKeyDown = this._onKeyDown.bind(this);
-            globalThis.addEventListener('keydown', this._onKeyDown, false);
-        }
 
         this._renderer.runners.postrender.remove(this);
     }
@@ -465,7 +506,8 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
 
         this._androidUpdateCount = now + this._androidUpdateFrequency;
 
-        if (!this._renderer.renderingToScreen || !this._renderer.view.canvas)
+        if ((!this._renderer.renderingToScreen || !this._renderer.view.canvas)
+            && !this._isRunningTests)
         {
             return;
         }
@@ -499,7 +541,9 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
                 {
                     child._accessibleDiv.parentNode.removeChild(child._accessibleDiv);
 
-                    this._pool.push(child._accessibleDiv);
+                    const pool = this._getPool(child.accessibleType);
+
+                    pool.push(child._accessibleDiv);
                     child._accessibleDiv = null;
                 }
                 child._accessibleActive = false;
@@ -510,13 +554,8 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         // Update root div dimensions if needed
         if (this._renderer.renderingToScreen)
         {
-            const { x, y, width: viewWidth, height: viewHeight } = this._renderer.screen;
-            const div = this._div;
-
-            div.style.left = `${x}px`;
-            div.style.top = `${y}px`;
-            div.style.width = `${viewWidth}px`;
-            div.style.height = `${viewHeight}px`;
+            // Ensure the main DOM element is attached to the same parent as the canvas
+            this._canvasObserver.ensureAttached();
         }
 
         // Update positions of existing divs
@@ -536,24 +575,19 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
             if (child.hitArea)
             {
                 const wt = child.worldTransform;
-                const sx = this._renderer.resolution;
-                const sy = this._renderer.resolution;
 
-                div.style.left = `${(wt.tx + (hitArea.x * wt.a)) * sx}px`;
-                div.style.top = `${(wt.ty + (hitArea.y * wt.d)) * sy}px`;
-                div.style.width = `${hitArea.width * wt.a * sx}px`;
-                div.style.height = `${hitArea.height * wt.d * sy}px`;
+                div.style.left = `${(wt.tx + (hitArea.x * wt.a))}px`;
+                div.style.top = `${(wt.ty + (hitArea.y * wt.d))}px`;
+                div.style.width = `${hitArea.width * wt.a}px`;
+                div.style.height = `${hitArea.height * wt.d}px`;
             }
             else
             {
                 this._capHitArea(hitArea);
-                const sx = this._renderer.resolution;
-                const sy = this._renderer.resolution;
-
-                div.style.left = `${hitArea.x * sx}px`;
-                div.style.top = `${hitArea.y * sy}px`;
-                div.style.width = `${hitArea.width * sx}px`;
-                div.style.height = `${hitArea.height * sy}px`;
+                div.style.left = `${hitArea.x}px`;
+                div.style.top = `${hitArea.y}px`;
+                div.style.width = `${hitArea.width}px`;
+                div.style.height = `${hitArea.height}px`;
             }
         }
 
@@ -610,9 +644,24 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
      */
     private _addChild<T extends Container>(container: T): void
     {
-        let div = this._pool.pop();
+        const pool = this._getPool(container.accessibleType);
 
-        if (!div)
+        let div = pool.pop();
+
+        if (div)
+        {
+            /*
+             * Reset these properties so we don't have outdated metadata.
+             * It was possible to end up with:
+             * - the old tabIndex if container.interactive is false
+             * - the old aria-label if container.accessibleHint is not set
+             */
+            div.innerHTML = '';
+            div.removeAttribute('title');
+            div.removeAttribute('aria-label');
+            div.tabIndex = 0;
+        }
+        else
         {
             if (container.accessibleType === 'button')
             {
@@ -695,6 +744,16 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
             div.setAttribute('aria-label', container.accessibleHint);
         }
 
+        if (container.interactive)
+        {
+            div.tabIndex = container.tabIndex;
+        }
+        else
+        {
+            // reset tabIndex back to 0 in case this div instance was pulled from the pool and already had a value
+            div.tabIndex = 0;
+        }
+
         if (this.debug)
         {
             this._updateDebugHTML(div);
@@ -706,10 +765,6 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
 
         this._children.push(container);
         this._div.appendChild(container._accessibleDiv);
-        if (container.interactive)
-        {
-            container._accessibleDiv.tabIndex = container.tabIndex;
-        }
     }
 
     /**
@@ -798,26 +853,40 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         this._deactivate();
     }
 
-    /** Destroys the accessibility system. Removes all elements and listeners. */
+    /**
+     * Destroys the accessibility system. Removes all elements and listeners.
+     * > [!IMPORTANT] This is typically called automatically when the {@link Application} is destroyed.
+     * > A typically user should not need to call this method directly.
+     */
     public destroy(): void
     {
         this._deactivate();
         this._destroyTouchHook();
 
+        this._canvasObserver?.destroy();
+        this._canvasObserver = null;
+
         this._div = null;
-        this._pool = null;
+        this._pools = null;
         this._children = null;
         this._renderer = null;
+        this._hookDiv = null;
 
-        if (this._activateOnTab)
-        {
-            globalThis.removeEventListener('keydown', this._onKeyDown);
-        }
+        // Remove listeners using the stored bound references
+        globalThis.removeEventListener('keydown', this._boundOnKeyDown);
+        this._boundOnKeyDown = null;
+        globalThis.document.removeEventListener('mousemove', this._boundOnMouseMove, true);
+        this._boundOnMouseMove = null;
     }
 
     /**
      * Enables or disables the accessibility system.
      * @param enabled - Whether to enable or disable accessibility.
+     * @example
+     * ```js
+     * app.renderer.accessibility.setAccessibilityEnabled(true); // Enable accessibility
+     * app.renderer.accessibility.setAccessibilityEnabled(false); // Disable accessibility
+     * ```
      */
     public setAccessibilityEnabled(enabled: boolean): void
     {
@@ -829,5 +898,15 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         {
             this._deactivate();
         }
+    }
+
+    private _getPool(accessibleType: string): AccessibleHTMLElement[]
+    {
+        if (!this._pools[accessibleType])
+        {
+            this._pools[accessibleType] = [];
+        }
+
+        return this._pools[accessibleType];
     }
 }

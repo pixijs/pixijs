@@ -19,6 +19,7 @@ export type ExtractUniformObject<T = Record<string, UniformData>> = {
 /**
  * Uniform group options
  * @category rendering
+ * @advanced
  */
 export type UniformGroupOptions = {
     /**
@@ -29,6 +30,8 @@ export type UniformGroupOptions = {
     ubo?: boolean;
     /** if true, then you are responsible for when the data is uploaded to the GPU by calling `update()` */
     isStatic?: boolean;
+
+    noTypes: boolean
 };
 
 /**
@@ -59,7 +62,7 @@ export type UniformGroupOptions = {
  *
  Uniforms can be modified via the classes 'uniforms' property. It will contain all the uniforms declared in the constructor.
  *
- * ```
+ * ```ts
  * // UBO in shader:
  * uniform myCoolData { // Declaring a UBO...
  *     mat4 uCoolMatrix;
@@ -80,10 +83,9 @@ export type UniformGroupOptions = {
  * const shader = Shader.from(srcVert, srcFrag, {
  *     myCoolData // Name matches the UBO name in the shader. Will be processed accordingly.
  * })
- *
- *
- *  ```
+ * ```
  * @category rendering
+ * @advanced
  */
 export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any> implements BindResource
 {
@@ -93,6 +95,7 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
         ubo: false,
         /** if true, then you are responsible for when the data is uploaded to the GPU by calling `update()` */
         isStatic: false,
+        noTypes: false
     };
 
     /**
@@ -137,7 +140,7 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
      * a signature string generated for internal use
      * @internal
      */
-    public readonly _signature: number;
+    public _signature: number;
 
     // implementing the interface - UniformGroup are not destroyed
     public readonly destroyed = false;
@@ -145,43 +148,71 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
     /**
      * Create a new Uniform group
      * @param uniformStructures - The structures of the uniform group
+     * @param _uniformStructures
      * @param options - The optional parameters of this uniform group
      */
-    constructor(uniformStructures: UNIFORMS, options?: UniformGroupOptions)
+    constructor(_uniformStructures: UNIFORMS | Record<string, unknown>, options?: UniformGroupOptions)
     {
         options = { ...UniformGroup.defaultOptions, ...options };
 
-        this.uniformStructures = uniformStructures;
+        const noTypes = hasTypes(_uniformStructures as Record<string, { type: string }>);
 
-        const uniforms = {} as ExtractUniformObject<UNIFORMS>;
-
-        for (const i in uniformStructures)
+        // if(_uniformStructures.)
+        if (noTypes)
         {
-            const uniformData = uniformStructures[i] as UniformData;
+            const uniforms = _uniformStructures as Record<string, unknown>;
 
-            uniformData.name = i;
-            uniformData.size = uniformData.size ?? 1;
+            this.uniforms = uniforms as any;
 
-            if (!UNIFORM_TYPES_MAP[uniformData.type])
+            this.uniformStructures = {} as UNIFORMS;
+
+            // uniform structures will be figured out later!
+        }
+        else
+        {
+            const uniformStructures = _uniformStructures as UNIFORMS;
+
+            const uniforms = {} as ExtractUniformObject<UNIFORMS>;
+
+            for (const i in uniformStructures)
             {
+                const uniformData = uniformStructures[i] as UniformData;
+
+                uniformData.name = i;
+                uniformData.size ??= 1;
+
+                if (!UNIFORM_TYPES_MAP[uniformData.type])
+                {
                 // eslint-disable-next-line max-len
-                throw new Error(`Uniform type ${uniformData.type} is not supported. Supported uniform types are: ${UNIFORM_TYPES_VALUES.join(', ')}`);
+                    throw new Error(`Uniform type ${uniformData.type} is not supported. Supported uniform types are: ${UNIFORM_TYPES_VALUES.join(', ')}`);
+                }
+
+                uniformData.value ??= getDefaultUniformValue(uniformData.type, uniformData.size);
+
+                uniforms[i] = uniformData.value as ExtractUniformObject<UNIFORMS>[keyof UNIFORMS];
             }
 
-            uniformData.value ??= getDefaultUniformValue(uniformData.type, uniformData.size);
-
-            uniforms[i] = uniformData.value as ExtractUniformObject<UNIFORMS>[keyof UNIFORMS];
+            this.uniformStructures = uniformStructures;
+            this.uniforms = uniforms;
         }
-
-        this.uniforms = uniforms;
 
         this._dirtyId = 1;
         this.ubo = options.ubo;
         this.isStatic = options.isStatic;
+    }
 
-        this._signature = createIdFromString(Object.keys(uniforms).map(
-            (i) => `${i}-${(uniformStructures[i as keyof typeof uniformStructures] as UniformData).type}`
-        ).join('-'), 'uniform-group');
+    get signature()
+    {
+        // if (!this._signature)
+        {
+            const uniformStructures = this.uniformStructures;
+
+            this._signature = createIdFromString(Object.keys(uniformStructures).map(
+                (i) => `${i}-${(uniformStructures[i as keyof typeof uniformStructures] as UniformData).type}`
+            ).join('-'), 'uniform-group');
+        }
+
+        return this._signature;
     }
 
     /** Call this if you want the uniform groups data to be uploaded to the GPU only useful if `isStatic` is true. */
@@ -191,3 +222,16 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
         // dispatch...
     }
 }
+function hasTypes<T extends Record<string, { type: string }>>(_uniformStructures: T)
+{
+    for (const i in _uniformStructures)
+    {
+        if (!_uniformStructures[i]?.type)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+

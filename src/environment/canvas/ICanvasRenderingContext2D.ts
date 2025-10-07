@@ -1,8 +1,11 @@
+import { type ImageLike } from '../ImageLike';
+
 import type { ICanvas } from './ICanvas';
 
 /**
  * Common interface for CanvasRenderingContext2D, OffscreenCanvasRenderingContext2D, and other custom canvas 2D context.
  * @category environment
+ * @advanced
  */
 export interface ICanvasRenderingContext2D extends
     CanvasState,
@@ -22,12 +25,12 @@ export interface ICanvasRenderingContext2D extends
     CanvasPath
 {
     /** creates a pattern using the specified image and repetition. */
-    createPattern(image: CanvasImageSource | ICanvas, repetition: string | null): CanvasPattern | null;
+    createPattern(image: CanvasImageSource | ICanvas | ImageLike, repetition: string | null): CanvasPattern | null;
 
     /** provides different ways to draw an image onto the canvas */
-    drawImage(image: CanvasImageSource | ICanvas, dx: number, dy: number): void;
-    drawImage(image: CanvasImageSource | ICanvas, dx: number, dy: number, dw: number, dh: number): void;
-    drawImage(image: CanvasImageSource | ICanvas, sx: number, sy: number, sw: number, sh: number,
+    drawImage(image: CanvasImageSource | ICanvas | ImageLike, dx: number, dy: number): void;
+    drawImage(image: CanvasImageSource | ICanvas | ImageLike, dx: number, dy: number, dw: number, dh: number): void;
+    drawImage(image: CanvasImageSource | ICanvas | ImageLike, sx: number, sy: number, sw: number, sh: number,
         dx: number, dy: number, dw: number, dh: number): void;
 
     /** sets the horizontal spacing behavior between text characters. */

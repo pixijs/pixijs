@@ -10,8 +10,9 @@ import type { AssetExtension } from '../assets/AssetExtension';
  * load all `.gif` images as an ArrayBuffer and transform into an
  * GifSource object.
  * @category gif
+ * @advanced
  */
-const GifAsset = {
+const GifAsset: AssetExtension<GifSource, GifBufferOptions> = {
     extension: ExtensionType.Asset,
     detection: {
         test: async () => true,
@@ -19,7 +20,9 @@ const GifAsset = {
         remove: async (formats) => formats.filter((format) => format !== 'gif'),
     },
     loader: {
+        /** used for deprecation purposes */
         name: 'gifLoader',
+        id: 'gif',
         test: (url) => path.extname(url) === '.gif' || url.startsWith('data:image/gif'),
         load: async (url, asset) =>
         {
@@ -33,6 +36,6 @@ const GifAsset = {
             asset.destroy();
         },
     }
-} as AssetExtension<GifSource, GifBufferOptions>;
+};
 
 export { GifAsset };

@@ -9,6 +9,7 @@ import type { PoolItem } from '../../../utils/pool/Pool';
  * This can be useful for selectively rendering certain colors or for creating
  * effects based on color values.
  * @category rendering
+ * @advanced
  */
 export class ColorMask implements Effect, PoolItem
 {

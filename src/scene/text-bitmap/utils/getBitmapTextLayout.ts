@@ -6,6 +6,7 @@ import type { AbstractBitmapFont } from '../AbstractBitmapFont';
  * This contains the width, height, scale, offsetY and lines of text.
  * Each line contains its width, character positions, characters, space width and spaces index.
  * @category text
+ * @internal
  */
 export interface BitmapTextLayoutData
 {
@@ -68,6 +69,14 @@ export function getBitmapTextLayout(
         chars: [] as string[],
     };
 
+    const scale = font.baseMeasurementFontSize / style.fontSize;
+
+    const adjustedLetterSpacing = style.letterSpacing * scale;
+    const adjustedWordWrapWidth = style.wordWrapWidth * scale;
+    const adjustedLineHeight = style.lineHeight ? style.lineHeight * scale : font.lineHeight;
+
+    const breakWords = style.wordWrap && style.breakWords;
+
     const nextWord = (word: typeof currentWord) =>
     {
         const start = currentLine.width;
@@ -119,13 +128,11 @@ export function getBitmapTextLayout(
 
         firstWord = true;
         layoutData.lines.push(currentLine);
-        layoutData.height += font.lineHeight;
+        layoutData.height += adjustedLineHeight;
     };
 
-    const scale = font.baseMeasurementFontSize / style.fontSize;
-
-    const adjustedLetterSpacing = style.letterSpacing * scale;
-    const adjustedWordWrapWidth = style.wordWrapWidth * scale;
+    const checkIsOverflow = (lineWidth: number) =>
+        lineWidth - adjustedLetterSpacing > adjustedWordWrapWidth;
 
     // loop an extra time to force a line break..
     for (let i = 0; i < chars.length + 1; i++)
@@ -149,9 +156,7 @@ export function getBitmapTextLayout(
 
         if (isWordBreak)
         {
-            const addWordToNextLine = !firstWord
-                && style.wordWrap
-                && (currentLine.width + currentWord.width - adjustedLetterSpacing) > adjustedWordWrapWidth;
+            const addWordToNextLine = !firstWord && style.wordWrap && checkIsOverflow(currentLine.width + currentWord.width);
 
             if (addWordToNextLine)
             {
@@ -178,10 +183,7 @@ export function getBitmapTextLayout(
 
             if (char === '\r' || char === '\n')
             {
-                if (currentLine.width !== 0)
-                {
-                    nextLine();
-                }
+                nextLine();
             }
             else if (!isEnd)
             {
@@ -201,6 +203,14 @@ export function getBitmapTextLayout(
             const kerning = charData.kerning[previousChar] || 0;
 
             const nextCharWidth = charData.xAdvance + kerning + adjustedLetterSpacing;
+
+            const addWordToNextLine = breakWords && checkIsOverflow(currentLine.width + currentWord.width + nextCharWidth);
+
+            if (addWordToNextLine)
+            {
+                nextWord(currentWord);
+                nextLine();
+            }
 
             currentWord.positions[currentWord.index++] = currentWord.width + kerning;
             currentWord.chars.push(char);

@@ -16,6 +16,7 @@ export interface UboAdaptor
 /**
  * System plugin to the renderer to manage uniform buffers.
  * @category rendering
+ * @advanced
  */
 export class UboSystem implements System
 {
@@ -63,7 +64,7 @@ export class UboSystem implements System
     {
         return this._syncFunctionHash[uniformGroup._signature] || this._initUniformGroup(uniformGroup);
     }
-
+    //
     private _initUniformGroup(uniformGroup: UniformGroup)
     {
         const uniformGroupSignature = uniformGroup._signature;

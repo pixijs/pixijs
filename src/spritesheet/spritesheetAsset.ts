@@ -19,6 +19,7 @@ import type { SpritesheetData } from './Spritesheet';
  * @see {@link Spritesheet}
  * @see {@link SpritesheetData}
  * @category assets
+ * @advanced
  */
 export interface SpriteSheetJson extends SpritesheetData
 {
@@ -78,6 +79,7 @@ function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack:
  * })
  * @type {AssetExtension}
  * @category assets
+ * @advanced
  */
 export const spritesheetAsset = {
     extension: ExtensionType.Asset,
@@ -119,7 +121,9 @@ export const spritesheetAsset = {
      * All textures in the sprite sheet are then added to the cache
      */
     loader: {
+        /** used for deprecation purposes */
         name: 'spritesheetLoader',
+        id: 'spritesheet',
 
         extension: {
             type: ExtensionType.LoadParser,

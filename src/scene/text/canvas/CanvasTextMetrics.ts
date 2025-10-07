@@ -1,3 +1,4 @@
+import { lru } from 'tiny-lru';
 import { DOMAdapter } from '../../../environment/adapter';
 import { fontStringFromTextStyle } from './utils/fontStringFromTextStyle';
 
@@ -22,6 +23,10 @@ interface IIntl
 {
     Segmenter?: {
         prototype: ISegmenter;
+        /**
+         * Creates a new Intl.Segmenter object.
+         * @returns A new Intl.Segmenter object.
+         */
         new(): ISegmenter;
     };
 }
@@ -33,6 +38,7 @@ interface IIntl
  * @property {number} ascent - Font ascent
  * @property {number} descent - Font descent
  * @property {number} fontSize - Font size
+ * @advanced
  */
 export interface FontMetrics
 {
@@ -62,6 +68,7 @@ const contextSettings: ICanvasRenderingContext2DSettings = {
  * });
  * const textMetrics = CanvasTextMetrics.measureText('Your text', style);
  * @category text
+ * @advanced
  */
 export class CanvasTextMetrics
 {
@@ -157,7 +164,7 @@ export class CanvasTextMetrics
     {
         let result = CanvasTextMetrics._experimentalLetterSpacingSupported;
 
-        if (result !== undefined)
+        if (result === undefined)
         {
             const proto = DOMAdapter.get().getCanvasRenderingContext2D().prototype;
 
@@ -209,6 +216,9 @@ export class CanvasTextMetrics
     // eslint-disable-next-line @typescript-eslint/naming-convention
     private static __context: ICanvasRenderingContext2D;
 
+    /** Cache for measured text metrics */
+    private static readonly _measurementCache = lru<CanvasTextMetrics>(1000);
+
     /**
      * @param text - the text that was measured
      * @param style - the style that was measured
@@ -249,6 +259,14 @@ export class CanvasTextMetrics
         wordWrap: boolean = style.wordWrap,
     ): CanvasTextMetrics
     {
+        const textKey = `${text}-${style.styleKey}-wordWrap-${wordWrap}`;
+
+        // check if we have already measured this text with the same style
+        if (CanvasTextMetrics._measurementCache.has(textKey))
+        {
+            return CanvasTextMetrics._measurementCache.get(textKey);
+        }
+
         const font = fontStringFromTextStyle(style);
         const fontProperties = CanvasTextMetrics.measureFont(font);
 
@@ -306,6 +324,9 @@ export class CanvasTextMetrics
             maxLineWidth,
             fontProperties
         );
+
+        // cache the measurements
+        CanvasTextMetrics._measurementCache.set(textKey, measurements);
 
         return measurements;
     }
@@ -707,7 +728,16 @@ export class CanvasTextMetrics
                     token = '';
                 }
 
-                tokens.push(char);
+                // treat \r\n as a single new line token
+                if (char === '\r' && nextChar === '\n')
+                {
+                    tokens.push('\r\n');
+                    i++;
+                }
+                else
+                {
+                    tokens.push(char);
+                }
 
                 continue;
             }

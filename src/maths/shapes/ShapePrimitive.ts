@@ -2,13 +2,42 @@ import type { SHAPE_PRIMITIVE } from '../misc/const';
 import type { Rectangle } from './Rectangle';
 
 /**
- * A basic object to define a Pixi shape.
+ * A basic interface that defines common properties and methods for all Pixi shape primitives.
+ * Provides a standard API for shape manipulation, hit testing, and bounds calculation.
+ * @example
+ * ```ts
+ * // Implement basic shape
+ * class CustomShape implements ShapePrimitive {
+ *     public readonly type = 'custom';
+ *     public x = 0;
+ *     public y = 0;
+ *
+ *     // Implement required methods
+ *     public contains(x: number, y: number): boolean {
+ *         // Custom hit testing logic
+ *         return true;
+ *     }
+ *
+ *     public getBounds(out?: Rectangle): Rectangle {
+ *         // Custom bounds calculation
+ *         return out || new Rectangle();
+ *     }
+ *
+ *     // ... implement other required methods
+ * }
+ * // Use in a container
+ * container.hitArea = new CustomShape();
+ * ```
+ * @see {@link Rectangle} For rectangular shape implementation
+ * @see {@link Circle} For circular shape implementation
+ * @see {@link Polygon} For polygon shape implementation
  * @category maths
+ * @advanced
  */
 export interface ShapePrimitive
 {
     /** The type of the object, mainly used to avoid `instanceof` checks */
-    readonly type: SHAPE_PRIMITIVE
+    readonly type: SHAPE_PRIMITIVE | (string & {});
 
     /** Checks whether the x and y coordinates passed to this function are contained within this ShapePrimitive. */
     contains(x: number, y: number): boolean;

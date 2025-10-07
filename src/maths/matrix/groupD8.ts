@@ -3,6 +3,8 @@
 // This file implements the dihedral group of order 16, also called
 // of degree 8. That's why its called groupD8.
 
+import { type RectangleLike } from '../../culling/Culler';
+import { type Rectangle } from '../shapes/Rectangle';
 import { Matrix } from './Matrix';
 
 /*
@@ -96,6 +98,7 @@ type GD8Symmetry = number;
  * @author Ivan: ivanpopelyshev
  * @groupDescription groupD8
  * @category maths
+ * @advanced
  */
 export const groupD8 = {
     /**
@@ -366,5 +369,68 @@ export const groupD8 = {
         mat.tx = tx;
         mat.ty = ty;
         matrix.append(mat);
+    },
+
+    /**
+     * Transforms rectangle coordinates based on texture packer rotation.
+     * Used when texture atlas pages are rotated and coordinates need to be adjusted.
+     * @group groupD8
+     * @param {RectangleLike} rect - Rectangle with original coordinates to transform
+     * @param {RectangleLike} sourceFrame - Source texture frame (includes offset and dimensions)
+     * @param {GD8Symmetry} rotation - The groupD8 rotation value
+     * @param {Rectangle} out - Rectangle to store the result
+     * @returns {Rectangle} Transformed coordinates (includes source frame offset)
+     */
+    transformRectCoords: (
+        rect: RectangleLike,
+        sourceFrame: RectangleLike,
+        rotation: GD8Symmetry,
+        out: Rectangle
+    ): Rectangle =>
+    {
+        const { x, y, width, height } = rect;
+        const { x: frameX, y: frameY, width: frameWidth, height: frameHeight } = sourceFrame;
+
+        if (rotation === groupD8.E)
+        {
+            // No rotation
+            out.set(x + frameX, y + frameY, width, height);
+
+            return out;
+        }
+        else if (rotation === groupD8.S)
+        {
+            // 90° clockwise rotation
+            return out.set(
+                (frameWidth - y - height) + frameX,
+                x + frameY,
+                height,
+                width
+            );
+        }
+        else if (rotation === groupD8.W)
+        {
+            // 180° rotation
+            return out.set(
+                (frameWidth - x - width) + frameX,
+                (frameHeight - y - height) + frameY,
+                width,
+                height
+            );
+        }
+        else if (rotation === groupD8.N)
+        {
+            // 270° clockwise rotation (90° counter-clockwise)
+            return out.set(
+                y + frameX,
+                (frameHeight - x - width) + frameY,
+                height,
+                width
+            );
+        }
+
+        // For other rotations (diagonal and reflections), fall back to no rotation
+        // These are less common in typical texture atlases
+        return out.set(x + frameX, y + frameY, width, height);
     },
 };

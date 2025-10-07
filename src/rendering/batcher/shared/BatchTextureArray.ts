@@ -3,6 +3,7 @@ import type { TextureSource } from '../../renderers/shared/texture/sources/Textu
 /**
  * Used by the batcher to build texture batches. Holds list of textures and their respective locations.
  * @category rendering
+ * @advanced
  */
 export class BatchTextureArray
 {

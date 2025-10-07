@@ -9,6 +9,7 @@ import type { GPU } from '../GpuDeviceSystem';
 /**
  * System plugin to the renderer to manage WebGL state machines.
  * @category rendering
+ * @advanced
  */
 export class GpuStateSystem implements System
 {

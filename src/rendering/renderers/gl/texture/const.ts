@@ -1,6 +1,7 @@
 /**
  * Various GL texture/resources formats.
  * @category rendering
+ * @advanced
  */
 export enum GL_FORMATS
 {
@@ -22,6 +23,7 @@ export enum GL_FORMATS
 /**
  * Various GL target types.
  * @category rendering
+ * @advanced
  */
 export enum GL_TARGETS
 {
@@ -46,6 +48,7 @@ export enum GL_TARGETS
  *
  * This property only affects WebGL.
  * @category rendering
+ * @advanced
  */
 export enum GL_WRAP_MODES
 {

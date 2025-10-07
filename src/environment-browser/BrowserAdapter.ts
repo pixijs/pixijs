@@ -1,4 +1,6 @@
+/* eslint-disable no-restricted-globals */
 import { type Adapter } from '../environment/adapter';
+import { type ImageLike } from '../environment/ImageLike';
 
 /**
  * This is an implementation of the {@link Adapter} interface.
@@ -14,6 +16,7 @@ import { type Adapter } from '../environment/adapter';
  * @property {Function} getFontFaceSet - Return the font face set if available
  * @property {Function} fetch - Returns a Response object that has been fetched from the given URL.
  * @property {Function} parseXML - Returns Document object that has been parsed from the given XML string.
+ * @advanced
  */
 export const BrowserAdapter = {
     createCanvas: (width: number, height: number): HTMLCanvasElement =>
@@ -25,6 +28,7 @@ export const BrowserAdapter = {
 
         return canvas;
     },
+    createImage: (): ImageLike => new Image(),
     getCanvasRenderingContext2D: () => CanvasRenderingContext2D,
     getWebGLRenderingContext: () => WebGLRenderingContext,
     getNavigator: () => navigator,

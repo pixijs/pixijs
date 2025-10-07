@@ -27,6 +27,7 @@ const BYTES_PER_PIXEL = 4;
 /**
  * The system for managing textures in WebGL.
  * @category rendering
+ * @advanced
  */
 export class GlTextureSystem implements System, CanvasGenerator
 {
@@ -97,6 +98,11 @@ export class GlTextureSystem implements System, CanvasGenerator
         }
     }
 
+    /**
+     * Initializes a texture source, if it has already been initialized nothing will happen.
+     * @param source - The texture source to initialize.
+     * @returns The initialized texture source.
+     */
     public initSource(source: TextureSource)
     {
         this.bind(source);
@@ -432,7 +438,14 @@ export class GlTextureSystem implements System, CanvasGenerator
             .forEach((source) => this.onSourceDestroy(source));
 
         (this.managedTextures as null) = null;
-
+        this._glTextures = null;
+        this._glSamplers = null;
+        this._boundTextures = null;
+        this._boundSamplers = null;
+        this._mapFormatToInternalFormat = null;
+        this._mapFormatToType = null;
+        this._mapFormatToFormat = null;
+        (this._uploads as null) = null;
         (this._renderer as null) = null;
     }
 

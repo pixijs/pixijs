@@ -14,6 +14,7 @@ import type { MeshGeometryOptions } from '../mesh/shared/MeshGeometry';
  * ```
  * @see {@link RopeGeometry}
  * @category scene
+ * @advanced
  */
 export interface RopeGeometryOptions
 {
@@ -44,6 +45,7 @@ export interface RopeGeometryOptions
  * };
  * const rope = new RopeGeometry(100, points);
  * @category scene
+ * @advanced
  */
 export class RopeGeometry extends MeshGeometry
 {

@@ -15,6 +15,7 @@ import type { MeshGeometryOptions } from '../mesh/shared/MeshGeometry';
  * ```
  * @see {@link PlaneGeometry}
  * @category scene
+ * @advanced
  */
 export interface PlaneGeometryOptions
 {
@@ -31,6 +32,7 @@ export interface PlaneGeometryOptions
 /**
  * The PlaneGeometry allows you to draw a 2d plane
  * @category scene
+ * @advanced
  */
 export class PlaneGeometry extends MeshGeometry
 {

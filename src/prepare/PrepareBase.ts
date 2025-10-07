@@ -11,12 +11,14 @@ import type { Text } from '../scene/text/Text';
 /**
  * The accepted types to pass to the prepare system
  * @category rendering
+ * @advanced
  */
 export type PrepareSourceItem = Container | TextureSource | Texture | GraphicsContext;
 
 /**
  * The valid types resolved to the queue ready for upload
  * @category rendering
+ * @advanced
  */
 export type PrepareQueueItem = TextureSource | Text | GraphicsContext;
 
@@ -24,6 +26,7 @@ export type PrepareQueueItem = TextureSource | Text | GraphicsContext;
  * Part of the prepare system. Responsible for uploading all the items to the GPU.
  * This class provides the base functionality and handles processing the queue asynchronously.
  * @category rendering
+ * @advanced
  */
 export abstract class PrepareBase
 {
@@ -41,6 +44,8 @@ export abstract class PrepareBase
 
     /** Timeout id for next processing call */
     protected timeout?: number;
+
+    private _destroyed: boolean;
 
     /**
      * @param {Renderer} renderer - A reference to the current renderer
@@ -156,15 +161,25 @@ export abstract class PrepareBase
         this.queue.length = nextUnique;
     }
 
+    public destroy(): void
+    {
+        this._destroyed = true;
+        clearTimeout(this.timeout);
+    }
+
     /** called per frame by the ticker, defer processing to next tick */
     private readonly _tick = () =>
     {
+        if (this._destroyed) return;
+
         this.timeout = setTimeout(this._processQueue, 0) as unknown as number;
     };
 
     /** process the queue up to max item limit per frame */
     private readonly _processQueue = () =>
     {
+        if (this._destroyed) return;
+
         const { queue } = this;
         let itemsProcessed = 0;
 

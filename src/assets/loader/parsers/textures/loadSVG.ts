@@ -1,4 +1,5 @@
 import { DOMAdapter } from '../../../../environment/adapter';
+import { type ImageLike } from '../../../../environment/ImageLike';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { ImageSource } from '../../../../rendering/renderers/shared/texture/sources/ImageSource';
 import { GraphicsContext } from '../../../../scene/graphics/shared/GraphicsContext';
@@ -17,6 +18,7 @@ import type { Loader } from '../../Loader';
  * Configuration for the {@link loadSvg} plugin.
  * @see loadSvg
  * @category assets
+ * @advanced
  */
 export interface LoadSVGConfig
 {
@@ -24,7 +26,7 @@ export interface LoadSVGConfig
      * The crossOrigin value to use for loading the SVG as an image.
      * @default 'anonymous'
      */
-    crossOrigin: HTMLImageElement['crossOrigin'];
+    crossOrigin: ImageLike['crossOrigin'];
     /**
      * When set to `true`, loading and decoding images will happen with `new Image()`,
      * @default false
@@ -43,6 +45,7 @@ const validSVGMIME = 'image/svg+xml';
 /**
  * A simple loader plugin for loading json data
  * @category assets
+ * @advanced
  */
 export const loadSvg: LoaderParser<Texture | GraphicsContext, TextureSourceOptions & LoadSVGConfig, LoadSVGConfig> = {
     extension: {
@@ -51,7 +54,9 @@ export const loadSvg: LoaderParser<Texture | GraphicsContext, TextureSourceOptio
         name: 'loadSVG',
     },
 
+    /** used for deprecation purposes */
     name: 'loadSVG',
+    id: 'svg',
 
     config: {
         crossOrigin: 'anonymous',
@@ -88,36 +93,35 @@ async function loadAsTexture(
     url: string,
     asset: ResolvedAsset<TextureSourceOptions & LoadSVGConfig>,
     loader: Loader,
-    crossOrigin: HTMLImageElement['crossOrigin']
+    crossOrigin: ImageLike['crossOrigin']
 ): Promise<Texture>
 {
     const response = await DOMAdapter.get().fetch(url);
 
-    const blob = await response.blob();
+    const image = DOMAdapter.get().createImage();
 
-    const blobUrl = URL.createObjectURL(blob);
-
-    const image = new Image();
-
-    image.src = blobUrl;
+    image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(await response.text())}`;
     image.crossOrigin = crossOrigin;
     await image.decode();
 
-    URL.revokeObjectURL(blobUrl);
-
     // convert to canvas...
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-
-    const resolution = asset.data?.resolution || getResolutionOfUrl(url);
-
     const width = asset.data?.width ?? image.width;
     const height = asset.data?.height ?? image.height;
+    const resolution = asset.data?.resolution || getResolutionOfUrl(url);
 
-    canvas.width = width * resolution;
-    canvas.height = height * resolution;
+    // Ensure canvas dimensions are integers to prevent edge trimming
+    const canvasWidth = Math.ceil(width * resolution);
+    const canvasHeight = Math.ceil(height * resolution);
 
-    context.drawImage(image, 0, 0, width * resolution, height * resolution);
+    const canvas = DOMAdapter.get().createCanvas(canvasWidth, canvasHeight);
+    const context = canvas.getContext('2d');
+
+    // Improve rendering quality for decimal resolutions
+    context.imageSmoothingEnabled = true;
+    context.imageSmoothingQuality = 'high';
+
+    // Draw image with exact scaled dimensions to prevent trimming
+    context.drawImage(image as CanvasImageSource, 0, 0, width * resolution, height * resolution);
 
     const { parseAsGraphicsContext: _p, ...rest } = asset.data ?? {};
     const base = new ImageSource({

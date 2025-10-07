@@ -7,6 +7,7 @@ import type { WebGPURenderer } from '../../../rendering/renderers/gpu/WebGPURend
 /**
  * WebGPU renderer for Particles that is designed for speed over feature set.
  * @category scene
+ * @internal
  */
 export class GpuParticleContainerPipe extends ParticleContainerPipe
 {

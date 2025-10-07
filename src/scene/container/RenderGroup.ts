@@ -1,5 +1,6 @@
 import { Matrix } from '../../maths/matrix/Matrix';
 import { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
+import { type SCALE_MODE } from '../../rendering/renderers/shared/texture/const';
 import { TexturePool } from '../../rendering/renderers/shared/texture/TexturePool';
 import { type Renderer } from '../../rendering/renderers/types';
 
@@ -13,7 +14,7 @@ import type { Container } from './Container';
 /**
  * Options for caching a container as a texture.
  * @category rendering
- * @see {@link RenderGroup#textureOptions}
+ * @advanced
  */
 export interface CacheAsTextureOptions
 {
@@ -27,6 +28,24 @@ export interface CacheAsTextureOptions
      * By default the resolution is 1 which is the same as the rendererers resolution.
      */
     resolution?: number;
+    /**
+     * Scale Mode to use for the cached texture
+     * @type {SCALE_MODE}
+     * @default 'linear'
+     * @example
+     * ```ts
+     * const container = new Container();
+     * container.cacheAsTexture({ scaleMode: 'nearest' });
+     * ```
+     * @see {@link SCALE_MODE}
+     */
+    scaleMode?: SCALE_MODE;
+
+    /**
+     * If true, the texture will be padded with a border of this many pixels.
+     * @default 0
+     */
+    padding?: number;
 }
 
 /**
@@ -34,6 +53,7 @@ export interface CacheAsTextureOptions
  * root container and its children. It also watches for any changes in that container or its children,
  * these changes are analysed and either the instruction set is rebuild or the instructions data is updated.
  * @category rendering
+ * @advanced
  */
 export class RenderGroup implements Instruction
 {
@@ -150,7 +170,7 @@ export class RenderGroup implements Instruction
         this.isCachedAsTexture = false;
         if (this.texture)
         {
-            TexturePool.returnTexture(this.texture);
+            TexturePool.returnTexture(this.texture, true);
             this.texture = null;
         }
     }
@@ -158,6 +178,15 @@ export class RenderGroup implements Instruction
     public updateCacheTexture(): void
     {
         this.textureNeedsUpdate = true;
+
+        const cachedParent = this._parentCacheAsTextureRenderGroup;
+
+        // It's worth going bottom-up and notify all parents cached as texture
+        // that cached child was updated.
+        if (cachedParent && !cachedParent.textureNeedsUpdate)
+        {
+            cachedParent.updateCacheTexture();
+        }
     }
 
     public reset()
@@ -471,6 +500,11 @@ export class RenderGroup implements Instruction
      */
     public get cacheToLocalTransform()
     {
+        if (this.isCachedAsTexture)
+        {
+            return this.textureOffsetInverseTransform;
+        }
+
         if (!this._parentCacheAsTextureRenderGroup) return null;
 
         return this._parentCacheAsTextureRenderGroup.textureOffsetInverseTransform;

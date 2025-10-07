@@ -1,3 +1,4 @@
+import { lru } from 'tiny-lru';
 import { Cache } from '../../assets/cache/Cache';
 import { type TextureStyle, type TextureStyleOptions } from '../../rendering/renderers/shared/texture/TextureStyle';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
@@ -15,48 +16,250 @@ import type { BitmapTextLayoutData } from './utils/getBitmapTextLayout';
 let fontCount = 0;
 
 /**
+ * The options for installing a new BitmapFont. Once installed, the font will be available
+ * for use in BitmapText objects through the fontFamily property of TextStyle.
+ * @example
+ * ```ts
+ * import { BitmapFont, BitmapText } from 'pixi.js';
  *
- * The options for installing a new BitmapFont. Once installed the font will be available for use in the BitmapText.
- * It can be accessed by the `fontFamily` property of the TextStyle.
+ * // Basic font installation
+ * BitmapFont.install({
+ *     name: 'BasicFont',
+ *     style: {
+ *         fontFamily: 'Arial',
+ *         fontSize: 24,
+ *         fill: '#ffffff'
+ *     }
+ * });
  *
- * Install a new BitmapFont will create the characters provided for the font and store them in the cache.
- * But don't worry, if a character is requested that hasn't been generated yet, it will be created on the fly.
+ * // Advanced font installation
+ * BitmapFont.install({
+ *     name: 'AdvancedFont',
+ *     style: {
+ *         fontFamily: 'Arial',
+ *         fontSize: 32,
+ *         fill: '#ff0000',
+ *         stroke: { color: '#000000', width: 2 }
+ *     },
+ *     // Include specific character ranges
+ *     chars: [
+ *         ['a', 'z'],           // lowercase letters
+ *         ['A', 'Z'],           // uppercase letters
+ *         ['0', '9'],           // numbers
+ *         '!@#$%^&*()_+-=[]{}' // symbols
+ *     ],
+ *     resolution: 2,            // High-DPI support
+ *     padding: 4,              // Glyph padding
+ *     skipKerning: false,      // Enable kerning
+ *     textureStyle: {
+ *         scaleMode: 'linear',
+ *     }
+ * });
+ *
+ * // Using the installed font
+ * const text = new BitmapText({
+ *     text: 'Hello World',
+ *     style: {
+ *         fontFamily: 'AdvancedFont',
+ *         fontSize: 48
+ *     }
+ * });
+ * ```
  * @category text
+ * @standard
  */
 export interface BitmapFontInstallOptions
 {
-    /** the name of the font, this will be the name you use in the fontFamily of text style to access this font */
-    name?: string;
     /**
-     * Characters included in the font set. You can also use ranges.
-     * For example, `[['a', 'z'], ['A', 'Z'], "!@#$%^&*()~{}[] "]`.
+     * The name of the font. This will be used as the fontFamily in text styles to access this font.
+     * Must be unique across all installed bitmap fonts.
+     * @example
+     * ```ts
+     * BitmapFont.install({
+     *     name: 'MyCustomFont',
+     *     style: { fontFamily: 'Arial' }
+     * });
+     * ```
+     */
+    name?: string;
+
+    /**
+     * Characters included in the font set. You can specify individual characters or ranges.
      * Don't forget to include spaces ' ' in your character set!
      * @default BitmapFont.ALPHANUMERIC
+     * @example
+     * ```ts
+     * // Different ways to specify characters
+     * BitmapFont.install({
+     *     name: 'RangeFont',
+     *     chars: [
+     *         ['a', 'z'],              // Range of characters
+     *         '0123456789',            // String of characters
+     *         [['0', '9'], ['A', 'Z']] // Multiple ranges
+     *     ]
+     * });
+     * ```
      */
     chars?: string | (string | string[])[];
+
     /**
-     * Render resolution for glyphs.
+     * Render resolution for glyphs. Higher values create sharper text at the cost of memory.
+     * Useful for supporting high-DPI displays.
      * @default 1
+     * @example
+     * ```ts
+     * BitmapFont.install({
+     *     name: 'HiDPIFont',
+     *     resolution: window.devicePixelRatio || 2
+     * });
+     * ```
      */
     resolution?: number;
+
     /**
-     * Padding between glyphs on texture atlas. Lower values could mean more visual artifacts
-     * and bleeding from other glyphs, larger values increase the space required on the texture.
+     * Padding between glyphs on texture atlas. Balances visual quality with texture space.
+     * - Lower values: More compact, but may have visual artifacts
+     * - Higher values: Better quality, but uses more texture space
      * @default 4
+     * @example
+     * ```ts
+     * BitmapFont.install({
+     *     name: 'PaddedFont',
+     *     padding: 8 // More padding for better quality
+     * });
+     * ```
      */
     padding?: number;
+
     /**
      * Skip generation of kerning information for the BitmapFont.
-     * If true, this could potentially increase the performance, but may impact the rendered text appearance.
+     * - true: Faster generation, but text may have inconsistent spacing
+     * - false: Better text appearance, but slower generation
      * @default false
+     * @example
+     * ```ts
+     * BitmapFont.install({
+     *     name: 'FastFont',
+     *     skipKerning: true // Prioritize performance
+     * });
+     * ```
      */
     skipKerning?: boolean;
-    /** Style options to render with BitmapFont. */
+
+    /**
+     * Style options to render the BitmapFont with.
+     * Supports all TextStyle properties including fill, stroke, and shadow effects.
+     * @example
+     * ```ts
+     * BitmapFont.install({
+     *     name: 'StyledFont',
+     *     style: {
+     *         fontFamily: 'Arial',
+     *         fontSize: 32,
+     *         fill: 'white',
+     *         stroke: { color: '#000000', width: 2 },
+     *         dropShadow: {
+     *             color: '#000000',
+     *             blur: 2,
+     *             distance: 3
+     *         }
+     *     }
+     * });
+     * ```
+     */
     style?: TextStyle | TextStyleOptions;
-    /** Optional texture style to use when creating the font textures. */
+
+    /**
+     * Optional texture style to use when creating the font textures.
+     * Controls how the font textures are rendered and filtered.
+     * @example
+     * ```ts
+     * BitmapFont.install({
+     *     name: 'CrispFont',
+     *     textureStyle: {
+     *         scaleMode: 'nearest',
+     *     }
+     * });
+     * ```
+     */
     textureStyle?: TextureStyle | TextureStyleOptions;
+
+    /**
+     * Whether to allow overriding the fill color with a tint at runtime.
+     *
+     * When enabled, the font can be dynamically tinted using the `tint` property of BitmapText,
+     * allowing a single font to display multiple colors without creating separate font textures.
+     * This is memory efficient but requires the font to be rendered with white fill color.
+     *
+     * When disabled, the fill color is permanently baked into the font texture. This allows
+     * any fill color but prevents runtime tinting - each color variation requires a separate font.
+     * @default false (automatically determined based on style)
+     *
+     * **Requirements for tinting:**
+     * - Fill color must be white (`0xFFFFFF` or `'#ffffff'`)
+     * - No stroke effects
+     * - No drop shadows (or only black shadows)
+     * - No gradient or pattern fills
+     *
+     * **Performance considerations:**
+     * - ✅ Enabled: One font texture, multiple colors via tinting (memory efficient)
+     * - ❌ Disabled: Separate font texture per color (higher memory usage)
+     * @example
+     * ```ts
+     * // Correct usage - white fill with tinting enabled
+     * BitmapFont.install({
+     *     name: 'TintableFont',
+     *     style: {
+     *         fontFamily: 'Arial',
+     *         fontSize: 24,
+     *         fill: 0xFFFFFF  // Must be white for tinting
+     *     },
+     *     dynamicFill: true
+     * });
+     *
+     * // Use the font with different colors via tinting
+     * const redText = new BitmapText({
+     *     text: 'Red Text',
+     *     style: { fontFamily: 'TintableFont', fill: 'red }, // Red tint
+     * });
+     *
+     * const blueText = new BitmapText({
+     *     text: 'Blue Text',
+     *     style: { fontFamily: 'TintableFont', fill: 'blue' }, // Blue tint
+     * });
+     * ```
+     * @example
+     * ```ts
+     * // Incorrect usage - colored fill with tinting enabled
+     * BitmapFont.install({
+     *     name: 'BadTintFont',
+     *     style: {
+     *         fontFamily: 'Arial',
+     *         fontSize: 24,
+     *         fill: 0xFF0000  // ❌ Red fill won't tint properly
+     *     },
+     *     dynamicFill: true  // ❌ Will not work as expected
+     * });
+     * ```
+     * @example
+     * ```ts
+     * // Alternative - baked colors (no tinting)
+     * BitmapFont.install({
+     *     name: 'BakedColorFont',
+     *     style: {
+     *         fontFamily: 'Arial',
+     *         fontSize: 24,
+     *         fill: 0xFF0000,  // Any color works
+     *         stroke: { color: 0x000000, width: 2 }  // Strokes allowed
+     *     },
+     *     dynamicFill: false  // Color is baked in
+     * });
+     * ```
+     */
+    dynamicFill?: boolean;
 }
 
+/** @advanced */
 class BitmapFontManagerClass
 {
     /**
@@ -97,6 +300,9 @@ class BitmapFontManagerClass
         textureStyle: null,
     };
 
+    /** Cache for measured text layouts to avoid recalculating them multiple times. */
+    public readonly measureCache = lru<BitmapTextLayoutData>(1000);
+
     /**
      * Get a font for the specified text and style.
      * @param text - The text to get the font for
@@ -117,20 +323,21 @@ class BitmapFontManagerClass
         {
             // if there is a stoke, we need to use the style key as this the font generated cannot be tinted
             // due to the fact the font has at least two colors.
-            let key = style.styleKey;
-
-            // remove the font size..
-            key = key.substring(0, key.lastIndexOf('-'));
-
-            fontFamilyKey = `${key}-bitmap`;
+            fontFamilyKey = `${style.styleKey}-bitmap`;
             overrideFill = false;
         }
 
         // first get us the the right font...
         if (!Cache.has(fontFamilyKey))
         {
+            const styleCopy = Object.create(style);
+
+            // Override the lineHeight, let the BitmapFont calculate the lineHeight
+            // from the fontMetrics instead using a custom lineHeight from BitmapText parameter
+            styleCopy.lineHeight = 0;
+
             const fnt = new DynamicBitmapFont({
-                style,
+                style: styleCopy,
                 overrideFill,
                 overrideSize: true,
                 ...this.defaultOptions,
@@ -174,9 +381,22 @@ class BitmapFontManagerClass
     {
         const bitmapFont = this.getFont(text, style);
 
+        const id = `${text}-${style.styleKey}-${trimEnd}`;
+
+        // Check if we have a cached layout
+        if (this.measureCache.has(id))
+        {
+            return this.measureCache.get(id);
+        }
+
         const segments = CanvasTextMetrics.graphemeSegmenter(text);
 
-        return getBitmapTextLayout(segments, style, bitmapFont, trimEnd);
+        // Generate the layout data
+        const layoutData = getBitmapTextLayout(segments, style, bitmapFont, trimEnd);
+
+        this.measureCache.set(id, layoutData);
+
+        return layoutData;
     }
 
     /**
@@ -247,7 +467,7 @@ class BitmapFontManagerClass
         const textStyle = options.style;
 
         const style = textStyle instanceof TextStyle ? textStyle : new TextStyle(textStyle);
-        const overrideFill = style._fill.fill !== null && style._fill.fill !== undefined;
+        const overrideFill = options.dynamicFill ?? this._canUseTintForStyle(style);
         const font = new DynamicBitmapFont({
             style,
             overrideFill,
@@ -283,12 +503,31 @@ class BitmapFontManagerClass
             font.destroy();
         }
     }
+
+    /**
+     * Determines if a style can use tinting instead of baking colors into the bitmap.
+     * Tinting is more efficient as it allows reusing the same bitmap with different colors.
+     * @param style - The text style to evaluate
+     * @returns true if the style can use tinting, false if colors must be baked in
+     * @private
+     */
+    private _canUseTintForStyle(style: TextStyle): boolean
+    {
+        // Exclude strokes, non black shadows and ensure
+        // we have a non gradient or pattern fill,
+        // and the fill color is white
+        return !style._stroke
+            && (!style.dropShadow || style.dropShadow.color === 0x000000)
+            && !style._fill.fill
+            && style._fill.color === 0xFFFFFF;
+    }
 }
 
 /**
  * The BitmapFontManager is a helper that exists to install and uninstall fonts
  * into the cache for BitmapText objects.
  * @category text
+ * @advanced
  * @class
  * @example
  * import { BitmapFontManager, BitmapText } from 'pixi.js';

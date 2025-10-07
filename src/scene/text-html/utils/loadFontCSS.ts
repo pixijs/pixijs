@@ -3,6 +3,7 @@ import { loadFontAsBase64 } from './loadFontAsBase64';
 /**
  * Options for the font CSS style
  * @category text
+ * @internal
  */
 export interface FontCSSStyleOptions
 {
@@ -40,8 +41,8 @@ export async function loadFontCSS(style: FontCSSStyleOptions, url: string): Prom
 
     return `@font-face {
         font-family: "${style.fontFamily}";
-        src: url('${dataSrc}');
         font-weight: ${style.fontWeight};
         font-style: ${style.fontStyle};
+        src: url('${dataSrc}');
     }`;
 }

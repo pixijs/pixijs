@@ -17,6 +17,7 @@ import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
  * This parser loads KTX2 textures using a web worker for transcoding.
  * It supports both single and multiple textures.
  * @category assets
+ * @advanced
  */
 export const loadKTX2 = {
     extension: {
@@ -25,7 +26,9 @@ export const loadKTX2 = {
         name: 'loadKTX2',
     },
 
+    /** used for deprecation purposes */
     name: 'loadKTX2',
+    id: 'ktx2',
 
     test(url: string): boolean
     {

@@ -1,4 +1,5 @@
 import { DOMAdapter } from '../../../../environment/adapter';
+import { type ImageLike } from '../../../../environment/ImageLike';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { ImageSource } from '../../../../rendering/renderers/shared/texture/sources/ImageSource';
 import { getResolutionOfUrl } from '../../../../utils/network/getResolutionOfUrl';
@@ -26,6 +27,7 @@ const validImageMIMEs = [
  * Configuration for the [loadTextures]{@link loadTextures} plugin.
  * @see loadTextures
  * @category assets
+ * @advanced
  */
 export interface LoadTextureConfig
 {
@@ -47,7 +49,7 @@ export interface LoadTextureConfig
      * The crossOrigin value to use for images when `preferCreateImageBitmap` is `false`.
      * @default 'anonymous'
      */
-    crossOrigin: HTMLImageElement['crossOrigin'];
+    crossOrigin: ImageLike['crossOrigin'];
 }
 
 /**
@@ -96,10 +98,13 @@ export async function loadImageBitmap(url: string, asset?: ResolvedAsset<Texture
  * };
  * ```
  * @category assets
+ * @advanced
  */
 export const loadTextures: LoaderParser<Texture, TextureSourceOptions, LoadTextureConfig> = {
 
+    /** used for deprecation purposes */
     name: 'loadTextures',
+    id: 'texture',
 
     extension: {
         type: ExtensionType.LoadParser,
@@ -137,7 +142,7 @@ export const loadTextures: LoaderParser<Texture, TextureSourceOptions, LoadTextu
         {
             src = await new Promise((resolve, reject) =>
             {
-                src = new Image();
+                src = DOMAdapter.get().createImage();
                 src.crossOrigin = this.config.crossOrigin;
 
                 src.src = url;

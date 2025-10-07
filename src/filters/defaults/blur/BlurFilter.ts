@@ -10,33 +10,69 @@ import type { FilterOptions } from '../../Filter';
 import type { FilterSystem } from '../../FilterSystem';
 
 /**
- * Options for BlurFilter
+ * Configuration options for the BlurFilter.
+ * Controls how the Gaussian blur effect is applied.
+ * @example
+ * ```ts
+ * // Basic blur with default values
+ * const filter = new BlurFilter();
+ *
+ * // Custom blur configuration
+ * const filter = new BlurFilter({
+ *     strength: 8,        // Overall blur strength
+ *     quality: 4,         // Higher quality = better blur
+ *     kernelSize: 5      // Size of blur kernel
+ * });
+ *
+ * // Different horizontal/vertical blur
+ * const filter = new BlurFilter({
+ *     strengthX: 4,      // Horizontal blur only
+ *     strengthY: 12,     // Stronger vertical blur
+ *     quality: 2         // Lower quality for better performance
+ * });
+ * ```
+ * @remarks
+ * - Higher quality values produce better blur but impact performance
+ * - KernelSize affects blur precision and performance
+ * - Strength values determine blur intensity
+ * @see {@link BlurFilter} The filter that uses these options
+ * @see {@link FilterOptions} Base filter options
  * @category filters
+ * @standard
  */
 export interface BlurFilterOptions extends FilterOptions
 {
     /**
      * The strength of the blur filter.
+     * Applied to both horizontal and vertical blur if strengthX/Y not set.
      * @default 8
      */
     strength?: number;
+
     /**
      * The horizontal strength of the blur.
+     * Overrides strength parameter for x-axis.
      * @default 8
      */
     strengthX?: number;
+
     /**
      * The vertical strength of the blur.
+     * Overrides strength parameter for y-axis.
      * @default 8
      */
     strengthY?: number;
+
     /**
      * The quality of the blur filter.
+     * Higher values mean better quality but slower performance.
      * @default 4
      */
     quality?: number;
+
     /**
      * The kernelSize of the blur filter.
+     * Larger values create more precise blur but impact performance.
      * Options: 5, 7, 9, 11, 13, 15.
      * @default 5
      */
@@ -45,21 +81,66 @@ export interface BlurFilterOptions extends FilterOptions
 
 /**
  * The BlurFilter applies a Gaussian blur to an object.
- *
  * The strength of the blur can be set for the x-axis and y-axis separately.
- * @category filters
  * @example
+ * ```ts
  * import { BlurFilter } from 'pixi.js';
  *
- * const filter = new BlurFilter({ strength: 8, quality: 4 });
- * sprite.filters = filter;
+ * // Create with default settings
+ * const filter = new BlurFilter();
  *
- * // update filter values
- * filter.strength = 10;
+ * // Create with custom settings
+ * const filter = new BlurFilter({
+ *     strength: 8,      // Overall blur strength
+ *     quality: 4,       // Blur quality (higher = better but slower)
+ *     kernelSize: 5     // Size of blur kernel matrix
+ * });
+ *
+ * // Apply to a display object
+ * sprite.filters = [filter];
+ *
+ * // Update properties
+ * filter.strength = 10;          // Set both X and Y blur
+ * filter.strengthX = 5;          // Set only horizontal blur
+ * filter.strengthY = 15;         // Set only vertical blur
+ * filter.quality = 2;            // Adjust quality
+ *
+ * // Enable edge pixel clamping
+ * filter.repeatEdgePixels = true;
+ * ```
+ * @remarks
+ * - Higher quality values produce better blur but impact performance
+ * - Strength controls blur intensity independently for X and Y
+ * - Can be optimized using quality and kernelSize settings
+ * - Supports edge pixel clamping for special effects
+ * @see {@link BlurFilterPass} For single-direction blur
+ * @see {@link FilterOptions} For base filter options
+ * @category filters
+ * @standard
+ * @noInheritDoc
  */
 export class BlurFilter extends Filter
 {
-    /** Default blur filter options */
+    /**
+     * Default blur filter options
+     * @example
+     * ```ts
+     * // Set default options for all BlurFilters
+     * BlurFilter.defaultOptions = {
+     *     strength: 10,       // Default blur strength
+     *     quality: 2,        // Default blur quality
+     *     kernelSize: 7      // Default kernel size
+     * };
+     * // Create a filter with these defaults
+     * const filter = new BlurFilter(); // Uses default options
+     * ```
+     * @remarks
+     * - These options are used when creating a new BlurFilter without specific parameters
+     * - Can be overridden by passing options to the constructor
+     * - Useful for setting global defaults for all blur filters in your application
+     * @see {@link BlurFilterOptions} For detailed options
+     * @see {@link BlurFilter} The filter that uses these options
+     */
     public static defaultOptions: Partial<BlurFilterOptions> = {
         /** The strength of the blur filter. */
         strength: 8,
@@ -69,9 +150,15 @@ export class BlurFilter extends Filter
         kernelSize: 5,
     };
 
-    /** The horizontal blur filter */
+    /**
+     * The horizontal blur filter
+     * @advanced
+     */
     public blurXFilter: BlurFilterPass;
-    /** The vertical blur filter */
+    /**
+     * The vertical blur filter
+     * @advanced
+     */
     public blurYFilter: BlurFilterPass;
 
     private _repeatEdgePixels = false;
@@ -126,6 +213,7 @@ export class BlurFilter extends Filter
      * @param input - The input target.
      * @param output - The output target.
      * @param clearMode - How to clear
+     * @advanced
      */
     public apply(
         filterManager: FilterSystem,
@@ -173,8 +261,20 @@ export class BlurFilter extends Filter
     }
 
     /**
-     * Sets the strength of both the blurX and blurY properties simultaneously
+     * Sets the strength of both the blurX and blurY properties simultaneously.
+     * Controls the overall intensity of the Gaussian blur effect.
+     * @example
+     * ```ts
+     * // Set equal blur strength for both axes
+     * filter.strength = 8;
+     *
+     * // Will throw error if X and Y are different
+     * filter.strengthX = 4;
+     * filter.strengthY = 8;
+     * filter.strength; // Error: BlurFilter's strengthX and strengthY are different
+     * ```
      * @default 8
+     * @throws {Error} If strengthX and strengthY are different values
      */
     get strength(): number
     {
@@ -193,8 +293,18 @@ export class BlurFilter extends Filter
     }
 
     /**
-     * Sets the number of passes for blur. More passes means higher quality bluring.
-     * @default 1
+     * Sets the number of passes for blur. More passes means higher quality blurring.
+     * Controls the precision and smoothness of the blur effect at the cost of performance.
+     * @example
+     * ```ts
+     * // High quality blur (slower)
+     * filter.quality = 8;
+     *
+     * // Low quality blur (faster)
+     * filter.quality = 2;
+     * ```
+     * @default 4
+     * @remarks Higher values produce better quality but impact performance
      */
     get quality(): number
     {
@@ -207,7 +317,18 @@ export class BlurFilter extends Filter
     }
 
     /**
-     * Sets the strength of horizontal blur
+     * Sets the strength of horizontal blur.
+     * Controls the blur intensity along the x-axis independently.
+     * @example
+     * ```ts
+     * // Apply horizontal-only blur
+     * filter.strengthX = 8;
+     * filter.strengthY = 0;
+     *
+     * // Create motion blur effect
+     * filter.strengthX = 16;
+     * filter.strengthY = 2;
+     * ```
      * @default 8
      */
     get strengthX(): number
@@ -222,7 +343,18 @@ export class BlurFilter extends Filter
     }
 
     /**
-     * Sets the strength of the vertical blur
+     * Sets the strength of the vertical blur.
+     * Controls the blur intensity along the y-axis independently.
+     * @example
+     * ```ts
+     * // Apply vertical-only blur
+     * filter.strengthX = 0;
+     * filter.strengthY = 8;
+     *
+     * // Create radial blur effect
+     * filter.strengthX = 8;
+     * filter.strengthY = 8;
+     * ```
      * @default 8
      */
     get strengthY(): number

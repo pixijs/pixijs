@@ -7,8 +7,9 @@ import { DEG_TO_RAD, RAD_TO_DEG } from '../../maths/misc/const';
 import { ObservablePoint } from '../../maths/point/ObservablePoint';
 import { uid } from '../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
+import { warn } from '../../utils/logging/warn';
 import { BigPool } from '../../utils/pool/PoolGroup';
-import { type IRenderLayer } from '../layers/RenderLayer';
+import { type RenderLayer } from '../layers/RenderLayer';
 import { cacheAsTextureMixin } from './container-mixins/cacheAsTextureMixin';
 import { childrenHelperMixin } from './container-mixins/childrenHelperMixin';
 import { collectRenderablesMixin } from './container-mixins/collectRenderablesMixin';
@@ -35,71 +36,129 @@ import type { DestroyOptions } from './destroyTypes';
  * The type of child that can be added to a {@link Container}.
  * This is a generic type that extends the {@link Container} class.
  * @category scene
+ * @standard
  */
 export type ContainerChild = Container;
-
-/**
- * @module
- * @categoryDescription scene
- * This is where you'll find all the display objects available in Pixi.
- *
- * All display objects inherit from the {@link Container} class. You can use a `Container` for simple grouping of
- * other display objects. Here's all the available display object classes.
- *
- * - {@link Container} is the base class for all display objects that act as a container for other objects.
- *   - {@link Sprite} is a display object that uses a texture
- *      - {@link AnimatedSprite} is a sprite that can play animations
- *   - {@link TilingSprite} a fast way of rendering a tiling image
- *   - {@link NineSliceSprite} allows you to stretch a texture using 9-slice scaling
- *   - {@link Graphics} is a graphic object that can be drawn to the screen.
- *   - {@link Mesh} empowers you to have maximum flexibility to render any kind of visuals you can think of
- *      - {@link MeshSimple} mimics Mesh, providing easy-to-use constructor arguments
- *      - {@link MeshPlane} allows you to draw a texture across several points and then manipulate these points
- *      - {@link MeshRope} allows you to draw a texture across several points and then manipulate these points
- *   - {@link Text} render text using custom fonts
- *      - {@link BitmapText} render text using a bitmap font
- *      - {@link HTMLText} render text using HTML and CSS
- */
 
 // as pivot and skew are the least used properties of a container, we can use this optimisation
 // to avoid allocating lots of unnecessary objects for them.
 const defaultSkew = new ObservablePoint(null);
 const defaultPivot = new ObservablePoint(null);
 const defaultScale = new ObservablePoint(null, 1, 1);
+const defaultOrigin = new ObservablePoint(null);
 
 /**
- * The events that can be emitted by a Container.
+ * Events that can be emitted by a Container. These events provide lifecycle hooks and notifications
+ * for container state changes.
+ * @example
+ * ```ts
+ * import { Container, Sprite } from 'pixi.js';
+ *
+ * // Setup container with event listeners
+ * const container = new Container();
+ *
+ * // Listen for child additions
+ * container.on('childAdded', (child, container, index) => {
+ *     console.log(`Child added at index ${index}:`, child);
+ * });
+ *
+ * // Listen for child removals
+ * container.on('childRemoved', (child, container, index) => {
+ *     console.log(`Child removed from index ${index}:`, child);
+ * });
+ *
+ * // Listen for when container is added to parent
+ * container.on('added', (parent) => {
+ *     console.log('Added to parent:', parent);
+ * });
+ *
+ * // Listen for when container is removed from parent
+ * container.on('removed', (parent) => {
+ *     console.log('Removed from parent:', parent);
+ * });
+ *
+ * // Listen for container destruction
+ * container.on('destroyed', (container) => {
+ *     console.log('Container destroyed:', container);
+ * });
+ * ```
  * @category scene
+ * @standard
  */
 export interface ContainerEvents<C extends ContainerChild> extends PixiMixins.ContainerEvents
 {
     /**
      * Emitted when this container is added to a new container.
-     * @param container - The parent container.
+     * Useful for setting up parent-specific behaviors.
+     * @param container - The parent container this was added to
+     * @example
+     * ```ts
+     * const child = new Container();
+     * child.on('added', (parent) => {
+     *     console.log('Child added to parent:', parent.label);
+     * });
+     * parentContainer.addChild(child);
+     * ```
      */
     added: [container: Container];
+
     /**
-     * Emitted when a child is added to the container.
-     * @param child - The child that was added.
-     * @param container - The container that the child was added to.
-     * @param index - The index at which the child was added.
+     * Emitted when a child is added to this container.
+     * Useful for tracking container composition changes.
+     * @param child - The child that was added
+     * @param container - The container the child was added to (this container)
+     * @param index - The index at which the child was added
+     * @example
+     * ```ts
+     * const parent = new Container();
+     * parent.on('childAdded', (child, container, index) => {
+     *     console.log(`New child at index ${index}:`, child);
+     * });
+     * ```
      */
     childAdded: [child: C, container: Container, index: number];
+
     /**
-     * Emitted when this container is removed from the parent.
-     * @param container - The parent container.
+     * Emitted when this container is removed from its parent.
+     * Useful for cleanup and state management.
+     * @param container - The parent container this was removed from
+     * @example
+     * ```ts
+     * const child = new Container();
+     * child.on('removed', (oldParent) => {
+     *     console.log('Child removed from parent:', oldParent.label);
+     * });
+     * ```
      */
     removed: [container: Container];
+
     /**
-     * Emitted when a child is removed from the container.
-     * @param child - The child that was removed.
-     * @param container - The container that the child was removed from.
-     * @param index - The index at which the child was removed.
+     * Emitted when a child is removed from this container.
+     * Useful for cleanup and maintaining container state.
+     * @param child - The child that was removed
+     * @param container - The container the child was removed from (this container)
+     * @param index - The index from which the child was removed
+     * @example
+     * ```ts
+     * const parent = new Container();
+     * parent.on('childRemoved', (child, container, index) => {
+     *     console.log(`Child removed from index ${index}:`, child);
+     * });
+     * ```
      */
     childRemoved: [child: C, container: Container, index: number];
+
     /**
      * Emitted when the container is destroyed.
-     * @param container - The container that was destroyed.
+     * Useful for final cleanup and resource management.
+     * @param container - The container that was destroyed
+     * @example
+     * ```ts
+     * const container = new Container();
+     * container.on('destroyed', (container) => {
+     *     console.log('Container destroyed:', container.label);
+     * });
+     * ```
      */
     destroyed: [container: Container];
 }
@@ -130,6 +189,7 @@ export const UPDATE_TRANSFORM = 0b1000;
 /**
  * Options for updating the transform of a container.
  * @category scene
+ * @standard
  */
 export interface UpdateTransformOptions
 {
@@ -142,6 +202,8 @@ export interface UpdateTransformOptions
     skewY: number;
     pivotX: number;
     pivotY: number;
+    originX: number;
+    originY: number;
 }
 
 /**
@@ -154,6 +216,7 @@ export interface UpdateTransformOptions
  * });
  * ```
  * @category scene
+ * @standard
  * @see Container
  */
 export interface ContainerOptions<C extends ContainerChild = ContainerChild> extends PixiMixins.ContainerOptions
@@ -161,42 +224,225 @@ export interface ContainerOptions<C extends ContainerChild = ContainerChild> ext
     /** @see Container#isRenderGroup */
     isRenderGroup?: boolean;
 
-    /** @see Container#blendMode */
+    /**
+     * The blend mode to be applied to the sprite. Controls how pixels are blended when rendering.
+     *
+     * Setting to 'normal' will reset to default blending.
+     * > [!NOTE] More blend modes are available after importing the `pixi.js/advanced-blend-modes` sub-export.
+     * @example
+     * ```ts
+     * // Basic blend modes
+     * new Container({ blendMode: 'normal' }); // Default blending
+     * new Container({ blendMode: 'add' });    // Additive blending
+     * new Container({ blendMode: 'multiply' }); // Multiply colors
+     * new Container({ blendMode: 'screen' }); // Screen blend
+     * ```
+     * @default 'normal'
+     * @see {@link Container#alpha} For transparency
+     * @see {@link Container#tint} For color adjustments
+     */
     blendMode?: BLEND_MODES;
-    /** @see Container#tint */
+    /**
+     * The tint applied to the sprite.
+     *
+     * This can be any valid {@link ColorSource}.
+     * @example
+     * ```ts
+     * new Container({ tint: 0xff0000 }); // Red tint
+     * new Container({ tint: 'blue' }); // Blue tint
+     * new Container({ tint: '#00ff00' }); // Green tint
+     * new Container({ tint: 'rgb(0,0,255)' }); // Blue tint
+     * ```
+     * @default 0xFFFFFF
+     * @see {@link Container#alpha} For transparency
+     * @see {@link Container#visible} For visibility control
+     */
     tint?: ColorSource;
 
-    /** @see Container#alpha */
+    /**
+     * The opacity of the object relative to its parent's opacity.
+     * Value ranges from 0 (fully transparent) to 1 (fully opaque).
+     * @example
+     * ```ts
+     * new Container({ alpha: 0.5 }); // 50% opacity
+     * new Container({ alpha: 1 }); // Fully opaque
+     * ```
+     * @default 1
+     * @see {@link Container#visible} For toggling visibility
+     * @see {@link Container#renderable} For render control
+     */
     alpha?: number;
-    /** @see Container#angle */
+    /**
+     * The angle of the object in degrees.
+     *
+     * > [!NOTE] 'rotation' and 'angle' have the same effect on a display object;
+     * > rotation is in radians, angle is in degrees.
+     * @example
+     * ```ts
+     * new Container({ angle: 45 }); // Rotate 45 degrees
+     * new Container({ angle: 90 }); // Rotate 90 degrees
+     * ```
+     */
     angle?: number;
-    /** @see Container#children */
+    /**
+     * The array of children of this container. Each child must be a Container or extend from it.
+     *
+     * The array is read-only, but its contents can be modified using Container methods.
+     * @example
+     * ```ts
+     * new Container({
+     *    children: [
+     *        new Container(), // First child
+     *        new Container(), // Second child
+     *    ],
+     * });
+     * ```
+     * @readonly
+     * @see {@link Container#addChild} For adding children
+     * @see {@link Container#removeChild} For removing children
+     */
     children?: C[];
-    /** @see Container#parent */
+    /**
+     * The display object container that contains this display object.
+     * This represents the parent-child relationship in the display tree.
+     * @readonly
+     * @see {@link Container#addChild} For adding to a parent
+     * @see {@link Container#removeChild} For removing from parent
+     */
     parent?: Container;
-    /** @see Container#renderable */
+    /**
+     * Controls whether this object can be rendered. If false the object will not be drawn,
+     * but the transform will still be updated. This is different from visible, which skips
+     * transform updates.
+     * @example
+     * ```ts
+     * new Container({ renderable: false }); // Will not be drawn, but transforms will update
+     * ```
+     * @default true
+     * @see {@link Container#visible} For skipping transform updates
+     * @see {@link Container#alpha} For transparency
+     */
     renderable?: boolean;
-    /** @see Container#rotation */
+    /**
+     * The rotation of the object in radians.
+     *
+     * > [!NOTE] 'rotation' and 'angle' have the same effect on a display object;
+     * > rotation is in radians, angle is in degrees.
+     * @example
+     * ```ts
+     * new Container({ rotation: Math.PI / 4 }); // Rotate 45 degrees
+     * new Container({ rotation: Math.PI / 2 }); // Rotate 90 degrees
+     * ```
+     */
     rotation?: number;
-    /** @see Container#scale */
+    /**
+     * The scale factors of this object along the local coordinate axes.
+     *
+     * The default scale is (1, 1).
+     * @example
+     * ```ts
+     * new Container({ scale: new Point(2, 2) }); // Scale by 2x
+     * new Container({ scale: 0.5 }); // Scale by 0.5x
+     * new Container({ scale: { x: 1.5, y: 1.5 } }); // Scale by 1.5x
+     * ```
+     */
     scale?: PointData | number;
-    /** @see Container#pivot */
+    /**
+     * The center of rotation, scaling, and skewing for this display object in its local space.
+     * The `position` is the projection of `pivot` in the parent's local space.
+     *
+     * By default, the pivot is the origin (0, 0).
+     * @example
+     * ```ts
+     * new Container({ pivot: new Point(100, 200) }); // Set pivot to (100, 200)
+     * new Container({ pivot: 50 }); // Set pivot to (50, 50)
+     * new Container({ pivot: { x: 150, y: 150 } }); // Set pivot to (150, 150)
+     * ```
+     */
     pivot?: PointData | number;
-    /** @see Container#position */
+    /**
+     * The origin point around which the container rotates and scales.
+     * Unlike pivot, changing origin will not move the container's position.
+     * @example
+     * ```ts
+     * new Container({ origin: new Point(100, 100) }); // Rotate around point (100,100)
+     * new Container({ origin: 50 }); // Rotate around point (50, 50)
+     * new Container({ origin: { x: 150, y: 150 } }); // Rotate around point (150, 150)
+     * ```
+     */
+    origin?: PointData | number;
+    /**
+     * The coordinate of the object relative to the local coordinates of the parent.
+     * @example
+     * ```ts
+     * new Container({ position: new Point(100, 200) }); // Set position to (100, 200)
+     * new Container({ position: { x: 150, y: 150 } }); // Set position to (150, 150)
+     * ```
+     */
     position?: PointData;
-    /** @see Container#skew */
+    /**
+     * The skew factor for the object in radians. Skewing is a transformation that distorts
+     * the object by rotating it differently at each point, creating a non-uniform shape.
+     * @example
+     * ```ts
+     * new Container({ skew: new Point(0.1, 0.2) }); // Skew by 0.1 radians on x and 0.2 radians on y
+     * new Container({ skew: { x: 0.1, y: 0.2 } }); // Skew by 0.1 radians on x and 0.2 radians on y
+     * ```
+     * @default { x: 0, y: 0 }
+     */
     skew?: PointData;
-    /** @see Container#visible */
+    /**
+     * The visibility of the object. If false the object will not be drawn,
+     * and the transform will not be updated.
+     * @example
+     * ```ts
+     * new Container({ visible: false }); // Will not be drawn and transforms will not update
+     * new Container({ visible: true }); // Will be drawn and transforms will update
+     * ```
+     * @default true
+     * @see {@link Container#renderable} For render-only control
+     * @see {@link Container#alpha} For transparency
+     */
     visible?: boolean;
-    /** @see Container#x */
+    /**
+     * The position of the container on the x axis relative to the local coordinates of the parent.
+     *
+     * An alias to position.x
+     * @example
+     * ```ts
+     * new Container({ x: 100 }); // Set x position to 100
+     * ```
+     */
     x?: number;
-    /** @see Container#y */
+    /**
+     * The position of the container on the y axis relative to the local coordinates of the parent.
+     *
+     * An alias to position.y
+     * @example
+     * ```ts
+     * new Container({ y: 200 }); // Set y position to 200
+     * ```
+     */
     y?: number;
-    /** @see Container#boundArea */
+    /**
+     * An optional bounds area for this container. Setting this rectangle will stop the renderer
+     * from recursively measuring the bounds of each children and instead use this single boundArea.
+     *
+     * > [!IMPORTANT] This is great for optimisation! If for example you have a
+     * > 1000 spinning particles and you know they all sit within a specific bounds,
+     * > then setting it will mean the renderer will not need to measure the
+     * > 1000 children to find the bounds. Instead it will just use the bounds you set.
+     * @example
+     * ```ts
+     * const container = new Container({
+     *    boundsArea: new Rectangle(0, 0, 500, 500) // Set a fixed bounds area
+     * });
+     * ```
+     */
     boundsArea?: Rectangle;
 }
 
-// eslint-disable-next-line requireExport/require-export-jsdoc
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface Container<C extends ContainerChild>
     extends PixiMixins.Container<C>, EventEmitter<ContainerEvents<C> & AnyEvent> {}
 
@@ -390,6 +636,7 @@ export interface Container<C extends ContainerChild>
  * 3. worldTransform, this is the transform of the container relative to the Scene being rendered
  * </details>
  * @category scene
+ * @standard
  */
 export class Container<C extends ContainerChild = ContainerChild> extends EventEmitter<ContainerEvents<C> & AnyEvent>
 {
@@ -406,7 +653,10 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         extensions.mixin(Container, source);
     }
 
-    /** unique id for this container */
+    /**
+     * unique id for this container
+     * @internal
+     */
     public readonly uid: number = uid('renderable');
 
     /** @private */
@@ -437,12 +687,40 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     public relativeRenderGroupDepth = 0;
 
     /**
-     * The array of children of this container.
+     * The array of children of this container. Each child must be a Container or extend from it.
+     *
+     * The array is read-only, but its contents can be modified using Container methods.
+     * @example
+     * ```ts
+     * // Access children
+     * const firstChild = container.children[0];
+     * const lastChild = container.children[container.children.length - 1];
+     * ```
      * @readonly
+     * @see {@link Container#addChild} For adding children
+     * @see {@link Container#removeChild} For removing children
      */
     public children: C[] = [];
-    /** The display object container that contains this display object. */
-    public parent: Container = null;
+    /**
+     * The display object container that contains this display object.
+     * This represents the parent-child relationship in the display tree.
+     * @example
+     * ```ts
+     * // Basic parent access
+     * const parent = sprite.parent;
+     *
+     * // Walk up the tree
+     * let current = sprite;
+     * while (current.parent) {
+     *     console.log('Level up:', current.parent.constructor.name);
+     *     current = current.parent;
+     * }
+     * ```
+     * @readonly
+     * @see {@link Container#addChild} For adding to a parent
+     * @see {@link Container#removeChild} For removing from parent
+     */
+    public parent: Container | null = null;
 
     // used internally for changing up the render order.. mainly for masks and filters
     // TODO setting this should cause a rebuild??
@@ -457,8 +735,9 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * The RenderLayer this container belongs to, if any.
      * If it belongs to a RenderLayer, it will be rendered from the RenderLayer's position in the scene.
      * @readonly
+     * @advanced
      */
-    public parentRenderLayer: IRenderLayer;
+    public parentRenderLayer: RenderLayer | null = null;
 
     // / /////////////Transform related props//////////////
 
@@ -469,7 +748,16 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
     /**
      * Current transform of the object based on local factors: position, scale, other stuff.
+     * This matrix represents the local transformation without any parent influence.
+     * @example
+     * ```ts
+     * // Basic transform access
+     * const localMatrix = sprite.localTransform;
+     * console.log(localMatrix.toString());
+     * ```
      * @readonly
+     * @see {@link Container#worldTransform} For global transform
+     * @see {@link Container#groupTransform} For render group transform
      */
     public localTransform: Matrix = new Matrix();
     /**
@@ -477,6 +765,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * transforms and up to the render group (think of it as kind of like a stage - but the stage can be nested).
      * If this container is is self a render group matrix will be relative to its parent render group
      * @readonly
+     * @advanced
      */
     public relativeGroupTransform: Matrix = new Matrix();
     /**
@@ -485,13 +774,25 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * will be the same as the relativeGroupTransform.
      * Use this value when actually rendering things to the screen
      * @readonly
+     * @advanced
      */
     public groupTransform: Matrix = this.relativeGroupTransform;
 
     // the global transform taking into account the render group and all parents
     private _worldTransform: Matrix;
 
-    /** If the object has been destroyed via destroy(). If true, it should not be used. */
+    /**
+     * Whether this object has been destroyed. If true, the object should no longer be used.
+     * After an object is destroyed, all of its functionality is disabled and references are removed.
+     * @example
+     * ```ts
+     * // Cleanup with destroy
+     * sprite.destroy();
+     * console.log(sprite.destroyed); // true
+     * ```
+     * @default false
+     * @see {@link Container#destroy} For destroying objects
+     */
     public destroyed = false;
 
     // transform data..
@@ -512,6 +813,13 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * @internal
      */
     public _pivot: ObservablePoint = defaultPivot;
+
+    /**
+     * The origin point around which the container rotates and scales.
+     * Unlike pivot, changing origin will not move the container's position.
+     * @private
+     */
+    public _origin: ObservablePoint = defaultOrigin;
 
     /**
      * The skew amount, on the x and y axis.
@@ -556,11 +864,16 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     // / COLOR related props //////////////
 
     // color stored as ABGR
+    /** @internal */
     public localColor = 0xFFFFFF;
+    /** @internal */
     public localAlpha = 1;
 
+    /** @internal */
     public groupAlpha = 1; // A
+    /** @internal */
     public groupColor = 0xFFFFFF; // BGR
+    /** @internal */
     public groupColorAlpha = 0xFFFFFFFF; // ABGR
 
     // / BLEND related props //////////////
@@ -586,14 +899,22 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     /** @internal */
     public globalDisplayStatus = 0b111; // 0b11 | 0b10 | 0b01 | 0b00
 
+    /** @internal */
     public readonly renderPipeId: string;
 
     /**
      * An optional bounds area for this container. Setting this rectangle will stop the renderer
      * from recursively measuring the bounds of each children and instead use this single boundArea.
-     * This is great for optimisation! If for example you have a 1000 spinning particles and you know they all sit
-     * within a specific bounds, then setting it will mean the renderer will not need to measure the
-     * 1000 children to find the bounds. Instead it will just use the bounds you set.
+     *
+     * > [!IMPORTANT] This is great for optimisation! If for example you have a
+     * > 1000 spinning particles and you know they all sit within a specific bounds,
+     * > then setting it will mean the renderer will not need to measure the
+     * > 1000 children to find the bounds. Instead it will just use the bounds you set.
+     * @example
+     * ```ts
+     * const container = new Container();
+     * container.boundsArea = new Rectangle(0, 0, 500, 500);
+     * ```
      */
     public boundsArea: Rectangle;
 
@@ -610,6 +931,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      */
     public _didViewChangeTick = 0;
 
+    /** @internal */
     public layerParentId: string;// = 'default';
     /**
      * We now use the _didContainerChangeTick and _didViewChangeTick to track changes
@@ -621,7 +943,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         this._didViewChangeTick = (value >> 12) & 0xFFF; // Extract the upper 12 bits
         this._didContainerChangeTick = value & 0xFFF; // Extract the lower 12 bits
     }
-
+    /** @ignore */
     get _didChangeId(): number
     {
         return (this._didContainerChangeTick & 0xfff) | ((this._didViewChangeTick & 0xfff) << 12);
@@ -650,12 +972,25 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
     /**
      * Adds one or more children to the container.
+     * The children will be rendered as part of this container's display list.
+     * @example
+     * ```ts
+     * // Add a single child
+     * container.addChild(sprite);
      *
-     * Multiple items can be added like so: `myContainer.addChild(thingOne, thingTwo, thingThree)`
-     * @param {...Container} children - The Container(s) to add to the container
-     * @returns {Container} - The first child that was added.
+     * // Add multiple children
+     * container.addChild(background, player, foreground);
+     *
+     * // Add with type checking
+     * const sprite = container.addChild<Sprite>(new Sprite(texture));
+     * sprite.tint = 'red';
+     * ```
+     * @param children - The Container(s) to add to the container
+     * @returns The first child that was added
+     * @see {@link Container#removeChild} For removing children
+     * @see {@link Container#addChildAt} For adding at specific index
      */
-    public addChild<U extends(C | IRenderLayer)[]>(...children: U): U[0]
+    public addChild<U extends C[]>(...children: U): U[0]
     {
         // #if _DEBUG
         if (!this.allowChildren)
@@ -675,7 +1010,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             return children[0];
         }
 
-        const child = children[0] as C;
+        const child = children[0];
 
         const renderGroup = this.renderGroup || this.parentRenderGroup;
 
@@ -706,7 +1041,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
         child.didChange = true;
 
-        // TODO - OPtimise this? could check what the parent has set?
+        // TODO - Optimise this? could check what the parent has set?
         child._updateFlags = 0b1111;
 
         if (renderGroup)
@@ -729,10 +1064,25 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
     /**
      * Removes one or more children from the container.
-     * @param {...Container} children - The Container(s) to remove
-     * @returns {Container} The first child that was removed.
+     * When removing multiple children, events will be triggered for each child in sequence.
+     * @example
+     * ```ts
+     * // Remove a single child
+     * const removed = container.removeChild(sprite);
+     *
+     * // Remove multiple children
+     * const bg = container.removeChild(background, player, userInterface);
+     *
+     * // Remove with type checking
+     * const sprite = container.removeChild<Sprite>(childSprite);
+     * sprite.texture = newTexture;
+     * ```
+     * @param children - The Container(s) to remove
+     * @returns The first child that was removed
+     * @see {@link Container#addChild} For adding children
+     * @see {@link Container#removeChildren} For removing multiple children
      */
-    public removeChild<U extends(C | IRenderLayer)[]>(...children: U): U[0]
+    public removeChild<U extends C[]>(...children: U): U[0]
     {
         // if there is only one argument we can bypass looping through the them
         if (children.length > 1)
@@ -746,7 +1096,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             return children[0];
         }
 
-        const child = children[0] as C;
+        const child = children[0];
 
         const index = this.children.indexOf(child);
 
@@ -819,6 +1169,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     /**
      * Returns true if this container is a render group.
      * This means that it will be rendered as a separate pass, with its own set of instructions
+     * @advanced
      */
     get isRenderGroup(): boolean
     {
@@ -829,6 +1180,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * Calling this enables a render group for this container.
      * This means it will be rendered as a separate set of instructions.
      * The transform of the container will also be handled on the GPU rather than the CPU.
+     * @advanced
      */
     public enableRenderGroup(): void
     {
@@ -849,7 +1201,10 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         this._updateIsSimple();
     }
 
-    /** This will disable the render group for this container. */
+    /**
+     * This will disable the render group for this container.
+     * @advanced
+     */
     public disableRenderGroup(): void
     {
         if (!this.renderGroup) return;
@@ -876,7 +1231,16 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
     /**
      * Current transform of the object based on world (parent) factors.
+     *
+     * This matrix represents the absolute transformation in the scene graph.
+     * @example
+     * ```ts
+     * // Get world position
+     * const worldPos = container.worldTransform;
+     * console.log(`World position: (${worldPos.tx}, ${worldPos.ty})`);
+     * ```
      * @readonly
+     * @see {@link Container#localTransform} For local space transform
      */
     get worldTransform()
     {
@@ -896,7 +1260,13 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
     /**
      * The position of the container on the x axis relative to the local coordinates of the parent.
+     *
      * An alias to position.x
+     * @example
+     * ```ts
+     * // Basic position
+     * container.x = 100;
+     * ```
      */
     get x(): number
     {
@@ -910,7 +1280,13 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
     /**
      * The position of the container on the y axis relative to the local coordinates of the parent.
+     *
      * An alias to position.y
+     * @example
+     * ```ts
+     * // Basic position
+     * container.y = 200;
+     * ```
      */
     get y(): number
     {
@@ -924,6 +1300,14 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
     /**
      * The coordinate of the object relative to the local coordinates of the parent.
+     * @example
+     * ```ts
+     * // Basic position setting
+     * container.position.set(100, 200);
+     * container.position.set(100); // Sets both x and y to 100
+     * // Using point data
+     * container.position = { x: 50, y: 75 };
+     * ```
      * @since 4.0.0
      */
     get position(): ObservablePoint
@@ -938,7 +1322,26 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
     /**
      * The rotation of the object in radians.
-     * 'rotation' and 'angle' have the same effect on a display object; rotation is in radians, angle is in degrees.
+     *
+     * > [!NOTE] 'rotation' and 'angle' have the same effect on a display object;
+     * > rotation is in radians, angle is in degrees.
+     * @example
+     * ```ts
+     * // Basic rotation
+     * container.rotation = Math.PI / 4; // 45 degrees
+     *
+     * // Convert from degrees
+     * const degrees = 45;
+     * container.rotation = degrees * Math.PI / 180;
+     *
+     * // Rotate around center
+     * container.pivot.set(container.width / 2, container.height / 2);
+     * container.rotation = Math.PI; // 180 degrees
+     *
+     * // Rotate around center with origin
+     * container.origin.set(container.width / 2, container.height / 2);
+     * container.rotation = Math.PI; // 180 degrees
+     * ```
      */
     get rotation(): number
     {
@@ -956,7 +1359,25 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
     /**
      * The angle of the object in degrees.
-     * 'rotation' and 'angle' have the same effect on a display object; rotation is in radians, angle is in degrees.
+     *
+     * > [!NOTE] 'rotation' and 'angle' have the same effect on a display object;
+     * > rotation is in radians, angle is in degrees.
+     * @example
+     * ```ts
+     * // Basic angle rotation
+     * sprite.angle = 45; // 45 degrees
+     *
+     * // Rotate around center
+     * sprite.pivot.set(sprite.width / 2, sprite.height / 2);
+     * sprite.angle = 180; // Half rotation
+     *
+     * // Rotate around center with origin
+     * sprite.origin.set(sprite.width / 2, sprite.height / 2);
+     * sprite.angle = 180; // Half rotation
+     *
+     * // Reset rotation
+     * sprite.angle = 0;
+     * ```
      */
     get angle(): number
     {
@@ -969,10 +1390,16 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     }
 
     /**
-     * The center of rotation, scaling, and skewing for this display object in its local space. The `position`
-     * is the projection of `pivot` in the parent's local space.
+     * The center of rotation, scaling, and skewing for this display object in its local space.
+     * The `position` is the projection of `pivot` in the parent's local space.
      *
      * By default, the pivot is the origin (0, 0).
+     * @example
+     * ```ts
+     * // Rotate around center
+     * container.pivot.set(container.width / 2, container.height / 2);
+     * container.rotation = Math.PI; // Rotates around center
+     * ```
      * @since 4.0.0
      */
     get pivot(): ObservablePoint
@@ -990,14 +1417,47 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         if (this._pivot === defaultPivot)
         {
             this._pivot = new ObservablePoint(this, 0, 0);
+
+            // #if _DEBUG
+            if (this._origin !== defaultOrigin)
+            {
+                // eslint-disable-next-line max-len
+                warn(`Setting both a pivot and origin on a Container is not recommended. This can lead to unexpected behavior if not handled carefully.`);
+            }
+            // #endif
         }
 
         typeof value === 'number' ? this._pivot.set(value) : this._pivot.copyFrom(value);
     }
 
     /**
-     * The skew factor for the object in radians.
+     * The skew factor for the object in radians. Skewing is a transformation that distorts
+     * the object by rotating it differently at each point, creating a non-uniform shape.
+     * @example
+     * ```ts
+     * // Basic skewing
+     * container.skew.set(0.5, 0); // Skew horizontally
+     * container.skew.set(0, 0.5); // Skew vertically
+     *
+     * // Skew with point data
+     * container.skew = { x: 0.3, y: 0.3 }; // Diagonal skew
+     *
+     * // Reset skew
+     * container.skew.set(0, 0);
+     *
+     * // Animate skew
+     * app.ticker.add(() => {
+     *     // Create wave effect
+     *     container.skew.x = Math.sin(Date.now() / 1000) * 0.3;
+     * });
+     *
+     * // Combine with rotation
+     * container.rotation = Math.PI / 4; // 45 degrees
+     * container.skew.set(0.2, 0.2); // Skew the rotated object
+     * ```
      * @since 4.0.0
+     * @type {ObservablePoint} Point-like object with x/y properties in radians
+     * @default {x: 0, y: 0}
      */
     get skew(): ObservablePoint
     {
@@ -1023,6 +1483,15 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * The scale factors of this object along the local coordinate axes.
      *
      * The default scale is (1, 1).
+     * @example
+     * ```ts
+     * // Basic scaling
+     * container.scale.set(2, 2); // Scales to double size
+     * container.scale.set(2); // Scales uniformly to double size
+     * container.scale = 2; // Scales uniformly to double size
+     * // Scale to a specific width and height
+     * container.setSize(200, 100); // Sets width to 200 and height to 100
+     * ```
      * @since 4.0.0
      */
     get scale(): ObservablePoint
@@ -1035,17 +1504,76 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         return this._scale;
     }
 
-    set scale(value: PointData | number)
+    set scale(value: PointData | number | string)
     {
         if (this._scale === defaultScale)
         {
             this._scale = new ObservablePoint(this, 0, 0);
         }
 
+        if (typeof value === 'string')
+        {
+            value = parseFloat(value);
+        }
+
         typeof value === 'number' ? this._scale.set(value) : this._scale.copyFrom(value);
     }
 
-    /** The width of the Container, setting this will actually modify the scale to achieve the value set. */
+    /**
+     * @experimental
+     * The origin point around which the container rotates and scales without affecting its position.
+     * Unlike pivot, changing the origin will not move the container's position.
+     * @example
+     * ```ts
+     * // Rotate around center point
+     * container.origin.set(container.width / 2, container.height / 2);
+     * container.rotation = Math.PI; // Rotates around center
+     *
+     * // Reset origin
+     * container.origin.set(0, 0);
+     * ```
+     */
+    get origin(): ObservablePoint
+    {
+        if (this._origin === defaultOrigin)
+        {
+            this._origin = new ObservablePoint(this, 0, 0);
+        }
+
+        return this._origin;
+    }
+
+    set origin(value: PointData | number)
+    {
+        if (this._origin === defaultOrigin)
+        {
+            this._origin = new ObservablePoint(this, 0, 0);
+
+            // #if _DEBUG
+            if (this._pivot !== defaultPivot)
+            {
+                // eslint-disable-next-line max-len
+                warn(`Setting both a pivot and origin on a Container is not recommended. This can lead to unexpected behavior if not handled carefully.`);
+            }
+            // #endif
+        }
+
+        typeof value === 'number' ? this._origin.set(value) : this._origin.copyFrom(value);
+    }
+
+    /**
+     * The width of the Container, setting this will actually modify the scale to achieve the value set.
+     * > [!NOTE] Changing the width will adjust the scale.x property of the container while maintaining its aspect ratio.
+     * > [!NOTE] If you want to set both width and height at the same time, use {@link Container#setSize}
+     * as it is more optimized by not recalculating the local bounds twice.
+     * @example
+     * ```ts
+     * // Basic width setting
+     * container.width = 100;
+     * // Optimized width setting
+     * container.setSize(100, 100);
+     * ```
+     */
     get width(): number
     {
         return Math.abs(this.scale.x * this.getLocalBounds().width);
@@ -1058,7 +1586,19 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         this._setWidth(value, localWidth);
     }
 
-    /** The height of the Container, setting this will actually modify the scale to achieve the value set. */
+    /**
+     * The height of the Container,
+     * > [!NOTE] Changing the height will adjust the scale.y property of the container while maintaining its aspect ratio.
+     * > [!NOTE] If you want to set both width and height at the same time, use {@link Container#setSize}
+     * as it is more optimized by not recalculating the local bounds twice.
+     * @example
+     * ```ts
+     * // Basic height setting
+     * container.height = 200;
+     * // Optimized height setting
+     * container.setSize(100, 200);
+     * ```
+     */
     get height(): number
     {
         return Math.abs(this.scale.y * this.getLocalBounds().height);
@@ -1073,9 +1613,20 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
     /**
      * Retrieves the size of the container as a [Size]{@link Size} object.
+     *
      * This is faster than get the width and height separately.
+     * @example
+     * ```ts
+     * // Basic size retrieval
+     * const size = container.getSize();
+     * console.log(`Size: ${size.width}x${size.height}`);
+     *
+     * // Reuse existing size object
+     * const reuseSize = { width: 0, height: 0 };
+     * container.getSize(reuseSize);
+     * ```
      * @param out - Optional object to store the size in.
-     * @returns - The size of the container.
+     * @returns The size of the container.
      */
     public getSize(out?: Size): Size
     {
@@ -1094,7 +1645,15 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
     /**
      * Sets the size of the container to the specified width and height.
-     * This is faster than setting the width and height separately.
+     * This is more efficient than setting width and height separately as it only recalculates bounds once.
+     * @example
+     * ```ts
+     * // Basic size setting
+     * container.setSize(100, 200);
+     *
+     * // Set uniform size
+     * container.setSize(100); // Sets both width and height to 100
+     * ```
      * @param value - This can be either a number or a [Size]{@link Size} object.
      * @param height - The height to set. Defaults to the value of `width` if not provided.
      */
@@ -1129,17 +1688,45 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     }
 
     /**
-     * Updates the transform properties of the container (accepts partial values).
-     * @param {object} opts - The options for updating the transform.
-     * @param {number} opts.x - The x position of the container.
-     * @param {number} opts.y - The y position of the container.
-     * @param {number} opts.scaleX - The scale factor on the x-axis.
-     * @param {number} opts.scaleY - The scale factor on the y-axis.
-     * @param {number} opts.rotation - The rotation of the container, in radians.
-     * @param {number} opts.skewX - The skew factor on the x-axis.
-     * @param {number} opts.skewY - The skew factor on the y-axis.
-     * @param {number} opts.pivotX - The x coordinate of the pivot point.
-     * @param {number} opts.pivotY - The y coordinate of the pivot point.
+     * Updates the transform properties of the container.
+     * Allows partial updates of transform properties for optimized manipulation.
+     * @example
+     * ```ts
+     * // Basic transform update
+     * container.updateTransform({
+     *     x: 100,
+     *     y: 200,
+     *     rotation: Math.PI / 4
+     * });
+     *
+     * // Scale and rotate around center
+     * sprite.updateTransform({
+     *     pivotX: sprite.width / 2,
+     *     pivotY: sprite.height / 2,
+     *     scaleX: 2,
+     *     scaleY: 2,
+     *     rotation: Math.PI
+     * });
+     *
+     * // Update position only
+     * button.updateTransform({
+     *     x: button.x + 10, // Move right
+     *     y: button.y      // Keep same y
+     * });
+     * ```
+     * @param opts - Transform options to update
+     * @param opts.x - The x position
+     * @param opts.y - The y position
+     * @param opts.scaleX - The x-axis scale factor
+     * @param opts.scaleY - The y-axis scale factor
+     * @param opts.rotation - The rotation in radians
+     * @param opts.skewX - The x-axis skew factor
+     * @param opts.skewY - The y-axis skew factor
+     * @param opts.pivotX - The x-axis pivot point
+     * @param opts.pivotY - The y-axis pivot point
+     * @returns This container, for chaining
+     * @see {@link Container#setFromMatrix} For matrix-based transforms
+     * @see {@link Container#position} For direct position access
      */
     public updateTransform(opts: Partial<UpdateTransformOptions>): this
     {
@@ -1160,13 +1747,40 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             typeof opts.pivotX === 'number' ? opts.pivotX : this.pivot.x,
             typeof opts.pivotY === 'number' ? opts.pivotY : this.pivot.y
         );
+        this.origin.set(
+            typeof opts.originX === 'number' ? opts.originX : this.origin.x,
+            typeof opts.originY === 'number' ? opts.originY : this.origin.y
+        );
 
         return this;
     }
 
     /**
-     * Updates the local transform using the given matrix.
-     * @param matrix - The matrix to use for updating the transform.
+     * Updates the local transform properties by decomposing the given matrix.
+     * Extracts position, scale, rotation, and skew from a transformation matrix.
+     * @example
+     * ```ts
+     * // Basic matrix transform
+     * const matrix = new Matrix()
+     *     .translate(100, 100)
+     *     .rotate(Math.PI / 4)
+     *     .scale(2, 2);
+     *
+     * container.setFromMatrix(matrix);
+     *
+     * // Copy transform from another container
+     * const source = new Container();
+     * source.position.set(100, 100);
+     * source.rotation = Math.PI / 2;
+     *
+     * target.setFromMatrix(source.localTransform);
+     *
+     * // Reset transform
+     * container.setFromMatrix(Matrix.IDENTITY);
+     * ```
+     * @param matrix - The matrix to use for updating the transform
+     * @see {@link Container#updateTransform} For property-based updates
+     * @see {@link Matrix#decompose} For matrix decomposition details
      */
     public setFromMatrix(matrix: Matrix): void
     {
@@ -1181,11 +1795,11 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         if (this._didLocalTransformChangeId === localTransformChangeId) return;
 
         this._didLocalTransformChangeId = localTransformChangeId;
-        //   this.didChange = false;
 
         const lt = this.localTransform;
         const scale = this._scale;
         const pivot = this._pivot;
+        const origin = this._origin;
         const position = this._position;
 
         const sx = scale._x;
@@ -1194,14 +1808,21 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         const px = pivot._x;
         const py = pivot._y;
 
+        const ox = -origin._x;
+        const oy = -origin._y;
+
         // get the matrix values of the container based on its this properties..
         lt.a = this._cx * sx;
         lt.b = this._sx * sx;
         lt.c = this._cy * sy;
         lt.d = this._sy * sy;
 
-        lt.tx = position._x - ((px * lt.a) + (py * lt.c));
-        lt.ty = position._y - ((px * lt.b) + (py * lt.d));
+        lt.tx = position._x - ((px * lt.a) + (py * lt.c)) // Pivot offset
+            + ((ox * lt.a) + (oy * lt.c)) // Origin offset for rotation and scaling
+            - ox; // Remove origin to maintain position
+        lt.ty = position._y - ((px * lt.b) + (py * lt.d)) // Pivot offset
+            + ((ox * lt.b) + (oy * lt.d)) // Origin offset for rotation and scaling
+            - oy; // Remove origin to maintain position
     }
 
     // / ///// color related stuff
@@ -1217,7 +1838,25 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         this._onUpdate();
     }
 
-    /** The opacity of the object. */
+    /**
+     * The opacity of the object relative to its parent's opacity.
+     * Value ranges from 0 (fully transparent) to 1 (fully opaque).
+     * @example
+     * ```ts
+     * // Basic transparency
+     * sprite.alpha = 0.5; // 50% opacity
+     *
+     * // Inherited opacity
+     * container.alpha = 0.5;
+     * const child = new Sprite(texture);
+     * child.alpha = 0.5;
+     * container.addChild(child);
+     * // child's effective opacity is 0.25 (0.5 * 0.5)
+     * ```
+     * @default 1
+     * @see {@link Container#visible} For toggling visibility
+     * @see {@link Container#renderable} For render control
+     */
     get alpha(): number
     {
         return this.localAlpha;
@@ -1238,10 +1877,24 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     }
 
     /**
-     * The tint applied to the sprite. This is a hex value.
+     * The tint applied to the sprite.
      *
-     * A value of 0xFFFFFF will remove any tint effect.
+     * This can be any valid {@link ColorSource}.
+     * @example
+     * ```ts
+     * // Basic color tinting
+     * container.tint = 0xff0000; // Red tint
+     * container.tint = 'red';    // Same as above
+     * container.tint = '#00ff00'; // Green
+     * container.tint = 'rgb(0,0,255)'; // Blue
+     *
+     * // Remove tint
+     * container.tint = 0xffffff; // White = no tint
+     * container.tint = null;     // Also removes tint
+     * ```
      * @default 0xFFFFFF
+     * @see {@link Container#alpha} For transparency
+     * @see {@link Container#visible} For visibility control
      */
     get tint(): number
     {
@@ -1267,8 +1920,23 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
     }
 
     /**
-     * The blend mode to be applied to the sprite. Apply a value of `'normal'` to reset the blend mode.
+     * The blend mode to be applied to the sprite. Controls how pixels are blended when rendering.
+     *
+     * Setting to 'normal' will reset to default blending.
+     * > [!NOTE] More blend modes are available after importing the `pixi.js/advanced-blend-modes` sub-export.
+     * @example
+     * ```ts
+     * // Basic blend modes
+     * sprite.blendMode = 'add';        // Additive blending
+     * sprite.blendMode = 'multiply';   // Multiply colors
+     * sprite.blendMode = 'screen';     // Screen blend
+     *
+     * // Reset blend mode
+     * sprite.blendMode = 'normal';     // Normal blending
+     * ```
      * @default 'normal'
+     * @see {@link Container#alpha} For transparency
+     * @see {@link Container#tint} For color adjustments
      */
     get blendMode(): BLEND_MODES
     {
@@ -1277,7 +1945,19 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
 
     // / ///////// VISIBILITY / RENDERABLE /////////////////
 
-    /** The visibility of the object. If false the object will not be drawn, and the transform will not be updated. */
+    /**
+     * The visibility of the object. If false the object will not be drawn,
+     * and the transform will not be updated.
+     * @example
+     * ```ts
+     * // Basic visibility toggle
+     * sprite.visible = false; // Hide sprite
+     * sprite.visible = true;  // Show sprite
+     * ```
+     * @default true
+     * @see {@link Container#renderable} For render-only control
+     * @see {@link Container#alpha} For transparency
+     */
     get visible()
     {
         return !!(this.localDisplayStatus & 0b010);
@@ -1325,7 +2005,20 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         this._onUpdate();
     }
 
-    /** Can this object be rendered, if false the object will not be drawn but the transform will still be updated. */
+    /**
+     * Controls whether this object can be rendered. If false the object will not be drawn,
+     * but the transform will still be updated. This is different from visible, which skips
+     * transform updates.
+     * @example
+     * ```ts
+     * // Basic render control
+     * sprite.renderable = false; // Skip rendering
+     * sprite.renderable = true;  // Enable rendering
+     * ```
+     * @default true
+     * @see {@link Container#visible} For skipping transform updates
+     * @see {@link Container#alpha} For transparency
+     */
     get renderable()
     {
         return !!(this.localDisplayStatus & 0b001);
@@ -1348,7 +2041,10 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         this._onUpdate();
     }
 
-    /** Whether or not the object should be rendered. */
+    /**
+     * Whether or not the object should be rendered.
+     * @advanced
+     */
     get isRenderable(): boolean
     {
         return (this.localDisplayStatus === 0b111 && this.groupAlpha > 0);
@@ -1360,10 +2056,12 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
      * @example
+     * ```ts
      * container.destroy();
      * container.destroy(true);
      * container.destroy({ children: true });
      * container.destroy({ children: true, texture: true, textureSource: true });
+     * ```
      */
     public destroy(options: DestroyOptions = false): void
     {
@@ -1389,6 +2087,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
         this._position = null;
         this._scale = null;
         this._pivot = null;
+        this._origin = null;
         this._skew = null;
 
         this.emit('destroyed', this);

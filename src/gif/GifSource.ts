@@ -1,11 +1,12 @@
 import { decompressFrames, type ParsedFrame, parseGIF } from 'gifuct-js';
 import { DOMAdapter } from '../environment/adapter';
-import { CanvasSource } from '../rendering/renderers/shared/texture/sources/CanvasSource';
+import { CanvasSource, type CanvasSourceOptions } from '../rendering/renderers/shared/texture/sources/CanvasSource';
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 
 /**
  * Represents a single frame of a GIF. Includes image and timing data.
  * @category gif
+ * @advanced
  */
 interface GifFrame
 {
@@ -20,11 +21,12 @@ interface GifFrame
 /**
  * Options when constructing from buffer
  * @category gif
+ * @advanced
  */
-interface GifBufferOptions
+interface GifBufferOptions extends Omit<CanvasSourceOptions, 'resource'>
 {
     /** FPS to use when the GIF animation doesn't define any delay between frames */
-    fps: number;
+    fps?: number;
 }
 
 /**
@@ -32,6 +34,7 @@ interface GifBufferOptions
  * Texture between Sprites. This source contains all the frames and animation needed
  * to support playback.
  * @category gif
+ * @advanced
  */
 class GifSource
 {
@@ -150,7 +153,8 @@ class GifSource
         let previousFrame: ImageData | null = null;
 
         // Some GIFs have a non-zero frame delay, so we need to calculate the fallback
-        const defaultDelay = 1000 / (options?.fps ?? 30);
+        const { fps = 30, ...canvasSourceOptions } = options ?? {};
+        const defaultDelay = 1000 / fps;
 
         // Precompute each frame and store as ImageData
         for (let i = 0; i < gifFrames.length; i++)
@@ -203,6 +207,7 @@ class GifSource
                 texture: new Texture({
                     source: new CanvasSource({
                         resource,
+                        ...canvasSourceOptions,
                     }),
                 }),
             });

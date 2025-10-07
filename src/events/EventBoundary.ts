@@ -75,6 +75,7 @@ const tempLocalMapping = new Point();
  * }
  * ```
  * @category events
+ * @advanced
  */
 export class EventBoundary
 {
@@ -96,7 +97,7 @@ export class EventBoundary
     public dispatch: EventEmitter = new EventEmitter();
 
     /** The cursor preferred by the event targets underneath this boundary. */
-    public cursor: Cursor | string;
+    public cursor: Cursor | (string & {});
 
     /**
      * This flag would emit `pointermove`, `touchmove`, and `mousemove` events on all Containers.
@@ -1405,6 +1406,7 @@ export class EventBoundary
      * This allocation is constructor-agnostic, as long as it only takes one argument - this event
      * boundary.
      * @param constructor - The event's constructor.
+     * @returns An event of the given type.
      */
     protected allocateEvent<T extends FederatedEvent>(
         constructor: { new(boundary: EventBoundary): T }

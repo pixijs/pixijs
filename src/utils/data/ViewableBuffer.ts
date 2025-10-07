@@ -3,6 +3,7 @@ import { type TypedArray } from '../../rendering/renderers/shared/buffer/Buffer'
 /**
  * Flexible wrapper around `ArrayBuffer` that also provides typed array views on demand.
  * @category utils
+ * @advanced
  */
 export class ViewableBuffer
 {
@@ -17,6 +18,7 @@ export class ViewableBuffer
 
     /** View on the raw binary data as a `Float32Array`. */
     public float32View: Float32Array;
+    /** View on the raw binary data as a `Uint16Array`. */
     public uint16View: Uint16Array;
 
     private _int8View: Int8Array;

@@ -1,14 +1,30 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { UniformGroup } from '../../shared/shader/UniformGroup';
 import { generateShaderSyncCode } from './GenerateShaderSyncCode';
 import { generateProgram } from './program/generateProgram';
 
 import type { BufferResource } from '../../shared/buffer/BufferResource';
 import type { Shader } from '../../shared/shader/Shader';
-import type { UniformGroup } from '../../shared/shader/UniformGroup';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
 import type { GlProgram } from './GlProgram';
 import type { GlProgramData } from './GlProgramData';
+
+/** @internal */
+export const WEBGL_TO_WEBGPU_UNIFORM_MAP = {
+    float: 'f32',
+    int: 'i32',
+    vec2: 'vec2<f32>',
+    vec3: 'vec3<f32>',
+    vec4: 'vec4<f32>',
+    mat2: 'mat2x2<f32>',
+    mat3: 'mat3x3<f32>',
+    mat4: 'mat4x4<f32>',
+    // For types that don’t have a direct equivalent in WebGL, you can leave them unmapped or handle them separately.
+    sampler2D: 'sampler2D',
+    samplerCube: 'samplerCube',
+    sampler2DArray: 'sampler2DArray'
+};
 
 /** @internal */
 export interface ShaderSyncData
@@ -29,6 +45,7 @@ const defaultSyncData: ShaderSyncData = {
 /**
  * System plugin to the renderer to manage the shaders for WebGL.
  * @category rendering
+ * @advanced
  */
 export class GlShaderSystem
 {
@@ -40,10 +57,7 @@ export class GlShaderSystem
         name: 'shader',
     } as const;
 
-    /**
-     * @internal
-     * @private
-     */
+    /** @internal */
     public _activeProgram: GlProgram = null;
 
     private _programDataHash: Record<string, GlProgramData> = Object.create(null);
@@ -79,14 +93,20 @@ export class GlShaderSystem
      */
     public bind(shader: Shader, skipSync?: boolean): void
     {
+        // console.log('BINDING SHADER:', shader);
         this._setProgram(shader.glProgram);
 
         if (skipSync) return;
+
+        // sync up those uniforms!
 
         defaultSyncData.textureCount = 0;
         defaultSyncData.blockIndex = 0;
 
         let syncFunction = this._shaderSyncFunctions[shader.glProgram._key];
+
+        // console.log('ensuring uniforms for ', shader);
+        this.ensureUniformStructures(shader);
 
         if (!syncFunction)
         {
@@ -96,6 +116,56 @@ export class GlShaderSystem
         // TODO: take into account number of TF buffers. Currently works only with interleaved
         this._renderer.buffer.nextBindBase(!!shader.glProgram.transformFeedbackVaryings);
         syncFunction(this._renderer, shader, defaultSyncData);
+    }
+
+    public ensureUniformStructures(shader: Shader)
+    {
+        for (const i in shader.groups)
+        {
+            const group = shader.groups[i];
+
+            for (const j in group.resources)
+            {
+                const resource = group.resources[j];
+
+                if (resource instanceof UniformGroup)
+                {
+                    this.bloop(resource, shader.glProgram);
+                }
+            }
+        }
+    }
+
+    public bloop(uniformGroup: UniformGroup, glProgram: GlProgram)
+    {
+        const uniformData = glProgram._uniformData;
+
+        const uniformStructures = uniformGroup.uniformStructures;
+
+        for (const i in uniformGroup.uniforms)
+        {
+            const uniformValue = uniformGroup.uniforms[i];
+
+            if (uniformValue instanceof UniformGroup)
+            {
+                uniformStructures[i] ||= {
+                    value: uniformValue,
+                    type: 'uniformGroup',
+                    name: i,
+                };
+
+                this.bloop(uniformValue, glProgram);
+            }
+            else if (uniformData[i])
+            {
+                uniformStructures[i] ||= {
+                    value: uniformValue,
+                    type: WEBGL_TO_WEBGPU_UNIFORM_MAP[uniformData[i].type],
+                    name: i,
+                    size: 1
+                };
+            }
+        }
     }
 
     /**
@@ -173,7 +243,6 @@ export class GlShaderSystem
     /**
      * @param program - the program to get the data for
      * @internal
-     * @private
      */
     public _getProgramData(program: GlProgram): GlProgramData
     {
@@ -200,6 +269,10 @@ export class GlShaderSystem
         }
 
         this._programDataHash = null;
+        this._shaderSyncFunctions = null;
+        this._activeProgram = null;
+        (this._renderer as null) = null;
+        this._gl = null;
     }
 
     /**

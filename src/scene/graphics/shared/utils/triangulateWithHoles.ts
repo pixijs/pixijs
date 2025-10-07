@@ -1,4 +1,4 @@
-import { default as earcut } from 'earcut';
+import { earcut } from '../../../../utils/utils';
 
 /**
  * @param points

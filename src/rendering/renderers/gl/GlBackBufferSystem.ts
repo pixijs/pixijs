@@ -26,6 +26,7 @@ const bigTriangleGeometry = new Geometry({
  * @category rendering
  * @property {boolean} [useBackBuffer=false] - if true will use the back buffer where required
  * @property {boolean} [antialias=false] - if true will ensure the texture is antialiased
+ * @advanced
  */
 export interface GlBackBufferOptions
 {
@@ -52,6 +53,7 @@ export interface GlBackBufferOptions
  *
  * to activate is simple, you pass `useBackBuffer:true` to your render options
  * @category rendering
+ * @advanced
  */
 export class GlBackBufferSystem implements System<GlBackBufferOptions>
 {

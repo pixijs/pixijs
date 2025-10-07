@@ -9,11 +9,11 @@ import type { RenderGroup } from '../RenderGroup';
  */
 export function validateRenderables(renderGroup: RenderGroup, renderPipes: RenderPipes): boolean
 {
-    const { list, index } = renderGroup.childrenRenderablesToUpdate;
+    const { list } = renderGroup.childrenRenderablesToUpdate;
 
     let rebuildRequired = false;
 
-    for (let i = 0; i < index; i++)
+    for (let i = 0; i < renderGroup.childrenRenderablesToUpdate.index; i++)
     {
         const container = list[i];
 

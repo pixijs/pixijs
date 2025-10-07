@@ -25,6 +25,7 @@ import type { BindResource } from './BindResource';
  * This bind group class will also watch for changes in its resources ensuring that the changes
  * are reflected in the WebGPU BindGroup.
  * @category rendering
+ * @advanced
  */
 export class BindGroup
 {
@@ -138,7 +139,7 @@ export class BindGroup
         {
             const resource = resources[i];
 
-            resource.off?.('change', this.onResourceChange, this);
+            resource?.off?.('change', this.onResourceChange, this);
         }
 
         this.resources = null;
