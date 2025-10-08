@@ -104,11 +104,12 @@ export interface ParticleProperties
  * ```
  * @see {@link ParticleContainer} For the main particle container class
  * @see {@link ParticleProperties} For dynamic property configuration
- * @category scene
+ * @template T The type of particles in the container. Must implement {@link IParticle}. * @category scene
  * @standard
  * @noInheritDoc
  */
-export interface ParticleContainerOptions extends PixiMixins.ParticleContainerOptions, Omit<ViewContainerOptions, 'children'>
+export interface ParticleContainerOptions
+<T extends IParticle = IParticle> extends PixiMixins.ParticleContainerOptions, Omit<ViewContainerOptions, 'children'>
 {
     /**
      * Specifies which particle properties should update each frame.
@@ -137,10 +138,10 @@ export interface ParticleContainerOptions extends PixiMixins.ParticleContainerOp
     texture?: Texture;
 
     /** Initial array of particles to add to the container. All particles must share the same base texture. */
-    particles?: IParticle[];
+    particles?: T[];
 }
 // eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
-export interface ParticleContainer extends PixiMixins.ParticleContainer, ViewContainer<ParticleBuffer> {}
+export interface IParticleContainer extends PixiMixins.ParticleContainer, ViewContainer<ParticleBuffer> {}
 
 /**
  * The ParticleContainer class is a highly optimized container that can render 1000s or particles at great speed.
@@ -192,10 +193,12 @@ export interface ParticleContainer extends PixiMixins.ParticleContainer, ViewCon
  *     container.addParticle(particle);
  * }
  * ```
+ * @template T The type of particles in the container. Must implement {@link IParticle}.
  * @category scene
  * @standard
  */
-export class ParticleContainer extends ViewContainer<ParticleBuffer> implements Instruction
+export class ParticleContainer
+<T extends IParticle = IParticle> extends ViewContainer<ParticleBuffer> implements Instruction, IParticleContainer
 {
     /**
      * Defines the default options for creating a ParticleContainer.
@@ -214,10 +217,10 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * };
      * ```
      * @property {Record<string, boolean>} dynamicProperties - Specifies which properties are dynamic.
-     * @property {boolean} roundPixels - Indicates if pixels should be  rounded.
+     * @property {boolean} roundPixels - Indicates if pixels should be rounded.
      */
-    public static defaultOptions: ParticleContainerOptions = {
-        /** Specifies which properties are dynamic. */
+    public static defaultOptions: Pick<ParticleContainerOptions, 'dynamicProperties' | 'roundPixels'> = {
+    /** Specifies which properties are dynamic. */
         dynamicProperties: {
             /** Indicates if vertex positions are dynamic. */
             vertex: false,
@@ -283,7 +286,7 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * @see {@link ParticleContainer#addParticle} For a safer way to add particles
      * @see {@link ParticleContainer#removeParticle} For a safer way to remove particles
      */
-    public particleChildren: IParticle[];
+    public particleChildren: T[];
 
     /**
      * The shader used for rendering particles in this ParticleContainer.
@@ -318,7 +321,7 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
     /**
      * @param options - The options for creating the sprite.
      */
-    constructor(options: ParticleContainerOptions = {})
+    constructor(options: ParticleContainerOptions<T> = {})
     {
         options = {
             ...ParticleContainer.defaultOptions,
@@ -384,7 +387,7 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * @see {@link ParticleContainer#texture} For setting the shared texture
      * @see {@link ParticleContainer#update} For updating after modifications
      */
-    public addParticle(...children: IParticle[]): IParticle
+    public addParticle(...children: T[]): T
     {
         for (let i = 0; i < children.length; i++)
         {
@@ -413,13 +416,13 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * @see {@link ParticleContainer#removeParticles} For removing particles by index
      * @see {@link ParticleContainer#removeParticleAt} For removing a particle at a specific index
      */
-    public removeParticle(...children: IParticle[]): IParticle
+    public removeParticle(...children: T[]): T
     {
         let didRemove = false;
 
         for (let i = 0; i < children.length; i++)
         {
-            const index = this.particleChildren.indexOf(children[i] as IParticle);
+            const index = this.particleChildren.indexOf(children[i] as T);
 
             if (index > -1)
             {
@@ -548,7 +551,7 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
 
         this.onViewUpdate();
 
-        return children;
+        return children as T[];
     }
 
     /**
@@ -556,7 +559,7 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * @param index - The index to get the particle from
      * @returns The particle that was removed.
      */
-    public removeParticleAt<U extends IParticle>(index: number): U
+    public removeParticleAt<U extends T = T>(index: number): U
     {
         const child = this.particleChildren.splice(index, 1);
 
@@ -572,7 +575,7 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * @param {number} index - The absolute index where the particle will be positioned at the end of the operation.
      * @returns {Container} The particle that was added.
      */
-    public addParticleAt<U extends IParticle>(child: U, index: number): U
+    public addParticleAt<U extends T = T>(child: U, index: number): U
     {
         this.particleChildren.splice(index, 0, child);
 
