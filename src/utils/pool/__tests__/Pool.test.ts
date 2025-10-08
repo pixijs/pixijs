@@ -147,6 +147,23 @@ describe('Pool', () =>
         });
     });
 
+    it('should ignore the data argument type of item.init(data) if the item does not have an init() method', () =>
+    {
+        class EmptyTestItem
+        {
+
+        }
+        const pool = new Pool(EmptyTestItem);
+
+        expectTypeOf<Parameters<typeof pool.get>[0]>().toEqualTypeOf<never>();
+
+        const item = new EmptyTestItem();
+
+        pool.return(item);
+
+        expect(pool.get()).toEqual(item);
+    });
+
     it('should track the count of items in the pool', () =>
     {
         const pool = new Pool(TestItem);
