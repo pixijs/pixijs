@@ -141,7 +141,7 @@ export interface ParticleContainerOptions
     particles?: T[];
 }
 // eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
-export interface IParticleContainer extends PixiMixins.ParticleContainer, ViewContainer<ParticleBuffer> {}
+export interface ParticleContainer extends PixiMixins.ParticleContainer, ViewContainer<ParticleBuffer> {}
 
 /**
  * The ParticleContainer class is a highly optimized container that can render 1000s or particles at great speed.
@@ -198,7 +198,7 @@ export interface IParticleContainer extends PixiMixins.ParticleContainer, ViewCo
  * @standard
  */
 export class ParticleContainer
-<T extends IParticle = IParticle> extends ViewContainer<ParticleBuffer> implements Instruction, IParticleContainer
+<T extends IParticle = IParticle> extends ViewContainer<ParticleBuffer> implements Instruction
 {
     /**
      * Defines the default options for creating a ParticleContainer.
