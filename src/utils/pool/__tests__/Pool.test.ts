@@ -146,4 +146,21 @@ describe('Pool', () =>
             id: 99,
         });
     });
+
+    it('should ignore the data argument type of item.init(data) if the item does not have an init() method', () =>
+    {
+        class EmptyTestItem
+        {
+
+        }
+        const pool = new Pool(EmptyTestItem);
+
+        expectTypeOf<Parameters<typeof pool.get>[0]>().toEqualTypeOf<never>();
+
+        const item = new EmptyTestItem();
+
+        pool.return(item);
+
+        expect(pool.get()).toEqual(item);
+    });
 });
