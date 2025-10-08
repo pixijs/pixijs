@@ -428,6 +428,42 @@ declare global
             normal: import('../maths/point/PointData').PointData,
             outPoint?: T
         ): T;
+
+        /**
+         * Rotates `this` vector.
+         *
+         * Like a light ray bouncing off a mirror surface.
+         * `this` vector is the light and `normal` is a vector perpendicular to the mirror.
+         * `this.reflect(normal)` is the reflection of `this` on that mirror.
+         *
+         * > [!IMPORTANT] Only available with **pixi.js/math-extras**.
+         * @example
+         * ```ts
+         * // Basic point rotation
+         * const point = new Point(10, 20);
+         * const degrees = 45
+         * const radians = degrees * (Math.PI / 180)
+         * const result = point.rotate(radians);
+         * console.log(result); // {x: -7.071067811865474, y: 21.213203435596427}
+         *
+         * // Using output point for efficiency
+         * const output = new Point(10, 20);
+         * point.rotate(90 * (Math.PI / 180), output);
+         * console.log(result); // {x: -7.071067811865474, y: 21.213203435596427}
+         *
+         * // Chain multiple additions
+         * const final = point.rotate(radians).rotate(radians2);
+         * ```
+         * @remarks
+         * convert degrees to radians with const radians = degrees * (Math.PI / 180)
+         * @param {PointData} radians - The rotation angle in radians
+         * @param {PointData} outPoint - Optional Point-like object to store result
+         * @returns The outPoint or a new Point with rotated result
+         */
+        rotate<T extends import('../maths/point/PointData').PointData = import('../maths/point/Point').Point>(
+            radians: number,
+            outPoint?: T
+        ): T;
     }
 }
 

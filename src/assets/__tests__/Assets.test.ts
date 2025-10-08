@@ -99,6 +99,51 @@ describe('Assets', () =>
         expect(res['textures/bunny.png']).toBeInstanceOf(Texture);
     });
 
+    it('should load assets with the correct progress size', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        let progress = 0;
+        let progressFirst = 0;
+        const progressMock = jest.fn((p) =>
+        {
+            progress = p;
+            if (progressFirst === 0) progressFirst = p;
+        });
+
+        const assets = [
+            {
+                src: [
+                    {
+                        src: 'textures/texture.webp',
+                        progressSize: 900,
+                    },
+                    {
+                        src: 'textures/texture.png',
+                        progressSize: 1500, // should not be used
+                    }
+                ],
+                alias: ['bunny-array', 'bunny-array2'],
+            },
+            {
+                src: 'textures/bunny.png',
+                progressSize: 100,
+            }
+        ];
+        const res = await Assets.load(assets, progressMock);
+
+        expect(progressMock).toHaveBeenCalledTimes(2);
+        expect(progress).toBe(1);
+        // this could be either 0.1 or 0.9 depending on which one loads first
+        expect([0.1, 0.9]).toContain(progressFirst);
+
+        expect(res['bunny-array']).toBeInstanceOf(Texture);
+        expect(res['bunny-array2']).toBeInstanceOf(Texture);
+        expect(res['textures/bunny.png']).toBeInstanceOf(Texture);
+    });
+
     it('should load assets with resolver', async () =>
     {
         await Assets.init({

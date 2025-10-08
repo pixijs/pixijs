@@ -9,7 +9,7 @@ import { uid } from '../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { warn } from '../../utils/logging/warn';
 import { BigPool } from '../../utils/pool/PoolGroup';
-import { type IRenderLayer } from '../layers/RenderLayer';
+import { type RenderLayer } from '../layers/RenderLayer';
 import { cacheAsTextureMixin } from './container-mixins/cacheAsTextureMixin';
 import { childrenHelperMixin } from './container-mixins/childrenHelperMixin';
 import { collectRenderablesMixin } from './container-mixins/collectRenderablesMixin';
@@ -737,7 +737,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * @readonly
      * @advanced
      */
-    public parentRenderLayer: IRenderLayer;
+    public parentRenderLayer: RenderLayer | null = null;
 
     // / /////////////Transform related props//////////////
 
@@ -990,7 +990,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * @see {@link Container#removeChild} For removing children
      * @see {@link Container#addChildAt} For adding at specific index
      */
-    public addChild<U extends(C | IRenderLayer)[]>(...children: U): U[0]
+    public addChild<U extends C[]>(...children: U): U[0]
     {
         // #if _DEBUG
         if (!this.allowChildren)
@@ -1010,7 +1010,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             return children[0];
         }
 
-        const child = children[0] as C;
+        const child = children[0];
 
         const renderGroup = this.renderGroup || this.parentRenderGroup;
 
@@ -1082,7 +1082,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
      * @see {@link Container#addChild} For adding children
      * @see {@link Container#removeChildren} For removing multiple children
      */
-    public removeChild<U extends(C | IRenderLayer)[]>(...children: U): U[0]
+    public removeChild<U extends C[]>(...children: U): U[0]
     {
         // if there is only one argument we can bypass looping through the them
         if (children.length > 1)
@@ -1096,7 +1096,7 @@ export class Container<C extends ContainerChild = ContainerChild> extends EventE
             return children[0];
         }
 
-        const child = children[0] as C;
+        const child = children[0];
 
         const index = this.children.indexOf(child);
 

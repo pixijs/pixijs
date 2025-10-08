@@ -95,6 +95,12 @@ export interface ResolvedAsset<T = any>
     loadParser?: LoadParserName;
     /** Override to specify which parser should load this asset. Useful when file extensions don't match the content type. */
     parser?: AssetParser;
+    /**
+     * The amount of progress an asset will contribute to the onProgress event when loading.
+     * This can be any arbitrary value but typically represents the file size.
+     * @default 1
+     */
+    progressSize?: number;
 }
 
 /**
