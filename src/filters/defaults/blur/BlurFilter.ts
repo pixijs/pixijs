@@ -6,9 +6,9 @@ import { BlurFilterPass } from './BlurFilterPass';
 
 import type { RenderSurface } from '../../../rendering/renderers/shared/renderTarget/RenderTargetSystem';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
+import type { MakeRequired } from '../../../utils';
 import type { FilterOptions } from '../../Filter';
 import type { FilterSystem } from '../../FilterSystem';
-import type { MakeRequired } from '~/utils';
 
 /**
  * Configuration options for the BlurFilter.

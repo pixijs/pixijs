@@ -6,9 +6,9 @@ import { generateBlurProgram } from './gpu/generateBlurProgram';
 
 import type { RenderSurface } from '../../../rendering/renderers/shared/renderTarget/RenderTargetSystem';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
+import type { MakeRequired } from '../../../utils';
 import type { FilterSystem } from '../../FilterSystem';
 import type { BlurFilterOptions } from './BlurFilter';
-import type { MakeRequired } from '~/utils';
 
 /**
  * Options for BlurFilterPass
