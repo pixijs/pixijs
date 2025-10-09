@@ -1,7 +1,6 @@
 import { removeItems } from '../../../utils/data/removeItems';
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 
-import type { IRenderLayer } from '../../layers/RenderLayer';
 import type { Container, ContainerChild } from '../Container';
 
 /**
@@ -14,8 +13,8 @@ export interface ChildrenHelperMixin<C = ContainerChild>
 {
     /** @internal */
     allowChildren: boolean;
-    addChild<U extends(C | IRenderLayer)[]>(...children: U): U[0];
-    removeChild<U extends(C | IRenderLayer)[]>(...children: U): U[0];
+    addChild<U extends C[]>(...children: U): U[0];
+    removeChild<U extends C[]>(...children: U): U[0];
     /**
      * Removes all children from this container that are within the begin and end indexes.
      * @example
@@ -64,7 +63,7 @@ export interface ChildrenHelperMixin<C = ContainerChild>
      * @see {@link Container#removeChild} For removing specific children
      * @see {@link Container#removeChildren} For removing multiple children
      */
-    removeChildAt<U extends(C | IRenderLayer)>(index: number): U;
+    removeChildAt<U extends C>(index: number): U;
     /**
      * Returns the child at the specified index.
      * @example
@@ -88,7 +87,7 @@ export interface ChildrenHelperMixin<C = ContainerChild>
      * @see {@link Container#children} For direct array access
      * @see {@link Container#getChildByLabel} For name-based lookup
      */
-    getChildAt<U extends(C | IRenderLayer)>(index: number): U;
+    getChildAt<U extends C>(index: number): U;
     /**
      * Changes the position of an existing child in the container.
      * @example
@@ -111,7 +110,7 @@ export interface ChildrenHelperMixin<C = ContainerChild>
      * @see {@link Container#getChildIndex} For getting current index
      * @see {@link Container#swapChildren} For swapping positions
      */
-    setChildIndex(child: C | IRenderLayer, index: number): void;
+    setChildIndex(child: C, index: number): void;
     /**
      * Returns the index position of a child Container instance.
      * @example
@@ -133,7 +132,7 @@ export interface ChildrenHelperMixin<C = ContainerChild>
      * @see {@link Container#setChildIndex} For changing index
      * @see {@link Container#children} For direct array access
      */
-    getChildIndex(child: C | IRenderLayer): number;
+    getChildIndex(child: C): number;
     /**
      * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown.
      * If the child is already in this container, it will be moved to the specified index.
@@ -160,7 +159,7 @@ export interface ChildrenHelperMixin<C = ContainerChild>
      * @see {@link Container#addChild} For adding to the end
      * @see {@link Container#setChildIndex} For moving existing children
      */
-    addChildAt<U extends(C | IRenderLayer)>(child: U, index: number): U;
+    addChildAt<U extends C>(child: U, index: number): U;
     /**
      * Swaps the position of 2 Containers within this container.
      * @example
@@ -186,7 +185,7 @@ export interface ChildrenHelperMixin<C = ContainerChild>
      * @see {@link Container#setChildIndex} For direct index placement
      * @see {@link Container#getChildIndex} For getting current positions
      */
-    swapChildren<U extends(C | IRenderLayer)>(child: U, child2: U): void;
+    swapChildren<U extends C>(child: U, child2: U): void;
     /**
      * Remove the Container from its parent Container. If the Container has no parent, do nothing.
      * @example
@@ -248,7 +247,7 @@ export interface ChildrenHelperMixin<C = ContainerChild>
      * @param {Container} oldChild - The child to replace.
      * @param {Container} newChild - The new child to add.
      */
-    replaceChild<U extends(C), T extends(C)>(oldChild: U, newChild: T): void;
+    replaceChild<U extends C, T extends C>(oldChild: U, newChild: T): void;
 }
 
 /** @internal */
@@ -307,14 +306,14 @@ export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
         throw new RangeError('removeChildren: numeric values are outside the acceptable range.');
     },
 
-    removeChildAt<U extends(ContainerChild | IRenderLayer)>(index: number): U
+    removeChildAt<U extends ContainerChild>(index: number): U
     {
         const child = this.getChildAt<U>(index);
 
         return this.removeChild(child);
     },
 
-    getChildAt<U extends(ContainerChild | IRenderLayer)>(index: number): U
+    getChildAt<U extends ContainerChild>(index: number): U
     {
         if (index < 0 || index >= this.children.length)
         {
@@ -324,7 +323,7 @@ export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
         return this.children[index] as U;
     },
 
-    setChildIndex(child: ContainerChild | IRenderLayer, index: number): void
+    setChildIndex(child: ContainerChild, index: number): void
     {
         if (index < 0 || index >= this.children.length)
         {
@@ -335,9 +334,9 @@ export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
         this.addChildAt(child, index);
     },
 
-    getChildIndex(child: ContainerChild | IRenderLayer): number
+    getChildIndex(child: ContainerChild): number
     {
-        const index = this.children.indexOf(child as ContainerChild);
+        const index = this.children.indexOf(child);
 
         if (index === -1)
         {
@@ -347,7 +346,7 @@ export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
         return index;
     },
 
-    addChildAt<U extends(ContainerChild | IRenderLayer)>(child: U, index: number): U
+    addChildAt<U extends ContainerChild>(child: U, index: number): U
     {
         // #if _DEBUG
         if (!this.allowChildren)
@@ -368,7 +367,7 @@ export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
 
         if (child.parent)
         {
-            const currentIndex = child.parent.children.indexOf(child as ContainerChild);
+            const currentIndex = child.parent.children.indexOf(child);
 
             // If this child is in the container and in the same position, do nothing
             if (child.parent === this && currentIndex === index)
@@ -384,11 +383,11 @@ export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
 
         if (index === children.length)
         {
-            children.push(child as ContainerChild);
+            children.push(child);
         }
         else
         {
-            children.splice(index, 0, child as ContainerChild);
+            children.splice(index, 0, child);
         }
 
         child.parent = this;
@@ -399,18 +398,18 @@ export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
 
         if (renderGroup)
         {
-            renderGroup.addChild(child as ContainerChild);
+            renderGroup.addChild(child);
         }
 
         if (this.sortableChildren) this.sortDirty = true;
 
-        this.emit('childAdded', child as ContainerChild, this, index);
+        this.emit('childAdded', child, this, index);
         child.emit('added', this);
 
         return child;
     },
 
-    swapChildren<U extends(ContainerChild | IRenderLayer)>(child: U, child2: U): void
+    swapChildren<U extends ContainerChild>(child: U, child2: U): void
     {
         if (child === child2)
         {
@@ -420,8 +419,8 @@ export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
         const index1 = this.getChildIndex(child);
         const index2 = this.getChildIndex(child2);
 
-        this.children[index1] = child2 as ContainerChild;
-        this.children[index2] = child as ContainerChild;
+        this.children[index1] = child2;
+        this.children[index2] = child;
 
         const renderGroup = this.renderGroup || this.parentRenderGroup;
 
@@ -474,7 +473,7 @@ export const childrenHelperMixin: ChildrenHelperMixin<ContainerChild> = {
         return child;
     },
 
-    replaceChild<U extends(ContainerChild), T extends(ContainerChild)>(oldChild: U, newChild: T)
+    replaceChild<U extends ContainerChild, T extends ContainerChild>(oldChild: U, newChild: T)
     {
         oldChild.updateLocalTransform();
         this.addChildAt(newChild, this.getChildIndex(oldChild));

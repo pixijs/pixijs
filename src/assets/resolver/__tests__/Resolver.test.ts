@@ -396,6 +396,7 @@ describe('Resolver', () =>
                 resolution: 2,
                 format: 'png',
                 src: 'my-image.png',
+                progressSize: 1000,
             }]
         });
 
@@ -408,6 +409,7 @@ describe('Resolver', () =>
         });
 
         expect(resolver.resolveUrl('test')).toBe('my-image.png');
+        expect(resolver.resolve('test').progressSize).toBe(1000);
         expect(resolver.resolveUrl('explode-sound')).toBe('explode.ogg');
     });
 

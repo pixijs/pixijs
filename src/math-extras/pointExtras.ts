@@ -115,5 +115,17 @@ export const pointExtraMixins: any = {
         outPoint.y = this.y - (2 * dotProduct * normal.y);
 
         return outPoint;
+    },
+    rotate<T extends PointData>(radians: number, outPoint?: T): T
+    {
+        outPoint ??= new Point() as PointData as T;
+
+        const cosTheta = Math.cos(radians);
+        const sinTheta = Math.sin(radians);
+
+        outPoint.x = (this.x * cosTheta) - (this.y * sinTheta);
+        outPoint.y = (this.x * sinTheta) + (this.y * cosTheta);
+
+        return outPoint;
     }
 };
