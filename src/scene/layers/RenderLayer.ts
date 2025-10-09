@@ -4,7 +4,6 @@ import { warn } from '../../utils/logging/warn';
 import { type Bounds } from '../container/bounds/Bounds';
 import { Container } from '../container/Container';
 
-import type EventEmitter from 'eventemitter3';
 // TODO make it clear render layer cannot have 'filters'
 
 /**
@@ -81,21 +80,86 @@ export interface RenderLayerOptions
     sortFunction?: (a: Container, b: Container) => number;
 }
 
-/*
- * Here we are essentially hiding the Container API even though this class extends a Container.
- * This is just so it fits into the current architecture. When users use a RenderLayer,
- * the Container properties will be hidden from them, as they don't do anything in renderLayers.
+/**
+ * The RenderLayer API provides a way to control the rendering order of objects independently
+ * of their logical parent-child relationships in the scene graph.
+ * This allows developers to decouple how objects are transformed
+ * (via their logical parent) from how they are rendered on the screen.
+ *
+ * ### Key Concepts
+ *
+ * #### RenderLayers Control Rendering Order:
+ * - RenderLayers define where in the render stack objects are drawn,
+ * but they do not affect an object's transformations (e.g., position, scale, rotation) or logical hierarchy.
+ * - RenderLayers can be added anywhere in the scene graph.
+ *
+ * #### Logical Parenting Remains Unchanged:
+ * - Objects still have a logical parent for transformations via addChild.
+ * - Assigning an object to a layer does not reparent it.
+ *
+ * #### Explicit Control:
+ * - Developers assign objects to layers using renderLayer.add and remove them using renderLayer.remove.
+ * ---
+ * ### API Details
+ *
+ * #### 1. Creating a RenderLayer
+ * A RenderLayer is a lightweight object responsible for controlling render order.
+ * It has no children or transformations of its own
+ * but can be inserted anywhere in the scene graph to define its render position.
+ * ```js
+ * const layer = new RenderLayer();
+ * app.stage.addChild(layer); // Insert the layer into the scene graph
+ * ```
+ *
+ * #### 2. Adding Objects to a Layer
+ * Use renderLayer.add to assign an object to a layer.
+ * This overrides the object's default render order defined by its logical parent.
+ * ```js
+ * const rect = new Graphics();
+ * container.addChild(rect);    // Add to logical parent
+ * layer.attach(rect);      // Control render order via the layer
+ * ```
+ *
+ * #### 3. Removing Objects from a Layer
+ * To stop an object from being rendered in the layer, use remove.
+ * ```js
+ * layer.remove(rect); // Stop rendering rect via the layer
+ * ```
+ * When an object is removed from its logical parent (removeChild), it is automatically removed from the layer.
+ *
+ * #### 4. Re-Adding Objects to Layers
+ * If an object is re-added to a logical parent, it does not automatically reassign itself to the layer.
+ * Developers must explicitly reassign it.
+ * ```js
+ * container.addChild(rect);    // Logical parent
+ * layer.attach(rect);      // Explicitly reassign to the layer
+ * ```
+ *
+ * #### 5. Layer Position in Scene Graph
+ * A layer's position in the scene graph determines its render priority relative to other layers and objects.
+ * Layers can be inserted anywhere in the scene graph.
+ * ```js
+ * const backgroundLayer = new RenderLayer();
+ * const uiLayer = new RenderLayer();
+ *
+ * app.stage.addChild(backgroundLayer);
+ * app.stage.addChild(world);
+ * app.stage.addChild(uiLayer);
+ * ```
+ * This is a new API and therefore considered experimental at this stage.
+ * While the core is pretty robust, there are still a few tricky issues we need to tackle.
+ * However, even with the known issues below, we believe this API is incredibly useful!
+ *
+ * Known issues:
+ *  - Interaction may not work as expected since hit testing does not account for the visual render order created by layers.
+ *    For example, if an object is visually moved to the front via a layer, hit testing will still use its original position.
+ *  - RenderLayers and their children must all belong to the same renderGroup to work correctly
+ * @category scene
+ * @class
+ * @extends null
+ * @standard
  */
-type ContainerKeys = keyof Container;
-type PartialContainerKeys = Exclude<ContainerKeys,
-'parent' | 'didChange' | '_updateFlags' | keyof EventEmitter | 'parentRenderLayer' |
-'destroyed' | 'layerParentId' | 'sortableChildren' | 'getFastGlobalBounds'
->;
-/** @internal */
-export type IRenderLayer = Omit<RenderLayerClass, PartialContainerKeys>;
-
-/** @standard */
-class RenderLayerClass extends Container
+export class RenderLayer extends Container
 {
     /**
      * Default options for RenderLayer instances. These options control the sorting behavior
@@ -169,6 +233,21 @@ class RenderLayerClass extends Container
      */
     public renderLayerChildren: Container[] = [];
 
+    /** @internal */
+    public parent: Container | null;
+    /** @internal */
+    public didChange: boolean;
+    /** @internal */
+    public _updateFlags: number;
+    /** @internal */
+    public parentRenderLayer: null;
+    /** @internal */
+    public destroyed: boolean;
+    /** @internal */
+    public layerParentId: string;
+    /** @internal */
+    public sortableChildren;
+
     /**
      * Creates a new RenderLayer instance
      * @param options - Configuration options for the RenderLayer
@@ -177,7 +256,7 @@ class RenderLayerClass extends Container
      */
     constructor(options: RenderLayerOptions = {})
     {
-        options = { ...RenderLayerClass.defaultOptions, ...options };
+        options = { ...RenderLayer.defaultOptions, ...options };
 
         super();
 
@@ -352,8 +431,7 @@ class RenderLayerClass extends Container
      * @param _currentLayer - The current render layer being processed.
      * @internal
      */
-    public override collectRenderables(instructionSet: InstructionSet, renderer: Renderer, _currentLayer: RenderLayerClass
-    ): void
+    public override collectRenderables(instructionSet: InstructionSet, renderer: Renderer, _currentLayer: RenderLayer): void
     {
         const layerChildren = this.renderLayerChildren;
         const length = layerChildren.length;
@@ -424,7 +502,7 @@ class RenderLayerClass extends Container
     public override _getGlobalBoundsRecursive(
         factorRenderLayers: boolean,
         bounds: Bounds,
-        _currentLayer: RenderLayerClass,
+        _currentLayer: RenderLayer,
     ): void
     {
         if (!factorRenderLayers) return;
@@ -436,87 +514,168 @@ class RenderLayerClass extends Container
             children[i]._getGlobalBoundsRecursive(true, bounds, this);
         }
     }
-}
 
-/**
- * The RenderLayer API provides a way to control the rendering order of objects independently
- * of their logical parent-child relationships in the scene graph.
- * This allows developers to decouple how objects are transformed
- * (via their logical parent) from how they are rendered on the screen.
- *
- * ### Key Concepts
- *
- * #### RenderLayers Control Rendering Order:
- * - RenderLayers define where in the render stack objects are drawn,
- * but they do not affect an object's transformations (e.g., position, scale, rotation) or logical hierarchy.
- * - RenderLayers can be added anywhere in the scene graph.
- *
- * #### Logical Parenting Remains Unchanged:
- * - Objects still have a logical parent for transformations via addChild.
- * - Assigning an object to a layer does not reparent it.
- *
- * #### Explicit Control:
- * - Developers assign objects to layers using renderLayer.add and remove them using renderLayer.remove.
- * ---
- * ### API Details
- *
- * #### 1. Creating a RenderLayer
- * A RenderLayer is a lightweight object responsible for controlling render order.
- * It has no children or transformations of its own
- * but can be inserted anywhere in the scene graph to define its render position.
- * ```js
- * const layer = new RenderLayer();
- * app.stage.addChild(layer); // Insert the layer into the scene graph
- * ```
- *
- * #### 2. Adding Objects to a Layer
- * Use renderLayer.add to assign an object to a layer.
- * This overrides the object's default render order defined by its logical parent.
- * ```js
- * const rect = new Graphics();
- * container.addChild(rect);    // Add to logical parent
- * layer.attach(rect);      // Control render order via the layer
- * ```
- *
- * #### 3. Removing Objects from a Layer
- * To stop an object from being rendered in the layer, use remove.
- * ```js
- * layer.remove(rect); // Stop rendering rect via the layer
- * ```
- * When an object is removed from its logical parent (removeChild), it is automatically removed from the layer.
- *
- * #### 4. Re-Adding Objects to Layers
- * If an object is re-added to a logical parent, it does not automatically reassign itself to the layer.
- * Developers must explicitly reassign it.
- * ```js
- * container.addChild(rect);    // Logical parent
- * layer.attach(rect);      // Explicitly reassign to the layer
- * ```
- *
- * #### 5. Layer Position in Scene Graph
- * A layer's position in the scene graph determines its render priority relative to other layers and objects.
- * Layers can be inserted anywhere in the scene graph.
- * ```js
- * const backgroundLayer = new RenderLayer();
- * const uiLayer = new RenderLayer();
- *
- * app.stage.addChild(backgroundLayer);
- * app.stage.addChild(world);
- * app.stage.addChild(uiLayer);
- * ```
- * This is a new API and therefore considered experimental at this stage.
- * While the core is pretty robust, there are still a few tricky issues we need to tackle.
- * However, even with the known issues below, we believe this API is incredibly useful!
- *
- * Known issues:
- *  - Interaction may not work as expected since hit testing does not account for the visual render order created by layers.
- *    For example, if an object is visually moved to the front via a layer, hit testing will still use its original position.
- *  - RenderLayers and their children must all belong to the same renderGroup to work correctly
- * @category scene
- * @class
- * @extends null
- * @standard
- */
-export const RenderLayer = RenderLayerClass as {
-    new (options?: RenderLayerOptions): IRenderLayer;
-};
+    /**
+     * @inheritdoc
+     * @internal
+     */
+    public getFastGlobalBounds(factorRenderLayers?: boolean, bounds?: Bounds): Bounds
+    {
+        return super.getFastGlobalBounds(factorRenderLayers, bounds);
+    }
+    /**
+     * This method is not available in RenderLayer.
+     *
+     * Calling this method will throw an error. Please use `RenderLayer.attach()` instead.
+     * @param {...any} _children
+     * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
+     */
+    public override addChild<U extends Container[]>(..._children: U): never
+    {
+        throw new Error(
+            'RenderLayer.addChild() is not available. Please use RenderLayer.attach()',
+        );
+    }
+    /**
+     * This method is not available in RenderLayer.
+     * Calling this method will throw an error. Please use `RenderLayer.detach()` instead.
+     * @param {...any} _children
+     * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
+     */
+    public override removeChild<U extends Container[]>(..._children: U): never
+    {
+        throw new Error(
+            'RenderLayer.removeChild() is not available. Please use RenderLayer.detach()',
+        );
+    }
+    /**
+     * This method is not available in RenderLayer.
+     *
+     * Calling this method will throw an error. Please use `RenderLayer.detach()` instead.
+     * @param {number} [_beginIndex]
+     * @param {number} [_endIndex]
+     * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
+     */
+    public override removeChildren(_beginIndex?: number, _endIndex?: number): never
+    {
+        throw new Error(
+            'RenderLayer.removeChildren() is not available. Please use RenderLayer.detach()',
+        );
+    }
+    /**
+     * This method is not available in RenderLayer.
+     *
+     * Calling this method will throw an error.
+     * @param {number} _index
+     * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
+     */
+    public override removeChildAt(_index: number): never
+    {
+        throw new Error(
+            'RenderLayer.removeChildAt() is not available',
+        );
+    }
+    /**
+     * This method is not available in RenderLayer.
+     *
+     * Calling this method will throw an error.
+     * @param {number} _index
+     * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
+     */
+    public override getChildAt(_index: number): never
+    {
+        throw new Error(
+            'RenderLayer.getChildAt() is not available',
+        );
+    }
+    /**
+     * This method is not available in RenderLayer.
+     *
+     * Calling this method will throw an error.
+     * @param {Container} _child
+     * @param {number} _index
+     * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
+     */
+    public override setChildIndex(_child: Container, _index: number): never
+    {
+        throw new Error(
+            'RenderLayer.setChildIndex() is not available',
+        );
+    }
+    /**
+     * This method is not available in RenderLayer.
+     *
+     * Calling this method will throw an error.
+     * @param {Container} _child
+     * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
+     */
+    public override getChildIndex(_child: Container): never
+    {
+        throw new Error(
+            'RenderLayer.getChildIndex() is not available',
+        );
+    }
+    /**
+     * This method is not available in RenderLayer.
+     *
+     * Calling this method will throw an error.
+     * @param {Container} _child
+     * @param {number} _index
+     * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
+     */
+    public override addChildAt<U extends Container>(_child: U, _index: number): never
+    {
+        throw new Error(
+            'RenderLayer.addChildAt() is not available',
+        );
+    }
+    /**
+     * This method is not available in RenderLayer.
+     *
+     * Calling this method will throw an error.
+     * @param {Container} _child
+     * @param {Container} _child2
+     * @ignore
+     */
+    public override swapChildren<U extends Container>(_child: U, _child2: U): never
+    {
+        throw new Error(
+            'RenderLayer.swapChildren() is not available',
+        );
+    }
+
+    /**
+     * This method is not available in RenderLayer.
+     *
+     * Calling this method will throw an error.
+     * @param _child - The child to reparent
+     * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
+     */
+    public override reparentChild(..._child: Container[]): never
+    {
+        throw new Error('RenderLayer.reparentChild() is not available with the render layer');
+    }
+
+    /**
+     * This method is not available in RenderLayer.
+     *
+     * Calling this method will throw an error.
+     * @param _child - The child to reparent
+     * @param _index - The index to reparent the child to
+     * @throws {Error} Always throws an error as this method is not available.
+     * @ignore
+     */
+    public override reparentChildAt(_child: Container, _index: number): never
+    {
+        throw new Error('RenderLayer.reparentChildAt() is not available with the render layer');
+    }
+}

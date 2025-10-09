@@ -1,7 +1,7 @@
 import { type InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
 import { type InstructionPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
 import { type Renderer, type RenderPipes } from '../../../rendering/renderers/types';
-import { type IRenderLayer } from '../../layers/RenderLayer';
+import { type RenderLayer } from '../../layers/RenderLayer';
 
 import type { Container } from '../Container';
 
@@ -19,33 +19,33 @@ export interface CollectRenderablesMixin
      * This method decides whether to use a simple or advanced collection method based on the container's properties.
      * @param {InstructionSet} instructionSet - The set of instructions to which the renderables will be added.
      * @param {Renderer} renderer - The renderer responsible for rendering the scene.
-     * @param {IRenderLayer} currentLayer - The current render layer being processed.
+     * @param {RenderLayer} currentLayer - The current render layer being processed.
      * @internal
      */
-    collectRenderables(instructionSet: InstructionSet, renderer: Renderer, currentLayer: IRenderLayer): void;
+    collectRenderables(instructionSet: InstructionSet, renderer: Renderer, currentLayer: RenderLayer): void;
 
     /**
      * Collects renderables using a simple method, suitable for containers marked as simple.
      * This method iterates over the container's children and adds their renderables to the instruction set.
      * @param {InstructionSet} instructionSet - The set of instructions to which the renderables will be added.
      * @param {Renderer} renderer - The renderer responsible for rendering the scene.
-     * @param {IRenderLayer} currentLayer - The current render layer being processed.
+     * @param {RenderLayer} currentLayer - The current render layer being processed.
      * @internal
      */
-    collectRenderablesSimple(instructionSet: InstructionSet, renderer: Renderer, currentLayer: IRenderLayer): void;
+    collectRenderablesSimple(instructionSet: InstructionSet, renderer: Renderer, currentLayer: RenderLayer): void;
 
     /**
      * Collects renderables using an advanced method, suitable for containers with complex processing needs.
      * This method handles additional effects and transformations that may be applied to the renderables.
      * @param {InstructionSet} instructionSet - The set of instructions to which the renderables will be added.
      * @param {Renderer} renderer - The renderer responsible for rendering the scene.
-     * @param {IRenderLayer} currentLayer - The current render layer being processed.
+     * @param {RenderLayer} currentLayer - The current render layer being processed.
      * @internal
      */
     collectRenderablesWithEffects(
         instructionSet: InstructionSet,
         renderer: Renderer,
-        currentLayer: IRenderLayer,
+        currentLayer: RenderLayer,
     ): void;
 }
 
@@ -55,7 +55,7 @@ export interface CollectRenderablesMixin
  * @internal
  */
 export const collectRenderablesMixin: Partial<Container> = {
-    collectRenderables(instructionSet: InstructionSet, renderer: Renderer, currentLayer: IRenderLayer): void
+    collectRenderables(instructionSet: InstructionSet, renderer: Renderer, currentLayer: RenderLayer): void
     {
         // Skip processing if the container is not in the current render layer or is not fully visible.
         if ((this.parentRenderLayer && this.parentRenderLayer !== currentLayer)
@@ -84,7 +84,7 @@ export const collectRenderablesMixin: Partial<Container> = {
     collectRenderablesSimple(
         instructionSet: InstructionSet,
         renderer: Renderer,
-        currentLayer: IRenderLayer,
+        currentLayer: RenderLayer,
     ): void
     {
         const children = this.children;
@@ -99,7 +99,7 @@ export const collectRenderablesMixin: Partial<Container> = {
     collectRenderablesWithEffects(
         instructionSet: InstructionSet,
         renderer: Renderer,
-        currentLayer: IRenderLayer,
+        currentLayer: RenderLayer,
     ): void
     {
         const { renderPipes } = renderer;
