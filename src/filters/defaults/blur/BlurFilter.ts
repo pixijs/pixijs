@@ -8,6 +8,7 @@ import type { RenderSurface } from '../../../rendering/renderers/shared/renderTa
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { FilterOptions } from '../../Filter';
 import type { FilterSystem } from '../../FilterSystem';
+import type { MakeRequired } from '~/utils';
 
 /**
  * Configuration options for the BlurFilter.
@@ -141,7 +142,7 @@ export class BlurFilter extends Filter
      * @see {@link BlurFilterOptions} For detailed options
      * @see {@link BlurFilter} The filter that uses these options
      */
-    public static defaultOptions: Partial<BlurFilterOptions> = {
+    public static defaultOptions: MakeRequired<BlurFilterOptions, 'strength' | 'quality' | 'kernelSize'> = {
         /** The strength of the blur filter. */
         strength: 8,
         /** The quality of the blur filter. */
@@ -188,9 +189,9 @@ export class BlurFilter extends Filter
             if (args[3] !== undefined)options.kernelSize = args[3];
         }
 
-        options = { ...BlurFilterPass.defaultOptions, ...options };
+        const _options = { ...BlurFilter.defaultOptions, ...options };
 
-        const { strength, strengthX, strengthY, quality, ...rest } = options;
+        const { strength, strengthX, strengthY, quality, ...rest } = _options;
 
         super({
             ...rest,
@@ -198,8 +199,8 @@ export class BlurFilter extends Filter
             resources: {}
         });
 
-        this.blurXFilter = new BlurFilterPass({ horizontal: true, ...options });
-        this.blurYFilter = new BlurFilterPass({ horizontal: false, ...options });
+        this.blurXFilter = new BlurFilterPass({ horizontal: true, ..._options });
+        this.blurYFilter = new BlurFilterPass({ horizontal: false, ..._options });
 
         this.quality = quality;
         this.strengthX = strengthX ?? strength;
