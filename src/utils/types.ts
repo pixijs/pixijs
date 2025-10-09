@@ -11,3 +11,10 @@ export type ArrayFixed<T, L extends number> = [ T, ...Array<T> ] & { length: L }
  * @advanced
  */
 export type Dict<T> = {[key: string]: T};
+
+/**
+ * A utility type to make specific keys required in type T.
+ * @category utils
+ * @advanced
+ */
+export type MakeRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
