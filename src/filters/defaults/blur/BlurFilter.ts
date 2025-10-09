@@ -168,7 +168,7 @@ export class BlurFilter extends Filter
      */
     constructor(options?: BlurFilterOptions);
     /** @deprecated since 8.0.0 */
-    constructor(strength?: number, quality?: number, resolution?: number | null, kernelSize?: number);
+    constructor(strength?: number, quality?: number, resolution?: number, kernelSize?: number);
     constructor(...args: [BlurFilterOptions?] | [number?, number?, (number | null)?, number?])
     {
         let options = args[0] ?? {};
