@@ -322,7 +322,7 @@ export class Loader
             data: {}
         }));
 
-        const total = assetsToLoad.length;
+        const total = assetsToLoad.reduce((sum, asset) => sum + (asset.progressSize || 1), 0);
 
         const promises: Promise<void>[] = assetsToLoad.map(async (asset: ResolvedAsset) =>
         {
@@ -332,7 +332,8 @@ export class Loader
 
             await this._loadAssetWithRetry(url, asset, { onProgress, onError, strategy, retryCount, retryDelay }, assets);
 
-            if (onProgress) onProgress(++count / total);
+            count += (asset.progressSize || 1);
+            if (onProgress) onProgress(count / total);
         });
 
         await Promise.all(promises);

@@ -770,21 +770,28 @@ export class AssetsClass
         const out: Record<string, Record<string, any>> = {};
 
         const keys = Object.keys(resolveResults);
-        let count = 0;
         let total = 0;
+        const counts: number[] = [];
         const _onProgress = () =>
         {
-            onProgress?.(++count / total);
+            onProgress?.(counts.reduce((a, b) => a + b, 0) / total);
         };
-        const promises = keys.map((bundleId) =>
+        const promises = keys.map((bundleId, i) =>
         {
             const resolveResult = resolveResults[bundleId];
             const values = Object.values(resolveResult);
             const totalAssetsToLoad = [...new Set(values.flat())] as ResolvedAsset[];
 
-            total += totalAssetsToLoad.length;
+            const progressSize = totalAssetsToLoad.reduce((sum, asset) => sum + (asset.progressSize || 1), 0);
 
-            return this._mapLoadToResolve(resolveResult, _onProgress)
+            counts.push(0);
+            total += progressSize;
+
+            return this._mapLoadToResolve(resolveResult, (e) =>
+            {
+                counts[i] = e * progressSize;
+                _onProgress();
+            })
                 .then((resolveResult) =>
                 {
                     out[bundleId] = resolveResult;

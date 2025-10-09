@@ -562,5 +562,100 @@ describe('Point', () =>
             expect(oc.y).toEqual(-86);
         });
     });
+
+    describe('rotate', () =>
+    {
+        it('should rotate component-wise', () =>
+        {
+            const radians = 45 * (Math.PI / 180);
+            const cosTheta = Math.cos(radians);
+            const sinTheta = Math.sin(radians);
+            const rotated = {
+                x: (2 * cosTheta) - (3 * sinTheta),
+                y: (2 * sinTheta) + (3 * cosTheta)
+            };
+
+            // Point
+            const a = new Point(2, 3);
+            const c = a.rotate(radians);
+
+            expect(c.x).toBeCloseTo(rotated.x, 0.001);
+            expect(c.y).toBeCloseTo(rotated.y, 0.001);
+
+            // ObservablePoint
+            const oa = new ObservablePoint(observer, 2, 3);
+            const oc = oa.rotate(radians);
+
+            expect(oc.x).toBeCloseTo(rotated.x, 0.001);
+            expect(oc.y).toBeCloseTo(rotated.y, 0.001);
+        });
+
+        it('should return the same reference given', () =>
+        {
+            const radians = 45 * (Math.PI / 180);
+
+            // Point
+            const a = new Point(1, 2);
+            const c = a.rotate(radians, a);
+
+            expect(c).toEqual(a);
+
+            // ObservablePoint
+            const oa = new ObservablePoint(observer, 1, 2);
+            const oc = oa.rotate(radians, oa);
+
+            expect(oc).toEqual(oa);
+        });
+
+        it('can output into any IPointData given', () =>
+        {
+            const radians = 45 * (Math.PI / 180);
+            const cosTheta = Math.cos(radians);
+            const sinTheta = Math.sin(radians);
+            const rotated = {
+                x: (2 * cosTheta) - (3 * sinTheta),
+                y: (2 * sinTheta) + (3 * cosTheta)
+            };
+
+            // Point
+            const a = new Point(2, 3);
+            const c = a.rotate(radians, { x: 0, y: 0 });
+
+            expect(c.x).toBeCloseTo(rotated.x, 0.001);
+            expect(c.y).toBeCloseTo(rotated.y, 0.001);
+
+            // ObservablePoint
+            const oa = new ObservablePoint(observer, 2, 3);
+            const oc = oa.rotate(radians, { x: 0, y: 0 });
+
+            expect(oc.x).toBeCloseTo(rotated.x, 0.001);
+            expect(oc.y).toBeCloseTo(rotated.y, 0.001);
+        });
+
+        it('can take any IPointData as other input', () =>
+        {
+            const radians = 45 * (Math.PI / 180);
+            const cosTheta = Math.cos(radians);
+            const sinTheta = Math.sin(radians);
+            const rotated = {
+                x: (2 * cosTheta) - (3 * sinTheta),
+                y: (2 * sinTheta) + (3 * cosTheta)
+            };
+
+            // Point
+            const a = new Point(2, 3);
+            const c = a.rotate(radians, { x: 4, y: 5 });
+
+            expect(c.x).toBeCloseTo(rotated.x, 0.001);
+            expect(c.y).toBeCloseTo(rotated.y, 0.001);
+
+            // ObservablePoint
+            const oa = new ObservablePoint(observer, 2, 3);
+            const oc = oa.rotate(radians, { x: 4, y: 5 });
+
+            expect(oc.x).toBeCloseTo(rotated.x, 0.001);
+            expect(oc.y).toBeCloseTo(rotated.y, 0.001);
+        });
+    });
 });
 

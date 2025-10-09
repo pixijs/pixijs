@@ -3,7 +3,7 @@ import { type RenderPipe } from '../../rendering/renderers/shared/instructions/R
 import { type Renderer } from '../../rendering/renderers/types';
 import { Bounds } from '../container/bounds/Bounds';
 import { Container, type ContainerOptions } from '../container/Container';
-import { type IRenderLayer } from '../layers/RenderLayer';
+import { type RenderLayer } from '../layers/RenderLayer';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';
@@ -178,7 +178,7 @@ export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Cont
     public override collectRenderablesSimple(
         instructionSet: InstructionSet,
         renderer: Renderer,
-        currentLayer: IRenderLayer,
+        currentLayer: RenderLayer,
     ): void
     {
         const { renderPipes } = renderer;

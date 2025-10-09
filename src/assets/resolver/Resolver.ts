@@ -479,7 +479,12 @@ export class Resolver
         assetArray.forEach((asset) =>
         {
             const { src } = asset;
-            let { data, format, loadParser: userDefinedLoadParser, parser: userDefinedParser } = asset;
+            let {
+                data,
+                format,
+                loadParser: userDefinedLoadParser,
+                parser: userDefinedParser,
+            } = asset;
 
             // src can contain an unresolved asset itself
             // so we need to merge that data with the current asset
@@ -549,6 +554,7 @@ export class Resolver
                         format,
                         loadParser: userDefinedLoadParser,
                         parser: userDefinedParser,
+                        progressSize: asset.progressSize,
                     });
 
                     resolvedAssets.push(formattedAsset);
@@ -793,9 +799,10 @@ export class Resolver
         loadParser?: string,
         parser?: string,
         format?: string,
+        progressSize?: number,
     }): ResolvedAsset
     {
-        const { aliases, data: assetData, loadParser, parser, format } = data;
+        const { aliases, data: assetData, loadParser, parser, format, progressSize } = data;
 
         if (this._basePath || this._rootPath)
         {
@@ -808,6 +815,10 @@ export class Resolver
         formattedAsset.loadParser = loadParser ?? formattedAsset.loadParser;
         formattedAsset.parser = parser ?? formattedAsset.parser;
         formattedAsset.format = format ?? formattedAsset.format ?? getUrlExtension(formattedAsset.src);
+        if (progressSize !== undefined)
+        {
+            formattedAsset.progressSize = progressSize;
+        }
 
         return formattedAsset;
     }
