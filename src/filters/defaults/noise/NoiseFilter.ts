@@ -1,12 +1,10 @@
 import { GlProgram } from '../../../rendering/renderers/gl/shader/GlProgram';
 import { GpuProgram } from '../../../rendering/renderers/gpu/shader/GpuProgram';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
-import { Filter } from '../../Filter';
+import { Filter, type FilterDefaultOptions, type FilterOptions } from '../../Filter';
 import vertex from '../defaultFilter.vert';
 import fragment from './noise.frag';
 import source from './noise.wgsl';
-
-import type { FilterOptions } from '../../Filter';
 
 /**
  * Configuration options for the NoiseFilter.
@@ -56,6 +54,15 @@ export interface NoiseFilterOptions extends FilterOptions
 }
 
 /**
+ * Default Options for NoiseFilter
+ * @category filters
+ * @standard
+ */
+export type NoiseFilterDefaultOptions = FilterDefaultOptions & {
+    noise: number
+};
+
+/**
  * A filter that adds configurable random noise to rendered content.
  *
  * This filter generates pixel noise based on a noise intensity value and an optional seed.
@@ -97,7 +104,8 @@ export class NoiseFilter extends Filter
      * const filter = new NoiseFilter(); // Will use noise 0.7 by default
      * ```
      */
-    public static defaultOptions: NoiseFilterOptions = {
+    public static defaultOptions: NoiseFilterDefaultOptions = {
+        ...Filter.defaultOptions,
         noise: 0.5,
     };
 
@@ -106,8 +114,6 @@ export class NoiseFilter extends Filter
      */
     constructor(options: NoiseFilterOptions = {})
     {
-        options = { ...NoiseFilter.defaultOptions, ...options };
-
         const gpuProgram = GpuProgram.from({
             vertex: {
                 source,
@@ -125,7 +131,7 @@ export class NoiseFilter extends Filter
             name: 'noise-filter'
         });
 
-        const { noise, seed, ...rest } = options;
+        const { noise, seed, ...rest } = { ...NoiseFilter.defaultOptions, ...options };
 
         super({
             ...rest,

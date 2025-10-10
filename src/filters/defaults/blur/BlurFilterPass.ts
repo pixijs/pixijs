@@ -7,7 +7,7 @@ import { generateBlurProgram } from './gpu/generateBlurProgram';
 import type { RenderSurface } from '../../../rendering/renderers/shared/renderTarget/RenderTargetSystem';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import type { FilterSystem } from '../../FilterSystem';
-import type { BlurFilterOptions } from './BlurFilter';
+import type { BlurFilterDefaultOptions, BlurFilterOptions } from './BlurFilter';
 
 /**
  * Options for BlurFilterPass
@@ -19,6 +19,17 @@ export interface BlurFilterPassOptions extends BlurFilterOptions
     /** Do pass along the x-axis (`true`) or y-axis (`false`). */
     horizontal: boolean;
 }
+
+/**
+ * Default Options for BlurFilterPass
+ * @category filters
+ * @internal
+ */
+export type BlurFilterPassDefaultOptions = BlurFilterDefaultOptions & {
+    strength: number,
+    quality: number,
+    kernelSize: number,
+};
 
 /**
  * The BlurFilterPass applies a horizontal or vertical Gaussian blur to an object.
@@ -36,7 +47,8 @@ export interface BlurFilterPassOptions extends BlurFilterOptions
 export class BlurFilterPass extends Filter
 {
     /** Default blur filter pass options */
-    public static defaultOptions: Partial<BlurFilterPassOptions> = {
+    public static defaultOptions: BlurFilterPassDefaultOptions = {
+        ...Filter.defaultOptions,
         /** The strength of the blur filter. */
         strength: 8,
         /** The quality of the blur filter. */
@@ -64,10 +76,10 @@ export class BlurFilterPass extends Filter
      */
     constructor(options: BlurFilterPassOptions)
     {
-        options = { ...BlurFilterPass.defaultOptions, ...options };
+        const _options = { ...BlurFilterPass.defaultOptions, ...options };
 
-        const glProgram = generateBlurGlProgram(options.horizontal, options.kernelSize);
-        const gpuProgram = generateBlurProgram(options.horizontal, options.kernelSize);
+        const glProgram = generateBlurGlProgram(_options.horizontal, _options.kernelSize);
+        const gpuProgram = generateBlurProgram(_options.horizontal, _options.kernelSize);
 
         super({
             glProgram,
@@ -77,16 +89,16 @@ export class BlurFilterPass extends Filter
                     uStrength: { value: 0, type: 'f32' },
                 }
             },
-            ...options
+            ..._options
         });
 
-        this.horizontal = options.horizontal;
+        this.horizontal = _options.horizontal;
 
         this._quality = 0;
 
-        this.quality = options.quality;
+        this.quality = _options.quality;
 
-        this.blur = options.strength;
+        this.blur = _options.strength;
 
         this._uniforms = this.resources.blurUniforms.uniforms;
     }

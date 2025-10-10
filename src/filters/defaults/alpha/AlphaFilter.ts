@@ -1,12 +1,10 @@
 import { GlProgram } from '../../../rendering/renderers/gl/shader/GlProgram';
 import { GpuProgram } from '../../../rendering/renderers/gpu/shader/GpuProgram';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
-import { Filter } from '../../Filter';
+import { Filter, type FilterDefaultOptions, type FilterOptions } from '../../Filter';
 import vertex from '../defaultFilter.vert';
 import fragment from './alpha.frag';
 import source from './alpha.wgsl';
-
-import type { FilterOptions } from '../../Filter';
 
 /**
  * Options for AlphaFilter
@@ -19,8 +17,17 @@ export interface AlphaFilterOptions extends FilterOptions
      * Amount of alpha from 0 to 1, where 0 is transparent
      * @default 1
      */
-    alpha: number;
+    alpha?: number;
 }
+
+/**
+ * Default Options for AlphaFilter
+ * @category filters
+ * @standard
+ */
+export type AlphaFilterDefaultOptions = FilterDefaultOptions & {
+    alpha: number
+};
 
 /**
  * Simplest filter - applies alpha.
@@ -59,7 +66,8 @@ export class AlphaFilter extends Filter
      * const filter = new AlphaFilter(); // Uses default alpha of 0.5
      * ```
      */
-    public static defaultOptions: AlphaFilterOptions = {
+    public static defaultOptions: AlphaFilterDefaultOptions = {
+        ...Filter.defaultOptions,
         /**
          * Amount of alpha transparency to apply.
          * - 0 = fully transparent
