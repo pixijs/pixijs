@@ -1,12 +1,11 @@
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
 import { RendererType } from '../../../rendering/renderers/types';
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
-import { Filter } from '../../Filter';
+import { Filter, type FilterDefaultOptions, type FilterOptions } from '../../Filter';
 import { BlurFilterPass } from './BlurFilterPass';
 
 import type { RenderSurface } from '../../../rendering/renderers/shared/renderTarget/RenderTargetSystem';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import type { FilterOptions } from '../../Filter';
 import type { FilterSystem } from '../../FilterSystem';
 
 /**
@@ -84,12 +83,12 @@ export interface BlurFilterOptions extends FilterOptions
  * @category filters
  * @internal
  */
-export interface BlurFilterDefaultOptions extends Required<typeof Filter.defaultOptions>
+export type BlurFilterDefaultOptions = FilterDefaultOptions &
 {
     strength: number,
     quality: number,
     kernelSize: number,
-}
+};
 
 /**
  * The BlurFilter applies a Gaussian blur to an object.

@@ -25,12 +25,11 @@ export interface BlurFilterPassOptions extends BlurFilterOptions
  * @category filters
  * @internal
  */
-export interface BlurFilterPassDefaultOptions extends BlurFilterDefaultOptions
-{
+export type BlurFilterPassDefaultOptions = BlurFilterDefaultOptions & {
     strength: number,
     quality: number,
     kernelSize: number,
-}
+};
 
 /**
  * The BlurFilterPass applies a horizontal or vertical Gaussian blur to an object.
