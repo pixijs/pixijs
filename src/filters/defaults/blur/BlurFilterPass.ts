@@ -30,7 +30,6 @@ export interface BlurFilterPassDefaultOptions extends BlurFilterDefaultOptions
     strength: number,
     quality: number,
     kernelSize: number,
-    horizontal: boolean;
 }
 
 /**
@@ -57,8 +56,6 @@ export class BlurFilterPass extends Filter
         quality: 4,
         /** The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15. */
         kernelSize: 5,
-        /** Do pass along the x-axis (`true`) or y-axis (`false`). */
-        horizontal: false,
     };
 
     /** Do pass along the x-axis (`true`) or y-axis (`false`). */
