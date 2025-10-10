@@ -6,7 +6,6 @@ import { BlurFilterPass } from './BlurFilterPass';
 
 import type { RenderSurface } from '../../../rendering/renderers/shared/renderTarget/RenderTargetSystem';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import type { MakeRequired } from '../../../utils';
 import type { FilterOptions } from '../../Filter';
 import type { FilterSystem } from '../../FilterSystem';
 
@@ -81,6 +80,18 @@ export interface BlurFilterOptions extends FilterOptions
 }
 
 /**
+ * Default Options for BlurFilterPass
+ * @category filters
+ * @internal
+ */
+export interface BlurFilterDefaultOptions extends Required<typeof Filter.defaultOptions>
+{
+    strength: number,
+    quality: number,
+    kernelSize: number,
+}
+
+/**
  * The BlurFilter applies a Gaussian blur to an object.
  * The strength of the blur can be set for the x-axis and y-axis separately.
  * @example
@@ -142,7 +153,8 @@ export class BlurFilter extends Filter
      * @see {@link BlurFilterOptions} For detailed options
      * @see {@link BlurFilter} The filter that uses these options
      */
-    public static defaultOptions: MakeRequired<BlurFilterOptions, 'strength' | 'quality' | 'kernelSize'> = {
+    public static defaultOptions: BlurFilterDefaultOptions = {
+        ...Filter.defaultOptions,
         /** The strength of the blur filter. */
         strength: 8,
         /** The quality of the blur filter. */

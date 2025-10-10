@@ -6,9 +6,8 @@ import { generateBlurProgram } from './gpu/generateBlurProgram';
 
 import type { RenderSurface } from '../../../rendering/renderers/shared/renderTarget/RenderTargetSystem';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import type { MakeRequired } from '../../../utils';
 import type { FilterSystem } from '../../FilterSystem';
-import type { BlurFilterOptions } from './BlurFilter';
+import type { BlurFilterDefaultOptions, BlurFilterOptions } from './BlurFilter';
 
 /**
  * Options for BlurFilterPass
@@ -18,6 +17,19 @@ import type { BlurFilterOptions } from './BlurFilter';
 export interface BlurFilterPassOptions extends BlurFilterOptions
 {
     /** Do pass along the x-axis (`true`) or y-axis (`false`). */
+    horizontal: boolean;
+}
+
+/**
+ * Default Options for BlurFilterPass
+ * @category filters
+ * @internal
+ */
+export interface BlurFilterPassDefaultOptions extends BlurFilterDefaultOptions
+{
+    strength: number,
+    quality: number,
+    kernelSize: number,
     horizontal: boolean;
 }
 
@@ -37,19 +49,17 @@ export interface BlurFilterPassOptions extends BlurFilterOptions
 export class BlurFilterPass extends Filter
 {
     /** Default blur filter pass options */
-    public static defaultOptions: MakeRequired<
-        BlurFilterPassOptions,
-        'strength' | 'quality' | 'kernelSize' | 'horizontal'
-    > = {
+    public static defaultOptions: BlurFilterPassDefaultOptions = {
+        ...Filter.defaultOptions,
         /** The strength of the blur filter. */
-            strength: 8,
-            /** The quality of the blur filter. */
-            quality: 4,
-            /** The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15. */
-            kernelSize: 5,
-            /** Do pass along the x-axis (`true`) or y-axis (`false`). */
-            horizontal: false,
-        };
+        strength: 8,
+        /** The quality of the blur filter. */
+        quality: 4,
+        /** The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15. */
+        kernelSize: 5,
+        /** Do pass along the x-axis (`true`) or y-axis (`false`). */
+        horizontal: false,
+    };
 
     /** Do pass along the x-axis (`true`) or y-axis (`false`). */
     public horizontal: boolean;

@@ -131,7 +131,7 @@ export type FilterAntialias = 'on' | 'off' | 'inherit';
 export class Filter extends Shader
 {
     /** The default filter settings */
-    public static defaultOptions: FilterOptions = {
+    public static defaultOptions: Required<FilterOptions> = {
         blendMode: 'normal',
         resolution: 1,
         padding: 0,
