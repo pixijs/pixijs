@@ -300,7 +300,7 @@ export class Geometry extends EventEmitter<{
             this.buffers.forEach((buffer) => buffer.destroy());
         }
 
-        this.indexBuffer.destroy();
+        this.indexBuffer?.destroy();
         (this.attributes as null) = null;
         (this.buffers as null) = null;
         (this.indexBuffer as null) = null;
