@@ -293,7 +293,7 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
         context.off('destroy', this.onGraphicsContextDestroy, this);
 
         this._gpuContextHash[context.uid] = null;
-        this._renderer.renderableGC.increaseNullCount(this._gpuContextBinding);
+        this._renderer.renderableGC._increaseNullCount(this._gpuContextBinding);
     }
 
     private _cleanGraphicsContextData(context: GraphicsContext)
@@ -308,7 +308,7 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
 
                 // we will rebuild this...
                 this._graphicsDataContextHash[context.uid] = null;
-                this._renderer.renderableGC.increaseNullCount(this._graphicsDataBinding);
+                this._renderer.renderableGC._increaseNullCount(this._graphicsDataBinding);
             }
         }
 

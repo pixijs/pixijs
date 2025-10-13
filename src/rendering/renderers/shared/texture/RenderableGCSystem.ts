@@ -258,7 +258,12 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
         return managedArray;
     }
 
-    public increaseNullCount(item: ManagedItem)
+    /**
+     * Increases the null count for a managed item and cleans it if the count exceeds the threshold.
+     * @param item - The managed item to increase null count for
+     * @internal
+     */
+    public _increaseNullCount(item: ManagedItem)
     {
         item.nullCount++;
         if (item.nullCount > this.renderableMaxNullCount)

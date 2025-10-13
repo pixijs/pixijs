@@ -298,7 +298,7 @@ export class GlBufferSystem implements System
         buffer.off('destroy', this.onBufferDestroy, this);
 
         this._gpuBuffers[buffer.uid] = null;
-        this._renderer.renderableGC.increaseNullCount(this._gpuBufferBinding);
+        this._renderer.renderableGC._increaseNullCount(this._gpuBufferBinding);
     }
 
     /**

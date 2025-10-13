@@ -555,7 +555,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
                 if (gpuRenderTarget)
                 {
                     this._gpuRenderTargetHash[renderTarget.uid] = null;
-                    this._renderer.renderableGC.increaseNullCount(this._gpuRenderTargetBinding);
+                    this._renderer.renderableGC._increaseNullCount(this._gpuRenderTargetBinding);
                     this.adaptor.destroyGpuRenderTarget(gpuRenderTarget);
                 }
             });
