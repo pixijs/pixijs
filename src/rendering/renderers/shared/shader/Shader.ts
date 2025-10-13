@@ -219,6 +219,9 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
     public _uniformBindMap: Record<number, Record<number, string>> = Object.create(null);
     private readonly _ownedBindGroups: BindGroup[] = [];
 
+    /** @internal */
+    public _destroyed: boolean = false;
+
     /**
      * Fired after rendering finishes.
      * @event Shader#destroy
@@ -434,6 +437,7 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
      */
     public destroy(destroyPrograms = false): void
     {
+        if (this._destroyed) return;
         this.emit('destroy', this);
 
         if (destroyPrograms)
@@ -458,6 +462,7 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
 
         this.resources = null;
         this.groups = null;
+        this._destroyed = true;
     }
 
     /**

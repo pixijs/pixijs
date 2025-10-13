@@ -1,5 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { getTextureBatchBindGroup } from '../../../rendering/batcher/gpu/getTextureBatchBindGroup';
+import { type BatcherOptions } from '../../../rendering/batcher/shared/Batcher';
 import { DefaultBatcher } from '../../../rendering/batcher/shared/DefaultBatcher';
 import { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
 import { type ManagedItem } from '../../../rendering/renderers/shared/texture/RenderableGCSystem';
@@ -49,19 +50,11 @@ export class GraphicsContextRenderData
     public batcher: DefaultBatcher;
     public instructions = new InstructionSet();
 
-    public init(maxTextures: number)
+    public init(options: BatcherOptions | number)
     {
-        this.batcher = new DefaultBatcher({
-            maxTextures,
-        });
+        const maxTextures = typeof options === 'number' ? options : options.maxTextures;
 
-        this.instructions.reset();
-    }
-
-    public reset()
-    {
-        this.batcher.destroy();
-        this.batcher = null;
+        this.batcher ? this.batcher._updateMaxTextures(maxTextures) : this.batcher = new DefaultBatcher({ maxTextures });
         this.instructions.reset();
     }
 

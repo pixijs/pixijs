@@ -89,6 +89,18 @@ export class DefaultBatcher extends Batcher
         this.shader = defaultShader;
     }
 
+    /**
+     * Updates the maximum number of textures that can be used in the shader.
+     * @param maxTextures - The maximum number of textures that can be used in the shader.
+     * @internal
+     */
+    public _updateMaxTextures(maxTextures: number): void
+    {
+        if (this.shader.maxTextures === maxTextures) return;
+        defaultShader = new DefaultShader(maxTextures);
+        this.shader = defaultShader;
+    }
+
     public override destroy(destroyShader?: boolean): void
     {
         const shader = destroyShader ? true : this.shader !== defaultShader;
