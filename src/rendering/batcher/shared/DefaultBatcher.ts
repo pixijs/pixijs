@@ -103,9 +103,7 @@ export class DefaultBatcher extends Batcher
 
     public override destroy(destroyShader?: boolean): void
     {
-        const shader = destroyShader ? true : this.shader !== defaultShader;
-
-        super.destroy(shader);
+        super.destroy(destroyShader || this.shader !== defaultShader);
     }
 
     /**
