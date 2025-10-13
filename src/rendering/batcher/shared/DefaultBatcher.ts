@@ -89,6 +89,13 @@ export class DefaultBatcher extends Batcher
         this.shader = defaultShader;
     }
 
+    public override destroy(destroyShader?: boolean): void
+    {
+        const shader = destroyShader ? true : this.shader !== defaultShader;
+
+        super.destroy(shader);
+    }
+
     /**
      * Packs the attributes of a DefaultBatchableMeshElement into the provided views.
      * @param element - The DefaultBatchableMeshElement to pack.

@@ -774,7 +774,7 @@ export abstract class Batcher
         }
     }
 
-    public destroy()
+    public destroy(destroyShader = false)
     {
         if (this.batches === null) return;
 
@@ -788,6 +788,15 @@ export abstract class Batcher
         for (let i = 0; i < this._elements.length; i++)
         {
             if (this._elements[i]) this._elements[i]._batch = null;
+        }
+
+        this.geometry.destroy(true);
+        this.geometry = null;
+
+        if (destroyShader && this.shader)
+        {
+            this.shader.destroy(true);
+            this.shader = null;
         }
 
         this._elements = null;

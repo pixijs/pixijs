@@ -1,5 +1,6 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { getAttributeInfoFromFormat } from '../../shared/geometry/utils/getAttributeInfoFromFormat';
+import { type ManagedItem } from '../../shared/texture/RenderableGCSystem';
 import { ensureAttributes } from '../shader/program/ensureAttributes';
 import { getGlTypeFromFormat } from './utils/getGlTypeFromFormat';
 
@@ -50,6 +51,7 @@ export class GlGeometrySystem implements System
     protected _activeVao: WebGLVertexArrayObject;
 
     protected _geometryVaoHash: Record<number, Record<string, WebGLVertexArrayObject>> = Object.create(null);
+    private _geometryVaoBinding: ManagedItem;
 
     /** Renderer that owns this {@link GeometrySystem}. */
     private _renderer: WebGLRenderer;
@@ -64,7 +66,7 @@ export class GlGeometrySystem implements System
         this.hasVao = true;
         this.hasInstance = true;
 
-        this._renderer.renderableGC.addManagedHash(this, '_geometryVaoHash');
+        this._geometryVaoBinding = this._renderer.renderableGC.addManagedHash(this, '_geometryVaoHash');
     }
 
     /** Sets up the renderer context and necessary buffers. */
@@ -307,6 +309,7 @@ export class GlGeometrySystem implements System
             }
 
             this._geometryVaoHash[geometry.uid] = null;
+            this._renderer.renderableGC.increaseNullCount(this._geometryVaoBinding);
         }
     }
 
@@ -488,5 +491,6 @@ export class GlGeometrySystem implements System
         this._activeVao = null;
         this._activeGeometry = null;
         this._geometryVaoHash = null;
+        this._geometryVaoBinding = null;
     }
 }

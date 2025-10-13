@@ -39,6 +39,14 @@ export interface RenderableGCSystemOptions
     renderableGCFrequency: number;
 }
 
+/** @internal */
+export interface ManagedItem
+{
+    hash: string;
+    context: any;
+    nullCount: number;
+}
+
 /**
  * The RenderableGCSystem is responsible for cleaning up GPU resources that are no longer being used.
  *
@@ -118,12 +126,12 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
     private _now: number;
 
     /** Array of hash objects being tracked for cleanup */
-    private readonly _managedHashes: {context: any, hash: string}[] = [];
+    private readonly _managedHashes: ManagedItem[] = [];
     /** ID of the hash cleanup scheduler handler */
     private _hashHandler: number;
 
     /** Array of arrays being tracked for cleanup */
-    private readonly _managedArrays: {context: any, hash: string}[] = [];
+    private readonly _managedArrays: ManagedItem[] = [];
     /** ID of the array cleanup scheduler handler */
     private _arrayHandler: number;
 
@@ -184,6 +192,7 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
                     for (const hash of this._managedHashes)
                     {
                         hash.context[hash.hash] = cleanHash(hash.context[hash.hash]);
+                        hash.nullCount = 0;
                     }
                 },
                 this._frequency
@@ -196,6 +205,7 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
                     for (const array of this._managedArrays)
                     {
                         cleanArray(array.context[array.hash]);
+                        array.nullCount = 0;
                     }
                 },
                 this._frequency
@@ -215,9 +225,13 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
      * @param context - The object containing the hash table
      * @param hash - The property name of the hash table
      */
-    public addManagedHash<T>(context: T, hash: string): void
+    public addManagedHash<T>(context: T, hash: string)
     {
-        this._managedHashes.push({ context, hash: hash as string });
+        const managedHash = { context, hash: hash as string, nullCount: 0 };
+
+        this._managedHashes.push(managedHash);
+
+        return managedHash;
     }
 
     /**
@@ -225,9 +239,30 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
      * @param context - The object containing the array
      * @param hash - The property name of the array
      */
-    public addManagedArray<T>(context: T, hash: string): void
+    public addManagedArray<T>(context: T, hash: string)
     {
-        this._managedArrays.push({ context, hash: hash as string });
+        const managedArray = { context, hash: hash as string, nullCount: 0 };
+
+        this._managedArrays.push(managedArray);
+
+        return managedArray;
+    }
+
+    public increaseNullCount(item: ManagedItem)
+    {
+        item.nullCount++;
+        if (item.nullCount > 10000)
+        {
+            if (Array.isArray(item.context[item.hash]))
+            {
+                cleanArray(item.context[item.hash]);
+            }
+            else
+            {
+                item.context[item.hash] = cleanHash(item.context[item.hash]);
+            }
+            item.nullCount = 0;
+        }
     }
 
     /**

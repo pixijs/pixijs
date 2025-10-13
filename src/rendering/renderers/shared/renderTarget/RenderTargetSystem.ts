@@ -3,6 +3,7 @@ import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { CLEAR } from '../../gl/const';
 import { calculateProjection } from '../../gpu/renderTarget/calculateProjection';
 import { SystemRunner } from '../system/SystemRunner';
+import { type ManagedItem } from '../texture/RenderableGCSystem';
 import { CanvasSource } from '../texture/sources/CanvasSource';
 import { TextureSource } from '../texture/sources/TextureSource';
 import { Texture } from '../texture/Texture';
@@ -183,6 +184,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
         = new Map();
     /** A hash that stores a gpu render target for a given render target. */
     private _gpuRenderTargetHash: Record<number, RENDER_TARGET> = Object.create(null);
+    private _gpuRenderTargetBinding: ManagedItem;
     /**
      * A stack that stores the render target and frame that is currently being rendered to.
      * When push is called, the current render target is stored in this stack.
@@ -195,7 +197,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
-        renderer.renderableGC.addManagedHash(this, '_gpuRenderTargetHash');
+        this._gpuRenderTargetBinding = this._renderer.renderableGC.addManagedHash(this, '_gpuRenderTargetHash');
     }
 
     /** called when dev wants to finish a render pass */
@@ -514,6 +516,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
         this._renderSurfaceToRenderTargetHash.clear();
 
         this._gpuRenderTargetHash = Object.create(null);
+        this._gpuRenderTargetBinding = null;
     }
 
     private _initRenderTarget(renderSurface: RenderSurface): RenderTarget
@@ -552,6 +555,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
                 if (gpuRenderTarget)
                 {
                     this._gpuRenderTargetHash[renderTarget.uid] = null;
+                    this._renderer.renderableGC.increaseNullCount(this._gpuRenderTargetBinding);
                     this.adaptor.destroyGpuRenderTarget(gpuRenderTarget);
                 }
             });

@@ -1,5 +1,6 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { BufferUsage } from '../../shared/buffer/const';
+import { type ManagedItem } from '../../shared/texture/RenderableGCSystem';
 import { BUFFER_TYPE } from './const';
 import { GlBuffer } from './GlBuffer';
 
@@ -38,6 +39,7 @@ export class GlBufferSystem implements System
 
     private _gl: GlRenderingContext;
     private _gpuBuffers: {[key: number]: GlBuffer} = Object.create(null);
+    private _gpuBufferBinding: ManagedItem;
 
     /** Cache keeping track of the base bound buffer bases */
     private _boundBufferBases: {[key: number]: GlBuffer} = Object.create(null);
@@ -56,7 +58,7 @@ export class GlBufferSystem implements System
     {
         this._renderer = renderer;
 
-        this._renderer.renderableGC.addManagedHash(this, '_gpuBuffers');
+        this._gpuBufferBinding = this._renderer.renderableGC.addManagedHash(this, '_gpuBuffers');
     }
 
     /** @ignore */
@@ -65,6 +67,7 @@ export class GlBufferSystem implements System
         this._renderer = null;
         this._gl = null;
         this._gpuBuffers = null;
+        this._gpuBufferBinding = null;
         (this._boundBufferBases as null) = null;
     }
 
@@ -268,6 +271,7 @@ export class GlBufferSystem implements System
         }
 
         this._gpuBuffers = Object.create(null);
+        this._gpuBufferBinding = null;
     }
 
     /**
@@ -287,6 +291,7 @@ export class GlBufferSystem implements System
         }
 
         this._gpuBuffers[buffer.uid] = null;
+        this._renderer.renderableGC.increaseNullCount(this._gpuBufferBinding);
     }
 
     /**

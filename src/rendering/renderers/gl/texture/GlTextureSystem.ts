@@ -1,5 +1,6 @@
 import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { type ManagedItem } from '../../shared/texture/RenderableGCSystem';
 import { Texture } from '../../shared/texture/Texture';
 import { GlTexture } from './GlTexture';
 import { glUploadBufferImageResource } from './uploaders/glUploadBufferImageResource';
@@ -44,6 +45,8 @@ export class GlTextureSystem implements System, CanvasGenerator
     private readonly _renderer: WebGLRenderer;
 
     private _glTextures: Record<number, GlTexture> = Object.create(null);
+    private _glTexturesBinding: ManagedItem;
+    // TODO: samplers are not nulled
     private _glSamplers: Record<string, WebGLSampler> = Object.create(null);
 
     private _boundTextures: TextureSource[] = [];
@@ -71,7 +74,7 @@ export class GlTextureSystem implements System, CanvasGenerator
     constructor(renderer: WebGLRenderer)
     {
         this._renderer = renderer;
-        this._renderer.renderableGC.addManagedHash(this, '_glTextures');
+        this._glTexturesBinding = this._renderer.renderableGC.addManagedHash(this, '_glTextures');
         this._renderer.renderableGC.addManagedHash(this, '_glSamplers');
     }
 
@@ -275,6 +278,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         this.unbind(source);
         this._glTextures[source.uid] = null;
+        this._renderer.renderableGC.increaseNullCount(this._glTexturesBinding);
 
         this._gl.deleteTexture(glTexture.texture);
     }
@@ -439,6 +443,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         (this.managedTextures as null) = null;
         this._glTextures = null;
+        this._glTexturesBinding = null;
         this._glSamplers = null;
         this._boundTextures = null;
         this._boundSamplers = null;

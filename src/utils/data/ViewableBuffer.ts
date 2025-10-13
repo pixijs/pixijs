@@ -140,13 +140,15 @@ export class ViewableBuffer
     public destroy(): void
     {
         this.rawBinaryData = null;
+        this.uint32View = null;
+        this.float32View = null;
+        this.uint16View = null;
         this._int8View = null;
         this._uint8View = null;
         this._int16View = null;
-        this.uint16View = null;
         this._int32View = null;
-        this.uint32View = null;
-        this.float32View = null;
+        this._float64Array = null;
+        this._bigUint64Array = null;
     }
 
     /**
