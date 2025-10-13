@@ -37,6 +37,11 @@ export interface RenderableGCSystemOptions
      * @default 600
      */
     renderableGCFrequency: number;
+    /**
+     * The maximum number of null entries in a managed hash before it is cleaned.
+     * @default 10000
+     */
+    renderableMaxNullCount?: number;
 }
 
 /** @internal */
@@ -108,6 +113,8 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
         renderableGCMaxUnusedTime: 60000,
         /** How often to run garbage collection in ms (default 30 seconds) */
         renderableGCFrequency: 30000,
+        /** The maximum number of null entries in a managed hash before it is cleaned */
+        renderableMaxNullCount: 10000,
     };
 
     /** Maximum time in ms a resource can be unused before being garbage collected */
@@ -122,6 +129,8 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
     private _handler: number;
     /** How frequently GC runs in ms */
     private _frequency: number;
+    /** The maximum number of null entries in a managed hash before it is cleaned */
+    public renderableMaxNullCount: number;
     /** Current timestamp used for age calculations */
     private _now: number;
 
@@ -156,6 +165,7 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
         this._frequency = options.renderableGCFrequency;
 
         this.enabled = options.renderableGCActive;
+        this.renderableMaxNullCount = options.renderableMaxNullCount ?? 10000;
     }
 
     /**
@@ -251,7 +261,7 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
     public increaseNullCount(item: ManagedItem)
     {
         item.nullCount++;
-        if (item.nullCount > 10000)
+        if (item.nullCount > this.renderableMaxNullCount)
         {
             if (Array.isArray(item.context[item.hash]))
             {

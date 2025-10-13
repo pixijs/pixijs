@@ -490,7 +490,7 @@ export class GlGeometrySystem implements System
         this.gl = null;
         this._activeVao = null;
         this._activeGeometry = null;
-        this._geometryVaoHash = null;
+        this._geometryVaoHash = {};
         this._geometryVaoBinding = null;
     }
 }

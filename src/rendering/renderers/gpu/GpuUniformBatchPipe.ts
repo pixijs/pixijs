@@ -2,6 +2,7 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import { Buffer } from '../shared/buffer/Buffer';
 import { BufferResource } from '../shared/buffer/BufferResource';
 import { BufferUsage } from '../shared/buffer/const';
+import { type ManagedItem } from '../shared/texture/RenderableGCSystem';
 import { UboBatch } from './buffer/UboBatch';
 import { BindGroup } from './shader/BindGroup';
 
@@ -24,6 +25,7 @@ export class GpuUniformBatchPipe
     private _renderer: WebGPURenderer;
 
     private _bindGroupHash: Record<number, BindGroup> = Object.create(null);
+    private _bindGroupBinding: ManagedItem;
     private readonly _batchBuffer: UboBatch;
 
     // number of buffers..
@@ -35,7 +37,7 @@ export class GpuUniformBatchPipe
     constructor(renderer: WebGPURenderer)
     {
         this._renderer = renderer;
-        this._renderer.renderableGC.addManagedHash(this, '_bindGroupHash');
+        this._bindGroupBinding = this._renderer.renderableGC.addManagedHash(this, '_bindGroupHash');
 
         this._batchBuffer = new UboBatch({ minUniformOffsetAlignment });
 
@@ -65,6 +67,7 @@ export class GpuUniformBatchPipe
         for (const i in this._bindGroupHash)
         {
             this._bindGroupHash[i] = null;
+            this._renderer.renderableGC.increaseNullCount(this._bindGroupBinding);
         }
 
         this._batchBuffer.clear();
@@ -187,6 +190,7 @@ export class GpuUniformBatchPipe
 
         this._bindGroups = null;
         this._bindGroupHash = null;
+        this._bindGroupBinding = null;
 
         for (let i = 0; i < this._buffers.length; i++)
         {

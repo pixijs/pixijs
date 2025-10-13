@@ -2,6 +2,7 @@ import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { UniformGroup } from '../../shared/shader/UniformGroup';
 import { CanvasPool } from '../../shared/texture/CanvasPool';
+import { type ManagedItem } from '../../shared/texture/RenderableGCSystem';
 import { BindGroup } from '../shader/BindGroup';
 import { gpuUploadBufferImageResource } from './uploaders/gpuUploadBufferImageResource';
 import { blockDataMap, gpuUploadCompressedTextureResource } from './uploaders/gpuUploadCompressedTextureResource';
@@ -38,9 +39,12 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
     protected CONTEXT_UID: number;
     private _gpuSources: Record<number, GPUTexture> = Object.create(null);
+    private _gpuSourceBinding: ManagedItem;
     private _gpuSamplers: Record<string, GPUSampler> = Object.create(null);
     private _bindGroupHash: Record<string, BindGroup> = Object.create(null);
+    private _bindGroupBinding: ManagedItem;
     private _textureViewHash: Record<string, GPUTextureView> = Object.create(null);
+    private _textureViewBinding: ManagedItem;
 
     private readonly _uploads: Record<string, GpuTextureUploader> = {
         image: gpuUploadImageResource,
@@ -57,10 +61,10 @@ export class GpuTextureSystem implements System, CanvasGenerator
     constructor(renderer: WebGPURenderer)
     {
         this._renderer = renderer;
-        renderer.renderableGC.addManagedHash(this, '_gpuSources');
+        this._gpuSourceBinding = renderer.renderableGC.addManagedHash(this, '_gpuSources');
         renderer.renderableGC.addManagedHash(this, '_gpuSamplers');
-        renderer.renderableGC.addManagedHash(this, '_bindGroupHash');
-        renderer.renderableGC.addManagedHash(this, '_textureViewHash');
+        this._bindGroupBinding = renderer.renderableGC.addManagedHash(this, '_bindGroupHash');
+        this._textureViewBinding = renderer.renderableGC.addManagedHash(this, '_textureViewHash');
     }
 
     protected contextChange(gpu: GPU): void
@@ -158,6 +162,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
         if (gpuTexture)
         {
             this._gpuSources[source.uid] = null;
+            this._renderer.renderableGC.increaseNullCount(this._gpuSourceBinding);
 
             gpuTexture.destroy();
         }
@@ -199,7 +204,9 @@ export class GpuTextureSystem implements System, CanvasGenerator
         else if (gpuTexture.width !== source.pixelWidth || gpuTexture.height !== source.pixelHeight)
         {
             this._textureViewHash[source.uid] = null;
+            this._renderer.renderableGC.increaseNullCount(this._textureViewBinding);
             this._bindGroupHash[source.uid] = null;
+            this._renderer.renderableGC.increaseNullCount(this._bindGroupBinding);
 
             this.onSourceUnload(source);
             this.initSource(source);
@@ -352,5 +359,9 @@ export class GpuTextureSystem implements System, CanvasGenerator
         this._bindGroupHash = null;
         this._textureViewHash = null;
         this._gpuSamplers = null;
+        (this._renderer as null) = null;
+        this._bindGroupBinding = null;
+        this._textureViewBinding = null;
+        this._gpuSourceBinding = null;
     }
 }
