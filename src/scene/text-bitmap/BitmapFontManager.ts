@@ -440,7 +440,10 @@ class BitmapFontManagerClass
 
         const lineHeight = effectiveLineHeight ?? font.lineHeight;
 
-        const extraLineHeight = lineHeight - font.lineHeight;
+        // Use fontMetrics.fontSize as the baseline for adjustment calculations
+        // rather than font.lineHeight which may contain custom values
+        const naturalLineHeight = font.fontMetrics.fontSize;
+        const extraLineHeight = lineHeight - naturalLineHeight;
         const lineHightAdjustment = extraLineHeight > 0 ? extraLineHeight / 2 : 0;
 
         switch (style.textBaseline)
