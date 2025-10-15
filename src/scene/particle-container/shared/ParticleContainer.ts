@@ -1,5 +1,4 @@
 import { Bounds } from '../../container/bounds/Bounds';
-import { type IRenderLayer } from '../../layers/RenderLayer';
 import { ViewContainer, type ViewContainerOptions } from '../../view/ViewContainer';
 import { type ParticleBuffer } from './ParticleBuffer';
 import { particleData } from './particleData';
@@ -589,7 +588,7 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * @throws {Error} Always throws an error as this method is not available.
      * @ignore
      */
-    public override addChild<U extends(ContainerChild | IRenderLayer)[]>(..._children: U): U[0]
+    public override addChild<U extends ContainerChild[]>(..._children: U): U[0]
     {
         throw new Error(
             'ParticleContainer.addChild() is not available. Please use ParticleContainer.addParticle()',
@@ -602,7 +601,7 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * @throws {Error} Always throws an error as this method is not available.
      * @ignore
      */
-    public override removeChild<U extends(ContainerChild | IRenderLayer)[]>(..._children: U): U[0]
+    public override removeChild<U extends ContainerChild[]>(..._children: U): U[0]
     {
         throw new Error(
             'ParticleContainer.removeChild() is not available. Please use ParticleContainer.removeParticle()',
@@ -631,7 +630,7 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * @throws {Error} Always throws an error as this method is not available.
      * @ignore
      */
-    public override removeChildAt<U extends(ContainerChild | IRenderLayer)>(_index: number): U
+    public override removeChildAt<U extends ContainerChild>(_index: number): U
     {
         throw new Error(
             'ParticleContainer.removeChildAt() is not available. Please use ParticleContainer.removeParticleAt()',
@@ -645,7 +644,7 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * @throws {Error} Always throws an error as this method is not available.
      * @ignore
      */
-    public override getChildAt<U extends(ContainerChild | IRenderLayer)>(_index: number): U
+    public override getChildAt<U extends ContainerChild>(_index: number): U
     {
         throw new Error(
             'ParticleContainer.getChildAt() is not available. Please use ParticleContainer.getParticleAt()',
@@ -689,7 +688,7 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * @throws {Error} Always throws an error as this method is not available.
      * @ignore
      */
-    public override addChildAt<U extends(ContainerChild | IRenderLayer)>(_child: U, _index: number): U
+    public override addChildAt<U extends ContainerChild>(_child: U, _index: number): U
     {
         throw new Error(
             'ParticleContainer.addChildAt() is not available. Please use ParticleContainer.addParticleAt()',
@@ -703,7 +702,7 @@ export class ParticleContainer extends ViewContainer<ParticleBuffer> implements 
      * @param {ContainerChild} _child2
      * @ignore
      */
-    public override swapChildren<U extends(ContainerChild | IRenderLayer)>(_child: U, _child2: U): void
+    public override swapChildren<U extends ContainerChild>(_child: U, _child2: U): void
     {
         throw new Error(
             'ParticleContainer.swapChildren() is not available. Please use ParticleContainer.swapParticles()',

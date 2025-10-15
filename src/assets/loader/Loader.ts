@@ -1,11 +1,101 @@
 import { warn } from '../../utils/logging/warn';
 import { path } from '../../utils/path';
+import { type ProgressCallback } from '../Assets';
 import { convertToList } from '../utils/convertToList';
 import { isSingleItem } from '../utils/isSingleItem';
 
 import type { ResolvedAsset } from '../types';
 import type { LoaderParser } from './parsers/LoaderParser';
 import type { PromiseAndParser } from './types';
+
+/**
+ * Options for loading assets with the Loader
+ * @example
+ * ```ts
+ * await Assets.load(['file1.png', 'file2.png'], {
+ *   onProgress: (progress) => console.log(`Progress: ${progress * 100}%`),
+ *   onError: (error, url) => console.error(`Error loading ${url}: ${error.message}`),
+ *   strategy: 'retry', // 'throw' | 'skip' | 'retry'
+ *   retryCount: 5, // Number of retry attempts if strategy is 'retry'
+ *   retryDelay: 500, // Delay in ms between retries
+ * });
+ * ```
+ * @category assets
+ * @standard
+ */
+export interface LoadOptions
+{
+    /**
+     * Callback for progress updates during loading
+     * @param progress - A number between 0 and 1 indicating the load progress
+     * @example
+     * ```ts
+     * const options: LoadOptions = {
+     *   onProgress: (progress) => {
+     *     console.log(`Loading progress: ${progress * 100}%`);
+     *   },
+     * };
+     * await Assets.load('image.png', options);
+     * ```
+     */
+    onProgress?: (progress: number) => void;
+    /**
+     * Callback for handling errors during loading
+     * @param error - The error that occurred
+     * @param url - The URL of the asset that failed to load
+     * @example
+     * ```ts
+     * const options: LoadOptions = {
+     *   onError: (error, url) => {
+     *     console.error(`Failed to load ${url}: ${error.message}`);
+     *   },
+     * };
+     * await Assets.load('missing-file.png', options);
+     * ```
+     */
+    onError?: (error: Error, url: string | ResolvedAsset) => void;
+    /**
+     * Strategy to handle load failures
+     * - 'throw': Immediately throw an error and stop loading (default)
+     * - 'skip': Skip the failed asset and continue loading others
+     * - 'retry': Retry loading the asset a specified number of times
+     * @default 'throw'
+     * @example
+     * ```ts
+     * const options: LoadOptions = {
+     *   strategy: 'skip',
+     * };
+     * await Assets.load('sometimes-fails.png', options);
+     * ```
+     */
+    strategy?: 'throw' | 'skip' | 'retry';
+    /**
+     * Number of retry attempts if strategy is 'retry'
+     * @default 3
+     * @example
+     * ```ts
+     * const options: LoadOptions = {
+     *   strategy: 'retry',
+     *   retryCount: 5, // Retry up to 5 times
+     * };
+     * await Assets.load('unstable-asset.png', options);
+     * ```
+     */
+    retryCount?: number;
+    /**
+     * Delay in milliseconds between retry attempts
+     * @default 250
+     * @example
+     * ```ts
+     * const options: LoadOptions = {
+     *   strategy: 'retry',
+     *   retryDelay: 1000, // Wait 1 second between retries
+     * };
+     * await Assets.load('sometimes-fails.png', options);
+     * ```
+     */
+    retryDelay?: number;
+}
 
 /**
  * The Loader is responsible for loading all assets, such as images, spritesheets, audio files, etc.
@@ -20,6 +110,43 @@ import type { PromiseAndParser } from './types';
  */
 export class Loader
 {
+    /**
+     * Default options for loading assets
+     * @example
+     * ```ts
+     * // Change default load options globally
+     * Loader.defaultOptions = {
+     *   strategy: 'skip', // Change default strategy to 'skip'
+     *   retryCount: 5,   // Change default retry count to 5
+     *   retryDelay: 500, // Change default retry delay to 500ms
+     * };
+     * ```
+     */
+    public static defaultOptions: LoadOptions = {
+        onProgress: undefined,
+        onError: undefined,
+        strategy: 'throw',
+        retryCount: 3,
+        retryDelay: 250,
+    };
+    /**
+     * Options for loading assets with the loader.
+     * These options will be used as defaults for all load calls made with this loader instance.
+     * They can be overridden by passing options directly to the load method.
+     * @example
+     * ```ts
+     * // Create a loader with custom default options
+     * const loader = new Loader();
+     * loader.loadOptions = {
+     *   strategy: 'skip', // Default strategy to 'skip'
+     *   retryCount: 5,   // Default retry count to 5
+     *   retryDelay: 500, // Default retry delay to 500ms
+     * };
+     *
+     * // This load call will use the loader's default options
+     * await loader.load('image1.png');
+     */
+    public loadOptions: LoadOptions = { ...Loader.defaultOptions };
     private readonly _parsers: LoaderParser[] = [];
     private _parserHash: Record<string, LoaderParser>;
 
@@ -162,21 +289,26 @@ export class Loader
      */
     public async load<T = any>(
         assetsToLoadIn: string | ResolvedAsset,
-        onProgress?: (progress: number) => void,
+        onProgress?: ProgressCallback | LoadOptions,
     ): Promise<T>;
     public async load<T = any>(
         assetsToLoadIn: string[] | ResolvedAsset[],
-        onProgress?: (progress: number) => void,
+        onProgress?: ProgressCallback | LoadOptions,
     ): Promise<Record<string, T>>;
     public async load<T = any>(
         assetsToLoadIn: string | string[] | ResolvedAsset | ResolvedAsset[],
-        onProgress?: (progress: number) => void,
+        onProgressOrOptions?: ProgressCallback | LoadOptions,
     ): Promise<T | Record<string, T>>
     {
         if (!this._parsersValidated)
         {
             this._validateParsers();
         }
+
+        const options: LoadOptions = typeof onProgressOrOptions === 'function'
+            ? { ...Loader.defaultOptions, ...this.loadOptions, onProgress: onProgressOrOptions }
+            : { ...Loader.defaultOptions, ...this.loadOptions, ...(onProgressOrOptions || {}) };
+        const { onProgress, onError, strategy, retryCount, retryDelay } = options;
 
         let count = 0;
 
@@ -190,37 +322,18 @@ export class Loader
             data: {}
         }));
 
-        const total = assetsToLoad.length;
+        const total = assetsToLoad.reduce((sum, asset) => sum + (asset.progressSize || 1), 0);
 
         const promises: Promise<void>[] = assetsToLoad.map(async (asset: ResolvedAsset) =>
         {
             const url = path.toAbsolute(asset.src);
 
-            if (!assets[asset.src])
-            {
-                try
-                {
-                    if (!this.promiseCache[url])
-                    {
-                        this.promiseCache[url] = this._getLoadPromiseAndParser(url, asset);
-                    }
+            if (assets[asset.src]) return;
 
-                    assets[asset.src] = await this.promiseCache[url].promise;
+            await this._loadAssetWithRetry(url, asset, { onProgress, onError, strategy, retryCount, retryDelay }, assets);
 
-                    // Only progress if nothing goes wrong
-                    if (onProgress) onProgress(++count / total);
-                }
-                catch (e)
-                {
-                    // Delete eventually registered file and promises from internal cache
-                    // so they can be eligible for another loading attempt
-                    delete this.promiseCache[url];
-                    delete assets[asset.src];
-
-                    // Stop further execution
-                    throw new Error(`[Loader.load] Failed to load ${url}.\n${e}`);
-                }
-            }
+            count += (asset.progressSize || 1);
+            if (onProgress) onProgress(count / total);
         });
 
         await Promise.all(promises);
@@ -296,5 +409,60 @@ export class Loader
 
                 return hash;
             }, {} as Record<string, LoaderParser>);
+    }
+
+    private async _loadAssetWithRetry(
+        url: string,
+        asset: ResolvedAsset,
+        options: LoadOptions,
+        assets: Record<string, Promise<any>>
+    )
+    {
+        let attempt = 0;
+        const { onError, strategy, retryCount, retryDelay } = options;
+        const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+        while (true)
+        {
+            try
+            {
+                if (!this.promiseCache[url])
+                {
+                    this.promiseCache[url] = this._getLoadPromiseAndParser(url, asset);
+                }
+
+                assets[asset.src] = await this.promiseCache[url].promise;
+
+                return;
+            }
+            catch (e)
+            {
+                // clear cache for a new attempt
+                delete this.promiseCache[url];
+                delete assets[asset.src];
+
+                attempt++;
+
+                const isLast = strategy !== 'retry' || attempt > retryCount;
+
+                if (strategy === 'retry' && !isLast)
+                {
+                    if (onError) onError(e as Error, asset);
+                    await wait(retryDelay);
+                    continue;
+                }
+
+                if (strategy === 'skip')
+                {
+                    if (onError) onError(e as Error, asset);
+
+                    return;
+                }
+
+                // strategy 'throw' or exhausted 'retry'
+                if (onError) onError(e as Error, asset);
+                throw new Error(`[Loader.load] Failed to load ${url}.\n${e}`);
+            }
+        }
     }
 }
