@@ -215,6 +215,7 @@ function renderChildren(svg: SVGElement, session: Session, fillStyle: FillStyle,
             else
             {
                 const checkForHoles = fillRule === 'evenodd';
+
                 graphicsPath = new GraphicsPath(d, checkForHoles);
                 session.context.path(graphicsPath);
                 if (fillStyle) session.context.fill(fillStyle);
