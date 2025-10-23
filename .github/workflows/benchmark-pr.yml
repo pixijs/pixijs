@@ -21,13 +21,14 @@ jobs:
           node-version: 24
 
       - name: Build
-        run: npm run dist
+        run: npm run build
 
       - name: Download Dev Baseline
         uses: actions/download-artifact@v4
         with:
           name: dev-benchmark
           path: ./baseline
+        continue-on-error: true
 
       - name: Run PR Benchmark and Compare
         uses: pixijs/performance-benchmark-action@main
