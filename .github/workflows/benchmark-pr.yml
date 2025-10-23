@@ -1,0 +1,39 @@
+name: Benchmark PR
+on:
+  pull_request:
+    branches: [dev]
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{github.workflow}} - ${{github.ref}}
+  cancel-in-progress: true
+
+jobs:
+  benchmark:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Project
+        uses: ./.github/actions/setup
+        with:
+          node-version: 24
+
+      - name: Build
+        run: npm run dist
+
+      - name: Download Dev Baseline
+        uses: actions/download-artifact@v4
+        with:
+          name: dev-benchmark
+          path: ./baseline
+
+      - name: Run PR Benchmark and Compare
+        uses: pixijs/performance-benchmark-action@main
+        with:
+          dist-path: ./dist
+          output-file: pr_result.json
+          baseline-file: ./baseline/dev_result.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
