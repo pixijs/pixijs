@@ -5,8 +5,8 @@
  * @advanced
  */
 export const basisTranscoderUrls = {
-    jsUrl: 'https://files.pixijs.download/transcoders/basis/basis_transcoder.js',
-    wasmUrl: 'https://files.pixijs.download/transcoders/basis/basis_transcoder.wasm',
+    jsUrl: 'https://cdn.jsdelivr.net/npm/pixi.js/transcoders/basis/basis_transcoder.js',
+    wasmUrl: 'https://cdn.jsdelivr.net/npm/pixi.js/transcoders/basis/basis_transcoder.wasm',
 };
 
 /**
