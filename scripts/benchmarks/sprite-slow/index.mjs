@@ -59,6 +59,17 @@ export class Test extends Engine
                     r.el.position.y = r.y;
                 }
 
+                if (this.slowToggle)
+                {
+                    this.app.stage.removeChild(this.particles[0].el);
+                    this.slowToggle = false;
+                }
+                else
+                {
+                    this.app.stage.addChild(this.particles[0].el);
+                    this.slowToggle = true;
+                }
+
                 this.tick();
 
                 if (this.frameCount >= this.maxFrames)
@@ -70,3 +81,14 @@ export class Test extends Engine
         });
     }
 }
+
+(async () =>
+{
+    const spriteBenchmark = new Test('Sprites Slow Path (50k)', 50_000);
+
+    await spriteBenchmark.init();
+    spriteBenchmark.resetMetrics();
+    await spriteBenchmark.render();
+
+    window.benchmarkResult = spriteBenchmark.getPerformanceMetrics();
+})();
