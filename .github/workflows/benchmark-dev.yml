@@ -33,6 +33,7 @@ jobs:
         with:
           dist-path: ./dist
           output-file: dev_result.json
+          benchmark-path: './scripts/benchmarks'
 
       - uses: actions/upload-artifact@v4
         with:

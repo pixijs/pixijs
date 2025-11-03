@@ -40,6 +40,7 @@ jobs:
         uses: pixijs/performance-benchmark-action@main
         with:
           dist-path: ./dist
+          benchmark-path: './scripts/benchmarks'
           output-file: pr_result.json
           baseline-file: ./baseline/dev_result.json
         env:
