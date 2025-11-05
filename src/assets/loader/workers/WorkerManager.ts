@@ -154,6 +154,12 @@ class WorkerManagerClass
      */
     private _complete(data: LoadImageBitmapResult): void
     {
+        if (!this._resolveHash[data.uuid])
+        {
+            // this can happen if the worker manager is reset before a task completes
+            return;
+        }
+
         if (data.error !== undefined)
         {
             this._resolveHash[data.uuid].reject(data.error);
@@ -163,7 +169,7 @@ class WorkerManagerClass
             this._resolveHash[data.uuid].resolve(data.data);
         }
 
-        this._resolveHash[data.uuid] = null;
+        delete this._resolveHash[data.uuid];
     }
 
     /**
@@ -247,7 +253,7 @@ class WorkerManagerClass
         // Reject pending promises
         Object.values(this._resolveHash).forEach(({ reject }) =>
         {
-            reject?.(new Error('WorkerManager destroyed'));
+            reject?.(new Error('WorkerManager has been reset before completion'));
         });
         this._resolveHash = {};
         this._queue.length = 0;

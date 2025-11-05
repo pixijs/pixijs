@@ -310,7 +310,7 @@ export class GraphicsContext extends EventEmitter<{
 
         const lastInstruction = this.instructions[this.instructions.length - 1];
 
-        if (this._tick === 0 && lastInstruction && lastInstruction.action === 'stroke')
+        if (this._tick === 0 && lastInstruction?.action === 'stroke')
         {
             path = lastInstruction.data.path;
         }
@@ -371,7 +371,7 @@ export class GraphicsContext extends EventEmitter<{
 
         const lastInstruction = this.instructions[this.instructions.length - 1];
 
-        if (this._tick === 0 && lastInstruction && lastInstruction.action === 'fill')
+        if (this._tick === 0 && lastInstruction?.action === 'fill')
         {
             path = lastInstruction.data.path;
         }
