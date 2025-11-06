@@ -51,6 +51,7 @@ export class AlphaMask implements Effect, PoolItem
 
     public reset()
     {
+        if (this.mask === null) return;
         this.mask.measurable = true;
         this.mask = null;
     }

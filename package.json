@@ -18,7 +18,8 @@
   "types": "lib/index.d.ts",
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "transcoders"
   ],
   "scripts": {
     "prepare": "husky install",
