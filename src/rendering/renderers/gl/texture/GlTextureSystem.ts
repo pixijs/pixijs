@@ -74,7 +74,7 @@ export class GlTextureSystem implements System, CanvasGenerator
     constructor(renderer: WebGLRenderer)
     {
         this._renderer = renderer;
-        this._glTexturesBinding = this._renderer.renderableGC.addManagedHash(this, '_glTextures');
+        this._glTexturesBinding = this._renderer.renderableGC.addManagedHash(this, '_glTextures', true);
         this._renderer.renderableGC.addManagedHash(this, '_glSamplers');
     }
 
@@ -278,7 +278,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         this.unbind(source);
         this._glTextures[source.uid] = null;
-        this._renderer.renderableGC._increaseNullCount(this._glTexturesBinding);
+        this._glTexturesBinding.nullCount++;
 
         this._gl.deleteTexture(glTexture.texture);
     }

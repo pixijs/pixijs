@@ -58,7 +58,7 @@ export class GlBufferSystem implements System
     {
         this._renderer = renderer;
 
-        this._gpuBufferBinding = this._renderer.renderableGC.addManagedHash(this, '_gpuBuffers');
+        this._gpuBufferBinding = this._renderer.renderableGC.addManagedHash(this, '_gpuBuffers', true);
     }
 
     /** @ignore */
@@ -280,12 +280,6 @@ export class GlBufferSystem implements System
      */
     protected onBufferDestroy(buffer: Buffer, contextLost?: boolean): void
     {
-        // return early if gpuBuffer is null as it is already destroyed
-        if (!this._gpuBuffers || !this._gpuBuffers[buffer.uid])
-        {
-            return;
-        }
-
         const glBuffer = this._gpuBuffers[buffer.uid];
 
         const gl = this._gl;
@@ -298,7 +292,7 @@ export class GlBufferSystem implements System
         buffer.off('destroy', this.onBufferDestroy, this);
 
         this._gpuBuffers[buffer.uid] = null;
-        this._renderer.renderableGC._increaseNullCount(this._gpuBufferBinding);
+        this._gpuBufferBinding.nullCount++;
     }
 
     /**

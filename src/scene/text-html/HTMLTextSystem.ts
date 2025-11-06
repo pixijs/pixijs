@@ -1,6 +1,7 @@
 import { type ImageLike } from '../../environment/ImageLike';
 import { ExtensionType } from '../../extensions/Extensions';
 import { type CanvasAndContext, CanvasPool } from '../../rendering/renderers/shared/texture/CanvasPool';
+import { type ManagedItem } from '../../rendering/renderers/shared/texture/RenderableGCSystem';
 import { TexturePool } from '../../rendering/renderers/shared/texture/TexturePool';
 import { type TextureStyle } from '../../rendering/renderers/shared/texture/TextureStyle';
 import { type Renderer, RendererType } from '../../rendering/renderers/types';
@@ -52,11 +53,13 @@ export class HTMLTextSystem implements System
         usageCount: number,
         promise: Promise<Texture>,
     }> = {};
+    private readonly _activeTexturesBinding: ManagedItem;
 
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
         this._createCanvas = renderer.type === RendererType.WEBGPU;
+        this._activeTexturesBinding = this._renderer.renderableGC.addManagedHash(this, '_activeTextures', true);
     }
 
     /**
@@ -151,6 +154,7 @@ export class HTMLTextSystem implements System
             }
 
             this._activeTextures[textKey] = null;
+            this._activeTexturesBinding.nullCount++;
         }
     }
 

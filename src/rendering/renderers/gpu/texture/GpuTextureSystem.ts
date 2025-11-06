@@ -61,10 +61,10 @@ export class GpuTextureSystem implements System, CanvasGenerator
     constructor(renderer: WebGPURenderer)
     {
         this._renderer = renderer;
-        this._gpuSourceBinding = renderer.renderableGC.addManagedHash(this, '_gpuSources');
+        this._gpuSourceBinding = renderer.renderableGC.addManagedHash(this, '_gpuSources', true);
         renderer.renderableGC.addManagedHash(this, '_gpuSamplers');
-        this._bindGroupBinding = renderer.renderableGC.addManagedHash(this, '_bindGroupHash');
-        this._textureViewBinding = renderer.renderableGC.addManagedHash(this, '_textureViewHash');
+        this._bindGroupBinding = renderer.renderableGC.addManagedHash(this, '_bindGroupHash', true);
+        this._textureViewBinding = renderer.renderableGC.addManagedHash(this, '_textureViewHash', true);
     }
 
     protected contextChange(gpu: GPU): void
@@ -162,7 +162,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
         if (gpuTexture)
         {
             this._gpuSources[source.uid] = null;
-            this._renderer.renderableGC._increaseNullCount(this._gpuSourceBinding);
+            this._gpuSourceBinding.nullCount++;
 
             gpuTexture.destroy();
         }
@@ -204,9 +204,9 @@ export class GpuTextureSystem implements System, CanvasGenerator
         else if (gpuTexture.width !== source.pixelWidth || gpuTexture.height !== source.pixelHeight)
         {
             this._textureViewHash[source.uid] = null;
-            this._renderer.renderableGC._increaseNullCount(this._textureViewBinding);
+            this._textureViewBinding.nullCount++;
             this._bindGroupHash[source.uid] = null;
-            this._renderer.renderableGC._increaseNullCount(this._bindGroupBinding);
+            this._bindGroupBinding.nullCount++;
 
             this.onSourceUnload(source);
             this.initSource(source);

@@ -50,6 +50,7 @@ export interface ManagedItem
     hash: string;
     context: any;
     nullCount: number;
+    useNullCount: boolean;
 }
 
 /**
@@ -195,17 +196,24 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
                 false
             );
 
+            let frequencyCount = 0;
+            const nullCountFrequency = 5000;
+            const frequencyRatio = this._frequency / nullCountFrequency;
+
             // Schedule periodic hash table cleanup
             this._hashHandler = this._renderer.scheduler.repeat(
                 () =>
                 {
+                    frequencyCount++;
                     for (const hash of this._managedHashes)
                     {
+                        if (hash.useNullCount && hash.nullCount < this.renderableMaxNullCount) continue;
+                        if (!hash.useNullCount && frequencyCount % frequencyRatio !== 0) continue;
                         hash.context[hash.hash] = cleanHash(hash.context[hash.hash]);
                         hash.nullCount = 0;
                     }
                 },
-                this._frequency
+                nullCountFrequency
             );
 
             // Schedule periodic array cleanup
@@ -214,11 +222,13 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
                 {
                     for (const array of this._managedArrays)
                     {
+                        if (array.useNullCount && array.nullCount < this.renderableMaxNullCount) continue;
+                        if (!array.useNullCount && frequencyCount % frequencyRatio !== 0) continue;
                         cleanArray(array.context[array.hash]);
                         array.nullCount = 0;
                     }
                 },
-                this._frequency
+                nullCountFrequency
             );
         }
         else
@@ -234,10 +244,11 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
      * Adds a hash table to be managed by the garbage collector.
      * @param context - The object containing the hash table
      * @param hash - The property name of the hash table
+     * @param useNullCount - Whether to use null count tracking for cleanup
      */
-    public addManagedHash<T>(context: T, hash: string)
+    public addManagedHash<T>(context: T, hash: string, useNullCount: boolean = false)
     {
-        const managedHash = { context, hash: hash as string, nullCount: 0 };
+        const managedHash = { context, hash: hash as string, nullCount: 0, useNullCount };
 
         this._managedHashes.push(managedHash);
 
@@ -248,36 +259,15 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
      * Adds an array to be managed by the garbage collector.
      * @param context - The object containing the array
      * @param hash - The property name of the array
+     * @param useNullCount - Whether to use null count tracking for cleanup
      */
-    public addManagedArray<T>(context: T, hash: string)
+    public addManagedArray<T>(context: T, hash: string, useNullCount: boolean = false)
     {
-        const managedArray = { context, hash: hash as string, nullCount: 0 };
+        const managedArray = { context, hash: hash as string, nullCount: 0, useNullCount };
 
         this._managedArrays.push(managedArray);
 
         return managedArray;
-    }
-
-    /**
-     * Increases the null count for a managed item and cleans it if the count exceeds the threshold.
-     * @param item - The managed item to increase null count for
-     * @internal
-     */
-    public _increaseNullCount(item: ManagedItem)
-    {
-        item.nullCount++;
-        if (item.nullCount > this.renderableMaxNullCount)
-        {
-            if (Array.isArray(item.context[item.hash]))
-            {
-                cleanArray(item.context[item.hash]);
-            }
-            else
-            {
-                item.context[item.hash] = cleanHash(item.context[item.hash]);
-            }
-            item.nullCount = 0;
-        }
     }
 
     /**

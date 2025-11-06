@@ -1,5 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { type Filter } from '../../../filters/Filter';
+import { type ManagedItem } from '../../../rendering/renderers/shared/texture/RenderableGCSystem';
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
 import { TextureStyle } from '../../../rendering/renderers/shared/texture/TextureStyle';
 import { deprecation } from '../../../utils/logging/deprecation';
@@ -35,10 +36,12 @@ export class CanvasTextSystem implements System
         texture: Texture,
         usageCount: number,
     }> = {};
+    private readonly _activeTexturesBinding: ManagedItem;
 
     constructor(_renderer: Renderer)
     {
         this._renderer = _renderer;
+        this._activeTexturesBinding = this._renderer.renderableGC.addManagedHash(this, '_activeTextures', true);
     }
 
     /** @deprecated since 8.0.0 */
@@ -223,6 +226,7 @@ export class CanvasTextSystem implements System
         {
             this.returnTexture(activeTexture.texture);
             this._activeTextures[textKey] = null;
+            this._activeTexturesBinding.nullCount++;
         }
     }
 
@@ -280,5 +284,6 @@ export class CanvasTextSystem implements System
             if (this._activeTextures[key]) this.returnTexture(this._activeTextures[key].texture);
         }
         (this._activeTextures as null) = null;
+        (this._activeTexturesBinding as null) = null;
     }
 }

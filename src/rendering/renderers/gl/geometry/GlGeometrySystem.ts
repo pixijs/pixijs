@@ -66,7 +66,7 @@ export class GlGeometrySystem implements System
         this.hasVao = true;
         this.hasInstance = true;
 
-        this._geometryVaoBinding = this._renderer.renderableGC.addManagedHash(this, '_geometryVaoHash');
+        this._geometryVaoBinding = this._renderer.renderableGC.addManagedHash(this, '_geometryVaoHash', true);
     }
 
     /** Sets up the renderer context and necessary buffers. */
@@ -309,7 +309,7 @@ export class GlGeometrySystem implements System
             }
 
             this._geometryVaoHash[geometry.uid] = null;
-            this._renderer.renderableGC._increaseNullCount(this._geometryVaoBinding);
+            this._geometryVaoBinding.nullCount++;
         }
     }
 

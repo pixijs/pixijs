@@ -27,12 +27,10 @@ export class GpuBufferSystem implements System
     private _gpuBufferBinding: ManagedItem;
 
     private _gpu: GPU;
-    private _renderer: WebGPURenderer;
 
     constructor(renderer: WebGPURenderer)
     {
-        this._renderer = renderer;
-        this._gpuBufferBinding = renderer.renderableGC.addManagedHash(this, '_gpuBuffers');
+        this._gpuBufferBinding = renderer.renderableGC.addManagedHash(this, '_gpuBuffers', true);
     }
 
     protected contextChange(gpu: GPU): void
@@ -132,7 +130,6 @@ export class GpuBufferSystem implements System
         this._gpuBuffers = null;
         this._gpu = null;
         this._gpuBufferBinding = null;
-        this._renderer = null;
     }
 
     private _destroyBuffer(buffer: Buffer): void
@@ -146,7 +143,7 @@ export class GpuBufferSystem implements System
         buffer.off('destroy', this.onBufferDestroy, this);
 
         this._gpuBuffers[buffer.uid] = null;
-        this._renderer.renderableGC._increaseNullCount(this._gpuBufferBinding);
+        this._gpuBufferBinding.nullCount++;
     }
 }
 

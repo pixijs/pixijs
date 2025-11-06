@@ -37,7 +37,7 @@ export class GpuUniformBatchPipe
     constructor(renderer: WebGPURenderer)
     {
         this._renderer = renderer;
-        this._bindGroupBinding = this._renderer.renderableGC.addManagedHash(this, '_bindGroupHash');
+        this._bindGroupBinding = this._renderer.renderableGC.addManagedHash(this, '_bindGroupHash', true);
 
         this._batchBuffer = new UboBatch({ minUniformOffsetAlignment });
 
@@ -67,7 +67,7 @@ export class GpuUniformBatchPipe
         for (const i in this._bindGroupHash)
         {
             this._bindGroupHash[i] = null;
-            this._renderer.renderableGC._increaseNullCount(this._bindGroupBinding);
+            this._bindGroupBinding.nullCount++;
         }
 
         this._batchBuffer.clear();

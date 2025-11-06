@@ -197,7 +197,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
-        this._gpuRenderTargetBinding = this._renderer.renderableGC.addManagedHash(this, '_gpuRenderTargetHash');
+        this._gpuRenderTargetBinding = this._renderer.renderableGC.addManagedHash(this, '_gpuRenderTargetHash', true);
     }
 
     /** called when dev wants to finish a render pass */
@@ -555,7 +555,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
                 if (gpuRenderTarget)
                 {
                     this._gpuRenderTargetHash[renderTarget.uid] = null;
-                    this._renderer.renderableGC._increaseNullCount(this._gpuRenderTargetBinding);
+                    this._gpuRenderTargetBinding.nullCount++;
                     this.adaptor.destroyGpuRenderTarget(gpuRenderTarget);
                 }
             });

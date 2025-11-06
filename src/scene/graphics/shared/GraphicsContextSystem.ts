@@ -74,7 +74,7 @@ export class GraphicsContextRenderData
 
     public destroy()
     {
-        this.batcher && this.batcher.destroy();
+        this.batcher?.destroy();
         this.instructions.destroy();
 
         this.batcher = null;
@@ -131,8 +131,8 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
-        this._gpuContextBinding = renderer.renderableGC.addManagedHash(this, '_gpuContextHash');
-        this._graphicsDataBinding = renderer.renderableGC.addManagedHash(this, '_graphicsDataContextHash');
+        this._gpuContextBinding = renderer.renderableGC.addManagedHash(this, '_gpuContextHash', true);
+        this._graphicsDataBinding = renderer.renderableGC.addManagedHash(this, '_graphicsDataContextHash', true);
     }
 
     /**
@@ -293,7 +293,7 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
         context.off('destroy', this.onGraphicsContextDestroy, this);
 
         this._gpuContextHash[context.uid] = null;
-        this._renderer.renderableGC._increaseNullCount(this._gpuContextBinding);
+        this._gpuContextBinding.nullCount++;
     }
 
     private _cleanGraphicsContextData(context: GraphicsContext)
@@ -308,7 +308,7 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
 
                 // we will rebuild this...
                 this._graphicsDataContextHash[context.uid] = null;
-                this._renderer.renderableGC._increaseNullCount(this._graphicsDataBinding);
+                this._graphicsDataBinding.nullCount++;
             }
         }
 
