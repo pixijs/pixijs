@@ -12,7 +12,7 @@ class Engine
     {
         this.width = 800;
         this.height = 600;
-        this.maxFrames = 500;
+        this.maxFrames = 300;
         this.app = new PIXI.Application();
         await this.app.init({
             width: this.width,

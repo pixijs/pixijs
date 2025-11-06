@@ -84,7 +84,7 @@ export class Test extends Engine
 
 (async () =>
 {
-    const spriteBenchmark = new Test('Sprites Slow Path (50k)', 50_000);
+    const spriteBenchmark = new Test('Sprites Slow Path (25k)', 25_000);
 
     await spriteBenchmark.init();
     spriteBenchmark.resetMetrics();
