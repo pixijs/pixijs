@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   benchmark:
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
