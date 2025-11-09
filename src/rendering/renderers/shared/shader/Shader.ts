@@ -326,6 +326,13 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
                     nameHash[data.name] = data;
                 });
             }
+            else if (resources.uBackTexture)
+            {
+                // we are using a backTexture, but no gpuProgram to give us the bindings.
+                nameHash.uBackTexture = { group: 0, binding: 3, name: 'uBackTexture' };
+                groupMap[0] = groupMap[0] || {};
+                groupMap[0][3] = 'uBackTexture';
+            }
 
             let bindTick = 0;
 
@@ -364,6 +371,11 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
 
                 if (data)
                 {
+                    if (name === 'uBackTexture' && data.group === 0)
+                    {
+                        continue;
+                    }
+
                     if (!groups[data.group])
                     {
                         groups[data.group] = new BindGroup();
