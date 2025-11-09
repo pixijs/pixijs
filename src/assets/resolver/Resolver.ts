@@ -506,6 +506,25 @@ export class Resolver
             // loop through all the srcs and generate a resolve asset for each src
             const resolvedAssets: ResolvedAsset[] = [];
 
+            // Helper function to parse a URL string using registered parsers
+            const parseUrl = (url: string): ResolvedAsset =>
+            {
+                let result = { src: url } as ResolvedAsset;
+
+                for (let i = 0; i < this._parsers.length; i++)
+                {
+                    const parser = this._parsers[i];
+
+                    if (parser.test(url))
+                    {
+                        result = parser.parse(url);
+                        break;
+                    }
+                }
+
+                return result;
+            };
+
             srcsToUse.forEach((srcs) =>
             {
                 srcs.forEach((src) =>
@@ -514,18 +533,8 @@ export class Resolver
 
                     if (typeof src !== 'object')
                     {
-                        formattedAsset.src = src;
                         // first see if it contains any {} tags...
-                        for (let i = 0; i < this._parsers.length; i++)
-                        {
-                            const parser = this._parsers[i];
-
-                            if (parser.test(src))
-                            {
-                                formattedAsset = parser.parse(src);
-                                break;
-                            }
-                        }
+                        formattedAsset = parseUrl(src);
                     }
                     else
                     {
@@ -536,6 +545,12 @@ export class Resolver
                             userDefinedLoadParser = src.loadParser ?? userDefinedLoadParser;
                             userDefinedParser = src.parser ?? userDefinedParser;
                         }
+
+                        if (typeof src.src === 'string')
+                        {
+                            formattedAsset = parseUrl(src.src);
+                        }
+
                         formattedAsset = {
                             ...formattedAsset,
                             ...src,
