@@ -509,20 +509,12 @@ export class Resolver
             // Helper function to parse a URL string using registered parsers
             const parseUrl = (url: string): ResolvedAsset =>
             {
-                let result = { src: url } as ResolvedAsset;
+                const parser = this._parsers.find((p) => p.test(url));
 
-                for (let i = 0; i < this._parsers.length; i++)
-                {
-                    const parser = this._parsers[i];
-
-                    if (parser.test(url))
-                    {
-                        result = parser.parse(url);
-                        break;
-                    }
-                }
-
-                return result;
+                return {
+                    ...parser?.parse(url),
+                    src: url,
+                };
             };
 
             srcsToUse.forEach((srcs) =>
