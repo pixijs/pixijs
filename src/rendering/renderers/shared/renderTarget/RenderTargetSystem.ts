@@ -182,7 +182,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
     private readonly _renderSurfaceToRenderTargetHash: Map<RenderSurface, RenderTarget>
         = new Map();
     /** A hash that stores a gpu render target for a given render target. */
-    private _gpuRenderTargetHash: Record<number, RENDER_TARGET> = Object.create(null);
+    private _gpuRenderTargetHash: WeakMap<RenderTarget, RENDER_TARGET> = new WeakMap();
     /**
      * A stack that stores the render target and frame that is currently being rendered to.
      * When push is called, the current render target is stored in this stack.
@@ -352,7 +352,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
 
     protected contextChange(): void
     {
-        this._gpuRenderTargetHash = Object.create(null);
+        this._gpuRenderTargetHash = new WeakMap();
     }
 
     /**
@@ -513,7 +513,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
 
         this._renderSurfaceToRenderTargetHash.clear();
 
-        this._gpuRenderTargetHash = Object.create(null);
+        this._gpuRenderTargetHash = new WeakMap();
     }
 
     private _initRenderTarget(renderSurface: RenderSurface): RenderTarget
@@ -547,11 +547,11 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
 
                 this._renderSurfaceToRenderTargetHash.delete(renderSurface);
 
-                const gpuRenderTarget = this._gpuRenderTargetHash[renderTarget.uid];
+                const gpuRenderTarget = this._gpuRenderTargetHash.get(renderTarget);
 
                 if (gpuRenderTarget)
                 {
-                    this._gpuRenderTargetHash[renderTarget.uid] = null;
+                    this._gpuRenderTargetHash.delete(renderTarget);
                     this.adaptor.destroyGpuRenderTarget(gpuRenderTarget);
                 }
             });
@@ -562,10 +562,20 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
         return renderTarget;
     }
 
-    public getGpuRenderTarget(renderTarget: RenderTarget)
+    public getGpuRenderTarget(renderTarget: RenderTarget): RENDER_TARGET
     {
-        return this._gpuRenderTargetHash[renderTarget.uid]
-        || (this._gpuRenderTargetHash[renderTarget.uid] = this.adaptor.initGpuRenderTarget(renderTarget));
+        const gpuRenderTarget = this._gpuRenderTargetHash.get(renderTarget);
+
+        if (gpuRenderTarget)
+        {
+            return gpuRenderTarget;
+        }
+
+        const newGpuRenderTarget = this.adaptor.initGpuRenderTarget(renderTarget);
+
+        this._gpuRenderTargetHash.set(renderTarget, newGpuRenderTarget);
+
+        return newGpuRenderTarget;
     }
 
     public resetState(): void

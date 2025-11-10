@@ -3,7 +3,7 @@ import type { BUFFER_TYPE } from './const';
 /** @internal */
 export class GlBuffer
 {
-    public buffer: WebGLBuffer;
+    public readonly buffer: WebGLBuffer;
     public updateID: number;
     public byteLength: number;
     public type: number;

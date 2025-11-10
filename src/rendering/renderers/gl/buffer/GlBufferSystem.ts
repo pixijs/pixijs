@@ -37,7 +37,7 @@ export class GlBufferSystem implements System
     } as const;
 
     private _gl: GlRenderingContext;
-    private _gpuBuffers: {[key: number]: GlBuffer} = Object.create(null);
+    private _gpuBuffers: WeakMap<Buffer, GlBuffer> = new WeakMap();
 
     /** Cache keeping track of the base bound buffer bases */
     private _boundBufferBases: {[key: number]: GlBuffer} = Object.create(null);
@@ -73,13 +73,13 @@ export class GlBufferSystem implements System
     {
         this._gl = this._renderer.gl;
 
-        this._gpuBuffers = Object.create(null);
+        this._gpuBuffers = new WeakMap();
         this._maxBindings = this._renderer.limits.maxUniformBindings;
     }
 
     public getGlBuffer(buffer: Buffer): GlBuffer
     {
-        return this._gpuBuffers[buffer.uid] || this.createGLBuffer(buffer);
+        return this._gpuBuffers.get(buffer) || this.createGLBuffer(buffer);
     }
 
     /**
@@ -260,14 +260,9 @@ export class GlBufferSystem implements System
     /** dispose all WebGL resources of all managed buffers */
     public destroyAll(): void
     {
-        const gl = this._gl;
-
-        for (const id in this._gpuBuffers)
-        {
-            gl.deleteBuffer(this._gpuBuffers[id].buffer);
-        }
-
-        this._gpuBuffers = Object.create(null);
+        // Garbage collector will take care of any just-released buffers
+        // See: https://registry.khronos.org/webgl/specs/latest/1.0/#5.14.5
+        this._gpuBuffers = new WeakMap();
     }
 
     /**
@@ -277,7 +272,7 @@ export class GlBufferSystem implements System
      */
     protected onBufferDestroy(buffer: Buffer, contextLost?: boolean): void
     {
-        const glBuffer = this._gpuBuffers[buffer.uid];
+        const glBuffer = this._gpuBuffers.get(buffer);
 
         const gl = this._gl;
 
@@ -286,7 +281,7 @@ export class GlBufferSystem implements System
             gl.deleteBuffer(glBuffer.buffer);
         }
 
-        this._gpuBuffers[buffer.uid] = null;
+        this._gpuBuffers.delete(buffer);
     }
 
     /**
@@ -311,7 +306,7 @@ export class GlBufferSystem implements System
 
         const glBuffer = new GlBuffer(gl.createBuffer(), type);
 
-        this._gpuBuffers[buffer.uid] = glBuffer;
+        this._gpuBuffers.set(buffer, glBuffer);
 
         buffer.on('destroy', this.onBufferDestroy, this);
 
