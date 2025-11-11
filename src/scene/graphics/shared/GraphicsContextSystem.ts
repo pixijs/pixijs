@@ -1,5 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { getTextureBatchBindGroup } from '../../../rendering/batcher/gpu/getTextureBatchBindGroup';
+import { type BatcherOptions } from '../../../rendering/batcher/shared/Batcher';
 import { DefaultBatcher } from '../../../rendering/batcher/shared/DefaultBatcher';
 import { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
 import { deprecation, v8_3_4 } from '../../../utils/logging/deprecation';
@@ -48,12 +49,11 @@ export class GraphicsContextRenderData
     public batcher: DefaultBatcher;
     public instructions = new InstructionSet();
 
-    public init(maxTextures: number)
+    public init(options: BatcherOptions | number)
     {
-        this.batcher = new DefaultBatcher({
-            maxTextures,
-        });
+        const maxTextures = typeof options === 'number' ? options : options.maxTextures;
 
+        this.batcher ? this.batcher._updateMaxTextures(maxTextures) : this.batcher = new DefaultBatcher({ maxTextures });
         this.instructions.reset();
     }
 
@@ -73,7 +73,7 @@ export class GraphicsContextRenderData
 
     public destroy()
     {
-        this.batcher.destroy();
+        this.batcher?.destroy();
         this.instructions.destroy();
 
         this.batcher = null;
@@ -319,7 +319,6 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
     public destroy()
     {
         // Clean up all graphics contexts
-
         for (const i in this._gpuContextHash)
         {
             if (this._gpuContextHash[i])
@@ -327,5 +326,9 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
                 this.onGraphicsContextDestroy(this._gpuContextHash[i].context);
             }
         }
+
+        this._gpuContextHash = {};
+        this._graphicsDataContextHash = {};
+        (this._renderer as null) = null;
     }
 }

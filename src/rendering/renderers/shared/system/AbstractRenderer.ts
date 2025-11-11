@@ -542,16 +542,16 @@ export class AbstractRenderer<
         this.runners.destroy.items.reverse();
         this.runners.destroy.emit(options);
 
+        if (options === true || (typeof options === 'object' && options.releaseGlobalResources))
+        {
+            GlobalResourceRegistry.release();
+        }
+
         // destroy all runners
         Object.values(this.runners).forEach((runner) =>
         {
             runner.destroy();
         });
-
-        if (options === true || (typeof options === 'object' && options.releaseGlobalResources))
-        {
-            GlobalResourceRegistry.release();
-        }
 
         this._systemsHash = null;
 

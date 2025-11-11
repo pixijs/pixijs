@@ -23,7 +23,6 @@ export class GpuBufferSystem implements System
 
     protected CONTEXT_UID: number;
     private _gpuBuffers: { [key: number]: GPUBuffer } = Object.create(null);
-    private readonly _managedBuffers: Buffer[] = [];
 
     private _gpu: GPU;
 
@@ -69,7 +68,7 @@ export class GpuBufferSystem implements System
     {
         for (const id in this._gpuBuffers)
         {
-            this._gpuBuffers[id].destroy();
+            this._gpuBuffers[id]?.destroy();
         }
 
         this._gpuBuffers = {};
@@ -82,8 +81,6 @@ export class GpuBufferSystem implements System
             buffer.on('update', this.updateBuffer, this);
             buffer.on('change', this.onBufferChange, this);
             buffer.on('destroy', this.onBufferDestroy, this);
-
-            this._managedBuffers.push(buffer);
         }
 
         const gpuBuffer = this._gpu.device.createBuffer(buffer.descriptor);
@@ -105,6 +102,7 @@ export class GpuBufferSystem implements System
 
     protected onBufferChange(buffer: Buffer)
     {
+        if (!this._gpuBuffers[buffer.uid]) return;
         const gpuBuffer = this._gpuBuffers[buffer.uid];
 
         gpuBuffer.destroy();
@@ -118,22 +116,18 @@ export class GpuBufferSystem implements System
      */
     protected onBufferDestroy(buffer: Buffer): void
     {
-        this._managedBuffers.splice(this._managedBuffers.indexOf(buffer), 1);
-
         this._destroyBuffer(buffer);
     }
 
     public destroy(): void
     {
-        this._managedBuffers.forEach((buffer) => this._destroyBuffer(buffer));
-
-        (this._managedBuffers as null) = null;
-
-        this._gpuBuffers = null;
+        this.destroyAll();
+        this._gpuBuffers = {};
     }
 
     private _destroyBuffer(buffer: Buffer): void
     {
+        if (!this._gpuBuffers[buffer.uid]) return;
         const gpuBuffer = this._gpuBuffers[buffer.uid];
 
         gpuBuffer.destroy();

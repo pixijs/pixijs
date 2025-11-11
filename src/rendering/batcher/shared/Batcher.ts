@@ -774,7 +774,12 @@ export abstract class Batcher
         }
     }
 
-    public destroy()
+    /**
+     * Destroys the batch and its resources.
+     * @param options - destruction options
+     * @param options.shader - whether to destroy the associated shader
+     */
+    public destroy(options: {shader?: boolean} = {})
     {
         if (this.batches === null) return;
 
@@ -784,6 +789,14 @@ export abstract class Batcher
         }
 
         this.batches = null;
+        this.geometry.destroy(true);
+        this.geometry = null;
+
+        if (this.shader && options.shader)
+        {
+            this.shader.destroy();
+            this.shader = null;
+        }
 
         for (let i = 0; i < this._elements.length; i++)
         {

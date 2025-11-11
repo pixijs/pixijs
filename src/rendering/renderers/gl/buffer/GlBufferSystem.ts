@@ -62,10 +62,12 @@ export class GlBufferSystem implements System
     /** @ignore */
     public destroy(): void
     {
+        // loop through and delete all buffers
+        this.destroyAll();
         this._renderer = null;
         this._gl = null;
-        this._gpuBuffers = null;
-        (this._boundBufferBases as null) = null;
+        this._gpuBuffers = {};
+        this._boundBufferBases = {};
     }
 
     /** Sets up the renderer context and necessary buffers. */
@@ -264,7 +266,7 @@ export class GlBufferSystem implements System
 
         for (const id in this._gpuBuffers)
         {
-            gl.deleteBuffer(this._gpuBuffers[id].buffer);
+            if (this._gpuBuffers[id]) gl.deleteBuffer(this._gpuBuffers[id].buffer);
         }
 
         this._gpuBuffers = Object.create(null);
@@ -277,6 +279,7 @@ export class GlBufferSystem implements System
      */
     protected onBufferDestroy(buffer: Buffer, contextLost?: boolean): void
     {
+        if (!this._gpuBuffers[buffer.uid]) return;
         const glBuffer = this._gpuBuffers[buffer.uid];
 
         const gl = this._gl;
@@ -286,6 +289,7 @@ export class GlBufferSystem implements System
             gl.deleteBuffer(glBuffer.buffer);
         }
 
+        buffer.off('destroy', this.onBufferDestroy, this);
         this._gpuBuffers[buffer.uid] = null;
     }
 

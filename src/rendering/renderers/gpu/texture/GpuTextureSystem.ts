@@ -346,6 +346,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
             this._bindGroupHash[key] = null;
         }
 
+        (this._renderer as null) = null;
         this._gpu = null;
         this._mipmapGenerator = null;
         this._gpuSources = null;
