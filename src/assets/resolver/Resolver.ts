@@ -538,13 +538,8 @@ export class Resolver
                             userDefinedParser = src.parser ?? userDefinedParser;
                         }
 
-                        if (typeof src.src === 'string')
-                        {
-                            formattedAsset = parseUrl(src.src);
-                        }
-
                         formattedAsset = {
-                            ...formattedAsset,
+                            ...parseUrl(src.src),
                             ...src,
                         };
                     }
