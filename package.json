@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "8.14.0",
+  "version": "8.14.1",
   "author": "PixiJS Team",
   "homepage": "http://pixijs.com/",
   "bugs": "https://github.com/pixijs/pixijs/issues",
@@ -18,7 +18,8 @@
   "types": "lib/index.d.ts",
   "files": [
     "lib",
-    "dist"
+    "dist",
+    "transcoders"
   ],
   "scripts": {
     "prepare": "husky install",
