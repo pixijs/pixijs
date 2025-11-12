@@ -118,5 +118,6 @@ export class BufferResource extends EventEmitter<{
         this.emit('change', this);
 
         this.buffer = null;
+        this.removeAllListeners();
     }
 }

@@ -49,9 +49,9 @@ export class GraphicsContextRenderData
     public batcher: DefaultBatcher;
     public instructions = new InstructionSet();
 
-    public init(options: BatcherOptions | number)
+    public init(options: BatcherOptions)
     {
-        const maxTextures = typeof options === 'number' ? options : options.maxTextures;
+        const maxTextures = options.maxTextures;
 
         this.batcher ? this.batcher._updateMaxTextures(maxTextures) : this.batcher = new DefaultBatcher({ maxTextures });
         this.instructions.reset();
@@ -73,7 +73,7 @@ export class GraphicsContextRenderData
 
     public destroy()
     {
-        this.batcher?.destroy();
+        this.batcher.destroy();
         this.instructions.destroy();
 
         this.batcher = null;

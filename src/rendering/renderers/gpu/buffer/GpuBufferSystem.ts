@@ -102,7 +102,6 @@ export class GpuBufferSystem implements System
 
     protected onBufferChange(buffer: Buffer)
     {
-        if (!this._gpuBuffers[buffer.uid]) return;
         const gpuBuffer = this._gpuBuffers[buffer.uid];
 
         gpuBuffer.destroy();
@@ -127,14 +126,16 @@ export class GpuBufferSystem implements System
 
     private _destroyBuffer(buffer: Buffer): void
     {
+        // always remove the buffer events as the GPU buffer may have already been cleared up by system destroy calls
+        // since the system destroy doesn't have access to the underlying buffer
+        buffer.off('update', this.updateBuffer, this);
+        buffer.off('change', this.onBufferChange, this);
+        buffer.off('destroy', this.onBufferDestroy, this);
+
         if (!this._gpuBuffers[buffer.uid]) return;
         const gpuBuffer = this._gpuBuffers[buffer.uid];
 
         gpuBuffer.destroy();
-
-        buffer.off('update', this.updateBuffer, this);
-        buffer.off('change', this.onBufferChange, this);
-        buffer.off('destroy', this.onBufferDestroy, this);
 
         this._gpuBuffers[buffer.uid] = null;
     }
