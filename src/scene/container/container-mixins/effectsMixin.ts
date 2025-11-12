@@ -360,9 +360,9 @@ export const effectsMixin: Partial<Container> = {
         this._markStructureAsChanged();
     },
 
-    set filters(value: Filter | Filter[] | null | undefined)
+    set filters(value: Filter | readonly Filter[] | null | undefined)
     {
-        if (!Array.isArray(value) && value) value = [value];
+        if (!Array.isArray(value) && value) value = ([value] as Filter[]);
 
         const effect = this._filterEffect ||= new FilterEffect();
 
