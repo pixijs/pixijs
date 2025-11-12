@@ -49,6 +49,9 @@ export interface FilterOptions
      * to and pass this into the shader. This is useful for blend modes that need to be aware of the pixels
      * they are rendering to. Only use if you need that data, otherwise its an extra gpu copy you don't need!
      * (default false)
+     *
+     * If given, the shader should have a uniform named `uBackTexture`, which is where the pixels of the
+     * area being rendered to can be sampled from.
      */
     blendRequired?: boolean;
     /**
