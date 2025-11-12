@@ -208,7 +208,14 @@ export class Filter extends Shader
         this.blendRequired = options.blendRequired;
         this.clipToViewport = options.clipToViewport;
 
+        // this is where the filter system will attach the filter texture
         this.addResource('uTexture', 0, 1);
+
+        if (options.blendRequired)
+        {
+            // this is where the filter system will attach the back texture
+            this.addResource('uBackTexture', 0, 3);
+        }
     }
 
     /**
