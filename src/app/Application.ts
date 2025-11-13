@@ -152,7 +152,7 @@ export interface Application extends PixiMixins.Application { }
  * document.body.appendChild(app.canvas);
  *
  * // Start adding content to your application
- * const texture - await Assets.load('your-image.png');
+ * const texture = await Assets.load('your-image.png');
  * const sprite = new Sprite(texture);
  * app.stage.addChild(sprite);
  * ```
