@@ -25,6 +25,29 @@ describe('Application', () =>
             expect(app.renderer).toBeNull();
         });
 
+        it('should allow for application to be reinitialized after destroy', async () =>
+        {
+            const app = await getApp();
+
+            expect(app.stage).toBeInstanceOf(Container);
+            expect(app.renderer).toBeTruthy();
+
+            app.destroy();
+
+            expect(app.stage).toBeNull();
+            expect(app.renderer).toBeNull();
+
+            await app.init();
+
+            expect(app.stage).toBeInstanceOf(Container);
+            expect(app.renderer).toBeTruthy();
+
+            app.destroy();
+
+            expect(app.stage).toBeNull();
+            expect(app.renderer).toBeNull();
+        });
+
         it('register a new plugin, then destroy it', async () =>
         {
             const plugin = {
