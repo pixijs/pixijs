@@ -249,6 +249,7 @@ export class Application<R extends Renderer = Renderer>
         // The default options
         options = { ...options };
 
+        this.stage = new Container();
         this.renderer = await autoDetectRenderer(options as ApplicationOptions) as R;
 
         // install plugins here

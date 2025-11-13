@@ -99,6 +99,7 @@ export class ResizePlugin
     {
         Object.defineProperty(this, 'resizeTo',
             {
+                configurable: true,
                 set(dom: Window | HTMLElement)
                 {
                     globalThis.removeEventListener('resize', this.queueResize);
