@@ -1,7 +1,7 @@
 import { ExtensionType } from '../extensions/Extensions';
 import { PassthroughFilter } from '../filters/defaults/passthrough/PassthroughFilter';
 import { Matrix } from '../maths/matrix/Matrix';
-import { type Rectangle } from '../maths/shapes/Rectangle';
+import { Rectangle } from '../maths/shapes/Rectangle';
 import { BindGroup } from '../rendering/renderers/gpu/shader/BindGroup';
 import { Geometry } from '../rendering/renderers/shared/geometry/Geometry';
 import { UniformGroup } from '../rendering/renderers/shared/shader/UniformGroup';
@@ -233,7 +233,28 @@ export class FilterSystem implements System
 
         this._calculateFilterArea(instruction, bounds);
 
-        this._calculateFilterBounds(filterData, renderer.renderTarget.rootViewPort, rootAntialias, rootResolution, 1);
+        let viewport = renderer.renderTarget.rootViewPort;
+
+        if (instruction.container)
+        {
+            const renderGroup = instruction.container.renderGroup || instruction.container.parentRenderGroup;
+            const closestCacheAsTexture = renderGroup.isCachedAsTexture
+                ? renderGroup : renderGroup._parentCacheAsTextureRenderGroup;
+
+            if (closestCacheAsTexture)
+            {
+                const frame = closestCacheAsTexture.texture.frame;
+                const resolution = closestCacheAsTexture.texture._source._resolution;
+
+                viewport = new Rectangle();
+                viewport.x = ((frame.x * resolution) + 0.5) | 0;
+                viewport.y = ((frame.y * resolution) + 0.5) | 0;
+                viewport.width = ((frame.width * resolution) + 0.5) | 0;
+                viewport.height = ((frame.height * resolution) + 0.5) | 0;
+            }
+        }
+
+        this._calculateFilterBounds(filterData, viewport, rootAntialias, rootResolution, 1);
 
         if (filterData.skip)
         {
