@@ -78,4 +78,69 @@ describe('Pool', () =>
 
         expect(item3).toBe(item1);
     });
+
+    it('should track the count of items in the pool', () =>
+    {
+        const pool = new Pool(TestItem);
+
+        expect(pool.totalSize).toBe(0);
+        expect(pool.totalFree).toBe(0);
+        expect(pool.totalUsed).toBe(0);
+
+        pool.prepopulate(3);
+
+        expect(pool.totalSize).toBe(3);
+        expect(pool.totalFree).toBe(3);
+        expect(pool.totalUsed).toBe(0);
+
+        const item1 = pool.get();
+
+        pool.get();
+
+        expect(pool.totalSize).toBe(3);
+        expect(pool.totalFree).toBe(1);
+        expect(pool.totalUsed).toBe(2);
+
+        pool.return(item1);
+
+        expect(pool.totalSize).toBe(3);
+        expect(pool.totalFree).toBe(2);
+        expect(pool.totalUsed).toBe(1);
+    });
+
+    it('should call destroy on available items with a destroy method', () =>
+    {
+        class DestroyableItem
+        {
+            public destroy = jest.fn();
+        }
+
+        const pool = new Pool(DestroyableItem);
+
+        pool.prepopulate(2);
+
+        const pooledItems = [...pool['_pool']];
+
+        pool.clear();
+
+        expect(pool.totalSize).toBe(0);
+        pooledItems.forEach((item) =>
+        {
+            expect(item.destroy).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    it('should reset storage and counters', () =>
+    {
+        const pool = new Pool(TestItem, 3);
+
+        pool.get(5);
+
+        pool.clear();
+
+        expect(pool['_pool']).toHaveLength(0);
+        expect(pool.totalSize).toBe(0);
+        expect(pool.totalFree).toBe(0);
+        expect(pool.totalUsed).toBe(0);
+    });
 });

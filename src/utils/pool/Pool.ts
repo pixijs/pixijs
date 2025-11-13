@@ -58,6 +58,7 @@ export class Pool<T extends PoolItem>
         else
         {
             item = new this._classType();
+            this._count++;
         }
 
         item.init?.(data);
