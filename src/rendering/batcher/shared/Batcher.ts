@@ -792,9 +792,9 @@ export abstract class Batcher
         this.geometry.destroy(true);
         this.geometry = null;
 
-        if (this.shader && options.shader)
+        if (options.shader)
         {
-            this.shader.destroy();
+            this.shader?.destroy();
             this.shader = null;
         }
 
