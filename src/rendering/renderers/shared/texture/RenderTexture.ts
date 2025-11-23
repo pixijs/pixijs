@@ -13,8 +13,12 @@ export class RenderTexture extends Texture
 {
     public static create(options: TextureSourceOptions): RenderTexture
     {
+        // Pass dynamic to the RenderTexture constructor if present in options
+        const { dynamic, ...rest } = options;
+
         return new RenderTexture({
-            source: new TextureSource(options)
+            source: new TextureSource(rest),
+            dynamic: dynamic ?? false,
         });
     }
 
