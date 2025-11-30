@@ -18,6 +18,15 @@ import type { FilterOptions } from '../../Filter';
  */
 export type ColorMatrix = ArrayFixed<number, 20>;
 
+/** @internal */
+export interface ColorMatrixFilterResources
+{
+    colorMatrixUniforms: UniformGroup<{
+        uColorMatrix: { value: ColorMatrix, type: 'f32', size: number },
+        uAlpha: { value: number, type: 'f32' },
+    }>
+}
+
 /**
  * The ColorMatrixFilter class lets you apply color transformations to display objects using a 5x4 matrix.
  * The matrix transforms the RGBA color and alpha values of every pixel to produce a new set of values.
@@ -55,7 +64,7 @@ export type ColorMatrix = ArrayFixed<number, 20>;
  * @standard
  * @noInheritDoc
  */
-export class ColorMatrixFilter extends Filter
+export class ColorMatrixFilter extends Filter<ColorMatrixFilterResources>
 {
     constructor(options: FilterOptions = {})
     {
@@ -66,7 +75,7 @@ export class ColorMatrixFilter extends Filter
                     0, 1, 0, 0, 0,
                     0, 0, 1, 0, 0,
                     0, 0, 0, 1, 0,
-                ],
+                ] as ColorMatrix,
                 type: 'f32',
                 size: 20,
             },

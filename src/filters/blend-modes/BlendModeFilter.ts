@@ -22,7 +22,16 @@ export interface BlendModeFilterOptions
 }
 
 /** @internal */
-export class BlendModeFilter extends Filter
+export interface BlendModeFilterResources
+{
+    blendUniforms: UniformGroup<{
+        uBlend: { value: number, type: 'f32' },
+    }>
+    uBackTexture: Texture;
+}
+
+/** @internal */
+export class BlendModeFilter extends Filter<BlendModeFilterResources>
 {
     constructor(options: BlendModeFilterOptions)
     {
@@ -50,7 +59,7 @@ export class BlendModeFilter extends Filter
             fragment: glSource
         });
 
-        const uniformGroup = new UniformGroup({
+        const blendUniforms = new UniformGroup({
             uBlend: {
                 value: 1,
                 type: 'f32'
@@ -62,7 +71,7 @@ export class BlendModeFilter extends Filter
             glProgram,
             blendRequired: true,
             resources: {
-                blendUniforms: uniformGroup,
+                blendUniforms,
                 uBackTexture: Texture.EMPTY
             }
         });
