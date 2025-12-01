@@ -5,9 +5,9 @@ import { State } from '../rendering/renderers/shared/state/State';
 
 import type { RenderSurface } from '../rendering/renderers/shared/renderTarget/RenderTargetSystem';
 import type {
-    GenericResources,
     IShaderWithResources,
     ShaderFromResources,
+    ShaderResources,
     ShaderWithResources
 } from '../rendering/renderers/shared/shader/Shader';
 import type { BLEND_MODES } from '../rendering/renderers/shared/state/const';
@@ -69,7 +69,7 @@ export interface FilterOptions
  * @advanced
  * @see {@link FilterOptions}
  */
-export type FilterWithShader<R = GenericResources> = FilterOptions & IShaderWithResources<R>;
+export type FilterWithShader<R = ShaderResources> = FilterOptions & IShaderWithResources<R>;
 
 /**
  * The antialiasing mode of the filter. This can be either:
@@ -132,7 +132,7 @@ export type FilterAntialias = 'on' | 'off' | 'inherit';
  *     filter.resources.timeUniforms.uniforms.uTime += 0.04 * ticker.deltaTime;
  * });
  */
-export class Filter<R = GenericResources> extends Shader<R>
+export class Filter<R = ShaderResources> extends Shader<R>
 {
     /** The default filter settings */
     public static defaultOptions: FilterOptions = {
@@ -259,7 +259,7 @@ export class Filter<R = GenericResources> extends Shader<R>
      * @param options
      * @returns A shiny new PixiJS filter!
      */
-    public static from<R = GenericResources>(options: FilterOptions & ShaderFromResources<R>): Filter<R>
+    public static from<R = ShaderResources>(options: FilterOptions & ShaderFromResources<R>): Filter<R>
     {
         const { gpu, gl, ...rest } = options;
 

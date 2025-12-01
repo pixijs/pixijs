@@ -71,7 +71,7 @@ export interface ShaderWithGroupsDescriptor
     groupMap?: Record<string, Record<string, any>>;
 }
 
-interface ShaderWithResourcesDescriptor<R = GenericResources>
+interface ShaderWithResourcesDescriptor<R = ShaderResources>
 {
     /**
      * A key value of uniform resources used by the shader.
@@ -109,20 +109,20 @@ export type ShaderWithGroups = ShaderWithGroupsDescriptor & ShaderWith;
  * @category rendering
  * @advanced
  */
-export type ShaderWithResources<R = GenericResources> = ShaderWithResourcesDescriptor<R> & ShaderWith;
+export type ShaderWithResources<R = ShaderResources> = ShaderWithResourcesDescriptor<R> & ShaderWith;
 /**
  * A shader that can be used with both WebGL and WebGPU.
  * @category rendering
  * @advanced
  */
-export interface IShaderWithResources<R = GenericResources> extends ShaderWithResourcesDescriptor<R>, ShaderBase {}
+export interface IShaderWithResources<R = ShaderResources> extends ShaderWithResourcesDescriptor<R>, ShaderBase {}
 
 /**
  * A descriptor for a shader that can be used with both WebGL and WebGPU.
  * @category rendering
  * @advanced
  */
-export type ShaderDescriptor<R = GenericResources> = ShaderWithGroups & ShaderWithResources<R>;
+export type ShaderDescriptor<R = ShaderResources> = ShaderWithGroups & ShaderWithResources<R>;
 
 /**
  * A descriptor for a shader with resources and groups.
@@ -151,15 +151,15 @@ export type ShaderFromGroups = (GlShaderFromWith | GpuShaderFromWith) & Omit<Sha
  * @category rendering
  * @advanced
  */
-export type ShaderFromResources<R = GenericResources> = (GlShaderFromWith | GpuShaderFromWith)
+export type ShaderFromResources<R = ShaderResources> = (GlShaderFromWith | GpuShaderFromWith)
 & Omit<ShaderWithResources<R>, 'glProgram' | 'gpuProgram'>;
 
 /**
- * A generic type for resources.
+ * A generic type for resources when no specific type is defined.
  * @category rendering
  * @advanced
  */
-export type GenericResources = Record<string, any>;
+export type ShaderResources = Record<string, any>;
 
 /**
  * The Shader class is an integral part of the PixiJS graphics pipeline.
@@ -198,7 +198,7 @@ export type GenericResources = Record<string, any>;
  * @category rendering
  * @advanced
  */
-export class Shader<R = GenericResources> extends EventEmitter<{'destroy': Shader}>
+export class Shader<R = ShaderResources> extends EventEmitter<{'destroy': Shader}>
 {
     /** A unique identifier for the shader */
     public readonly uid: number = uid('shader');
@@ -478,9 +478,9 @@ export class Shader<R = GenericResources> extends EventEmitter<{'destroy': Shade
      * @param options
      * @returns A shiny new PixiJS shader!
      */
-    public static from<R = GenericResources>(options: ShaderFromGroups): Shader<R>;
-    public static from<R = GenericResources>(options: ShaderFromResources<R>): Shader<R>;
-    public static from<R = GenericResources>(
+    public static from<R = ShaderResources>(options: ShaderFromGroups): Shader<R>;
+    public static from<R = ShaderResources>(options: ShaderFromResources<R>): Shader<R>;
+    public static from<R = ShaderResources>(
         options: ShaderFromGroups & ShaderFromResources<R>): Shader<R>
     {
         const { gpu, gl, ...rest } = options;
