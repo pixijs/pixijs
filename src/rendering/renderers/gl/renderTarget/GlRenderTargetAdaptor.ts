@@ -314,7 +314,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
                 0);// mipLevel);
         });
 
-        if (colorTextures.length > 0)
+        if (colorTextures.length > 1)
         {
             const bufferArray: number[] = [];
 
