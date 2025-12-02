@@ -283,7 +283,9 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         glRenderTarget.width = renderTarget.colorTexture.source.pixelWidth;
         glRenderTarget.height = renderTarget.colorTexture.source.pixelHeight;
 
-        renderTarget.colorTextures.forEach((colorTexture, i) =>
+        const colorTextures = renderTarget.colorTextures;
+
+        colorTextures.forEach((colorTexture, i) =>
         {
             const source = colorTexture.source;
 
@@ -311,6 +313,35 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
                 glTexture,
                 0);// mipLevel);
         });
+
+        if (colorTextures.length > 0)
+        {
+            const bufferArray: number[] = [];
+
+            for (let i = 0; i < colorTextures.length; i++)
+            {
+                bufferArray.push(gl.COLOR_ATTACHMENT0 + i);
+            }
+
+            if (renderer.context.webGLVersion === 1)
+            {
+                const ext = renderer.context.extensions.drawBuffers;
+
+                if (!ext)
+                {
+                    warn('[RenderTexture] This WebGL1 context does not support rendering to multiple targets');
+                }
+                else
+                {
+                    ext.drawBuffersWEBGL(bufferArray);
+                }
+            }
+            else
+            {
+                // WebGL2 has built in support
+                gl.drawBuffers(bufferArray);
+            }
+        }
 
         if (glRenderTarget.msaa)
         {
