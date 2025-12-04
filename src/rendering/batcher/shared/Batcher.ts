@@ -744,7 +744,7 @@ export abstract class Batcher
         }
         else
         {
-            fastCopy(indexBuffer.buffer, newIndexBuffer.buffer);
+            fastCopy(indexBuffer.buffer as ArrayBuffer, newIndexBuffer.buffer);
         }
 
         this.indexBuffer = newIndexBuffer;
