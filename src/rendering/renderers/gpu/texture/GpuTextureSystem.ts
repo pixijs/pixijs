@@ -1,7 +1,7 @@
 import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { type GPUData } from '../../../../scene/view/ViewContainer';
-import { ManagedHash } from '../../../../utils/data/ManagedHash';
+import { GCManagedHash } from '../../../../utils/data/GCManagedHash';
 import { UniformGroup } from '../../shared/shader/UniformGroup';
 import { CanvasPool } from '../../shared/texture/CanvasPool';
 import { BindGroup } from '../shader/BindGroup';
@@ -74,7 +74,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
     private _mipmapGenerator?: GpuMipmapGenerator;
 
     private readonly _renderer: WebGPURenderer;
-    private readonly _managedTextures: ManagedHash<TextureSource>;
+    private readonly _managedTextures: GCManagedHash<TextureSource>;
     /**
      * @deprecated since 8.15.0
      */
@@ -84,7 +84,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
     {
         this._renderer = renderer;
         renderer.renderableGC.addManagedHash(this, '_bindGroupHash');
-        this._managedTextures = new ManagedHash(renderer, 'resource', this.onSourceUnload.bind(this));
+        this._managedTextures = new GCManagedHash({ renderer, type: 'resource', onUnload: this.onSourceUnload.bind(this) });
     }
 
     protected contextChange(gpu: GPU): void
@@ -191,7 +191,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
     protected onSourceResize(source: TextureSource): void
     {
-        this._renderer.gc.touch(source);
+        source._gcLastUsed = this._renderer.gc.now;
 
         const gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
         const gpuTexture = gpuData?.gpuTexture;
@@ -223,7 +223,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
     public getGpuSource(source: TextureSource): GPUTexture
     {
-        this._renderer.gc.touch(source);
+        source._gcLastUsed = this._renderer.gc.now;
 
         return (source._gpuData[this._renderer.uid] as GPUTextureGpuData)?.gpuTexture || this.initSource(source);
     }
@@ -261,7 +261,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
     {
         const source = texture.source;
 
-        this._renderer.gc.touch(source);
+        source._gcLastUsed = this._renderer.gc.now;
         let gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
         let textureView: GPUTextureView = null;
 

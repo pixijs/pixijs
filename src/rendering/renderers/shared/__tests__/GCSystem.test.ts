@@ -7,15 +7,22 @@ import type { GCable, GCSystemOptions } from '../GCSystem';
 // Mock resource that implements GCable interface
 function createMockResource(options: Partial<GCable> = {}): GCable & { once: jest.Mock; off: jest.Mock; unload: jest.Mock }
 {
-    return {
+    const mockResource: GCable & { once: jest.Mock; off: jest.Mock; unload: jest.Mock; } = {
         _gpuData: {},
+        _onTouch: jest.fn().mockImplementation((now: number) =>
+        {
+            mockResource._gcLastUsed = now;
+        }),
         autoGarbageCollect: true,
+        _gcLastUsed: -1,
         _gcData: null,
         unload: jest.fn() as any,
         once: jest.fn(),
         off: jest.fn(),
         ...options,
     };
+
+    return mockResource;
 }
 
 // Mock renderer with scheduler
@@ -195,16 +202,16 @@ describe('GCSystem', () =>
             const resource = createMockResource();
 
             gcSystem.addResource(resource, 'resource');
-            const originalLastUsed = resource._gcData?.lastUsed;
+            const originalLastUsed = resource._gcLastUsed;
 
             // Wait a tiny bit to ensure time difference
             const laterTime = (originalLastUsed ?? 0) + 100;
 
-            gcSystem['_now'] = laterTime;
+            gcSystem.now = laterTime;
 
             gcSystem.addResource(resource, 'resource');
 
-            expect(resource._gcData?.lastUsed).toBe(laterTime);
+            expect(resource._gcLastUsed).toBe(laterTime);
 
             jest.restoreAllMocks();
         });
@@ -295,15 +302,15 @@ describe('GCSystem', () =>
             const resource = createMockResource();
 
             gcSystem.addResource(resource, 'resource');
-            const originalLastUsed = resource._gcData?.lastUsed;
+            const originalLastUsed = resource._gcLastUsed;
 
             const laterTime = (originalLastUsed ?? 0) + 1000;
 
-            gcSystem['_now'] = laterTime;
+            gcSystem.now = laterTime;
 
-            gcSystem.touch(resource);
+            resource._gcLastUsed = laterTime;
 
-            expect(resource._gcData?.lastUsed).toBe(laterTime);
+            expect(resource._gcLastUsed).toBe(laterTime);
 
             jest.restoreAllMocks();
         });
@@ -314,17 +321,9 @@ describe('GCSystem', () =>
             const resource = createMockResource({ _onTouch: onTouch });
 
             gcSystem.addResource(resource, 'resource');
-            gcSystem.touch(resource);
+            resource._gcLastUsed = renderer.tick;
 
             expect(onTouch).toHaveBeenCalled();
-        });
-
-        it('should do nothing if resource has no GC data', () =>
-        {
-            const resource = createMockResource();
-
-            // Should not throw
-            expect(() => gcSystem.touch(resource)).not.toThrow();
         });
     });
 
@@ -353,7 +352,7 @@ describe('GCSystem', () =>
             gcSystem.addResource(resource, 'resource');
 
             // Simulate resource being old
-            resource._gcData!.lastUsed = gcSystem['_now'] - 2000;
+            resource._gcLastUsed = gcSystem.now - 2000;
 
             gcSystem.run();
 
@@ -368,7 +367,7 @@ describe('GCSystem', () =>
             gcSystem.addResource(resource, 'resource');
 
             // Simulate resource being old
-            resource._gcData!.lastUsed = gcSystem['_now'] - 2000;
+            resource._gcLastUsed = gcSystem.now - 2000;
 
             gcSystem.run();
 
@@ -387,7 +386,7 @@ describe('GCSystem', () =>
             gcSystem.addResource(resource3, 'resource');
 
             // Make middle resource old
-            resource2._gcData!.lastUsed = gcSystem['_now'] - 2000;
+            resource2._gcLastUsed = gcSystem.now - 2000;
 
             gcSystem.run();
 
@@ -401,7 +400,7 @@ describe('GCSystem', () =>
             const resource = createMockResource();
 
             gcSystem.addResource(resource, 'resource');
-            resource._gcData!.lastUsed = gcSystem['_now'] - 2000;
+            resource._gcLastUsed = gcSystem.now - 2000;
 
             gcSystem.run();
 
@@ -463,8 +462,7 @@ describe('GCSystem', () =>
             gcSystem.addResourceHash(context, 'myHash', 'resource');
             gcSystem.run();
 
-            expect(resource._gcData).not.toBeNull();
-            expect(resource._gcData?.type).toBe('resource');
+            expect(resource._gcLastUsed).not.toBe(-1);
         });
 
         it('should garbage collect old resources from hash', () =>
@@ -472,9 +470,9 @@ describe('GCSystem', () =>
             const resource = createMockResource();
 
             resource._gcData = {
-                lastUsed: gcSystem['_now'] - 2000,
                 type: 'resource',
             };
+            resource._gcLastUsed = gcSystem.now - 2000;
 
             const context = { myHash: { key1: resource } };
 
@@ -491,9 +489,9 @@ describe('GCSystem', () =>
             const resource = createMockResource();
 
             resource._gcData = {
-                lastUsed: gcSystem['_now'],
                 type: 'resource',
             };
+            resource._gcLastUsed = gcSystem.now;
 
             const context = { myHash: { key1: resource } };
 
@@ -517,7 +515,7 @@ describe('GCSystem', () =>
             gcSystem.addResourceHash(context, 'myHash', 'resource');
             gcSystem.run();
 
-            expect(resource._gcData).not.toBeNull();
+            expect(resource._gcLastUsed).not.toBe(-1);
         });
 
         it('should not replace hash if nothing changed', () =>
@@ -525,9 +523,9 @@ describe('GCSystem', () =>
             const resource = createMockResource();
 
             resource._gcData = {
-                lastUsed: gcSystem['_now'],
                 type: 'resource',
             };
+            resource._gcLastUsed = gcSystem.now;
 
             const originalHash = { key1: resource };
             const context = { myHash: originalHash };
@@ -545,13 +543,13 @@ describe('GCSystem', () =>
             const resource2 = createMockResource();
 
             resource1._gcData = {
-                lastUsed: gcSystem['_now'] - 2000,
                 type: 'resource',
             };
+            resource1._gcLastUsed = gcSystem.now - 2000;
             resource2._gcData = {
-                lastUsed: gcSystem['_now'],
                 type: 'resource',
             };
+            resource2._gcLastUsed = gcSystem.now;
 
             const originalHash: Record<string, GCable | null> = { key1: resource1, key2: resource2 };
             const context = { myHash: originalHash };
@@ -572,9 +570,9 @@ describe('GCSystem', () =>
             const resource = createMockResource({ autoGarbageCollect: false });
 
             resource._gcData = {
-                lastUsed: gcSystem['_now'] - 2000,
                 type: 'resource',
             };
+            resource._gcLastUsed = gcSystem.now - 2000;
 
             const context = { myHash: { key1: resource } };
 
@@ -653,9 +651,9 @@ describe('GCSystem', () =>
             const resource = createMockResource();
 
             resource._gcData = {
-                lastUsed: gcSystem['_now'] - 2000,
                 type: 'resource',
             };
+            resource._gcLastUsed = gcSystem.now - 2000;
 
             const originalHash: Record<string, GCable | null> = { key1: resource };
             const context = { myHash: originalHash };
@@ -679,16 +677,17 @@ describe('GCSystem', () =>
                 const resource = createMockResource();
 
                 resource._gcData = {
-                    lastUsed: performance.now() - 2000,
                     type: 'resource',
                 };
+                resource._gcLastUsed = performance.now() - 2000;
                 hash[`old_${i}`] = resource;
             }
 
             // Add one valid resource
             const validResource = createMockResource();
 
-            validResource._gcData = { lastUsed: performance.now(), type: 'resource' };
+            validResource._gcData = { type: 'resource' };
+            validResource._gcLastUsed = performance.now();
             hash.valid = validResource;
 
             const context = { myHash: hash };
@@ -718,7 +717,8 @@ describe('GCSystem', () =>
             // Add one valid resource
             const resource = createMockResource();
 
-            resource._gcData = { lastUsed: performance.now(), type: 'resource' };
+            resource._gcData = { type: 'resource' };
+            resource._gcLastUsed = performance.now();
             hash.valid = resource;
 
             const context = { myHash: hash };
@@ -747,15 +747,16 @@ describe('GCSystem', () =>
             const oldResource = createMockResource();
 
             oldResource._gcData = {
-                lastUsed: performance.now() - 2000,
                 type: 'resource',
             };
+            oldResource._gcLastUsed = performance.now() - 2000;
             hash.old = oldResource;
 
             // Add one valid resource
             const validResource = createMockResource();
 
-            validResource._gcData = { lastUsed: performance.now(), type: 'resource' };
+            validResource._gcData = { type: 'resource' };
+            validResource._gcLastUsed = performance.now();
             hash.valid = validResource;
 
             const context = { myHash: hash };
@@ -789,16 +790,17 @@ describe('GCSystem', () =>
                 const resource = createMockResource();
 
                 resource._gcData = {
-                    lastUsed: performance.now() - 2000,
                     type: 'resource',
                 };
+                resource._gcLastUsed = performance.now() - 2000;
                 hash[`old_${i}`] = resource;
             }
 
             // Add one valid resource at the end
             const validResource = createMockResource();
 
-            validResource._gcData = { lastUsed: performance.now(), type: 'resource' };
+            validResource._gcData = { type: 'resource' };
+            validResource._gcLastUsed = performance.now();
             hash.valid = validResource;
 
             const context = { myHash: hash };
@@ -829,16 +831,17 @@ describe('GCSystem', () =>
                 const resource = createMockResource();
 
                 resource._gcData = {
-                    lastUsed: performance.now() - 2000,
                     type: 'resource',
                 };
+                resource._gcLastUsed = performance.now() - 2000;
                 hash[`old_${i}`] = resource;
             }
 
             // Add one valid resource
             const validResource = createMockResource();
 
-            validResource._gcData = { lastUsed: performance.now(), type: 'resource' };
+            validResource._gcData = { type: 'resource' };
+            validResource._gcLastUsed = performance.now();
             hash.valid = validResource;
 
             const context = { myHash: hash };

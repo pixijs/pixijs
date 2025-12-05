@@ -1,5 +1,5 @@
 import { ExtensionType } from '../../extensions/Extensions';
-import { ManagedHash } from '../../utils/data/ManagedHash';
+import { GCManagedHash } from '../../utils/data/GCManagedHash';
 import { BatchableMesh } from '../mesh/shared/BatchableMesh';
 import { type GPUData } from '../view/ViewContainer';
 import { NineSliceGeometry } from './NineSliceGeometry';
@@ -44,12 +44,12 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
     } as const;
 
     private readonly _renderer: Renderer;
-    private readonly _managedSprites: ManagedHash<NineSliceSprite>;
+    private readonly _managedSprites: GCManagedHash<NineSliceSprite>;
 
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
-        this._managedSprites = new ManagedHash(renderer, 'renderable');
+        this._managedSprites = new GCManagedHash({ renderer, type: 'renderable' });
     }
 
     public addRenderable(sprite: NineSliceSprite, instructionSet: InstructionSet)
