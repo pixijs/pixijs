@@ -1,6 +1,7 @@
+import { type GCable, type GCData } from '../../rendering/renderers/shared/GCSystem';
 import { type InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 import { type RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
-import { type Renderer } from '../../rendering/renderers/types';
+import { type GPUDataOwner, type Renderer } from '../../rendering/renderers/types';
 import { Bounds } from '../container/bounds/Bounds';
 import { Container, type ContainerOptions } from '../container/Container';
 import { type RenderLayer } from '../layers/RenderLayer';
@@ -9,17 +10,13 @@ import type { PointData } from '../../maths/point/PointData';
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { DestroyOptions } from '../container/destroyTypes';
 
-/** @internal */
+/**
+ * A GPU Data object
+ * @internal
+ */
 export interface GPUData
 {
     destroy: () => void;
-}
-
-/** @internal */
-export interface GPUDataContainer<GPU_DATA extends GPUData = any>
-{
-    _gpuData: Record<number, GPU_DATA>;
-    unload: () => void;
 }
 
 /**
@@ -30,7 +27,7 @@ export interface GPUDataContainer<GPU_DATA extends GPUData = any>
 export interface ViewContainerOptions extends ContainerOptions, PixiMixins.ViewContainerOptions {}
 // eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface ViewContainer<GPU_DATA extends GPUData = any> extends
-    PixiMixins.ViewContainer, Container, GPUDataContainer<GPU_DATA> {}
+    PixiMixins.ViewContainer, Container, GPUDataOwner<GPU_DATA>, GCable {}
 
 /**
  * A ViewContainer is a type of container that represents a view.
@@ -39,7 +36,7 @@ export interface ViewContainer<GPU_DATA extends GPUData = any> extends
  * @category scene
  * @advanced
  */
-export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Container implements View
+export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Container implements View, GCable
 {
     /** @internal */
     public override readonly renderPipeId: string;
@@ -55,6 +52,10 @@ export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Cont
 
     /** @internal */
     public _gpuData: Record<number, GPU_DATA> = Object.create(null);
+    /** @internal */
+    public _gcData?: GCData;
+    /** If set to true, the resource will be garbage collected automatically when it is not used. */
+    public autoGarbageCollect = true;
 
     protected _bounds: Bounds = new Bounds(0, 1, 0, 0);
     protected _boundsDirty = true;
@@ -172,11 +173,10 @@ export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Cont
 
     public override destroy(options?: DestroyOptions): void
     {
+        this.unload();
         super.destroy(options);
 
         this._bounds = null;
-
-        this.unload();
     }
 
     /**
@@ -212,3 +212,4 @@ export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Cont
         renderPipes.blendMode.popBlendMode(instructionSet);
     }
 }
+
