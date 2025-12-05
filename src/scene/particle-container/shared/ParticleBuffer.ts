@@ -3,6 +3,7 @@ import { BufferUsage } from '../../../rendering/renderers/shared/buffer/const';
 import { Geometry } from '../../../rendering/renderers/shared/geometry/Geometry';
 import { getAttributeInfoFromFormat } from '../../../rendering/renderers/shared/geometry/utils/getAttributeInfoFromFormat';
 import { ViewableBuffer } from '../../../utils/data/ViewableBuffer';
+import { type GPUData } from '../../view/ViewContainer';
 import { createIndicesForQuads } from './utils/createIndicesForQuads';
 import { generateParticleUpdateFunction } from './utils/generateParticleUpdateFunction';
 
@@ -28,7 +29,7 @@ export interface ParticleBufferOptions
  * It also contains the upload functions for the static and dynamic properties.
  * @internal
  */
-export class ParticleBuffer
+export class ParticleBuffer implements GPUData
 {
     /** The buffer containing static attribute data for all elements in the batch. */
     public staticAttributeBuffer: ViewableBuffer;
