@@ -1,5 +1,6 @@
 import { ExtensionType } from '../../extensions/Extensions';
 import { BatchableMesh } from '../mesh/shared/BatchableMesh';
+import { type GPUData } from '../view/ViewContainer';
 import { NineSliceGeometry } from './NineSliceGeometry';
 
 import type { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
@@ -11,7 +12,7 @@ import type { NineSliceSprite } from './NineSliceSprite';
  * GPU data for NineSliceSprite.
  * @internal
  */
-export class NineSliceSpriteGpuData extends BatchableMesh
+export class NineSliceSpriteGpuData extends BatchableMesh implements GPUData
 {
     constructor()
     {

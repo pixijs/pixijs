@@ -362,7 +362,5 @@ export class Mesh<
         this._texture = null;
         this._geometry = null;
         this._shader = null;
-
-        this._gpuData = null;
     }
 }

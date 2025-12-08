@@ -15,6 +15,13 @@ export interface GPUData
     destroy: () => void;
 }
 
+/** @internal */
+export interface GPUDataContainer<GPU_DATA extends GPUData = any>
+{
+    _gpuData: Record<number, GPU_DATA>;
+    unload: () => void;
+}
+
 /**
  * Options for the construction of a ViewContainer.
  * @category scene
@@ -22,11 +29,8 @@ export interface GPUData
  */
 export interface ViewContainerOptions extends ContainerOptions, PixiMixins.ViewContainerOptions {}
 // eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
-export interface ViewContainer<GPU_DATA extends GPUData = any> extends PixiMixins.ViewContainer, Container
-{
-    // eslint-disable-next-line requireMemberAPI/require-member-api-doc
-    _gpuData: Record<number, GPU_DATA>;
-}
+export interface ViewContainer<GPU_DATA extends GPUData = any> extends
+    PixiMixins.ViewContainer, Container, GPUDataContainer<GPU_DATA> {}
 
 /**
  * A ViewContainer is a type of container that represents a view.
@@ -154,18 +158,25 @@ export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Cont
         }
     }
 
+    /** Unloads the GPU data from the view. */
+    public unload(): void
+    {
+        this.emit('unload', this);
+        for (const key in this._gpuData)
+        {
+            this._gpuData[key]?.destroy();
+        }
+        this._gpuData = Object.create(null);
+        this.onViewUpdate();
+    }
+
     public override destroy(options?: DestroyOptions): void
     {
         super.destroy(options);
 
         this._bounds = null;
 
-        for (const key in this._gpuData)
-        {
-            (this._gpuData[key] as GPU_DATA).destroy?.();
-        }
-
-        this._gpuData = null;
+        this.unload();
     }
 
     /**

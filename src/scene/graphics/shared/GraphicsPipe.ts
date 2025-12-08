@@ -2,6 +2,7 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import { State } from '../../../rendering/renderers/shared/state/State';
 import { type Renderer } from '../../../rendering/renderers/types';
 import { BigPool } from '../../../utils/pool/PoolGroup';
+import { type GPUData } from '../../view/ViewContainer';
 import { color32BitToUniform } from '../gpu/colorToUniform';
 import { BatchableGraphics } from './BatchableGraphics';
 
@@ -22,7 +23,7 @@ export interface GraphicsAdaptor
 }
 
 /** @internal */
-export class GraphicsGpuData
+export class GraphicsGpuData implements GPUData
 {
     public batches: BatchableGraphics[] = [];
     public batched = false;

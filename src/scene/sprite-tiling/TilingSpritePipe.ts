@@ -5,6 +5,7 @@ import { type Renderer, RendererType } from '../../rendering/renderers/types';
 import { color32BitToUniform } from '../graphics/gpu/colorToUniform';
 import { BatchableMesh } from '../mesh/shared/BatchableMesh';
 import { MeshGeometry } from '../mesh/shared/MeshGeometry';
+import { type GPUData } from '../view/ViewContainer';
 import { TilingSpriteShader } from './shader/TilingSpriteShader';
 import { QuadGeometry } from './utils/QuadGeometry';
 import { setPositions } from './utils/setPositions';
@@ -18,7 +19,7 @@ import type { TilingSprite } from './TilingSprite';
 const sharedQuad = new QuadGeometry();
 
 /** @internal */
-export class TilingSpriteGpuData
+export class TilingSpriteGpuData implements GPUData
 {
     public canBatch: boolean = true;
     public renderable: TilingSprite;
