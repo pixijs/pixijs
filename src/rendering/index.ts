@@ -152,6 +152,7 @@ export * from './renderers/shared/buffer/const';
 export * from './renderers/shared/buffer/utils/fastCopy';
 export * from './renderers/shared/extract/ExtractSystem';
 export * from './renderers/shared/extract/GenerateTextureSystem';
+export * from './renderers/shared/GCSystem';
 export * from './renderers/shared/geometry/const';
 export * from './renderers/shared/geometry/Geometry';
 export * from './renderers/shared/geometry/utils/buildUvs';
