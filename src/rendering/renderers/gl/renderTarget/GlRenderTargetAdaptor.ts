@@ -9,6 +9,7 @@ import type { RenderTarget } from '../../shared/renderTarget/RenderTarget';
 import type { RenderTargetAdaptor, RenderTargetSystem } from '../../shared/renderTarget/RenderTargetSystem';
 import type { Texture } from '../../shared/texture/Texture';
 import type { CLEAR_OR_BOOL } from '../const';
+import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
 
 /**
@@ -22,6 +23,8 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
     private _renderer: WebGLRenderer<HTMLCanvasElement>;
     private _clearColorCache: RgbaArray = [0, 0, 0, 0];
     private _viewPortCache: Rectangle = new Rectangle();
+    /** Pre-computed draw buffers arrays for MRT, indexed by color attachment count */
+    private _drawBuffersCache: number[][];
 
     public init(renderer: WebGLRenderer, renderTargetSystem: RenderTargetSystem<GlRenderTarget>): void
     {
@@ -35,6 +38,16 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
     {
         this._clearColorCache = [0, 0, 0, 0];
         this._viewPortCache = new Rectangle();
+
+        // Pre-compute draw buffers arrays for all possible MRT configurations
+        const gl = this._renderer.gl;
+
+        this._drawBuffersCache = [];
+
+        for (let i = 1; i <= 16; i++)
+        {
+            this._drawBuffersCache[i] = Array.from({ length: i }, (_, j) => gl.COLOR_ATTACHMENT0 + j);
+        }
     }
 
     public copyToTexture(
@@ -97,6 +110,12 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         const gl = this._renderer.gl;
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, gpuRenderTarget.framebuffer);
+
+        // Set draw buffers for multiple render targets (MRT)
+        if (renderTarget.colorTextures.length > 1)
+        {
+            this._setDrawBuffers(renderTarget, gl);
+        }
 
         const viewPortCache = this._viewPortCache;
 
@@ -314,35 +333,6 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
                 0);// mipLevel);
         });
 
-        if (colorTextures.length > 1)
-        {
-            const bufferArray: number[] = [];
-
-            for (let i = 0; i < colorTextures.length; i++)
-            {
-                bufferArray.push(gl.COLOR_ATTACHMENT0 + i);
-            }
-
-            if (renderer.context.webGLVersion === 1)
-            {
-                const ext = renderer.context.extensions.drawBuffers;
-
-                if (!ext)
-                {
-                    warn('[RenderTexture] This WebGL1 context does not support rendering to multiple targets');
-                }
-                else
-                {
-                    ext.drawBuffersWEBGL(bufferArray);
-                }
-            }
-            else
-            {
-                // WebGL2 has built in support
-                gl.drawBuffers(bufferArray);
-            }
-        }
-
         if (glRenderTarget.msaa)
         {
             const viewFramebuffer = gl.createFramebuffer();
@@ -510,6 +500,31 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
                 contextCanvas as CanvasImageSource,
                 0, canvasSource.pixelHeight - contextCanvas.height
             );
+        }
+    }
+
+    private _setDrawBuffers(renderTarget: RenderTarget, gl: GlRenderingContext): void
+    {
+        const count = renderTarget.colorTextures.length;
+        const bufferArray = this._drawBuffersCache[count];
+
+        if (this._renderer.context.webGLVersion === 1)
+        {
+            const ext = this._renderer.context.extensions.drawBuffers;
+
+            if (!ext)
+            {
+                warn('[RenderTexture] This WebGL1 context does not support rendering to multiple targets');
+            }
+            else
+            {
+                ext.drawBuffersWEBGL(bufferArray);
+            }
+        }
+        else
+        {
+            // WebGL2 has built in support
+            gl.drawBuffers(bufferArray);
         }
     }
 }

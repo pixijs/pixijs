@@ -47,16 +47,19 @@ function getGraphicsStateKey(
 // stencilState = 8; // 3 bits // 8 states // value 0-7;
 // renderTarget = 1; // 2 bit // 3 states // value 0-3; // none, stencil, depth, depth-stencil
 // multiSampleCount = 1; // 1 bit // 2 states // value 0-1;
+// colorTargetCount = 4; // 2 bits // 4 states // value 0-3; // supports 1-4 color targets
 function getGlobalStateKey(
     stencilStateId: number,
     multiSampleCount: number,
     colorMask: number,
     renderTarget: number,
+    colorTargetCount: number,
 ): number
 {
-    return (colorMask << 6) // Allocate the 4 bits for colorMask at the top
-         | (stencilStateId << 3) // Next 3 bits for stencilStateId
-         | (renderTarget << 1) // 2 bits for renderTarget
+    return (colorMask << 8) // Allocate the 4 bits for colorMask at the top
+         | (stencilStateId << 5) // Next 3 bits for stencilStateId
+         | (renderTarget << 3) // 2 bits for renderTarget
+         | (colorTargetCount << 1) // 2 bits for colorTargetCount
          | multiSampleCount; // And 1 bit for multiSampleCount at the least significant position
 }
 
@@ -104,6 +107,7 @@ export class PipelineSystem implements System
     private _stencilMode: STENCIL_MODES;
     private _colorMask = 0b1111;
     private _multisampleCount = 1;
+    private _colorTargetCount = 1;
     private _depthStencilAttachment: 0 | 1;
 
     constructor(renderer: WebGPURenderer)
@@ -132,7 +136,7 @@ export class PipelineSystem implements System
     {
         this._multisampleCount = renderTarget.msaaSamples;
         this._depthStencilAttachment = renderTarget.descriptor.depthStencilAttachment ? 1 : 0;
-
+        this._colorTargetCount = renderTarget.colorTargetCount;
         this._updatePipeHash();
     }
 
@@ -201,9 +205,15 @@ export class PipelineSystem implements System
 
         const buffers = this._createVertexBufferLayouts(geometry, program);
 
-        const blendModes = this._renderer.state.getColorTargets(state);
+        const blendModes = this._renderer.state.getColorTargets(state, this._colorTargetCount);
 
-        blendModes[0].writeMask = this._stencilMode === STENCIL_MODES.RENDERING_MASK_ADD ? 0 : this._colorMask;
+        // Apply write mask to all color targets
+        const writeMask = this._stencilMode === STENCIL_MODES.RENDERING_MASK_ADD ? 0 : this._colorMask;
+
+        for (let i = 0; i < blendModes.length; i++)
+        {
+            blendModes[i].writeMask = writeMask;
+        }
 
         const layout = this._renderer.shader.getProgramData(program).pipeline;
 
@@ -419,7 +429,8 @@ export class PipelineSystem implements System
             this._stencilMode,
             this._multisampleCount,
             this._colorMask,
-            this._depthStencilAttachment
+            this._depthStencilAttachment,
+            this._colorTargetCount,
         );
 
         if (!this._pipeStateCaches[key])
