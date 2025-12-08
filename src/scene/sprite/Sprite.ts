@@ -359,7 +359,6 @@ export class Sprite extends ViewContainer<BatchableSprite>
         (this._visualBounds as null) = null;
         (this._bounds as null) = null;
         (this._anchor as null) = null;
-        this._gpuData = null;
     }
 
     /**
