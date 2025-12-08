@@ -119,6 +119,8 @@ export class Buffer extends EventEmitter<{
     public _gpuData: Record<number, GlBuffer | GpuBufferData> = Object.create(null);
     /** @internal */
     public _gcData?: GCData;
+    /** @internal */
+    public _gcLastUsed = -1;
     /** If set to true, the buffer will be garbage collected automatically when it is not used. */
     public autoGarbageCollect = true;
 

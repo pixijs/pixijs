@@ -1,5 +1,5 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { ManagedHash } from '../../../../utils/data/ManagedHash';
+import { GCManagedHash } from '../../../../utils/data/GCManagedHash';
 import { BufferUsage } from '../../shared/buffer/const';
 import { BUFFER_TYPE } from './const';
 import { GlBuffer } from './GlBuffer';
@@ -39,7 +39,7 @@ export class GlBufferSystem implements System
 
     /** @internal */
     public _gl: GlRenderingContext;
-    protected _managedBuffers: ManagedHash<Buffer>;
+    protected _managedBuffers: GCManagedHash<Buffer>;
 
     /** Cache keeping track of the base bound buffer bases */
     private _boundBufferBases: {[key: number]: GlBuffer} = Object.create(null);
@@ -57,7 +57,7 @@ export class GlBufferSystem implements System
     constructor(renderer: WebGLRenderer)
     {
         this._renderer = renderer;
-        this._managedBuffers = new ManagedHash(renderer, 'resource', this.onBufferUnload.bind(this));
+        this._managedBuffers = new GCManagedHash({ renderer, type: 'resource', onUnload: this.onBufferUnload.bind(this) });
     }
 
     /** @ignore */
@@ -80,7 +80,7 @@ export class GlBufferSystem implements System
 
     public getGlBuffer(buffer: Buffer): GlBuffer
     {
-        this._renderer.gc.touch(buffer);
+        buffer._gcLastUsed = this._renderer.gc.now;
 
         return (buffer._gpuData[this._renderer.uid] as GlBuffer) || this.createGLBuffer(buffer);
     }

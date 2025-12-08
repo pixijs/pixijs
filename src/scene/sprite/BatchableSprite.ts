@@ -50,6 +50,6 @@ export class BatchableSprite implements DefaultBatchableQuadElement, GPUData
 
     public destroy()
     {
-        // BOOM!
+        this.reset();
     }
 }

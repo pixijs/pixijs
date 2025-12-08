@@ -63,6 +63,8 @@ export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Cont
     public _gcData?: GCData;
     /** If set to true, the resource will be garbage collected automatically when it is not used. */
     public autoGarbageCollect = true;
+    /** @internal */
+    public _gcLastUsed = -1;
 
     protected _bounds: Bounds = new Bounds(0, 1, 0, 0);
     protected _boundsDirty = true;

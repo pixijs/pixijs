@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { type GPUData } from '../../../../scene/view/ViewContainer';
-import { ManagedHash } from '../../../../utils/data/ManagedHash';
+import { GCManagedHash } from '../../../../utils/data/GCManagedHash';
 import { uid } from '../../../../utils/data/uid';
 import { fastCopy } from '../../shared/buffer/utils/fastCopy';
 
@@ -43,14 +43,14 @@ export class GpuBufferSystem implements System
 
     protected CONTEXT_UID: number;
     private readonly _renderer: WebGPURenderer;
-    private readonly _managedBuffers: ManagedHash<Buffer>;
+    private readonly _managedBuffers: GCManagedHash<Buffer>;
 
     private _gpu: GPU;
 
     constructor(renderer: WebGPURenderer)
     {
         this._renderer = renderer;
-        this._managedBuffers = new ManagedHash(renderer, 'resource', this.onBufferUnload.bind(this));
+        this._managedBuffers = new GCManagedHash({ renderer, type: 'resource', onUnload: this.onBufferUnload.bind(this) });
     }
 
     protected contextChange(gpu: GPU): void
@@ -60,7 +60,7 @@ export class GpuBufferSystem implements System
 
     public getGPUBuffer(buffer: Buffer): GPUBuffer
     {
-        this._renderer.gc.touch(buffer);
+        buffer._gcLastUsed = this._renderer.gc.now;
 
         return (buffer._gpuData[this._renderer.uid] as GpuBufferData)?.gpuBuffer || this.createGPUBuffer(buffer);
     }

@@ -92,6 +92,8 @@ export class GraphicsContext extends EventEmitter<{
     public _gcData?: GCData;
     /** If set to true, the resource will be garbage collected automatically when it is not used. */
     public autoGarbageCollect = true;
+    /** @internal */
+    public _gcLastUsed = -1;
 
     /** The default fill style to use when none is provided. */
     public static defaultFillStyle: ConvertedFillStyle = {
