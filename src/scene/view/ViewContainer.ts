@@ -19,6 +19,13 @@ export interface GPUData
     destroy: () => void;
 }
 
+/** @internal */
+export interface GPUDataContainer<GPU_DATA extends GPUData = any>
+{
+    _gpuData: Record<number, GPU_DATA>;
+    unload: () => void;
+}
+
 /**
  * Options for the construction of a ViewContainer.
  * @category scene
