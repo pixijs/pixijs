@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { type GPUData } from '../../../../scene/view/ViewContainer';
-import { ManagedHash } from '../../../../utils/data/ManagedHash';
+import { GCManagedHash } from '../../../../utils/data/GCManagedHash';
 import { getAttributeInfoFromFormat } from '../../shared/geometry/utils/getAttributeInfoFromFormat';
 import { ensureAttributes } from '../shader/program/ensureAttributes';
 import { getGlTypeFromFormat } from './utils/getGlTypeFromFormat';
@@ -76,7 +76,7 @@ export class GlGeometrySystem implements System
     /** @internal */
     public _activeVao: WebGLVertexArrayObject;
     /** @internal */
-    public _managedGeometries: ManagedHash<Geometry>;
+    public _managedGeometries: GCManagedHash<Geometry>;
 
     /** Renderer that owns this {@link GeometrySystem}. */
     private _renderer: WebGLRenderer;
@@ -91,7 +91,11 @@ export class GlGeometrySystem implements System
         this.hasVao = true;
         this.hasInstance = true;
 
-        this._managedGeometries = new ManagedHash(renderer, 'resource', this.onGeometryUnload.bind(this));
+        this._managedGeometries = new GCManagedHash({
+            renderer,
+            type: 'resource',
+            onUnload: this.onGeometryUnload.bind(this)
+        });
     }
 
     /** Sets up the renderer context and necessary buffers. */
@@ -186,7 +190,7 @@ export class GlGeometrySystem implements System
             bufferSystem.updateBuffer(buffer);
         }
 
-        this._renderer.gc.touch(geometry);
+        geometry._gcLastUsed = this._renderer.gc.now;
     }
 
     /**

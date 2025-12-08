@@ -283,8 +283,8 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
      */
     public _onTouch(now: number): void
     {
-        if (!this._context._gcData) return;
-        this._context._gcData.lastUsed = now;
+        this._gcLastUsed = now;
+        this._context._gcLastUsed = now;
     }
 
     private _callContextMethod(method: keyof GraphicsContext, args: any[]): this

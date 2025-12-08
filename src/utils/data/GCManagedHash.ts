@@ -4,25 +4,34 @@ import { type Renderer } from '../../rendering/renderers/types';
 import type EventEmitter from 'eventemitter3';
 
 /**
+ * Options for the {@link GCManagedHash}.
+ * @internal
+ */
+export interface GCManagedHashOptions<T extends GCable & { uid: number } & Pick<EventEmitter, 'once' | 'off'>>
+{
+    renderer: Renderer;
+    type: GCData['type'];
+    onUnload?: (item: T, ...args: any[]) => void;
+    priority?: number;
+}
+
+/**
  * A hash for managing renderable and resource resources with GC integration.
  * @internal
  */
-export class ManagedHash<T extends GCable & { uid: number } & Pick<EventEmitter, 'once' | 'off'>>
+export class GCManagedHash<T extends GCable & { uid: number } & Pick<EventEmitter, 'once' | 'off'>>
 {
     // Exposed directly for GC system access
     public items: Record<number, T> = Object.create(null);
     private _renderer: Renderer;
-    private _onUnload: (item: T, ...args: any[]) => void;
+    private _onUnload?: (item: T, ...args: unknown[]) => void;
 
-    constructor(
-        renderer: Renderer,
-        type: GCData['type'],
-        onUnload?: (item: T, ...args: any[]) => void,
-        priority: number = 0,
-    )
+    constructor(options: GCManagedHashOptions<T>)
     {
+        const { renderer, type, onUnload, priority } = options;
+
         this._renderer = renderer;
-        renderer.gc.addResourceHash(this, 'items', type, priority);
+        renderer.gc.addResourceHash(this, 'items', type, priority ?? 0);
         this._onUnload = onUnload;
     }
 
@@ -36,7 +45,7 @@ export class ManagedHash<T extends GCable & { uid: number } & Pick<EventEmitter,
         if (this.items[item.uid]) return false;
         this.items[item.uid] = item;
         item.once('unload', this.remove, this);
-        this._renderer.gc.touch(item);
+        item._gcLastUsed = this._renderer.gc.now;
 
         return true;
     }

@@ -1,6 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { type RenderGroup } from '../../../scene/container/RenderGroup';
-import { type BindResource } from '../gpu/shader/BindResource';
 import { type GPUDataOwner, type Renderer } from '../types';
 import { type Renderable } from './Renderable';
 import { type RenderOptions } from './system/AbstractRenderer';
@@ -15,8 +14,6 @@ import type { System } from './system/System';
  */
 export interface GCData
 {
-    /** Timestamp of last use */
-    lastUsed: number;
     /** Index in the managed resources array */
     index?: number;
     /** Type of the resource */
@@ -30,6 +27,8 @@ export interface GCData
  */
 export interface GCable extends GPUDataOwner
 {
+    /** Timestamp of last use */
+    _gcLastUsed: number;
     /** GC tracking data, null if not being tracked */
     _gcData?: GCData | null;
     /** If set to true, the resource will be garbage collected automatically when it is not used. */
@@ -132,7 +131,7 @@ export class GCSystem implements System<GCSystemOptions>
     private _frequency: number;
 
     /** Current timestamp used for age calculations */
-    private _now: number;
+    public now: number;
 
     private _ready = false;
 
@@ -157,7 +156,7 @@ export class GCSystem implements System<GCSystemOptions>
         this._frequency = options.gcFrequency;
 
         this.enabled = options.gcActive;
-        this._now = performance.now();
+        this.now = performance.now();
     }
 
     /**
@@ -203,7 +202,7 @@ export class GCSystem implements System<GCSystemOptions>
      */
     protected prerender({ container }: RenderOptions): void
     {
-        this._now = performance.now();
+        this.now = performance.now();
         container.renderGroup.gcTick = this._renderer.tick++;
 
         this._updateInstructionGCTick(container.renderGroup, container.renderGroup.gcTick);
@@ -241,9 +240,10 @@ export class GCSystem implements System<GCSystemOptions>
     public addResource(resource: GCableEventEmitter, type: GCData['type']): void
     {
         // Already being tracked
-        if (resource._gcData)
+        if (resource._gcLastUsed !== -1)
         {
-            this.touch(resource);
+            resource._gcLastUsed = this.now;
+            resource._onTouch?.(this.now);
 
             return;
         }
@@ -251,10 +251,11 @@ export class GCSystem implements System<GCSystemOptions>
         const index = this._managedResources.length;
 
         resource._gcData = {
-            lastUsed: this._now,
             index,
             type,
         };
+        resource._gcLastUsed = this.now;
+        resource._onTouch?.(this.now);
         resource.once('unload', this.removeResource, this);
 
         this._managedResources.push(resource);
@@ -285,6 +286,7 @@ export class GCSystem implements System<GCSystemOptions>
 
         this._managedResources.length--;
         resource._gcData = null;
+        resource._gcLastUsed = -1;
     }
 
     /**
@@ -308,29 +310,12 @@ export class GCSystem implements System<GCSystemOptions>
     }
 
     /**
-     * Marks a resource as recently used, resetting its idle timer.
-     * @param resource - The resource to touch
-     */
-    public touch(resource: GCable): void
-    {
-        if (resource._gcData)
-        {
-            resource._gcData.lastUsed = this._now;
-            resource._onTouch?.(resource._gcData.lastUsed);
-        }
-
-        // backwards compatibility with the textureGC system
-        (resource as unknown as BindResource)._touched = this._renderer.tick;
-    }
-
-    /**
      * Performs garbage collection by cleaning up unused resources.
      * Removes resources that haven't been used for longer than maxUnusedTime.
      */
     public run(): void
     {
         const now = performance.now();
-        // const managedResources = this._managedResources;
         const managedResourceHashes = this._managedResourceHashes;
 
         for (const hashEntry of managedResourceHashes)
@@ -358,8 +343,8 @@ export class GCSystem implements System<GCSystemOptions>
         // Update last used time if the renderable's group was rendered this tick
         if ((renderGroup?.gcTick ?? 0) === currentTick)
         {
-            renderable._gcData.lastUsed = now;
-            renderable._onTouch?.(renderable._gcData.lastUsed);
+            renderable._gcLastUsed = now;
+            renderable._onTouch?.(now);
         }
     }
 
@@ -373,7 +358,7 @@ export class GCSystem implements System<GCSystemOptions>
             this.updateRenderableGCTick(resource as Renderable, now);
         }
 
-        const isRecentlyUsed = now - gcData.lastUsed < this.maxUnusedTime;
+        const isRecentlyUsed = now - resource._gcLastUsed < this.maxUnusedTime;
 
         if (isRecentlyUsed || !resource.autoGarbageCollect)
         {
@@ -386,6 +371,7 @@ export class GCSystem implements System<GCSystemOptions>
             // Call the cleanup function
             resource.unload();
             resource._gcData = null;
+            resource._gcLastUsed = -1;
             resource.off('unload', this.removeResource, this);
         }
 
@@ -438,19 +424,15 @@ export class GCSystem implements System<GCSystemOptions>
             }
 
             // If no GC data, then the resource has been added since the last garbage collection
-            if (!resource._gcData)
+            if (resource._gcLastUsed === -1)
             {
-                resource._gcData = {
-                    lastUsed: now,
-                    type,
-                };
+                resource._gcLastUsed = now;
+                resource._onTouch?.(now);
 
                 if (hashClone) hashClone[key] = resource;
 
                 continue;
             }
-
-            const gcData = resource._gcData;
 
             // special case for renderables as we do not check every frame if they are being used
             if (type === 'renderable')
@@ -458,7 +440,7 @@ export class GCSystem implements System<GCSystemOptions>
                 this.updateRenderableGCTick(resource as Renderable, now);
             }
 
-            const isRecentlyUsed = now - gcData.lastUsed < this.maxUnusedTime;
+            const isRecentlyUsed = now - resource._gcLastUsed < this.maxUnusedTime;
 
             if (!isRecentlyUsed && resource.autoGarbageCollect)
             {
@@ -481,6 +463,7 @@ export class GCSystem implements System<GCSystemOptions>
                 // Call the cleanup function
                 resource.unload();
                 resource._gcData = null;
+                resource._gcLastUsed = -1;
             }
             else if (hashClone)
             {

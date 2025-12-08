@@ -1,5 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { ManagedHash } from '../../../utils/data/ManagedHash';
+import { GCManagedHash } from '../../../utils/data/GCManagedHash';
 import { updateTextBounds } from '../utils/updateTextBounds';
 import { BatchableText } from './BatchableText';
 
@@ -22,13 +22,13 @@ export class CanvasTextPipe implements RenderPipe<Text>
     } as const;
 
     private _renderer: Renderer;
-    private readonly _managedTexts: ManagedHash<Text>;
+    private readonly _managedTexts: GCManagedHash<Text>;
 
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
         renderer.runners.resolutionChange.add(this);
-        this._managedTexts = new ManagedHash(renderer, 'renderable', this.onTextUnload.bind(this));
+        this._managedTexts = new GCManagedHash({ renderer, type: 'renderable', onUnload: this.onTextUnload.bind(this) });
     }
 
     protected resolutionChange()

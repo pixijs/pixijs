@@ -143,6 +143,8 @@ export class Geometry extends EventEmitter<{
     public _gcData?: GCData;
     /** If set to true, the resource will be garbage collected automatically when it is not used. */
     public autoGarbageCollect = true;
+    /** @internal */
+    public _gcLastUsed = -1;
 
     /** The topology of the geometry. */
     public topology: Topology;

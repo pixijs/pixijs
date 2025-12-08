@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../extensions/Extensions';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
-import { ManagedHash } from '../../utils/data/ManagedHash';
+import { GCManagedHash } from '../../utils/data/GCManagedHash';
 import { updateTextBounds } from '../text/utils/updateTextBounds';
 import { BatchableHTMLText } from './BatchableHTMLText';
 
@@ -26,13 +26,13 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
     } as const;
 
     private _renderer: Renderer;
-    private readonly _managedTexts: ManagedHash<HTMLText>;
+    private readonly _managedTexts: GCManagedHash<HTMLText>;
 
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
         renderer.runners.resolutionChange.add(this);
-        this._managedTexts = new ManagedHash(renderer, 'renderable', this.onTextUnload.bind(this));
+        this._managedTexts = new GCManagedHash({ renderer, type: 'renderable', onUnload: this.onTextUnload.bind(this) });
     }
 
     protected resolutionChange()

@@ -2,7 +2,7 @@ import { ExtensionType } from '../../extensions/Extensions';
 import { getAdjustedBlendModeBlend } from '../../rendering/renderers/shared/state/getAdjustedBlendModeBlend';
 import { State } from '../../rendering/renderers/shared/state/State';
 import { type Renderer, RendererType } from '../../rendering/renderers/types';
-import { ManagedHash } from '../../utils/data/ManagedHash';
+import { GCManagedHash } from '../../utils/data/GCManagedHash';
 import { color32BitToUniform } from '../graphics/gpu/colorToUniform';
 import { BatchableMesh } from '../mesh/shared/BatchableMesh';
 import { MeshGeometry } from '../mesh/shared/MeshGeometry';
@@ -63,12 +63,12 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
 
     private _renderer: Renderer;
     private readonly _state: State = State.default2d;
-    private readonly _managedTilingSprites: ManagedHash<TilingSprite>;
+    private readonly _managedTilingSprites: GCManagedHash<TilingSprite>;
 
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
-        this._managedTilingSprites = new ManagedHash(renderer, 'renderable');
+        this._managedTilingSprites = new GCManagedHash({ renderer, type: 'renderable' });
     }
 
     public validateRenderable(renderable: TilingSprite): boolean

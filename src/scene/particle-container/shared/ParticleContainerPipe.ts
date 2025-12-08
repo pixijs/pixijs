@@ -2,7 +2,7 @@ import { Matrix } from '../../../maths/matrix/Matrix';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
 import { getAdjustedBlendModeBlend } from '../../../rendering/renderers/shared/state/getAdjustedBlendModeBlend';
 import { State } from '../../../rendering/renderers/shared/state/State';
-import { ManagedHash } from '../../../utils/data/ManagedHash';
+import { GCManagedHash } from '../../../utils/data/GCManagedHash';
 import { color32BitToUniform } from '../../graphics/gpu/colorToUniform';
 import { ParticleBuffer } from './ParticleBuffer';
 import { ParticleShader } from './shader/ParticleShader';
@@ -35,7 +35,7 @@ export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
     public readonly state = State.for2d();
     /** @internal */
     public readonly renderer: Renderer;
-    private readonly _managedContainers: ManagedHash<ParticleContainer>;
+    private readonly _managedContainers: GCManagedHash<ParticleContainer>;
 
     /** Local uniforms that are used for rendering particles. */
     public readonly localUniforms = new UniformGroup({
@@ -59,7 +59,7 @@ export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
 
         this.state = State.for2d();
 
-        this._managedContainers = new ManagedHash(renderer, 'renderable');
+        this._managedContainers = new GCManagedHash({ renderer, type: 'renderable' });
     }
 
     public validateRenderable(_renderable: ParticleContainer): boolean

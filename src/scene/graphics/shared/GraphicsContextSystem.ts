@@ -3,7 +3,7 @@ import { getTextureBatchBindGroup } from '../../../rendering/batcher/gpu/getText
 import { type BatcherOptions } from '../../../rendering/batcher/shared/Batcher';
 import { DefaultBatcher } from '../../../rendering/batcher/shared/DefaultBatcher';
 import { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
-import { ManagedHash } from '../../../utils/data/ManagedHash';
+import { GCManagedHash } from '../../../utils/data/GCManagedHash';
 import { deprecation, v8_3_4 } from '../../../utils/logging/deprecation';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { type GPUData } from '../../view/ViewContainer';
@@ -152,12 +152,12 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
     };
 
     private readonly _renderer: Renderer;
-    private readonly _managedContexts: ManagedHash<GraphicsContext>;
+    private readonly _managedContexts: GCManagedHash<GraphicsContext>;
 
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
-        this._managedContexts = new ManagedHash(renderer, 'resource');
+        this._managedContexts = new GCManagedHash({ renderer, type: 'resource' });
     }
 
     /**
