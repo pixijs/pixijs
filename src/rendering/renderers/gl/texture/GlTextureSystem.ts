@@ -309,8 +309,17 @@ export class GlTextureSystem implements System, CanvasGenerator
         }
         else
         {
-            // eslint-disable-next-line max-len
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, source.pixelWidth, source.pixelHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+            gl.texImage2D(
+                gl.TEXTURE_2D,
+                0,
+                glTexture.internalFormat,
+                source.pixelWidth,
+                source.pixelHeight,
+                0,
+                glTexture.format,
+                glTexture.type,
+                null,
+            );
         }
 
         if (source.autoGenerateMipmaps && source.mipLevelCount > 1)
