@@ -59,6 +59,8 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
     label?: string;
     /** If true, the Garbage Collector will unload this texture if it is not used after a period of time */
     autoGarbageCollect?: boolean;
+    /** Used by RenderTexture.create to allow resizing. Not used by TextureSource itself. */
+    dynamic?: boolean;
 }
 
 /**
