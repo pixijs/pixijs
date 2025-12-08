@@ -99,6 +99,9 @@ export interface BindableTexture
  */
 export type TextureSourceLike = TextureSource | TextureResourceOrOptions | string;
 
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
+export interface Texture extends PixiMixins.Texture, EventEmitter<{ update: Texture; destroy: Texture }> {}
+
 /**
  * A texture stores the information that represents an image or part of an image.
  *

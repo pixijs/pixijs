@@ -26,6 +26,9 @@ ImageBitmap
 | HTMLImageElement
 | HTMLVideoElement;
 
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
+export interface ImageSource extends PixiMixins.ImageSource, TextureSource<ImageResource> {}
+
 /**
  * A texture source that uses an image-like resource as its resource.
  * It can handle HTMLImageElement, ImageBitmap, VideoFrame, and HTMLVideoElement.

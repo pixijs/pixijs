@@ -4,6 +4,7 @@
 /// <reference path="../src/culling/CullingMixins.d.ts" />
 /// <reference path="../src/events/EventsMixins.d.ts" />
 /// <reference path="../src/dom/DOMMixins.d.ts" />
+/// <reference path="../src/gl2d/Gl2DMixins.d.ts" />
 /// <reference path="../src/rendering/RenderingMixins.d.ts" />
 /// <reference path="../src/scene/SceneMixins.d.ts" />
 /// <reference path="../src/scene/graphics/GraphicsMixins.d.ts" />

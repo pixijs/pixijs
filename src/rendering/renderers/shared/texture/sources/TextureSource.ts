@@ -16,6 +16,8 @@ import type { TextureResourceOrOptions } from '../utils/textureFrom';
  */
 export interface TextureSourceOptions<T extends Record<string, any> = any> extends TextureStyleOptions
 {
+    /** The URI of the texture source. */
+    uri?: string;
     /**
      * the resource that will be uploaded to the GPU. This is where we get our pixels from
      * eg an ImageBimt / Canvas / Video etc
@@ -63,6 +65,19 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
     dynamic?: boolean;
 }
 
+type TextureSourceEvents = {
+    change: BindResource;
+    update: TextureSource;
+    unload: TextureSource;
+    destroy: TextureSource;
+    resize: TextureSource;
+    styleChange: TextureSource;
+    updateMipmaps: TextureSource;
+    error: Error;
+};
+// eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
+export interface TextureSource extends PixiMixins.TextureSource, EventEmitter<TextureSourceEvents> {}
+
 /**
  * A TextureSource stores the information that represents an image.
  * All textures have require TextureSource, which contains information about the source.
@@ -73,16 +88,8 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
  * @category rendering
  * @advanced
  */
-export class TextureSource<T extends Record<string, any> = any> extends EventEmitter<{
-    change: BindResource;
-    update: TextureSource;
-    unload: TextureSource;
-    destroy: TextureSource;
-    resize: TextureSource;
-    styleChange: TextureSource;
-    updateMipmaps: TextureSource;
-    error: Error;
-}> implements BindResource
+export class TextureSource<T extends Record<string, any> = any> extends EventEmitter<TextureSourceEvents>
+    implements BindResource
 {
     /** The default options used when creating a new TextureSource. override these to add your own defaults */
     public static defaultOptions: TextureSourceOptions = {
@@ -101,6 +108,9 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     public readonly uid: number = uid('textureSource');
     /** optional label, can be used for debugging */
     public label: string;
+
+    /** The URI of the texture source. */
+    public uri?: string;
 
     /**
      * The resource type used by this TextureSource. This is used by the bind groups to determine
@@ -246,6 +256,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
             this.pixelHeight = this.resource ? (this.resourceHeight ?? 1) : 1;
         }
 
+        this.uri = options.uri;
         this.width = this.pixelWidth / this._resolution;
         this.height = this.pixelHeight / this._resolution;
 

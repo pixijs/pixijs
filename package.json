@@ -219,7 +219,10 @@
     "./lib/prepare/init.*",
     "./lib/unsafe-eval/init.*",
     "./lib/scene/sprite-nine-slice/init.*",
-    "./lib/scene/particle-container/init.*"
+    "./lib/scene/particle-container/init.*",
+    "./lib/gl2d/init.*",
+    "./lib/gl2d/serialize/init.*",
+    "./lib/gl2d/deserialize/init.*"
   ],
   "exports": {
     ".": {
@@ -424,6 +427,30 @@
       },
       "require": {
         "default": "./lib/scene/particle-container/init.js"
+      }
+    },
+    "./gl2d": {
+      "import": {
+        "default": "./lib/gl2d/init.mjs"
+      },
+      "require": {
+        "default": "./lib/gl2d/init.js"
+      }
+    },
+    "./gl2d/serialize": {
+      "import": {
+        "default": "./lib/gl2d/serialize/init.mjs"
+      },
+      "require": {
+        "default": "./lib/gl2d/serialize/init.js"
+      }
+    },
+    "./gl2d/deserialize": {
+      "import": {
+        "default": "./lib/gl2d/deserialize/init.mjs"
+      },
+      "require": {
+        "default": "./lib/gl2d/deserialize/init.js"
       }
     }
   }
