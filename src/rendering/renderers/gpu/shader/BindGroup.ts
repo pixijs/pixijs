@@ -1,4 +1,4 @@
-import { type GCable, type GCSystem } from '../../shared/GCSystem';
+import { type GCable } from '../../shared/GCSystem';
 
 import type { BindResource } from './BindResource';
 
@@ -119,16 +119,18 @@ export class BindGroup
     /**
      * Used internally to 'touch' each resource, to ensure that the GC
      * knows that all resources in this bind group are still being used.
-     * @param gc
+     * @param now - The current time in milliseconds.
+     * @param tick - The current tick.
      * @internal
      */
-    public _touch(gc: GCSystem)
+    public _touch(now: number, tick: number): void
     {
         const resources = this.resources;
 
         for (const i in resources)
         {
-            gc.touch(resources[i] as unknown as GCable);
+            (resources[i] as BindResource & GCable)._gcLastUsed = now;
+            resources[i]._touched = tick;
         }
     }
 

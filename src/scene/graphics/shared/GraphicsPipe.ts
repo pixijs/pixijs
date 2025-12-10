@@ -1,7 +1,7 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { State } from '../../../rendering/renderers/shared/state/State';
 import { type Renderer } from '../../../rendering/renderers/types';
-import { ManagedHash } from '../../../utils/data/ManagedHash';
+import { GCManagedHash } from '../../../utils/data/GCManagedHash';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { type GPUData } from '../../view/ViewContainer';
 import { color32BitToUniform } from '../gpu/colorToUniform';
@@ -56,14 +56,14 @@ export class GraphicsPipe implements RenderPipe<Graphics>
     public state: State = State.for2d();
 
     private _adaptor: GraphicsAdaptor;
-    private readonly _managedGraphics: ManagedHash<Graphics>;
+    private readonly _managedGraphics: GCManagedHash<Graphics>;
 
     constructor(renderer: Renderer, adaptor: GraphicsAdaptor)
     {
         this.renderer = renderer;
         this._adaptor = adaptor;
         this.renderer.runners.contextChange.add(this);
-        this._managedGraphics = new ManagedHash(renderer, 'renderable', undefined, -1);
+        this._managedGraphics = new GCManagedHash({ renderer, type: 'renderable', priority: -1 });
     }
 
     public contextChange(): void

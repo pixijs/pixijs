@@ -1,6 +1,6 @@
 import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { ManagedHash } from '../../../../utils/data/ManagedHash';
+import { GCManagedHash } from '../../../../utils/data/GCManagedHash';
 import { Texture } from '../../shared/texture/Texture';
 import { GlTexture } from './GlTexture';
 import { glUploadBufferImageResource } from './uploaders/glUploadBufferImageResource';
@@ -41,7 +41,7 @@ export class GlTextureSystem implements System, CanvasGenerator
     } as const;
 
     private readonly _renderer: WebGLRenderer;
-    private readonly _managedTextures: ManagedHash<TextureSource>;
+    private readonly _managedTextures: GCManagedHash<TextureSource>;
     /**
      * @deprecated since 8.15.0
      */
@@ -74,7 +74,7 @@ export class GlTextureSystem implements System, CanvasGenerator
     constructor(renderer: WebGLRenderer)
     {
         this._renderer = renderer;
-        this._managedTextures = new ManagedHash(renderer, 'resource', this.onSourceUnload.bind(this));
+        this._managedTextures = new GCManagedHash({ renderer, type: 'resource', onUnload: this.onSourceUnload.bind(this) });
     }
 
     protected contextChange(gl: GlRenderingContext): void
@@ -139,7 +139,7 @@ export class GlTextureSystem implements System, CanvasGenerator
     {
         const gl = this._gl;
 
-        this._renderer.gc.touch(source);
+        source._gcLastUsed = this._renderer.gc.now;
 
         if (this._boundTextures[location] !== source)
         {
@@ -309,8 +309,17 @@ export class GlTextureSystem implements System, CanvasGenerator
         }
         else
         {
-            // eslint-disable-next-line max-len
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, source.pixelWidth, source.pixelHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+            gl.texImage2D(
+                gl.TEXTURE_2D,
+                0,
+                glTexture.internalFormat,
+                source.pixelWidth,
+                source.pixelHeight,
+                0,
+                glTexture.format,
+                glTexture.type,
+                null,
+            );
         }
 
         if (source.autoGenerateMipmaps && source.mipLevelCount > 1)
@@ -357,7 +366,7 @@ export class GlTextureSystem implements System, CanvasGenerator
 
     public getGlSource(source: TextureSource): GlTexture
     {
-        this._renderer.gc.touch(source);
+        source._gcLastUsed = this._renderer.gc.now;
 
         return source._gpuData[this._renderer.uid] as GlTexture || this._initSource(source);
     }

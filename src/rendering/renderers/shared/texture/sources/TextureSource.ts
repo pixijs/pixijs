@@ -105,6 +105,8 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     public _gpuData: Record<number, GlTexture | GPUTextureGpuData> = Object.create(null);
     /** GC tracking data, undefined if not being tracked */
     public _gcData?: GCData;
+    /** @internal */
+    public _gcLastUsed = -1;
 
     /** unique id for this Texture source */
     public readonly uid: number = uid('textureSource');

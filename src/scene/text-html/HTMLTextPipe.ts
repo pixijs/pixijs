@@ -1,5 +1,6 @@
 import { ExtensionType } from '../../extensions/Extensions';
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
+import { GCManagedHash } from '../../utils/data/GCManagedHash';
 import { updateTextBounds } from '../text/utils/updateTextBounds';
 import { BatchableHTMLText } from './BatchableHTMLText';
 
@@ -25,10 +26,26 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
     } as const;
 
     private _renderer: Renderer;
+    private readonly _managedTexts: GCManagedHash<HTMLText>;
 
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        renderer.runners.resolutionChange.add(this);
+        this._managedTexts = new GCManagedHash({ renderer, type: 'renderable', onUnload: this.onTextUnload.bind(this) });
+    }
+
+    protected resolutionChange()
+    {
+        for (const key in this._managedTexts.items)
+        {
+            const text = this._managedTexts.items[key];
+
+            if (text?._autoResolution)
+            {
+                text.onViewUpdate();
+            }
+        }
     }
 
     public validateRenderable(htmlText: HTMLText): boolean
@@ -133,7 +150,7 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
 
     public initGpuText(htmlText: HTMLText)
     {
-        const batchableHTMLText = new BatchableHTMLText(this._renderer);
+        const batchableHTMLText = new BatchableHTMLText();
 
         batchableHTMLText.renderable = htmlText;
         batchableHTMLText.transform = htmlText.groupTransform;
@@ -144,11 +161,27 @@ export class HTMLTextPipe implements RenderPipe<HTMLText>
         htmlText._resolution = htmlText._autoResolution ? this._renderer.resolution : htmlText.resolution;
         htmlText._gpuData[this._renderer.uid] = batchableHTMLText;
 
+        this._managedTexts.add(htmlText);
+
         return batchableHTMLText;
+    }
+
+    protected onTextUnload(text: HTMLText)
+    {
+        const gpuData = text._gpuData[this._renderer.uid];
+
+        if (!gpuData) return;
+
+        const { htmlText } = this._renderer;
+
+        htmlText.getReferenceCount(gpuData.currentKey) === null
+            ? htmlText.returnTexturePromise(gpuData.texturePromise)
+            : htmlText.decreaseReferenceCount(gpuData.currentKey);
     }
 
     public destroy()
     {
+        this._managedTexts.destroy();
         this._renderer = null;
     }
 }
