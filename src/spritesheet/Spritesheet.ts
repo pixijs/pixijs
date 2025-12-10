@@ -333,7 +333,7 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
     }
 
     /**
-     * Parser spritesheet from loaded data. This is done asynchronously
+     * Parse spritesheet from loaded data. This is done asynchronously
      * to prevent creating too many Texture within a single process.
      */
     public parse(): Promise<Record<string, Texture>>
@@ -357,13 +357,32 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
     }
 
     /**
+     * Parse spritesheet from loaded data. This is done synchronously
+     * and is only suitable for smaller spritesheets (less than ~1000 frames)
+     * or may cause too many Texture within a single process. However, synchronous parsing may be
+     * more convenient since the called does not need to be asynchronous and is safe for
+     * small-to-medium sized spritesheets.
+     *
+     * Other than being synchronous, `parseSync` is otherwise identical to `.parse()`.
+     */
+    public parseSync(): Record<keyof S['frames'], Texture>
+    {
+        this._processFrames(0, true);
+        this._processAnimations();
+
+        return this.textures;
+    }
+
+    /**
      * Process a batch of frames
      * @param initialFrameIndex - The index of frame to start.
+     * @param processAll - if true will process all frames in a single batch, ignoring BATCH_SIZE - this
+     * is used for synchronous parsing.
      */
-    private _processFrames(initialFrameIndex: number): void
+    private _processFrames(initialFrameIndex: number, processAll: boolean = false): void
     {
         let frameIndex = initialFrameIndex;
-        const maxFrames = Spritesheet.BATCH_SIZE;
+        const maxFrames = processAll ? Infinity : Spritesheet.BATCH_SIZE;
 
         while (frameIndex - initialFrameIndex < maxFrames && frameIndex < this._frameKeys.length)
         {
