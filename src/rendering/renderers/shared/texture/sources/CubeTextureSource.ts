@@ -50,6 +50,15 @@ export interface CubeTextureSourceOptions extends Omit<
  *
  * Internally, WebGPU uses a 2D texture with 6 array layers and a `cube` view.
  * WebGL uses `TEXTURE_CUBE_MAP`.
+ * @example
+ * Create a cube source from 6 already-created {@link TextureSource} instances:
+ *
+ * ```ts
+ * const cubeSource = new CubeTextureSource({
+ *   faces: { right, left, top, bottom, front, back },
+ *   label: 'env-map',
+ * });
+ * ```
  * @category rendering
  * @advanced
  */
