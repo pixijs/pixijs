@@ -60,6 +60,15 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
      * 2D texture with 6 array layers (`dimensions: '2d'`) but viewed as `viewDimension: 'cube'`.
      */
     viewDimension?: TEXTURE_VIEW_DIMENSIONS;
+    /**
+     * The number of array layers for this texture source.
+     *
+     * This maps to WebGPU's `GPUTextureDescriptor.size.depthOrArrayLayers` and is used for array-backed textures
+     * such as cube maps (6 layers).
+     * @default 1
+     * @advanced
+     */
+    arrayLayerCount?: number;
     /** The number of mip levels to generate for this texture. this is  overridden if autoGenerateMipmaps is true */
     mipLevelCount?: number;
     /**
@@ -109,6 +118,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         alphaMode: 'premultiply-alpha-on-upload',
         dimensions: '2d',
         viewDimension: '2d',
+        arrayLayerCount: 1,
         mipLevelCount: 1,
         autoGenerateMipmaps: false,
         sampleCount: 1,
@@ -197,6 +207,8 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     public dimension: TEXTURE_DIMENSIONS = '2d';
     /** how this texture is viewed/sampled by shaders (WebGPU view dimension) */
     public viewDimension: TEXTURE_VIEW_DIMENSIONS = '2d';
+    /** how many array layers this texture has (WebGPU depthOrArrayLayers) */
+    public arrayLayerCount = 1;
     /** the alpha mode of the texture */
     public alphaMode: ALPHA_MODES;
     private _style: TextureStyle;
@@ -280,6 +292,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.format = options.format;
         this.dimension = options.dimensions;
         this.viewDimension = options.viewDimension ?? options.dimensions;
+        this.arrayLayerCount = options.arrayLayerCount;
         this.mipLevelCount = options.mipLevelCount;
         this.autoGenerateMipmaps = options.autoGenerateMipmaps;
         this.sampleCount = options.sampleCount;

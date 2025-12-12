@@ -110,6 +110,7 @@ export class CubeTextureSource extends TextureSource<CubeTextureFaces<TextureSou
             height: first.height,
             dimensions: '2d',
             viewDimension: 'cube',
+            arrayLayerCount: 6,
             resolution: derivedResolution,
             format: derivedFormat,
             alphaMode: derivedAlphaMode,

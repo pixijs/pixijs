@@ -132,15 +132,12 @@ export class GpuTextureSystem implements System, CanvasGenerator
         const width = Math.ceil(source.pixelWidth / blockData.blockWidth) * blockData.blockWidth;
         const height = Math.ceil(source.pixelHeight / blockData.blockHeight) * blockData.blockHeight;
 
-        const isCube = source.uploadMethodId === 'cube';
-
         const textureDescriptor: GPUTextureDescriptor = {
             label: source.label,
-            size: { width, height, depthOrArrayLayers: isCube ? 6 : 1 },
+            size: { width, height, depthOrArrayLayers: source.arrayLayerCount },
             format: source.format,
             sampleCount: source.sampleCount,
             mipLevelCount: source.mipLevelCount,
-            // WebGPU cube textures are 2D textures with 6 array layers and a cube view.
             dimension: source.dimension,
             usage
         };
@@ -281,10 +278,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
             gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
         }
 
-        if (!gpuData.textureView)
-        {
-            gpuData.textureView = gpuData.gpuTexture.createView({ dimension: source.viewDimension });
-        }
+        gpuData.textureView ||= gpuData.gpuTexture.createView({ dimension: source.viewDimension });
 
         return gpuData.textureView;
     }
