@@ -274,7 +274,6 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
         source._gcLastUsed = this._renderer.gc.now;
         let gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
-        let textureView: GPUTextureView = null;
 
         if (!gpuData)
         {
@@ -284,16 +283,10 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
         if (!gpuData.textureView)
         {
-            const viewDimension = source.viewDimension;
-
-            gpuData.textureView = viewDimension
-                ? gpuData.gpuTexture.createView({ dimension: viewDimension })
-                : gpuData.gpuTexture.createView();
+            gpuData.textureView = gpuData.gpuTexture.createView({ dimension: source.viewDimension });
         }
 
-        textureView = gpuData.textureView;
-
-        return textureView;
+        return gpuData.textureView;
     }
 
     public generateCanvas(texture: Texture): ICanvas
