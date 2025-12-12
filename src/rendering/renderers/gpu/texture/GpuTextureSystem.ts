@@ -7,6 +7,7 @@ import { CanvasPool } from '../../shared/texture/CanvasPool';
 import { BindGroup } from '../shader/BindGroup';
 import { gpuUploadBufferImageResource } from './uploaders/gpuUploadBufferImageResource';
 import { blockDataMap, gpuUploadCompressedTextureResource } from './uploaders/gpuUploadCompressedTextureResource';
+import { createGpuUploadCubeTextureResource } from './uploaders/gpuUploadCubeTextureResource';
 import { gpuUploadImageResource } from './uploaders/gpuUploadImageSource';
 import { gpuUploadVideoResource } from './uploaders/gpuUploadVideoSource';
 import { GpuMipmapGenerator } from './utils/GpuMipmapGenerator';
@@ -63,12 +64,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
     private _gpuSamplers: Record<string, GPUSampler> = Object.create(null);
     private _bindGroupHash: Record<string, BindGroup> = Object.create(null);
 
-    private readonly _uploads: Record<string, GpuTextureUploader> = {
-        image: gpuUploadImageResource,
-        buffer: gpuUploadBufferImageResource,
-        video: gpuUploadVideoResource,
-        compressed: gpuUploadCompressedTextureResource
-    };
+    private readonly _uploads: Record<string, GpuTextureUploader>;
 
     private _gpu: GPU;
     private _mipmapGenerator?: GpuMipmapGenerator;
@@ -85,6 +81,18 @@ export class GpuTextureSystem implements System, CanvasGenerator
         this._renderer = renderer;
         renderer.renderableGC.addManagedHash(this, '_bindGroupHash');
         this._managedTextures = new GCManagedHash({ renderer, type: 'resource', onUnload: this.onSourceUnload.bind(this) });
+
+        const baseUploaders = {
+            image: gpuUploadImageResource,
+            buffer: gpuUploadBufferImageResource,
+            video: gpuUploadVideoResource,
+            compressed: gpuUploadCompressedTextureResource,
+        };
+
+        this._uploads = {
+            ...baseUploaders,
+            cube: createGpuUploadCubeTextureResource(baseUploaders),
+        };
     }
 
     protected contextChange(gpu: GPU): void
@@ -124,12 +132,15 @@ export class GpuTextureSystem implements System, CanvasGenerator
         const width = Math.ceil(source.pixelWidth / blockData.blockWidth) * blockData.blockWidth;
         const height = Math.ceil(source.pixelHeight / blockData.blockHeight) * blockData.blockHeight;
 
+        const isCube = source.uploadMethodId === 'cube';
+
         const textureDescriptor: GPUTextureDescriptor = {
             label: source.label,
-            size: { width, height },
+            size: { width, height, depthOrArrayLayers: isCube ? 6 : 1 },
             format: source.format,
             sampleCount: source.sampleCount,
             mipLevelCount: source.mipLevelCount,
+            // WebGPU cube textures are 2D textures with 6 array layers and a cube view.
             dimension: source.dimension,
             usage
         };
@@ -271,7 +282,16 @@ export class GpuTextureSystem implements System, CanvasGenerator
             gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
         }
 
-        textureView = gpuData.textureView || gpuData.gpuTexture.createView();
+        if (!gpuData.textureView)
+        {
+            const viewDimension = source.viewDimension;
+
+            gpuData.textureView = viewDimension
+                ? gpuData.gpuTexture.createView({ dimension: viewDimension })
+                : gpuData.gpuTexture.createView();
+        }
+
+        textureView = gpuData.textureView;
 
         return textureView;
     }

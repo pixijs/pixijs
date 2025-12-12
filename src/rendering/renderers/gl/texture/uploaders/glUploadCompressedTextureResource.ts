@@ -69,8 +69,17 @@ export const glUploadCompressedTextureResource = {
 
     id: 'compressed',
 
-    upload(source: CompressedSource, glTexture: GlTexture, gl: GlRenderingContext)
+    upload(
+        source: CompressedSource,
+        glTexture: GlTexture,
+        gl: GlRenderingContext,
+        _webGLVersion: number,
+        targetOverride?: number,
+        _forceAllocation?: boolean
+    )
     {
+        const target = targetOverride ?? glTexture.target;
+
         gl.pixelStorei(gl.UNPACK_ALIGNMENT, 4);
 
         let mipWidth = source.pixelWidth;
@@ -85,7 +94,7 @@ export const glUploadCompressedTextureResource = {
             if (compressed)
             {
                 gl.compressedTexImage2D(
-                    gl.TEXTURE_2D, i, glTexture.internalFormat,
+                    target, i, glTexture.internalFormat,
                     mipWidth, mipHeight, 0,
                     levelBuffer
                 );
@@ -93,7 +102,7 @@ export const glUploadCompressedTextureResource = {
             else
             {
                 gl.texImage2D(
-                    gl.TEXTURE_2D, i, glTexture.internalFormat,
+                    target, i, glTexture.internalFormat,
                     mipWidth, mipHeight, 0,
                     glTexture.format, glTexture.type,
                     levelBuffer);

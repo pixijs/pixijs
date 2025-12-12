@@ -10,7 +10,7 @@ export const gpuUploadImageResource = {
 
     type: 'image',
 
-    upload(source: TextureSource, gpuTexture: GPUTexture, gpu: GPU)
+    upload(source: TextureSource, gpuTexture: GPUTexture, gpu: GPU, originZOverride = 0)
     {
         const resource = source.resource as ImageBitmap | HTMLCanvasElement | OffscreenCanvas | HTMLImageElement;
 
@@ -40,7 +40,7 @@ export const gpuUploadImageResource = {
 
         gpu.device.queue.copyExternalImageToTexture(
             { source: resource },
-            { texture: gpuTexture, premultipliedAlpha },
+            { texture: gpuTexture, origin: { x: 0, y: 0, z: originZOverride }, premultipliedAlpha },
             {
                 width,
                 height,
