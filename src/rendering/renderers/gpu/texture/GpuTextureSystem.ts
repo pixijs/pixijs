@@ -169,6 +169,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
         const textureDescriptor: GPUTextureDescriptor = {
             label: source.label,
+            // WebGPU cube textures are 2D textures with 6 array layers and a cube view.
             size: { width, height, depthOrArrayLayers: source.arrayLayerCount },
             format: source.format,
             sampleCount: source.sampleCount,
