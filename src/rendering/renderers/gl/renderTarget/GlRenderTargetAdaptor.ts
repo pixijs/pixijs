@@ -134,6 +134,19 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, gpuRenderTarget.framebuffer);
 
+        if (mipLevel > 0)
+        {
+            if (gpuRenderTarget.msaa)
+            {
+                throw new Error('[RenderTargetSystem] Rendering to mip levels is not supported with MSAA render targets.');
+            }
+
+            if (this._renderer.context.webGLVersion < 2)
+            {
+                throw new Error('[RenderTargetSystem] Rendering to mip levels requires WebGL2.');
+            }
+        }
+
         // Re-attach color textures at the requested mip level.
         // (Framebuffer attachments are per-FBO, so we must re-attach when mipLevel changes.)
         // IMPORTANT: This must also run when returning from mip>0 back to mip=0, because attachments are stateful.
