@@ -103,6 +103,7 @@ export * from './renderers/gl/texture/utils/getSupportedGlCompressedTextureForma
 export * from './renderers/gl/texture/utils/mapFormatToGlFormat';
 export * from './renderers/gl/texture/utils/mapFormatToGlInternalFormat';
 export * from './renderers/gl/texture/utils/mapFormatToGlType';
+export * from './renderers/gl/texture/utils/mapViewDimensionToGlTarget';
 export * from './renderers/gl/texture/utils/pixiToGlMaps';
 export * from './renderers/gl/texture/utils/unpremultiplyAlpha';
 export * from './renderers/gl/WebGLRenderer';

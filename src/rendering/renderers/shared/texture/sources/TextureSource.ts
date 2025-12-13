@@ -190,7 +190,10 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      */
     public sampleCount = 1;
 
-    /** The number of mip levels to generate for this texture. this is  overridden if autoGenerateMipmaps is true */
+    /**
+     * The number of mip levels to generate for this texture.
+     * this is  overridden if autoGenerateMipmaps is true. it is read only!
+     */
     public mipLevelCount = 1;
     /**
      * Should we auto generate mipmaps for this texture? This will automatically generate mipmaps
