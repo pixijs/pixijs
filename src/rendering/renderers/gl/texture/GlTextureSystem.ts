@@ -337,6 +337,10 @@ export class GlTextureSystem implements System, CanvasGenerator
         {
             this._initEmptyTexture2DArray(glTexture, source);
         }
+        else if (glTexture.target === gl.TEXTURE_CUBE_MAP)
+        {
+            this._initEmptyTextureCube(glTexture, source);
+        }
         else
         {
             throw new Error('[GlTextureSystem] Unsupported texture target for empty allocation.');
@@ -447,6 +451,56 @@ export class GlTextureSystem implements System, CanvasGenerator
                 glTexture.type,
                 null,
             );
+
+            w = Math.max(w >> 1, 1);
+            h = Math.max(h >> 1, 1);
+        }
+    }
+
+    private _initEmptyTextureCube(glTexture: GlTexture, source: TextureSource): void
+    {
+        const gl = this._gl;
+
+        const totalCubeFaces = 6;
+
+        // Level 0 (all faces)
+        for (let face = 0; face < totalCubeFaces; face++)
+        {
+            gl.texImage2D(
+                gl.TEXTURE_CUBE_MAP_POSITIVE_X + face,
+                0,
+                glTexture.internalFormat,
+                source.pixelWidth,
+                source.pixelHeight,
+                0,
+                glTexture.format,
+                glTexture.type,
+                null,
+            );
+        }
+
+        // Mips (if requested)
+        if (source.mipLevelCount === 0) return;
+
+        let w = Math.max(source.pixelWidth >> 1, 1);
+        let h = Math.max(source.pixelHeight >> 1, 1);
+
+        for (let level = 1; level < source.mipLevelCount; level++)
+        {
+            for (let face = 0; face < totalCubeFaces; face++)
+            {
+                gl.texImage2D(
+                    gl.TEXTURE_CUBE_MAP_POSITIVE_X + face,
+                    level,
+                    glTexture.internalFormat,
+                    w,
+                    h,
+                    0,
+                    glTexture.format,
+                    glTexture.type,
+                    null,
+                );
+            }
 
             w = Math.max(w >> 1, 1);
             h = Math.max(h >> 1, 1);
