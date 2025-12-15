@@ -65,14 +65,20 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
         renderTarget: RenderTarget,
         clear: CLEAR_OR_BOOL = true,
         clearColor?: RgbaArray,
-        viewport?: Rectangle
+        viewport?: Rectangle,
+        mipLevel = 0
     )
     {
         const renderTargetSystem = this._renderTargetSystem;
 
         const gpuRenderTarget = renderTargetSystem.getGpuRenderTarget(renderTarget);
 
-        const descriptor = this.getDescriptor(renderTarget, clear, clearColor);
+        if (mipLevel > 0 && gpuRenderTarget.msaaTextures?.length)
+        {
+            throw new Error('[RenderTargetSystem] Rendering to mip levels is not supported with MSAA render targets.');
+        }
+
+        const descriptor = this.getDescriptor(renderTarget, clear, clearColor, mipLevel);
 
         gpuRenderTarget.descriptor = descriptor;
 
@@ -111,7 +117,8 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
     public getDescriptor(
         renderTarget: RenderTarget,
         clear: CLEAR_OR_BOOL,
-        clearValue: RgbaArray
+        clearValue: RgbaArray,
+        mipLevel = 0
     ): GPURenderPassDescriptor
     {
         if (typeof clear === 'boolean')
@@ -142,6 +149,7 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
                 else
                 {
                     view = this._renderer.texture.getGpuSource(texture).createView({
+                        baseMipLevel: mipLevel,
                         mipLevelCount: 1,
                     });
                 }
