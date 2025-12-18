@@ -167,10 +167,22 @@ const messageHandlers = {
 self.onmessage = (async (messageEvent) =>
 {
     const message = messageEvent.data;
-    const response = await messageHandlers[message.type as 'load' | 'init']?.(message as any);
 
-    if (response)
+    try
     {
-        (self as any).postMessage(response, response.transferables);
+        const response = await messageHandlers[message.type as 'load' | 'init']?.(message as any);
+
+        if (response)
+        {
+            (self as any).postMessage(response, response.transferables);
+        }
+    }
+    catch (err)
+    {
+        (self as any).postMessage({
+            type: 'error',
+            err,
+            url: message.url,
+        });
     }
 });

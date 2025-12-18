@@ -37,13 +37,13 @@ describe('TextureSource', () =>
 
         renderer.texture.bind(textureSource);
 
-        expect(renderer.texture.managedTextures.length).toBe(2);
+        expect(Object.keys(renderer.texture['_managedTextures'].items).length).toBe(2);
 
         textureSource.unload();
 
         renderer.texture.bind(textureSource);
 
-        expect(renderer.texture.managedTextures.length).toBe(2);
+        expect(Object.keys(renderer.texture['_managedTextures'].items).length).toBe(2);
     });
 
     it('expect label to be set form constructor', () =>

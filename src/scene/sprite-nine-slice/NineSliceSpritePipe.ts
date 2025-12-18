@@ -1,5 +1,7 @@
 import { ExtensionType } from '../../extensions/Extensions';
+import { GCManagedHash } from '../../utils/data/GCManagedHash';
 import { BatchableMesh } from '../mesh/shared/BatchableMesh';
+import { type GPUData } from '../view/ViewContainer';
 import { NineSliceGeometry } from './NineSliceGeometry';
 
 import type { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
@@ -11,7 +13,7 @@ import type { NineSliceSprite } from './NineSliceSprite';
  * GPU data for NineSliceSprite.
  * @internal
  */
-export class NineSliceSpriteGpuData extends BatchableMesh
+export class NineSliceSpriteGpuData extends BatchableMesh implements GPUData
 {
     constructor()
     {
@@ -42,10 +44,12 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
     } as const;
 
     private readonly _renderer: Renderer;
+    private readonly _managedSprites: GCManagedHash<NineSliceSprite>;
 
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        this._managedSprites = new GCManagedHash({ renderer, type: 'renderable' });
     }
 
     public addRenderable(sprite: NineSliceSprite, instructionSet: InstructionSet)
@@ -101,6 +105,8 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
         batchableMesh.texture = sprite._texture;
         batchableMesh.roundPixels = (this._renderer._roundPixels | sprite._roundPixels) as 0 | 1;
 
+        this._managedSprites.add(sprite);
+
         // if the sprite has not been updated by the view, we need to update the batchable mesh now.
         if (!sprite.didViewUpdate)
         {
@@ -112,6 +118,7 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
 
     public destroy()
     {
+        this._managedSprites.destroy();
         (this._renderer as null) = null;
     }
 }

@@ -283,7 +283,7 @@ function renderChildren(svg: SVGElement, session: Session, fillStyle: FillStyle,
 
         case 'polygon':
             pointsString = svg.getAttribute('points') as string;
-            points = pointsString.match(/\d+/g).map((n) => parseInt(n, 10));
+            points = pointsString.match(/-?\d+/g).map((n) => parseInt(n, 10));
             session.context.poly(points, true);
             if (fillStyle) session.context.fill(fillStyle);
             if (strokeStyle) session.context.stroke(strokeStyle);
@@ -291,7 +291,7 @@ function renderChildren(svg: SVGElement, session: Session, fillStyle: FillStyle,
 
         case 'polyline':
             pointsString = svg.getAttribute('points') as string;
-            points = pointsString.match(/\d+/g).map((n) => parseInt(n, 10));
+            points = pointsString.match(/-?\d+/g).map((n) => parseInt(n, 10));
             session.context.poly(points, false);
             if (strokeStyle) session.context.stroke(strokeStyle);
             break;

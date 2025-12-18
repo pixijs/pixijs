@@ -3,10 +3,12 @@ import EventEmitter from 'eventemitter3';
 import { Color, type ColorSource } from '../../../color/Color';
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { Point } from '../../../maths/point/Point';
+import { type GCable, type GCData } from '../../../rendering/renderers/shared/GCSystem';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { uid } from '../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import { Bounds } from '../../container/bounds/Bounds';
+import { type GpuGraphicsContext } from './GraphicsContextSystem';
 import { GraphicsPath } from './path/GraphicsPath';
 import { SVGParser } from './svg/SVGParser';
 import { toFillStyle, toStrokeStyle } from './utils/convertFillInputToFillStyle';
@@ -81,8 +83,18 @@ const tempMatrix = new Matrix();
 export class GraphicsContext extends EventEmitter<{
     update: GraphicsContext
     destroy: GraphicsContext
-}>
+    unload: GraphicsContext
+}> implements GCable
 {
+    /** @internal */
+    public _gpuData: Record<number | string, GpuGraphicsContext> = Object.create(null);
+    /** @internal */
+    public _gcData?: GCData;
+    /** If set to true, the resource will be garbage collected automatically when it is not used. */
+    public autoGarbageCollect = true;
+    /** @internal */
+    public _gcLastUsed = -1;
+
     /** The default fill style to use when none is provided. */
     public static defaultFillStyle: ConvertedFillStyle = {
         /** The color to use for the fill. */
@@ -146,6 +158,9 @@ export class GraphicsContext extends EventEmitter<{
      * @advanced
      */
     public customShader?: Shader;
+
+    /** Whether the graphics context has been destroyed. */
+    public destroyed = false;
 
     private _activePath: GraphicsPath = new GraphicsPath();
     private _transform: Matrix = new Matrix();
@@ -1199,6 +1214,17 @@ export class GraphicsContext extends EventEmitter<{
         return hasHit;
     }
 
+    /** Unloads the GPU data from the graphics context. */
+    public unload(): void
+    {
+        this.emit('unload', this);
+        for (const key in this._gpuData)
+        {
+            this._gpuData[key]?.destroy();
+        }
+        this._gpuData = Object.create(null);
+    }
+
     /**
      * Destroys the GraphicsData object.
      * @param options - Options parameter. A boolean will act as if all options
@@ -1210,9 +1236,12 @@ export class GraphicsContext extends EventEmitter<{
      */
     public destroy(options: TypeOrBool<TextureDestroyOptions> = false): void
     {
+        if (this.destroyed) return;
+        this.destroyed = true;
         this._stateStack.length = 0;
         this._transform = null;
 
+        this.unload();
         this.emit('destroy', this);
         this.removeAllListeners();
 

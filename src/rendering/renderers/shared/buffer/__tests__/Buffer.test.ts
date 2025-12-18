@@ -30,7 +30,8 @@ describe('Buffer', () =>
 
         buffer.destroy();
 
-        expect((renderer).buffer['_gpuBuffers'][buffer.uid]).toBeNull();
+        expect(buffer._gpuData[renderer.uid]).toBeUndefined();
+        expect(buffer._gpuData).toBeEmptyObject();
     });
 
     it('should set a cast data correctly', () =>
@@ -56,7 +57,7 @@ describe('Buffer', () =>
 
         renderer.buffer.destroyAll();
 
-        expect((renderer).buffer['_gpuBuffers'][buffer.uid]).toBeUndefined();
+        expect(buffer._gpuData[renderer.uid]).toBeNull();
     });
 
     it('should set static correctly', () =>

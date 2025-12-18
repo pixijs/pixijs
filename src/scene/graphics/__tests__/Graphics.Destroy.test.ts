@@ -37,20 +37,18 @@ describe('Graphics Destroy', () =>
 
         // we will lose this ref once its destroyed:
         const context = graphics.context;
+        const gpuContextData = graphics.context._gpuData[renderer.uid];
+        const spy = jest.spyOn(gpuContextData, 'destroy');
 
         graphics.destroy({ context: false });
 
         expect(graphics.context).toBeNull();
-
-        expect(graphics._gpuData).toBeNull();
-
-        expect(renderer.graphicsContext['_gpuContextHash'][context.uid]).not.toBeNull();
-        expect(renderer.graphicsContext['_gpuContextHash'][context.uid]).not.toBeNull();
+        expect(graphics._gpuData).toBeEmptyObject();
+        expect(spy).not.toHaveBeenCalled();
 
         context.destroy(true);
 
-        expect(renderer.graphicsContext['_gpuContextHash'][context.uid]).toBeNull();
-        expect(renderer.graphicsContext['_gpuContextHash'][context.uid]).toBeNull();
+        expect(spy).toHaveBeenCalledOnce();
 
         expect(context.instructions).toBeNull();
     });

@@ -1,5 +1,9 @@
 import EventEmitter from 'eventemitter3';
 import { uid } from '../../../../utils/data/uid';
+import { type GlBuffer } from '../../gl/buffer/GlBuffer';
+import { type GpuBufferData } from '../../gpu/buffer/GpuBufferSystem';
+import { type GPUDataOwner } from '../../types';
+import { type GCable, type GCData } from '../GCSystem';
 import { BufferUsage } from './const';
 
 import type { BindResource } from '../../gpu/shader/BindResource';
@@ -91,7 +95,8 @@ export class Buffer extends EventEmitter<{
     change: BindResource,
     update: Buffer,
     destroy: Buffer,
-}> implements BindResource
+    unload: Buffer,
+}> implements BindResource, GPUDataOwner, GCable
 {
     /**
      * emits when the underlying buffer has changed shape (i.e. resized)
@@ -109,6 +114,15 @@ export class Buffer extends EventEmitter<{
      * emits when the buffer is destroyed. letting the renderer know that it needs to destroy the buffer on the GPU
      * @event destroy
      */
+
+    /** @internal */
+    public _gpuData: Record<number, GlBuffer | GpuBufferData> = Object.create(null);
+    /** @internal */
+    public _gcData?: GCData;
+    /** @internal */
+    public _gcLastUsed = -1;
+    /** If set to true, the buffer will be garbage collected automatically when it is not used. */
+    public autoGarbageCollect = true;
 
     /** a unique id for this uniform group used through the renderer */
     public readonly uid: number = uid('buffer');
@@ -297,11 +311,24 @@ export class Buffer extends EventEmitter<{
         this.emit('update', this);
     }
 
+    /** Unloads the buffer from the GPU */
+    public unload()
+    {
+        /** Unloads the GPU data from the view container. */
+        this.emit('unload', this);
+        for (const key in this._gpuData)
+        {
+            this._gpuData[key]?.destroy();
+        }
+        this._gpuData = Object.create(null);
+    }
+
     /** Destroys the buffer */
     public destroy()
     {
         this.destroyed = true;
 
+        this.unload();
         this.emit('destroy', this);
         this.emit('change', this);
 
