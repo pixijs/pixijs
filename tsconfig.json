@@ -29,12 +29,5 @@
         "**/dist/**",
         "**/lib/**",
         "**/out/**"
-    ],
-    "ts-node": {
-        "files": true,
-        "compilerOptions": {
-            "esModuleInterop": true,
-            "module": "commonjs"
-        }
-    }
+    ]
 }
