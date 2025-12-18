@@ -7,10 +7,8 @@ import type { Renderer } from '../../rendering/renderers/types';
 
 declare global
 {
-    /* eslint-disable no-var */
     var __PIXI_APP_INIT__: undefined | ((arg: Application | Renderer, version: string) => void);
     var __PIXI_RENDERER_INIT__: undefined | ((arg: Application | Renderer, version: string) => void);
-    /* eslint-enable no-var */
 }
 
 /**
