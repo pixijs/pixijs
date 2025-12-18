@@ -1,7 +1,10 @@
 import EventEmitter from 'eventemitter3';
 import { Bounds } from '../../../../scene/container/bounds/Bounds';
 import { uid } from '../../../../utils/data/uid';
+import { type GlGeometryGpuData } from '../../gl/geometry/GlGeometrySystem';
+import { type GPUDataOwner } from '../../types';
 import { Buffer } from '../buffer/Buffer';
+import { type GCable, type GCData } from '../GCSystem';
 import { ensureIsBuffer } from './utils/ensureIsBuffer';
 import { getGeometryBounds } from './utils/getGeometryBounds';
 
@@ -131,8 +134,18 @@ function ensureIsAttribute(attribute: AttributeOption): Attribute
 export class Geometry extends EventEmitter<{
     update: Geometry,
     destroy: Geometry,
-}>
+    unload: Geometry,
+}> implements GPUDataOwner, GCable
 {
+    /** @internal */
+    public _gpuData: Record<number, GlGeometryGpuData> = Object.create(null);
+    /** @internal */
+    public _gcData?: GCData;
+    /** If set to true, the resource will be garbage collected automatically when it is not used. */
+    public autoGarbageCollect = true;
+    /** @internal */
+    public _gcLastUsed = -1;
+
     /** The topology of the geometry. */
     public topology: Topology;
     /** The unique id of the geometry. */
@@ -285,6 +298,18 @@ export class Geometry extends EventEmitter<{
         return getGeometryBounds(this, 'aPosition', this._bounds);
     }
 
+    /** Unloads the geometry from the GPU. */
+    public unload(): void
+    {
+        /** Unloads the GPU data from the view container. */
+        this.emit('unload', this);
+        for (const key in this._gpuData)
+        {
+            this._gpuData[key]?.destroy();
+        }
+        this._gpuData = Object.create(null);
+    }
+
     /**
      * destroys the geometry.
      * @param destroyBuffers - destroy the buffers associated with this geometry
@@ -300,6 +325,9 @@ export class Geometry extends EventEmitter<{
             this.buffers.forEach((buffer) => buffer.destroy());
         }
 
+        this.unload();
+
+        this.indexBuffer?.destroy();
         (this.attributes as null) = null;
         (this.buffers as null) = null;
         (this.indexBuffer as null) = null;

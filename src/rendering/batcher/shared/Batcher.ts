@@ -1,6 +1,7 @@
 import { uid } from '../../../utils/data/uid';
 import { ViewableBuffer } from '../../../utils/data/ViewableBuffer';
 import { deprecation } from '../../../utils/logging/deprecation';
+import { GlobalResourceRegistry } from '../../../utils/pool/GlobalResourceRegistry';
 import { fastCopy } from '../../renderers/shared/buffer/utils/fastCopy';
 import { type BLEND_MODES } from '../../renderers/shared/state/const';
 import { getAdjustedBlendModeBlend } from '../../renderers/shared/state/getAdjustedBlendModeBlend';
@@ -74,6 +75,22 @@ export class Batch implements Instruction
 // inlined pool for SPEEEEEEEEEED :D
 const batchPool: Batch[] = [];
 let batchPoolIndex = 0;
+
+GlobalResourceRegistry.register({
+    clear: () =>
+    {
+        // check if the first element has a destroy method
+        if (batchPool.length > 0)
+        {
+            for (const item of batchPool)
+            {
+                if (item) item.destroy();
+            }
+        }
+        batchPool.length = 0; // clear the array
+        batchPoolIndex = 0;
+    },
+});
 
 function getBatchFromPool()
 {
@@ -399,6 +416,7 @@ export abstract class Batcher
         }
 
         this.batchIndex = 0;
+
         this._batchIndexStart = 0;
         this._batchIndexSize = 0;
 
@@ -757,18 +775,33 @@ export abstract class Batcher
         }
     }
 
-    public destroy()
+    /**
+     * Destroys the batch and its resources.
+     * @param options - destruction options
+     * @param options.shader - whether to destroy the associated shader
+     */
+    public destroy(options: {shader?: boolean} = {})
     {
-        for (let i = 0; i < this.batches.length; i++)
+        if (this.batches === null) return;
+
+        for (let i = 0; i < this.batchIndex; i++)
         {
             returnBatchToPool(this.batches[i]);
         }
 
         this.batches = null;
+        this.geometry.destroy(true);
+        this.geometry = null;
+
+        if (options.shader)
+        {
+            this.shader?.destroy();
+            this.shader = null;
+        }
 
         for (let i = 0; i < this._elements.length; i++)
         {
-            this._elements[i]._batch = null;
+            if (this._elements[i]) this._elements[i]._batch = null;
         }
 
         this._elements = null;

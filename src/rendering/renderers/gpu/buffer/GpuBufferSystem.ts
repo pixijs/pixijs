@@ -1,10 +1,30 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { type GPUData } from '../../../../scene/view/ViewContainer';
+import { GCManagedHash } from '../../../../utils/data/GCManagedHash';
+import { uid } from '../../../../utils/data/uid';
 import { fastCopy } from '../../shared/buffer/utils/fastCopy';
 
 import type { Buffer } from '../../shared/buffer/Buffer';
 import type { System } from '../../shared/system/System';
 import type { GPU } from '../GpuDeviceSystem';
 import type { WebGPURenderer } from '../WebGPURenderer';
+
+/** @internal */
+export class GpuBufferData implements GPUData
+{
+    public gpuBuffer: GPUBuffer;
+
+    constructor(gpuBuffer: GPUBuffer)
+    {
+        this.gpuBuffer = gpuBuffer;
+    }
+
+    public destroy()
+    {
+        this.gpuBuffer.destroy();
+        this.gpuBuffer = null;
+    }
+}
 
 /**
  * System plugin to the renderer to manage buffers.
@@ -22,14 +42,15 @@ export class GpuBufferSystem implements System
     } as const;
 
     protected CONTEXT_UID: number;
-    private _gpuBuffers: { [key: number]: GPUBuffer } = Object.create(null);
-    private readonly _managedBuffers: Buffer[] = [];
+    private readonly _renderer: WebGPURenderer;
+    private readonly _managedBuffers: GCManagedHash<Buffer>;
 
     private _gpu: GPU;
 
     constructor(renderer: WebGPURenderer)
     {
-        renderer.renderableGC.addManagedHash(this, '_gpuBuffers');
+        this._renderer = renderer;
+        this._managedBuffers = new GCManagedHash({ renderer, type: 'resource', onUnload: this.onBufferUnload.bind(this) });
     }
 
     protected contextChange(gpu: GPU): void
@@ -39,12 +60,14 @@ export class GpuBufferSystem implements System
 
     public getGPUBuffer(buffer: Buffer): GPUBuffer
     {
-        return this._gpuBuffers[buffer.uid] || this.createGPUBuffer(buffer);
+        buffer._gcLastUsed = this._renderer.gc.now;
+
+        return (buffer._gpuData[this._renderer.uid] as GpuBufferData)?.gpuBuffer || this.createGPUBuffer(buffer);
     }
 
     public updateBuffer(buffer: Buffer): GPUBuffer
     {
-        const gpuBuffer = this._gpuBuffers[buffer.uid] || this.createGPUBuffer(buffer);
+        const gpuBuffer = this.getGPUBuffer(buffer);
 
         const data = buffer.data;
 
@@ -67,28 +90,21 @@ export class GpuBufferSystem implements System
     /** dispose all WebGL resources of all managed buffers */
     public destroyAll(): void
     {
-        for (const id in this._gpuBuffers)
-        {
-            this._gpuBuffers[id].destroy();
-        }
+        this._managedBuffers.removeAll();
+    }
 
-        this._gpuBuffers = {};
+    protected onBufferUnload(buffer: Buffer): void
+    {
+        buffer.off('update', this.updateBuffer, this);
+        buffer.off('change', this.onBufferChange, this);
     }
 
     public createGPUBuffer(buffer: Buffer): GPUBuffer
     {
-        if (!this._gpuBuffers[buffer.uid])
-        {
-            buffer.on('update', this.updateBuffer, this);
-            buffer.on('change', this.onBufferChange, this);
-            buffer.on('destroy', this.onBufferDestroy, this);
-
-            this._managedBuffers.push(buffer);
-        }
-
         const gpuBuffer = this._gpu.device.createBuffer(buffer.descriptor);
 
         buffer._updateID = 0;
+        buffer._resourceId = uid('resource');
 
         if (buffer.data)
         {
@@ -98,51 +114,28 @@ export class GpuBufferSystem implements System
             gpuBuffer.unmap();
         }
 
-        this._gpuBuffers[buffer.uid] = gpuBuffer;
+        buffer._gpuData[this._renderer.uid] = new GpuBufferData(gpuBuffer);
+        if (this._managedBuffers.add(buffer))
+        {
+            buffer.on('update', this.updateBuffer, this);
+            buffer.on('change', this.onBufferChange, this);
+        }
 
         return gpuBuffer;
     }
 
     protected onBufferChange(buffer: Buffer)
     {
-        const gpuBuffer = this._gpuBuffers[buffer.uid];
-
-        gpuBuffer.destroy();
+        this._managedBuffers.remove(buffer);
         buffer._updateID = 0;
-        this._gpuBuffers[buffer.uid] = this.createGPUBuffer(buffer);
-    }
-
-    /**
-     * Disposes buffer
-     * @param buffer - buffer with data
-     */
-    protected onBufferDestroy(buffer: Buffer): void
-    {
-        this._managedBuffers.splice(this._managedBuffers.indexOf(buffer), 1);
-
-        this._destroyBuffer(buffer);
+        this.createGPUBuffer(buffer);
     }
 
     public destroy(): void
     {
-        this._managedBuffers.forEach((buffer) => this._destroyBuffer(buffer));
-
-        (this._managedBuffers as null) = null;
-
-        this._gpuBuffers = null;
-    }
-
-    private _destroyBuffer(buffer: Buffer): void
-    {
-        const gpuBuffer = this._gpuBuffers[buffer.uid];
-
-        gpuBuffer.destroy();
-
-        buffer.off('update', this.updateBuffer, this);
-        buffer.off('change', this.onBufferChange, this);
-        buffer.off('destroy', this.onBufferDestroy, this);
-
-        this._gpuBuffers[buffer.uid] = null;
+        this._managedBuffers.destroy();
+        (this._renderer as null) = null;
+        this._gpu = null;
     }
 }
 

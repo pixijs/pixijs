@@ -49,6 +49,7 @@ export class ScissorMask implements Effect
 
     public reset()
     {
+        if (this.mask === null) return;
         this.mask.measurable = true;
         this.mask = null;
     }

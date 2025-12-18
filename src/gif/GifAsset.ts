@@ -12,7 +12,7 @@ import type { AssetExtension } from '../assets/AssetExtension';
  * @category gif
  * @advanced
  */
-const GifAsset = {
+const GifAsset: AssetExtension<GifSource, GifBufferOptions> = {
     extension: ExtensionType.Asset,
     detection: {
         test: async () => true,
@@ -36,6 +36,6 @@ const GifAsset = {
             asset.destroy();
         },
     }
-} as AssetExtension<GifSource, GifBufferOptions>;
+};
 
 export { GifAsset };

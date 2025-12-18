@@ -4,6 +4,7 @@ import { Container } from '../../../../scene/container/Container';
 import { unsafeEvalSupported } from '../../../../utils/browser/unsafeEvalSupported';
 import { uid } from '../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
+import { GlobalResourceRegistry } from '../../../../utils/pool/GlobalResourceRegistry';
 import { EventEmitter } from '../../../../utils/utils';
 import { CLEAR } from '../../gl/const';
 import { SystemRunner } from './SystemRunner';
@@ -77,7 +78,10 @@ export interface ClearOptions
  * @category rendering
  * @standard
  */
-export type RendererDestroyOptions = TypeOrBool<ViewSystemDestroyOptions>;
+export type RendererDestroyOptions = TypeOrBool<ViewSystemDestroyOptions & {
+    /** Whether to clean up global resource pools/caches */
+    releaseGlobalResources?: boolean;
+}>;
 
 const defaultRunners = [
     'init',
@@ -191,6 +195,9 @@ export class AbstractRenderer<
     /** The name of the renderer. */
     public readonly name: string;
 
+    /** The current tick of the renderer. */
+    public tick: number = 0;
+
     /** @internal */
     public readonly uid = uid('renderer');
 
@@ -280,6 +287,8 @@ export class AbstractRenderer<
     public render(container: Container, options: {renderTexture: any}): void;
     public render(args: RenderOptions | Container, deprecated?: {renderTexture: any}): void
     {
+        this.tick++;
+
         let options = args;
 
         if (options instanceof Container)
@@ -528,6 +537,8 @@ export class AbstractRenderer<
                 this as unknown as Renderer,
                 Adaptor ? new Adaptor() : null
             );
+
+            this.runners.destroy.add((this.renderPipes as any)[name]);
         });
     }
 
@@ -535,6 +546,11 @@ export class AbstractRenderer<
     {
         this.runners.destroy.items.reverse();
         this.runners.destroy.emit(options);
+
+        if (options === true || (typeof options === 'object' && options.releaseGlobalResources))
+        {
+            GlobalResourceRegistry.release();
+        }
 
         // destroy all runners
         Object.values(this.runners).forEach((runner) =>

@@ -1,5 +1,6 @@
 import { GpuUniformBatchPipe } from '../gpu/GpuUniformBatchPipe';
 import { SchedulerSystem } from '../shared/SchedulerSystem';
+import { SystemRunner } from '../shared/system/SystemRunner';
 import { RenderableGCSystem } from '../shared/texture/RenderableGCSystem';
 
 import type { WebGPURenderer } from '../gpu/WebGPURenderer';
@@ -13,6 +14,9 @@ describe('UniformBatch', () =>
         const uniformBatchPipe = new GpuUniformBatchPipe({
             scheduler,
             renderableGC: new RenderableGCSystem({} as WebGPURenderer),
+            runners: {
+                destroy: new SystemRunner('destroy'),
+            },
         } as WebGPURenderer);
 
         const bufferResource = uniformBatchPipe.getArrayBufferResource(new Float32Array(32));

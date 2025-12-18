@@ -11,7 +11,7 @@ import { detectMp4 } from './detections/parsers/detectMp4';
 import { detectOgv } from './detections/parsers/detectOgv';
 import { detectWebm } from './detections/parsers/detectWebm';
 import { detectWebp } from './detections/parsers/detectWebp';
-import { Loader } from './loader/Loader';
+import { Loader, type LoadOptions } from './loader/Loader';
 import { loadJson } from './loader/parsers/loadJson';
 import { loadTxt } from './loader/parsers/loadTxt';
 import { loadWebFont } from './loader/parsers/loadWebFont';
@@ -252,6 +252,30 @@ export interface AssetInitOptions
      * ```
      */
     preferences?: Partial<AssetsPreferences>;
+
+    /**
+     * Options for defining the loading behavior of assets.
+     * @example
+     * ```ts
+     * await Assets.init({
+     *    loadOptions: {
+     *       onProgress: (progress) => console.log(`Loading: ${Math.round(progress * 100)}%`),
+     *       onError: (error, asset) => console.error(`Error loading ${asset.src}: ${error.message}`),
+     *       strategy: 'retry',
+     *       retryCount: 5,
+     *       retryDelay: 500,
+     *   }
+     * });
+     * ```
+     * @remarks
+     * - `onProgress` callback receives values from 0.0 to 1.0
+     * - `onError` callback is invoked for individual asset load failures
+     * - `strategy` can be 'throw' (default), 'retry', or 'skip'
+     * - `retryCount` sets how many times to retry failed assets (default 3)
+     * - `retryDelay` sets the delay between retries in milliseconds (default 250ms)
+     * @see {@link LoadOptions} For all available load options
+     */
+    loadOptions?: Partial<LoadOptions>;
 }
 
 /** @internal */
@@ -415,6 +439,15 @@ export class AssetsClass
         {
             this.setPreferences(options.preferences);
         }
+
+        // set load options on the loader
+        if (options.loadOptions)
+        {
+            this.loader.loadOptions = {
+                ...this.loader.loadOptions,
+                ...options.loadOptions
+            };
+        }
     }
 
     /**
@@ -539,15 +572,15 @@ export class AssetsClass
      */
     public async load<T = any>(
         urls: string | UnresolvedAsset,
-        onProgress?: ProgressCallback,
+        onProgress?: ProgressCallback | LoadOptions,
     ): Promise<T>;
     public async load<T = any>(
         urls: string[] | UnresolvedAsset[],
-        onProgress?: ProgressCallback,
+        onProgress?: ProgressCallback | LoadOptions,
     ): Promise<Record<string, T>>;
     public async load<T = any>(
         urls: ArrayOr<string> | ArrayOr<UnresolvedAsset>,
-        onProgress?: ProgressCallback
+        onProgress?: ProgressCallback | LoadOptions,
     ): Promise<T | Record<string, T>>
     {
         if (!this._initialized)
@@ -737,21 +770,28 @@ export class AssetsClass
         const out: Record<string, Record<string, any>> = {};
 
         const keys = Object.keys(resolveResults);
-        let count = 0;
         let total = 0;
+        const counts: number[] = [];
         const _onProgress = () =>
         {
-            onProgress?.(++count / total);
+            onProgress?.(counts.reduce((a, b) => a + b, 0) / total);
         };
-        const promises = keys.map((bundleId) =>
+        const promises = keys.map((bundleId, i) =>
         {
             const resolveResult = resolveResults[bundleId];
             const values = Object.values(resolveResult);
             const totalAssetsToLoad = [...new Set(values.flat())] as ResolvedAsset[];
 
-            total += totalAssetsToLoad.length;
+            const progressSize = totalAssetsToLoad.reduce((sum, asset) => sum + (asset.progressSize || 1), 0);
 
-            return this._mapLoadToResolve(resolveResult, _onProgress)
+            counts.push(0);
+            total += progressSize;
+
+            return this._mapLoadToResolve(resolveResult, (e) =>
+            {
+                counts[i] = e * progressSize;
+                _onProgress();
+            })
                 .then((resolveResult) =>
                 {
                     out[bundleId] = resolveResult;
@@ -980,11 +1020,11 @@ export class AssetsClass
     /**
      * helper function to map resolved assets back to loaded assets
      * @param resolveResults - the resolve results from the resolver
-     * @param onProgress - the progress callback
+     * @param progressOrLoadOptions - the progress callback or load options
      */
     private async _mapLoadToResolve<T>(
         resolveResults: ResolvedAsset | Record<string, ResolvedAsset>,
-        onProgress?: ProgressCallback
+        progressOrLoadOptions?: ProgressCallback | LoadOptions,
     ): Promise<Record<string, T>>
     {
         const resolveArray = [...new Set(Object.values(resolveResults))] as ResolvedAsset[];
@@ -992,7 +1032,7 @@ export class AssetsClass
         // pause background loader...
         this._backgroundLoader.active = false;
 
-        const loadedAssets = await this.loader.load<T>(resolveArray, onProgress);
+        const loadedAssets = await this.loader.load<T>(resolveArray, progressOrLoadOptions);
 
         // resume background loader...
         this._backgroundLoader.active = true;

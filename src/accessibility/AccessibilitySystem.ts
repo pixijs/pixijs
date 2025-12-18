@@ -162,7 +162,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
     private _div: HTMLElement | null = null;
 
     /** A simple pool for storing divs. */
-    private _pool: AccessibleHTMLElement[] = [];
+    private _pools: Record<string, AccessibleHTMLElement[]> = {};
 
     /** This is a tick used to check if an object is no longer being rendered. */
     private _renderId = 0;
@@ -176,6 +176,13 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
     /**  The frequency to update the div elements. */
     private readonly _androidUpdateFrequency = 500; // 2fps
     private _canvasObserver: CanvasObserver;
+
+    // eslint-disable-next-line @typescript-eslint/prefer-readonly
+    private _isRunningTests: boolean = false;
+
+    /** Bound function references for proper event listener removal */
+    private _boundOnKeyDown: (e: KeyboardEvent) => void = this._onKeyDown.bind(this);
+    private _boundOnMouseMove: (e: MouseEvent) => void = this._onMouseMove.bind(this);
 
     // eslint-disable-next-line jsdoc/require-param
     /**
@@ -214,12 +221,21 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
     }
 
     /**
-     * The DOM element that will sit over the PixiJS element. This is where the div overlays will go.
+     * Button element for handling touch hooks.
      * @readonly
      */
     get hookDiv()
     {
         return this._hookDiv;
+    }
+
+    /**
+     * The DOM element that will sit over the PixiJS element. This is where the div overlays will go.
+     * @readonly
+     */
+    get div()
+    {
+        return this._div;
     }
 
     /**
@@ -295,17 +311,15 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
             });
         }
 
-        // Bind event handlers and add listeners when activating
+        // Add listeners using the stored bound references
         if (this._activateOnTab)
         {
-            this._onKeyDown = this._onKeyDown.bind(this);
-            globalThis.addEventListener('keydown', this._onKeyDown, false);
+            globalThis.addEventListener('keydown', this._boundOnKeyDown, false);
         }
 
         if (this._deactivateOnMouseMove)
         {
-            this._onMouseMove = this._onMouseMove.bind(this);
-            globalThis.document.addEventListener('mousemove', this._onMouseMove, true);
+            globalThis.document.addEventListener('mousemove', this._boundOnMouseMove, true);
         }
 
         // Check if canvas is in DOM
@@ -364,10 +378,10 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         this._isActive = false;
 
         // Switch listeners
-        globalThis.document.removeEventListener('mousemove', this._onMouseMove, true);
+        globalThis.document.removeEventListener('mousemove', this._boundOnMouseMove, true);
         if (this._activateOnTab)
         {
-            globalThis.addEventListener('keydown', this._onKeyDown, false);
+            globalThis.addEventListener('keydown', this._boundOnKeyDown, false);
         }
 
         this._renderer.runners.postrender.remove(this);
@@ -375,7 +389,7 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         // Remove all active accessibility elements
         for (const child of this._children)
         {
-            if (child._accessibleDiv && child._accessibleDiv.parentNode)
+            if (child._accessibleDiv?.parentNode)
             {
                 child._accessibleDiv.parentNode.removeChild(child._accessibleDiv);
                 child._accessibleDiv = null;
@@ -384,21 +398,27 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         }
 
         // Clear the pool of divs
-        this._pool.forEach((div) =>
+        for (const accessibleType in this._pools)
         {
-            if (div.parentNode)
+            const pool = this._pools[accessibleType];
+
+            pool.forEach((div) =>
             {
-                div.parentNode.removeChild(div);
-            }
-        });
+                if (div.parentNode)
+                {
+                    div.parentNode.removeChild(div);
+                }
+            });
+            delete this._pools[accessibleType];
+        }
 
         // Remove parent div from DOM
-        if (this._div && this._div.parentNode)
+        if (this._div?.parentNode)
         {
             this._div.parentNode.removeChild(this._div);
         }
 
-        this._pool = [];
+        this._pools = {};
         this._children = [];
     }
 
@@ -459,11 +479,6 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         {
             this._activate();
         }
-        else if (this._activateOnTab)
-        {
-            this._onKeyDown = this._onKeyDown.bind(this);
-            globalThis.addEventListener('keydown', this._onKeyDown, false);
-        }
 
         this._renderer.runners.postrender.remove(this);
     }
@@ -491,7 +506,8 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
 
         this._androidUpdateCount = now + this._androidUpdateFrequency;
 
-        if (!this._renderer.renderingToScreen || !this._renderer.view.canvas)
+        if ((!this._renderer.renderingToScreen || !this._renderer.view.canvas)
+            && !this._isRunningTests)
         {
             return;
         }
@@ -525,7 +541,9 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
                 {
                     child._accessibleDiv.parentNode.removeChild(child._accessibleDiv);
 
-                    this._pool.push(child._accessibleDiv);
+                    const pool = this._getPool(child.accessibleType);
+
+                    pool.push(child._accessibleDiv);
                     child._accessibleDiv = null;
                 }
                 child._accessibleActive = false;
@@ -626,9 +644,24 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
      */
     private _addChild<T extends Container>(container: T): void
     {
-        let div = this._pool.pop();
+        const pool = this._getPool(container.accessibleType);
 
-        if (!div)
+        let div = pool.pop();
+
+        if (div)
+        {
+            /*
+             * Reset these properties so we don't have outdated metadata.
+             * It was possible to end up with:
+             * - the old tabIndex if container.interactive is false
+             * - the old aria-label if container.accessibleHint is not set
+             */
+            div.innerHTML = '';
+            div.removeAttribute('title');
+            div.removeAttribute('aria-label');
+            div.tabIndex = 0;
+        }
+        else
         {
             if (container.accessibleType === 'button')
             {
@@ -711,6 +744,16 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
             div.setAttribute('aria-label', container.accessibleHint);
         }
 
+        if (container.interactive)
+        {
+            div.tabIndex = container.tabIndex;
+        }
+        else
+        {
+            // reset tabIndex back to 0 in case this div instance was pulled from the pool and already had a value
+            div.tabIndex = 0;
+        }
+
         if (this.debug)
         {
             this._updateDebugHTML(div);
@@ -722,10 +765,6 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
 
         this._children.push(container);
         this._div.appendChild(container._accessibleDiv);
-        if (container.interactive)
-        {
-            container._accessibleDiv.tabIndex = container.tabIndex;
-        }
     }
 
     /**
@@ -828,14 +867,16 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         this._canvasObserver = null;
 
         this._div = null;
-        this._pool = null;
+        this._pools = null;
         this._children = null;
         this._renderer = null;
+        this._hookDiv = null;
 
-        if (this._activateOnTab)
-        {
-            globalThis.removeEventListener('keydown', this._onKeyDown);
-        }
+        // Remove listeners using the stored bound references
+        globalThis.removeEventListener('keydown', this._boundOnKeyDown);
+        this._boundOnKeyDown = null;
+        globalThis.document.removeEventListener('mousemove', this._boundOnMouseMove, true);
+        this._boundOnMouseMove = null;
     }
 
     /**
@@ -857,5 +898,15 @@ export class AccessibilitySystem implements System<AccessibilitySystemOptions>
         {
             this._deactivate();
         }
+    }
+
+    private _getPool(accessibleType: string): AccessibleHTMLElement[]
+    {
+        if (!this._pools[accessibleType])
+        {
+            this._pools[accessibleType] = [];
+        }
+
+        return this._pools[accessibleType];
     }
 }

@@ -2,6 +2,10 @@ import EventEmitter from 'eventemitter3';
 import { isPow2 } from '../../../../../maths/misc/pow2';
 import { definedProps } from '../../../../../scene/container/utils/definedProps';
 import { uid } from '../../../../../utils/data/uid';
+import { type GPUDataOwner } from '../../../../renderers/types';
+import { type GlTexture } from '../../../gl/texture/GlTexture';
+import { type GPUTextureGpuData } from '../../../gpu/texture/GpuTextureSystem';
+import { type GCable, type GCData } from '../../GCSystem';
 import { TextureStyle } from '../TextureStyle';
 
 import type { BindResource } from '../../../gpu/shader/BindResource';
@@ -59,6 +63,8 @@ export interface TextureSourceOptions<T extends Record<string, any> = any> exten
     label?: string;
     /** If true, the Garbage Collector will unload this texture if it is not used after a period of time */
     autoGarbageCollect?: boolean;
+    /** Used by RenderTexture.create to allow resizing. Not used by TextureSource itself. */
+    dynamic?: boolean;
 }
 
 /**
@@ -80,7 +86,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     styleChange: TextureSource;
     updateMipmaps: TextureSource;
     error: Error;
-}> implements BindResource
+}> implements BindResource, GPUDataOwner, GCable
 {
     /** The default options used when creating a new TextureSource. override these to add your own defaults */
     public static defaultOptions: TextureSourceOptions = {
@@ -94,6 +100,13 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         antialias: false,
         autoGarbageCollect: false,
     };
+
+    /** @internal */
+    public _gpuData: Record<number, GlTexture | GPUTextureGpuData> = Object.create(null);
+    /** GC tracking data, undefined if not being tracked */
+    public _gcData?: GCData;
+    /** @internal */
+    public _gcLastUsed = -1;
 
     /** unique id for this Texture source */
     public readonly uid: number = uid('textureSource');
@@ -400,8 +413,8 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     public destroy()
     {
         this.destroyed = true;
+        this.unload();
         this.emit('destroy', this);
-        this.emit('change', this);
 
         if (this._style)
         {
@@ -422,7 +435,14 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     {
         this._resourceId = uid('resource');
         this.emit('change', this);
+
+        /** Unloads the GPU data from the view container. */
         this.emit('unload', this);
+        for (const key in this._gpuData)
+        {
+            this._gpuData[key]?.destroy?.();
+        }
+        this._gpuData = Object.create(null);
     }
 
     /** the width of the resource. This is the REAL pure number, not accounting resolution   */

@@ -499,6 +499,7 @@ export class EventSystem implements System<EventSystemOptions>
     /** Destroys all event listeners and detaches the renderer. */
     public destroy(): void
     {
+        EventsTicker.destroy();
         this.setTargetElement(null);
         this.renderer = null;
         this._currentCursor = null;

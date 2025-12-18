@@ -1,3 +1,5 @@
+import { type GPUData } from '../../scene/view/ViewContainer';
+
 import type { ICanvas } from '../../environment/canvas/ICanvas';
 import type { WebGLOptions, WebGLPipes, WebGLRenderer } from './gl/WebGLRenderer';
 import type { WebGPUOptions, WebGPUPipes, WebGPURenderer } from './gpu/WebGPURenderer';
@@ -54,4 +56,16 @@ export enum RendererType
  * @category rendering
  * @advanced
  */
-export type GpuPowerPreference = 'low-power' | 'high-performance';
+export type GpuPowerPreference = 'low-power' | 'high-performance';/** @internal */
+
+/**
+ * A resource that can have GPU data associated with it.
+ * @category rendering
+ * @advanced
+ */
+export interface GPUDataOwner<GPU_DATA extends GPUData = any>
+{
+    _gpuData: Record<number, GPU_DATA>;
+    unload: () => void;
+}
+

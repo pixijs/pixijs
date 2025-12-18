@@ -3,6 +3,7 @@ import { ExtensionType } from '../../extensions/Extensions';
 import { Graphics } from '../graphics/shared/Graphics';
 import { CanvasTextMetrics } from '../text/canvas/CanvasTextMetrics';
 import { SdfShader } from '../text/sdfShader/SdfShader';
+import { type GPUData } from '../view/ViewContainer';
 import { BitmapFontManager } from './BitmapFontManager';
 import { getBitmapTextLayout } from './utils/getBitmapTextLayout';
 
@@ -13,7 +14,7 @@ import type { Renderer } from '../../rendering/renderers/types';
 import type { BitmapText } from './BitmapText';
 
 /** @internal */
-export class BitmapTextGraphics extends Graphics
+export class BitmapTextGraphics extends Graphics implements GPUData
 {
     public destroy()
     {
@@ -44,7 +45,6 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
-        this._renderer.renderableGC.addManagedHash(this, '_gpuBitmapText');
     }
 
     public validateRenderable(bitmapText: BitmapText): boolean

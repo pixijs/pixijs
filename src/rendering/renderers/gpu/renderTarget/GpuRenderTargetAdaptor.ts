@@ -241,6 +241,8 @@ export class GpuRenderTargetAdaptor implements RenderTargetAdaptor<GpuRenderTarg
 
         const gpuRenderTarget = new GpuRenderTarget();
 
+        gpuRenderTarget.colorTargetCount = renderTarget.colorTextures.length;
+
         // create a context...
         // is a canvas...
         renderTarget.colorTextures.forEach((colorTexture, i) =>

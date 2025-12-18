@@ -58,6 +58,7 @@ export class Pool<T extends PoolItem>
         else
         {
             item = new this._classType();
+            this._count++;
         }
 
         item.init?.(data);
@@ -103,10 +104,18 @@ export class Pool<T extends PoolItem>
         return this._count - this._index;
     }
 
-    /** clears the pool - mainly used for debugging! */
+    /** clears the pool */
     public clear()
     {
+        if (this._pool.length > 0 && this._pool[0].destroy)
+        {
+            for (let i = 0; i < this._index; i++)
+            {
+                this._pool[i].destroy();
+            }
+        }
         this._pool.length = 0;
+        this._count = 0;
         this._index = 0;
     }
 }
@@ -119,6 +128,7 @@ export class Pool<T extends PoolItem>
 export type PoolItem = {
     init?: (data?: any) => void;
     reset?: () => void;
+    destroy?: () => void;
     [key: string]: any;
 };
 

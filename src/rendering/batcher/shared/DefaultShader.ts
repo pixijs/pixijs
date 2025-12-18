@@ -17,6 +17,9 @@ import { Shader } from '../../renderers/shared/shader/Shader';
  */
 export class DefaultShader extends Shader
 {
+    /** @internal */
+    public maxTextures?: number;
+
     constructor(maxTextures: number)
     {
         const glProgram = compileHighShaderGlProgram({
@@ -44,5 +47,7 @@ export class DefaultShader extends Shader
                 batchSamplers: getBatchSamplersUniformGroup(maxTextures),
             }
         });
+
+        this.maxTextures = maxTextures;
     }
 }

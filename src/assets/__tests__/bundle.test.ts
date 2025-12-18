@@ -59,6 +59,84 @@ describe('Assets bundles', () =>
         expect(assets.spritesheet).toBeInstanceOf(Spritesheet);
     });
 
+    it('should give a correct progress update with progress size', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        Assets.addBundle('testBundle', [
+            { alias: ['bunny', 'b'], src: 'textures/bunny.{png,webp}', progressSize: 100 },
+            { alias: 'spritesheet', src: 'spritesheet/spritesheet.json', progressSize: 900 },
+        ]);
+
+        let progress = 0;
+        let progressFirst = 0;
+        const progressMock = jest.fn((p) =>
+        {
+            progress = p;
+            if (progressFirst === 0) progressFirst = p;
+        });
+        const assets = await Assets.loadBundle('testBundle', progressMock);
+
+        expect(progressMock).toHaveBeenCalledTimes(2);
+        expect(progress).toBe(1);
+        expect([0.1, 0.9]).toContain(progressFirst);
+
+        expect(assets.bunny).toBeInstanceOf(Texture);
+        expect(assets.spritesheet).toBeInstanceOf(Spritesheet);
+    });
+
+    it('should give a correct progress update with multiple bundles and progress size', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        Assets.addBundle('testBundle', [
+            {
+                alias: ['bunny', 'b'], src: [{
+                    src: 'textures/bunny.png',
+                    progressSize: 400 // should not be used as webp is supported
+                }, {
+                    src: 'textures/bunny.webp',
+                    progressSize: 100
+                }]
+            },
+            { alias: 'spritesheet', src: 'spritesheet/spritesheet.json', progressSize: 900 },
+        ]);
+        Assets.addBundle('testBundle2', [
+            { alias: ['bunny2', 'b2'], src: 'textures/bunny.{png,webp}', progressSize: 200 },
+            { alias: 'spritesheet2', src: 'spritesheet/spritesheet.json', progressSize: 800 },
+        ]);
+
+        let progress = 0;
+        const progressPercentages: number[] = [];
+        const progressMock = jest.fn((p) =>
+        {
+            progress = p;
+            progressPercentages.push(p - (progressPercentages.reduce((a, b) => a + b, 0)));
+        });
+        const assets = await Assets.loadBundle(['testBundle', 'testBundle2'], progressMock);
+
+        expect(progressMock).toHaveBeenCalledTimes(4);
+        expect(progress).toBe(1);
+        const expectedValues = [0.05, 0.45, 0.1, 0.4];
+
+        expect(progressPercentages).toHaveLength(4);
+        expectedValues.forEach((expectedValue) =>
+        {
+            expect(progressPercentages.some((actual) =>
+                Math.abs(actual - expectedValue) < 0.001
+            )).toBe(true);
+        });
+
+        expect(assets.testBundle.bunny).toBeInstanceOf(Texture);
+        expect(assets.testBundle.spritesheet).toBeInstanceOf(Spritesheet);
+        expect(assets.testBundle2.bunny2).toBeInstanceOf(Texture);
+        expect(assets.testBundle2.spritesheet2).toBeInstanceOf(Spritesheet);
+    });
+
     it('should add and load bundle object', async () =>
     {
         await Assets.init({
@@ -353,5 +431,69 @@ describe('Assets bundles', () =>
         const bundle = Assets.resolver.resolveBundle('bunny1');
 
         expect(bundle.character.data).toEqual({ otherData: 'thing' });
+    });
+
+    it('should use the throw loading strategy by default', async () =>
+    {
+        let count = 0;
+
+        await Assets.init({
+            basePath,
+            loadOptions: { onError: () => count++ },
+        });
+
+        Assets.addBundle('testBundle', [
+            { alias: 'bunny', src: 'textures/bunny_no_img.png' },
+            { alias: 'bunny2', src: 'textures/bunny.png' },
+        ]);
+
+        await Assets.loadBundle('testBundle').catch(
+            (e) => expect(e).toBeInstanceOf(Error)
+        );
+
+        expect(Assets.loader.loadOptions.strategy).toBe('throw');
+        expect(count).toBe(1);
+    });
+
+    it('should use the retry loading strategy when set', async () =>
+    {
+        let count = 0;
+
+        await Assets.init({
+            basePath,
+            loadOptions: { strategy: 'retry', onError: () => count++ },
+        });
+
+        Assets.addBundle('testBundle', [
+            { alias: 'bunny', src: 'textures/bunny_no_img.png' },
+            { alias: 'bunny2', src: 'textures/bunny.png' },
+        ]);
+
+        await Assets.loadBundle('testBundle').catch(
+            (e) => expect(e).toBeInstanceOf(Error)
+        );
+
+        expect(count).toBe(4); // 1 initial try + 3 retries
+    }, 5000);
+
+    it('should use the skip loading strategy when set', async () =>
+    {
+        let count = 0;
+
+        await Assets.init({
+            basePath,
+            loadOptions: { strategy: 'skip', onError: () => count++ },
+        });
+
+        Assets.addBundle('testBundle', [
+            { alias: 'bunny', src: 'textures/bunny_no_img.png' },
+            { alias: 'bunny2', src: 'textures/bunny.png' },
+        ]);
+
+        const assets = await Assets.loadBundle('testBundle');
+
+        expect(assets.bunny).toBeUndefined();
+        expect(assets.bunny2).toBeDefined();
+        expect(count).toBe(1);
     });
 });

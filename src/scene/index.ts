@@ -72,6 +72,7 @@ export * from './graphics/shared/svg/utils/extractSvgUrlId';
 export * from './graphics/shared/svg/utils/fillOperations';
 export * from './graphics/shared/svg/utils/pathOperations';
 export * from './graphics/shared/utils/buildContextBatches';
+export * from './graphics/shared/utils/buildGeometryFromPath';
 export * from './graphics/shared/utils/convertFillInputToFillStyle';
 export * from './graphics/shared/utils/generateTextureFillMatrix';
 export * from './graphics/shared/utils/getOrientationOfPoints';

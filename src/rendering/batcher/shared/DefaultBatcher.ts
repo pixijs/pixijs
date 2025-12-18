@@ -222,5 +222,24 @@ export class DefaultBatcher extends Batcher
         uint32View[index + 22] = argb;
         uint32View[index + 23] = textureIdAndRound;
     }
+
+    /**
+     * Updates the maximum number of textures that can be used in the shader.
+     * @param maxTextures - The maximum number of textures that can be used in the shader.
+     * @internal
+     */
+    public _updateMaxTextures(maxTextures: number): void
+    {
+        if (this.shader.maxTextures === maxTextures) return;
+        defaultShader = new DefaultShader(maxTextures);
+        this.shader = defaultShader;
+    }
+
+    public override destroy(): void
+    {
+        // do not destroy default shader!
+        this.shader = null;
+        super.destroy();
+    }
 }
 

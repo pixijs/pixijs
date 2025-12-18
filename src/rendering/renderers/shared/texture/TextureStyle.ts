@@ -228,8 +228,8 @@ export class TextureStyle extends EventEmitter<{
     public update()
     {
         // manage the resource..
-        this.emit('change', this);
         this._sharedResourceId = null;
+        this.emit('change', this);
     }
 
     private _generateResourceId(): number

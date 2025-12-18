@@ -28,6 +28,51 @@ describe('Assets', () =>
         expect(bunny2).toBeInstanceOf(Texture);
     });
 
+    it('should set default load options', async () =>
+    {
+        await Assets.init({
+            basePath,
+            loadOptions: {
+                retryCount: 5,
+                retryDelay: 100,
+                onProgress: () => { /** empty */ },
+            }
+        });
+
+        const bunny = await Assets.load('textures/bunny.png');
+        const bunny2 = await Assets.load({
+            src: 'textures/bunny.png'
+        });
+
+        expect(bunny).toBeInstanceOf(Texture);
+        expect(bunny2).toBeInstanceOf(Texture);
+        expect(Assets.loader.loadOptions.retryCount).toBe(5);
+        expect(Assets.loader.loadOptions.retryDelay).toBe(100);
+        expect(Assets.loader.loadOptions.onProgress).toBeInstanceOf(Function);
+    });
+
+    it('should set load options when passed directly', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        const bunny = await Assets.load('textures/bunny.png');
+        const bunny2 = await Assets.load({
+            src: 'textures/bunny.png'
+        }, {
+            retryCount: 5,
+            retryDelay: 100,
+            onProgress: () => { /** empty */ },
+        });
+
+        expect(bunny).toBeInstanceOf(Texture);
+        expect(bunny2).toBeInstanceOf(Texture);
+        expect(Assets.loader.loadOptions.retryCount).toBe(5);
+        expect(Assets.loader.loadOptions.retryDelay).toBe(100);
+        expect(Assets.loader.loadOptions.onProgress).toBeInstanceOf(Function);
+    });
+
     it('should load assets with the correct progress', async () =>
     {
         await Assets.init({
@@ -48,6 +93,51 @@ describe('Assets', () =>
 
         expect(progressMock).toHaveBeenCalledTimes(2);
         expect(progress).toBe(1);
+
+        expect(res['bunny-array']).toBeInstanceOf(Texture);
+        expect(res['bunny-array2']).toBeInstanceOf(Texture);
+        expect(res['textures/bunny.png']).toBeInstanceOf(Texture);
+    });
+
+    it('should load assets with the correct progress size', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        let progress = 0;
+        let progressFirst = 0;
+        const progressMock = jest.fn((p) =>
+        {
+            progress = p;
+            if (progressFirst === 0) progressFirst = p;
+        });
+
+        const assets = [
+            {
+                src: [
+                    {
+                        src: 'textures/texture.webp',
+                        progressSize: 900,
+                    },
+                    {
+                        src: 'textures/texture.png',
+                        progressSize: 1500, // should not be used
+                    }
+                ],
+                alias: ['bunny-array', 'bunny-array2'],
+            },
+            {
+                src: 'textures/bunny.png',
+                progressSize: 100,
+            }
+        ];
+        const res = await Assets.load(assets, progressMock);
+
+        expect(progressMock).toHaveBeenCalledTimes(2);
+        expect(progress).toBe(1);
+        // this could be either 0.1 or 0.9 depending on which one loads first
+        expect([0.1, 0.9]).toContain(progressFirst);
 
         expect(res['bunny-array']).toBeInstanceOf(Texture);
         expect(res['bunny-array2']).toBeInstanceOf(Texture);

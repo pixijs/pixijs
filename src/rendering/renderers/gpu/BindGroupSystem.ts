@@ -35,7 +35,6 @@ export class BindGroupSystem implements System
     constructor(renderer: WebGPURenderer)
     {
         this._renderer = renderer;
-        this._renderer.renderableGC.addManagedHash(this, '_hash');
     }
 
     protected contextChange(gpu: GPU): void
@@ -109,9 +108,7 @@ export class BindGroupSystem implements System
             {
                 const texture = resource as TextureSource;
 
-                gpuResource = renderer.texture.getGpuSource(texture).createView({
-
-                });
+                gpuResource = renderer.texture.getGpuSource(texture).createView();
             }
 
             entries.push({
@@ -134,13 +131,7 @@ export class BindGroupSystem implements System
 
     public destroy(): void
     {
-        for (const key of Object.keys(this._hash))
-        {
-            this._hash[key] = null;
-        }
-
         this._hash = null;
-
         (this._renderer as null) = null;
     }
 }

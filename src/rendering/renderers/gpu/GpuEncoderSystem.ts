@@ -134,7 +134,7 @@ export class GpuEncoderSystem implements System
         if (this._boundBindGroup[index] === bindGroup) return;
         this._boundBindGroup[index] = bindGroup;
 
-        bindGroup._touch(this._renderer.textureGC.count);
+        bindGroup._touch(this._renderer.gc.now, this._renderer.tick);
 
         // TODO getting the bind group works as it looks at th e assets and generates a key
         // should this just be hidden behind a dirty flag?
@@ -156,7 +156,7 @@ export class GpuEncoderSystem implements System
 
         for (const i in buffersToBind)
         {
-            this._setVertexBuffer(i as any as number, geometry.attributes[buffersToBind[i]].buffer);
+            this._setVertexBuffer(parseInt(i, 10), geometry.attributes[buffersToBind[i]].buffer);
         }
 
         if (geometry.indexBuffer)

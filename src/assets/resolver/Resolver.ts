@@ -479,7 +479,12 @@ export class Resolver
         assetArray.forEach((asset) =>
         {
             const { src } = asset;
-            let { data, format, loadParser: userDefinedLoadParser, parser: userDefinedParser } = asset;
+            let {
+                data,
+                format,
+                loadParser: userDefinedLoadParser,
+                parser: userDefinedParser,
+            } = asset;
 
             // src can contain an unresolved asset itself
             // so we need to merge that data with the current asset
@@ -501,6 +506,17 @@ export class Resolver
             // loop through all the srcs and generate a resolve asset for each src
             const resolvedAssets: ResolvedAsset[] = [];
 
+            // Helper function to parse a URL string using registered parsers
+            const parseUrl = (url: string): ResolvedAsset =>
+            {
+                const parser = this._parsers.find((p) => p.test(url));
+
+                return {
+                    ...parser?.parse(url),
+                    src: url,
+                };
+            };
+
             srcsToUse.forEach((srcs) =>
             {
                 srcs.forEach((src) =>
@@ -509,18 +525,8 @@ export class Resolver
 
                     if (typeof src !== 'object')
                     {
-                        formattedAsset.src = src;
                         // first see if it contains any {} tags...
-                        for (let i = 0; i < this._parsers.length; i++)
-                        {
-                            const parser = this._parsers[i];
-
-                            if (parser.test(src))
-                            {
-                                formattedAsset = parser.parse(src);
-                                break;
-                            }
-                        }
+                        formattedAsset = parseUrl(src);
                     }
                     else
                     {
@@ -531,8 +537,9 @@ export class Resolver
                             userDefinedLoadParser = src.loadParser ?? userDefinedLoadParser;
                             userDefinedParser = src.parser ?? userDefinedParser;
                         }
+
                         formattedAsset = {
-                            ...formattedAsset,
+                            ...parseUrl(src.src),
                             ...src,
                         };
                     }
@@ -549,6 +556,7 @@ export class Resolver
                         format,
                         loadParser: userDefinedLoadParser,
                         parser: userDefinedParser,
+                        progressSize: asset.progressSize,
                     });
 
                     resolvedAssets.push(formattedAsset);
@@ -793,9 +801,10 @@ export class Resolver
         loadParser?: string,
         parser?: string,
         format?: string,
+        progressSize?: number,
     }): ResolvedAsset
     {
-        const { aliases, data: assetData, loadParser, parser, format } = data;
+        const { aliases, data: assetData, loadParser, parser, format, progressSize } = data;
 
         if (this._basePath || this._rootPath)
         {
@@ -808,6 +817,10 @@ export class Resolver
         formattedAsset.loadParser = loadParser ?? formattedAsset.loadParser;
         formattedAsset.parser = parser ?? formattedAsset.parser;
         formattedAsset.format = format ?? formattedAsset.format ?? getUrlExtension(formattedAsset.src);
+        if (progressSize !== undefined)
+        {
+            formattedAsset.progressSize = progressSize;
+        }
 
         return formattedAsset;
     }

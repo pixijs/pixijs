@@ -11,6 +11,7 @@ import { BackgroundSystem } from '../background/BackgroundSystem';
 import { BlendModePipe } from '../blendModes/BlendModePipe';
 import { ExtractSystem } from '../extract/ExtractSystem';
 import { GenerateTextureSystem } from '../extract/GenerateTextureSystem';
+import { GCSystem } from '../GCSystem';
 import { GlobalUniformSystem } from '../renderTarget/GlobalUniformSystem';
 import { SchedulerSystem } from '../SchedulerSystem';
 import { HelloSystem } from '../startup/HelloSystem';
@@ -31,6 +32,7 @@ export const SharedSystems = [
     HelloSystem,
     ViewSystem,
     RenderGroupSystem,
+    GCSystem,
     TextureGCSystem,
     GenerateTextureSystem,
     ExtractSystem,
