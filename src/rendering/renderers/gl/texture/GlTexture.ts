@@ -13,6 +13,13 @@ export class GlTexture implements GPUData
     /** The WebGL texture. */
     public texture: WebGLTexture;
 
+    /**
+     * Bitmask tracking which array layers / sub-targets have been initialized at mip level 0.
+     * Used by uploaders that need per-layer allocation semantics (e.g. cube faces).
+     * @internal
+     */
+    public _layerInitMask = 0;
+
     /** Width of texture that was used in texImage2D. */
     public width: number;
 

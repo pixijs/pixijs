@@ -9,10 +9,16 @@ export const glUploadImageResource = {
 
     id: 'image',
 
-    upload(source: ImageSource | CanvasSource, glTexture: GlTexture, gl: GlRenderingContext, webGLVersion: number)
+    upload(
+        source: ImageSource | CanvasSource,
+        glTexture: GlTexture,
+        gl: GlRenderingContext,
+        webGLVersion: number,
+        targetOverride?: number,
+        forceAllocation = false
+    )
     {
-        const glWidth = glTexture.width;
-        const glHeight = glTexture.height;
+        const target = targetOverride || glTexture.target;
 
         const textureWidth = source.pixelWidth;
         const textureHeight = source.pixelHeight;
@@ -20,66 +26,51 @@ export const glUploadImageResource = {
         const resourceWidth = source.resourceWidth;
         const resourceHeight = source.resourceHeight;
 
-        if (resourceWidth < textureWidth || resourceHeight < textureHeight)
-        {
-            if (glWidth !== textureWidth || glHeight !== textureHeight)
-            {
-                gl.texImage2D(
-                    glTexture.target,
-                    0,
-                    glTexture.internalFormat,
-                    textureWidth,
-                    textureHeight,
-                    0,
-                    glTexture.format,
-                    glTexture.type,
-                    null
-                );
-            }
+        const isWebGL2 = webGLVersion === 2;
+        const needsAllocation = forceAllocation || glTexture.width !== textureWidth || glTexture.height !== textureHeight;
+        const resourceFitsTexture = resourceWidth >= textureWidth && resourceHeight >= textureHeight;
+        const resource = source.resource as TexImageSource;
 
-            if (webGLVersion === 2)
-            {
-                gl.texSubImage2D(
-                    gl.TEXTURE_2D,
-                    0,
-                    0,
-                    0,
-                    resourceWidth,
-                    resourceHeight,
-                    glTexture.format,
-                    glTexture.type,
-                    source.resource as TexImageSource
-                );
-            }
-            else
-            {
-                gl.texSubImage2D(
-                    gl.TEXTURE_2D,
-                    0,
-                    0,
-                    0,
-                    glTexture.format,
-                    glTexture.type,
-                    source.resource as TexImageSource
-                );
-            }
-        }
-        else if (glWidth === textureWidth && glHeight === textureHeight)
-        {
-            gl.texSubImage2D(
-                gl.TEXTURE_2D,
-                0,
-                0,
-                0,
-                glTexture.format,
-                glTexture.type,
-                source.resource as TexImageSource
-            );
-        }
-        else if (webGLVersion === 2)
+        const uploadFunction = isWebGL2 ? uploadImageWebGL2 : uploadImageWebGL1;
+
+        uploadFunction(
+            gl,
+            target,
+            glTexture,
+            textureWidth,
+            textureHeight,
+            resourceWidth,
+            resourceHeight,
+            resource,
+            needsAllocation,
+            resourceFitsTexture
+        );
+
+        glTexture.width = textureWidth;
+        glTexture.height = textureHeight;
+    }
+} as GLTextureUploader;
+
+function uploadImageWebGL2(
+    gl: GlRenderingContext,
+    target: number,
+    glTexture: GlTexture,
+    textureWidth: number,
+    textureHeight: number,
+    resourceWidth: number,
+    resourceHeight: number,
+    resource: TexImageSource,
+    needsAllocation: boolean,
+    resourceFitsTexture: boolean
+): void
+{
+    if (!resourceFitsTexture)
+    {
+        // Allocate the full texture and upload the (smaller) resource into it.
+        if (needsAllocation)
         {
             gl.texImage2D(
-                glTexture.target,
+                target,
                 0,
                 glTexture.internalFormat,
                 textureWidth,
@@ -87,23 +78,122 @@ export const glUploadImageResource = {
                 0,
                 glTexture.format,
                 glTexture.type,
-                source.resource as TexImageSource
+                null
             );
         }
-        else
+
+        gl.texSubImage2D(
+            target,
+            0,
+            0,
+            0,
+            resourceWidth,
+            resourceHeight,
+            glTexture.format,
+            glTexture.type,
+            resource
+        );
+
+        return;
+    }
+
+    if (!needsAllocation)
+    {
+        // Texture already allocated at the correct size; update in-place.
+        gl.texSubImage2D(
+            target,
+            0,
+            0,
+            0,
+            glTexture.format,
+            glTexture.type,
+            resource
+        );
+
+        return;
+    }
+
+    // WebGL2 supports the sized texImage2D overload with TexImageSource.
+    gl.texImage2D(
+        target,
+        0,
+        glTexture.internalFormat,
+        textureWidth,
+        textureHeight,
+        0,
+        glTexture.format,
+        glTexture.type,
+        resource
+    );
+}
+
+function uploadImageWebGL1(
+    gl: GlRenderingContext,
+    target: number,
+    glTexture: GlTexture,
+    textureWidth: number,
+    textureHeight: number,
+    _resourceWidth: number,
+    _resourceHeight: number,
+    resource: TexImageSource,
+    needsAllocation: boolean,
+    resourceFitsTexture: boolean
+): void
+{
+    if (!resourceFitsTexture)
+    {
+        // Allocate the full texture and upload the (smaller) resource into it.
+        if (needsAllocation)
         {
             gl.texImage2D(
-                glTexture.target,
+                target,
                 0,
                 glTexture.internalFormat,
+                textureWidth,
+                textureHeight,
+                0,
                 glTexture.format,
                 glTexture.type,
-                source.resource as TexImageSource
+                null
             );
         }
 
-        glTexture.width = textureWidth;
-        glTexture.height = textureHeight;
-    }
-} as GLTextureUploader;
+        gl.texSubImage2D(
+            target,
+            0,
+            0,
+            0,
+            glTexture.format,
+            glTexture.type,
+            resource
+        );
 
+        return;
+    }
+
+    if (!needsAllocation)
+    {
+        // Texture already allocated at the correct size; update in-place.
+        gl.texSubImage2D(
+            target,
+            0,
+            0,
+            0,
+            glTexture.format,
+            glTexture.type,
+            resource
+        );
+
+        return;
+    }
+
+    // WebGL1 uses the unsized TexImageSource overload.
+    gl.texImage2D(
+        target,
+        0,
+        glTexture.internalFormat,
+        glTexture.format,
+        glTexture.type,
+        resource
+    );
+}
