@@ -447,7 +447,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
             {
                 if (renderer.context.webGLVersion < 2)
                 {
-                    throw new Error('[RenderTexture] TEXTURE_2D_ARRAY requires WebGL2.');
+                    throw new Error('[RenderTargetSystem] TEXTURE_2D_ARRAY requires WebGL2.');
                 }
 
                 (gl as any as WebGL2RenderingContext).framebufferTextureLayer(
@@ -470,7 +470,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
             }
             else
             {
-                throw new Error('[RenderTexture] Unsupported texture target for framebuffer attachment.');
+                throw new Error('[RenderTargetSystem] Unsupported texture target for framebuffer attachment.');
             }
         });
 

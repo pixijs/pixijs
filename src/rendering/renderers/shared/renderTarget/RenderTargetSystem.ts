@@ -228,7 +228,8 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
      * @param options.clearColor - the color to clear to
      * @param options.frame - the frame to render to
      * @param options.mipLevel - the mip level to render to
-     * @param options.layer
+     * @param options.layer - The layer of the render target to render to. Used for array or 3D textures, or when rendering
+     * to a specific layer of a layered render target. Optional.
      */
     public renderStart({
         target,
@@ -290,7 +291,9 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
      * @param clearColor - the color to clear to
      * @param frame - the frame to render to
      * @param mipLevel - the mip level to render to
-     * @param layer
+     * @param layer - the layer (or slice) of the render surface to render to. For array textures,
+     * 3D textures, or cubemaps, this specifies the target layer or face. Defaults to 0 (the first layer/face).
+     * Ignored for surfaces that do not support layers.
      * @returns the render target that was bound
      */
     public bind(
@@ -440,7 +443,8 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
      * @param clearColor - the color to clear to
      * @param frame - the frame to use when rendering to the render surface
      * @param mipLevel - the mip level to render to
-     * @param layer
+     * @param layer - The layer of the render surface to render to. For array textures or cube maps, this specifies
+     * which layer or face to target. Defaults to 0 (the first layer).
      */
     public push(
         renderSurface: RenderSurface,
