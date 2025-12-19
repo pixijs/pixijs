@@ -41,6 +41,8 @@ interface RenderTargetAndFrame
     frame: Rectangle;
     /** mip level to render to (subresource) */
     mipLevel: number;
+    /** array layer to render to (subresource) */
+    layer: number;
 }
 
 /**
@@ -82,7 +84,9 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends GlRenderTarget | GpuR
         /** the viewport to use */
         viewport?: Rectangle,
         /** mip level to render to (subresource) */
-        mipLevel?: number
+        mipLevel?: number,
+        /** array layer to render to (subresource) */
+        layer?: number
     ): void
 
     /** clears the current render target to the specified color */
@@ -94,7 +98,11 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends GlRenderTarget | GpuR
         /** the color to clear to   */
         clearColor?: RgbaArray,
         /** the viewport to use */
-        viewport?: Rectangle
+        viewport?: Rectangle,
+        /** mip level to clear (subresource) */
+        mipLevel?: number,
+        /** array layer to clear (subresource) */
+        layer?: number
     ): void
 
     /** finishes the current render pass */
@@ -168,6 +176,10 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
     public renderSurface: RenderSurface;
     /** the current viewport that the gpu is using */
     public readonly viewport = new Rectangle();
+    /** the current mip level being rendered to (for texture subresources) */
+    public mipLevel = 0;
+    /** the current array layer being rendered to (for array-backed targets) */
+    public layer = 0;
     /**
      * a runner that lets systems know if the active render target has changed.
      * Eg the Stencil System needs to know so it can manage the stencil buffer
@@ -216,19 +228,23 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
      * @param options.clearColor - the color to clear to
      * @param options.frame - the frame to render to
      * @param options.mipLevel - the mip level to render to
+     * @param options.layer - The layer of the render target to render to. Used for array or 3D textures, or when rendering
+     * to a specific layer of a layered render target. Optional.
      */
     public renderStart({
         target,
         clear,
         clearColor,
         frame,
-        mipLevel
+        mipLevel,
+        layer
     }: {
         target: RenderSurface;
         clear: CLEAR_OR_BOOL;
         clearColor: RgbaArray;
         frame?: Rectangle;
         mipLevel?: number;
+        layer?: number;
     }): void
     {
         // TODO no need to reset this - use optimised index instead
@@ -239,7 +255,8 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
             clear,
             clearColor,
             frame,
-            mipLevel ?? 0
+            mipLevel ?? 0,
+            layer ?? 0
         );
 
         this.rootViewPort.copyFrom(this.viewport);
@@ -265,7 +282,8 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
      * - `frame` is treated as **base mip (mip 0) pixel space**.
      * - When `mipLevel > 0`, the viewport derived from `frame` is scaled by \(2^{mipLevel}\) and clamped to the
      *   mip dimensions. This keeps "render the same region" semantics consistent across mip levels.
-     * - When `renderSurface` is a {@link Texture}, `renderer.render({ target: texture, mipLevel })` will render into
+     * - When `renderSurface` is a {@link Texture}, `renderer.render({ container, target: texture, mipLevel })` will
+     *   render into
      *   the underlying {@link TextureSource} (Pixi will create/use a {@link RenderTarget} for the source) using the
      *   texture's frame to define the region (in mip 0 space).
      * @param renderSurface - the render surface to bind
@@ -273,6 +291,9 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
      * @param clearColor - the color to clear to
      * @param frame - the frame to render to
      * @param mipLevel - the mip level to render to
+     * @param layer - the layer (or slice) of the render surface to render to. For array textures,
+     * 3D textures, or cubemaps, this specifies the target layer or face. Defaults to 0 (the first layer/face).
+     * Ignored for surfaces that do not support layers.
      * @returns the render target that was bound
      */
     public bind(
@@ -280,7 +301,8 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
         clear: CLEAR_OR_BOOL = true,
         clearColor?: RgbaArray,
         frame?: Rectangle,
-        mipLevel = 0
+        mipLevel = 0,
+        layer = 0
     ): RenderTarget
     {
         const renderTarget = this.getRenderTarget(renderSurface);
@@ -303,6 +325,20 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
 
         const source = renderTarget.colorTexture;
         const viewport = this.viewport;
+        const arrayLayerCount = source.arrayLayerCount || 1;
+
+        if ((layer | 0) !== layer)
+        {
+            layer |= 0;
+        }
+
+        if (layer < 0 || layer >= arrayLayerCount)
+        {
+            throw new Error(`[RenderTargetSystem] layer ${layer} is out of bounds (arrayLayerCount=${arrayLayerCount}).`);
+        }
+
+        this.mipLevel = mipLevel | 0;
+        this.layer = layer;
 
         const pixelWidth = Math.max(source.pixelWidth >> mipLevel, 1);
         const pixelHeight = Math.max(source.pixelHeight >> mipLevel, 1);
@@ -360,7 +396,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
             !renderTarget.isRoot
         );
 
-        this.adaptor.startRenderPass(renderTarget, clear, clearColor, viewport, mipLevel);
+        this.adaptor.startRenderPass(renderTarget, clear, clearColor, viewport, mipLevel, layer);
 
         if (didChange)
         {
@@ -374,6 +410,8 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
         target?: RenderSurface,
         clear: CLEAR_OR_BOOL = CLEAR.ALL,
         clearColor?: RgbaArray,
+        mipLevel = this.mipLevel,
+        layer = this.layer,
     )
     {
         if (!clear) return;
@@ -387,7 +425,9 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
             (target as RenderTarget) || this.renderTarget,
             clear,
             clearColor,
-            this.viewport
+            this.viewport,
+            mipLevel,
+            layer
         );
     }
 
@@ -403,21 +443,25 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
      * @param clearColor - the color to clear to
      * @param frame - the frame to use when rendering to the render surface
      * @param mipLevel - the mip level to render to
+     * @param layer - The layer of the render surface to render to. For array textures or cube maps, this specifies
+     * which layer or face to target. Defaults to 0 (the first layer).
      */
     public push(
         renderSurface: RenderSurface,
         clear: CLEAR | boolean = CLEAR.ALL,
         clearColor?: RgbaArray,
         frame?: Rectangle,
-        mipLevel = 0
+        mipLevel = 0,
+        layer = 0
     )
     {
-        const renderTarget = this.bind(renderSurface, clear, clearColor, frame, mipLevel);
+        const renderTarget = this.bind(renderSurface, clear, clearColor, frame, mipLevel, layer);
 
         this._renderTargetStack.push({
             renderTarget,
             frame,
             mipLevel,
+            layer,
         });
 
         return renderTarget;
@@ -435,7 +479,8 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
             false,
             null,
             currentRenderTargetData.frame,
-            currentRenderTargetData.mipLevel
+            currentRenderTargetData.mipLevel,
+            currentRenderTargetData.layer
         );
     }
 
@@ -544,7 +589,7 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
         {
             this.renderTarget.stencil = true;
 
-            this.adaptor.startRenderPass(this.renderTarget, false, null, this.viewport, 0);
+            this.adaptor.startRenderPass(this.renderTarget, false, null, this.viewport, 0, this.layer);
         }
     }
 
