@@ -60,6 +60,33 @@ renderer.render({
 });
 ```
 
+## Rendering to Mip Levels
+
+When rendering to a texture-backed target, you can optionally specify `mipLevel` to render into a specific mip level
+of the target's underlying texture storage.
+
+```ts
+import { RenderTexture } from 'pixi.js';
+
+const rt = RenderTexture.create({
+    width: 256,
+    height: 256,
+    mipLevelCount: 4,
+    autoGenerateMipmaps: false,
+});
+
+// Render into mip 1 (128x128)
+renderer.render({
+    container,
+    target: rt,
+    mipLevel: 1,
+});
+```
+
+Frame semantics:
+- If your `target` is a {@link Texture} with a `frame` (e.g. an atlas sub-texture), that frame is interpreted in **mip 0**
+  pixel space and is **scaled/clamped** when rendering to `mipLevel > 0`.
+
 ## Resizing the Renderer
 
 To resize the renderer, use the `resize()` method. This will adjust the canvas size and update the resolution:

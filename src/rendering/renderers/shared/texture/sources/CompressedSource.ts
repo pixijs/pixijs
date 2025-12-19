@@ -14,9 +14,9 @@ export class CompressedSource extends TextureSource<Uint8Array[]>
 
     constructor(options: TextureSourceOptions)
     {
-        super(options);
-
-        this.resource = options.resource;
-        this.mipLevelCount = this.resource.length;
+        super({
+            ...options,
+            mipLevelCount: options.resource.length,
+        });
     }
 }
