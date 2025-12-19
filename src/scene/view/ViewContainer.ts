@@ -31,7 +31,11 @@ export interface GPUDataContainer<GPU_DATA extends GPUData = any>
  * @category scene
  * @advanced
  */
-export interface ViewContainerOptions extends ContainerOptions, PixiMixins.ViewContainerOptions {}
+export interface ViewContainerOptions extends ContainerOptions, PixiMixins.ViewContainerOptions
+{
+    /** If set to true, the resource will be garbage collected automatically when it is not used. */
+    autoGarbageCollect?: boolean;
+}
 // eslint-disable-next-line requireExport/require-export-jsdoc, requireMemberAPI/require-member-api-doc
 export interface ViewContainer<GPU_DATA extends GPUData = any> extends
     PixiMixins.ViewContainer, Container, GPUDataOwner<GPU_DATA>, GCable {}
@@ -115,10 +119,10 @@ export abstract class ViewContainer<GPU_DATA extends GPUData = any> extends Cont
         this._roundPixels = value ? 1 : 0;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
     constructor(options: ViewContainerOptions)
     {
         super(options);
+        this.autoGarbageCollect = options.autoGarbageCollect ?? true;
     }
 
     /**
