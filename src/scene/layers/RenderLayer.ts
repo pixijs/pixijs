@@ -245,7 +245,20 @@ export class RenderLayer extends Container
     public destroyed: boolean;
     /** @internal */
     public layerParentId: string;
-    /** @internal */
+    /**
+     * If true, the layer's children will be sorted by zIndex before rendering.
+     * If false, you can manually sort the children using sortRenderLayerChildren when needed.
+     * @default false
+     * @example
+     * ```ts
+     * const layer = new RenderLayer({
+     *     sortableChildren: true // Automatically sorts children by zIndex
+     * });
+     * ```
+     * @see {@link RenderLayer#sortRenderLayerChildren} For manual sorting
+     * @see {@link RenderLayer#sortFunction} For customizing the sort logic
+     * @see {@link Container#zIndex} For the default sort property
+     */
     public sortableChildren;
 
     /**
