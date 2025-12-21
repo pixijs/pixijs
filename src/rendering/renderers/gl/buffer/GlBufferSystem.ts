@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { GCManagedHash } from '../../../../utils/data/GCManagedHash';
 import { BufferUsage } from '../../shared/buffer/const';
 import { BUFFER_TYPE } from './const';
 import { GlBuffer } from './GlBuffer';
@@ -36,8 +37,9 @@ export class GlBufferSystem implements System
         name: 'buffer',
     } as const;
 
-    private _gl: GlRenderingContext;
-    private _gpuBuffers: {[key: number]: GlBuffer} = Object.create(null);
+    /** @internal */
+    public _gl: GlRenderingContext;
+    protected _managedBuffers: GCManagedHash<Buffer>;
 
     /** Cache keeping track of the base bound buffer bases */
     private _boundBufferBases: {[key: number]: GlBuffer} = Object.create(null);
@@ -55,18 +57,15 @@ export class GlBufferSystem implements System
     constructor(renderer: WebGLRenderer)
     {
         this._renderer = renderer;
-
-        this._renderer.renderableGC.addManagedHash(this, '_gpuBuffers');
+        this._managedBuffers = new GCManagedHash({ renderer, type: 'resource', onUnload: this.onBufferUnload.bind(this) });
     }
 
     /** @ignore */
     public destroy(): void
     {
-        // loop through and delete all buffers
-        this.destroyAll();
+        this._managedBuffers.destroy();
         this._renderer = null;
         this._gl = null;
-        this._gpuBuffers = {};
         this._boundBufferBases = {};
     }
 
@@ -75,13 +74,15 @@ export class GlBufferSystem implements System
     {
         this._gl = this._renderer.gl;
 
-        this._gpuBuffers = Object.create(null);
+        this.destroyAll(true);
         this._maxBindings = this._renderer.limits.maxUniformBindings;
     }
 
     public getGlBuffer(buffer: Buffer): GlBuffer
     {
-        return this._gpuBuffers[buffer.uid] || this.createGLBuffer(buffer);
+        buffer._gcLastUsed = this._renderer.gc.now;
+
+        return (buffer._gpuData[this._renderer.uid] as GlBuffer) || this.createGLBuffer(buffer);
     }
 
     /**
@@ -259,38 +260,21 @@ export class GlBufferSystem implements System
         return glBuffer;
     }
 
-    /** dispose all WebGL resources of all managed buffers */
-    public destroyAll(): void
+    /**
+     * dispose all WebGL resources of all managed buffers
+     * @param contextLost
+     */
+    public destroyAll(contextLost: boolean = false): void
     {
-        const gl = this._gl;
-
-        for (const id in this._gpuBuffers)
-        {
-            if (this._gpuBuffers[id]) gl.deleteBuffer(this._gpuBuffers[id].buffer);
-        }
-
-        this._gpuBuffers = Object.create(null);
+        this._managedBuffers.removeAll(contextLost);
     }
 
-    /**
-     * Disposes buffer
-     * @param {Buffer} buffer - buffer with data
-     * @param {boolean} [contextLost=false] - If context was lost, we suppress deleteVertexArray
-     */
-    protected onBufferDestroy(buffer: Buffer, contextLost?: boolean): void
+    protected onBufferUnload(buffer: Buffer, contextLost: boolean = false): void
     {
-        if (!this._gpuBuffers[buffer.uid]) return;
-        const glBuffer = this._gpuBuffers[buffer.uid];
+        const glBuffer = buffer._gpuData[this._renderer.uid] as GlBuffer;
 
-        const gl = this._gl;
-
-        if (!contextLost)
-        {
-            gl.deleteBuffer(glBuffer.buffer);
-        }
-
-        buffer.off('destroy', this.onBufferDestroy, this);
-        this._gpuBuffers[buffer.uid] = null;
+        if (!glBuffer) return;
+        if (!contextLost) this._gl.deleteBuffer(glBuffer.buffer);
     }
 
     /**
@@ -315,9 +299,8 @@ export class GlBufferSystem implements System
 
         const glBuffer = new GlBuffer(gl.createBuffer(), type);
 
-        this._gpuBuffers[buffer.uid] = glBuffer;
-
-        buffer.on('destroy', this.onBufferDestroy, this);
+        buffer._gpuData[this._renderer.uid] = glBuffer;
+        this._managedBuffers.add(buffer);
 
         return glBuffer;
     }

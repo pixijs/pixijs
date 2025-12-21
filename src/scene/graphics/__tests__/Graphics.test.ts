@@ -245,7 +245,7 @@ describe('Graphics', () =>
 
             renderer.render(graphics);
 
-            const graphicsData = renderer.graphicsContext['_graphicsDataContextHash'][graphics.context.uid];
+            const graphicsData = graphics.context._gpuData[renderer.uid].graphicsData;
 
             expect(graphicsData.batcher.geometry.indexBuffer.data.length).toEqual(3 * 6);
             expect(graphicsData.batcher.geometry.buffers[0].data.length).toEqual(3 * 4 * 6);

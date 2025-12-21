@@ -416,6 +416,7 @@ export abstract class Batcher
         }
 
         this.batchIndex = 0;
+
         this._batchIndexStart = 0;
         this._batchIndexSize = 0;
 
@@ -783,7 +784,7 @@ export abstract class Batcher
     {
         if (this.batches === null) return;
 
-        for (let i = 0; i < this.batches.length; i++)
+        for (let i = 0; i < this.batchIndex; i++)
         {
             returnBatchToPool(this.batches[i]);
         }

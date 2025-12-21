@@ -1,3 +1,5 @@
+import { type GPUData } from '../view/ViewContainer';
+
 import type { Matrix } from '../../maths/matrix/Matrix';
 import type { Batch, Batcher } from '../../rendering/batcher/shared/Batcher';
 import type { DefaultBatchableQuadElement } from '../../rendering/batcher/shared/DefaultBatcher';
@@ -10,7 +12,7 @@ import type { Container } from '../container/Container';
  * A batchable sprite object.
  * @internal
  */
-export class BatchableSprite implements DefaultBatchableQuadElement
+export class BatchableSprite implements DefaultBatchableQuadElement, GPUData
 {
     public batcherName = 'default';
     public topology: Topology = 'triangle-list';
@@ -48,6 +50,6 @@ export class BatchableSprite implements DefaultBatchableQuadElement
 
     public destroy()
     {
-        // BOOM!
+        this.reset();
     }
 }

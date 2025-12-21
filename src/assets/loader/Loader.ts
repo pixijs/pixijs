@@ -461,7 +461,13 @@ export class Loader
 
                 // strategy 'throw' or exhausted 'retry'
                 if (onError) onError(e as Error, asset);
-                throw new Error(`[Loader.load] Failed to load ${url}.\n${e}`);
+                const error = new Error(`[Loader.load] Failed to load ${url}.\n${e}`);
+
+                if (e instanceof Error && e.stack)
+                {
+                    error.stack = e.stack;
+                }
+                throw error;
             }
         }
     }

@@ -1,3 +1,4 @@
+import { type GPUData } from '../../../../scene/view/ViewContainer';
 import { GL_FORMATS, GL_TARGETS, GL_TYPES } from './const';
 
 /**
@@ -5,7 +6,7 @@ import { GL_FORMATS, GL_TARGETS, GL_TYPES } from './const';
  * @category rendering
  * @ignore
  */
-export class GlTexture
+export class GlTexture implements GPUData
 {
     public target: GL_TARGETS = GL_TARGETS.TEXTURE_2D;
 
@@ -41,5 +42,10 @@ export class GlTexture
         this.internalFormat = GL_FORMATS.RGBA;
         this.format = GL_FORMATS.RGBA;
         this.samplerType = 0;
+    }
+
+    public destroy(): void
+    {
+        // BOOM
     }
 }

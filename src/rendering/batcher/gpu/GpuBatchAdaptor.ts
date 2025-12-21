@@ -91,7 +91,7 @@ export class GpuBatchAdaptor implements BatcherAdaptor
             batch.topology
         );
 
-        batch.bindGroup._touch(renderer.textureGC.count);
+        batch.bindGroup._touch(renderer.gc.now, renderer.tick);
 
         encoder.setPipeline(pipeline);
 

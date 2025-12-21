@@ -2,9 +2,11 @@ import { ExtensionType } from '../../extensions/Extensions';
 import { getAdjustedBlendModeBlend } from '../../rendering/renderers/shared/state/getAdjustedBlendModeBlend';
 import { State } from '../../rendering/renderers/shared/state/State';
 import { type Renderer, RendererType } from '../../rendering/renderers/types';
+import { GCManagedHash } from '../../utils/data/GCManagedHash';
 import { color32BitToUniform } from '../graphics/gpu/colorToUniform';
 import { BatchableMesh } from '../mesh/shared/BatchableMesh';
 import { MeshGeometry } from '../mesh/shared/MeshGeometry';
+import { type GPUData } from '../view/ViewContainer';
 import { TilingSpriteShader } from './shader/TilingSpriteShader';
 import { QuadGeometry } from './utils/QuadGeometry';
 import { setPositions } from './utils/setPositions';
@@ -18,7 +20,7 @@ import type { TilingSprite } from './TilingSprite';
 const sharedQuad = new QuadGeometry();
 
 /** @internal */
-export class TilingSpriteGpuData
+export class TilingSpriteGpuData implements GPUData
 {
     public canBatch: boolean = true;
     public renderable: TilingSprite;
@@ -61,10 +63,12 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
 
     private _renderer: Renderer;
     private readonly _state: State = State.default2d;
+    private readonly _managedTilingSprites: GCManagedHash<TilingSprite>;
 
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        this._managedTilingSprites = new GCManagedHash({ renderer, type: 'renderable' });
     }
 
     public validateRenderable(renderable: TilingSprite): boolean
@@ -207,6 +211,8 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
         gpuData.renderable = tilingSprite;
         tilingSprite._gpuData[this._renderer.uid] = gpuData;
 
+        this._managedTilingSprites.add(tilingSprite);
+
         return gpuData;
     }
 
@@ -230,6 +236,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
 
     public destroy()
     {
+        this._managedTilingSprites.destroy();
         this._renderer = null;
     }
 

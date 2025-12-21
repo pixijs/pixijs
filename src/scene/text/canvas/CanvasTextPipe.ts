@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { GCManagedHash } from '../../../utils/data/GCManagedHash';
 import { updateTextBounds } from '../utils/updateTextBounds';
 import { BatchableText } from './BatchableText';
 
@@ -21,10 +22,23 @@ export class CanvasTextPipe implements RenderPipe<Text>
     } as const;
 
     private _renderer: Renderer;
+    private readonly _managedTexts: GCManagedHash<Text>;
 
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
+        renderer.runners.resolutionChange.add(this);
+        this._managedTexts = new GCManagedHash({ renderer, type: 'renderable', onUnload: this.onTextUnload.bind(this) });
+    }
+
+    protected resolutionChange()
+    {
+        for (const key in this._managedTexts.items)
+        {
+            const text = this._managedTexts.items[key];
+
+            if (text?._autoResolution) text.onViewUpdate();
+        }
     }
 
     public validateRenderable(text: Text): boolean
@@ -89,7 +103,7 @@ export class CanvasTextPipe implements RenderPipe<Text>
 
     public initGpuText(text: Text)
     {
-        const batchableText = new BatchableText(this._renderer);
+        const batchableText = new BatchableText();
 
         batchableText.currentKey = '--';
         batchableText.renderable = text;
@@ -98,12 +112,33 @@ export class CanvasTextPipe implements RenderPipe<Text>
         batchableText.roundPixels = (this._renderer._roundPixels | text._roundPixels) as 0 | 1;
 
         text._gpuData[this._renderer.uid] = batchableText;
+        this._managedTexts.add(text);
 
         return batchableText;
     }
 
+    protected onTextUnload(text: Text)
+    {
+        const gpuData = text._gpuData[this._renderer.uid];
+
+        if (!gpuData) return;
+
+        const { canvasText } = this._renderer;
+        const refCount = canvasText.getReferenceCount(gpuData.currentKey);
+
+        if (refCount > 0)
+        {
+            canvasText.decreaseReferenceCount(gpuData.currentKey);
+        }
+        else if (gpuData.texture)
+        {
+            canvasText.returnTexture(gpuData.texture);
+        }
+    }
+
     public destroy()
     {
+        this._managedTexts.destroy();
         this._renderer = null;
     }
 }
