@@ -1,13 +1,14 @@
 import { extensions, ExtensionType } from '../../../extensions/Extensions';
 import { State } from '../../renderers/shared/state/State';
 import { DefaultBatcher } from './DefaultBatcher';
+import { Ktx2Batcher } from './Ktx2Batcher';
 
 import type { Geometry } from '../../renderers/shared/geometry/Geometry';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { BatchPipe, InstructionPipe } from '../../renderers/shared/instructions/RenderPipe';
 import type { Shader } from '../../renderers/shared/shader/Shader';
 import type { Renderer } from '../../renderers/types';
-import type { Batch, BatchableElement, Batcher } from './Batcher';
+import type { Batch, BatchableElement, Batcher, BatcherOptions } from './Batcher';
 
 /** @internal */
 export interface BatcherAdaptor
@@ -51,11 +52,18 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
     /** The currently active batcher being used to batch elements */
     private _activeBatch: Batcher;
 
-    public static _availableBatchers: Record<string, new () => Batcher> = Object.create(null);
+    public static _availableBatchers: Record<string, new (options: BatcherOptions) => Batcher> = Object.create(null);
 
-    public static getBatcher(name: string): Batcher
+    public static getBatcher(name: string, options: BatcherOptions): Batcher
     {
-        return new this._availableBatchers[name as keyof typeof this._availableBatchers]();
+        const BatcherClass = this._availableBatchers[name as keyof typeof this._availableBatchers];
+
+        if (!BatcherClass)
+        {
+            return new DefaultBatcher(options);
+        }
+
+        return new BatcherClass(options);
     }
 
     constructor(renderer: Renderer, adaptor: BatcherAdaptor)
@@ -98,8 +106,23 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
 
             if (!batch)
             {
-                batch = this._activeBatches[batchableObject.batcherName]
-                    = BatcherPipe.getBatcher(batchableObject.batcherName);
+                // Create batcher with options (maxTextures from renderer)
+                const BatcherClass = BatcherPipe._availableBatchers[batchableObject.batcherName as
+                    keyof typeof BatcherPipe._availableBatchers];
+
+                if (!BatcherClass)
+                {
+                    // Fallback to default if batcher not found
+                    batch = this._activeBatches[batchableObject.batcherName] = new DefaultBatcher({
+                        maxTextures: this.renderer.limits.maxBatchableTextures,
+                    });
+                }
+                else
+                {
+                    batch = this._activeBatches[batchableObject.batcherName] = new BatcherClass({
+                        maxTextures: this.renderer.limits.maxBatchableTextures,
+                    });
+                }
                 batch.begin();
             }
 
@@ -182,3 +205,4 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
 extensions.handleByMap(ExtensionType.Batcher, BatcherPipe._availableBatchers);
 
 extensions.add(DefaultBatcher);
+extensions.add(Ktx2Batcher);

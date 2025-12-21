@@ -59,6 +59,11 @@ export class SpritePipe implements RenderPipe<Sprite>
     {
         batchableSprite.bounds = sprite.visualBounds;
         batchableSprite.texture = sprite._texture;
+        // Copy batcherName from sprite if it exists (for custom batchers like Ktx2Batcher)
+        if ('batcherName' in sprite)
+        {
+            batchableSprite.batcherName = (sprite as any).batcherName;
+        }
     }
 
     private _getGpuSprite(sprite: Sprite): BatchableSprite
@@ -76,6 +81,11 @@ export class SpritePipe implements RenderPipe<Sprite>
         batchableSprite.texture = sprite._texture;
         batchableSprite.bounds = sprite.visualBounds;
         batchableSprite.roundPixels = (this._renderer._roundPixels | sprite._roundPixels) as 0 | 1;
+        // Copy batcherName from sprite if it exists (for custom batchers like Ktx2Batcher)
+        if ('batcherName' in sprite)
+        {
+            batchableSprite.batcherName = (sprite as any).batcherName;
+        }
 
         sprite._gpuData[this._renderer.uid] = batchableSprite;
 
