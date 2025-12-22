@@ -17,11 +17,12 @@
         "downlevelIteration": true,
         "skipDefaultLibCheck": true,
         "forceConsistentCasingInFileNames": true,
-        "types": ["node", "css-font-loading-module", "@webgpu/types"],
+        "types": ["node", "@webgpu/types"],
         "baseUrl": ".",
         "paths": {
             "~/*": ["./src/*"],
-            "@test-utils": ["./tests/utils/index.ts"]
+            "@test-utils": ["./tests/utils/index.ts"],
+            "pixi.js": ["./src/index.ts"]
         },
     },
     "exclude": [
