@@ -1,5 +1,7 @@
 import { ExtensionType } from '../extensions/Extensions';
 
+import { RendererType } from '../rendering/renderers/types';
+
 import type { InstructionSet } from '../rendering/renderers/shared/instructions/InstructionSet';
 import type { InstructionPipe } from '../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../rendering/renderers/types';
@@ -54,6 +56,8 @@ export class FilterPipe implements InstructionPipe<FilterInstruction>
 
     public execute(instruction: FilterInstruction)
     {
+        if (this._renderer.type === RendererType.CANVAS || !this._renderer.filter) return;
+
         if (instruction.action === 'pushFilter')
         {
             this._renderer.filter.push(instruction);
