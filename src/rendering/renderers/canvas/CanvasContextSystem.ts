@@ -10,14 +10,26 @@ import type { CanvasRenderer } from './CanvasRenderer';
 
 const tempMatrix = new Matrix();
 
+/**
+ * Canvas 2D context with vendor image smoothing flags.
+ * @internal
+ */
 export interface CrossPlatformCanvasRenderingContext2D extends ICanvasRenderingContext2D
 {
+    /** WebKit-specific image smoothing flag. */
     webkitImageSmoothingEnabled: boolean;
+    /** Mozilla-specific image smoothing flag. */
     mozImageSmoothingEnabled: boolean;
+    /** Opera-specific image smoothing flag. */
     oImageSmoothingEnabled: boolean;
+    /** Microsoft-specific image smoothing flag. */
     msImageSmoothingEnabled: boolean;
 }
 
+/**
+ * Available image smoothing flags for the current context.
+ * @internal
+ */
 export type SmoothingEnabledProperties =
     'imageSmoothingEnabled' |
     'webkitImageSmoothingEnabled' |
@@ -25,6 +37,11 @@ export type SmoothingEnabledProperties =
     'oImageSmoothingEnabled' |
     'msImageSmoothingEnabled';
 
+/**
+ * Canvas 2D context system for the CanvasRenderer.
+ * @category rendering
+ * @advanced
+ */
 export class CanvasContextSystem implements System
 {
     /** @ignore */
@@ -37,27 +54,42 @@ export class CanvasContextSystem implements System
 
     private readonly _renderer: CanvasRenderer;
 
+    /** Root 2D context tied to the renderer's canvas. */
     public rootContext: CrossPlatformCanvasRenderingContext2D;
+    /** Active 2D context for rendering (root or render target). */
     public activeContext: CrossPlatformCanvasRenderingContext2D;
+    /** Resolution of the active context. */
     public activeResolution = 1;
 
+    /** The image smoothing property to toggle for this browser. */
     public smoothProperty: SmoothingEnabledProperties = 'imageSmoothingEnabled';
+    /** Map of Pixi blend modes to canvas composite operations. */
     public readonly blendModes = mapCanvasBlendModesToPixi();
 
+    /** Current canvas blend mode. */
     public _activeBlendMode: BLEND_MODES = 'normal';
+    /** Optional projection transform for render targets. */
     public _projTransform: Matrix = null;
+    /** True when external blend mode control is in use. */
     public _outerBlend = false;
 
+    /**
+     * @param renderer - The owning CanvasRenderer.
+     */
     constructor(renderer: CanvasRenderer)
     {
         this._renderer = renderer;
     }
 
+    /** Initializes the root context and smoothing flag selection. */
     public init(): void
     {
         const alpha = this._renderer.background.alpha < 1;
 
-        this.rootContext = this._renderer.canvas.getContext('2d', { alpha }) as unknown as CrossPlatformCanvasRenderingContext2D;
+        this.rootContext = this._renderer.canvas.getContext(
+            '2d',
+            { alpha }
+        ) as unknown as CrossPlatformCanvasRenderingContext2D;
         this.activeContext = this.rootContext;
         this.activeResolution = this._renderer.resolution;
 
@@ -84,6 +116,12 @@ export class CanvasContextSystem implements System
         }
     }
 
+    /**
+     * Sets the current transform on the active context.
+     * @param transform - Transform to apply.
+     * @param roundPixels - Whether to round translation to integers.
+     * @param localResolution - Optional local resolution multiplier.
+     */
     public setContextTransform(transform: Matrix, roundPixels?: boolean, localResolution?: number): void
     {
         let mat = transform;
@@ -123,6 +161,11 @@ export class CanvasContextSystem implements System
         }
     }
 
+    /**
+     * Clears the current render target, optionally filling with a color.
+     * @param clearColor - Color to fill after clearing.
+     * @param alpha - Alpha override for the clear color.
+     */
     public clear(clearColor?: number[] | string | number, alpha?: number): void
     {
         const context = this.activeContext;
@@ -141,6 +184,10 @@ export class CanvasContextSystem implements System
         }
     }
 
+    /**
+     * Sets the active blend mode.
+     * @param blendMode - Pixi blend mode.
+     */
     public setBlendMode(blendMode: BLEND_MODES): void
     {
         if (this._activeBlendMode === blendMode) return;
@@ -151,6 +198,7 @@ export class CanvasContextSystem implements System
         this.activeContext.globalCompositeOperation = this.blendModes[blendMode] || 'source-over';
     }
 
+    /** Releases context references. */
     public destroy(): void
     {
         this.rootContext = null;

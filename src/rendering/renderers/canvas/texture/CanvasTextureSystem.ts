@@ -8,6 +8,11 @@ import type { Texture } from '../../shared/texture/Texture';
 import type { TextureSource } from '../../shared/texture/sources/TextureSource';
 import type { CanvasRenderer } from '../CanvasRenderer';
 
+/**
+ * Texture helper system for CanvasRenderer.
+ * @category rendering
+ * @advanced
+ */
 export class CanvasTextureSystem implements System, CanvasGenerator
 {
     /** @ignore */
@@ -18,21 +23,33 @@ export class CanvasTextureSystem implements System, CanvasGenerator
         name: 'texture',
     } as const;
 
+    /**
+     * @param renderer - The owning CanvasRenderer.
+     */
     constructor(renderer: CanvasRenderer)
     {
         void renderer;
     }
 
+    /** Initializes the system (no-op for canvas). */
     public init(): void
     {
         // no-op
     }
 
+    /**
+     * Initializes a texture source (no-op for canvas).
+     * @param _source - Texture source.
+     */
     public initSource(_source: TextureSource): void
     {
         // no-op for canvas
     }
 
+    /**
+     * Creates a canvas containing the texture's frame.
+     * @param texture - Texture to render.
+     */
     public generateCanvas(texture: Texture): ICanvas
     {
         const canvas = DOMAdapter.get().createCanvas();
@@ -70,6 +87,10 @@ export class CanvasTextureSystem implements System, CanvasGenerator
         return canvas;
     }
 
+    /**
+     * Reads pixel data from a texture.
+     * @param texture - Texture to read.
+     */
     public getPixels(texture: Texture): GetPixelsOutput
     {
         const canvas = this.generateCanvas(texture);
@@ -83,6 +104,7 @@ export class CanvasTextureSystem implements System, CanvasGenerator
         };
     }
 
+    /** Destroys the system (no-op for canvas). */
     public destroy(): void
     {
         // no-op

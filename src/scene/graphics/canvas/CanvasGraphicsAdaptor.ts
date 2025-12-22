@@ -271,10 +271,16 @@ export class CanvasGraphicsAdaptor implements GraphicsAdaptor
                 const frame = texture.frame;
                 const resolution = texture.source._resolution ?? texture.source.resolution ?? 1;
 
-                const sx = frame.x * resolution;
-                const sy = frame.y * resolution;
+                let sx = frame.x * resolution;
+                let sy = frame.y * resolution;
                 const sw = frame.width * resolution;
                 const sh = frame.height * resolution;
+
+                if (drawSource !== source)
+                {
+                    sx = 0;
+                    sy = 0;
+                }
 
                 const transform = data.transform;
                 const hasTransform = transform && !transform.isIdentity();

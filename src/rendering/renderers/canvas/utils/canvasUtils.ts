@@ -3,10 +3,15 @@ import { DOMAdapter } from '../../../../environment/adapter';
 import { canUseNewCanvasBlendModes } from './canUseNewCanvasBlendModes';
 
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
+import type { ImageLike } from '../../../../environment/ImageLike';
 import type { Texture } from '../../shared/texture/Texture';
 
-type TintCache = Record<string, (ICanvas & { tintId?: number }) | (HTMLImageElement & { tintId?: number })>;
+type TintCache = Record<string, (ICanvas & { tintId?: number }) | (ImageLike & { tintId?: number })>;
 
+/**
+ * Canvas helper utilities for tinting and pattern generation.
+ * @internal
+ */
 export const canvasUtils = {
     canvas: null as ICanvas | null,
     convertTintToImage: false,
@@ -14,7 +19,7 @@ export const canvasUtils = {
     canUseMultiply: canUseNewCanvasBlendModes(),
     tintMethod: null as (texture: Texture, color: number, canvas: ICanvas) => void,
 
-    getTintedCanvas: (sprite: { texture: Texture }, color: number): ICanvas | HTMLImageElement =>
+    getTintedCanvas: (sprite: { texture: Texture }, color: number): ICanvas | ImageLike =>
     {
         const texture = sprite.texture;
         const stringColor = Color.shared.setValue(color).toHex();
@@ -38,7 +43,7 @@ export const canvasUtils = {
 
         if (canvasUtils.convertTintToImage && canvas.toDataURL !== undefined)
         {
-            const tintImage = new Image();
+            const tintImage = DOMAdapter.get().createImage();
 
             tintImage.src = canvas.toDataURL();
             (tintImage as any).tintId = resourceId;

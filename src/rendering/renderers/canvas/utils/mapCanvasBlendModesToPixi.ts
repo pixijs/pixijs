@@ -3,6 +3,11 @@ import { canUseNewCanvasBlendModes } from './canUseNewCanvasBlendModes';
 
 const FALLBACK_BLEND: GlobalCompositeOperation = 'source-over';
 
+/**
+ * Builds the Canvas blend mode map for Pixi blend enums.
+ * @returns A mapping of Pixi blend modes to canvas composite ops.
+ * @internal
+ */
 export function mapCanvasBlendModesToPixi(): Record<BLEND_MODES, GlobalCompositeOperation>
 {
     const supportsAdvanced = canUseNewCanvasBlendModes();

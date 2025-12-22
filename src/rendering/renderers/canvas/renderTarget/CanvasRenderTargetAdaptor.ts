@@ -12,24 +12,46 @@ import type { Texture } from '../../shared/texture/Texture';
 import type { TextureSource } from '../../shared/texture/sources/TextureSource';
 import type { CanvasRenderer } from '../CanvasRenderer';
 
+/**
+ * Canvas render target backing store.
+ * @internal
+ */
 export type CanvasRenderTarget = {
+    /** Backing canvas element. */
     canvas: ICanvas;
+    /** 2D context associated with the canvas. */
     context: ICanvasRenderingContext2D;
+    /** Pixel width. */
     width: number;
+    /** Pixel height. */
     height: number;
 };
 
+/**
+ * Canvas adaptor for render targets.
+ * @category rendering
+ * @advanced
+ */
 export class CanvasRenderTargetAdaptor implements RenderTargetAdaptor<CanvasRenderTarget>
 {
     private _renderer: CanvasRenderer;
     private _renderTargetSystem: RenderTargetSystem<CanvasRenderTarget>;
 
+    /**
+     * Initializes the adaptor.
+     * @param renderer - Canvas renderer instance.
+     * @param renderTargetSystem - The render target system.
+     */
     public init(renderer: CanvasRenderer, renderTargetSystem: RenderTargetSystem<CanvasRenderTarget>): void
     {
         this._renderer = renderer;
         this._renderTargetSystem = renderTargetSystem;
     }
 
+    /**
+     * Creates a GPU render target for canvas.
+     * @param renderTarget - Render target to initialize.
+     */
     public initGpuRenderTarget(renderTarget: RenderTarget): CanvasRenderTarget
     {
         const colorTexture = renderTarget.colorTexture;
@@ -43,6 +65,10 @@ export class CanvasRenderTargetAdaptor implements RenderTargetAdaptor<CanvasRend
         };
     }
 
+    /**
+     * Resizes the backing canvas for a render target.
+     * @param renderTarget - Render target to resize.
+     */
     public resizeGpuRenderTarget(renderTarget: RenderTarget): void
     {
         const colorTexture = renderTarget.colorTexture;
@@ -52,6 +78,13 @@ export class CanvasRenderTargetAdaptor implements RenderTargetAdaptor<CanvasRend
         canvas.height = renderTarget.pixelHeight;
     }
 
+    /**
+     * Starts a render pass on the canvas target.
+     * @param renderTarget - Target to render to.
+     * @param clear - Clear mode.
+     * @param clearColor - Optional clear color.
+     * @param _viewport - Optional viewport (unused).
+     */
     public startRenderPass(
         renderTarget: RenderTarget,
         clear: CLEAR_OR_BOOL,
@@ -70,6 +103,13 @@ export class CanvasRenderTargetAdaptor implements RenderTargetAdaptor<CanvasRend
         }
     }
 
+    /**
+     * Clears the render target.
+     * @param renderTarget - Target to clear.
+     * @param _clear - Clear mode (unused).
+     * @param clearColor - Optional clear color.
+     * @param viewport - Optional viewport rectangle.
+     */
     public clear(
         renderTarget: RenderTarget,
         _clear: CLEAR_OR_BOOL,
@@ -98,11 +138,20 @@ export class CanvasRenderTargetAdaptor implements RenderTargetAdaptor<CanvasRend
         }
     }
 
+    /** Finishes the render pass (no-op for canvas). */
     public finishRenderPass(): void
     {
         // no-op for canvas
     }
 
+    /**
+     * Copies a render target into a texture source.
+     * @param sourceRenderSurfaceTexture - Source render target.
+     * @param destinationTexture - Destination texture.
+     * @param originSrc - Source origin.
+     * @param size - Copy size.
+     * @param originDest - Destination origin.
+     */
     public copyToTexture(
         sourceRenderSurfaceTexture: RenderTarget,
         destinationTexture: Texture,
@@ -137,6 +186,10 @@ export class CanvasRenderTargetAdaptor implements RenderTargetAdaptor<CanvasRend
         return destinationTexture;
     }
 
+    /**
+     * Destroys a GPU render target (no-op for canvas).
+     * @param _gpuRenderTarget - Target to destroy.
+     */
     public destroyGpuRenderTarget(_gpuRenderTarget: CanvasRenderTarget): void
     {
         // no-op for canvas
