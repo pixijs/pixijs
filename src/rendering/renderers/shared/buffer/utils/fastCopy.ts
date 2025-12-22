@@ -6,7 +6,7 @@
  * @param destinationBuffer - the array buffer to copy to
  * @private
  */
-export function fastCopy(sourceBuffer: ArrayBuffer, destinationBuffer: ArrayBuffer): void
+export function fastCopy(sourceBuffer: ArrayBufferLike, destinationBuffer: ArrayBufferLike): void
 {
     const lengthDouble = (sourceBuffer.byteLength / 8) | 0;
 
