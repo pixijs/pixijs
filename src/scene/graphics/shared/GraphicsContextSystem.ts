@@ -11,6 +11,7 @@ import { buildContextBatches } from './utils/buildContextBatches';
 
 import type { System } from '../../../rendering/renderers/shared/system/System';
 import type { Renderer } from '../../../rendering/renderers/types';
+import { RendererType } from '../../../rendering/renderers/types';
 import type { BatchableGraphics } from './BatchableGraphics';
 import type { GraphicsContext } from './GraphicsContext';
 
@@ -191,6 +192,22 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
     {
         const hasContext = !!context._gpuData[this._renderer.uid];
         const gpuContext: GpuGraphicsContext = context._gpuData[this._renderer.uid] || this._initContext(context);
+
+        if (this._renderer.type === RendererType.CANVAS)
+        {
+            if (context.dirty || !hasContext)
+            {
+                if (hasContext)
+                {
+                    gpuContext.reset();
+                }
+
+                gpuContext.isBatchable = false;
+                context.dirty = false;
+            }
+
+            return gpuContext;
+        }
 
         if (context.dirty || !hasContext)
         {
