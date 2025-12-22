@@ -84,6 +84,7 @@ export class RenderableGCSystem implements System<RenderableGCSystemOptions>
         type: [
             ExtensionType.WebGLSystem,
             ExtensionType.WebGPUSystem,
+            ExtensionType.CanvasSystem,
         ],
         name: 'renderableGC',
         priority: 0
