@@ -15,6 +15,7 @@ import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { CLEAR_OR_BOOL } from '../../gl/const';
 import type { GlRenderTarget } from '../../gl/GlRenderTarget';
 import type { GpuRenderTarget } from '../../gpu/renderTarget/GpuRenderTarget';
+import type { CanvasRenderTarget } from '../../canvas/renderTarget/CanvasRenderTargetAdaptor';
 import type { Renderer } from '../../types';
 import type { System } from '../system/System';
 import type { BindableTexture } from '../texture/Texture';
@@ -46,7 +47,9 @@ interface RenderTargetAndFrame
  * This is used internally by the renderer, and is not intended to be used directly.
  * @ignore
  */
-export interface RenderTargetAdaptor<RENDER_TARGET extends GlRenderTarget | GpuRenderTarget>
+type RendererRenderTarget = GlRenderTarget | GpuRenderTarget | CanvasRenderTarget;
+
+export interface RenderTargetAdaptor<RENDER_TARGET extends RendererRenderTarget>
 {
     init(
         /** the renderer */
@@ -150,7 +153,7 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends GlRenderTarget | GpuR
  * @category rendering
  * @advanced
  */
-export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRenderTarget> implements System
+export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> implements System
 {
     /** When rendering of a scene begins, this is where the root render surface is stored */
     public rootRenderTarget: RenderTarget;
