@@ -181,6 +181,7 @@ async function main()
                         format: 'iife',
                         freeze: false,
                         sourcemap: true,
+                        inlineDynamicImports: true,
                     },
                     !bundle.plugin
                     && {
@@ -189,6 +190,7 @@ async function main()
                         format: 'esm',
                         freeze: false,
                         sourcemap: true,
+                        inlineDynamicImports: true,
                     }
                 ],
                 treeshake: false,
@@ -205,6 +207,7 @@ async function main()
                         format: 'iife',
                         freeze: false,
                         sourcemap: true,
+                        inlineDynamicImports: true,
                     },
                     !bundle.plugin
                     && {
@@ -213,6 +216,7 @@ async function main()
                         format: 'esm',
                         freeze: false,
                         sourcemap: true,
+                        inlineDynamicImports: true,
                     }
                 ],
                 treeshake: false,
