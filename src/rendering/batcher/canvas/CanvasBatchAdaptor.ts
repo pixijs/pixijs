@@ -40,7 +40,6 @@ export class CanvasBatchAdaptor implements BatcherAdaptor
         const renderer = batchPipe.renderer as CanvasRenderer;
         const contextSystem = renderer.canvasContext;
         const context = contextSystem.activeContext;
-        const activeResolution = contextSystem.activeResolution;
 
         for (let i = 0; i < elements.length; i++)
         {
@@ -83,12 +82,12 @@ export class CanvasBatchAdaptor implements BatcherAdaptor
             const dw = bounds.maxX - bounds.minX;
             const dh = bounds.maxY - bounds.minY;
 
-            contextSystem.setContextTransform(quad.transform, quad.roundPixels === 1, 1);
+            contextSystem.setContextTransform(quad.transform, quad.roundPixels === 1);
 
-            const drawX = Math.floor(dx * activeResolution);
-            const drawY = Math.floor(dy * activeResolution);
-            const drawW = Math.floor(dw * activeResolution);
-            const drawH = Math.floor(dh * activeResolution);
+            const drawX = dx;
+            const drawY = dy;
+            const drawW = dw;
+            const drawH = dh;
 
             if (tintedSource === source)
             {

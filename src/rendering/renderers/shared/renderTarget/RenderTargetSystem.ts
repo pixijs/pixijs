@@ -12,10 +12,10 @@ import { RenderTarget } from './RenderTarget';
 
 import type { RgbaArray } from '../../../../color/Color';
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
+import type { CanvasRenderTarget } from '../../canvas/renderTarget/CanvasRenderTargetAdaptor';
 import type { CLEAR_OR_BOOL } from '../../gl/const';
 import type { GlRenderTarget } from '../../gl/GlRenderTarget';
 import type { GpuRenderTarget } from '../../gpu/renderTarget/GpuRenderTarget';
-import type { CanvasRenderTarget } from '../../canvas/renderTarget/CanvasRenderTargetAdaptor';
 import type { Renderer } from '../../types';
 import type { System } from '../system/System';
 import type { BindableTexture } from '../texture/Texture';
@@ -49,82 +49,123 @@ interface RenderTargetAndFrame
  */
 type RendererRenderTarget = GlRenderTarget | GpuRenderTarget | CanvasRenderTarget;
 
+/**
+ * An adaptor interface for RenderTargetSystem to support WebGL and WebGPU.
+ * This is used internally by the renderer, and is not intended to be used directly.
+ * @memberof rendering
+ * @ignore
+ */
 export interface RenderTargetAdaptor<RENDER_TARGET extends RendererRenderTarget>
 {
+    /**
+     * Initializes the adaptor.
+     * @param {Renderer} renderer - the renderer
+     * @param {RenderTargetSystem} renderTargetSystem - the render target system
+     * @standard
+     */
     init(
-        /** the renderer */
         renderer: Renderer,
-        /** the render target system */
         renderTargetSystem: RenderTargetSystem<RENDER_TARGET>
     ): void
 
-    /** A function copies the contents of a render surface to a texture */
+    /**
+     * A function copies the contents of a render surface to a texture
+     * @param {RenderTarget} sourceRenderSurfaceTexture - the render surface to copy from
+     * @param {Texture} destinationTexture - the texture to copy to
+     * @param {object} originSrc - the origin of the copy
+     * @param {number} originSrc.x - the x origin of the copy
+     * @param {number} originSrc.y - the y origin of the copy
+     * @param {object} size - the size of the copy
+     * @param {number} size.width - the width of the copy
+     * @param {number} size.height - the height of the copy
+     * @param {object} originDest - the destination origin (top left to paste from!)
+     * @param {number} originDest.x - the x destination origin of the copy
+     * @param {number} originDest.y - the y destination origin of the copy
+     * @standard
+     */
     copyToTexture(
-        /** the render surface to copy from  */
         sourceRenderSurfaceTexture: RenderTarget,
-        /** the texture to copy to */
         destinationTexture: Texture,
-        /** the origin of the copy */
         originSrc: { x: number; y: number },
-        /** the size of the copy */
         size: { width: number; height: number },
-        /** the destination origin (top left to paste from!) */
         originDest?: { x: number; y: number },
     ): Texture
 
-    /** starts a render pass on the render target */
+    /**
+     * starts a render pass on the render target
+     * @param {RenderTarget} renderTarget - the render target to start the render pass on
+     * @param {CLEAR_OR_BOOL} clear - the clear mode to use. Can be true or a CLEAR number 'COLOR | DEPTH | STENCIL' 0b111*
+     * @param {RgbaArray} [clearColor] - the color to clear to
+     * @param {Rectangle} [viewport] - the viewport to use
+     * @standard
+     */
     startRenderPass(
-        /** the render target to start the render pass on */
         renderTarget: RenderTarget,
-        /* the clear mode to use. Can be true or a CLEAR number 'COLOR | DEPTH | STENCIL' 0b111* */
         clear: CLEAR_OR_BOOL,
-        /** the color to clear to */
         clearColor?: RgbaArray,
-        /** the viewport to use */
         viewport?: Rectangle
     ): void
 
-    /** clears the current render target to the specified color */
+    /**
+     * clears the current render target to the specified color
+     * @param {RenderTarget} renderTarget - the render target to clear
+     * @param {CLEAR_OR_BOOL} clear - the clear mode to use. Can be true or a CLEAR number 'COLOR | DEPTH | STENCIL' 0b111*
+     * @param {RgbaArray} [clearColor] - the color to clear to
+     * @param {Rectangle} [viewport] - the viewport to use
+     * @standard
+     */
     clear(
-        /** the render target to clear */
         renderTarget: RenderTarget,
-        /** the clear mode to use. Can be true or a CLEAR number 'COLOR | DEPTH | STENCIL' 0b111 */
         clear: CLEAR_OR_BOOL,
-        /** the color to clear to   */
         clearColor?: RgbaArray,
-        /** the viewport to use */
         viewport?: Rectangle
     ): void
 
-    /** finishes the current render pass */
+    /**
+     * finishes the current render pass
+     * @param {RenderTarget} renderTarget - the render target to finish the render pass for
+     * @standard
+     */
     finishRenderPass(renderTarget: RenderTarget): void
 
-    /** called after the render pass is finished */
+    /**
+     * called after the render pass is finished
+     * @param {RenderTarget} renderTarget - the render target that was rendered to
+     * @standard
+     */
     postrender?(renderTarget: RenderTarget): void;
 
-    /** called before the render main pass is started */
+    /**
+     * called before the render main pass is started
+     * @param {RenderTarget} renderTarget - the render target that will be rendered to
+     * @standard
+     */
     prerender?(renderTarget: RenderTarget): void;
 
     /**
-     * initializes a gpu render target. Both renderers use this function to initialize a gpu render target
-     * Its different type of object depending on the renderer.
+     * initializes a gpu render target
+     * @param {RenderTarget} renderTarget - the render target to initialize
+     * @standard
      */
     initGpuRenderTarget(
-        /** the render target to initialize */
         renderTarget: RenderTarget
     ): RENDER_TARGET
 
-    /** called when a render target is resized */
+    /**
+     * resizes the gpu render target
+     * @param {RenderTarget} renderTarget - the render target to resize
+     * @standard
+     */
     resizeGpuRenderTarget(
-        /** the render target to resize */
         renderTarget: RenderTarget
     ): void
 
-    /** destroys the gpu render target */
-    destroyGpuRenderTarget(
-        /** the render target to destroy */
-        gpuRenderTarget: RENDER_TARGET
-    ): void
+    /**
+     * destroys the gpu render target
+     * @param {RendererRenderTarget} gpuRenderTarget - the gpu render target to destroy
+     * @standard
+     */
+    destroyGpuRenderTarget(gpuRenderTarget: RENDER_TARGET): void
 }
 
 /**
@@ -155,28 +196,56 @@ export interface RenderTargetAdaptor<RENDER_TARGET extends RendererRenderTarget>
  */
 export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> implements System
 {
-    /** When rendering of a scene begins, this is where the root render surface is stored */
+    /**
+     * When rendering of a scene begins, this is where the root render surface is stored
+     * @advanced
+     */
     public rootRenderTarget: RenderTarget;
-    /** This is the root viewport for the render pass*/
+    /**
+     * This is the root viewport for the render pass
+     * @advanced
+     */
     public rootViewPort = new Rectangle();
-    /** A boolean that lets the dev know if the current render pass is rendering to the screen. Used by some plugins */
+    /**
+     * A boolean that lets the dev know if the current render pass is rendering to the screen. Used by some plugins
+     * @advanced
+     */
     public renderingToScreen: boolean;
-    /** the current active render target */
+    /**
+     * the current active render target
+     * @advanced
+     */
     public renderTarget: RenderTarget;
-    /** the current active render surface that the render target is created from */
+    /**
+     * the current active render surface that the render target is created from
+     * @advanced
+     */
     public renderSurface: RenderSurface;
-    /** the current viewport that the gpu is using */
+    /**
+     * the current viewport that the gpu is using
+     * @advanced
+     */
     public readonly viewport = new Rectangle();
     /**
      * a runner that lets systems know if the active render target has changed.
      * Eg the Stencil System needs to know so it can manage the stencil buffer
+     * @advanced
      */
     public readonly onRenderTargetChange = new SystemRunner('onRenderTargetChange');
-    /** the projection matrix that is used by the shaders based on the active render target and the viewport */
+    /**
+     * the projection matrix that is used by the shaders based on the active render target and the viewport
+     * @advanced
+     */
     public readonly projectionMatrix = new Matrix();
-    /** the default clear color for render targets */
+    /**
+     * the default clear color for render targets
+     * @advanced
+     */
     public readonly defaultClearColor: RgbaArray = [0, 0, 0, 0];
-    /** a reference to the adaptor that interfaces with WebGL / WebGP */
+    /**
+     * a reference to the adaptor that interfaces with WebGL / WebGP
+     * @advanced
+     */
     public readonly adaptor: RenderTargetAdaptor<RENDER_TARGET>;
     /**
      * a hash that stores the render target for a given render surface. When you pass in a texture source,
@@ -437,17 +506,17 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
      * The best way to copy a canvas is to create a texture from it. Then render with that.
      *
      * Parsing in a RenderTarget canvas context (with a 2d context)
-     * @param sourceRenderSurfaceTexture - the render surface to copy from
-     * @param destinationTexture - the texture to copy to
-     * @param originSrc - the origin of the copy
-     * @param originSrc.x - the x origin of the copy
-     * @param originSrc.y - the y origin of the copy
-     * @param size - the size of the copy
-     * @param size.width - the width of the copy
-     * @param size.height - the height of the copy
-     * @param originDest - the destination origin (top left to paste from!)
-     * @param originDest.x - the x origin of the paste
-     * @param originDest.y - the y origin of the paste
+     * @param {RenderTarget} sourceRenderSurfaceTexture - the render surface to copy from
+     * @param {Texture} destinationTexture - the texture to copy to
+     * @param {object} originSrc - the origin of the copy
+     * @param {number} originSrc.x - the x origin of the copy
+     * @param {number} originSrc.y - the y origin of the copy
+     * @param {object} size - the size of the copy
+     * @param {number} size.width - the width of the copy
+     * @param {number} size.height - the height of the copy
+     * @param {object} originDest - the destination origin (top left to paste from!)
+     * @param {number} originDest.x - the x origin of the paste
+     * @param {number} originDest.y - the y origin of the paste
      */
     public copyToTexture(
         sourceRenderSurfaceTexture: RenderTarget,

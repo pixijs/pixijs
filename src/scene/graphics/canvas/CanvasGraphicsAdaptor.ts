@@ -25,23 +25,6 @@ function colorToHex(color: number): string
     return `#${clamped.toString(16).padStart(6, '0')}`;
 }
 
-function applyPatternTransform(pattern: CanvasPattern, matrix?: Matrix): void
-{
-    if (!matrix) return;
-
-    const patternAny = pattern as unknown as { setTransform?: (value: DOMMatrix) => void };
-
-    if (!patternAny.setTransform) return;
-
-    const DOMMatrixCtor = (globalThis as { DOMMatrix?: typeof DOMMatrix }).DOMMatrix;
-
-    if (!DOMMatrixCtor) return;
-
-    const domMatrix = new DOMMatrixCtor([matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty]);
-
-    patternAny.setTransform(domMatrix.inverse());
-}
-
 function buildRoundedRectPath(
     context: CrossPlatformCanvasRenderingContext2D,
     x: number,
@@ -187,7 +170,7 @@ function getCanvasStyle(
 
         const pattern = canvasUtils.getTintedPattern(texture, tint);
 
-        applyPatternTransform(pattern, style.matrix);
+        canvasUtils.applyPatternTransform(pattern, style.matrix);
 
         return pattern;
     }

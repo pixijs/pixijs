@@ -92,6 +92,44 @@ export const canvasUtils = {
         return pattern;
     },
 
+    /**
+     * Applies a transform to a CanvasPattern.
+     * @param pattern - The pattern to apply the transform to.
+     * @param matrix - The matrix to apply.
+     * @param matrix.a
+     * @param matrix.b
+     * @param matrix.c
+     * @param matrix.d
+     * @param matrix.tx
+     * @param matrix.ty
+     */
+    applyPatternTransform: (
+        pattern: CanvasPattern,
+        matrix: {
+            a: number,
+            b: number,
+            c: number,
+            d: number,
+            tx: number,
+            ty: number
+        }
+    ): void =>
+    {
+        if (!matrix) return;
+
+        const patternAny = pattern as unknown as { setTransform?: (value: DOMMatrix) => void };
+
+        if (!patternAny.setTransform) return;
+
+        const DOMMatrixCtor = (globalThis as { DOMMatrix?: typeof DOMMatrix }).DOMMatrix;
+
+        if (!DOMMatrixCtor) return;
+
+        const domMatrix = new DOMMatrixCtor([matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty]);
+
+        patternAny.setTransform(domMatrix.inverse());
+    },
+
     tintWithMultiply: (texture: Texture, color: number, canvas: ICanvas): void =>
     {
         const context = canvas.getContext('2d');

@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../extensions/Extensions';
+import { canvasUtils } from '../../rendering/renderers/canvas/utils/canvasUtils';
 import { getAdjustedBlendModeBlend } from '../../rendering/renderers/shared/state/getAdjustedBlendModeBlend';
 import { State } from '../../rendering/renderers/shared/state/State';
 import { type Renderer, RendererType } from '../../rendering/renderers/types';
@@ -12,6 +13,7 @@ import { QuadGeometry } from './utils/QuadGeometry';
 import { setPositions } from './utils/setPositions';
 import { setUvs } from './utils/setUvs';
 
+import type { CanvasRenderer } from '../../rendering/renderers/canvas/CanvasRenderer';
 import type { WebGLRenderer } from '../../rendering/renderers/gl/WebGLRenderer';
 import type { WebGPURenderer } from '../../rendering/renderers/gpu/WebGPURenderer';
 import type { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
@@ -102,6 +104,14 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
 
     public addRenderable(tilingSprite: TilingSprite, instructionSet: InstructionSet)
     {
+        if (this._renderer.type === RendererType.CANVAS)
+        {
+            this._renderer.renderPipes.batch.break(instructionSet);
+            instructionSet.add(tilingSprite);
+
+            return;
+        }
+
         const batcher = this._renderer.renderPipes.batch;
 
         // init
@@ -145,7 +155,49 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
 
     public execute(tilingSprite: TilingSprite)
     {
-        if (this._renderer.type === RendererType.CANVAS) return;
+        if (this._renderer.type === RendererType.CANVAS)
+        {
+            const renderer = this._renderer as CanvasRenderer;
+            const contextSystem = renderer.canvasContext;
+            const context = contextSystem.activeContext;
+
+            context.save();
+
+            const transform = tilingSprite.groupTransform;
+            const roundPixels = (renderer._roundPixels | tilingSprite._roundPixels) as 0 | 1;
+
+            contextSystem.setContextTransform(transform, roundPixels === 1);
+            contextSystem.setBlendMode(tilingSprite.groupBlendMode);
+
+            const groupColorAlpha = tilingSprite.groupColorAlpha;
+
+            context.globalAlpha = ((groupColorAlpha >>> 24) & 0xFF) / 255;
+
+            const color = groupColorAlpha & 0xFFFFFF;
+            const tint = ((color & 0xFF) << 16) + (color & 0xFF00) + ((color >> 16) & 0xFF);
+            const pattern = canvasUtils.getTintedPattern(tilingSprite.texture, tint);
+
+            const matrix = tilingSprite._tileTransform.matrix.clone();
+
+            if (!tilingSprite.applyAnchorToTexture)
+            {
+                matrix.translate(-tilingSprite.anchor.x * tilingSprite.width, -tilingSprite.anchor.y * tilingSprite.height);
+            }
+
+            canvasUtils.applyPatternTransform(pattern, matrix);
+
+            context.fillStyle = pattern;
+
+            const width = tilingSprite.width;
+            const height = tilingSprite.height;
+            const anchor = tilingSprite.anchor;
+
+            context.fillRect(-anchor.x * width, -anchor.y * height, width, height);
+
+            context.restore();
+
+            return;
+        }
 
         const renderer = this._renderer as WebGLRenderer | WebGPURenderer;
         const { shader } = this._getTilingSpriteData(tilingSprite);

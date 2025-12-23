@@ -35,8 +35,6 @@ const canvasUnsupportedPatterns = [
     /\bMask\b/,
     /Filter\b/,
     /\bMesh\b/,
-    /\bTilingSprite\b/,
-    /\bNineSliceSprite\b/,
     /\bParticleContainer\b/,
     /\bParticle\b/,
     /\bHTMLText\b/,
