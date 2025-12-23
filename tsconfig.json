@@ -21,8 +21,7 @@
         "baseUrl": ".",
         "paths": {
             "~/*": ["./src/*"],
-            "@test-utils": ["./tests/utils/index.ts"],
-            "pixi.js": ["./src/index.ts"]
+            "@test-utils": ["./tests/utils/index.ts"]
         },
     },
     "exclude": [
