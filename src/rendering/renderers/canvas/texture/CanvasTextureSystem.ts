@@ -4,8 +4,8 @@ import { ExtensionType } from '../../../../extensions/Extensions';
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { System } from '../../shared/system/System';
 import type { CanvasGenerator, GetPixelsOutput } from '../../shared/texture/GenerateCanvas';
-import type { Texture } from '../../shared/texture/Texture';
 import type { TextureSource } from '../../shared/texture/sources/TextureSource';
+import type { Texture } from '../../shared/texture/Texture';
 import type { CanvasRenderer } from '../CanvasRenderer';
 
 /**

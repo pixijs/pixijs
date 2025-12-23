@@ -1,5 +1,6 @@
-import type { BLEND_MODES } from '../../shared/state/const';
 import { canUseNewCanvasBlendModes } from './canUseNewCanvasBlendModes';
+
+import type { BLEND_MODES } from '../../shared/state/const';
 
 const FALLBACK_BLEND: GlobalCompositeOperation = 'source-over';
 

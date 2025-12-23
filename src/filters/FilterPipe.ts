@@ -1,5 +1,4 @@
 import { ExtensionType } from '../extensions/Extensions';
-
 import { RendererType } from '../rendering/renderers/types';
 
 import type { InstructionSet } from '../rendering/renderers/shared/instructions/InstructionSet';

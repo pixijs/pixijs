@@ -3,6 +3,7 @@ import { getTextureBatchBindGroup } from '../../../rendering/batcher/gpu/getText
 import { type BatcherOptions } from '../../../rendering/batcher/shared/Batcher';
 import { DefaultBatcher } from '../../../rendering/batcher/shared/DefaultBatcher';
 import { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
+import { RendererType } from '../../../rendering/renderers/types';
 import { GCManagedHash } from '../../../utils/data/GCManagedHash';
 import { deprecation, v8_3_4 } from '../../../utils/logging/deprecation';
 import { BigPool } from '../../../utils/pool/PoolGroup';
@@ -11,7 +12,6 @@ import { buildContextBatches } from './utils/buildContextBatches';
 
 import type { System } from '../../../rendering/renderers/shared/system/System';
 import type { Renderer } from '../../../rendering/renderers/types';
-import { RendererType } from '../../../rendering/renderers/types';
 import type { BatchableGraphics } from './BatchableGraphics';
 import type { GraphicsContext } from './GraphicsContext';
 

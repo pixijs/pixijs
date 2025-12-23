@@ -1,14 +1,13 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { RendererType } from '../../renderers/types';
 
 import type { Container } from '../../../scene/container/Container';
 import type { Effect } from '../../../scene/container/Effect';
+import type { WebGLRenderer } from '../../renderers/gl/WebGLRenderer';
+import type { WebGPURenderer } from '../../renderers/gpu/WebGPURenderer';
 import type { Instruction } from '../../renderers/shared/instructions/Instruction';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { InstructionPipe } from '../../renderers/shared/instructions/RenderPipe';
-import { RendererType } from '../../renderers/types';
-
-import type { WebGLRenderer } from '../../renderers/gl/WebGLRenderer';
-import type { WebGPURenderer } from '../../renderers/gpu/WebGPURenderer';
 import type { Renderer } from '../../renderers/types';
 import type { ColorMask } from './ColorMask';
 

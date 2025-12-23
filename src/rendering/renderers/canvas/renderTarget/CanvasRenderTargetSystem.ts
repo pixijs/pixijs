@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { RenderTargetSystem } from '../../shared/renderTarget/RenderTargetSystem';
-import { CanvasRenderTargetAdaptor, type CanvasRenderTarget } from './CanvasRenderTargetAdaptor';
+import { type CanvasRenderTarget, CanvasRenderTargetAdaptor } from './CanvasRenderTargetAdaptor';
 
 import type { CanvasRenderer } from '../CanvasRenderer';
 

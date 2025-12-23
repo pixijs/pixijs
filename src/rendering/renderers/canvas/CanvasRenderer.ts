@@ -1,5 +1,8 @@
 import { extensions, ExtensionType } from '../../../extensions/Extensions';
 import { CanvasGraphicsAdaptor } from '../../../scene/graphics/canvas/CanvasGraphicsAdaptor';
+import { CanvasParticleContainerPipe } from '../../../scene/particle-container/canvas/CanvasParticleContainerPipe';
+import { HTMLTextPipe } from '../../../scene/text-html/HTMLTextPipe';
+import { HTMLTextSystem } from '../../../scene/text-html/HTMLTextSystem';
 import { CanvasBatchAdaptor } from '../../batcher/canvas/CanvasBatchAdaptor';
 import { AbstractRenderer } from '../shared/system/AbstractRenderer';
 import { SharedRenderPipes, SharedSystems } from '../shared/system/SharedSystems';
@@ -21,8 +24,13 @@ const DefaultCanvasSystems = [
     CanvasLimitsSystem,
     CanvasTextureSystem,
     CanvasRenderTargetSystem,
+    HTMLTextSystem,
 ];
-const DefaultCanvasPipes = [...SharedRenderPipes];
+const DefaultCanvasPipes = [
+    ...SharedRenderPipes,
+    CanvasParticleContainerPipe,
+    HTMLTextPipe,
+];
 const DefaultCanvasAdapters = [CanvasBatchAdaptor, CanvasGraphicsAdaptor];
 
 // installed systems will be added to this array by the extensions manager.

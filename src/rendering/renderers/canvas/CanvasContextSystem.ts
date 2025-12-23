@@ -4,8 +4,8 @@ import { Matrix } from '../../../maths/matrix/Matrix';
 import { mapCanvasBlendModesToPixi } from './utils/mapCanvasBlendModesToPixi';
 
 import type { ICanvasRenderingContext2D } from '../../../environment/canvas/ICanvasRenderingContext2D';
-import type { System } from '../shared/system/System';
 import type { BLEND_MODES } from '../shared/state/const';
+import type { System } from '../shared/system/System';
 import type { CanvasRenderer } from './CanvasRenderer';
 
 const tempMatrix = new Matrix();

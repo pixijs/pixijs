@@ -35,10 +35,6 @@ const canvasUnsupportedPatterns = [
     /\bMask\b/,
     /Filter\b/,
     /\bMesh\b/,
-    /\bParticleContainer\b/,
-    /\bParticle\b/,
-    /\bHTMLText\b/,
-    /\bHTMLTextStyle\b/,
 ];
 
 function isCanvasCompatible(scenePath: string): boolean
