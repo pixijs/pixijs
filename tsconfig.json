@@ -17,7 +17,7 @@
         "downlevelIteration": true,
         "skipDefaultLibCheck": true,
         "forceConsistentCasingInFileNames": true,
-        "types": ["node", "@webgpu/types"],
+        "types": ["node", "css-font-loading-module", "@webgpu/types"],
         "baseUrl": ".",
         "paths": {
             "~/*": ["./src/*"],
