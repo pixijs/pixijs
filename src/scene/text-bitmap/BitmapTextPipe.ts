@@ -1,3 +1,4 @@
+import { RendererType } from '../../../lib';
 import { Cache } from '../../assets/cache/Cache';
 import { ExtensionType } from '../../extensions/Extensions';
 import { Graphics } from '../graphics/shared/Graphics';
@@ -105,10 +106,14 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
         if (bitmapFont.distanceField.type !== 'none')
         {
-            if (!context.customShader)
+            // Only use custom shader for WebGL/WebGPU renderers
+            // Canvas renderer cannot properly handle MSDF distance field math
+            if (this._renderer.type !== RendererType.CANVAS)
             {
-                // TODO: Check if this is a WebGL renderer before asserting type
-                context.customShader = new SdfShader(this._renderer.limits.maxBatchableTextures);
+                if (!context.customShader)
+                {
+                    context.customShader = new SdfShader(this._renderer.limits.maxBatchableTextures);
+                }
             }
         }
 
@@ -171,7 +176,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
 
                     context.texture(
                         texture,
-                        tint ? tint : 'black',
+                        tint ?? 0xFFFFFF,
                         Math.round(line.charPositions[j] + charData.xOffset),
                         Math.round(currentY + charData.yOffset + linePositionYShift),
                         texture.orig.width,

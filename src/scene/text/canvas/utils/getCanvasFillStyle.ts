@@ -32,7 +32,7 @@ export function getCanvasFillStyle(
     // Solid color fill
     if (fillStyle.texture === Texture.WHITE && !fillStyle.fill)
     {
-        return Color.shared.setValue(fillStyle.color).setAlpha(fillStyle.alpha ?? 1).toHexa();
+        return Color.shared.setValue(fillStyle.color).setAlpha(fillStyle.alpha ?? 1).toRgbaString();
     }
     // Basic texture fill
     else if (!fillStyle.fill)
@@ -122,7 +122,9 @@ export function getCanvasFillStyle(
                 fillGradient.colorStops.forEach((stop) =>
                 {
                     // Convert to global space
-                    const globalStop = start + (stop.offset * ratio);
+                    let globalStop = start + (stop.offset * ratio);
+
+                    globalStop = Math.max(0, Math.min(1, globalStop));
 
                     gradient.addColorStop(
                         // fix to 5 decimal places to avoid floating point precision issues

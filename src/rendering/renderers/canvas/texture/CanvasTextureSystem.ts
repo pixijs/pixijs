@@ -77,12 +77,12 @@ export class CanvasTextureSystem implements System, CanvasGenerator
             source,
             sx,
             sy,
-            Math.floor(sw),
-            Math.floor(sh),
+            sw,
+            sh,
             0,
             0,
-            Math.floor(sw),
-            Math.floor(sh)
+            sw,
+            sh
         );
 
         return canvas;

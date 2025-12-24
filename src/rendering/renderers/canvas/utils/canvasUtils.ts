@@ -168,6 +168,7 @@ export const canvasUtils = {
      * @param matrix.d
      * @param matrix.tx
      * @param matrix.ty
+     * @param invert
      */
     applyPatternTransform: (
         pattern: CanvasPattern,
@@ -178,7 +179,8 @@ export const canvasUtils = {
             d: number,
             tx: number,
             ty: number
-        }
+        },
+        invert = true
     ): void =>
     {
         if (!matrix) return;
@@ -193,7 +195,7 @@ export const canvasUtils = {
 
         const domMatrix = new DOMMatrixCtor([matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty]);
 
-        patternAny.setTransform(domMatrix.inverse());
+        patternAny.setTransform(invert ? domMatrix.inverse() : domMatrix);
     },
 
     tintWithMultiply: (texture: Texture, color: number, canvas: ICanvas): void =>

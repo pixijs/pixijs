@@ -81,6 +81,11 @@ export class CanvasContextSystem implements System
         this._renderer = renderer;
     }
 
+    protected resolutionChange(resolution: number): void
+    {
+        this.activeResolution = resolution;
+    }
+
     /** Initializes the root context and smoothing flag selection. */
     public init(): void
     {
@@ -121,10 +126,24 @@ export class CanvasContextSystem implements System
      * @param transform - Transform to apply.
      * @param roundPixels - Whether to round translation to integers.
      * @param localResolution - Optional local resolution multiplier.
+     * @param skipGlobalTransform - If true, skip applying the global world transform matrix.
      */
-    public setContextTransform(transform: Matrix, roundPixels?: boolean, localResolution?: number): void
+    public setContextTransform(
+        transform: Matrix,
+        roundPixels?: boolean,
+        localResolution?: number,
+        skipGlobalTransform?: boolean
+    ): void
     {
-        let mat = transform;
+        const globalTransform = skipGlobalTransform
+            ? Matrix.IDENTITY
+            : (this._renderer.globalUniforms.globalUniformData?.worldTransformMatrix || Matrix.IDENTITY);
+
+        let mat = tempMatrix;
+
+        mat.copyFrom(globalTransform);
+        mat.append(transform);
+
         const proj = this._projTransform;
         const contextResolution = this.activeResolution;
 
@@ -132,9 +151,11 @@ export class CanvasContextSystem implements System
 
         if (proj)
         {
-            mat = tempMatrix;
-            mat.copyFrom(transform);
-            mat.prepend(proj);
+            const finalMat = Matrix.shared;
+
+            finalMat.copyFrom(mat);
+            finalMat.prepend(proj);
+            mat = finalMat;
         }
 
         if (roundPixels)

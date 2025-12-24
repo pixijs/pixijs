@@ -3,6 +3,8 @@ import { canvasUtils } from '../../rendering/renderers/canvas/utils/canvasUtils'
 import { getAdjustedBlendModeBlend } from '../../rendering/renderers/shared/state/getAdjustedBlendModeBlend';
 import { State } from '../../rendering/renderers/shared/state/State';
 import { type Renderer, RendererType } from '../../rendering/renderers/types';
+import { bgr2rgb } from '../../scene/container/container-mixins/getGlobalMixin';
+import { multiplyHexColors } from '../../scene/container/utils/multiplyHexColors';
 import { GCManagedHash } from '../../utils/data/GCManagedHash';
 import { color32BitToUniform } from '../graphics/gpu/colorToUniform';
 import { BatchableMesh } from '../mesh/shared/BatchableMesh';
@@ -169,12 +171,28 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
             contextSystem.setContextTransform(transform, roundPixels === 1);
             contextSystem.setBlendMode(tilingSprite.groupBlendMode);
 
+            const globalColor = renderer.globalUniforms.globalUniformData?.worldColor ?? 0xFFFFFFFF;
             const groupColorAlpha = tilingSprite.groupColorAlpha;
 
-            context.globalAlpha = ((groupColorAlpha >>> 24) & 0xFF) / 255;
+            const globalAlpha = ((globalColor >>> 24) & 0xFF) / 255;
+            const groupAlphaValue = ((groupColorAlpha >>> 24) & 0xFF) / 255;
 
-            const color = groupColorAlpha & 0xFFFFFF;
-            const tint = ((color & 0xFF) << 16) + (color & 0xFF00) + ((color >> 16) & 0xFF);
+            const alpha = globalAlpha * groupAlphaValue;
+
+            if (alpha <= 0)
+            {
+                context.restore();
+
+                return;
+            }
+
+            context.globalAlpha = alpha;
+
+            const globalTint = globalColor & 0xFFFFFF;
+            const groupTintBGR = groupColorAlpha & 0xFFFFFF;
+
+            const tint = bgr2rgb(multiplyHexColors(groupTintBGR, globalTint));
+
             const pattern = canvasUtils.getTintedPattern(tilingSprite.texture, tint);
 
             const matrix = tilingSprite._tileTransform.matrix.clone();

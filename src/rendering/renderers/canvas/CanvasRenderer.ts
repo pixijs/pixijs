@@ -1,6 +1,8 @@
 import { extensions, ExtensionType } from '../../../extensions/Extensions';
 import { CanvasGraphicsAdaptor } from '../../../scene/graphics/canvas/CanvasGraphicsAdaptor';
 import { CanvasParticleContainerPipe } from '../../../scene/particle-container/canvas/CanvasParticleContainerPipe';
+import { CanvasTextPipe } from '../../../scene/text/canvas/CanvasTextPipe';
+import { CanvasTextSystem } from '../../../scene/text/canvas/CanvasTextSystem';
 import { HTMLTextPipe } from '../../../scene/text-html/HTMLTextPipe';
 import { HTMLTextSystem } from '../../../scene/text-html/HTMLTextSystem';
 import { CanvasBatchAdaptor } from '../../batcher/canvas/CanvasBatchAdaptor';
@@ -24,10 +26,12 @@ const DefaultCanvasSystems = [
     CanvasLimitsSystem,
     CanvasTextureSystem,
     CanvasRenderTargetSystem,
+    CanvasTextSystem,
     HTMLTextSystem,
 ];
 const DefaultCanvasPipes = [
     ...SharedRenderPipes,
+    CanvasTextPipe,
     CanvasParticleContainerPipe,
     HTMLTextPipe,
 ];

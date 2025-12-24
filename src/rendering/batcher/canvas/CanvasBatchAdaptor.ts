@@ -1,7 +1,10 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { groupD8 } from '../../../maths/matrix/groupD8';
 import { Matrix } from '../../../maths/matrix/Matrix';
 import { bgr2rgb } from '../../../scene/container/container-mixins/getGlobalMixin';
+import { multiplyHexColors } from '../../../scene/container/utils/multiplyHexColors';
 import { canvasUtils } from '../../renderers/canvas/utils/canvasUtils';
+import { type PatternRepetition } from '~/scene';
 
 import type { CanvasRenderer } from '../../renderers/canvas/CanvasRenderer';
 import type { Geometry } from '../../renderers/shared/geometry/Geometry';
@@ -22,7 +25,7 @@ export class CanvasBatchAdaptor implements BatcherAdaptor
     private static _getPatternRepeat(
         addressModeU?: string,
         addressModeV?: string
-    ): CanvasPatternRepeat
+    ): PatternRepetition
     {
         const repeatU = addressModeU && addressModeU !== 'clamp-to-edge';
         const repeatV = addressModeV && addressModeV !== 'clamp-to-edge';
@@ -82,14 +85,22 @@ export class CanvasBatchAdaptor implements BatcherAdaptor
 
             contextSystem.setBlendMode(element.blendMode);
 
+            const globalColor = renderer.globalUniforms.globalUniformData?.worldColor ?? 0xFFFFFFFF;
             const argb = quad.color;
-            const alpha = ((argb >>> 24) & 0xFF) / 255;
+
+            const globalAlpha = ((globalColor >>> 24) & 0xFF) / 255;
+            const quadAlpha = ((argb >>> 24) & 0xFF) / 255;
+
+            const alpha = globalAlpha * quadAlpha;
 
             if (alpha <= 0) continue;
 
             context.globalAlpha = alpha;
 
-            const tint = bgr2rgb(argb & 0xFFFFFF);
+            const globalTint = globalColor & 0xFFFFFF;
+            const quadTint = argb & 0xFFFFFF;
+
+            const tint = bgr2rgb(multiplyHexColors(quadTint, globalTint));
             const frame = texture.frame;
             const repeatU = textureStyle.addressModeU ?? textureStyle.addressMode;
             const repeatV = textureStyle.addressModeV ?? textureStyle.addressMode;
@@ -103,15 +114,45 @@ export class CanvasBatchAdaptor implements BatcherAdaptor
             const sh = frame.height * resolution;
 
             const bounds = quad.bounds;
-            const dx = bounds.minX;
-            const dy = bounds.minY;
+
+            // For cached texture sprites (render groups), the bounds have an offset that's already
+            // in world space. Since we skip the global transform, we need to normalize to (0,0)
+            const isFromCachedRenderGroup = ((quad as any).renderable as any)?.renderGroup?.isCachedAsTexture;
+            const dx = isFromCachedRenderGroup ? 0 : bounds.minX;
+            const dy = isFromCachedRenderGroup ? 0 : bounds.minY;
             const dw = bounds.maxX - bounds.minX;
             const dh = bounds.maxY - bounds.minY;
 
-            contextSystem.setContextTransform(quad.transform, quad.roundPixels === 1);
+            const rotate = texture.rotate;
 
-            const drawX = dx;
-            const drawY = dy;
+            if (rotate)
+            {
+                CanvasBatchAdaptor._tempPatternMatrix.copyFrom(quad.transform);
+                groupD8.matrixAppendRotationInv(
+                    CanvasBatchAdaptor._tempPatternMatrix,
+                    rotate,
+                    dx,
+                    dy
+                );
+                contextSystem.setContextTransform(
+                    CanvasBatchAdaptor._tempPatternMatrix,
+                    quad.roundPixels === 1,
+                    undefined,
+                    isFromCachedRenderGroup
+                );
+            }
+            else
+            {
+                contextSystem.setContextTransform(
+                    quad.transform,
+                    quad.roundPixels === 1,
+                    undefined,
+                    isFromCachedRenderGroup
+                );
+            }
+
+            const drawX = rotate ? 0 : dx;
+            const drawY = rotate ? 0 : dy;
             const drawW = dw;
             const drawH = dh;
 
@@ -170,12 +211,14 @@ export class CanvasBatchAdaptor implements BatcherAdaptor
                     ? source
                     : canvasUtils.getTintedCanvas({ texture }, tint) as CanvasImageSource;
 
+                const isTinted = tintedSource !== source;
+
                 context.drawImage(
                     tintedSource,
-                    tintedSource === source ? sx : 0,
-                    tintedSource === source ? sy : 0,
-                    Math.floor(sw),
-                    Math.floor(sh),
+                    isTinted ? 0 : sx,
+                    isTinted ? 0 : sy,
+                    isTinted ? (tintedSource as any).width : sw,
+                    isTinted ? (tintedSource as any).height : sh,
                     drawX,
                     drawY,
                     drawW,
