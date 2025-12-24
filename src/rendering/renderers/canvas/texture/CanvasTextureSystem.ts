@@ -1,5 +1,6 @@
 import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { canvasUtils } from '../utils/canvasUtils';
 
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { System } from '../../shared/system/System';
@@ -54,7 +55,7 @@ export class CanvasTextureSystem implements System, CanvasGenerator
     {
         const canvas = DOMAdapter.get().createCanvas();
         const context = canvas.getContext('2d');
-        const source = texture.source.resource as CanvasImageSource;
+        const source = canvasUtils.getCanvasSource(texture);
 
         if (!source)
         {

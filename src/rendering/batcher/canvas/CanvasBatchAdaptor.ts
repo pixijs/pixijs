@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { Matrix } from '../../../maths/matrix/Matrix';
 import { bgr2rgb } from '../../../scene/container/container-mixins/getGlobalMixin';
 import { canvasUtils } from '../../renderers/canvas/utils/canvasUtils';
 
@@ -16,6 +17,23 @@ import type { DefaultBatchableQuadElement } from '../shared/DefaultBatcher';
  */
 export class CanvasBatchAdaptor implements BatcherAdaptor
 {
+    private static readonly _tempPatternMatrix = new Matrix();
+
+    private static _getPatternRepeat(
+        addressModeU?: string,
+        addressModeV?: string
+    ): CanvasPatternRepeat
+    {
+        const repeatU = addressModeU && addressModeU !== 'clamp-to-edge';
+        const repeatV = addressModeV && addressModeV !== 'clamp-to-edge';
+
+        if (repeatU && repeatV) return 'repeat';
+        if (repeatU) return 'repeat-x';
+        if (repeatV) return 'repeat-y';
+
+        return 'no-repeat';
+    }
+
     /** @ignore */
     public static extension = {
         type: [
@@ -49,10 +67,18 @@ export class CanvasBatchAdaptor implements BatcherAdaptor
 
             const quad = element as DefaultBatchableQuadElement;
             const texture = quad.texture;
-
-            const source = texture?.source?.resource as CanvasImageSource;
+            const source = texture ? canvasUtils.getCanvasSource(texture) : null;
 
             if (!source) continue;
+
+            const textureStyle = texture.source.style;
+            const smoothProperty = contextSystem.smoothProperty;
+            const shouldSmooth = textureStyle.scaleMode !== 'nearest';
+
+            if (context[smoothProperty] !== shouldSmooth)
+            {
+                context[smoothProperty] = shouldSmooth;
+            }
 
             contextSystem.setBlendMode(element.blendMode);
 
@@ -64,11 +90,11 @@ export class CanvasBatchAdaptor implements BatcherAdaptor
             context.globalAlpha = alpha;
 
             const tint = bgr2rgb(argb & 0xFFFFFF);
-            const tintedSource = tint === 0xFFFFFF
-                ? source
-                : canvasUtils.getTintedCanvas({ texture }, tint) as CanvasImageSource;
-
             const frame = texture.frame;
+            const repeatU = textureStyle.addressModeU ?? textureStyle.addressMode;
+            const repeatV = textureStyle.addressModeV ?? textureStyle.addressMode;
+            const repeat = CanvasBatchAdaptor._getPatternRepeat(repeatU, repeatV);
+
             const resolution = texture.source._resolution ?? texture.source.resolution ?? 1;
 
             const sx = frame.x * resolution;
@@ -89,26 +115,65 @@ export class CanvasBatchAdaptor implements BatcherAdaptor
             const drawW = dw;
             const drawH = dh;
 
-            if (tintedSource === source)
+            const uvs = texture.uvs;
+            const uvMin = Math.min(uvs.x0, uvs.x1, uvs.x2, uvs.x3, uvs.y0, uvs.y1, uvs.y2, uvs.y3);
+            const uvMax = Math.max(uvs.x0, uvs.x1, uvs.x2, uvs.x3, uvs.y0, uvs.y1, uvs.y2, uvs.y3);
+            const needsRepeat = repeat !== 'no-repeat' && (uvMin < 0 || uvMax > 1);
+
+            if (needsRepeat)
             {
-                context.drawImage(
-                    source,
-                    sx,
-                    sy,
-                    Math.floor(sw),
-                    Math.floor(sh),
-                    drawX,
-                    drawY,
-                    drawW,
-                    drawH
+                let patternSource = source;
+
+                if (tint !== 0xFFFFFF && frame.width <= texture.source.width && frame.height <= texture.source.height)
+                {
+                    patternSource = canvasUtils.getTintedCanvas({ texture }, tint) as CanvasImageSource;
+                }
+
+                const pattern = context.createPattern(patternSource, repeat);
+
+                if (!pattern) continue;
+
+                const denomX = drawW;
+                const denomY = drawH;
+
+                if (denomX === 0 || denomY === 0) continue;
+
+                const invDx = 1 / denomX;
+                const invDy = 1 / denomY;
+
+                const a = (uvs.x1 - uvs.x0) * invDx;
+                const b = (uvs.y1 - uvs.y0) * invDx;
+                const c = (uvs.x3 - uvs.x0) * invDy;
+                const d = (uvs.y3 - uvs.y0) * invDy;
+                const tx = uvs.x0 - (a * drawX) - (c * drawY);
+                const ty = uvs.y0 - (b * drawX) - (d * drawY);
+
+                const pixelWidth = texture.source.pixelWidth;
+                const pixelHeight = texture.source.pixelHeight;
+
+                CanvasBatchAdaptor._tempPatternMatrix.set(
+                    a * pixelWidth,
+                    b * pixelHeight,
+                    c * pixelWidth,
+                    d * pixelHeight,
+                    tx * pixelWidth,
+                    ty * pixelHeight
                 );
+
+                canvasUtils.applyPatternTransform(pattern, CanvasBatchAdaptor._tempPatternMatrix);
+                context.fillStyle = pattern;
+                context.fillRect(drawX, drawY, drawW, drawH);
             }
             else
             {
+                const tintedSource = tint === 0xFFFFFF
+                    ? source
+                    : canvasUtils.getTintedCanvas({ texture }, tint) as CanvasImageSource;
+
                 context.drawImage(
                     tintedSource,
-                    0,
-                    0,
+                    tintedSource === source ? sx : 0,
+                    tintedSource === source ? sy : 0,
                     Math.floor(sw),
                     Math.floor(sh),
                     drawX,

@@ -4,6 +4,10 @@ import { canvasUtils } from '../../../rendering/renderers/canvas/utils/canvasUti
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { bgr2rgb } from '../../container/container-mixins/getGlobalMixin';
 import { multiplyHexColors } from '../../container/utils/multiplyHexColors';
+import { buildLine } from '../shared/buildCommands/buildLine';
+import { FillGradient } from '../shared/fill/FillGradient';
+import { shapeBuilders } from '../shared/utils/buildContextBatches';
+import { generateTextureMatrix as generateTextureFillMatrix } from '../shared/utils/generateTextureFillMatrix';
 
 import type { ShapePrimitive } from '../../../maths/shapes/ShapePrimitive';
 import type { CrossPlatformCanvasRenderingContext2D } from '../../../rendering/renderers/canvas/CanvasContextSystem';
@@ -17,6 +21,30 @@ import type { ShapePrimitiveWithHoles } from '../shared/path/ShapePath';
 
 const emptyCanvasStyle = '#808080';
 const tempMatrix = new Matrix();
+const tempTextureMatrix = new Matrix();
+
+function fillTriangles(
+    context: CrossPlatformCanvasRenderingContext2D,
+    vertices: number[],
+    indices: number[]
+): void
+{
+    context.beginPath();
+
+    for (let i = 0; i < indices.length; i += 3)
+    {
+        const i0 = indices[i] * 2;
+        const i1 = indices[i + 1] * 2;
+        const i2 = indices[i + 2] * 2;
+
+        context.moveTo(vertices[i0], vertices[i0 + 1]);
+        context.lineTo(vertices[i1], vertices[i1 + 1]);
+        context.lineTo(vertices[i2], vertices[i2 + 1]);
+        context.closePath();
+    }
+
+    context.fill();
+}
 
 function colorToHex(color: number): string
 {
@@ -156,7 +184,8 @@ function addHolePaths(context: CrossPlatformCanvasRenderingContext2D, holes?: Sh
 
 function getCanvasStyle(
     style: ConvertedFillStyle,
-    tint: number
+    tint: number,
+    textureMatrix?: Matrix
 ): string | CanvasPattern
 {
     const texture = style.texture;
@@ -170,7 +199,14 @@ function getCanvasStyle(
 
         const pattern = canvasUtils.getTintedPattern(texture, tint);
 
-        canvasUtils.applyPatternTransform(pattern, style.matrix);
+        if (textureMatrix)
+        {
+            canvasUtils.applyPatternTransform(pattern, textureMatrix);
+        }
+        else
+        {
+            canvasUtils.applyPatternTransform(pattern, style.matrix);
+        }
 
         return pattern;
     }
@@ -230,17 +266,15 @@ export class CanvasGraphicsAdaptor implements GraphicsAdaptor
             {
                 const data = instruction.data;
                 const texture = data.image;
+                const source = texture ? canvasUtils.getCanvasSource(texture) : null;
 
-                if (!texture?.source?.resource) continue;
+                if (!source) continue;
 
                 const alpha = data.alpha * groupAlpha;
 
                 if (alpha <= 0) continue;
 
                 const tint = multiplyHexColors(data.style, groupTint);
-                const source = texture.source.resource as CanvasImageSource;
-
-                if (!source) continue;
 
                 context.globalAlpha = alpha;
 
@@ -310,8 +344,6 @@ export class CanvasGraphicsAdaptor implements GraphicsAdaptor
 
             const isStroke = instruction.action === 'stroke';
 
-            const canvasStyle = getCanvasStyle(style, tint);
-
             context.globalAlpha = alpha;
 
             if (isStroke)
@@ -322,11 +354,6 @@ export class CanvasGraphicsAdaptor implements GraphicsAdaptor
                 context.lineCap = strokeStyle.cap;
                 context.lineJoin = strokeStyle.join;
                 context.miterLimit = strokeStyle.miterLimit;
-                context.strokeStyle = canvasStyle as string | CanvasPattern;
-            }
-            else
-            {
-                context.fillStyle = canvasStyle as string | CanvasPattern;
             }
 
             const shapePrimitives = shapePath.shapePrimitives;
@@ -346,6 +373,11 @@ export class CanvasGraphicsAdaptor implements GraphicsAdaptor
 
                 const transform = primitive.transform;
                 const hasTransform = transform && !transform.isIdentity();
+                const isGradientFill = style.fill instanceof FillGradient;
+                const textureMatrix = !isGradientFill && style.texture && style.texture !== Texture.WHITE
+                    ? generateTextureFillMatrix(tempTextureMatrix, style, primitive.shape, transform)
+                    : null;
+                const canvasStyle = getCanvasStyle(style, tint, textureMatrix);
 
                 if (hasTransform)
                 {
@@ -353,22 +385,58 @@ export class CanvasGraphicsAdaptor implements GraphicsAdaptor
                     context.transform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
                 }
 
-                context.beginPath();
-                buildShapePath(context, primitive.shape);
-
-                const hasHoles = addHolePaths(context, primitive.holes);
-
                 if (isStroke)
                 {
-                    context.stroke();
-                }
-                else if (hasHoles)
-                {
-                    context.fill('evenodd');
+                    const strokeStyle = style as ConvertedStrokeStyle;
+                    const useStrokeGeometry = strokeStyle.alignment !== 0.5 && !strokeStyle.pixelLine;
+
+                    if (useStrokeGeometry)
+                    {
+                        const points: number[] = [];
+                        const vertices: number[] = [];
+                        const indices: number[] = [];
+                        const shapeBuilder = shapeBuilders[primitive.shape.type];
+
+                        if (shapeBuilder?.build(primitive.shape, points))
+                        {
+                            const close = (primitive.shape as { closePath?: boolean }).closePath ?? true;
+
+                            buildLine(points, strokeStyle, false, close, vertices, indices);
+                            context.fillStyle = canvasStyle as string | CanvasPattern;
+                            fillTriangles(context, vertices, indices);
+                        }
+                        else
+                        {
+                            context.strokeStyle = canvasStyle as string | CanvasPattern;
+                            context.beginPath();
+                            buildShapePath(context, primitive.shape);
+                            context.stroke();
+                        }
+                    }
+                    else
+                    {
+                        context.strokeStyle = canvasStyle as string | CanvasPattern;
+                        context.beginPath();
+                        buildShapePath(context, primitive.shape);
+                        context.stroke();
+                    }
                 }
                 else
                 {
-                    context.fill();
+                    context.fillStyle = canvasStyle as string | CanvasPattern;
+                    context.beginPath();
+                    buildShapePath(context, primitive.shape);
+
+                    const hasHoles = addHolePaths(context, primitive.holes);
+
+                    if (hasHoles)
+                    {
+                        context.fill('evenodd');
+                    }
+                    else
+                    {
+                        context.fill();
+                    }
                 }
 
                 if (hasTransform)

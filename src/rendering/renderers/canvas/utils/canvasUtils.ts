@@ -4,9 +4,14 @@ import { canUseNewCanvasBlendModes } from './canUseNewCanvasBlendModes';
 
 import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { ImageLike } from '../../../../environment/ImageLike';
+import type { TextureSource } from '../../shared/texture/sources/TextureSource';
 import type { Texture } from '../../shared/texture/Texture';
 
 type TintCache = Record<string, (ICanvas & { tintId?: number }) | (ImageLike & { tintId?: number })>;
+type CanvasSourceCache = {
+    canvas: ICanvas;
+    resourceId: number;
+};
 
 /**
  * Canvas helper utilities for tinting and pattern generation.
@@ -18,6 +23,67 @@ export const canvasUtils = {
     cacheStepsPerColorChannel: 8,
     canUseMultiply: canUseNewCanvasBlendModes(),
     tintMethod: null as (texture: Texture, color: number, canvas: ICanvas) => void,
+    _canvasSourceCache: new WeakMap<TextureSource, CanvasSourceCache>(),
+    getCanvasSource: (texture: Texture): CanvasImageSource | null =>
+    {
+        const source = texture.source;
+        const resource = source?.resource as unknown;
+
+        if (!resource)
+        {
+            return null;
+        }
+
+        if (resource instanceof Uint8Array
+            || resource instanceof Uint8ClampedArray
+            || resource instanceof Int8Array
+            || resource instanceof Uint16Array
+            || resource instanceof Int16Array
+            || resource instanceof Uint32Array
+            || resource instanceof Int32Array
+            || resource instanceof Float32Array
+            || resource instanceof ArrayBuffer)
+        {
+            const cached = canvasUtils._canvasSourceCache.get(source);
+
+            if (cached?.resourceId === source._resourceId)
+            {
+                return cached.canvas as unknown as CanvasImageSource;
+            }
+
+            const canvas = DOMAdapter.get().createCanvas(source.pixelWidth, source.pixelHeight);
+            const context = canvas.getContext('2d');
+            const imageData = context.createImageData(source.pixelWidth, source.pixelHeight);
+            const data = imageData.data;
+
+            const bytes = resource instanceof ArrayBuffer
+                ? new Uint8Array(resource)
+                : new Uint8Array(resource.buffer, resource.byteOffset, resource.byteLength);
+
+            if (source.format === 'bgra8unorm')
+            {
+                for (let i = 0; i < data.length && i + 3 < bytes.length; i += 4)
+                {
+                    data[i] = bytes[i + 2];
+                    data[i + 1] = bytes[i + 1];
+                    data[i + 2] = bytes[i];
+                    data[i + 3] = bytes[i + 3];
+                }
+            }
+            else
+            {
+                data.set(bytes.subarray(0, data.length));
+            }
+
+            context.putImageData(imageData, 0, 0);
+
+            canvasUtils._canvasSourceCache.set(source, { canvas, resourceId: source._resourceId });
+
+            return canvas as unknown as CanvasImageSource;
+        }
+
+        return resource as CanvasImageSource;
+    },
 
     getTintedCanvas: (sprite: { texture: Texture }, color: number): ICanvas | ImageLike =>
     {
@@ -150,7 +216,14 @@ export const canvasUtils = {
 
         context.globalCompositeOperation = 'multiply';
 
-        const source = texture.source.resource as CanvasImageSource;
+        const source = canvasUtils.getCanvasSource(texture);
+
+        if (!source)
+        {
+            context.restore();
+
+            return;
+        }
 
         context.drawImage(
             source,
@@ -199,8 +272,17 @@ export const canvasUtils = {
         context.fillRect(0, 0, crop.width, crop.height);
 
         context.globalCompositeOperation = 'destination-atop';
+        const source = canvasUtils.getCanvasSource(texture);
+
+        if (!source)
+        {
+            context.restore();
+
+            return;
+        }
+
         context.drawImage(
-            texture.source.resource as CanvasImageSource,
+            source,
             crop.x,
             crop.y,
             crop.width,
@@ -229,8 +311,17 @@ export const canvasUtils = {
 
         context.save();
         context.globalCompositeOperation = 'copy';
+        const source = canvasUtils.getCanvasSource(texture);
+
+        if (!source)
+        {
+            context.restore();
+
+            return;
+        }
+
         context.drawImage(
-            texture.source.resource as CanvasImageSource,
+            source,
             crop.x,
             crop.y,
             crop.width,

@@ -155,12 +155,26 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
         const tint = ((color & 0xFF) << 16) + (color & 0xFF00) + ((color >> 16) & 0xFF);
         const texture = sprite.texture;
 
-        let drawSource: CanvasImageSource = texture.source.resource as CanvasImageSource;
+        const drawSource = canvasUtils.getCanvasSource(texture);
 
-        if (tint !== 0xFFFFFF)
+        if (!drawSource)
         {
-            drawSource = canvasUtils.getTintedCanvas({ texture }, tint) as CanvasImageSource;
+            context.restore();
+
+            return;
         }
+
+        const smoothProperty = contextSystem.smoothProperty;
+        const shouldSmooth = texture.source.style.scaleMode !== 'nearest';
+
+        if (context[smoothProperty] !== shouldSmooth)
+        {
+            context[smoothProperty] = shouldSmooth;
+        }
+
+        const finalSource = tint === 0xFFFFFF
+            ? drawSource
+            : canvasUtils.getTintedCanvas({ texture }, tint) as CanvasImageSource;
 
         const {
             leftWidth,
@@ -173,35 +187,36 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
 
         const anchor = sprite.anchor;
 
-        const sx = (texture.frame.x) * texture.source.resolution;
-        const sy = (texture.frame.y) * texture.source.resolution;
-        const sw = (texture.frame.width) * texture.source.resolution;
-        const sh = (texture.frame.height) * texture.source.resolution;
+        const resolution = texture.source._resolution ?? texture.source.resolution ?? 1;
+        const sx = (texture.frame.x) * resolution;
+        const sy = (texture.frame.y) * resolution;
+        const sw = (texture.frame.width) * resolution;
+        const sh = (texture.frame.height) * resolution;
 
         const dx = -anchor.x * width;
         const dy = -anchor.y * height;
 
-        const lw = leftWidth * texture.source.resolution;
-        const tw = topHeight * texture.source.resolution;
-        const rw = rightWidth * texture.source.resolution;
-        const bw = bottomHeight * texture.source.resolution;
+        const lw = leftWidth * resolution;
+        const tw = topHeight * resolution;
+        const rw = rightWidth * resolution;
+        const bw = bottomHeight * resolution;
 
         // Top-left
-        context.drawImage(drawSource, sx, sy, lw, tw, dx, dy, leftWidth, topHeight);
+        context.drawImage(finalSource, sx, sy, lw, tw, dx, dy, leftWidth, topHeight);
         // Top-center
         context.drawImage(
-            drawSource,
+            finalSource,
             sx + lw, sy,
             sw - lw - rw, tw,
             dx + leftWidth, dy,
             width - leftWidth - rightWidth, topHeight
         );
         // Top-right
-        context.drawImage(drawSource, sx + sw - rw, sy, rw, tw, dx + width - rightWidth, dy, rightWidth, topHeight);
+        context.drawImage(finalSource, sx + sw - rw, sy, rw, tw, dx + width - rightWidth, dy, rightWidth, topHeight);
 
         // Middle-left
         context.drawImage(
-            drawSource,
+            finalSource,
             sx, sy + tw,
             lw, sh - tw - bw,
             dx, dy + topHeight,
@@ -209,7 +224,7 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
         );
         // Middle-center
         context.drawImage(
-            drawSource,
+            finalSource,
             sx + lw, sy + tw,
             sw - lw - rw, sh - tw - bw,
             dx + leftWidth, dy + topHeight,
@@ -217,7 +232,7 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
         );
         // Middle-right
         context.drawImage(
-            drawSource,
+            finalSource,
             sx + sw - rw, sy + tw,
             rw, sh - tw - bw,
             dx + width - rightWidth, dy + topHeight,
@@ -225,10 +240,10 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
         );
 
         // Bottom-left
-        context.drawImage(drawSource, sx, sy + sh - bw, lw, bw, dx, dy + height - bottomHeight, leftWidth, bottomHeight);
+        context.drawImage(finalSource, sx, sy + sh - bw, lw, bw, dx, dy + height - bottomHeight, leftWidth, bottomHeight);
         // Bottom-center
         context.drawImage(
-            drawSource,
+            finalSource,
             sx + lw, sy + sh - bw,
             sw - lw - rw, bw,
             dx + leftWidth, dy + height - bottomHeight,
@@ -236,7 +251,7 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
         );
         // Bottom-right
         context.drawImage(
-            drawSource,
+            finalSource,
             sx + sw - rw, sy + sh - bw,
             rw, bw,
             dx + width - rightWidth, dy + height - bottomHeight,
