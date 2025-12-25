@@ -1,6 +1,6 @@
-import { RendererType } from '../../../lib';
 import { Cache } from '../../assets/cache/Cache';
 import { ExtensionType } from '../../extensions/Extensions';
+import { type Renderer, RendererType } from '../../rendering/renderers/types';
 import { Graphics } from '../graphics/shared/Graphics';
 import { CanvasTextMetrics } from '../text/canvas/CanvasTextMetrics';
 import { SdfShader } from '../text/sdfShader/SdfShader';
@@ -11,7 +11,6 @@ import { getBitmapTextLayout } from './utils/getBitmapTextLayout';
 import type { InstructionSet } from '../../rendering/renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderable } from '../../rendering/renderers/shared/Renderable';
-import type { Renderer } from '../../rendering/renderers/types';
 import type { BitmapText } from './BitmapText';
 
 /** @internal */
