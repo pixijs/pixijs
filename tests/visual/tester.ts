@@ -42,6 +42,9 @@ const renderTypeSettings: Record<RenderType, Partial<RendererOptions>> = {
         preference: 'webgl',
         preferWebGLVersion: 1,
     } as Partial<RendererOptions>,
+    canvas: {
+        preference: 'canvas',
+    } as Partial<RendererOptions>,
 };
 
 /**

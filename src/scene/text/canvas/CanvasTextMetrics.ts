@@ -271,10 +271,11 @@ export class CanvasTextMetrics
         const fontProperties = CanvasTextMetrics.measureFont(font);
 
         // fallback in case UA disallow canvas data extraction
-        if (fontProperties.fontSize === 0)
+        if (fontProperties.fontSize <= 0)
         {
             fontProperties.fontSize = style.fontSize as number;
             fontProperties.ascent = style.fontSize as number;
+            fontProperties.descent = 0;
         }
 
         const context = CanvasTextMetrics.__context; // canvas.getContext('2d', contextSettings);
@@ -356,8 +357,8 @@ export class CanvasTextMetrics
 
         const metrics = context.measureText(text);
         let metricWidth = metrics.width;
-        const actualBoundingBoxLeft = -metrics.actualBoundingBoxLeft;
-        const actualBoundingBoxRight = metrics.actualBoundingBoxRight;
+        const actualBoundingBoxLeft = -(metrics.actualBoundingBoxLeft ?? 0);
+        const actualBoundingBoxRight = metrics.actualBoundingBoxRight ?? 0;
         let boundsWidth = actualBoundingBoxRight - actualBoundingBoxLeft;
 
         if (metricWidth > 0)
@@ -821,10 +822,13 @@ export class CanvasTextMetrics
         context.font = font;
         const metrics = context.measureText(CanvasTextMetrics.METRICS_STRING + CanvasTextMetrics.BASELINE_SYMBOL);
 
+        const ascent = metrics.actualBoundingBoxAscent ?? 0;
+        const descent = metrics.actualBoundingBoxDescent ?? 0;
+
         const properties = {
-            ascent: metrics.actualBoundingBoxAscent,
-            descent: metrics.actualBoundingBoxDescent,
-            fontSize: metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent
+            ascent,
+            descent,
+            fontSize: ascent + descent
         };
 
         CanvasTextMetrics._fonts[font] = properties;

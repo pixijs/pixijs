@@ -1,3 +1,4 @@
+import { readFileSync } from 'fs';
 import glob from 'glob';
 import path from 'path';
 import '~/environment-browser/browserAll';
@@ -16,6 +17,50 @@ const scenes = paths.map((p) =>
     // eslint-disable-next-line global-require , @typescript-eslint/no-require-imports
     return { path: p, data: require(`./${relativePath}`).scene };
 });
+
+const canvasUnsupportedPathParts = [
+    '/scenes/filters/',
+    '/scenes/blend-modes/',
+    '/scenes/mask/',
+    '/scenes/mesh/',
+    '/scenes/particle/',
+    '/scenes/compressed-textures/',
+];
+const canvasUnsupportedPatterns = [
+    /from ['"]~\/filters/,
+    /\.filters\b/,
+    /\bfilters\s*:/,
+    /\.mask\b/,
+    /\bmask\s*:/,
+    /\bMask\b/,
+    /Filter\b/,
+    /\bMesh\b/,
+];
+
+function isCanvasCompatible(scenePath: string): boolean
+{
+    const normalized = scenePath.replace(/\\/g, '/');
+
+    for (let i = 0; i < canvasUnsupportedPathParts.length; i++)
+    {
+        if (normalized.includes(canvasUnsupportedPathParts[i]))
+        {
+            return false;
+        }
+    }
+
+    const source = readFileSync(path.join(process.cwd(), 'tests', scenePath), 'utf8');
+
+    for (let i = 0; i < canvasUnsupportedPatterns.length; i++)
+    {
+        if (canvasUnsupportedPatterns[i].test(source))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
 
 const onlyScenes = scenes.filter((s) =>
 {
@@ -57,12 +102,18 @@ describe('Visual Tests', () =>
             webgpu: true,
             webgl1: true,
             webgl2: true,
+            canvas: true,
         };
 
         const renderers = {
             ...defaultRenderers,
             ...scene.data.renderers
         };
+
+        if (!isCanvasCompatible(scene.path))
+        {
+            renderers.canvas = false;
+        }
 
         Object.keys(renderers).forEach((renderer) =>
         {

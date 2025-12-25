@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { State } from '../../../rendering/renderers/shared/state/State';
-import { type Renderer } from '../../../rendering/renderers/types';
+import { type Renderer, RendererType } from '../../../rendering/renderers/types';
 import { GCManagedHash } from '../../../utils/data/GCManagedHash';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { type GPUData } from '../../view/ViewContainer';
@@ -128,6 +128,13 @@ export class GraphicsPipe implements RenderPipe<Graphics>
     public execute(graphics: Graphics)
     {
         if (!graphics.isRenderable) return;
+
+        if (this.renderer.type === RendererType.CANVAS)
+        {
+            this._adaptor.execute(this, graphics);
+
+            return;
+        }
 
         const renderer = this.renderer;
         const context = graphics.context;

@@ -17,7 +17,7 @@ export const gpuUploadBufferImageResource = {
 
         gpu.device.queue.writeTexture(
             { texture: gpuTexture },
-            resource,
+            resource as unknown as AllowSharedBufferSource,
             {
                 offset: 0,
                 rowsPerImage: source.pixelHeight,
@@ -31,4 +31,3 @@ export const gpuUploadBufferImageResource = {
         );
     }
 } as GpuTextureUploader<BufferImageSource>;
-

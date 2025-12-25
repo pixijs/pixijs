@@ -1,7 +1,9 @@
+import { type ICanvas } from '../../../environment/canvas/ICanvas';
 import { ExtensionType } from '../../../extensions/Extensions';
 import { type Filter } from '../../../filters/Filter';
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
 import { TextureStyle } from '../../../rendering/renderers/shared/texture/TextureStyle';
+import { RendererType } from '../../../rendering/renderers/types';
 import { deprecation } from '../../../utils/logging/deprecation';
 import { type CanvasTextOptions, type Text } from '../Text';
 import { TextStyle } from '../TextStyle';
@@ -132,7 +134,10 @@ export class CanvasTextSystem implements System
 
         this._renderer.texture.initSource(texture._source);
 
-        CanvasTextGenerator.returnCanvasAndContext(canvasAndContext);
+        if (this._renderer.type !== RendererType.CANVAS)
+        {
+            CanvasTextGenerator.returnCanvasAndContext(canvasAndContext);
+        }
 
         return texture;
     }
@@ -145,6 +150,17 @@ export class CanvasTextSystem implements System
     public returnTexture(texture: Texture)
     {
         const source = texture.source;
+        const resource = source.resource as ICanvas | null;
+
+        if (this._renderer.type === RendererType.CANVAS && resource?.getContext)
+        {
+            const context = resource.getContext('2d');
+
+            if (context)
+            {
+                CanvasTextGenerator.returnCanvasAndContext({ canvas: resource, context });
+            }
+        }
 
         source.resource = null;
         source.uploadMethodId = 'unknown';

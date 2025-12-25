@@ -7,7 +7,7 @@ import { Geometry } from '../rendering/renderers/shared/geometry/Geometry';
 import { UniformGroup } from '../rendering/renderers/shared/shader/UniformGroup';
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { TexturePool } from '../rendering/renderers/shared/texture/TexturePool';
-import { type Renderer, RendererType } from '../rendering/renderers/types';
+import { RendererType } from '../rendering/renderers/types';
 import { Bounds } from '../scene/container/bounds/Bounds';
 import { getGlobalRenderableBounds } from '../scene/container/bounds/getRenderableBounds';
 import { warn } from '../utils/logging/warn';
@@ -163,7 +163,7 @@ export class FilterSystem implements System
         name: 'filter',
     } as const;
 
-    public readonly renderer: Renderer;
+    public readonly renderer: WebGLRenderer | WebGPURenderer;
 
     private _filterStackIndex = 0;
     private _filterStack: FilterData[] = [];
@@ -181,7 +181,7 @@ export class FilterSystem implements System
     private _activeFilterData: FilterData;
     private _passthroughFilter: Filter;
 
-    constructor(renderer: Renderer)
+    constructor(renderer: WebGLRenderer | WebGPURenderer)
     {
         this.renderer = renderer;
     }
@@ -558,7 +558,7 @@ export class FilterSystem implements System
      * @param input - The input texture
      * @param renderer - The renderer instance
      */
-    private _setupBindGroupsAndRender(filter: Filter, input: Texture, renderer: Renderer): void
+    private _setupBindGroupsAndRender(filter: Filter, input: Texture, renderer: WebGLRenderer | WebGPURenderer): void
     {
         // TODO - should prolly use a adaptor...
         if ((renderer as WebGPURenderer).renderPipes.uniformBatch)
@@ -605,7 +605,7 @@ export class FilterSystem implements System
     private _setupFilterTextures(
         filterData: FilterData,
         bounds: Bounds,
-        renderer: Renderer,
+        renderer: WebGLRenderer | WebGPURenderer,
         previousFilterData: FilterData | null
     ): void
     {

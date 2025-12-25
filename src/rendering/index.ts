@@ -1,4 +1,5 @@
 // Auto-generated code, do not edit manually
+export * from './batcher/canvas/CanvasBatchAdaptor';
 export * from './batcher/gl/GlBatchAdaptor';
 export * from './batcher/gl/utils/checkMaxIfStatementsInShader';
 export * from './batcher/gl/utils/maxRecommendedTextures';
@@ -39,6 +40,15 @@ export * from './mask/stencil/StencilMaskPipe';
 export * from './mask/utils/addMaskBounds';
 export * from './mask/utils/addMaskLocalBounds';
 export * from './renderers/autoDetectRenderer';
+export * from './renderers/canvas/CanvasContextSystem';
+export * from './renderers/canvas/CanvasLimitsSystem';
+export * from './renderers/canvas/CanvasRenderer';
+export * from './renderers/canvas/renderTarget/CanvasRenderTargetAdaptor';
+export * from './renderers/canvas/renderTarget/CanvasRenderTargetSystem';
+export * from './renderers/canvas/texture/CanvasTextureSystem';
+export * from './renderers/canvas/utils/canUseNewCanvasBlendModes';
+export * from './renderers/canvas/utils/canvasUtils';
+export * from './renderers/canvas/utils/mapCanvasBlendModesToPixi';
 export * from './renderers/gl/buffer/const';
 export * from './renderers/gl/buffer/GlBuffer';
 export * from './renderers/gl/buffer/GlBufferSystem';
