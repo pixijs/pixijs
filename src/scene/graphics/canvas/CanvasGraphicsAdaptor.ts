@@ -547,7 +547,7 @@ export class CanvasGraphicsAdaptor implements GraphicsAdaptor
 
                     if (rotate)
                     {
-                        groupD8.matrixAppendRotationInv(tempMatrix, rotate, data.dx, data.dy);
+                        groupD8.matrixAppendRotationInv(tempMatrix, rotate, data.dx, data.dy, data.dw, data.dh);
                     }
 
                     contextSystem.setContextTransform(tempMatrix, roundPixels === 1);

@@ -24,6 +24,7 @@ export const canvasUtils = {
     canUseMultiply: canUseNewCanvasBlendModes(),
     tintMethod: null as (texture: Texture, color: number, canvas: ICanvas) => void,
     _canvasSourceCache: new WeakMap<TextureSource, CanvasSourceCache>(),
+    _unpremultipliedCache: new WeakMap<TextureSource, CanvasSourceCache>(),
     getCanvasSource: (texture: Texture): CanvasImageSource | null =>
     {
         const source = texture.source;
@@ -32,6 +33,18 @@ export const canvasUtils = {
         if (!resource)
         {
             return null;
+        }
+
+        const isPMA = source.alphaMode === 'premultiplied-alpha';
+
+        if (isPMA)
+        {
+            const cached = canvasUtils._unpremultipliedCache.get(source);
+
+            if (cached?.resourceId === source._resourceId)
+            {
+                return cached.canvas as unknown as CanvasImageSource;
+            }
         }
 
         if (resource instanceof Uint8Array
@@ -78,6 +91,40 @@ export const canvasUtils = {
             context.putImageData(imageData, 0, 0);
 
             canvasUtils._canvasSourceCache.set(source, { canvas, resourceId: source._resourceId });
+
+            return canvas as unknown as CanvasImageSource;
+        }
+
+        if (isPMA)
+        {
+            const canvas = DOMAdapter.get().createCanvas(source.pixelWidth, source.pixelHeight);
+            const context = canvas.getContext('2d', { willReadFrequently: true });
+
+            canvas.width = source.pixelWidth;
+            canvas.height = source.pixelHeight;
+
+            context.drawImage(resource as CanvasImageSource, 0, 0);
+
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+
+            for (let i = 0; i < data.length; i += 4)
+            {
+                const a = data[i + 3];
+
+                if (a > 0)
+                {
+                    const alphaInv = 255 / a;
+
+                    data[i] = Math.min(255, (data[i] * alphaInv) + 0.5);
+                    data[i + 1] = Math.min(255, (data[i + 1] * alphaInv) + 0.5);
+                    data[i + 2] = Math.min(255, (data[i + 2] * alphaInv) + 0.5);
+                }
+            }
+
+            context.putImageData(imageData, 0, 0);
+
+            canvasUtils._unpremultipliedCache.set(source, { canvas, resourceId: source._resourceId });
 
             return canvas as unknown as CanvasImageSource;
         }

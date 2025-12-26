@@ -27,13 +27,9 @@ const canvasUnsupportedPathParts = [
     '/scenes/compressed-textures/',
 ];
 const canvasUnsupportedPatterns = [
-    /from ['"]~\/filters/,
-    /\.filters\b/,
-    /\bfilters\s*:/,
     /\.mask\b/,
     /\bmask\s*:/,
     /\bMask\b/,
-    /Filter\b/,
     /\bMesh\b/,
 ];
 

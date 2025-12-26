@@ -83,7 +83,8 @@ export class CanvasBatchAdaptor implements BatcherAdaptor
                 context[smoothProperty] = shouldSmooth;
             }
 
-            contextSystem.setBlendMode(element.blendMode);
+            // Use the batch-level (already alpha-adjusted) blend mode
+            contextSystem.setBlendMode(batch.blendMode);
 
             const globalColor = renderer.globalUniforms.globalUniformData?.worldColor ?? 0xFFFFFFFF;
             const argb = quad.color;
@@ -132,7 +133,9 @@ export class CanvasBatchAdaptor implements BatcherAdaptor
                     CanvasBatchAdaptor._tempPatternMatrix,
                     rotate,
                     dx,
-                    dy
+                    dy,
+                    dw,
+                    dh
                 );
                 contextSystem.setContextTransform(
                     CanvasBatchAdaptor._tempPatternMatrix,
@@ -163,6 +166,8 @@ export class CanvasBatchAdaptor implements BatcherAdaptor
 
             if (needsRepeat)
             {
+                // We can now allow tinting for PMA textures because getCanvasSource
+                // returns an un-premultiplied (straight alpha) version for Canvas.
                 let patternSource = source;
 
                 if (tint !== 0xFFFFFF && frame.width <= texture.source.width && frame.height <= texture.source.height)
@@ -207,6 +212,8 @@ export class CanvasBatchAdaptor implements BatcherAdaptor
             }
             else
             {
+                // We can now allow tinting for PMA textures because getCanvasSource
+                // returns an un-premultiplied (straight alpha) version for Canvas.
                 const tintedSource = tint === 0xFFFFFF
                     ? source
                     : canvasUtils.getTintedCanvas({ texture }, tint) as CanvasImageSource;
