@@ -1,15 +1,13 @@
-import { Color } from '../../../color/Color';
 import { ExtensionType } from '../../../extensions/Extensions';
 import { groupD8 } from '../../../maths/matrix/groupD8';
 import { Matrix } from '../../../maths/matrix/Matrix';
-import { Rectangle } from '../../../maths/shapes/Rectangle';
 import { canvasUtils } from '../../../rendering/renderers/canvas/utils/canvasUtils';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
 import { bgr2rgb } from '../../container/container-mixins/getGlobalMixin';
 import { multiplyHexColors } from '../../container/utils/multiplyHexColors';
 import { buildLine } from '../shared/buildCommands/buildLine';
 import { FillGradient } from '../shared/fill/FillGradient';
-import { FillPattern, type PatternRepetition } from '../shared/fill/FillPattern';
+import { FillPattern } from '../shared/fill/FillPattern';
 import { shapeBuilders } from '../shared/utils/buildContextBatches';
 import { generateTextureMatrix as generateTextureFillMatrix } from '../shared/utils/generateTextureFillMatrix';
 
@@ -26,24 +24,8 @@ import type { ShapePrimitiveWithHoles } from '../shared/path/ShapePath';
 const emptyCanvasStyle = '#808080';
 const tempMatrix = new Matrix();
 const tempTextureMatrix = new Matrix();
-const tempBounds = new Rectangle();
 const tempGradientMatrix = new Matrix();
 const tempPatternMatrix = new Matrix();
-
-function getPatternRepeat(
-    addressModeU?: string,
-    addressModeV?: string
-): PatternRepetition
-{
-    const repeatU = addressModeU && addressModeU !== 'clamp-to-edge';
-    const repeatV = addressModeV && addressModeV !== 'clamp-to-edge';
-
-    if (repeatU && repeatV) return 'repeat';
-    if (repeatU) return 'repeat-x';
-    if (repeatV) return 'repeat-y';
-
-    return 'no-repeat';
-}
 
 function fillTriangles(
     context: CrossPlatformCanvasRenderingContext2D,
@@ -205,12 +187,9 @@ function addHolePaths(context: CrossPlatformCanvasRenderingContext2D, holes?: Sh
 }
 
 function getCanvasStyle(
-    context: CrossPlatformCanvasRenderingContext2D,
     style: ConvertedFillStyle,
     tint: number,
     textureMatrix?: Matrix,
-    bounds?: Rectangle,
-    strokeWidth = 0,
     currentTransform?: Matrix
 ): string | CanvasPattern | CanvasGradient
 {
@@ -224,187 +203,20 @@ function getCanvasStyle(
 
         if (gradientTexture)
         {
-            const sourceStyle = gradientTexture.source.style;
-            const addressModeU = sourceStyle.addressModeU ?? sourceStyle.addressMode;
-            const addressModeV = sourceStyle.addressModeV ?? sourceStyle.addressMode;
-            const isRepeating = addressModeU !== 'clamp-to-edge' || addressModeV !== 'clamp-to-edge';
+            const pattern = canvasUtils.getTintedPattern(gradientTexture, tint);
+            const patternMatrix = textureMatrix
+                ? tempPatternMatrix.copyFrom(textureMatrix).scale(gradientTexture.frame.width, gradientTexture.frame.height)
+                : tempPatternMatrix.copyFrom(fill.transform);
 
-            if (isRepeating)
+            if (currentTransform && !style.textureSpace)
             {
-                const pattern = canvasUtils.getTintedPattern(gradientTexture, tint);
-                const patternMatrix = textureMatrix
-                    ? tempPatternMatrix.copyFrom(textureMatrix)
-                        .scale(gradientTexture.frame.width, gradientTexture.frame.height)
-                    : fill.transform;
-
-                canvasUtils.applyPatternTransform(pattern, patternMatrix);
-
-                return pattern;
-            }
-        }
-
-        const isLinear = fill.type === 'linear';
-        const isLocal = fill.textureSpace === 'local';
-        const start = fill.start;
-        const end = fill.end;
-
-        if (isLocal && bounds && isLinear)
-        {
-            const pad = strokeWidth || 0;
-            const width = bounds.width + (pad * 2);
-            const height = bounds.height + (pad * 2);
-            const x0 = bounds.x - pad;
-            const y0 = bounds.y - pad;
-            const gradient = context.createLinearGradient(
-                x0 + (start.x * width),
-                y0 + (start.y * height),
-                x0 + (end.x * width),
-                y0 + (end.y * height)
-            );
-
-            for (let i = 0; i < fill.colorStops.length; i++)
-            {
-                const stop = fill.colorStops[i];
-                const color = Color.shared.setValue(stop.color);
-                const alpha = color.alpha;
-                const tinted = multiplyHexColors(color.toNumber(), tint);
-
-                gradient.addColorStop(
-                    stop.offset,
-                    Color.shared.setValue(tinted).setAlpha(alpha).toRgbaString()
-                );
+                patternMatrix.append(currentTransform);
             }
 
-            return gradient;
+            canvasUtils.applyPatternTransform(pattern, patternMatrix);
+
+            return pattern;
         }
-
-        if (isLocal && bounds && !isLinear)
-        {
-            const pad = strokeWidth || 0;
-            const width = bounds.width + (pad * 2);
-            const height = bounds.height + (pad * 2);
-            const x0 = bounds.x - pad;
-            const y0 = bounds.y - pad;
-            const radiusScale = Math.max(width, height);
-
-            const center = fill.center;
-            const outerCenter = fill.outerCenter ?? center;
-            const r0 = fill.innerRadius * radiusScale;
-            const r1 = fill.outerRadius * radiusScale;
-
-            const gradient = context.createRadialGradient(
-                x0 + (center.x * width),
-                y0 + (center.y * height),
-                r0,
-                x0 + (outerCenter.x * width),
-                y0 + (outerCenter.y * height),
-                r1
-            );
-
-            for (let i = 0; i < fill.colorStops.length; i++)
-            {
-                const stop = fill.colorStops[i];
-                const color = Color.shared.setValue(stop.color);
-                const alpha = color.alpha;
-                const tinted = multiplyHexColors(color.toNumber(), tint);
-
-                gradient.addColorStop(
-                    stop.offset,
-                    Color.shared.setValue(tinted).setAlpha(alpha).toRgbaString()
-                );
-            }
-
-            return gradient;
-        }
-
-        if (!isLocal && currentTransform)
-        {
-            tempGradientMatrix.copyFrom(currentTransform).invert();
-
-            const a = tempGradientMatrix.a;
-            const b = tempGradientMatrix.b;
-            const c = tempGradientMatrix.c;
-            const d = tempGradientMatrix.d;
-            const tx = tempGradientMatrix.tx;
-            const ty = tempGradientMatrix.ty;
-
-            if (isLinear)
-            {
-                const x0 = (a * start.x) + (c * start.y) + tx;
-                const y0 = (b * start.x) + (d * start.y) + ty;
-                const x1 = (a * end.x) + (c * end.y) + tx;
-                const y1 = (b * end.x) + (d * end.y) + ty;
-
-                const gradient = context.createLinearGradient(x0, y0, x1, y1);
-
-                for (let i = 0; i < fill.colorStops.length; i++)
-                {
-                    const stop = fill.colorStops[i];
-                    const color = Color.shared.setValue(stop.color);
-                    const alpha = color.alpha;
-                    const tinted = multiplyHexColors(color.toNumber(), tint);
-
-                    gradient.addColorStop(
-                        stop.offset,
-                        Color.shared.setValue(tinted).setAlpha(alpha).toRgbaString()
-                    );
-                }
-
-                return gradient;
-            }
-
-            const center = fill.center;
-            const outerCenter = fill.outerCenter ?? center;
-            const r0 = fill.innerRadius;
-            const r1 = fill.outerRadius;
-
-            const cx0 = (a * center.x) + (c * center.y) + tx;
-            const cy0 = (b * center.x) + (d * center.y) + ty;
-            const cx1 = (a * outerCenter.x) + (c * outerCenter.y) + tx;
-            const cy1 = (b * outerCenter.x) + (d * outerCenter.y) + ty;
-
-            const gradient = context.createRadialGradient(cx0, cy0, r0, cx1, cy1, r1);
-
-            for (let i = 0; i < fill.colorStops.length; i++)
-            {
-                const stop = fill.colorStops[i];
-                const color = Color.shared.setValue(stop.color);
-                const alpha = color.alpha;
-                const tinted = multiplyHexColors(color.toNumber(), tint);
-
-                gradient.addColorStop(
-                    stop.offset,
-                    Color.shared.setValue(tinted).setAlpha(alpha).toRgbaString()
-                );
-            }
-
-            return gradient;
-        }
-        const texture = fill.texture;
-        const sourceStyle = texture.source.style;
-        const repeat = getPatternRepeat(
-            sourceStyle.addressModeU ?? sourceStyle.addressMode,
-            sourceStyle.addressModeV ?? sourceStyle.addressMode
-        );
-        const source = tint === 0xFFFFFF
-            ? canvasUtils.getCanvasSource(texture)
-            : canvasUtils.getTintedCanvas({ texture }, tint) as CanvasImageSource;
-
-        if (!source)
-        {
-            return emptyCanvasStyle;
-        }
-
-        const pattern = context.createPattern(source, repeat);
-
-        if (!pattern)
-        {
-            return emptyCanvasStyle;
-        }
-
-        canvasUtils.applyPatternTransform(pattern, textureMatrix ?? fill.transform);
-
-        return pattern;
     }
 
     if (fill instanceof FillPattern)
@@ -624,17 +436,13 @@ export class CanvasGraphicsAdaptor implements GraphicsAdaptor
                 const textureMatrix = hasTexture
                     ? generateTextureFillMatrix(tempTextureMatrix, style, primitive.shape, textureTransform)
                     : null;
-                const strokeWidth = isStroke ? (style as ConvertedStrokeStyle).width : 0;
                 const currentTransform = hasTransform
                     ? tempGradientMatrix.copyFrom(baseTransform).append(transform)
                     : baseTransform;
                 const canvasStyle = getCanvasStyle(
-                    context,
                     style,
                     tint,
                     textureMatrix,
-                    primitive.shape.getBounds(tempBounds),
-                    strokeWidth,
                     currentTransform
                 );
 

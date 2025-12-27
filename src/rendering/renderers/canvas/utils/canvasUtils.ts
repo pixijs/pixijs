@@ -39,6 +39,13 @@ export const canvasUtils = {
 
         if (isPMA)
         {
+            // If the resource is a canvas, we can assume it's already in a format that the context handles correctly
+            if (resource instanceof HTMLCanvasElement
+                || (typeof OffscreenCanvas !== 'undefined' && resource instanceof OffscreenCanvas))
+            {
+                return resource as CanvasImageSource;
+            }
+
             const cached = canvasUtils._unpremultipliedCache.get(source);
 
             if (cached?.resourceId === source._resourceId)
@@ -185,19 +192,34 @@ export const canvasUtils = {
             return pattern;
         }
 
+        let source: CanvasImageSource;
+
+        if (color === 0xFFFFFF)
+        {
+            source = canvasUtils.getCanvasSource(texture);
+        }
+        else
+        {
+            if (!canvasUtils.canvas)
+            {
+                canvasUtils.canvas = DOMAdapter.get().createCanvas();
+            }
+
+            const tintCanvas = canvasUtils.canvas!;
+
+            canvasUtils.tintMethod(texture, color, tintCanvas);
+
+            source = tintCanvas as unknown as CanvasImageSource;
+        }
+
         if (!canvasUtils.canvas)
         {
             canvasUtils.canvas = DOMAdapter.get().createCanvas();
         }
 
-        const tintCanvas = canvasUtils.canvas!;
+        const context = canvasUtils.canvas!.getContext('2d');
 
-        canvasUtils.tintMethod(texture, color, tintCanvas);
-
-        pattern = tintCanvas.getContext('2d')!.createPattern(
-            tintCanvas as unknown as CanvasImageSource,
-            'repeat'
-        );
+        pattern = context.createPattern(source, 'repeat');
 
         pattern.tintId = resourceId;
         cache[stringColor] = pattern;
