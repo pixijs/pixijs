@@ -104,6 +104,15 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
     private _initSource(source: TextureSource): GPUTexture
     {
+        if (source.uploadMethodId === 'external')
+        {
+            const gpuTexture = source.resource as GPUTexture;
+
+            source._gpuData[this._renderer.uid] = new GPUTextureGpuData(gpuTexture);
+
+            return gpuTexture;
+        }
+
         if (source.autoGenerateMipmaps)
         {
             const biggestDimension = Math.max(source.pixelWidth, source.pixelHeight);
