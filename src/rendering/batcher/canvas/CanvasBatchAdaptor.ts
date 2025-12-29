@@ -109,6 +109,8 @@ export class CanvasBatchAdaptor implements BatcherAdaptor
 
             const resolution = texture.source._resolution ?? texture.source.resolution ?? 1;
 
+            const isFromCachedRenderGroup = ((quad as any).renderable as any)?.renderGroup?.isCachedAsTexture;
+
             const sx = frame.x * resolution;
             const sy = frame.y * resolution;
             const sw = frame.width * resolution;
@@ -116,11 +118,9 @@ export class CanvasBatchAdaptor implements BatcherAdaptor
 
             const bounds = quad.bounds;
 
-            // For cached texture sprites (render groups), the bounds have an offset that's already
-            // in world space. Since we skip the global transform, we need to normalize to (0,0)
-            const isFromCachedRenderGroup = ((quad as any).renderable as any)?.renderGroup?.isCachedAsTexture;
-            const dx = isFromCachedRenderGroup ? 0 : bounds.minX;
-            const dy = isFromCachedRenderGroup ? 0 : bounds.minY;
+            const isRootTarget = renderer.renderTarget.renderTarget.isRoot;
+            const dx = bounds.minX;
+            const dy = bounds.minY;
             const dw = bounds.maxX - bounds.minX;
             const dh = bounds.maxY - bounds.minY;
 
@@ -141,7 +141,7 @@ export class CanvasBatchAdaptor implements BatcherAdaptor
                     CanvasBatchAdaptor._tempPatternMatrix,
                     quad.roundPixels === 1,
                     undefined,
-                    isFromCachedRenderGroup
+                    isFromCachedRenderGroup && isRootTarget
                 );
             }
             else
@@ -150,7 +150,7 @@ export class CanvasBatchAdaptor implements BatcherAdaptor
                     quad.transform,
                     quad.roundPixels === 1,
                     undefined,
-                    isFromCachedRenderGroup
+                    isFromCachedRenderGroup && isRootTarget
                 );
             }
 

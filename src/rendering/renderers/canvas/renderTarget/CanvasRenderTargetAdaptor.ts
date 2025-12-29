@@ -86,14 +86,14 @@ export class CanvasRenderTargetAdaptor implements RenderTargetAdaptor<CanvasRend
      * @param renderTarget - Target to render to.
      * @param clear - Clear mode.
      * @param clearColor - Optional clear color.
-     * @param _viewport - Optional viewport (unused).
+     * @param viewport - Optional viewport.
      * @advanced
      */
     public startRenderPass(
         renderTarget: RenderTarget,
         clear: CLEAR_OR_BOOL,
         clearColor?: number[],
-        _viewport?: Rectangle
+        viewport?: Rectangle
     ): void
     {
         const gpuRenderTarget = this._renderTargetSystem.getGpuRenderTarget(renderTarget);
@@ -103,7 +103,7 @@ export class CanvasRenderTargetAdaptor implements RenderTargetAdaptor<CanvasRend
 
         if (clear)
         {
-            this.clear(renderTarget, clear, clearColor, _viewport);
+            this.clear(renderTarget, clear, clearColor, viewport);
         }
     }
 
