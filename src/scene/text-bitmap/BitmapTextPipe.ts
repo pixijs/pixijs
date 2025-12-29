@@ -231,6 +231,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
     {
         this._managedBitmapTexts.destroy();
         this._renderer = null;
+        (this._managedBitmapTexts as null) = null;
     }
 }
 
