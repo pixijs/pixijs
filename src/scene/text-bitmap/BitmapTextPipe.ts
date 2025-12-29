@@ -47,7 +47,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
-        this._managedBitmapTexts = new GCManagedHash({ renderer, type: 'renderable', priority: -2 });
+        this._managedBitmapTexts = new GCManagedHash({ renderer, type: 'renderable', priority: -2, name: 'bitmapText' });
     }
 
     public validateRenderable(bitmapText: BitmapText): boolean
