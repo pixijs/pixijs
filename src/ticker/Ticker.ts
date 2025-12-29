@@ -130,7 +130,6 @@ export class Ticker
      *
      * This is NOT in milliseconds - it's a scalar multiplier for frame-independent animations.
      * For actual milliseconds, use {@link Ticker#deltaMS}.
-     * @member {number}
      * @example
      * ```ts
      * // Frame-independent animation using deltaTime scalar
@@ -171,7 +170,6 @@ export class Ticker
      * This value is not capped or scaled and provides raw timing information.
      *
      * Unlike {@link Ticker#deltaMS}, this value is unmodified by speed scaling or FPS capping.
-     * @member {number}
      * @example
      * ```ts
      * ticker.add((ticker) => {
@@ -185,7 +183,6 @@ export class Ticker
      * Similar to performance.now() timestamp format.
      *
      * Used internally for calculating time deltas between frames.
-     * @member {number}
      * @example
      * ```ts
      * ticker.add((ticker) => {

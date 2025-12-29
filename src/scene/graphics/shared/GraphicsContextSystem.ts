@@ -157,7 +157,7 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
     constructor(renderer: Renderer)
     {
         this._renderer = renderer;
-        this._managedContexts = new GCManagedHash({ renderer, type: 'resource' });
+        this._managedContexts = new GCManagedHash({ renderer, type: 'resource', name: 'graphicsContext' });
     }
 
     /**
