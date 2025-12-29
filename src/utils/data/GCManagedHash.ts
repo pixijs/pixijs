@@ -13,6 +13,7 @@ export interface GCManagedHashOptions<T extends GCable & { uid: number } & Pick<
     type: GCData['type'];
     onUnload?: (item: T, ...args: any[]) => void;
     priority?: number;
+    name: string;
 }
 
 /**
@@ -25,14 +26,16 @@ export class GCManagedHash<T extends GCable & { uid: number } & Pick<EventEmitte
     public items: Record<number, T> = Object.create(null);
     private _renderer: Renderer;
     private _onUnload?: (item: T, ...args: unknown[]) => void;
+    public readonly name: string;
 
     constructor(options: GCManagedHashOptions<T>)
     {
-        const { renderer, type, onUnload, priority } = options;
+        const { renderer, type, onUnload, priority, name } = options;
 
         this._renderer = renderer;
         renderer.gc.addResourceHash(this, 'items', type, priority ?? 0);
         this._onUnload = onUnload;
+        this.name = name;
     }
 
     /**
