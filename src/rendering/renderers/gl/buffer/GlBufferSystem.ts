@@ -57,7 +57,12 @@ export class GlBufferSystem implements System
     constructor(renderer: WebGLRenderer)
     {
         this._renderer = renderer;
-        this._managedBuffers = new GCManagedHash({ renderer, type: 'resource', onUnload: this.onBufferUnload.bind(this) });
+        this._managedBuffers = new GCManagedHash({
+            renderer,
+            type: 'resource',
+            onUnload: this.onBufferUnload.bind(this),
+            name: 'glBuffer'
+        });
     }
 
     /** @ignore */

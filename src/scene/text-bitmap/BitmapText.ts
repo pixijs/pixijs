@@ -150,6 +150,21 @@ export class BitmapText extends AbstractText<
         super(options, TextStyle);
     }
 
+    /**
+     * @param now - The current time in milliseconds.
+     * @internal
+     */
+    public _onTouch(now: number): void
+    {
+        this._gcLastUsed = now;
+
+        // Make sure to touch the proxy renderable
+        for (const key in this._gpuData)
+        {
+            this._gpuData[key]?._onTouch(now);
+        }
+    }
+
     /** @private */
     protected updateBounds()
     {
