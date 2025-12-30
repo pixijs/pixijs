@@ -1,12 +1,16 @@
 import { extensions, ExtensionType } from '../../../extensions/Extensions';
 import { Bounds } from '../../../scene/container/bounds/Bounds';
 import { getGlobalRenderableBounds } from '../../../scene/container/bounds/getRenderableBounds';
+import { getPo2TextureFromSource } from '../../../scene/text/utils/getPo2TextureFromSource';
+import { CanvasPool } from '../shared/texture/CanvasPool';
+import { canvasUtils } from './utils/canvasUtils';
 
 import type { ICanvasRenderingContext2D } from '../../../environment/canvas/ICanvasRenderingContext2D';
 import type { Filter } from '../../../filters/Filter';
 import type { FilterInstruction } from '../../../filters/FilterSystem';
 import type { Container } from '../../../scene/container/Container';
 import type { System } from '../shared/system/System';
+import type { Texture } from '../shared/texture/Texture';
 
 /**
  * Interface for filters that can supply a CSS filter string for Canvas2D.
@@ -235,6 +239,118 @@ export class CanvasFilterSystem implements System
         }
 
         this._alphaMultiplier = savedState.alphaMultiplier;
+    }
+
+    /**
+     * Applies supported filters to a texture and returns a new texture.
+     * Unsupported filters are skipped with a warn-once message.
+     * @param params - The parameters for applying filters.
+     * @param params.texture
+     * @param params.filters
+     * @returns The resulting texture after filters are applied.
+     */
+    public generateFilteredTexture({ texture, filters }: { texture: Texture; filters: Filter[] }): Texture
+    {
+        if (!filters?.length || filters.every((filter) => !filter.enabled))
+        {
+            return texture;
+        }
+
+        const cssFilters: string[] = [];
+        let alphaMultiplier = 1;
+
+        for (const filter of filters)
+        {
+            if (!filter.enabled) continue;
+
+            if (this._isAlphaFilter(filter))
+            {
+                const alphaValue = this._getAlphaFilterValue(filter);
+
+                if (alphaValue !== null)
+                {
+                    alphaMultiplier *= alphaValue;
+                }
+
+                continue;
+            }
+
+            if (!isCanvasFilterCapable(filter))
+            {
+                this._warnUnsupportedFilter(filter);
+
+                continue;
+            }
+
+            const cssString = filter.getCanvasFilterString();
+
+            if (cssString === null)
+            {
+                this._warnUnsupportedFilter(filter);
+
+                continue;
+            }
+
+            if (cssString)
+            {
+                cssFilters.push(cssString);
+            }
+        }
+
+        if (cssFilters.length === 0 && alphaMultiplier === 1)
+        {
+            return texture;
+        }
+
+        const source = canvasUtils.getCanvasSource(texture);
+
+        if (!source)
+        {
+            return texture;
+        }
+
+        const frame = texture.frame;
+        const resolution = texture.source._resolution ?? texture.source.resolution ?? 1;
+        const width = frame.width;
+        const height = frame.height;
+
+        const canvasAndContext = CanvasPool.getOptimalCanvasAndContext(width, height, resolution);
+        const { canvas, context } = canvasAndContext;
+
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (cssFilters.length)
+        {
+            context.filter = cssFilters.join(' ');
+        }
+
+        if (alphaMultiplier !== 1)
+        {
+            context.globalAlpha = alphaMultiplier;
+        }
+
+        const sx = frame.x * resolution;
+        const sy = frame.y * resolution;
+        const sw = width * resolution;
+        const sh = height * resolution;
+
+        context.drawImage(
+            source,
+            sx,
+            sy,
+            sw,
+            sh,
+            0,
+            0,
+            sw,
+            sh
+        );
+
+        context.filter = 'none';
+        context.globalAlpha = 1;
+
+        return getPo2TextureFromSource(canvas, width, height, resolution);
     }
 
     /**
