@@ -18,6 +18,9 @@ jobs:
 
             - name: Setup Project
               uses: ./.github/actions/setup
+              with:
+                  node-version: 24
+                  npm-version: latest
 
             - name: Build Project
               run: npm run build

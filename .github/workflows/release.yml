@@ -14,13 +14,16 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       id-token: write
-      contents: read
+      contents: write
     steps:
     - name: Checkout
       uses: actions/checkout@v4
 
     - name: Setup project
       uses: ./.github/actions/setup
+      with:
+        node-version: 24
+        npm-version: latest
 
     # Build the project
     - name: Build

@@ -18,7 +18,7 @@ jobs:
     uses: ./.github/workflows/release.yml
     permissions:
       id-token: write
-      contents: read
+      contents: write
 
   publish-branch:
     if: github.event_name == 'push'
