@@ -305,7 +305,7 @@ export class GlTextureSystem implements System, CanvasGenerator
     {
         if (source.uploadMethodId === 'external')
         {
-            (source._gpuData[this._renderer.uid] as GlTexture).texture = source.resource as WebGLTexture;
+            (source._gpuData[this._renderer.uid] as GlTexture).texture = source.resource;
 
             return;
         }

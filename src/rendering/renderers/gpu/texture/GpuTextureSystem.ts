@@ -172,7 +172,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
     {
         if (source.uploadMethodId === 'external')
         {
-            source._gpuData[this._renderer.uid] = new GPUTextureGpuData(source.resource);
+            (source._gpuData[this._renderer.uid] as GPUTextureGpuData).gpuTexture = source.resource;
 
             return;
         }
@@ -218,7 +218,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
         if (source.uploadMethodId === 'external')
         {
-            source._gpuData[this._renderer.uid] = new GPUTextureGpuData(source.resource);
+            (source._gpuData[this._renderer.uid] as GPUTextureGpuData).gpuTexture = source.resource;
 
             return;
         }
