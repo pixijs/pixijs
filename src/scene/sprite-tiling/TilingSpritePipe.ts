@@ -200,7 +200,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSprite>
 
             if (!tilingSprite.applyAnchorToTexture)
             {
-                matrix.translate(-tilingSprite.anchor.x * tilingSprite.width, -tilingSprite.anchor.y * tilingSprite.height);
+                matrix.translate(tilingSprite.anchor.x * tilingSprite.width, tilingSprite.anchor.y * tilingSprite.height);
             }
 
             canvasUtils.applyPatternTransform(pattern, matrix);

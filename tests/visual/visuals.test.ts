@@ -19,16 +19,12 @@ const scenes = paths.map((p) =>
 });
 
 const canvasUnsupportedPathParts = [
-    '/scenes/filters/',
-    '/scenes/blend-modes/',
     '/scenes/mask/',
     '/scenes/mesh/',
     '/scenes/particle/',
     '/scenes/compressed-textures/',
 ];
 const canvasUnsupportedPatterns = [
-    /\bFilter\b/,
-    /.filter\b/,
     /\.mask\b/,
     /\bmask\s*:/,
     /\bMask\b/,

@@ -169,7 +169,11 @@ export class CanvasFilterSystem implements System
 
         this._savedStates.push({ filter: previousFilter, alphaMultiplier: this._alphaMultiplier });
 
-        if (filterFrame.useClip)
+        if (filterFrame.useClip
+            && Number.isFinite(filterFrame.bounds.width)
+            && Number.isFinite(filterFrame.bounds.height)
+            && filterFrame.bounds.width > 0
+            && filterFrame.bounds.height > 0)
         {
             const resolution = this.renderer.canvasContext.activeResolution || 1;
 
@@ -183,6 +187,10 @@ export class CanvasFilterSystem implements System
                 filterFrame.bounds.height * resolution
             );
             context.clip();
+        }
+        else
+        {
+            filterFrame.useClip = false;
         }
 
         if (alphaMultiplier !== 1)
