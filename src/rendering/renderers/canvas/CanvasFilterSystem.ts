@@ -37,6 +37,7 @@ export function isCanvasFilterCapable(filter: Filter): filter is Filter & Canvas
 class CanvasFilterFrame
 {
     public skip = false;
+    public useClip = false;
     public filters: Filter[] = null;
     public container: Container = null;
     public bounds = new Bounds();
@@ -61,6 +62,7 @@ export class CanvasFilterSystem implements System
     public readonly renderer: {
         canvasContext: {
             activeContext: ICanvasRenderingContext2D;
+            activeResolution: number;
         };
     };
 
@@ -74,10 +76,12 @@ export class CanvasFilterSystem implements System
      * @param renderer - The Canvas renderer
      * @param renderer.canvasContext
      * @param renderer.canvasContext.activeContext
+     * @param renderer.canvasContext.activeResolution
      */
     constructor(renderer: {
         canvasContext: {
             activeContext: ICanvasRenderingContext2D;
+            activeResolution: number;
         };
     })
     {
@@ -95,6 +99,7 @@ export class CanvasFilterSystem implements System
         const filters = instruction.filterEffect.filters as Filter[];
 
         filterFrame.skip = false;
+        filterFrame.useClip = false;
         filterFrame.filters = filters;
         filterFrame.container = instruction.container;
         filterFrame.cssFilterString = '';
@@ -157,11 +162,28 @@ export class CanvasFilterSystem implements System
         filterFrame.cssFilterString = cssFilters.join(' ');
 
         this._calculateFilterArea(instruction, filterFrame.bounds);
+        filterFrame.useClip = !!instruction.filterEffect.filterArea;
 
         const context = this.renderer.canvasContext.activeContext;
         const previousFilter = context.filter || 'none';
 
         this._savedStates.push({ filter: previousFilter, alphaMultiplier: this._alphaMultiplier });
+
+        if (filterFrame.useClip)
+        {
+            const resolution = this.renderer.canvasContext.activeResolution || 1;
+
+            context.save();
+            context.setTransform(1, 0, 0, 1, 0, 0);
+            context.beginPath();
+            context.rect(
+                filterFrame.bounds.x * resolution,
+                filterFrame.bounds.y * resolution,
+                filterFrame.bounds.width * resolution,
+                filterFrame.bounds.height * resolution
+            );
+            context.clip();
+        }
 
         if (alphaMultiplier !== 1)
         {
@@ -195,7 +217,15 @@ export class CanvasFilterSystem implements System
 
         const context = this.renderer.canvasContext.activeContext;
 
-        context.filter = savedState.filter;
+        if (filterFrame.useClip)
+        {
+            context.restore();
+        }
+        else
+        {
+            context.filter = savedState.filter;
+        }
+
         this._alphaMultiplier = savedState.alphaMultiplier;
     }
 
