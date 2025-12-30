@@ -30,7 +30,7 @@ export class ExternalSource extends TextureSource<
     {
         if (this.resource instanceof WebGLTexture)
         {
-            return this.options.width ?? 1;
+            return this.pixelWidth;
         }
 
         return super.resourceWidth;
@@ -40,7 +40,7 @@ export class ExternalSource extends TextureSource<
     {
         if (this.resource instanceof WebGLTexture)
         {
-            return this.options.height ?? 1;
+            return this.pixelHeight;
         }
 
         return super.resourceHeight;

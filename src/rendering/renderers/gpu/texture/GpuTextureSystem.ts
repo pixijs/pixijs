@@ -109,6 +109,8 @@ export class GpuTextureSystem implements System, CanvasGenerator
             const gpuTexture = source.resource as GPUTexture;
 
             source._gpuData[this._renderer.uid] = new GPUTextureGpuData(gpuTexture);
+            source.on('update', this.onSourceUpdate, this);
+            source.on('resize', this.onSourceResize, this);
 
             return gpuTexture;
         }
@@ -163,6 +165,13 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
     protected onSourceUpdate(source: TextureSource): void
     {
+        if (source.uploadMethodId === 'external')
+        {
+            source._gpuData[this._renderer.uid] = new GPUTextureGpuData(source.resource);
+
+            return;
+        }
+
         const gpuTexture = this.getGpuSource(source);
 
         // destroyed!
@@ -201,6 +210,13 @@ export class GpuTextureSystem implements System, CanvasGenerator
     protected onSourceResize(source: TextureSource): void
     {
         source._gcLastUsed = this._renderer.gc.now;
+
+        if (source.uploadMethodId === 'external')
+        {
+            source._gpuData[this._renderer.uid] = new GPUTextureGpuData(source.resource);
+
+            return;
+        }
 
         const gpuData = source._gpuData[this._renderer.uid] as GPUTextureGpuData;
         const gpuTexture = gpuData?.gpuTexture;
