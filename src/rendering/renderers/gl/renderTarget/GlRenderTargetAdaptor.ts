@@ -98,7 +98,7 @@ export class GlRenderTargetAdaptor implements RenderTargetAdaptor<GlRenderTarget
         if (renderTarget.isRoot)
         {
             // /TODO this is the same logic?
-            viewPortY = source.pixelHeight - viewport.height;
+            viewPortY = source.pixelHeight - viewport.height - viewport.y;
         }
 
         // unbind the current render texture..

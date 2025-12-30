@@ -122,6 +122,7 @@ export class Graphics extends ViewContainer<GraphicsGpuData> implements Instruct
         if (!context)
         {
             this.context = this._ownedContext = new GraphicsContext();
+            this.context.autoGarbageCollect = this.autoGarbageCollect;
         }
         else
         {
