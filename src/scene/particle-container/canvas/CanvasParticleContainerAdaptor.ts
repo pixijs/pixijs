@@ -25,7 +25,8 @@ export class CanvasParticleContainerAdaptor implements ParticleContainerAdaptor
         renderer.canvasContext.setBlendMode(container.groupBlendMode);
 
         const groupColorAlpha = container.groupColorAlpha;
-        const groupAlpha = ((groupColorAlpha >>> 24) & 0xFF) / 255;
+        const filterAlpha = (renderer.filter as { alphaMultiplier?: number } | null)?.alphaMultiplier ?? 1;
+        const groupAlpha = (((groupColorAlpha >>> 24) & 0xFF) / 255) * filterAlpha;
 
         for (let i = 0; i < children.length; i++)
         {

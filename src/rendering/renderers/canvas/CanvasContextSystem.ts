@@ -72,6 +72,8 @@ export class CanvasContextSystem implements System
     public _projTransform: Matrix = null;
     /** True when external blend mode control is in use. */
     public _outerBlend = false;
+    /** Tracks unsupported blend mode warnings to avoid spam. */
+    private readonly _warnedBlendModes = new Set<BLEND_MODES>();
 
     /**
      * @param renderer - The owning CanvasRenderer.
@@ -216,7 +218,24 @@ export class CanvasContextSystem implements System
         this._activeBlendMode = blendMode;
         this._outerBlend = false;
 
-        this.activeContext.globalCompositeOperation = this.blendModes[blendMode] || 'source-over';
+        const mappedBlend = this.blendModes[blendMode];
+
+        if (!mappedBlend)
+        {
+            if (!this._warnedBlendModes.has(blendMode))
+            {
+                console.warn(
+                    `CanvasRenderer: blend mode "${blendMode}" is not supported in Canvas2D; falling back to "source-over".`
+                );
+                this._warnedBlendModes.add(blendMode);
+            }
+
+            this.activeContext.globalCompositeOperation = 'source-over';
+
+            return;
+        }
+
+        this.activeContext.globalCompositeOperation = mappedBlend;
     }
 
     /** Releases context references. */
@@ -224,5 +243,6 @@ export class CanvasContextSystem implements System
     {
         this.rootContext = null;
         this.activeContext = null;
+        this._warnedBlendModes.clear();
     }
 }

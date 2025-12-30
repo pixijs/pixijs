@@ -125,4 +125,19 @@ export class AlphaFilter extends Filter
      */
     get alpha(): number { return this.resources.alphaUniforms.uniforms.uAlpha; }
     set alpha(value: number) { this.resources.alphaUniforms.uniforms.uAlpha = value; }
+
+    /**
+     * Returns a CSS filter string for Canvas2D rendering.
+     * @internal
+     */
+    public getCanvasFilterString(): string | null
+    {
+        const alpha = this.alpha;
+
+        if (!Number.isFinite(alpha)) return null;
+
+        const clamped = Math.min(1, Math.max(0, alpha));
+
+        return `opacity(${clamped})`;
+    }
 }

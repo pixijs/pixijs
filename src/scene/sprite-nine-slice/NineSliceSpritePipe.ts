@@ -155,7 +155,8 @@ export class NineSliceSpritePipe implements RenderPipe<NineSliceSprite>
         const globalAlpha = ((globalColor >>> 24) & 0xFF) / 255;
         const groupAlphaValue = ((groupColorAlpha >>> 24) & 0xFF) / 255;
 
-        const alpha = globalAlpha * groupAlphaValue;
+        const filterAlpha = (renderer.filter as { alphaMultiplier?: number } | null)?.alphaMultiplier ?? 1;
+        const alpha = globalAlpha * groupAlphaValue * filterAlpha;
 
         if (alpha <= 0)
         {

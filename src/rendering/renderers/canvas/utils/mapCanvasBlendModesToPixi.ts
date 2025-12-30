@@ -9,7 +9,7 @@ const FALLBACK_BLEND: GlobalCompositeOperation = 'source-over';
  * @returns A mapping of Pixi blend modes to canvas composite ops.
  * @internal
  */
-export function mapCanvasBlendModesToPixi(): Record<BLEND_MODES, GlobalCompositeOperation>
+export function mapCanvasBlendModesToPixi(): Record<BLEND_MODES, GlobalCompositeOperation | null>
 {
     const supportsAdvanced = canUseNewCanvasBlendModes();
     const map = Object.create(null) as Record<BLEND_MODES, GlobalCompositeOperation>;

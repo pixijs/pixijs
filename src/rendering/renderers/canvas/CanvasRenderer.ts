@@ -10,6 +10,7 @@ import { AbstractRenderer } from '../shared/system/AbstractRenderer';
 import { SharedRenderPipes, SharedSystems } from '../shared/system/SharedSystems';
 import { RendererType } from '../types';
 import { CanvasContextSystem } from './CanvasContextSystem';
+import { CanvasFilterSystem } from './CanvasFilterSystem';
 import { CanvasLimitsSystem } from './CanvasLimitsSystem';
 import { CanvasRenderTargetSystem } from './renderTarget/CanvasRenderTargetSystem';
 import { CanvasTextureSystem } from './texture/CanvasTextureSystem';
@@ -23,6 +24,7 @@ import type { ExtractRendererOptions, ExtractSystemTypes } from '../shared/syste
 const DefaultCanvasSystems = [
     ...SharedSystems,
     CanvasContextSystem,
+    CanvasFilterSystem,
     CanvasLimitsSystem,
     CanvasTextureSystem,
     CanvasRenderTargetSystem,

@@ -92,7 +92,8 @@ export class CanvasBatchAdaptor implements BatcherAdaptor
             const globalAlpha = ((globalColor >>> 24) & 0xFF) / 255;
             const quadAlpha = ((argb >>> 24) & 0xFF) / 255;
 
-            const alpha = globalAlpha * quadAlpha;
+            const filterAlpha = (renderer.filter as { alphaMultiplier?: number } | null)?.alphaMultiplier ?? 1;
+            const alpha = globalAlpha * quadAlpha * filterAlpha;
 
             if (alpha <= 0) continue;
 

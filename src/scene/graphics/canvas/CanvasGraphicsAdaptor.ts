@@ -289,7 +289,8 @@ export class CanvasGraphicsAdaptor implements GraphicsAdaptor
         const globalAlpha = ((globalColor >>> 24) & 0xFF) / 255;
         const groupAlphaValue = ((groupColorAlpha >>> 24) & 0xFF) / 255;
 
-        const groupAlpha = globalAlpha * groupAlphaValue;
+        const filterAlpha = (renderer.filter as { alphaMultiplier?: number } | null)?.alphaMultiplier ?? 1;
+        const groupAlpha = globalAlpha * groupAlphaValue * filterAlpha;
 
         if (groupAlpha <= 0) return;
 
