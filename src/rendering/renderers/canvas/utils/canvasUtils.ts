@@ -37,13 +37,20 @@ export const canvasUtils = {
 
         const isPMA = source.alphaMode === 'premultiplied-alpha';
 
+        const resourceWidth = source.resourceWidth ?? source.pixelWidth;
+        const resourceHeight = source.resourceHeight ?? source.pixelHeight;
+        const needsResize = resourceWidth !== source.pixelWidth || resourceHeight !== source.pixelHeight;
+
         if (isPMA)
         {
             // If the resource is a canvas, we can assume it's already in a format that the context handles correctly
             if (resource instanceof HTMLCanvasElement
                 || (typeof OffscreenCanvas !== 'undefined' && resource instanceof OffscreenCanvas))
             {
-                return resource as CanvasImageSource;
+                if (!needsResize)
+                {
+                    return resource as CanvasImageSource;
+                }
             }
 
             const cached = canvasUtils._unpremultipliedCache.get(source);
@@ -132,6 +139,28 @@ export const canvasUtils = {
             context.putImageData(imageData, 0, 0);
 
             canvasUtils._unpremultipliedCache.set(source, { canvas, resourceId: source._resourceId });
+
+            return canvas as unknown as CanvasImageSource;
+        }
+
+        if (needsResize)
+        {
+            const cached = canvasUtils._canvasSourceCache.get(source);
+
+            if (cached?.resourceId === source._resourceId)
+            {
+                return cached.canvas as unknown as CanvasImageSource;
+            }
+
+            const canvas = DOMAdapter.get().createCanvas(source.pixelWidth, source.pixelHeight);
+            const context = canvas.getContext('2d');
+
+            canvas.width = source.pixelWidth;
+            canvas.height = source.pixelHeight;
+
+            context.drawImage(resource as CanvasImageSource, 0, 0);
+
+            canvasUtils._canvasSourceCache.set(source, { canvas, resourceId: source._resourceId });
 
             return canvas as unknown as CanvasImageSource;
         }

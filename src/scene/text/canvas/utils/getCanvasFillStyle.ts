@@ -40,7 +40,7 @@ export function getCanvasFillStyle(
         const pattern = context.createPattern(fillStyle.texture.source.resource, 'repeat');
         const tempMatrix = fillStyle.matrix.copyTo(Matrix.shared);
 
-        tempMatrix.scale(fillStyle.texture.frame.width, fillStyle.texture.frame.height);
+        tempMatrix.scale(fillStyle.texture.source.pixelWidth, fillStyle.texture.source.pixelHeight);
         pattern.setTransform(tempMatrix);
 
         return pattern;
@@ -53,8 +53,8 @@ export function getCanvasFillStyle(
         const tempMatrix = fillPattern.transform.copyTo(Matrix.shared);
 
         tempMatrix.scale(
-            fillPattern.texture.frame.width,
-            fillPattern.texture.frame.height
+            fillPattern.texture.source.pixelWidth,
+            fillPattern.texture.source.pixelHeight
         );
 
         pattern.setTransform(tempMatrix);

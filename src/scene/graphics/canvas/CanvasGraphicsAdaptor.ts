@@ -205,7 +205,9 @@ function getCanvasStyle(
         {
             const pattern = canvasUtils.getTintedPattern(gradientTexture, tint);
             const patternMatrix = textureMatrix
-                ? tempPatternMatrix.copyFrom(textureMatrix).scale(gradientTexture.frame.width, gradientTexture.frame.height)
+                ? tempPatternMatrix
+                    .copyFrom(textureMatrix)
+                    .scale(gradientTexture.source.pixelWidth, gradientTexture.source.pixelHeight)
                 : tempPatternMatrix.copyFrom(fill.transform);
 
             if (currentTransform && !style.textureSpace)
@@ -239,7 +241,9 @@ function getCanvasStyle(
 
         const pattern = canvasUtils.getTintedPattern(texture, tint);
         const patternMatrix = textureMatrix
-            ? tempPatternMatrix.copyFrom(textureMatrix).scale(texture.frame.width, texture.frame.height)
+            ? tempPatternMatrix
+                .copyFrom(textureMatrix)
+                .scale(texture.source.pixelWidth, texture.source.pixelHeight)
             : style.matrix;
 
         canvasUtils.applyPatternTransform(pattern, patternMatrix);
