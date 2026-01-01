@@ -1,6 +1,7 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { warn } from '../../../../utils/logging/warn';
 import { ensureAttributes } from '../../gl/shader/program/ensureAttributes';
+import { ShaderOverrides } from '../../shared/shader/ShaderOverrides';
 import { STENCIL_MODES } from '../../shared/state/const';
 import { createIdFromString } from '../../shared/utils/createIdFromString';
 import { GpuStencilModesToPixi } from '../state/GpuStencilModesToPixi';
@@ -23,6 +24,8 @@ const topologyStringToId = {
     'triangle-strip': 4,
 };
 
+const emptyOverrides = new ShaderOverrides({});
+
 // geometryLayouts = 256; // 8 bits // 256 states // value 0-255;
 // shaderKeys = 256; // 8 bits // 256 states // value 0-255;
 // state = 64; // 6 bits // 64 states // value 0-63;
@@ -34,13 +37,15 @@ function getGraphicsStateKey(
     state: number,
     blendMode: number,
     topology: number,
+    overrideId: number
 ): number
 {
-    return (geometryLayout << 24) // Allocate the 8 bits for geometryLayouts at the top
-         | (shaderKey << 16) // Next 8 bits for shaderKeys
-         | (state << 10) // 6 bits for state
-         | (blendMode << 5) // 5 bits for blendMode
-         | topology; // And 3 bits for topology at the least significant position
+    return (geometryLayout * 35184372088832) // 2^45 - 8 bits space for geometry (256)
+    + (shaderKey * 536870912) // 2^29 - 16 bits space for shader (65,536)
+    + (overrideId * 16384) // 2^14 - 15 bits space for overrides (32,768)
+    + (state << 8)
+    + (blendMode << 3)
+    + topology;
 }
 
 // colorMask = 16;// 4 bits // 16 states // value 0-15;
@@ -171,6 +176,7 @@ export class PipelineSystem implements System
         program: GpuProgram,
         state: State,
         topology?: Topology,
+        overrides?: ShaderOverrides,
     ): GPURenderPipeline
     {
         if (!geometry._layoutKey)
@@ -182,6 +188,7 @@ export class PipelineSystem implements System
         }
 
         topology ||= geometry.topology;
+        overrides ||= emptyOverrides;
 
         // now we have set the Ids - the key is different...
         const key = getGraphicsStateKey(
@@ -190,16 +197,23 @@ export class PipelineSystem implements System
             state.data,
             state._blendModeId,
             topologyStringToId[topology],
+            overrides.id,
         );
 
         if (this._pipeCache[key]) return this._pipeCache[key];
 
-        this._pipeCache[key] = this._createPipeline(geometry, program, state, topology);
+        this._pipeCache[key] = this._createPipeline(geometry, program, state, topology, overrides);
 
         return this._pipeCache[key];
     }
 
-    private _createPipeline(geometry: Geometry, program: GpuProgram, state: State, topology: Topology): GPURenderPipeline
+    private _createPipeline(
+        geometry: Geometry,
+        program: GpuProgram,
+        state: State,
+        topology: Topology,
+        overrides: ShaderOverrides
+    ): GPURenderPipeline
     {
         const device = this._gpu.device;
 
@@ -223,6 +237,7 @@ export class PipelineSystem implements System
             vertex: {
                 module: this._getModule(program.vertex.source),
                 entryPoint: program.vertex.entryPoint,
+                constants: overrides.data,
                 // geometry..
                 buffers,
             },
@@ -230,6 +245,7 @@ export class PipelineSystem implements System
                 module: this._getModule(program.fragment.source),
                 entryPoint: program.fragment.entryPoint,
                 targets: blendModes,
+                constants: overrides.data,
             },
             primitive: {
                 topology,

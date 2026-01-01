@@ -21,13 +21,23 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
             layout[group.group] = [];
         }
 
-        if (group.isUniform)
+        if (group.accessMode === 'uniform')
         {
             layout[group.group].push({
                 binding: group.binding,
                 visibility: ShaderStage.VERTEX | ShaderStage.FRAGMENT,
                 buffer: {
                     type: 'uniform'
+                }
+            });
+        }
+        else if (group.accessMode === 'storage')
+        {
+            layout[group.group].push({
+                binding: group.binding,
+                visibility: ShaderStage.VERTEX | ShaderStage.FRAGMENT,
+                buffer: {
+                    type: 'read-only-storage'
                 }
             });
         }
@@ -48,6 +58,18 @@ export function generateGpuLayoutGroups({ groups }: StructsAndGroups): ProgramPi
                 visibility: ShaderStage.FRAGMENT,
                 texture: {
                     sampleType: 'float',
+                    viewDimension: '2d',
+                    multisampled: false,
+                }
+            });
+        }
+        else if (group.type === 'texture_depth_2d')
+        {
+            layout[group.group].push({
+                binding: group.binding,
+                visibility: ShaderStage.FRAGMENT,
+                texture: {
+                    sampleType: 'depth',
                     viewDimension: '2d',
                     multisampled: false,
                 }

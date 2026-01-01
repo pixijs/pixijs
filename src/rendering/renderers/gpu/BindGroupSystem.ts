@@ -60,7 +60,7 @@ export class BindGroupSystem implements System
 
         for (const j in groupLayout)
         {
-            const resource: BindResource = group.resources[j] ?? group.resources[groupLayout[j]];
+            const resource: BindResource = group.resources[j as unknown as number] ?? group.resources[groupLayout[j]];
             let gpuResource: GPUSampler | GPUTextureView | GPUExternalTexture | GPUBufferBinding;
             // TODO make this dynamic..
 
@@ -95,7 +95,7 @@ export class BindGroupSystem implements System
                 gpuResource = {
                     buffer: renderer.buffer.getGPUBuffer(bufferResource.buffer),
                     offset: bufferResource.offset,
-                    size: bufferResource.size,
+                    size: bufferResource.size ?? bufferResource.buffer.descriptor.size,
                 };
             }
             else if (resource._resourceType === 'textureSampler')
