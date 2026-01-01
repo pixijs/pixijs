@@ -291,8 +291,8 @@ export class RenderTargetSystem<RENDER_TARGET extends RendererRenderTarget> impl
             clear,
             clearColor,
             frame,
-            mipLevel ?? 0,
-            layer ?? 0
+            mipLevel || 0,
+            layer || 0
         );
 
         this.rootViewPort.copyFrom(this.viewport);

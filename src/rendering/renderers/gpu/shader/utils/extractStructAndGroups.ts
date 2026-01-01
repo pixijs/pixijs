@@ -1,3 +1,6 @@
+/** The access mode for a buffer binding in WGSL */
+type WgslAccessMode = 'uniform' | 'storage' | undefined;
+
 /**
  * Defines the structure of the extracted WGSL structs and groups.
  * @category rendering
@@ -9,7 +12,8 @@ export interface StructsAndGroups
         group: number;
         binding: number;
         name: string;
-        isUniform: boolean;
+        /** The access mode for buffer bindings: 'uniform', 'storage', or undefined for textures/samplers */
+        accessMode: WgslAccessMode;
         type: string;
     }[];
     structs: {
@@ -33,15 +37,32 @@ export function extractStructAndGroups(wgsl: string): StructsAndGroups
     const structPattern = /struct\s+(\w+)\s*{([^}]+)}/g;
     const structMemberPattern = /(\w+)\s*:\s*([\w\<\>]+)/g;
     const structName = /struct\s+(\w+)/;
-
     // Find the @group and @binding annotations
-    const groups = wgsl.match(linePattern)?.map((item) => ({
-        group: parseInt(item.match(groupPattern)[1], 10),
-        binding: parseInt(item.match(bindingPattern)[1], 10),
-        name: item.match(namePattern)[2],
-        isUniform: item.match(namePattern)[1] === '<uniform>',
-        type: item.match(typePattern)[1],
-    }));
+    const groups = wgsl.match(linePattern)?.map((item) =>
+    {
+        const varMatch = item.match(namePattern);
+        const varQualifier = varMatch?.[1] ?? '';
+
+        // Determine access mode from var qualifier
+        let accessMode: WgslAccessMode;
+
+        if (varQualifier === '<uniform>')
+        {
+            accessMode = 'uniform';
+        }
+        else if (varQualifier.startsWith('<storage'))
+        {
+            accessMode = 'storage';
+        }
+
+        return {
+            group: parseInt(item.match(groupPattern)[1], 10),
+            binding: parseInt(item.match(bindingPattern)[1], 10),
+            name: varMatch[2],
+            accessMode,
+            type: item.match(typePattern)[1],
+        };
+    });
 
     if (!groups)
     {
