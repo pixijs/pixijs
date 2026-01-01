@@ -46,7 +46,9 @@ export class GpuBatchAdaptor implements BatcherAdaptor
         renderer.pipeline.getPipeline(
             geometry,
             program,
-            tempState
+            tempState,
+            undefined,
+            shader._overrides,
         );
 
         const globalUniformsBindGroup = renderer.globalUniforms.bindGroup;
@@ -88,7 +90,8 @@ export class GpuBatchAdaptor implements BatcherAdaptor
             this._geometry,
             program,
             tempState,
-            batch.topology
+            batch.topology,
+            this._shader._overrides,
         );
 
         batch.bindGroup._touch(renderer.gc.now, renderer.tick);

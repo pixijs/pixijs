@@ -174,6 +174,7 @@ export * from './renderers/shared/renderTarget/RenderTargetSystem';
 export * from './renderers/shared/SchedulerSystem';
 export * from './renderers/shared/shader/const';
 export * from './renderers/shared/shader/Shader';
+export * from './renderers/shared/shader/ShaderOverrides';
 export * from './renderers/shared/shader/ShaderSystem';
 export * from './renderers/shared/shader/types';
 export * from './renderers/shared/shader/UboSystem';

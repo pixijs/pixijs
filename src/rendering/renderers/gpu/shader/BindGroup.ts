@@ -32,7 +32,7 @@ import type { BindResource } from './BindResource';
 export class BindGroup
 {
     /** The resources that are bound together for use by a shader. */
-    public resources: Record<string, BindResource> = Object.create(null);
+    public resources: Record<number, BindResource> = Object.create(null);
     /**
      * a key used internally to match it up to a WebGPU Bindgroup
      * @internal
@@ -44,7 +44,7 @@ export class BindGroup
      * Create a new instance eof the Bind Group.
      * @param resources - The resources that are bound together for use by a shader.
      */
-    constructor(resources?: Record<string, BindResource>)
+    constructor(resources?: Record<number, BindResource>)
     {
         let index = 0;
 

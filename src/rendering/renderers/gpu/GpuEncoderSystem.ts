@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { type ShaderOverrides } from '../shared/shader/ShaderOverrides';
 
 import type { Rectangle } from '../../../maths/shapes/Rectangle';
 import type { Buffer } from '../shared/buffer/Buffer';
@@ -89,9 +90,16 @@ export class GpuEncoderSystem implements System
         program: GpuProgram,
         state: any,
         topology?: Topology,
+        overrides?: ShaderOverrides,
     ): void
     {
-        const pipeline = this._renderer.pipeline.getPipeline(geometry, program, state, topology);
+        const pipeline = this._renderer.pipeline.getPipeline(
+            geometry,
+            program,
+            state,
+            topology,
+            overrides,
+        );
 
         this.setPipeline(pipeline);
     }
@@ -207,7 +215,7 @@ export class GpuEncoderSystem implements System
     {
         const { geometry, shader, state, topology, size, start, instanceCount, skipSync } = options;
 
-        this.setPipelineFromGeometryProgramAndState(geometry, shader.gpuProgram, state, topology);
+        this.setPipelineFromGeometryProgramAndState(geometry, shader.gpuProgram, state, topology, shader._overrides);
         this.setGeometry(geometry, shader.gpuProgram);
         this._setShaderBindGroups(shader, skipSync);
 

@@ -4,6 +4,7 @@ import { GlProgram } from '../../gl/shader/GlProgram';
 import { BindGroup } from '../../gpu/shader/BindGroup';
 import { GpuProgram } from '../../gpu/shader/GpuProgram';
 import { RendererType } from '../../types';
+import { ShaderOverrides } from './ShaderOverrides';
 import { UniformGroup } from './UniformGroup';
 
 import type { GlProgramOptions } from '../../gl/shader/GlProgram';
@@ -33,6 +34,9 @@ interface ShaderBase
      * This is automatically set based on if a {@link GlProgram} or {@link GpuProgram} is provided.
      */
     compatibleRenderers?: number
+
+    /** The overrides used by the shader. */
+    overrides?: Record<string, number> | ShaderOverrides;
 }
 
 /**
@@ -220,6 +224,9 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
     private readonly _ownedBindGroups: BindGroup[] = [];
 
     /** @internal */
+    public readonly _overrides: ShaderOverrides;
+
+    /** @internal */
     public _destroyed: boolean = false;
 
     /**
@@ -250,9 +257,12 @@ export class Shader extends EventEmitter<{'destroy': Shader}>
             groups,
             resources,
             compatibleRenderers,
-            groupMap
+            groupMap,
+            overrides,
         } = options;
         /* eslint-enable prefer-const */
+
+        this._overrides = overrides ? ShaderOverrides.from(overrides) : null;
 
         this.gpuProgram = gpuProgram;
         this.glProgram = glProgram;

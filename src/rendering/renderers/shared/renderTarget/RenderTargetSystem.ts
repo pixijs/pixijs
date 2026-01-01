@@ -254,8 +254,8 @@ export class RenderTargetSystem<RENDER_TARGET extends GlRenderTarget | GpuRender
             clear,
             clearColor,
             frame,
-            mipLevel ?? 0,
-            layer ?? 0
+            mipLevel || 0,
+            layer || 0
         );
 
         this.rootViewPort.copyFrom(this.viewport);
