@@ -120,7 +120,7 @@ export default tseslint.config(
             'jest/expect-expect': [
                 'error',
                 {
-                    assertFunctionNames: ['expect', 'check32BitColorMatches', 'assertRemovedFromParent'],
+                    assertFunctionNames: ['expect', 'check32BitColorMatches', 'assertRemovedFromParent', 'expectTypeOf'],
                     additionalTestBlockFunctions: [''],
                 },
             ],
