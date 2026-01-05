@@ -123,11 +123,11 @@ export const measureMixin: Partial<Container> = {
 
     _setWidth(value: number, localWidth: number)
     {
-        const sign = Math.sign(this.scale.x) || 1;
+        const sign = Math.sign(value) || 1;
 
         if (localWidth !== 0)
         {
-            this.scale.x = (value / localWidth) * sign;
+            this.scale.x = (Math.abs(value) / localWidth) * sign;
         }
         else
         {
@@ -137,11 +137,11 @@ export const measureMixin: Partial<Container> = {
 
     _setHeight(value: number, localHeight: number)
     {
-        const sign = Math.sign(this.scale.y) || 1;
+        const sign = Math.sign(value) || 1;
 
         if (localHeight !== 0)
         {
-            this.scale.y = (value / localHeight) * sign;
+            this.scale.y = (Math.abs(value) / localHeight) * sign;
         }
         else
         {

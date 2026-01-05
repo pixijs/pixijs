@@ -90,7 +90,7 @@ describe('Sprite', () =>
             expect(sprite.width).toBeGreaterThanOrEqual(0);
         });
 
-        it('should not change sign of scale.x', () =>
+        it('should set scale sign based on width sign', () =>
         {
             const texture = RenderTexture.create({ width: 100, height: 100 });
             const sprite = new Sprite(texture);
@@ -100,8 +100,14 @@ describe('Sprite', () =>
 
             expect(sprite.scale.x).toEqual(0.5);
 
+            // Setting positive width should result in positive scale
             sprite.scale.x = -1;
-            sprite.width = 75; // should this be -75, this is when the scale.x becomes negative
+            sprite.width = 75;
+
+            expect(sprite.scale.x).toEqual(0.75);
+
+            // Setting negative width should result in negative scale
+            sprite.width = -75;
 
             expect(sprite.scale.x).toEqual(-0.75);
         });
@@ -114,6 +120,22 @@ describe('Sprite', () =>
             });
 
             expect(sprite.width).toEqual(50);
+        });
+
+        it('should update scale sign when width sign changes', () =>
+        {
+            const texture = RenderTexture.create({ width: 100, height: 100 });
+            const sprite = new Sprite(texture);
+
+            const originWidth = sprite.width;
+
+            // Setting negative width should make scale.x negative
+            sprite.width = -originWidth;
+            expect(sprite.scale.x).toBeLessThan(0);
+
+            // Setting positive width should make scale.x positive
+            sprite.width = originWidth;
+            expect(sprite.scale.x).toBeGreaterThan(0);
         });
     });
 
@@ -129,7 +151,7 @@ describe('Sprite', () =>
             expect(sprite.height).toBeGreaterThanOrEqual(0);
         });
 
-        it('should not change sign of scale.y', () =>
+        it('should set scale sign based on height sign', () =>
         {
             const texture = RenderTexture.create({ width: 100, height: 100 });
             const sprite = new Sprite(texture);
@@ -139,8 +161,14 @@ describe('Sprite', () =>
 
             expect(sprite.scale.y).toEqual(0.5);
 
+            // Setting positive height should result in positive scale
             sprite.scale.y = -1;
             sprite.height = 75;
+
+            expect(sprite.scale.y).toEqual(0.75);
+
+            // Setting negative height should result in negative scale
+            sprite.height = -75;
 
             expect(sprite.scale.y).toEqual(-0.75);
         });
@@ -153,6 +181,22 @@ describe('Sprite', () =>
             });
 
             expect(sprite.height).toEqual(50);
+        });
+
+        it('should update scale sign when height sign changes', () =>
+        {
+            const texture = RenderTexture.create({ width: 100, height: 100 });
+            const sprite = new Sprite(texture);
+
+            const originHeight = sprite.height;
+
+            // Setting negative height should make scale.y negative
+            sprite.height = -originHeight;
+            expect(sprite.scale.y).toBeLessThan(0);
+
+            // Setting positive height should make scale.y positive
+            sprite.height = originHeight;
+            expect(sprite.scale.y).toBeGreaterThan(0);
         });
     });
 
