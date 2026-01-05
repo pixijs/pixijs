@@ -25,6 +25,10 @@
         "*.{mjs,js,json}",
         "types/**/*.d.ts"
     ],
+    "ignoreBinaries": [
+        // Used in GitHub workflows only
+        "playwright"
+    ],
     "ignoreDependencies": [
         // Not detected in jest setup
         "http-server",
