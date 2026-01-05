@@ -338,7 +338,7 @@ export class Loader
 
         await Promise.all(promises);
 
-        return singleAsset ? assets[assetsToLoad[0].src] : assets;
+        return singleAsset ? assets[assetsToLoad[0].src] : assets as Record<string, T>;
     }
 
     /**

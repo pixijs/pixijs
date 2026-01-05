@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "target": "es2020",
-        "lib": ["ESNext", "DOM", "WebWorker"],
+        "lib": ["ESNext", "DOM", "WebWorker", "DOM.Iterable"],
         "module": "ESNext",
         "allowJs": false,
         "removeComments": false,
@@ -17,7 +17,7 @@
         "downlevelIteration": true,
         "skipDefaultLibCheck": true,
         "forceConsistentCasingInFileNames": true,
-        "types": ["node", "css-font-loading-module", "@webgpu/types"],
+        "types": ["node", "@webgpu/types"],
         "baseUrl": ".",
         "paths": {
             "~/*": ["./src/*"],
@@ -29,12 +29,5 @@
         "**/dist/**",
         "**/lib/**",
         "**/out/**"
-    ],
-    "ts-node": {
-        "files": true,
-        "compilerOptions": {
-            "esModuleInterop": true,
-            "module": "commonjs"
-        }
-    }
+    ]
 }

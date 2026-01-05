@@ -17,7 +17,7 @@ export const gpuUploadBufferImageResource = {
 
         gpu.device.queue.writeTexture(
             { texture: gpuTexture },
-            resource,
+            resource as ArrayBuffer,
             {
                 offset: 0,
                 rowsPerImage: source.pixelHeight,
