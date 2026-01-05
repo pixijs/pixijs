@@ -1,6 +1,7 @@
 import { lru } from 'tiny-lru';
 import { DOMAdapter } from '../../../environment/adapter';
 import { fontStringFromTextStyle } from './utils/fontStringFromTextStyle';
+import { hasTagMarkup, hasTagStyles, parseTaggedText, type TextStyleRun } from './utils/parseTaggedText';
 
 import type { ICanvas, ICanvasRenderingContext2DSettings } from '../../../environment/canvas/ICanvas';
 import type { ICanvasRenderingContext2D } from '../../../environment/canvas/ICanvasRenderingContext2D';
@@ -100,6 +101,38 @@ export class CanvasTextMetrics
     public fontProperties: FontMetrics;
 
     /**
+     * Per-line style runs for tagged text rendering.
+     * Each element is an array of runs for that line.
+     * Only populated when text contains tag markup.
+     * @internal
+     */
+    public runsByLine?: TextStyleRun[][];
+
+    /**
+     * Per-line ascent values for tagged text with mixed fonts.
+     * Represents the max ascent across all runs on each line.
+     * Only populated when text contains tag markup.
+     * @internal
+     */
+    public lineAscents?: number[];
+
+    /**
+     * Per-line descent values for tagged text with mixed fonts.
+     * Represents the max descent across all runs on each line.
+     * Only populated when text contains tag markup.
+     * @internal
+     */
+    public lineDescents?: number[];
+
+    /**
+     * Per-line heights for tagged text with mixed fonts.
+     * Each line may have different height based on the fonts used.
+     * Only populated when text contains tag markup.
+     * @internal
+     */
+    public lineHeights?: number[];
+
+    /**
      * String used for calculate font metrics.
      * These characters are all tall to help calculate the height required for text.
      */
@@ -156,7 +189,7 @@ export class CanvasTextMetrics
      * Checking that we can use modern canvas 2D API.
      *
      * Note: This is an unstable API, Chrome < 94 use `textLetterSpacing`, later versions use `letterSpacing`.
-     * @see TextMetrics.experimentalLetterSpacing
+     * @see CanvasTextMetrics.experimentalLetterSpacing
      * @see https://developer.mozilla.org/en-US/docs/Web/API/ICanvasRenderingContext2D/letterSpacing
      * @see https://developer.chrome.com/origintrials/#/view_trial/3585991203293757441
      */
@@ -180,7 +213,7 @@ export class CanvasTextMetrics
      * New rendering behavior for letter-spacing which uses Chrome's new native API. This will
      * lead to more accurate letter-spacing results because it does not try to manually draw
      * each character. However, this Chrome API is experimental and may not serve all cases yet.
-     * @see TextMetrics.experimentalLetterSpacingSupported
+     * @see CanvasTextMetrics.experimentalLetterSpacingSupported
      */
     public static experimentalLetterSpacing = false;
 
@@ -211,6 +244,12 @@ export class CanvasTextMetrics
         0x3000, // ideographic space
     ];
 
+    /** Regex to split text while capturing newline sequences. */
+    private static readonly _newlineSplitRegex = /(\r\n|\r|\n)/;
+
+    /** Regex to split text on newlines without capturing. */
+    private static readonly _newlineMatchRegex = /(?:\r\n|\r|\n)/;
+
     // eslint-disable-next-line @typescript-eslint/naming-convention
     private static __canvas: ICanvas;
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -228,10 +267,30 @@ export class CanvasTextMetrics
      * @param lineWidths - an array of the line widths for each line matched to `lines`
      * @param lineHeight - the measured line height for this style
      * @param maxLineWidth - the maximum line width for all measured lines
-     * @param {FontMetrics} fontProperties - the font properties object from TextMetrics.measureFont
+     * @param fontProperties - the font properties object from TextMetrics.measureFont
+     * @param taggedData - optional object containing tagged text specific data
+     * @param taggedData.runsByLine - per-line style runs for tagged text
+     * @param taggedData.lineAscents - per-line ascent values for tagged text
+     * @param taggedData.lineDescents - per-line descent values for tagged text
+     * @param taggedData.lineHeights - per-line height values for tagged text
      */
-    constructor(text: string, style: TextStyle, width: number, height: number, lines: string[], lineWidths: number[],
-        lineHeight: number, maxLineWidth: number, fontProperties: FontMetrics)
+    constructor(
+        text: string,
+        style: TextStyle,
+        width: number,
+        height: number,
+        lines: string[],
+        lineWidths: number[],
+        lineHeight: number,
+        maxLineWidth: number,
+        fontProperties: FontMetrics,
+        taggedData?: {
+            runsByLine?: TextStyleRun[][],
+            lineAscents?: number[],
+            lineDescents?: number[],
+            lineHeights?: number[],
+        },
+    )
     {
         this.text = text;
         this.style = style;
@@ -242,6 +301,14 @@ export class CanvasTextMetrics
         this.lineHeight = lineHeight;
         this.maxLineWidth = maxLineWidth;
         this.fontProperties = fontProperties;
+
+        if (taggedData)
+        {
+            this.runsByLine = taggedData.runsByLine;
+            this.lineAscents = taggedData.lineAscents;
+            this.lineDescents = taggedData.lineDescents;
+            this.lineHeights = taggedData.lineHeights;
+        }
     }
 
     /**
@@ -267,6 +334,18 @@ export class CanvasTextMetrics
             return CanvasTextMetrics._measurementCache.get(textKey);
         }
 
+        // Check if we need to use tagged text measurement
+        const isTagged = hasTagStyles(style) && hasTagMarkup(text);
+
+        if (isTagged)
+        {
+            const measurements = CanvasTextMetrics._measureTaggedText(text, style, canvas, wordWrap);
+
+            CanvasTextMetrics._measurementCache.set(textKey, measurements);
+
+            return measurements;
+        }
+
         const font = fontStringFromTextStyle(style);
         const fontProperties = CanvasTextMetrics.measureFont(font);
 
@@ -277,12 +356,12 @@ export class CanvasTextMetrics
             fontProperties.ascent = style.fontSize as number;
         }
 
-        const context = CanvasTextMetrics.__context; // canvas.getContext('2d', contextSettings);
+        const context = CanvasTextMetrics.__context;
 
         context.font = font;
 
         const outputText = wordWrap ? CanvasTextMetrics._wordWrap(text, style, canvas) : text;
-        const lines = outputText.split(/(?:\r\n|\r|\n)/);
+        const lines = outputText.split(CanvasTextMetrics._newlineMatchRegex);
         const lineWidths = new Array<number>(lines.length);
         let maxLineWidth = 0;
 
@@ -295,23 +374,16 @@ export class CanvasTextMetrics
         }
 
         const strokeWidth = style._stroke?.width || 0;
-
-        let width = maxLineWidth + strokeWidth;
-
-        if (style.dropShadow)
-        {
-            width += style.dropShadow.distance;
-        }
-
         const lineHeight = style.lineHeight || fontProperties.fontSize;
 
-        let height = Math.max(lineHeight, fontProperties.fontSize + (strokeWidth))
-            + ((lines.length - 1) * (lineHeight + style.leading));
+        // Calculate base width - use wordWrapWidth for non-left alignment when wrapping
+        const baseWidth = CanvasTextMetrics._getAlignWidth(maxLineWidth, style, wordWrap);
+        const width = CanvasTextMetrics._adjustWidthForStyle(baseWidth, style);
 
-        if (style.dropShadow)
-        {
-            height += style.dropShadow.distance;
-        }
+        // Calculate height
+        const baseHeight = Math.max(lineHeight, fontProperties.fontSize + strokeWidth)
+            + ((lines.length - 1) * (lineHeight + style.leading));
+        const height = CanvasTextMetrics._adjustHeightForStyle(baseHeight, style);
 
         const measurements = new CanvasTextMetrics(
             text,
@@ -329,6 +401,484 @@ export class CanvasTextMetrics
         CanvasTextMetrics._measurementCache.set(textKey, measurements);
 
         return measurements;
+    }
+
+    /**
+     * Measures tagged text with multiple styles.
+     * Handles per-run font measurement and per-line metrics.
+     * @param text - The tagged text to measure
+     * @param style - The base text style containing tagStyles
+     * @param canvas - Canvas for measurement
+     * @param _wordWrap - Whether to apply word wrapping (reserved for future use)
+     * @returns CanvasTextMetrics with tagged-specific data
+     */
+    private static _measureTaggedText(
+        text: string,
+        style: TextStyle,
+        canvas: ICanvas,
+        _wordWrap: boolean,
+    ): CanvasTextMetrics
+    {
+        const context = canvas.getContext('2d', contextSettings);
+
+        // Parse text into runs
+        const runs = parseTaggedText(text, style);
+
+        // First, we need to handle newlines and word wrap
+        // Split runs by newlines first
+        const runsByLine: TextStyleRun[][] = [];
+        let currentLineRuns: TextStyleRun[] = [];
+
+        for (const run of runs)
+        {
+            // Split run text by newlines
+            const parts = run.text.split(CanvasTextMetrics._newlineSplitRegex);
+
+            for (let i = 0; i < parts.length; i++)
+            {
+                const part = parts[i];
+
+                if (part === '\r\n' || part === '\r' || part === '\n')
+                {
+                    // Push current line and start a new one
+                    runsByLine.push(currentLineRuns);
+                    currentLineRuns = [];
+                }
+                else if (part.length > 0)
+                {
+                    currentLineRuns.push({ text: part, style: run.style });
+                }
+            }
+        }
+        // Don't forget the last line
+        if (currentLineRuns.length > 0 || runsByLine.length === 0)
+        {
+            runsByLine.push(currentLineRuns);
+        }
+
+        // Apply word wrap if enabled
+        const wrappedRunsByLine = _wordWrap
+            ? CanvasTextMetrics._wordWrapTaggedLines(runsByLine, style, canvas)
+            : runsByLine;
+
+        // Measure each line
+        const lineWidths: number[] = [];
+        const lineAscents: number[] = [];
+        const lineDescents: number[] = [];
+        const lineHeightsArr: number[] = [];
+        const lines: string[] = [];
+        let maxLineWidth = 0;
+
+        // Get base font properties for fallback
+        const baseFont = fontStringFromTextStyle(style);
+        const baseFontProps = CanvasTextMetrics.measureFont(baseFont);
+
+        // Fallback in case UA disallows canvas data extraction
+        if (baseFontProps.fontSize === 0)
+        {
+            baseFontProps.fontSize = style.fontSize as number;
+            baseFontProps.ascent = style.fontSize as number;
+        }
+
+        for (const lineRuns of wrappedRunsByLine)
+        {
+            let lineWidth = 0;
+            let lineAscent = baseFontProps.ascent;
+            let lineDescent = baseFontProps.descent;
+            let lineText = '';
+
+            for (const run of lineRuns)
+            {
+                const runFont = fontStringFromTextStyle(run.style);
+                const runFontProps = CanvasTextMetrics.measureFont(runFont);
+
+                context.font = runFont;
+
+                const runWidth = CanvasTextMetrics._measureText(run.text, run.style.letterSpacing, context);
+
+                lineWidth += runWidth;
+                lineAscent = Math.max(lineAscent, runFontProps.ascent);
+                lineDescent = Math.max(lineDescent, runFontProps.descent);
+                lineText += run.text;
+            }
+
+            // Handle empty lines
+            if (lineRuns.length === 0)
+            {
+                lineAscent = baseFontProps.ascent;
+                lineDescent = baseFontProps.descent;
+            }
+
+            lineWidths.push(lineWidth);
+            lineAscents.push(lineAscent);
+            lineDescents.push(lineDescent);
+            lines.push(lineText);
+
+            // Calculate line height - use style.lineHeight if set, otherwise use measured metrics
+            const computedLineHeight = style.lineHeight || (lineAscent + lineDescent);
+
+            lineHeightsArr.push(computedLineHeight + style.leading);
+            maxLineWidth = Math.max(maxLineWidth, lineWidth);
+        }
+
+        // Calculate total dimensions
+        const strokeWidth = style._stroke?.width || 0;
+
+        // Calculate base width - use wordWrapWidth for non-left alignment when wrapping
+        const alignWidth = CanvasTextMetrics._getAlignWidth(maxLineWidth, style, _wordWrap);
+        const width = CanvasTextMetrics._adjustWidthForStyle(alignWidth, style);
+
+        // Calculate total height from per-line heights
+        let baseHeight = 0;
+
+        for (let i = 0; i < lineHeightsArr.length; i++)
+        {
+            baseHeight += lineHeightsArr[i];
+        }
+
+        // Add stroke width to height for first line (to match non-tagged behavior)
+        baseHeight = Math.max(baseHeight, lineHeightsArr[0] + strokeWidth);
+        const height = CanvasTextMetrics._adjustHeightForStyle(baseHeight, style);
+
+        // Use the base style's line height for the lineHeight property (for backwards compat)
+        const baseLineHeight = style.lineHeight || baseFontProps.fontSize;
+
+        return new CanvasTextMetrics(
+            text,
+            style,
+            width,
+            height,
+            lines,
+            lineWidths,
+            baseLineHeight + style.leading,
+            maxLineWidth,
+            baseFontProps,
+            {
+                runsByLine: wrappedRunsByLine,
+                lineAscents,
+                lineDescents,
+                lineHeights: lineHeightsArr,
+            },
+        );
+    }
+
+    /**
+     * Applies word wrapping to tagged text lines.
+     * Breaks runs at word boundaries while maintaining style information.
+     * @param runsByLine - Array of run arrays, one per line
+     * @param style - The base text style
+     * @param canvas - Canvas for measurement
+     * @returns New runsByLine array with word wrap applied
+     */
+    private static _wordWrapTaggedLines(
+        runsByLine: TextStyleRun[][],
+        style: TextStyle,
+        canvas: ICanvas,
+    ): TextStyleRun[][]
+    {
+        const context = canvas.getContext('2d', contextSettings);
+        const { letterSpacing, whiteSpace, wordWrapWidth, breakWords } = style;
+
+        // How to handle whitespaces
+        const collapseSpaces = CanvasTextMetrics._collapseSpaces(whiteSpace);
+
+        // Adjust for letterSpacing (see _wordWrap for explanation)
+        const adjustedWrapWidth = wordWrapWidth + letterSpacing;
+
+        const result: TextStyleRun[][] = [];
+
+        // Process each line from the input
+        for (const lineRuns of runsByLine)
+        {
+            // Tokenize all runs on this line into styled tokens
+            const styledTokens = CanvasTextMetrics._tokenizeTaggedRuns(lineRuns);
+
+            // Now apply word wrap logic to these tokens
+            let currentLineRuns: TextStyleRun[] = [];
+            let currentWidth = 0;
+            let canPrependSpaces = !collapseSpaces;
+
+            // Track the current "building" run (to merge adjacent tokens with same style)
+            let buildingRun: TextStyleRun | null = null;
+
+            const flushBuildingRun = (): void =>
+            {
+                if (buildingRun && buildingRun.text.length > 0)
+                {
+                    currentLineRuns.push(buildingRun);
+                }
+                buildingRun = null;
+            };
+
+            const startNewLine = (): void =>
+            {
+                flushBuildingRun();
+                // Trim trailing spaces from last run on line
+                if (currentLineRuns.length > 0)
+                {
+                    const lastRun = currentLineRuns[currentLineRuns.length - 1];
+
+                    lastRun.text = CanvasTextMetrics._trimRight(lastRun.text);
+                    if (lastRun.text.length === 0)
+                    {
+                        currentLineRuns.pop();
+                    }
+                }
+                result.push(currentLineRuns);
+                currentLineRuns = [];
+                currentWidth = 0;
+                canPrependSpaces = false;
+            };
+
+            for (let i = 0; i < styledTokens.length; i++)
+            {
+                const { token, style: tokenStyle } = styledTokens[i];
+
+                // Measure the token with its style
+                const tokenFont = fontStringFromTextStyle(tokenStyle);
+
+                context.font = tokenFont;
+                const tokenWidth = CanvasTextMetrics._measureText(token, tokenStyle.letterSpacing, context)
+                    + tokenStyle.letterSpacing;
+
+                // Handle collapsing spaces
+                if (collapseSpaces)
+                {
+                    const currIsSpace = CanvasTextMetrics.isBreakingSpace(token);
+                    const lastChar = buildingRun?.text[buildingRun.text.length - 1]
+                        ?? currentLineRuns[currentLineRuns.length - 1]?.text.slice(-1)
+                        ?? '';
+                    const lastIsSpace = lastChar ? CanvasTextMetrics.isBreakingSpace(lastChar) : false;
+
+                    if (currIsSpace && lastIsSpace)
+                    {
+                        continue;
+                    }
+                }
+
+                // Token is longer than the wrap width
+                if (tokenWidth > adjustedWrapWidth)
+                {
+                    // Flush any existing content to a new line
+                    if (currentWidth > 0)
+                    {
+                        startNewLine();
+                    }
+
+                    // Break the long word if allowed
+                    if (CanvasTextMetrics.canBreakWords(token, breakWords))
+                    {
+                        const charGroups = CanvasTextMetrics._getCharacterGroups(token, breakWords);
+
+                        for (const char of charGroups)
+                        {
+                            context.font = tokenFont;
+                            const charWidth = CanvasTextMetrics._measureText(char, tokenStyle.letterSpacing, context)
+                                + tokenStyle.letterSpacing;
+
+                            if (charWidth + currentWidth > adjustedWrapWidth)
+                            {
+                                startNewLine();
+                            }
+
+                            // Add char to building run
+                            if (!buildingRun || buildingRun.style !== tokenStyle)
+                            {
+                                flushBuildingRun();
+                                buildingRun = { text: char, style: tokenStyle };
+                            }
+                            else
+                            {
+                                buildingRun.text += char;
+                            }
+                            currentWidth += charWidth;
+                        }
+                    }
+                    else
+                    {
+                        // Can't break - put whole word on its own line
+                        flushBuildingRun();
+                        result.push([{ text: token, style: tokenStyle }]);
+                        canPrependSpaces = false;
+                    }
+                }
+                // Token would exceed line width
+                else if (tokenWidth + currentWidth > adjustedWrapWidth)
+                {
+                    // Don't start new line with just a space
+                    if (CanvasTextMetrics.isBreakingSpace(token))
+                    {
+                        canPrependSpaces = false;
+                        continue;
+                    }
+
+                    startNewLine();
+
+                    // Start new building run with this token
+                    buildingRun = { text: token, style: tokenStyle };
+                    currentWidth = tokenWidth;
+                }
+                // Token fits on current line
+                else
+                {
+                    const isSpace = CanvasTextMetrics.isBreakingSpace(token);
+
+                    // Don't prepend spaces to line start unless allowed
+                    if (currentWidth === 0 && isSpace && !canPrependSpaces)
+                    {
+                        continue;
+                    }
+
+                    // Add to building run or start new one
+                    if (!buildingRun || buildingRun.style !== tokenStyle)
+                    {
+                        flushBuildingRun();
+                        buildingRun = { text: token, style: tokenStyle };
+                    }
+                    else
+                    {
+                        buildingRun.text += token;
+                    }
+                    currentWidth += tokenWidth;
+                }
+            }
+
+            // Flush final content
+            flushBuildingRun();
+            if (currentLineRuns.length > 0)
+            {
+                // Trim trailing spaces
+                const lastRun = currentLineRuns[currentLineRuns.length - 1];
+
+                lastRun.text = CanvasTextMetrics._trimRight(lastRun.text);
+                if (lastRun.text.length === 0)
+                {
+                    currentLineRuns.pop();
+                }
+            }
+
+            // Push final line (even if empty for blank lines)
+            result.push(currentLineRuns);
+        }
+
+        return result;
+    }
+
+    /**
+     * Tokenizes an array of TextStyleRuns into individual styled tokens.
+     * Each token is a word, space, or newline with its associated style.
+     * @param runs - The runs to tokenize
+     * @returns Array of styled tokens
+     */
+    private static _tokenizeTaggedRuns(runs: TextStyleRun[]): Array<{ token: string; style: TextStyle }>
+    {
+        const styledTokens: Array<{ token: string; style: TextStyle }> = [];
+
+        for (const run of runs)
+        {
+            const tokens = CanvasTextMetrics._tokenize(run.text);
+
+            for (const token of tokens)
+            {
+                styledTokens.push({ token, style: run.style });
+            }
+        }
+
+        return styledTokens;
+    }
+
+    /**
+     * Splits a token into character groups that should not be broken apart.
+     * Adjacent characters that can't be broken are combined into single groups.
+     * @param token - The token to split
+     * @param breakWords - Whether word breaking is enabled
+     * @returns Array of character groups
+     */
+    private static _getCharacterGroups(token: string, breakWords: boolean): string[]
+    {
+        const characters = CanvasTextMetrics.wordWrapSplit(token);
+        const groups: string[] = [];
+
+        for (let j = 0; j < characters.length; j++)
+        {
+            let char = characters[j];
+            let lastChar = char;
+
+            // Combine chars that shouldn't be split
+            let k = 1;
+
+            while (characters[j + k])
+            {
+                const nextChar = characters[j + k];
+
+                if (!CanvasTextMetrics.canBreakChars(lastChar, nextChar, token, j, breakWords))
+                {
+                    char += nextChar;
+                    lastChar = nextChar;
+                    k++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            j += k - 1;
+            groups.push(char);
+        }
+
+        return groups;
+    }
+
+    /**
+     * Adjusts the measured width to account for stroke and drop shadow.
+     * @param baseWidth - The base content width
+     * @param style - The text style
+     * @returns The adjusted width
+     */
+    private static _adjustWidthForStyle(baseWidth: number, style: TextStyle): number
+    {
+        const strokeWidth = style._stroke?.width || 0;
+        let width = baseWidth + strokeWidth;
+
+        if (style.dropShadow)
+        {
+            width += style.dropShadow.distance;
+        }
+
+        return width;
+    }
+
+    /**
+     * Adjusts the measured height to account for drop shadow.
+     * @param baseHeight - The base content height
+     * @param style - The text style
+     * @returns The adjusted height
+     */
+    private static _adjustHeightForStyle(baseHeight: number, style: TextStyle): number
+    {
+        let height = baseHeight;
+
+        if (style.dropShadow)
+        {
+            height += style.dropShadow.distance;
+        }
+
+        return height;
+    }
+
+    /**
+     * Calculates the base width for alignment purposes.
+     * When word wrap is enabled with center/right alignment, uses wordWrapWidth.
+     * @param maxLineWidth - The maximum line width
+     * @param style - The text style
+     * @param wordWrap - Whether word wrap is enabled
+     * @returns The width to use for alignment calculations
+     */
+    private static _getAlignWidth(maxLineWidth: number, style: TextStyle, wordWrap: boolean): number
+    {
+        const useWrapWidth = wordWrap && style.align !== 'left' && style.align !== 'justify';
+
+        return useWrapWidth ? Math.max(maxLineWidth, style.wordWrapWidth) : maxLineWidth;
     }
 
     private static _measureText(
@@ -476,39 +1026,12 @@ export class CanvasTextMetrics
                 // break large word over multiple lines
                 if (CanvasTextMetrics.canBreakWords(token, style.breakWords))
                 {
-                    // break word into characters
-                    const characters = CanvasTextMetrics.wordWrapSplit(token);
+                    // break word into character groups that shouldn't be split
+                    const charGroups = CanvasTextMetrics._getCharacterGroups(token, style.breakWords);
 
-                    // loop the characters
-                    for (let j = 0; j < characters.length; j++)
+                    // loop the character groups
+                    for (const char of charGroups)
                     {
-                        let char = characters[j];
-                        let lastChar = char;
-
-                        let k = 1;
-
-                        // we are not at the end of the token
-                        while (characters[j + k])
-                        {
-                            const nextChar = characters[j + k];
-
-                            // should not split chars
-                            if (!CanvasTextMetrics.canBreakChars(lastChar, nextChar, token, j, style.breakWords))
-                            {
-                                // combine chars & move forward one
-                                char += nextChar;
-                            }
-                            else
-                            {
-                                break;
-                            }
-
-                            lastChar = nextChar;
-                            k++;
-                        }
-
-                        j += k - 1;
-
                         const characterWidth = CanvasTextMetrics._getFromCache(char, letterSpacing, cache, context);
 
                         if (characterWidth + width > wordWrapWidth)

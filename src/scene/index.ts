@@ -161,6 +161,7 @@ export * from './text/canvas/CanvasTextPipe';
 export * from './text/canvas/CanvasTextSystem';
 export * from './text/canvas/utils/fontStringFromTextStyle';
 export * from './text/canvas/utils/getCanvasFillStyle';
+export * from './text/canvas/utils/parseTaggedText';
 export * from './text/sdfShader/SdfShader';
 export * from './text/sdfShader/shader-bits/localUniformMSDFBit';
 export * from './text/sdfShader/shader-bits/mSDFBit';
