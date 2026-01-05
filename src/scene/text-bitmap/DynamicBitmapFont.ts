@@ -13,7 +13,7 @@ import { AbstractBitmapFont } from './AbstractBitmapFont';
 
 import type { ICanvasRenderingContext2D } from '../../environment/canvas/ICanvasRenderingContext2D';
 import type { CanvasAndContext } from '../../rendering/renderers/shared/texture/CanvasPool';
-import type { FontMetrics } from '../text/canvas/CanvasTextMetrics';
+import type { FontMetrics } from '../text/canvas/utils/types';
 
 /** @internal */
 export interface DynamicBitmapFontOptions
