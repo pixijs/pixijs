@@ -10,6 +10,7 @@ export * from './const';
 export * from './data/clean';
 export * from './data/GCManagedHash';
 export * from './data/removeItems';
+export * from './data/stableSort';
 export * from './data/uid';
 export * from './data/updateQuadBounds';
 export * from './data/ViewableBuffer';

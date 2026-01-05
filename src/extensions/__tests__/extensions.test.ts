@@ -105,6 +105,63 @@ describe('extensions', () =>
             expect(list[1]).toBe(ext1);
             expect(list[2]).toBe(ext3);
         });
+
+        it('should maintain insertion order when priorities are equal', () =>
+        {
+            const ext1 = {
+                extension: {
+                    priority: 1,
+                    type: exampleType,
+                },
+            };
+            const ext2 = {
+                extension: {
+                    priority: 1,
+                    type: exampleType,
+                },
+            };
+            const list: any[] = [];
+
+            extensions.handleByList(exampleType, list);
+            extensions.add(ext1);
+            extensions.add(ext2);
+
+            expect(list[0]).toBe(ext1);
+            expect(list[1]).toBe(ext2);
+
+            extensions.remove(ext1, ext2);
+        });
+    });
+
+    describe('handleByNamedList', () =>
+    {
+        it('should maintain insertion order for equal priority', () =>
+        {
+            const list: { name: string; value: any }[] = [];
+            const ext1 = {
+                extension: {
+                    priority: 1,
+                    name: 'a',
+                    type: exampleType,
+                },
+            };
+            const ext2 = {
+                extension: {
+                    priority: 1,
+                    name: 'b',
+                    type: exampleType,
+                },
+            };
+
+            extensions.handleByNamedList(exampleType, list);
+            extensions.add(ext1);
+            extensions.add(ext2);
+
+            expect(list[0].value).toBe(ext1);
+            expect(list[1].value).toBe(ext2);
+
+            extensions.remove(ext1, ext2);
+        });
     });
 
     describe('add', () =>
