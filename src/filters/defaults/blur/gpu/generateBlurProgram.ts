@@ -1,15 +1,16 @@
 import { GpuProgram } from '../../../../rendering/renderers/gpu/shader/GpuProgram';
-import { GAUSSIAN_VALUES } from '../const';
+import { GAUSSIAN_VALUES, GAUSSIAN_VALUES_FIX } from '../const';
 import source from './blur-template.wgsl';
 
 /**
  * @internal
  * @param horizontal - Whether to generate a horizontal or vertical blur program.
  * @param kernelSize - The size of the kernel.
+ * @param fix - Whether to use the new Gaussian values.
  */
-export function generateBlurProgram(horizontal: boolean, kernelSize: number)
+export function generateBlurProgram(horizontal: boolean, kernelSize: number, fix: boolean)
 {
-    const kernel = GAUSSIAN_VALUES[kernelSize];
+    const kernel = (fix ? GAUSSIAN_VALUES_FIX : GAUSSIAN_VALUES)[kernelSize];
     const halfLength = kernel.length;
 
     const blurStructSource: string[] = [];

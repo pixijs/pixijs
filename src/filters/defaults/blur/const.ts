@@ -12,3 +12,23 @@ export const GAUSSIAN_VALUES: IGAUSSIAN_VALUES = {
     13: [0.002406, 0.009255, 0.027867, 0.065666, 0.121117, 0.174868, 0.197641],
     15: [0.000489, 0.002403, 0.009246, 0.02784, 0.065602, 0.120999, 0.174697, 0.197448],
 };
+
+/** @internal */
+export const GAUSSIAN_VALUES_FIX: IGAUSSIAN_VALUES = {};
+
+for (const kernelSize of [5, 7, 9, 11, 13, 15])
+{
+    const a: number[] = GAUSSIAN_VALUES_FIX[kernelSize] = [];
+
+    for (let i = 0; (2 * i) + 1 <= kernelSize; i++)
+    {
+        // recurrence relation for binomial coefficients
+        a[i] = i === 0 ? 1 : a[i - 1] * (kernelSize - i) / i;
+    }
+    const normalization = 2 ** (1 - kernelSize);
+
+    for (let i = 0; i < a.length; i++)
+    {
+        a[i] *= normalization;
+    }
+}
