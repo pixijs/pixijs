@@ -22,6 +22,14 @@ export interface AlphaFilterOptions extends FilterOptions
     alpha: number;
 }
 
+/** @internal */
+export interface AlphaFilterResources
+{
+    alphaUniforms: UniformGroup<{
+        uAlpha: { value: number, type: 'f32' },
+    }>
+}
+
 /**
  * Simplest filter - applies alpha.
  *
@@ -46,7 +54,7 @@ export interface AlphaFilterOptions extends FilterOptions
  * // update alpha
  * filter.alpha = 0.8;
  */
-export class AlphaFilter extends Filter
+export class AlphaFilter extends Filter<AlphaFilterResources>
 {
     /**
      * Default options for the AlphaFilter.

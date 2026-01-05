@@ -1,3 +1,4 @@
+import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
 import { RendererType } from '../../../rendering/renderers/types';
 import { Filter } from '../../Filter';
@@ -20,6 +21,13 @@ export interface BlurFilterPassOptions extends BlurFilterOptions
     horizontal: boolean;
 }
 
+/** @internal */
+export interface BlurFilterPassResources
+{
+    blurUniforms: UniformGroup<{
+        uStrength: { value: number, type: 'f32' },
+    }>
+}
 /**
  * The BlurFilterPass applies a horizontal or vertical Gaussian blur to an object.
  * @category filters
@@ -33,7 +41,7 @@ export interface BlurFilterPassOptions extends BlurFilterOptions
  * // update blur
  * filter.blur = 16;
  */
-export class BlurFilterPass extends Filter
+export class BlurFilterPass extends Filter<BlurFilterPassResources>
 {
     /** Default blur filter pass options */
     public static defaultOptions: Partial<BlurFilterPassOptions> = {
@@ -53,7 +61,7 @@ export class BlurFilterPass extends Filter
     public strength!: number;
 
     private _quality: number;
-    private readonly _uniforms: any;
+    private readonly _uniforms: BlurFilterPassResources['blurUniforms']['uniforms'];
 
     /**
      * @param options
@@ -69,13 +77,15 @@ export class BlurFilterPass extends Filter
         const glProgram = generateBlurGlProgram(options.horizontal, options.kernelSize);
         const gpuProgram = generateBlurProgram(options.horizontal, options.kernelSize);
 
+        const blurUniforms = new UniformGroup({
+            uStrength: { value: 0, type: 'f32' },
+        });
+
         super({
             glProgram,
             gpuProgram,
             resources: {
-                blurUniforms: {
-                    uStrength: { value: 0, type: 'f32' },
-                }
+                blurUniforms,
             },
             ...options
         });
