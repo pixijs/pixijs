@@ -276,8 +276,29 @@ class CanvasTextGeneratorClass
         context.scale(resolution, resolution);
         context.textBaseline = style.textBaseline;
 
+        // Check if base style OR any run has a drop shadow
+        let hasDropShadow = !!style.dropShadow;
+
+        if (!hasDropShadow)
+        {
+            for (let i = 0; i < runsByLine.length; i++)
+            {
+                const lineRuns = runsByLine[i];
+
+                for (let j = 0; j < lineRuns.length; j++)
+                {
+                    if (lineRuns[j].style.dropShadow)
+                    {
+                        hasDropShadow = true;
+                        break;
+                    }
+                }
+                if (hasDropShadow) break;
+            }
+        }
+
         // require 2 passes if a shadow; the first to draw the drop shadow, the second to draw the text
-        const passesCount = style.dropShadow ? 2 : 1;
+        const passesCount = hasDropShadow ? 2 : 1;
 
         // Calculate alignment width - use wordWrapWidth when wrapping with non-left align
         const alignWidth = style.wordWrap ? style.wordWrapWidth : maxLineWidth;
@@ -302,15 +323,11 @@ class CanvasTextGeneratorClass
 
         for (let pass = 0; pass < passesCount; ++pass)
         {
-            const isShadowPass = style.dropShadow && pass === 0;
+            const isShadowPass = hasDropShadow && pass === 0;
             const dsOffsetText = isShadowPass ? Math.ceil(Math.max(1, height) + (padding * 2)) : 0;
             const dsOffsetShadow = dsOffsetText * resolution;
 
-            if (isShadowPass)
-            {
-                this._setupDropShadow(context as CanvasRenderingContext2D, style, resolution, dsOffsetShadow);
-            }
-            else
+            if (!isShadowPass)
             {
                 context.shadowColor = 'black';
             }
@@ -349,7 +366,26 @@ class CanvasTextGeneratorClass
                     // Set stroke style for this run if not shadow pass
                     if (run.style._stroke?.width)
                     {
-                        if (!isShadowPass)
+                        if (isShadowPass)
+                        {
+                            // Set up drop shadow for this specific run
+                            if (run.style.dropShadow)
+                            {
+                                this._setupDropShadow(
+                                    context as CanvasRenderingContext2D,
+                                    run.style,
+                                    resolution,
+                                    dsOffsetShadow
+                                );
+                            }
+                            else
+                            {
+                                // No shadow for this run, skip drawing
+                                runX += runWidth;
+                                continue;
+                            }
+                        }
+                        else
                         {
                             const runStroke = run.style._stroke;
 
@@ -388,7 +424,26 @@ class CanvasTextGeneratorClass
                     // Set fill style for this run if not shadow pass
                     if (run.style._fill !== undefined)
                     {
-                        if (!isShadowPass)
+                        if (isShadowPass)
+                        {
+                            // Set up drop shadow for this specific run
+                            if (run.style.dropShadow)
+                            {
+                                this._setupDropShadow(
+                                    context as CanvasRenderingContext2D,
+                                    run.style,
+                                    resolution,
+                                    dsOffsetShadow
+                                );
+                            }
+                            else
+                            {
+                                // No shadow for this run, skip drawing
+                                runX += runWidth;
+                                continue;
+                            }
+                        }
+                        else
                         {
                             context.fillStyle = getCanvasFillStyle(run.style._fill, context, measured, padding * 2);
                         }
