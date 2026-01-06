@@ -344,6 +344,7 @@ class CanvasTextGeneratorClass
                     const runWidth = runWidths[runIndex];
 
                     context.font = fontStringFromTextStyle(run.style);
+                    context.textBaseline = run.style.textBaseline;
 
                     // Set stroke style for this run if not shadow pass
                     if (run.style._stroke?.width)
@@ -382,6 +383,7 @@ class CanvasTextGeneratorClass
                     const runWidth = runWidths[runIndex];
 
                     context.font = fontStringFromTextStyle(run.style);
+                    context.textBaseline = run.style.textBaseline;
 
                     // Set fill style for this run if not shadow pass
                     if (run.style._fill !== undefined)
