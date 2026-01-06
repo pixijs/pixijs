@@ -393,7 +393,26 @@ class CanvasTextGeneratorClass
                             context.miterLimit = runStroke.miterLimit;
                             context.lineJoin = runStroke.join;
                             context.lineCap = runStroke.cap;
-                            context.strokeStyle = getCanvasFillStyle(runStroke, context, measured, padding * 2);
+
+                            // Create per-run metrics for gradient calculation
+                            // Use run's font metrics for height to match non-tagged text behavior
+                            const runFont = fontStringFromTextStyle(run.style);
+                            const runFontProps = CanvasTextMetrics.measureFont(runFont);
+                            const runHeight = run.style.lineHeight || runFontProps.fontSize;
+
+                            const runMetrics = {
+                                width: runWidth,
+                                height: runHeight,
+                                lineHeight: runHeight,
+                                lines: [run.text],
+                            } as CanvasTextMetrics;
+
+                            // Pass position offsets so gradient aligns with where the run is drawn
+                            // Subtract padding from runX because runX already includes padding,
+                            // but regular text rendering has gradient at origin with text at +padding
+                            context.strokeStyle = getCanvasFillStyle(
+                                runStroke, context, runMetrics, padding * 2, runX - padding, currentY
+                            );
                         }
 
                         this._drawLetterSpacing(
@@ -445,7 +464,25 @@ class CanvasTextGeneratorClass
                         }
                         else
                         {
-                            context.fillStyle = getCanvasFillStyle(run.style._fill, context, measured, padding * 2);
+                            // Create per-run metrics for gradient calculation
+                            // Use run's font metrics for height to match non-tagged text behavior
+                            const runFont = fontStringFromTextStyle(run.style);
+                            const runFontProps = CanvasTextMetrics.measureFont(runFont);
+                            const runHeight = run.style.lineHeight || runFontProps.fontSize;
+
+                            const runMetrics = {
+                                width: runWidth,
+                                height: runHeight,
+                                lineHeight: runHeight,
+                                lines: [run.text],
+                            } as CanvasTextMetrics;
+
+                            // Pass position offsets so gradient aligns with where the run is drawn
+                            // Subtract padding from runX because runX already includes padding,
+                            // but regular text rendering has gradient at origin with text at +padding
+                            context.fillStyle = getCanvasFillStyle(
+                                run.style._fill, context, runMetrics, padding * 2, runX - padding, currentY
+                            );
                         }
 
                         this._drawLetterSpacing(
