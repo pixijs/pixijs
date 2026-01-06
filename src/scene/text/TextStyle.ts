@@ -1209,7 +1209,7 @@ export class TextStyle extends EventEmitter<{
         return this._tagStyles;
     }
 
-    set tagStyles(value: Record<string, TextStyleOptions> | undefined)
+    public set tagStyles(value: Record<string, TextStyleOptions> | undefined)
     {
         if (this._tagStyles === value) return;
 

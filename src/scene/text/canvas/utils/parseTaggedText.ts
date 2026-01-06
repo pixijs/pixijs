@@ -182,8 +182,6 @@ export function parseTaggedText(text: string, style: TextStyle): TextStyleRun[]
         });
     }
 
-    // Handle unclosed tags - they still get rendered with their styles
-
     return runs;
 }
 

@@ -150,7 +150,7 @@ export class HTMLTextStyle extends TextStyle
     {
         if (this._tagStyles === value) return;
 
-        this._tagStyles = value ?? undefined;
+        this._tagStyles = value ?? {};
         this.update();
     }
 

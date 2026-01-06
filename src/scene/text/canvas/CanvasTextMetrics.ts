@@ -409,17 +409,17 @@ export class CanvasTextMetrics
      * @param text - The tagged text to measure
      * @param style - The base text style containing tagStyles
      * @param canvas - Canvas for measurement
-     * @param _wordWrap - Whether to apply word wrapping (reserved for future use)
+     * @param wordWrap - Whether to apply word wrapping
      * @returns CanvasTextMetrics with tagged-specific data
      */
     private static _measureTaggedText(
         text: string,
         style: TextStyle,
         canvas: ICanvas,
-        _wordWrap: boolean,
+        wordWrap: boolean,
     ): CanvasTextMetrics
     {
-        const context = canvas.getContext('2d', contextSettings);
+        const context = CanvasTextMetrics.__context;
 
         // Parse text into runs
         const runs = parseTaggedText(text, style);
@@ -457,7 +457,7 @@ export class CanvasTextMetrics
         }
 
         // Apply word wrap if enabled
-        const wrappedRunsByLine = _wordWrap
+        const wrappedRunsByLine = wordWrap
             ? CanvasTextMetrics._wordWrapTaggedLines(runsByLine, style, canvas)
             : runsByLine;
 
@@ -525,7 +525,7 @@ export class CanvasTextMetrics
         const strokeWidth = style._stroke?.width || 0;
 
         // Calculate base width - use wordWrapWidth for non-left alignment when wrapping
-        const alignWidth = CanvasTextMetrics._getAlignWidth(maxLineWidth, style, _wordWrap);
+        const alignWidth = CanvasTextMetrics._getAlignWidth(maxLineWidth, style, wordWrap);
         const width = CanvasTextMetrics._adjustWidthForStyle(alignWidth, style);
 
         // Calculate total height from per-line heights
