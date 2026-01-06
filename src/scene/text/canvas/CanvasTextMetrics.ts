@@ -356,7 +356,7 @@ export class CanvasTextMetrics
             fontProperties.ascent = style.fontSize as number;
         }
 
-        const context = CanvasTextMetrics.__context;
+        const context = CanvasTextMetrics._context;
 
         context.font = font;
 
@@ -419,7 +419,7 @@ export class CanvasTextMetrics
         wordWrap: boolean,
     ): CanvasTextMetrics
     {
-        const context = CanvasTextMetrics.__context;
+        const context = CanvasTextMetrics._context;
 
         // Parse text into runs
         const runs = parseTaggedText(text, style);
