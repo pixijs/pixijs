@@ -16,7 +16,7 @@ export const scene: TestScene = {
         await Assets.load('fonts/outfit.woff2');
 
         const style2 = new TextStyle({
-            fontFamily: 'Outfit',
+            fontFamily: 'Arial',
             fontSize: 36,
             fontStyle: 'italic',
             fontWeight: 'bold',

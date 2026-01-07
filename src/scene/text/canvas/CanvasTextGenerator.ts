@@ -363,9 +363,17 @@ class CanvasTextGeneratorClass
                     context.font = fontStringFromTextStyle(run.style);
                     context.textBaseline = run.style.textBaseline;
 
-                    // Set stroke style for this run if not shadow pass
+                    // Set stroke style for this run
                     if (run.style._stroke?.width)
                     {
+                        const runStroke = run.style._stroke;
+
+                        // Always set stroke properties (both passes need correct lineWidth)
+                        context.lineWidth = runStroke.width;
+                        context.miterLimit = runStroke.miterLimit;
+                        context.lineJoin = runStroke.join;
+                        context.lineCap = runStroke.cap;
+
                         if (isShadowPass)
                         {
                             // Set up drop shadow for this specific run
@@ -387,13 +395,6 @@ class CanvasTextGeneratorClass
                         }
                         else
                         {
-                            const runStroke = run.style._stroke;
-
-                            context.lineWidth = runStroke.width;
-                            context.miterLimit = runStroke.miterLimit;
-                            context.lineJoin = runStroke.join;
-                            context.lineCap = runStroke.cap;
-
                             // Create per-run metrics for gradient calculation
                             // Use run's font metrics for height to match non-tagged text behavior
                             const runFont = fontStringFromTextStyle(run.style);

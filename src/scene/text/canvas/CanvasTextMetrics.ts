@@ -593,6 +593,46 @@ export class CanvasTextMetrics
             // Tokenize all runs on this line into styled tokens
             const styledTokens = CanvasTextMetrics._tokenizeTaggedRuns(lineRuns);
 
+            // Track if we pushed content directly to result (for word groups)
+            const resultStartLength = result.length;
+
+            // Helper to calculate the total width of a word group starting at index
+            // A word group is a sequence of tokens where each subsequent token has continuesFromPrevious: true
+            const getWordGroupWidth = (startIndex: number): number =>
+            {
+                let totalWidth = 0;
+                let j = startIndex;
+
+                do
+                {
+                    const { token: groupToken, style: groupStyle } = styledTokens[j];
+
+                    context.font = fontStringFromTextStyle(groupStyle);
+                    totalWidth += CanvasTextMetrics._measureText(groupToken, groupStyle.letterSpacing, context)
+                        + groupStyle.letterSpacing;
+                    j++;
+                }
+                while (j < styledTokens.length && styledTokens[j].continuesFromPrevious);
+
+                return totalWidth;
+            };
+
+            // Helper to get all tokens in a word group
+            const getWordGroupTokens = (startIndex: number): Array<{ token: string; style: TextStyle }> =>
+            {
+                const tokens: Array<{ token: string; style: TextStyle }> = [];
+                let j = startIndex;
+
+                do
+                {
+                    tokens.push({ token: styledTokens[j].token, style: styledTokens[j].style });
+                    j++;
+                }
+                while (j < styledTokens.length && styledTokens[j].continuesFromPrevious);
+
+                return tokens;
+            };
+
             // Now apply word wrap logic to these tokens
             let currentLineRuns: TextStyleRun[] = [];
             let currentWidth = 0;
@@ -632,7 +672,7 @@ export class CanvasTextMetrics
 
             for (let i = 0; i < styledTokens.length; i++)
             {
-                const { token, style: tokenStyle } = styledTokens[i];
+                const { token, style: tokenStyle, continuesFromPrevious } = styledTokens[i];
 
                 // Measure the token with its style
                 const tokenFont = fontStringFromTextStyle(tokenStyle);
@@ -656,8 +696,14 @@ export class CanvasTextMetrics
                     }
                 }
 
-                // Token is longer than the wrap width
-                if (tokenWidth > adjustedWrapWidth)
+                // Check if this token starts a word group (not a continuation)
+                const startsWordGroup = !continuesFromPrevious;
+
+                // Calculate word group width if this starts a new word group
+                const wordGroupWidth = startsWordGroup ? getWordGroupWidth(i) : tokenWidth;
+
+                // Word group is longer than the wrap width
+                if (wordGroupWidth > adjustedWrapWidth && startsWordGroup)
                 {
                     // Flush any existing content to a new line
                     if (currentWidth > 0)
@@ -665,45 +711,65 @@ export class CanvasTextMetrics
                         startNewLine();
                     }
 
-                    // Break the long word if allowed
-                    if (CanvasTextMetrics.canBreakWords(token, breakWords))
+                    // Break the long word group if allowed
+                    if (breakWords)
                     {
-                        const charGroups = CanvasTextMetrics._getCharacterGroups(token, breakWords);
+                        // Get all tokens in this word group
+                        const wordGroupTokens = getWordGroupTokens(i);
 
-                        for (const char of charGroups)
+                        // Process each token in the word group
+                        for (let g = 0; g < wordGroupTokens.length; g++)
                         {
-                            context.font = tokenFont;
-                            const charWidth = CanvasTextMetrics._measureText(char, tokenStyle.letterSpacing, context)
-                                + tokenStyle.letterSpacing;
+                            const groupToken = wordGroupTokens[g].token;
+                            const groupStyle = wordGroupTokens[g].style;
+                            const groupFont = fontStringFromTextStyle(groupStyle);
+                            const charGroups = CanvasTextMetrics._getCharacterGroups(groupToken, breakWords);
 
-                            if (charWidth + currentWidth > adjustedWrapWidth)
+                            for (const char of charGroups)
                             {
-                                startNewLine();
-                            }
+                                context.font = groupFont;
+                                const charWidth = CanvasTextMetrics._measureText(char, groupStyle.letterSpacing, context)
+                                    + groupStyle.letterSpacing;
 
-                            // Add char to building run
-                            if (!buildingRun || buildingRun.style !== tokenStyle)
-                            {
-                                flushBuildingRun();
-                                buildingRun = { text: char, style: tokenStyle };
+                                // eslint-disable-next-line max-depth
+                                if (charWidth + currentWidth > adjustedWrapWidth)
+                                {
+                                    startNewLine();
+                                }
+
+                                // Add char to building run
+                                // eslint-disable-next-line max-depth
+                                if (!buildingRun || buildingRun.style !== groupStyle)
+                                {
+                                    flushBuildingRun();
+                                    buildingRun = { text: char, style: groupStyle };
+                                }
+                                else
+                                {
+                                    buildingRun.text += char;
+                                }
+                                currentWidth += charWidth;
                             }
-                            else
-                            {
-                                buildingRun.text += char;
-                            }
-                            currentWidth += charWidth;
                         }
+
+                        // Skip all the tokens we just processed
+                        i += wordGroupTokens.length - 1;
                     }
                     else
                     {
-                        // Can't break - put whole word on its own line
+                        // Can't break - put whole word group on its own line
+                        const wordGroupTokens = getWordGroupTokens(i);
+
                         flushBuildingRun();
-                        result.push([{ text: token, style: tokenStyle }]);
+                        result.push(wordGroupTokens.map((t) => ({ text: t.token, style: t.style })));
                         canPrependSpaces = false;
+
+                        // Skip all the tokens we just processed
+                        i += wordGroupTokens.length - 1;
                     }
                 }
-                // Token would exceed line width
-                else if (tokenWidth + currentWidth > adjustedWrapWidth)
+                // Word group would exceed line width (but fits on its own line)
+                else if (wordGroupWidth + currentWidth > adjustedWrapWidth && startsWordGroup)
                 {
                     // Don't start new line with just a space
                     if (CanvasTextMetrics.isBreakingSpace(token))
@@ -718,7 +784,22 @@ export class CanvasTextMetrics
                     buildingRun = { text: token, style: tokenStyle };
                     currentWidth = tokenWidth;
                 }
-                // Token fits on current line
+                // Token is a continuation of a word group - always add it (don't wrap mid-word when breakWords: false)
+                else if (continuesFromPrevious && !breakWords)
+                {
+                    // Add to building run or start new one
+                    if (!buildingRun || buildingRun.style !== tokenStyle)
+                    {
+                        flushBuildingRun();
+                        buildingRun = { text: token, style: tokenStyle };
+                    }
+                    else
+                    {
+                        buildingRun.text += token;
+                    }
+                    currentWidth += tokenWidth;
+                }
+                // Token fits on current line (or is a continuation with breakWords: true)
                 else
                 {
                     const isSpace = CanvasTextMetrics.isBreakingSpace(token);
@@ -757,8 +838,12 @@ export class CanvasTextMetrics
                 }
             }
 
-            // Push final line (even if empty for blank lines)
-            result.push(currentLineRuns);
+            // Push final line if it has content, or if we haven't pushed anything yet
+            // (to preserve blank lines in the input)
+            if (currentLineRuns.length > 0 || result.length === resultStartLength)
+            {
+                result.push(currentLineRuns);
+            }
         }
 
         return result;
@@ -767,20 +852,36 @@ export class CanvasTextMetrics
     /**
      * Tokenizes an array of TextStyleRuns into individual styled tokens.
      * Each token is a word, space, or newline with its associated style.
+     * Tracks whether adjacent tokens across run boundaries form a continuous word.
      * @param runs - The runs to tokenize
-     * @returns Array of styled tokens
+     * @returns Array of styled tokens with continuation flags
      */
-    private static _tokenizeTaggedRuns(runs: TextStyleRun[]): Array<{ token: string; style: TextStyle }>
+    private static _tokenizeTaggedRuns(
+        runs: TextStyleRun[]
+    ): Array<{ token: string; style: TextStyle; continuesFromPrevious: boolean }>
     {
-        const styledTokens: Array<{ token: string; style: TextStyle }> = [];
+        const styledTokens: Array<{ token: string; style: TextStyle; continuesFromPrevious: boolean }> = [];
+        let lastTokenWasWord = false;
 
         for (const run of runs)
         {
             const tokens = CanvasTextMetrics._tokenize(run.text);
+            let isFirstTokenInRun = true;
 
             for (const token of tokens)
             {
-                styledTokens.push({ token, style: run.style });
+                const isSpace = CanvasTextMetrics.isBreakingSpace(token) || CanvasTextMetrics._isNewline(token);
+
+                // Token continues from previous word if:
+                // 1. It's the first token in this run
+                // 2. The previous run's last token was a word (not space)
+                // 3. This token is also a word (not space)
+                const continuesFromPrevious = isFirstTokenInRun && lastTokenWasWord && !isSpace;
+
+                styledTokens.push({ token, style: run.style, continuesFromPrevious });
+
+                lastTokenWasWord = !isSpace;
+                isFirstTokenInRun = false;
             }
         }
 

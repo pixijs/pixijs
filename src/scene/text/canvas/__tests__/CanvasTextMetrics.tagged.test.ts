@@ -206,6 +206,87 @@ describe('CanvasTextMetrics tagged text', () =>
             expect(measured.lines.length).toBeGreaterThan(1);
         });
 
+        it('should keep adjacent tagged words together when breakWords is false', () =>
+        {
+            const style = new TextStyle({
+                fontSize: 24,
+                fontFamily: 'Arial',
+                wordWrap: true,
+                wordWrapWidth: 300, // Wide enough for the word
+                breakWords: false,
+                tagStyles: {
+                    green: { fill: 'green' },
+                },
+            });
+
+            const measured = CanvasTextMetrics.measureText('<green>Supercalifragilistic</green>expialidocious', style);
+
+            // Should be a single line since there's no space to wrap on
+            expect(measured.lines.length).toBe(1);
+            expect(measured.lines[0]).toBe('Supercalifragilisticexpialidocious');
+        });
+
+        it('should put adjacent tagged word on own line when too wide and breakWords is false', () =>
+        {
+            const style = new TextStyle({
+                fontSize: 24,
+                fontFamily: 'Arial',
+                wordWrap: true,
+                wordWrapWidth: 100, // Too narrow for the word
+                breakWords: false,
+                tagStyles: {
+                    green: { fill: 'green' },
+                },
+            });
+
+            const measured = CanvasTextMetrics.measureText('Hi <green>Supercalifragilistic</green>expialidocious', style);
+
+            // "Hi" on first line, the long word on second line (kept together)
+            expect(measured.lines.length).toBe(2);
+            expect(measured.lines[0]).toBe('Hi');
+            expect(measured.lines[1]).toBe('Supercalifragilisticexpialidocious');
+        });
+
+        it('should wrap at space boundaries even with adjacent tags and breakWords false', () =>
+        {
+            const style = new TextStyle({
+                fontSize: 24,
+                fontFamily: 'Arial',
+                wordWrap: true,
+                wordWrapWidth: 100,
+                breakWords: false,
+                tagStyles: {
+                    red: { fill: 'red' },
+                },
+            });
+
+            const measured = CanvasTextMetrics.measureText('<red>Hello</red> World', style);
+
+            // Should wrap at the space
+            expect(measured.lines.length).toBe(2);
+        });
+
+        it('should break adjacent tagged words at character boundaries when breakWords is true', () =>
+        {
+            const style = new TextStyle({
+                fontSize: 24,
+                fontFamily: 'Arial',
+                wordWrap: true,
+                wordWrapWidth: 100, // Too narrow for the word
+                breakWords: true,
+                tagStyles: {
+                    green: { fill: 'green' },
+                },
+            });
+
+            const measured = CanvasTextMetrics.measureText('<green>Supercalifragilistic</green>expialidocious', style);
+
+            // Should break into multiple lines
+            expect(measured.lines.length).toBeGreaterThan(1);
+            // Combined text should be preserved
+            expect(measured.lines.join('')).toBe('Supercalifragilisticexpialidocious');
+        });
+
         it('should maintain line metrics across wrapped lines', () =>
         {
             const style = new TextStyle({
