@@ -1,6 +1,5 @@
 import { lru } from 'tiny-lru';
 import { DOMAdapter } from '../../../environment/adapter';
-import { fontStringFromTextStyle } from './utils/fontStringFromTextStyle';
 import { hasTagMarkup, hasTagStyles, parseTaggedText, type TextStyleRun } from './utils/parseTaggedText';
 
 import type { ICanvas, ICanvasRenderingContext2DSettings } from '../../../environment/canvas/ICanvas';
@@ -234,6 +233,8 @@ export class CanvasTextMetrics
         0x000D, // carriage return
     ];
 
+    private static readonly _newlinesSet = new Set(CanvasTextMetrics._newlines);
+
     /** Cache of breaking spaces. */
     private static readonly _breakingSpaces: number[] = [
         0x0009, // character tabulation
@@ -251,6 +252,8 @@ export class CanvasTextMetrics
         0x205F, // medium mathematical space
         0x3000, // ideographic space
     ];
+
+    private static readonly _breakingSpacesSet = new Set(CanvasTextMetrics._breakingSpaces);
 
     /** Regex to split text while capturing newline sequences. */
     private static readonly _newlineSplitRegex = /(\r\n|\r|\n)/;
@@ -357,7 +360,7 @@ export class CanvasTextMetrics
             return measurements;
         }
 
-        const font = fontStringFromTextStyle(style);
+        const font = style.fontString;
         const fontProperties = CanvasTextMetrics.measureFont(font);
 
         // fallback in case UA disallow canvas data extraction
@@ -494,7 +497,7 @@ export class CanvasTextMetrics
         let maxLineWidth = 0;
 
         // Get base font properties for fallback
-        const baseFont = fontStringFromTextStyle(style);
+        const baseFont = style.fontString;
         const baseFontProps = CanvasTextMetrics.measureFont(baseFont);
 
         // Fallback in case UA disallows canvas data extraction
@@ -503,6 +506,8 @@ export class CanvasTextMetrics
             baseFontProps.fontSize = style.fontSize as number;
             baseFontProps.ascent = style.fontSize as number;
         }
+
+        let lastFont = '';
 
         for (const lineRuns of wrappedRunsByLine)
         {
@@ -513,10 +518,14 @@ export class CanvasTextMetrics
 
             for (const run of lineRuns)
             {
-                const runFont = fontStringFromTextStyle(run.style);
+                const runFont = run.style.fontString;
                 const runFontProps = CanvasTextMetrics.measureFont(runFont);
 
-                context.font = runFont;
+                if (runFont !== lastFont)
+                {
+                    context.font = runFont;
+                    lastFont = runFont;
+                }
 
                 const runWidth = CanvasTextMetrics._measureText(run.text, run.style.letterSpacing, context);
 
@@ -631,6 +640,32 @@ export class CanvasTextMetrics
         // Adjust for letterSpacing (see _wordWrap for explanation)
         const adjustedWrapWidth = wordWrapWidth + letterSpacing;
 
+        // Cache for token width measurements and font tracking to avoid redundant work
+        const tokenWidthCache: Record<string, number> = {};
+        let lastFont = '';
+
+        const measureTokenWidth = (token: string, tokenStyle: TextStyle): number =>
+        {
+            const cacheKey = `${token}|${tokenStyle.styleKey}`;
+            let width = tokenWidthCache[cacheKey];
+
+            if (width === undefined)
+            {
+                const font = tokenStyle.fontString;
+
+                if (font !== lastFont)
+                {
+                    context.font = font;
+                    lastFont = font;
+                }
+                width = CanvasTextMetrics._measureText(token, tokenStyle.letterSpacing, context)
+                    + tokenStyle.letterSpacing;
+                tokenWidthCache[cacheKey] = width;
+            }
+
+            return width;
+        };
+
         const result: TextStyleRun[][] = [];
 
         // Process each line from the input
@@ -653,9 +688,7 @@ export class CanvasTextMetrics
                 {
                     const { token: groupToken, style: groupStyle } = styledTokens[j];
 
-                    context.font = fontStringFromTextStyle(groupStyle);
-                    totalWidth += CanvasTextMetrics._measureText(groupToken, groupStyle.letterSpacing, context)
-                        + groupStyle.letterSpacing;
+                    totalWidth += measureTokenWidth(groupToken, groupStyle);
                     j++;
                 }
                 while (j < styledTokens.length && styledTokens[j].continuesFromPrevious);
@@ -720,12 +753,7 @@ export class CanvasTextMetrics
             {
                 const { token, style: tokenStyle, continuesFromPrevious } = styledTokens[i];
 
-                // Measure the token with its style
-                const tokenFont = fontStringFromTextStyle(tokenStyle);
-
-                context.font = tokenFont;
-                const tokenWidth = CanvasTextMetrics._measureText(token, tokenStyle.letterSpacing, context)
-                    + tokenStyle.letterSpacing;
+                const tokenWidth = measureTokenWidth(token, tokenStyle);
 
                 // Handle collapsing spaces
                 if (collapseSpaces)
@@ -768,14 +796,11 @@ export class CanvasTextMetrics
                         {
                             const groupToken = wordGroupTokens[g].token;
                             const groupStyle = wordGroupTokens[g].style;
-                            const groupFont = fontStringFromTextStyle(groupStyle);
                             const charGroups = CanvasTextMetrics._getCharacterGroups(groupToken, breakWords);
 
                             for (const char of charGroups)
                             {
-                                context.font = groupFont;
-                                const charWidth = CanvasTextMetrics._measureText(char, groupStyle.letterSpacing, context)
-                                    + groupStyle.letterSpacing;
+                                const charWidth = measureTokenWidth(char, groupStyle);
 
                                 // eslint-disable-next-line max-depth
                                 if (charWidth + currentWidth > adjustedWrapWidth)
@@ -1348,7 +1373,7 @@ export class CanvasTextMetrics
             return false;
         }
 
-        return CanvasTextMetrics._newlines.includes(char.charCodeAt(0));
+        return CanvasTextMetrics._newlinesSet.has(char.charCodeAt(0));
     }
 
     /**
@@ -1368,7 +1393,7 @@ export class CanvasTextMetrics
             return false;
         }
 
-        return CanvasTextMetrics._breakingSpaces.includes(char.charCodeAt(0));
+        return CanvasTextMetrics._breakingSpacesSet.has(char.charCodeAt(0));
     }
 
     /**
@@ -1379,7 +1404,7 @@ export class CanvasTextMetrics
     private static _tokenize(text: string): string[]
     {
         const tokens: string[] = [];
-        let token = '';
+        const tokenChars: string[] = [];
 
         if (typeof text !== 'string')
         {
@@ -1393,10 +1418,10 @@ export class CanvasTextMetrics
 
             if (CanvasTextMetrics.isBreakingSpace(char, nextChar) || CanvasTextMetrics._isNewline(char))
             {
-                if (token !== '')
+                if (tokenChars.length > 0)
                 {
-                    tokens.push(token);
-                    token = '';
+                    tokens.push(tokenChars.join(''));
+                    tokenChars.length = 0;
                 }
 
                 // treat \r\n as a single new line token
@@ -1413,12 +1438,12 @@ export class CanvasTextMetrics
                 continue;
             }
 
-            token += char;
+            tokenChars.push(char);
         }
 
-        if (token !== '')
+        if (tokenChars.length > 0)
         {
-            tokens.push(token);
+            tokens.push(tokenChars.join(''));
         }
 
         return tokens;

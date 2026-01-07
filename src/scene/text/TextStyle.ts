@@ -8,6 +8,7 @@ import { FillGradient } from '../graphics/shared/fill/FillGradient';
 import { FillPattern } from '../graphics/shared/fill/FillPattern';
 import { GraphicsContext } from '../graphics/shared/GraphicsContext';
 import { toFillStyle, toStrokeStyle } from '../graphics/shared/utils/convertFillInputToFillStyle';
+import { fontStringFromTextStyle } from './canvas/utils/fontStringFromTextStyle';
 
 import type { TextureDestroyOptions, TypeOrBool } from '../container/destroyTypes';
 import type {
@@ -826,6 +827,7 @@ export class TextStyle extends EventEmitter<{
     private _padding: number;
 
     private _trim: boolean;
+    private _cachedFontString: string | null = null;
     /** @internal */
     public _tagStyles: Record<string, TextStyleOptions> | undefined;
 
@@ -1221,6 +1223,7 @@ export class TextStyle extends EventEmitter<{
     public update()
     {
         this._tick++;
+        this._cachedFontString = null;
         this.emit('update', this);
     }
 
@@ -1261,6 +1264,20 @@ export class TextStyle extends EventEmitter<{
     public get styleKey(): string
     {
         return `${this.uid}-${this._tick}`;
+    }
+
+    /**
+     * Returns the CSS font string for this style, cached for performance.
+     * @returns CSS font string
+     */
+    public get fontString(): string
+    {
+        if (this._cachedFontString === null)
+        {
+            this._cachedFontString = fontStringFromTextStyle(this);
+        }
+
+        return this._cachedFontString;
     }
 
     /**
