@@ -7,19 +7,19 @@ import type { Container } from '~/scene';
 export const scene: TestScene = {
     it: 'should render bounds with tagged text correctly',
     options: {
-        width: 128,
+        width: 164,
         height: 64,
     },
     create: async (scene: Container) =>
     {
-        await Assets.load('fonts/outfit.woff2');
+        await Assets.load('fonts/msdf/pinyon/PinyonScript-Regular.ttf');
 
         const text = new Text({
             text: '<red>aff</red> <blue>fi if fl</blue>',
             style: {
-                fontFamily: 'Outfit',
+                fontFamily: 'PinyonScript Regular',
                 fontSize: 24,
-                fill: 'white',
+                fill: 'red',
                 padding: 25,
                 letterSpacing: 2,
                 tagStyles: {
@@ -45,7 +45,7 @@ export const scene: TestScene = {
             text: '<green>aff</green> <yellow>fi if fl</yellow>',
             style: {
                 fontSize: 24,
-                fill: 'white',
+                fill: 'red',
                 fontStyle: 'italic',
                 tagStyles: {
                     green: { fill: 'green' },
