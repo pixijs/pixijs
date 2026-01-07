@@ -424,6 +424,17 @@ export class CanvasTextMetrics
         // Parse text into runs
         const runs = parseTaggedText(text, style);
 
+        // Collapse newlines to spaces in 'normal' mode (matching regular text behavior)
+        const collapseNewlines = CanvasTextMetrics._collapseNewlines(style.whiteSpace);
+
+        if (collapseNewlines)
+        {
+            for (const run of runs)
+            {
+                run.text = run.text.replace(/\r\n|\r|\n/g, ' ');
+            }
+        }
+
         // First, we need to handle newlines and word wrap
         // Split runs by newlines first
         const runsByLine: TextStyleRun[][] = [];
