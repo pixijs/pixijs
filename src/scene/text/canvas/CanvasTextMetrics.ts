@@ -1098,7 +1098,7 @@ export class CanvasTextMetrics
 
         let width = 0;
         let line = '';
-        let lines = '';
+        const linesArray: string[] = [];
 
         const cache: CharacterWidthCache = Object.create(null);
         const { letterSpacing, whiteSpace } = style;
@@ -1132,7 +1132,7 @@ export class CanvasTextMetrics
                 // keep the new line
                 if (!collapseNewlines)
                 {
-                    lines += CanvasTextMetrics._addLine(line);
+                    linesArray.push(CanvasTextMetrics._trimRight(line));
                     canPrependSpaces = !collapseSpaces;
                     line = '';
                     width = 0;
@@ -1167,7 +1167,7 @@ export class CanvasTextMetrics
                 if (line !== '')
                 {
                     // start newlines for overflow words
-                    lines += CanvasTextMetrics._addLine(line);
+                    linesArray.push(CanvasTextMetrics._trimRight(line));
                     line = '';
                     width = 0;
                 }
@@ -1185,7 +1185,7 @@ export class CanvasTextMetrics
 
                         if (characterWidth + width > wordWrapWidth)
                         {
-                            lines += CanvasTextMetrics._addLine(line);
+                            linesArray.push(CanvasTextMetrics._trimRight(line));
                             canPrependSpaces = false;
                             line = '';
                             width = 0;
@@ -1203,15 +1203,13 @@ export class CanvasTextMetrics
                     // finish that line and start a new one
                     if (line.length > 0)
                     {
-                        lines += CanvasTextMetrics._addLine(line);
+                        linesArray.push(CanvasTextMetrics._trimRight(line));
                         line = '';
                         width = 0;
                     }
 
-                    const isLastToken = i === tokens.length - 1;
-
-                    // give it its own line if it's not the end
-                    lines += CanvasTextMetrics._addLine(token, !isLastToken);
+                    // give it its own line
+                    linesArray.push(CanvasTextMetrics._trimRight(token));
                     canPrependSpaces = false;
                     line = '';
                     width = 0;
@@ -1229,7 +1227,7 @@ export class CanvasTextMetrics
                     canPrependSpaces = false;
 
                     // add a new line
-                    lines += CanvasTextMetrics._addLine(line);
+                    linesArray.push(CanvasTextMetrics._trimRight(line));
 
                     // start a new line
                     line = '';
@@ -1248,9 +1246,14 @@ export class CanvasTextMetrics
             }
         }
 
-        lines += CanvasTextMetrics._addLine(line, false);
+        const trimmedLine = CanvasTextMetrics._trimRight(line);
 
-        return lines;
+        if (trimmedLine.length > 0)
+        {
+            linesArray.push(trimmedLine);
+        }
+
+        return linesArray.join('\n');
     }
 
     /**
@@ -1322,19 +1325,15 @@ export class CanvasTextMetrics
             return '';
         }
 
-        for (let i = text.length - 1; i >= 0; i--)
+        let i = text.length - 1;
+
+        while (i >= 0 && CanvasTextMetrics.isBreakingSpace(text[i]))
         {
-            const char = text[i];
-
-            if (!CanvasTextMetrics.isBreakingSpace(char))
-            {
-                break;
-            }
-
-            text = text.slice(0, -1);
+            i--;
         }
 
-        return text;
+        // Only slice if we found trailing spaces
+        return i < text.length - 1 ? text.slice(0, i + 1) : text;
     }
 
     /**
