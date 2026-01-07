@@ -352,34 +352,15 @@ export class FillGradient implements CanvasGradient
     {
         if (this.texture) return;
 
-        let { x: x0, y: y0 } = this.start;
-        let { x: x1, y: y1 } = this.end;
+        const { x: x0, y: y0 } = this.start;
+        const { x: x1, y: y1 } = this.end;
 
-        let dx = x1 - x0;
-        let dy = y1 - y0;
+        const dx = x1 - x0;
+        const dy = y1 - y0;
 
-        // Determine flip based on original dx/dy and swap coordinates if necessary
+        // Determine flip based on original dx/dy
+        // We flip the gradient texture when either component is negative
         const flip = dx < 0 || dy < 0;
-
-        if (this._wrapMode === 'clamp-to-edge')
-        {
-            if (dx < 0)
-            {
-                const temp = x0;
-
-                x0 = x1;
-                x1 = temp;
-                dx *= -1;
-            }
-            if (dy < 0)
-            {
-                const temp = y0;
-
-                y0 = y1;
-                y1 = temp;
-                dy *= -1;
-            }
-        }
 
         const colorStops = this.colorStops.length ? this.colorStops : emptyColorStops;
 
@@ -403,14 +384,12 @@ export class FillGradient implements CanvasGradient
             }),
         });
 
-        // generate some UVS based on the gradient direction sent
-
+        // Generate UVs based on the gradient direction
+        // Use the original (non-swapped) coordinates to calculate the transform
         const dist = Math.sqrt((dx * dx) + (dy * dy));
         const angle = Math.atan2(dy, dx);
 
-        // little offset to stop the uvs from flowing over the edge..
-        // this matrix is inverted when used in the graphics
-        // add a tiny off set to prevent uv bleeding..
+        // This matrix is inverted when used in the graphics
         const m = new Matrix();
 
         m.scale((dist / defaultSize), 1);
