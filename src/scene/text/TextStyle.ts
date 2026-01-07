@@ -826,6 +826,7 @@ export class TextStyle extends EventEmitter<{
     private _padding: number;
 
     private _trim: boolean;
+    /** @internal */
     public _tagStyles: Record<string, TextStyleOptions> | undefined;
 
     constructor(style: Partial<TextStyleOptions> = {})

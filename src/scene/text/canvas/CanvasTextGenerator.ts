@@ -268,34 +268,13 @@ class CanvasTextGeneratorClass
     ): void
     {
         const { canvas, context } = canvasAndContext;
-        const { runsByLine, lineWidths, maxLineWidth, lineAscents, lineHeights } = measured;
+        const { runsByLine, lineWidths, maxLineWidth, lineAscents, lineHeights, hasDropShadow } = measured;
 
         const height = canvas.height;
 
         context.resetTransform();
         context.scale(resolution, resolution);
         context.textBaseline = style.textBaseline;
-
-        // Check if base style OR any run has a drop shadow
-        let hasDropShadow = !!style.dropShadow;
-
-        if (!hasDropShadow)
-        {
-            for (let i = 0; i < runsByLine.length; i++)
-            {
-                const lineRuns = runsByLine[i];
-
-                for (let j = 0; j < lineRuns.length; j++)
-                {
-                    if (lineRuns[j].style.dropShadow)
-                    {
-                        hasDropShadow = true;
-                        break;
-                    }
-                }
-                if (hasDropShadow) break;
-            }
-        }
 
         // require 2 passes if a shadow; the first to draw the drop shadow, the second to draw the text
         const passesCount = hasDropShadow ? 2 : 1;
@@ -305,20 +284,25 @@ class CanvasTextGeneratorClass
         const strokeWidth = style._stroke?.width ?? 0;
         const halfStroke = strokeWidth / 2;
 
-        // Pre-calculate run widths to avoid measuring twice per pass
-        const runWidthsByLine: number[][] = [];
+        // Pre-calculate run widths and font strings to avoid redundant computation per pass
+        const runDataByLine: Array<Array<{ width: number; font: string }>> = [];
 
         for (let lineIndex = 0; lineIndex < runsByLine.length; lineIndex++)
         {
             const lineRuns = runsByLine[lineIndex];
-            const widths: number[] = [];
+            const runData: Array<{ width: number; font: string }> = [];
 
             for (const run of lineRuns)
             {
-                context.font = fontStringFromTextStyle(run.style);
-                widths.push(this._measureRunWidth(run, context as CanvasRenderingContext2D));
+                const font = fontStringFromTextStyle(run.style);
+
+                context.font = font;
+                runData.push({
+                    width: this._measureRunWidth(run, context as CanvasRenderingContext2D),
+                    font,
+                });
             }
-            runWidthsByLine.push(widths);
+            runDataByLine.push(runData);
         }
 
         for (let pass = 0; pass < passesCount; ++pass)
@@ -341,7 +325,7 @@ class CanvasTextGeneratorClass
                 const lineWidth = lineWidths[lineIndex];
                 const lineAscent = lineAscents[lineIndex];
                 const currentLineHeight = lineHeights[lineIndex];
-                const runWidths = runWidthsByLine[lineIndex];
+                const lineRunData = runDataByLine[lineIndex];
 
                 // Calculate line X position based on alignment
                 let linePositionX = halfStroke;
@@ -358,9 +342,9 @@ class CanvasTextGeneratorClass
                 for (let runIndex = 0; runIndex < lineRuns.length; runIndex++)
                 {
                     const run = lineRuns[runIndex];
-                    const runWidth = runWidths[runIndex];
+                    const { width: runWidth, font: runFont } = lineRunData[runIndex];
 
-                    context.font = fontStringFromTextStyle(run.style);
+                    context.font = runFont;
                     context.textBaseline = run.style.textBaseline;
 
                     // Set stroke style for this run
@@ -397,7 +381,6 @@ class CanvasTextGeneratorClass
                         {
                             // Create per-run metrics for gradient calculation
                             // Use run's font metrics for height to match non-tagged text behavior
-                            const runFont = fontStringFromTextStyle(run.style);
                             const runFontProps = CanvasTextMetrics.measureFont(runFont);
                             const runHeight = run.style.lineHeight || runFontProps.fontSize;
 
@@ -436,9 +419,9 @@ class CanvasTextGeneratorClass
                 for (let runIndex = 0; runIndex < lineRuns.length; runIndex++)
                 {
                     const run = lineRuns[runIndex];
-                    const runWidth = runWidths[runIndex];
+                    const { width: runWidth, font: runFont } = lineRunData[runIndex];
 
-                    context.font = fontStringFromTextStyle(run.style);
+                    context.font = runFont;
                     context.textBaseline = run.style.textBaseline;
 
                     // Set fill style for this run if not shadow pass
@@ -467,7 +450,6 @@ class CanvasTextGeneratorClass
                         {
                             // Create per-run metrics for gradient calculation
                             // Use run's font metrics for height to match non-tagged text behavior
-                            const runFont = fontStringFromTextStyle(run.style);
                             const runFontProps = CanvasTextMetrics.measureFont(runFont);
                             const runHeight = run.style.lineHeight || runFontProps.fontSize;
 

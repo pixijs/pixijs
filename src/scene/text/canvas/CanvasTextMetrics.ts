@@ -133,6 +133,14 @@ export class CanvasTextMetrics
     public lineHeights?: number[];
 
     /**
+     * Whether any run in the tagged text has a drop shadow.
+     * Cached during measurement to avoid per-render iteration.
+     * Only populated when text contains tag markup.
+     * @internal
+     */
+    public hasDropShadow?: boolean;
+
+    /**
      * String used for calculate font metrics.
      * These characters are all tall to help calculate the height required for text.
      */
@@ -273,6 +281,7 @@ export class CanvasTextMetrics
      * @param taggedData.lineAscents - per-line ascent values for tagged text
      * @param taggedData.lineDescents - per-line descent values for tagged text
      * @param taggedData.lineHeights - per-line height values for tagged text
+     * @param taggedData.hasDropShadow - whether any run has a drop shadow
      */
     constructor(
         text: string,
@@ -289,6 +298,7 @@ export class CanvasTextMetrics
             lineAscents?: number[],
             lineDescents?: number[],
             lineHeights?: number[],
+            hasDropShadow?: boolean,
         },
     )
     {
@@ -308,6 +318,7 @@ export class CanvasTextMetrics
             this.lineAscents = taggedData.lineAscents;
             this.lineDescents = taggedData.lineDescents;
             this.lineHeights = taggedData.lineHeights;
+            this.hasDropShadow = taggedData.hasDropShadow;
         }
     }
 
@@ -373,7 +384,7 @@ export class CanvasTextMetrics
             maxLineWidth = Math.max(maxLineWidth, lineWidth);
         }
 
-        const strokeWidth = style._stroke?.width || 0;
+        const strokeWidth = style._stroke?.width ?? 0;
         const lineHeight = style.lineHeight || fontProperties.fontSize;
 
         // Calculate base width - use wordWrapWidth for non-left alignment when wrapping
@@ -429,9 +440,11 @@ export class CanvasTextMetrics
 
         if (collapseNewlines)
         {
-            for (const run of runs)
+            for (let i = 0; i < runs.length; i++)
             {
-                run.text = run.text.replace(/\r\n|\r|\n/g, ' ');
+                const run = runs[i];
+
+                runs[i] = { text: run.text.replace(/\r\n|\r|\n/g, ' '), style: run.style };
             }
         }
 
@@ -554,6 +567,27 @@ export class CanvasTextMetrics
         // Use the base style's line height for the lineHeight property (for backwards compat)
         const baseLineHeight = style.lineHeight || baseFontProps.fontSize;
 
+        // Check if base style OR any run has a drop shadow (cache to avoid per-render iteration)
+        let hasDropShadow = !!style.dropShadow;
+
+        if (!hasDropShadow)
+        {
+            for (let i = 0; i < runsByLine.length; i++)
+            {
+                const lineRuns = runsByLine[i];
+
+                for (let j = 0; j < lineRuns.length; j++)
+                {
+                    if (lineRuns[j].style.dropShadow)
+                    {
+                        hasDropShadow = true;
+                        break;
+                    }
+                }
+                if (hasDropShadow) break;
+            }
+        }
+
         return new CanvasTextMetrics(
             text,
             style,
@@ -569,6 +603,7 @@ export class CanvasTextMetrics
                 lineAscents,
                 lineDescents,
                 lineHeights: lineHeightsArr,
+                hasDropShadow,
             },
         );
     }
@@ -849,8 +884,10 @@ export class CanvasTextMetrics
                 }
             }
 
-            // Push final line if it has content, or if we haven't pushed anything yet
-            // (to preserve blank lines in the input)
+            // Push final line if it has content, or if we haven't pushed anything yet.
+            // The second condition (result.length === resultStartLength) ensures we preserve
+            // explicit blank lines from the input text. Without this, a line containing only
+            // whitespace would be trimmed away entirely, collapsing consecutive newlines.
             if (currentLineRuns.length > 0 || result.length === resultStartLength)
             {
                 result.push(currentLineRuns);
