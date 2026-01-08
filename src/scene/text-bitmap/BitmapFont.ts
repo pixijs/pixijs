@@ -4,7 +4,7 @@ import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { AbstractBitmapFont } from './AbstractBitmapFont';
 import { BitmapFontManager } from './BitmapFontManager';
 
-import type { FontMetrics } from '../text/canvas/CanvasTextMetrics';
+import type { FontMetrics } from '../text/canvas/utils/types';
 import type { BitmapFontData } from './AbstractBitmapFont';
 import type { BitmapFontInstallOptions } from './BitmapFontManager';
 

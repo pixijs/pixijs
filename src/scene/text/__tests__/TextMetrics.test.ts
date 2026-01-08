@@ -5,6 +5,7 @@
 
 import { lru } from 'tiny-lru';
 import { CanvasTextMetrics } from '../canvas/CanvasTextMetrics';
+import { collapseNewlines, collapseSpaces, isNewline, tokenize, trimRight } from '../canvas/utils/textTokenization';
 import { TextStyle } from '../TextStyle';
 
 import type { TextStyleOptions } from '../TextStyle';
@@ -395,28 +396,28 @@ describe('CanvasTextMetrics', () =>
     {
         it('string with no whitespaces to trim', () =>
         {
-            const text = CanvasTextMetrics['_trimRight']('remove white spaces to the right');
+            const text = trimRight('remove white spaces to the right');
 
             expect(text).toEqual('remove white spaces to the right');
         });
 
         it('string with whitespaces to trim', () =>
         {
-            const text = CanvasTextMetrics['_trimRight']('remove white spaces to the right   ');
+            const text = trimRight('remove white spaces to the right   ');
 
             expect(text).toEqual('remove white spaces to the right');
         });
 
         it('string with strange unicode whitespaces to trim', () =>
         {
-            const text = CanvasTextMetrics['_trimRight']('remove white spaces to the right\u0009\u0020\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2008\u2009\u200A\u205F\u3000');
+            const text = trimRight('remove white spaces to the right\u0009\u0020\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2008\u2009\u200A\u205F\u3000');
 
             expect(text).toEqual('remove white spaces to the right');
         });
 
         it('empty string', () =>
         {
-            const text = CanvasTextMetrics['_trimRight']('');
+            const text = trimRight('');
 
             expect(text).toEqual('');
         });
@@ -424,7 +425,7 @@ describe('CanvasTextMetrics', () =>
         it('non-string input', () =>
         {
             // @ts-expect-error - should return false on non-string input
-            const text = CanvasTextMetrics['_trimRight']({});
+            const text = trimRight({});
 
             expect(text).toEqual('');
         });
@@ -434,21 +435,21 @@ describe('CanvasTextMetrics', () =>
     {
         it('line feed', () =>
         {
-            const bool = CanvasTextMetrics['_isNewline']('\n');
+            const bool = isNewline('\n');
 
             expect(bool).toEqual(true);
         });
 
         it('carriage return', () =>
         {
-            const bool = CanvasTextMetrics['_isNewline']('\r');
+            const bool = isNewline('\r');
 
             expect(bool).toEqual(true);
         });
 
         it('newline char', () =>
         {
-            const bool = CanvasTextMetrics['_isNewline']('A');
+            const bool = isNewline('A');
 
             expect(bool).toEqual(false);
         });
@@ -456,7 +457,7 @@ describe('CanvasTextMetrics', () =>
         it('non string', () =>
         {
             // @ts-expect-error - should return false on non-string input
-            const bool = CanvasTextMetrics['_isNewline']({});
+            const bool = isNewline({});
 
             expect(bool).toEqual(false);
         });
@@ -534,7 +535,7 @@ describe('CanvasTextMetrics', () =>
     {
         it('full example', () =>
         {
-            const arr = CanvasTextMetrics['_tokenize'](spaceNewLineText);
+            const arr = tokenize(spaceNewLineText);
 
             expect(arr).toBeArray();
             expect(arr.length).toEqual(146);
@@ -544,7 +545,7 @@ describe('CanvasTextMetrics', () =>
 
         it('empty string', () =>
         {
-            const arr = CanvasTextMetrics['_tokenize']('');
+            const arr = tokenize('');
 
             expect(arr).toBeArray();
             expect(arr.length).toEqual(0);
@@ -552,7 +553,7 @@ describe('CanvasTextMetrics', () =>
 
         it('single char', () =>
         {
-            const arr = CanvasTextMetrics['_tokenize']('A');
+            const arr = tokenize('A');
 
             expect(arr).toBeArray();
             expect(arr.length).toEqual(1);
@@ -560,7 +561,7 @@ describe('CanvasTextMetrics', () =>
 
         it('newline char', () =>
         {
-            const arr = CanvasTextMetrics['_tokenize']('\n');
+            const arr = tokenize('\n');
 
             expect(arr).toBeArray();
             expect(arr.length).toEqual(1);
@@ -568,7 +569,7 @@ describe('CanvasTextMetrics', () =>
 
         it('newline char: CRLF', () =>
         {
-            const arr = CanvasTextMetrics['_tokenize']('\r\n');
+            const arr = tokenize('\r\n');
 
             expect(arr).toBeArray();
             expect(arr.length).toEqual(1);
@@ -576,7 +577,7 @@ describe('CanvasTextMetrics', () =>
 
         it('breakingSpaces', () =>
         {
-            const arr = CanvasTextMetrics['_tokenize'](breakingSpaces.join(''));
+            const arr = tokenize(breakingSpaces.join(''));
 
             expect(arr).toBeArray();
             expect(arr.length).toEqual(breakingSpaces.length);
@@ -585,7 +586,7 @@ describe('CanvasTextMetrics', () =>
         it('non string', () =>
         {
             // @ts-expect-error - should return false on non-string input
-            const arr = CanvasTextMetrics['_tokenize']({});
+            const arr = tokenize({});
 
             expect(arr).toBeArray();
             expect(arr.length).toEqual(0);
@@ -596,21 +597,21 @@ describe('CanvasTextMetrics', () =>
     {
         it('pre', () =>
         {
-            const bool = CanvasTextMetrics['_collapseSpaces']('pre');
+            const bool = collapseSpaces('pre');
 
             expect(bool).toEqual(false);
         });
 
         it('normal', () =>
         {
-            const bool = CanvasTextMetrics['_collapseSpaces']('normal');
+            const bool = collapseSpaces('normal');
 
             expect(bool).toEqual(true);
         });
 
         it('pre-line', () =>
         {
-            const bool = CanvasTextMetrics['_collapseSpaces']('pre-line');
+            const bool = collapseSpaces('pre-line');
 
             expect(bool).toEqual(true);
         });
@@ -618,7 +619,7 @@ describe('CanvasTextMetrics', () =>
         it('non matching string', () =>
         {
             // @ts-expect-error - should return false on non matching string
-            const bool = CanvasTextMetrics['_collapseSpaces']('bull');
+            const bool = collapseSpaces('bull');
 
             expect(bool).toEqual(false);
         });
@@ -626,7 +627,7 @@ describe('CanvasTextMetrics', () =>
         it('non string', () =>
         {
             // @ts-expect-error - should return false on non-string input
-            const bool = CanvasTextMetrics['_collapseSpaces']({});
+            const bool = collapseSpaces({});
 
             expect(bool).toEqual(false);
         });
@@ -636,21 +637,21 @@ describe('CanvasTextMetrics', () =>
     {
         it('pre', () =>
         {
-            const bool = CanvasTextMetrics['_collapseNewlines']('pre');
+            const bool = collapseNewlines('pre');
 
             expect(bool).toEqual(false);
         });
 
         it('normal', () =>
         {
-            const bool = CanvasTextMetrics['_collapseNewlines']('normal');
+            const bool = collapseNewlines('normal');
 
             expect(bool).toEqual(true);
         });
 
         it('pre-line', () =>
         {
-            const bool = CanvasTextMetrics['_collapseNewlines']('pre-line');
+            const bool = collapseNewlines('pre-line');
 
             expect(bool).toEqual(false);
         });
@@ -658,7 +659,7 @@ describe('CanvasTextMetrics', () =>
         it('non matching string', () =>
         {
             // @ts-expect-error - should return false on non matching string
-            const bool = CanvasTextMetrics['_collapseNewlines']('bull');
+            const bool = collapseNewlines('bull');
 
             expect(bool).toEqual(false);
         });
@@ -666,7 +667,7 @@ describe('CanvasTextMetrics', () =>
         it('non string', () =>
         {
             // @ts-expect-error - should return false on non-string input
-            const bool = CanvasTextMetrics['_collapseNewlines']({});
+            const bool = collapseNewlines({});
 
             expect(bool).toEqual(false);
         });

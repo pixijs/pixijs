@@ -80,7 +80,7 @@ class CanvasTextGeneratorClass
 
         const canvasAndContext = CanvasPool.getOptimalCanvasAndContext(width, height);
 
-        this._renderTextToCanvas(text, style, padding, resolution, canvasAndContext);
+        this._renderTextToCanvas(style, padding, resolution, canvasAndContext, measured);
 
         const frame = style.trim
             ? getCanvasBoundingBox({ canvas: canvasAndContext.canvas, width, height, resolution: 1, output: tempRect })
@@ -106,25 +106,32 @@ class CanvasTextGeneratorClass
 
     /**
      * Renders text to its canvas, and updates its texture.
-     * @param text - The text to render
      * @param style - The style of the text
      * @param padding - The padding of the text
      * @param resolution - The resolution of the text
      * @param canvasAndContext - The canvas and context to render the text to
+     * @param measured - Pre-measured text metrics to avoid duplicate measurement
      */
     private _renderTextToCanvas(
-        text: string,
         style: TextStyle,
         padding: number,
         resolution: number,
-        canvasAndContext: CanvasAndContext
+        canvasAndContext: CanvasAndContext,
+        measured: CanvasTextMetrics
     ): void
     {
+        // Check if we have tagged text data
+        if (measured.runsByLine && measured.runsByLine.length > 0)
+        {
+            this._renderTaggedTextToCanvas(measured, style, padding, resolution, canvasAndContext);
+
+            return;
+        }
+
         const { canvas, context } = canvasAndContext;
 
         const font = fontStringFromTextStyle(style);
 
-        const measured = CanvasTextMetrics.measureText(text || ' ', style);// , canvas);
         const lines = measured.lines;
         const lineHeight = measured.lineHeight;
         const lineWidths = measured.lineWidths;
@@ -170,6 +177,18 @@ class CanvasTextGeneratorClass
         // text, but instead drawing text in the correct location, we'll draw it off screen (-paddingY), and then adjust the
         // drop shadow so only that appears on screen (+paddingY). Now we'll have the correct draw order of the shadow
         // beneath the text, whilst also having the proper text shadow styling.
+        // Calculate alignment width - use wordWrapWidth when wrapping with non-left align
+        const alignWidth = style.wordWrap ? style.wordWrapWidth : maxLineWidth;
+        const strokeWidth = style._stroke?.width ?? 0;
+        const halfStroke = strokeWidth / 2;
+
+        let linePositionYShift = (lineHeight - fontProperties.fontSize) / 2;
+
+        if (lineHeight - fontProperties.fontSize < 0)
+        {
+            linePositionYShift = 0;
+        }
+
         for (let i = 0; i < passesCount; ++i)
         {
             const isShadowPass = style.dropShadow && i === 0;
@@ -179,28 +198,7 @@ class CanvasTextGeneratorClass
 
             if (isShadowPass)
             {
-                // On Safari, text with gradient and drop shadows together do not position correctly
-                // if the scale of the canvas is not 1: https://bugs.webkit.org/show_bug.cgi?id=197689
-                // Therefore we'll set the styles to be a plain black whilst generating this drop shadow
-                context.fillStyle = 'black';
-                context.strokeStyle = 'black';
-
-                const shadowOptions = style.dropShadow;
-
-                const dropShadowColor = shadowOptions.color;
-                const dropShadowAlpha = shadowOptions.alpha;
-
-                context.shadowColor = Color.shared
-                    .setValue(dropShadowColor)
-                    .setAlpha(dropShadowAlpha)
-                    .toRgbaString();
-
-                const dropShadowBlur = shadowOptions.blur * resolution;
-                const dropShadowDistance = shadowOptions.distance * resolution;
-
-                context.shadowBlur = dropShadowBlur;
-                context.shadowOffsetX = Math.cos(shadowOptions.angle) * dropShadowDistance;
-                context.shadowOffsetY = (Math.sin(shadowOptions.angle) * dropShadowDistance) + dsOffsetShadow;
+                this._setupDropShadow(context as CanvasRenderingContext2D, style, resolution, dsOffsetShadow);
             }
             else
             {
@@ -208,7 +206,7 @@ class CanvasTextGeneratorClass
 
                 if (style._stroke?.width)
                 {
-                    const strokePadding = (style._stroke.width * 0.5) + (padding * 2);
+                    const strokePadding = halfStroke + (padding * 2);
 
                     context.strokeStyle = getCanvasFillStyle(style._stroke, context, measured, strokePadding);
                 }
@@ -216,34 +214,18 @@ class CanvasTextGeneratorClass
                 context.shadowColor = 'black';
             }
 
-            let linePositionYShift = (lineHeight - fontProperties.fontSize) / 2;
-
-            if (lineHeight - fontProperties.fontSize < 0)
-            {
-                linePositionYShift = 0;
-            }
-
-            const strokeWidth = style._stroke?.width ?? 0;
-
             // draw lines line by line
-            for (let i = 0; i < lines.length; i++)
+            for (let j = 0; j < lines.length; j++)
             {
-                linePositionX = strokeWidth / 2;
-                linePositionY = ((strokeWidth / 2) + (i * lineHeight)) + fontProperties.ascent + linePositionYShift;
+                linePositionX = halfStroke;
+                linePositionY = (halfStroke + (j * lineHeight)) + fontProperties.ascent + linePositionYShift;
 
-                if (style.align === 'right')
-                {
-                    linePositionX += maxLineWidth - lineWidths[i];
-                }
-                else if (style.align === 'center')
-                {
-                    linePositionX += (maxLineWidth - lineWidths[i]) / 2;
-                }
+                linePositionX += this._getAlignmentOffset(lineWidths[j], alignWidth, style.align);
 
                 if (style._stroke?.width)
                 {
                     this._drawLetterSpacing(
-                        lines[i],
+                        lines[j],
                         style,
                         canvasAndContext,
                         linePositionX + padding,
@@ -255,7 +237,7 @@ class CanvasTextGeneratorClass
                 if (style._fill !== undefined)
                 {
                     this._drawLetterSpacing(
-                        lines[i],
+                        lines[j],
                         style,
                         canvasAndContext,
                         linePositionX + padding,
@@ -264,6 +246,299 @@ class CanvasTextGeneratorClass
                 }
             }
         }
+    }
+
+    /**
+     * Renders tagged text (with per-run styles) to canvas.
+     * @param measured - The measured text metrics containing runsByLine
+     * @param style - The base text style
+     * @param padding - The padding of the text
+     * @param resolution - The resolution of the text
+     * @param canvasAndContext - The canvas and context to render to
+     */
+    private _renderTaggedTextToCanvas(
+        measured: CanvasTextMetrics,
+        style: TextStyle,
+        padding: number,
+        resolution: number,
+        canvasAndContext: CanvasAndContext
+    ): void
+    {
+        const { canvas, context } = canvasAndContext;
+        const { runsByLine, lineWidths, maxLineWidth, lineAscents, lineHeights, hasDropShadow } = measured;
+
+        const height = canvas.height;
+
+        context.resetTransform();
+        context.scale(resolution, resolution);
+        context.textBaseline = style.textBaseline;
+
+        // require 2 passes if a shadow; the first to draw the drop shadow, the second to draw the text
+        const passesCount = hasDropShadow ? 2 : 1;
+
+        // Calculate alignment width - use wordWrapWidth when wrapping with non-left align
+        const alignWidth = style.wordWrap ? style.wordWrapWidth : maxLineWidth;
+        const strokeWidth = style._stroke?.width ?? 0;
+        const halfStroke = strokeWidth / 2;
+
+        // Pre-calculate run widths and font strings to avoid redundant computation per pass
+        const runDataByLine: Array<Array<{ width: number; font: string }>> = [];
+
+        for (let lineIndex = 0; lineIndex < runsByLine.length; lineIndex++)
+        {
+            const lineRuns = runsByLine[lineIndex];
+            const runData: Array<{ width: number; font: string }> = [];
+
+            for (const run of lineRuns)
+            {
+                const font = fontStringFromTextStyle(run.style);
+
+                context.font = font;
+                runData.push({
+                    width: CanvasTextMetrics._measureText(run.text, run.style.letterSpacing, context),
+                    font,
+                });
+            }
+            runDataByLine.push(runData);
+        }
+
+        for (let pass = 0; pass < passesCount; ++pass)
+        {
+            const isShadowPass = hasDropShadow && pass === 0;
+            const dsOffsetText = isShadowPass ? Math.ceil(Math.max(1, height) + (padding * 2)) : 0;
+            const dsOffsetShadow = dsOffsetText * resolution;
+
+            if (!isShadowPass)
+            {
+                context.shadowColor = 'black';
+            }
+
+            let currentY = halfStroke;
+
+            // Draw lines
+            for (let lineIndex = 0; lineIndex < runsByLine.length; lineIndex++)
+            {
+                const lineRuns = runsByLine[lineIndex];
+                const lineWidth = lineWidths[lineIndex];
+                const lineAscent = lineAscents[lineIndex];
+                const currentLineHeight = lineHeights[lineIndex];
+                const lineRunData = runDataByLine[lineIndex];
+
+                // Calculate line X position based on alignment
+                let linePositionX = halfStroke;
+
+                linePositionX += this._getAlignmentOffset(lineWidth, alignWidth, style.align);
+
+                // Calculate Y position - use line ascent for proper baseline
+                const linePositionY = currentY + lineAscent;
+
+                // Track X position for runs
+                let runX = linePositionX + padding;
+
+                // First pass: draw strokes for all runs
+                for (let runIndex = 0; runIndex < lineRuns.length; runIndex++)
+                {
+                    const run = lineRuns[runIndex];
+                    const { width: runWidth, font: runFont } = lineRunData[runIndex];
+
+                    context.font = runFont;
+                    context.textBaseline = run.style.textBaseline;
+
+                    // Set stroke style for this run
+                    if (run.style._stroke?.width)
+                    {
+                        const runStroke = run.style._stroke;
+
+                        // Always set stroke properties (both passes need correct lineWidth)
+                        context.lineWidth = runStroke.width;
+                        context.miterLimit = runStroke.miterLimit;
+                        context.lineJoin = runStroke.join;
+                        context.lineCap = runStroke.cap;
+
+                        if (isShadowPass)
+                        {
+                            // Set up drop shadow for this specific run
+                            if (run.style.dropShadow)
+                            {
+                                this._setupDropShadow(
+                                    context as CanvasRenderingContext2D,
+                                    run.style,
+                                    resolution,
+                                    dsOffsetShadow
+                                );
+                            }
+                            else
+                            {
+                                // No shadow for this run, skip drawing
+                                runX += runWidth;
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            // Create per-run metrics for gradient calculation
+                            // Use run's font metrics for height to match non-tagged text behavior
+                            const runFontProps = CanvasTextMetrics.measureFont(runFont);
+                            const runHeight = run.style.lineHeight || runFontProps.fontSize;
+
+                            const runMetrics = {
+                                width: runWidth,
+                                height: runHeight,
+                                lineHeight: runHeight,
+                                lines: [run.text],
+                            } as CanvasTextMetrics;
+
+                            // Pass position offsets so gradient aligns with where the run is drawn
+                            // Subtract padding from runX because runX already includes padding,
+                            // but regular text rendering has gradient at origin with text at +padding
+                            context.strokeStyle = getCanvasFillStyle(
+                                runStroke, context, runMetrics, padding * 2, runX - padding, currentY
+                            );
+                        }
+
+                        this._drawLetterSpacing(
+                            run.text,
+                            run.style,
+                            canvasAndContext,
+                            runX,
+                            linePositionY + padding - dsOffsetText,
+                            true
+                        );
+                    }
+
+                    runX += runWidth;
+                }
+
+                // Reset X position for fill pass
+                runX = linePositionX + padding;
+
+                // Second pass: draw fills for all runs
+                for (let runIndex = 0; runIndex < lineRuns.length; runIndex++)
+                {
+                    const run = lineRuns[runIndex];
+                    const { width: runWidth, font: runFont } = lineRunData[runIndex];
+
+                    context.font = runFont;
+                    context.textBaseline = run.style.textBaseline;
+
+                    // Set fill style for this run if not shadow pass
+                    if (run.style._fill !== undefined)
+                    {
+                        if (isShadowPass)
+                        {
+                            // Set up drop shadow for this specific run
+                            if (run.style.dropShadow)
+                            {
+                                this._setupDropShadow(
+                                    context as CanvasRenderingContext2D,
+                                    run.style,
+                                    resolution,
+                                    dsOffsetShadow
+                                );
+                            }
+                            else
+                            {
+                                // No shadow for this run, skip drawing
+                                runX += runWidth;
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            // Create per-run metrics for gradient calculation
+                            // Use run's font metrics for height to match non-tagged text behavior
+                            const runFontProps = CanvasTextMetrics.measureFont(runFont);
+                            const runHeight = run.style.lineHeight || runFontProps.fontSize;
+
+                            const runMetrics = {
+                                width: runWidth,
+                                height: runHeight,
+                                lineHeight: runHeight,
+                                lines: [run.text],
+                            } as CanvasTextMetrics;
+
+                            // Pass position offsets so gradient aligns with where the run is drawn
+                            // Subtract padding from runX because runX already includes padding,
+                            // but regular text rendering has gradient at origin with text at +padding
+                            context.fillStyle = getCanvasFillStyle(
+                                run.style._fill, context, runMetrics, padding * 2, runX - padding, currentY
+                            );
+                        }
+
+                        this._drawLetterSpacing(
+                            run.text,
+                            run.style,
+                            canvasAndContext,
+                            runX,
+                            linePositionY + padding - dsOffsetText,
+                            false
+                        );
+                    }
+
+                    runX += runWidth;
+                }
+
+                currentY += currentLineHeight;
+            }
+        }
+    }
+
+    /**
+     * Sets up the canvas context for drop shadow rendering.
+     * @param context - The canvas context
+     * @param style - The text style containing drop shadow options
+     * @param resolution - The resolution multiplier
+     * @param dsOffsetShadow - The shadow Y offset
+     */
+    private _setupDropShadow(
+        context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
+        style: TextStyle,
+        resolution: number,
+        dsOffsetShadow: number
+    ): void
+    {
+        // On Safari, text with gradient and drop shadows together do not position correctly
+        // if the scale of the canvas is not 1: https://bugs.webkit.org/show_bug.cgi?id=197689
+        // Therefore we'll set the styles to be a plain black whilst generating this drop shadow
+        context.fillStyle = 'black';
+        context.strokeStyle = 'black';
+
+        const shadowOptions = style.dropShadow;
+        const dropShadowColor = shadowOptions.color;
+        const dropShadowAlpha = shadowOptions.alpha;
+
+        context.shadowColor = Color.shared
+            .setValue(dropShadowColor)
+            .setAlpha(dropShadowAlpha)
+            .toRgbaString();
+
+        const dropShadowBlur = shadowOptions.blur * resolution;
+        const dropShadowDistance = shadowOptions.distance * resolution;
+
+        context.shadowBlur = dropShadowBlur;
+        context.shadowOffsetX = Math.cos(shadowOptions.angle) * dropShadowDistance;
+        context.shadowOffsetY = (Math.sin(shadowOptions.angle) * dropShadowDistance) + dsOffsetShadow;
+    }
+
+    /**
+     * Calculates the X offset for text alignment.
+     * @param lineWidth - The width of the current line
+     * @param alignWidth - The width to align against (maxLineWidth or wordWrapWidth)
+     * @param align - The text alignment
+     * @returns The X offset for this line
+     */
+    private _getAlignmentOffset(lineWidth: number, alignWidth: number, align: string): number
+    {
+        if (align === 'right')
+        {
+            return alignWidth - lineWidth;
+        }
+        else if (align === 'center')
+        {
+            return (alignWidth - lineWidth) / 2;
+        }
+
+        return 0;
     }
 
     /**
