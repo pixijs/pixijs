@@ -6,7 +6,6 @@ import { type TextStyle } from '../TextStyle';
 import { CanvasTextMetrics } from './CanvasTextMetrics';
 import { fontStringFromTextStyle } from './utils/fontStringFromTextStyle';
 import { getCanvasFillStyle } from './utils/getCanvasFillStyle';
-import { type TextStyleRun } from './utils/parseTaggedText';
 
 /**
  * Temporary rectangle for getting the bounding box of the text.
@@ -298,7 +297,7 @@ class CanvasTextGeneratorClass
 
                 context.font = font;
                 runData.push({
-                    width: this._measureRunWidth(run, context as CanvasRenderingContext2D),
+                    width: CanvasTextMetrics._measureText(run.text, run.style.letterSpacing, context),
                     font,
                 });
             }
@@ -484,30 +483,6 @@ class CanvasTextGeneratorClass
                 currentY += currentLineHeight;
             }
         }
-    }
-
-    /**
-     * Measures the width of a text run.
-     * @param run - The text style run to measure
-     * @param context - The canvas context with font already set
-     * @returns The width of the run in pixels
-     */
-    private _measureRunWidth(
-        run: TextStyleRun,
-        context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
-    ): number
-    {
-        const letterSpacing = run.style.letterSpacing;
-        const text = run.text;
-
-        if (letterSpacing === 0)
-        {
-            return context.measureText(text).width;
-        }
-
-        const graphemes = CanvasTextMetrics.graphemeSegmenter(text);
-
-        return context.measureText(text).width + ((graphemes.length - 1) * letterSpacing);
     }
 
     /**

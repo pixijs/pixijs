@@ -452,14 +452,14 @@ export class CanvasTextMetrics
     }
 
     /**
-     * Core text measurement using canvas context.
-     * Kept in main class for performance (hot path).
+     * Measures the rendered width of a string, accounting for letter spacing and using the provided context.
      * @param text - The text to measure
-     * @param letterSpacing - Letter spacing value
+     * @param letterSpacing - Letter spacing in pixels
      * @param context - Canvas 2D context
-     * @returns The measured text width
+     * @returns The measured width of the text with spacing
+     * @internal
      */
-    private static _measureText(
+    public static _measureText(
         text: string,
         letterSpacing: number,
         context: ICanvasRenderingContext2D
