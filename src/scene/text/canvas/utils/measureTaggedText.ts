@@ -179,6 +179,7 @@ export function measureTaggedText(
     }
 
     let lastFont = '';
+    let hasDropShadow = !!style.dropShadow;
 
     for (const lineRuns of wrappedRunsByLine)
     {
@@ -204,6 +205,11 @@ export function measureTaggedText(
             lineAscent = Math.max(lineAscent, runFontProps.ascent);
             lineDescent = Math.max(lineDescent, runFontProps.descent);
             lineText += run.text;
+
+            if (!hasDropShadow && run.style.dropShadow)
+            {
+                hasDropShadow = true;
+            }
         }
 
         // Handle empty lines
@@ -247,27 +253,6 @@ export function measureTaggedText(
 
     // Use the base style's line height for the lineHeight property (for backwards compat)
     const baseLineHeight = style.lineHeight || baseFontProps.fontSize;
-
-    // Check if base style OR any run has a drop shadow (cache to avoid per-render iteration)
-    let hasDropShadow = !!style.dropShadow;
-
-    if (!hasDropShadow)
-    {
-        for (let i = 0; i < runsByLine.length; i++)
-        {
-            const lineRuns = runsByLine[i];
-
-            for (let j = 0; j < lineRuns.length; j++)
-            {
-                if (lineRuns[j].style.dropShadow)
-                {
-                    hasDropShadow = true;
-                    break;
-                }
-            }
-            if (hasDropShadow) break;
-        }
-    }
 
     return {
         width,
