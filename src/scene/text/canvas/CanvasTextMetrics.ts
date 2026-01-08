@@ -1282,21 +1282,6 @@ export class CanvasTextMetrics
     }
 
     /**
-     * Convenience function for logging each line added during the wordWrap method.
-     * @param line    - The line of text to add
-     * @param newLine - Add new line character to end
-     * @returns A formatted line
-     */
-    private static _addLine(line: string, newLine = true): string
-    {
-        line = CanvasTextMetrics._trimRight(line);
-
-        line = (newLine) ? `${line}\n` : line;
-
-        return line;
-    }
-
-    /**
      * Gets & sets the widths of calculated characters in a cache object
      * @param key            - The key
      * @param letterSpacing  - The letter spacing
