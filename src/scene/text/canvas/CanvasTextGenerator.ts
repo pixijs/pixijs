@@ -80,7 +80,7 @@ class CanvasTextGeneratorClass
 
         const canvasAndContext = CanvasPool.getOptimalCanvasAndContext(width, height);
 
-        this._renderTextToCanvas(text, style, padding, resolution, canvasAndContext);
+        this._renderTextToCanvas(style, padding, resolution, canvasAndContext, measured);
 
         const frame = style.trim
             ? getCanvasBoundingBox({ canvas: canvasAndContext.canvas, width, height, resolution: 1, output: tempRect })
@@ -106,22 +106,20 @@ class CanvasTextGeneratorClass
 
     /**
      * Renders text to its canvas, and updates its texture.
-     * @param text - The text to render
      * @param style - The style of the text
      * @param padding - The padding of the text
      * @param resolution - The resolution of the text
      * @param canvasAndContext - The canvas and context to render the text to
+     * @param measured - Pre-measured text metrics to avoid duplicate measurement
      */
     private _renderTextToCanvas(
-        text: string,
         style: TextStyle,
         padding: number,
         resolution: number,
-        canvasAndContext: CanvasAndContext
+        canvasAndContext: CanvasAndContext,
+        measured: CanvasTextMetrics
     ): void
     {
-        const measured = CanvasTextMetrics.measureText(text || ' ', style);
-
         // Check if we have tagged text data
         if (measured.runsByLine && measured.runsByLine.length > 0)
         {
