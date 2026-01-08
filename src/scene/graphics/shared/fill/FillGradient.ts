@@ -358,23 +358,29 @@ export class FillGradient implements CanvasGradient
         let dx = x1 - x0;
         let dy = y1 - y0;
 
-        // For diagonal gradients where dx and dy have opposite signs,
-        // we should not swap coordinates independently
-        // Only swap when moving in a fully negative direction (both negative)
-        const shouldSwap = (dx < 0 && dy < 0);
+        // Determine flip based on original dx/dy
+        const flip = dx < 0 || dy < 0;
 
-        if (shouldSwap)
+        // For clamp-to-edge mode, we need to swap coordinates to ensure proper texture mapping
+        // Only swap when moving in a fully negative direction (both dx and dy negative)
+        // to avoid breaking diagonal gradients where dx and dy have opposite signs
+        if (this._wrapMode === 'clamp-to-edge')
         {
-            // Swap the entire gradient direction
-            const tempX = x0;
-            const tempY = y0;
+            const shouldSwap = (dx < 0 && dy < 0);
 
-            x0 = x1;
-            y0 = y1;
-            x1 = tempX;
-            y1 = tempY;
-            dx = -dx;
-            dy = -dy;
+            if (shouldSwap)
+            {
+                // Swap the entire gradient direction
+                const tempX = x0;
+                const tempY = y0;
+
+                x0 = x1;
+                y0 = y1;
+                x1 = tempX;
+                y1 = tempY;
+                dx = -dx;
+                dy = -dy;
+            }
         }
 
         const colorStops = this.colorStops.length ? this.colorStops : emptyColorStops;
@@ -383,8 +389,7 @@ export class FillGradient implements CanvasGradient
 
         const { canvas, context } = getCanvas(defaultSize, 1);
 
-        // Reverse gradient if we swapped
-        const gradient = !shouldSwap
+        const gradient = !flip
             ? context.createLinearGradient(0, 0, this._textureSize, 0)
             : context.createLinearGradient(this._textureSize, 0, 0, 0);
 
