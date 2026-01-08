@@ -358,7 +358,8 @@ export class FillGradient implements CanvasGradient
         let dx = x1 - x0;
         let dy = y1 - y0;
 
-        // For clamp-to-edge mode, handle negative directions by swapping
+        // For clamp-to-edge mode, handle negative directions by swapping coordinates
+        // Repeat mode doesn't need this as it tiles the gradient texture
         // Only swap when moving in a fully negative direction (both dx and dy negative)
         // to avoid breaking diagonal gradients where dx and dy have opposite signs
         if (this._wrapMode === 'clamp-to-edge')
@@ -380,7 +381,9 @@ export class FillGradient implements CanvasGradient
             }
         }
 
-        // Determine flip based on final dx/dy after any coordinate transformations
+        // Flip the gradient texture when either dx or dy is negative
+        // This reverses the gradient colors (right-to-left instead of left-to-right)
+        // to ensure correct rendering with the calculated angle
         const flip = dx < 0 || dy < 0;
 
         const colorStops = this.colorStops.length ? this.colorStops : emptyColorStops;
