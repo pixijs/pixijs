@@ -1,10 +1,14 @@
 import { lru } from 'tiny-lru';
 import { DOMAdapter } from '../../../environment/adapter';
-import { hasTagMarkup, hasTagStyles, parseTaggedText, type TextStyleRun } from './utils/parseTaggedText';
+import { measureTaggedText } from './utils/measureTaggedText';
+import { hasTagMarkup, hasTagStyles, type TextStyleRun } from './utils/parseTaggedText';
+import { isBreakingSpace as isBreakingSpaceUtil, NEWLINE_MATCH_REGEX } from './utils/textTokenization';
+import { wordWrap } from './utils/wordWrap';
 
 import type { ICanvas, ICanvasRenderingContext2DSettings } from '../../../environment/canvas/ICanvas';
 import type { ICanvasRenderingContext2D } from '../../../environment/canvas/ICanvasRenderingContext2D';
-import type { TextStyle, TextStyleWhiteSpace } from '../TextStyle';
+import type { TextStyle } from '../TextStyle';
+import type { FontMetrics } from './utils/types';
 
 // The type for Intl.Segmenter is only available since TypeScript 4.7.2, so let's make a polyfill for it.
 interface ISegmentData
@@ -30,24 +34,6 @@ interface IIntl
         new(): ISegmenter;
     };
 }
-
-/**
- * A number, or a string containing a number.
- * @category text
- * @typedef {object} FontMetrics
- * @property {number} ascent - Font ascent
- * @property {number} descent - Font descent
- * @property {number} fontSize - Font size
- * @advanced
- */
-export interface FontMetrics
-{
-    ascent: number;
-    descent: number;
-    fontSize: number;
-}
-
-type CharacterWidthCache = Record<string, number>;
 
 // Default settings used for all getContext calls
 const contextSettings: ICanvasRenderingContext2DSettings = {
@@ -227,40 +213,6 @@ export class CanvasTextMetrics
     /** Cache of {@link TextMetrics.FontMetrics} objects. */
     private static _fonts: Record<string, FontMetrics> = {};
 
-    /** Cache of new line chars. */
-    private static readonly _newlines: number[] = [
-        0x000A, // line feed
-        0x000D, // carriage return
-    ];
-
-    private static readonly _newlinesSet = new Set(CanvasTextMetrics._newlines);
-
-    /** Cache of breaking spaces. */
-    private static readonly _breakingSpaces: number[] = [
-        0x0009, // character tabulation
-        0x0020, // space
-        0x2000, // en quad
-        0x2001, // em quad
-        0x2002, // en space
-        0x2003, // em space
-        0x2004, // three-per-em space
-        0x2005, // four-per-em space
-        0x2006, // six-per-em space
-        0x2008, // punctuation space
-        0x2009, // thin space
-        0x200A, // hair space
-        0x205F, // medium mathematical space
-        0x3000, // ideographic space
-    ];
-
-    private static readonly _breakingSpacesSet = new Set(CanvasTextMetrics._breakingSpaces);
-
-    /** Regex to split text while capturing newline sequences. */
-    private static readonly _newlineSplitRegex = /(\r\n|\r|\n)/;
-
-    /** Regex to split text on newlines without capturing. */
-    private static readonly _newlineMatchRegex = /(?:\r\n|\r|\n)/;
-
     // eslint-disable-next-line @typescript-eslint/naming-convention
     private static __canvas: ICanvas;
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -353,7 +305,35 @@ export class CanvasTextMetrics
 
         if (isTagged)
         {
-            const measurements = CanvasTextMetrics._measureTaggedText(text, style, canvas, wordWrap);
+            const result = measureTaggedText(
+                text,
+                style,
+                wordWrap,
+                CanvasTextMetrics._context,
+                CanvasTextMetrics._measureText,
+                CanvasTextMetrics.measureFont,
+                CanvasTextMetrics.canBreakChars,
+                CanvasTextMetrics.wordWrapSplit,
+            );
+
+            const measurements = new CanvasTextMetrics(
+                text,
+                style,
+                result.width,
+                result.height,
+                result.lines,
+                result.lineWidths,
+                result.lineHeight,
+                result.maxLineWidth,
+                result.fontProperties,
+                {
+                    runsByLine: result.runsByLine,
+                    lineAscents: result.lineAscents,
+                    lineDescents: result.lineDescents,
+                    lineHeights: result.lineHeights,
+                    hasDropShadow: result.hasDropShadow,
+                },
+            );
 
             CanvasTextMetrics._measurementCache.set(textKey, measurements);
 
@@ -374,8 +354,10 @@ export class CanvasTextMetrics
 
         context.font = font;
 
-        const outputText = wordWrap ? CanvasTextMetrics._wordWrap(text, style, canvas) : text;
-        const lines = outputText.split(CanvasTextMetrics._newlineMatchRegex);
+        const outputText = wordWrap
+            ? CanvasTextMetrics._wordWrap(text, style, canvas)
+            : text;
+        const lines = outputText.split(NEWLINE_MATCH_REGEX);
         const lineWidths = new Array<number>(lines.length);
         let maxLineWidth = 0;
 
@@ -415,592 +397,6 @@ export class CanvasTextMetrics
         CanvasTextMetrics._measurementCache.set(textKey, measurements);
 
         return measurements;
-    }
-
-    /**
-     * Measures tagged text with multiple styles.
-     * Handles per-run font measurement and per-line metrics.
-     * @param text - The tagged text to measure
-     * @param style - The base text style containing tagStyles
-     * @param canvas - Canvas for measurement
-     * @param wordWrap - Whether to apply word wrapping
-     * @returns CanvasTextMetrics with tagged-specific data
-     */
-    private static _measureTaggedText(
-        text: string,
-        style: TextStyle,
-        canvas: ICanvas,
-        wordWrap: boolean,
-    ): CanvasTextMetrics
-    {
-        const context = CanvasTextMetrics._context;
-
-        // Parse text into runs
-        const runs = parseTaggedText(text, style);
-
-        // Collapse newlines to spaces in 'normal' mode (matching regular text behavior)
-        const collapseNewlines = CanvasTextMetrics._collapseNewlines(style.whiteSpace);
-
-        if (collapseNewlines)
-        {
-            for (let i = 0; i < runs.length; i++)
-            {
-                const run = runs[i];
-
-                runs[i] = { text: run.text.replace(/\r\n|\r|\n/g, ' '), style: run.style };
-            }
-        }
-
-        // First, we need to handle newlines and word wrap
-        // Split runs by newlines first
-        const runsByLine: TextStyleRun[][] = [];
-        let currentLineRuns: TextStyleRun[] = [];
-
-        for (const run of runs)
-        {
-            // Split run text by newlines
-            const parts = run.text.split(CanvasTextMetrics._newlineSplitRegex);
-
-            for (let i = 0; i < parts.length; i++)
-            {
-                const part = parts[i];
-
-                if (part === '\r\n' || part === '\r' || part === '\n')
-                {
-                    // Push current line and start a new one
-                    runsByLine.push(currentLineRuns);
-                    currentLineRuns = [];
-                }
-                else if (part.length > 0)
-                {
-                    currentLineRuns.push({ text: part, style: run.style });
-                }
-            }
-        }
-        // Don't forget the last line
-        if (currentLineRuns.length > 0 || runsByLine.length === 0)
-        {
-            runsByLine.push(currentLineRuns);
-        }
-
-        // Apply word wrap if enabled
-        const wrappedRunsByLine = wordWrap
-            ? CanvasTextMetrics._wordWrapTaggedLines(runsByLine, style, canvas)
-            : runsByLine;
-
-        // Measure each line
-        const lineWidths: number[] = [];
-        const lineAscents: number[] = [];
-        const lineDescents: number[] = [];
-        const lineHeightsArr: number[] = [];
-        const lines: string[] = [];
-        let maxLineWidth = 0;
-
-        // Get base font properties for fallback
-        const baseFont = style.fontString;
-        const baseFontProps = CanvasTextMetrics.measureFont(baseFont);
-
-        // Fallback in case UA disallows canvas data extraction
-        if (baseFontProps.fontSize === 0)
-        {
-            baseFontProps.fontSize = style.fontSize as number;
-            baseFontProps.ascent = style.fontSize as number;
-        }
-
-        let lastFont = '';
-
-        for (const lineRuns of wrappedRunsByLine)
-        {
-            let lineWidth = 0;
-            let lineAscent = baseFontProps.ascent;
-            let lineDescent = baseFontProps.descent;
-            let lineText = '';
-
-            for (const run of lineRuns)
-            {
-                const runFont = run.style.fontString;
-                const runFontProps = CanvasTextMetrics.measureFont(runFont);
-
-                if (runFont !== lastFont)
-                {
-                    context.font = runFont;
-                    lastFont = runFont;
-                }
-
-                const runWidth = CanvasTextMetrics._measureText(run.text, run.style.letterSpacing, context);
-
-                lineWidth += runWidth;
-                lineAscent = Math.max(lineAscent, runFontProps.ascent);
-                lineDescent = Math.max(lineDescent, runFontProps.descent);
-                lineText += run.text;
-            }
-
-            // Handle empty lines
-            if (lineRuns.length === 0)
-            {
-                lineAscent = baseFontProps.ascent;
-                lineDescent = baseFontProps.descent;
-            }
-
-            lineWidths.push(lineWidth);
-            lineAscents.push(lineAscent);
-            lineDescents.push(lineDescent);
-            lines.push(lineText);
-
-            // Calculate line height - use style.lineHeight if set, otherwise use measured metrics
-            const computedLineHeight = style.lineHeight || (lineAscent + lineDescent);
-
-            lineHeightsArr.push(computedLineHeight + style.leading);
-            maxLineWidth = Math.max(maxLineWidth, lineWidth);
-        }
-
-        // Calculate total dimensions
-        const strokeWidth = style._stroke?.width || 0;
-
-        // Calculate base width - use wordWrapWidth for non-left alignment when wrapping
-        const alignWidth = CanvasTextMetrics._getAlignWidth(maxLineWidth, style, wordWrap);
-        const width = CanvasTextMetrics._adjustWidthForStyle(alignWidth, style);
-
-        // Calculate total height from per-line heights
-        let baseHeight = 0;
-
-        for (let i = 0; i < lineHeightsArr.length; i++)
-        {
-            baseHeight += lineHeightsArr[i];
-        }
-
-        // Add stroke width to height for first line (to match non-tagged behavior)
-        baseHeight = Math.max(baseHeight, lineHeightsArr[0] + strokeWidth);
-        const height = CanvasTextMetrics._adjustHeightForStyle(baseHeight, style);
-
-        // Use the base style's line height for the lineHeight property (for backwards compat)
-        const baseLineHeight = style.lineHeight || baseFontProps.fontSize;
-
-        // Check if base style OR any run has a drop shadow (cache to avoid per-render iteration)
-        let hasDropShadow = !!style.dropShadow;
-
-        if (!hasDropShadow)
-        {
-            for (let i = 0; i < runsByLine.length; i++)
-            {
-                const lineRuns = runsByLine[i];
-
-                for (let j = 0; j < lineRuns.length; j++)
-                {
-                    if (lineRuns[j].style.dropShadow)
-                    {
-                        hasDropShadow = true;
-                        break;
-                    }
-                }
-                if (hasDropShadow) break;
-            }
-        }
-
-        return new CanvasTextMetrics(
-            text,
-            style,
-            width,
-            height,
-            lines,
-            lineWidths,
-            baseLineHeight + style.leading,
-            maxLineWidth,
-            baseFontProps,
-            {
-                runsByLine: wrappedRunsByLine,
-                lineAscents,
-                lineDescents,
-                lineHeights: lineHeightsArr,
-                hasDropShadow,
-            },
-        );
-    }
-
-    /**
-     * Applies word wrapping to tagged text lines.
-     * Breaks runs at word boundaries while maintaining style information.
-     * @param runsByLine - Array of run arrays, one per line
-     * @param style - The base text style
-     * @param canvas - Canvas for measurement
-     * @returns New runsByLine array with word wrap applied
-     */
-    private static _wordWrapTaggedLines(
-        runsByLine: TextStyleRun[][],
-        style: TextStyle,
-        canvas: ICanvas,
-    ): TextStyleRun[][]
-    {
-        const context = canvas.getContext('2d', contextSettings);
-        const { letterSpacing, whiteSpace, wordWrapWidth, breakWords } = style;
-
-        // How to handle whitespaces
-        const collapseSpaces = CanvasTextMetrics._collapseSpaces(whiteSpace);
-
-        // Adjust for letterSpacing (see _wordWrap for explanation)
-        const adjustedWrapWidth = wordWrapWidth + letterSpacing;
-
-        // Cache for token width measurements and font tracking to avoid redundant work
-        const tokenWidthCache: Record<string, number> = {};
-        let lastFont = '';
-
-        const measureTokenWidth = (token: string, tokenStyle: TextStyle): number =>
-        {
-            const cacheKey = `${token}|${tokenStyle.styleKey}`;
-            let width = tokenWidthCache[cacheKey];
-
-            if (width === undefined)
-            {
-                const font = tokenStyle.fontString;
-
-                if (font !== lastFont)
-                {
-                    context.font = font;
-                    lastFont = font;
-                }
-                width = CanvasTextMetrics._measureText(token, tokenStyle.letterSpacing, context)
-                    + tokenStyle.letterSpacing;
-                tokenWidthCache[cacheKey] = width;
-            }
-
-            return width;
-        };
-
-        const result: TextStyleRun[][] = [];
-
-        // Process each line from the input
-        for (const lineRuns of runsByLine)
-        {
-            // Tokenize all runs on this line into styled tokens
-            const styledTokens = CanvasTextMetrics._tokenizeTaggedRuns(lineRuns);
-
-            // Track if we pushed content directly to result (for word groups)
-            const resultStartLength = result.length;
-
-            // Helper to calculate the total width of a word group starting at index
-            // A word group is a sequence of tokens where each subsequent token has continuesFromPrevious: true
-            const getWordGroupWidth = (startIndex: number): number =>
-            {
-                let totalWidth = 0;
-                let j = startIndex;
-
-                do
-                {
-                    const { token: groupToken, style: groupStyle } = styledTokens[j];
-
-                    totalWidth += measureTokenWidth(groupToken, groupStyle);
-                    j++;
-                }
-                while (j < styledTokens.length && styledTokens[j].continuesFromPrevious);
-
-                return totalWidth;
-            };
-
-            // Helper to get all tokens in a word group
-            const getWordGroupTokens = (startIndex: number): Array<{ token: string; style: TextStyle }> =>
-            {
-                const tokens: Array<{ token: string; style: TextStyle }> = [];
-                let j = startIndex;
-
-                do
-                {
-                    tokens.push({ token: styledTokens[j].token, style: styledTokens[j].style });
-                    j++;
-                }
-                while (j < styledTokens.length && styledTokens[j].continuesFromPrevious);
-
-                return tokens;
-            };
-
-            // Now apply word wrap logic to these tokens
-            let currentLineRuns: TextStyleRun[] = [];
-            let currentWidth = 0;
-            let canPrependSpaces = !collapseSpaces;
-
-            // Track the current "building" run (to merge adjacent tokens with same style)
-            let buildingRun: TextStyleRun | null = null;
-
-            const flushBuildingRun = (): void =>
-            {
-                if (buildingRun && buildingRun.text.length > 0)
-                {
-                    currentLineRuns.push(buildingRun);
-                }
-                buildingRun = null;
-            };
-
-            const startNewLine = (): void =>
-            {
-                flushBuildingRun();
-                // Trim trailing spaces from last run on line
-                if (currentLineRuns.length > 0)
-                {
-                    const lastRun = currentLineRuns[currentLineRuns.length - 1];
-
-                    lastRun.text = CanvasTextMetrics._trimRight(lastRun.text);
-                    if (lastRun.text.length === 0)
-                    {
-                        currentLineRuns.pop();
-                    }
-                }
-                result.push(currentLineRuns);
-                currentLineRuns = [];
-                currentWidth = 0;
-                canPrependSpaces = false;
-            };
-
-            for (let i = 0; i < styledTokens.length; i++)
-            {
-                const { token, style: tokenStyle, continuesFromPrevious } = styledTokens[i];
-
-                const tokenWidth = measureTokenWidth(token, tokenStyle);
-
-                // Handle collapsing spaces
-                if (collapseSpaces)
-                {
-                    const currIsSpace = CanvasTextMetrics.isBreakingSpace(token);
-                    const lastChar = buildingRun?.text[buildingRun.text.length - 1]
-                        ?? currentLineRuns[currentLineRuns.length - 1]?.text.slice(-1)
-                        ?? '';
-                    const lastIsSpace = lastChar ? CanvasTextMetrics.isBreakingSpace(lastChar) : false;
-
-                    if (currIsSpace && lastIsSpace)
-                    {
-                        continue;
-                    }
-                }
-
-                // Check if this token starts a word group (not a continuation)
-                const startsWordGroup = !continuesFromPrevious;
-
-                // Calculate word group width if this starts a new word group
-                const wordGroupWidth = startsWordGroup ? getWordGroupWidth(i) : tokenWidth;
-
-                // Word group is longer than the wrap width
-                if (wordGroupWidth > adjustedWrapWidth && startsWordGroup)
-                {
-                    // Flush any existing content to a new line
-                    if (currentWidth > 0)
-                    {
-                        startNewLine();
-                    }
-
-                    // Break the long word group if allowed
-                    if (breakWords)
-                    {
-                        // Get all tokens in this word group
-                        const wordGroupTokens = getWordGroupTokens(i);
-
-                        // Process each token in the word group
-                        for (let g = 0; g < wordGroupTokens.length; g++)
-                        {
-                            const groupToken = wordGroupTokens[g].token;
-                            const groupStyle = wordGroupTokens[g].style;
-                            const charGroups = CanvasTextMetrics._getCharacterGroups(groupToken, breakWords);
-
-                            for (const char of charGroups)
-                            {
-                                const charWidth = measureTokenWidth(char, groupStyle);
-
-                                // eslint-disable-next-line max-depth
-                                if (charWidth + currentWidth > adjustedWrapWidth)
-                                {
-                                    startNewLine();
-                                }
-
-                                // Add char to building run
-                                // eslint-disable-next-line max-depth
-                                if (!buildingRun || buildingRun.style !== groupStyle)
-                                {
-                                    flushBuildingRun();
-                                    buildingRun = { text: char, style: groupStyle };
-                                }
-                                else
-                                {
-                                    buildingRun.text += char;
-                                }
-                                currentWidth += charWidth;
-                            }
-                        }
-
-                        // Skip all the tokens we just processed
-                        i += wordGroupTokens.length - 1;
-                    }
-                    else
-                    {
-                        // Can't break - put whole word group on its own line
-                        const wordGroupTokens = getWordGroupTokens(i);
-
-                        flushBuildingRun();
-                        result.push(wordGroupTokens.map((t) => ({ text: t.token, style: t.style })));
-                        canPrependSpaces = false;
-
-                        // Skip all the tokens we just processed
-                        i += wordGroupTokens.length - 1;
-                    }
-                }
-                // Word group would exceed line width (but fits on its own line)
-                else if (wordGroupWidth + currentWidth > adjustedWrapWidth && startsWordGroup)
-                {
-                    // Don't start new line with just a space
-                    if (CanvasTextMetrics.isBreakingSpace(token))
-                    {
-                        canPrependSpaces = false;
-                        continue;
-                    }
-
-                    startNewLine();
-
-                    // Start new building run with this token
-                    buildingRun = { text: token, style: tokenStyle };
-                    currentWidth = tokenWidth;
-                }
-                // Token is a continuation of a word group - always add it (don't wrap mid-word when breakWords: false)
-                else if (continuesFromPrevious && !breakWords)
-                {
-                    // Add to building run or start new one
-                    if (!buildingRun || buildingRun.style !== tokenStyle)
-                    {
-                        flushBuildingRun();
-                        buildingRun = { text: token, style: tokenStyle };
-                    }
-                    else
-                    {
-                        buildingRun.text += token;
-                    }
-                    currentWidth += tokenWidth;
-                }
-                // Token fits on current line (or is a continuation with breakWords: true)
-                else
-                {
-                    const isSpace = CanvasTextMetrics.isBreakingSpace(token);
-
-                    // Don't prepend spaces to line start unless allowed
-                    if (currentWidth === 0 && isSpace && !canPrependSpaces)
-                    {
-                        continue;
-                    }
-
-                    // Add to building run or start new one
-                    if (!buildingRun || buildingRun.style !== tokenStyle)
-                    {
-                        flushBuildingRun();
-                        buildingRun = { text: token, style: tokenStyle };
-                    }
-                    else
-                    {
-                        buildingRun.text += token;
-                    }
-                    currentWidth += tokenWidth;
-                }
-            }
-
-            // Flush final content
-            flushBuildingRun();
-            if (currentLineRuns.length > 0)
-            {
-                // Trim trailing spaces
-                const lastRun = currentLineRuns[currentLineRuns.length - 1];
-
-                lastRun.text = CanvasTextMetrics._trimRight(lastRun.text);
-                if (lastRun.text.length === 0)
-                {
-                    currentLineRuns.pop();
-                }
-            }
-
-            // Push final line if it has content, or if we haven't pushed anything yet.
-            // The second condition (result.length === resultStartLength) ensures we preserve
-            // explicit blank lines from the input text. Without this, a line containing only
-            // whitespace would be trimmed away entirely, collapsing consecutive newlines.
-            if (currentLineRuns.length > 0 || result.length === resultStartLength)
-            {
-                result.push(currentLineRuns);
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Tokenizes an array of TextStyleRuns into individual styled tokens.
-     * Each token is a word, space, or newline with its associated style.
-     * Tracks whether adjacent tokens across run boundaries form a continuous word.
-     * @param runs - The runs to tokenize
-     * @returns Array of styled tokens with continuation flags
-     */
-    private static _tokenizeTaggedRuns(
-        runs: TextStyleRun[]
-    ): Array<{ token: string; style: TextStyle; continuesFromPrevious: boolean }>
-    {
-        const styledTokens: Array<{ token: string; style: TextStyle; continuesFromPrevious: boolean }> = [];
-        let lastTokenWasWord = false;
-
-        for (const run of runs)
-        {
-            const tokens = CanvasTextMetrics._tokenize(run.text);
-            let isFirstTokenInRun = true;
-
-            for (const token of tokens)
-            {
-                const isSpace = CanvasTextMetrics.isBreakingSpace(token) || CanvasTextMetrics._isNewline(token);
-
-                // Token continues from previous word if:
-                // 1. It's the first token in this run
-                // 2. The previous run's last token was a word (not space)
-                // 3. This token is also a word (not space)
-                const continuesFromPrevious = isFirstTokenInRun && lastTokenWasWord && !isSpace;
-
-                styledTokens.push({ token, style: run.style, continuesFromPrevious });
-
-                lastTokenWasWord = !isSpace;
-                isFirstTokenInRun = false;
-            }
-        }
-
-        return styledTokens;
-    }
-
-    /**
-     * Splits a token into character groups that should not be broken apart.
-     * Adjacent characters that can't be broken are combined into single groups.
-     * @param token - The token to split
-     * @param breakWords - Whether word breaking is enabled
-     * @returns Array of character groups
-     */
-    private static _getCharacterGroups(token: string, breakWords: boolean): string[]
-    {
-        const characters = CanvasTextMetrics.wordWrapSplit(token);
-        const groups: string[] = [];
-
-        for (let j = 0; j < characters.length; j++)
-        {
-            let char = characters[j];
-            let lastChar = char;
-
-            // Combine chars that shouldn't be split
-            let k = 1;
-
-            while (characters[j + k])
-            {
-                const nextChar = characters[j + k];
-
-                if (!CanvasTextMetrics.canBreakChars(lastChar, nextChar, token, j, breakWords))
-                {
-                    char += nextChar;
-                    lastChar = nextChar;
-                    k++;
-                }
-                else
-                {
-                    break;
-                }
-            }
-            j += k - 1;
-            groups.push(char);
-        }
-
-        return groups;
     }
 
     /**
@@ -1045,21 +441,29 @@ export class CanvasTextMetrics
      * When word wrap is enabled with center/right alignment, uses wordWrapWidth.
      * @param maxLineWidth - The maximum line width
      * @param style - The text style
-     * @param wordWrap - Whether word wrap is enabled
+     * @param wordWrapEnabled - Whether word wrap is enabled
      * @returns The width to use for alignment calculations
      */
-    private static _getAlignWidth(maxLineWidth: number, style: TextStyle, wordWrap: boolean): number
+    private static _getAlignWidth(maxLineWidth: number, style: TextStyle, wordWrapEnabled: boolean): number
     {
-        const useWrapWidth = wordWrap && style.align !== 'left' && style.align !== 'justify';
+        const useWrapWidth = wordWrapEnabled && style.align !== 'left' && style.align !== 'justify';
 
         return useWrapWidth ? Math.max(maxLineWidth, style.wordWrapWidth) : maxLineWidth;
     }
 
+    /**
+     * Core text measurement using canvas context.
+     * Kept in main class for performance (hot path).
+     * @param text - The text to measure
+     * @param letterSpacing - Letter spacing value
+     * @param context - Canvas 2D context
+     * @returns The measured text width
+     */
     private static _measureText(
         text: string,
         letterSpacing: number,
         context: ICanvasRenderingContext2D
-    )
+    ): number
     {
         let useExperimentalLetterSpacing = false;
 
@@ -1119,246 +523,15 @@ export class CanvasTextMetrics
         canvas: ICanvas = CanvasTextMetrics._canvas
     ): string
     {
-        const context = canvas.getContext('2d', contextSettings);
-
-        let width = 0;
-        let line = '';
-        const linesArray: string[] = [];
-
-        const cache: CharacterWidthCache = Object.create(null);
-        const { letterSpacing, whiteSpace } = style;
-
-        // How to handle whitespaces
-        const collapseSpaces = CanvasTextMetrics._collapseSpaces(whiteSpace);
-        const collapseNewlines = CanvasTextMetrics._collapseNewlines(whiteSpace);
-
-        // whether or not spaces may be added to the beginning of lines
-        let canPrependSpaces = !collapseSpaces;
-
-        // There is letterSpacing after every char except the last one
-        // t_h_i_s_' '_i_s_' '_a_n_' '_e_x_a_m_p_l_e_' '_!
-        // so for convenience the above needs to be compared to width + 1 extra letterSpace
-        // t_h_i_s_' '_i_s_' '_a_n_' '_e_x_a_m_p_l_e_' '_!_
-        // ________________________________________________
-        // And then the final space is simply no appended to each line
-        const wordWrapWidth = style.wordWrapWidth + letterSpacing;
-
-        // break text into words, spaces and newline chars
-        const tokens = CanvasTextMetrics._tokenize(text);
-
-        for (let i = 0; i < tokens.length; i++)
-        {
-            // get the word, space or newlineChar
-            let token = tokens[i];
-
-            // if word is a new line
-            if (CanvasTextMetrics._isNewline(token))
-            {
-                // keep the new line
-                if (!collapseNewlines)
-                {
-                    linesArray.push(CanvasTextMetrics._trimRight(line));
-                    canPrependSpaces = !collapseSpaces;
-                    line = '';
-                    width = 0;
-                    continue;
-                }
-
-                // if we should collapse new lines
-                // we simply convert it into a space
-                token = ' ';
-            }
-
-            // if we should collapse repeated whitespaces
-            if (collapseSpaces)
-            {
-                // check both this and the last tokens for spaces
-                const currIsBreakingSpace = CanvasTextMetrics.isBreakingSpace(token);
-                const lastIsBreakingSpace = CanvasTextMetrics.isBreakingSpace(line[line.length - 1]);
-
-                if (currIsBreakingSpace && lastIsBreakingSpace)
-                {
-                    continue;
-                }
-            }
-
-            // get word width from cache if possible
-            const tokenWidth = CanvasTextMetrics._getFromCache(token, letterSpacing, cache, context);
-
-            // word is longer than desired bounds
-            if (tokenWidth > wordWrapWidth)
-            {
-                // if we are not already at the beginning of a line
-                if (line !== '')
-                {
-                    // start newlines for overflow words
-                    linesArray.push(CanvasTextMetrics._trimRight(line));
-                    line = '';
-                    width = 0;
-                }
-
-                // break large word over multiple lines
-                if (CanvasTextMetrics.canBreakWords(token, style.breakWords))
-                {
-                    // break word into character groups that shouldn't be split
-                    const charGroups = CanvasTextMetrics._getCharacterGroups(token, style.breakWords);
-
-                    // loop the character groups
-                    for (const char of charGroups)
-                    {
-                        const characterWidth = CanvasTextMetrics._getFromCache(char, letterSpacing, cache, context);
-
-                        if (characterWidth + width > wordWrapWidth)
-                        {
-                            linesArray.push(CanvasTextMetrics._trimRight(line));
-                            canPrependSpaces = false;
-                            line = '';
-                            width = 0;
-                        }
-
-                        line += char;
-                        width += characterWidth;
-                    }
-                }
-
-                // run word out of the bounds
-                else
-                {
-                    // if there are words in this line already
-                    // finish that line and start a new one
-                    if (line.length > 0)
-                    {
-                        linesArray.push(CanvasTextMetrics._trimRight(line));
-                        line = '';
-                        width = 0;
-                    }
-
-                    // give it its own line
-                    linesArray.push(CanvasTextMetrics._trimRight(token));
-                    canPrependSpaces = false;
-                    line = '';
-                    width = 0;
-                }
-            }
-
-            // word could fit
-            else
-            {
-                // word won't fit because of existing words
-                // start a new line
-                if (tokenWidth + width > wordWrapWidth)
-                {
-                    // if its a space we don't want it
-                    canPrependSpaces = false;
-
-                    // add a new line
-                    linesArray.push(CanvasTextMetrics._trimRight(line));
-
-                    // start a new line
-                    line = '';
-                    width = 0;
-                }
-
-                // don't add spaces to the beginning of lines
-                if (line.length > 0 || !CanvasTextMetrics.isBreakingSpace(token) || canPrependSpaces)
-                {
-                    // add the word to the current line
-                    line += token;
-
-                    // update width counter
-                    width += tokenWidth;
-                }
-            }
-        }
-
-        const trimmedLine = CanvasTextMetrics._trimRight(line);
-
-        if (trimmedLine.length > 0)
-        {
-            linesArray.push(trimmedLine);
-        }
-
-        return linesArray.join('\n');
-    }
-
-    /**
-     * Gets & sets the widths of calculated characters in a cache object
-     * @param key            - The key
-     * @param letterSpacing  - The letter spacing
-     * @param cache          - The cache
-     * @param context        - The canvas context
-     * @returns The from cache.
-     */
-    private static _getFromCache(key: string, letterSpacing: number, cache: CharacterWidthCache,
-        context: ICanvasRenderingContext2D): number
-    {
-        let width = cache[key];
-
-        if (typeof width !== 'number')
-        {
-            width = CanvasTextMetrics._measureText(key, letterSpacing, context) + letterSpacing;
-            cache[key] = width;
-        }
-
-        return width;
-    }
-
-    /**
-     * Determines whether we should collapse breaking spaces.
-     * @param whiteSpace - The TextStyle property whiteSpace
-     * @returns Should collapse
-     */
-    private static _collapseSpaces(whiteSpace: TextStyleWhiteSpace): boolean
-    {
-        return (whiteSpace === 'normal' || whiteSpace === 'pre-line');
-    }
-
-    /**
-     * Determines whether we should collapse newLine chars.
-     * @param whiteSpace - The white space
-     * @returns should collapse
-     */
-    private static _collapseNewlines(whiteSpace: TextStyleWhiteSpace): boolean
-    {
-        return (whiteSpace === 'normal');
-    }
-
-    /**
-     * Trims breaking whitespaces from string.
-     * @param text - The text
-     * @returns Trimmed string
-     */
-    private static _trimRight(text: string): string
-    {
-        if (typeof text !== 'string')
-        {
-            return '';
-        }
-
-        let i = text.length - 1;
-
-        while (i >= 0 && CanvasTextMetrics.isBreakingSpace(text[i]))
-        {
-            i--;
-        }
-
-        // Only slice if we found trailing spaces
-        return i < text.length - 1 ? text.slice(0, i + 1) : text;
-    }
-
-    /**
-     * Determines if char is a newline.
-     * @param char - The character
-     * @returns True if newline, False otherwise.
-     */
-    private static _isNewline(char: string): boolean
-    {
-        if (typeof char !== 'string')
-        {
-            return false;
-        }
-
-        return CanvasTextMetrics._newlinesSet.has(char.charCodeAt(0));
+        return wordWrap(
+            text,
+            style,
+            canvas,
+            CanvasTextMetrics._measureText,
+            CanvasTextMetrics.canBreakWords,
+            CanvasTextMetrics.canBreakChars,
+            CanvasTextMetrics.wordWrapSplit,
+        );
     }
 
     /**
@@ -1373,65 +546,7 @@ export class CanvasTextMetrics
      */
     public static isBreakingSpace(char: string, _nextChar?: string): boolean
     {
-        if (typeof char !== 'string')
-        {
-            return false;
-        }
-
-        return CanvasTextMetrics._breakingSpacesSet.has(char.charCodeAt(0));
-    }
-
-    /**
-     * Splits a string into words, breaking-spaces and newLine characters
-     * @param text - The text
-     * @returns A tokenized array
-     */
-    private static _tokenize(text: string): string[]
-    {
-        const tokens: string[] = [];
-        const tokenChars: string[] = [];
-
-        if (typeof text !== 'string')
-        {
-            return tokens;
-        }
-
-        for (let i = 0; i < text.length; i++)
-        {
-            const char = text[i];
-            const nextChar = text[i + 1];
-
-            if (CanvasTextMetrics.isBreakingSpace(char, nextChar) || CanvasTextMetrics._isNewline(char))
-            {
-                if (tokenChars.length > 0)
-                {
-                    tokens.push(tokenChars.join(''));
-                    tokenChars.length = 0;
-                }
-
-                // treat \r\n as a single new line token
-                if (char === '\r' && nextChar === '\n')
-                {
-                    tokens.push('\r\n');
-                    i++;
-                }
-                else
-                {
-                    tokens.push(char);
-                }
-
-                continue;
-            }
-
-            tokenChars.push(char);
-        }
-
-        if (tokenChars.length > 0)
-        {
-            tokens.push(tokenChars.join(''));
-        }
-
-        return tokens;
+        return isBreakingSpaceUtil(char, _nextChar);
     }
 
     /**
