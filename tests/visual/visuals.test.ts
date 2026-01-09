@@ -1,4 +1,3 @@
-import { readFileSync } from 'fs';
 import glob from 'glob';
 import path from 'path';
 import '~/environment-browser/browserAll';
@@ -18,43 +17,50 @@ const scenes = paths.map((p) =>
     return { path: p, data: require(`./${relativePath}`).scene };
 });
 
-const canvasUnsupportedPathParts = [
-    '/scenes/mask/',
-    '/scenes/mesh/',
-    '/scenes/particle/',
-    '/scenes/compressed-textures/',
-];
-const canvasUnsupportedPatterns = [
-    /\.mask\b/,
-    /\bmask\s*:/,
-    /\bMask\b/,
-    /\bMesh\b/,
-    /\bmsdf\b/,
-];
+const canvasExcludedScenes = new Set([
+    'alpha-filter.scene.ts',
+    'alpha-inverse-mask.scene.ts',
+    'alpha-mask-cache-as-texture.scene.ts',
+    'alpha-mask.scene.ts',
+    'blend-mode-max.scene.ts',
+    'blend-mode-min.scene.ts',
+    'blend-mode-render-texture.scene.ts',
+    'circle-mask.scene.ts',
+    'culling-texture.scene.ts',
+    'custom-mesh-instanced.scene.ts',
+    'custom-mesh.scene.ts',
+    'dds.scene.ts',
+    'filter-render-textures.scene.ts',
+    'fully-custom-mesh.scene.ts',
+    'geometry-from-path.scene.ts',
+    'ktx.scene.ts',
+    'layer-mask.scene.ts',
+    'mask-out-of-viewport.scene.ts',
+    'mesh-textures.scene.ts',
+    'meshplane.scene.ts',
+    'meshrope.scene.ts',
+    'msdf-text.scene.ts',
+    'multiple-render-targets.scene.ts',
+    'nested-container.scene.ts',
+    'nested-mask.scene.ts',
+    'particle.scene.ts',
+    'perspective-mesh.scene.ts',
+    'restore-context.scene.ts',
+    'sdf-text.scene.ts',
+    'sprite-sheet-mesh.scene.ts',
+    'stencil-inverse-mask.scene.ts',
+    'stencil-mask.scene.ts',
+    'stencil-nested-render-group.scene.ts',
+    'text-bounds.scene.ts',
+    'triangle.scene.ts',
+    'trimed-sprite-mask.scene.ts',
+]);
 
 function isCanvasCompatible(scenePath: string): boolean
 {
-    const normalized = scenePath.replace(/\\/g, '/');
+    const sceneName = path.basename(scenePath);
 
-    for (let i = 0; i < canvasUnsupportedPathParts.length; i++)
-    {
-        if (normalized.includes(canvasUnsupportedPathParts[i]))
-        {
-            return false;
-        }
-    }
-
-    const source = readFileSync(path.join(process.cwd(), 'tests', scenePath), 'utf8');
-
-    for (let i = 0; i < canvasUnsupportedPatterns.length; i++)
-    {
-        if (canvasUnsupportedPatterns[i].test(source))
-        {
-            return false;
-        }
-    }
-
-    return true;
+    return !canvasExcludedScenes.has(sceneName);
 }
 
 const onlyScenes = scenes.filter((s) =>
