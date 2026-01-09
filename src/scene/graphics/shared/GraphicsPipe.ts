@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { State } from '../../../rendering/renderers/shared/state/State';
-import { type Renderer, RendererType } from '../../../rendering/renderers/types';
+import { type Renderer } from '../../../rendering/renderers/types';
 import { GCManagedHash } from '../../../utils/data/GCManagedHash';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { type GPUData } from '../../view/ViewContainer';
@@ -12,14 +12,21 @@ import type { RenderPipe } from '../../../rendering/renderers/shared/instruction
 import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import type { PoolItem } from '../../../utils/pool/Pool';
 import type { Graphics } from './Graphics';
-import type { GpuGraphicsContext } from './GraphicsContextSystem';
+import type { GpuGraphicsContext, GraphicsContextSystem } from './GraphicsContextSystem';
+
+/** @internal */
+export interface GraphicsPipeLike
+{
+    renderer: Renderer;
+    state: State;
+}
 
 /** @internal */
 export interface GraphicsAdaptor
 {
     shader: Shader;
     contextChange(renderer: Renderer): void;
-    execute(graphicsPipe: GraphicsPipe, renderable: Graphics): void;
+    execute(graphicsPipe: GraphicsPipeLike, renderable: Graphics): void;
     destroy(): void;
 }
 
@@ -47,7 +54,6 @@ export class GraphicsPipe implements RenderPipe<Graphics>
         type: [
             ExtensionType.WebGLPipes,
             ExtensionType.WebGPUPipes,
-            ExtensionType.CanvasPipes,
         ],
         name: 'graphics',
     } as const;
@@ -78,7 +84,8 @@ export class GraphicsPipe implements RenderPipe<Graphics>
 
         const wasBatched = !!graphics._gpuData;
 
-        const gpuContext = this.renderer.graphicsContext.updateGpuContext(context);
+        const contextSystem = this.renderer.graphicsContext as GraphicsContextSystem;
+        const gpuContext = contextSystem.updateGpuContext(context);
 
         if (gpuContext.isBatchable || wasBatched !== gpuContext.isBatchable)
         {
@@ -91,7 +98,8 @@ export class GraphicsPipe implements RenderPipe<Graphics>
 
     public addRenderable(graphics: Graphics, instructionSet: InstructionSet)
     {
-        const gpuContext = this.renderer.graphicsContext.updateGpuContext(graphics.context);
+        const contextSystem = this.renderer.graphicsContext as GraphicsContextSystem;
+        const gpuContext = contextSystem.updateGpuContext(graphics.context);
 
         // need to get batches here.. as we need to know if we can batch or not..
         // this also overrides the current batches..
@@ -129,16 +137,9 @@ export class GraphicsPipe implements RenderPipe<Graphics>
     {
         if (!graphics.isRenderable) return;
 
-        if (this.renderer.type === RendererType.CANVAS)
-        {
-            this._adaptor.execute(this, graphics);
-
-            return;
-        }
-
         const renderer = this.renderer;
         const context = graphics.context;
-        const contextSystem = renderer.graphicsContext;
+        const contextSystem = renderer.graphicsContext as GraphicsContextSystem;
 
         // early out if there is no actual visual stuff...
         if (!contextSystem.getGpuContext(context).batches.length)
@@ -166,7 +167,8 @@ export class GraphicsPipe implements RenderPipe<Graphics>
     {
         const gpuData = this._getGpuDataForRenderable(graphics);
 
-        const gpuContext = this.renderer.graphicsContext.updateGpuContext(graphics.context);
+        const contextSystem = this.renderer.graphicsContext as GraphicsContextSystem;
+        const gpuContext = contextSystem.updateGpuContext(graphics.context);
 
         // free up the batches..
         gpuData.destroy();
@@ -210,8 +212,8 @@ export class GraphicsPipe implements RenderPipe<Graphics>
     private _updateBatchesForRenderable(graphics: Graphics, gpuData: GraphicsGpuData)
     {
         const context = graphics.context;
-
-        const gpuContext: GpuGraphicsContext = this.renderer.graphicsContext.getGpuContext(context);
+        const contextSystem = this.renderer.graphicsContext as GraphicsContextSystem;
+        const gpuContext: GpuGraphicsContext = contextSystem.getGpuContext(context);
 
         const roundPixels = (this.renderer._roundPixels | graphics._roundPixels) as 0 | 1;
 

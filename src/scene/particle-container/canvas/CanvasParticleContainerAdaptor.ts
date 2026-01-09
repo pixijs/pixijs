@@ -1,6 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { canvasUtils } from '../../../rendering/renderers/canvas/utils/canvasUtils';
-import { RendererType } from '../../../rendering/renderers/types';
 
 import type { CanvasRenderer } from '../../../rendering/renderers/canvas/CanvasRenderer';
 import type { ParticleContainer } from '../shared/ParticleContainer';
@@ -22,8 +21,6 @@ export class CanvasParticleContainerAdaptor implements ParticleContainerAdaptor
 
     public execute(particleContainerPipe: ParticleContainerPipe, container: ParticleContainer)
     {
-        if (particleContainerPipe.renderer.type !== RendererType.CANVAS) return;
-
         const renderer = particleContainerPipe.renderer as CanvasRenderer;
         const context = renderer.canvasContext.activeContext;
         const children = container.particleChildren;

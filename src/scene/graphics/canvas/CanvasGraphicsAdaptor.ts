@@ -18,7 +18,7 @@ import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import type { Renderer } from '../../../rendering/renderers/types';
 import type { ConvertedFillStyle, ConvertedStrokeStyle } from '../shared/FillTypes';
 import type { Graphics } from '../shared/Graphics';
-import type { GraphicsAdaptor, GraphicsPipe } from '../shared/GraphicsPipe';
+import type { GraphicsAdaptor, GraphicsPipeLike } from '../shared/GraphicsPipe';
 import type { ShapePrimitiveWithHoles } from '../shared/path/ShapePath';
 
 const emptyCanvasStyle = '#808080';
@@ -276,7 +276,7 @@ export class CanvasGraphicsAdaptor implements GraphicsAdaptor
         void renderer;
     }
 
-    public execute(graphicsPipe: GraphicsPipe, renderable: Graphics): void
+    public execute(graphicsPipe: GraphicsPipeLike, renderable: Graphics): void
     {
         const renderer = graphicsPipe.renderer as CanvasRenderer;
         const contextSystem = renderer.canvasContext;

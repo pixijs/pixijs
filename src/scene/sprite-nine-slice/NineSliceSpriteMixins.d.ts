@@ -4,9 +4,10 @@ declare global
     {
         interface RendererPipes
         {
-            nineSliceSprite: import('./NineSliceSpritePipe').NineSliceSpritePipe;
+            nineSliceSprite: import('../../rendering/renderers/shared/instructions/RenderPipe').RenderPipe<
+                import('./NineSliceSprite').NineSliceSprite
+            >;
         }
     }
 }
-
 export {};

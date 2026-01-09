@@ -1,14 +1,22 @@
 import { extensions, ExtensionType } from '../../../extensions/Extensions';
+import { CustomRenderPipe } from '../../../scene/container/CustomRenderPipe';
+import { RenderGroupPipe } from '../../../scene/container/RenderGroupPipe';
 import { CanvasGraphicsAdaptor } from '../../../scene/graphics/canvas/CanvasGraphicsAdaptor';
 import { CanvasParticleContainerAdaptor } from '../../../scene/particle-container/canvas/CanvasParticleContainerAdaptor';
 import { ParticleContainerPipe } from '../../../scene/particle-container/shared/ParticleContainerPipe';
+import { SpritePipe } from '../../../scene/sprite/SpritePipe';
 import { CanvasTextPipe } from '../../../scene/text/canvas/CanvasTextPipe';
 import { CanvasTextSystem } from '../../../scene/text/canvas/CanvasTextSystem';
 import { HTMLTextPipe } from '../../../scene/text-html/HTMLTextPipe';
 import { HTMLTextSystem } from '../../../scene/text-html/HTMLTextSystem';
 import { CanvasBatchAdaptor } from '../../batcher/canvas/CanvasBatchAdaptor';
+import { BatcherPipe } from '../../batcher/shared/BatcherPipe';
+import { AlphaMaskPipe } from '../../mask/alpha/AlphaMaskPipe';
+import { CanvasColorMaskPipe } from '../../mask/color/CanvasColorMaskPipe';
+import { CanvasStencilMaskPipe } from '../../mask/stencil/CanvasStencilMaskPipe';
+import { BlendModePipe } from '../shared/blendModes/BlendModePipe';
 import { AbstractRenderer } from '../shared/system/AbstractRenderer';
-import { SharedRenderPipes, SharedSystems } from '../shared/system/SharedSystems';
+import { SharedSystems } from '../shared/system/SharedSystems';
 import { RendererType } from '../types';
 import { CanvasContextSystem } from './CanvasContextSystem';
 import { CanvasFilterSystem } from './CanvasFilterSystem';
@@ -33,7 +41,14 @@ const DefaultCanvasSystems = [
     HTMLTextSystem,
 ];
 const DefaultCanvasPipes = [
-    ...SharedRenderPipes,
+    BlendModePipe,
+    BatcherPipe,
+    SpritePipe,
+    RenderGroupPipe,
+    AlphaMaskPipe,
+    CanvasStencilMaskPipe,
+    CanvasColorMaskPipe,
+    CustomRenderPipe,
     CanvasTextPipe,
     ParticleContainerPipe,
     HTMLTextPipe,

@@ -12,7 +12,7 @@ import type { WebGLRenderer } from '../../../rendering/renderers/gl/WebGLRendere
 export class GlParticleContainerPipe extends ParticleContainerPipe
 {
     /** @ignore */
-    public static extension = {
+    public static extension: { type: ExtensionType[]; name: 'particle' } = {
         type: [
             ExtensionType.WebGLPipes,
         ],

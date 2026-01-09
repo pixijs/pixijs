@@ -12,7 +12,7 @@ import type { WebGPURenderer } from '../../../rendering/renderers/gpu/WebGPURend
 export class GpuParticleContainerPipe extends ParticleContainerPipe
 {
     /** @ignore */
-    public static extension = {
+    public static extension: { type: ExtensionType[]; name: 'particle' } = {
         type: [
             ExtensionType.WebGPUPipes,
         ],

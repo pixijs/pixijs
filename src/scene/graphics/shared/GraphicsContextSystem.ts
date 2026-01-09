@@ -3,7 +3,6 @@ import { getTextureBatchBindGroup } from '../../../rendering/batcher/gpu/getText
 import { type BatcherOptions } from '../../../rendering/batcher/shared/Batcher';
 import { DefaultBatcher } from '../../../rendering/batcher/shared/DefaultBatcher';
 import { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
-import { RendererType } from '../../../rendering/renderers/types';
 import { GCManagedHash } from '../../../utils/data/GCManagedHash';
 import { deprecation, v8_3_4 } from '../../../utils/logging/deprecation';
 import { BigPool } from '../../../utils/pool/PoolGroup';
@@ -138,7 +137,6 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
         type: [
             ExtensionType.WebGLSystem,
             ExtensionType.WebGPUSystem,
-            ExtensionType.CanvasSystem,
         ],
         name: 'graphicsContext'
     } as const;
@@ -192,22 +190,6 @@ export class GraphicsContextSystem implements System<GraphicsContextSystemOption
     {
         const hasContext = !!context._gpuData[this._renderer.uid];
         const gpuContext: GpuGraphicsContext = context._gpuData[this._renderer.uid] || this._initContext(context);
-
-        if (this._renderer.type === RendererType.CANVAS)
-        {
-            if (context.dirty || !hasContext)
-            {
-                if (hasContext)
-                {
-                    gpuContext.reset();
-                }
-
-                gpuContext.isBatchable = false;
-                context.dirty = false;
-            }
-
-            return gpuContext;
-        }
 
         if (context.dirty || !hasContext)
         {

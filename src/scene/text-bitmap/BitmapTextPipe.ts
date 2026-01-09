@@ -1,6 +1,6 @@
 import { Cache } from '../../assets/cache/Cache';
 import { ExtensionType } from '../../extensions/Extensions';
-import { type Renderer, RendererType } from '../../rendering/renderers/types';
+import { type Renderer } from '../../rendering/renderers/types';
 import { GCManagedHash } from '../../utils/data/GCManagedHash';
 import { Graphics } from '../graphics/shared/Graphics';
 import { CanvasTextMetrics } from '../text/canvas/CanvasTextMetrics';
@@ -32,11 +32,10 @@ export class BitmapTextGraphics extends Graphics implements GPUData
 export class BitmapTextPipe implements RenderPipe<BitmapText>
 {
     /** @ignore */
-    public static extension = {
+    public static extension: { type: ExtensionType[]; name: 'bitmapText' } = {
         type: [
             ExtensionType.WebGLPipes,
             ExtensionType.WebGPUPipes,
-            ExtensionType.CanvasPipes,
         ],
         name: 'bitmapText',
     } as const;
@@ -98,6 +97,11 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
         }
     }
 
+    protected shouldUseSdfShader(): boolean
+    {
+        return true;
+    }
+
     private _updateContext(bitmapText: BitmapText, proxyGraphics: Graphics)
     {
         const { context } = proxyGraphics;
@@ -110,7 +114,7 @@ export class BitmapTextPipe implements RenderPipe<BitmapText>
         {
             // Only use custom shader for WebGL/WebGPU renderers
             // Canvas renderer cannot properly handle MSDF distance field math
-            if (this._renderer.type !== RendererType.CANVAS)
+            if (this.shouldUseSdfShader())
             {
                 if (!context.customShader)
                 {

@@ -28,7 +28,7 @@ export interface ParticleContainerAdaptor
 export class ParticleContainerPipe implements RenderPipe<ParticleContainer>
 {
     /** @ignore */
-    public static extension = {
+    public static extension: { type: ExtensionType[]; name: 'particle' } = {
         type: [
             ExtensionType.CanvasPipes,
         ],

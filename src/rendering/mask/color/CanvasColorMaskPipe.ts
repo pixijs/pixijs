@@ -2,8 +2,6 @@ import { ExtensionType } from '../../../extensions/Extensions';
 
 import type { Container } from '../../../scene/container/Container';
 import type { Effect } from '../../../scene/container/Effect';
-import type { WebGLRenderer } from '../../renderers/gl/WebGLRenderer';
-import type { WebGPURenderer } from '../../renderers/gpu/WebGPURenderer';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { InstructionPipe } from '../../renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../../renderers/types';
@@ -11,13 +9,12 @@ import type { ColorMask } from './ColorMask';
 import type { ColorMaskInstruction } from './ColorMaskTypes';
 
 /** @internal */
-export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
+export class CanvasColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
 {
     /** @ignore */
     public static extension = {
         type: [
-            ExtensionType.WebGLPipes,
-            ExtensionType.WebGPUPipes,
+            ExtensionType.CanvasPipes,
         ],
         name: 'colorMask',
     } as const;
@@ -41,9 +38,7 @@ export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
 
     public push(mask: Effect, _container: Container, instructionSet: InstructionSet): void
     {
-        const renderer = this._renderer;
-
-        renderer.renderPipes.batch.break(instructionSet);
+        this._renderer.renderPipes.batch.break(instructionSet);
 
         const colorStack = this._colorStack;
 
@@ -66,9 +61,7 @@ export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
 
     public pop(_mask: Effect, _container: Container, instructionSet: InstructionSet): void
     {
-        const renderer = this._renderer;
-
-        renderer.renderPipes.batch.break(instructionSet);
+        this._renderer.renderPipes.batch.break(instructionSet);
 
         const colorStack = this._colorStack;
 
@@ -88,11 +81,9 @@ export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
         }
     }
 
-    public execute(instruction: ColorMaskInstruction)
+    public execute(_instruction: ColorMaskInstruction)
     {
-        const renderer = this._renderer;
-
-        (renderer as WebGLRenderer | WebGPURenderer).colorMask.setMask(instruction.colorMask);
+        // no-op on canvas
     }
 
     public destroy()
